@@ -1,0 +1,13 @@
+Testsuite: org.simpleframework.xml.core.PrimitiveValueTest
+Tests run: 4, Failures: 0, Errors: 0, Time elapsed: 0.032 sec
+------------- Standard Output ---------------
+<inlineString value="example"/><notInlineString>
+   <value>example</value>
+</notInlineString><noAttributeString>
+   <value>example</value>
+</noAttributeString><attributeNoKeyString value="example"/>------------- ---------------- ---------------
+
+Testcase: testInlineString took 0.026 sec
+Testcase: testNotInlineString took 0.001 sec
+Testcase: testNoAttributeString took 0.001 sec
+Testcase: testAttributeNoKeyString took 0.002 sec

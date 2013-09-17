@@ -1,0 +1,76 @@
+Testsuite: org.simpleframework.xml.util.DictionaryTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.116 sec
+------------- Standard Output ---------------
+<test name="example">
+   <list>
+      <property name="3">
+         <text>three</text>
+      </property>
+      <property name="2">
+         <text>two</text>
+      </property>
+      <property name="1">
+         <text>one</text>
+      </property>
+   </list>
+</test><test name="example">
+   <list>
+      <property name="3">
+         <text>three</text>
+      </property>
+      <property name="2">
+         <text>two</text>
+      </property>
+      <property name="1">
+         <text>one</text>
+      </property>
+   </list>
+</test>
+<test ID="0" name="example">
+   <!-- org.simpleframework.xml.util.Dictionary -->
+   <list ID="1">
+      <!-- org.simpleframework.xml.util.DictionaryTest$Property -->
+      <property ID="2" name="3">
+         <!-- java.lang.String -->
+         <text ID="3">three</text>
+      </property>
+      <!-- org.simpleframework.xml.util.DictionaryTest$Property -->
+      <property ID="4" name="2">
+         <!-- java.lang.String -->
+         <text ID="5">two</text>
+      </property>
+      <!-- org.simpleframework.xml.util.DictionaryTest$Property -->
+      <property ID="6" name="1">
+         <!-- java.lang.String -->
+         <text ID="7">one</text>
+      </property>
+   </list>
+</test>>>>>> ELEMENT=[element test]
+>>>>> TYPE=[class org.simpleframework.xml.util.DictionaryTest$PropertySet]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Test ID="0" name="example">
+   <!-- org.simpleframework.xml.util.Dictionary -->
+   <List ID="1">
+      <!-- org.simpleframework.xml.util.DictionaryTest$Property -->
+      <Property ID="2" name="3">
+         <!-- java.lang.String -->
+         <Text ID="3">three</Text>
+      </Property>
+      <!-- org.simpleframework.xml.util.DictionaryTest$Property -->
+      <Property ID="4" name="2">
+         <!-- java.lang.String -->
+         <Text ID="5">two</Text>
+      </Property>
+      <!-- org.simpleframework.xml.util.DictionaryTest$Property -->
+      <Property ID="6" name="1">
+         <!-- java.lang.String -->
+         <Text ID="7">one</Text>
+      </Property>
+   </List>
+</Test>>>>>> ELEMENT=[element Test]
+>>>>> TYPE=[class org.simpleframework.xml.util.DictionaryTest$PropertySet]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testDictionary took 0.114 sec
+Testcase: testDirectory took 0 sec

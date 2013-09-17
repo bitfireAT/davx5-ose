@@ -1,0 +1,27 @@
+Testsuite: org.simpleframework.xml.core.PathDuplicateTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.106 sec
+------------- Standard Output ---------------
+<example>
+   <y>
+      <x>a</x>
+   </y>
+   <y>
+      <x>b</x>
+   </y>
+</example>
+<StyleExample>
+   <Path>
+      <Details>
+         <Name>a</Name>
+      </Details>
+   </Path>
+   <Path>
+      <Details>
+         <Name>b</Name>
+      </Details>
+   </Path>
+</StyleExample>
+------------- ---------------- ---------------
+
+Testcase: testDup took 0.094 sec
+Testcase: testStyleDup took 0.01 sec

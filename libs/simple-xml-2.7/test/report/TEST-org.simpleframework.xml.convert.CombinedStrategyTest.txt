@@ -1,0 +1,24 @@
+Testsuite: org.simpleframework.xml.convert.CombinedStrategyTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.104 sec
+------------- Standard Output ---------------
+<combinationExample>
+   <item>
+      <value>1</value>
+      <type>org.simpleframework.xml.convert.CombinedStrategyTest$RegistryItemConverter</type>
+   </item>
+   <overriddenItem value="2" type="org.simpleframework.xml.convert.CombinedStrategyTest$AnnotationItemConverter"/>
+   <extendedItem class="org.simpleframework.xml.convert.CombinedStrategyTest$ExtendedItem" value="3" type="org.simpleframework.xml.convert.CombinedStrategyTest$ExtendedItemConverter"/>
+</combinationExample>
+<combination-example>
+   <item>
+      <value>1</value>
+      <type>org.simpleframework.xml.convert.CombinedStrategyTest$RegistryItemConverter</type>
+   </item>
+   <overridden-item value="2" type="org.simpleframework.xml.convert.CombinedStrategyTest$AnnotationItemConverter"/>
+   <extended-item class="org.simpleframework.xml.convert.CombinedStrategyTest$ExtendedItem" value="3" type="org.simpleframework.xml.convert.CombinedStrategyTest$ExtendedItemConverter"/>
+</combination-example>
+------------- ---------------- ---------------
+
+Testcase: testCombinedStrategy took 0.089 sec
+Testcase: testCombinationStrategyWithStyle took 0.012 sec
+Testcase: testDirectory took 0 sec

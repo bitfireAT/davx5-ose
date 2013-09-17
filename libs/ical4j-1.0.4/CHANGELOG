@@ -1,0 +1,432 @@
+==================
+ iCal4j - Changes
+==================
+
+ See the changelog report for further details:
+
+ 	http://m2.modularity.net.au/projects/ical4j/changelog.html
+
+==
+
+1.0-beta5
+
+ - Added support for compatibility configuration via properties file
+ 
+ - Numerous bug fixes
+ 
+ 
+1.0-beta4
+
+ - Added support for VVENUE
+ 
+ - Bug fixes
+ 
+ 
+1.0-beta3
+
+ - Third beta release.
+ 
+ - Added UidGenerator to help with creation of unique UID properties
+ 
+ - Added timezone aliases for deprecetated timezone ids
+ 
+ - Added support for calculating the recurrence set for components, to unify
+ PeriodRule and VEvent.getConsumedTime() functionality
+
+ - Updated timezone definitions (Olson 2007f)
+ 
+ - Bug fixes.
+
+
+1.0-beta2
+
+ - Second beta. General bug fixes. No changes to API. Retains binary
+ compatibility with previous release.
+ 
+1.0-beta1
+
+ - First iCal4j beta. Expect little API changes until the final release, as
+ binary compatibility should be maintained from this release onwards.
+ 
+ 
+0.9.20
+
+ - Updated commons logging to 1.1
+ 
+ - Refactored logging to use local Log instances to avoid classloader issues
+ 
+ - Updated parser to include word chars up to 255 (was 127)
+ 
+ - Updated PeriodRule to check if date falls within period range (exclusive of
+ period start and end)
+ 
+ - Added commons codec dependency to support QUOTED-PRINTABLE encoding
+ 
+ - Added compatibility hint for Lotus Notes
+ 
+ - Additional component validation from RFC2445 implemented. Additional
+ Compatibility Hint for relaxed validation, which skips this extra validation.
+ 
+ - Provide a default DTSTAMP property in VEvent, VToDo, VJournal and VFreeBusy
+
+ - Updated timzone definitions (Olson 2006g)
+ 
+ - More bug fixes.
+
+
+0.9.19
+
+ - Added filter package to allow for filtering of collections
+ based on filtering rules
+ 
+ - Added convenience methods to calendar, components and properties
+ 
+ - Fixed unfolding bug
+ 
+ - Added support for relaxed parsing
+ 
+ - Improved use of date formats in DateTime
+ 
+ - Added replace() method to ParameterList
+ 
+ - Added convenience method to calculate recurrences from a period
+ 
+ - Removed quote character from escape patterns
+ 
+ - Applied patches: #1434747
+ 
+ - Added CalendarComponent superclass for components added directly to a
+ calendar (removed redundant Component.isCalendarComponent() method)
+ 
+ - Improved javadoc documentation
+ 
+ - Improved caching of timezone observance onsets
+ 
+ - Updated timezone definitions (Olson tzdata2006b)
+ 
+ - Bug fixes: #1460795, #1446120, #1434734, #1434291
+
+
+0.9.18
+
+ - Improved support for experimental components
+ 
+ - Added shared cache of default timezones for TimeZoneRegistryImpl
+
+ - Applied fixes for the following bugs: #1353378, #1338857
+
+ - Added override build option for including version name in JAR filename
+ (see build.properties.sample)
+ 
+ - Added convenience methods for retrieving UID properties from components
+ 
+ - Updated timezone definitions to Olson 2005q
+ 
+ - Date/Time instances now use the default Java timezone where no timezone
+ information is specified (i.e. floating time).
+ 
+ - Re-instated fix for retrieving consumed time whereby events partially intersect
+ date range (affects VEvent/VFreeBusy)
+
+
+0.9.17
+
+ - Added support for experimental components (XComponent)
+ 
+ - Now includes default timezone definitions (based on Olson timezone database)
+ 
+ - Applied fixes for the following bugs: #1323762, #1338857
+ 
+ - Applied the following patches: #1326774
+ 
+ - Added rudimentary caching of timezone observance onsets to improve performance
+ 
+ - Updated timezone registry for improved multi-threaded support
+ 
+ - Added Dur.negate() convenience method
+
+
+0.9.16
+
+ - Applied fixes for bugs #1297830, #1300305, #1300728, #1305610, #1305634,
+ #1305655, #1305715
+ 
+ - removed final modifiers in CalendarBuilder to allow for subclassing
+ 
+ - added initial capacity constructors to lists for optimisations
+ 
+ - fixed bug where DateProperty.setDate() was not correctly updating
+ timezones of new date values
+ 
+ - corrected bug in calculating negative durations
+ 
+ - added precision rounding to date/date-time instances to fix comparisons
+ and equality checking
+ 
+ - added convenience methods for creating date/calendar instances
+ 
+ - fixed recurrence rules to use correct timezones
+ 
+ - Fixed potential NullPointerException in TimeZone
+ 
+ - Fixed invalid date values in Date properties
+ 
+ - Removed redundant methods in DateProperties and general clean up
+ 
+ - TzId now correctly implements Escapable interface
+
+
+0.9.15
+
+ - Fixed DateProperties to correctly call super.validate() in validation
+ 
+ - Fix applied to Recur.getMonthDayVariants() to correctly set the month of
+ candidate dates. Also fixed to ignore dates prior to seed date.
+ 
+ - Added encoding/decoding of URIs
+
+ - Fixed parser to allow arbitrary ordering of VTIMEZONE observances/properties.
+ 
+ - Now allows for additional whitespace between properties.
+ 
+ - Introduced a custom timezone implementation for use with iCalendar objects
+ 
+ - Introduced a timezone registry with support for alternative implementations
+
+
+0.9.14:
+
+ - Reimplemented ParameterFactory and PropertyFactory with improved design
+ 
+ - Added a duration type (Dur) for represeting durations in properties Duration
+ and Trigger, and type Period. (DurationFormat deprecated).
+ 
+ - ParameterList.add() now automatically removes from the list all other parameters
+ with the same name
+ 
+ - Added serialVersionUID to all properties, parameters and types
+ 
+ - Added utc offset type (UtcOffset) for representing utc offsets (UtcOffsetFormat
+ deprecated)
+ 
+ - Added date/date-time types (Date/DateTime) for representing date values
+ (DateFormat/DateTimeFormat deprecated)
+ 
+ - Removed DateList.setType() (use new DateList(DateList, Value) instead)
+ 
+ - added equals()/hashcode() to Calendar, Component
+ 
+ - refactored ComponentList/PropertyList to extend ArrayList
+ 
+ - overridden List.add() for all lists extending ArrayList
+ 
+ - created Escapable interface to replace setEscapable/isEscapable methods
+ 
+ - ParameterFactory now returns constant instances where applicable
+ 
+ - changes to VTimeZone.getVTimeZone() method signature
+ 
+ - added Calendar.getVTimeZone()
+ 
+ - added Constants utility class for working with constants.
+ 
+ - CalendarBuilder replaces properties with constant instances where applicable
+ 
+ - Checkstyle-based code clean up
+ 
+ - Applied patches: #1234424, #1244945
+ 
+ - Added Numbers.parseInt(), StringUtils.valueOf() utility methods.
+ 
+ - Completed rewrite of Recur to use "candidate" dates to generate a list
+ of applicable dates.
+ 
+ - Date-based properties refactored to use superclasses.
+ 
+ - VFreeBusy modified to only accept date-time ranges (may be revised later).
+ 
+ 
+0.9.13:
+
+ - Merged DateRange functionality into Period
+ 
+ - Merged DateRangeNormalizer functionality into PeriodList
+ 
+ - Removed Calendar.getEventDateRanges() (use VFreeBusy request instead)
+ 
+ - Removed VEvent.getDateRanges() (use VEvent.getConsumedTime() instead)
+ 
+ - Removed VEvent.getRecurringStartDates() (use Recur.getDates() instead)
+ 
+ - Applied patches where possible: #1197119, #1191253, #1185766 - thanks tobli
+ 
+ - Default charset for CalendarBuilder and CalendarOutputter now UTF-8 (as per
+ RFC2445, section 4.1.4)
+ 
+ - Applied patch from bug #1203990 to Recur.getAbsWeekDays()
+ 
+
+0.9.12:
+
+ - Redefined parameter and property constants to class instances rather
+ than strings. This is done for efficiency where class instances are immutable
+ once created. Note: this may cause incompatibilities with existing code!
+ 
+ - fixed bug in parsing periods
+ 
+ - fixed bug in TimeZoneUtils for non-DST timezones
+ 
+ - added support for removal of extraneous newlines between components in the
+ default parser implementation (KOrganizer generates such files)
+ 
+ - fixed bug in parsing free time where durations are specified
+ 
+ - Various constants reimplemented as typed instances (as opposed to strings)
+ 
+ NOTE: This may break existing code based on earlier releases! Please check
+ your usage of the following classes:
+ 
+ 	* net.fortuna.ical4j.model.WeekDay
+ 	* net.fortuna.ical4j.model.parameter.CuType
+ 	* net.fortuna.ical4j.model.parameter.Encoding
+ 	* net.fortuna.ical4j.model.parameter.FbType
+ 	* net.fortuna.ical4j.model.parameter.PartStat
+ 	* net.fortuna.ical4j.model.parameter.Range
+ 	* net.fortuna.ical4j.model.parameter.Related
+ 	* net.fortuna.ical4j.model.parameter.RelType
+ 	* net.fortuna.ical4j.model.parameter.Role
+ 	* net.fortuna.ical4j.model.parameter.Rsvp
+ 	* net.fortuna.ical4j.model.parameter.Value
+ 	* net.fortuna.ical4j.model.property.Action
+ 	* net.fortuna.ical4j.model.property.CalScale
+ 	* net.fortuna.ical4j.model.property.Clazz
+ 	* net.fortuna.ical4j.model.property.Method
+ 	* net.fortuna.ical4j.model.property.Priority
+ 	* net.fortuna.ical4j.model.property.Status
+ 	* net.fortuna.ical4j.model.property.Transp
+ 	
+ 
+ - Applied patch #1170060 by calibre. Provides improvements to retrieval of
+ date ranges represented by recurring VEvents.
+ 
+ - documentation updated to conform to XHTML 1.0
+ 
+ - added Base64 encoding/decoding to Attach property
+ 
+ 
+0.9.11:
+
+ - Better support and usability for recurrence rules. (see
+ extensive changes to Recur class)
+ 
+ - Convenience constructors for components VAlarm, VEvent, VFreeBusy, VJournal,
+ and VToDo should make it easier to construct standard components.
+ 
+ - Further validation fine-tuning to ensure some properties don't occur where
+ not applicable.
+ 
+ - Fixed support for TRANSP property, which was previously being ignored by the
+ CalendarBuilder.
+ 
+ 
+0.9.10:
+
+ - Model classes are now Serializable
+ 
+ - Bug fixes related to VALARMs in VTODOs (thanks twinkle!)
+ 
+ - Added explicit serialVersionUID for Serializable implementors.
+ 
+ - Added use of Log.isDebugEnabled() for performance reasons.
+ 
+ - Added WeekDay class to better represent day patterns in recurrence rules.
+
+ 
+0.9.9:
+
+ - Separated the calendar parser from the builder to allow different
+ parser implementations to be used with iCal4j.
+ 
+ - All properties are now mutable with default constructors.
+
+
+0.9.8:
+
+ - Added special character escaping and parsing. NOTE: I've provided the ability
+ to escape parameter values although I am unsure it is necessary (or allowed) by
+ RFC2445.
+ 
+ - Fixed bug whereby CalendarBuilder wasn't reading quoted text correctly in all
+ cases.
+ 
+
+0.9.7:
+ 
+ - Added convenience constructors to model classes (Calendar, Component, Property)
+ 
+ - Initial design of support for RFC 2446 (transform) - NOTE: Not yet functional!
+ 
+ - Fixed bug where builder would hang if calendar streams didn't
+ contain an extra whitespace char at EOF
+
+
+0.9.6:
+
+ - Fixed bug found in some property constructors where was not checking
+ VALUE parameter correctly to identify DATE type for date-time values
+ 
+ - Added validating option to CalendarOutputter to indicate whether to
+ validate the Calendar before outputting
+ 
+ - Added recurse parameter to calendar and component validate methods
+ to indicate whether to validate children
+ 
+ - Added license header to all source files (hence the increase in size
+ of the distribution!)
+
+
+0.9.5:
+
+ - Added UTC flag to date-time properties indicating how date-time values are formatted
+	NOTE: This is not provided for all properties as some must be in UTC format.
+
+ - Added convenience methods for creating VTimeZone instances.
+ 
+ 
+0.9.4:
+
+ - Property and Parameter made abstract classes
+ 
+ - Added getValue() implementation to all Property and Parameter sub-classes
+ 
+ - Fixed FoldingWriter
+ 
+ - Other fixes regarding string representations
+ 
+ 
+0.9.3:
+
+ - Added commons logging support
+ 
+ - Fixed problem with parsing quoted parameters
+
+ - Finished implementation of Period, Recur types
+
+ - Fix date/date-time parsing to check for VALUE parameter
+ 
+ - Added format method to DurationFormat and UtcOffsetFormat
+
+
+0.9.2:
+
+ - Interim Release
+
+
+0.9.1:
+
+ - Interim Release
+
+
+0.9
+
+ - Initial Release

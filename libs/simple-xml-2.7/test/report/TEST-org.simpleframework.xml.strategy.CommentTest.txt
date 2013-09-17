@@ -1,0 +1,14 @@
+Testsuite: org.simpleframework.xml.strategy.CommentTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.078 sec
+------------- Standard Output ---------------
+<commentExample>
+   <!-- This represents the name value -->
+   <name>Some Name</name>
+   <!-- This is a value to be used -->
+   <value>A value to use</value>
+   <!-- Yet another comment -->
+   <price>9.99</price>
+</commentExample>------------- ---------------- ---------------
+
+Testcase: testComment took 0.076 sec
+Testcase: testDirectory took 0.001 sec

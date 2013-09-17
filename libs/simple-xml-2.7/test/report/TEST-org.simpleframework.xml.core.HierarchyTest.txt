@@ -1,0 +1,54 @@
+Testsuite: org.simpleframework.xml.core.HierarchyTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.116 sec
+------------- Standard Output ---------------
+<specialized>
+   <a>a</a>
+   <b>b</b>
+   <c>1</c>
+   <d>2</d>
+   <one>1</one>
+   <two>2.0</two>
+</specialized><specialized>
+   <a>a</a>
+   <b>b</b>
+   <c>1</c>
+   <d>2</d>
+   <one>1</one>
+   <two>2.0</two>
+</specialized>
+<specialized ID="0">
+   <!-- java.lang.String -->
+   <a ID="1">a</a>
+   <!-- java.lang.String -->
+   <b ID="2">b</b>
+   <!-- java.lang.Integer -->
+   <c ID="3">1</c>
+   <!-- java.lang.Integer -->
+   <d ID="4">2</d>
+   <!-- java.lang.Long -->
+   <one ID="5">1</one>
+   <!-- java.lang.Double -->
+   <two ID="6">2.0</two>
+</specialized>>>>>> ELEMENT=[element specialized]
+>>>>> TYPE=[class org.simpleframework.xml.core.HierarchyTest$Specialized]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Specialized ID="0">
+   <!-- java.lang.String -->
+   <A ID="1">a</A>
+   <!-- java.lang.String -->
+   <B ID="2">b</B>
+   <!-- java.lang.Integer -->
+   <C ID="3">1</C>
+   <!-- java.lang.Integer -->
+   <D ID="4">2</D>
+   <!-- java.lang.Long -->
+   <One ID="5">1</One>
+   <!-- java.lang.Double -->
+   <Two ID="6">2.0</Two>
+</Specialized>>>>>> ELEMENT=[element Specialized]
+>>>>> TYPE=[class org.simpleframework.xml.core.HierarchyTest$Specialized]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testHierarchy took 0.113 sec
+Testcase: testDirectory took 0 sec

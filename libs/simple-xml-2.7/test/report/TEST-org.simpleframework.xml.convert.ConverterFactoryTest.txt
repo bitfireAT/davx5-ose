@@ -1,0 +1,4 @@
+Testsuite: org.simpleframework.xml.convert.ConverterFactoryTest
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.005 sec
+
+Testcase: testFactory took 0.003 sec

@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<project default="test" basedir=".">
+
+   <target name="layout">
+      <property name="parent.path" value=".."/>
+      <property name="source.path" value="src"/>
+      <property name="lib.path" value="lib"/>
+      <property name="report.path" value="report"/>
+      <property name="build.path" value="build"/>
+   </target>
+
+   <target name="clean" depends="layout">
+      <delete dir="${build.path}"/>      
+   </target>
+
+   <target name="prepare" depends="clean">
+      <mkdir dir="${build.path}"/>
+      <mkdir dir="${build.path}/core"/>
+      <mkdir dir="${build.path}/test"/>
+      <mkdir dir="${report.path}"/>
+   </target> 
+
+   <target name="test" depends="prepare">
+      <javac srcdir="${parent.path}/${source.path}" destdir="${build.path}/core" debug="true" debuglevel="lines,vars,source" encoding="UTF-8">
+         <classpath>
+            <fileset dir="${lib.path}">
+               <include name="**/*.jar"/>
+            </fileset>
+         </classpath>
+      </javac>
+      <copy todir="${build.path}">
+         <fileset dir="${parent.path}/${source.path}">
+            <exclude name="**/*.java"/>
+         </fileset>
+      </copy>
+      <javac srcdir="${source.path}" destdir="${build.path}/test" debug="true" debuglevel="lines,vars,source" encoding="UTF-8">
+         <classpath>
+            <fileset dir="${lib.path}">
+               <include name="**/*.jar"/>
+            </fileset>
+            <pathelement path="${build.path}/core"/>
+         </classpath>
+      </javac>
+      <junit printsummary="yes" haltonfailure="yes">
+         <classpath location="${build.path}/core"/>
+         <classpath location="${build.path}/test"/>
+         <classpath>
+            <fileset dir="${lib.path}">
+               <include name="**/*.jar"/>
+            </fileset>
+         </classpath>
+         <formatter type="plain"/>
+         <batchtest fork="yes" todir="${report.path}">
+            <fileset dir="${build.path}/test">
+               <include name="**/*Test.class"/>
+               <exclude name="**/*TestSuite.class"/>
+            </fileset>
+         </batchtest>
+      </junit>
+      <junit printsummary="yes" haltonfailure="yes">
+         <classpath location="${build.path}/core"/>
+         <classpath location="${build.path}/test"/>
+         <classpath>
+            <fileset dir="${lib.path}">
+               <include name="**/*.jar"/>
+               <exclude name="**/stax-api-1.0.1.jar"/>
+               <exclude name="**/stax-1.2.0.jar"/>
+               <exclude name="**/wstx-asl-3.2.1.jar"/>
+            </fileset>
+         </classpath>
+         <formatter type="plain"/>
+         <batchtest fork="yes" todir="${report.path}">
+            <fileset dir="${build.path}/test">
+               <include name="**/*Test.class"/>
+               <exclude name="**/*TestSuite.class"/>
+            </fileset>
+         </batchtest>
+      </junit>
+      <delete dir="${build.path}"/>
+   </target>
+
+</project>

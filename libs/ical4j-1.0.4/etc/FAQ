@@ -1,0 +1,43 @@
+============================
+ Frequently Asked Questions
+============================
+
+
+Q. What is iCal4j?
+
+A. iCal4j consists of an iCalendar parser, object model, and generator. If you
+   are looking to add iCalendar support to your Java application then iCal4j
+   is for you.
+
+
+Q. Are there any examples?
+
+A. You will find most examples in the unit tests included in the "test" folder
+   included with the source distribution. There are also some basic examples
+   on the introduction page of the documentation, as well as in the javadocs.
+
+
+Q. Is iCal4j compatible with Outlook?
+
+A. Yes. Whilst Outlook does generate iCalendar files with abnormalities that
+   don't conform to the RFC2445 specification, we have added compatibility
+   flags that will correctly interpret these files. (See CompatibilityHints)
+
+
+Q. Is iCal4j compatible with Mozilla Calendar/Sunbird?
+
+A. Yes. Compatibility hints are also provided for working with Mozilla Calendar
+   files.
+
+
+Q. Does iCal4j support recurrence rules?
+
+A. Yes. iCal4j is a complete implementation of the RFC2445 specification.
+
+
+Q. Where does iCal4j get its timezone definitions from?
+
+A. iCal4j includes a default set of timezone definitions, which are generated
+   from the Olson database timezone definitions. You may also provide your own
+   timezone definitions by providing a TimeZoneRegistry implementation (see
+   TimeZoneRegistryFactory).

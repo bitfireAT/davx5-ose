@@ -1,0 +1,374 @@
+Testsuite: org.simpleframework.xml.core.UnionComplicatedPathMixTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.429 sec
+------------- Standard Output ---------------
+<complicatedExample xmlns:x="http://www.x.com/x">
+   <x:path>
+      <a>
+         <x/>
+         <a id="1"/>
+      </a>
+      <c>
+         <z/>
+         <c id="2"/>
+      </c>
+      <c>
+         <z/>
+         <c id="3"/>
+      </c>
+      <b>
+         <y/>
+         <b id="4"/>
+      </b>
+   </x:path>
+   <x:path>
+      <c id="a"/>
+      <a id="b"/>
+      <b id="c"/>
+      <b id="d"/>
+      <elementOne>element 1</elementOne>
+      <elementTwo>element 2</elementTwo>
+      <elementThree>element 3</elementThree>
+      <x:someOtherPath attribute_one="attribute 1" attribute_two="attribute 2">text</x:someOtherPath>
+   </x:path>
+</complicatedExample>
+<complicatedExample xmlns:x="http://www.x.com/x">
+   <x:path>
+      <a>
+         <x/>
+         <a id="1"/>
+      </a>
+      <c>
+         <z/>
+         <c id="2"/>
+      </c>
+      <c>
+         <z/>
+         <c id="3"/>
+      </c>
+      <b>
+         <y/>
+         <b id="4"/>
+      </b>
+   </x:path>
+   <x:path>
+      <c id="a"/>
+      <a id="b"/>
+      <b id="c"/>
+      <b id="d"/>
+      <elementOne>element 1</elementOne>
+      <elementTwo>element 2</elementTwo>
+      <elementThree>element 3</elementThree>
+      <x:someOtherPath attribute_one="attribute 1" attribute_two="attribute 2">text</x:someOtherPath>
+   </x:path>
+</complicatedExample><complicatedExample xmlns:x="http://www.x.com/x">
+   <x:path>
+      <a>
+         <x/>
+         <a id="1"/>
+      </a>
+      <c>
+         <z/>
+         <c id="2"/>
+      </c>
+      <c>
+         <z/>
+         <c id="3"/>
+      </c>
+      <b>
+         <y/>
+         <b id="4"/>
+      </b>
+   </x:path>
+   <x:path>
+      <c id="a"/>
+      <a id="b"/>
+      <b id="c"/>
+      <b id="d"/>
+      <elementOne>element 1</elementOne>
+      <elementTwo>element 2</elementTwo>
+      <elementThree>element 3</elementThree>
+      <x:someOtherPath attribute_one="attribute 1" attribute_two="attribute 2">text</x:someOtherPath>
+   </x:path>
+</complicatedExample>
+<complicated-example ID="0" xmlns:x="http://www.x.com/x">
+   <x:path>
+      <a>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$X -->
+         <x ID="1"/>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$A -->
+         <a ID="2" id="1"/>
+      </a>
+      <c>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$Z -->
+         <z ID="3"/>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$C -->
+         <c ID="4" id="2"/>
+      </c>
+      <c>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$Z -->
+         <z ID="5"/>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$C -->
+         <c ID="6" id="3"/>
+      </c>
+      <b>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$Y -->
+         <y ID="7"/>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$B -->
+         <b ID="8" id="4"/>
+      </b>
+   </x:path>
+   <x:path>
+      <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$C -->
+      <c ID="9" id="a"/>
+      <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$A -->
+      <a ID="10" id="b"/>
+      <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$B -->
+      <b ID="11" id="c"/>
+      <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$B -->
+      <b ID="12" id="d"/>
+      <!-- java.lang.String -->
+      <element-one ID="13">element 1</element-one>
+      <!-- java.lang.String -->
+      <element-two ID="14">element 2</element-two>
+      <!-- java.lang.String -->
+      <element-three ID="15">element 3</element-three>
+      <x:some-other-path attribute-one="attribute 1" attribute-two="attribute 2">text</x:some-other-path>
+   </x:path>
+</complicated-example>>>>>> ELEMENT=[element complicated-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionComplicatedPathMixTest$ComplicatedExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ComplicatedExample ID="0" xmlns:x="http://www.x.com/x">
+   <x:Path>
+      <A>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$X -->
+         <X ID="1"/>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$A -->
+         <A ID="2" id="1"/>
+      </A>
+      <C>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$Z -->
+         <Z ID="3"/>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$C -->
+         <C ID="4" id="2"/>
+      </C>
+      <C>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$Z -->
+         <Z ID="5"/>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$C -->
+         <C ID="6" id="3"/>
+      </C>
+      <B>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$Y -->
+         <Y ID="7"/>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$B -->
+         <B ID="8" id="4"/>
+      </B>
+   </x:Path>
+   <x:Path>
+      <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$C -->
+      <C ID="9" id="a"/>
+      <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$A -->
+      <A ID="10" id="b"/>
+      <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$B -->
+      <B ID="11" id="c"/>
+      <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$B -->
+      <B ID="12" id="d"/>
+      <!-- java.lang.String -->
+      <ElementOne ID="13">element 1</ElementOne>
+      <!-- java.lang.String -->
+      <ElementTwo ID="14">element 2</ElementTwo>
+      <!-- java.lang.String -->
+      <ElementThree ID="15">element 3</ElementThree>
+      <x:SomeOtherPath attributeOne="attribute 1" attributeTwo="attribute 2">text</x:SomeOtherPath>
+   </x:Path>
+</ComplicatedExample>>>>>> ELEMENT=[element ComplicatedExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionComplicatedPathMixTest$ComplicatedExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ComplicatedExample xmlns:x="http://www.x.com/x">
+   <x:Path>
+      <A>
+         <X/>
+         <A id="1"/>
+      </A>
+      <C>
+         <Z/>
+         <C id="2"/>
+      </C>
+      <C>
+         <Z/>
+         <C id="3"/>
+      </C>
+      <B>
+         <Y/>
+         <B id="4"/>
+      </B>
+   </x:Path>
+   <x:Path>
+      <C id="a"/>
+      <A id="b"/>
+      <B id="c"/>
+      <B id="d"/>
+      <ElementOne>element 1</ElementOne>
+      <ElementTwo>element 2</ElementTwo>
+      <ElementThree>element 3</ElementThree>
+      <x:SomeOtherPath attributeOne="attribute 1" attributeTwo="attribute 2">text</x:SomeOtherPath>
+   </x:Path>
+</ComplicatedExample>
+<ComplicatedExample xmlns:x="http://www.x.com/x">
+   <x:Path>
+      <A>
+         <X/>
+         <A id="1"/>
+      </A>
+      <C>
+         <Z/>
+         <C id="2"/>
+      </C>
+      <C>
+         <Z/>
+         <C id="3"/>
+      </C>
+      <B>
+         <Y/>
+         <B id="4"/>
+      </B>
+   </x:Path>
+   <x:Path>
+      <C id="a"/>
+      <A id="b"/>
+      <B id="c"/>
+      <B id="d"/>
+      <ElementOne>element 1</ElementOne>
+      <ElementTwo>element 2</ElementTwo>
+      <ElementThree>element 3</ElementThree>
+      <x:SomeOtherPath attributeOne="attribute 1" attributeTwo="attribute 2">text</x:SomeOtherPath>
+   </x:Path>
+</ComplicatedExample><ComplicatedExample xmlns:x="http://www.x.com/x">
+   <x:Path>
+      <A>
+         <X/>
+         <A id="1"/>
+      </A>
+      <C>
+         <Z/>
+         <C id="2"/>
+      </C>
+      <C>
+         <Z/>
+         <C id="3"/>
+      </C>
+      <B>
+         <Y/>
+         <B id="4"/>
+      </B>
+   </x:Path>
+   <x:Path>
+      <C id="a"/>
+      <A id="b"/>
+      <B id="c"/>
+      <B id="d"/>
+      <ElementOne>element 1</ElementOne>
+      <ElementTwo>element 2</ElementTwo>
+      <ElementThree>element 3</ElementThree>
+      <x:SomeOtherPath attributeOne="attribute 1" attributeTwo="attribute 2">text</x:SomeOtherPath>
+   </x:Path>
+</ComplicatedExample>
+<complicated-example ID="0" xmlns:x="http://www.x.com/x">
+   <x:path>
+      <a>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$X -->
+         <x ID="1"/>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$A -->
+         <a ID="2" id="1"/>
+      </a>
+      <c>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$Z -->
+         <z ID="3"/>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$C -->
+         <c ID="4" id="2"/>
+      </c>
+      <c>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$Z -->
+         <z ID="5"/>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$C -->
+         <c ID="6" id="3"/>
+      </c>
+      <b>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$Y -->
+         <y ID="7"/>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$B -->
+         <b ID="8" id="4"/>
+      </b>
+   </x:path>
+   <x:path>
+      <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$C -->
+      <c ID="9" id="a"/>
+      <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$A -->
+      <a ID="10" id="b"/>
+      <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$B -->
+      <b ID="11" id="c"/>
+      <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$B -->
+      <b ID="12" id="d"/>
+      <!-- java.lang.String -->
+      <element-one ID="13">element 1</element-one>
+      <!-- java.lang.String -->
+      <element-two ID="14">element 2</element-two>
+      <!-- java.lang.String -->
+      <element-three ID="15">element 3</element-three>
+      <x:some-other-path attribute-one="attribute 1" attribute-two="attribute 2">text</x:some-other-path>
+   </x:path>
+</complicated-example>>>>>> ELEMENT=[element complicated-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionComplicatedPathMixTest$ComplicatedExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ComplicatedExample ID="0" xmlns:x="http://www.x.com/x">
+   <x:Path>
+      <A>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$X -->
+         <X ID="1"/>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$A -->
+         <A ID="2" id="1"/>
+      </A>
+      <C>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$Z -->
+         <Z ID="3"/>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$C -->
+         <C ID="4" id="2"/>
+      </C>
+      <C>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$Z -->
+         <Z ID="5"/>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$C -->
+         <C ID="6" id="3"/>
+      </C>
+      <B>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$Y -->
+         <Y ID="7"/>
+         <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$B -->
+         <B ID="8" id="4"/>
+      </B>
+   </x:Path>
+   <x:Path>
+      <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$C -->
+      <C ID="9" id="a"/>
+      <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$A -->
+      <A ID="10" id="b"/>
+      <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$B -->
+      <B ID="11" id="c"/>
+      <!-- org.simpleframework.xml.core.UnionComplicatedPathMixTest$B -->
+      <B ID="12" id="d"/>
+      <!-- java.lang.String -->
+      <ElementOne ID="13">element 1</ElementOne>
+      <!-- java.lang.String -->
+      <ElementTwo ID="14">element 2</ElementTwo>
+      <!-- java.lang.String -->
+      <ElementThree ID="15">element 3</ElementThree>
+      <x:SomeOtherPath attributeOne="attribute 1" attributeTwo="attribute 2">text</x:SomeOtherPath>
+   </x:Path>
+</ComplicatedExample>>>>>> ELEMENT=[element ComplicatedExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionComplicatedPathMixTest$ComplicatedExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testComplicatedMap took 0.294 sec
+Testcase: testStyledComplicatedMap took 0.132 sec
+Testcase: testDirectory took 0 sec

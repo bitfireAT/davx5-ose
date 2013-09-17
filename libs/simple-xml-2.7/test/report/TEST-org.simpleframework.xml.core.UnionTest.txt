@@ -1,0 +1,30 @@
+Testsuite: org.simpleframework.xml.core.UnionTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.112 sec
+------------- Standard Output ---------------
+<unionListExample>
+   <integer>
+      <number>111</number>
+   </integer>
+   <i>
+      <number>111</number>
+   </i>
+   <d>
+      <number>222.0</number>
+   </d>
+   <s>
+      <string>SSS</string>
+   </s>
+</unionListExample><unionListExample>
+   <double>
+      <number>222.2</number>
+   </double>
+   <d>
+      <number>1.1</number>
+   </d>
+   <d>
+      <number>2.2</number>
+   </d>
+</unionListExample>------------- ---------------- ---------------
+
+Testcase: testListDeserialization took 0.105 sec
+Testcase: testDoubleListDeserialization took 0.005 sec

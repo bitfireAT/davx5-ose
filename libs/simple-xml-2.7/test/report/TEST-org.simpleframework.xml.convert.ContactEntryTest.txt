@@ -1,0 +1,32 @@
+Testsuite: org.simpleframework.xml.convert.ContactEntryTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.097 sec
+------------- Standard Output ---------------
+<entryList>
+   <entry>
+      <name>a</name>
+      <value>A</value>
+   </entry>
+   <entry>
+      <name>b</name>
+      <value>B</value>
+   </entry>
+   <entry>
+      <name>c</name>
+      <value>C</value>
+   </entry>
+   <other name="Other" value="Value"/>
+   <inheritConverter>
+      <name>INHERIT</name>
+      <value>inherit</value>
+   </inheritConverter>
+   <polymorhic class="org.simpleframework.xml.convert.ExampleConverters$ExtendedEntry" name="POLY" value="poly" code="12"/>
+   <otherList class="java.util.ArrayList">
+      <entry name="1" value="ONE"/>
+      <entry name="2" value="TWO"/>
+      <entry name="3" value="THREE"/>
+   </otherList>
+</entryList>
+------------- ---------------- ---------------
+
+Testcase: testContact took 0.094 sec
+Testcase: testDirectory took 0.001 sec

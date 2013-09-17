@@ -1,0 +1,15 @@
+Testsuite: org.simpleframework.xml.core.ConversionTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.097 sec
+------------- Standard Output ---------------
+<petShop>
+   <pets>
+      <pet class="org.simpleframework.xml.core.ConversionTest$Dog" name="Lassie" age="10"/>
+      <pet class="org.simpleframework.xml.core.ConversionTest$Cat">
+         <name>Kitty</name>
+         <age>2</age>
+      </pet>
+   </pets>
+</petShop>------------- ---------------- ---------------
+
+Testcase: testConverter took 0.095 sec
+Testcase: testDirectory took 0 sec

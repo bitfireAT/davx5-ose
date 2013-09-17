@@ -1,0 +1,9 @@
+Testsuite: org.simpleframework.xml.core.CompositeListUnionTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.097 sec
+------------- Standard Output ---------------
+<circle>1.0</circle><square>4</square><triangle>5.0</triangle>------------- ---------------- ---------------
+------------- Standard Error -----------------
+<circle>1.0</circle><square>4</square><triangle>5.0</triangle><circle>1.0</circle><square>4</square><triangle>5.0</triangle><circle>1.0</circle><square>4</square><triangle>5.0</triangle><circle>1.0</circle><square>4</square><triangle>5.0</triangle><circle>1.0</circle><square>4</square><triangle>5.0</triangle><circle>1.0</circle><square>4</square><triangle>5.0</triangle>------------- ---------------- ---------------
+
+Testcase: testSimpleList took 0.088 sec
+Testcase: testLargeList took 0.006 sec

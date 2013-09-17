@@ -1,0 +1,30 @@
+Testsuite: org.simpleframework.xml.core.NonFinalConstructorInjectionTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.11 sec
+------------- Standard Output ---------------
+<nonFinalExample>
+   <name>A</name>
+   <value>a</value>
+</nonFinalExample><nonFinalExample>
+   <name>A</name>
+   <value>a</value>
+</nonFinalExample>
+<non-final-example ID="0">
+   <!-- java.lang.String -->
+   <name ID="1">A</name>
+   <!-- java.lang.String -->
+   <value ID="2">a</value>
+</non-final-example>>>>>> ELEMENT=[element non-final-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.NonFinalConstructorInjectionTest$NonFinalExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<NonFinalExample ID="0">
+   <!-- java.lang.String -->
+   <Name ID="1">A</Name>
+   <!-- java.lang.String -->
+   <Value ID="2">a</Value>
+</NonFinalExample>>>>>> ELEMENT=[element NonFinalExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.NonFinalConstructorInjectionTest$NonFinalExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testNonFinal took 0.108 sec
+Testcase: testDirectory took 0.001 sec

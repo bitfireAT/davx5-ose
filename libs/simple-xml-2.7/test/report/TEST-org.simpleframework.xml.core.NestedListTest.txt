@@ -1,0 +1,64 @@
+Testsuite: org.simpleframework.xml.core.NestedListTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.112 sec
+------------- Standard Output ---------------
+<testSuit>
+   <defaultTestScenario includeDefault="false">
+      <testCase name="Test Case" description="abc">
+         <step id="1" action="open" target="field id" value="value"/>
+         <step id="2" action="type" target="field id" value="value"/>
+         <step id="3" action="select" target="field id" value="value"/>
+         <step id="4" action="clickAndWait" target="field id" value="value"/>
+         <step id="5" action="assertTrue" target="field id" value="value"/>
+      </testCase>
+      <testCase name="Test Case1" description="abc">
+         <step id="1" action="open" target="field id" value="value"/>
+         <step id="2" action="type" target="field id" value="value"/>
+         <step id="3" action="select" target="field id" value="value"/>
+         <step id="4" action="clickAndWait" target="field id" value="value"/>
+         <step id="5" action="assertTrue" target="field id" value="value"/>
+      </testCase>
+   </defaultTestScenario>
+   <testScenario name="Test Case1,Test Case3" description="abc" includeDefault="true">
+      <testCase name="Test Case1" description="abc">
+         <step id="1" action="open" target="field id" value="value"/>
+         <step id="2" action="type" target="field id" value="value"/>
+         <step id="3" action="select" target="field id" value="value"/>
+         <step id="4" action="clickAndWait" target="field id" value="value"/>
+         <step id="5" action="assertTrue" target="field id" value="value"/>
+         <step id="6" action="assertTrue" target="field id" value="value"/>
+      </testCase>
+      <testCase name="Test Case3" description="abc">
+         <step id="1" action="open" target="field id" value="value"/>
+         <step id="2" action="type" target="field id" value="value"/>
+         <step id="3" action="select" target="field id" value="value"/>
+         <step id="4" action="clickAndWait" target="field id" value="value"/>
+         <step id="5" action="assertTrue" target="field id" value="value"/>
+         <step id="6" action="assertTrue" target="field id" value="value"/>
+         <step id="7" action="assertTrue" target="field id" value="value"/>
+      </testCase>
+   </testScenario>
+   <testScenario name="Test Case2,Test Case4" description="abc" includeDefault="false">
+      <testCase name="Test Case2" description="">
+         <step id="1" action="open" target="field id" value="value"/>
+         <step id="2" action="type" target="field id" value="value"/>
+         <step id="3" action="select" target="field id" value="value"/>
+         <step id="4" action="clickAndWait" target="field id" value="value"/>
+         <step id="5" action="assertTrue" target="field id" value="value"/>
+         <step id="6" action="open" target="field id" value="value"/>
+         <step id="7" action="type" target="field id" value="value"/>
+         <step id="8" action="select" target="field id" value="value"/>
+         <step id="9" action="clickAndWait" target="field id" value="value"/>
+         <step id="10" action="assertTrue" target="field id" value="value"/>
+      </testCase>
+      <testCase name="Test Case4" description="">
+         <step id="1" action="open" target="field id" value="value"/>
+         <step id="2" action="type" target="field id" value="value"/>
+         <step id="3" action="select" target="field id" value="value"/>
+         <step id="4" action="clickAndWait" target="field id" value="value"/>
+         <step id="5" action="assertTrue" target="field id" value="value"/>
+      </testCase>
+   </testScenario>
+</testSuit>------------- ---------------- ---------------
+
+Testcase: testNestedList took 0.109 sec
+Testcase: testDirectory took 0 sec

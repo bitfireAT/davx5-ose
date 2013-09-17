@@ -1,0 +1,56 @@
+Testsuite: org.simpleframework.xml.core.PathAttributeWithNoExistingSectionTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.104 sec
+------------- Standard Output ---------------
+<attributeWithNoExistingSectionExample>
+   <some>
+      <path>
+         <to>
+            <build value="Attribute value"/>
+         </to>
+      </path>
+   </some>
+</attributeWithNoExistingSectionExample><attributeWithNoExistingSectionExample>
+   <some>
+      <path>
+         <to>
+            <build value="Attribute value"/>
+         </to>
+      </path>
+   </some>
+</attributeWithNoExistingSectionExample>
+<attribute-with-no-existing-section-example ID="0">
+   <some>
+      <path>
+         <to>
+            <build value="Attribute value"/>
+         </to>
+      </path>
+   </some>
+</attribute-with-no-existing-section-example>>>>>> ELEMENT=[element attribute-with-no-existing-section-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathAttributeWithNoExistingSectionTest$AttributeWithNoExistingSectionExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<AttributeWithNoExistingSectionExample ID="0">
+   <Some>
+      <Path>
+         <To>
+            <Build value="Attribute value"/>
+         </To>
+      </Path>
+   </Some>
+</AttributeWithNoExistingSectionExample>>>>>> ELEMENT=[element AttributeWithNoExistingSectionExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathAttributeWithNoExistingSectionTest$AttributeWithNoExistingSectionExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+------------- Standard Error -----------------
+<attributeWithNoExistingSectionExample>
+   <some>
+      <path>
+         <to>
+            <build value="Attribute value"/>
+         </to>
+      </path>
+   </some>
+</attributeWithNoExistingSectionExample>------------- ---------------- ---------------
+
+Testcase: testOrder took 0.101 sec
+Testcase: testDirectory took 0 sec

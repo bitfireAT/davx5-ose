@@ -1,0 +1,8 @@
+Testsuite: org.simpleframework.xml.core.MethodScannerDefaultTest
+Tests run: 5, Failures: 0, Errors: 0, Time elapsed: 0.058 sec
+
+Testcase: testNoAnnotationsWithNoDefaults took 0.04 sec
+Testcase: testMixedAnnotationsWithNoDefaults took 0.006 sec
+Testcase: testExtendedAnnotations took 0.004 sec
+Testcase: testMixedAnnotations took 0.002 sec
+Testcase: testNoAnnotations took 0.003 sec

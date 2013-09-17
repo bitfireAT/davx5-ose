@@ -1,0 +1,602 @@
+Testsuite: org.simpleframework.xml.core.StyleTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.225 sec
+------------- Standard Output ---------------
+<Example Version="1.0" Name="example" URL="http://domain.com/">
+   <List class="java.util.ArrayList">
+      <ListEntry id="1">
+         <Text>one</Text>
+      </ListEntry>
+      <ListEntry id="2">
+         <Text>two</Text>
+      </ListEntry>
+      <ListEntry id="3">
+         <Text>three</Text>
+      </ListEntry>
+   </List>
+   <URLList class="java.util.ArrayList">
+      <URLEntry>http://a.com/</URLEntry>
+      <URLEntry>http://b.com/</URLEntry>
+      <URLEntry>http://c.com/</URLEntry>
+   </URLList>
+   <TextEntry id="4">
+      <Text>example 4</Text>
+   </TextEntry>
+   <TextEntry id="5">
+      <Text>example 5</Text>
+   </TextEntry>
+   <TextEntry id="6">
+      <Text>example 6</Text>
+   </TextEntry>
+   <TextEntry id="9">
+      <Text>example 9</Text>
+   </TextEntry>
+   <TextArray length="3">
+      <TextEntry id="6">
+         <Text>example 6</Text>
+      </TextEntry>
+      <TextEntry id="7">
+         <Text>example 7</Text>
+      </TextEntry>
+      <TextEntry id="8">
+         <Text>example 8</Text>
+      </TextEntry>
+   </TextArray>
+   <URLMap class="java.util.HashMap">
+      <URLItem Key="b">
+         <URLItem>http://b.com/</URLItem>
+      </URLItem>
+      <URLItem Key="c">
+         <URLItem>http://c.com/</URLItem>
+      </URLItem>
+      <URLItem Key="a">
+         <URLItem>http://a.com/</URLItem>
+      </URLItem>
+   </URLMap>
+</Example><Example Version="1.0" Name="example" URL="http://domain.com/">
+   <List class="java.util.ArrayList">
+      <ListEntry id="1">
+         <Text>one</Text>
+      </ListEntry>
+      <ListEntry id="2">
+         <Text>two</Text>
+      </ListEntry>
+      <ListEntry id="3">
+         <Text>three</Text>
+      </ListEntry>
+   </List>
+   <URLList class="java.util.ArrayList">
+      <URLEntry>http://a.com/</URLEntry>
+      <URLEntry>http://b.com/</URLEntry>
+      <URLEntry>http://c.com/</URLEntry>
+   </URLList>
+   <TextEntry id="4">
+      <Text>example 4</Text>
+   </TextEntry>
+   <TextEntry id="5">
+      <Text>example 5</Text>
+   </TextEntry>
+   <TextEntry id="6">
+      <Text>example 6</Text>
+   </TextEntry>
+   <TextEntry id="9">
+      <Text>example 9</Text>
+   </TextEntry>
+   <TextArray length="3">
+      <TextEntry id="6">
+         <Text>example 6</Text>
+      </TextEntry>
+      <TextEntry id="7">
+         <Text>example 7</Text>
+      </TextEntry>
+      <TextEntry id="8">
+         <Text>example 8</Text>
+      </TextEntry>
+   </TextArray>
+   <URLMap class="java.util.HashMap">
+      <URLItem Key="b">
+         <URLItem>http://b.com/</URLItem>
+      </URLItem>
+      <URLItem Key="c">
+         <URLItem>http://c.com/</URLItem>
+      </URLItem>
+      <URLItem Key="a">
+         <URLItem>http://a.com/</URLItem>
+      </URLItem>
+   </URLMap>
+</Example>
+<example ID="0" version="1.0" name="example" URL="http://domain.com/">
+   <!-- java.util.List -->
+   <list class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <list-entry ID="2" id="1">
+         <!-- java.lang.String -->
+         <text ID="3">one</text>
+      </list-entry>
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <list-entry ID="4" id="2">
+         <!-- java.lang.String -->
+         <text ID="5">two</text>
+      </list-entry>
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <list-entry ID="6" id="3">
+         <!-- java.lang.String -->
+         <text ID="7">three</text>
+      </list-entry>
+   </list>
+   <!-- java.util.List -->
+   <URL-list class="java.util.ArrayList" ID="8">
+      <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+      <URL-entry ID="9">http://a.com/</URL-entry>
+      <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+      <URL-entry ID="10">http://b.com/</URL-entry>
+      <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+      <URL-entry ID="11">http://c.com/</URL-entry>
+   </URL-list>
+   <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+   <text-entry ID="12" id="4">
+      <!-- java.lang.String -->
+      <text ID="13">example 4</text>
+   </text-entry>
+   <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+   <text-entry ID="14" id="5">
+      <!-- java.lang.String -->
+      <text ID="15">example 5</text>
+   </text-entry>
+   <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+   <text-entry ID="16" id="6">
+      <!-- java.lang.String -->
+      <text ID="17">example 6</text>
+   </text-entry>
+   <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+   <text-entry ID="18" id="9">
+      <!-- java.lang.String -->
+      <text ID="19">example 9</text>
+   </text-entry>
+   <!-- [Lorg.simpleframework.xml.core.StyleTest$TextEntry; -->
+   <text-array length="3" ID="20">
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <text-entry ID="21" id="6">
+         <!-- java.lang.String -->
+         <text ID="22">example 6</text>
+      </text-entry>
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <text-entry ID="23" id="7">
+         <!-- java.lang.String -->
+         <text ID="24">example 7</text>
+      </text-entry>
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <text-entry ID="25" id="8">
+         <!-- java.lang.String -->
+         <text ID="26">example 8</text>
+      </text-entry>
+   </text-array>
+   <!-- java.util.Map -->
+   <URL-map class="java.util.HashMap" ID="27">
+      <URL-item key="b">
+         <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+         <URL-item ID="28">http://b.com/</URL-item>
+      </URL-item>
+      <URL-item key="c">
+         <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+         <URL-item ID="29">http://c.com/</URL-item>
+      </URL-item>
+      <URL-item key="a">
+         <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+         <URL-item ID="30">http://a.com/</URL-item>
+      </URL-item>
+   </URL-map>
+</example>>>>>> ELEMENT=[element example]
+>>>>> TYPE=[class org.simpleframework.xml.core.StyleTest$CaseExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Example ID="0" Version="1.0" Name="example" URL="http://domain.com/">
+   <!-- java.util.List -->
+   <List class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <ListEntry ID="2" id="1">
+         <!-- java.lang.String -->
+         <Text ID="3">one</Text>
+      </ListEntry>
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <ListEntry ID="4" id="2">
+         <!-- java.lang.String -->
+         <Text ID="5">two</Text>
+      </ListEntry>
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <ListEntry ID="6" id="3">
+         <!-- java.lang.String -->
+         <Text ID="7">three</Text>
+      </ListEntry>
+   </List>
+   <!-- java.util.List -->
+   <URLList class="java.util.ArrayList" ID="8">
+      <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+      <URLEntry ID="9">http://a.com/</URLEntry>
+      <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+      <URLEntry ID="10">http://b.com/</URLEntry>
+      <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+      <URLEntry ID="11">http://c.com/</URLEntry>
+   </URLList>
+   <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+   <TextEntry ID="12" id="4">
+      <!-- java.lang.String -->
+      <Text ID="13">example 4</Text>
+   </TextEntry>
+   <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+   <TextEntry ID="14" id="5">
+      <!-- java.lang.String -->
+      <Text ID="15">example 5</Text>
+   </TextEntry>
+   <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+   <TextEntry ID="16" id="6">
+      <!-- java.lang.String -->
+      <Text ID="17">example 6</Text>
+   </TextEntry>
+   <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+   <TextEntry ID="18" id="9">
+      <!-- java.lang.String -->
+      <Text ID="19">example 9</Text>
+   </TextEntry>
+   <!-- [Lorg.simpleframework.xml.core.StyleTest$TextEntry; -->
+   <TextArray length="3" ID="20">
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <TextEntry ID="21" id="6">
+         <!-- java.lang.String -->
+         <Text ID="22">example 6</Text>
+      </TextEntry>
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <TextEntry ID="23" id="7">
+         <!-- java.lang.String -->
+         <Text ID="24">example 7</Text>
+      </TextEntry>
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <TextEntry ID="25" id="8">
+         <!-- java.lang.String -->
+         <Text ID="26">example 8</Text>
+      </TextEntry>
+   </TextArray>
+   <!-- java.util.Map -->
+   <URLMap class="java.util.HashMap" ID="27">
+      <URLItem Key="b">
+         <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+         <URLItem ID="28">http://b.com/</URLItem>
+      </URLItem>
+      <URLItem Key="c">
+         <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+         <URLItem ID="29">http://c.com/</URLItem>
+      </URLItem>
+      <URLItem Key="a">
+         <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+         <URLItem ID="30">http://a.com/</URLItem>
+      </URLItem>
+   </URLMap>
+</Example>>>>>> ELEMENT=[element Example]
+>>>>> TYPE=[class org.simpleframework.xml.core.StyleTest$CaseExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<example version="1.0" name="example" URL="http://domain.com/">
+   <list class="java.util.ArrayList">
+      <list-entry id="1">
+         <text>one</text>
+      </list-entry>
+      <list-entry id="2">
+         <text>two</text>
+      </list-entry>
+      <list-entry id="3">
+         <text>three</text>
+      </list-entry>
+   </list>
+   <URL-list class="java.util.ArrayList">
+      <URL-entry>http://a.com/</URL-entry>
+      <URL-entry>http://b.com/</URL-entry>
+      <URL-entry>http://c.com/</URL-entry>
+   </URL-list>
+   <text-entry id="4">
+      <text>example 4</text>
+   </text-entry>
+   <text-entry id="5">
+      <text>example 5</text>
+   </text-entry>
+   <text-entry id="6">
+      <text>example 6</text>
+   </text-entry>
+   <text-entry id="9">
+      <text>example 9</text>
+   </text-entry>
+   <text-array length="3">
+      <text-entry id="6">
+         <text>example 6</text>
+      </text-entry>
+      <text-entry id="7">
+         <text>example 7</text>
+      </text-entry>
+      <text-entry id="8">
+         <text>example 8</text>
+      </text-entry>
+   </text-array>
+   <URL-map class="java.util.HashMap">
+      <URL-item key="b">
+         <URL-item>http://b.com/</URL-item>
+      </URL-item>
+      <URL-item key="c">
+         <URL-item>http://c.com/</URL-item>
+      </URL-item>
+      <URL-item key="a">
+         <URL-item>http://a.com/</URL-item>
+      </URL-item>
+   </URL-map>
+</example><example version="1.0" name="example" URL="http://domain.com/">
+   <list class="java.util.ArrayList">
+      <list-entry id="1">
+         <text>one</text>
+      </list-entry>
+      <list-entry id="2">
+         <text>two</text>
+      </list-entry>
+      <list-entry id="3">
+         <text>three</text>
+      </list-entry>
+   </list>
+   <URL-list class="java.util.ArrayList">
+      <URL-entry>http://a.com/</URL-entry>
+      <URL-entry>http://b.com/</URL-entry>
+      <URL-entry>http://c.com/</URL-entry>
+   </URL-list>
+   <text-entry id="4">
+      <text>example 4</text>
+   </text-entry>
+   <text-entry id="5">
+      <text>example 5</text>
+   </text-entry>
+   <text-entry id="6">
+      <text>example 6</text>
+   </text-entry>
+   <text-entry id="9">
+      <text>example 9</text>
+   </text-entry>
+   <text-array length="3">
+      <text-entry id="6">
+         <text>example 6</text>
+      </text-entry>
+      <text-entry id="7">
+         <text>example 7</text>
+      </text-entry>
+      <text-entry id="8">
+         <text>example 8</text>
+      </text-entry>
+   </text-array>
+   <URL-map class="java.util.HashMap">
+      <URL-item key="b">
+         <URL-item>http://b.com/</URL-item>
+      </URL-item>
+      <URL-item key="c">
+         <URL-item>http://c.com/</URL-item>
+      </URL-item>
+      <URL-item key="a">
+         <URL-item>http://a.com/</URL-item>
+      </URL-item>
+   </URL-map>
+</example>
+<example ID="0" version="1.0" name="example" URL="http://domain.com/">
+   <!-- java.util.List -->
+   <list class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <list-entry ID="2" id="1">
+         <!-- java.lang.String -->
+         <text ID="3">one</text>
+      </list-entry>
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <list-entry ID="4" id="2">
+         <!-- java.lang.String -->
+         <text ID="5">two</text>
+      </list-entry>
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <list-entry ID="6" id="3">
+         <!-- java.lang.String -->
+         <text ID="7">three</text>
+      </list-entry>
+   </list>
+   <!-- java.util.List -->
+   <URL-list class="java.util.ArrayList" ID="8">
+      <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+      <URL-entry ID="9">http://a.com/</URL-entry>
+      <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+      <URL-entry ID="10">http://b.com/</URL-entry>
+      <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+      <URL-entry ID="11">http://c.com/</URL-entry>
+   </URL-list>
+   <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+   <text-entry ID="12" id="4">
+      <!-- java.lang.String -->
+      <text ID="13">example 4</text>
+   </text-entry>
+   <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+   <text-entry ID="14" id="5">
+      <!-- java.lang.String -->
+      <text ID="15">example 5</text>
+   </text-entry>
+   <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+   <text-entry ID="16" id="6">
+      <!-- java.lang.String -->
+      <text ID="17">example 6</text>
+   </text-entry>
+   <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+   <text-entry ID="18" id="9">
+      <!-- java.lang.String -->
+      <text ID="19">example 9</text>
+   </text-entry>
+   <!-- [Lorg.simpleframework.xml.core.StyleTest$TextEntry; -->
+   <text-array length="3" ID="20">
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <text-entry ID="21" id="6">
+         <!-- java.lang.String -->
+         <text ID="22">example 6</text>
+      </text-entry>
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <text-entry ID="23" id="7">
+         <!-- java.lang.String -->
+         <text ID="24">example 7</text>
+      </text-entry>
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <text-entry ID="25" id="8">
+         <!-- java.lang.String -->
+         <text ID="26">example 8</text>
+      </text-entry>
+   </text-array>
+   <!-- java.util.Map -->
+   <URL-map class="java.util.HashMap" ID="27">
+      <URL-item key="b">
+         <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+         <URL-item ID="28">http://b.com/</URL-item>
+      </URL-item>
+      <URL-item key="c">
+         <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+         <URL-item ID="29">http://c.com/</URL-item>
+      </URL-item>
+      <URL-item key="a">
+         <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+         <URL-item ID="30">http://a.com/</URL-item>
+      </URL-item>
+   </URL-map>
+</example>>>>>> ELEMENT=[element example]
+>>>>> TYPE=[class org.simpleframework.xml.core.StyleTest$CaseExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Example ID="0" Version="1.0" Name="example" URL="http://domain.com/">
+   <!-- java.util.List -->
+   <List class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <ListEntry ID="2" id="1">
+         <!-- java.lang.String -->
+         <Text ID="3">one</Text>
+      </ListEntry>
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <ListEntry ID="4" id="2">
+         <!-- java.lang.String -->
+         <Text ID="5">two</Text>
+      </ListEntry>
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <ListEntry ID="6" id="3">
+         <!-- java.lang.String -->
+         <Text ID="7">three</Text>
+      </ListEntry>
+   </List>
+   <!-- java.util.List -->
+   <URLList class="java.util.ArrayList" ID="8">
+      <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+      <URLEntry ID="9">http://a.com/</URLEntry>
+      <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+      <URLEntry ID="10">http://b.com/</URLEntry>
+      <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+      <URLEntry ID="11">http://c.com/</URLEntry>
+   </URLList>
+   <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+   <TextEntry ID="12" id="4">
+      <!-- java.lang.String -->
+      <Text ID="13">example 4</Text>
+   </TextEntry>
+   <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+   <TextEntry ID="14" id="5">
+      <!-- java.lang.String -->
+      <Text ID="15">example 5</Text>
+   </TextEntry>
+   <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+   <TextEntry ID="16" id="6">
+      <!-- java.lang.String -->
+      <Text ID="17">example 6</Text>
+   </TextEntry>
+   <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+   <TextEntry ID="18" id="9">
+      <!-- java.lang.String -->
+      <Text ID="19">example 9</Text>
+   </TextEntry>
+   <!-- [Lorg.simpleframework.xml.core.StyleTest$TextEntry; -->
+   <TextArray length="3" ID="20">
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <TextEntry ID="21" id="6">
+         <!-- java.lang.String -->
+         <Text ID="22">example 6</Text>
+      </TextEntry>
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <TextEntry ID="23" id="7">
+         <!-- java.lang.String -->
+         <Text ID="24">example 7</Text>
+      </TextEntry>
+      <!-- org.simpleframework.xml.core.StyleTest$TextEntry -->
+      <TextEntry ID="25" id="8">
+         <!-- java.lang.String -->
+         <Text ID="26">example 8</Text>
+      </TextEntry>
+   </TextArray>
+   <!-- java.util.Map -->
+   <URLMap class="java.util.HashMap" ID="27">
+      <URLItem Key="b">
+         <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+         <URLItem ID="28">http://b.com/</URLItem>
+      </URLItem>
+      <URLItem Key="c">
+         <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+         <URLItem ID="29">http://c.com/</URLItem>
+      </URLItem>
+      <URLItem Key="a">
+         <!-- org.simpleframework.xml.core.StyleTest$URLEntry -->
+         <URLItem ID="30">http://a.com/</URLItem>
+      </URLItem>
+   </URLMap>
+</Example>>>>>> ELEMENT=[element Example]
+>>>>> TYPE=[class org.simpleframework.xml.core.StyleTest$CaseExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+------------- Standard Error -----------------
+<example version="1.0" name="example" URL="http://domain.com/">
+   <list class="java.util.ArrayList">
+      <list-entry id="1">
+         <text>one</text>
+      </list-entry>
+      <list-entry id="2">
+         <text>two</text>
+      </list-entry>
+      <list-entry id="3">
+         <text>three</text>
+      </list-entry>
+   </list>
+   <URL-list class="java.util.ArrayList">
+      <URL-entry>http://a.com/</URL-entry>
+      <URL-entry>http://b.com/</URL-entry>
+      <URL-entry>http://c.com/</URL-entry>
+   </URL-list>
+   <text-entry id="4">
+      <text>example 4</text>
+   </text-entry>
+   <text-entry id="5">
+      <text>example 5</text>
+   </text-entry>
+   <text-entry id="6">
+      <text>example 6</text>
+   </text-entry>
+   <text-entry id="9">
+      <text>example 9</text>
+   </text-entry>
+   <text-array length="3">
+      <text-entry id="6">
+         <text>example 6</text>
+      </text-entry>
+      <text-entry id="7">
+         <text>example 7</text>
+      </text-entry>
+      <text-entry id="8">
+         <text>example 8</text>
+      </text-entry>
+   </text-array>
+   <URL-map class="java.util.HashMap">
+      <URL-item key="b">
+         <URL-item>http://b.com/</URL-item>
+      </URL-item>
+      <URL-item key="c">
+         <URL-item>http://c.com/</URL-item>
+      </URL-item>
+      <URL-item key="a">
+         <URL-item>http://a.com/</URL-item>
+      </URL-item>
+   </URL-map>
+</example>------------- ---------------- ---------------
+
+Testcase: testCase took 0.222 sec
+Testcase: testDirectory took 0 sec

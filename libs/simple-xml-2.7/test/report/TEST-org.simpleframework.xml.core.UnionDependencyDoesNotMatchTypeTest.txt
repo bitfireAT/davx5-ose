@@ -1,0 +1,47 @@
+Testsuite: org.simpleframework.xml.core.UnionDependencyDoesNotMatchTypeTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.12 sec
+------------- Standard Output ---------------
+<example>
+   <x/>
+   <y/>
+   <z/>
+   <z/>
+</example><example>
+   <x/>
+   <y/>
+   <z/>
+   <z/>
+</example><example>
+   <x/>
+   <y/>
+   <z/>
+   <z/>
+</example>
+<example ID="0">
+   <!-- org.simpleframework.xml.core.UnionDependencyDoesNotMatchTypeTest$X -->
+   <x ID="1"/>
+   <!-- org.simpleframework.xml.core.UnionDependencyDoesNotMatchTypeTest$Y -->
+   <y ID="2"/>
+   <!-- org.simpleframework.xml.core.UnionDependencyDoesNotMatchTypeTest$Z -->
+   <z ID="3"/>
+   <!-- org.simpleframework.xml.core.UnionDependencyDoesNotMatchTypeTest$Z -->
+   <z ID="4"/>
+</example>>>>>> ELEMENT=[element example]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionDependencyDoesNotMatchTypeTest$Example]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Example ID="0">
+   <!-- org.simpleframework.xml.core.UnionDependencyDoesNotMatchTypeTest$X -->
+   <X ID="1"/>
+   <!-- org.simpleframework.xml.core.UnionDependencyDoesNotMatchTypeTest$Y -->
+   <Y ID="2"/>
+   <!-- org.simpleframework.xml.core.UnionDependencyDoesNotMatchTypeTest$Z -->
+   <Z ID="3"/>
+   <!-- org.simpleframework.xml.core.UnionDependencyDoesNotMatchTypeTest$Z -->
+   <Z ID="4"/>
+</Example>>>>>> ELEMENT=[element Example]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionDependencyDoesNotMatchTypeTest$Example]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testTypeMatch took 0.118 sec
+Testcase: testDirectory took 0 sec

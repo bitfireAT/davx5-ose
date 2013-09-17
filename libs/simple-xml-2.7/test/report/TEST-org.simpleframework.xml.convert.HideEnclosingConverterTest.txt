@@ -1,0 +1,23 @@
+Testsuite: org.simpleframework.xml.convert.HideEnclosingConverterTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.117 sec
+------------- Standard Output ---------------
+<entryHolder code="10">
+   <entry>
+      <name>name</name>
+      <value>value</value>
+   </entry>
+   <name>test</name>
+</entryHolder>
+------------- ---------------- ---------------
+------------- Standard Error -----------------
+<entryHolder code="10">
+   <entry>
+      <name>name</name>
+      <value>value</value>
+   </entry>
+   <name>test</name>
+</entryHolder>
+------------- ---------------- ---------------
+
+Testcase: testWrapper took 0.114 sec
+Testcase: testDirectory took 0 sec

@@ -1,0 +1,168 @@
+Testsuite: org.simpleframework.xml.core.DecoratorTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.189 sec
+------------- Standard Output ---------------
+<friendList>
+   <list type="list">
+      <friend status="ACTIVE">
+         <member name="Tom" age="30">
+            <address>
+               <street>14 High Steet</street>
+               <city>London</city>
+               <country>UK</country>
+            </address>
+         </member>
+         <messages type="list">
+            <message title="Hello"><![CDATA[Hi, this is a message, Bye]]></message>
+            <message title="Hi Tom"><![CDATA[This is another quick message]]></message>
+         </messages>
+      </friend>
+      <friend status="INACTIVE">
+         <member type="gold-member" name="Jim" age="30">
+            <address>
+               <street>14 Main Road</street>
+               <city>London</city>
+               <country>UK</country>
+            </address>
+         </member>
+         <messages type="linked-list">
+            <message title="Hello Jim"><![CDATA[Hi Jim, here is a message]]></message>
+            <message title="Hi"><![CDATA[Yet another message]]></message>
+         </messages>
+      </friend>
+   </list>
+</friendList><friendList>
+   <list type="list">
+      <friend status="ACTIVE">
+         <member name="Tom" age="30">
+            <address>
+               <street>14 High Steet</street>
+               <city>London</city>
+               <country>UK</country>
+            </address>
+         </member>
+         <messages type="list">
+            <message title="Hello"><![CDATA[Hi, this is a message, Bye]]></message>
+            <message title="Hi Tom"><![CDATA[This is another quick message]]></message>
+         </messages>
+      </friend>
+      <friend status="INACTIVE">
+         <member type="gold-member" name="Jim" age="30">
+            <address>
+               <street>14 Main Road</street>
+               <city>London</city>
+               <country>UK</country>
+            </address>
+         </member>
+         <messages type="linked-list">
+            <message title="Hello Jim"><![CDATA[Hi Jim, here is a message]]></message>
+            <message title="Hi"><![CDATA[Yet another message]]></message>
+         </messages>
+      </friend>
+   </list>
+</friendList>
+<friend-list ID="0">
+   <!-- java.util.List -->
+   <list class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.core.DecoratorTest$Friend -->
+      <friend ID="2" status="ACTIVE">
+         <!-- org.simpleframework.xml.core.DecoratorTest$Member -->
+         <member ID="3" name="Tom" age="30">
+            <!-- org.simpleframework.xml.core.DecoratorTest$Address -->
+            <address ID="4">
+               <!-- java.lang.String -->
+               <street ID="5">14 High Steet</street>
+               <!-- java.lang.String -->
+               <city ID="6">London</city>
+               <!-- java.lang.String -->
+               <country ID="7">UK</country>
+            </address>
+         </member>
+         <!-- java.util.List -->
+         <messages class="java.util.ArrayList" ID="8">
+            <!-- org.simpleframework.xml.core.DecoratorTest$Message -->
+            <message ID="9" title="Hello"><![CDATA[Hi, this is a message, Bye]]></message>
+            <!-- org.simpleframework.xml.core.DecoratorTest$Message -->
+            <message ID="10" title="Hi Tom"><![CDATA[This is another quick message]]></message>
+         </messages>
+      </friend>
+      <!-- org.simpleframework.xml.core.DecoratorTest$Friend -->
+      <friend ID="11" status="INACTIVE">
+         <!-- org.simpleframework.xml.core.DecoratorTest$Member -->
+         <member class="org.simpleframework.xml.core.DecoratorTest$GoldMember" ID="12" name="Jim" age="30">
+            <!-- org.simpleframework.xml.core.DecoratorTest$Address -->
+            <address ID="13">
+               <!-- java.lang.String -->
+               <street ID="14">14 Main Road</street>
+               <!-- java.lang.String -->
+               <city REFERER="6"/>
+               <!-- java.lang.String -->
+               <country REFERER="7"/>
+            </address>
+         </member>
+         <!-- java.util.List -->
+         <messages class="java.util.LinkedList" ID="15">
+            <!-- org.simpleframework.xml.core.DecoratorTest$Message -->
+            <message ID="16" title="Hello Jim"><![CDATA[Hi Jim, here is a message]]></message>
+            <!-- org.simpleframework.xml.core.DecoratorTest$Message -->
+            <message ID="17" title="Hi"><![CDATA[Yet another message]]></message>
+         </messages>
+      </friend>
+   </list>
+</friend-list>>>>>> ELEMENT=[element friend-list]
+>>>>> TYPE=[class org.simpleframework.xml.core.DecoratorTest$FriendList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<FriendList ID="0">
+   <!-- java.util.List -->
+   <List class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.core.DecoratorTest$Friend -->
+      <Friend ID="2" status="ACTIVE">
+         <!-- org.simpleframework.xml.core.DecoratorTest$Member -->
+         <Member ID="3" name="Tom" age="30">
+            <!-- org.simpleframework.xml.core.DecoratorTest$Address -->
+            <Address ID="4">
+               <!-- java.lang.String -->
+               <Street ID="5">14 High Steet</Street>
+               <!-- java.lang.String -->
+               <City ID="6">London</City>
+               <!-- java.lang.String -->
+               <Country ID="7">UK</Country>
+            </Address>
+         </Member>
+         <!-- java.util.List -->
+         <Messages class="java.util.ArrayList" ID="8">
+            <!-- org.simpleframework.xml.core.DecoratorTest$Message -->
+            <Message ID="9" title="Hello"><![CDATA[Hi, this is a message, Bye]]></Message>
+            <!-- org.simpleframework.xml.core.DecoratorTest$Message -->
+            <Message ID="10" title="Hi Tom"><![CDATA[This is another quick message]]></Message>
+         </Messages>
+      </Friend>
+      <!-- org.simpleframework.xml.core.DecoratorTest$Friend -->
+      <Friend ID="11" status="INACTIVE">
+         <!-- org.simpleframework.xml.core.DecoratorTest$Member -->
+         <Member class="org.simpleframework.xml.core.DecoratorTest$GoldMember" ID="12" name="Jim" age="30">
+            <!-- org.simpleframework.xml.core.DecoratorTest$Address -->
+            <Address ID="13">
+               <!-- java.lang.String -->
+               <Street ID="14">14 Main Road</Street>
+               <!-- java.lang.String -->
+               <City REFERER="6"/>
+               <!-- java.lang.String -->
+               <Country REFERER="7"/>
+            </Address>
+         </Member>
+         <!-- java.util.List -->
+         <Messages class="java.util.LinkedList" ID="15">
+            <!-- org.simpleframework.xml.core.DecoratorTest$Message -->
+            <Message ID="16" title="Hello Jim"><![CDATA[Hi Jim, here is a message]]></Message>
+            <!-- org.simpleframework.xml.core.DecoratorTest$Message -->
+            <Message ID="17" title="Hi"><![CDATA[Yet another message]]></Message>
+         </Messages>
+      </Friend>
+   </List>
+</FriendList>>>>>> ELEMENT=[element FriendList]
+>>>>> TYPE=[class org.simpleframework.xml.core.DecoratorTest$FriendList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testDecorator took 0.187 sec
+Testcase: testDirectory took 0 sec

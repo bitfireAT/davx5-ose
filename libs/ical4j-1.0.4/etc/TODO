@@ -1,0 +1,100 @@
+To-do List:
+==========
+
+ - Add "relaxed" option for parsing dates (ie. attempt both date and date-time regardless of value type)
+ 
+ - inspect date-based properties and default local time where TZID parameter
+ is identified
+ 
+ - Add note regarding Outlook requiring Method=Publish and UIDs for each event for correct parsing.
+ 
+ - Allow for extra whitespace between all content lines in the parser.
+ 
+ - investigate use of commons-lang for equals/hashcode implementations.
+ 
+ - add validation to ensure that date-time instances are not used where only date
+ instances are applicable..
+ 
+ - investigate use of alternative Base64 implementation (michael grev?)
+ 
+ - Timezone processing and validation as follows:
+ 	
+ 	  * In validation, ensure any referenced VTimeZones (TzId parameter) are included in the
+ 	  VCalendar on output.
+ 	  
+ 	  * possibly automate VTimeZone inclusion by examining all date/date-time-based properties
+ 	  for timezone-specific instances.
+ 
+ - Provide the option for automatically adding referenced VTimeZones to calendar
+  
+ ===========
+  RFC 2446:
+ ===========
+ 
+ 	* net.fortuna.ical4j.transform
+ 	
+ 		* Transformer
+ 		
+ 			- Calendar wrap(Component component); // wraps the specified component in a calendar
+
+			- Calendar transform(Component component); // wraps a component in a calendar and transforms
+
+			- abstract Calendar transform(Calendar calendar); // abstract calendar transform
+ 			
+ 			* PublishTransformer (Organizer)
+ 			
+ 				- Calendar transform(Calendar calendar); // publish/republish a calendar
+ 			
+ 			* RequestTransformer (Organizer | Attendee)
+ 			
+ 				- Calendar transform(Calendar calendar); // creates a request for reply to a calendar
+ 			
+ 			* ReplyTransformer (Attendee)
+ 			
+ 				- Calendar transform(Calendar calendar); // creates a reply to a request for this calendar
+ 				
+ 			* AddTransformer (Organizer)
+ 			
+ 				- Calendar transform(Calendar calendar); // add a published calendar
+ 				
+ 			* CancelTransformer (Organizer)
+ 			
+ 				- Calendar transform(Calendar calendar); // cancel a published calendar
+ 				
+ 			* RefreshTransformer (Attendee)
+ 			
+ 				- Calendar transform(Calendar calendar); // refresh a published calendar
+ 				
+ 			* CounterTransformer (Attendee)
+ 			
+ 				- Calendar transform(Calendar calendar); // counter a published calendar
+ 				
+ 			* DeclineCounterTransformer (Organizer)
+ 			
+ 				- Calendar transform(Calendar calendar); // decline a counter to a published calendar
+ 
+ 
+ ==========
+  RFC2447:
+ ==========
+ 
+ 	* When implementing the creation of a MIME message incorporate a human-readable text summary in case
+ 	iCalendar is not supported by the recipient. Add Calendar/Component formatting into human-readable
+ 	text/html.
+ 
+ 
+ ==============================
+  Questions for calconnect.org
+ ==============================
+ 
+  * When implementing a CUA there are occasional incompatibilities discovered with alternate implementations. Would it
+  be possible for calconnect members to maintain a compatibility matrix in areas that are either ambiguous or not
+  clearly defined by RFC2445?
+  
+  * Timezone support for iCalendar depends heavily on identical timezone definitions used across all CUAs. VTIMEZONE
+  objects may be included in iCalendar files, however this is not mandatory. Would it be possible for calconnect to
+  maintain a repository of VTIMEZONE objects accessible to all CUAs (similar to those provided by libical)?
+  
+  * With the complexity of the iCalendar specifications, it is more than likely that each CUA implementation does not
+  implement the entire specification (correctly). Could calconnect provide a common set of test cases (possibly defined
+  in a use-case format) that each CUA must pass to be a "certified" implementation of iCalendar?

@@ -1,0 +1,113 @@
+Testsuite: org.simpleframework.xml.core.StaticTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.147 sec
+------------- Standard Output ---------------
+<document title="Secret Document" xmlns="http://www.domain.com/document">
+   <user:author xmlns:user="http://www.domain.com/user">Niall Gallagher</user:author>
+   <contact>niallg@users.sourceforge.net</contact>
+   <detail xmlns="http://www.domain.com/detail">
+      <publisher>Stanford Press</publisher>
+      <date>2001</date>
+      <address>Palo Alto</address>
+      <edition>1st</edition>
+      <ISBN>0-69-697269-4</ISBN>
+   </detail>
+   <section name="Introduction" xmlns:para="http://www.domain.com/paragraph">
+      <para:paragraph>First paragraph of document</para:paragraph>
+      <para:paragraph>Second paragraph in the document</para:paragraph>
+      <para:paragraph>Third and final paragraph</para:paragraph>
+   </section>
+</document><document title="Secret Document" xmlns="http://www.domain.com/document">
+   <user:author xmlns:user="http://www.domain.com/user">Niall Gallagher</user:author>
+   <contact>niallg@users.sourceforge.net</contact>
+   <detail xmlns="http://www.domain.com/detail">
+      <publisher>Stanford Press</publisher>
+      <date>2001</date>
+      <address>Palo Alto</address>
+      <edition>1st</edition>
+      <ISBN>0-69-697269-4</ISBN>
+   </detail>
+   <section name="Introduction" xmlns:para="http://www.domain.com/paragraph">
+      <para:paragraph>First paragraph of document</para:paragraph>
+      <para:paragraph>Second paragraph in the document</para:paragraph>
+      <para:paragraph>Third and final paragraph</para:paragraph>
+   </section>
+</document><document title="Secret Document" xmlns="http://www.domain.com/document">
+   <user:author xmlns:user="http://www.domain.com/user">Niall Gallagher</user:author>
+   <contact>niallg@users.sourceforge.net</contact>
+   <detail xmlns="http://www.domain.com/detail">
+      <publisher>Stanford Press</publisher>
+      <date>2001</date>
+      <address>Palo Alto</address>
+      <edition>1st</edition>
+      <ISBN>0-69-697269-4</ISBN>
+   </detail>
+   <section name="Introduction" xmlns:para="http://www.domain.com/paragraph">
+      <para:paragraph>First paragraph of document</para:paragraph>
+      <para:paragraph>Second paragraph in the document</para:paragraph>
+      <para:paragraph>Third and final paragraph</para:paragraph>
+   </section>
+</document>
+<document ID="0" title="Secret Document" xmlns="http://www.domain.com/document">
+   <!-- java.lang.String -->
+   <user:author ID="1" xmlns:user="http://www.domain.com/user">Niall Gallagher</user:author>
+   <!-- java.lang.String -->
+   <contact ID="2">niallg@users.sourceforge.net</contact>
+   <!-- org.simpleframework.xml.core.StaticTest$Detail -->
+   <detail ID="3" xmlns="http://www.domain.com/detail">
+      <!-- java.lang.String -->
+      <publisher ID="4">Stanford Press</publisher>
+      <!-- java.lang.String -->
+      <date ID="5">2001</date>
+      <!-- java.lang.String -->
+      <address ID="6">Palo Alto</address>
+      <!-- java.lang.String -->
+      <edition ID="7">1st</edition>
+      <!-- java.lang.String -->
+      <ISBN ID="8">0-69-697269-4</ISBN>
+   </detail>
+   <!-- org.simpleframework.xml.core.StaticTest$Section -->
+   <section ID="9" name="Introduction" xmlns:para="http://www.domain.com/paragraph">
+      <!-- org.simpleframework.xml.core.StaticTest$Paragraph -->
+      <para:paragraph ID="10">First paragraph of document</para:paragraph>
+      <!-- org.simpleframework.xml.core.StaticTest$Paragraph -->
+      <para:paragraph ID="11">Second paragraph in the document</para:paragraph>
+      <!-- org.simpleframework.xml.core.StaticTest$Paragraph -->
+      <para:paragraph ID="12">Third and final paragraph</para:paragraph>
+   </section>
+</document>>>>>> ELEMENT=[element document]
+>>>>> TYPE=[class org.simpleframework.xml.core.StaticTest$Document]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Document ID="0" title="Secret Document" xmlns="http://www.domain.com/document">
+   <!-- java.lang.String -->
+   <user:Author ID="1" xmlns:user="http://www.domain.com/user">Niall Gallagher</user:Author>
+   <!-- java.lang.String -->
+   <Contact ID="2">niallg@users.sourceforge.net</Contact>
+   <!-- org.simpleframework.xml.core.StaticTest$Detail -->
+   <Detail ID="3" xmlns="http://www.domain.com/detail">
+      <!-- java.lang.String -->
+      <Publisher ID="4">Stanford Press</Publisher>
+      <!-- java.lang.String -->
+      <Date ID="5">2001</Date>
+      <!-- java.lang.String -->
+      <Address ID="6">Palo Alto</Address>
+      <!-- java.lang.String -->
+      <Edition ID="7">1st</Edition>
+      <!-- java.lang.String -->
+      <ISBN ID="8">0-69-697269-4</ISBN>
+   </Detail>
+   <!-- org.simpleframework.xml.core.StaticTest$Section -->
+   <Section ID="9" name="Introduction" xmlns:para="http://www.domain.com/paragraph">
+      <!-- org.simpleframework.xml.core.StaticTest$Paragraph -->
+      <para:Paragraph ID="10">First paragraph of document</para:Paragraph>
+      <!-- org.simpleframework.xml.core.StaticTest$Paragraph -->
+      <para:Paragraph ID="11">Second paragraph in the document</para:Paragraph>
+      <!-- org.simpleframework.xml.core.StaticTest$Paragraph -->
+      <para:Paragraph ID="12">Third and final paragraph</para:Paragraph>
+   </Section>
+</Document>>>>>> ELEMENT=[element Document]
+>>>>> TYPE=[class org.simpleframework.xml.core.StaticTest$Document]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testStatic took 0.144 sec
+Testcase: testDirectory took 0.001 sec

@@ -1,0 +1,8 @@
+Testsuite: org.simpleframework.xml.core.TimerTest
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.007 sec
+------------- Standard Error -----------------
+Test time
+STDERR time=0 MILLISECONDS
+------------- ---------------- ---------------
+
+Testcase: testTimer took 0.004 sec

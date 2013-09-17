@@ -1,0 +1,39 @@
+Testsuite: org.simpleframework.xml.core.MatcherTest
+Tests run: 4, Failures: 0, Errors: 0, Time elapsed: 0.121 sec
+------------- Standard Output ---------------
+<foo:example attr="12345" xmlns:foo="http://www.domain.com/value">
+   <value>12345</value>
+</foo:example><foo:example attr="12345" xmlns:foo="http://www.domain.com/value">
+   <value>12345</value>
+</foo:example><foo:example attr="12345" xmlns:foo="http://www.domain.com/value">
+   <value>12345</value>
+</foo:example>
+<foo:example ID="0" attr="9999" xmlns:foo="http://www.domain.com/value">
+   <!-- java.lang.Integer -->
+   <value ID="1">1</value>
+</foo:example>>>>>> ELEMENT=[element example]
+>>>>> TYPE=[class org.simpleframework.xml.core.MatcherTest$Example]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<foo:Example ID="0" attr="9999" xmlns:foo="http://www.domain.com/value">
+   <!-- java.lang.Integer -->
+   <Value ID="1">1</Value>
+</foo:Example>>>>>> ELEMENT=[element Example]
+>>>>> TYPE=[class org.simpleframework.xml.core.MatcherTest$Example]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<exampleEnum value="A-1"/>
+<exampleEnum value="A-1"/><exampleEnum value="A-1"/>
+<example-enum ID="0" value="A_1"/>>>>>> ELEMENT=[element example-enum]
+>>>>> TYPE=[class org.simpleframework.xml.core.MatcherTest$ExampleEnum]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ExampleEnum ID="0" value="A_1"/>>>>>> ELEMENT=[element ExampleEnum]
+>>>>> TYPE=[class org.simpleframework.xml.core.MatcherTest$ExampleEnum]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<emptyStringExample>
+   <emptyValue>[[EMPTY]]</emptyValue>
+</emptyStringExample>
+------------- ---------------- ---------------
+
+Testcase: testMatcher took 0.1 sec
+Testcase: testEnumMatcher took 0.01 sec
+Testcase: testStringMatcher took 0.006 sec
+Testcase: testDirectory took 0.001 sec

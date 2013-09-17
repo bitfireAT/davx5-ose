@@ -1,0 +1,94 @@
+Testsuite: org.simpleframework.xml.core.UnionElementListInConstructorTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.147 sec
+------------- Standard Output ---------------
+<inlineListUnion xmlns:x="http://x.com/x" xmlns:y="http://y.com/y">
+   <x:path>
+      <a/>
+      <a/>
+      <b/>
+      <a/>
+      <c/>
+   </x:path>
+   <y:path>
+      <a/>
+      <a/>
+      <b/>
+      <a/>
+      <c/>
+   </y:path>
+</inlineListUnion><inlineListUnion xmlns:x="http://x.com/x" xmlns:y="http://y.com/y">
+   <x:path>
+      <a/>
+      <a/>
+      <b/>
+      <a/>
+      <c/>
+   </x:path>
+   <y:path>
+      <a/>
+      <a/>
+      <b/>
+      <a/>
+      <c/>
+   </y:path>
+</inlineListUnion>
+<inline-list-union ID="0" xmlns:x="http://x.com/x" xmlns:y="http://y.com/y">
+   <x:path>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$A -->
+      <a ID="1"/>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$A -->
+      <a ID="2"/>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$B -->
+      <b ID="3"/>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$A -->
+      <a ID="4"/>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$C -->
+      <c ID="5"/>
+   </x:path>
+   <y:path>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$A -->
+      <a ID="6"/>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$A -->
+      <a ID="7"/>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$B -->
+      <b ID="8"/>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$A -->
+      <a ID="9"/>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$C -->
+      <c ID="10"/>
+   </y:path>
+</inline-list-union>>>>>> ELEMENT=[element inline-list-union]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionElementListInConstructorTest$InlineListUnion]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<InlineListUnion ID="0" xmlns:x="http://x.com/x" xmlns:y="http://y.com/y">
+   <x:Path>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$A -->
+      <A ID="1"/>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$A -->
+      <A ID="2"/>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$B -->
+      <B ID="3"/>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$A -->
+      <A ID="4"/>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$C -->
+      <C ID="5"/>
+   </x:Path>
+   <y:Path>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$A -->
+      <A ID="6"/>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$A -->
+      <A ID="7"/>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$B -->
+      <B ID="8"/>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$A -->
+      <A ID="9"/>
+      <!-- org.simpleframework.xml.core.UnionElementListInConstructorTest$C -->
+      <C ID="10"/>
+   </y:Path>
+</InlineListUnion>>>>>> ELEMENT=[element InlineListUnion]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionElementListInConstructorTest$InlineListUnion]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testListUnion took 0.145 sec
+Testcase: testDirectory took 0 sec

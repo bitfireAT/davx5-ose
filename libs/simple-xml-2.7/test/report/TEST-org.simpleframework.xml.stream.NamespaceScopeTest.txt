@@ -1,0 +1,6 @@
+Testsuite: org.simpleframework.xml.stream.NamespaceScopeTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.017 sec
+
+Testcase: testEmptyOverride took 0.014 sec
+Testcase: testDefaultFirst took 0.001 sec
+Testcase: testDirectory took 0.001 sec

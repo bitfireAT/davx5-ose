@@ -1,0 +1,44 @@
+Testsuite: org.simpleframework.xml.core.PathWithTextTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.067 sec
+------------- Standard Error -----------------
+org.simpleframework.xml.core.TextException: Text annotation @org.simpleframework.xml.Text(data=false, empty=, required=true) on field 'text' private java.lang.String org.simpleframework.xml.core.PathWithTextTest$PathWithTextExample.text can not be used with paths in class org.simpleframework.xml.core.PathWithTextTest$PathWithTextExample
+	at org.simpleframework.xml.core.TreeModel.validateText(TreeModel.java:379)
+	at org.simpleframework.xml.core.TreeModel.validate(TreeModel.java:362)
+	at org.simpleframework.xml.core.StructureBuilder.validateModel(StructureBuilder.java:515)
+	at org.simpleframework.xml.core.StructureBuilder.validate(StructureBuilder.java:500)
+	at org.simpleframework.xml.core.ObjectScanner.validate(ObjectScanner.java:419)
+	at org.simpleframework.xml.core.ObjectScanner.scan(ObjectScanner.java:373)
+	at org.simpleframework.xml.core.ObjectScanner.<init>(ObjectScanner.java:82)
+	at org.simpleframework.xml.core.ScannerFactory.getInstance(ScannerFactory.java:81)
+	at org.simpleframework.xml.core.Support.getScanner(Support.java:357)
+	at org.simpleframework.xml.core.Support.getName(Support.java:419)
+	at org.simpleframework.xml.core.Source.getName(Source.java:240)
+	at org.simpleframework.xml.core.Traverser.getName(Traverser.java:284)
+	at org.simpleframework.xml.core.Traverser.write(Traverser.java:203)
+	at org.simpleframework.xml.core.Traverser.write(Traverser.java:186)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1180)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1162)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1140)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1259)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1241)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1222)
+	at org.simpleframework.xml.core.PathWithTextTest.testTextWithPath(PathWithTextTest.java:33)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:154)
+	at junit.framework.TestCase.runBare(TestCase.java:127)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:118)
+	at junit.framework.TestSuite.runTest(TestSuite.java:208)
+	at junit.framework.TestSuite.run(TestSuite.java:203)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.run(JUnitTestRunner.java:518)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.launch(JUnitTestRunner.java:1052)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.main(JUnitTestRunner.java:906)
+------------- ---------------- ---------------
+
+Testcase: testTextWithPath took 0.064 sec
+Testcase: testDirectory took 0 sec

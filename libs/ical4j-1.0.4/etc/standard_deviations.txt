@@ -1,0 +1,60 @@
+====================
+ RFC2445 Deviations
+====================
+
+ Most RFC2445 (iCalendar) implementations deviate from the specification in one
+ form or another. These deviations may be a result of ambiguous or missing
+ requirements, or just poor interpretation of the specification. Below we
+ attempt to document known assumptions and deviations for specific RFC2445
+ implementations.
+ 
+ 
+ MS Outlook:
+ 
+   - allows DATE-TIME representation without specifying a VALUE=DATE-TIME
+   parameter
+
+   - Outlook will not read files that don't contain the mandatory UID and
+   DTSTAMP properties in VEVENT, etc. components
+   
+   - provides quoted TZID parameters, and as such does not conform with RFC2445
+   
+   - generates additional spaces in recurrence rules containing a BYDAY
+   component
+ 
+ 
+ Mozilla Calendar/Sunbird:
+ 
+   - long content lines are folded with a single LF character (should be CRLF)
+   
+   - folds all property parameters and values
+ 
+   - Generates non-standard "X" properties
+ 
+ 
+ phpicalendar:
+
+   - long content lines are folded with a single LF character (should be CRLF)
+ 
+ 
+ KOrganizer:
+ 
+   - long content lines are folded with a single LF character (should be CRLF)
+   
+   - folds all property parameters and values
+  
+ 
+ Apple iCal:
+ 
+   - uses VALUE=TEXT on some X-properties (NOTE: this is valid behaviour)
+   
+   - iCal events don't include the mandatory DTSTAMP property
+   
+   - iCal 1.0 doesn't appear to include vtimezone definitions where applicable
+   (this appears fixed as of 1.5)
+
+
+ Google Calendar:
+ 
+   - Generates DTSTART properties in DATE format without specifying the
+   required VALUE=DATE parameter

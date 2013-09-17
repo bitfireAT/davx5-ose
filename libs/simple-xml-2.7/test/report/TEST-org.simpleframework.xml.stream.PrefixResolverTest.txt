@@ -1,0 +1,12 @@
+Testsuite: org.simpleframework.xml.stream.PrefixResolverTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.013 sec
+------------- Standard Output ---------------
+<n:root xmlns:n="ns1">
+   <n:child xmlns:n="ns2">
+      <n:grandchild xmlns:n="ns1"/>
+   </n:child>
+</n:root>
+------------- ---------------- ---------------
+
+Testcase: testPrefixResolver took 0.01 sec
+Testcase: testDirectory took 0.001 sec

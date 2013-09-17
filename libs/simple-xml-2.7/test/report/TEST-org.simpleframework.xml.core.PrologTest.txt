@@ -1,0 +1,32 @@
+Testsuite: org.simpleframework.xml.core.PrologTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.107 sec
+------------- Standard Output ---------------
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<prologExample id="12" flag="true">
+    <name>some name</name>
+    <text>entry text</text>
+</prologExample><?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<prologExample id="12" flag="true">
+    <name>some name</name>
+    <text>entry text</text>
+</prologExample>
+<prolog-example ID="0" id="12" flag="true">
+   <!-- java.lang.String -->
+   <name ID="1">some name</name>
+   <!-- java.lang.String -->
+   <text ID="2">entry text</text>
+</prolog-example>>>>>> ELEMENT=[element prolog-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.PrologTest$PrologExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<PrologExample ID="0" id="12" flag="true">
+   <!-- java.lang.String -->
+   <Name ID="1">some name</Name>
+   <!-- java.lang.String -->
+   <Text ID="2">entry text</Text>
+</PrologExample>>>>>> ELEMENT=[element PrologExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.PrologTest$PrologExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testProlog took 0.104 sec
+Testcase: testDirectory took 0 sec

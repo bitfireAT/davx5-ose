@@ -1,0 +1,156 @@
+Testsuite: org.simpleframework.xml.core.PathAsNamespacePrefixTest
+Tests run: 4, Failures: 0, Errors: 0, Time elapsed: 0.153 sec
+------------- Standard Output ---------------
+<p:pathWithPrefix xmlns:p="http://www.x.com/y">
+   <x>
+      <y>
+         <p:z>
+            <p:name>tim</p:name>
+         </p:z>
+      </y>
+   </x>
+</p:pathWithPrefix>
+<p:pathWithPrefix xmlns:p="http://www.x.com/y">
+   <x>
+      <y>
+         <p:z>
+            <p:name>tim</p:name>
+         </p:z>
+      </y>
+   </x>
+</p:pathWithPrefix><p:pathWithPrefix xmlns:p="http://www.x.com/y">
+   <x>
+      <y>
+         <p:z>
+            <p:name>tim</p:name>
+         </p:z>
+      </y>
+   </x>
+</p:pathWithPrefix>
+<p:path-with-prefix ID="0" xmlns:p="http://www.x.com/y">
+   <x>
+      <y>
+         <p:z>
+            <!-- java.lang.String -->
+            <p:name ID="1">tim</p:name>
+         </p:z>
+      </y>
+   </x>
+</p:path-with-prefix>>>>>> ELEMENT=[element path-with-prefix]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathAsNamespacePrefixTest$PathWithPrefix]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<p:PathWithPrefix ID="0" xmlns:p="http://www.x.com/y">
+   <X>
+      <Y>
+         <p:Z>
+            <!-- java.lang.String -->
+            <p:Name ID="1">tim</p:Name>
+         </p:Z>
+      </Y>
+   </X>
+</p:PathWithPrefix>>>>>> ELEMENT=[element PathWithPrefix]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathAsNamespacePrefixTest$PathWithPrefix]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<p:bringPrefixInScope xmlns:p="http://www.x.com/p">
+   <example>
+      <x>
+         <y>
+            <p:z>
+               <name xmlns="http://www.x.com/y">tim</name>
+            </p:z>
+         </y>
+      </x>
+   </example>
+</p:bringPrefixInScope>
+<p:bringPrefixInScope xmlns:p="http://www.x.com/p">
+   <example>
+      <x>
+         <y>
+            <p:z>
+               <name xmlns="http://www.x.com/y">tim</name>
+            </p:z>
+         </y>
+      </x>
+   </example>
+</p:bringPrefixInScope><p:bringPrefixInScope xmlns:p="http://www.x.com/p">
+   <example>
+      <x>
+         <y>
+            <p:z>
+               <name xmlns="http://www.x.com/y">tim</name>
+            </p:z>
+         </y>
+      </x>
+   </example>
+</p:bringPrefixInScope>
+<p:bring-prefix-in-scope ID="0" xmlns:p="http://www.x.com/p">
+   <!-- org.simpleframework.xml.core.PathAsNamespacePrefixTest$PathWithPrefixOutOfScope -->
+   <example ID="1">
+      <x>
+         <y>
+            <p:z>
+               <!-- java.lang.String -->
+               <name ID="2" xmlns="http://www.x.com/y">tim</name>
+            </p:z>
+         </y>
+      </x>
+   </example>
+</p:bring-prefix-in-scope>>>>>> ELEMENT=[element bring-prefix-in-scope]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathAsNamespacePrefixTest$BringPrefixInScope]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<p:BringPrefixInScope ID="0" xmlns:p="http://www.x.com/p">
+   <!-- org.simpleframework.xml.core.PathAsNamespacePrefixTest$PathWithPrefixOutOfScope -->
+   <Example ID="1">
+      <X>
+         <Y>
+            <p:Z>
+               <!-- java.lang.String -->
+               <Name ID="2" xmlns="http://www.x.com/y">tim</Name>
+            </p:Z>
+         </Y>
+      </X>
+   </Example>
+</p:BringPrefixInScope>>>>>> ELEMENT=[element BringPrefixInScope]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathAsNamespacePrefixTest$BringPrefixInScope]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+------------- Standard Error -----------------
+org.simpleframework.xml.core.ElementException: Namespace prefix 'p' in class org.simpleframework.xml.core.PathAsNamespacePrefixTest$PathWithPrefixOutOfScope is not in scope
+	at org.simpleframework.xml.core.Composite.writeSection(Composite.java:998)
+	at org.simpleframework.xml.core.Composite.writeElements(Composite.java:1087)
+	at org.simpleframework.xml.core.Composite.writeSection(Composite.java:1004)
+	at org.simpleframework.xml.core.Composite.writeElements(Composite.java:1087)
+	at org.simpleframework.xml.core.Composite.writeSection(Composite.java:1004)
+	at org.simpleframework.xml.core.Composite.writeElements(Composite.java:1087)
+	at org.simpleframework.xml.core.Composite.writeSection(Composite.java:1004)
+	at org.simpleframework.xml.core.Composite.write(Composite.java:975)
+	at org.simpleframework.xml.core.Composite.write(Composite.java:952)
+	at org.simpleframework.xml.core.Traverser.write(Traverser.java:236)
+	at org.simpleframework.xml.core.Traverser.write(Traverser.java:208)
+	at org.simpleframework.xml.core.Traverser.write(Traverser.java:186)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1180)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1162)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1140)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1259)
+	at org.simpleframework.xml.core.PathAsNamespacePrefixTest.testPathWithPrefixOufOfScope(PathAsNamespacePrefixTest.java:79)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:154)
+	at junit.framework.TestCase.runBare(TestCase.java:127)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:118)
+	at junit.framework.TestSuite.runTest(TestSuite.java:208)
+	at junit.framework.TestSuite.run(TestSuite.java:203)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.run(JUnitTestRunner.java:518)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.launch(JUnitTestRunner.java:1052)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.main(JUnitTestRunner.java:906)
+------------- ---------------- ---------------
+
+Testcase: testPathWithPrefix took 0.119 sec
+Testcase: testPathWithPrefixOufOfScope took 0.007 sec
+Testcase: testBringPrefixInScope took 0.023 sec
+Testcase: testDirectory took 0.001 sec

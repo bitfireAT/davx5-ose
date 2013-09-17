@@ -1,0 +1,5 @@
+Testsuite: org.simpleframework.xml.core.CompositeTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.087 sec
+
+Testcase: testComposite took 0.084 sec
+Testcase: testDirectory took 0 sec

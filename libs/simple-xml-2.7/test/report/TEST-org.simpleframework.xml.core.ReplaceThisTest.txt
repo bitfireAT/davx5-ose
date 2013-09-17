@@ -1,0 +1,27 @@
+Testsuite: org.simpleframework.xml.core.ReplaceThisTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.104 sec
+------------- Standard Output ---------------
+<realParent>
+   <inner/>
+</realParent>
+<realParent>
+   <inner/>
+</realParent><realParent>
+   <inner/>
+</realParent>
+<real-parent ID="0">
+   <!-- org.simpleframework.xml.core.ReplaceThisTest$ReplaceThisParent -->
+   <inner ID="1"/>
+</real-parent>>>>>> ELEMENT=[element real-parent]
+>>>>> TYPE=[class org.simpleframework.xml.core.ReplaceThisTest$RealParent]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<RealParent ID="0">
+   <!-- org.simpleframework.xml.core.ReplaceThisTest$ReplaceThisParent -->
+   <Inner ID="1"/>
+</RealParent>>>>>> ELEMENT=[element RealParent]
+>>>>> TYPE=[class org.simpleframework.xml.core.ReplaceThisTest$RealParent]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testReplaceParent took 0.101 sec
+Testcase: testDirectory took 0 sec

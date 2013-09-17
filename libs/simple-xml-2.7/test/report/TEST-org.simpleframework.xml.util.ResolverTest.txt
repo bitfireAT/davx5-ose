@@ -1,0 +1,149 @@
+Testsuite: org.simpleframework.xml.util.ResolverTest
+Tests run: 6, Failures: 0, Errors: 0, Time elapsed: 0.151 sec
+------------- Standard Output ---------------
+<test name="example">
+   <list>
+      <match value="text/html" pattern="*.html"/>
+      <match value="image/jpeg" pattern="*.jpg"/>
+      <match value="image/jpeg" pattern="/images/*"/>
+      <match value="text/plain" pattern="/log/**"/>
+      <match value="application/octetstream" pattern="*.exe"/>
+      <match value="text/plain" pattern="**.txt"/>
+      <match value="text/html" pattern="/html/*"/>
+   </list>
+</test><test name="example">
+   <list>
+      <match value="text/html" pattern="*.html"/>
+      <match value="image/jpeg" pattern="*.jpg"/>
+      <match value="image/jpeg" pattern="/images/*"/>
+      <match value="text/plain" pattern="/log/**"/>
+      <match value="application/octetstream" pattern="*.exe"/>
+      <match value="text/plain" pattern="**.txt"/>
+      <match value="text/html" pattern="/html/*"/>
+   </list>
+</test>
+<test ID="0" name="example">
+   <!-- org.simpleframework.xml.util.Resolver -->
+   <list ID="1">
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <match ID="2" value="text/html" pattern="*.html"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <match ID="3" value="image/jpeg" pattern="*.jpg"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <match ID="4" value="image/jpeg" pattern="/images/*"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <match ID="5" value="text/plain" pattern="/log/**"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <match ID="6" value="application/octetstream" pattern="*.exe"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <match ID="7" value="text/plain" pattern="**.txt"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <match ID="8" value="text/html" pattern="/html/*"/>
+   </list>
+</test>>>>>> ELEMENT=[element test]
+>>>>> TYPE=[class org.simpleframework.xml.util.ResolverTest$ContentResolver]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Test ID="0" name="example">
+   <!-- org.simpleframework.xml.util.Resolver -->
+   <List ID="1">
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <Match ID="2" value="text/html" pattern="*.html"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <Match ID="3" value="image/jpeg" pattern="*.jpg"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <Match ID="4" value="image/jpeg" pattern="/images/*"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <Match ID="5" value="text/plain" pattern="/log/**"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <Match ID="6" value="application/octetstream" pattern="*.exe"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <Match ID="7" value="text/plain" pattern="**.txt"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <Match ID="8" value="text/html" pattern="/html/*"/>
+   </List>
+</Test>>>>>> ELEMENT=[element Test]
+>>>>> TYPE=[class org.simpleframework.xml.util.ResolverTest$ContentResolver]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<test name="example">
+   <list>
+      <match value="text/html" pattern="*.html"/>
+      <match value="image/jpeg" pattern="*.jpg"/>
+      <match value="image/jpeg" pattern="/images/*"/>
+      <match value="application/octetstream" pattern="*.exe"/>
+      <match value="text/plain" pattern="**.txt"/>
+      <match value="text/html" pattern="/html/*"/>
+      <match value="application/octetstream" pattern="*"/>
+      <match value="text/html" pattern="README.*"/>
+      <match value="text/plain" pattern="README.txt"/>
+   </list>
+</test><test name="example">
+   <list>
+      <match value="text/html" pattern="*.html"/>
+      <match value="image/jpeg" pattern="*.jpg"/>
+      <match value="image/jpeg" pattern="/images/*"/>
+      <match value="application/octetstream" pattern="*.exe"/>
+      <match value="text/plain" pattern="**.txt"/>
+      <match value="text/html" pattern="/html/*"/>
+      <match value="application/octetstream" pattern="*"/>
+      <match value="text/html" pattern="README.*"/>
+      <match value="text/plain" pattern="README.txt"/>
+   </list>
+</test>
+<test ID="0" name="example">
+   <!-- org.simpleframework.xml.util.Resolver -->
+   <list ID="1">
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <match ID="2" value="text/html" pattern="*.html"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <match ID="3" value="image/jpeg" pattern="*.jpg"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <match ID="4" value="image/jpeg" pattern="/images/*"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <match ID="5" value="application/octetstream" pattern="*.exe"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <match ID="6" value="text/plain" pattern="**.txt"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <match ID="7" value="text/html" pattern="/html/*"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <match ID="8" value="application/octetstream" pattern="*"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <match ID="9" value="text/html" pattern="README.*"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <match ID="10" value="text/plain" pattern="README.txt"/>
+   </list>
+</test>>>>>> ELEMENT=[element test]
+>>>>> TYPE=[class org.simpleframework.xml.util.ResolverTest$ContentResolver]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Test ID="0" name="example">
+   <!-- org.simpleframework.xml.util.Resolver -->
+   <List ID="1">
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <Match ID="2" value="text/html" pattern="*.html"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <Match ID="3" value="image/jpeg" pattern="*.jpg"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <Match ID="4" value="image/jpeg" pattern="/images/*"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <Match ID="5" value="application/octetstream" pattern="*.exe"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <Match ID="6" value="text/plain" pattern="**.txt"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <Match ID="7" value="text/html" pattern="/html/*"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <Match ID="8" value="application/octetstream" pattern="*"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <Match ID="9" value="text/html" pattern="README.*"/>
+      <!-- org.simpleframework.xml.util.ResolverTest$ContentType -->
+      <Match ID="10" value="text/plain" pattern="README.txt"/>
+   </List>
+</Test>>>>>> ELEMENT=[element Test]
+>>>>> TYPE=[class org.simpleframework.xml.util.ResolverTest$ContentResolver]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testResolver took 0.112 sec
+Testcase: testCache took 0.023 sec
+Testcase: testNoResolution took 0.003 sec
+Testcase: testNonGreedyMatch took 0.003 sec
+Testcase: testResolverCache took 0.008 sec
+Testcase: testDirectory took 0 sec

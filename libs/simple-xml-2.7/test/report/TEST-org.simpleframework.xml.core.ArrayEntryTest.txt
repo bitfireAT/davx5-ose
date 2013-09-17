@@ -1,0 +1,122 @@
+Testsuite: org.simpleframework.xml.core.ArrayEntryTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.124 sec
+------------- Standard Output ---------------
+<exampleArray>
+   <list length="3">
+      <substitute id="1">
+         <text>one</text>
+      </substitute>
+      <substitute id="2">
+         <text>two</text>
+      </substitute>
+      <substitute id="3">
+         <text>three</text>
+      </substitute>
+   </list>
+</exampleArray><exampleArray>
+   <list length="3">
+      <substitute id="1">
+         <text>one</text>
+      </substitute>
+      <substitute id="2">
+         <text>two</text>
+      </substitute>
+      <substitute id="3">
+         <text>three</text>
+      </substitute>
+   </list>
+</exampleArray>
+<example-array ID="0">
+   <!-- [Lorg.simpleframework.xml.core.ArrayEntryTest$Entry; -->
+   <list length="3" ID="1">
+      <!-- org.simpleframework.xml.core.ArrayEntryTest$Entry -->
+      <substitute ID="2" id="1">
+         <!-- java.lang.String -->
+         <text ID="3">one</text>
+      </substitute>
+      <!-- org.simpleframework.xml.core.ArrayEntryTest$Entry -->
+      <substitute ID="4" id="2">
+         <!-- java.lang.String -->
+         <text ID="5">two</text>
+      </substitute>
+      <!-- org.simpleframework.xml.core.ArrayEntryTest$Entry -->
+      <substitute ID="6" id="3">
+         <!-- java.lang.String -->
+         <text ID="7">three</text>
+      </substitute>
+   </list>
+</example-array>>>>>> ELEMENT=[element example-array]
+>>>>> TYPE=[class org.simpleframework.xml.core.ArrayEntryTest$ExampleArray]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ExampleArray ID="0">
+   <!-- [Lorg.simpleframework.xml.core.ArrayEntryTest$Entry; -->
+   <List length="3" ID="1">
+      <!-- org.simpleframework.xml.core.ArrayEntryTest$Entry -->
+      <Substitute ID="2" id="1">
+         <!-- java.lang.String -->
+         <Text ID="3">one</Text>
+      </Substitute>
+      <!-- org.simpleframework.xml.core.ArrayEntryTest$Entry -->
+      <Substitute ID="4" id="2">
+         <!-- java.lang.String -->
+         <Text ID="5">two</Text>
+      </Substitute>
+      <!-- org.simpleframework.xml.core.ArrayEntryTest$Entry -->
+      <Substitute ID="6" id="3">
+         <!-- java.lang.String -->
+         <Text ID="7">three</Text>
+      </Substitute>
+   </List>
+</ExampleArray>>>>>> ELEMENT=[element ExampleArray]
+>>>>> TYPE=[class org.simpleframework.xml.core.ArrayEntryTest$ExampleArray]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<examplePrimitiveArray>
+   <list length="4">
+      <substitute>a</substitute>
+      <substitute>b</substitute>
+      <substitute>c</substitute>
+      <substitute>d</substitute>
+   </list>
+</examplePrimitiveArray><examplePrimitiveArray>
+   <list length="4">
+      <substitute>a</substitute>
+      <substitute>b</substitute>
+      <substitute>c</substitute>
+      <substitute>d</substitute>
+   </list>
+</examplePrimitiveArray>
+<example-primitive-array ID="0">
+   <!-- [Ljava.lang.Character; -->
+   <list length="4" ID="1">
+      <!-- java.lang.Character -->
+      <substitute ID="2">a</substitute>
+      <!-- java.lang.Character -->
+      <substitute ID="3">b</substitute>
+      <!-- java.lang.Character -->
+      <substitute ID="4">c</substitute>
+      <!-- java.lang.Character -->
+      <substitute ID="5">d</substitute>
+   </list>
+</example-primitive-array>>>>>> ELEMENT=[element example-primitive-array]
+>>>>> TYPE=[class org.simpleframework.xml.core.ArrayEntryTest$ExamplePrimitiveArray]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ExamplePrimitiveArray ID="0">
+   <!-- [Ljava.lang.Character; -->
+   <List length="4" ID="1">
+      <!-- java.lang.Character -->
+      <Substitute ID="2">a</Substitute>
+      <!-- java.lang.Character -->
+      <Substitute ID="3">b</Substitute>
+      <!-- java.lang.Character -->
+      <Substitute ID="4">c</Substitute>
+      <!-- java.lang.Character -->
+      <Substitute ID="5">d</Substitute>
+   </List>
+</ExamplePrimitiveArray>>>>>> ELEMENT=[element ExamplePrimitiveArray]
+>>>>> TYPE=[class org.simpleframework.xml.core.ArrayEntryTest$ExamplePrimitiveArray]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testExampleArray took 0.111 sec
+Testcase: testExamplePrimitiveArray took 0.01 sec
+Testcase: testDirectory took 0 sec

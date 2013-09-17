@@ -1,0 +1,42 @@
+Testsuite: org.simpleframework.xml.core.UnionNotRequiredTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.124 sec
+------------- Standard Output ---------------
+<animalFarm>
+   <dog>
+      <name>Snoopy</name>
+   </dog>
+</animalFarm><animalFarm>
+   <dog>
+      <name>Snoopy</name>
+   </dog>
+</animalFarm>
+<animal-farm ID="0">
+   <!-- org.simpleframework.xml.core.UnionNotRequiredTest$Dog -->
+   <dog ID="1">
+      <!-- java.lang.String -->
+      <name ID="2">Snoopy</name>
+   </dog>
+</animal-farm>>>>>> ELEMENT=[element animal-farm]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionNotRequiredTest$AnimalFarm]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<AnimalFarm ID="0">
+   <!-- org.simpleframework.xml.core.UnionNotRequiredTest$Dog -->
+   <Dog ID="1">
+      <!-- java.lang.String -->
+      <Name ID="2">Snoopy</Name>
+   </Dog>
+</AnimalFarm>>>>>> ELEMENT=[element AnimalFarm]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionNotRequiredTest$AnimalFarm]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<animalFarm/><animalFarm/>
+<animal-farm ID="0"/>>>>>> ELEMENT=[element animal-farm]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionNotRequiredTest$AnimalFarm]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<AnimalFarm ID="0"/>>>>>> ELEMENT=[element AnimalFarm]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionNotRequiredTest$AnimalFarm]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testOptionalEntry took 0.112 sec
+Testcase: testOptionalMissingEntry took 0.011 sec
+Testcase: testDirectory took 0 sec

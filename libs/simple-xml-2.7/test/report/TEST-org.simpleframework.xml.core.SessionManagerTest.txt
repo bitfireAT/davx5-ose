@@ -1,0 +1,4 @@
+Testsuite: org.simpleframework.xml.core.SessionManagerTest
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.004 sec
+
+Testcase: testManager took 0.002 sec

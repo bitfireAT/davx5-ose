@@ -1,0 +1,22 @@
+Testsuite: org.simpleframework.xml.core.NamespaceInheritanceTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.086 sec
+------------- Standard Output ---------------
+<aaa xmlns="namespace1">
+   <bbb xmlns="namespace2">
+      <aaa xmlns="namespace1">
+         <bbb xmlns="namespace2"/>
+      </aaa>
+   </bbb>
+</aaa>
+<aaa:aaaWithPrefix xmlns:aaa="namespace1">
+   <bbb:bbb xmlns:bbb="namespace2">
+      <aaa:aaa>
+         <bbb:bbb/>
+      </aaa:aaa>
+   </bbb:bbb>
+</aaa:aaaWithPrefix>
+------------- ---------------- ---------------
+
+Testcase: testNamespace took 0.077 sec
+Testcase: testNamespacePrefix took 0.006 sec
+Testcase: testDirectory took 0 sec

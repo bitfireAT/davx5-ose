@@ -1,0 +1,24 @@
+Testsuite: org.simpleframework.xml.strategy.AnnotationTypeTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.117 sec
+------------- Standard Output ---------------
+<annotationExample age="10">
+   <name key="name">John Doe</name>
+</annotationExample><annotationExample age="10">
+   <name key="name">John Doe</name>
+</annotationExample>
+<annotation-example ID="0" age="10">
+   <!-- java.lang.String -->
+   <name ID="1">John Doe</name>
+</annotation-example>>>>>> ELEMENT=[element annotation-example]
+>>>>> TYPE=[class org.simpleframework.xml.strategy.AnnotationTypeTest$AnnotationExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<AnnotationExample ID="0" age="10">
+   <!-- java.lang.String -->
+   <Name ID="1">John Doe</Name>
+</AnnotationExample>>>>>> ELEMENT=[element AnnotationExample]
+>>>>> TYPE=[class org.simpleframework.xml.strategy.AnnotationTypeTest$AnnotationExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testAnnotationType took 0.114 sec
+Testcase: testDirectory took 0.001 sec

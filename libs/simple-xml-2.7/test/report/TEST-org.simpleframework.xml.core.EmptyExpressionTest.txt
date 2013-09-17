@@ -1,0 +1,4 @@
+Testsuite: org.simpleframework.xml.core.EmptyExpressionTest
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.006 sec
+
+Testcase: testEmptyPath took 0.004 sec

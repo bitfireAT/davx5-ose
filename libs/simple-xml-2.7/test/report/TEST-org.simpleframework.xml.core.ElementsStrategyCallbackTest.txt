@@ -1,0 +1,20 @@
+Testsuite: org.simpleframework.xml.core.ElementsStrategyCallbackTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.091 sec
+------------- Standard Output ---------------
+null
+attribute type='double'
+attribute type='int'
+attribute type='float'
+attribute type='string'
+attribute type='byte'
+<example>
+   <d type="double">0.0</d>
+   <i type="int">0</i>
+   <f type="float">0.0</f>
+   <s type="string">text</s>
+   <b type="byte">0</b>
+</example>
+------------- ---------------- ---------------
+
+Testcase: testTypeCallback took 0.088 sec
+Testcase: testDirectory took 0 sec

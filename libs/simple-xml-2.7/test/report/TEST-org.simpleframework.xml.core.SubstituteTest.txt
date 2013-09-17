@@ -1,0 +1,76 @@
+Testsuite: org.simpleframework.xml.core.SubstituteTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.141 sec
+------------- Standard Output ---------------
+<substituteExample>
+   <substitute class="org.simpleframework.xml.core.SubstituteTest$OtherSubstitute" name="this is the other substitute">some example text</substitute>
+</substituteExample><substituteExample>
+   <substitute class="org.simpleframework.xml.core.SubstituteTest$OtherSubstitute" name="this is the other substitute">some example text</substitute>
+</substituteExample>
+<substitute-example ID="0">
+   <!-- org.simpleframework.xml.core.SubstituteTest$Substitute -->
+   <substitute class="org.simpleframework.xml.core.SubstituteTest$OtherSubstitute" ID="1" name="this is the other substitute">some example text</substitute>
+</substitute-example>>>>>> ELEMENT=[element substitute-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.SubstituteTest$SubstituteExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<SubstituteExample ID="0">
+   <!-- org.simpleframework.xml.core.SubstituteTest$Substitute -->
+   <Substitute class="org.simpleframework.xml.core.SubstituteTest$OtherSubstitute" ID="1" name="this is the other substitute">some example text</Substitute>
+</SubstituteExample>>>>>> ELEMENT=[element SubstituteExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.SubstituteTest$SubstituteExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<substituteExample>
+   <substitute class="org.simpleframework.xml.core.SubstituteTest$OtherSubstitute" name="this is the other substitute">some example text</substitute>
+</substituteExample><substituteExample>
+   <substitute class="org.simpleframework.xml.core.SubstituteTest$OtherSubstitute" name="this is the other substitute">some example text</substitute>
+</substituteExample>
+<substitute-example ID="0">
+   <!-- org.simpleframework.xml.core.SubstituteTest$Substitute -->
+   <substitute class="org.simpleframework.xml.core.SubstituteTest$OtherSubstitute" ID="1" name="this is the other substitute">some example text</substitute>
+</substitute-example>>>>>> ELEMENT=[element substitute-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.SubstituteTest$SubstituteExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<SubstituteExample ID="0">
+   <!-- org.simpleframework.xml.core.SubstituteTest$Substitute -->
+   <Substitute class="org.simpleframework.xml.core.SubstituteTest$OtherSubstitute" ID="1" name="this is the other substitute">some example text</Substitute>
+</SubstituteExample>>>>>> ELEMENT=[element SubstituteExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.SubstituteTest$SubstituteExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<substituteExample>
+   <substitute class="org.simpleframework.xml.core.SubstituteTest$LargeSubstitute" name="John Doe" street="Sesame Street" city="Metropilis">some example text</substitute>
+</substituteExample><substituteExample>
+   <substitute class="org.simpleframework.xml.core.SubstituteTest$LargeSubstitute" name="John Doe" street="Sesame Street" city="Metropilis">some example text</substitute>
+</substituteExample>
+<substitute-example ID="0">
+   <!-- org.simpleframework.xml.core.SubstituteTest$Substitute -->
+   <substitute class="org.simpleframework.xml.core.SubstituteTest$LargeSubstitute" ID="1" name="John Doe" street="Sesame Street" city="Metropilis">some example text</substitute>
+</substitute-example>>>>>> ELEMENT=[element substitute-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.SubstituteTest$SubstituteExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<SubstituteExample ID="0">
+   <!-- org.simpleframework.xml.core.SubstituteTest$Substitute -->
+   <Substitute class="org.simpleframework.xml.core.SubstituteTest$LargeSubstitute" ID="1" name="John Doe" street="Sesame Street" city="Metropilis">some example text</Substitute>
+</SubstituteExample>>>>>> ELEMENT=[element SubstituteExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.SubstituteTest$SubstituteExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<substituteExample>
+   <substitute class="org.simpleframework.xml.core.SubstituteTest$LargeSubstitute" name="John Doe" street="Sesame Street" city="Metropilis">some example text</substitute>
+</substituteExample><substituteExample>
+   <substitute class="org.simpleframework.xml.core.SubstituteTest$LargeSubstitute" name="John Doe" street="Sesame Street" city="Metropilis">some example text</substitute>
+</substituteExample>
+<substitute-example ID="0">
+   <!-- org.simpleframework.xml.core.SubstituteTest$Substitute -->
+   <substitute class="org.simpleframework.xml.core.SubstituteTest$LargeSubstitute" ID="1" name="John Doe" street="Sesame Street" city="Metropilis">some example text</substitute>
+</substitute-example>>>>>> ELEMENT=[element substitute-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.SubstituteTest$SubstituteExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<SubstituteExample ID="0">
+   <!-- org.simpleframework.xml.core.SubstituteTest$Substitute -->
+   <Substitute class="org.simpleframework.xml.core.SubstituteTest$LargeSubstitute" ID="1" name="John Doe" street="Sesame Street" city="Metropilis">some example text</Substitute>
+</SubstituteExample>>>>>> ELEMENT=[element SubstituteExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.SubstituteTest$SubstituteExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testReplace took 0.114 sec
+Testcase: testResolve took 0.024 sec
+Testcase: testDirectory took 0.001 sec

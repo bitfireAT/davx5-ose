@@ -1,0 +1,128 @@
+Testsuite: org.simpleframework.xml.core.ElementWithExplicitTypeTest
+Tests run: 5, Failures: 0, Errors: 0, Time elapsed: 0.176 sec
+------------- Standard Output ---------------
+<example>
+   <string>str</string>
+   <integer>10</integer>
+   <bool>true</bool>
+</example><example>
+   <string>str</string>
+   <integer>10</integer>
+   <bool>true</bool>
+</example><example>
+   <string>str</string>
+   <integer>10</integer>
+   <bool>true</bool>
+</example>
+<example ID="0">
+   <!-- java.lang.String -->
+   <string ID="1">str</string>
+   <!-- java.lang.Integer -->
+   <integer ID="2">10</integer>
+   <!-- java.lang.Boolean -->
+   <bool ID="3">true</bool>
+</example>>>>>> ELEMENT=[element example]
+>>>>> TYPE=[class org.simpleframework.xml.core.ElementWithExplicitTypeTest$Example]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Example ID="0">
+   <!-- java.lang.String -->
+   <String ID="1">str</String>
+   <!-- java.lang.Integer -->
+   <Integer ID="2">10</Integer>
+   <!-- java.lang.Boolean -->
+   <Bool ID="3">true</Bool>
+</Example>>>>>> ELEMENT=[element Example]
+>>>>> TYPE=[class org.simpleframework.xml.core.ElementWithExplicitTypeTest$Example]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<unionExample>
+   <s>str</s>
+</unionExample><unionExample>
+   <s>str</s>
+</unionExample><unionExample>
+   <s>str</s>
+</unionExample>
+<union-example ID="0">
+   <!-- java.lang.String -->
+   <s ID="1">str</s>
+</union-example>>>>>> ELEMENT=[element union-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.ElementWithExplicitTypeTest$UnionExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<UnionExample ID="0">
+   <!-- java.lang.String -->
+   <S ID="1">str</S>
+</UnionExample>>>>>> ELEMENT=[element UnionExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.ElementWithExplicitTypeTest$UnionExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<heirarchyExample>
+   <a class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$B"/>
+   <b class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$C"/>
+   <c/>
+</heirarchyExample><heirarchyExample>
+   <a class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$B"/>
+   <b class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$C"/>
+   <c/>
+</heirarchyExample><heirarchyExample>
+   <a class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$B"/>
+   <b class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$C"/>
+   <c/>
+</heirarchyExample>
+<heirarchy-example ID="0">
+   <!-- org.simpleframework.xml.core.ElementWithExplicitTypeTest$A -->
+   <a class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$B" ID="1"/>
+   <!-- org.simpleframework.xml.core.ElementWithExplicitTypeTest$B -->
+   <b class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$C" ID="2"/>
+   <!-- org.simpleframework.xml.core.ElementWithExplicitTypeTest$C -->
+   <c ID="3"/>
+</heirarchy-example>>>>>> ELEMENT=[element heirarchy-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.ElementWithExplicitTypeTest$HeirarchyExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<HeirarchyExample ID="0">
+   <!-- org.simpleframework.xml.core.ElementWithExplicitTypeTest$A -->
+   <A class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$B" ID="1"/>
+   <!-- org.simpleframework.xml.core.ElementWithExplicitTypeTest$B -->
+   <B class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$C" ID="2"/>
+   <!-- org.simpleframework.xml.core.ElementWithExplicitTypeTest$C -->
+   <C ID="3"/>
+</HeirarchyExample>>>>>> ELEMENT=[element HeirarchyExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.ElementWithExplicitTypeTest$HeirarchyExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<heirarchyExample>
+   <a class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$B"/>
+   <b class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$A"/>
+   <c class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$A"/>
+</heirarchyExample><heirarchyExample>
+   <a class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$B"/>
+   <b class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$A"/>
+   <c class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$A"/>
+</heirarchyExample><heirarchyExample>
+   <a class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$B"/>
+   <b class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$A"/>
+   <c class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$A"/>
+</heirarchyExample>
+<heirarchy-example ID="0">
+   <!-- org.simpleframework.xml.core.ElementWithExplicitTypeTest$A -->
+   <a class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$B" ID="1"/>
+   <!-- org.simpleframework.xml.core.ElementWithExplicitTypeTest$B -->
+   <b class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$A" ID="2"/>
+   <!-- org.simpleframework.xml.core.ElementWithExplicitTypeTest$C -->
+   <c class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$A" ID="3"/>
+</heirarchy-example>>>>>> ELEMENT=[element heirarchy-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.ElementWithExplicitTypeTest$HeirarchyExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<HeirarchyExample ID="0">
+   <!-- org.simpleframework.xml.core.ElementWithExplicitTypeTest$A -->
+   <A class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$B" ID="1"/>
+   <!-- org.simpleframework.xml.core.ElementWithExplicitTypeTest$B -->
+   <B class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$A" ID="2"/>
+   <!-- org.simpleframework.xml.core.ElementWithExplicitTypeTest$C -->
+   <C class="org.simpleframework.xml.core.ElementWithExplicitTypeTest$A" ID="3"/>
+</HeirarchyExample>>>>>> ELEMENT=[element HeirarchyExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.ElementWithExplicitTypeTest$HeirarchyExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testExplicitType took 0.114 sec
+Testcase: testExplicitUnionType took 0.015 sec
+Testcase: testExplicitHierarchyType took 0.023 sec
+Testcase: testExplicitIncorrectHierarchyType took 0.019 sec
+Testcase: testDirectory took 0 sec

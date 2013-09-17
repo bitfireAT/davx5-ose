@@ -1,0 +1,14 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Ben Fortuna//iCal4j 1.0//EN
+BEGIN:X-VVENUE
+X-VVENUE-INFO:http://evdb.com/docs/ical-venue/draft-norris-ical-venue.html
+X-NAME:Chan Shun Concert Hall\, Chan Centre for the Performing Arts
+X-ADDRESS:6265 Crescent Road\, UBC
+X-CITY:Vancouver
+X-REGION;X-ABBREV=bc:British Columbia
+X-COUNTRY;X-ABBREV=ca:Canada
+X-POSTALCODE:
+X-URL;X-LABEL=Venue Info:http://www.chancentre.com
+END:X-VVENUE
+END:VCALENDAR

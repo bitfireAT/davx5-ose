@@ -1,0 +1,7 @@
+Testsuite: org.simpleframework.xml.core.XPathTest
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.038 sec
+------------- Standard Output ---------------
+2000
+------------- ---------------- ---------------
+
+Testcase: testXPath took 0.036 sec

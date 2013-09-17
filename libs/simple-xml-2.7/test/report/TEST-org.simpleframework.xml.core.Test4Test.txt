@@ -1,0 +1,54 @@
+Testsuite: org.simpleframework.xml.core.Test4Test
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.113 sec
+------------- Standard Output ---------------
+<test4>
+   <single-element/>
+   <elements>
+      <elementA/>
+      <elementB/>
+   </elements>
+</test4>
+
+<test4>
+   <single-element/>
+   <elements>
+      <elementA/>
+      <elementB/>
+   </elements>
+</test4>
+
+<test4>
+   <single-element class="org.simpleframework.xml.core.Test4Test$MyElementC"/>
+   <elements>
+      <elementA/>
+      <elementB/>
+   </elements>
+</test4>
+
+<test4>
+   <single-element class="org.simpleframework.xml.core.Test4Test$MyElementC"/>
+   <elements>
+      <elementA/>
+      <elementB/>
+   </elements>
+</test4>
+
+<test4>
+   <single-element/>
+   <elements>
+      <element class="org.simpleframework.xml.core.Test4Test$MyElementC"/>
+      <elementB/>
+   </elements>
+</test4>
+
+<test4>
+   <single-element/>
+   <elements>
+      <element class="org.simpleframework.xml.core.Test4Test$MyElementC"/>
+      <elementB/>
+   </elements>
+</test4>
+
+------------- ---------------- ---------------
+
+Testcase: testSerialization took 0.111 sec

@@ -1,0 +1,8 @@
+org.simpleframework.xml
+org.simpleframework.xml.convert
+org.simpleframework.xml.core
+org.simpleframework.xml.filter
+org.simpleframework.xml.strategy
+org.simpleframework.xml.stream
+org.simpleframework.xml.transform
+org.simpleframework.xml.util

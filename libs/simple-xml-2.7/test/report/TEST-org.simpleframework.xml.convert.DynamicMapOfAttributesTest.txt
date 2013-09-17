@@ -1,0 +1,7 @@
+Testsuite: org.simpleframework.xml.convert.DynamicMapOfAttributesTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.091 sec
+------------- Standard Output ---------------
+<Car color="green" length="3.3" brand="audi" nrOfDoors="2" topSpeed="190"/>------------- ---------------- ---------------
+
+Testcase: testConverter took 0.089 sec
+Testcase: testDirectory took 0 sec

@@ -1,0 +1,4 @@
+Testsuite: org.simpleframework.xml.core.MethodPartFactoryTest
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.034 sec
+
+Testcase: testMethodPart took 0.033 sec

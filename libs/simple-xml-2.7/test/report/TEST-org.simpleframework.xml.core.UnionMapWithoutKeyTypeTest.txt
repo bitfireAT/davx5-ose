@@ -1,0 +1,74 @@
+Testsuite: org.simpleframework.xml.core.UnionMapWithoutKeyTypeTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.124 sec
+------------- Standard Output ---------------
+<mapExample>
+   <y-node key="3">
+      <y>C</y>
+   </y-node>
+   <y-node key="2">
+      <y>B</y>
+   </y-node>
+   <x-node key="1">
+      <x>A</x>
+   </x-node>
+   <z-node key="4">
+      <z>D</z>
+   </z-node>
+</mapExample><mapExample>
+   <y-node key="3">
+      <y>C</y>
+   </y-node>
+   <y-node key="2">
+      <y>B</y>
+   </y-node>
+   <x-node key="1">
+      <x>A</x>
+   </x-node>
+   <z-node key="4">
+      <z>D</z>
+   </z-node>
+</mapExample>
+<map-example ID="0">
+   <y-node key="3">
+      <!-- org.simpleframework.xml.core.UnionMapWithoutKeyTypeTest$Y -->
+      <y ID="1">C</y>
+   </y-node>
+   <y-node key="2">
+      <!-- org.simpleframework.xml.core.UnionMapWithoutKeyTypeTest$Y -->
+      <y ID="2">B</y>
+   </y-node>
+   <x-node key="1">
+      <!-- org.simpleframework.xml.core.UnionMapWithoutKeyTypeTest$X -->
+      <x ID="3">A</x>
+   </x-node>
+   <z-node key="4">
+      <!-- org.simpleframework.xml.core.UnionMapWithoutKeyTypeTest$Z -->
+      <z ID="4">D</z>
+   </z-node>
+</map-example>>>>>> ELEMENT=[element map-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionMapWithoutKeyTypeTest$MapExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<MapExample ID="0">
+   <YNode key="3">
+      <!-- org.simpleframework.xml.core.UnionMapWithoutKeyTypeTest$Y -->
+      <Y ID="1">C</Y>
+   </YNode>
+   <YNode key="2">
+      <!-- org.simpleframework.xml.core.UnionMapWithoutKeyTypeTest$Y -->
+      <Y ID="2">B</Y>
+   </YNode>
+   <XNode key="1">
+      <!-- org.simpleframework.xml.core.UnionMapWithoutKeyTypeTest$X -->
+      <X ID="3">A</X>
+   </XNode>
+   <ZNode key="4">
+      <!-- org.simpleframework.xml.core.UnionMapWithoutKeyTypeTest$Z -->
+      <Z ID="4">D</Z>
+   </ZNode>
+</MapExample>>>>>> ELEMENT=[element MapExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionMapWithoutKeyTypeTest$MapExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testInlineList took 0.121 sec
+Testcase: testDirectory took 0 sec

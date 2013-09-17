@@ -1,0 +1,15 @@
+Testsuite: org.simpleframework.xml.core.UnionWithTypeOverridesTest
+Tests run: 4, Failures: 0, Errors: 0, Time elapsed: 0.099 sec
+------------- Standard Output ---------------
+<test4>
+   <single-elementA/>
+</test4><test4>
+   <single-elementB/>
+</test4><test4>
+   <single-element class="org.simpleframework.xml.core.UnionWithTypeOverridesTest$MyElementC"/>
+</test4>------------- ---------------- ---------------
+
+Testcase: testMyElementA took 0.086 sec
+Testcase: testMyElementB took 0.004 sec
+Testcase: testMyElementWithovOverrideC took 0.006 sec
+Testcase: testDirectory took 0.002 sec

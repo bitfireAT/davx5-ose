@@ -1,0 +1,15 @@
+Testsuite: org.simpleframework.xml.convert.RegistryStrategyTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.109 sec
+------------- Standard Output ---------------
+<a:petShop xmlns:a="http://domain/a">
+   <b:pets xmlns:b="http://domain/b">
+      <pet class="org.simpleframework.xml.convert.ExampleConverters$Dog" name="Lassie" age="10"/>
+      <pet class="org.simpleframework.xml.convert.ExampleConverters$Cat">
+         <name>Kitty</name>
+         <age>2</age>
+      </pet>
+   </b:pets>
+</a:petShop>------------- ---------------- ---------------
+
+Testcase: testConverter took 0.106 sec
+Testcase: testDirectory took 0 sec

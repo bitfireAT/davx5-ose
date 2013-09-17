@@ -1,0 +1,20 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+DURATION:PT1H
+LOCATION:515 East Capitol Street SE\, Washington\, DC 20003
+DTSTAMP:20040319T053019Z
+UID:41E603E9-5C76-11D9-B268-000D93514BB4
+SEQUENCE:1
+DTSTART;TZID=US/Eastern:20040307T184500
+SUMMARY:Potluck and Dialogue at William Penn House: David Etheridge of F
+ riends Meeting of Washington on Humor in the Bible
+DESCRIPTION:The focus of the discussion will be on Biblical humor as int
+ ended by the author.\n\nOur monthly potluck is the first Sunday of each 
+ month at 6:30 PM. This is an opportunity for fellowship among Quakers a
+ nd attenders. Bring a dish to share\; family members and friends are al
+ ways welcome. Note: William Penn House is an alcohol and tobacco free f
+ acility.
+END:VEVENT
+END:VCALENDAR
