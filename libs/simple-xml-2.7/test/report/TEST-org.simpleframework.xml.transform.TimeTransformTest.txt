@@ -1,0 +1,69 @@
+Testsuite: org.simpleframework.xml.transform.TimeTransformTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.143 sec
+------------- Standard Output ---------------
+<timeExample attribute="2013-02-18 20:54:18.788 EST">
+   <element class="java.sql.Time">2013-02-18 20:54:18.788 EST</element>
+   <time>2013-02-18 20:54:18.788 EST</time>
+   <list class="java.util.ArrayList">
+      <time>2013-02-18 20:54:18.788 EST</time>
+      <time>2013-02-18 20:54:18.788 EST</time>
+   </list>
+   <array length="1">
+      <time>2013-02-18 20:54:18.788 EST</time>
+   </array>
+</timeExample><timeExample attribute="2013-02-18 20:54:18.788 EST">
+   <element class="java.sql.Time">2013-02-18 20:54:18.788 EST</element>
+   <time>2013-02-18 20:54:18.788 EST</time>
+   <list class="java.util.ArrayList">
+      <time>2013-02-18 20:54:18.788 EST</time>
+      <time>2013-02-18 20:54:18.788 EST</time>
+   </list>
+   <array length="1">
+      <time>2013-02-18 20:54:18.788 EST</time>
+   </array>
+</timeExample>
+<time-example ID="0" attribute="2013-02-18 20:54:18.788 EST">
+   <!-- java.util.Date -->
+   <element class="java.sql.Time" ID="1">2013-02-18 20:54:18.788 EST</element>
+   <!-- java.sql.Time -->
+   <time ID="2">2013-02-18 20:54:18.788 EST</time>
+   <!-- java.util.Collection -->
+   <list class="java.util.ArrayList" ID="3">
+      <!-- java.sql.Time -->
+      <time ID="4">2013-02-18 20:54:18.788 EST</time>
+      <!-- java.sql.Time -->
+      <time ID="5">2013-02-18 20:54:18.788 EST</time>
+   </list>
+   <!-- [Ljava.sql.Time; -->
+   <array length="1" ID="6">
+      <!-- java.sql.Time -->
+      <time ID="7">2013-02-18 20:54:18.788 EST</time>
+   </array>
+</time-example>>>>>> ELEMENT=[element time-example]
+>>>>> TYPE=[class org.simpleframework.xml.transform.TimeTransformTest$TimeExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<TimeExample ID="0" attribute="2013-02-18 20:54:18.788 EST">
+   <!-- java.util.Date -->
+   <Element class="java.sql.Time" ID="1">2013-02-18 20:54:18.788 EST</Element>
+   <!-- java.sql.Time -->
+   <Time ID="2">2013-02-18 20:54:18.788 EST</Time>
+   <!-- java.util.Collection -->
+   <List class="java.util.ArrayList" ID="3">
+      <!-- java.sql.Time -->
+      <Time ID="4">2013-02-18 20:54:18.788 EST</Time>
+      <!-- java.sql.Time -->
+      <Time ID="5">2013-02-18 20:54:18.788 EST</Time>
+   </List>
+   <!-- [Ljava.sql.Time; -->
+   <Array length="1" ID="6">
+      <!-- java.sql.Time -->
+      <Time ID="7">2013-02-18 20:54:18.788 EST</Time>
+   </Array>
+</TimeExample>>>>>> ELEMENT=[element TimeExample]
+>>>>> TYPE=[class org.simpleframework.xml.transform.TimeTransformTest$TimeExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testTime took 0.014 sec
+Testcase: testPersistence took 0.128 sec
+Testcase: testDirectory took 0 sec

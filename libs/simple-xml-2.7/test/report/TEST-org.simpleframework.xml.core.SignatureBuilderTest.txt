@@ -1,0 +1,30 @@
+Testsuite: org.simpleframework.xml.core.SignatureBuilderTest
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.005 sec
+------------- Standard Error -----------------
+[x] [a] [1] [i] 
+[x] [a] [1] [j] 
+[x] [a] [2] [i] 
+[x] [a] [2] [j] 
+[x] [b] [1] [i] 
+[x] [b] [1] [j] 
+[x] [b] [2] [i] 
+[x] [b] [2] [j] 
+[x] [c] [1] [i] 
+[x] [c] [1] [j] 
+[x] [c] [2] [i] 
+[x] [c] [2] [j] 
+[y] [a] [1] [i] 
+[y] [a] [1] [j] 
+[y] [a] [2] [i] 
+[y] [a] [2] [j] 
+[y] [b] [1] [i] 
+[y] [b] [1] [j] 
+[y] [b] [2] [i] 
+[y] [b] [2] [j] 
+[y] [c] [1] [i] 
+[y] [c] [1] [j] 
+[y] [c] [2] [i] 
+[y] [c] [2] [j] 
+------------- ---------------- ---------------
+
+Testcase: testMatrix took 0.002 sec

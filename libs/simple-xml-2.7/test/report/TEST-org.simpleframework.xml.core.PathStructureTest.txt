@@ -1,0 +1,188 @@
+Testsuite: org.simpleframework.xml.core.PathStructureTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.171 sec
+------------- Standard Output ---------------
+some
+fifth
+sixth
+group
+ninth
+path
+other
+path
+fourth
+first
+second
+third
+tenth
+<exampleAssembledType f="This is f" g="This is g">
+   <some>
+      <path a="This is a" d="This is d" e="This is e" h="This is h"/>
+      <other>
+         <path>
+            <first>The first element</first>
+            <second>The second element</second>
+            <third>The third element</third>
+            <tenth>The tenth element</tenth>
+         </path>
+         <fourth>The fourth element</fourth>
+      </other>
+   </some>
+   <fifth>The fifth element</fifth>
+   <sixth>The sixth element</sixth>
+   <group>
+      <example b="This is b" c="This is c"/>
+      <blah>
+         <eight>The eight element</eight>
+      </blah>
+      <seventh>The seventh element</seventh>
+   </group>
+   <ninth>The ninth element</ninth>
+</exampleAssembledType><exampleAssembledType f="This is f" g="This is g">
+   <some>
+      <path a="This is a" d="This is d" e="This is e" h="This is h"/>
+      <other>
+         <path>
+            <first>The first element</first>
+            <second>The second element</second>
+            <third>The third element</third>
+            <tenth>The tenth element</tenth>
+         </path>
+         <fourth>The fourth element</fourth>
+      </other>
+   </some>
+   <fifth>The fifth element</fifth>
+   <sixth>The sixth element</sixth>
+   <group>
+      <example b="This is b" c="This is c"/>
+      <blah>
+         <eight>The eight element</eight>
+      </blah>
+      <seventh>The seventh element</seventh>
+   </group>
+   <ninth>The ninth element</ninth>
+</exampleAssembledType><exampleAssembledType f="This is f" g="This is g">
+   <some>
+      <path a="This is a" d="This is d" e="This is e" h="This is h"/>
+      <other>
+         <path>
+            <first>The first element</first>
+            <second>The second element</second>
+            <third>The third element</third>
+            <tenth>The tenth element</tenth>
+         </path>
+         <fourth>The fourth element</fourth>
+      </other>
+   </some>
+   <fifth>The fifth element</fifth>
+   <sixth>The sixth element</sixth>
+   <group>
+      <example b="This is b" c="This is c"/>
+      <blah>
+         <eight>The eight element</eight>
+      </blah>
+      <seventh>The seventh element</seventh>
+   </group>
+   <ninth>The ninth element</ninth>
+</exampleAssembledType>
+<example-assembled-type ID="0" f="This is f" g="This is g">
+   <some>
+      <path a="This is a" d="This is d" e="This is e" h="This is h"/>
+      <other>
+         <path>
+            <!-- java.lang.String -->
+            <first ID="1">The first element</first>
+            <!-- java.lang.String -->
+            <second ID="2">The second element</second>
+            <!-- java.lang.String -->
+            <third ID="3">The third element</third>
+            <!-- java.lang.String -->
+            <tenth ID="4">The tenth element</tenth>
+         </path>
+         <!-- java.lang.String -->
+         <fourth ID="5">The fourth element</fourth>
+      </other>
+   </some>
+   <!-- java.lang.String -->
+   <fifth ID="6">The fifth element</fifth>
+   <!-- java.lang.String -->
+   <sixth ID="7">The sixth element</sixth>
+   <group>
+      <example b="This is b" c="This is c"/>
+      <blah>
+         <!-- java.lang.String -->
+         <eight ID="8">The eight element</eight>
+      </blah>
+      <!-- java.lang.String -->
+      <seventh ID="9">The seventh element</seventh>
+   </group>
+   <!-- java.lang.String -->
+   <ninth ID="10">The ninth element</ninth>
+</example-assembled-type>>>>>> ELEMENT=[element example-assembled-type]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathStructureTest$ExampleAssembledType]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ExampleAssembledType ID="0" f="This is f" g="This is g">
+   <Some>
+      <Path a="This is a" d="This is d" e="This is e" h="This is h"/>
+      <Other>
+         <Path>
+            <!-- java.lang.String -->
+            <First ID="1">The first element</First>
+            <!-- java.lang.String -->
+            <Second ID="2">The second element</Second>
+            <!-- java.lang.String -->
+            <Third ID="3">The third element</Third>
+            <!-- java.lang.String -->
+            <Tenth ID="4">The tenth element</Tenth>
+         </Path>
+         <!-- java.lang.String -->
+         <Fourth ID="5">The fourth element</Fourth>
+      </Other>
+   </Some>
+   <!-- java.lang.String -->
+   <Fifth ID="6">The fifth element</Fifth>
+   <!-- java.lang.String -->
+   <Sixth ID="7">The sixth element</Sixth>
+   <Group>
+      <Example b="This is b" c="This is c"/>
+      <Blah>
+         <!-- java.lang.String -->
+         <Eight ID="8">The eight element</Eight>
+      </Blah>
+      <!-- java.lang.String -->
+      <Seventh ID="9">The seventh element</Seventh>
+   </Group>
+   <!-- java.lang.String -->
+   <Ninth ID="10">The ninth element</Ninth>
+</ExampleAssembledType>>>>>> ELEMENT=[element ExampleAssembledType]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathStructureTest$ExampleAssembledType]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+------------- Standard Error -----------------
+<ExampleAssembledType f="This is f" g="This is g">
+   <Some>
+      <Path a="This is a" d="This is d" e="This is e" h="This is h"/>
+      <Other>
+         <Path>
+            <First>The first element</First>
+            <Second>The second element</Second>
+            <Third>The third element</Third>
+            <Tenth>The tenth element</Tenth>
+         </Path>
+         <Fourth>The fourth element</Fourth>
+      </Other>
+   </Some>
+   <Fifth>The fifth element</Fifth>
+   <Sixth>The sixth element</Sixth>
+   <Group>
+      <Example b="This is b" c="This is c"/>
+      <Blah>
+         <Eight>The eight element</Eight>
+      </Blah>
+      <Seventh>The seventh element</Seventh>
+   </Group>
+   <Ninth>The ninth element</Ninth>
+</ExampleAssembledType>------------- ---------------- ---------------
+
+Testcase: testOrder took 0.065 sec
+Testcase: testSerialization took 0.104 sec
+Testcase: testDirectory took 0 sec

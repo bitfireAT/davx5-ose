@@ -1,0 +1,9 @@
+Testsuite: org.simpleframework.xml.core.Test1Test
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.09 sec
+------------- Standard Output ---------------
+<test1 iri="a">
+   <resource iri="b"/>
+</test1>
+------------- ---------------- ---------------
+
+Testcase: testParameterMismatch took 0.088 sec

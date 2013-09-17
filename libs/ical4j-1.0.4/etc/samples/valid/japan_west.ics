@@ -1,0 +1,609 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+X-WR-CALNAME:Japan Events - West
+PRODID:-//Matthew Bystedt\, apike.ca//Calendar 0.2//EN
+X-WR-TIMEZONE:Japan
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALDESC:Information about events in cities around Hiroshima.\n\nPleas
+ e check the official website of the events shown here as events may be can
+ celed and dates changed without warning.\n\nHiroshima area and more\nhttp:
+ //apike.ca/japan.html\n\nMatthew Bystedt\nmb_pike@hotmail.com
+BEGIN:VTIMEZONE
+TZID:Japan
+BEGIN:STANDARD
+TZOFFSETFROM:+0900
+TZOFFSETTO:+0900
+TZNAME:JST
+DTSTART:19700101T000000
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:20060503-17@apike.ca
+SUMMARY:Hiroshima Flower Festival
+LOCATION:Hiroshima
+DESCRIPTION:A three day event from May 3rd to 5th celebrated by around 1.4
+  million people. It takes place around Heiwa Odori Avenue and numerous eve
+ nts like parades and concerts occur during the festival.
+URL;VALUE=URI:http://apike.ca/japan_hiroshima.html
+DTSTAMP:20060503T000500Z
+DTSTART;TZID=Japan;VALUE=DATE:20060503
+DTEND;TZID=Japan;VALUE=DATE:20060506
+END:VEVENT
+BEGIN:VEVENT
+UID:20050503-17@apike.ca
+SUMMARY:Hiroshima Flower Festival
+LOCATION:Hiroshima
+DESCRIPTION:A three day event from May 3rd to 5th celebrated by around 1.4
+  million people. It takes place around Heiwa Odori Avenue and numerous eve
+ nts like parades and concerts occur during the festival.
+URL;VALUE=URI:http://apike.ca/japan_hiroshima.html
+DTSTAMP:20050503T000500Z
+DTSTART;TZID=Japan;VALUE=DATE:20050503
+DTEND;TZID=Japan;VALUE=DATE:20050506
+END:VEVENT
+BEGIN:VEVENT
+UID:20060203-5@apike.ca
+SUMMARY:Setsubun Ceremony
+LOCATION:Onomichi (Saikokuji Temple)
+DESCRIPTION:People born in the same sign as the current chinese astrologic
+ al year throw out soybeans from the temple and yell\, \"Oni ha Soto\, Fuku
+  ha Uchi\" or \"Demons out\, good fortune out.\" Held at Saikokuji Temple.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20060203T000200Z
+DTSTART;TZID=Japan;VALUE=DATE:20060203
+DTEND;TZID=Japan;VALUE=DATE:20060204
+END:VEVENT
+BEGIN:VEVENT
+UID:20050203-5@apike.ca
+SUMMARY:Setsubun Ceremony
+LOCATION:Onomichi (Saikokuji Temple)
+DESCRIPTION:People born in the same sign as the current chinese astrologic
+ al year throw out soybeans from the temple and yell\, \"Oni ha Soto\, Fuku
+  ha Uchi\" or \"Demons out\, good fortune out.\" Held at Saikokuji Temple.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20050203T000200Z
+DTSTART;TZID=Japan;VALUE=DATE:20050203
+DTEND;TZID=Japan;VALUE=DATE:20050204
+END:VEVENT
+BEGIN:VEVENT
+UID:20060108-9@apike.ca
+SUMMARY:Ceremony Of The Holy Flame
+LOCATION:Onomichi (Saikokuji Temple)
+DESCRIPTION:A fire walking ceremony to pray for good health\, business for
+ tune and peaceful households. After the fires die down\, participants walk
+  across and chant a holy sutra. Held at Saikokuji Temple.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20060108T000100Z
+DTSTART;TZID=Japan;VALUE=DATE:20060108
+DTEND;TZID=Japan;VALUE=DATE:20060109
+END:VEVENT
+BEGIN:VEVENT
+UID:20050108-9@apike.ca
+SUMMARY:Ceremony Of The Holy Flame
+LOCATION:Onomichi (Saikokuji Temple)
+DESCRIPTION:A fire walking ceremony to pray for good health\, business for
+ tune and peaceful households. After the fires die down\, participants walk
+  across and chant a holy sutra. Held at Saikokuji Temple.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20050108T000100Z
+DTSTART;TZID=Japan;VALUE=DATE:20050108
+DTEND;TZID=Japan;VALUE=DATE:20050109
+END:VEVENT
+BEGIN:VEVENT
+UID:20060115-10@apike.ca
+SUMMARY:Sanba Shinmei Festival (Tondo Festival)
+LOCATION:Onomichi (Sanba Elementary School)
+DESCRIPTION:Men and boys create handmade Tondos made of straw and bamboo a
+ nd throw them into a fire to see off the deities who came to visit for the
+  New Year.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20060115T000100Z
+DTSTART;TZID=Japan;VALUE=DATE:20060115
+DTEND;TZID=Japan;VALUE=DATE:20060116
+END:VEVENT
+BEGIN:VEVENT
+UID:20050115-10@apike.ca
+SUMMARY:Sanba Shinmei Festival (Tondo Festival)
+LOCATION:Onomichi (Sanba Elementary School)
+DESCRIPTION:Men and boys create handmade Tondos made of straw and bamboo a
+ nd throw them into a fire to see off the deities who came to visit for the
+  New Year.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20050115T000100Z
+DTSTART;TZID=Japan;VALUE=DATE:20050115
+DTEND;TZID=Japan;VALUE=DATE:20050116
+END:VEVENT
+BEGIN:VEVENT
+UID:20050818-6@apike.ca
+SUMMARY:Yoshiwa Taiko Dance
+LOCATION:Onomichi (Jodoji Temple)
+DESCRIPTION:Celebration of Takauji Ashikaga victory and formation of the M
+ uromachi Bakufu. Held at the Jodoji Temple. Proclaimed as a intangible fol
+ klore cultural asset by Hiroshima Prefecture.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20050818T000800Z
+DTSTART;TZID=Japan;VALUE=DATE:20050818
+DTEND;TZID=Japan;VALUE=DATE:20050819
+END:VEVENT
+BEGIN:VEVENT
+UID:20061111-11@apike.ca
+SUMMARY:Betchya Festival
+LOCATION:Onomichi (Kibitsu-hiko Shrine)
+DESCRIPTION:A festival started in the Edo era. Young men in costume as dem
+ ons terrorize young children who\, if they are lucky enough to be beaten w
+ ith a bamboo stick\, are then protected from illness for the rest of the y
+ ear. Held at Kibitsu-hiko Shrine.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20061111T001100Z
+DTSTART;TZID=Japan;VALUE=DATE:20061111
+DTEND;TZID=Japan;VALUE=DATE:20061112
+END:VEVENT
+BEGIN:VEVENT
+UID:20051111-11@apike.ca
+SUMMARY:Betchya Festival
+LOCATION:Onomichi (Kibitsu-hiko Shrine)
+DESCRIPTION:A festival started in the Edo era. Young men in costume as dem
+ ons terrorize young children who\, if they are lucky enough to be beaten w
+ ith a bamboo stick\, are then protected from illness for the rest of the y
+ ear. Held at Kibitsu-hiko Shrine.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20051111T001100Z
+DTSTART;TZID=Japan;VALUE=DATE:20051111
+DTEND;TZID=Japan;VALUE=DATE:20051112
+END:VEVENT
+BEGIN:VEVENT
+UID:20061115-13@apike.ca
+SUMMARY:Hiwatari-Shinji
+LOCATION:Miyajima (Diasho-in Temple)
+DESCRIPTION:Famous fire walking ceremony for Junrei (pilgrims).
+URL;VALUE=URI:http://apike.ca/japan_miyajima.html
+DTSTAMP:20061115T001100Z
+DTSTART;TZID=Japan;VALUE=DATE:20061115
+DTEND;TZID=Japan;VALUE=DATE:20061116
+END:VEVENT
+BEGIN:VEVENT
+UID:20051115-13@apike.ca
+SUMMARY:Hiwatari-Shinji
+LOCATION:Miyajima (Diasho-in Temple)
+DESCRIPTION:Famous fire walking ceremony for Junrei (pilgrims).
+URL;VALUE=URI:http://apike.ca/japan_miyajima.html
+DTSTAMP:20051115T001100Z
+DTSTART;TZID=Japan;VALUE=DATE:20051115
+DTEND;TZID=Japan;VALUE=DATE:20051116
+END:VEVENT
+BEGIN:VEVENT
+UID:20060415-12@apike.ca
+SUMMARY:Hiwatari-Shinji
+LOCATION:Miyajima (Diasho-in Temple)
+DESCRIPTION:Famous fire walking ceremony for Junrei (pilgrims).
+URL;VALUE=URI:http://apike.ca/japan_miyajima.html
+DTSTAMP:20060415T000400Z
+DTSTART;TZID=Japan;VALUE=DATE:20060415
+DTEND;TZID=Japan;VALUE=DATE:20060416
+END:VEVENT
+BEGIN:VEVENT
+UID:20050415-12@apike.ca
+SUMMARY:Hiwatari-Shinji
+LOCATION:Miyajima (Diasho-in Temple)
+DESCRIPTION:Famous fire walking ceremony for Junrei (pilgrims).
+URL;VALUE=URI:http://apike.ca/japan_miyajima.html
+DTSTAMP:20050415T000400Z
+DTSTART;TZID=Japan;VALUE=DATE:20050415
+DTEND;TZID=Japan;VALUE=DATE:20050416
+END:VEVENT
+BEGIN:VEVENT
+UID:20060814-14@apike.ca
+SUMMARY:Miyajima Fireworks
+LOCATION:Miyajima (Itsukushima Shrine)
+DESCRIPTION:The largest fireworks display in western Japan is launched in 
+ front of Itsukushima Shrine.
+URL;VALUE=URI:http://apike.ca/japan_miyajima.html
+DTSTAMP:20060814T000800Z
+DTSTART;TZID=Japan;VALUE=DATE:20060814
+DTEND;TZID=Japan;VALUE=DATE:20060815
+END:VEVENT
+BEGIN:VEVENT
+UID:20050814-14@apike.ca
+SUMMARY:Miyajima Fireworks
+LOCATION:Miyajima (Itsukushima Shrine)
+DESCRIPTION:The largest fireworks display in western Japan is launched in 
+ front of Itsukushima Shrine.
+URL;VALUE=URI:http://apike.ca/japan_miyajima.html
+DTSTAMP:20050814T000800Z
+DTSTART;TZID=Japan;VALUE=DATE:20050814
+DTEND;TZID=Japan;VALUE=DATE:20050815
+END:VEVENT
+BEGIN:VEVENT
+UID:20061231-15@apike.ca
+SUMMARY:Chinkasai
+LOCATION:Miyajima (Itsukushima Shrine)
+DESCRIPTION:Large pine wood bundles are set alight as part of a festival t
+ o welcome the new year.
+URL;VALUE=URI:http://apike.ca/japan_miyajima.html
+DTSTAMP:20061231T001200Z
+DTSTART;TZID=Japan;VALUE=DATE:20061231
+DTEND;TZID=Japan;VALUE=DATE:20070101
+END:VEVENT
+BEGIN:VEVENT
+UID:20051231-15@apike.ca
+SUMMARY:Chinkasai
+LOCATION:Miyajima (Itsukushima Shrine)
+DESCRIPTION:Large pine wood bundles are set alight as part of a festival t
+ o welcome the new year.
+URL;VALUE=URI:http://apike.ca/japan_miyajima.html
+DTSTAMP:20051231T001200Z
+DTSTART;TZID=Japan;VALUE=DATE:20051231
+DTEND;TZID=Japan;VALUE=DATE:20060101
+END:VEVENT
+BEGIN:VEVENT
+UID:20060422-18@apike.ca
+SUMMARY:Onomichi Minato Port Festival
+LOCATION:Onomichi (Various Places)
+DESCRIPTION:Taking place in front of the station\, in the shopping arcade 
+ and throughout town is a celebration of the start of construction of Onomi
+ chi harbor's in 1740 with the help of Kakuzaemon Hirayama. Parades and oth
+ er events.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20060422T000400Z
+DTSTART;TZID=Japan;VALUE=DATE:20060422
+DTEND;TZID=Japan;VALUE=DATE:20060424
+END:VEVENT
+BEGIN:VEVENT
+UID:20050423-18@apike.ca
+SUMMARY:Onomichi Minato Port Festival
+LOCATION:Onomichi (Various Places)
+DESCRIPTION:Taking place in front of the station\, in the shopping arcade 
+ and throughout town is a celebration of the start of construction of Onomi
+ chi harbor's in 1740 with the help of Kakuzaemon Hirayama. Parades and oth
+ er events.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20050423T000400Z
+DTSTART;TZID=Japan;VALUE=DATE:20050423
+DTEND;TZID=Japan;VALUE=DATE:20050425
+END:VEVENT
+BEGIN:VEVENT
+UID:20060520-19@apike.ca
+SUMMARY:Mountain King (Sanou) Festival
+LOCATION:Onomichi (Yamawaki Shrine)
+DESCRIPTION:Held at the Yamawaki Shrine is a festival to greet summer. Tra
+ ditionally in Onomichi\, Yukatas (a light cotton kimono) are worn from thi
+ s day on.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20060520T000500Z
+DTSTART;TZID=Japan;VALUE=DATE:20060520
+DTEND;TZID=Japan;VALUE=DATE:20060521
+END:VEVENT
+BEGIN:VEVENT
+UID:20050521-19@apike.ca
+SUMMARY:Mountain King (Sanou) Festival
+LOCATION:Onomichi (Yamawaki Shrine)
+DESCRIPTION:Held at the Yamawaki Shrine is a festival to greet summer. Tra
+ ditionally in Onomichi\, Yukatas (a light cotton kimono) are worn from thi
+ s day on.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20050521T000500Z
+DTSTART;TZID=Japan;VALUE=DATE:20050521
+DTEND;TZID=Japan;VALUE=DATE:20050522
+END:VEVENT
+BEGIN:VEVENT
+UID:20060805-20@apike.ca
+SUMMARY:Onomichi Sumiyoshi Fireworks Festival
+LOCATION:Onomichi (Onomichi Harbor)
+DESCRIPTION:Thousands of fireworks exploding over the harbor. Sponsored by
+  Sumiyoshi Shrine and set off by the Edo Era established Hamadonya Group.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20060805T000800Z
+DTSTART;TZID=Japan;VALUE=DATE:20060805
+DTEND;TZID=Japan;VALUE=DATE:20060806
+END:VEVENT
+BEGIN:VEVENT
+UID:20050806-20@apike.ca
+SUMMARY:Onomichi Sumiyoshi Fireworks Festival
+LOCATION:Onomichi (Onomichi Harbor)
+DESCRIPTION:Thousands of fireworks exploding over the harbor. Sponsored by
+  Sumiyoshi Shrine and set off by the Edo Era established Hamadonya Group.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20050806T000800Z
+DTSTART;TZID=Japan;VALUE=DATE:20050806
+DTEND;TZID=Japan;VALUE=DATE:20050807
+END:VEVENT
+BEGIN:VEVENT
+UID:20061021-21@apike.ca
+SUMMARY:Rice Cake Making Ritual
+LOCATION:Onomichi ( Sanba-Ushitora Shrine)
+DESCRIPTION:Wearing only a modest loincloth\, men pound rice into rice cak
+ es which are used as an offering to the gods for a plentiful harvest. Held
+  at Sanba-Ushitora Shrine.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20061021T001000Z
+DTSTART;TZID=Japan;VALUE=DATE:20061021
+DTEND;TZID=Japan;VALUE=DATE:20061022
+END:VEVENT
+BEGIN:VEVENT
+UID:20051015-21@apike.ca
+SUMMARY:Rice Cake Making Ritual
+LOCATION:Onomichi ( Sanba-Ushitora Shrine)
+DESCRIPTION:Wearing only a modest loincloth\, men pound rice into rice cak
+ es which are used as an offering to the gods for a plentiful harvest. Held
+  at Sanba-Ushitora Shrine.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20051015T001000Z
+DTSTART;TZID=Japan;VALUE=DATE:20051015
+DTEND;TZID=Japan;VALUE=DATE:20051016
+END:VEVENT
+BEGIN:VEVENT
+UID:20061015-23@apike.ca
+SUMMARY:Kinosho Kane Taiko Dance
+LOCATION:Onomichi (Kinosho Heitaka Hachiman Shrine)
+DESCRIPTION:A traditional dance performed with taiko drum music in traditi
+ onal costume for the shrine's gods. Held at Kinosho Heitaka Hachiman Shrin
+ e.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20061015T001000Z
+DTSTART;TZID=Japan;VALUE=DATE:20061015
+DTEND;TZID=Japan;VALUE=DATE:20061016
+END:VEVENT
+BEGIN:VEVENT
+UID:20051016-23@apike.ca
+SUMMARY:Kinosho Kane Taiko Dance
+LOCATION:Onomichi (Kinosho Heitaka Hachiman Shrine)
+DESCRIPTION:A traditional dance performed with taiko drum music in traditi
+ onal costume for the shrine's gods. Held at Kinosho Heitaka Hachiman Shrin
+ e.
+URL;VALUE=URI:http://apike.ca/japan_onomichi.html
+DTSTAMP:20051016T001000Z
+DTSTART;TZID=Japan;VALUE=DATE:20051016
+DTEND;TZID=Japan;VALUE=DATE:20051017
+END:VEVENT
+BEGIN:VEVENT
+UID:20060211-25@apike.ca
+SUMMARY:Miyajima Oyster Festival
+LOCATION:Miyajima (Miyajima Port)
+DESCRIPTION:Locally farmed oysters are served. The best part? They're free
+ !
+URL;VALUE=URI:http://apike.ca/japan_miyajima.html
+DTSTAMP:20060211T000200Z
+DTSTART;TZID=Japan;VALUE=DATE:20060211
+DTEND;TZID=Japan;VALUE=DATE:20060212
+END:VEVENT
+BEGIN:VEVENT
+UID:20050211-25@apike.ca
+SUMMARY:Miyajima Oyster Festival
+LOCATION:Miyajima (Miyajima Port)
+DESCRIPTION:Locally farmed oysters are served. The best part? They're free
+ !
+URL;VALUE=URI:http://apike.ca/japan_miyajima.html
+DTSTAMP:20050211T000200Z
+DTSTART;TZID=Japan;VALUE=DATE:20050211
+DTEND;TZID=Japan;VALUE=DATE:20050212
+END:VEVENT
+BEGIN:VEVENT
+UID:20050827-40@apike.ca
+SUMMARY:Takehara Summer Festival Fireworks
+LOCATION:Takehara (10 minute walk from Ono Station)
+DESCRIPTION:Around 4\,200 fireworks are planned to be fired this year! Thi
+ s event takes place east of Takehara City in Ono Town.
+URL;VALUE=URI:http://apike.ca/japan_takehara.html
+DTSTAMP:20050827T000800Z
+DTSTART;TZID=Japan;VALUE=DATE:20050827
+DTEND;TZID=Japan;VALUE=DATE:20050828
+END:VEVENT
+BEGIN:VEVENT
+UID:20060806-41@apike.ca
+SUMMARY:Peace Memorial Ceremony
+LOCATION:Hiroshima (Peace Memorial Park)
+DESCRIPTION:\n\nHiroshima City Hall\nshimin@city.hiroshima.jp
+URL;VALUE=URI:http://www.city.hiroshima.jp/shimin/shimin/shikiten/shikiten
+ -e.html
+DTSTAMP:20060806T080800Z
+DTSTART;TZID=Japan:20060806T080000
+DTEND;TZID=Japan:20060806T084500
+END:VEVENT
+BEGIN:VEVENT
+UID:20050806-41@apike.ca
+SUMMARY:Peace Memorial Ceremony
+LOCATION:Hiroshima (Peace Memorial Park)
+DESCRIPTION:\n\nHiroshima City Hall\nshimin@city.hiroshima.jp
+URL;VALUE=URI:http://www.city.hiroshima.jp/shimin/shimin/shikiten/shikiten
+ -e.html
+DTSTAMP:20050806T080800Z
+DTSTART;TZID=Japan:20050806T080000
+DTEND;TZID=Japan:20050806T084500
+END:VEVENT
+BEGIN:VEVENT
+UID:20050508-42@apike.ca
+SUMMARY:Yasumi-yama Marathon
+LOCATION:Kure City (Ondo Lodge-shita)
+DESCRIPTION:A 14.5 km run up Mount Yasumi and across the Ondo bridge. Ther
+ e is a 2000 yen entry fee which includes an onsen (hot spring bath) ticket
+ .\n\nOndo Lodge-shita is a 30 min. ride on bus 3 from Kure JR Station.\n\n
+ Kure Soyukai\n0823-22-6489
+URL;VALUE=URI:http://apike.ca/japan_kure.html
+DTSTAMP:20050508T000500Z
+DTSTART;TZID=Japan;VALUE=DATE:20050508
+DTEND;TZID=Japan;VALUE=DATE:20050509
+END:VEVENT
+BEGIN:VEVENT
+UID:20050429-43@apike.ca
+SUMMARY:Kintai-kyo Bridge Festival
+LOCATION:Iwakuni (Kintai-kyo Bridge)
+DESCRIPTION:The bridge festival's highlight is a parade across the bridge 
+ in traditional costume. There are stalls selling the usual festival foods 
+ and goods.\n\nIwakuni Tourist Department\n0827-41-1477
+URL;VALUE=URI:
+DTSTAMP:20050429T000400Z
+DTSTART;TZID=Japan;VALUE=DATE:20050429
+DTEND;TZID=Japan;VALUE=DATE:20050430
+END:VEVENT
+BEGIN:VEVENT
+UID:20050503-44@apike.ca
+SUMMARY:Mount Noro Opening
+LOCATION:Kure City (Kawajiri)
+DESCRIPTION:The official opening of Mount Noro for the the climbing season
+  is celebrated with a festival on top of the mountain.\n\nKawajiri is east
+  of Kure City on the Kure train line. A free bus will be available from th
+ e station up the mountain.
+URL;VALUE=URI:http://apike.ca/japan_kawajiri.html
+DTSTAMP:20050503T120500Z
+DTSTART;TZID=Japan;VALUE=DATE:20050503
+DTEND;TZID=Japan;VALUE=DATE:20050504
+END:VEVENT
+BEGIN:VEVENT
+UID:20060303-45@apike.ca
+SUMMARY:Doll's Festival (Hina Matsuri)
+LOCATION:Japan
+DESCRIPTION:
+URL;VALUE=URI:http://apike.ca/japan.html
+DTSTAMP:20060303T120300Z
+DTSTART;TZID=Japan;VALUE=DATE:20060303
+DTEND;TZID=Japan;VALUE=DATE:20060304
+END:VEVENT
+BEGIN:VEVENT
+UID:20050303-45@apike.ca
+SUMMARY:Doll's Festival (Hina Matsuri)
+LOCATION:Japan
+DESCRIPTION:
+URL;VALUE=URI:http://apike.ca/japan.html
+DTSTAMP:20050303T120300Z
+DTSTART;TZID=Japan;VALUE=DATE:20050303
+DTEND;TZID=Japan;VALUE=DATE:20050304
+END:VEVENT
+BEGIN:VEVENT
+UID:20060807-47@apike.ca
+SUMMARY:Star Festival (Tanabata)
+LOCATION:Japan
+DESCRIPTION:The two stars\, Altair and Vega\, are united on this night acc
+ ording to a chinese legend. People write a wish and tie them to bamboo tre
+ es. This festival occurs in July or August.\n\nThe 7th day in the 7th mont
+ h of the lunar calendar falls in either August and July. As a result\, som
+ e parts of Japan celebrate Tanabata in July and others in August on the 7t
+ h day.
+URL;VALUE=URI:http://apike.ca/japan.html
+DTSTAMP:20060807T120800Z
+DTSTART;TZID=Japan;VALUE=DATE:20060807
+DTEND;TZID=Japan;VALUE=DATE:20060808
+END:VEVENT
+BEGIN:VEVENT
+UID:20050807-47@apike.ca
+SUMMARY:Star Festival (Tanabata)
+LOCATION:Japan
+DESCRIPTION:The two stars\, Altair and Vega\, are united on this night acc
+ ording to a chinese legend. People write a wish and tie them to bamboo tre
+ es. This festival occurs in July or August.\n\nThe 7th day in the 7th mont
+ h of the lunar calendar falls in either August and July. As a result\, som
+ e parts of Japan celebrate Tanabata in July and others in August on the 7t
+ h day.
+URL;VALUE=URI:http://apike.ca/japan.html
+DTSTAMP:20050807T120800Z
+DTSTART;TZID=Japan;VALUE=DATE:20050807
+DTEND;TZID=Japan;VALUE=DATE:20050808
+END:VEVENT
+BEGIN:VEVENT
+UID:20060707-46@apike.ca
+SUMMARY:Star Festival (Tanabata)
+LOCATION:Japan
+DESCRIPTION:The two stars\, Altair and Vega\, are united on this night acc
+ ording to a chinese legend. People write a wish and tie them to bamboo tre
+ es. This festival occurs in July or August.\n\nThe 7th day in the 7th mont
+ h of the lunar calendar falls in either August and July. As a result\, som
+ e parts of Japan celebrate Tanabata in July and others in August on the 7t
+ h day.
+URL;VALUE=URI:http://apike.ca/japan.html
+DTSTAMP:20060707T120700Z
+DTSTART;TZID=Japan;VALUE=DATE:20060707
+DTEND;TZID=Japan;VALUE=DATE:20060708
+END:VEVENT
+BEGIN:VEVENT
+UID:20050707-46@apike.ca
+SUMMARY:Star Festival (Tanabata)
+LOCATION:Japan
+DESCRIPTION:The two stars\, Altair and Vega\, are united on this night acc
+ ording to a chinese legend. People write a wish and tie them to bamboo tre
+ es. This festival occurs in July or August.\n\nThe 7th day in the 7th mont
+ h of the lunar calendar falls in either August and July. As a result\, som
+ e parts of Japan celebrate Tanabata in July and others in August on the 7t
+ h day.
+URL;VALUE=URI:http://apike.ca/japan.html
+DTSTAMP:20050707T120700Z
+DTSTART;TZID=Japan;VALUE=DATE:20050707
+DTEND;TZID=Japan;VALUE=DATE:20050708
+END:VEVENT
+BEGIN:VEVENT
+UID:20060813-48@apike.ca
+SUMMARY:Obon
+LOCATION:Japan
+DESCRIPTION:People travel to their ancestors graves to pay their respects.
+  The followed obon traditions vary throughout Japan.\n\nIn most regions\, 
+ there is an obon dori (obon dance)\, graves are visited and food offerings
+  are made. Lanterns are used to guide the spirits back to their world.\n\n
+ Obon is celebrated in July in some parts of Japan.  The 13th day of the 7t
+ h month using the lunar calendar sometimes falls in July.
+URL;VALUE=URI:http://apike.ca/japan.html
+DTSTAMP:20060813T120800Z
+DTSTART;TZID=Japan;VALUE=DATE:20060813
+DTEND;TZID=Japan;VALUE=DATE:20060816
+END:VEVENT
+BEGIN:VEVENT
+UID:20050813-48@apike.ca
+SUMMARY:Obon
+LOCATION:Japan
+DESCRIPTION:People travel to their ancestors graves to pay their respects.
+  The followed obon traditions vary throughout Japan.\n\nIn most regions\, 
+ there is an obon dori (obon dance)\, graves are visited and food offerings
+  are made. Lanterns are used to guide the spirits back to their world.\n\n
+ Obon is celebrated in July in some parts of Japan.  The 13th day of the 7t
+ h month using the lunar calendar sometimes falls in July.
+URL;VALUE=URI:http://apike.ca/japan.html
+DTSTAMP:20050813T120800Z
+DTSTART;TZID=Japan;VALUE=DATE:20050813
+DTEND;TZID=Japan;VALUE=DATE:20050816
+END:VEVENT
+BEGIN:VEVENT
+UID:20061115-49@apike.ca
+SUMMARY:Shichigosan (7-5-3)
+LOCATION:Japan
+DESCRIPTION:This festival is for children who reach these auspicious ages.
+ \n\nChildren are taken to a shrine dressed in kimonos and pray for good he
+ alth and growth. Many people will go on the closest weekend to November 15
+ th as it is not a holiday. 
+URL;VALUE=URI:http://apike.ca/japan.html
+DTSTAMP:20061115T121100Z
+DTSTART;TZID=Japan;VALUE=DATE:20061115
+DTEND;TZID=Japan;VALUE=DATE:20061116
+END:VEVENT
+BEGIN:VEVENT
+UID:20051115-49@apike.ca
+SUMMARY:Shichigosan (7-5-3)
+LOCATION:Japan
+DESCRIPTION:This festival is for children who reach these auspicious ages.
+ \n\nChildren are taken to a shrine dressed in kimonos and pray for good he
+ alth and growth. Many people will go on the closest weekend to November 15
+ th as it is not a holiday. 
+URL;VALUE=URI:http://apike.ca/japan.html
+DTSTAMP:20051115T121100Z
+DTSTART;TZID=Japan;VALUE=DATE:20051115
+DTEND;TZID=Japan;VALUE=DATE:20051116
+END:VEVENT
+BEGIN:VEVENT
+UID:20050320-50@apike.ca
+SUMMARY:Kure Amalgamation Day
+LOCATION:Kure City (6 towns)
+DESCRIPTION:The towns of Ondo\, Kurahashi\, Kamigari\, Yasuura\, Toyohama 
+ and Toyo are all becoming part of Kure City.
+URL;VALUE=URI:http://apike.ca/japan_kure.html
+DTSTAMP:20050320T120300Z
+DTSTART;TZID=Japan;VALUE=DATE:20050320
+DTEND;TZID=Japan;VALUE=DATE:20050321
+END:VEVENT
+BEGIN:VEVENT
+UID:20050423-51@apike.ca
+SUMMARY:Yamoto Museum Opening
+LOCATION:Kure City
+DESCRIPTION:
+URL;VALUE=URI:http://apike.ca/japan_kure.html
+DTSTAMP:20050423T120400Z
+DTSTART;TZID=Japan;VALUE=DATE:20050423
+DTEND;TZID=Japan;VALUE=DATE:20050424
+END:VEVENT
+END:VCALENDAR

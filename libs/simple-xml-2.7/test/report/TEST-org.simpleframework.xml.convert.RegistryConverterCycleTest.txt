@@ -1,0 +1,19 @@
+Testsuite: org.simpleframework.xml.convert.RegistryConverterCycleTest
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.092 sec
+------------- Standard Output ---------------
+<Club id="0">
+   <Address id="1">
+      <Address id="2">An Address</Address>
+   </Address>
+   <Members class="java.util.ArrayList" id="3">
+      <Person id="4">
+         <PersonDelegate id="5">
+            <Address reference="1"/>
+            <Name id="6">Niall</Name>
+            <Age id="7">30</Age>
+         </PersonDelegate>
+      </Person>
+   </Members>
+</Club>------------- ---------------- ---------------
+
+Testcase: testCycle took 0.09 sec

@@ -1,0 +1,36 @@
+Testsuite: org.simpleframework.xml.core.PathWithTextAndElementTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.129 sec
+------------- Standard Output ---------------
+<pathWithTextAndElementExample>
+   <some>
+      <path name="A">T</path>
+      <name>E</name>
+   </some>
+</pathWithTextAndElementExample><pathWithTextAndElementExample>
+   <some>
+      <path name="A">T</path>
+      <name>E</name>
+   </some>
+</pathWithTextAndElementExample>
+<path-with-text-and-element-example ID="0">
+   <some>
+      <path name="A">T</path>
+      <!-- java.lang.String -->
+      <name ID="1">E</name>
+   </some>
+</path-with-text-and-element-example>>>>>> ELEMENT=[element path-with-text-and-element-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathWithTextAndElementTest$PathWithTextAndElementExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<PathWithTextAndElementExample ID="0">
+   <Some>
+      <Path name="A">T</Path>
+      <!-- java.lang.String -->
+      <Name ID="1">E</Name>
+   </Some>
+</PathWithTextAndElementExample>>>>>> ELEMENT=[element PathWithTextAndElementExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathWithTextAndElementTest$PathWithTextAndElementExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testTextWithPath took 0.126 sec
+Testcase: testDirectory took 0 sec

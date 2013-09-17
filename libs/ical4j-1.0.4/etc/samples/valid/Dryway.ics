@@ -1,0 +1,331 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+X-WR-CALNAME:Dryway
+PRODID:-//Apple Computer\, Inc//iCal 1.5//EN
+X-WR-RELCALID:9618E652-9A12-11D9-B9F6-003065D7F79A-CALP
+X-WR-TIMEZONE:US/Eastern
+CALSCALE:GREGORIAN
+BEGIN:VTIMEZONE
+TZID:US/Eastern
+LAST-MODIFIED:20050420T000902Z
+BEGIN:DAYLIGHT
+DTSTART:20050403T070000
+TZOFFSETTO:-0400
+TZOFFSETFROM:+0000
+TZNAME:EDT
+END:DAYLIGHT
+BEGIN:STANDARD
+DTSTART:20051030T020000
+TZOFFSETTO:-0500
+TZOFFSETFROM:-0400
+TZNAME:EST
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20060402T010000
+TZOFFSETTO:-0400
+TZOFFSETFROM:-0500
+TZNAME:EDT
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20050321T140804Z
+UID:9529B04C-9A10-11D9-B9F6-003065D7F79A-RID
+DTSTART;TZID=US/Eastern:20050528T100000
+SUMMARY:Dry Way
+DTEND;TZID=US/Eastern:20050528T150000
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+RRULE:FREQ=DAILY;INTERVAL=1;COUNT=2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050624T100000
+SUMMARY:Dry Way
+UID:CE57543A-9A5D-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T230707Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050612T100000
+SUMMARY:Dryway
+UID:DF840B5C-9A5D-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050322T020207Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050618T100000
+SUMMARY:Dryway
+UID:E9403F63-9A5D-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050322T020156Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050619T100000
+SUMMARY:Dryway
+UID:EF7BAD31-9A5D-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050322T020211Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050625T100000
+SUMMARY:Dryway
+UID:F34776C8-9A5D-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050322T020201Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050708T100000
+SUMMARY:Dry Way
+UID:F4910F82-9A5D-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T230737Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050626T100000
+SUMMARY:Dryway
+UID:F8A5E477-9A5D-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050322T020215Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050702T100000
+SUMMARY:Dryway
+UID:FA4FEEB4-9A5D-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050322T020223Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050703T100000
+SUMMARY:Dryway
+UID:02390F02-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050322T020220Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050710T100000
+SUMMARY:Dry Way
+UID:052543DA-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T230741Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050807T100000
+SUMMARY:Dry Way
+UID:088A8B2D-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T230902Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050717T100000
+SUMMARY:Dry Way
+UID:0AE6CC6A-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T230748Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050729T100000
+SUMMARY:Dry Way
+UID:0FBDCD3D-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T230756Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050730T100000
+SUMMARY:Dry Way
+UID:119B40AD-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T230759Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050731T100000
+SUMMARY:Dry Way
+UID:1AD30FA1-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T230815Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050806T100000
+SUMMARY:Dry Way
+UID:33CAF8EE-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T230857Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050812T100000
+SUMMARY:Dry Way
+UID:377F37E6-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T230906Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050814T100000
+SUMMARY:Dry Way
+UID:3B8484C7-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T230915Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050820T100000
+SUMMARY:Dry Way
+UID:3FB197BA-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T230919Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050821T100000
+SUMMARY:Dry Way
+UID:417A378D-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T230922Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050904T100000
+SUMMARY:Dryway
+UID:439E54E7-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050322T015827Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050826T100000
+SUMMARY:Dry Way
+UID:468221CC-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T230928Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050819T100000
+SUMMARY:Dry Way
+UID:48966612-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050322T020128Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050828T100000
+SUMMARY:Dry Way
+UID:4B4CE621-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T230936Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050903T100000
+SUMMARY:Dryway
+UID:4EB4963F-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050322T015805Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050917T100000
+SUMMARY:Dryway
+UID:527DD9D5-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050322T015833Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20051009T100000
+SUMMARY:Dry Way
+UID:544182EE-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T231026Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20050918T100000
+SUMMARY:Dryway
+UID:56D4C4F4-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050322T015840Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=US/Eastern:20051008T100000
+SUMMARY:Dry Way
+UID:670DB0B6-9A5E-11D9-ACB4-003065D7F79A-RID
+DTSTAMP:20050321T231023Z
+DESCRIPTION:Friday releases are for four hours and begin at 11 a.m. Satu
+ rday releases last five hours and begin at 10 a.m. Sunday releases are f
+ our hours beginning at 10 a.m. Flows vary from 900-1100 cfs. 
+DURATION:PT5H
+END:VEVENT
+END:VCALENDAR

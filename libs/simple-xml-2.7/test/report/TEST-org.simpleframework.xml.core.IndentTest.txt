@@ -1,0 +1,74 @@
+Testsuite: org.simpleframework.xml.core.IndentTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.123 sec
+------------- Standard Output ---------------
+<contact id="some id">
+     <details>
+          <title>Some Title</title>
+          <mail>email@domain.com</mail>
+          <name>Name Surname</name>
+     </details>
+</contact><contact id="some id">
+     <details>
+          <title>Some Title</title>
+          <mail>email@domain.com</mail>
+          <name>Name Surname</name>
+     </details>
+</contact>
+<contact ID="0" id="some id">
+   <!-- org.simpleframework.xml.core.IndentTest$Details -->
+   <details ID="1">
+      <!-- java.lang.String -->
+      <title ID="2">Some Title</title>
+      <!-- java.lang.String -->
+      <mail ID="3">email@domain.com</mail>
+      <!-- java.lang.String -->
+      <name ID="4">Name Surname</name>
+   </details>
+</contact>>>>>> ELEMENT=[element contact]
+>>>>> TYPE=[class org.simpleframework.xml.core.IndentTest$Contact]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Contact ID="0" id="some id">
+   <!-- org.simpleframework.xml.core.IndentTest$Details -->
+   <Details ID="1">
+      <!-- java.lang.String -->
+      <Title ID="2">Some Title</Title>
+      <!-- java.lang.String -->
+      <Mail ID="3">email@domain.com</Mail>
+      <!-- java.lang.String -->
+      <Name ID="4">Name Surname</Name>
+   </Details>
+</Contact>>>>>> ELEMENT=[element Contact]
+>>>>> TYPE=[class org.simpleframework.xml.core.IndentTest$Contact]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<contact id="some id"><details><title>Some Title</title><mail>email@domain.com</mail><name>Name Surname</name></details></contact><contact id="some id"><details><title>Some Title</title><mail>email@domain.com</mail><name>Name Surname</name></details></contact>
+<contact ID="0" id="some id">
+   <!-- org.simpleframework.xml.core.IndentTest$Details -->
+   <details ID="1">
+      <!-- java.lang.String -->
+      <title ID="2">Some Title</title>
+      <!-- java.lang.String -->
+      <mail ID="3">email@domain.com</mail>
+      <!-- java.lang.String -->
+      <name ID="4">Name Surname</name>
+   </details>
+</contact>>>>>> ELEMENT=[element contact]
+>>>>> TYPE=[class org.simpleframework.xml.core.IndentTest$Contact]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Contact ID="0" id="some id">
+   <!-- org.simpleframework.xml.core.IndentTest$Details -->
+   <Details ID="1">
+      <!-- java.lang.String -->
+      <Title ID="2">Some Title</Title>
+      <!-- java.lang.String -->
+      <Mail ID="3">email@domain.com</Mail>
+      <!-- java.lang.String -->
+      <Name ID="4">Name Surname</Name>
+   </Details>
+</Contact>>>>>> ELEMENT=[element Contact]
+>>>>> TYPE=[class org.simpleframework.xml.core.IndentTest$Contact]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testIndent took 0.106 sec
+Testcase: testNoIndent took 0.014 sec
+Testcase: testDirectory took 0 sec

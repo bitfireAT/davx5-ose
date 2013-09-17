@@ -1,0 +1,23 @@
+Testsuite: org.simpleframework.xml.convert.RegistryConverterTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.098 sec
+------------- Standard Output ---------------
+<OrderItem>
+   <Envelope>
+      <Customer>
+         <Name>Niall</Name>
+         <Address>Some Place</Address>
+      </Customer>
+   </Envelope>
+</OrderItem><PersonProfile>
+   <Person>
+      <PersonDelegate>
+         <Name>Niall</Name>
+         <Age>30</Age>
+      </PersonDelegate>
+   </Person>
+</PersonProfile>
+------------- ---------------- ---------------
+
+Testcase: testConverter took 0.078 sec
+Testcase: testPersonConverter took 0.017 sec
+Testcase: testDirectory took 0.001 sec

@@ -1,0 +1,107 @@
+Testsuite: org.simpleframework.xml.core.PathWithScatteredElementsTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.122 sec
+------------- Standard Output ---------------
+<test version="ONE">
+   <messages>
+      <list>
+         <message>Some example message</message>
+      </list>
+   </messages>
+   <string>Example 1</string>
+   <string>Example 2</string>
+   <string>Example 3</string>
+</test><test version="ONE">
+   <messages>
+      <list>
+         <message>Some example message</message>
+      </list>
+   </messages>
+   <string>Example 1</string>
+   <string>Example 2</string>
+   <string>Example 3</string>
+</test>
+<test ID="0" version="ONE">
+   <messages>
+      <list>
+         <!-- java.lang.String -->
+         <message ID="1">Some example message</message>
+      </list>
+   </messages>
+   <!-- java.lang.String -->
+   <string ID="2">Example 1</string>
+   <!-- java.lang.String -->
+   <string ID="3">Example 2</string>
+   <!-- java.lang.String -->
+   <string ID="4">Example 3</string>
+</test>>>>>> ELEMENT=[element test]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathWithScatteredElementsTest$PathWithInlinePrimitiveList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Test ID="0" version="ONE">
+   <Messages>
+      <List>
+         <!-- java.lang.String -->
+         <Message ID="1">Some example message</Message>
+      </List>
+   </Messages>
+   <!-- java.lang.String -->
+   <String ID="2">Example 1</String>
+   <!-- java.lang.String -->
+   <String ID="3">Example 2</String>
+   <!-- java.lang.String -->
+   <String ID="4">Example 3</String>
+</Test>>>>>> ELEMENT=[element Test]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathWithScatteredElementsTest$PathWithInlinePrimitiveList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+------------- Standard Error -----------------
+<test version="ONE">
+   <messages>
+      <list>
+         <message>Some example message</message>
+      </list>
+   </messages>
+   <string>Example 1</string>
+   <string>Example 2</string>
+   <string>Example 3</string>
+</test>org.simpleframework.xml.core.ElementException: Element 'message' is also a path name in class org.simpleframework.xml.core.PathWithScatteredElementsTest$PathWithConflictInlinePrimitiveList
+	at org.simpleframework.xml.core.TreeModel.validateElements(TreeModel.java:507)
+	at org.simpleframework.xml.core.TreeModel.validate(TreeModel.java:360)
+	at org.simpleframework.xml.core.StructureBuilder.validateModel(StructureBuilder.java:515)
+	at org.simpleframework.xml.core.StructureBuilder.validate(StructureBuilder.java:500)
+	at org.simpleframework.xml.core.ObjectScanner.validate(ObjectScanner.java:419)
+	at org.simpleframework.xml.core.ObjectScanner.scan(ObjectScanner.java:373)
+	at org.simpleframework.xml.core.ObjectScanner.<init>(ObjectScanner.java:82)
+	at org.simpleframework.xml.core.ScannerFactory.getInstance(ScannerFactory.java:81)
+	at org.simpleframework.xml.core.Support.getScanner(Support.java:357)
+	at org.simpleframework.xml.core.Support.getName(Support.java:419)
+	at org.simpleframework.xml.core.Source.getName(Source.java:240)
+	at org.simpleframework.xml.core.Traverser.getName(Traverser.java:284)
+	at org.simpleframework.xml.core.Traverser.write(Traverser.java:203)
+	at org.simpleframework.xml.core.Traverser.write(Traverser.java:186)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1180)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1162)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1140)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1259)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1241)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1222)
+	at org.simpleframework.xml.core.PathWithScatteredElementsTest.testConflictScattering(PathWithScatteredElementsTest.java:101)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:154)
+	at junit.framework.TestCase.runBare(TestCase.java:127)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:118)
+	at junit.framework.TestSuite.runTest(TestSuite.java:208)
+	at junit.framework.TestSuite.run(TestSuite.java:203)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.run(JUnitTestRunner.java:518)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.launch(JUnitTestRunner.java:1052)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.main(JUnitTestRunner.java:906)
+------------- ---------------- ---------------
+
+Testcase: testScattering took 0.118 sec
+Testcase: testConflictScattering took 0.002 sec
+Testcase: testDirectory took 0 sec

@@ -1,0 +1,2224 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+X-WR-CALNAME;VALUE=TEXT:OZ Movies
+PRODID:-//Apple Computer\, Inc//iCal 1.0//EN
+X-WR-RELCALID;VALUE=TEXT:0BDD9936-22D1-11D7-B452-0050E4C50C66
+X-WR-TIMEZONE;VALUE=TEXT:Australia/Sydney
+X-WR-CALDESC:Cinema Release Dates for Australia\, with synopsis\,mini-re
+ views\, and links to trailers. Updated approx weekly Thanks to Steven Ma
+ rshall's website Sammi Cinema (http://www.sammicinema.b0x.com)
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VTIMEZONE
+TZID:Australia/Sydney
+LAST-MODIFIED:20051005T074413Z
+BEGIN:STANDARD
+DTSTART:20060325T160000
+TZOFFSETTO:+1000
+TZOFFSETFROM:+0000
+TZNAME:EST
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20061029T030000
+TZOFFSETTO:+1100
+TZOFFSETFROM:+1000
+TZNAME:EST
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030109
+SUMMARY:Catch Me If You Can - Leonardo DiCaprio stars as Frank Abagnale\
+ , the youngest man to make the FBI's most-wanted list for forgery. Assum
+ ing various identities\, Abagnale passed millions of dollars in bad chec
+ ks. Stars Leonardo DiCaprio\, Tom Hanks\, Christopher Walken\, Jennifer 
+ Garner and Martin Sheen. - Empire rating: 4/5 stars.
+UID:C20350E0-22CF-11D7-B452-0050E4C50C66
+DTSTAMP:20030108T062114Z
+SEQUENCE:2
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030116
+SUMMARY:Like Mike - Hip Hop star Lil' Bow Wow stars as Calvin\, a 14-yea
+ r-old orphan with the dream of becoming a famous basketball star. When h
+ e puts on a mysterious pair of old sneakers inscribed with the faded ini
+ tials \"MJ\,\" he inherits the abilities of Michael Jordan and makes the
+  leap to NBA superstardom. Empire Rating 1/5
+UID:F7F52318-22D1-11D7-B452-0050E4C50C66
+DTSTAMP:20030108T063328Z
+SEQUENCE:2
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030116
+SUMMARY:Star Trek: Nemesis -                                            
+                                        Ordered by Starfleet to be the fi
+ rst line of diplomacy in ushering in a new era for the Federation\, the 
+ crew of the USS Enterprise-E is dispatched to Romulus for an unexpected 
+ peace mission. Once in the shadow of the Romulan Empire\, Captain Jean-L
+ uc Picard and the Enterprise crew are thrust into the center of a plot t
+ hat could lead to the destruction of Earth at the hands of a new and chi
+ lling nemesis. Stars Patrick Stewart\, Jonathan Frakes\, Brent Spiner an
+ d LeVar Burton - Empire Rating 3/5
+UID:FA2DF665-22D1-11D7-B452-0050E4C50C66
+DTSTAMP:20030108T063225Z
+SEQUENCE:2
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030116
+SUMMARY:The Quiet American -                                            
+                                       Set against the French Indochina W
+ ar in Vietnam\, circa 1952\, this murder mystery follows a veteran Engli
+ sh journalist who challenges a young American for the affections of a Vi
+ etnamese beauty. Based on the novel by Graham Green. Stars Michael Caine
+ \, Brendan Fraser and Hai Yen Do. Empire rating 5/5
+UID:FBC432FB-22D1-11D7-B452-0050E4C50C66
+DTSTAMP:20030108T063314Z
+SEQUENCE:3
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030123
+SUMMARY:8 Mile - Set against the 1995 hip-hop scene in Detroit\, this dr
+ ama is about a young man's struggle to find the strength and courage to 
+ transcend the boundaries that define his life. Stars Eminem\, Mekhi Phif
+ er\, Brittany Murphy and Kim Basinger. \n\n \n                        \n
+                         \n
+UID:319A08D9-22D3-11D7-B452-0050E4C50C66
+DTSTAMP:20030108T063427Z
+SEQUENCE:2
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031002
+DTEND;VALUE=DATE:20031003
+SUMMARY:The League of Extraordinary Gentlemen 
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=lxg
+UID:62B2B092-AF8D-11D7-9EF2-0050E4C50C66
+SEQUENCE:15
+DTSTAMP:20040109T022324Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030828
+SUMMARY:Darkness Falls\n\n
+UID:FD5DF18A-B2A9-11D7-B3D4-0050E4C50C66
+DTSTAMP:20040109T022212Z
+SEQUENCE:2
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030828
+SUMMARY:Finding Nemo
+UID:01822D56-B2AA-11D7-B3D4-0050E4C50C66
+DTSTAMP:20040109T022156Z
+SEQUENCE:2
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030828
+SUMMARY:A Guy Thing\n\n
+UID:045BC2BB-B2AA-11D7-B3D4-0050E4C50C66
+DTSTAMP:20040109T022159Z
+SEQUENCE:2
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030904
+SUMMARY:Hollywood Homicide
+UID:104F57E9-B2AB-11D7-B3D4-0050E4C50C66
+DTSTAMP:20040109T022218Z
+SEQUENCE:3
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030904
+SUMMARY:Ghosts of the Abyss-\n
+UID:25FEE878-B2AB-11D7-B3D4-0050E4C50C66
+DTSTAMP:20040109T022222Z
+SEQUENCE:3
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030911
+SUMMARY:Legally Blonde 2-
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=legallyblonde2
+UID:766EFCB6-B2AB-11D7-B3D4-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040109T022234Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030911
+SUMMARY:Pirates of the Carribean
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=piratesofthecari
+ bbean
+UID:7EE175DC-B2AB-11D7-B3D4-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040109T022239Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030918
+SUMMARY:Bad Boys 2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=badboys2
+UID:AE93963E-B2AB-11D7-B3D4-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040109T022247Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030925
+DTEND;VALUE=DATE:20030926
+SUMMARY:Tomb Raider 2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=tombraider2
+UID:B8CB65AA-B2AB-11D7-B3D4-0050E4C50C66
+SEQUENCE:4
+DTSTAMP:20040109T022313Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030925
+SUMMARY:Agent Cody Banks - 
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=agentcodybanks
+UID:42536AD3-B770-11D7-8FBE-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040109T022254Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031211
+SUMMARY:Dumb and Dumberer 
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=whenharrymetlloy
+ d
+UID:45F049D0-B770-11D7-8FBE-0050E4C50C66
+SEQUENCE:10
+DTSTAMP:20040114T130855Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030925
+DTEND;VALUE=DATE:20030926
+SUMMARY:Freaky Friday
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=freakyfriday
+UID:505AD1EE-B770-11D7-8FBE-0050E4C50C66
+SEQUENCE:4
+DTSTAMP:20040109T022259Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031106
+DTEND;VALUE=DATE:20031107
+SUMMARY:How to Deal - 
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=howtodeal
+UID:534E394A-B770-11D7-8FBE-0050E4C50C66
+SEQUENCE:11
+DTSTAMP:20040109T022601Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030904
+DTEND;VALUE=DATE:20030905
+SUMMARY:28 Days Later 
+UID:61483E80-B770-11D7-8FBE-0050E4C50C66
+DTSTAMP:20040109T022227Z
+SEQUENCE:11
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031002
+SUMMARY:Matchstick Men\n
+URL;VALUE=URI:http://www.movie-list.com/m/matchstickmen.shtml
+UID:791FB42F-B770-11D7-8FBE-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040109T022331Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031016
+SUMMARY:Head of State \n
+URL;VALUE=URI:http://www.movie-list.com/h/headofstate.shtml
+UID:9AB21C3C-B770-11D7-8FBE-0050E4C50C66
+SEQUENCE:3
+DTSTAMP:20040109T022355Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031106
+DTEND;VALUE=DATE:20031107
+SUMMARY:Le Divorce
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=ledivorce
+UID:C21710F8-B770-11D7-8FBE-0050E4C50C66
+SEQUENCE:6
+DTSTAMP:20040109T022612Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031016
+SUMMARY:Alex and Emma - 
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=alexandemma
+UID:C8BAEA5A-B770-11D7-8FBE-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040109T022400Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031016
+SUMMARY:Kill Bill Volume 1 
+URL;VALUE=URI:http://www.movie-list.com/k/killbill.shtml
+UID:CCF41603-B770-11D7-8FBE-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040109T022413Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031023
+SUMMARY:Intolerable Cruelty\n
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=intolerablecruel
+ ty
+UID:DBB76B96-B770-11D7-8FBE-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040109T022438Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031023
+DTEND;VALUE=DATE:20031024
+SUMMARY:Freddy vs Jason
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=freddyvsjason
+UID:F52CF678-B770-11D7-8FBE-0050E4C50C66
+SEQUENCE:3
+DTSTAMP:20040109T022444Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031030
+SUMMARY:Holes\n\n
+URL;VALUE=URI:http://www.movie-list.com/h/holes.shtml
+UID:FA8DB261-B770-11D7-8FBE-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040109T022532Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031030
+SUMMARY:Runaway Jury                                                    
+                           
+URL;VALUE=URI:http://www.movie-list.com/r/runawayjury.shtml
+UID:FD1D3D99-B770-11D7-8FBE-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040109T022544Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031127
+SUMMARY:Elf 
+URL;VALUE=URI:http://elfmovie.com/
+UID:58C64DE8-B771-11D7-8FBE-0050E4C50C66
+SEQUENCE:3
+DTSTAMP:20040114T130827Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20040109T023356Z
+UID:5FDE5542-B771-11D7-8FBE-0050E4C50C66
+SEQUENCE:7
+URL;VALUE=URI:http://us.imdb.com/title/tt0309912/
+DTSTART;VALUE=DATE:20031120
+SUMMARY:Nicholas Nickleby
+DTEND;VALUE=DATE:20031121
+X-WR-ITIPSTATUSML:UNCLEAN
+ORGANIZER;CN="Kenton Baines":mailto:kob@kob.id.au
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+DTSTAMP:20040109T022652Z
+UID:64F4869C-B771-11D7-8FBE-0050E4C50C66
+SEQUENCE:3
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=seabiscuit
+DTSTART;VALUE=DATE:20031113
+SUMMARY:Seabiscuit
+X-WR-ITIPSTATUSML:UNCLEAN
+ORGANIZER;CN="Kenton Baines":mailto:kob@kob.id.au
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031113
+SUMMARY:The Honourable Wally Newman                                     
+                                              
+UID:69083917-B771-11D7-8FBE-0050E4C50C66
+DTSTAMP:20040109T022644Z
+SEQUENCE:2
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+DTSTAMP:20040109T023422Z
+UID:76FA9A76-B771-11D7-8FBE-0050E4C50C66
+SEQUENCE:3
+URL;VALUE=URI:http://us.imdb.com/title/tt0327056/
+DTSTART;VALUE=DATE:20031120
+SUMMARY:Mystic River
+DESCRIPTION:Mystic River explores the dark\, interwoven history of three
+  men and their families coming to terms with a brutal murder on the mean
+  streets of south Boston...
+X-WR-ITIPSTATUSML:UNCLEAN
+ORGANIZER;CN="Kenton Baines":mailto:kob@kob.id.au
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20040109T023448Z
+UID:991DA2D2-B771-11D7-8FBE-0050E4C50C66
+SEQUENCE:17
+URL;VALUE=URI:http://us.imdb.com/title/tt0332379/
+DTSTART;VALUE=DATE:20031120
+SUMMARY:School of Rock
+DTEND;VALUE=DATE:20031121
+X-WR-ITIPSTATUSML:UNCLEAN
+ORGANIZER;CN="Kenton Baines":mailto:kob@kob.id.au
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031226
+SUMMARY:Brother Bear 
+URL;VALUE=URI:http://disney.go.com/disneypictures/brotherbear/
+UID:C0C9EF5C-B771-11D7-8FBE-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040130T022151Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030731T230000
+SUMMARY:Mr and
+UID:DD1A2D8E-B788-11D7-98AE-0050E4C50C66
+SEQUENCE:1
+DTSTAMP:20030716T122737Z
+DURATION:PT1H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030731T230000
+SUMMARY:Mr
+UID:E77268CA-B788-11D7-98AE-0050E4C50C66
+SEQUENCE:1
+DTSTAMP:20030716T122750Z
+DURATION:PT1H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030731T230000
+SUMMARY:New Event
+UID:EDA9BFBC-B788-11D7-98AE-0050E4C50C66
+SEQUENCE:1
+DTSTAMP:20030716T122756Z
+DURATION:PT1H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030925
+DTEND;VALUE=DATE:20030926
+SUMMARY:Rugrats Go Wild - 
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=rugratsgowild
+UID:531D2DE2-B78A-11D7-98AE-0050E4C50C66
+SEQUENCE:7
+DTSTAMP:20040109T022304Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030925
+DTEND;VALUE=DATE:20030926
+SUMMARY:The Wannabes 
+UID:C5CEA534-B78A-11D7-98AE-0050E4C50C66
+DTSTAMP:20040109T022318Z
+SEQUENCE:13
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031009
+SUMMARY:Gettin' Square
+UID:75AA4E8E-B78B-11D7-98AE-0050E4C50C66
+DTSTAMP:20040109T022341Z
+SEQUENCE:2
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20040122
+SUMMARY:Underworld 
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=underworld
+UID:E77DA524-B78B-11D7-98AE-0050E4C50C66
+SEQUENCE:10
+DTSTAMP:20040209T220323Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031030
+SUMMARY:Medallion\, The\n
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=medallion
+UID:16D3301C-B78D-11D7-98AE-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040109T022453Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031106
+SUMMARY:Matrix Revolutions - 
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=matrixrevolution
+ s
+UID:B8A6A612-B78D-11D7-98AE-0050E4C50C66
+SEQUENCE:4
+DTSTAMP:20040109T022605Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+ATTENDEE;CN="Brittany Murphy":invalid:nomail
+DTSTAMP:20040109T023331Z
+UID:346534FC-B78E-11D7-98AE-0050E4C50C66
+SEQUENCE:4
+URL;VALUE=URI:http://us.imdb.com/title/tt0263757/
+DTSTART;VALUE=DATE:20031120
+SUMMARY:Uptown Girls
+X-WR-ITIPSTATUSML:UNCLEAN
+ORGANIZER;CN="Kenton Baines":mailto:kob@kob.id.au
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Kerry Armstrong\, Dan Spielman\, Directed by Paul Currie. 
+DTSTAMP:20040205T080939Z
+UID:6ED80E14-B78E-11D7-98AE-0050E4C50C66
+SEQUENCE:8
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=oneperfectday
+DTSTART;VALUE=DATE:20040219
+SUMMARY:One Perfect Day 
+DTEND;VALUE=DATE:20040220
+DESCRIPTION:Dan Spielman\, Leanna Walsman\, Kerry Armstrong\, Abbie Corn
+ ish. D: Paul Currie (debut). One perfect day tells the story of a 22 yea
+ r old musical prodigy\, Tommy Matisse (Dan Spielman) who embarks on a jo
+ urney of self-discovery as he confronts his own beliefs to seek answers 
+ relating to his sister’s life and death. \n\n\"grooves to a dynamic\, pa
+ ssionate and electric beat\, whilst never speaking down to the niche you
+ th-audience it’s targeted at. \" - moviehole
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+LOCATION:Heath Ledger\, Shannyn Sossamon\, Mark Addy\, Directed by Brian
+  Helgeland
+DTSTAMP:20040108T084618Z
+UID:9C3EDDE0-B78E-11D7-98AE-0050E4C50C66
+SEQUENCE:5
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=order
+DTSTART;VALUE=DATE:20040219
+SUMMARY:Sin Eater\, The
+DESCRIPTION:A young conflicted NY priest\, Alex       Bermier (Ledger)\,
+  helps a female detective\, Lucy Sinclair (Sossamon)\,       investigati
+ ng the case of the French ambassador\, whose corpse was covered  with my
+ sterious religious symbols written in Aramaic.\n\n\"A supernaturally sil
+ ly drama about priests\, exorcism\, sin-eaters and Heath Ledger struggli
+ ng with such pious problems as how to keep his fake Euro accent in place
+ .\"\n-- Jami Bernard\, NEW YORK NEWS
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031127
+SUMMARY:Good Boy
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=goodboy
+UID:2DADD58E-B78F-11D7-98AE-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040114T130823Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031204
+SUMMARY:Master and Commander
+URL;VALUE=URI:http://darkhorizons.com/2003/masterandcommander.php
+UID:EAFC91EC-B7FB-11D7-98AE-0050E4C50C66
+SEQUENCE:3
+DTSTAMP:20040114T130844Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031211
+SUMMARY:Looney Tunes: Back in Action
+URL;VALUE=URI:http://darkhorizons.com/2003/looneytunesbackinaction.php
+UID:F973724C-B7FB-11D7-98AE-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040114T130917Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+LOCATION:Seann William Scott\, Christopher Walker\, Rosario Dawson.
+DTSTAMP:20040204T061117Z
+UID:07D52B50-B7FC-11D7-98AE-0050E4C50C66
+SEQUENCE:6
+URL;VALUE=URI:http://www.therundown.com/
+DTSTART;VALUE=DATE:20040101
+SUMMARY:Welcome to the Jungle aka The Run Down
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+DTSTAMP:20040130T022141Z
+UID:2145281F-B7FC-11D7-98AE-0050E4C50C66
+SEQUENCE:2
+URL;VALUE=URI:http://www.lordoftherings.net/
+DTSTART;VALUE=DATE:20031226
+SUMMARY:Lord of the Rings: The Return of the King\n
+DESCRIPTION:\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031226
+SUMMARY:Love Actually 
+URL;VALUE=URI:http://www.loveactually.com/
+UID:28C20E2A-B7FC-11D7-98AE-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040130T022145Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+DTSTAMP:20040130T022130Z
+UID:2FFB536A-B7FC-11D7-98AE-0050E4C50C66
+SEQUENCE:4
+DTSTART;VALUE=DATE:20031218
+SUMMARY:Peter Pan 
+X-WR-ITIPSTATUSML:UNCLEAN
+ORGANIZER;CN="Kenton Baines":mailto:kob@kob.id.au
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+LOCATION:Sylvester Stallone\, Directed by Michael Rodriguez
+DTSTAMP:20040204T061122Z
+UID:9F5865BE-B7FF-11D7-A7B3-0050E4C50C66
+SEQUENCE:4
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=spykids3
+DTSTART;VALUE=DATE:20040101
+SUMMARY:Spy Kids 3D 
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20040101
+SUMMARY:Cold Mountain 
+URL;VALUE=URI:http://www.apple.com/trailers/miramax/cold_mountain/
+UID:A39CAC56-B7FF-11D7-A7B3-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040204T061203Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:
+DTSTAMP:20040108T075642Z
+UID:B5CE8E4C-B7FF-11D7-A7B3-0050E4C50C66
+SEQUENCE:10
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=lastsamurai
+DTSTART;VALUE=DATE:20040115
+SUMMARY:The Last Samurai 
+DTEND;VALUE=DATE:20040116
+DESCRIPTION:Set in Japan during the 1870s\, The Last Samurai tells the s
+ tory of Capt. Nathan Algren (Tom Cruise)\, an American military officer 
+ hired by the Emperor of Japan to train the country's first army in the a
+ rt of modern warfare.  \n\n\"Great to look at and respectful of its subj
+ ect matter\, this is an epic with excitement\, brains and heart.\"\n-- B
+ rian Webster\, APOLLO GUIDE\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20040108
+SUMMARY:Cheaper By The Dozen
+URL;VALUE=URI:http://us.imdb.com/title/tt0349205/
+UID:BCF496E0-B7FF-11D7-A7B3-0050E4C50C66
+SEQUENCE:9
+DTSTAMP:20040204T061710Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+LOCATION:Gwyneth Paltrow\, Daniel Craig\, Michael Gambon\, Jared Harris\
+ , Blythe 
+DTSTAMP:20040108T080633Z
+UID:E61FB149-B803-11D7-A7B3-0050E4C50C66
+SEQUENCE:3
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=sylvia
+DTSTART;VALUE=DATE:20040129
+SUMMARY:Sylvia 
+DESCRIPTION:Director Christine Jeffs takes the heartbreaking story of wr
+ iter Sylvia Plath's life and suicide (which has taken on mythological si
+ gnificance in certain literary circles) and renders it in a palette of s
+ urprising beauty.  \n\n\"Sylvia delves into the tawdry details\, which g
+ ive the movie all the power of ... a daytime soap.\"\n-- Gary Thompson
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20040109T023538Z
+UID:E8D2A882-B803-11D7-A7B3-0050E4C50C66
+SEQUENCE:8
+URL;VALUE=URI:http://us.imdb.com/title/tt0324216/
+DTSTART;VALUE=DATE:20031120
+SUMMARY:Texas Chainsaw Massacre\, The
+DTEND;VALUE=DATE:20031121
+X-WR-ITIPSTATUSML:UNCLEAN
+ORGANIZER;CN="Kenton Baines":mailto:kob@kob.id.au
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20041226
+SUMMARY:Oceans 12
+UID:F4D3A90A-B826-11D7-BABE-0050E4C50C66
+DTSTAMP:20030717T071928Z
+SEQUENCE:2
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20030828
+SUMMARY:In Laws 
+UID:F80AB0BC-B2A9-11D7-B3D4-0050E4C50C66
+DTSTAMP:20040109T022205Z
+SEQUENCE:2
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031127
+SUMMARY:S.W.A.T 
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=swat
+UID:9A6C34F6-BDA4-11D7-8992-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040114T130832Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031211
+DTEND;VALUE=DATE:20031212
+SUMMARY:Scary Movie 3 
+UID:2A57D4DB-BDA5-11D7-8992-0050E4C50C66
+SEQUENCE:30
+DTSTAMP:20040130T022418Z
+DESCRIPTION:\n
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+LOCATION:Paul Walker\, Frances O'Connor\nDirected by Richard Donner
+DTSTAMP:20040314T025056Z
+UID:0B18064D-BDA6-11D7-8992-0050E4C50C66
+SEQUENCE:7
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=timeline
+DTSTART;VALUE=DATE:20040205
+SUMMARY:Timeline 
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20040108
+DTEND;VALUE=DATE:20040109
+SUMMARY:Something's Gotta Give 
+UID:22028875-C883-11D7-947E-0050E4C50C66
+URL;VALUE=URI:http://us.imdb.com/title/tt0337741/
+SEQUENCE:11
+DTSTAMP:20040204T061705Z
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+LOCATION:Ewan McGregor\, Albert Finney\, Jessica Lange\, Danny DeVito\, 
+ Helena Bonham Carter. Director: Tim Burton
+DTSTAMP:20040314T025100Z
+UID:368C4524-CF02-11D7-B1B3-0050E4C50C66
+SEQUENCE:8
+URL;VALUE=URI:http://www.apple.com/trailers/sony_pictures/big_fish/
+DTSTART;VALUE=DATE:20040205
+SUMMARY:Big Fish
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20040108
+SUMMARY:Honey 
+URL;VALUE=URI:http://us.imdb.com/title/tt0322589/
+UID:12BDC0F4-D520-11D7-9509-0050E4C50C66
+SEQUENCE:7
+DTSTAMP:20040204T061702Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+LOCATION:Antonio Banderas\, Johnny Depp\, Salma Hayek\nDirected by Rober
+ t Rodriguez
+DTSTAMP:20040314T025015Z
+UID:B6B19FAC-DBA6-11D7-B8AE-0050E4C50C66
+SEQUENCE:7
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=onceuponatimeinm
+ exico
+DTSTART;VALUE=DATE:20040226
+SUMMARY:Once Upon a Time in Mexico 
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+LOCATION:Matt Damon\, Greg Kinnear\, Directed by the Farrelly brothers
+DTSTAMP:20040314T025133Z
+UID:98BACC62-DBA8-11D7-B8AE-0050E4C50C66
+SEQUENCE:8
+URL;VALUE=URI:http://www.movie-list.com/s/stuckonyou.shtml
+DTSTART;VALUE=DATE:20040212
+SUMMARY:Stuck On You 
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+LOCATION:Cate Blanchett\, Gerard McSorley\, Ciaran Hinds\nDirected by Jo
+ el Schumacher
+DTSTAMP:20040225T234607Z
+UID:C42C607A-DBA9-11D7-B8AE-0050E4C50C66
+SEQUENCE:6
+URL;VALUE=URI:http://www.movie-list.com/v/veronicaguerin.shtml
+DTSTART;VALUE=DATE:20040115
+SUMMARY:Veronica Guerin 
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+LOCATION:Ice Cube\, Jay Hernandez\, Dane Cook\,Jaime Pressly\, Faizon Lo
+ ve
+DTSTAMP:20040209T220343Z
+UID:4E766A8D-DBAA-11D7-B8AE-0050E4C50C66
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=torque
+DTSTART;VALUE=DATE:20040122
+SUMMARY:Torque
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+LOCATION:Denzel Washington\; Sanaa Lathan\; Dean Cain\; Eva Mendes\; Ale
+ x Carter
+DTSTAMP:20040314T025047Z
+UID:E078BC0A-DBAA-11D7-B8AE-0050E4C50C66
+SEQUENCE:3
+URL;VALUE=URI:http://www.movie-list.com/o/outoftime.shtml
+DTSTART;VALUE=DATE:20040129
+SUMMARY:Out of Time 
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031211
+DTEND;VALUE=DATE:20031212
+SUMMARY:Fellowship of the ring : Extended Edition
+UID:D8D78EC3-E0FD-11D7-8420-0050E4C50C66
+URL;VALUE=URI:http://www.lordoftherings.net/
+SEQUENCE:2
+DTSTAMP:20040114T130858Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031218
+DTEND;VALUE=DATE:20031219
+SUMMARY:Two Towers: Extended Edition 
+UID:A045EA5E-E0FE-11D7-8420-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040130T022135Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030910T111500
+DTEND;TZID=Australia/Sydney:20030910T121500
+SUMMARY:dr parikh
+UID:2A68E47E-E29A-11D7-8F13-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20030909T074953Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031009
+DTEND;VALUE=DATE:20031010
+SUMMARY:Calendar Girls\n
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=calendargirls
+UID:AD39AA27-EAB4-11D7-A5A2-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040109T022346Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031204
+DTEND;VALUE=DATE:20031205
+SUMMARY:Cabin Fever 
+UID:91FC077E-EAB5-11D7-A5A2-0050E4C50C66
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=cabinfever
+SEQUENCE:8
+DTSTAMP:20040114T130838Z
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Paddy Considine\, director: Jim Sheridan
+DTSTAMP:20040209T222558Z
+UID:2E3A3E44-EAB7-11D7-A5A2-0050E4C50C66
+SEQUENCE:3
+URL;VALUE=URI:http://www.movie-list.com/i/inamerica.shtml
+DTSTART;VALUE=DATE:20040122
+SUMMARY:In America 
+DTEND;VALUE=DATE:20040123
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031023
+DTEND;VALUE=DATE:20031024
+SUMMARY:Mambo Italiano
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=mamboitaliano
+UID:0554DF6E-F290-11D7-A47E-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040109T022422Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031030
+DTEND;VALUE=DATE:20031031
+SUMMARY:Laurel Canyon\n
+URL;VALUE=URI:http://www.apple.com/trailers/sony/laurel_canyon.html
+UID:E29DDEAA-F491-11D7-A522-0050E4C50C66
+SEQUENCE:2
+DTSTAMP:20040109T022524Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031030
+DTEND;VALUE=DATE:20031031
+SUMMARY:Jet Lag
+URL;VALUE=URI:http://www.apple.com/trailers/miramax/jet_lag.html
+UID:8CCBA852-F492-11D7-A522-0050E4C50C66
+SEQUENCE:4
+DTSTAMP:20040109T022512Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031030
+DTEND;VALUE=DATE:20031031
+SUMMARY:Formula 51
+URL;VALUE=URI:http://www.apple.com/trailers/columbia/formula_51/
+UID:27DDCB52-F493-11D7-A522-0050E4C50C66
+DTSTAMP:20040109T022503Z
+SEQUENCE:8
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031113
+DTEND;VALUE=DATE:20031114
+SUMMARY:In the Cut \n
+UID:C37782F9-F493-11D7-A522-0050E4C50C66
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=inthecut
+SEQUENCE:2
+DTSTAMP:20040109T022648Z
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:
+DTSTAMP:20040130T022200Z
+UID:E0956030-F4A9-11D7-A522-0050E4C50C66
+SEQUENCE:2
+URL;VALUE=URI:http://www.focusfeatures.com/
+DTSTART;VALUE=DATE:20031226
+SUMMARY:Lost in Translation 
+DTEND;VALUE=DATE:20031227
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031113
+DTEND;VALUE=DATE:20031114
+SUMMARY:Alien: Director's Cut 
+UID:21429594-FAE1-11D7-B0FA-000A958D1EFE
+URL;VALUE=URI:http://www.apple.com/trailers/fox/alien_25/
+SEQUENCE:2
+DTSTAMP:20040109T022629Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031120
+DTEND;VALUE=DATE:20031121
+SUMMARY:Misadventures in 3d (IMAX)
+UID:CF4F742C-FAE1-11D7-B0FA-000A958D1EFE
+SEQUENCE:2
+DTSTAMP:20031110T031429Z
+DESCRIPTION:A sequel to nWave's 'Encounter in the Third Dimension' (1999
+ )\, dealing with the groundbreaking nature of large format 3D cinema. Th
+ e first episode was a comedy about the history of 3D cinema. Encounter I
+ I deals with the future of the format.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031211
+DTEND;VALUE=DATE:20031212
+SUMMARY:Brown Sugar 
+UID:E572A6EC-FAE4-11D7-B0FA-000A958D1EFE
+URL;VALUE=URI:http://www2.foxsearchlight.com/brownsugar/
+SEQUENCE:2
+DTSTAMP:20040114T130902Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031226
+DTEND;VALUE=DATE:20031227
+SUMMARY:Bright Young Things 
+UID:62CCA3E4-FAE7-11D7-B0FA-000A958D1EFE
+URL;VALUE=URI:http://iconmovies.co.uk/brightyoungthings/
+SEQUENCE:2
+DTSTAMP:20040130T022148Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20040130T013949Z
+UID:9987E6F8-FAEC-11D7-B0FA-000A958D1EFE
+SEQUENCE:8
+URL;VALUE=URI:http://www.apple.com/trailers/independent/camp.html
+DTSTART;VALUE=DATE:20040304
+SUMMARY:Camp 
+DTEND;VALUE=DATE:20040305
+DESCRIPTION: Todd Graff's crowd-pleasing directorial debut pays tribute 
+ to summer camps\, musical theatre\, and Stephen Sondheim. \n\n\"The comb
+ ination of sap\, echoes of truth\, and lots of razzle-dazzle\, song-and-
+ dance is lethal.\"\n-- Thom Fowler\, HOLLYWOOD BITCHSLAP
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20040122
+DTEND;VALUE=DATE:20040123
+SUMMARY:Along Came Polly 
+UID:D1CF26D2-FAED-11D7-B0FA-000A958D1EFE
+URL;VALUE=URI:http://www.apple.com/trailers/universal/along_came_polly/
+SEQUENCE:2
+DTSTAMP:20040209T220334Z
+END:VEVENT
+BEGIN:VTODO
+DTSTART;TZID=Australia/Sydney:20031018T000000
+STATUS:COMPLETED
+SUMMARY:$35 Metro: Paul Kelly tickets $35
+UID:1E2C09FC-FBA7-11D7-B98C-000A958D1EFE
+SEQUENCE:2
+DTSTAMP:20031018T164749Z
+COMPLETED:20031018T140000Z
+END:VTODO
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20031023
+DTEND;VALUE=DATE:20031024
+SUMMARY:Raising Victor Vargas - 
+UID:B5CAFE48-FF86-11D7-8061-000A958D1EFE
+URL;VALUE=URI:http://www.apple.com/trailers/samuel_goldwyn/raising_victo
+ r_vargas.html
+SEQUENCE:2
+DTSTAMP:20040109T022427Z
+END:VEVENT
+BEGIN:VTODO
+DTSTART;TZID=Australia/Sydney:20031023T000000
+STATUS:COMPLETED
+SUMMARY:$430 200GB hard drive
+UID:7A0EDDE6-FF8A-11D7-8061-000A958D1EFE
+SEQUENCE:2
+DTSTAMP:20031018T164747Z
+COMPLETED:20031018T140000Z
+END:VTODO
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20040115
+DTEND;VALUE=DATE:20040116
+SUMMARY:Step Into Liquid 
+UID:F5178AE8-090B-11D8-B1DB-000A958D1EFE
+URL;VALUE=URI:http://www.apple.com/trailers/artisan/step_into_liquid/
+SEQUENCE:6
+DTSTAMP:20040225T234600Z
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:David Spade\; Craig Bierko\; Jenna Boyd\; Jon Lovitz\; Mary McC
+ ormack
+DTSTAMP:20040205T080741Z
+UID:EB1CF48C-0D34-11D8-9D9F-000A958D1EFE
+SEQUENCE:5
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=dickieroberts
+DTSTART;VALUE=DATE:20040219
+SUMMARY:Dickie Roberts\, Former Child Star 
+DTEND;VALUE=DATE:20040220
+DESCRIPTION:In the reverse rags-to-riches story of DICKIE ROBERTS: FORME
+ R CHILD STAR\, writer/actor David Spade's string of infectious laughs tu
+ rn into waves of compassion. \n\n\"Just a platform for Spade to tell smu
+ tty jokes to kids\, fall off bicycles\, puncture waterbeds\, and\, oh ye
+ s\, learn the real meaning of family.\"\n-- David Edelstein\, SLATE
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20040205
+DTEND;VALUE=DATE:20040206
+SUMMARY:Jeepers Creepers 2 
+UID:5C7F689A-0D35-11D8-9D9F-000A958D1EFE
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=jeeperscreepers2
+ 
+SEQUENCE:2
+DTSTAMP:20040314T025104Z
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Owen Wilson\, Morgan Freeman\, Gary Sinise\, Charlie Sheen\, Sa
+ ra Foster. Director: George Armitage
+DTSTAMP:20040205T081925Z
+UID:F1818C74-0D35-11D8-9D9F-000A958D1EFE
+SEQUENCE:4
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=bigbounce
+DTSTART;VALUE=DATE:20040311
+SUMMARY:Big Bounce 
+DTEND;VALUE=DATE:20040312
+DESCRIPTION:Set on Hawaii's stunning North Shore\, a charismatic drifter
+  (Owen Wilson) forms a dubious alliance with a powerful local businessma
+ n (Morgan Freeman) while hooking up with a criminally-minded seductress 
+ (Sara Foster) to double-cross a wealthy developer (Gary Sinise) and his 
+ cohorts (Charlie Sheen).\n\n\"A travelogue pretending to be a movie.\"\n
+ -- Chauncey Mabe\, SOUTH FLORIDA SUN-SENTINEL
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Orlando Jones\, Director: Charles Stone
+DTSTAMP:20040314T025116Z
+UID:18D1C4EE-0D36-11D8-9D9F-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/d/drumline.shtml
+DTSTART;VALUE=DATE:20040212
+SUMMARY:Drumline 
+DTEND;VALUE=DATE:20040213
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Kevin Costner\; Annette Bening\; Abraham Benrubi\; Robert Duval
+ l\; Michael Gambon. Director: Kevin Costner
+DTSTAMP:20040314T025147Z
+UID:C33B96EE-0D9E-11D8-9D9F-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=openrange
+DTSTART;VALUE=DATE:20040212
+SUMMARY:Open Range 
+DTEND;VALUE=DATE:20040213
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Hayden Christensen\, Chloe Sevigny\, Hank Azaria\, Rosario Daws
+ on\, Maggie Gyllenhaal
+DTSTAMP:20040314T025129Z
+UID:97C0E9FE-0D9F-11D8-9D9F-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=shatteredglass
+DTSTART;VALUE=DATE:20040212
+SUMMARY:Shattered Glass 
+DTEND;VALUE=DATE:20040213
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Diane Lane
+DTSTAMP:20040314T025144Z
+UID:C2679196-0D9F-11D8-9D9F-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://tuscansun.movies.com/
+DTSTART;VALUE=DATE:20040212
+SUMMARY:Under the Tuscan Sun 
+DTEND;VALUE=DATE:20040213
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Julia Roberts\, Maggie Gyllenhaal\, Kirsten Dunst
+DTSTAMP:20040108T084057Z
+UID:9924742C-0DA1-11D8-9D9F-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=monalisasmile
+DTSTART;VALUE=DATE:20040219
+SUMMARY:Mona Lisa Smile 
+DTEND;VALUE=DATE:20040220
+DESCRIPTION:Mike Newell's MONA LISA SMILE is a pretty period film that c
+ ombines a quaint pedagogical tale with a feminist dissection of traditio
+ nal female roles in 1950s society\n\n\"Newell tries to make a profound f
+ ilm that challenges the social standards of the 1950s\, but all he does 
+ is throw some stereotypes up against some other stereotypes.\"\n-- Josh 
+ Bell\, LAS VEGAS WEEKL
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20031205T084858Z
+UID:7CE9491F-0DA2-11D8-9D9F-000A958D1EFE
+SEQUENCE:4
+URL;VALUE=URI:http://www.miramax.com/the_human_stain/
+DTSTART;VALUE=DATE:20040304
+SUMMARY:Humain Stain\, the 
+DTEND;VALUE=DATE:20040305
+DESCRIPTION:The story of Coleman Silk (ANTHONY HOPKINS)\, a distinguishe
+ d professor at a prestigious New England college whose professional life
+  is shattered by allegations of racism and whose personal life is infect
+ ed with the cancer of a lie he has been living for fifty years. \"All th
+ e talent and expertise has resulted in a film that\, while poised and be
+ autifully crafted\, is emotionally detached and remote.\"\n-- Frank Swie
+ tek\, ONE GUY'S OPINION
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Michael Caine\, Robert Duvall\, Haley Joel Osment\, Director: T
+ im McCanlies
+DTSTAMP:20040314T024958Z
+UID:1D1BC802-0DA3-11D8-9D9F-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=secondhandlions
+DTSTART;VALUE=DATE:20040226
+SUMMARY:Secondhand Lions 
+DTEND;VALUE=DATE:20040227
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Narrated by Liam Neeson
+DTSTAMP:20040130T013352Z
+UID:F54CB761-0DA3-11D8-9D9F-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://us.imdb.com/title/tt0270291/
+DTSTART;VALUE=DATE:20040219
+SUMMARY:Ocean Wonderland 3D (IMAX) 
+DTEND;VALUE=DATE:20040220
+DESCRIPTION:\"Perfectly balances entertainment and nature-science elemen
+ ts in its brisk and sometimes thrilling 46 minutes.\"\n-- Bruce Kirkland
+ \, JAM! MOVIES
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+ATTENDEE;CN="http://www.movie-list.com/trailers.php?id=wonderland03":inv
+ alid:nomail
+LOCATION:Val Kilmer\, Lisa Kudrow\, Kate Bosworth\, Josh Lucas\, Christi
+ na Applegate
+DTSTAMP:20040314T025043Z
+UID:6B2A061C-1A94-11D8-B19A-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.wonderlandthemovie.com/
+DTSTART;VALUE=DATE:20040129
+SUMMARY:Wonderland
+X-WR-ITIPSTATUSML:UNCLEAN
+ORGANIZER;CN="Kenton Baines":mailto:kob@kob.id.au
+END:VEVENT
+BEGIN:VTODO
+DTSTART;TZID=Australia/Sydney:20040203T000000
+SUMMARY:neon KB
+UID:0AE6D541-1F54-11D8-8F64-000A958D1EFE
+SEQUENCE:1
+DTSTAMP:20031125T143151Z
+END:VTODO
+BEGIN:VTODO
+DTSTART;TZID=Australia/Sydney:20031126T000000
+STATUS:COMPLETED
+SUMMARY:master commander
+UID:6E72474D-1F69-11D8-8F64-000A958D1EFE
+SEQUENCE:2
+DTSTAMP:20031130T024112Z
+COMPLETED:20031129T130000Z
+END:VTODO
+BEGIN:VEVENT
+LOCATION:Sir Ben Kingsley\, Jennifer Connelly\, Ron Eldard\, Shohreh Agh
+ dashloo\, Jonathan Ahdout
+DTSTAMP:20040314T025140Z
+UID:ADD125A8-23B5-11D8-AA82-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=houseofsandandfo
+ g
+DTSTART;VALUE=DATE:20040212
+SUMMARY:House of Sand and Fog 
+DTEND;VALUE=DATE:20040213
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+LOCATION:Cuba Gooding Jr\, Beyonce Knowles
+DTSTAMP:20040205T081454Z
+UID:FE08BDE5-26FF-11D8-AA82-000A958D1EFE
+SEQUENCE:1
+URL;VALUE=URI:http://www.apple.com/trailers/paramount/the_fighting_tempt
+ ations/
+DTSTART;VALUE=DATE:20040304
+SUMMARY:Fighting Temptations\, The
+DESCRIPTION:A New York advertising executive travels to a small Southern
+  town to collect an inheritance but finds he must create a gospel choir 
+ and lead it to success before he can collect. \n\n\"When he's not keenin
+ g and shucking and jiving and behaving altogether spastically\, Cuba kic
+ ks into full-on \"dramatic mode\" and the results are unquestionably mor
+ e amusing.\"\n-- Scott Weinberg\,EFILMCRITIC.COM
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+DTSTAMP:20040205T081434Z
+UID:0CCE9724-2700-11D8-AA82-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://darkhorizons.com/2003/missing.php
+DTSTART;VALUE=DATE:20040304
+SUMMARY:Missing\, The 
+DESCRIPTION:In 19th-century New Mexico\, a father (Tommy Lee Jones) come
+ s back home\, hoping to reconcile with his adult daughter Maggie (Cate B
+ lanchett).\n\n \"The movie can't overcome characterizations that are as 
+ spare as the landscapes and a Searchers- like story line that just isn't
+  interesting enough to sustain interest over the course of 135 minutes.\
+ "\n-- Glenn Whipp\, LOS ANGELES DAILY NEWS
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:James Caviezel\, Monica Belluci\, Directed by Mel Gibson
+DTSTAMP:20040108T085726Z
+UID:CF4CF2A7-296A-11D8-965C-000A958D1EFE
+SEQUENCE:3
+URL;VALUE=URI:http://www.thepassionofthechrist.com/
+DTSTART;VALUE=DATE:20040225
+SUMMARY:Passion of the Christ\, The
+DTEND;VALUE=DATE:20040226
+DESCRIPTION:A film detailing the final hours and crucifixion of Jesus Ch
+ rist.. directed by Mel Gibson. \n\n\"shouldn't be second-guessed with re
+ ligious or political agendas. It stands as a work of art\" - AICN
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Mandy Moore
+DTSTAMP:20040204T044958Z
+UID:D9AEA84D-296B-11D8-965C-000A958D1EFE
+SEQUENCE:4
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=chasingliberty
+DTSTART;VALUE=DATE:20040408
+SUMMARY:Chasing Liberty
+DTEND;VALUE=DATE:20040409
+DESCRIPTION:Tired of being followed around every moment of every day\, t
+ he 18-year-old daughter of the president of the United States ditches he
+ r Secret Service handlers and sets out on a romantic road trip through E
+ urope with her boyfriend.\n\n\"A fairly standard-issue teen romantic com
+ edy.\"\n-- James Berardinelli\,REELVIEWS
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Peter Dinklage\, Patricia Clarkson\, Bobby Cannavale\nDirected 
+ by Tom McCarthy
+DTSTAMP:20040314T025112Z
+UID:DC36435A-30A0-11D8-B441-000A958D1EFE
+SEQUENCE:4
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=stationagent
+DTSTART;VALUE=DATE:20040205
+SUMMARY:Station Agent\, The 
+DTEND;VALUE=DATE:20040206
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Katie Holmes\, Patricia Clarkson\, Oliver Platt\nDirected by Pe
+ ter Hedges
+DTSTAMP:20040121T075426Z
+UID:61A858A8-30A2-11D8-B441-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.piecesofaprilmovie.com/
+DTSTART;VALUE=DATE:20040304
+SUMMARY:Pieces of April
+DTEND;VALUE=DATE:20040305
+DESCRIPTION:Katie Holmes is outstanding as the title character in Peter 
+ Hedges's PIECES OF APRIL. Holmes stars as April Burns\, the black sheep 
+ of her family who has left suburbia for a Lower East Side tenement.   \n
+ \n\"Pieces of April feel less like a movie and more like a series of mom
+ ents in search of one.\"\n-- Kevin Smokler \, filmcritic.com
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Frankie Muniz\, Hilary Duff\, Angie Harmon\,Anthony Anderson\, 
+ Cynthia Stevenson
+DTSTAMP:20040108T090338Z
+UID:0AFD2D64-30A3-11D8-B441-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.futuresecretagent.com/
+DTSTART;VALUE=DATE:20040318
+SUMMARY:Agent Cody Banks 2: Destination London
+DTEND;VALUE=DATE:20040319
+DESCRIPTION:Frankie Muniz returns as super cool spy Cody Banks in Agent 
+ Cody Banks 2. In Cody's new adventure\, a rogue CIA agent has stolen a t
+ op secret mind-control device and Cody has to go undercover in London to
+  get it back...
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Ben Affleck\, Aaron Eckhart\, Uma Thurman\,Kathryn Morris\, dir
+ ected by John Woo
+DTSTAMP:20040108T090715Z
+UID:E4E935F6-30A3-11D8-B441-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=paycheck
+DTSTART;VALUE=DATE:20040318
+SUMMARY:Paycheck
+DTEND;VALUE=DATE:20040319
+DESCRIPTION:Based on the short story by Philip K. Dick\, \"Paycheck\" is
+  about world famous genius Michael Jennings (Ben Affleck)\, who does spe
+ cialized projects for high-tech corporations...\n\n  \"Sadly\, the once 
+ glowing Hollywood promise of Ben Affleck and director John Woo has gradu
+ ally given way to good paycheck hunting.\"\n-- Todd Gilchrist\,FILMSTEW.
+ COM\n
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Halle Berry\, Robert Downey Jr\, 
+DTSTAMP:20040221T005140Z
+UID:4E52DE4B-3B43-11D8-9EA1-000A958D1EFE
+SEQUENCE:4
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=gothika
+DTSTART;VALUE=DATE:20040429
+SUMMARY:Gothika
+DTEND;VALUE=DATE:20040430
+DESCRIPTION:A brilliant and respected criminal psychologist\, Dr. Mirand
+ a Grey (HALLE BERRY) is an expert at knowing what is rational.. What is 
+ sane. But Miranda's comfortable marriage and stable life are thrust into
+  terrifying jeopardy after a cryptic encounter with a mysterious young g
+ irl leads to a nightmare beyond her wildest imagination.\n\n\"Dwells in 
+ its own abysmal dreariness without creating real suspense\, relying inst
+ ead on a stream of easy shocks to convince us that we're watching a scar
+ y movie.\"\n-- Erich Scholz\, CITYSEARCH
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+LOCATION:Viggo Mortensen\, Omar Sharif\, Frank Collison\, Louise Lombard
+ \, Directed by Joe Johnston
+DTSTAMP:20040209T211727Z
+UID:AE628D2C-167E-11D8-9D6F-000A958D1EFE
+SEQUENCE:8
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=hidalgo
+DTSTART;VALUE=DATE:20040318
+SUMMARY:Hidalgo
+DESCRIPTION:Based on the true story of the greatest long-distance horse 
+ race ever run\, \"Hidalgo\" is an epic action-adventure and one man's jo
+ urney of personal redemption..
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+LOCATION:Sean Penn\, Benicio Del Toro\,Naomi Watts\, Directed by Alejand
+ ro Gonzalez Inarritu
+DTSTAMP:20040209T220338Z
+UID:B6C91881-090E-11D8-B1DB-000A958D1EFE
+SEQUENCE:4
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=21grams
+DTSTART;VALUE=DATE:20040122
+SUMMARY:21 Grams
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Mike Myers\, Alec Baldwin\,Kelly Preston. Directed by Bo Welch
+DTSTAMP:20040108T092136Z
+UID:431667C9-41AA-11D8-8E3D-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=drseusscatintheh
+ at
+DTSTART;VALUE=DATE:20040401
+SUMMARY:Cat in the Hat
+DTEND;VALUE=DATE:20040402
+DESCRIPTION:This adaptation of the classic children's book stars Mike Me
+ yers (AUSTIN POWERS) as the wily talking cat with a tall striped hat and
+  more than a few tricks up his sleeve.\n\n\"They missed the point\, But 
+ stole the name / The real question today\, Is who to blame?\"\n-- Steven
+  Snyder\, ZERTINET MOVIES
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Adam Sandler\, Drew Barrymore\, Sean Astin\, Rob Schneider\,\nD
+ irector: Peter Segal
+DTSTAMP:20040221T005439Z
+UID:C4C219E6-41AD-11D8-8E3D-000A958D1EFE
+SEQUENCE:5
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=50firstdates
+DTSTART;VALUE=DATE:20040325
+SUMMARY:50 First Dates
+DTEND;VALUE=DATE:20040326
+DESCRIPTION:Adam Sandler and Drew Barrymore star in this romantic comedy
+  about a man who has to make a woman fall in love with him everyday beca
+ use of the woman's short term memory lost...\n\n\"A terrible movie by al
+ l reasonable standards -- yet it leaves a sweet taste.\"\n-- Jami Bernar
+ d\, NEW YORK DAILY NEWS
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+LOCATION:Eddie Murphy\, Terence Stamp
+DTSTAMP:20040218T065453Z
+UID:C35ABE14-167E-11D8-9D6F-000A958D1EFE
+SEQUENCE:6
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=hauntedmansion
+DTSTART;VALUE=DATE:20040325
+SUMMARY:Haunted Mansion
+DESCRIPTION:Inspired by Disney's theme park attraction\,Haunted Mansion 
+ tells the story of a man discovering how important his family is through
+  the intervention of a few ghosts\n\n \"Mansion is everything we fearedP
+ irates [of the Caribbean] would be: gimmicky\, unimaginative\, and shack
+ led to its source like an anvil.\"\n-- Rob Vaux\, FLIPSIDE MOVIE EMPORIU
+ M
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Freddie Prinze Jr. Sarah Michelle Gellar\, Matthew Lillard\, Se
+ th Green
+DTSTAMP:20040330T050612Z
+UID:C493A654-41AE-11D8-8E3D-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=scoobydoo2
+DTSTART;VALUE=DATE:20040401
+SUMMARY:Scooby Doo 2 : Monster's Unleashed
+DTEND;VALUE=DATE:20040402
+DESCRIPTION:The mysterious adventures of the five members of the Mystery
+ \, Inc. detective agency\, as they investigate the nefarious plans of an
+  anonymous masked villain who is plotting to take over control of the ci
+ ty of Coolsville by wreaking mayhem with a monster machine that recreate
+ s Mystery\, Inc.'s greatest classic foes.\n\n\"While Scooby 2 is probabl
+ y no worse or better than the first installment\, the freshness has defi
+ nitely worn off.\"\n-- John Monaghan\, DETROIT FREE PRESS\n
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Angelina Jolie\, Clive Owen\, Noah Emmerich. Directed by Martin
+  Campbell
+DTSTAMP:20040218T065356Z
+UID:B4A01ACE-0D32-11D8-9D9F-000A958D1EFE
+SEQUENCE:6
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=beyondborders
+DTSTART;VALUE=DATE:20040318
+SUMMARY:Beyond Borders 
+DTEND;VALUE=DATE:20040319
+DESCRIPTION:Set against the backdrop of the world's most dangerous hot s
+ pots\, this thrilling romantic adventure stars Academy Award winner Ange
+ lina Jolie as Sarah Jordan\, a sheltered American socialite living in Lo
+ ndon. \n\n\"The formula that gave life to such poignant and powerful fil
+ ms as The Killing Fieldsand The Year of Living Dangerously this time res
+ ults in something closer to parody.\"\n-- Colin Covert\,MINNEAPOLIS STAR
+  TRIBUNE
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Angelina Jolie\, Ethan Hawke\, Kiefer Sutherland
+DTSTAMP:20040330T051329Z
+UID:12E42769-2B97-11D8-8F07-000A958D1EFE
+SEQUENCE:4
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=takinglives
+DTSTART;VALUE=DATE:20040415
+SUMMARY:Taking Lives
+DTEND;VALUE=DATE:20040416
+DESCRIPTION:An FBI profiler is called in by French Canadian police to ca
+ tch a serial killer who takes on the identity of each new victim.\n\n \"
+ Jolie is one of those actresses like Ashley Judd who are capable of givi
+ ng good performances in good movies\, but for undisclosed reasons have d
+ ecided not to.\"\n-- Rob Thomas\, CAPITAL TIMES (MADISON\, WI)
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Ben Stiller\, Owen Wilson\, Snoop Dogg\, Vince Vaughn\, Carmen 
+ Electra\, Directed by Todd Phillips
+DTSTAMP:20040330T050923Z
+UID:504BD191-4BE9-11D8-A981-000A958D1EFE
+SEQUENCE:3
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=starskyandhutch
+DTSTART;VALUE=DATE:20040408
+SUMMARY:Starsky and Hutch
+DTEND;VALUE=DATE:20040409
+DESCRIPTION:Set in the 1970s in a metropolis called \"Bay City\,\" this 
+ is the tale of two police detective partners\, Ken \"Hutch\" Hutchinson\
+ , and Dave Starsky\, telling the story of their first big case\, which i
+ nvolved a former college campus drug dealer who went on to become a whit
+ e collar criminal.\n\n\"Starsky & Hutch is guilty pleasure fun that just
+  rolls along having a grand old time.\"\n-- Bob Bloom\, JOURNAL AND COUR
+ IER (LAFAYETTE\, IN)
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20040330T050811Z
+UID:2D448F3A-468D-11D8-A8A0-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=catchthatkid
+DTSTART;VALUE=DATE:20040408
+SUMMARY:Catch That Kid
+DTEND;VALUE=DATE:20040409
+DESCRIPTION:A remake of the Danish blockbuster \"Klatretosen\,\" MISSION
+  WITHOUT PERMISSION is an action-packed caper that revolves around a you
+ ngster who\, with the help of two friends\, robs the state-of-the-art ba
+ nk where her mother works to acquire the cash needed for a costly operat
+ ion to save her ailing father...\n\n\"Another Spy Kids rip-off that’s no
+  great catch.\"\n-- Thomas Delapa\, BOULDER WEEKLY\n
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Bill Moseley\, Karen Black\,Chris Hardwick. Directed by Rob Zom
+ bie
+DTSTAMP:20040130T014537Z
+UID:6ED0468A-2B95-11D8-8F07-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/h/houseof1000corpses.shtml
+DTSTART;VALUE=DATE:20040311
+SUMMARY:House of 1000 Corpses
+DTEND;VALUE=DATE:20040312
+DESCRIPTION:An empty fuel tank and a flat tire lead two couples down a t
+ error-riddled road to the House of 1000 Corpses. \n\n\"Neither scary\, p
+ erversely funny nor suspenseful\, this demented dung heap is not even in
+ ventively gory.\"\n-- Megan Lehmann\, NEW YORK POST
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Ashton Kutcher\, Amy Smart\,Eric Stoltz
+DTSTAMP:20040130T015204Z
+UID:325B6BB5-52C6-11D8-B289-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=butterflyeffect
+DTSTART;VALUE=DATE:20040311
+SUMMARY:Butterfly Effect\, The
+DTEND;VALUE=DATE:20040312
+DESCRIPTION:A young man struggling with the psychological effects of sub
+ limated childhood memories devises a technique of traveling back in time
+  to inhabit his childhood body.\n\n\"It's as if [Kutcher] decided that h
+ e would prove himself as a dramatic actor by trying out every clichéd se
+ rious role in the history of cinema.\"\n-- Michael Agger\, SLATE
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Jim Carrey\, Kate Winslet. Directed by Michael Gondry.
+DTSTAMP:20040225T000906Z
+UID:E485B660-52C9-11D8-B289-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=eternalsunshineo
+ fthespotlessmind
+DTSTART;VALUE=DATE:20040422
+SUMMARY:Eternal Sunshine Of The Spotless Mind
+DTEND;VALUE=DATE:20040423
+DESCRIPTION:Joel (Jim Carrey) is stunned to discover that his girlfriend
+  Clementine (Kate Winslet) has had her memories of their tumultuous rela
+ tionship erased.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20040130T022007Z
+UID:AE5C078C-52CA-11D8-B289-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=perfectscore
+DTSTART;VALUE=DATE:20040422
+SUMMARY:Perfect Score\, The
+DTEND;VALUE=DATE:20040423
+DESCRIPTION:A group of seven high school seniors\, made up of two girls 
+ and five boys\, decide to break into the Princeton Testing Center\, so t
+ hey can steal the answers to their upcoming SAT tests and all get perfec
+ t scores.\n\n\"Like The Breakfast Club recast as a videogame for simplet
+ ons.\"\n-- Owen Gleiberman\,ENTERTAINMENT WEEKLY
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20040226
+SUMMARY:Grind 
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=grind
+UID:A10194B6-30A1-11D8-B441-000A958D1EFE
+SEQUENCE:4
+DTSTAMP:20040314T025009Z
+DURATION:P1D
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20040318T111244Z
+UID:CBE5867A-56D6-11D8-8E6C-000A958D1EFE
+SEQUENCE:4
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=billabongodyssey
+ 
+DTSTART;VALUE=DATE:20040325
+SUMMARY:Billabong Odyssey
+DTEND;VALUE=DATE:20040326
+DESCRIPTION:Surfing documentary.\n\n\"A dog's dinner of profiles\, repet
+ itive narration\, safety tips and banal 'insights' into the joys and dan
+ gers of cresting waves that sometimes reach 70 feet.\"\n-- Megan Lehmann
+ \, NEW YORK POST
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20040330T051335Z
+UID:5BD3E8DC-0D34-11D8-9D9F-000A958D1EFE
+SEQUENCE:5
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=cooler
+DTSTART;VALUE=DATE:20040415
+SUMMARY:Cooler\, The 
+DTEND;VALUE=DATE:20040416
+DESCRIPTION:Bernie Lootz (William H. Macy) is the unluckiest guy in Vega
+ s. From a failed marriage to an estranged son to a lost cat\, everything
+  Bernie touches turns bad. \n\n\"A movie perfectly written for the look 
+ of William H. Macy.\"\n-- Chuck Schwartz\, CRANKY CRITIC&REG
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20040422
+DTEND;VALUE=DATE:20040423
+SUMMARY:Strange Bedfellows
+UID:266BE550-56D8-11D8-8E6C-000A958D1EFE
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=strangebedfellow
+ s
+SEQUENCE:6
+DTSTAMP:20040318T183347Z
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Gene Hackman\, Ray Romano\, Marcia Gay Harden\, Maura Tierney
+DTSTAMP:20040204T061336Z
+UID:FF6C6F26-30A1-11D8-B441-000A958D1EFE
+SEQUENCE:8
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=welcometomoosepo
+ rt
+DTSTART;VALUE=DATE:20040429
+SUMMARY:Welcome to Mooseport
+DTEND;VALUE=DATE:20040430
+DESCRIPTION:A former U.S. president whose plan to retire in a small Nort
+ heastern coastal town goes awry when he tries to fill an empty mayoral s
+ eat...
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Toni Collette\, David Duchovny
+DTSTAMP:20040204T061634Z
+UID:9E5FBB10-56D9-11D8-8E6C-000A958D1EFE
+SEQUENCE:2
+DTSTART;VALUE=DATE:20040429
+SUMMARY:Connie and Carla
+DTEND;VALUE=DATE:20040430
+DESCRIPTION:Two chanteuses working the dinner theater circuit in L.A. ta
+ ke an undercover assignment\, posing as drag queens. Things get extra-we
+ ird when a guy falls for one of the girls (as a guy?).
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Charlize Theron\, Christina Ricci\, Bruce Dern
+DTSTAMP:20040213T075720Z
+UID:73C5FE96-5B44-11D8-976E-000A958D1EFE
+SEQUENCE:3
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=monster
+DTSTART;VALUE=DATE:20040325
+SUMMARY:Monster
+DTEND;VALUE=DATE:20040326
+DESCRIPTION:In a revelatory performance\, Charlize Theron stars in the s
+ hocking and moving true-life story of Aileen Wuornos\, a prostitute exec
+ uted last year in Florida after being convicted of murdering six men.\n\
+ n\"There's Theron\, like a force of nature\, compelling us to go beyond 
+ TV-movie supposition and look Wuornos straight in the eye.\"\n-- Peter T
+ ravers\, ROLLING STONE
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20040209T212107Z
+UID:5CCFE05E-3B43-11D8-9EA1-000A958D1EFE
+SEQUENCE:4
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=youngblackstalli
+ on
+DTSTART;VALUE=DATE:20040401
+SUMMARY:Young Black Stallion (IMAX)
+DTEND;VALUE=DATE:20040402
+DESCRIPTION:In Disney's first dramatic feature made specifically for the
+  giant screen\, Walt Disney Pictures is proud to present the continuatio
+ n of a family favorite and a story that has enthralled generations of re
+ aders.\n\n\"As with most IMAX pictures\, the spectacular presentation is
+  worth seeing\, although this time the cinematography is nearly ruined b
+ y some spectacularly awful child acting.\"\n-- Jeffrey Westhoff\,NORTHWE
+ ST HERALD (CRYSTAL LAKE\, IL)
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Johnny Depp
+DTSTAMP:20040304T212514Z
+UID:C83B05F5-5B46-11D8-976E-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=secretwindow
+DTSTART;VALUE=DATE:20040408
+SUMMARY:Secret Window
+DTEND;VALUE=DATE:20040409
+DESCRIPTION:Mort Rainey\, a writer just coming off of a troublesome divo
+ rce with his ex-wife\, Amy\, finds himself stalked at his remote lake ho
+ use by a psychotic stranger who claims Mort stole his best story idea\, 
+ changing just the ending.\n\n\"No matter how good Depp and Turturro are\
+ , no matter how pretty the cinematography is... there just isn't any sus
+ pense or real interest in the story.\" - AICN
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Kate Bosworth\, Topher Grace\,Nathan Lane. Directed by Robert L
+ uketic
+DTSTAMP:20040209T213227Z
+UID:A6DAFD22-4691-11D8-A8A0-000A958D1EFE
+SEQUENCE:3
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=winadatewithtadh
+ amilton
+DTSTART;VALUE=DATE:20040415
+SUMMARY:Win A Date With Tad Hamilton !
+DTEND;VALUE=DATE:20040416
+DESCRIPTION:When a hot young actor\, Tad Hamilton agrees to participate 
+ in a \"win a date\" contest to promote his new movie\, his world is turn
+ ed upside-down when he finds himself falling in love with the winner\, a
+  grocery store checkout girl from West Virginia named \n\n \"A nice but 
+ inconsequential romancer.\"\n-- Robert Koehler\, VARIETY
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Uma Thurman\, Lucy Liu\,David Carradine\, Directed by Quentin T
+ arantino
+DTSTAMP:20040209T213729Z
+UID:9E6AF11C-0DA2-11D8-9D9F-000A958D1EFE
+SEQUENCE:9
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=killbill
+DTSTART;VALUE=DATE:20040422
+SUMMARY:Kill Bill volume 2 
+DTEND;VALUE=DATE:20040423
+DESCRIPTION:The Bride continues her vengeance quest against her ex-boss\
+ , Bill\, and his associates. 
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Ashley Judd\, Samuel L. Jackson\, Andy Garcia\, D.W. Moffett\, 
+ Mark Pellegrino
+DTSTAMP:20040209T215100Z
+UID:DBAA74C4-5B49-11D8-976E-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=twisted
+DTSTART;VALUE=DATE:20040429
+SUMMARY:Twisted
+DTEND;VALUE=DATE:20040430
+DESCRIPTION:In this thriller starring Ashley Judd\, a detective who is a
+ n expert at profiling murderers finds herself stumped by a difficult cas
+ e with a killer who may actually be somebody she knows--and is coming af
+ ter her...\n
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Hugh Jackman\, Kate Beckinsale\, Richard Roxburgh\, David Wenha
+ m. Director: Stephen Sommers
+DTSTAMP:20040209T215514Z
+UID:2EFCF209-5B4A-11D8-976E-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=vanhelsing
+DTSTART;VALUE=DATE:20040506
+SUMMARY:Van Helsing
+DTEND;VALUE=DATE:20040507
+DESCRIPTION:Set in the late 19th century\, monster hunter Dr. Abraham Va
+ n Helsing is summoned to a mysterious land in East Europe to vanquish ev
+ il forces... evil forces with names like Count Dracula\, the Wolf Man\, 
+ and Frankenstein's Monster.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20040318T183544Z
+UID:43BF518B-5B4B-11D8-976E-000A958D1EFE
+SEQUENCE:4
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=yougotserved
+DTSTART;VALUE=DATE:20040617
+SUMMARY:You Got Served
+DTEND;VALUE=DATE:20040618
+DESCRIPTION:Explores the social subculture of street dancing\, focusing 
+ on a pair of friends\, David and Elgin\, who want to open their own hip-
+ hop dance and recording studio.\n\n\"On the checklist of things a movie 
+ should offer\, like character development\, dialogue with subtext and pl
+ ausibility\, You Got Served is more like You Got Screwed.\"\n-- Jami Ber
+ nard\, NEW YORK DAILY NEWS
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Adam Goldberg\, Andy Dick
+DTSTAMP:20040213T081228Z
+UID:624DB792-5DFA-11D8-A6BA-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=hebrewhammer
+DTSTART;VALUE=DATE:20040325
+SUMMARY:Hebrew Hammer
+DTEND;VALUE=DATE:20040326
+DESCRIPTION:Jefferson Carver\, also known as the Hebrew Hammer\, a priva
+ te detective who has an overbearing mother (Nora Dunn) and a propensity 
+ to whine when things get difficult\n\n\"The corker-to-groaner ratio heav
+ ily favors the latter as the bagel-and-dreidel jokes begin to lose their
+  spark\, as does the story.\"\n-- Robert Abele\, L.A. WEEKLY
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Neve Campbell\, Malcolm McDowell\, James Franco\nDirected by Ro
+ bert Altman
+DTSTAMP:20040213T082211Z
+UID:0A76F396-5DFD-11D8-A6BA-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=company
+DTSTART;VALUE=DATE:20040513
+SUMMARY:Company\, The
+DTEND;VALUE=DATE:20040514
+DESCRIPTION:A look at the world of ballet.\n\n\"The experience will sati
+ sfy ballet lovers more than film lovers.\"\n-- Jeffrey Westhoff\, NORTHW
+ EST HERALD (CRYSTAL LAKE\, IL  
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Brad Pitt\, Eric Bana\, Orlando Bloom\, Diane Kruger\, Peter O'
+ Toole. Director: Wolfgang Petersen
+DTSTAMP:20040213T082419Z
+UID:93C449F0-5DFD-11D8-A6BA-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=troy
+DTSTART;VALUE=DATE:20040513
+SUMMARY:Troy
+DTEND;VALUE=DATE:20040514
+DESCRIPTION:In 1193 B.C.\, Prince Paris of Troy stole the beautiful Gree
+ k woman\, Helen\, away from her husband\, Menelaus\, the king of Sparta\
+ , setting the two nations at war with each other. 
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Al Pacino\, Steven Bauer\, Michelle Pfeiffer. Director: Brian D
+ e Palma
+DTSTAMP:20040330T051600Z
+UID:2B38D5E6-61DC-11D8-961E-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=scarface
+DTSTART;VALUE=DATE:20040226
+SUMMARY:Scarface
+DTEND;VALUE=DATE:20040227
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20040318
+DTEND;VALUE=DATE:20040319
+SUMMARY:Solarmax (IMAX)
+UID:AE93AE12-61DC-11D8-961E-000A958D1EFE
+SEQUENCE:3
+DTSTAMP:20040310T010350Z
+DESCRIPTION:Documentary tells the story of humankind's struggle to under
+ stand the sun.\n\n\"I thought I was back in grade school watching 'Our M
+ ister Sun.'\"\n-- Robert Roten\, LARAMIE MOVIE SCOPE
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Meg Ryan\; Omar Epps
+DTSTAMP:20040218T065105Z
+UID:767EA137-61DE-11D8-961E-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=againsttheropes
+DTSTART;VALUE=DATE:20040520
+SUMMARY:Against the Ropes
+DTEND;VALUE=DATE:20040521
+DESCRIPTION:Jackie Kallen (Meg Ryan) knows a winner when she sees one. A
+ s soon as she sees Luther Shaw in a fight\, Jackie knows he's a champion
+  in the raw\n\n\"Meg Ryan's swell\, but this \"Erin Rocky-vich\" inspira
+ tional story lacks punch.\"\n-- Michael Rechtshaffen\, HOLLYWOOD REPORTE
+ R
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Roy Billing\, Stephen Curry\, Damon Gameau
+DTSTAMP:20040218T065121Z
+UID:A6FA2BBC-2B96-11D8-8F07-000A958D1EFE
+SEQUENCE:4
+DTSTART;VALUE=DATE:20040520
+SUMMARY:Thunderstruck
+DTEND;VALUE=DATE:20040521
+DESCRIPTION:After a near death experience\, five Boys\, all devoted AC/D
+ C fans\, make a pact to bury their best friend next to the grave of Bon 
+ Scott. 12 years later\, having gone their different ways\, they come tog
+ ether to fulfill the promise. 
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20040219T000000
+SUMMARY:New Event
+UID:59E5182C-6218-11D8-961E-000A958D1EFE
+SEQUENCE:1
+DTSTAMP:20040218T134253Z
+DURATION:PT1H
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Pierce Brosnan\, Aidan Quinn. Directed by Bruce Beresford
+DTSTAMP:20040221T004943Z
+UID:5CC87FFC-6407-11D8-AA60-000A958D1EFE
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/e/evelyn.shtml
+DTSTART;VALUE=DATE:20040506
+SUMMARY:Evelyn
+DTEND;VALUE=DATE:20040507
+DESCRIPTION:Desmond Doyle\, an Irishman whose troubles mount after his p
+ hilandering wife runs away with another man\, and now must fight to rega
+ in his children\,\n\n\"It's that rare family movie -- genuine and sweet 
+ without relying on animation or dumb humor.\"\n-- Mary F. Pols\, CONTRA 
+ COSTA TIMES\n
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Rupert Everett\, Isabelle Adjani\, Virginie Ledoyen
+DTSTAMP:20040225T000026Z
+UID:F002D124-6724-11D8-9A21-000A958D1EFE
+SEQUENCE:6
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=bonvoyage
+DTSTART;VALUE=DATE:20040527
+SUMMARY:Bon Voyage
+DTEND;VALUE=DATE:20040528
+DESCRIPTION:At the start of World War II\, the fate of the free world ha
+ ngs in the balance at the posh Hotel Splendide in Bordeaux\n\n\"The bust
+ ling structure keeps us gripped\, even though there's too much going on.
+ \"\n-- Rich Cline\, SHADOWS ON THE WALL
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20040225T000236Z
+UID:9F593EEE-6725-11D8-9A21-000A958D1EFE
+SEQUENCE:4
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=dayaftertomorrow
+ 
+DTSTART;VALUE=DATE:20040527
+SUMMARY:Day After Tomorrow\, The
+DTEND;VALUE=DATE:20040528
+DESCRIPTION:A big-budget\, mega-event epic motion picture that revolves 
+ around an abrupt climate change that has cataclysmic consequences for th
+ e planet
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Chjwetel Ejiofor\, Audrey Tautou\, Sergi Lopez\, Directed by St
+ ephen Frears
+DTSTAMP:20040225T000343Z
+UID:AA438D50-3B40-11D8-9EA1-000A958D1EFE
+SEQUENCE:4
+URL;VALUE=URI:http://www.miramax.com/dirty_pretty_things/
+DTSTART;VALUE=DATE:20040527
+SUMMARY:Dirty Pretty Things
+DTEND;VALUE=DATE:20040528
+DESCRIPTION:Chiwetel Ejiofor gives a remarkably understated performance 
+ in director Stephen Frears's offbeat and gripping drama DIRTY PRETTY THI
+ NGS.\n\n\"Not only does Frears dress this London with a palpable atmosph
+ ere -- and even a kind of rank smell and rough touch -- but he also coax
+ es deeply affecting performances out of his stars.\"\n-- Jeffrey M. Ande
+ rson\, SAN FRANCISCO EXAMINER
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Nicole Kidman\, Bette Midler\, Matthew Broderick\, Christopher 
+ Walken\, Glenn Close\, Jon Lovitz. Directed by Frank Oz
+DTSTAMP:20040303T232933Z
+UID:1C1D56D0-6D6A-11D8-AA68-000A27B6071A
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=stepfordwives
+DTSTART;VALUE=DATE:20040603
+SUMMARY:Stepford Wives\, The
+DTEND;VALUE=DATE:20040604
+DESCRIPTION:Joanna\, a young wife and mother\, moves from Manhattan to t
+ he upper-class suburb of Stepford\, Connecticut. Once there\, she makes 
+ friends with bombastic Bobbie Markowitz. Together they find out\, much t
+ o their horror\, that all the housewives are strangely blissful\, and so
+ mehow... doomed.
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Nathan Lane\, Kelsey Grammer\, Jerry Stiller
+DTSTAMP:20040310T011204Z
+UID:4BB14D27-722F-11D8-B1E4-000A27B6071A
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=teacherspet
+DTSTART;VALUE=DATE:20040506
+SUMMARY:Teachers Pet
+DTEND;VALUE=DATE:20040507
+DESCRIPTION:Spot\, a talking dog who longs to be a boy so much that he e
+ ven dresses up as one so he can accompany his owner Leonard to school ..
+ \n\n\"This completely random creation is essentially an adult's cartoon 
+ cut for a kid's short attention span.\"\n-- Ed Gonzalez\, CITY PAGES\, M
+ INNEAPOLIS/ST. PAUL\n
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Jamie Foxx
+DTSTAMP:20040318T184352Z
+UID:11474DEF-7230-11D8-B1E4-000A27B6071A
+SEQUENCE:4
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=breakinalltherul
+ es
+DTSTART;VALUE=DATE:20040812
+SUMMARY:Breakin' All The Rules
+DTEND;VALUE=DATE:20040813
+DESCRIPTION:A romantic comedy about a man who\, after being unceremoniou
+ sly dumped by his  fiance\, pens a \"how to\" book on breaking up and be
+ comes a best-selling author on the subject. 
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Daniel Radcliffe\, Rupert Grint\, Emma Watson\, Michael Gamon\,
+  Gary Oldman\, Dawn French\, Emma Thompson
+DTSTAMP:20040310T012817Z
+UID:37BBFC2A-7230-11D8-B1E4-000A27B6071A
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=harrypotter3
+DTSTART;VALUE=DATE:20040610
+SUMMARY:Harry Potter And The Prisoner Of Azkaban
+DTEND;VALUE=DATE:20040611
+DESCRIPTION:Harry Potter and his friends Ron and Hermione return as teen
+ agers to Hogwarts School of Witchcraft and Wizardry for their third year
+  of study\, where they delve into the mystery surrounding an escaped pri
+ soner who poses a dangerous threat to the young wizard. 
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Vin Diesel\, Judi Dench
+DTSTAMP:20040310T012906Z
+UID:5DD27BBA-7230-11D8-B1E4-000A27B6071A
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=breakinalltherul
+ es
+DTSTART;VALUE=DATE:20040610
+SUMMARY:Chronicles of Riddick aka Pitch Black 2
+DTEND;VALUE=DATE:20040611
+DESCRIPTION:Riddick\, now a hunted man\, finds himself in the middle of 
+  two opposing forces in a major crusade. 
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Tom Hanks\, Marlon Wayans\nDirected by Joel Coen
+DTSTAMP:20040318T184326Z
+UID:A253E792-7230-11D8-B1E4-000A27B6071A
+SEQUENCE:3
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=theladykillers
+DTSTART;VALUE=DATE:20040603
+SUMMARY:Lady Killers\, The
+DTEND;VALUE=DATE:20040604
+DESCRIPTION:Goldthwait Higginson Dorr III\, Ph.D.\, a charlatan professo
+ r who’s assembled a gang of \"experts\" for the heist of the century. Th
+ e thieves The ruse: the five need a place to practice their church music
+ . The problem: it quickly becomes evident that Dorr’s thieves lack the m
+ ental capacity to do the job. The bigger problem: they have all seriousl
+ y underestimated their upstairs host.\n
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Colin Farrell
+DTSTAMP:20040314T021245Z
+UID:B83EE0B2-755C-11D8-885C-000A9596385E
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=intermission
+DTSTART;VALUE=DATE:20040603
+SUMMARY:Intermission
+DTEND;VALUE=DATE:20040604
+DESCRIPTION:Intermission is an urban love story about people adrift and 
+ their convoluted journeys in the search for some kind of love. \n\n\"\"I
+ ntermission\" is all done with an assured hand that combines action\, vi
+ olence\, sex and humor in liberal doses with its talented ensemble cast 
+ and manic\, inventive story.\"\n-- Robin Clifford\, REELING REVIEWS
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Jennifer Garner
+DTSTAMP:20040318T184643Z
+UID:2B748ED4-755D-11D8-885C-000A9596385E
+SEQUENCE:4
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=13goingon30
+DTSTART;VALUE=DATE:20040916
+SUMMARY:13 Going on 30
+DTEND;VALUE=DATE:20040917
+DESCRIPTION:A 13 year old girl plays a game on her 13th birthday and wak
+ es up the next day as a 30 year old woman.
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Mike Myers\, Eddie Murphy\, Cameron Diaz\, John Lithgow\, John 
+ Cleese
+DTSTAMP:20040314T021623Z
+UID:6D27F7F9-755D-11D8-885C-000A9596385E
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=shrek2
+DTSTART;VALUE=DATE:20040617
+SUMMARY:Shrek 2
+DTEND;VALUE=DATE:20040618
+DESCRIPTION:Princess Fiona's parents invite her and Shrek to dinner to c
+ elebrate her marriage. If only they knew the newlyweds were both ogres. 
+ 
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20040314T022349Z
+UID:9EEA9830-755D-11D8-885C-000A9596385E
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=barbershop2
+DTSTART;VALUE=DATE:20040624
+SUMMARY:Barbershop 2: Back in Business
+DTEND;VALUE=DATE:20040625
+DESCRIPTION:Why not spend another day with the crew at Calvin's shop in 
+ the South Side of Chicago?\n\n\"The seriousness with which Barbershop II
+  treats its political conscience offers an unexpected weight to what’s e
+ ssentially a big screen sitcom.\"\n-- Mark Palermo\, COAST (HALIFAX\, NO
+ VA SCOTIA
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Bill Paxton
+DTSTAMP:20040314T024934Z
+UID:BBD3136E-755D-11D8-885C-000A9596385E
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=clubdread
+DTSTART;VALUE=DATE:20040624
+SUMMARY:Club Dread
+DTEND;VALUE=DATE:20040625
+DESCRIPTION:At Club Dread\, an alcohol drenched swinging-singles-style i
+ sland resort off the coast of Costa Rica\, the festivities are interrupt
+ ed by the presence of a machete-wielding serial killer.\n\n\"Most of the
+  movie is just blood and bodies\, some of the dead\, some of them toples
+ s\, and none of them interesting.\"\n-- Stephen Whitty\, NEWARK STAR-LED
+ GER
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Lindsay Lohan\, Adam Garcia
+DTSTAMP:20040318T183009Z
+UID:C4BE60EA-755D-11D8-885C-000A9596385E
+SEQUENCE:4
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=confessionsofate
+ enagedramaqueen
+DTSTART;VALUE=DATE:20040408
+SUMMARY:Confessions of a Teenage Drama Queen
+DTEND;VALUE=DATE:20040409
+DESCRIPTION:A teenage girl is convinced that her home city revolves arou
+ nd her until her family packs up and moves to the suburbs\, where she fi
+ nds herself competing for attention. \n\n\"What teenage girl would enjoy
+  watching this? I'm glad Disney addresses this oft-ignored demographic\,
+  but if these girls are pandered to so obviously\, won't they feel insul
+ ted?\"\n-- Jeffrey Chen\, WINDOW TO THE MOVIES
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Lindsay Lohan
+DTSTAMP:20040314T022716Z
+UID:CAEA6CFA-755D-11D8-885C-000A9596385E
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=meangirls
+DTSTART;VALUE=DATE:20040624
+SUMMARY:Mean Girls
+DTEND;VALUE=DATE:20040625
+DESCRIPTION:A girl who grew up in many places returns to an Illinois pub
+ lic high school\, falls for the wrong guy\, and experiences humiliation 
+ from her female classmates.
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Julia Stiles\, Miranda Richardson\, James Fox\, Ben Miller. D: 
+ Martha Cooli
+DTSTAMP:20040314T021829Z
+UID:D0644C6E-468F-11D8-A8A0-000A958D1EFE
+SEQUENCE:5
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=princeandme
+DTSTART;VALUE=DATE:20040624
+SUMMARY:Prince and Me\, The
+DTEND;VALUE=DATE:20040625
+DESCRIPTION:A fairy tale love-story about a pre-med student who falls in
+  love with a Danish Prince. 
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20040701
+DTEND;VALUE=DATE:20040702
+SUMMARY:New York Minute
+UID:236E44EA-77A6-11D8-937F-000A9596385E
+SEQUENCE:2
+DTSTAMP:20040317T000108Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20040701
+DTEND;VALUE=DATE:20040702
+SUMMARY:Spiderman 2
+UID:27824F06-77A6-11D8-937F-000A9596385E
+SEQUENCE:2
+DTSTAMP:20040317T000106Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20040318T183450Z
+UID:C6329B7B-52C7-11D8-B289-000A958D1EFE
+SEQUENCE:7
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=dirtydancinghava
+ nanights
+DTSTART;VALUE=DATE:20040429
+SUMMARY:Dirty Dancing: Havana Nights
+DTEND;VALUE=DATE:20040430
+DESCRIPTION:Set in 1958 Havana\, this is the story of a lonely 17-year-o
+ ld American girl\, Katie\, who moves to Cuba in the days right before th
+ e Revolution with her parents\, where she meets a charming and talented 
+ local dancer\, Javier.\n\n\"molds a great deal of the franchise's first 
+ film and makes an even more compelling film than the original.\"\n-- Chr
+ is Faile\, FILMJERK.COM
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Dir Roger Michell w/ Anne Reid\, Daniel Craig.
+DTSTAMP:20040318T183748Z
+UID:CFB7CEFC-090D-11D8-B1DB-000A958D1EFE
+SEQUENCE:9
+DTSTART;VALUE=DATE:20040520
+SUMMARY:Mother\, The
+DTEND;VALUE=DATE:20040521
+DESCRIPTION:A recently widowed suburban hausfrau falls for her adult dau
+ ghter's married lover in The Mother\, a kitchen-sink drama of building d
+ ramatic force and incongruous visual loveliness.
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Jet Li\; Maggie Cheung\; Tony Leung\; Zhang Ziyi\; Daoming Chen
+ 
+DTSTAMP:20040318T184928Z
+UID:5FD00E54-468E-11D8-A8A0-000A958D1EFE
+SEQUENCE:5
+URL;VALUE=URI:http://www.movie-list.com/h/hero.shtml
+DTSTART;VALUE=DATE:20040624
+SUMMARY:Hero
+DTEND;VALUE=DATE:20040625
+DESCRIPTION:Using the assasination attempt of the historical figure\, Ch
+ in Shi Huang Di (The first emperor of China) as a backdrop\, this film a
+ ttempts to explore and develop a better understanding of the Chinese con
+ cept of a hero.\n\n  \"Instead of reinventing this genre\, Zhang opts to
+  dazzle his audience with his assemblage of technical and aesthetic wond
+ ers.\"\n-- Jeremy Heilman\,MOVIEMARTYR.COM
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Michael Caine\, Tilda Swinton\, Jeremy Northam. Directed by Nor
+ man Jewison
+DTSTAMP:20040318T185526Z
+UID:89737536-790D-11D8-8109-000A9596385E
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=statement
+DTSTART;VALUE=DATE:20040708
+SUMMARY:Statement\, The
+DTEND;VALUE=DATE:20040709
+DESCRIPTION:Tale of a former Nazi executioner who becomes a target of hi
+ t men and Police investigators. \n\n \"A surprisingly mild thriller\, on
+ e that meanders and spasms dramatically\, and that\, despite its occasio
+ nal outburst of violence\, wastes a cast of ordinarily superb actors.\"\
+ n-- John Anderson\, NEWSDAY
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Matthew Lillard\, Seth Gree
+DTSTAMP:20040318T185626Z
+UID:D2C9AC2A-790D-11D8-8109-000A9596385E
+SEQUENCE:2
+DTSTART;VALUE=DATE:20040708
+SUMMARY:Without a Paddle
+DTEND;VALUE=DATE:20040709
+DESCRIPTION:Three city-dwelling friends go on a camping trip with disast
+ rous results. 
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Bruce Willis\, Matthew Perry\, Natasha Henstridge\, Amanda Peet
+ \, Kevin Pollak
+DTSTAMP:20040318T185823Z
+UID:F6A36D66-790D-11D8-8109-000A9596385E
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=wholetenyards
+DTSTART;VALUE=DATE:20040708
+SUMMARY:Whole Ten Yards\, The
+DTEND;VALUE=DATE:20040709
+DESCRIPTION:Jimmy the Tulip's (Willis) quiet new life is shaken up by hi
+ s old pal Oz (Perry)\, whose wife (Henstridge) has been kidnapped by a H
+ ungarian mob. The Tulip and his wife Jill (Peet) spring into action.
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Jack Black\, Ben Stiller\, Rachel Weisz\, Christopher Walken. D
+ irected by Barry Levinson.
+DTSTAMP:20040327T093820Z
+UID:C88418E3-7FD1-11D8-86BD-000A27B6071A
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=envy
+DTSTART;VALUE=DATE:20040715
+SUMMARY:Envy
+DTEND;VALUE=DATE:20040716
+DESCRIPTION:A man becomes increasingly jealous of his friend's newfound 
+ success.
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Keira Knightley
+DTSTAMP:20040327T094354Z
+UID:CBEDB8F1-7FD1-11D8-86BD-000A27B6071A
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=kingarthur
+DTSTART;VALUE=DATE:20040715
+SUMMARY:King Arthur
+DTEND;VALUE=DATE:20040716
+DESCRIPTION:A demystified take on the tale of King Arthur and the Knight
+ s of the Round Table.
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Will Smith. Directed by Alex Proyas.
+DTSTAMP:20040327T094831Z
+UID:4E91CBDC-7FD3-11D8-86BD-000A27B6071A
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=irobot
+DTSTART;VALUE=DATE:20040722
+SUMMARY:I Robot
+DTEND;VALUE=DATE:20040723
+DESCRIPTION:In the year 2035 a techno-phobic cop investigates a crime th
+ at may have been perpetrated by a robot\, which leads to a larger threat
+  to humanity.\n
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:Kurt Russell\, Patricia Clarkson
+DTSTAMP:20040327T095105Z
+UID:B7B32328-7FD3-11D8-86BD-000A27B6071A
+SEQUENCE:2
+URL;VALUE=URI:http://www.movie-list.com/trailers.php?id=miracle
+DTSTART;VALUE=DATE:20040722
+SUMMARY:Miracle
+DTEND;VALUE=DATE:20040723
+DESCRIPTION:Miracle tells the true story of Herb Brooks (Russell)\, the 
+ player-turned-coach who led the 1980 U.S. Olympic hockey team to victory
+  over the seemingly invincible Russian squad.\n
+END:VEVENT
+END:VCALENDAR

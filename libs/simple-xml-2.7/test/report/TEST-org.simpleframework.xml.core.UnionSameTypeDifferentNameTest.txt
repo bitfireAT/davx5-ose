@@ -1,0 +1,58 @@
+Testsuite: org.simpleframework.xml.core.UnionSameTypeDifferentNameTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.128 sec
+------------- Standard Output ---------------
+<optionalNameExample>
+   <login>john.doe</login>
+</optionalNameExample><optionalNameExample>
+   <login>john.doe</login>
+</optionalNameExample>
+<optional-name-example ID="0">
+   <!-- java.lang.String -->
+   <login ID="1">john.doe</login>
+</optional-name-example>>>>>> ELEMENT=[element optional-name-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionSameTypeDifferentNameTest$OptionalNameExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<OptionalNameExample ID="0">
+   <!-- java.lang.String -->
+   <Login ID="1">john.doe</Login>
+</OptionalNameExample>>>>>> ELEMENT=[element OptionalNameExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionSameTypeDifferentNameTest$OptionalNameExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<optionalNameExample>
+   <login>john.doe</login>
+</optionalNameExample><optionalNameExample>
+   <login>john.doe</login>
+</optionalNameExample>
+<optional-name-example ID="0">
+   <!-- java.lang.String -->
+   <login ID="1">john.doe</login>
+</optional-name-example>>>>>> ELEMENT=[element optional-name-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionSameTypeDifferentNameTest$OptionalNameExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<OptionalNameExample ID="0">
+   <!-- java.lang.String -->
+   <Login ID="1">john.doe</Login>
+</OptionalNameExample>>>>>> ELEMENT=[element OptionalNameExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionSameTypeDifferentNameTest$OptionalNameExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<optionalNameExample>
+   <login>john.doe</login>
+</optionalNameExample><optionalNameExample>
+   <login>john.doe</login>
+</optionalNameExample>
+<optional-name-example ID="0">
+   <!-- java.lang.String -->
+   <login ID="1">john.doe</login>
+</optional-name-example>>>>>> ELEMENT=[element optional-name-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionSameTypeDifferentNameTest$OptionalNameExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<OptionalNameExample ID="0">
+   <!-- java.lang.String -->
+   <Login ID="1">john.doe</Login>
+</OptionalNameExample>>>>>> ELEMENT=[element OptionalNameExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionSameTypeDifferentNameTest$OptionalNameExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testOptionalName took 0.126 sec
+Testcase: testDirectory took 0 sec

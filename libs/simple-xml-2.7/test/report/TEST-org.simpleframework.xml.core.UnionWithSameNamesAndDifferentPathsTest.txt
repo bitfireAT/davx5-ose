@@ -1,0 +1,85 @@
+Testsuite: org.simpleframework.xml.core.UnionWithSameNamesAndDifferentPathsTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.147 sec
+------------- Standard Output ---------------
+<example>
+   <path>
+      <x:a xmlns:x="http://www.xml.com/ns">X</x:a>
+   </path>
+   <path>
+      <x:a xmlns:x="http://www.xml.com/ns">Y</x:a>
+   </path>
+</example><example>
+   <path>
+      <x:a xmlns:x="http://www.xml.com/ns">X</x:a>
+   </path>
+   <path>
+      <x:a xmlns:x="http://www.xml.com/ns">Y</x:a>
+   </path>
+</example>
+<example ID="0">
+   <path>
+      <!-- java.lang.String -->
+      <x:a ID="1" xmlns:x="http://www.xml.com/ns">X</x:a>
+   </path>
+   <path>
+      <!-- java.lang.String -->
+      <x:a ID="2" xmlns:x="http://www.xml.com/ns">Y</x:a>
+   </path>
+</example>>>>>> ELEMENT=[element example]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionWithSameNamesAndDifferentPathsTest$Example]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Example ID="0">
+   <Path>
+      <!-- java.lang.String -->
+      <x:A ID="1" xmlns:x="http://www.xml.com/ns">X</x:A>
+   </Path>
+   <Path>
+      <!-- java.lang.String -->
+      <x:A ID="2" xmlns:x="http://www.xml.com/ns">Y</x:A>
+   </Path>
+</Example>>>>>> ELEMENT=[element Example]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionWithSameNamesAndDifferentPathsTest$Example]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+------------- Standard Error -----------------
+org.simpleframework.xml.core.ConstructorException: Parameter 'b' does not have a match in class org.simpleframework.xml.core.UnionWithSameNamesAndDifferentPathsTest$AmbiguousConstructorParameterExample
+	at org.simpleframework.xml.core.InstantiatorBuilder.validate(InstantiatorBuilder.java:249)
+	at org.simpleframework.xml.core.InstantiatorBuilder.build(InstantiatorBuilder.java:114)
+	at org.simpleframework.xml.core.StructureBuilder.commit(StructureBuilder.java:483)
+	at org.simpleframework.xml.core.ObjectScanner.validate(ObjectScanner.java:418)
+	at org.simpleframework.xml.core.ObjectScanner.scan(ObjectScanner.java:373)
+	at org.simpleframework.xml.core.ObjectScanner.<init>(ObjectScanner.java:82)
+	at org.simpleframework.xml.core.ScannerFactory.getInstance(ScannerFactory.java:81)
+	at org.simpleframework.xml.core.Support.getScanner(Support.java:357)
+	at org.simpleframework.xml.core.Support.getName(Support.java:419)
+	at org.simpleframework.xml.core.Source.getName(Source.java:240)
+	at org.simpleframework.xml.core.Traverser.getName(Traverser.java:284)
+	at org.simpleframework.xml.core.Traverser.write(Traverser.java:203)
+	at org.simpleframework.xml.core.Traverser.write(Traverser.java:186)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1180)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1162)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1140)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1259)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1241)
+	at org.simpleframework.xml.core.Persister.write(Persister.java:1222)
+	at org.simpleframework.xml.core.UnionWithSameNamesAndDifferentPathsTest.testErrorInParametersExample(UnionWithSameNamesAndDifferentPathsTest.java:95)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:154)
+	at junit.framework.TestCase.runBare(TestCase.java:127)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:118)
+	at junit.framework.TestSuite.runTest(TestSuite.java:208)
+	at junit.framework.TestSuite.run(TestSuite.java:203)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.run(JUnitTestRunner.java:518)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.launch(JUnitTestRunner.java:1052)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.main(JUnitTestRunner.java:906)
+------------- ---------------- ---------------
+
+Testcase: testNamespaceWithUnion took 0.139 sec
+Testcase: testErrorInParametersExample took 0.007 sec
+Testcase: testDirectory took 0 sec

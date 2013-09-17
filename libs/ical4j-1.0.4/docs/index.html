@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>iCal4j</title>
+    <link rel="stylesheet" href="css/default.css" type="text/css" />
+    <link rel="alternate" href="http://sourceforge.net/export/rss2_projnews.php?group_id=107024&amp;rss_fulltext=1" type="application/rss+xml" title="iCal4j - News"/>
+    <meta name="author" content="Ben Fortuna"/>
+    <meta name="description" content="A Java library for reading and writing iCalendar data streams"/>
+    <meta name="keywords" content="iCalendar, iCal, Parser, Java, Library, API"/>
+</head>
+<body>
+
+    <table>
+        <thead>
+            <tr>
+                <td colspan="13" class="title">iCal4<span style="background:red">j</span></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><a href="index.html">Home</a></td>
+                <td>|</td>
+                <td><a href="introduction.html">Introduction</a></td>
+                <td>|</td>
+                <td><a href="http://wiki.modularity.net.au/ical4j">Wiki</a></td>
+                <td>|</td>
+                <td><a href="apidocs/index.html">Documentation</a></td>
+                <td>|</td>
+                <td><a href="http://sourceforge.net/news/?group_id=107024">News</a></td>
+                <td>|</td>
+                <td><a href="http://sourceforge.net/forum/?group_id=107024">Support</a></td>
+                <td>|</td>
+                <td><a href="http://sourceforge.net/project/showfiles.php?group_id=107024">Download</a></td>
+                <td>|</td>
+                <td style="width:100%"><a href="http://m2.modularity.net.au/projects/ical4j/license.html" target="_blank">License</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+<div id="overview" class="content">
+	<h2>Overview <a href="#overview">&raquo;</a></h2>
+	<p>
+        iCal4j is a Java library used to read and
+        write iCalendar data streams as defined in
+        <a href="http://www.faqs.org/rfcs/rfc2445.html">RFC2445</a>.
+        The iCalendar standard provides a common data format used to store information about
+        calendar-specific data such as events, appointments, to-do lists, etc.
+        All of the popular calendaring tools, such as Lotus Notes, Outlook and Apple's iCal
+        also support the iCalendar standard.
+    </p>
+    <p>
+        Providing both a parser and an object model, iCal4j allows
+        you to either modify existing iCalendar data or create new
+        data models. Validation is also provided to ensure the
+        data maintains a state consistent with the specification.
+    </p>
+</div>
+
+<div id="popularity" class="content">
+	<h2>Popularity <a href="#popularity">&raquo;</a></h2>
+	<p>
+        <a href="http://sourceforge.net/project/stats/detail.php?group_id=107024&amp;ugn=ical4j&amp;mode=60day&amp;type=prdownload">
+            <img src="http://sourceforge.net/project/stats/detail.php?group_id=107024&amp;ugn=ical4j&amp;type=prdownload&amp;mode=60day&amp;package_id=0&amp;graph=1" alt="SourceForge.net Download Statistics"/>
+        </a>
+	</p>
+</div>
+
+<div id="versioninfo" class="content">
+	<h2>Version Information <a href="#versioninfo">&raquo;</a></h2>
+    <table>
+        <tbody>
+            <tr>
+                <th>0.9</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Initial release</li>
+                        <li>Primary focus: parsing iCalendar data stream and building object model</li>
+                        <li>Limited model manipulation</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.1</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Interim release</li>
+                        <li>Validation of object model</li>
+                        <li>Manipulation of object model</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.2</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Interim release</li>
+                        <li>Added typed constructors to Property classes</li>
+                        <li>Refactoring</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.3</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Interim release</li>
+                        <li>Finished implementation of types (Recur, Period)</li>
+                        <li>Bug fixes (see CHANGELOG for details)</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.4</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Interim release</li>
+                        <li>Implemented proper string representations for all entities</li>
+                        <li>Fixed folding and other changes (see CHANGELOG for details)</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.5</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Interim release</li>
+                        <li>Configurable output format for some date-time-based properties (UTC or local time)</li>
+                        <li>Added support for pre-defined VTimeZones</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.6</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Interim release</li>
+                        <li>Fixed bug with parsing certain date-time properties</li>
+                        <li>Added support for automatic validation</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.7</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Milestone (alpha) release</li>
+                        <li>Added convenience constructors to object model</li>
+                        <li>Initial design for suppporting <a href="http://www.faqs.org/rfcs/rfc2446.html">RFC2446</a></li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.8</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Second milestone (alpha) release</li>
+                        <li>Added support for special character escaping</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.9</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Third milestone (alpha) release</li>
+                        <li>All properties now mutable</li>
+                        <li>Decoupled parser/builder to allow for alternate parser implementations</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.10</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Fourth milestone (alpha) release</li>
+                        <li>Model classes now implement Serializable</li>
+                        <li>Bug fixes related to nested VALARMs in VTODOs</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.11</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Fifth alpha release</li>
+                        <li>Better support/usability for recurrence rules</li>
+                        <li>Convenience constructors added to most components</li>
+                        <li>Improved support for non-conformant folding of long lines</li>
+                        <li>See the CHANGELOG for further details</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.12</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Sixth alpha release</li>
+                        <li>Improved parsing of iCalendar files generated by KOrganizer</li>
+                        <li>Reimplemented some constants as typed instances</li>
+                        <li>Applied patch <a href="http://sourceforge.net/tracker/index.php?func=detail&amp;aid=1170060&amp;group_id=107024&amp;atid=646397">#1170060</a></li>
+                        <li>Added Base64 encoding to ATTACH property</li>
+                        <li>See the CHANGELOG for further details</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.13</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Seventh alpha release</li>
+                        <li>"Normalised" DateRange/Period, DateRangeNormalizer/PeriodList and associated recurrance methods</li>
+                        <li>Default charset is now UTF-8</li>
+                        <li>Applied patches #1197119, #1191253, #1185766, <a href="https://sourceforge.net/tracker/index.php?func=detail&amp;aid=1203990&amp;group_id=107024&amp;atid=646395">#1203990</a></li>
+                        <li>See the CHANGELOG for further details</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.14</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Interim release</li>
+                        <li>Introduced Date, DateTime and Dur types</li>
+                        <li>More support for timezones</li>
+                        <li>Applied patches: #1234424, #1244945</li>
+                        <li>Many more changes - see the CHANGELOG for further details</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.15</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Alpha release</li>
+                        <li>Introduced custom TimeZone implementation and TimeZone Registry support</li>
+                        <li>Added encoding/decoding of URIs</li>
+                        <li>More bug fixes - see the CHANGELOG for further details</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.16</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Interim release</li>
+                        <li>Includes a number of critical bug fixes (see CHANGELOG for further details)</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.17</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Interim release</li>
+                        <li>Now includes default timezone definitions (based on Olson timezone database)</li>
+                        <li>Support for experimental components</li>
+                        <li>
+                        	Other bug fixes (see
+                        	<a href="http://ical4j.cvs.sourceforge.net/ical4j/iCal4j/CHANGELOG?view=markup">CHANGELOG</a>
+                         	for details)
+                         </li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.18</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Alpha release</li>
+                        <li>Improved performance with regard to timezone lookups</li>
+                        <li>
+                          Date/Time instances now use the default Java timezone where no timezone
+						  information is specified (i.e. floating time).
+                        </li>
+                        <li>Updated timezone definitions</li>
+                        <li>
+                        	Other bug fixes (see
+                        	<a href="http://ical4j.cvs.sourceforge.net/ical4j/iCal4j/CHANGELOG?view=markup">CHANGELOG</a>
+                        	for details)
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.19</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Alpha release</li>
+                        <li>Added filtering capabilities (net.fortuna.ical4j.filter)</li>
+                        <li>Added support for indexed components and properties (see IndexedComponentList and IndexedPropertyList</li>
+                        <li>Improved compatibility with Mozilla Calendar's invalid "X" property (see relaxed parsing)</li>
+                        <li>Additional convenience methods for Components and Properties</li>
+                        <li>Even more performance improvements with timezones and dates</li>
+                        <li>Updated timezone definitions</li>
+                        <li>
+                        	Other bug fixes (see
+                        	<a href="http://ical4j.cvs.sourceforge.net/ical4j/iCal4j/CHANGELOG?view=markup">CHANGELOG</a>
+                        	for details)
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>0.9.20</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Alpha release</li>
+                        <li>Upgraded commons logging dependency to 1.1</li>
+                        <li>Added commons codec support for encoding attachments</li>
+                        <li>Updated timezone definitions</li>
+                        <li>
+                        	Other bug fixes (see
+                        	<a href="http://ical4j.cvs.sourceforge.net/ical4j/iCal4j/CHANGELOG?view=markup">CHANGELOG</a>
+                        	for details)
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th style="white-space:nowrap">1.0 beta</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Beta Release</li>
+                        <li>Clean up and consistency check of code</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr style="color: silver">
+                <th>1.0</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Stable Release</li>
+                        <li>Complete implementation of <a href="http://www.faqs.org/rfcs/rfc2445.html">RFC2445</a></li>
+                    </ul>
+                </td>
+            </tr>
+            <tr style="color: silver">
+                <th>1.1</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Stable Release</li>
+                        <li>Complete implementation of <a href="http://www.faqs.org/rfcs/rfc2446.html">RFC2446</a></li>
+                    </ul>
+                </td>
+            </tr>
+            <tr style="color: silver">
+                <th>1.2</th>
+                <td style="width:100%">
+                    <ul>
+                        <li>Stable Release</li>
+                        <li>Complete implementation of <a href="http://www.faqs.org/rfcs/rfc2447.html">RFC2447</a></li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="dependencies" class="content">
+	<h2>Dependencies <a href="#dependencies">&raquo;</a></h2>
+	
+		Please see the
+		<a href="http://modularity.net.au/projects/ical4j/dependencies.html">Project Documentation</a>
+		for a list of dependencies.
+</div>
+
+<div id="footer">
+	<p>
+	    Copyright 2007 &#169;
+	    <a href="mailto:fortuna@users.sourceforge.net">Ben Fortun<span style="background:red">a</span></a>
+    </p>
+    <p>
+	    <a href="http://sourceforge.net/projects/ical4j"><img src="http://sourceforge.net/sflogo.php?group_id=122094&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Project" /></a>
+	</p>
+    <p>
+	    <a href="http://validator.w3.org/check?uri=referer">
+	      	<img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0!" height="31" width="88" />
+	    </a>
+    </p>
+</div>
+
+</body>
+</html>

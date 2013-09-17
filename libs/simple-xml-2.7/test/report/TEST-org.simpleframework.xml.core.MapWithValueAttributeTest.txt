@@ -1,0 +1,367 @@
+Testsuite: org.simpleframework.xml.core.MapWithValueAttributeTest
+Tests run: 6, Failures: 0, Errors: 0, Time elapsed: 0.189 sec
+------------- Standard Output ---------------
+<mapWithValueTextExample id="0">
+   <entry key="d">3.0</entry>
+   <entry key="b">1.0</entry>
+   <entry key="c">2.0</entry>
+   <entry key="a">0.0</entry>
+</mapWithValueTextExample><mapWithValueTextExample id="0">
+   <entry key="d">3.0</entry>
+   <entry key="b">1.0</entry>
+   <entry key="c">2.0</entry>
+   <entry key="a">0.0</entry>
+</mapWithValueTextExample>
+<map-with-value-text-example ID="0">
+   <entry key="d">3.0</entry>
+   <entry key="b">1.0</entry>
+   <entry key="c">2.0</entry>
+   <entry key="a">0.0</entry>
+</map-with-value-text-example>>>>>> ELEMENT=[element map-with-value-text-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapWithValueAttributeTest$MapWithValueTextExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<MapWithValueTextExample ID="0">
+   <Entry key="d">3.0</Entry>
+   <Entry key="b">1.0</Entry>
+   <Entry key="c">2.0</Entry>
+   <Entry key="a">0.0</Entry>
+</MapWithValueTextExample>>>>>> ELEMENT=[element MapWithValueTextExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapWithValueAttributeTest$MapWithValueTextExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<mapWithValueElementExample id="0">
+   <entry>
+      <key id="1">d</key>
+      <value id="2">3.0</value>
+   </entry>
+   <entry>
+      <key id="3">b</key>
+      <value id="4">1.0</value>
+   </entry>
+   <entry>
+      <key id="5">c</key>
+      <value id="6">2.0</value>
+   </entry>
+   <entry>
+      <key id="7">a</key>
+      <value id="8">0.0</value>
+   </entry>
+</mapWithValueElementExample><mapWithValueElementExample id="0">
+   <entry>
+      <key id="1">d</key>
+      <value id="2">3.0</value>
+   </entry>
+   <entry>
+      <key id="3">b</key>
+      <value id="4">1.0</value>
+   </entry>
+   <entry>
+      <key id="5">c</key>
+      <value id="6">2.0</value>
+   </entry>
+   <entry>
+      <key id="7">a</key>
+      <value id="8">0.0</value>
+   </entry>
+</mapWithValueElementExample>
+<map-with-value-element-example ID="0">
+   <entry>
+      <!-- java.lang.String -->
+      <key ID="1">d</key>
+      <!-- java.lang.Double -->
+      <value ID="2">3.0</value>
+   </entry>
+   <entry>
+      <!-- java.lang.String -->
+      <key ID="3">b</key>
+      <!-- java.lang.Double -->
+      <value ID="4">1.0</value>
+   </entry>
+   <entry>
+      <!-- java.lang.String -->
+      <key ID="5">c</key>
+      <!-- java.lang.Double -->
+      <value ID="6">2.0</value>
+   </entry>
+   <entry>
+      <!-- java.lang.String -->
+      <key ID="7">a</key>
+      <!-- java.lang.Double -->
+      <value ID="8">0.0</value>
+   </entry>
+</map-with-value-element-example>>>>>> ELEMENT=[element map-with-value-element-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapWithValueAttributeTest$MapWithValueElementExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<MapWithValueElementExample ID="0">
+   <Entry>
+      <!-- java.lang.String -->
+      <Key ID="1">d</Key>
+      <!-- java.lang.Double -->
+      <value ID="2">3.0</value>
+   </Entry>
+   <Entry>
+      <!-- java.lang.String -->
+      <Key ID="3">b</Key>
+      <!-- java.lang.Double -->
+      <value ID="4">1.0</value>
+   </Entry>
+   <Entry>
+      <!-- java.lang.String -->
+      <Key ID="5">c</Key>
+      <!-- java.lang.Double -->
+      <value ID="6">2.0</value>
+   </Entry>
+   <Entry>
+      <!-- java.lang.String -->
+      <Key ID="7">a</Key>
+      <!-- java.lang.Double -->
+      <value ID="8">0.0</value>
+   </Entry>
+</MapWithValueElementExample>>>>>> ELEMENT=[element MapWithValueElementExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapWithValueAttributeTest$MapWithValueElementExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<mapWithValueAttributeExample id="0">
+   <entry key="d" value="3.0"/>
+   <entry key="b" value="1.0"/>
+   <entry key="c" value="2.0"/>
+   <entry key="a" value="0.0"/>
+</mapWithValueAttributeExample><mapWithValueAttributeExample id="0">
+   <entry key="d" value="3.0"/>
+   <entry key="b" value="1.0"/>
+   <entry key="c" value="2.0"/>
+   <entry key="a" value="0.0"/>
+</mapWithValueAttributeExample>
+<map-with-value-attribute-example ID="0">
+   <entry key="d" value="3.0"/>
+   <entry key="b" value="1.0"/>
+   <entry key="c" value="2.0"/>
+   <entry key="a" value="0.0"/>
+</map-with-value-attribute-example>>>>>> ELEMENT=[element map-with-value-attribute-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapWithValueAttributeTest$MapWithValueAttributeExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<MapWithValueAttributeExample ID="0">
+   <Entry key="d" value="3.0"/>
+   <Entry key="b" value="1.0"/>
+   <Entry key="c" value="2.0"/>
+   <Entry key="a" value="0.0"/>
+</MapWithValueAttributeExample>>>>>> ELEMENT=[element MapWithValueAttributeExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapWithValueAttributeTest$MapWithValueAttributeExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<mapWithCompositeValueExample id="0">
+   <entry key="a">
+      <value id="1">
+         <name id="2">B</name>
+         <value id="3">C</value>
+      </value>
+   </entry>
+   <entry key="x">
+      <value id="4">
+         <name id="5">Y</name>
+         <value id="6">Z</value>
+      </value>
+   </entry>
+</mapWithCompositeValueExample><mapWithCompositeValueExample id="0">
+   <entry key="a">
+      <value id="1">
+         <name id="2">B</name>
+         <value id="3">C</value>
+      </value>
+   </entry>
+   <entry key="x">
+      <value id="4">
+         <name id="5">Y</name>
+         <value id="6">Z</value>
+      </value>
+   </entry>
+</mapWithCompositeValueExample>
+<map-with-composite-value-example ID="0">
+   <entry key="a">
+      <!-- org.simpleframework.xml.core.MapWithValueAttributeTest$ValueExample -->
+      <value ID="1">
+         <!-- java.lang.String -->
+         <name ID="2">B</name>
+         <!-- java.lang.String -->
+         <value ID="3">C</value>
+      </value>
+   </entry>
+   <entry key="x">
+      <!-- org.simpleframework.xml.core.MapWithValueAttributeTest$ValueExample -->
+      <value ID="4">
+         <!-- java.lang.String -->
+         <name ID="5">Y</name>
+         <!-- java.lang.String -->
+         <value ID="6">Z</value>
+      </value>
+   </entry>
+</map-with-composite-value-example>>>>>> ELEMENT=[element map-with-composite-value-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapWithValueAttributeTest$MapWithCompositeValueExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<MapWithCompositeValueExample ID="0">
+   <Entry key="a">
+      <!-- org.simpleframework.xml.core.MapWithValueAttributeTest$ValueExample -->
+      <Value ID="1">
+         <!-- java.lang.String -->
+         <Name ID="2">B</Name>
+         <!-- java.lang.String -->
+         <Value ID="3">C</Value>
+      </Value>
+   </Entry>
+   <Entry key="x">
+      <!-- org.simpleframework.xml.core.MapWithValueAttributeTest$ValueExample -->
+      <Value ID="4">
+         <!-- java.lang.String -->
+         <Name ID="5">Y</Name>
+         <!-- java.lang.String -->
+         <Value ID="6">Z</Value>
+      </Value>
+   </Entry>
+</MapWithCompositeValueExample>>>>>> ELEMENT=[element MapWithCompositeValueExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapWithValueAttributeTest$MapWithCompositeValueExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<mapWithCompositeValueAndElementKeyExample id="0">
+   <entry>
+      <key id="1">a</key>
+      <value id="2">
+         <name id="3">B</name>
+         <value id="4">C</value>
+      </value>
+   </entry>
+   <entry>
+      <key id="5">x</key>
+      <value id="6">
+         <name id="7">Y</name>
+         <value id="8">Z</value>
+      </value>
+   </entry>
+</mapWithCompositeValueAndElementKeyExample><mapWithCompositeValueAndElementKeyExample id="0">
+   <entry>
+      <key id="1">a</key>
+      <value id="2">
+         <name id="3">B</name>
+         <value id="4">C</value>
+      </value>
+   </entry>
+   <entry>
+      <key id="5">x</key>
+      <value id="6">
+         <name id="7">Y</name>
+         <value id="8">Z</value>
+      </value>
+   </entry>
+</mapWithCompositeValueAndElementKeyExample>
+<map-with-composite-value-and-element-key-example ID="0">
+   <entry>
+      <!-- java.lang.String -->
+      <key ID="1">a</key>
+      <!-- org.simpleframework.xml.core.MapWithValueAttributeTest$ValueExample -->
+      <value ID="2">
+         <!-- java.lang.String -->
+         <name ID="3">B</name>
+         <!-- java.lang.String -->
+         <value ID="4">C</value>
+      </value>
+   </entry>
+   <entry>
+      <!-- java.lang.String -->
+      <key ID="5">x</key>
+      <!-- org.simpleframework.xml.core.MapWithValueAttributeTest$ValueExample -->
+      <value ID="6">
+         <!-- java.lang.String -->
+         <name ID="7">Y</name>
+         <!-- java.lang.String -->
+         <value ID="8">Z</value>
+      </value>
+   </entry>
+</map-with-composite-value-and-element-key-example>>>>>> ELEMENT=[element map-with-composite-value-and-element-key-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapWithValueAttributeTest$MapWithCompositeValueAndElementKeyExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<MapWithCompositeValueAndElementKeyExample ID="0">
+   <Entry>
+      <!-- java.lang.String -->
+      <Key ID="1">a</Key>
+      <!-- org.simpleframework.xml.core.MapWithValueAttributeTest$ValueExample -->
+      <Value ID="2">
+         <!-- java.lang.String -->
+         <Name ID="3">B</Name>
+         <!-- java.lang.String -->
+         <Value ID="4">C</Value>
+      </Value>
+   </Entry>
+   <Entry>
+      <!-- java.lang.String -->
+      <Key ID="5">x</Key>
+      <!-- org.simpleframework.xml.core.MapWithValueAttributeTest$ValueExample -->
+      <Value ID="6">
+         <!-- java.lang.String -->
+         <Name ID="7">Y</Name>
+         <!-- java.lang.String -->
+         <Value ID="8">Z</Value>
+      </Value>
+   </Entry>
+</MapWithCompositeValueAndElementKeyExample>>>>>> ELEMENT=[element MapWithCompositeValueAndElementKeyExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapWithValueAttributeTest$MapWithCompositeValueAndElementKeyExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+------------- Standard Error -----------------
+<mapWithValueTextExample id="0">
+   <entry key="d">3.0</entry>
+   <entry key="b">1.0</entry>
+   <entry key="c">2.0</entry>
+   <entry key="a">0.0</entry>
+</mapWithValueTextExample><mapWithValueElementExample id="0">
+   <entry>
+      <key id="1">d</key>
+      <value id="2">3.0</value>
+   </entry>
+   <entry>
+      <key id="3">b</key>
+      <value id="4">1.0</value>
+   </entry>
+   <entry>
+      <key id="5">c</key>
+      <value id="6">2.0</value>
+   </entry>
+   <entry>
+      <key id="7">a</key>
+      <value id="8">0.0</value>
+   </entry>
+</mapWithValueElementExample><mapWithValueAttributeExample id="0">
+   <entry key="d" value="3.0"/>
+   <entry key="b" value="1.0"/>
+   <entry key="c" value="2.0"/>
+   <entry key="a" value="0.0"/>
+</mapWithValueAttributeExample><mapWithCompositeValueExample id="0">
+   <entry key="a">
+      <value id="1">
+         <name id="2">B</name>
+         <value id="3">C</value>
+      </value>
+   </entry>
+   <entry key="x">
+      <value id="4">
+         <name id="5">Y</name>
+         <value id="6">Z</value>
+      </value>
+   </entry>
+</mapWithCompositeValueExample><mapWithCompositeValueAndElementKeyExample id="0">
+   <entry>
+      <key id="1">a</key>
+      <value id="2">
+         <name id="3">B</name>
+         <value id="4">C</value>
+      </value>
+   </entry>
+   <entry>
+      <key id="5">x</key>
+      <value id="6">
+         <name id="7">Y</name>
+         <value id="8">Z</value>
+      </value>
+   </entry>
+</mapWithCompositeValueAndElementKeyExample>------------- ---------------- ---------------
+
+Testcase: testPrimitiveTextMap took 0.102 sec
+Testcase: testPrimitiveElementMap took 0.016 sec
+Testcase: testPrimitiveAttributeMap took 0.01 sec
+Testcase: testCompositeValueMap took 0.036 sec
+Testcase: testCompositeValueAndElementKeyMap took 0.021 sec
+Testcase: testDirectory took 0 sec

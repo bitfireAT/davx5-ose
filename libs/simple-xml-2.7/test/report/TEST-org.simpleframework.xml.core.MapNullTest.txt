@@ -1,0 +1,874 @@
+Testsuite: org.simpleframework.xml.core.MapNullTest
+Tests run: 10, Failures: 0, Errors: 0, Time elapsed: 0.291 sec
+------------- Standard Output ---------------
+<complexMap>
+   <map class="java.util.HashMap">
+      <entry>
+         <compositeKey>
+            <name>name.4</name>
+            <address>address.4</address>
+         </compositeKey>
+         <mapEntry/>
+      </entry>
+   </map>
+</complexMap><complexMap>
+   <map class="java.util.HashMap">
+      <entry>
+         <compositeKey>
+            <name>name.4</name>
+            <address>address.4</address>
+         </compositeKey>
+         <mapEntry/>
+      </entry>
+   </map>
+</complexMap>
+<complex-map ID="0">
+   <!-- java.util.Map -->
+   <map class="java.util.HashMap" ID="1">
+      <entry>
+         <!-- org.simpleframework.xml.core.MapNullTest$CompositeKey -->
+         <composite-key ID="2">
+            <!-- java.lang.String -->
+            <name ID="3">name.4</name>
+            <!-- java.lang.String -->
+            <address ID="4">address.4</address>
+         </composite-key>
+         <map-entry/>
+      </entry>
+   </map>
+</complex-map>>>>>> ELEMENT=[element complex-map]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$ComplexMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ComplexMap ID="0">
+   <!-- java.util.Map -->
+   <Map class="java.util.HashMap" ID="1">
+      <Entry>
+         <!-- org.simpleframework.xml.core.MapNullTest$CompositeKey -->
+         <CompositeKey ID="2">
+            <!-- java.lang.String -->
+            <Name ID="3">name.4</Name>
+            <!-- java.lang.String -->
+            <Address ID="4">address.4</Address>
+         </CompositeKey>
+         <MapEntry/>
+      </Entry>
+   </Map>
+</ComplexMap>>>>>> ELEMENT=[element ComplexMap]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$ComplexMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<complexMap>
+   <map class="java.util.HashMap">
+      <entry>
+         <compositeKey>
+            <name>name.4</name>
+            <address>address.4</address>
+         </compositeKey>
+         <mapEntry/>
+      </entry>
+   </map>
+</complexMap><complexMap>
+   <map class="java.util.HashMap">
+      <entry>
+         <compositeKey>
+            <name>name.4</name>
+            <address>address.4</address>
+         </compositeKey>
+         <mapEntry/>
+      </entry>
+   </map>
+</complexMap>
+<complex-map ID="0">
+   <!-- java.util.Map -->
+   <map class="java.util.HashMap" ID="1">
+      <entry>
+         <!-- org.simpleframework.xml.core.MapNullTest$CompositeKey -->
+         <composite-key ID="2">
+            <!-- java.lang.String -->
+            <name ID="3">name.4</name>
+            <!-- java.lang.String -->
+            <address ID="4">address.4</address>
+         </composite-key>
+         <map-entry/>
+      </entry>
+   </map>
+</complex-map>>>>>> ELEMENT=[element complex-map]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$ComplexMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ComplexMap ID="0">
+   <!-- java.util.Map -->
+   <Map class="java.util.HashMap" ID="1">
+      <Entry>
+         <!-- org.simpleframework.xml.core.MapNullTest$CompositeKey -->
+         <CompositeKey ID="2">
+            <!-- java.lang.String -->
+            <Name ID="3">name.4</Name>
+            <!-- java.lang.String -->
+            <Address ID="4">address.4</Address>
+         </CompositeKey>
+         <MapEntry/>
+      </Entry>
+   </Map>
+</ComplexMap>>>>>> ELEMENT=[element ComplexMap]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$ComplexMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<complexMap>
+   <map class="java.util.HashMap">
+      <entry>
+         <compositeKey/>
+         <mapEntry>
+            <name>3</name>
+            <value>3</value>
+         </mapEntry>
+      </entry>
+   </map>
+</complexMap><complexMap>
+   <map class="java.util.HashMap">
+      <entry>
+         <compositeKey/>
+         <mapEntry>
+            <name>3</name>
+            <value>3</value>
+         </mapEntry>
+      </entry>
+   </map>
+</complexMap>
+<complex-map ID="0">
+   <!-- java.util.Map -->
+   <map class="java.util.HashMap" ID="1">
+      <entry>
+         <composite-key/>
+         <!-- org.simpleframework.xml.core.MapNullTest$MapEntry -->
+         <map-entry ID="2">
+            <!-- java.lang.String -->
+            <name ID="3">3</name>
+            <!-- java.lang.String -->
+            <value ID="4">3</value>
+         </map-entry>
+      </entry>
+   </map>
+</complex-map>>>>>> ELEMENT=[element complex-map]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$ComplexMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ComplexMap ID="0">
+   <!-- java.util.Map -->
+   <Map class="java.util.HashMap" ID="1">
+      <Entry>
+         <CompositeKey/>
+         <!-- org.simpleframework.xml.core.MapNullTest$MapEntry -->
+         <MapEntry ID="2">
+            <!-- java.lang.String -->
+            <Name ID="3">3</Name>
+            <!-- java.lang.String -->
+            <Value ID="4">3</Value>
+         </MapEntry>
+      </Entry>
+   </Map>
+</ComplexMap>>>>>> ELEMENT=[element ComplexMap]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$ComplexMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<complexMap>
+   <map class="java.util.HashMap">
+      <entry>
+         <compositeKey/>
+         <mapEntry>
+            <name>3</name>
+            <value>3</value>
+         </mapEntry>
+      </entry>
+   </map>
+</complexMap><complexMap>
+   <map class="java.util.HashMap">
+      <entry>
+         <compositeKey/>
+         <mapEntry>
+            <name>3</name>
+            <value>3</value>
+         </mapEntry>
+      </entry>
+   </map>
+</complexMap>
+<complex-map ID="0">
+   <!-- java.util.Map -->
+   <map class="java.util.HashMap" ID="1">
+      <entry>
+         <composite-key/>
+         <!-- org.simpleframework.xml.core.MapNullTest$MapEntry -->
+         <map-entry ID="2">
+            <!-- java.lang.String -->
+            <name ID="3">3</name>
+            <!-- java.lang.String -->
+            <value ID="4">3</value>
+         </map-entry>
+      </entry>
+   </map>
+</complex-map>>>>>> ELEMENT=[element complex-map]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$ComplexMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ComplexMap ID="0">
+   <!-- java.util.Map -->
+   <Map class="java.util.HashMap" ID="1">
+      <Entry>
+         <CompositeKey/>
+         <!-- org.simpleframework.xml.core.MapNullTest$MapEntry -->
+         <MapEntry ID="2">
+            <!-- java.lang.String -->
+            <Name ID="3">3</Name>
+            <!-- java.lang.String -->
+            <Value ID="4">3</Value>
+         </MapEntry>
+      </Entry>
+   </Map>
+</ComplexMap>>>>>> ELEMENT=[element ComplexMap]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$ComplexMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<primitiveMap>
+   <table class="java.util.HashMap">
+      <entry>
+         <string>example</string>
+         <bigDecimal/>
+      </entry>
+   </table>
+</primitiveMap><primitiveMap>
+   <table class="java.util.HashMap">
+      <entry>
+         <string>example</string>
+         <bigDecimal/>
+      </entry>
+   </table>
+</primitiveMap>
+<primitive-map ID="0">
+   <!-- java.util.Map -->
+   <table class="java.util.HashMap" ID="1">
+      <entry>
+         <!-- java.lang.String -->
+         <string ID="2">example</string>
+         <big-decimal/>
+      </entry>
+   </table>
+</primitive-map>>>>>> ELEMENT=[element primitive-map]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$PrimitiveMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<PrimitiveMap ID="0">
+   <!-- java.util.Map -->
+   <Table class="java.util.HashMap" ID="1">
+      <Entry>
+         <!-- java.lang.String -->
+         <String ID="2">example</String>
+         <bigDecimal/>
+      </Entry>
+   </Table>
+</PrimitiveMap>>>>>> ELEMENT=[element PrimitiveMap]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$PrimitiveMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<primitiveMap>
+   <table class="java.util.HashMap">
+      <entry>
+         <string>example</string>
+         <bigDecimal/>
+      </entry>
+   </table>
+</primitiveMap><primitiveMap>
+   <table class="java.util.HashMap">
+      <entry>
+         <string>example</string>
+         <bigDecimal/>
+      </entry>
+   </table>
+</primitiveMap>
+<primitive-map ID="0">
+   <!-- java.util.Map -->
+   <table class="java.util.HashMap" ID="1">
+      <entry>
+         <!-- java.lang.String -->
+         <string ID="2">example</string>
+         <big-decimal/>
+      </entry>
+   </table>
+</primitive-map>>>>>> ELEMENT=[element primitive-map]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$PrimitiveMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<PrimitiveMap ID="0">
+   <!-- java.util.Map -->
+   <Table class="java.util.HashMap" ID="1">
+      <Entry>
+         <!-- java.lang.String -->
+         <String ID="2">example</String>
+         <bigDecimal/>
+      </Entry>
+   </Table>
+</PrimitiveMap>>>>>> ELEMENT=[element PrimitiveMap]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$PrimitiveMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<primitiveMap>
+   <table class="java.util.HashMap">
+      <entry>
+         <string/>
+         <bigDecimal>4</bigDecimal>
+      </entry>
+   </table>
+</primitiveMap><primitiveMap>
+   <table class="java.util.HashMap">
+      <entry>
+         <string/>
+         <bigDecimal>4</bigDecimal>
+      </entry>
+   </table>
+</primitiveMap>
+<primitive-map ID="0">
+   <!-- java.util.Map -->
+   <table class="java.util.HashMap" ID="1">
+      <entry>
+         <string/>
+         <!-- java.math.BigDecimal -->
+         <big-decimal ID="2">4</big-decimal>
+      </entry>
+   </table>
+</primitive-map>>>>>> ELEMENT=[element primitive-map]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$PrimitiveMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<PrimitiveMap ID="0">
+   <!-- java.util.Map -->
+   <Table class="java.util.HashMap" ID="1">
+      <Entry>
+         <String/>
+         <!-- java.math.BigDecimal -->
+         <bigDecimal ID="2">4</bigDecimal>
+      </Entry>
+   </Table>
+</PrimitiveMap>>>>>> ELEMENT=[element PrimitiveMap]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$PrimitiveMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<primitiveMap>
+   <table class="java.util.HashMap">
+      <entry>
+         <string/>
+         <bigDecimal>4</bigDecimal>
+      </entry>
+   </table>
+</primitiveMap><primitiveMap>
+   <table class="java.util.HashMap">
+      <entry>
+         <string/>
+         <bigDecimal>4</bigDecimal>
+      </entry>
+   </table>
+</primitiveMap>
+<primitive-map ID="0">
+   <!-- java.util.Map -->
+   <table class="java.util.HashMap" ID="1">
+      <entry>
+         <string/>
+         <!-- java.math.BigDecimal -->
+         <big-decimal ID="2">4</big-decimal>
+      </entry>
+   </table>
+</primitive-map>>>>>> ELEMENT=[element primitive-map]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$PrimitiveMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<PrimitiveMap ID="0">
+   <!-- java.util.Map -->
+   <Table class="java.util.HashMap" ID="1">
+      <Entry>
+         <String/>
+         <!-- java.math.BigDecimal -->
+         <bigDecimal ID="2">4</bigDecimal>
+      </Entry>
+   </Table>
+</PrimitiveMap>>>>>> ELEMENT=[element PrimitiveMap]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$PrimitiveMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<primitiveMap>
+   <table class="java.util.HashMap">
+      <entry>
+         <string/>
+         <bigDecimal>4</bigDecimal>
+      </entry>
+      <entry>
+         <string>b</string>
+         <bigDecimal>2</bigDecimal>
+      </entry>
+      <entry>
+         <string>c</string>
+         <bigDecimal/>
+      </entry>
+      <entry>
+         <string>a</string>
+         <bigDecimal>1</bigDecimal>
+      </entry>
+   </table>
+</primitiveMap><primitiveMap>
+   <table class="java.util.HashMap">
+      <entry>
+         <string/>
+         <bigDecimal>4</bigDecimal>
+      </entry>
+      <entry>
+         <string>b</string>
+         <bigDecimal>2</bigDecimal>
+      </entry>
+      <entry>
+         <string>c</string>
+         <bigDecimal/>
+      </entry>
+      <entry>
+         <string>a</string>
+         <bigDecimal>1</bigDecimal>
+      </entry>
+   </table>
+</primitiveMap>
+<primitive-map ID="0">
+   <!-- java.util.Map -->
+   <table class="java.util.HashMap" ID="1">
+      <entry>
+         <string/>
+         <!-- java.math.BigDecimal -->
+         <big-decimal ID="2">4</big-decimal>
+      </entry>
+      <entry>
+         <!-- java.lang.String -->
+         <string ID="3">b</string>
+         <!-- java.math.BigDecimal -->
+         <big-decimal ID="4">2</big-decimal>
+      </entry>
+      <entry>
+         <!-- java.lang.String -->
+         <string ID="5">c</string>
+         <big-decimal/>
+      </entry>
+      <entry>
+         <!-- java.lang.String -->
+         <string ID="6">a</string>
+         <!-- java.math.BigDecimal -->
+         <big-decimal ID="7">1</big-decimal>
+      </entry>
+   </table>
+</primitive-map>>>>>> ELEMENT=[element primitive-map]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$PrimitiveMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<PrimitiveMap ID="0">
+   <!-- java.util.Map -->
+   <Table class="java.util.HashMap" ID="1">
+      <Entry>
+         <String/>
+         <!-- java.math.BigDecimal -->
+         <bigDecimal ID="2">4</bigDecimal>
+      </Entry>
+      <Entry>
+         <!-- java.lang.String -->
+         <String ID="3">b</String>
+         <!-- java.math.BigDecimal -->
+         <bigDecimal ID="4">2</bigDecimal>
+      </Entry>
+      <Entry>
+         <!-- java.lang.String -->
+         <String ID="5">c</String>
+         <bigDecimal/>
+      </Entry>
+      <Entry>
+         <!-- java.lang.String -->
+         <String ID="6">a</String>
+         <!-- java.math.BigDecimal -->
+         <bigDecimal ID="7">1</bigDecimal>
+      </Entry>
+   </Table>
+</PrimitiveMap>>>>>> ELEMENT=[element PrimitiveMap]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$PrimitiveMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<complexMap>
+   <map class="java.util.HashMap">
+      <entry>
+         <compositeKey/>
+         <mapEntry>
+            <name>3</name>
+            <value>3</value>
+         </mapEntry>
+      </entry>
+      <entry>
+         <compositeKey>
+            <name>name.1</name>
+            <address>address.1</address>
+         </compositeKey>
+         <mapEntry>
+            <name>1</name>
+            <value>1</value>
+         </mapEntry>
+      </entry>
+      <entry>
+         <compositeKey>
+            <name>name.2</name>
+            <address>address.2</address>
+         </compositeKey>
+         <mapEntry>
+            <name>2</name>
+            <value>2</value>
+         </mapEntry>
+      </entry>
+      <entry>
+         <compositeKey>
+            <name>name.4</name>
+            <address>address.4</address>
+         </compositeKey>
+         <mapEntry/>
+      </entry>
+   </map>
+</complexMap><complexMap>
+   <map class="java.util.HashMap">
+      <entry>
+         <compositeKey/>
+         <mapEntry>
+            <name>3</name>
+            <value>3</value>
+         </mapEntry>
+      </entry>
+      <entry>
+         <compositeKey>
+            <name>name.1</name>
+            <address>address.1</address>
+         </compositeKey>
+         <mapEntry>
+            <name>1</name>
+            <value>1</value>
+         </mapEntry>
+      </entry>
+      <entry>
+         <compositeKey>
+            <name>name.2</name>
+            <address>address.2</address>
+         </compositeKey>
+         <mapEntry>
+            <name>2</name>
+            <value>2</value>
+         </mapEntry>
+      </entry>
+      <entry>
+         <compositeKey>
+            <name>name.4</name>
+            <address>address.4</address>
+         </compositeKey>
+         <mapEntry/>
+      </entry>
+   </map>
+</complexMap>
+<complex-map ID="0">
+   <!-- java.util.Map -->
+   <map class="java.util.HashMap" ID="1">
+      <entry>
+         <composite-key/>
+         <!-- org.simpleframework.xml.core.MapNullTest$MapEntry -->
+         <map-entry ID="2">
+            <!-- java.lang.String -->
+            <name ID="3">3</name>
+            <!-- java.lang.String -->
+            <value REFERER="3"/>
+         </map-entry>
+      </entry>
+      <entry>
+         <!-- org.simpleframework.xml.core.MapNullTest$CompositeKey -->
+         <composite-key ID="4">
+            <!-- java.lang.String -->
+            <name ID="5">name.1</name>
+            <!-- java.lang.String -->
+            <address ID="6">address.1</address>
+         </composite-key>
+         <!-- org.simpleframework.xml.core.MapNullTest$MapEntry -->
+         <map-entry ID="7">
+            <!-- java.lang.String -->
+            <name ID="8">1</name>
+            <!-- java.lang.String -->
+            <value REFERER="8"/>
+         </map-entry>
+      </entry>
+      <entry>
+         <!-- org.simpleframework.xml.core.MapNullTest$CompositeKey -->
+         <composite-key ID="9">
+            <!-- java.lang.String -->
+            <name ID="10">name.2</name>
+            <!-- java.lang.String -->
+            <address ID="11">address.2</address>
+         </composite-key>
+         <!-- org.simpleframework.xml.core.MapNullTest$MapEntry -->
+         <map-entry ID="12">
+            <!-- java.lang.String -->
+            <name ID="13">2</name>
+            <!-- java.lang.String -->
+            <value REFERER="13"/>
+         </map-entry>
+      </entry>
+      <entry>
+         <!-- org.simpleframework.xml.core.MapNullTest$CompositeKey -->
+         <composite-key ID="14">
+            <!-- java.lang.String -->
+            <name ID="15">name.4</name>
+            <!-- java.lang.String -->
+            <address ID="16">address.4</address>
+         </composite-key>
+         <map-entry/>
+      </entry>
+   </map>
+</complex-map>>>>>> ELEMENT=[element complex-map]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$ComplexMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ComplexMap ID="0">
+   <!-- java.util.Map -->
+   <Map class="java.util.HashMap" ID="1">
+      <Entry>
+         <CompositeKey/>
+         <!-- org.simpleframework.xml.core.MapNullTest$MapEntry -->
+         <MapEntry ID="2">
+            <!-- java.lang.String -->
+            <Name ID="3">3</Name>
+            <!-- java.lang.String -->
+            <Value REFERER="3"/>
+         </MapEntry>
+      </Entry>
+      <Entry>
+         <!-- org.simpleframework.xml.core.MapNullTest$CompositeKey -->
+         <CompositeKey ID="4">
+            <!-- java.lang.String -->
+            <Name ID="5">name.1</Name>
+            <!-- java.lang.String -->
+            <Address ID="6">address.1</Address>
+         </CompositeKey>
+         <!-- org.simpleframework.xml.core.MapNullTest$MapEntry -->
+         <MapEntry ID="7">
+            <!-- java.lang.String -->
+            <Name ID="8">1</Name>
+            <!-- java.lang.String -->
+            <Value REFERER="8"/>
+         </MapEntry>
+      </Entry>
+      <Entry>
+         <!-- org.simpleframework.xml.core.MapNullTest$CompositeKey -->
+         <CompositeKey ID="9">
+            <!-- java.lang.String -->
+            <Name ID="10">name.2</Name>
+            <!-- java.lang.String -->
+            <Address ID="11">address.2</Address>
+         </CompositeKey>
+         <!-- org.simpleframework.xml.core.MapNullTest$MapEntry -->
+         <MapEntry ID="12">
+            <!-- java.lang.String -->
+            <Name ID="13">2</Name>
+            <!-- java.lang.String -->
+            <Value REFERER="13"/>
+         </MapEntry>
+      </Entry>
+      <Entry>
+         <!-- org.simpleframework.xml.core.MapNullTest$CompositeKey -->
+         <CompositeKey ID="14">
+            <!-- java.lang.String -->
+            <Name ID="15">name.4</Name>
+            <!-- java.lang.String -->
+            <Address ID="16">address.4</Address>
+         </CompositeKey>
+         <MapEntry/>
+      </Entry>
+   </Map>
+</ComplexMap>>>>>> ELEMENT=[element ComplexMap]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$ComplexMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<complexMap>
+   <map class="java.util.HashMap">
+      <entry>
+         <compositeKey>
+            <name>name.1</name>
+            <address>address.1</address>
+         </compositeKey>
+         <mapEntry>
+            <name>1</name>
+            <value>1</value>
+         </mapEntry>
+      </entry>
+      <entry>
+         <compositeKey/>
+         <mapEntry>
+            <name>3</name>
+            <value>3</value>
+         </mapEntry>
+      </entry>
+      <entry>
+         <compositeKey>
+            <name>name.2</name>
+            <address>address.2</address>
+         </compositeKey>
+         <mapEntry>
+            <name>2</name>
+            <value>2</value>
+         </mapEntry>
+      </entry>
+      <entry>
+         <compositeKey>
+            <name>name.4</name>
+            <address>address.4</address>
+         </compositeKey>
+         <mapEntry/>
+      </entry>
+   </map>
+</complexMap><complexMap>
+   <map class="java.util.HashMap">
+      <entry>
+         <compositeKey>
+            <name>name.1</name>
+            <address>address.1</address>
+         </compositeKey>
+         <mapEntry>
+            <name>1</name>
+            <value>1</value>
+         </mapEntry>
+      </entry>
+      <entry>
+         <compositeKey/>
+         <mapEntry>
+            <name>3</name>
+            <value>3</value>
+         </mapEntry>
+      </entry>
+      <entry>
+         <compositeKey>
+            <name>name.2</name>
+            <address>address.2</address>
+         </compositeKey>
+         <mapEntry>
+            <name>2</name>
+            <value>2</value>
+         </mapEntry>
+      </entry>
+      <entry>
+         <compositeKey>
+            <name>name.4</name>
+            <address>address.4</address>
+         </compositeKey>
+         <mapEntry/>
+      </entry>
+   </map>
+</complexMap>
+<complex-map ID="0">
+   <!-- java.util.Map -->
+   <map class="java.util.HashMap" ID="1">
+      <entry>
+         <!-- org.simpleframework.xml.core.MapNullTest$CompositeKey -->
+         <composite-key ID="2">
+            <!-- java.lang.String -->
+            <name ID="3">name.1</name>
+            <!-- java.lang.String -->
+            <address ID="4">address.1</address>
+         </composite-key>
+         <!-- org.simpleframework.xml.core.MapNullTest$MapEntry -->
+         <map-entry ID="5">
+            <!-- java.lang.String -->
+            <name ID="6">1</name>
+            <!-- java.lang.String -->
+            <value ID="7">1</value>
+         </map-entry>
+      </entry>
+      <entry>
+         <composite-key/>
+         <!-- org.simpleframework.xml.core.MapNullTest$MapEntry -->
+         <map-entry ID="8">
+            <!-- java.lang.String -->
+            <name ID="9">3</name>
+            <!-- java.lang.String -->
+            <value ID="10">3</value>
+         </map-entry>
+      </entry>
+      <entry>
+         <!-- org.simpleframework.xml.core.MapNullTest$CompositeKey -->
+         <composite-key ID="11">
+            <!-- java.lang.String -->
+            <name ID="12">name.2</name>
+            <!-- java.lang.String -->
+            <address ID="13">address.2</address>
+         </composite-key>
+         <!-- org.simpleframework.xml.core.MapNullTest$MapEntry -->
+         <map-entry ID="14">
+            <!-- java.lang.String -->
+            <name ID="15">2</name>
+            <!-- java.lang.String -->
+            <value ID="16">2</value>
+         </map-entry>
+      </entry>
+      <entry>
+         <!-- org.simpleframework.xml.core.MapNullTest$CompositeKey -->
+         <composite-key ID="17">
+            <!-- java.lang.String -->
+            <name ID="18">name.4</name>
+            <!-- java.lang.String -->
+            <address ID="19">address.4</address>
+         </composite-key>
+         <map-entry/>
+      </entry>
+   </map>
+</complex-map>>>>>> ELEMENT=[element complex-map]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$ComplexMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ComplexMap ID="0">
+   <!-- java.util.Map -->
+   <Map class="java.util.HashMap" ID="1">
+      <Entry>
+         <!-- org.simpleframework.xml.core.MapNullTest$CompositeKey -->
+         <CompositeKey ID="2">
+            <!-- java.lang.String -->
+            <Name ID="3">name.1</Name>
+            <!-- java.lang.String -->
+            <Address ID="4">address.1</Address>
+         </CompositeKey>
+         <!-- org.simpleframework.xml.core.MapNullTest$MapEntry -->
+         <MapEntry ID="5">
+            <!-- java.lang.String -->
+            <Name ID="6">1</Name>
+            <!-- java.lang.String -->
+            <Value ID="7">1</Value>
+         </MapEntry>
+      </Entry>
+      <Entry>
+         <CompositeKey/>
+         <!-- org.simpleframework.xml.core.MapNullTest$MapEntry -->
+         <MapEntry ID="8">
+            <!-- java.lang.String -->
+            <Name ID="9">3</Name>
+            <!-- java.lang.String -->
+            <Value ID="10">3</Value>
+         </MapEntry>
+      </Entry>
+      <Entry>
+         <!-- org.simpleframework.xml.core.MapNullTest$CompositeKey -->
+         <CompositeKey ID="11">
+            <!-- java.lang.String -->
+            <Name ID="12">name.2</Name>
+            <!-- java.lang.String -->
+            <Address ID="13">address.2</Address>
+         </CompositeKey>
+         <!-- org.simpleframework.xml.core.MapNullTest$MapEntry -->
+         <MapEntry ID="14">
+            <!-- java.lang.String -->
+            <Name ID="15">2</Name>
+            <!-- java.lang.String -->
+            <Value ID="16">2</Value>
+         </MapEntry>
+      </Entry>
+      <Entry>
+         <!-- org.simpleframework.xml.core.MapNullTest$CompositeKey -->
+         <CompositeKey ID="17">
+            <!-- java.lang.String -->
+            <Name ID="18">name.4</Name>
+            <!-- java.lang.String -->
+            <Address ID="19">address.4</Address>
+         </CompositeKey>
+         <MapEntry/>
+      </Entry>
+   </Map>
+</ComplexMap>>>>>> ELEMENT=[element ComplexMap]
+>>>>> TYPE=[class org.simpleframework.xml.core.MapNullTest$ComplexMap]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testEmptyCompositeValue took 0.117 sec
+Testcase: testEmptyCompositeBlankValue took 0.018 sec
+Testcase: testEmptyCompositeKey took 0.016 sec
+Testcase: testEmptyCompositeBlankKey took 0.016 sec
+Testcase: testEmptyPrimitiveValue took 0.013 sec
+Testcase: testEmptyPrimitiveBlankValue took 0.013 sec
+Testcase: testEmptyPrimitiveKey took 0.012 sec
+Testcase: testEmptyPrimitiveBlankKey took 0.011 sec
+Testcase: testNullValue took 0.07 sec
+Testcase: testDirectory took 0 sec

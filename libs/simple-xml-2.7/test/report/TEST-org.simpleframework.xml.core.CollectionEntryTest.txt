@@ -1,0 +1,218 @@
+Testsuite: org.simpleframework.xml.core.CollectionEntryTest
+Tests run: 5, Failures: 0, Errors: 0, Time elapsed: 0.161 sec
+------------- Standard Output ---------------
+<exampleCollection>
+   <list class="java.util.ArrayList">
+      <substitute id="1">
+         <text>one</text>
+      </substitute>
+      <substitute id="2">
+         <text>two</text>
+      </substitute>
+      <substitute id="3">
+         <text>three</text>
+      </substitute>
+   </list>
+</exampleCollection><exampleCollection>
+   <list class="java.util.ArrayList">
+      <substitute id="1">
+         <text>one</text>
+      </substitute>
+      <substitute id="2">
+         <text>two</text>
+      </substitute>
+      <substitute id="3">
+         <text>three</text>
+      </substitute>
+   </list>
+</exampleCollection>
+<example-collection ID="0">
+   <!-- java.util.List -->
+   <list class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.core.CollectionEntryTest$Entry -->
+      <substitute ID="2" id="1">
+         <!-- java.lang.String -->
+         <text ID="3">one</text>
+      </substitute>
+      <!-- org.simpleframework.xml.core.CollectionEntryTest$Entry -->
+      <substitute ID="4" id="2">
+         <!-- java.lang.String -->
+         <text ID="5">two</text>
+      </substitute>
+      <!-- org.simpleframework.xml.core.CollectionEntryTest$Entry -->
+      <substitute ID="6" id="3">
+         <!-- java.lang.String -->
+         <text ID="7">three</text>
+      </substitute>
+   </list>
+</example-collection>>>>>> ELEMENT=[element example-collection]
+>>>>> TYPE=[class org.simpleframework.xml.core.CollectionEntryTest$ExampleCollection]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ExampleCollection ID="0">
+   <!-- java.util.List -->
+   <List class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.core.CollectionEntryTest$Entry -->
+      <Substitute ID="2" id="1">
+         <!-- java.lang.String -->
+         <Text ID="3">one</Text>
+      </Substitute>
+      <!-- org.simpleframework.xml.core.CollectionEntryTest$Entry -->
+      <Substitute ID="4" id="2">
+         <!-- java.lang.String -->
+         <Text ID="5">two</Text>
+      </Substitute>
+      <!-- org.simpleframework.xml.core.CollectionEntryTest$Entry -->
+      <Substitute ID="6" id="3">
+         <!-- java.lang.String -->
+         <Text ID="7">three</Text>
+      </Substitute>
+   </List>
+</ExampleCollection>>>>>> ELEMENT=[element ExampleCollection]
+>>>>> TYPE=[class org.simpleframework.xml.core.CollectionEntryTest$ExampleCollection]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<exampleInlineCollection>
+   <substitute id="1">
+      <text>one</text>
+   </substitute>
+   <substitute id="2">
+      <text>two</text>
+   </substitute>
+   <substitute id="3">
+      <text>three</text>
+   </substitute>
+</exampleInlineCollection><exampleInlineCollection>
+   <substitute id="1">
+      <text>one</text>
+   </substitute>
+   <substitute id="2">
+      <text>two</text>
+   </substitute>
+   <substitute id="3">
+      <text>three</text>
+   </substitute>
+</exampleInlineCollection>
+<example-inline-collection ID="0">
+   <!-- org.simpleframework.xml.core.CollectionEntryTest$Entry -->
+   <substitute ID="1" id="1">
+      <!-- java.lang.String -->
+      <text ID="2">one</text>
+   </substitute>
+   <!-- org.simpleframework.xml.core.CollectionEntryTest$Entry -->
+   <substitute ID="3" id="2">
+      <!-- java.lang.String -->
+      <text ID="4">two</text>
+   </substitute>
+   <!-- org.simpleframework.xml.core.CollectionEntryTest$Entry -->
+   <substitute ID="5" id="3">
+      <!-- java.lang.String -->
+      <text ID="6">three</text>
+   </substitute>
+</example-inline-collection>>>>>> ELEMENT=[element example-inline-collection]
+>>>>> TYPE=[class org.simpleframework.xml.core.CollectionEntryTest$ExampleInlineCollection]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ExampleInlineCollection ID="0">
+   <!-- org.simpleframework.xml.core.CollectionEntryTest$Entry -->
+   <Substitute ID="1" id="1">
+      <!-- java.lang.String -->
+      <Text ID="2">one</Text>
+   </Substitute>
+   <!-- org.simpleframework.xml.core.CollectionEntryTest$Entry -->
+   <Substitute ID="3" id="2">
+      <!-- java.lang.String -->
+      <Text ID="4">two</Text>
+   </Substitute>
+   <!-- org.simpleframework.xml.core.CollectionEntryTest$Entry -->
+   <Substitute ID="5" id="3">
+      <!-- java.lang.String -->
+      <Text ID="6">three</Text>
+   </Substitute>
+</ExampleInlineCollection>>>>>> ELEMENT=[element ExampleInlineCollection]
+>>>>> TYPE=[class org.simpleframework.xml.core.CollectionEntryTest$ExampleInlineCollection]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<examplePrimitiveInlineCollection>
+   <substitute>a</substitute>
+   <substitute>b</substitute>
+   <substitute>c</substitute>
+   <substitute>d</substitute>
+</examplePrimitiveInlineCollection><examplePrimitiveInlineCollection>
+   <substitute>a</substitute>
+   <substitute>b</substitute>
+   <substitute>c</substitute>
+   <substitute>d</substitute>
+</examplePrimitiveInlineCollection>
+<example-primitive-inline-collection ID="0">
+   <!-- java.lang.String -->
+   <substitute ID="1">a</substitute>
+   <!-- java.lang.String -->
+   <substitute ID="2">b</substitute>
+   <!-- java.lang.String -->
+   <substitute ID="3">c</substitute>
+   <!-- java.lang.String -->
+   <substitute ID="4">d</substitute>
+</example-primitive-inline-collection>>>>>> ELEMENT=[element example-primitive-inline-collection]
+>>>>> TYPE=[class org.simpleframework.xml.core.CollectionEntryTest$ExamplePrimitiveInlineCollection]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ExamplePrimitiveInlineCollection ID="0">
+   <!-- java.lang.String -->
+   <Substitute ID="1">a</Substitute>
+   <!-- java.lang.String -->
+   <Substitute ID="2">b</Substitute>
+   <!-- java.lang.String -->
+   <Substitute ID="3">c</Substitute>
+   <!-- java.lang.String -->
+   <Substitute ID="4">d</Substitute>
+</ExamplePrimitiveInlineCollection>>>>>> ELEMENT=[element ExamplePrimitiveInlineCollection]
+>>>>> TYPE=[class org.simpleframework.xml.core.CollectionEntryTest$ExamplePrimitiveInlineCollection]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<examplePrimitiveCollection>
+   <list class="java.util.ArrayList">
+      <substitute>a</substitute>
+      <substitute>b</substitute>
+      <substitute>c</substitute>
+      <substitute>d</substitute>
+   </list>
+</examplePrimitiveCollection><examplePrimitiveCollection>
+   <list class="java.util.ArrayList">
+      <substitute>a</substitute>
+      <substitute>b</substitute>
+      <substitute>c</substitute>
+      <substitute>d</substitute>
+   </list>
+</examplePrimitiveCollection>
+<example-primitive-collection ID="0">
+   <!-- java.util.List -->
+   <list class="java.util.ArrayList" ID="1">
+      <!-- java.lang.Character -->
+      <substitute ID="2">a</substitute>
+      <!-- java.lang.Character -->
+      <substitute ID="3">b</substitute>
+      <!-- java.lang.Character -->
+      <substitute ID="4">c</substitute>
+      <!-- java.lang.Character -->
+      <substitute ID="5">d</substitute>
+   </list>
+</example-primitive-collection>>>>>> ELEMENT=[element example-primitive-collection]
+>>>>> TYPE=[class org.simpleframework.xml.core.CollectionEntryTest$ExamplePrimitiveCollection]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ExamplePrimitiveCollection ID="0">
+   <!-- java.util.List -->
+   <List class="java.util.ArrayList" ID="1">
+      <!-- java.lang.Character -->
+      <Substitute ID="2">a</Substitute>
+      <!-- java.lang.Character -->
+      <Substitute ID="3">b</Substitute>
+      <!-- java.lang.Character -->
+      <Substitute ID="4">c</Substitute>
+      <!-- java.lang.Character -->
+      <Substitute ID="5">d</Substitute>
+   </List>
+</ExamplePrimitiveCollection>>>>>> ELEMENT=[element ExamplePrimitiveCollection]
+>>>>> TYPE=[class org.simpleframework.xml.core.CollectionEntryTest$ExamplePrimitiveCollection]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testExampleCollection took 0.118 sec
+Testcase: testExampleInlineCollection took 0.018 sec
+Testcase: testExamplePrimitiveInlineCollection took 0.009 sec
+Testcase: testExamplePrimitiveCollection took 0.012 sec
+Testcase: testDirectory took 0 sec

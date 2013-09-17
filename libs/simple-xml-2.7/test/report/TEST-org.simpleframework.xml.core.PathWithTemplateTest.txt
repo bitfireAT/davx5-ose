@@ -1,0 +1,192 @@
+Testsuite: org.simpleframework.xml.core.PathWithTemplateTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.146 sec
+------------- Standard Output ---------------
+<pathWithTemplateExample>
+   <details>
+      <name>John Doe</name>
+      <age>21</age>
+      <sex>MALE</sex>
+      <address>
+         <street>George Street</street>
+         <city>Sydney</city>
+      </address>
+      <phone area="+61">
+         <mobile>12345</mobile>
+         <home>67890</home>
+      </phone>
+   </details>
+</pathWithTemplateExample><pathWithTemplateExample>
+   <details>
+      <name>John Doe</name>
+      <age>21</age>
+      <sex>MALE</sex>
+      <address>
+         <street>George Street</street>
+         <city>Sydney</city>
+      </address>
+      <phone area="+61">
+         <mobile>12345</mobile>
+         <home>67890</home>
+      </phone>
+   </details>
+</pathWithTemplateExample>
+<path-with-template-example ID="0">
+   <details>
+      <!-- java.lang.String -->
+      <name ID="1">John Doe</name>
+      <!-- java.lang.Integer -->
+      <age ID="2">21</age>
+      <!-- org.simpleframework.xml.core.PathWithTemplateTest$Sex -->
+      <sex ID="3">MALE</sex>
+      <address>
+         <!-- java.lang.String -->
+         <street ID="4">George Street</street>
+         <!-- java.lang.String -->
+         <city ID="5">Sydney</city>
+      </address>
+      <phone area="+61">
+         <!-- java.lang.String -->
+         <mobile ID="6">12345</mobile>
+         <!-- java.lang.String -->
+         <home ID="7">67890</home>
+      </phone>
+   </details>
+</path-with-template-example>>>>>> ELEMENT=[element path-with-template-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathWithTemplateTest$PathWithTemplateExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<PathWithTemplateExample ID="0">
+   <Details>
+      <!-- java.lang.String -->
+      <Name ID="1">John Doe</Name>
+      <!-- java.lang.Integer -->
+      <Age ID="2">21</Age>
+      <!-- org.simpleframework.xml.core.PathWithTemplateTest$Sex -->
+      <Sex ID="3">MALE</Sex>
+      <Address>
+         <!-- java.lang.String -->
+         <Street ID="4">George Street</Street>
+         <!-- java.lang.String -->
+         <City ID="5">Sydney</City>
+      </Address>
+      <Phone area="+61">
+         <!-- java.lang.String -->
+         <Mobile ID="6">12345</Mobile>
+         <!-- java.lang.String -->
+         <Home ID="7">67890</Home>
+      </Phone>
+   </Details>
+</PathWithTemplateExample>>>>>> ELEMENT=[element PathWithTemplateExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathWithTemplateTest$PathWithTemplateExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<pathWithTemplateExample>
+   <details>
+      <name>Jack Daniels</name>
+      <age>22</age>
+      <sex>MALE</sex>
+      <address>
+         <street>Old Street</street>
+         <city>London</city>
+      </address>
+      <phone area="+44">
+         <mobile>12345</mobile>
+         <home>67890</home>
+      </phone>
+   </details>
+</pathWithTemplateExample><pathWithTemplateExample>
+   <details>
+      <name>Jack Daniels</name>
+      <age>22</age>
+      <sex>MALE</sex>
+      <address>
+         <street>Old Street</street>
+         <city>London</city>
+      </address>
+      <phone area="+44">
+         <mobile>12345</mobile>
+         <home>67890</home>
+      </phone>
+   </details>
+</pathWithTemplateExample>
+<path-with-template-example ID="0">
+   <details>
+      <!-- java.lang.String -->
+      <name ID="1">Jack Daniels</name>
+      <!-- java.lang.Integer -->
+      <age ID="2">22</age>
+      <!-- org.simpleframework.xml.core.PathWithTemplateTest$Sex -->
+      <sex ID="3">MALE</sex>
+      <address>
+         <!-- java.lang.String -->
+         <street ID="4">Old Street</street>
+         <!-- java.lang.String -->
+         <city ID="5">London</city>
+      </address>
+      <phone area="+44">
+         <!-- java.lang.String -->
+         <mobile ID="6">12345</mobile>
+         <!-- java.lang.String -->
+         <home ID="7">67890</home>
+      </phone>
+   </details>
+</path-with-template-example>>>>>> ELEMENT=[element path-with-template-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathWithTemplateTest$PathWithTemplateExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<PathWithTemplateExample ID="0">
+   <Details>
+      <!-- java.lang.String -->
+      <Name ID="1">Jack Daniels</Name>
+      <!-- java.lang.Integer -->
+      <Age ID="2">22</Age>
+      <!-- org.simpleframework.xml.core.PathWithTemplateTest$Sex -->
+      <Sex ID="3">MALE</Sex>
+      <Address>
+         <!-- java.lang.String -->
+         <Street ID="4">Old Street</Street>
+         <!-- java.lang.String -->
+         <City ID="5">London</City>
+      </Address>
+      <Phone area="+44">
+         <!-- java.lang.String -->
+         <Mobile ID="6">12345</Mobile>
+         <!-- java.lang.String -->
+         <Home ID="7">67890</Home>
+      </Phone>
+   </Details>
+</PathWithTemplateExample>>>>>> ELEMENT=[element PathWithTemplateExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathWithTemplateTest$PathWithTemplateExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+------------- Standard Error -----------------
+<pathWithTemplateExample>
+   <details>
+      <name>John Doe</name>
+      <age>21</age>
+      <sex>MALE</sex>
+      <address>
+         <street>George Street</street>
+         <city>Sydney</city>
+      </address>
+      <phone area="+61">
+         <mobile>12345</mobile>
+         <home>67890</home>
+      </phone>
+   </details>
+</pathWithTemplateExample><pathWithTemplateExample>
+   <details>
+      <name>Jack Daniels</name>
+      <age>22</age>
+      <sex>MALE</sex>
+      <address>
+         <street>Old Street</street>
+         <city>London</city>
+      </address>
+      <phone area="+44">
+         <mobile>12345</mobile>
+         <home>67890</home>
+      </phone>
+   </details>
+</pathWithTemplateExample>------------- ---------------- ---------------
+
+Testcase: testSerialization took 0.121 sec
+Testcase: testPathWithTemplates took 0.022 sec
+Testcase: testDirectory took 0 sec

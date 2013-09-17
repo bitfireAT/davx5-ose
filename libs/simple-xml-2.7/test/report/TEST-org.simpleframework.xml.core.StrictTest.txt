@@ -1,0 +1,149 @@
+Testsuite: org.simpleframework.xml.core.StrictTest
+Tests run: 4, Failures: 0, Errors: 0, Time elapsed: 0.131 sec
+------------- Standard Output ---------------
+<root>
+   <list length="3">
+      <item>
+         <value>value 1</value>
+      </item>
+      <item>
+         <value>value 2</value>
+      </item>
+      <item>
+         <value>value 3</value>
+      </item>
+   </list>
+   <object>
+      <integer>123</integer>
+   </object>
+</root><root>
+   <list length="3">
+      <item>
+         <value>value 1</value>
+      </item>
+      <item>
+         <value>value 2</value>
+      </item>
+      <item>
+         <value>value 3</value>
+      </item>
+   </list>
+   <object>
+      <integer>123</integer>
+   </object>
+</root>
+<root ID="0">
+   <!-- [Lorg.simpleframework.xml.core.StrictTest$StrictEntry; -->
+   <list length="3" ID="1">
+      <!-- org.simpleframework.xml.core.StrictTest$StrictEntry -->
+      <item ID="2">
+         <!-- java.lang.String -->
+         <value ID="3">value 1</value>
+      </item>
+      <!-- org.simpleframework.xml.core.StrictTest$StrictEntry -->
+      <item ID="4">
+         <!-- java.lang.String -->
+         <value ID="5">value 2</value>
+      </item>
+      <!-- org.simpleframework.xml.core.StrictTest$StrictEntry -->
+      <item ID="6">
+         <!-- java.lang.String -->
+         <value ID="7">value 3</value>
+      </item>
+   </list>
+   <!-- org.simpleframework.xml.core.StrictTest$StrictObject -->
+   <object ID="8">
+      <!-- java.lang.Integer -->
+      <integer ID="9">123</integer>
+   </object>
+</root>>>>>> ELEMENT=[element root]
+>>>>> TYPE=[class org.simpleframework.xml.core.StrictTest$StrictExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Root ID="0">
+   <!-- [Lorg.simpleframework.xml.core.StrictTest$StrictEntry; -->
+   <List length="3" ID="1">
+      <!-- org.simpleframework.xml.core.StrictTest$StrictEntry -->
+      <Item ID="2">
+         <!-- java.lang.String -->
+         <Value ID="3">value 1</Value>
+      </Item>
+      <!-- org.simpleframework.xml.core.StrictTest$StrictEntry -->
+      <Item ID="4">
+         <!-- java.lang.String -->
+         <Value ID="5">value 2</Value>
+      </Item>
+      <!-- org.simpleframework.xml.core.StrictTest$StrictEntry -->
+      <Item ID="6">
+         <!-- java.lang.String -->
+         <Value ID="7">value 3</Value>
+      </Item>
+   </List>
+   <!-- org.simpleframework.xml.core.StrictTest$StrictObject -->
+   <Object ID="8">
+      <!-- java.lang.Integer -->
+      <Integer ID="9">123</Integer>
+   </Object>
+</Root>>>>>> ELEMENT=[element Root]
+>>>>> TYPE=[class org.simpleframework.xml.core.StrictTest$StrictExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<object>
+   <integer>123</integer>
+   <name>test</name>
+</object><object>
+   <integer>123</integer>
+   <name>test</name>
+</object>
+<object ID="0">
+   <!-- java.lang.Integer -->
+   <integer ID="1">123</integer>
+   <!-- java.lang.String -->
+   <name ID="2">test</name>
+</object>>>>>> ELEMENT=[element object]
+>>>>> TYPE=[class org.simpleframework.xml.core.StrictTest$NamedStrictObject]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Object ID="0">
+   <!-- java.lang.Integer -->
+   <Integer ID="1">123</Integer>
+   <!-- java.lang.String -->
+   <Name ID="2">test</Name>
+</Object>>>>>> ELEMENT=[element Object]
+>>>>> TYPE=[class org.simpleframework.xml.core.StrictTest$NamedStrictObject]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+------------- Standard Error -----------------
+org.simpleframework.xml.core.ValueRequiredException: Unable to satisfy @org.simpleframework.xml.Element(name=name, data=false, required=true, type=void) on field 'name' private java.lang.String org.simpleframework.xml.core.StrictTest$NamedStrictObject.name for class org.simpleframework.xml.core.StrictTest$NamedStrictObject at line 1
+	at org.simpleframework.xml.core.Composite.validate(Composite.java:644)
+	at org.simpleframework.xml.core.Composite.readElements(Composite.java:449)
+	at org.simpleframework.xml.core.Composite.access$400(Composite.java:59)
+	at org.simpleframework.xml.core.Composite$Builder.read(Composite.java:1383)
+	at org.simpleframework.xml.core.Composite.read(Composite.java:201)
+	at org.simpleframework.xml.core.Composite.read(Composite.java:148)
+	at org.simpleframework.xml.core.Traverser.read(Traverser.java:92)
+	at org.simpleframework.xml.core.Persister.read(Persister.java:625)
+	at org.simpleframework.xml.core.Persister.read(Persister.java:606)
+	at org.simpleframework.xml.core.Persister.read(Persister.java:584)
+	at org.simpleframework.xml.core.Persister.read(Persister.java:562)
+	at org.simpleframework.xml.core.Persister.read(Persister.java:499)
+	at org.simpleframework.xml.core.Persister.read(Persister.java:408)
+	at org.simpleframework.xml.core.StrictTest.testNamedStrictMissingName(StrictTest.java:119)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:154)
+	at junit.framework.TestCase.runBare(TestCase.java:127)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:118)
+	at junit.framework.TestSuite.runTest(TestSuite.java:208)
+	at junit.framework.TestSuite.run(TestSuite.java:203)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.run(JUnitTestRunner.java:518)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.launch(JUnitTestRunner.java:1052)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.main(JUnitTestRunner.java:906)
+------------- ---------------- ---------------
+
+Testcase: testStrict took 0.115 sec
+Testcase: testNamedStrict took 0.009 sec
+Testcase: testNamedStrictMissingName took 0.005 sec
+Testcase: testDirectory took 0.001 sec

@@ -1,0 +1,206 @@
+Testsuite: org.simpleframework.xml.core.UnionListTest
+Tests run: 4, Failures: 0, Errors: 0, Time elapsed: 0.168 sec
+------------- Standard Output ---------------
+<inlineListExample>
+   <xx>
+      <x>A</x>
+   </xx>
+   <yy>
+      <y>B</y>
+   </yy>
+   <yy>
+      <y>C</y>
+   </yy>
+   <zz>
+      <z>D</z>
+   </zz>
+   <xx>
+      <x>E</x>
+   </xx>
+</inlineListExample><inlineListExample>
+   <xx>
+      <x>A</x>
+   </xx>
+   <yy>
+      <y>B</y>
+   </yy>
+   <yy>
+      <y>C</y>
+   </yy>
+   <zz>
+      <z>D</z>
+   </zz>
+   <xx>
+      <x>E</x>
+   </xx>
+</inlineListExample>
+<inline-list-example ID="0">
+   <!-- org.simpleframework.xml.core.UnionListTest$X -->
+   <xx ID="1">
+      <!-- java.lang.String -->
+      <x ID="2">A</x>
+   </xx>
+   <!-- org.simpleframework.xml.core.UnionListTest$Y -->
+   <yy ID="3">
+      <!-- java.lang.String -->
+      <y ID="4">B</y>
+   </yy>
+   <!-- org.simpleframework.xml.core.UnionListTest$Y -->
+   <yy ID="5">
+      <!-- java.lang.String -->
+      <y ID="6">C</y>
+   </yy>
+   <!-- org.simpleframework.xml.core.UnionListTest$Z -->
+   <zz ID="7">
+      <!-- java.lang.String -->
+      <z ID="8">D</z>
+   </zz>
+   <!-- org.simpleframework.xml.core.UnionListTest$X -->
+   <xx ID="9">
+      <!-- java.lang.String -->
+      <x ID="10">E</x>
+   </xx>
+</inline-list-example>>>>>> ELEMENT=[element inline-list-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionListTest$InlineListExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<InlineListExample ID="0">
+   <!-- org.simpleframework.xml.core.UnionListTest$X -->
+   <Xx ID="1">
+      <!-- java.lang.String -->
+      <X ID="2">A</X>
+   </Xx>
+   <!-- org.simpleframework.xml.core.UnionListTest$Y -->
+   <Yy ID="3">
+      <!-- java.lang.String -->
+      <Y ID="4">B</Y>
+   </Yy>
+   <!-- org.simpleframework.xml.core.UnionListTest$Y -->
+   <Yy ID="5">
+      <!-- java.lang.String -->
+      <Y ID="6">C</Y>
+   </Yy>
+   <!-- org.simpleframework.xml.core.UnionListTest$Z -->
+   <Zz ID="7">
+      <!-- java.lang.String -->
+      <Z ID="8">D</Z>
+   </Zz>
+   <!-- org.simpleframework.xml.core.UnionListTest$X -->
+   <Xx ID="9">
+      <!-- java.lang.String -->
+      <X ID="10">E</X>
+   </Xx>
+</InlineListExample>>>>>> ELEMENT=[element InlineListExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionListTest$InlineListExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<listExample>
+   <xList class="java.util.ArrayList">
+      <xx>
+         <x>A</x>
+      </xx>
+      <xx>
+         <x>B</x>
+      </xx>
+   </xList>
+</listExample><listExample>
+   <xList class="java.util.ArrayList">
+      <xx>
+         <x>A</x>
+      </xx>
+      <xx>
+         <x>B</x>
+      </xx>
+   </xList>
+</listExample>
+<list-example ID="0">
+   <!-- java.util.List -->
+   <x-list class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.core.UnionListTest$X -->
+      <xx ID="2">
+         <!-- java.lang.String -->
+         <x ID="3">A</x>
+      </xx>
+      <!-- org.simpleframework.xml.core.UnionListTest$X -->
+      <xx ID="4">
+         <!-- java.lang.String -->
+         <x ID="5">B</x>
+      </xx>
+   </x-list>
+</list-example>>>>>> ELEMENT=[element list-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionListTest$ListExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ListExample ID="0">
+   <!-- java.util.List -->
+   <XList class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.core.UnionListTest$X -->
+      <Xx ID="2">
+         <!-- java.lang.String -->
+         <X ID="3">A</X>
+      </Xx>
+      <!-- org.simpleframework.xml.core.UnionListTest$X -->
+      <Xx ID="4">
+         <!-- java.lang.String -->
+         <X ID="5">B</X>
+      </Xx>
+   </XList>
+</ListExample>>>>>> ELEMENT=[element ListExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionListTest$ListExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<listExample>
+   <yList class="java.util.ArrayList">
+      <yy>
+         <y>A</y>
+      </yy>
+      <yy>
+         <y>B</y>
+      </yy>
+   </yList>
+</listExample><listExample>
+   <yList class="java.util.ArrayList">
+      <yy>
+         <y>A</y>
+      </yy>
+      <yy>
+         <y>B</y>
+      </yy>
+   </yList>
+</listExample>
+<list-example ID="0">
+   <!-- java.util.List -->
+   <y-list class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.core.UnionListTest$Y -->
+      <yy ID="2">
+         <!-- java.lang.String -->
+         <y ID="3">A</y>
+      </yy>
+      <!-- org.simpleframework.xml.core.UnionListTest$Y -->
+      <yy ID="4">
+         <!-- java.lang.String -->
+         <y ID="5">B</y>
+      </yy>
+   </y-list>
+</list-example>>>>>> ELEMENT=[element list-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionListTest$ListExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ListExample ID="0">
+   <!-- java.util.List -->
+   <YList class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.core.UnionListTest$Y -->
+      <Yy ID="2">
+         <!-- java.lang.String -->
+         <Y ID="3">A</Y>
+      </Yy>
+      <!-- org.simpleframework.xml.core.UnionListTest$Y -->
+      <Yy ID="4">
+         <!-- java.lang.String -->
+         <Y ID="5">B</Y>
+      </Yy>
+   </YList>
+</ListExample>>>>>> ELEMENT=[element ListExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.UnionListTest$ListExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testInlineList took 0.126 sec
+Testcase: testXList took 0.02 sec
+Testcase: testYList took 0.02 sec
+Testcase: testDirectory took 0 sec

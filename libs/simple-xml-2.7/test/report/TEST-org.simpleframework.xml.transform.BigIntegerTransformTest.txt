@@ -1,0 +1,4 @@
+Testsuite: org.simpleframework.xml.transform.BigIntegerTransformTest
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.004 sec
+
+Testcase: testBigInteger took 0.001 sec

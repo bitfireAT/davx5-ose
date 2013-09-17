@@ -1,0 +1,58 @@
+Testsuite: org.simpleframework.xml.core.ArrayTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.105 sec
+------------- Standard Output ---------------
+<root>
+   <array length="6">
+      <entry class="org.simpleframework.xml.core.ArrayTest$ExtendedText" value="one"/>
+      <entry/>
+      <entry/>
+      <entry class="org.simpleframework.xml.core.ArrayTest$ExtendedText" value="two"/>
+      <entry/>
+      <entry class="org.simpleframework.xml.core.ArrayTest$ExtendedText" value="three"/>
+   </array>
+</root><root>
+   <array length="6">
+      <entry class="org.simpleframework.xml.core.ArrayTest$ExtendedText" value="one"/>
+      <entry/>
+      <entry/>
+      <entry class="org.simpleframework.xml.core.ArrayTest$ExtendedText" value="two"/>
+      <entry/>
+      <entry class="org.simpleframework.xml.core.ArrayTest$ExtendedText" value="three"/>
+   </array>
+</root>
+<root ID="0">
+   <!-- [Lorg.simpleframework.xml.core.ArrayTest$Text; -->
+   <array length="6" ID="1">
+      <!-- org.simpleframework.xml.core.ArrayTest$Text -->
+      <entry class="org.simpleframework.xml.core.ArrayTest$ExtendedText" ID="2" value="one"/>
+      <entry/>
+      <entry/>
+      <!-- org.simpleframework.xml.core.ArrayTest$Text -->
+      <entry class="org.simpleframework.xml.core.ArrayTest$ExtendedText" ID="3" value="two"/>
+      <entry/>
+      <!-- org.simpleframework.xml.core.ArrayTest$Text -->
+      <entry class="org.simpleframework.xml.core.ArrayTest$ExtendedText" ID="4" value="three"/>
+   </array>
+</root>>>>>> ELEMENT=[element root]
+>>>>> TYPE=[class org.simpleframework.xml.core.ArrayTest$DifferentArrayExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Root ID="0">
+   <!-- [Lorg.simpleframework.xml.core.ArrayTest$Text; -->
+   <Array length="6" ID="1">
+      <!-- org.simpleframework.xml.core.ArrayTest$Text -->
+      <Entry class="org.simpleframework.xml.core.ArrayTest$ExtendedText" ID="2" value="one"/>
+      <Entry/>
+      <Entry/>
+      <!-- org.simpleframework.xml.core.ArrayTest$Text -->
+      <Entry class="org.simpleframework.xml.core.ArrayTest$ExtendedText" ID="3" value="two"/>
+      <Entry/>
+      <!-- org.simpleframework.xml.core.ArrayTest$Text -->
+      <Entry class="org.simpleframework.xml.core.ArrayTest$ExtendedText" ID="4" value="three"/>
+   </Array>
+</Root>>>>>> ELEMENT=[element Root]
+>>>>> TYPE=[class org.simpleframework.xml.core.ArrayTest$DifferentArrayExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testDifferentArray took 0.103 sec
+Testcase: testDirectory took 0 sec

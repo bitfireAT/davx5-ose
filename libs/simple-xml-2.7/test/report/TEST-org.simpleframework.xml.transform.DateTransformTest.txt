@@ -1,0 +1,119 @@
+Testsuite: org.simpleframework.xml.transform.DateTransformTest
+Tests run: 4, Failures: 0, Errors: 0, Time elapsed: 0.173 sec
+------------- Standard Output ---------------
+<dateExample attribute="2013-02-18 20:54:13.313 EST">
+   <array length="1">
+      <date>2013-02-18 20:54:13.313 EST</date>
+   </array>
+   <element>2013-02-18 20:54:13.313 EST</element>
+   <list class="java.util.ArrayList">
+      <date>2013-02-18 20:54:13.313 EST</date>
+      <date>2013-02-18 20:54:13.313 EST</date>
+   </list>
+</dateExample><dateExample attribute="2013-02-18 20:54:13.313 EST">
+   <array length="1">
+      <date>2013-02-18 20:54:13.313 EST</date>
+   </array>
+   <element>2013-02-18 20:54:13.313 EST</element>
+   <list class="java.util.ArrayList">
+      <date>2013-02-18 20:54:13.313 EST</date>
+      <date>2013-02-18 20:54:13.313 EST</date>
+   </list>
+</dateExample>
+<date-example ID="0" attribute="2013-02-18 20:54:13.313 EST">
+   <!-- [Ljava.util.Date; -->
+   <array length="1" ID="1">
+      <!-- java.util.Date -->
+      <date ID="2">2013-02-18 20:54:13.313 EST</date>
+   </array>
+   <!-- java.util.Date -->
+   <element ID="3">2013-02-18 20:54:13.313 EST</element>
+   <!-- java.util.List -->
+   <list class="java.util.ArrayList" ID="4">
+      <!-- java.util.Date -->
+      <date ID="5">2013-02-18 20:54:13.313 EST</date>
+      <!-- java.util.Date -->
+      <date ID="6">2013-02-18 20:54:13.313 EST</date>
+   </list>
+</date-example>>>>>> ELEMENT=[element date-example]
+>>>>> TYPE=[class org.simpleframework.xml.transform.DateTransformTest$DateExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<DateExample ID="0" attribute="2013-02-18 20:54:13.313 EST">
+   <!-- [Ljava.util.Date; -->
+   <Array length="1" ID="1">
+      <!-- java.util.Date -->
+      <Date ID="2">2013-02-18 20:54:13.313 EST</Date>
+   </Array>
+   <!-- java.util.Date -->
+   <Element ID="3">2013-02-18 20:54:13.313 EST</Element>
+   <!-- java.util.List -->
+   <List class="java.util.ArrayList" ID="4">
+      <!-- java.util.Date -->
+      <Date ID="5">2013-02-18 20:54:13.313 EST</Date>
+      <!-- java.util.Date -->
+      <Date ID="6">2013-02-18 20:54:13.313 EST</Date>
+   </List>
+</DateExample>>>>>> ELEMENT=[element DateExample]
+>>>>> TYPE=[class org.simpleframework.xml.transform.DateTransformTest$DateExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<dateExample id="0" attribute="2013-02-18 20:54:13.443 EST">
+   <array length="1" id="1">
+      <date id="2">2013-02-18 20:54:13.443 EST</date>
+   </array>
+   <element reference="2"/>
+   <list class="java.util.ArrayList" id="3">
+      <date reference="2"/>
+      <date reference="2"/>
+   </list>
+</dateExample><dateExample id="0" attribute="2013-02-18 20:54:13.443 EST">
+   <array length="1" id="1">
+      <date id="2">2013-02-18 20:54:13.443 EST</date>
+   </array>
+   <element reference="2"/>
+   <list class="java.util.ArrayList" id="3">
+      <date reference="2"/>
+      <date reference="2"/>
+   </list>
+</dateExample>
+<date-example ID="0" attribute="2013-02-18 20:54:13.443 EST">
+   <!-- [Ljava.util.Date; -->
+   <array length="1" ID="1">
+      <!-- java.util.Date -->
+      <date ID="2">2013-02-18 20:54:13.443 EST</date>
+   </array>
+   <!-- java.util.Date -->
+   <element REFERER="2"/>
+   <!-- java.util.List -->
+   <list class="java.util.ArrayList" ID="3">
+      <!-- java.util.Date -->
+      <date REFERER="2"/>
+      <!-- java.util.Date -->
+      <date REFERER="2"/>
+   </list>
+</date-example>>>>>> ELEMENT=[element date-example]
+>>>>> TYPE=[class org.simpleframework.xml.transform.DateTransformTest$DateExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<DateExample ID="0" attribute="2013-02-18 20:54:13.443 EST">
+   <!-- [Ljava.util.Date; -->
+   <Array length="1" ID="1">
+      <!-- java.util.Date -->
+      <Date ID="2">2013-02-18 20:54:13.443 EST</Date>
+   </Array>
+   <!-- java.util.Date -->
+   <Element REFERER="2"/>
+   <!-- java.util.List -->
+   <List class="java.util.ArrayList" ID="3">
+      <!-- java.util.Date -->
+      <Date REFERER="2"/>
+      <!-- java.util.Date -->
+      <Date REFERER="2"/>
+   </List>
+</DateExample>>>>>> ELEMENT=[element DateExample]
+>>>>> TYPE=[class org.simpleframework.xml.transform.DateTransformTest$DateExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testDate took 0.013 sec
+Testcase: testPersistence took 0.13 sec
+Testcase: testCyclicPersistence took 0.027 sec
+Testcase: testDirectory took 0 sec

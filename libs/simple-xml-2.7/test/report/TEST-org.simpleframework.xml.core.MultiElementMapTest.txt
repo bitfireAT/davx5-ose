@@ -1,0 +1,108 @@
+Testsuite: org.simpleframework.xml.core.MultiElementMapTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.133 sec
+------------- Standard Output ---------------
+<properties>
+   <entry>
+      <key>boolean-value</key>
+      <value>
+         <boolean>true</boolean>
+      </value>
+   </entry>
+   <entry>
+      <key>int-value</key>
+      <value>
+         <int>42</int>
+      </value>
+   </entry>
+   <entry>
+      <key>string-value</key>
+      <value>
+         <string>hello world</string>
+      </value>
+   </entry>
+</properties><properties>
+   <entry>
+      <key>boolean-value</key>
+      <value>
+         <boolean>true</boolean>
+      </value>
+   </entry>
+   <entry>
+      <key>int-value</key>
+      <value>
+         <int>42</int>
+      </value>
+   </entry>
+   <entry>
+      <key>string-value</key>
+      <value>
+         <string>hello world</string>
+      </value>
+   </entry>
+</properties>
+<properties ID="0">
+   <entry>
+      <!-- java.lang.String -->
+      <key ID="1">boolean-value</key>
+      <!-- org.simpleframework.xml.core.MultiElementMapTest$Value -->
+      <value ID="2">
+         <!-- java.lang.Boolean -->
+         <boolean ID="3">true</boolean>
+      </value>
+   </entry>
+   <entry>
+      <!-- java.lang.String -->
+      <key ID="4">int-value</key>
+      <!-- org.simpleframework.xml.core.MultiElementMapTest$Value -->
+      <value ID="5">
+         <!-- java.lang.Integer -->
+         <int ID="6">42</int>
+      </value>
+   </entry>
+   <entry>
+      <!-- java.lang.String -->
+      <key ID="7">string-value</key>
+      <!-- org.simpleframework.xml.core.MultiElementMapTest$Value -->
+      <value ID="8">
+         <!-- java.lang.String -->
+         <string ID="9">hello world</string>
+      </value>
+   </entry>
+</properties>>>>>> ELEMENT=[element properties]
+>>>>> TYPE=[class org.simpleframework.xml.core.MultiElementMapTest$Properties]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Properties ID="0">
+   <Entry>
+      <!-- java.lang.String -->
+      <Key ID="1">boolean-value</Key>
+      <!-- org.simpleframework.xml.core.MultiElementMapTest$Value -->
+      <Value ID="2">
+         <!-- java.lang.Boolean -->
+         <Boolean ID="3">true</Boolean>
+      </Value>
+   </Entry>
+   <Entry>
+      <!-- java.lang.String -->
+      <Key ID="4">int-value</Key>
+      <!-- org.simpleframework.xml.core.MultiElementMapTest$Value -->
+      <Value ID="5">
+         <!-- java.lang.Integer -->
+         <Int ID="6">42</Int>
+      </Value>
+   </Entry>
+   <Entry>
+      <!-- java.lang.String -->
+      <Key ID="7">string-value</Key>
+      <!-- org.simpleframework.xml.core.MultiElementMapTest$Value -->
+      <Value ID="8">
+         <!-- java.lang.String -->
+         <String ID="9">hello world</String>
+      </Value>
+   </Entry>
+</Properties>>>>>> ELEMENT=[element Properties]
+>>>>> TYPE=[class org.simpleframework.xml.core.MultiElementMapTest$Properties]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testProperties took 0.13 sec
+Testcase: testDirectory took 0 sec

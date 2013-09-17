@@ -1,0 +1,8 @@
+Testsuite: org.simpleframework.xml.core.Base64EncoderTest
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.003 sec
+------------- Standard Error -----------------
+AAtIZWxsbyBXb3JsZA==
+Hello World
+------------- ---------------- ---------------
+
+Testcase: testEncodingDataOutput took 0.001 sec

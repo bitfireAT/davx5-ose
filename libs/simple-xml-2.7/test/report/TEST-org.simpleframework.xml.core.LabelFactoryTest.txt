@@ -1,0 +1,5 @@
+Testsuite: org.simpleframework.xml.core.LabelFactoryTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.047 sec
+
+Testcase: testUnion took 0.035 sec
+Testcase: testUnionList took 0.009 sec

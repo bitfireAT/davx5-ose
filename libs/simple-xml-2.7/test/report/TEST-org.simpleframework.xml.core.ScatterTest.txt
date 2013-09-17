@@ -1,0 +1,262 @@
+Testsuite: org.simpleframework.xml.core.ScatterTest
+Tests run: 6, Failures: 0, Errors: 0, Time elapsed: 0.211 sec
+------------- Standard Output ---------------
+<test version="ONE">
+   <message>Some example message</message>
+   <double>1.0</double>
+   <double>2.0</double>
+   <double>3.0</double>
+   <text name="a" version="ONE">Example 1</text>
+   <text name="b" version="TWO">Example 2</text>
+   <text name="c" version="THREE">Example 3</text>
+</test><test version="ONE">
+   <message>Some example message</message>
+   <double>1.0</double>
+   <double>2.0</double>
+   <double>3.0</double>
+   <text name="a" version="ONE">Example 1</text>
+   <text name="b" version="TWO">Example 2</text>
+   <text name="c" version="THREE">Example 3</text>
+</test>
+<test ID="0" version="ONE">
+   <!-- java.lang.String -->
+   <message ID="1">Some example message</message>
+   <!-- java.lang.Double -->
+   <double ID="2">1.0</double>
+   <!-- java.lang.Double -->
+   <double ID="3">2.0</double>
+   <!-- java.lang.Double -->
+   <double ID="4">3.0</double>
+   <!-- org.simpleframework.xml.core.ScatterTest$TextEntry -->
+   <text ID="5" name="a" version="ONE">Example 1</text>
+   <!-- org.simpleframework.xml.core.ScatterTest$TextEntry -->
+   <text ID="6" name="b" version="TWO">Example 2</text>
+   <!-- org.simpleframework.xml.core.ScatterTest$TextEntry -->
+   <text ID="7" name="c" version="THREE">Example 3</text>
+</test>>>>>> ELEMENT=[element test]
+>>>>> TYPE=[class org.simpleframework.xml.core.ScatterTest$InlineTextList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Test ID="0" version="ONE">
+   <!-- java.lang.String -->
+   <Message ID="1">Some example message</Message>
+   <!-- java.lang.Double -->
+   <Double ID="2">1.0</Double>
+   <!-- java.lang.Double -->
+   <Double ID="3">2.0</Double>
+   <!-- java.lang.Double -->
+   <Double ID="4">3.0</Double>
+   <!-- org.simpleframework.xml.core.ScatterTest$TextEntry -->
+   <Text ID="5" name="a" version="ONE">Example 1</Text>
+   <!-- org.simpleframework.xml.core.ScatterTest$TextEntry -->
+   <Text ID="6" name="b" version="TWO">Example 2</Text>
+   <!-- org.simpleframework.xml.core.ScatterTest$TextEntry -->
+   <Text ID="7" name="c" version="THREE">Example 3</Text>
+</Test>>>>>> ELEMENT=[element Test]
+>>>>> TYPE=[class org.simpleframework.xml.core.ScatterTest$InlineTextList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<test version="ONE">
+   <message>Some example message</message>
+   <double>1.0</double>
+   <double>2.0</double>
+   <double>3.0</double>
+   <text name="a" version="ONE">Example 1</text>
+   <text name="b" version="TWO">Example 2</text>
+   <text name="c" version="THREE">Example 3</text>
+</test><test version="ONE">
+   <message>Some example message</message>
+   <double>1.0</double>
+   <double>2.0</double>
+   <double>3.0</double>
+   <text name="a" version="ONE">Example 1</text>
+   <text name="b" version="TWO">Example 2</text>
+   <text name="c" version="THREE">Example 3</text>
+</test>
+<test ID="0" version="ONE">
+   <!-- java.lang.String -->
+   <message ID="1">Some example message</message>
+   <!-- java.lang.Double -->
+   <double ID="2">1.0</double>
+   <!-- java.lang.Double -->
+   <double ID="3">2.0</double>
+   <!-- java.lang.Double -->
+   <double ID="4">3.0</double>
+   <!-- org.simpleframework.xml.core.ScatterTest$TextEntry -->
+   <text ID="5" name="a" version="ONE">Example 1</text>
+   <!-- org.simpleframework.xml.core.ScatterTest$TextEntry -->
+   <text ID="6" name="b" version="TWO">Example 2</text>
+   <!-- org.simpleframework.xml.core.ScatterTest$TextEntry -->
+   <text ID="7" name="c" version="THREE">Example 3</text>
+</test>>>>>> ELEMENT=[element test]
+>>>>> TYPE=[class org.simpleframework.xml.core.ScatterTest$InlineTextList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Test ID="0" version="ONE">
+   <!-- java.lang.String -->
+   <Message ID="1">Some example message</Message>
+   <!-- java.lang.Double -->
+   <Double ID="2">1.0</Double>
+   <!-- java.lang.Double -->
+   <Double ID="3">2.0</Double>
+   <!-- java.lang.Double -->
+   <Double ID="4">3.0</Double>
+   <!-- org.simpleframework.xml.core.ScatterTest$TextEntry -->
+   <Text ID="5" name="a" version="ONE">Example 1</Text>
+   <!-- org.simpleframework.xml.core.ScatterTest$TextEntry -->
+   <Text ID="6" name="b" version="TWO">Example 2</Text>
+   <!-- org.simpleframework.xml.core.ScatterTest$TextEntry -->
+   <Text ID="7" name="c" version="THREE">Example 3</Text>
+</Test>>>>>> ELEMENT=[element Test]
+>>>>> TYPE=[class org.simpleframework.xml.core.ScatterTest$InlineTextList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<test version="ONE">
+   <message>Some example message</message>
+   <string>Example 1</string>
+   <string>Example 2</string>
+   <string>Example 3</string>
+</test><test version="ONE">
+   <message>Some example message</message>
+   <string>Example 1</string>
+   <string>Example 2</string>
+   <string>Example 3</string>
+</test>
+<test ID="0" version="ONE">
+   <!-- java.lang.String -->
+   <message ID="1">Some example message</message>
+   <!-- java.lang.String -->
+   <string ID="2">Example 1</string>
+   <!-- java.lang.String -->
+   <string ID="3">Example 2</string>
+   <!-- java.lang.String -->
+   <string ID="4">Example 3</string>
+</test>>>>>> ELEMENT=[element test]
+>>>>> TYPE=[class org.simpleframework.xml.core.ScatterTest$InlinePrimitiveList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Test ID="0" version="ONE">
+   <!-- java.lang.String -->
+   <Message ID="1">Some example message</Message>
+   <!-- java.lang.String -->
+   <String ID="2">Example 1</String>
+   <!-- java.lang.String -->
+   <String ID="3">Example 2</String>
+   <!-- java.lang.String -->
+   <String ID="4">Example 3</String>
+</Test>>>>>> ELEMENT=[element Test]
+>>>>> TYPE=[class org.simpleframework.xml.core.ScatterTest$InlinePrimitiveList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<test version="ONE">
+   <message>Some example message</message>
+   <string>Example 1</string>
+   <string>Example 2</string>
+   <string>Example 3</string>
+</test><test version="ONE">
+   <message>Some example message</message>
+   <string>Example 1</string>
+   <string>Example 2</string>
+   <string>Example 3</string>
+</test>
+<test ID="0" version="ONE">
+   <!-- java.lang.String -->
+   <message ID="1">Some example message</message>
+   <!-- java.lang.String -->
+   <string ID="2">Example 1</string>
+   <!-- java.lang.String -->
+   <string ID="3">Example 2</string>
+   <!-- java.lang.String -->
+   <string ID="4">Example 3</string>
+</test>>>>>> ELEMENT=[element test]
+>>>>> TYPE=[class org.simpleframework.xml.core.ScatterTest$InlinePrimitiveList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Test ID="0" version="ONE">
+   <!-- java.lang.String -->
+   <Message ID="1">Some example message</Message>
+   <!-- java.lang.String -->
+   <String ID="2">Example 1</String>
+   <!-- java.lang.String -->
+   <String ID="3">Example 2</String>
+   <!-- java.lang.String -->
+   <String ID="4">Example 3</String>
+</Test>>>>>> ELEMENT=[element Test]
+>>>>> TYPE=[class org.simpleframework.xml.core.ScatterTest$InlinePrimitiveList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<test version="ONE">
+   <include file="1.txt" name="1"/>
+   <include file="4.txt" name="4"/>
+   <exclude file="3.txt" name="3"/>
+   <exclude file="2.txt" name="2"/>
+   <exclude file="5.txt" name="5"/>
+</test><test version="ONE">
+   <include file="1.txt" name="1"/>
+   <include file="4.txt" name="4"/>
+   <exclude file="3.txt" name="3"/>
+   <exclude file="2.txt" name="2"/>
+   <exclude file="5.txt" name="5"/>
+</test>
+<test ID="0" version="ONE">
+   <!-- org.simpleframework.xml.core.ScatterTest$FileMatch -->
+   <include ID="1" file="1.txt" name="1"/>
+   <!-- org.simpleframework.xml.core.ScatterTest$FileMatch -->
+   <include ID="2" file="4.txt" name="4"/>
+   <!-- org.simpleframework.xml.core.ScatterTest$FileMatch -->
+   <exclude ID="3" file="3.txt" name="3"/>
+   <!-- org.simpleframework.xml.core.ScatterTest$FileMatch -->
+   <exclude ID="4" file="2.txt" name="2"/>
+   <!-- org.simpleframework.xml.core.ScatterTest$FileMatch -->
+   <exclude ID="5" file="5.txt" name="5"/>
+</test>>>>>> ELEMENT=[element test]
+>>>>> TYPE=[class org.simpleframework.xml.core.ScatterTest$InlineNamedList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Test ID="0" version="ONE">
+   <!-- org.simpleframework.xml.core.ScatterTest$FileMatch -->
+   <Include ID="1" file="1.txt" name="1"/>
+   <!-- org.simpleframework.xml.core.ScatterTest$FileMatch -->
+   <Include ID="2" file="4.txt" name="4"/>
+   <!-- org.simpleframework.xml.core.ScatterTest$FileMatch -->
+   <Exclude ID="3" file="3.txt" name="3"/>
+   <!-- org.simpleframework.xml.core.ScatterTest$FileMatch -->
+   <Exclude ID="4" file="2.txt" name="2"/>
+   <!-- org.simpleframework.xml.core.ScatterTest$FileMatch -->
+   <Exclude ID="5" file="5.txt" name="5"/>
+</Test>>>>>> ELEMENT=[element Test]
+>>>>> TYPE=[class org.simpleframework.xml.core.ScatterTest$InlineNamedList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<simpleInlineList>
+   <simpleEntry content="test"/>
+</simpleInlineList><simpleInlineList>
+   <simpleEntry content="test"/>
+</simpleInlineList>
+<simple-inline-list ID="0">
+   <!-- org.simpleframework.xml.core.ScatterTest$SimpleEntry -->
+   <simple-entry ID="1" content="test"/>
+</simple-inline-list>>>>>> ELEMENT=[element simple-inline-list]
+>>>>> TYPE=[class org.simpleframework.xml.core.ScatterTest$SimpleInlineList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<SimpleInlineList ID="0">
+   <!-- org.simpleframework.xml.core.ScatterTest$SimpleEntry -->
+   <SimpleEntry ID="1" content="test"/>
+</SimpleInlineList>>>>>> ELEMENT=[element SimpleInlineList]
+>>>>> TYPE=[class org.simpleframework.xml.core.ScatterTest$SimpleInlineList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<simplePrimitiveInlineList>
+   <string>test</string>
+</simplePrimitiveInlineList><simplePrimitiveInlineList>
+   <string>test</string>
+</simplePrimitiveInlineList>
+<simple-primitive-inline-list ID="0">
+   <!-- java.lang.String -->
+   <string ID="1">test</string>
+</simple-primitive-inline-list>>>>>> ELEMENT=[element simple-primitive-inline-list]
+>>>>> TYPE=[class org.simpleframework.xml.core.ScatterTest$SimplePrimitiveInlineList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<SimplePrimitiveInlineList ID="0">
+   <!-- java.lang.String -->
+   <String ID="1">test</String>
+</SimplePrimitiveInlineList>>>>>> ELEMENT=[element SimplePrimitiveInlineList]
+>>>>> TYPE=[class org.simpleframework.xml.core.ScatterTest$SimplePrimitiveInlineList]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testList took 0.151 sec
+Testcase: testPrimitiveList took 0.024 sec
+Testcase: testInlineNamedList took 0.018 sec
+Testcase: testSimpleList took 0.008 sec
+Testcase: testSimplePrimitiveList took 0.006 sec
+Testcase: testDirectory took 0.001 sec

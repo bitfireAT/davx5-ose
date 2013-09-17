@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">DAVdroid</string>
+    <string name="menu_settings">Settings</string>
+    <string-array name="http_protocols">
+        <item >http://</item>
+        <item >https://</item>
+    </string-array>
+    <string name="http_warning">"If you don't use encryption (HTTPS), other people may easily intercept your login details, contacts and events."</string>
+    <string name="user_name">User name:</string>
+    <string name="password">Password:</string>
+    <string name="root_url">Root URL (collections will be auto-detected):</string>
+    <string name="next">Next</string>
+    <string name="help">Help</string>
+    <string name="invalid_base_url">Invalid base URL: </string>
+    <string name="title_select_collections">DAVdroid: Select collections</string>
+    <string name="exception_io">I/O error: %s</string>
+    <string name="exception_uri_syntax">Invalid URI: %s</string>
+    <string name="exception_incapable_resource">Missing capabilities: %s</string>
+    <string name="neither_caldav_nor_carddav">neither CalDAV nor CardDAV available</string>
+    <string name="error_principal_path">"Couldn't determine principal path (RFC 5397)"</string>
+    <string name="error_home_set_address_books">&quot;Couldn't determine address book home set&quot;</string>
+    <string name="error_home_set_calendars">&quot;Couldn't determine calendar home set&quot;</string>
+    <string name="add_account">Add account</string>
+    <string name="querying_server">Querying server. Please wait…</string>
+    <string name="exception_http">HTTP error: %s</string>
+    <string name="what_to_sync">Which collections shall be synchronized?</string>
+    <string name="address_books">Address books</string>
+    <string name="calendars">Calendars</string>
+    <string name="select_address_book">Select up to one address book (tap again to unselect):</string>
+    <string name="select_calendars">Select your calendars:</string>
+
+</resources>

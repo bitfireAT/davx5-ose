@@ -1,0 +1,14 @@
+Testsuite: org.simpleframework.xml.core.Test4_2Test
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.089 sec
+------------- Standard Output ---------------
+<test4>
+   <single-element class="org.simpleframework.xml.core.Test4_2Test$MyElementC"/>
+</test4>
+
+<test4>
+   <single-element class="org.simpleframework.xml.core.Test4_2Test$MyElementC"/>
+</test4>
+
+------------- ---------------- ---------------
+
+Testcase: testSerialization took 0.087 sec

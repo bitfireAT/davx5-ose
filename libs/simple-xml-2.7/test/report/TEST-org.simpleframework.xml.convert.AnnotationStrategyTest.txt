@@ -1,0 +1,15 @@
+Testsuite: org.simpleframework.xml.convert.AnnotationStrategyTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.123 sec
+------------- Standard Output ---------------
+<farmExample>
+   <c:chicken name="Hen" age="1" legs="2" xmlns:c="http://www.domain.com/test"/>
+   <cow name="Bull" age="4" legs="4"/>
+   <farmer age="80">Old McDonald</farmer>
+   <time>1</time>
+   <time>10</time>
+   <time>11</time>
+   <time>12</time>
+</farmExample>------------- ---------------- ---------------
+
+Testcase: testAnnotationStrategy took 0.121 sec
+Testcase: testDirectory took 0.001 sec

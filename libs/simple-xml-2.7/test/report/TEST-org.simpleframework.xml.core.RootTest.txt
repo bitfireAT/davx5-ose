@@ -1,0 +1,92 @@
+Testsuite: org.simpleframework.xml.core.RootTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.138 sec
+------------- Standard Output ---------------
+<rootExample version="1">
+   <text>Some text example</text>
+</rootExample><rootExample version="1">
+   <text>Some text example</text>
+</rootExample>
+<root-example ID="0" version="1">
+   <!-- java.lang.String -->
+   <text ID="1">Some text example</text>
+</root-example>>>>>> ELEMENT=[element root-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.RootTest$RootExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<RootExample ID="0" version="1">
+   <!-- java.lang.String -->
+   <Text ID="1">Some text example</Text>
+</RootExample>>>>>> ELEMENT=[element RootExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.RootTest$RootExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<extendedRootExample version="1">
+   <text>Some text example</text>
+</extendedRootExample><extendedRootExample version="1">
+   <text>Some text example</text>
+</extendedRootExample>
+<extended-root-example ID="0" version="1">
+   <!-- java.lang.String -->
+   <text ID="1">Some text example</text>
+</extended-root-example>>>>>> ELEMENT=[element extended-root-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.RootTest$ExtendedRootExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ExtendedRootExample ID="0" version="1">
+   <!-- java.lang.String -->
+   <Text ID="1">Some text example</Text>
+</ExtendedRootExample>>>>>> ELEMENT=[element ExtendedRootExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.RootTest$ExtendedRootExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<extendedRootExample version="1">
+   <text>Some text example</text>
+</extendedRootExample><extendedRootExample version="1">
+   <text>Some text example</text>
+</extendedRootExample>
+<extended-root-example ID="0" version="1">
+   <!-- java.lang.String -->
+   <text ID="1">Some text example</text>
+</extended-root-example>>>>>> ELEMENT=[element extended-root-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.RootTest$ExtendedRootExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ExtendedRootExample ID="0" version="1">
+   <!-- java.lang.String -->
+   <Text ID="1">Some text example</Text>
+</ExtendedRootExample>>>>>> ELEMENT=[element ExtendedRootExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.RootTest$ExtendedRootExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<extendedOverriddenRootExample version="1">
+   <text>Some text example</text>
+</extendedOverriddenRootExample><extendedOverriddenRootExample version="1">
+   <text>Some text example</text>
+</extendedOverriddenRootExample>
+<extended-overridden-root-example ID="0" version="1">
+   <!-- java.lang.String -->
+   <text ID="1">Some text example</text>
+</extended-overridden-root-example>>>>>> ELEMENT=[element extended-overridden-root-example]
+>>>>> TYPE=[class org.simpleframework.xml.core.RootTest$ExtendedOverriddenRootExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ExtendedOverriddenRootExample ID="0" version="1">
+   <!-- java.lang.String -->
+   <Text ID="1">Some text example</Text>
+</ExtendedOverriddenRootExample>>>>>> ELEMENT=[element ExtendedOverriddenRootExample]
+>>>>> TYPE=[class org.simpleframework.xml.core.RootTest$ExtendedOverriddenRootExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<explicitOverride version="1">
+   <text>Some text example</text>
+</explicitOverride><explicitOverride version="1">
+   <text>Some text example</text>
+</explicitOverride>
+<explicit-override ID="0" version="1">
+   <!-- java.lang.String -->
+   <text ID="1">Some text example</text>
+</explicit-override>>>>>> ELEMENT=[element explicit-override]
+>>>>> TYPE=[class org.simpleframework.xml.core.RootTest$ExtendedExplicitlyOverriddenRootExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<ExplicitOverride ID="0" version="1">
+   <!-- java.lang.String -->
+   <Text ID="1">Some text example</Text>
+</ExplicitOverride>>>>>> ELEMENT=[element ExplicitOverride]
+>>>>> TYPE=[class org.simpleframework.xml.core.RootTest$ExtendedExplicitlyOverriddenRootExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testRoot took 0.135 sec
+Testcase: testDirectory took 0 sec

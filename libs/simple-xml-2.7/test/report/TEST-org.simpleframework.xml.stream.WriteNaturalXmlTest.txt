@@ -1,0 +1,10 @@
+Testsuite: org.simpleframework.xml.stream.WriteNaturalXmlTest
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.027 sec
+------------- Standard Error -----------------
+<root>xxx
+   <child/>222
+   <child2/>
+</root>
+------------- ---------------- ---------------
+
+Testcase: testWriteXml took 0.025 sec

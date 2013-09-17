@@ -1,0 +1,8 @@
+net.fortuna.ical4j.data
+net.fortuna.ical4j.filter
+net.fortuna.ical4j.model
+net.fortuna.ical4j.model.component
+net.fortuna.ical4j.model.parameter
+net.fortuna.ical4j.model.property
+net.fortuna.ical4j.transform
+net.fortuna.ical4j.util

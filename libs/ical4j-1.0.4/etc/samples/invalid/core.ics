@@ -1,0 +1,657 @@
+BEGIN:VCALENDAR
+CALSCALE:GREGORIAN
+METHOD:publish
+PRODID:Glow calendar
+VERSION:1.0
+X-DISPLAY-NAME:Core
+BEGIN:VEVENT
+UID:aa433414-2000-4095-86d4-310b55966d43
+DTSTART;TZID=America/Los_Angeles:20040630T193000
+DTEND;TZID=America/Los_Angeles:20040630T203000
+SUMMARY:JavaTM Technology on Linux: Tips and Tricks
+DESCRIPTION:Meet the engineers behind the JavaTM 2 Platform, Standard Edition (J2SETM) port to Linux and find out some tips and techniques so that you, too, can be a JavaTM technology on Linux expert. Code and examples of tools to make your life easier are shown.
+LOCATION:BOF-1064
+END:VEVENT
+BEGIN:VEVENT
+UID:a7a6c9b1-1818-4463-889f-b51481cf4d59
+DTSTART;TZID=America/Los_Angeles:20040629T100000
+DTEND;TZID=America/Los_Angeles:20040629T110000
+SUMMARY:This Cat Roars! Experience the New Functionality in JavaTM 2 Platform, Standard Edition (J2SETM), Version 1.5
+DESCRIPTION:Today JavaTM technology is everywhere -- in large enterprise systems, desktops, hand-held devices and smart cards. Consequently Java technology is the platform of choice for developers all over the world. All this has happened in the short time since the technology was first introduced in 1995. While there have been updates and enhancements since the first version, release 1.5 of the core Java platform brings to the table more language-level updates and other enhancements through the incorporation of a number of Java Specification Requests (JSRs) than at any other time. In this hands-on session, developers will learn about all these changes and how to build desktop applications using version 1.5 of the Java platform.
+LAST-MODIFIED:20040610T120147Z
+LOCATION:6113
+END:VEVENT
+BEGIN:VEVENT
+UID:48c4812e-3337-4020-b9f1-3622953bdb3d
+DTSTART;TZID=America/Los_Angeles:20040630T223000
+DTEND;TZID=America/Los_Angeles:20040630T233000
+SUMMARY:Building Reusable Components for Sun JavaTM Studio Creator Application Development Tool
+DESCRIPTION:This session describes how to build reusable components for the Sun JavaTM Studio Creator application development tool, and shows how to assemble useful web applications from those components. This session is targeted at two types of developers:
+LOCATION:BOF-1105
+END:VEVENT
+BEGIN:VEVENT
+UID:a8031d62-88c9-4433-bced-35034c6a1f93
+DTSTART;TZID=America/Los_Angeles:20040630T193000
+DTEND;TZID=America/Los_Angeles:20040630T203000
+SUMMARY:Performance Measurement of Mixed JavaTM Technology, JIT-Compiled, and Native Applications
+DESCRIPTION:Many JavaTM technology-based applications are not pure Java technology, but include JIT-compiled code, as well as native code, accessed through JNI. Performance measurement for such codes is very important, and not available with typical Java software tools. In this session we describe the implementation of an external profiling agent that profiles mixed-model Java language codes. We show how the user can collect data on such applications, and how the data can be used to analyze the application's performance.
+LOCATION:BOF-1198
+END:VEVENT
+BEGIN:VEVENT
+UID:202b60d6-122e-4dd4-a8e4-8e7c827988b2
+DTSTART;TZID=America/Los_Angeles:20040630T203000
+DTEND;TZID=America/Los_Angeles:20040630T213000
+SUMMARY:Performance of JavaTM 2 Platform, Standard Edition (J2SETM), JavaTM 2 Platform, Enterprise Edition (J2EETM), Web Server, Web Services, and Portals
+DESCRIPTION:This session fields questions on anything in the JavaTM technology stack, including
+LOCATION:BOF-1217
+END:VEVENT
+BEGIN:VEVENT
+UID:a5581fc6-b5ba-4e49-a147-69bd22bcbd31
+DTSTART;TZID=America/Los_Angeles:20040629T203000
+DTEND;TZID=America/Los_Angeles:20040629T213000
+SUMMARY:Lies, Damned Lies, and Performance Statistics
+DESCRIPTION:This is a session on using statistical methods for designing experiments and collecting and analyzing performance data. In other words, in this session developers learn how to leverage statistical methods for gathering and analyzing performance data, along with how to avoid making erroneous conclusions.
+LOCATION:BOF-1220
+END:VEVENT
+BEGIN:VEVENT
+UID:552e255e-4d97-4de4-9e2a-951f078dceeb
+DTSTART;TZID=America/Los_Angeles:20040630T203000
+DTEND;TZID=America/Los_Angeles:20040630T213000
+SUMMARY:Taming the JavaTM Technology ClassLoader
+DESCRIPTION:Classloaders are integral to the JavaTM technology runtime environment, providing security and dynamic class loading capabilities. Java Servlet and EJBTM containers, for example, implement their own classloaders to support features like hot deployment. Even though they mostly stay in the background, giving a hint of their presence only through the NoClassDefFoundError, there are times when problems show up as more obscure exceptions like java.lang.LinkageError. A solid understanding of classloader function is important to the ability to debug these occasional problems.
+LAST-MODIFIED:20040610T120652Z
+LOCATION:BOF-1373
+END:VEVENT
+BEGIN:VEVENT
+UID:141b0e0a-7302-48b9-b382-19fea17081c6
+DTSTART;TZID=America/Los_Angeles:20040629T193000
+DTEND;TZID=America/Los_Angeles:20040629T203000
+SUMMARY:Performant and Scalable JDBCTM Technology
+DESCRIPTION:Accessing SQL datastores represents one of the most critical bottlenecks in any application, particularly if the reliance on a SQL datastore is central to the application. This is typical in EJBTM
+LOCATION:BOF-1525
+END:VEVENT
+BEGIN:VEVENT
+UID:c372421a-dfd8-47dd-a167-07ccddcebeac
+DTSTART;TZID=America/Los_Angeles:20040630T213000
+DTEND;TZID=America/Los_Angeles:20040630T223000
+SUMMARY:Meet the Team: Sun JavaTMStudio Creator Integrated Development Tool=
+DESCRIPTION:Sun JavaTM Studio Creator IDE is a new and exciting product designed to bring standards-based web application development based on Java technology to the large number of corporate developers who have traditionally used 4GL tools and languages on other platforms. With this new tool, the bar to entry to rapid application development and overall productivity has been significantly lowered. In addition, the ability to rapidly develop and deploy standards-based web applications based on JavaServerTM Faces technology and new Java technology APIs focused on ease-of-development is now a reality.
+LOCATION:BOF-1592
+END:VEVENT
+BEGIN:VEVENT
+UID:a0d3efb3-0da4-46ed-b7ed-57464bab9fc7
+DTSTART;TZID=America/Los_Angeles:20040630T203000
+DTEND;TZID=America/Los_Angeles:20040630T213000
+SUMMARY:Integrating Ant Builds Into the NetBeansTM IDE
+DESCRIPTION:The Apache Ant build system (ant.apache.org) has rapidly gained
+LOCATION:BOF-1598
+END:VEVENT
+BEGIN:VEVENT
+UID:cc3f4226-b9bf-43d5-aa24-b6d114ee711d
+DTSTART;TZID=America/Los_Angeles:20040628T213000
+DTEND;TZID=America/Los_Angeles:20040628T223000
+SUMMARY:INSANE (INternal Storage Analysis Now Easy): A Simple Way to Diagnose Memory Leaks
+DESCRIPTION:This session describes a technique for tracing heap memory from inside a running application. We describe how to use this technique to locate memory leaks, and how to write automated regression tests to:
+LOCATION:BOF-1600
+END:VEVENT
+BEGIN:VEVENT
+UID:a6f7aa88-93de-4d41-a429-a83883419c7d
+DTSTART;TZID=America/Los_Angeles:20040629T203000
+DTEND;TZID=America/Los_Angeles:20040629T213000
+SUMMARY:Meet the Team Behind the J2SETM Platform v1.5 Monitoring, Profiling and Debugging APIs
+DESCRIPTION:The JavaTM 2 Platform, Standard Edition (J2SETM) Serviceability Team manages the J2SE APIs for debugging,
+END:VEVENT
+BEGIN:VEVENT
+UID:1f6075d1-3776-4e95-af5a-10b63a27c3c9
+DTSTART;TZID=America/Los_Angeles:20040629T193000
+DTEND;TZID=America/Los_Angeles:20040629T203000
+SUMMARY:Big News for BigDecimal
+DESCRIPTION:With the inclusion of JSR 13 in the 1.5 release of JavaTM 2 Platform, Standard Edition (J2SETM platform), the BigDecimal class gains many new computational capabilities. You can now easily calculate your monthly mortage payment using BigDecimal! Besides the ability to perform fixed-precision arithmetic, an exact divide method is available, too.
+LOCATION:BOF-1638
+END:VEVENT
+BEGIN:VEVENT
+UID:71b65fab-246b-4044-b7d5-dba7a48e1e1d
+DTSTART;TZID=America/Los_Angeles:20040629T213000
+DTEND;TZID=America/Los_Angeles:20040629T223000
+SUMMARY:Eclipse
+DESCRIPTION:Whether you're an experienced plug-in writer or are using Eclipse to build your application, we welcome you to the Eclipse BOF. We provide a tour of the Eclipse Project 3.0 release and other recent Eclipse-related activities. We also provide an opportunity to share experiences (bring your laptop), challenges, new projects, and other goings-on during the roundtable discussion.
+LOCATION:BOF-1701
+END:VEVENT
+BEGIN:VEVENT
+UID:ba7bbcaa-1a2c-4ac0-a2c0-fe1d553097f5
+DTSTART;TZID=America/Los_Angeles:20040628T213000
+DTEND;TZID=America/Los_Angeles:20040628T223000
+SUMMARY:Getting More From java.net
+DESCRIPTION:Discover the unique ways java.net can help you collaborate and innovate with JavaTM technology more successfully. From community building to project development, using wikis, blogs, RSS feeds, mailing lists, and more, you'll learn from the experts, java.net project owners, and community leaders how you can get the most out of java.net.
+LOCATION:BOF-1812
+END:VEVENT
+BEGIN:VEVENT
+UID:75764970-32da-404f-9990-b22da1a6db4e
+DTSTART;TZID=America/Los_Angeles:20040628T223000
+DTEND;TZID=America/Los_Angeles:20040628T233000
+SUMMARY:Hosting Your Project on java.net
+DESCRIPTION:Discover how java.net provides developers worldwide with the resources to collaborate and innovate. Whether you have an existing web site or project or the beginnings of an idea that you want to explore, come to this session to learn how you can host your project on java.net. Together we explore java.net communities and projects, so come ready with your questions and ideas. Topics to discuss include the following:
+LOCATION:BOF-1816
+END:VEVENT
+BEGIN:VEVENT
+UID:8c75dbc7-23d0-4322-9915-d48d2688d9e0
+DTSTART;TZID=America/Los_Angeles:20040630T203000
+DTEND;TZID=America/Los_Angeles:20040630T213000
+SUMMARY:Source Code Quality Management by Visual Exploration
+DESCRIPTION:This session describes how to measure and improve source code quality by statistical analysis and visual exploration. Various standard software development tools (CVS, PMD, Clover, Doclets, and others) allow the collection of statistical data that can be used to qualify the source code, the members of a software development team, or the circumstances under which source code is created.
+LOCATION:BOF-1934
+END:VEVENT
+BEGIN:VEVENT
+UID:c17e979c-5421-446d-99be-a454d8e540ff
+DTSTART;TZID=America/Los_Angeles:20040629T203000
+DTEND;TZID=America/Los_Angeles:20040629T213000
+SUMMARY:A Fresh Look at the JMXTM Specification
+DESCRIPTION:This session reviews the original intentions of the JMXTM specification, and then provides a survey of how it has been put into practical use in the marketplace. The session puts these two different viewpoints into perspective by discussing JavaTM 2 Platform, Enterprise Edition (J2EETM platform) and the JMX API. We then discuss BEA's perspective on JMX technology and on the introduction of JSR 77, JMX 1.2, and JSR 173. Finally, we explore what it would take for the JMX API to form the basis for an enterprise management solution that spans multiple vendors.
+LOCATION:BOF-1995
+END:VEVENT
+BEGIN:VEVENT
+UID:8bc6a0ce-3a84-485e-b64d-1f4753084a82
+DTSTART;TZID=America/Los_Angeles:20040630T213000
+DTEND;TZID=America/Los_Angeles:20040630T223000
+SUMMARY:Tools and Tips for JavaTM Technology Coding
+DESCRIPTION:This session compares several tools for JavaTM technology code editing, and provides tips and tricks on using these tools based on many years of experience.
+LOCATION:BOF-2018
+END:VEVENT
+BEGIN:VEVENT
+UID:33b4c193-e971-4355-99ed-9035f5d2db9e
+DTSTART;TZID=America/Los_Angeles:20040628T223000
+DTEND;TZID=America/Los_Angeles:20040628T233000
+SUMMARY:JavaTM Programming Language and Compiler Issues
+DESCRIPTION:Changes in the language for JavaTM 2 Platform, Standard Edition (J2SETM platform) version 1.5 pose some interesting challenges to compiler developers. In this session, we consider the new language features and discuss implementation strategies.
+LOCATION:BOF-2025
+END:VEVENT
+BEGIN:VEVENT
+UID:1629df8e-9df6-4e89-8834-3f2f811cdbcf
+DTSTART;TZID=America/Los_Angeles:20040628T213000
+DTEND;TZID=America/Los_Angeles:20040628T223000
+SUMMARY:How the JavaTM 2 Platform, Standard Edition (J2SETM) 1.5 Language Changes Affect Your Favorite APIs
+DESCRIPTION:In this session, we survey the changes to the JavaTM 2 Platform, Standard Edition (J2SETM) APIs that result from retrofitting them to use the new language features.
+LOCATION:BOF-2027
+END:VEVENT
+BEGIN:VEVENT
+UID:a5e0e025-839d-489c-b6dd-276947e2a575
+DTSTART;TZID=America/Los_Angeles:20040629T223000
+DTEND;TZID=America/Los_Angeles:20040629T233000
+SUMMARY:Meet the Tools and Core Libraries Engineering Team
+DESCRIPTION:Come and meet the engineers and manager of the team called "Tools and Core Libraries." This is the team who maintains the Java technology code used daily by developers. These engineers are responsible for javac, javadoc tool, javah, javap, jar, java.lang, java.io, java.nio, java.util, the character converters, and other small bits of the JavaTM 2 Platform, Standard Edition (J2SETM platform. In this session, we present what the team has done lately, and what it is planning to do in the future. We are allotting ample time for Q&A.
+LOCATION:BOF-2029
+END:VEVENT
+BEGIN:VEVENT
+UID:f8355183-2831-48a0-aaf5-007c43771aa1
+DTSTART;TZID=America/Los_Angeles:20040630T223000
+DTEND;TZID=America/Los_Angeles:20040630T233000
+SUMMARY:Experiences with JavaTM 2 Platform, Enterprise Edition (J2EETM) Development on Mac OS X
+DESCRIPTION:The Mac OS X platform is gaining ground with developers because of its stable UNIX(r) system-based architecture, easy-to-use user interface, and integrated JavaTM runtime environment. This session discusses experiences of J2EETM technology development on Mac OS X, and explores the advantages and disadvantages of adopting the platform. The session also demonstrates some of the open source and commercial development tools that the speakers use on a regular basis, revealing any "gotchas" that have been encountered along the way.
+LOCATION:BOF-2058
+END:VEVENT
+BEGIN:VEVENT
+UID:9f1d3b23-5091-4902-8205-d6bd1c464f4a
+DTSTART;TZID=America/Los_Angeles:20040630T223000
+DTEND;TZID=America/Los_Angeles:20040630T233000
+SUMMARY:The FindBugs Tool
+DESCRIPTION:FindBugs is an open source tool for finding errors in
+LOCATION:BOF-2171
+END:VEVENT
+BEGIN:VEVENT
+UID:da005b5b-8458-4887-b1dd-cd380761bfd1
+DTSTART;TZID=America/Los_Angeles:20040628T223000
+DTEND;TZID=America/Los_Angeles:20040628T233000
+SUMMARY:Developing MIDP Applications for Different Devices
+DESCRIPTION:While the MIDP platform is becoming more popular and an increasing number of devices from various vendors are supporting it, we also note that not all applications run on all devices. There are a host of reasons why: devices are unique, devices may have different screen resolutions and a varying number of colors, devices may use proprietary extensions, and there may be possible bugs in the MIDP implementation. This situation causes problems for device developers, who must write complex code or produce different versions of their applications. Sun JavaTMtechnology Studio software addresses some of these problems.
+LOCATION:BOF-2307
+END:VEVENT
+BEGIN:VEVENT
+UID:e6c78537-a952-4e3b-bad9-8d8798d5aae6
+DTSTART;TZID=America/Los_Angeles:20040630T193000
+DTEND;TZID=America/Los_Angeles:20040630T203000
+SUMMARY:The JavaTM Technology Memory Model Session
+DESCRIPTION:JavaTM technology 1.5 incorporates JSR 133, the JavaTM Memory Model, which
+LOCATION:BOF-2334
+END:VEVENT
+BEGIN:VEVENT
+UID:6c6be43b-b834-47ae-b692-51ecb042d039
+DTSTART;TZID=America/Los_Angeles:20040630T223000
+DTEND;TZID=America/Los_Angeles:20040630T233000
+SUMMARY:Low-Cost JavaTM 2 Platform, Enterprise Edition (J2EETM) Performance Monitoring
+DESCRIPTION:The performance of JavaTM 2 Platform, Enterprise Edition (J2EETM) applications in production is critical. So critical that a whole market has sprung up, with vendors offering various sophisticated and expensive products for monitoring and managing J2EE platform performance. Are these products absolutely necessary for all types of J2EE applications? Are there lower-cost alternatives?
+LOCATION:BOF-2351
+END:VEVENT
+BEGIN:VEVENT
+UID:94bf2c30-bddc-4788-bb14-9d4134960e89
+DTSTART;TZID=America/Los_Angeles:20040629T223000
+DTEND;TZID=America/Los_Angeles:20040629T233000
+SUMMARY:JavaTM Technology Networking Q&A: The Secret Lives of Sockets, URLs, and Proxies
+DESCRIPTION:Meet the JavaTM 2 Platform, Standard Edition (J2SETM) networking team. Here is your opportunity to ask tough questions and get help with some of your technical problems. We discuss common problems, design patterns, and best practices as well as the features we added in J2SE technology 1.5. We would also like to gather feedback and requests for consideration for future releases.
+LOCATION:BOF-2367
+END:VEVENT
+BEGIN:VEVENT
+UID:62e32b23-910e-4d15-b0fb-ee8819403b9f
+DTSTART;TZID=America/Los_Angeles:20040629T203000
+DTEND;TZID=America/Los_Angeles:20040629T213000
+SUMMARY:Application Isolation for JavaTM 2 Platform, Micro Edition (J2METM) and JavaTM 2 Platform, Standard Edition (J2SETM) (JSR 121)
+DESCRIPTION:In this session, hear the latest information about the Java Application Isolation API for JavaTM 2 Platform, Micro Edition (J2METM)/CLDC, CDC, and JavaTM 2 Platform, Standard Edition (J2SETM) settings. We give you detailed information about initial application of the APIs as an alternative to classloader-based containment of JavaTM technology application components. We also discuss how Isolates provide the basis for exciting new resource management capabilities.
+LOCATION:BOF-2436
+END:VEVENT
+BEGIN:VEVENT
+UID:605088b7-34b6-4e9b-8c63-3269a6b01577
+DTSTART;TZID=America/Los_Angeles:20040630T213000
+DTEND;TZID=America/Los_Angeles:20040630T223000
+SUMMARY:Secure Communications Using the JavaTM Secure Socket Extension (JSSE) Software
+DESCRIPTION:JavaTM Secure Socket Extension (JSSE) provides secure networking by means of the Secure Socket Layer (SSL) and the Transport Layer Security (TLS) protocols. In this session, meet the JSSE team and hear what's new in J2SETM platform 1.5, including the non-blocking SSLEngine, and what the future holds. Attendees should bring JSSE questions and comments to the Q&A session.
+LOCATION:BOF-2454
+END:VEVENT
+BEGIN:VEVENT
+UID:7b88abdd-022c-4b7d-9d70-0448045bd2c0
+DTSTART;TZID=America/Los_Angeles:20040629T213000
+DTEND;TZID=America/Los_Angeles:20040629T223000
+SUMMARY:Cryptography Made Easy with the JavaTM Cryptography Extension
+DESCRIPTION:The JavaTM Cryptography Extension (JCE) provides a framework and implementations for crypto operations including encryption, decryption, key generation, and other operations.
+LOCATION:BOF-2492
+END:VEVENT
+BEGIN:VEVENT
+UID:fac21761-401e-4cd5-ab03-6e6411049de1
+DTSTART;TZID=America/Los_Angeles:20040629T213000
+DTEND;TZID=America/Los_Angeles:20040629T223000
+SUMMARY:Meet the Java HotspotTM VM Development Team
+DESCRIPTION:This session is an opportunity to meet the Java HotspotTM virtual machine (VM) development team, hear about new features for release 1.5 and ones we are considering for future releases, and get your technical questions answered at the source.
+LOCATION:BOF-2520
+END:VEVENT
+BEGIN:VEVENT
+UID:aa7e2001-5e4b-4ef9-b3ff-6d6c60221489
+DTSTART;TZID=America/Los_Angeles:20040629T193000
+DTEND;TZID=America/Los_Angeles:20040629T203000
+SUMMARY:The Collections Connection VII
+DESCRIPTION:If you have been using the Java(TM) Collections Framework or you are just curious about it, this session is for you. The session begins by reviewing the new algorithms, implementations, and interfaces in the J2SETM Platform Release 1.5. Then, we field programming questions, design philosophy questions, or any other questions you may have. We encourage those who have done interesting things with the Collections Framework to attend.
+LOCATION:BOF-2631
+END:VEVENT
+BEGIN:VEVENT
+UID:7ebd610e-a16d-413b-ac33-df063fb0cac6
+DTSTART;TZID=America/Los_Angeles:20040630T193000
+DTEND;TZID=America/Los_Angeles:20040630T203000
+SUMMARY:Meet the NetBeansTM Development Team
+DESCRIPTION:NetBeansTM technology is an open source IDE for developing J2SE and J2EE appplications. This is an opportunity to meet the NetBeans developers, learn about the product now and plans for the future, get helpful hints, network with other NetBeans technology users, and ask any questions you might have.
+LOCATION:BOF-2730
+END:VEVENT
+BEGIN:VEVENT
+UID:49e87884-580f-4f6e-b3f5-a34850650256
+DTSTART;TZID=America/Los_Angeles:20040630T193000
+DTEND;TZID=America/Los_Angeles:20040630T203000
+SUMMARY:The Java Community ProcessSM (JCPSM) Program
+DESCRIPTION:The Java Community ProcessSM (JCPSM) program is where Java technology
+LOCATION:BOF-2744
+END:VEVENT
+BEGIN:VEVENT
+UID:6c1c1514-8ade-4348-a137-3933c58f4beb
+DTSTART;TZID=America/Los_Angeles:20040628T213000
+DTEND;TZID=America/Los_Angeles:20040628T223000
+SUMMARY:Monitoring and Managing a JavaTM Virtual Machine in the JavaTM 2 Platform, Standard Edition (J2SETM) 1.5: JSR 174 Update and Case Studies
+DESCRIPTION:A JavaTM virtual machine monitoring and management interface is
+LOCATION:BOF-2823
+END:VEVENT
+BEGIN:VEVENT
+UID:3bdbdf6c-44b9-44d3-ac05-c98303aa46e3
+DTSTART;TZID=America/Los_Angeles:20040629T223000
+DTEND;TZID=America/Los_Angeles:20040629T233000
+SUMMARY:JavaTM 2 Platform, Enterprise Edition (J2EETM) Development With Free and Open-Source Tools
+DESCRIPTION:The average JavaTM 2 Platform, Enterprise Edition (J2EETM platform) IDE, application server, database server, and even OS can set you back a pretty penny. Even large companies may not want to outfit every developer with a full stack of commercial software tools. But you don't need to hemorrhage money to develop applications for the J2EE platform.
+LAST-MODIFIED:20040610T131106Z
+LOCATION:BOF-2923
+END:VEVENT
+BEGIN:VEVENT
+UID:761ed821-9f56-4558-8736-53987d68ad8f
+DTSTART;TZID=America/Los_Angeles:20040630T213000
+DTEND;TZID=America/Los_Angeles:20040630T223000
+SUMMARY:Bytecode Instrumentation: Making it Simple
+DESCRIPTION:Bytecode instrumentation (BCI) is easy to learn, and you can learn just how easy it is by attending this session. Bytecode instrumentation has been used since the early days of the Java platform. Today, we see it in many commercial performance tools as well as in open-source projects. In JavaTM 2 Platform, Standard Edition (J2SETM platform) version 1.5
+LOCATION:BOF-3042
+END:VEVENT
+BEGIN:VEVENT
+UID:541ee981-be69-4982-bb2a-46a191f769e8
+DTSTART;TZID=America/Los_Angeles:20040630T203000
+DTEND;TZID=America/Los_Angeles:20040630T213000
+SUMMARY:JavaTM Technology and Your Kids
+DESCRIPTION:Programming is what you do, and you would probably like to share it with your child, too. What kinds of tools and techniques are out there to draw your kids into the rewarding world of JavaTM technology development? At what age should they start, and what is available to get them started? We discuss tools such as Judo, JavaBot, and Lego Mindstorms, as well as other materials and projects to help your kids understand what you do every day.
+LOCATION:BOF-3145
+END:VEVENT
+BEGIN:VEVENT
+UID:ae03e5c2-a121-4639-96fe-57f1aa2ef689
+DTSTART;TZID=America/Los_Angeles:20040629T213000
+DTEND;TZID=America/Los_Angeles:20040629T223000
+SUMMARY:Server-Side Performance
+DESCRIPTION:This session covers various techniques and issues centered around performance of JavaTM technology-based server-side applications. It includes a discussion of how to analyze, monitor, and improve the performance of complex, multitier systems.
+LOCATION:BOF-3214
+END:VEVENT
+BEGIN:VEVENT
+UID:d68fb1f5-7222-44f1-b6d5-c1c28614271e
+DTSTART;TZID=America/Los_Angeles:20040629T193000
+DTEND;TZID=America/Los_Angeles:20040629T203000
+SUMMARY:"Tiger's Children"
+DESCRIPTION:What comes after the 1.5 release of the JavaTM 2 Platform, Standard Edition (J2SETM)? This Birds-of-a-Feather session begins with a short summary of the major themes and potential features being considered in the Java Community ProcessSM program for the releases that follow 1.5. We then open the floor for audience members to offer their own comments and ideas on the future evolution of the platform.
+LOCATION:BOF-3808
+END:VEVENT
+BEGIN:VEVENT
+UID:840f559e-d4c1-4547-bce7-a40ac25b3605
+DTSTART;TZID=America/Los_Angeles:20040629T203000
+DTEND;TZID=America/Los_Angeles:20040629T213000
+SUMMARY:"Tiger's Children"
+DESCRIPTION:What comes after the 1.5 release of the JavaTM 2 Platform, Standard Edition (J2SETM)? This Birds-of-a-Feather session begins with a short summary of the major themes and potential features being considered in the Java Community ProcessSM program for the releases that follow 1.5. We then open the floor for audience members to offer their own comments and ideas on the future evolution of the platform.
+LOCATION:BOF-3808
+END:VEVENT
+BEGIN:VEVENT
+UID:cb6ea9af-3909-4ffb-8650-183b65a626cb
+DTSTART;TZID=America/Los_Angeles:20040630T223000
+DTEND;TZID=America/Los_Angeles:20040630T233000
+SUMMARY:Everything You Wanted To Know About Generics
+DESCRIPTION:This session covers the fine points of generics in the JavaTM programming language, based upon queries from the audience. We discuss semantics, design rationale, history, and other subjects as time allows. Topics that are likely to come up are wildcards, reflection support, translation by erasure compared to reification, handling of arrays, and future plans.
+LOCATION:BOF-3823
+END:VEVENT
+BEGIN:VEVENT
+UID:ae86caf4-fa7b-4f6c-a178-909a62ecbc95
+DTSTART;TZID=America/Los_Angeles:20040630T193000
+DTEND;TZID=America/Los_Angeles:20040630T203000
+SUMMARY:A Metadata Facility for the JavaTM Programming Language
+DESCRIPTION:Metadata is among the most hotly awaited new features in the
+LOCATION:BOF-3825
+END:VEVENT
+BEGIN:VEVENT
+UID:bcd37425-7ff5-4646-a1e5-34dc454693a7
+DTSTART;TZID=America/Los_Angeles:20040629T223000
+DTEND;TZID=America/Los_Angeles:20040629T233000
+SUMMARY:JavaTM Technology Tools Community: Improving Alignment of Tool Platforms in a Diverse Environment
+DESCRIPTION:Earlier this year, the JavaTM technology tools community formed to address two outstanding issues in the Java technology tools market: (1) a growing desire by tools community to allow diverse developers to build applications in a more productive manner; and (2) the lack of attention paid to interoperability between Java technology development tools. The online community, javatools.org, now involves tool vendors, tool customers, and the public, who discuss issues and needs regarding interoperability and toolability, and then feed back input to relevant expert groups in the Java Community ProcessSM (JCPSM) program.
+LOCATION:BOF-3889
+END:VEVENT
+BEGIN:VEVENT
+UID:23e1ecc0-d670-4cec-823e-e7a3121c39c0
+DTSTART;TZID=America/Los_Angeles:20040628T164500
+DTEND;TZID=America/Los_Angeles:20040628T174500
+SUMMARY:Performance Tools Panel
+DESCRIPTION:The JavaTM platform is fortunate to have a number of companies producing very strong tools for performance profiling, monitoring, and analysis.
+LOCATION:BUS-1238
+END:VEVENT
+BEGIN:VEVENT
+UID:4ab51abc-ed4f-42d4-9276-b957983a9ca2
+DTSTART;TZID=America/Los_Angeles:20040628T180000
+DTEND;TZID=America/Los_Angeles:20040628T190000
+SUMMARY:JavaTM Technology IDE Shootout
+DESCRIPTION:So you're happy with your favorite editor and have key mappings configured for every command under the sun? Are you sure you know what you're missing?
+LOCATION:BUS-2864
+END:VEVENT
+BEGIN:VEVENT
+UID:1295a16f-faa4-41b1-b0ae-646a94a17bd5
+DTSTART;TZID=America/Los_Angeles:20040630T133000
+DTEND;TZID=America/Los_Angeles:20040630T143000
+SUMMARY:Aspect-Oriented Programming: Great New Thing or Great Leap Backwards?
+DESCRIPTION:Aspect-Oriented Programming (AOP) technology is receiving a great deal of attention within the object-oriented programming community. Although it provides a great deal of power, it also potentially greatly disrupts program semantics. This session hosts a lively debate between some leading proponents and some leading doub
+LOCATION:BUS-3192
+END:VEVENT
+BEGIN:VEVENT
+UID:aede7f2e-4230-4765-8ea3-f228ff3abc5e
+DTSTART;TZID=America/Los_Angeles:20040701T104500
+DTEND;TZID=America/Los_Angeles:20040701T114500
+SUMMARY:Upgrading JavaTM Technology-Based Applications from MS VM to Java 2 Platform, Standard Edition (J2SETM Platform
+DESCRIPTION:Learn to get the most out of your JavaTM technology-based applications and applets by converting them to target Java2>TM 2 Platform, Standard Edition (J2SETM)! Understand the upgrade paths through the Java Technology Upgrade program, and leverage the Upgrade tool to upgrade the application easily. Learn about top migration issues and resolutions, and understand how to improve graphics performance, which is important to many applet games in the marketplace. Hear about the upgrade experience of some of the customers in the case studies.
+LOCATION:TS-1177
+END:VEVENT
+BEGIN:VEVENT
+UID:c94c4a28-5775-429e-969b-6a9b5747fb6a
+DTSTART;TZID=America/Los_Angeles:20040629T110000
+DTEND;TZID=America/Los_Angeles:20040629T120000
+SUMMARY:Choices and Trade-Offs in Garbage Collection in the Java HotspotTM Virtual Machine
+DESCRIPTION:This session describes the choices of different garbage collectors in the Java HotspotTM Virtual Machine (JVMTM) and the tradeoffs implicit in those choices. The serial, mostly concurrent, and parallel garbrge collectors are discussed, wtih emphasis on the latter two.
+LOCATION:TS-1216
+END:VEVENT
+BEGIN:VEVENT
+UID:13aa96b0-f3a8-465a-bec3-1bae16fb7817
+DTSTART;TZID=America/Los_Angeles:20040628T153000
+DTEND;TZID=America/Los_Angeles:20040628T163000
+SUMMARY:JavaTM Platform Performance
+DESCRIPTION:This session goes into detail on the current performance of Java[TM] technology,
+LOCATION:TS-1218
+END:VEVENT
+BEGIN:VEVENT
+UID:af23abd9-88a6-435c-a749-7ce2a43b3442
+DTSTART;TZID=America/Los_Angeles:20040630T121500
+DTEND;TZID=America/Los_Angeles:20040630T131500
+SUMMARY:Using the JavaTM Management Extensions (JMXTM) API for Monitoring and Management
+DESCRIPTION:The JavaTM Management Extensions (JMXTM) API is part of the core JavaTM plaform starting with JavaTM 2 Platform, Standard Edition (J2SETM) 1.5. It is also present in JavaTM 2 Platform, Enterprise Edition (J2EETM) 1.4. This talk discusses how to use the JMX API to add monitoring and management to your applications. The session shows how to use the J2SE release 1.5 classes to provide an end-to-end monitoring and management solution. The session presents best practices in key areas such as naming, data types, security, remote access, and aggregation.
+LOCATION:TS-1304
+END:VEVENT
+BEGIN:VEVENT
+UID:89fc7af1-8d9d-4a0c-aae6-7cb46571f55f
+DTSTART;TZID=America/Los_Angeles:20040628T164500
+DTEND;TZID=America/Los_Angeles:20040628T174500
+SUMMARY:Concurrency Utilities in JDKTM Software Version 1.5: Multithreading Made Simpler
+DESCRIPTION:This session describes concurrency utilities in the java.util.concurrent package that are part of JDKTM software version 1.5.
+LOCATION:TS-1358
+END:VEVENT
+BEGIN:VEVENT
+UID:5ae4b9a5-78bb-4084-b5d2-42c16f06f8a7
+DTSTART;TZID=America/Los_Angeles:20040701T154500
+DTEND;TZID=America/Los_Angeles:20040701T164500
+SUMMARY:The Eclipse Modeling Framework: Introducing Modeling to the JavaTM Technology Mainstream
+DESCRIPTION:Many JavaTM Technology programmers, especially the experienced ones, often have little or no use for modeling. Maybe a class diagram or two to fill out the documentation, but other than that, it simply doesn't seem to help. Well, what if there were a framework/toolkit that brought you the benefits of modeling with a very low cost of entry? Enter the Eclipse Modeling Framework (EMF). An open source project at Eclipse.org, EMF is a framework and code generation facility for building robust applications based on surprisingly simple models. Models can be defined in several different ways—Java interfaces, XML Schemas, UML—from which EMF will generate a large part of the application. The generated code is clean, efficient, and easily hand-modified. You even can regenerate the model after changing the code, without wiping out your changes.
+LOCATION:TS-1396
+END:VEVENT
+BEGIN:VEVENT
+UID:38235bb3-445e-4f11-a5a2-c8f1e893b081
+DTSTART;TZID=America/Los_Angeles:20040701T170000
+DTEND;TZID=America/Los_Angeles:20040701T180000
+SUMMARY:Beyond JUnit: The Future of Developer Testing for JavaTM Technology
+DESCRIPTION:Software testing finally is emerging from the dark ages and entering into a renaissance due primarily to the growing popularity of extreme programming and other approaches that highlight the importance and necessity for developer testing. Java developers are at the forefront of this revolution, as evidenced by the fact that JUnit has been downloaded more than 500,000 times, a stunning number for a testing tool, and more than all of the other XUnit frameworks combined.
+LOCATION:TS-1520
+END:VEVENT
+BEGIN:VEVENT
+UID:603c124f-6f66-4d15-a915-91060796aafc
+DTSTART;TZID=America/Los_Angeles:20040630T160000
+DTEND;TZID=America/Los_Angeles:20040630T170000
+SUMMARY:JDBCTM API 4.0: The Next-Generation JDBC API
+DESCRIPTION:The JDBCTM API 4.0 Specification broadens the scope and strengths the appeal of the JDBC API for both the IT developer and the high-end user. This talk focuses on significant ease-of-development proposals that leverage JavaTM 2 Platform, Standard Edition (J2SETM) 1.5 language features such as Generics & Annotations in addition to outlining high-availability and connection management features that will become standard with the with the new API. We also offer significant code examples, and outline tie-ins with next-generation releases: Java 2 Platform, Enterprise Edition (J2EETM), version 1.5, and J2SE platform release, version 1.6.
+LOCATION:TS-1521
+END:VEVENT
+BEGIN:VEVENT
+UID:316d3b46-88b2-41d0-aa22-dea41a875725
+DTSTART;TZID=America/Los_Angeles:20040630T160000
+DTEND;TZID=America/Los_Angeles:20040630T170000
+SUMMARY:JavaTM Technology Tool Smithing: Extending the Eclipse Java Development Tools
+DESCRIPTION:This session describes how to extend the Eclipse JavaTM technology development tools so that you can smith your own tools. The Eclipse platform supports building IDEs for anything, but nothing in particular. The Java technology development tools contribute a set of plug-ins for Java technology development to Eclipse and are designed with extensibility in mind. You can extend the Java technology development tools in the same way you can extend the Eclipse Platform.
+LOCATION:TS-1662
+END:VEVENT
+BEGIN:VEVENT
+UID:3d81fff8-abfe-440d-add3-ffe17bdf97df
+DTSTART;TZID=America/Los_Angeles:20040701T120000
+DTEND;TZID=America/Los_Angeles:20040701T130000
+SUMMARY:Finding Bugs Is Easy
+DESCRIPTION:There are many good books and sources for tips on writing correct and effective software in the Java programming language, such as Josh Bloch's Effective Java. Unfortunately, it is all too easy, either through lack of attention, experience, or simple mistakes, to write code that violates these guidelines and even simpler rules of good practice.
+LOCATION:TS-1847
+END:VEVENT
+BEGIN:VEVENT
+UID:9497d66b-f09b-4c6a-a944-435cbf4c5359
+DTSTART;TZID=America/Los_Angeles:20040630T110000
+DTEND;TZID=America/Los_Angeles:20040630T120000
+SUMMARY:Developing Software Tools That Work with Both Eclipse and NetBeansTM IDEs
+DESCRIPTION:Software tool developers used to develop Integrated Development Environments (IDEs) as stand-alone applications. Very little consideration needed to be given to how such IDEs can work with other IDEs and other tools. Design decisions were less complex than today's. Tool developers could build their tools in isolation, and worry only about what they needed to do to build the best tool possible.
+LOCATION:TS-1876
+END:VEVENT
+BEGIN:VEVENT
+UID:e8c8d686-9f89-4c31-923d-fcde61b3599b
+DTSTART;TZID=America/Los_Angeles:20040630T144500
+DTEND;TZID=America/Los_Angeles:20040630T154500
+SUMMARY:The Performance Architecture of the BEA JRockit Virtual Machine for the JavaTM Platform
+DESCRIPTION:BEA JRockit virtual machine for the Java[TM] platform was designed as a server-oriented virtual machine from the ground up. This session presents a detailed look at the architecture, design, and internals of the BEA JRockit virtual machine, and discusses methods and algorithms used to ensure that it has superior performance. The presenters discuss some of the experiments and analysis that went into selection of those techniques, and describe the rich set of configuration options.
+LOCATION:TS-1904
+END:VEVENT
+BEGIN:VEVENT
+UID:5bf0ba50-f200-462e-8752-e5e0fc095dd3
+DTSTART;TZID=America/Los_Angeles:20040628T141500
+DTEND;TZID=America/Los_Angeles:20040628T151500
+SUMMARY:Fast Track to the JavaTM 2 Platform, Standard Edition (J2SETM) v1.5
+DESCRIPTION:A full hour packed with code, tips, and techniques to give you a head start with the release of the JavaTM 2 Platform, Standard Edition v1.5 (J2SETM 1.5 platform).
+LOCATION:TS-1952
+END:VEVENT
+BEGIN:VEVENT
+UID:f4129d44-e687-4bd8-b4c3-8eb34278a320
+DTSTART;TZID=America/Los_Angeles:20040629T160000
+DTEND;TZID=America/Los_Angeles:20040629T170000
+SUMMARY:Concurrency Utilities in Practice
+DESCRIPTION:The best way to learn about the new concurrency utilities introduced by JSR166 is to see them used in practice. This session presents case studies of real programs that would have been difficult to write without these new utilities.
+LOCATION:TS-2136
+END:VEVENT
+BEGIN:VEVENT
+UID:a12a26f7-51f1-46ba-b12f-e1d612a8c28a
+DTSTART;TZID=America/Los_Angeles:20040701T131500
+DTEND;TZID=America/Los_Angeles:20040701T141500
+SUMMARY:The Impact of the J2SETM 1.5 Platform on Persistence
+DESCRIPTION:Version 1.5 of the JavaTM 2 Platform, Standard Edition (J2SETM) promises to be one of the most significant releases of the platform to date. Several new features proposed for the 1.5 release will greatly impact the way architects design persistence into their applications and the way developers code for it. Persistence is often an underestimated challenge to Java software developers in complexity, effort, and maintenance. Some new features of the 1.5 release such as JSR 114 (JDBCTM RowSet Implementations) will address this challenge head-on, whereas other new features of 1.5 promise to make persistence layers and standards more developer-friendly.
+LOCATION:TS-2255
+END:VEVENT
+BEGIN:VEVENT
+UID:d6a2ff2d-cafc-431e-88fa-4ae50311dee5
+DTSTART;TZID=America/Los_Angeles:20040630T160000
+DTEND;TZID=America/Los_Angeles:20040630T170000
+SUMMARY:The New JavaTM Technology Memory Model
+DESCRIPTION:JavaTM technology release 1.5 incorporates JSR-133, the Java technology Memory Model, which redefines the semantics of threads, synchronization, volatile variables, and final fields. This redefinition is compatible with existing good programming practice, although care needs to be taken with a couple of corner cases. More important, the new memory model provides new efficient techniques for safely and correctly implementing concurrent operations.
+LOCATION:TS-2331
+END:VEVENT
+BEGIN:VEVENT
+UID:22f378e9-e9ca-4845-bf02-69ec45a88800
+DTSTART;TZID=America/Los_Angeles:20040628T141500
+DTEND;TZID=America/Los_Angeles:20040628T151500
+SUMMARY:Using jvmstat and visualgc to Solve Memory Management Problems
+DESCRIPTION:This presentation describes approaches to using the CoolStuff software package jvmstat to monitor JavaTM Virtual Machine (JVMTM) memory utilization. These tools facilitate visualizing memory utilization of a JavaTM technology-based language application. This presentation focuses on solving memory management problems that occur in Web services applications. The application used to demonstrate problems is based on real-world field experience of Sun Software Solution consultants. Most clients don't want to reveal to the world the mistakes they have made, so the presenters have developed this demonstration application that typifies many of the problems they have encountered.
+LOCATION:TS-2428
+END:VEVENT
+BEGIN:VEVENT
+UID:da48b98b-354b-4c1e-ab71-92e1432cc1ee
+DTSTART;TZID=America/Los_Angeles:20040630T110000
+DTEND;TZID=America/Los_Angeles:20040630T120000
+SUMMARY:High-Performance Cryptography -- Cryptographic Token Support in J2SETM Platform 1.5
+DESCRIPTION:Cryptography is the basis of many security operations and protocols.
+LOCATION:TS-2460
+END:VEVENT
+BEGIN:VEVENT
+UID:8e974b5b-0cb2-4dde-9a01-943f7a0f954d
+DTSTART;TZID=America/Los_Angeles:20040629T144500
+DTEND;TZID=America/Los_Angeles:20040629T154500
+SUMMARY:J2SETM Platform v1.5: A Close Look at the New Security and Networking Features
+DESCRIPTION:JavaTM 2 Platform, Standard Edition (J2SETM) version 1.5 introduces many new, significant security and networking features. In the security area, J2SE platform v1.5 adds support for smartcards and hardware cryptographic accelerators, highly scalable SSL/TLS applications, pluggable authentication for protocols, Ellyptic Curve Cryptography (ECC) APIs, and much more. In the networking area, J2SE platform v1.5 adds HTTP enhancements for dynamic control of: timeouts, proxy selection, cookie management, and caching of resources. Other networking enhancements include support for IPv6 on all three reference operating systems (SolarisTM, Linux and Windows), and an API for testing destination reachability. This session presents an overview of these new features and give examples of how they can be used.
+LOCATION:TS-2476
+END:VEVENT
+BEGIN:VEVENT
+UID:52a08501-b5b7-47a0-aa83-1f44d670ae31
+DTSTART;TZID=America/Los_Angeles:20040629T094500
+DTEND;TZID=America/Los_Angeles:20040629T104500
+SUMMARY:"Taming the Tiger": New Features of the J2SETM 1.5 Platform
+DESCRIPTION:The upcoming 1.5 release of the JavaTM 2 Platform, Standard Edition (J2SETM platform) includes many exciting new language features. Together these features greatly increase ease of programming, while decreasing potential errors. In this talk, the presenters show you how to make effective use of these new features, which include generics, autoboxing, typesafe enums, the enhanced for construct, varargs, and static import. They discuss what to do and what not to do, with plenty of code examples.
+LOCATION:TS-2569
+END:VEVENT
+BEGIN:VEVENT
+UID:5a9b760f-1fa5-4a73-8b60-749649dd5be9
+DTSTART;TZID=America/Los_Angeles:20040629T133000
+DTEND;TZID=America/Los_Angeles:20040629T143000
+SUMMARY:Still More Programming Puzzlers
+DESCRIPTION:Joshua Bloch and Neal Gafter present ten more programming puzzles for your entertainment and enlightenment. This is an entirely different set of puzzles from those presented in previous years. The game show format keeps you on your toes while the puzzles teach you about the subtleties of the JavaTM programming language and its core libraries. Anyone with a working knowledge of the language will be able to understand the puzzles, but even the most seasoned veterans will be challenged. The lessons you take from this session will be directly applicable to your programs and designs. Some of the jokes may even be funny.
+LOCATION:TS-2575
+END:VEVENT
+BEGIN:VEVENT
+UID:e261a876-588f-4b11-80cc-dbc65907e4fd
+DTSTART;TZID=America/Los_Angeles:20040701T154500
+DTEND;TZID=America/Los_Angeles:20040701T164500
+SUMMARY:JavaTM Technology Development on Mac OS X: Tips, Tricks, Traps, and Techniques
+DESCRIPTION:Apple's OS X platform is an excellent JavaTM technology development system. An attractive user interface is the skin over the BSD UNIX® variant— a skin that can be literally as translucent as you want. Whether you are a UNIX command-line developer or a modern GUI-aided developer, this is a viable platform. And for those of you like this presenter, you can leverage both command-line and GUI as appropriate in this integrated platform.
+LOCATION:TS-2738
+END:VEVENT
+BEGIN:VEVENT
+UID:4b64ddd1-a373-4da4-bf37-45252a359f75
+DTSTART;TZID=America/Los_Angeles:20040630T094500
+DTEND;TZID=America/Los_Angeles:20040630T104500
+SUMMARY:Monitoring and Management of the JavaTM 2 Platform, Standard Edition (J2SETM)
+DESCRIPTION:The new JavaTM 2 Platform, Standard Edition (J2SETM) 1.5 provides
+LOCATION:TS-2861
+END:VEVENT
+BEGIN:VEVENT
+UID:9e9d53e1-8477-4d30-b475-642b38a92bc8
+DTSTART;TZID=America/Los_Angeles:20040629T121500
+DTEND;TZID=America/Los_Angeles:20040629T131500
+SUMMARY:Observability Architecture in J2SETM Platform Release 1.5
+DESCRIPTION:This session explores the interfaces, available in J2SETM platform release 1.5, for
+LOCATION:TS-3065
+END:VEVENT
+BEGIN:VEVENT
+UID:842dbeb7-54da-462c-9fcc-434a8e196cb7
+DTSTART;TZID=America/Los_Angeles:20040701T143000
+DTEND;TZID=America/Los_Angeles:20040701T153000
+SUMMARY:Simplified Scanning and Formatting...Finally!
+DESCRIPTION:Scanning and formatting APIs included in the JavaTM 2 Platform, Standard Edition (J2SETM) 1.5 provide the simplest means to date to handle type-specific formatted input and output. The session covers all of the new API,s including those
+LOCATION:TS-3149
+END:VEVENT
+BEGIN:VEVENT
+UID:f83d7841-1f48-4ff4-a49f-384898dab5f0
+DTSTART;TZID=America/Los_Angeles:20040630T121500
+DTEND;TZID=America/Los_Angeles:20040630T131500
+SUMMARY:Sun JavaTM Studio Creator Application Development Tool: Development Model and Architectural Principles
+DESCRIPTION:Sun JavaTM Creator is Sun's new and exciting tool designed to bring standards-based Java technology Web application development to the large number of corporate developers who have traditionally used 4GL tools and languages on other platforms. Changes in the design and
+LOCATION:TS-3201
+END:VEVENT
+BEGIN:VEVENT
+UID:98e5a4c6-9943-4fa6-831d-f3f80a209eb2
+DTSTART;TZID=America/Los_Angeles:20040630T160000
+DTEND;TZID=America/Los_Angeles:20040630T170000
+SUMMARY:Sun JavaTM Studio Creator Application Development Tool: The Next Generation
+DESCRIPTION:With the introduction of Sun JavaTM Studio Creator application development tool (formerly code-named "Project Rave"), Sun introduced a tool and development model to corporate developers that brought the power of Java technology-based Web application creation to a large number of developers for whom the bar to entry was too high. This session looks at the up-and-coming features expected to exist in the next version of Sun's Java Studio Creator development tool, where rich clients, mobility, and closer integration with the enterprise play a significant role. During this technical session, the implications of expanding the scope of Sun's Java Studio Creator development tool for different platforms, clients, application model and components are covered in detail.
+LOCATION:TS-3202
+END:VEVENT
+BEGIN:VEVENT
+UID:5e8e2d44-c1f6-4eb9-907e-3622665d3d8f
+DTSTART;TZID=America/Los_Angeles:20040630T094500
+DTEND;TZID=America/Los_Angeles:20040630T104500
+SUMMARY:What's New with NetBeansTM IDE?
+DESCRIPTION:Come and learn about all the exciting changes to the NetBeansTM Open
+LOCATION:TS-3204
+END:VEVENT
+BEGIN:VEVENT
+UID:9ecb2504-4a45-40c9-b452-7ac6f2a0a4f7
+DTSTART;TZID=America/Los_Angeles:20040701T131500
+DTEND;TZID=America/Los_Angeles:20040701T141500
+SUMMARY:What's New with JBuilder?
+DESCRIPTION:This session covers various aspects of Java technology development with the latest version of JBuilder. The session shows how JBuilder accelerates the whole JavaTM technology application life cycle, starting from the requirements, coding, building unit tests, and checking the code into a version management system. The session works with the Java[TM] 2 Platform, Enterprise Edition (J2EE[TM]) and builds EJB[TM] technology based applications and Struts based applications. It shows how to deploy an EJB
+LOCATION:TS-3206
+END:VEVENT
+BEGIN:VEVENT
+UID:2438fdfb-da7b-49fb-9b44-4aba5f869ba7
+DTSTART;TZID=America/Los_Angeles:20040701T143000
+DTEND;TZID=America/Los_Angeles:20040701T153000
+SUMMARY:What's New With Eclipse?
+DESCRIPTION:Learn about the latest in the Eclipse tools platform and beyond. Eclipse 3.0 is a major step forward, including improved user experience, responsiveness, and a separable rich-client platform. This session takes you on a tour of the new capabilities of Eclipse 3.0. The open source Eclipse platform is a catalyst for the creation of a wide range of tools. We explore areas of recent development, including enhancements in the tools for JavaTM technology developers.
+LOCATION:TS-3210
+END:VEVENT
+BEGIN:VEVENT
+UID:d966a4e8-0d57-4c6a-8791-1eae70d3b90d
+DTSTART;TZID=America/Los_Angeles:20040701T154500
+DTEND;TZID=America/Los_Angeles:20040701T164500
+SUMMARY:What's New With WebLogic Workshop?
+DESCRIPTION:BEA WebLogic Workshop is the next-generation development environment for visually developing and debugging JavaTM 2 Platform, Enterprise Edition (J2EETM) based Web services, Web applications, JavaServer PagesTM (JSPTM) technology-based software, portals, process workflows, and EJBTM specification-based components in a consistent, uncomplicated way. Workshop abstracts the coding and deployment complexities associated with delivering enterprise-scale J2EE technology-based applications and components, allowing developers to generate applications directly from top-down, process-driven models.
+LOCATION:TS-3211
+END:VEVENT
+BEGIN:VEVENT
+UID:089f76d2-321f-4583-92bb-c8bfb0af28dd
+DTSTART;TZID=America/Los_Angeles:20040628T180000
+DTEND;TZID=America/Los_Angeles:20040628T190000
+SUMMARY:New Features in the JavaTM Programming Language
+DESCRIPTION:The 1.5 release of the JDKTM incorporates several important new language features. Since one session cannot treat all of the features in any depth, we are instead focusing on a select few, and providing the design rationale behind them.
+LOCATION:TS-3216
+END:VEVENT
+BEGIN:VEVENT
+UID:df1734b4-884c-4ff8-a952-f862d4df3abf
+DTSTART;TZID=America/Los_Angeles:20040629T160000
+DTEND;TZID=America/Los_Angeles:20040629T170000
+SUMMARY:The Groovy Programming Language
+DESCRIPTION:JSR 241, the Groovy Programming Language, proposes the standardization of a new programming language for the JavaTM platform -- one that is on equal footing with the Java technology programming language. Groovy is an agile, dynamic programming language like Smalltalk, Python, Perl, and Ruby, but it's designed specifically for the Java platform and is completely interoperable with conventional Java technology software programs. Groovy is not a replacement for the Java technology programming language; it complements it. Groovy fills a niche that is in demand by developers but is currently not provided for in the Java platform.
+LOCATION:TS-3814
+END:VEVENT
+END:VCALENDAR

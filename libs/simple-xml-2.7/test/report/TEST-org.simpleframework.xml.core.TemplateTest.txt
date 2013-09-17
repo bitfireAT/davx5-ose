@@ -1,0 +1,74 @@
+Testsuite: org.simpleframework.xml.core.TemplateTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.126 sec
+------------- Standard Output ---------------
+<test name="test">
+   <config class="java.util.ArrayList">
+      <var name="name" value="Niall Gallagher"/>
+      <var name="mail" value="niallg@users.sf.net"/>
+      <var name="title" value="Mr"/>
+   </config>
+   <details>
+      <title>Mr</title>
+      <mail>niallg@users.sf.net</mail>
+      <name>Niall Gallagher</name>
+   </details>
+</test><test name="test">
+   <config class="java.util.ArrayList">
+      <var name="name" value="Niall Gallagher"/>
+      <var name="mail" value="niallg@users.sf.net"/>
+      <var name="title" value="Mr"/>
+   </config>
+   <details>
+      <title>Mr</title>
+      <mail>niallg@users.sf.net</mail>
+      <name>Niall Gallagher</name>
+   </details>
+</test>
+<test ID="0" name="test">
+   <!-- java.util.List -->
+   <config class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.core.TemplateTest$Variable -->
+      <var ID="2" name="name" value="Niall Gallagher"/>
+      <!-- org.simpleframework.xml.core.TemplateTest$Variable -->
+      <var ID="3" name="mail" value="niallg@users.sf.net"/>
+      <!-- org.simpleframework.xml.core.TemplateTest$Variable -->
+      <var ID="4" name="title" value="Mr"/>
+   </config>
+   <!-- org.simpleframework.xml.core.TemplateTest$Details -->
+   <details ID="5">
+      <!-- java.lang.String -->
+      <title ID="6">Mr</title>
+      <!-- java.lang.String -->
+      <mail ID="7">niallg@users.sf.net</mail>
+      <!-- java.lang.String -->
+      <name ID="8">Niall Gallagher</name>
+   </details>
+</test>>>>>> ELEMENT=[element test]
+>>>>> TYPE=[class org.simpleframework.xml.core.TemplateTest$Example]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Test ID="0" name="test">
+   <!-- java.util.List -->
+   <Config class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.core.TemplateTest$Variable -->
+      <Var ID="2" name="name" value="Niall Gallagher"/>
+      <!-- org.simpleframework.xml.core.TemplateTest$Variable -->
+      <Var ID="3" name="mail" value="niallg@users.sf.net"/>
+      <!-- org.simpleframework.xml.core.TemplateTest$Variable -->
+      <Var ID="4" name="title" value="Mr"/>
+   </Config>
+   <!-- org.simpleframework.xml.core.TemplateTest$Details -->
+   <Details ID="5">
+      <!-- java.lang.String -->
+      <Title ID="6">Mr</Title>
+      <!-- java.lang.String -->
+      <Mail ID="7">niallg@users.sf.net</Mail>
+      <!-- java.lang.String -->
+      <Name ID="8">Niall Gallagher</Name>
+   </Details>
+</Test>>>>>> ELEMENT=[element Test]
+>>>>> TYPE=[class org.simpleframework.xml.core.TemplateTest$Example]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testTemplate took 0.123 sec
+Testcase: testDirectory took 0 sec

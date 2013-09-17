@@ -1,0 +1,21 @@
+Testsuite: org.simpleframework.xml.stream.NamespaceMapTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.032 sec
+------------- Standard Output ---------------
+<jsp:root xmlns:xhtml="http://www.w3c.com/xhtml" xmlns:jsp="http://www.sun.com/jsp">
+   <child xhtml:name.1="1" name.2="2"/>
+   <otherChild name.a="a" name.b="b">
+      <xhtml:yetAnotherChild>example text for yet another namespace</xhtml:yetAnotherChild>
+      <finalChild xmlns="http://www.w3c.com/anonymous">
+         <veryLastChild xmlns="">
+            <veryVeryLastChild>very very last child</veryVeryLastChild>
+            <otherVeryVeryLastChild>other very very last child</otherVeryVeryLastChild>
+            <xhtml:yetAnotherVeryVeryLastChild>yet another very very last child</xhtml:yetAnotherVeryVeryLastChild>
+         </veryLastChild>
+      </finalChild>
+   </otherChild>
+</jsp:root>
+------------- ---------------- ---------------
+
+Testcase: testInputNode took 0.016 sec
+Testcase: testOutputNode took 0.012 sec
+Testcase: testDirectory took 0 sec

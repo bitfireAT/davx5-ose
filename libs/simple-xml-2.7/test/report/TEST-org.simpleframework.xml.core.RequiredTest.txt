@@ -1,0 +1,5 @@
+Testsuite: org.simpleframework.xml.core.RequiredTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.083 sec
+
+Testcase: testComplete took 0.079 sec
+Testcase: testOptional took 0.001 sec

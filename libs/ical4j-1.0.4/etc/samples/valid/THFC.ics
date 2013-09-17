@@ -1,0 +1,1554 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+X-WR-CALNAME;VALUE=TEXT:THFC
+PRODID:-//Apple Computer\, Inc//iCal 1.0//EN
+X-WR-RELCALID;VALUE=TEXT:085755EB-963D-11D7-ABA4-003065B8B7E6
+X-WR-TIMEZONE;VALUE=TEXT:Australia/Sydney
+CALSCALE:GREGORIAN
+X-WR-CALDESC:Come On You Spurs!
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20020818T000000
+DTEND;TZID=Australia/Sydney:20020818T014000
+SUMMARY:Everton (2) v Spurs (2) [Pembridge 37\, Etherington 63\, Ferdina
+ nd 75\, Radzinski 81]
+UID:08A21E2D-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:7
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Everton: Wright\, Stubbs\, Weir\, Radzinksi (Unsworth\, 84)\
+ , Campbell\, Pembridge\, Li Tie (Rodrigol\, 76)\, Naysmith\, Gravesen\, 
+ Rooney (Alexandersson\, 66)\, Hibbert. Subs: Linderoth\, Simonsen. \n\nS
+ purs: Keller\, Carr (Thatcher\, 44)\, Taricco\, Bunjevcevic\, Sheringham
+  (Ferdinand\, 71)\, Redknapp\, Iversen (Acimovic\, 84)\, Etherington\, D
+ avies\, Gardner\, Richards. Subs: Perry\, Sullivan.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20020825T000000
+DTEND;TZID=Australia/Sydney:20020825T014000
+SUMMARY:Spurs (1) v Aston Villa (0) [Redknapp 26]
+UID:08A2260C-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030604T033131Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20020828T044500
+DTEND;TZID=Australia/Sydney:20020828T062500
+SUMMARY:Charlton A (0) v Spurs (1) [Davies 7]
+UID:08A229D7-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:6
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Charlton: Kiely\, Kishishev (Robinson\, 64)\, Powell\, Rufus
+ \, Euell\, Jensen\, Bart-Williams\, Konchesky\, Young\, Johansson (Svens
+ son\, 54)\, Fortune (Brown\, 71). Subs: Rachubka\, Lisbie. \n\nSpurs: Ke
+ ller\, Taricco\, Ziege\, Richards\, Gardner\, Bunjevcevic\, Redknapp\, D
+ avies\, Etherington\, Doherty (Ferdinand\, 77)\, Sheringham. Subs: Hirsc
+ hfeld\, Rebrov\, Thatcher\, Acimovic.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20020901T000000
+DTEND;TZID=Australia/Sydney:20020901T014000
+SUMMARY:Spurs (2) v Soton (1) [Ferdinand 10\, Taricco 29 (og)\, Sheringh
+ am 90 (pen)]
+UID:08A22D0F-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:5
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Taricco (Bunjevcevic\, 71)\,  Sheringham\, D
+ oherty\, Redknapp\, Thatcher\, Etherington\, Ferdinand (Iversen\, 64)\, 
+ Davies\, Acimovic (Blondel\, 79)\, Richards. Subs: Hirschfeld\, Perry. \
+ n\nSouthampton: Jones\, Bridge\, Marsden\, Williams\, Beattie\, A Svenss
+ on\, M Svensson\, Delap\, Fernandes\, Telfer\, Ormerod. Subs: Niemi\, Do
+ dd\, Oakley\, Pahars\, El Kalej. 
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20020912T044500
+DTEND;TZID=Australia/Sydney:20020912T062500
+SUMMARY:Fulham (3) v Spurs (2) [Richards 35\, Sheringham 43\, Inamoto 68
+ \, Malbranque 83 (pen)\, Legwinski 90]
+UID:08A2306C-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:10
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Fulham: Van der Sar\, Finnan\, Inamoto\, Sava\, Boa Morte (M
+ albranque\, 46)\, Knight\, Legwinski\, Saha (Hayles\, 19)\, Davis\, Goma
+ \, Wome (Collins\, 78). Subs: Taylor\, Melville. \n\nSpurs: Keller\, Per
+ ry (Doherty\, 78)\, Gardner\, Richards\, Thatcher\, Bunjevcevic\, Acimov
+ ic (Ziege\, 72)\, Davies\, Etherington\, Sheringham\, Ferdinand. Subs: H
+ irschfeld\, Iversen\, Keane.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20020916T010500
+DTEND;TZID=Australia/Sydney:20020916T024500
+SUMMARY:Spurs (3) v West Ham (2) [Davies 62\, Kanoute 66\, Sheringham 71
+  (pen)\, Sinclair 77\, Gardner 89]
+UID:08A233AF-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:8
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Taricco (Thatcher\, 46)\, Bunjevcevic\, Perr
+ y (Doherty\, 32)\, Sheringham\, Redknapp\, Ziege\, Etherington (Iversen\
+ , 85)\, Davies\, Gardner\, Keane. Subs: Hirschfeld\, Acimovic. \n\nWest 
+ Ham: James\, Repka (Winterburn\, 6)\, Dailly\, Sinclair\, Di Canio (Carr
+ ick\, 79)\, Lomas\, Kanoute (Defoe\, 85)\, Breen\, Pearce\, Cisse\, Cole
+ . Subs: Van Der Gouw\, Camara.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20020922T000000
+DTEND;TZID=Australia/Sydney:20020922T014000
+SUMMARY:Man Ure (1) v Spurs (0) [Nistelrooy 63pen]
+UID:08A236D3-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:7
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Manchester United: Barthez\, P Neville\, O'Shea\, Silvestre\
+ , Veron (G Neville\, 75)\, Ferdinand\, Beckham\, Butt\, Van Nistelrooy\,
+  Giggs (Pugh\, 85)\, Solskjaer (Forlan\, 75). Subs: Ricardo\, Stewart\, 
+ Forlan. \n\nSpurs: Keller\, Davies\, Doherty\, Richards\, Thatcher\, Ive
+ rsen (Ferdinand\, 75)\, Redknapp\, Bunjevcevic\, Etherington\, Sheringha
+ m (Acimovic\, 85)\, Keane. Subs: Hirschfeld\, Ricketts\, Henry.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20020929T000000
+DTEND;TZID=Australia/Sydney:20020929T014000
+SUMMARY:Spurs (0) v Boro (3) [Maccarone 32\, Geremi 55\, Job 58]
+UID:08A23A0B-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:8
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Davies\, Thatcher\, Richards\, Ziege (Dohert
+ y\, 12)\, Iversen (Acimovic\, 66)\, Redknapp\, Bunjevcevic\, Etherington
+ \, Keane\, Ferdinand (Sheringham\, 46). Unused subs: Hirschfeld\, Ricket
+ ts. \n\nMiddlesbrough: Schwarzer\, Stockdale\, Ehiogu\, Greening\, Gerem
+ i\, Job\, Boateng (Wilkshire\, 84)\, Maccarone\, Boksic\, Southgate\, Qu
+ eudrue. Unused subs: Crossley\, Cooper. Whelan\, Marinelli.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20021002T044500
+DTEND;TZID=Australia/Sydney:20021002T063000
+SUMMARY:Spurs (1) v Cardiff City (0) [WC] [Sheringham 30]
+UID:08A23D57-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:5
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Taricco (Doherty\, 65)\, Freund (Iversen\, 8
+ 4)\, Bunjevcevic\, Sheringham\, Thatcher\, Acimovic\, Keane (Ferdinand\,
+  89)\, Etherington\, Davies\, Richards. Unused subs: Hirschfeld\, Blonde
+ l. \n\nCardiff City: Alexander\, Weston\, Prior\, Gabbidon\, Croft\, Bol
+ and (Maxwell\, 84)\, Kavanagh\, Whalley\, Earnshaw\, Campbell\, Legg (Fo
+ rtune-West\, 76). Unused subs: Barker\, Hamilton\, Margetson.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20021007T000000
+DTEND;TZID=Australia/Sydney:20021007T014500
+SUMMARY:Blackburn (1) v Spurs (2) [Keane 6\, Ostenstad 59\, Redknapp 89]
+ 
+UID:08A2407B-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Blackburn: Friedel\, Taylor\, Berg (Gillespie 45)\, Johansso
+ n\, Neill\, Thompson\, Dunn (Grabbi 69)\, Tugay\, Flitcroft\, Duff\, Col
+ e (Ostenstad 45).\nSubs Not Used: Todd\, Kelly. \n\nBooked: Berg. \n\nGo
+ als: Ostenstad 59. \n\nTottenham: Keller\, Taricco (Perry 69)\, Bunjevce
+ vic\, Richards\, Thatcher\, Davies\, Redknapp\, Freund\, Acimovic (Ivers
+ en 69)\, Sheringham\, Keane.\nSubs Not Used: Ferdinand\, Doherty\, Hirsc
+ hfeld. \n\nGoals: Keane 6\, Redknapp 89. \n\nAttendance: 26\,203
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20021021T010500
+DTEND;TZID=Australia/Sydney:20021021T024500
+SUMMARY:Spurs (3) v Bolton (1) [Keane 58\,73\, Djorkaeff 63\, Davies 90]
+ 
+UID:08A243A9-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:9
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Carr\, Freund\, Bunjevcevic\, Perry\, Sherin
+ gham\, Redknapp\, Keane\, Etherington (Poyet\, 70)\, Davies\, Richards. 
+ Subs: Hirschfeld\, Doherty\, Acimovic\, Iversen.\n\nBolton: Jaaskelainen
+ \, Whitlow\, Bergsson\, Gardner\, Djorkaeff\, Farrelly\, Nolan\, Campo (
+ Holdsworth\, 76)\, Ricketts\, Barness\, Charlton. Subs: Poole\, Frandsen
+ \, Okocha\, Armstrong.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20021027T000000
+DTEND;TZID=Australia/Sydney:20021027T014500
+SUMMARY:Liverpool (2) v Spurs (1) [Murphy 72\, Richards 82\, Owen 86 (pe
+ n)]\n
+UID:08A246B4-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Liverpool: Dudek\, Hyypia\, Diouf (Baros\, 57)\, Owen\, Murp
+ hy\, Hamann\, Gerrard (Smicer\, 67)\, Riise\, Diao\, Carragher\, Traore.
+  Unused subs: Babbel\, Kirkland\, Cheyrou. \n\nSpurs: Keller\, Carr\, Fr
+ eund\, Bunjevcevic\, Perry\, Sheringham (Ferdinand\, 75)\, Redknapp (Eth
+ erington\, 90)\, Keane\, Davies\, Richards. Unused subs: Acimovic\, Hirs
+ chfeld\, Gardner.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20021104T010000
+DTEND;TZID=Australia/Sydney:20021104T024500
+SUMMARY:Spurs (0) v Chelsea (0)
+UID:08A249BE-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:6
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Tottenham: Keller\, Perry\, Richards\, Bunjevcevic\, Carr\, 
+ Freund\, Redknapp\, Poyet (Acimovic 73)\, Davies\, Sheringham (Ferdinand
+  90)\, Keane.\nSubs Not Used: Hirschfeld\, Etherington\, Gardner. \n\nBo
+ oked: Sheringham\, Acimovic\, Keller. \n\nChelsea: Cudicini\, Melchiot\,
+  Gallas\, Desailly\, Babayaro\, Morris\, Lampard\, Petit\, De Lucas (Oli
+ veira 88)\, Hasselbaink (Gudjohnsen 44)\, Zola.\nSubs Not Used: Pidgeley
+ \, Ferrer\, Terry.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20021111T030500
+DTEND;TZID=Australia/Sydney:20021111T045000
+SUMMARY:Sunderland (2) v Spurs (0) [Phillips 60\,  Flo 62]
+UID:08A24CE2-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:5
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Sunderland: Macho\, McCartney\, Gray\, Proctor (Thirlwell\, 
+ 74)\, Craddock\, Kilbane\, Phillips (Kyle\, 87)\, McCann\, Babb\, Flo\, 
+ Wright. Subs: Ingham\, Stewart\, Bjorkland. \n\nSpurs: Keller\, Carr\, F
+ reund (Acimovic\, 78)\, Perry\, Anderton\, Sheringham\, Poyet (Bunjevcev
+ ic\, 65)\, Thatcher (Iversen\, 89)\, Keane\, Davies\, Richards. Subs: Hi
+ rschfeld\, Doherty\, Iversen.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20021117T020000
+DTEND;TZID=Australia/Sydney:20021117T034500
+SUMMARY:Arse (3) v Spurs (0) [Henry 13\, Ljungberg 55\, Wiltord 71]
+UID:08A25011-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Scum: Shaaban\, Cole\, Vieira (Van Bronckhorst\, 78)\, Ljung
+ berg\, Bergkamp (Pires\, 28)\, Wiltord\, Henry (Jeffers\, 75)\, Cygan\, 
+ Gilberto\, Luzhny\, Judas. Subs: Taylor\, Toure.\n\nSpurs: Keller\, Carr
+ \, Freund\, Bunjevcevic\, Sheringham (Iversen\, 69)\, Redknapp (Anderton
+ \, 69)\, Keane\, King\, Etherington (Poyet\, 45)\, Davies\, Richards. Su
+ bs: Perry\, Hirschfeld.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20021125T010000
+DTEND;TZID=Australia/Sydney:20021125T024500
+SUMMARY:Spurs (2) v Leeds (0) [Sheringham 12\, Keane 41]
+UID:08A25323-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Carr\, Freund\, Bunjevcevic\, Anderton (Redk
+ napp\, 77)\, Sheringham\, Poyet (Iversen\, 90)\, Keane\, Ziege (Davies\,
+  67)\, King\, Richards. Subs: Hirschfeld\, Perry. \n\nLeeds United: Robi
+ nson\, Kelly\, Woodgate\, Kewell\, Bowyer\, Burns (Viduka\, 38\; Subbed 
+ for Milner\, 81)\, McPhail\, Lucic\, Wilcox\, Smith\, Bakke. Subs: Marty
+ n\, Duberry\, Richardson.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20021201T020000
+DTEND;TZID=Australia/Sydney:20021201T034500
+SUMMARY:Birmingham (1) v Spurs (1) [Sheringham 55\, Kenna 68]
+UID:08A25633-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Birmingham City: Vaesen\, Kenna\, Purse\, Cisse\, Devlin (Jo
+ hnson\, 63)\, Savage\, Lazaridis (Kirovski\, 89)\, Cunningham\, John (Hu
+ ghes\, 83)\, Morrison\, Tebily. Subs: Bennett\, Hutchinson. \n\nSpurs: K
+ eller\, Carr\, Ziege\, Bunjevcevic\, Richards\, King\, Anderton (Redknap
+ p\, 79)\, Freund\, Poyet (Acimovic\, 84)\, Sheringham\, Keane (Iversen\,
+  74). Subs: Hirschfeld\, Perry.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20021209T030500
+DTEND;TZID=Australia/Sydney:20021209T045000
+SUMMARY:Spurs (3) v WBA (1) [Ziege 3\, Keane 30\, Dobie 73\, Poyet 80]
+UID:08A2595C-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:9
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Carr\, Ziege\, Perry\, Richards\, King (Iver
+ sen\, 63)\, Davies\, Anderton\, Redknapp\, Sheringham (Poyet\, 74)\, Kea
+ ne. Subs: Hirschfeld\, Ferdinand\, Doherty. \n\nWest Brom: Hoult\, Balis
+ \, Clement\, McInnes\, Wallwork\, Johnson (A Chambers\, 84)\, Roberts (D
+ ichio\, 81)\, Gregan\, Sigurdsson\, Koumas\, Hughes (Dobie\, 55). Subs: 
+ J Chambers\, Murphy.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20021216T010000
+DTEND;TZID=Australia/Sydney:20021216T024500
+SUMMARY:Spurs (1) v Arse (1) [Ziege 11\, Pires 45pen]
+UID:08A25C99-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Carr\, Ziege\, Bunjevcevic\, King\, Richards
+ \, Freund\, Anderton (Davies\, 70)\, Poyet\, Keane\, Sheringham. Subs: H
+ irschfeld\, Perry\, Iversen\, Clemence. \n\nArsenal: Seaman\, Cole\, Keo
+ wn\, Pires (Van Bronckhorst)\, Ljungberg (Toure\, 86)\, Bergkamp (Wiltor
+ d\, 70)\, Lauren\, Henry\, Parlour\, Silva\, Campbell. Subs: Taylor\, Up
+ son.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20021223T200000
+DTEND;TZID=Europe/London:20021223T214500
+SUMMARY:Man City(2) v Spurs(3) [Howey 29\, Perry 38\, Davies 48\, Poyet 
+ 84\, Benarbia 90]
+UID:08A25FD9-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:5
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Man City: Schmeichel\, Tiatto\, Sun Jihai (Benarbia\, 58)\, 
+ Distin\, Howey\, Dunne\, Berkovic\, Foe\, Horlock\, Goater (Huckerby\, 8
+ 3)\, Anelka. Subs: Nash\, Jensen\, Wiekens.\n\nSpurs: Keller\, Carr\, Zi
+ ege\, King\, Perry\, Richards\, Freund\, Anderton\, Davies\, Iversen (Po
+ yet\, 60)\, Keane. Subs: Bunjevcevic\, Thatcher\, Clemence.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20021226T230000
+DTEND;TZID=Australia/Sydney:20021227T004500
+SUMMARY:Spurs(2) v Charlton(2) [Euell 14\, 49\, Keane 69\, Iversen 87]
+UID:08A262FC-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:20
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Carr\, Freund (Ferdinand\, 60)\, Perry\, And
+ erton (Davies\, 45)\, Sheringham (Iversen\, 60) Poyet\, Keane\, Ziege\, 
+ King\, Bunjevcevic. Subs: Sullivan\, Taricco. \n\nCharlton: Kiely\, Powe
+ ll\, Rufus\, Fish (Konchesky\, 73)\, Parker\, Euell\, Jensen (Kishishev\
+ , 81)\, Rowett\, Bartlett (Fortune\, 88)\, Young\, Lisbie. Subs: Johanss
+ on\, Roberts.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20021230T010000
+DTEND;TZID=Australia/Sydney:20021230T024500
+SUMMARY:Newcastle (2) v Spurs (1) [Speed 17\, Shearer 58\, Dabizas 73 (o
+ g)]
+UID:08A27955-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:5
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Newcastle: Given\, Solano (Dabizas\, 45)\, O'Brien\, Dyer (L
+ ua Lua\, 45)\, Shearer\, Bellamy\, Speed (Jenas\, 22)\, Hughes\, Caldwel
+ l\, Robert\, Bernard. Unused subs: Harper\, Ameobi. \n\nSpurs: Keller\, 
+ Carr\, Taricco\, Freund\, Bunjevcevic\, Freund\, Perry\, Poyet (Sheringh
+ am\, 67)\, Iversen (Ferdinand\, 67)\, Keane (Acimovic\, 78)\, King\, Dav
+ ies. Unused subs: Sullivan\, Thatcher.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030102T020000
+DTEND;TZID=Australia/Sydney:20030102T034500
+SUMMARY:Soton (1) v Spurs (0) [Beattie 82]
+UID:08A287A0-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:6
+DTSTAMP:20030604T033131Z
+DESCRIPTION:14.\nNiemi\, Antti\n\n \n33.\nTelfer\, Paul\n\n \n5.\nLundek
+ vam\, Claus\n\n \n11.\nSvensson\, Michael\n\n \n3.\nBridge\, Wayne\n\n \
+ n29.\nFernandes\, Fabrice\n\n \n18.\nDelap\, Rory\n\n \n8.\nOakley\, Mat
+ t\n\n \n4.\nMarsden\, Chris\n\n \n9.\nBeattie\, James\n\n \n36.\nOrmerod
+ \, Brett\n\n  Substitutes\n\n \n1.\nJones\, Paul\n\n \n10.\nDavies\, Kev
+ in\n\n \n6.\nWilliams\, Paul\n\n \n12.\nSvensson\, Anders\n\n \n21.\nTes
+ sem\, Jo\n\n\n Tottenham Hotspur\n\n  Starting XI\n\n \n13.\nKeller\, Ka
+ sey\n\n \n6.\nPerry\, Chris\n\n \n36.\nRichards\, Dean\n\n \n26.\nKing\,
+  Ledley\n\n \n2.\nCarr\, Stephen\n\n \n5.\nBunjevcevic\, Goran\n\n \n4.\
+ nFreund\, Steffen\n\n \n3.\nTaricco\, Mauricio\n\n \n10.\nSheringham\, T
+ eddy\n\n \n22.\nKeane\, Robbie\n\n \n16.\nIversen\, Steffen\n\n  Substit
+ utes\n\n \n1.\nSullivan\, Neil\n\n \n7.\nAnderton\, Darren\n\n \n18.\nTh
+ atcher\, Ben\n\n \n21.\nAcimovic\, Milenko\n\n \n14.\nPoyet\, Gustavo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030113T010000
+DTEND;TZID=Australia/Sydney:20030113T024500
+SUMMARY:Spurs (4) v Everton (3) [McBride 10\, Poyet 14\, Keane 50\, Wats
+ on 58\, Keane 68\, Radzinski 74\, Keane 83]
+UID:08A28B7C-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:7
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Carr\, Bunjevcevic\, Perry\, Anderton\, Dohe
+ rty\, Poyet\, Iversen (Acimovic\, 80)\, Keane\, King\, Davies. Subs: Sul
+ livan\, Taricco\, Blondel\, Gardner. \n\nEverton: Baardsen\, Watson\, Pi
+ stone\, Stubbs\, Unsworth\, Radzinski\, Li Tie (Osman\, 90)\, Naysmith\,
+  Gemmill\, McBride\, Yobo (Carsley\, 86). Subs: Alexandersson\, Pembridg
+ e\, Said.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030119T020000
+DTEND;TZID=Australia/Sydney:20030119T034500
+SUMMARY:Villa (0) v Spurs (1) [Sheringham 69]
+UID:08A28EB7-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Aston Villa: Enckelman\, Delaney\, Mellberg\, Johnsen\, Samu
+ el\, Hitzlsperger\, Hendrie (De la Cruz 45)\, Taylor\, Barry\, Dublin (C
+ rouch 77) Moore (Vassell 45).  Subs:Wright\, Postma.  \n\nTottenham: Kel
+ ler\, Taricco\, King\, Richards\, Carr\, Poyet\, Anderton\, Davies\, Bun
+ jevcevic\, Sheringham\, Keane. Subs: Sullivan\, Freund\, Perry\, Iversen
+ \, Acimovic.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030130T064500
+DTEND;TZID=Australia/Sydney:20030130T083000
+SUMMARY:Spurs (0) v Newcastle (1) [Jenas 90]
+UID:08A291E4-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:5
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Carr\, Bunjevcevic\, Anderton\, Sheringham\,
+  Poyet\, Keane (Doherty\, 36)\, King\, Davies\, Gardner\, Richards. Subs
+ : Sullivan\, Taricco\, Acimovic\, Freund. \n\nNewcastle United: Given\, 
+ O'Brien\, Jenas\, Dyer\, Shearer\, Bellamy\, Bramble\, Kerr (Solano\, 60
+ )\, Robert\, Dabizas\, Bernard. Subs: Elliott\, Harper\, Lua Lua\, Ameob
+ i.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030202T020000
+DTEND;TZID=Australia/Sydney:20030202T034500
+SUMMARY:Chelsea (1) v Spurs (1) [Sheringham 18\, Zola 40]
+UID:08A29527-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Chelsea: Cudicini\, Desailly\, Lampard\, Zenden (Melchiot\, 
+ 45)\, Gallas\, Le Saux (Hasselbaink\, 71)\, Petit\, Gudjohnsen\, Zola\, 
+ Terry\, Gronkjaer. Subs: De Goey\, Morris\, Cole. \n\nSpurs: Keller\, Ca
+ rr\, Taricco\, King\, Gardner (Doherty\, 36)\, Bunjevcevic\, Anderton\, 
+ Poyet\, Davies\, Sheringham\, Iversen. Subs: Sullivan\, Freund\, Acimovi
+ c\, Etherington.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030209T020000
+DTEND;TZID=Australia/Sydney:20030209T034500
+SUMMARY:Spurs (4) v Sunderland (1) [Poyet 14\, Phillips 26\, Doherty 45\
+ , Davies 67\, Sheringham 84]
+UID:08A29853-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Carr\, Taricco\, King\, Richards\, Bunjevcev
+ ic (Freund\, 76)\, Anderton\, Poyet\, Davies\, Sheringham\, Keane (Doher
+ ty\, 20). Subs: Sullivan\, Acimovic\, Etherington. \n\nSunderland: Soren
+ sen\, Wright\, McCartney\, Thome (Piper\, 69)\, Craddock\, Thornton\, Ar
+ ca\, Karkouri\, Phillips\, Proctor (Flo\, 57)\, McCann (Thirlwell\, 60).
+  Subs: Macho\, Babb.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030225T070000
+DTEND;TZID=Australia/Sydney:20030225T084500
+SUMMARY:Spurs (1) v Fulham (1) [ King 15 (og)\, Sheringham 40 (pen)]
+UID:08A29B71-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:6
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Carr\, Taricco\, Bunjevcevic\, Anderton\, Sh
+ eringham\, Doherty\, Poyet (Acimovic\, 35\; Etherington\, 83)\, King\, D
+ avies\, Richards. Subs: Sullivan\, Thatcher\, Toda. \n\nFulham: Taylor\,
+  Finnan\, Marlet (Saha\, 18)\, Sava\, Boa Morte\, Malbranque\, Djetou (K
+ night\, 12)\, Legwinski\, Davis\, Ouaddou\, Wome. Subs: Herrera\, Inamot
+ o\, Harley.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030302T020000
+DTEND;TZID=Australia/Sydney:20030302T034500
+SUMMARY:West Ham (2) v Spurs (0) [L.Ferdinand 31\,  Carrick 47]
+UID:08A29E98-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030604T033131Z
+DESCRIPTION:West Ham: James\, Johnson\, Pearce\, Repka\, Sinclair\, Carr
+ ick\, Cole\, Bowyer\, Ferdinand (Hutchinson\, 61)\, Defoe. Subs: Van Der
+  Gouw\, Breen\, Moncur\, Cisse.\n\nSpurs: Keller\, Carr\, Taricco\, Rich
+ ards\, King\, Davies\, Anderton\, Bunjevcevic (Thatcher\, 45)\, Ethering
+ ton (Acimovic\, 77)\, Sheringham\, Doherty (Freund\, 67). Subs: Sullivan
+ \, Toda.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030317T020000
+DTEND;TZID=Australia/Sydney:20030317T034500
+SUMMARY:Spurs (2) v Liverpool (3) [Taricco 49\, Owen 51\, Heskey 72\, Ge
+ rrard 82\, Sheringham 87]
+UID:08A2A1C9-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:5
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Carr\, Taricco (Freund\, 68)\, Bunjevcevic\,
+  Thatcher\, King\, Poyet\, Etherington\, Davies\, Doherty (Slabber\, 78)
+ \, Sheringham. Subs: Sullivan\, Acimovic\, Toda.\n\nLiverpool: Dudek\, H
+ yypia\, Heskey\, Diouf\, Owen\, Heskey\, Murphy\, Hamann (Diao\, 86)\, G
+ errard\, Riise\, Carragher\, Traore. Subs: Baros\, Smicer\, Arphexad\, B
+ iscan.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030325T070000
+DTEND;TZID=Australia/Sydney:20030325T084500
+SUMMARY:Bolton (1) v Spurs (0) [Okocha 92 pen]
+UID:08A2A4EC-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:5
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Bolton: Jaaskelainen\, Ngotty\, Bergsson\, Laville\, Gardner
+  (Barness\, 45)\, Campo\, Frandsen\, Okocha\, Djorkaeff\, Pedersen\, Men
+ dy (Andre\, 73). Subs: Poole\, Nolan\, Ballesta. \n\nSpurs: Keller\, Car
+ r\, Taricco\, Thatcher (Doherty\, 21)\, King\, Bunjevcevic\, Poyet\, And
+ erton (Etherington\, 86) Davies\, Sheringham\, Keane. Subs: Sullivan\, S
+ labber\, Etherington\, Toda.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030406T000000
+DTEND;TZID=Australia/Sydney:20030406T014500
+SUMMARY:Spurs (2) v Brum (1) [Keane 7\, Devlin 77 pen\, Poyet 88]
+UID:08A2A815-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Carr\, Taricco (Etherington\, 83)\, Bunjevce
+ vic\, King\, Perry\, Anderton\, Davies\, Poyet\, Keane\, Sheringham. Sub
+ s: Sullivan\, Doherty\, Acimovic\, Toda. \n\nBirmingham City: Marriott\,
+  Kenna (Carter\, 90)\, Devlin\, Horsfield\, Cunningham\, John (Lazaridis
+ \, 55)\, Dugarry (Kirovski\, 85)\, Johnson\, Clapham\, Upson\, Clemence.
+  Subs: Davies\, Johnson.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030413T000000
+DTEND;TZID=Australia/Sydney:20030413T014500
+SUMMARY:Leeds (2) v Spurs (2) [Viduka 31\, 76 (pen)\, Teddy Sheringham 3
+ 7\, Keane 39]
+UID:08A2AB3C-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Team: Keller\, Carr\, Taricco\, King\, Gardner\, Bunjevcevic
+ \, Anderton\, Sheringham\, Poyet (Etherington 86)\, Keane\, Davies. Subs
+ : Sullivan\, Perry\, Acimovic\, Toda.\n\nLeeds: Robinson\, Kelly\, Harte
+  (Wilcox 74)\, Radebe\, Viduka\, Kewell\, Smith\, Mills (Milner 63)\, Ba
+ kke\, Matteo\, Duberry. Subs: Martyn\, Barmby\, Johnson.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030419T000000
+DTEND;TZID=Australia/Sydney:20030419T014500
+SUMMARY:Spurs (0) v Man City (2) [Sommeil 3\, Barton 21]
+UID:08A2AE5D-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:5
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Carr\, Taricco (Perry\, 45)\, King\, Gardner
+ \, Bunjevcevic (Toda\, 45)\, Anderton\, Poyet (Acimovic\, 71)\, Davies\,
+  Sheringham\, Keane. Subs: Sullivan\, Iversen. \n\nMan City: Schmeichel\
+ , Sommeil\, Jensen\, Distin\, Benarbia\, Foe\, Wright-Phillips\, Fowler 
+ (Macken\, 80)\, Anelka\, Dunne\, Barton\, Subs: Nash\, Sun\, Horlock\, G
+ oater.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030422T000000
+DTEND;TZID=Australia/Sydney:20030422T014500
+SUMMARY:WBA (2) v Spurs (3) [Dichio 24\, Clement 61\, Keane 45\, 85\, Sh
+ eringham 63]
+UID:08A2B1A7-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030604T033131Z
+DESCRIPTION:WBA: Hoult\, Balis\, McInnes\, Wallwork\, Dichio (Dobie\, 68
+ )\, Johnson\, Roberts\, Gregan\, Sigurdsson\, Koumas\, Udeze (Clement\, 
+ 57). Subs: Murphy\, Chambers\, Lyttle. \n\nSpurs: Keller\, Carr\, Etheri
+ ngton\, Richards (Perry\, 83)\, King\, Gardner\, Toda (Poyet\, 45)\, Dav
+ ies\, Bunjevcevic\, Keane\, Sheringham. Subs: Sullivan\, Iversen\, Acimo
+ vic.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030427T000000
+DTEND;TZID=Australia/Sydney:20030427T014500
+SUMMARY:Spurs (0) v Man Ure (2) [Scholes 69\, van Nistelrooy 90]
+UID:08A2B4E6-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Carr\, Taricco\, King\, Richards (Gardner\, 
+ 30)\, Poyet\, Toda (Bunjevcevic\, 77)\, Davies\, Etherington (Iversen\, 
+ 77)\, Sheringham\, Keane. Subs: Sullivan\, Acimovic. \n\nManUre: Carroll
+ \, O'Shea\, Brown (G Neville\, 54)\, Ferdinand\, Silvestre\, Beckham\, K
+ eane\, Scholes (Fortune\, 71)\, Giggs\, Van Nistelrooy\, Solskjaer. Subs
+ : Ricardo\, Blanc\, Forlan.
+END:VEVENT
+BEGIN:VEVENT
+ATTENDEE;CN="Nick Edmonds";DIR="addressbook://56CB9F6C-4AE2-11D7-A1F5-00
+ 3065B8B7E6:ABPerson":mailto:nick@lego3.com
+DTSTAMP:20030604T033131Z
+UID:08A2B803-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:7
+DTSTART;TZID=Australia/Sydney:20030504T000000
+SUMMARY:Boro (5) v Spurs (1) [Christie 23\, Juninho 26\, Nemeth 28\, Mac
+ carone 51\, 75\, Redknapp 60]
+DTEND;TZID=Australia/Sydney:20030504T014500
+DESCRIPTION:Middlesbrough: Schwarzer\, Stockdale\, Queudrue\, Ehiogu (Ri
+ ggott\, 10)\, Southgate\, Boateng\, Nemeth\, Juninho\, Greening\, Christ
+ ie (Maccarone\, 45)\, Wilkshire (Downing\, 77). Subs: Jones\, Doriva. \n
+ \nSpurs: Keller\, Carr\, Taricco\, Perry\, Gardner\, King\, Poyet (Redkn
+ app\, 45)\, Bunjevcevic\, Davies\, Sheringham (Etherington\, 45)\, Keane
+ . Subs: Acimovic\, Yeates\, Burch.
+ORGANIZER;CN="Martin Jopson":mailto:martin@jopson.com
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030512T000000
+DTEND;TZID=Australia/Sydney:20030512T014500
+SUMMARY:Spurs (0) v Blackburn (4) [Yorke 5\, Hignett 45\, Duff 48\, Cole
+  60]
+UID:08A2BB2F-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Spurs: Keller\, Carr\, Taricco (Ziege\, 60)\, King\, Perry\,
+  Redknapp (Toda\, 69)\, Poyet\, Davies\, Keane\, Sheringham\, Etheringto
+ n. Subs: Sullivan\, Acimovic\, Bunjevcevic. \n\nBlackburn Rovers: Friede
+ l\, Neill\, Todd\, Taylor\, McEveley\, Flitcroft (Dunn\, 45)\, Tugay\, H
+ ignett (Jansen\, 75)\, Duff\, Cole\, Yorke. Subs: Kelly\, Suker.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20031009T071128Z
+UID:08A2BE5F-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:6
+DTSTART;VALUE=DATE:20030224
+SUMMARY:Neil Sullivan 24.02.1970
+DTEND;VALUE=DATE:20030225
+DESCRIPTION:Joined from Wimbledon 07.01.2000
+RRULE:FREQ=YEARLY;INTERVAL=1;UNTIL=20040223;BYMONTH=2
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A2C181-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20021129
+SUMMARY:Kasey Keller 29.11.69
+DTEND;VALUE=DATE:20021130
+DESCRIPTION:Joined from Rayo Vallecano on 07.08.2001 Free Transfer
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=11
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A2C4C0-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20021017
+SUMMARY:Lars Hirschfield 17.10.1978
+DTEND;VALUE=DATE:20021018
+DESCRIPTION:Joined from Calgary Storm 08.08.2002 Undisclosed Amount
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=10
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A2C7E2-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20020829
+SUMMARY:Stephen Carr 29.08.1976
+DTEND;VALUE=DATE:20020830
+DESCRIPTION:Joined as a trainee
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=8
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A2CB10-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20030310
+SUMMARY:Mauricio Taricco 10.03.1973
+DTEND;VALUE=DATE:20030311
+DESCRIPTION:Joined from Ipswich 04.12.1998 for £1.8m
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=3
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A2CE25-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20030217
+SUMMARY:Goran Bunjevcevic 17.02.1973
+DTEND;VALUE=DATE:20030218
+DESCRIPTION:Joined from Red Star 28.06.01 for £1.4m
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=2
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20040315T004421Z
+UID:08A2D148-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTART;VALUE=DATE:20030426
+SUMMARY:Chris Perry 26.04.1973
+DTEND;VALUE=DATE:20030427
+DESCRIPTION:Joined from Wimbledon 04.07.99 for £4m
+RRULE:FREQ=YEARLY;INTERVAL=1;UNTIL=20040425;BYMONTH=4
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A2D46F-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTART;VALUE=DATE:20030131
+SUMMARY:Gary Doherty 31.01.80
+DTEND;VALUE=DATE:20030201
+DESCRIPTION:Joined from Luton Town 25.04.00 for £1m
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=1
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20031009T071059Z
+UID:08A2D775-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTART;VALUE=DATE:20021130
+SUMMARY:Ben Thatcher 30.11.75
+DTEND;VALUE=DATE:20021201
+DESCRIPTION:Joined from Wimbledon 10.07.00 for £5m (why?)
+RRULE:FREQ=YEARLY;INTERVAL=1;UNTIL=20031129;BYMONTH=11
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A2DAAA-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20030201
+SUMMARY:Christian Ziege 01.02.72
+DTEND;VALUE=DATE:20030202
+DESCRIPTION:Joined from Liverpool 01.08.01 for an Undisclosed Amount
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=2
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A2DDD1-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20021210
+SUMMARY:Ledley King 10.12.80
+DTEND;VALUE=DATE:20021211
+DESCRIPTION:Joined as a Trainee
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=12
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A2E0E8-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20020910
+SUMMARY:Anthony Gardner 10.09.80
+DTEND;VALUE=DATE:20020911
+DESCRIPTION:Joined from Port Vale 24.01.00 for £1m
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=9
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A2E717-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20020609
+SUMMARY:Dean Richards 09.06.74
+DTEND;VALUE=DATE:20020610
+DESCRIPTION:Joined from Southampton 21.09.01 for £8.1m
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=6
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A2EA14-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20021222
+SUMMARY:Rohan Ricketts 22.12.82
+DTEND;VALUE=DATE:20021223
+DESCRIPTION:Joined from Arse 13.07.02 on a Free
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=12
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A2F15C-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20030625
+SUMMARY:Jamie Redknapp 25.06.73
+DTEND;VALUE=DATE:20030626
+DESCRIPTION:Joined from Liverpool 14.04.02 on a Free
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=6
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A2F498-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20030303
+SUMMARY:Darren Anderton 03.03.72
+DTEND;VALUE=DATE:20030304
+DESCRIPTION:Joined from Portsmouth 06.03.92 for £1.75m
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=3
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A2F7C4-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20021115
+SUMMARY:Gustavo Poyet 15.11.67
+DTEND;VALUE=DATE:20021116
+DESCRIPTION:Joined from Chelsea 10.06.01 for £2m
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=11
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20040302T042125Z
+UID:08A2FAE1-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:4
+DTSTART;VALUE=DATE:20030403
+SUMMARY:Jonathan Blondel 93.04.84
+DTEND;VALUE=DATE:20030404
+DESCRIPTION:Joined from Excelsior Mouscron (who?) 10.07.02 for an Undisc
+ losed Amount
+RRULE:FREQ=YEARLY;INTERVAL=1;UNTIL=20040402;BYMONTH=4
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A2FE0C-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20021231
+SUMMARY:Milenko Acimovic 31.12.77
+DTEND;VALUE=DATE:20030101
+DESCRIPTION:Joined from Crvena Zvezda 01.06.02 on a Free
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=12
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A3043B-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20020723
+SUMMARY:Simon Davies 23.07.82
+DTEND;VALUE=DATE:20020724
+DESCRIPTION:Joined from Peterborough 07.01.00 for £700k
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=7
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A30A76-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20020708
+SUMMARY:Robbie Keane 08.07.80
+DTEND;VALUE=DATE:20020709
+DESCRIPTION:Joined from Leeds 31.08.02 for £7m
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=7
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20030604T033131Z
+UID:08A30D92-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20021027
+SUMMARY:Glenn Hoddle 27.10.57
+DTEND;VALUE=DATE:20021028
+DESCRIPTION:Legend
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=10
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20021107T064500
+DTEND;TZID=Australia/Sydney:20021107T084500
+SUMMARY:Burnley (2) v Spurs (1) [WC 3rd Round] [Poyet 17\, Blake 57\, Da
+ vis 61]
+UID:08A310AC-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:7
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Burnley: Beresford\, West\, Gnohere\, McGregor\, Branch\, We
+ ller\, Stephen Davis\, Grant\, Briscoe\, Blake\, Taylor. Subs: Little\, 
+ Cook\, Ian Moore\, Alan Moore\, Papadopoulos. \n\nTottenham: Keller\, Pe
+ rry\, Bunjevcevic\, Gardner\, Carr\, Poyet\, Clemence\, Davies\, Etherin
+ gton\, Iversen\, Ferdinand. Subs: Hirschfeld\, Anderton\, Doherty\, Kean
+ e\, Acimovic.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20021018T044500
+DTEND;TZID=Australia/Sydney:20021018T063000
+SUMMARY:Spurs (0) v DC Utd (1) [Barratt] [Charity Friendly]
+UID:08A313B9-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:12
+DTSTAMP:20030604T033131Z
+DESCRIPTION:DC United took against the legendary Spurs XI in a wonderful
+  night's action in the Tottenham Tribute Match at the Lane.\n\nMINUTE-BY
+ -MINUTE GUIDE TO THE ACTION\n\n6mins: Wonderful Ginola cross just missed
+  Poyet and Doherty unable to hit target sliding in at far post.\n\n8mins
+ : SAVE. Keller at full stretch to tip Moreno's low drive around the post
+ .\n\n11mins: Keller out quickly to deny Olsen at his feet.\n\n17mins: Fr
+ eund almost scored own goal as he flicked away Etcheverry's dangerous co
+ rner.\n\n18mins: Fine work from Marney\, closed down Barratt and whipped
+  in cross that Sheringham glanced just over.\n\n26mins: Etcheverry cross
+  just over Olsen's head.\n\n29mins: Keller decent save to his left from 
+ Etcheverry's low curler.\n\n33mins: Sheringham curled wide after combini
+ ng with Poyet.\n\n37mins: Freund blasted over from 22 yards.\n\n38mins: 
+ Another great break from Marney down the right\, one-two with Sheringham
+ \, drove cross in towards Klinsmann but cut out well by Agoos. \n\n39min
+ s: SAVE. Straight up the other end and Keller out bravely to block from 
+ the sliding Moreno.\n\n42mins: WOODWORK. Ginola caused havoc with a drib
+ ble into the box\, went down\, Sheringham spun on loose ball but 20-yard
+ er hit base of the post and bounced to safety.\n\nHalf-time: Spurs XI 0-
+ 0 DC United\n\nChanges: Chris Waddle\, Colin Calderwood\, Ronnie Henry\,
+  Steve Carr\, Steve Clemence and Lars Hirschfeld all start second half.\
+ n\n51mins: CHANCE. Quaranta through on goal but Hirschfeld produced fine
+  save.\n\n53mins: Reyes strike just wide.\n\n58mins: SAVE. Nice passing 
+ and movement from DC sent Quaranta clear but Hirschfeld deflected wide w
+ ith his legs.\n\n61mins: WOODWORK. GOAL DISALLOWED. Delightful Olsen chi
+ p beat Hirschfeld but came back off the crossbar. Moreno headed in rebou
+ nd but was flagged offside.\n\n70mins: OFF LINE. Moreno dummy saw ball g
+ o past Hirschfeld but Marney was there to clear off the line.\n\n73mins:
+  Lovely flick from Allen found Rebrov bursting into the box but he shot 
+ wide from a tight angle.\n\n77mins: OFF LINE. Henry header from Waddle c
+ orner cleared off the line.\n\n82mins: Quantilla found Quaranta but Hirs
+ chfeld again up to the task.\n\n84mins: GOAL. Moreno miss control allowe
+ d Barratt to latch onto Convey's pass and finally beat Hirschfeld. 0-1.\
+ n\nLine-ups: Spurs first half: Keller\, Marney\, Doherty\, Perry\, Bunje
+ vcevic\, Poyet\, Freund\, Gascoigne\, Ginola\, Klinsmann\, Sheringham.\n
+ \nDC United: Rimando\, Reyes\, Moreno\, Etcheverry (Quintanilla\, 71)\, 
+ Agoos\, Olsen (Villegas\, 78)\, Convey\, Williams\, Pope (McKinley\, 45)
+ \, Barrett\, Quaranta (Curtis\, 83).\n\nSpurs second half: Hirschfeld\, 
+ Carr\, Marney (Marney\, 76)\, Calderwood (Kelly\, 76)\, Henry\, Gascoign
+ e (Blondel\, 50)\, Clemence\, Ginola (Etherington\, 57)\, Waddle\, Sheri
+ ngham (Rebrov\, 50)\, Klinsmann (C Allen\, 65).
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030105T064500
+DTEND;TZID=Australia/Sydney:20030105T081500
+SUMMARY:Soton (4) v Spurs (0) [FA Cup] [Svensson 13\, Tessem 50\, Svenss
+ on 56\, Beattie 80]
+UID:08A316EE-963D-11D7-ABA4-003065B8B7E6
+SEQUENCE:7
+DTSTAMP:20030604T033131Z
+DESCRIPTION:Keller\, Perry (Anderton 45)\, Taricco\, King\, Carr\, Davie
+ s (Doherty 73)\, Freund (Iversen 65)\, Poyet\, Thatcher\, Keane\, Sherin
+ gham. Subs: Sullivan\, Bunjevcevic\, Anderton\, Doherty\, Iversen. \n\nS
+ aints: Niemi\, Bridge\, Lundekvam\, M Svensson\, Telfer\, Oakley\, Marsd
+ en (A Svensson 26)\, Delap\, Fernandez\, Beattie\, Tessem (Davies). Subs
+ : Jones\, Williams\, Ormerod.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20030816T120000
+DTEND;TZID=Europe/London:20030816T134500
+SUMMARY:Brum (1)  v Spurs (0) [David Dunn 36 (pen)]
+UID:2EBB39B4-B03A-11D7-8B11-003065B8B7E6
+SEQUENCE:5
+DTSTAMP:20030827T211215Z
+DESCRIPTION:Line-ups: Birmingham City: Taylor\, Kenna\, Purse\, Clapham\
+ , Johnson\, Savage (Tebilly\, 88)\, Clemence\, Dunn\, Dugarry (Devlin\, 
+ 70)\, Cunningham\, Horsfield (John\, 67). Subs: Lazaridis\, Bennett. \n\
+ nSpurs: Keller\, Carr\, Taricco (Marney\, 69)\, Bunjevcevic\, Gardner\, 
+ Doherty\, Redknapp\, Ricketts\, Davies\, Postiga (Zamora\, 55)\, Keane. 
+ Subs: Sullivan\, Kelly\, Acimovic.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20030823T150000
+DTEND;TZID=Europe/London:20030823T164500
+SUMMARY:Spurs (2) v Leeds (1) [Smith 5\, Taricco 41\, Kanoute 71]
+UID:3E0FD5EC-B03A-11D7-8B11-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030827T211347Z
+DESCRIPTION:Line-ups: Spurs: Keller\, Carr\, Taricco (Marney\, 85)\, Gar
+ dner\, Richards\, King\, Ricketts\, Davies\, Redknapp\, Postiga\, Zamora
+  (Kanoute\, 61). Subs: Sullivan\, Bunjevcevic\, Acimovic. \n\nLeeds: Rob
+ inson\, Kelly\, Camara\, Radebe\, Matteo\, Wilcox (Pennant\, 54)\, Morri
+ s\, Johnson\, Sakho (Domi\, 63)\, Smith\, Viduka (Lennon\, 78). Subs: Ma
+ rtyn\, Batty.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20030827T200000
+DTEND;TZID=Europe/London:20030827T214500
+SUMMARY:Liverpool (0) v Spurs (0)
+UID:4C038E0C-B03A-11D7-8B11-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030827T211435Z
+DESCRIPTION:Line-ups: Liverpool: Dudek\, Finnan\, Hyypia\, Baros\, Kewel
+ l\, Diouf\, Owen\, Smicer (Murphy\, 70)\, Gerrard\, Carragher\, Biscan. 
+ Subs: Kirkland\, Diao\, Riise\, Le Tallec. \n\nSpurs: Keller\, Carr\, Ta
+ ricco\, Gardner\, King\, Richards\, Ricketts\, Davies\, Redknapp\, Posti
+ ga (Anderton\, 85)\, Zamora (Kanoute\, 66). Subs: Sullivan\, Bunjevcevic
+ \, Marney.\n\nAttendance: 43\,778
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20030830T150000
+DTEND;TZID=Europe/London:20030830T164500
+SUMMARY:Spurs (0) v Fulham (3) [Hayles 23\, 67\, Boa Morte 71]
+UID:682EA018-B03A-11D7-8B11-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030831T092435Z
+DESCRIPTION:Line-ups: Spurs: Keller\, Carr\, Taricco\, Gardner\, King (Z
+ amora\, 45)\, Richards\, Redknapp\, Ricketts\, Davies (Anderton\, 58)\, 
+ Postiga\, Kanoute. Subs: Burch\, Bunjevcevic\, Marney. \n\nFulham: Van d
+ er Sar\, Volz\, Legwinski\, Inamoto\, Clark\, Boa More\, Malbranque\, Ha
+ yles (Saha\, 71)\, Knight\, Bonnissel\, Goma. Subs: Crossley\, Sava\, Le
+ acock\, Buari. \n\nAttendance: 33\,421
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20030913T150000
+DTEND;TZID=Europe/London:20030913T164500
+SUMMARY:Chelski (4) v Spurs (2) [Lampard 35\, Mutu 37\, 75\, Kanoute 25\
+ , 87\, Hasselbaink 90]
+UID:B580C86A-B03A-11D7-8B11-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030914T221120Z
+DESCRIPTION:Chelsea: Cudicini\, Melchiot\, Babayaro\, Desailly\, Terry\,
+  Petit (Makelele\, 64)\, Lampard\, Gronkjaer (Gallas\, 70)\, Mutu\, Hass
+ elbaink\, Duff (Cole\, 73). Subs: Gudjohnsen\, Ambrosio. \n\nSpurs: Kell
+ er\, Carr\, Taricco (Konchesky\, 67)\, Gardner\, Richards\, King (Bunjev
+ cevic\, 41)\, Anderton (Dalmat 60)\, Redknapp\, Ricketts\, Kanoute\, Zam
+ ora. Subs: Burch\, Postiga.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20030920T150000
+DTEND;TZID=Europe/London:20030920T164500
+SUMMARY:Spurs (1) v Soton (3) [Beattie 3\, 43\, Phillips 60\, Kanoute 62
+ ]
+UID:C5F9334C-B03A-11D7-8B11-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20030920T222843Z
+DESCRIPTION:Spurs team v Southampton: Keller\, Carr\, Gardner\, Richards
+ \, Bunjevcevic\, Taricco\, Ricketts\, Dalmat\, Redknapp\, Kanoute\, Post
+ iga. Substitutes: Burch\, Doherty\, Anderton\, Postiga\, Keane.\n\nSaint
+ s: Jones\, Dodd\, Le Saux\, Marsden\, Lundekvam\, Phillips\, Oakley\, Be
+ attie\, Svensson M\, Fernandes\, Telfer. Substitutes: Niemi\, Svensson A
+ \, Higginbotham\, Prutton\, Ormerod.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20030928T160500
+DTEND;TZID=Europe/London:20030928T175000
+SUMMARY:Man City (0) v Spurs (0)
+UID:D6879AF4-B03A-11D7-8B11-003065B8B7E6
+SEQUENCE:6
+DTSTAMP:20030928T220957Z
+DESCRIPTION:Manchester City: Seaman\, Sommeil\, Distin\, Wanchope (Fowle
+ r\, 75)\, Sun\, Tarnat\, Bosvelt\, Sinclair (Sibierski\, 71)\, Wright-Ph
+ illips\, McManaman (Reyna\, 84)\, Anelka. Subs: Weaver\, Bischoff. \n\nS
+ purs: Keller\, Carr\, Taricco\, Richards\, Gardner\, Konchesky (Dalmat\,
+  77)\, Bunjevcevic (Ricketts\, 61)\, Poyet\, Anderton\, Kanoute\, Keane.
+  Subs: Burch\, Postiga\, Doherty.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20031004T150000
+DTEND;TZID=Europe/London:20031004T164500
+SUMMARY:Spurs (3) v Everton (0) [Kanoute 43\, Poyet 46\, Keane 49]
+UID:ED84C035-B03A-11D7-8B11-003065B8B7E6
+SEQUENCE:8
+DTSTAMP:20031005T034155Z
+DESCRIPTION:Spurs: Keller\, Carr\, Taricco (Dalmat\, 72)\, Gardner\, Ric
+ hards\, Ricketts\, Anderton\, Poyet\, Konchesky\, Kanoute (Postiga\, 77)
+ \, Keane. Subs: Burch\, Bunjevcevic\, Zamora. \n\nEverton: Martyn\, Wats
+ on\, Stubbs (Weir\, 33)\, Unsworth\, Radzinski (Rooney\, 54)\, Ferguson\
+ , Gravesen\, Carsley\, Yobo\, McFadden (Kilbane\, 54)\, Hibbert. Subs: T
+ urner\, Campbell.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20031019T140000
+DTEND;TZID=Europe/London:20031019T154500
+SUMMARY:Leics (1) v Spurs (2) [Dickov 38\, Mabizela 79\, Kanouté 90]
+UID:1076F7DB-B03B-11D7-8B11-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20031020T121420Z
+DESCRIPTION:Line-ups: Leicester City: Walker\, Curtis\, Gillespie\, Sinc
+ lair\, Taggart\, Izzet\, Rogers\, Scimeca\, Ferdinand (Bent\, 63)\, Dick
+ ov (Hignett\, 86)\, Scowcroft. Subs: Coyne\, Elliott. \n\nSpurs: Keller\
+ , Carr\, Taricco\, Richards\, Doherty\, Anderton\, Ricketts (Dalmat\, 45
+ )\, Konchesky (Zamora\, 65)\, Poyet (Mabizela\, 73)\, Keane\, Kanoute. S
+ ubs: Burch\, Bunjevcevic. 
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20031026T160500
+DTEND;TZID=Europe/London:20031026T175000
+SUMMARY:Spurs (0) v Mboro (0)
+UID:98FB60AA-C889-11D7-921C-003065B8B7E6
+SEQUENCE:9
+DTSTAMP:20031026T203350Z
+DESCRIPTION:Line-ups: Spurs: Keller\, Carr\, Taricco\, Gardner\, Richard
+ s\, Anderton\, Dalmat\, Poyet (King\, 67)\, Konchesky (Ricketts\, 83)\, 
+ Keane\, Zamora (Postiga\, 63). Subs: Burch\, Mabizela. \n\nMiddlesbrough
+ : Schwarzer\, Cooper\, Southgate\, Queudrue\, Davies\, Doriva\, Zenden (
+ Greening\, 90)\, Mendieta\, Boateng\, Nemeth (Juninho\, 78)\, Christie (
+ Maccarone\, 78). Subs: Nash\, Riggott. 
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20031101T150000
+DTEND;TZID=Europe/London:20031101T160000
+SUMMARY:Spurs (0) v Bolton (1) [Nolan 73]
+UID:B948AE34-C889-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20031103T030704Z
+DESCRIPTION:Spurs: Keller\, Carr\, Taricco (Blondel\, 63)\, Richards\, D
+ oherty\, Konchesky\, Poyet (Postiga\, 45)\, King (Mabizela\, 85)\, Ander
+ ton\, Keane\, Zamora. Subs: Burch\, Bunjevcevic.\n\nBolton: Jaaskelainen
+ \, Charlton\, Nolan\, N'Gotty\, Giannakopoulos (Pedersen\, 85)\, Frandse
+ n\, Okocha\, Gardner\, Davies\, Campo\, Hunt. Subs: Poole\, Barness\, Ja
+ rdel\, Ba.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20031108T150000
+DTEND;TZID=Europe/London:20031108T160000
+SUMMARY:cheating gooners (2) v Spurs (1) [Anderton 5\, Pires 69\, Ljungb
+ erg 79]
+UID:CCD33B55-C889-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20031109T235258Z
+DESCRIPTION:Arsenal: Lehmann\, Lauren (Cygan\, 60)\, Cole\, Campbell\, T
+ oure\, Pires\, Ljungberg\, Parlour\, Gilberto (Bergkamp\, 60)\, Henry\, 
+ Kanu (Edu\, 82). Subs: Stack\, Hoyte.\n\nSpurs: Keller\, Carr\, Taricco\
+ , Gardner\, Richards\, Anderton\, King\, Dalmat (Ricketts\, 82)\, Konche
+ sky (Mabizela\, 72)\, Postiga (Zamora\, 82)\, Keane. Subs: Burch\, Doher
+ ty.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20031123T160500
+DTEND;TZID=Europe/London:20031123T175000
+SUMMARY:Spurs(2) v Villa(1) [Allback 66\, Ricketts 78\, Keane 81]
+UID:DD1E7326-C889-11D7-921C-003065B8B7E6
+SEQUENCE:5
+DTSTAMP:20031123T234927Z
+DESCRIPTION:Spurs: Keller\, Carr\, Taricco\, Gardner\, Richards\, King\,
+  Dalmat\, Anderton\, Konchesky (Ricketts\, 57)\, Keane\, Postiga (Zamora
+ \, 73). Subs: Burch\, Doherty\, Poyet.\n\nAston Villa: Sorensen\, Delane
+ y (Dublin\, 80)\, Samuel\, Mellberg\, Johnsen\, Barry\, Hendrie (Moore\,
+  86)\, Hitzlsperger\, Whittingham\, Vassell\, Allback. Subs: Postma\, Ri
+ dgewell\, Kinsella.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20031129T150000
+DTEND;TZID=Europe/London:20031129T160000
+SUMMARY:Blackburn (1) v Spurs (0) [Gresko 78]
+UID:F37A9F52-C889-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20031130T060610Z
+DESCRIPTION:Line-ups: Blackburn Rovers: Friedel\, Gresko\, Short\, Tugay
+ \, Babbel\, Johansson (Reid\, 45)\, Todd\, Emerton\, Ferguson\, Gallaghe
+ r (Jansen\, 82)\, Yorke. Subs: Taylor\, Baggio\, Enckleman. \n\nSpurs: K
+ eller\, Carr\, Taricco\, Gardner\, Richards\, King\, Dalmat (Mabizela\, 
+ 65)\, Konchesky (Ricketts\, 82)\, Anderton\, Keane\, Postiga (Zamora\, 6
+ 5). Subs: Burch\, Doherty.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20031206T150000
+DTEND;TZID=Europe/London:20031206T164500
+SUMMARY:Spurs (5) v Wolves (2) [Keane 29\, 75\, 83\, Ince 30\, Kanoute 5
+ 0\, Rae 84\, Dalmat 90]
+UID:0C6DFCD7-C88A-11D7-921C-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20031209T234605Z
+DESCRIPTION:Spurs: Keller\, Carr\, Taricco\, Gardner\, Richards\, King\,
+  Anderton\, Poyet (Dalmat\, 75) \, Ricketts (Konchesky\, 65)\, Keane\, K
+ anoute. Subs: Burch\, Postiga\, Mabizela.\n\nWolves: Oakes\, Irwin Naylo
+ r\, Rae (Miller\, 85)\, Butler\, Ince\, Blake (Sturridge\, 57)Cameron\, 
+ Kennedy\, Craddock\, Camara. Subs: Marshall\, Luzhny\, Gudjonsson.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20031213T150000
+DTEND;TZID=Europe/London:20031213T160000
+SUMMARY:Newcastle (4) v Spurs (0) [Robert 35\, 55\, Shearer 59\, 66]
+UID:33D7EF54-C88A-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20031215T021010Z
+DESCRIPTION:Newcastle: Given\, Hughes\, Bramble\, Woodgate (O'Brien\, 45
+ )\, Bernard\, Jenas\, Speed (Ambrose\, 78)\, Dyer\, Robert (Solano\, 78)
+ \, Shearer\, Ameobi. Subs: Harper\, Lualua.\n\nSpurs: Keller\, Carr\, Ta
+ ricco\, Richards\, Gardner\, King\, Anderton\, Poyet (Mabizela\, 52)\, K
+ onchesky (Dalmat\, 78)\, Keane\, Kanoute (Postiga\, 60). Subs: Burch\, D
+ oherty.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20031221T160500
+DTEND;TZID=Europe/London:20031221T175000
+SUMMARY:Spurs (1) v ManUre (2) [ O`Shea 15\, van Nistelrooy 25\, Poyet 6
+ 3]
+UID:47C2E345-C88A-11D7-921C-003065B8B7E6
+DTSTAMP:20031223T043121Z
+SEQUENCE:11
+DESCRIPTION:Spurs: Keller\, Carr\, Taricco (Ricketts\, 63)\, Richards\, 
+ Gardner\, King\, Anderton (Poyet\, 18)\, Dalmat (Postiga\, 76)\, Konches
+ ky\, Keane\, Kanoute. Subs: Hirschfeld\, Doherty.\n\nUnited: Howard\, G 
+ Neville\, Silvestre\, Ferdinand\, O'Shea\, P Neville\, Keane (Butt\, 82)
+ \, Scholes\, Giggs\, Van Nistelrooy\, Fletcher (Ronaldo\, 78). Subs: Car
+ roll\, Forlan\, Fortune.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20031226T150000
+DTEND;TZID=Europe/London:20031226T160000
+SUMMARY:Portsmouth (2) v Spurs (0) [Berger 52\, 68]
+UID:5E65BC78-C88A-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20040105T045444Z
+DESCRIPTION:Portsmouth: Wapenaar\, Primus\, Zivkovic\, Stefanovic\, De Z
+ eeuw\, Stone\, Sherwood (Hughes\, 78)\, Sheringham\, Smertin (Taylor\, 9
+ 0)\, Berger\, Yakubu (Roberts\, 83). Subs: Srnicek\, Schemmel.\n\nSpurs:
+  Keller\, Carr\, Taricco\, Gardner\, Richards\, King\, Poyet (Postiga\, 
+ 60)\, Jackson\, Dalmat (Ricketts\, 67)\, Keane\, Kanoute (Zamora\, 85). 
+ Subs: Burch\, Doherty.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20031228T150000
+DTEND;TZID=Europe/London:20031228T160000
+SUMMARY:Spurs (0) v Charlton (1) [Cole 69]
+UID:6EE58880-C88A-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20040105T045332Z
+DESCRIPTION:Spurs: Keller\, Kelly\, Taricco (Mabizela\, 89)\, Gardner\, 
+ Richards\, King\, Poyet (Postiga\, 80)Jackson\, Ricketts (Zamora\, 71)\,
+  Keane\, Kanoute. Subs: Hirschfeld\, Doherty.\n\nCharlton: Kiely\, Kishi
+ shev\, Fish\, Parker\, Holland\, Euell\, Di Canio\, Hreidarsson\, Konche
+ sky\, Johansson (Cole\, 45)\, Perry. Subs: Royce\, Stuart\, Powell\, For
+ tune.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040107T190000
+DTEND;TZID=Europe/London:20040107T203500
+SUMMARY:Spurs (4) v Brum (1) [Dalmat 10\, 24\, Davies 39\, Savage 68 (pe
+ n)\, Keane 79]
+UID:7EC9F5BC-C88A-11D7-921C-003065B8B7E6
+SEQUENCE:6
+DTSTAMP:20040108T020529Z
+DESCRIPTION:Spurs: Keller\, Carr\, Jackson\, Doherty\, King\, Davies\, P
+ oyet\, Anderton (Kelly\, 86)\, Dalmat (Ricketts\, 80)\, Keane\, Kanoute 
+ (Postiga\, 80) Subs: Hirschfeld\, Bunjevcevic.\n\nBirmingham: Taylor\, K
+ enna\, Purse\, Cunningham\, Dunn\, Savage\, Clemence (Hughes\, 80)\, Joh
+ nson\, Morrison\, Forssell (Kirovski\, 82) Carter (Tebily\, 45). Subs: B
+ ennett\, John.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040110T150000
+DTEND;TZID=Europe/London:20040110T164500
+SUMMARY:Leeds(0) v Spurs(1) [Keane 56]
+UID:9BB5F332-C88A-11D7-921C-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20040114T033151Z
+DESCRIPTION:Leeds: Robinson\, Kelly\, Harte\, Kilgallon\, Duberry\, Penn
+ ant\, Bakke\, Barmby (Milner\, 66)\, Matteo\, Olembe (Sakho\, 66)\, Vidu
+ ka (Bridges\, 45). Subs: Carson\, Richardson.\n\nSpurs: Keller\, Carr\, 
+ Taricco\, Gardner\, Doherty\, King\, Davies\, Anderton (Poyet\, 87)\, Da
+ lmat\, Keane\, Kanoute. Subs: Hirschfeld\, Postiga\, Jackson\, Kelly.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040117T150000
+DTEND;TZID=Europe/London:20040117T160000
+SUMMARY:Spurs (2) v Scousers (1) [Keane 25 (pen)\, Postiga 54\, Kewell 7
+ 5]\n
+UID:C45419D0-C88A-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20040120T015309Z
+DESCRIPTION:Spurs: Keller\, Carr\, Taricco\, Gardner\, Doherty\, Anderto
+ n\, Davies\, Brown\, Dalmat (Jackson\, 45)\, Keane\, Postiga (Zamora\, 7
+ 7). Subs: Hirschfeld\, Bunjevcevic\, Kelly.\n\nLiverpool: Jones\, Hencho
+ z\, Hyypia\, Kewell\, Heskey\, Owen\, Murphy\, Hamann\, Traore (Riise\, 
+ 60)\, Biscan (Finnan\, 65) Cheyrou. Subs: Dudek\, Le Tallac\, Carragher.
+ 
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040131T150000
+DTEND;TZID=Europe/London:20040131T160000
+SUMMARY:Foolham (2) v Spurs (1) [Keane 18 (pen)\, Malbranque 45 (pen)\, 
+ McBride 67]
+UID:E1300E3F-C88A-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20040203T055232Z
+DESCRIPTION:Fulham: Van Der Sar\, Volz\, Clark\, Boa Morte (Petta\, 88)\
+ , Malbranque\, Hayles (McBride\, 58)\, Knight\, Djetou\, Davis\, Bocaneg
+ ra\, Pearce. Subs: Crossley\, Inamoto\, Sava.\n\nSpurs: Keller\, Carr\, 
+ Gardner\, Doherty\, Ziege\, King\, Davies\, Brown\, Dalmat\, Keane\, Pos
+ tiga (Zamora\, 78). Subs: Burch\, Bunjevcevic\, Jackson\, Kelly.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040207T150000
+DTEND;TZID=Europe/London:20040207T160000
+SUMMARY:Spurs (4) v Portsmouth (3) [Defoe 13\, Keane 42\, 79\, Poyet 89\
+ , Berkovic 39\, Lua Lua 73\, Mornar 84]
+UID:F1074430-C88A-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20040208T223236Z
+DESCRIPTION:Spurs: Keller\, Carr\, Jackson\, Gardner\, Richards\, Davies
+ \, Brown\, King\, Dalmat (Ricketts\, 72)\, Keane\, Defoe (Poyet\, 81). S
+ ubs: Burch\, Doherty\, Yeates.\n\nPortsmouth: Hislop\, Primus\, De Zeeuw
+ \, Sheringham (Mornar\, 45)\, Quashie\, Taylor\, Faye (Lua Lua\, 63)\, Y
+ akubu\, Smertin\, Curtis\, Berkovic (Stone\, 84). Subs: Wapenaar\, Berge
+ r.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040211T200000
+DTEND;TZID=Europe/London:20040211T214500
+SUMMARY:Charlton (2) v Spurs (4) [Stuart 51\, Perry 81\, Davies 10\, Def
+ oe 43\, King 46\, Jackson 85]
+UID:0169EBB6-C88B-11D7-921C-003065B8B7E6
+SEQUENCE:8
+DTSTAMP:20040212T114443Z
+DESCRIPTION:Charlton: Kiely\, Kishishev (Stuart\, 33)\, Fish\, Holland\,
+  Jensen\, Hreidarsson\, Bartlett (Di Canio\, 55)\, Konchesky\, Young\, C
+ ole (Euell\, 71)\, Perry. Subs: Royce\, Fortune.\n\nSpurs: Keller\, Carr
+ \, Taricco\, Doherty\, Richards\, Brown\, Davies\, King\, Jackson\, Kean
+ e\, Defoe (Poyet\, 85). Subs: Burch\, Bunjevcevic\, Dalmat\, Barnard.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040222T160500
+DTEND;TZID=Europe/London:20040222T175900
+SUMMARY:Spurs (4) v Leicester (4) [Brown 6\, Doherty 9 (og)\, Defoe 13\,
+  89\, Keane 28\, Ferdinand 51\, Thatcher 74\, Bent 79]
+UID:19AA68FC-C88B-11D7-921C-003065B8B7E6
+SEQUENCE:8
+DTSTAMP:20040229T102908Z
+DESCRIPTION:Changed from Saturday.\n\nSpurs: Keller\, Carr\, Taricco\, D
+ oherty\, Richards\, King\, Brown (Kanoute\, 77)\, Jackson (Anderton\, 60
+ )\, Davies\, Keane\, Defoe. Subs: Poyet\, Dalmat\, Burch.\n\nLeicester: 
+ Walker\, Taggart (Davidson\, 49)\, Nalis\, Ferdinand (Bent\, 72) \, Scow
+ croft\, Freund\, Scimeca\, Dickov (Sinclair\, 87)\, Guppy\, Thatcher\, D
+ abizas. Subs: Coyne\, Stewart.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040309T200000
+DTEND;TZID=Europe/London:20040309T213000
+SUMMARY:Mboro (1) v Spurs (0) [Nemeth 73]
+UID:2F9C4918-C88B-11D7-921C-003065B8B7E6
+SEQUENCE:7
+DTSTAMP:20040315T003940Z
+DESCRIPTION:Middlesbrough: Schwarzer\, Queudrue\, Ehiogu\, Southgate\, B
+ oateng\, Juninho\, Mendieta\, Job (Nemeth\, 68)\, Doriva (Maccarone\, 45
+ )\, Davies (Parnaby\, 45)\, Zenden. Subs: Jones\, Riggott.\n\nSpurs: Kel
+ ler\, Carr\, Taricco\, Gardner\, Richards\, King\, Brown (Poyet\, 82)\, 
+ Anderton (Postiga\, 87)\, Jackson (Dalmat\, 65)\, Keane\, Defoe. Subs: B
+ urch\, Doherty.\n\nReferee: Mike Halsey.\n\nAttendance: 31\,789
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040314T150000
+DTEND;TZID=Europe/London:20040314T160000
+SUMMARY:Spurs (1) v Newcastle (0) [O`Brien 86 (og)]
+UID:3F416B21-C88B-11D7-921C-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20040315T003805Z
+DESCRIPTION:Spurs: Keller\, Carr\, Taricco\, Gardner\, Doherty\, King\, 
+ Brown\, Ziege (Dalmat\, 80) \, Keane\, Kanoute (Redknapp\, 69)\, Defoe. 
+ Subs: Hirschfeld\, Postiga\, Kelly.\n\nNewcastle United: Given\, O'Brien
+ \, Jenas\, Shearer\, Bellamy\, Speed\, Hughes (Ameobi\, 88)\, Woodgate\,
+  Bowyer (Ambrose\, 74)\, Robert\, Bernard. Subs: Elliott\, Harper\, Vian
+ a.\n\nReferee: Harry Webb.\n\nAttendance: 36\,083
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040320T150000
+DTEND;TZID=Europe/London:20040320T160000
+SUMMARY:ManUre (3) v Spurs (0) [Giggs 30\, Ronaldo 89\, Bellion 90]
+UID:50E4E120-C88B-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20040322T000008Z
+DESCRIPTION:Manchester United: Carroll\, P Neville\, Brown\, O'Shea\, Si
+ lvestre\, Van Nistelrooy\, Giggs\, Scholes (Bellion\, 90)\, Keane\, Sols
+ kjaer (Ronaldo\, 76)\, Forlan (Butt\, 83). Subs: Howard\, Fletcher.\n\nS
+ purs: Keller\, Carr\, Taricco (Dalmat\, 45)\, Gardner\, Doherty\, King\,
+  Brown\, Marney (Redknapp\, 67)\, Ziege\, Keane\, Defoe (Kanoute\, 81). 
+ Subs: Hirschfeld\, Kelly.\n\nReferee: Dermot Gallagher.\n\nAttendance: 6
+ 7\,644
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040327T150000
+DTEND;TZID=Europe/London:20040327T160000
+SUMMARY:Soton (1) v Spurs (0) [Delap 64]
+UID:5EEFFDCE-C88B-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20040329T233900Z
+DESCRIPTION:Keller\, Carr\, Ziege (Kelly 47)\, Doherty\, Gardner\, Kanou
+ te\, Brown  (Dalmat 75)\, King\, Jackson (Redknapp 45)\, Keane\, Defoe. 
+ Subs: Hirschfeld\, Postiga.\n\nSaints: Niemi\, Dodd\, Lundekvam\, Higgin
+ botham\, Telfer\, Prutton\, Delap\, Folly\, Fernandes (Svensson 75)\, Be
+ attie\, Phillips (Ormerod 75). Subs: Smith (GK)\, Hall\, Pahars.\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040403T150000
+DTEND;TZID=Europe/London:20040403T160000
+SUMMARY:Spurs v Chelski
+UID:723874F4-C88B-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20030807T035901Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040409T200000
+DTEND;TZID=Europe/London:20040409T213000
+SUMMARY:Everton v Spurs
+UID:82A137D2-C88B-11D7-921C-003065B8B7E6
+SEQUENCE:6
+DTSTAMP:20040122T233556Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040412T150000
+DTEND;TZID=Europe/London:20040412T160000
+SUMMARY:Spurs v Man City
+UID:92948F3F-C88B-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20030807T040001Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040417T150000
+DTEND;TZID=Europe/London:20040417T160000
+SUMMARY:Spurs v Bolton
+UID:A3DF46D6-C88B-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20030807T040021Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040425T160500
+DTEND;TZID=Europe/London:20040425T174500
+SUMMARY:Spurs v arse
+UID:B1EDC43E-C88B-11D7-921C-003065B8B7E6
+SEQUENCE:7
+DTSTAMP:20040323T090322Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040502T150000
+DTEND;TZID=Europe/London:20040502T160000
+SUMMARY:Villa v Spurs
+UID:C492A9AA-C88B-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20030807T040120Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040508T150000
+DTEND;TZID=Europe/London:20040508T160000
+SUMMARY:Spurs v Blackburn
+UID:D38E4296-C88B-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20030807T040143Z
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040515T150000
+DTEND;TZID=Europe/London:20040515T160000
+SUMMARY:Wolves v Spurs
+UID:E1B2F23A-C88B-11D7-921C-003065B8B7E6
+SEQUENCE:3
+DTSTAMP:20030807T040205Z
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+DTSTAMP:20040315T004457Z
+UID:8984C818-CC6E-11D7-A39D-003065B8B7E6
+SEQUENCE:4
+DTSTART;VALUE=DATE:20031230
+SUMMARY:Kazuyuki Toda
+DESCRIPTION:On Loan from Shimizu S-Pulse\\t Arrived 24/01/2003\n\nDefens
+ ive midfielder who is a Japanese international and who joined us in Janu
+ ary\, 2003\, on a year-long loan from Shimizu S-Pulse. Featured in all h
+ is country's matches in the 2002 World Cup and made 167 appearances for 
+ Shimizu\, scoring twice. A strong\, energetic midfielder\, he made his d
+ ebut for us against Manchester City in April\, 2003.
+RRULE:FREQ=YEARLY;INTERVAL=1;UNTIL=20041229;BYMONTH=12
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+DTSTAMP:20040315T004508Z
+UID:E4FD3D74-CC6E-11D7-A39D-003065B8B7E6
+SEQUENCE:4
+DTSTART;VALUE=DATE:20040116
+SUMMARY:Bobby Zamorra 16.01.1981
+DESCRIPTION:Joined from Brighton & Hove Albion on 17.07.2003 for £1\,500
+ \,000\n\n\nA prolific marskman in the Football League - we snapped up th
+ e 22-year-old in a1.5m deal from Brighton in July.\n\nHe marked his debu
+ t for the club in pre-season in the only way he knows how - grabbing two
+  goals in a 45-minute stint at Oxford.\n\nLondon-born Bobby kicked-off h
+ is career at Bristol Rovers before his move to Brighton where he bagged 
+ 76 goals in 123 appearances - form that earned him an England U21 call.\
+ n\nHe is now in the Premiership and hoping to continue doing what he doe
+ s best.\n\nHe said: \"It will be tough to step up but I'm young and I wi
+ ll learn. Hopefully it will all come good and I'll score goals for Totte
+ nham.\" \n\n
+RRULE:FREQ=YEARLY;INTERVAL=1;UNTIL=20050115;BYMONTH=1
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+DTSTAMP:20030812T024830Z
+UID:452D69E1-CC6F-11D7-A39D-003065B8B7E6
+SEQUENCE:4
+DTSTART;VALUE=DATE:20030902
+SUMMARY:Frederic Kanouté 02.09.1977
+DESCRIPTION:From West Ham United on\\t 04.08.2003 for Undisclosed Amount
+ \n\n\nSigned for Spurs on August 4 2003 - a move speculated on throughou
+ t the summer. Began his career with his hometown club Lyon before joinin
+ g West Ham - initially on loan in 2000. He made 92 appearances for the H
+ ammer during his spell at Upton Park - scoring 33 goals.
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=9
+END:VEVENT
+BEGIN:VEVENT
+DURATION:P1D
+DTSTAMP:20030812T025236Z
+UID:C73E2C33-CC6F-11D7-A39D-003065B8B7E6
+SEQUENCE:3
+DTSTART;VALUE=DATE:20030802
+SUMMARY:Helder Postiga 02.08.1982
+DESCRIPTION:From FC Porto on  22.07.2003 for 6\,250\,000 + Appearance Fe
+ es\n\nHighly-rated centre forward who joined us during the summer from U
+ EFA Cup winners FC Porto. A Portuguese international\, he is regarded as
+  one of the best young strikers in Europe and scored 19 goals for his pr
+ evious club last season. Made his Porto debut against Barry Town in Augu
+ st\, 2001\, in a Champions League qualifier and won his first senior cap
+  against Italy in February\, 2003. His first international goals followe
+ d in his third cap against Bolivia in June\, scoring twice in a 4-0 win.
+ \nFull name - Helder Manuel Marques Postiga\nPosition - Striker\nNationa
+ lity - Portuguese \nDate of birth - August 2\, 1982\nPlace of birth - Po
+ voa de Varzim\nHeight - 179 cm \nWeight - 79kg\nFull International Caps 
+ - 3\, 2 goals\nOther International Caps - Junior\, Youth\, Under 21 and 
+ B levels\nPrevious Clubs - FC Porto\, Varzim SC\nSenior Debut - 2001/02\
+ nCareer Appearances - 85 \nCareer goals - 29 \nAppearances in season 200
+ 2/03 - 46 \nGoals in season 2002/03 - 19 \nClub honours -  Portuguese Ch
+ ampionship 02/03\, Portuguese Cup 02/03\, \nPortuguese Super Cup 01/02
+RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=8
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Australia/Sydney:20030924T080000
+SUMMARY:Cov (0) v Spurs (3) [League Cup] [Kanoute 13\, Keane 23\, Ricket
+ ts 85]
+UID:9D5D63B6-D8D3-11D7-A645-003065B8B7E6
+SEQUENCE:1
+DTSTAMP:20030924T233131Z
+DESCRIPTION:Coventry City: Shearer\, Konjic\, Shaw\, Safri\, Suffo\, Ade
+ bola\, Morrell\, Doyle\, Staunton\, Warnock\, Mansouri. Subs: Arphexad\,
+  Whing\, Davenport. \n\nSpurs: Keller\, Carr\, Taricco\, Bunjevcevic\, A
+ nderton\, Kanoute\, Keane (Postiga\, 79)\, Poyet\, Blondel (Ricketts\, 6
+ 1)\, Gardner\, Richards. Subs: Dalmat\, Doherty\, Burch.
+DURATION:PT1H
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20031029T194500
+DTEND;TZID=Europe/London:20031029T211500
+SUMMARY:Spurs (1) v West Ham (0) [Carling Cup] [Zamorra 91]
+UID:0B24BC9E-F523-11D7-9FCB-003065B8B7E6
+SEQUENCE:9
+DTSTAMP:20031030T055229Z
+DESCRIPTION:Line-ups: Spurs: Keller\, Carr\, Konchesky\, Gardner\, Doher
+ ty\, Ricketts (Postiga\, 76)\, King\, Dalmat (Mabizela\, 57)\, Ziege (Bl
+ ondel\, 60)\, Keane\, Zamora. Subs: Burch\, Bunjevcevic.\n\nWest Ham: Ja
+ mes\, Stockdale (Ferdinand\, 21)\, Quinn\, Dailly\, Kilgallon\, Lee (Gar
+ cia\, 67)\, Carrick\, Horlock (Mellor\, 105)\, Hutchison\, Eterington\, 
+ Defoe. Subs: Sofiane\, Bywater.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20031203T194500
+DTEND;TZID=Europe/London:20031203T212500
+SUMMARY:Spurs (3) v Man City (1) [Anderton 9\, Postiga 30\,  Fowler 80\,
+  Kanouté 90] [Carling Cup]
+UID:575888A2-0FD3-11D8-AF5F-003065B8B7E6
+SEQUENCE:7
+DTSTAMP:20031203T231538Z
+DESCRIPTION:Spurs: Line-up v City: Keller\, Carr\, Taricco\, Gardner\, D
+ oherty\, King\, Ricketts (Konchesky\, 69)\, Anderton\, Poyet (Dalmat\, 8
+ 4)\, Keane\, Postiga (Kanoute\, 75). Subs: Burch\, Mabizela.\n\nManchest
+ er City: Ellegaard\, Sommeil\, Distin\, Reyna\, Fowler\, Tarnat (McManam
+ an\, 70)\, Dunne\, Barton\, Sinclair\,Wright-Phillips\, Anelka. Subs: K 
+ Schmeichel\, Macken\, Wiekens\, Sibierski.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20031217T194500
+DTEND;TZID=Europe/London:20031217T210000
+SUMMARY:Spurs (1) [4pen] v Boro (1) [5pen] [Anderton 2\, M. Ricketts 86 
+ [Carling Cup]
+UID:AEABE740-25E6-11D8-BB86-003065B8B7E6
+SEQUENCE:16
+DTSTAMP:20031218T111303Z
+DESCRIPTION:Line-ups: Spurs: Keller\, Carr\, Taricco\, Richards (Doherty
+ \, 45)\, Gardner\, King\, Ricketts (Dalmat\, 95)\, Anderton (Poyet\, 77)
+ \, Konchesky\, Keane\, Kanoute. Subs: Burch\, Postiga.\n\nMiddlesbrough:
+  Schwarzer\, Mills\, Boateng\, Juninho\, Cooper (Nemeth\, 80) Southgate\
+ , Mendieta\, Zenden\, Ricketts\, Maccarone (Downing\, 45) Queudrue. Subs
+ : Jones\, Davies\, Riggott.\n\nFull-time\, extra-time: Spurs 1-1 Boro\n\
+ nPENALTY SHOOT OUT \n\nKeane: SCORED. 1-0.\n\nRicketts: SCORED. 1-1.\n\n
+ Carr: SCORED. 2-1.\n\nJuninho: SCORED. 2-2.\n\nKonchesky: SCORED. 3-2.\n
+ \nZenden: SCORED. 3-3.\n\nPoyet: SAVED. 3-3.\n\nMills: SCORED. 3-4.\n\nK
+ anoute: SCORED: 4-4.\n\nMendieta: SAVED. 4-4.\n\nTaricco: HIT POST. 4-4.
+ \n\nQueudrue: SCORED. 4-5.
+END:VEVENT
+BEGIN:VEVENT
+LOCATION:
+DTSTAMP:20040105T045223Z
+UID:D1537616-3501-11D8-BDB7-003065B8B7E6
+SEQUENCE:6
+DTSTART;TZID=Europe/London:20040102T150000
+SUMMARY:Spurs (3) v Palace (0) [Kanoute 15\, 20\, 48] [FA Cup 3rd Rnd]
+DTEND;TZID=Europe/London:20040102T164000
+DESCRIPTION:Line-ups: Spurs: Keller\, Carr\, Taricco\, Gardner\, Doherty
+ \, King\, (Davies\, 61)\, Jackson ( Zamora\, 72)\, Poyet\, Dalmat\, Kean
+ e\, Kanoute. Subs: Hirschfeld\, Postiga\, Kelly.\n\nPalace: Berthelin\, 
+ Butterfield\, Symons (Smith\, 68)\, Popovic\, Borrowdale (Granville\, 78
+ )\, Routledge\, Watson\, Hughes\, Gray\, Shipperley\, Johnson (Freedman\
+ , 45). Subs: Black\, Fleming.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040125T130000
+DTEND;TZID=Europe/London:20040125T153000
+SUMMARY:Man City (1) v Spurs (1) [Anelka 11\, Doherty 57] [FA Cup 4th Rn
+ d]
+UID:84ADF081-4AEB-11D8-9AF2-003065B8B7E6
+SEQUENCE:4
+DTSTAMP:20040203T055504Z
+DESCRIPTION:Ellegaard\, Distin\, Reyna\, Fowler (Macken\, 69)\, Sibiersk
+ i (Wright-Phillips\, 69)\, Jihai\, Tarnat\, Dunne\, Bosvelt\, Sinclair\,
+  Anelka. Subs: Arason\, McManaman\, Sommeil.\n\nSpurs: Keller\, Carr\, T
+ aricco (Jackson\, 45)\, Doherty\, Gardner\, Brown\, Anderton (Dalmat\, 4
+ 5)\, Davies\, King\, Keane\, Postiga. Subs: Hirschfeld\, Bunjevcevic\, Z
+ amora.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/London:20040204T194500
+DTEND;TZID=Europe/London:20040204T213000
+SUMMARY:Spurs v Man City [King 2\, Keane 19\, Ziege 43\, Distin 48\, Bos
+ velt 61\, Wright-Phillips 80\, Macken 90] [FA Cup 4th Rnd Replay]
+UID:AEF80D92-560C-11D8-88CE-003065B8B7E6
+SEQUENCE:6
+DTSTAMP:20040208T230234Z
+DESCRIPTION:Spurs: Keller\, Carr\, Ziege\, Richards\, Gardner\, Dalmat\,
+  Brown\, King\, Davies\, Postiga\, Keane. Subs: Burch\, Yeates\, Kelly\,
+  Jackson\, Poyet. \n\nCity: Arason\, Sun Jihai\, Tarnat\, Distin\, Dunne
+ \, Sinclair\, Bosvelt\, Barton\, Wright-Phillips\, Fowler\, Anelka. Subs
+ : Stuhr-Ellegaard\, Sibierski\, Macken\, McManaman\, Jordan.
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20041007
+DTEND;VALUE=DATE:20041008
+SUMMARY:Jermain Defoe 7.10.82
+UID:9945FA36-7619-11D8-B2AC-003065B8B7E6
+SEQUENCE:2
+DTSTAMP:20040315T004358Z
+DESCRIPTION:Joined from West Ham  02/02/2004\n£�7\,000\,000
+END:VEVENT
+END:VCALENDAR

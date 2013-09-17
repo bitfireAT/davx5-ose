@@ -1,0 +1,11 @@
+Testsuite: org.simpleframework.xml.core.ConstructorInjectionMatchTest
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.09 sec
+------------- Standard Output ---------------
+<root>
+   <one>
+      <two value="val"/>
+   </one>
+</root>
+------------- ---------------- ---------------
+
+Testcase: testConstructorInjection took 0.089 sec

@@ -1,0 +1,67 @@
+BEGIN:VCALENDAR
+PRODID:-//Microsoft Corporation//Outlook 12.0 MIMEDIR//EN
+VERSION:2.0
+METHOD:PUBLISH
+X-MS-OLK-FORCEINSPECTOROPEN:TRUE
+BEGIN:VEVENT
+CLASS:PUBLIC
+CREATED:20061005T211037Z
+DESCRIPTION:Session #6:  Signature distribution overview                   
+	                          3/14\, 9 a.m. (PST)\nhttps://www.livemeeting.com
+	/cc/microsoft/join?id=4N3J77&role=attend&pw=Forefront+Client+Security\nMee
+	ting ID: 4N3J77\nAttendee Meeting Key:  Forefront Client Security\n\nToll-
+	free:   (866) 500-6738\nInternational:  +001 (203) 480-8000\nParticipant p
+	asscode:  458846\n\n
+DTEND:20070314T180000Z
+DTSTAMP:20061005T211037Z
+DTSTART:20070314T170000Z
+LAST-MODIFIED:20061005T211037Z
+PRIORITY:5
+SEQUENCE:0
+SUMMARY;LANGUAGE=en-us:Session #6:  Signature distribution overview        
+	                                                                          
+	                                                                          
+	                                                       
+TRANSP:OPAQUE
+UID:040000008200E00074C5B7101A82E00800000000B036B088A7E8C601000000000000000
+	010000000F6E9BBD8393FE04E9FB949C12B24C7F9
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//E
+	N">\n<HTML>\n<HEAD>\n<META NAME="Generator" CONTENT="MS Exchange Server ve
+	rsion 08.00.0619.000">\n<TITLE></TITLE>\n</HEAD>\n<BODY>\n<!-- Converted f
+	rom text/rtf format -->\n\n<P DIR=LTR><SPAN LANG="en-us"><B></B></SPAN><SP
+	AN LANG="en-us"><B></B></SPAN><SPAN LANG="en-us"><B><FONT SIZE=2 FACE="Ari
+	al">Session #6: </FONT></B></SPAN><SPAN LANG="en-us"></SPAN><SPAN LANG="e
+	n-us"></SPAN><SPAN LANG="en-us"> <FONT SIZE=2 FACE="Arial">Signature distr
+	ibution overview                             
+	                3/14\, 9 a.m. (PST)</FONT></SPAN></P>\n\n<P
+	 DIR=LTR><SPAN LANG="en-us"></SPAN><A HREF="https://www.livemeeting.com/cc
+	/microsoft/join?id=4N3J77&amp\;role=attend&amp\;pw=Forefront+Client+Securi
+	ty"><SPAN LANG="en-us"></SPAN><SPAN LANG="en-us"></SPAN><SPAN LANG="en-us"
+	><U><FONT COLOR="#0000FF" SIZE=2 FACE="Arial">https://www.livemeeting.com/
+	cc/microsoft/join?id=4N3J77&amp\;role=attend&amp\;pw=Forefront+Client+Secu
+	rity</FONT></U></SPAN><SPAN LANG="en-us"></SPAN></A><SPAN LANG="en-us"></S
+	PAN><SPAN LANG="en-us"></SPAN><SPAN LANG="en-us"></SPAN></P>\n\n<P DIR=LTR
+	><SPAN LANG="en-us"><FONT COLOR="#000000" SIZE=2 FACE="Arial">Meeting ID: 
+	4N3J77</FONT></SPAN></P>\n\n<P DIR=LTR><SPAN LANG="en-us"><FONT COLOR="#00
+	0000" SIZE=2 FACE="Arial">Attendee Meeting Key:  Forefront Client Securit
+	y</FONT></SPAN><SPAN LANG="en-us"><B></B></SPAN><SPAN LANG="en-us"><B></B>
+	</SPAN><SPAN LANG="en-us"><B></B></SPAN></P>\n\n<P DIR=LTR><SPAN LANG="en-
+	us"></SPAN></P>\n\n<P DIR=LTR><SPAN LANG="en-us"></SPAN><SPAN LANG="en-us"
+	></SPAN><SPAN LANG="en-us"><FONT SIZE=2 FACE="Arial">Toll-free:   (866) 
+	500-6738</FONT></SPAN></P>\n\n<P DIR=LTR><SPAN LANG="en-us"><FONT SIZE=2 F
+	ACE="Arial">International:  +001 (203) 480-8000</FONT></SPAN></P>\n\n<P D
+	IR=LTR><SPAN LANG="en-us"><FONT SIZE=2 FACE="Arial">Participant passcode:
+	  458846</FONT></SPAN></P>\n\n<P DIR=LTR><SPAN LANG="en-us"></SPAN></P>\n
+	\n</BODY>\n</HTML>
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MICROSOFT-CDO-IMPORTANCE:1
+X-MICROSOFT-DISALLOW-COUNTER:FALSE
+X-MS-OLK-ALLOWEXTERNCHECK:TRUE
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,38 @@
+Testsuite: org.simpleframework.xml.core.PathWithExtraSectionTest
+Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.087 sec
+------------- Standard Error -----------------
+org.simpleframework.xml.core.ElementException: Element 'contact-details' does not have a match in class org.simpleframework.xml.core.PathWithExtraSectionTest$PathSectionIndexExample at line 12
+	at org.simpleframework.xml.core.Composite.readElement(Composite.java:527)
+	at org.simpleframework.xml.core.Composite.readElements(Composite.java:445)
+	at org.simpleframework.xml.core.Composite.access$400(Composite.java:59)
+	at org.simpleframework.xml.core.Composite$Injector.read(Composite.java:1433)
+	at org.simpleframework.xml.core.Composite.read(Composite.java:201)
+	at org.simpleframework.xml.core.Composite.read(Composite.java:148)
+	at org.simpleframework.xml.core.Traverser.read(Traverser.java:92)
+	at org.simpleframework.xml.core.Persister.read(Persister.java:625)
+	at org.simpleframework.xml.core.Persister.read(Persister.java:606)
+	at org.simpleframework.xml.core.Persister.read(Persister.java:584)
+	at org.simpleframework.xml.core.Persister.read(Persister.java:562)
+	at org.simpleframework.xml.core.Persister.read(Persister.java:499)
+	at org.simpleframework.xml.core.Persister.read(Persister.java:408)
+	at org.simpleframework.xml.core.PathWithExtraSectionTest.testExtraSection(PathWithExtraSectionTest.java:52)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:154)
+	at junit.framework.TestCase.runBare(TestCase.java:127)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:118)
+	at junit.framework.TestSuite.runTest(TestSuite.java:208)
+	at junit.framework.TestSuite.run(TestSuite.java:203)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.run(JUnitTestRunner.java:518)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.launch(JUnitTestRunner.java:1052)
+	at org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner.main(JUnitTestRunner.java:906)
+------------- ---------------- ---------------
+
+Testcase: testExtraSection took 0.079 sec
+Testcase: testExtraSectionWithNonStrict took 0.006 sec
+Testcase: testDirectory took 0 sec

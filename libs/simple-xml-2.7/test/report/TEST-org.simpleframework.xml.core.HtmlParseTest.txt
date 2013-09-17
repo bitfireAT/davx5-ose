@@ -1,0 +1,48 @@
+Testsuite: org.simpleframework.xml.core.HtmlParseTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.128 sec
+------------- Standard Output ---------------
+<document><body><p>
+This is a test <b>Bold text</b> other text. This is <i>italics</i> and also another <p>Paragraph <i>italic</i> inside a paragraph</p></p></body></document><document><body><p>
+This is a test <b>Bold text</b> other text. This is <i>italics</i> and also another <p>Paragraph <i>italic</i> inside a paragraph</p></p></body></document>
+<document ID="0">
+   <!-- org.simpleframework.xml.core.HtmlParseTest$Body -->
+   <body ID="1">
+      <!-- org.simpleframework.xml.core.HtmlParseTest$Paragraph -->
+      <p ID="2">
+This is a test 
+         <!-- org.simpleframework.xml.core.HtmlParseTest$Bold -->
+         <b ID="3">Bold text</b> other text. This is 
+         <!-- org.simpleframework.xml.core.HtmlParseTest$Italic -->
+         <i ID="4">italics</i> and also another 
+         <!-- org.simpleframework.xml.core.HtmlParseTest$Paragraph -->
+         <p ID="5">Paragraph 
+            <!-- org.simpleframework.xml.core.HtmlParseTest$Italic -->
+            <i ID="6">italic</i> inside a paragraph</p>
+      </p>
+   </body>
+</document>>>>>> ELEMENT=[element document]
+>>>>> TYPE=[class org.simpleframework.xml.core.HtmlParseTest$Document]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Document ID="0">
+   <!-- org.simpleframework.xml.core.HtmlParseTest$Body -->
+   <Body ID="1">
+      <!-- org.simpleframework.xml.core.HtmlParseTest$Paragraph -->
+      <P ID="2">
+This is a test 
+         <!-- org.simpleframework.xml.core.HtmlParseTest$Bold -->
+         <B ID="3">Bold text</B> other text. This is 
+         <!-- org.simpleframework.xml.core.HtmlParseTest$Italic -->
+         <I ID="4">italics</I> and also another 
+         <!-- org.simpleframework.xml.core.HtmlParseTest$Paragraph -->
+         <P ID="5">Paragraph 
+            <!-- org.simpleframework.xml.core.HtmlParseTest$Italic -->
+            <I ID="6">italic</I> inside a paragraph</P>
+      </P>
+   </Body>
+</Document>>>>>> ELEMENT=[element Document]
+>>>>> TYPE=[class org.simpleframework.xml.core.HtmlParseTest$Document]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testDocument took 0.125 sec
+Testcase: testDirectory took 0 sec

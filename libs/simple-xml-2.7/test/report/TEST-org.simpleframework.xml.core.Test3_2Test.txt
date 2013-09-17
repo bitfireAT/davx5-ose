@@ -1,0 +1,35 @@
+Testsuite: org.simpleframework.xml.core.Test3_2Test
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.113 sec
+------------- Standard Output ---------------
+<test3>
+   <elements>
+      <element-a/>
+      <element-b/>
+   </elements>
+</test3>
+
+<test3>
+   <elements>
+      <element-a/>
+      <element-b/>
+   </elements>
+</test3>
+
+<test3>
+   <elements>
+      <element-a/>
+      <element-b/>
+   </elements>
+</test3>
+
+<test3>
+   <elements>
+      <element-a/>
+      <element-b/>
+   </elements>
+</test3>
+
+------------- ---------------- ---------------
+
+Testcase: test32 took 0.102 sec
+Testcase: test33 took 0.008 sec

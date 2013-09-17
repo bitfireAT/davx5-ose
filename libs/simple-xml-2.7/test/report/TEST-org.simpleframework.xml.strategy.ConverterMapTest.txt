@@ -1,0 +1,157 @@
+Testsuite: org.simpleframework.xml.strategy.ConverterMapTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.129 sec
+------------- Standard Output ---------------
+<mapHolder>
+   <map class="java.util.HashMap">
+      <entry key="f">
+         <value>F</value>
+      </entry>
+      <entry key="d">
+         <value>D</value>
+      </entry>
+      <entry key="e">
+         <value>E</value>
+      </entry>
+      <entry key="b">
+         <value>B</value>
+      </entry>
+      <entry key="c">
+         <value>C</value>
+      </entry>
+      <entry key="a">
+         <value>A</value>
+      </entry>
+   </map>
+</mapHolder><mapHolder>
+   <map class="java.util.HashMap">
+      <entry key="f">
+         <value>F</value>
+      </entry>
+      <entry key="d">
+         <value>D</value>
+      </entry>
+      <entry key="e">
+         <value>E</value>
+      </entry>
+      <entry key="b">
+         <value>B</value>
+      </entry>
+      <entry key="c">
+         <value>C</value>
+      </entry>
+      <entry key="a">
+         <value>A</value>
+      </entry>
+   </map>
+</mapHolder><mapHolder>
+   <map class="java.util.HashMap">
+      <entry key="f">
+         <value>F</value>
+      </entry>
+      <entry key="d">
+         <value>D</value>
+      </entry>
+      <entry key="e">
+         <value>E</value>
+      </entry>
+      <entry key="b">
+         <value>B</value>
+      </entry>
+      <entry key="c">
+         <value>C</value>
+      </entry>
+      <entry key="a">
+         <value>A</value>
+      </entry>
+   </map>
+</mapHolder>
+<map-holder ID="0">
+   <!-- java.util.Map -->
+   <map class="java.util.HashMap" ID="1">
+      <entry>
+         <!-- java.lang.String -->
+         <string ID="2">f</string>
+         <!-- java.lang.String -->
+         <string ID="3">F</string>
+      </entry>
+      <entry>
+         <!-- java.lang.String -->
+         <string ID="4">d</string>
+         <!-- java.lang.String -->
+         <string ID="5">D</string>
+      </entry>
+      <entry>
+         <!-- java.lang.String -->
+         <string ID="6">e</string>
+         <!-- java.lang.String -->
+         <string ID="7">E</string>
+      </entry>
+      <entry>
+         <!-- java.lang.String -->
+         <string ID="8">b</string>
+         <!-- java.lang.String -->
+         <string ID="9">B</string>
+      </entry>
+      <entry>
+         <!-- java.lang.String -->
+         <string ID="10">c</string>
+         <!-- java.lang.String -->
+         <string ID="11">C</string>
+      </entry>
+      <entry>
+         <!-- java.lang.String -->
+         <string ID="12">a</string>
+         <!-- java.lang.String -->
+         <string ID="13">A</string>
+      </entry>
+   </map>
+</map-holder>>>>>> ELEMENT=[element map-holder]
+>>>>> TYPE=[class org.simpleframework.xml.strategy.ConverterMapTest$MapHolder]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<MapHolder ID="0">
+   <!-- java.util.Map -->
+   <Map class="java.util.HashMap" ID="1">
+      <Entry>
+         <!-- java.lang.String -->
+         <String ID="2">f</String>
+         <!-- java.lang.String -->
+         <string ID="3">F</string>
+      </Entry>
+      <Entry>
+         <!-- java.lang.String -->
+         <String ID="4">d</String>
+         <!-- java.lang.String -->
+         <string ID="5">D</string>
+      </Entry>
+      <Entry>
+         <!-- java.lang.String -->
+         <String ID="6">e</String>
+         <!-- java.lang.String -->
+         <string ID="7">E</string>
+      </Entry>
+      <Entry>
+         <!-- java.lang.String -->
+         <String ID="8">b</String>
+         <!-- java.lang.String -->
+         <string ID="9">B</string>
+      </Entry>
+      <Entry>
+         <!-- java.lang.String -->
+         <String ID="10">c</String>
+         <!-- java.lang.String -->
+         <string ID="11">C</string>
+      </Entry>
+      <Entry>
+         <!-- java.lang.String -->
+         <String ID="12">a</String>
+         <!-- java.lang.String -->
+         <string ID="13">A</string>
+      </Entry>
+   </Map>
+</MapHolder>>>>>> ELEMENT=[element MapHolder]
+>>>>> TYPE=[class org.simpleframework.xml.strategy.ConverterMapTest$MapHolder]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testMap took 0.126 sec
+Testcase: testDirectory took 0.001 sec

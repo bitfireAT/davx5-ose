@@ -1,0 +1,232 @@
+Testsuite: org.simpleframework.xml.strategy.ListCycleTest
+Tests run: 5, Failures: 0, Errors: 0, Time elapsed: 0.172 sec
+------------- Standard Output ---------------
+<root id="0">
+   <one class="java.util.ArrayList" id="1">
+      <text id="2" value="entry one"/>
+      <text id="3" value="entry two"/>
+      <text id="4" value="entry three"/>
+      <text id="5" value="entry four"/>
+      <text id="6" value="entry five"/>
+   </one>
+   <two class="java.util.ArrayList" ref="1"/>
+   <three class="java.util.ArrayList" id="7">
+      <text id="8" value="tom"/>
+      <text id="9" value="dick"/>
+      <text id="10" value="harry"/>
+   </three>
+   <example ref="0"/>
+</root><root id="0">
+   <one class="java.util.ArrayList" id="1">
+      <text id="2" value="entry one"/>
+      <text id="3" value="entry two"/>
+      <text id="4" value="entry three"/>
+      <text id="5" value="entry four"/>
+      <text id="6" value="entry five"/>
+   </one>
+   <two class="java.util.ArrayList" ref="1"/>
+   <three class="java.util.ArrayList" id="7">
+      <text id="8" value="tom"/>
+      <text id="9" value="dick"/>
+      <text id="10" value="harry"/>
+   </three>
+   <example ref="0"/>
+</root>
+<root ID="0">
+   <!-- java.util.List -->
+   <one class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+      <text ID="2" value="entry one"/>
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+      <text ID="3" value="entry two"/>
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+      <text ID="4" value="entry three"/>
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+      <text ID="5" value="entry four"/>
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+      <text ID="6" value="entry five"/>
+   </one>
+   <!-- java.util.List -->
+   <two class="java.util.ArrayList" REFERER="1"/>
+   <!-- java.util.List -->
+   <three class="java.util.ArrayList" ID="7">
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+      <text ID="8" value="tom"/>
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+      <text ID="9" value="dick"/>
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+      <text ID="10" value="harry"/>
+   </three>
+   <!-- org.simpleframework.xml.strategy.ListCycleTest$ListExample -->
+   <example REFERER="0"/>
+</root>>>>>> ELEMENT=[element root]
+>>>>> TYPE=[class org.simpleframework.xml.strategy.ListCycleTest$ListExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Root ID="0">
+   <!-- java.util.List -->
+   <One class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+      <Text ID="2" value="entry one"/>
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+      <Text ID="3" value="entry two"/>
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+      <Text ID="4" value="entry three"/>
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+      <Text ID="5" value="entry four"/>
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+      <Text ID="6" value="entry five"/>
+   </One>
+   <!-- java.util.List -->
+   <Two class="java.util.ArrayList" REFERER="1"/>
+   <!-- java.util.List -->
+   <Three class="java.util.ArrayList" ID="7">
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+      <Text ID="8" value="tom"/>
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+      <Text ID="9" value="dick"/>
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+      <Text ID="10" value="harry"/>
+   </Three>
+   <!-- org.simpleframework.xml.strategy.ListCycleTest$ListExample -->
+   <Example REFERER="0"/>
+</Root>>>>>> ELEMENT=[element Root]
+>>>>> TYPE=[class org.simpleframework.xml.strategy.ListCycleTest$ListExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<inlineListExample id="0">
+   <text id="1" value="entry one"/>
+   <text id="2" value="entry two"/>
+   <text id="3" value="entry three"/>
+   <text id="4" value="entry four"/>
+   <text id="5" value="entry five"/>
+   <example ref="0"/>
+</inlineListExample><inlineListExample id="0">
+   <text id="1" value="entry one"/>
+   <text id="2" value="entry two"/>
+   <text id="3" value="entry three"/>
+   <text id="4" value="entry four"/>
+   <text id="5" value="entry five"/>
+   <example ref="0"/>
+</inlineListExample>
+<inline-list-example ID="0">
+   <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+   <text ID="1" value="entry one"/>
+   <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+   <text ID="2" value="entry two"/>
+   <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+   <text ID="3" value="entry three"/>
+   <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+   <text ID="4" value="entry four"/>
+   <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+   <text ID="5" value="entry five"/>
+   <!-- org.simpleframework.xml.strategy.ListCycleTest$InlineListExample -->
+   <example REFERER="0"/>
+</inline-list-example>>>>>> ELEMENT=[element inline-list-example]
+>>>>> TYPE=[class org.simpleframework.xml.strategy.ListCycleTest$InlineListExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<InlineListExample ID="0">
+   <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+   <Text ID="1" value="entry one"/>
+   <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+   <Text ID="2" value="entry two"/>
+   <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+   <Text ID="3" value="entry three"/>
+   <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+   <Text ID="4" value="entry four"/>
+   <!-- org.simpleframework.xml.strategy.ListCycleTest$Entry -->
+   <Text ID="5" value="entry five"/>
+   <!-- org.simpleframework.xml.strategy.ListCycleTest$InlineListExample -->
+   <Example REFERER="0"/>
+</InlineListExample>>>>>> ELEMENT=[element InlineListExample]
+>>>>> TYPE=[class org.simpleframework.xml.strategy.ListCycleTest$InlineListExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<inlinePrimitiveListExample id="0">
+   <string id="1"><![CDATA[entry one]]></string>
+   <string id="2"><![CDATA[entry two]]></string>
+   <string id="3"><![CDATA[entry three]]></string>
+   <string id="4"><![CDATA[entry four]]></string>
+   <string id="5"><![CDATA[entry five]]></string>
+   <example ref="0"/>
+</inlinePrimitiveListExample><inlinePrimitiveListExample id="0">
+   <string id="1"><![CDATA[entry one]]></string>
+   <string id="2"><![CDATA[entry two]]></string>
+   <string id="3"><![CDATA[entry three]]></string>
+   <string id="4"><![CDATA[entry four]]></string>
+   <string id="5"><![CDATA[entry five]]></string>
+   <example ref="0"/>
+</inlinePrimitiveListExample>
+<inline-primitive-list-example ID="0">
+   <!-- java.lang.String -->
+   <string ID="1"><![CDATA[entry one]]></string>
+   <!-- java.lang.String -->
+   <string ID="2"><![CDATA[entry two]]></string>
+   <!-- java.lang.String -->
+   <string ID="3"><![CDATA[entry three]]></string>
+   <!-- java.lang.String -->
+   <string ID="4"><![CDATA[entry four]]></string>
+   <!-- java.lang.String -->
+   <string ID="5"><![CDATA[entry five]]></string>
+   <!-- org.simpleframework.xml.strategy.ListCycleTest$InlinePrimitiveListExample -->
+   <example REFERER="0"/>
+</inline-primitive-list-example>>>>>> ELEMENT=[element inline-primitive-list-example]
+>>>>> TYPE=[class org.simpleframework.xml.strategy.ListCycleTest$InlinePrimitiveListExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<InlinePrimitiveListExample ID="0">
+   <!-- java.lang.String -->
+   <String ID="1"><![CDATA[entry one]]></String>
+   <!-- java.lang.String -->
+   <String ID="2"><![CDATA[entry two]]></String>
+   <!-- java.lang.String -->
+   <String ID="3"><![CDATA[entry three]]></String>
+   <!-- java.lang.String -->
+   <String ID="4"><![CDATA[entry four]]></String>
+   <!-- java.lang.String -->
+   <String ID="5"><![CDATA[entry five]]></String>
+   <!-- org.simpleframework.xml.strategy.ListCycleTest$InlinePrimitiveListExample -->
+   <Example REFERER="0"/>
+</InlinePrimitiveListExample>>>>>> ELEMENT=[element InlinePrimitiveListExample]
+>>>>> TYPE=[class org.simpleframework.xml.strategy.ListCycleTest$InlinePrimitiveListExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<root id="0">
+   <list class="java.util.ArrayList" id="1">
+      <value id="2">
+         <list class="java.util.ArrayList" ref="1"/>
+      </value>
+   </list>
+</root><root id="0">
+   <list class="java.util.ArrayList" id="1">
+      <value id="2">
+         <list class="java.util.ArrayList" ref="1"/>
+      </value>
+   </list>
+</root>
+<root ID="0">
+   <!-- java.util.List -->
+   <list class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Value -->
+      <value ID="2">
+         <!-- java.util.List -->
+         <list class="java.util.ArrayList" REFERER="1"/>
+      </value>
+   </list>
+</root>>>>>> ELEMENT=[element root]
+>>>>> TYPE=[class org.simpleframework.xml.strategy.ListCycleTest$NestedListExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<Root ID="0">
+   <!-- java.util.List -->
+   <List class="java.util.ArrayList" ID="1">
+      <!-- org.simpleframework.xml.strategy.ListCycleTest$Value -->
+      <Value ID="2">
+         <!-- java.util.List -->
+         <List class="java.util.ArrayList" REFERER="1"/>
+      </Value>
+   </List>
+</Root>>>>>> ELEMENT=[element Root]
+>>>>> TYPE=[class org.simpleframework.xml.strategy.ListCycleTest$NestedListExample]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+
+Testcase: testCycle took 0.122 sec
+Testcase: testInlineList took 0.018 sec
+Testcase: testInlinePrimitiveList took 0.015 sec
+Testcase: testNestedExample took 0.013 sec
+Testcase: testDirectory took 0.001 sec

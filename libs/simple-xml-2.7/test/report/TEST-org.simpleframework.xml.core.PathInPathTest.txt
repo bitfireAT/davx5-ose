@@ -1,0 +1,183 @@
+Testsuite: org.simpleframework.xml.core.PathInPathTest
+Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.132 sec
+------------- Standard Output ---------------
+<pathInPathRoot>
+   <a>
+      <b>
+         <c>
+            <d>
+               <x>
+                  <y>
+                     <v>Value for V</v>
+                  </y>
+                  <z>
+                     <w>Value for W</w>
+                  </z>
+               </x>
+            </d>
+         </c>
+      </b>
+      <b>
+         <c>
+            <e>
+               <x>
+                  <y>
+                     <v>Another V</v>
+                  </y>
+                  <z>
+                     <w>Another W</w>
+                  </z>
+               </x>
+            </e>
+         </c>
+      </b>
+   </a>
+</pathInPathRoot><pathInPathRoot>
+   <a>
+      <b>
+         <c>
+            <d>
+               <x>
+                  <y>
+                     <v>Value for V</v>
+                  </y>
+                  <z>
+                     <w>Value for W</w>
+                  </z>
+               </x>
+            </d>
+         </c>
+      </b>
+      <b>
+         <c>
+            <e>
+               <x>
+                  <y>
+                     <v>Another V</v>
+                  </y>
+                  <z>
+                     <w>Another W</w>
+                  </z>
+               </x>
+            </e>
+         </c>
+      </b>
+   </a>
+</pathInPathRoot>
+<path-in-path-root ID="0">
+   <a>
+      <b>
+         <c>
+            <!-- org.simpleframework.xml.core.PathInPathTest$PathInPathEntry -->
+            <d ID="1">
+               <x>
+                  <y>
+                     <!-- java.lang.String -->
+                     <v ID="2">Value for V</v>
+                  </y>
+                  <z>
+                     <!-- java.lang.String -->
+                     <w ID="3">Value for W</w>
+                  </z>
+               </x>
+            </d>
+         </c>
+      </b>
+      <b>
+         <c>
+            <!-- org.simpleframework.xml.core.PathInPathTest$PathInPathEntry -->
+            <e ID="4">
+               <x>
+                  <y>
+                     <!-- java.lang.String -->
+                     <v ID="5">Another V</v>
+                  </y>
+                  <z>
+                     <!-- java.lang.String -->
+                     <w ID="6">Another W</w>
+                  </z>
+               </x>
+            </e>
+         </c>
+      </b>
+   </a>
+</path-in-path-root>>>>>> ELEMENT=[element path-in-path-root]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathInPathTest$PathInPathRoot]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+<PathInPathRoot ID="0">
+   <A>
+      <B>
+         <C>
+            <!-- org.simpleframework.xml.core.PathInPathTest$PathInPathEntry -->
+            <D ID="1">
+               <X>
+                  <Y>
+                     <!-- java.lang.String -->
+                     <V ID="2">Value for V</V>
+                  </Y>
+                  <Z>
+                     <!-- java.lang.String -->
+                     <W ID="3">Value for W</W>
+                  </Z>
+               </X>
+            </D>
+         </C>
+      </B>
+      <B>
+         <C>
+            <!-- org.simpleframework.xml.core.PathInPathTest$PathInPathEntry -->
+            <E ID="4">
+               <X>
+                  <Y>
+                     <!-- java.lang.String -->
+                     <V ID="5">Another V</V>
+                  </Y>
+                  <Z>
+                     <!-- java.lang.String -->
+                     <W ID="6">Another W</W>
+                  </Z>
+               </X>
+            </E>
+         </C>
+      </B>
+   </A>
+</PathInPathRoot>>>>>> ELEMENT=[element PathInPathRoot]
+>>>>> TYPE=[class org.simpleframework.xml.core.PathInPathTest$PathInPathRoot]
+>>>>> SOURCE=[class com.sun.xml.internal.stream.events.StartElementEvent]
+------------- ---------------- ---------------
+------------- Standard Error -----------------
+<pathInPathRoot>
+   <a>
+      <b>
+         <c>
+            <d>
+               <x>
+                  <y>
+                     <v>Value for V</v>
+                  </y>
+                  <z>
+                     <w>Value for W</w>
+                  </z>
+               </x>
+            </d>
+         </c>
+      </b>
+      <b>
+         <c>
+            <e>
+               <x>
+                  <y>
+                     <v>Another V</v>
+                  </y>
+                  <z>
+                     <w>Another W</w>
+                  </z>
+               </x>
+            </e>
+         </c>
+      </b>
+   </a>
+</pathInPathRoot>------------- ---------------- ---------------
+
+Testcase: testPathInPath took 0.129 sec
+Testcase: testDirectory took 0 sec
