@@ -1,0 +1,213 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    package biweekly.util;<a name="line.1"></a>
+<FONT color="green">002</FONT>    <a name="line.2"></a>
+<FONT color="green">003</FONT>    import java.text.DateFormat;<a name="line.3"></a>
+<FONT color="green">004</FONT>    import java.text.SimpleDateFormat;<a name="line.4"></a>
+<FONT color="green">005</FONT>    import java.util.regex.Pattern;<a name="line.5"></a>
+<FONT color="green">006</FONT>    <a name="line.6"></a>
+<FONT color="green">007</FONT>    /*<a name="line.7"></a>
+<FONT color="green">008</FONT>     Copyright (c) 2013, Michael Angstadt<a name="line.8"></a>
+<FONT color="green">009</FONT>     All rights reserved.<a name="line.9"></a>
+<FONT color="green">010</FONT>    <a name="line.10"></a>
+<FONT color="green">011</FONT>     Redistribution and use in source and binary forms, with or without<a name="line.11"></a>
+<FONT color="green">012</FONT>     modification, are permitted provided that the following conditions are met: <a name="line.12"></a>
+<FONT color="green">013</FONT>    <a name="line.13"></a>
+<FONT color="green">014</FONT>     1. Redistributions of source code must retain the above copyright notice, this<a name="line.14"></a>
+<FONT color="green">015</FONT>     list of conditions and the following disclaimer. <a name="line.15"></a>
+<FONT color="green">016</FONT>     2. Redistributions in binary form must reproduce the above copyright notice,<a name="line.16"></a>
+<FONT color="green">017</FONT>     this list of conditions and the following disclaimer in the documentation<a name="line.17"></a>
+<FONT color="green">018</FONT>     and/or other materials provided with the distribution. <a name="line.18"></a>
+<FONT color="green">019</FONT>    <a name="line.19"></a>
+<FONT color="green">020</FONT>     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.20"></a>
+<FONT color="green">021</FONT>     ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.21"></a>
+<FONT color="green">022</FONT>     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.22"></a>
+<FONT color="green">023</FONT>     DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.23"></a>
+<FONT color="green">024</FONT>     ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.24"></a>
+<FONT color="green">025</FONT>     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.25"></a>
+<FONT color="green">026</FONT>     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND<a name="line.26"></a>
+<FONT color="green">027</FONT>     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.27"></a>
+<FONT color="green">028</FONT>     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.28"></a>
+<FONT color="green">029</FONT>     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.29"></a>
+<FONT color="green">030</FONT>     */<a name="line.30"></a>
+<FONT color="green">031</FONT>    <a name="line.31"></a>
+<FONT color="green">032</FONT>    /**<a name="line.32"></a>
+<FONT color="green">033</FONT>     * Represents the various ISO8601 date-time formats that iCalendar dates can be<a name="line.33"></a>
+<FONT color="green">034</FONT>     * represented as.<a name="line.34"></a>
+<FONT color="green">035</FONT>     * @author Michael Angstadt<a name="line.35"></a>
+<FONT color="green">036</FONT>     */<a name="line.36"></a>
+<FONT color="green">037</FONT>    public enum ISOFormat {<a name="line.37"></a>
+<FONT color="green">038</FONT>            //@formatter:off<a name="line.38"></a>
+<FONT color="green">039</FONT>            /**<a name="line.39"></a>
+<FONT color="green">040</FONT>             * Example: 20120701<a name="line.40"></a>
+<FONT color="green">041</FONT>             */<a name="line.41"></a>
+<FONT color="green">042</FONT>            DATE_BASIC("\\d{8}","yyyyMMdd"),<a name="line.42"></a>
+<FONT color="green">043</FONT>            <a name="line.43"></a>
+<FONT color="green">044</FONT>            /**<a name="line.44"></a>
+<FONT color="green">045</FONT>             * Example: 2012-07-01<a name="line.45"></a>
+<FONT color="green">046</FONT>             */<a name="line.46"></a>
+<FONT color="green">047</FONT>            DATE_EXTENDED("\\d{4}-\\d{2}-\\d{2}", "yyyy-MM-dd"),<a name="line.47"></a>
+<FONT color="green">048</FONT>            <a name="line.48"></a>
+<FONT color="green">049</FONT>            /**<a name="line.49"></a>
+<FONT color="green">050</FONT>             * Example: 20120701T142110-0500<a name="line.50"></a>
+<FONT color="green">051</FONT>             */<a name="line.51"></a>
+<FONT color="green">052</FONT>            TIME_BASIC("\\d{8}T\\d{6}[-\\+]\\d{4}", "yyyyMMdd'T'HHmmssZ"),<a name="line.52"></a>
+<FONT color="green">053</FONT>            <a name="line.53"></a>
+<FONT color="green">054</FONT>            /**<a name="line.54"></a>
+<FONT color="green">055</FONT>             * Example: 20120701T142110<a name="line.55"></a>
+<FONT color="green">056</FONT>             */<a name="line.56"></a>
+<FONT color="green">057</FONT>            TIME_BASIC_WITHOUT_TZ("\\d{8}T\\d{6}", "yyyyMMdd'T'HHmmss"),<a name="line.57"></a>
+<FONT color="green">058</FONT>            <a name="line.58"></a>
+<FONT color="green">059</FONT>            /**<a name="line.59"></a>
+<FONT color="green">060</FONT>             * Example: 2012-07-01T14:21:10-05:00<a name="line.60"></a>
+<FONT color="green">061</FONT>             */<a name="line.61"></a>
+<FONT color="green">062</FONT>            TIME_EXTENDED("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-\\+]\\d{2}:\\d{2}", "yyyy-MM-dd'T'HH:mm:ssZ"),<a name="line.62"></a>
+<FONT color="green">063</FONT>            <a name="line.63"></a>
+<FONT color="green">064</FONT>            /**<a name="line.64"></a>
+<FONT color="green">065</FONT>             * Example: 2012-07-01T14:21:10<a name="line.65"></a>
+<FONT color="green">066</FONT>             */<a name="line.66"></a>
+<FONT color="green">067</FONT>            TIME_EXTENDED_WITHOUT_TZ("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}", "yyyy-MM-dd'T'HH:mm:ss"),<a name="line.67"></a>
+<FONT color="green">068</FONT>            <a name="line.68"></a>
+<FONT color="green">069</FONT>            /**<a name="line.69"></a>
+<FONT color="green">070</FONT>             * Example: 20120701T192110Z<a name="line.70"></a>
+<FONT color="green">071</FONT>             */<a name="line.71"></a>
+<FONT color="green">072</FONT>            UTC_TIME_BASIC("\\d{8}T\\d{6}Z", "yyyyMMdd'T'HHmmssZ", "yyyyMMdd'T'HHmmss'Z'"),<a name="line.72"></a>
+<FONT color="green">073</FONT>            <a name="line.73"></a>
+<FONT color="green">074</FONT>            /**<a name="line.74"></a>
+<FONT color="green">075</FONT>             * Example: 2012-07-01T19:21:10Z<a name="line.75"></a>
+<FONT color="green">076</FONT>             */<a name="line.76"></a>
+<FONT color="green">077</FONT>            UTC_TIME_EXTENDED("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z", "yyyy-MM-dd'T'HH:mm:ssZ", "yyyy-MM-dd'T'HH:mm:ss'Z'"),<a name="line.77"></a>
+<FONT color="green">078</FONT>            <a name="line.78"></a>
+<FONT color="green">079</FONT>            /**<a name="line.79"></a>
+<FONT color="green">080</FONT>             * Example: 2012-07-01T14:21:10-0500<a name="line.80"></a>
+<FONT color="green">081</FONT>             */<a name="line.81"></a>
+<FONT color="green">082</FONT>            HCARD_TIME_TAG("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-\\+]\\d{2}:?\\d{2}", "yyyy-MM-dd'T'HH:mm:ssZ");<a name="line.82"></a>
+<FONT color="green">083</FONT>            //@formatter:on<a name="line.83"></a>
+<FONT color="green">084</FONT>    <a name="line.84"></a>
+<FONT color="green">085</FONT>            /**<a name="line.85"></a>
+<FONT color="green">086</FONT>             * The regular expression pattern for the date format.<a name="line.86"></a>
+<FONT color="green">087</FONT>             */<a name="line.87"></a>
+<FONT color="green">088</FONT>            private final Pattern pattern;<a name="line.88"></a>
+<FONT color="green">089</FONT>    <a name="line.89"></a>
+<FONT color="green">090</FONT>            /**<a name="line.90"></a>
+<FONT color="green">091</FONT>             * The {@link SimpleDateFormat} format string used for parsing dates.<a name="line.91"></a>
+<FONT color="green">092</FONT>             */<a name="line.92"></a>
+<FONT color="green">093</FONT>            private final String parseFormat;<a name="line.93"></a>
+<FONT color="green">094</FONT>    <a name="line.94"></a>
+<FONT color="green">095</FONT>            /**<a name="line.95"></a>
+<FONT color="green">096</FONT>             * The {@link SimpleDateFormat} format string used for formatting dates.<a name="line.96"></a>
+<FONT color="green">097</FONT>             */<a name="line.97"></a>
+<FONT color="green">098</FONT>            private final String formatFormat;<a name="line.98"></a>
+<FONT color="green">099</FONT>    <a name="line.99"></a>
+<FONT color="green">100</FONT>            /**<a name="line.100"></a>
+<FONT color="green">101</FONT>             * @param regex the regular expression for the date format<a name="line.101"></a>
+<FONT color="green">102</FONT>             * @param format the {@link SimpleDateFormat} format string used for parsing<a name="line.102"></a>
+<FONT color="green">103</FONT>             * and formatting dates.<a name="line.103"></a>
+<FONT color="green">104</FONT>             */<a name="line.104"></a>
+<FONT color="green">105</FONT>            private ISOFormat(String regex, String format) {<a name="line.105"></a>
+<FONT color="green">106</FONT>                    this(regex, format, format);<a name="line.106"></a>
+<FONT color="green">107</FONT>            }<a name="line.107"></a>
+<FONT color="green">108</FONT>    <a name="line.108"></a>
+<FONT color="green">109</FONT>            /**<a name="line.109"></a>
+<FONT color="green">110</FONT>             * @param regex the regular expression for the date format<a name="line.110"></a>
+<FONT color="green">111</FONT>             * @param parseFormat the {@link SimpleDateFormat} format string used for<a name="line.111"></a>
+<FONT color="green">112</FONT>             * parsing dates.<a name="line.112"></a>
+<FONT color="green">113</FONT>             * @param formatFormat the {@link SimpleDateFormat} format string used for<a name="line.113"></a>
+<FONT color="green">114</FONT>             * formatting dates.<a name="line.114"></a>
+<FONT color="green">115</FONT>             */<a name="line.115"></a>
+<FONT color="green">116</FONT>            private ISOFormat(String regex, String parseFormat, String formatFormat) {<a name="line.116"></a>
+<FONT color="green">117</FONT>                    pattern = Pattern.compile(regex);<a name="line.117"></a>
+<FONT color="green">118</FONT>                    this.parseFormat = parseFormat;<a name="line.118"></a>
+<FONT color="green">119</FONT>                    this.formatFormat = formatFormat;<a name="line.119"></a>
+<FONT color="green">120</FONT>            }<a name="line.120"></a>
+<FONT color="green">121</FONT>    <a name="line.121"></a>
+<FONT color="green">122</FONT>            /**<a name="line.122"></a>
+<FONT color="green">123</FONT>             * Determines whether a date string is in this ISO format.<a name="line.123"></a>
+<FONT color="green">124</FONT>             * @param dateStr the date string<a name="line.124"></a>
+<FONT color="green">125</FONT>             * @return true if it matches the date format, false if not<a name="line.125"></a>
+<FONT color="green">126</FONT>             */<a name="line.126"></a>
+<FONT color="green">127</FONT>            public boolean matches(String dateStr) {<a name="line.127"></a>
+<FONT color="green">128</FONT>                    return pattern.matcher(dateStr).matches();<a name="line.128"></a>
+<FONT color="green">129</FONT>            }<a name="line.129"></a>
+<FONT color="green">130</FONT>    <a name="line.130"></a>
+<FONT color="green">131</FONT>            /**<a name="line.131"></a>
+<FONT color="green">132</FONT>             * Builds a {@link DateFormat} object for parsing dates in this ISO format.<a name="line.132"></a>
+<FONT color="green">133</FONT>             * @return the {@link DateFormat} object<a name="line.133"></a>
+<FONT color="green">134</FONT>             */<a name="line.134"></a>
+<FONT color="green">135</FONT>            public DateFormat getParseDateFormat() {<a name="line.135"></a>
+<FONT color="green">136</FONT>                    return new SimpleDateFormat(parseFormat);<a name="line.136"></a>
+<FONT color="green">137</FONT>            }<a name="line.137"></a>
+<FONT color="green">138</FONT>    <a name="line.138"></a>
+<FONT color="green">139</FONT>            /**<a name="line.139"></a>
+<FONT color="green">140</FONT>             * Builds a {@link DateFormat} object for formatting dates in this ISO<a name="line.140"></a>
+<FONT color="green">141</FONT>             * format.<a name="line.141"></a>
+<FONT color="green">142</FONT>             * @return the {@link DateFormat} object<a name="line.142"></a>
+<FONT color="green">143</FONT>             */<a name="line.143"></a>
+<FONT color="green">144</FONT>            public DateFormat getFormatDateFormat() {<a name="line.144"></a>
+<FONT color="green">145</FONT>                    return new SimpleDateFormat(formatFormat);<a name="line.145"></a>
+<FONT color="green">146</FONT>            }<a name="line.146"></a>
+<FONT color="green">147</FONT>    }<a name="line.147"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

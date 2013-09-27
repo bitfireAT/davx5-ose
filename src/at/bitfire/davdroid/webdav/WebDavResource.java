@@ -41,7 +41,7 @@ import com.google.common.collect.Iterables;
 
 @ToString
 public class WebDavResource {
-	private static final String TAG = "davdroid.WebDavResource";
+	//private static final String TAG = "davdroid.WebDavResource";
 	
 	public enum Property {
 		CURRENT_USER_PRINCIPAL,

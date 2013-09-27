@@ -1,0 +1,378 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    package biweekly.property;<a name="line.1"></a>
+<FONT color="green">002</FONT>    <a name="line.2"></a>
+<FONT color="green">003</FONT>    import java.util.ArrayList;<a name="line.3"></a>
+<FONT color="green">004</FONT>    import java.util.Collection;<a name="line.4"></a>
+<FONT color="green">005</FONT>    import java.util.List;<a name="line.5"></a>
+<FONT color="green">006</FONT>    <a name="line.6"></a>
+<FONT color="green">007</FONT>    import biweekly.ICalendar;<a name="line.7"></a>
+<FONT color="green">008</FONT>    import biweekly.component.ICalComponent;<a name="line.8"></a>
+<FONT color="green">009</FONT>    import biweekly.component.VTimezone;<a name="line.9"></a>
+<FONT color="green">010</FONT>    import biweekly.parameter.ICalParameters;<a name="line.10"></a>
+<FONT color="green">011</FONT>    <a name="line.11"></a>
+<FONT color="green">012</FONT>    /*<a name="line.12"></a>
+<FONT color="green">013</FONT>     Copyright (c) 2013, Michael Angstadt<a name="line.13"></a>
+<FONT color="green">014</FONT>     All rights reserved.<a name="line.14"></a>
+<FONT color="green">015</FONT>    <a name="line.15"></a>
+<FONT color="green">016</FONT>     Redistribution and use in source and binary forms, with or without<a name="line.16"></a>
+<FONT color="green">017</FONT>     modification, are permitted provided that the following conditions are met: <a name="line.17"></a>
+<FONT color="green">018</FONT>    <a name="line.18"></a>
+<FONT color="green">019</FONT>     1. Redistributions of source code must retain the above copyright notice, this<a name="line.19"></a>
+<FONT color="green">020</FONT>     list of conditions and the following disclaimer. <a name="line.20"></a>
+<FONT color="green">021</FONT>     2. Redistributions in binary form must reproduce the above copyright notice,<a name="line.21"></a>
+<FONT color="green">022</FONT>     this list of conditions and the following disclaimer in the documentation<a name="line.22"></a>
+<FONT color="green">023</FONT>     and/or other materials provided with the distribution. <a name="line.23"></a>
+<FONT color="green">024</FONT>    <a name="line.24"></a>
+<FONT color="green">025</FONT>     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.25"></a>
+<FONT color="green">026</FONT>     ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.26"></a>
+<FONT color="green">027</FONT>     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.27"></a>
+<FONT color="green">028</FONT>     DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.28"></a>
+<FONT color="green">029</FONT>     ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.29"></a>
+<FONT color="green">030</FONT>     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.30"></a>
+<FONT color="green">031</FONT>     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND<a name="line.31"></a>
+<FONT color="green">032</FONT>     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.32"></a>
+<FONT color="green">033</FONT>     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.33"></a>
+<FONT color="green">034</FONT>     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.34"></a>
+<FONT color="green">035</FONT>     */<a name="line.35"></a>
+<FONT color="green">036</FONT>    <a name="line.36"></a>
+<FONT color="green">037</FONT>    /**<a name="line.37"></a>
+<FONT color="green">038</FONT>     * Base class for all iCalendar properties.<a name="line.38"></a>
+<FONT color="green">039</FONT>     * @author Michael Angstadt<a name="line.39"></a>
+<FONT color="green">040</FONT>     */<a name="line.40"></a>
+<FONT color="green">041</FONT>    public abstract class ICalProperty {<a name="line.41"></a>
+<FONT color="green">042</FONT>            /**<a name="line.42"></a>
+<FONT color="green">043</FONT>             * The property parameters.<a name="line.43"></a>
+<FONT color="green">044</FONT>             */<a name="line.44"></a>
+<FONT color="green">045</FONT>            protected ICalParameters parameters = new ICalParameters();<a name="line.45"></a>
+<FONT color="green">046</FONT>    <a name="line.46"></a>
+<FONT color="green">047</FONT>            /**<a name="line.47"></a>
+<FONT color="green">048</FONT>             * Gets the property's parameters.<a name="line.48"></a>
+<FONT color="green">049</FONT>             * @return the parameters<a name="line.49"></a>
+<FONT color="green">050</FONT>             */<a name="line.50"></a>
+<FONT color="green">051</FONT>            public ICalParameters getParameters() {<a name="line.51"></a>
+<FONT color="green">052</FONT>                    return parameters;<a name="line.52"></a>
+<FONT color="green">053</FONT>            }<a name="line.53"></a>
+<FONT color="green">054</FONT>    <a name="line.54"></a>
+<FONT color="green">055</FONT>            /**<a name="line.55"></a>
+<FONT color="green">056</FONT>             * Sets the property's parameters<a name="line.56"></a>
+<FONT color="green">057</FONT>             * @param parameters the parameters<a name="line.57"></a>
+<FONT color="green">058</FONT>             */<a name="line.58"></a>
+<FONT color="green">059</FONT>            public void setParameters(ICalParameters parameters) {<a name="line.59"></a>
+<FONT color="green">060</FONT>                    this.parameters = parameters;<a name="line.60"></a>
+<FONT color="green">061</FONT>            }<a name="line.61"></a>
+<FONT color="green">062</FONT>    <a name="line.62"></a>
+<FONT color="green">063</FONT>            /**<a name="line.63"></a>
+<FONT color="green">064</FONT>             * Gets the first value of a parameter with the given name.<a name="line.64"></a>
+<FONT color="green">065</FONT>             * @param name the parameter name (case insensitive, e.g. "LANGUAGE")<a name="line.65"></a>
+<FONT color="green">066</FONT>             * @return the parameter value or null if not found<a name="line.66"></a>
+<FONT color="green">067</FONT>             */<a name="line.67"></a>
+<FONT color="green">068</FONT>            public String getParameter(String name) {<a name="line.68"></a>
+<FONT color="green">069</FONT>                    return parameters.first(name);<a name="line.69"></a>
+<FONT color="green">070</FONT>            }<a name="line.70"></a>
+<FONT color="green">071</FONT>    <a name="line.71"></a>
+<FONT color="green">072</FONT>            /**<a name="line.72"></a>
+<FONT color="green">073</FONT>             * Gets all values of a parameter with the given name.<a name="line.73"></a>
+<FONT color="green">074</FONT>             * @param name the parameter name (case insensitive, e.g. "LANGUAGE")<a name="line.74"></a>
+<FONT color="green">075</FONT>             * @return the parameter values<a name="line.75"></a>
+<FONT color="green">076</FONT>             */<a name="line.76"></a>
+<FONT color="green">077</FONT>            public List&lt;String&gt; getParameters(String name) {<a name="line.77"></a>
+<FONT color="green">078</FONT>                    return parameters.get(name);<a name="line.78"></a>
+<FONT color="green">079</FONT>            }<a name="line.79"></a>
+<FONT color="green">080</FONT>    <a name="line.80"></a>
+<FONT color="green">081</FONT>            /**<a name="line.81"></a>
+<FONT color="green">082</FONT>             * Adds a value to a parameter.<a name="line.82"></a>
+<FONT color="green">083</FONT>             * @param name the parameter name (case insensitive, e.g. "LANGUAGE")<a name="line.83"></a>
+<FONT color="green">084</FONT>             * @param value the parameter value<a name="line.84"></a>
+<FONT color="green">085</FONT>             */<a name="line.85"></a>
+<FONT color="green">086</FONT>            public void addParameter(String name, String value) {<a name="line.86"></a>
+<FONT color="green">087</FONT>                    parameters.put(name, value);<a name="line.87"></a>
+<FONT color="green">088</FONT>            }<a name="line.88"></a>
+<FONT color="green">089</FONT>    <a name="line.89"></a>
+<FONT color="green">090</FONT>            /**<a name="line.90"></a>
+<FONT color="green">091</FONT>             * Replaces all existing values of a parameter with the given value.<a name="line.91"></a>
+<FONT color="green">092</FONT>             * @param name the parameter name (case insensitive, e.g. "LANGUAGE")<a name="line.92"></a>
+<FONT color="green">093</FONT>             * @param value the parameter value<a name="line.93"></a>
+<FONT color="green">094</FONT>             */<a name="line.94"></a>
+<FONT color="green">095</FONT>            public void setParameter(String name, String value) {<a name="line.95"></a>
+<FONT color="green">096</FONT>                    parameters.replace(name, value);<a name="line.96"></a>
+<FONT color="green">097</FONT>            }<a name="line.97"></a>
+<FONT color="green">098</FONT>    <a name="line.98"></a>
+<FONT color="green">099</FONT>            /**<a name="line.99"></a>
+<FONT color="green">100</FONT>             * Replaces all existing values of a parameter with the given values.<a name="line.100"></a>
+<FONT color="green">101</FONT>             * @param name the parameter name (case insensitive, e.g. "LANGUAGE")<a name="line.101"></a>
+<FONT color="green">102</FONT>             * @param values the parameter values<a name="line.102"></a>
+<FONT color="green">103</FONT>             */<a name="line.103"></a>
+<FONT color="green">104</FONT>            public void setParameter(String name, Collection&lt;String&gt; values) {<a name="line.104"></a>
+<FONT color="green">105</FONT>                    parameters.replace(name, values);<a name="line.105"></a>
+<FONT color="green">106</FONT>            }<a name="line.106"></a>
+<FONT color="green">107</FONT>    <a name="line.107"></a>
+<FONT color="green">108</FONT>            /**<a name="line.108"></a>
+<FONT color="green">109</FONT>             * Removes a parameter from the property.<a name="line.109"></a>
+<FONT color="green">110</FONT>             * @param name the parameter name (case insensitive, e.g. "LANGUAGE")<a name="line.110"></a>
+<FONT color="green">111</FONT>             */<a name="line.111"></a>
+<FONT color="green">112</FONT>            public void removeParameter(String name) {<a name="line.112"></a>
+<FONT color="green">113</FONT>                    parameters.removeAll(name);<a name="line.113"></a>
+<FONT color="green">114</FONT>            }<a name="line.114"></a>
+<FONT color="green">115</FONT>    <a name="line.115"></a>
+<FONT color="green">116</FONT>            //Note: The following parameter helper methods are package-scoped to prevent them from cluttering up the Javadocs<a name="line.116"></a>
+<FONT color="green">117</FONT>    <a name="line.117"></a>
+<FONT color="green">118</FONT>            /**<a name="line.118"></a>
+<FONT color="green">119</FONT>             * Gets a URI pointing to additional information about the entity<a name="line.119"></a>
+<FONT color="green">120</FONT>             * represented by the property.<a name="line.120"></a>
+<FONT color="green">121</FONT>             * @return the URI or null if not set<a name="line.121"></a>
+<FONT color="green">122</FONT>             * @rfc 5545 p.14-5<a name="line.122"></a>
+<FONT color="green">123</FONT>             */<a name="line.123"></a>
+<FONT color="green">124</FONT>            String getAltRepresentation() {<a name="line.124"></a>
+<FONT color="green">125</FONT>                    return parameters.getAltRepresentation();<a name="line.125"></a>
+<FONT color="green">126</FONT>            }<a name="line.126"></a>
+<FONT color="green">127</FONT>    <a name="line.127"></a>
+<FONT color="green">128</FONT>            /**<a name="line.128"></a>
+<FONT color="green">129</FONT>             * Sets a URI pointing to additional information about the entity<a name="line.129"></a>
+<FONT color="green">130</FONT>             * represented by the property.<a name="line.130"></a>
+<FONT color="green">131</FONT>             * @param uri the URI or null to remove<a name="line.131"></a>
+<FONT color="green">132</FONT>             * @rfc 5545 p.14-5<a name="line.132"></a>
+<FONT color="green">133</FONT>             */<a name="line.133"></a>
+<FONT color="green">134</FONT>            void setAltRepresentation(String uri) {<a name="line.134"></a>
+<FONT color="green">135</FONT>                    parameters.setAltRepresentation(uri);<a name="line.135"></a>
+<FONT color="green">136</FONT>            }<a name="line.136"></a>
+<FONT color="green">137</FONT>    <a name="line.137"></a>
+<FONT color="green">138</FONT>            /**<a name="line.138"></a>
+<FONT color="green">139</FONT>             * Gets the content-type of the property's value.<a name="line.139"></a>
+<FONT color="green">140</FONT>             * @return the content type (e.g. "image/png") or null if not set<a name="line.140"></a>
+<FONT color="green">141</FONT>             * @rfc 5545 p.19-20<a name="line.141"></a>
+<FONT color="green">142</FONT>             */<a name="line.142"></a>
+<FONT color="green">143</FONT>            String getFormatType() {<a name="line.143"></a>
+<FONT color="green">144</FONT>                    return parameters.getFormatType();<a name="line.144"></a>
+<FONT color="green">145</FONT>            }<a name="line.145"></a>
+<FONT color="green">146</FONT>    <a name="line.146"></a>
+<FONT color="green">147</FONT>            /**<a name="line.147"></a>
+<FONT color="green">148</FONT>             * Sets the content-type of the property's value.<a name="line.148"></a>
+<FONT color="green">149</FONT>             * @param formatType the content type (e.g. "image/png") or null to remove<a name="line.149"></a>
+<FONT color="green">150</FONT>             * @rfc 5545 p.19-20<a name="line.150"></a>
+<FONT color="green">151</FONT>             */<a name="line.151"></a>
+<FONT color="green">152</FONT>            void setFormatType(String formatType) {<a name="line.152"></a>
+<FONT color="green">153</FONT>                    parameters.setFormatType(formatType);<a name="line.153"></a>
+<FONT color="green">154</FONT>            }<a name="line.154"></a>
+<FONT color="green">155</FONT>    <a name="line.155"></a>
+<FONT color="green">156</FONT>            /**<a name="line.156"></a>
+<FONT color="green">157</FONT>             * Gets the language that the property value is written in.<a name="line.157"></a>
+<FONT color="green">158</FONT>             * @return the language (e.g. "en" for English) or null if not set<a name="line.158"></a>
+<FONT color="green">159</FONT>             * @rfc 5545 p.21<a name="line.159"></a>
+<FONT color="green">160</FONT>             */<a name="line.160"></a>
+<FONT color="green">161</FONT>            String getLanguage() {<a name="line.161"></a>
+<FONT color="green">162</FONT>                    return parameters.getLanguage();<a name="line.162"></a>
+<FONT color="green">163</FONT>            }<a name="line.163"></a>
+<FONT color="green">164</FONT>    <a name="line.164"></a>
+<FONT color="green">165</FONT>            /**<a name="line.165"></a>
+<FONT color="green">166</FONT>             * Sets the language that the property value is written in.<a name="line.166"></a>
+<FONT color="green">167</FONT>             * @param language the language (e.g. "en" for English) or null to remove<a name="line.167"></a>
+<FONT color="green">168</FONT>             * @rfc 5545 p.21<a name="line.168"></a>
+<FONT color="green">169</FONT>             */<a name="line.169"></a>
+<FONT color="green">170</FONT>            void setLanguage(String language) {<a name="line.170"></a>
+<FONT color="green">171</FONT>                    parameters.setLanguage(language);<a name="line.171"></a>
+<FONT color="green">172</FONT>            }<a name="line.172"></a>
+<FONT color="green">173</FONT>    <a name="line.173"></a>
+<FONT color="green">174</FONT>            /**<a name="line.174"></a>
+<FONT color="green">175</FONT>             * Gets the timezone identifier. This either (a) references the<a name="line.175"></a>
+<FONT color="green">176</FONT>             * {@link TimezoneId} property of a {@link VTimezone} component, or (b)<a name="line.176"></a>
+<FONT color="green">177</FONT>             * specifies a globally-defined timezone (e.g. "America/New_York"). For a<a name="line.177"></a>
+<FONT color="green">178</FONT>             * list of globally-defined timezones, see the &lt;a<a name="line.178"></a>
+<FONT color="green">179</FONT>             * href="http://www.twinsun.com/tz/tz-link.htm"&gt;TZ database&lt;/a&gt;.<a name="line.179"></a>
+<FONT color="green">180</FONT>             * @return the timezone identifier or null if not set<a name="line.180"></a>
+<FONT color="green">181</FONT>             * @rfc 5545 p.27-8<a name="line.181"></a>
+<FONT color="green">182</FONT>             */<a name="line.182"></a>
+<FONT color="green">183</FONT>            String getTimezoneId() {<a name="line.183"></a>
+<FONT color="green">184</FONT>                    return parameters.getTimezoneId();<a name="line.184"></a>
+<FONT color="green">185</FONT>            }<a name="line.185"></a>
+<FONT color="green">186</FONT>    <a name="line.186"></a>
+<FONT color="green">187</FONT>            /**<a name="line.187"></a>
+<FONT color="green">188</FONT>             * Sets the timezone identifier. This either (a) references the<a name="line.188"></a>
+<FONT color="green">189</FONT>             * {@link TimezoneId} property of a {@link VTimezone} component, or (b)<a name="line.189"></a>
+<FONT color="green">190</FONT>             * specifies a globally-defined timezone (e.g. "America/New_York"). For a<a name="line.190"></a>
+<FONT color="green">191</FONT>             * list of globally-defined timezones, see the &lt;a<a name="line.191"></a>
+<FONT color="green">192</FONT>             * href="http://www.twinsun.com/tz/tz-link.htm"&gt;TZ database&lt;/a&gt;.<a name="line.192"></a>
+<FONT color="green">193</FONT>             * @param timezoneId the timezone identifier (e.g. "America/New_York") or<a name="line.193"></a>
+<FONT color="green">194</FONT>             * null to remove<a name="line.194"></a>
+<FONT color="green">195</FONT>             * @rfc 5545 p.27-8<a name="line.195"></a>
+<FONT color="green">196</FONT>             */<a name="line.196"></a>
+<FONT color="green">197</FONT>            void setTimezoneId(String timezoneId) {<a name="line.197"></a>
+<FONT color="green">198</FONT>                    parameters.setTimezoneId(timezoneId);<a name="line.198"></a>
+<FONT color="green">199</FONT>            }<a name="line.199"></a>
+<FONT color="green">200</FONT>    <a name="line.200"></a>
+<FONT color="green">201</FONT>            /**<a name="line.201"></a>
+<FONT color="green">202</FONT>             * Sets the property's timezone to a timezone that is defined within the<a name="line.202"></a>
+<FONT color="green">203</FONT>             * iCalendar object. Use {@link #setTimezoneId(String)} to use a<a name="line.203"></a>
+<FONT color="green">204</FONT>             * globally-defined timezone (e.g. "America/New_York").<a name="line.204"></a>
+<FONT color="green">205</FONT>             * @param timezone the timezone component to reference or null to remove<a name="line.205"></a>
+<FONT color="green">206</FONT>             * @rfc 5545 p.27-8<a name="line.206"></a>
+<FONT color="green">207</FONT>             */<a name="line.207"></a>
+<FONT color="green">208</FONT>            void setTimezone(VTimezone timezone) {<a name="line.208"></a>
+<FONT color="green">209</FONT>                    if (timezone == null) {<a name="line.209"></a>
+<FONT color="green">210</FONT>                            setTimezoneId(null);<a name="line.210"></a>
+<FONT color="green">211</FONT>                            return;<a name="line.211"></a>
+<FONT color="green">212</FONT>                    }<a name="line.212"></a>
+<FONT color="green">213</FONT>    <a name="line.213"></a>
+<FONT color="green">214</FONT>                    TimezoneId tzid = timezone.getTimezoneId();<a name="line.214"></a>
+<FONT color="green">215</FONT>                    if (tzid != null) {<a name="line.215"></a>
+<FONT color="green">216</FONT>                            setTimezoneId(tzid.getValue());<a name="line.216"></a>
+<FONT color="green">217</FONT>                    }<a name="line.217"></a>
+<FONT color="green">218</FONT>            }<a name="line.218"></a>
+<FONT color="green">219</FONT>    <a name="line.219"></a>
+<FONT color="green">220</FONT>            /**<a name="line.220"></a>
+<FONT color="green">221</FONT>             * Gets a person that is acting on behalf of the person defined in the<a name="line.221"></a>
+<FONT color="green">222</FONT>             * property.<a name="line.222"></a>
+<FONT color="green">223</FONT>             * @return a URI representing the person (typically, an email URI, e.g.<a name="line.223"></a>
+<FONT color="green">224</FONT>             * "mailto:janedoe@example.com") or null if not set<a name="line.224"></a>
+<FONT color="green">225</FONT>             * @rfc 5545 p.27<a name="line.225"></a>
+<FONT color="green">226</FONT>             */<a name="line.226"></a>
+<FONT color="green">227</FONT>            String getSentBy() {<a name="line.227"></a>
+<FONT color="green">228</FONT>                    return parameters.getSentBy();<a name="line.228"></a>
+<FONT color="green">229</FONT>            }<a name="line.229"></a>
+<FONT color="green">230</FONT>    <a name="line.230"></a>
+<FONT color="green">231</FONT>            /**<a name="line.231"></a>
+<FONT color="green">232</FONT>             * Sets a person that is acting on behalf of the person defined in the<a name="line.232"></a>
+<FONT color="green">233</FONT>             * property.<a name="line.233"></a>
+<FONT color="green">234</FONT>             * @param uri a URI representing the person (typically, an email URI, e.g.<a name="line.234"></a>
+<FONT color="green">235</FONT>             * "mailto:janedoe@example.com") or null to remove<a name="line.235"></a>
+<FONT color="green">236</FONT>             * @rfc 5545 p.27<a name="line.236"></a>
+<FONT color="green">237</FONT>             */<a name="line.237"></a>
+<FONT color="green">238</FONT>            void setSentBy(String uri) {<a name="line.238"></a>
+<FONT color="green">239</FONT>                    parameters.setSentBy(uri);<a name="line.239"></a>
+<FONT color="green">240</FONT>            }<a name="line.240"></a>
+<FONT color="green">241</FONT>    <a name="line.241"></a>
+<FONT color="green">242</FONT>            /**<a name="line.242"></a>
+<FONT color="green">243</FONT>             * Gets the display name of the person.<a name="line.243"></a>
+<FONT color="green">244</FONT>             * @return the display name (e.g. "John Doe") or null if not set<a name="line.244"></a>
+<FONT color="green">245</FONT>             * @rfc 5545 p.15-6<a name="line.245"></a>
+<FONT color="green">246</FONT>             */<a name="line.246"></a>
+<FONT color="green">247</FONT>            String getCommonName() {<a name="line.247"></a>
+<FONT color="green">248</FONT>                    return parameters.getCommonName();<a name="line.248"></a>
+<FONT color="green">249</FONT>            }<a name="line.249"></a>
+<FONT color="green">250</FONT>    <a name="line.250"></a>
+<FONT color="green">251</FONT>            /**<a name="line.251"></a>
+<FONT color="green">252</FONT>             * Sets the display name of the person.<a name="line.252"></a>
+<FONT color="green">253</FONT>             * @param commonName the display name (e.g. "John Doe") or null to remove<a name="line.253"></a>
+<FONT color="green">254</FONT>             * @rfc 5545 p.15-6<a name="line.254"></a>
+<FONT color="green">255</FONT>             */<a name="line.255"></a>
+<FONT color="green">256</FONT>            void setCommonName(String commonName) {<a name="line.256"></a>
+<FONT color="green">257</FONT>                    parameters.setCommonName(commonName);<a name="line.257"></a>
+<FONT color="green">258</FONT>            }<a name="line.258"></a>
+<FONT color="green">259</FONT>    <a name="line.259"></a>
+<FONT color="green">260</FONT>            /**<a name="line.260"></a>
+<FONT color="green">261</FONT>             * Gets a URI that contains additional information about the person.<a name="line.261"></a>
+<FONT color="green">262</FONT>             * @return the URI (e.g. an LDAP URI) or null if not set<a name="line.262"></a>
+<FONT color="green">263</FONT>             * @rfc 5545 p.18<a name="line.263"></a>
+<FONT color="green">264</FONT>             */<a name="line.264"></a>
+<FONT color="green">265</FONT>            String getDirectoryEntry() {<a name="line.265"></a>
+<FONT color="green">266</FONT>                    return parameters.getDirectoryEntry();<a name="line.266"></a>
+<FONT color="green">267</FONT>            }<a name="line.267"></a>
+<FONT color="green">268</FONT>    <a name="line.268"></a>
+<FONT color="green">269</FONT>            /**<a name="line.269"></a>
+<FONT color="green">270</FONT>             * Sets a URI that contains additional information about the person.<a name="line.270"></a>
+<FONT color="green">271</FONT>             * @param uri the URI (e.g. an LDAP URI) or null to remove<a name="line.271"></a>
+<FONT color="green">272</FONT>             * @rfc 5545 p.18<a name="line.272"></a>
+<FONT color="green">273</FONT>             */<a name="line.273"></a>
+<FONT color="green">274</FONT>            void setDirectoryEntry(String uri) {<a name="line.274"></a>
+<FONT color="green">275</FONT>                    parameters.setDirectoryEntry(uri);<a name="line.275"></a>
+<FONT color="green">276</FONT>            }<a name="line.276"></a>
+<FONT color="green">277</FONT>    <a name="line.277"></a>
+<FONT color="green">278</FONT>            /**<a name="line.278"></a>
+<FONT color="green">279</FONT>             * Checks the property for data consistency problems or deviations from the<a name="line.279"></a>
+<FONT color="green">280</FONT>             * spec. These problems will not prevent the property from being written to<a name="line.280"></a>
+<FONT color="green">281</FONT>             * a data stream, but may prevent it from being parsed correctly by the<a name="line.281"></a>
+<FONT color="green">282</FONT>             * consuming application. These problems can largely be avoided by reading<a name="line.282"></a>
+<FONT color="green">283</FONT>             * the Javadocs of the property class, or by being familiar with the<a name="line.283"></a>
+<FONT color="green">284</FONT>             * iCalendar standard.<a name="line.284"></a>
+<FONT color="green">285</FONT>             * @param components the hierarchy of components that the property belongs<a name="line.285"></a>
+<FONT color="green">286</FONT>             * to<a name="line.286"></a>
+<FONT color="green">287</FONT>             * @see ICalendar#validate<a name="line.287"></a>
+<FONT color="green">288</FONT>             * @return a list of warnings or an empty list if no problems were found<a name="line.288"></a>
+<FONT color="green">289</FONT>             */<a name="line.289"></a>
+<FONT color="green">290</FONT>            public final List&lt;String&gt; validate(List&lt;ICalComponent&gt; components) {<a name="line.290"></a>
+<FONT color="green">291</FONT>                    //validate property value<a name="line.291"></a>
+<FONT color="green">292</FONT>                    List&lt;String&gt; warnings = new ArrayList&lt;String&gt;(0);<a name="line.292"></a>
+<FONT color="green">293</FONT>                    validate(components, warnings);<a name="line.293"></a>
+<FONT color="green">294</FONT>    <a name="line.294"></a>
+<FONT color="green">295</FONT>                    //validate parameters<a name="line.295"></a>
+<FONT color="green">296</FONT>                    warnings.addAll(parameters.validate());<a name="line.296"></a>
+<FONT color="green">297</FONT>    <a name="line.297"></a>
+<FONT color="green">298</FONT>                    return warnings;<a name="line.298"></a>
+<FONT color="green">299</FONT>            }<a name="line.299"></a>
+<FONT color="green">300</FONT>    <a name="line.300"></a>
+<FONT color="green">301</FONT>            /**<a name="line.301"></a>
+<FONT color="green">302</FONT>             * Checks the property for data consistency problems or deviations from the<a name="line.302"></a>
+<FONT color="green">303</FONT>             * spec. Meant to be overridden by child classes that wish to provide<a name="line.303"></a>
+<FONT color="green">304</FONT>             * validation logic.<a name="line.304"></a>
+<FONT color="green">305</FONT>             * @param components the hierarchy of components that the property belongs<a name="line.305"></a>
+<FONT color="green">306</FONT>             * to<a name="line.306"></a>
+<FONT color="green">307</FONT>             * @param warnings the list to add the warnings to<a name="line.307"></a>
+<FONT color="green">308</FONT>             */<a name="line.308"></a>
+<FONT color="green">309</FONT>            protected void validate(List&lt;ICalComponent&gt; components, List&lt;String&gt; warnings) {<a name="line.309"></a>
+<FONT color="green">310</FONT>                    //do nothing<a name="line.310"></a>
+<FONT color="green">311</FONT>            }<a name="line.311"></a>
+<FONT color="green">312</FONT>    }<a name="line.312"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

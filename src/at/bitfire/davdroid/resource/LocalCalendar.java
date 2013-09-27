@@ -10,14 +10,8 @@ package at.bitfire.davdroid.resource;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TimeZone;
+import java.util.SimpleTimeZone;
 import java.util.UUID;
-
-import biweekly.property.DateEnd;
-import biweekly.property.DateStart;
-import biweekly.util.DateTimeComponents;
-
-import com.google.common.base.Joiner;
 
 import lombok.Getter;
 import android.accounts.Account;
@@ -35,10 +29,14 @@ import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
-import android.provider.ContactsContract.RawContacts;
 import android.text.format.Time;
 import android.util.Log;
 import at.bitfire.davdroid.syncadapter.ServerInfo;
+import biweekly.property.DateEnd;
+import biweekly.property.DateStart;
+import biweekly.util.DateTimeComponents;
+
+import com.google.common.base.Joiner;
 
 public class LocalCalendar extends LocalCollection {
 	private static final String TAG = "davdroid.LocalCalendar";
@@ -168,7 +166,7 @@ public class LocalCalendar extends LocalCollection {
 		Cursor cursor = providerClient.query(ContentUris.withAppendedId(entriesURI(), e.getLocalID()),
 			new String[] {
 				Events.TITLE, Events.EVENT_LOCATION, Events.DESCRIPTION,
-				Events.DTSTART, Events.DTEND, Events.ALL_DAY
+				Events.DTSTART, Events.DTEND, Events.EVENT_TIMEZONE, Events.EVENT_END_TIMEZONE, Events.ALL_DAY
 			}, null, null, null);
 		if (cursor.moveToNext()) {
 			e.setSummary(cursor.getString(0));
@@ -177,18 +175,25 @@ public class LocalCalendar extends LocalCollection {
 			
 			Date 	dateStart = new Date(cursor.getLong(3)),
 					dateEnd = new Date(cursor.getLong(4));
-			if (cursor.getInt(5) != 0) {
+			String	tzidStart = cursor.getString(5),
+					tzidEnd = cursor.getString(6);
+			if (cursor.getInt(7) != 0) {	// all-day, UTC
 				e.setDtStart(new DateStart(dateStart, false));
 				e.setDtEnd(new DateEnd(dateEnd, false));
 			} else {
-				e.setDtStart(new DateStart(dateStart));
-				e.setDtEnd(new DateEnd(dateEnd));
+				DateStart dtStart = new DateStart(dateStart);
+				dtStart.setTimezoneId(tzidStart);
+				e.setDtStart(dtStart);
+
+				DateEnd dtEnd = new DateEnd(dateEnd);
+				dtEnd.setTimezoneId((tzidEnd != null) ? tzidEnd : tzidStart);
+				e.setDtEnd(dtEnd);
 			}
 		}
 	}
 
 
-	/* create/update */	
+	/* create/update */
 
 	@Override
 	public void add(Resource resource) {
@@ -270,6 +275,9 @@ public class LocalCalendar extends LocalCollection {
 		
 		long dtStart, dtEnd;
 		boolean allDay = !dateStart.hasTime();
+		
+		String	tzStart = Time.TIMEZONE_UTC,
+				tzEnd = null;
 		if (allDay) {
 			// start date without time, but in UTC
 			DateTimeComponents components = dateStart.getRawComponents();
@@ -281,7 +289,12 @@ public class LocalCalendar extends LocalCollection {
 			dtEnd = Date.UTC(components.getYear() - 1900, components.getMonth() - 1, components.getDate(), 0, 0, 0);
 		} else {
 			dtStart = dateStart.getValue().getTime();
+			tzStart = localTimezoneID(dateStart.getTimezoneId());
+			if (tzStart == null)
+				tzStart = Time.TIMEZONE_UTC;
+			
 			dtEnd = event.getDtEnd().getValue().getTime();
+			tzEnd = localTimezoneID(dateEnd.getTimezoneId());
 		}
 		
 		builder = builder.withValue(Events.CALENDAR_ID, id)
@@ -290,7 +303,10 @@ public class LocalCalendar extends LocalCollection {
 				.withValue(Events.ALL_DAY, allDay ? 1 : 0)
 				.withValue(Events.DTSTART, dtStart)
 				.withValue(Events.DTEND, dtEnd)
-				.withValue(Events.EVENT_TIMEZONE, Time.TIMEZONE_UTC);
+				.withValue(Events.EVENT_TIMEZONE, tzStart);
+		
+		if (tzEnd != null)
+			builder = builder.withValue(Events.EVENT_END_TIMEZONE, tzEnd);
 		
 		if (event.getSummary() != null)
 			builder = builder.withValue(Events.TITLE, event.getSummary());
@@ -300,5 +316,19 @@ public class LocalCalendar extends LocalCollection {
 			builder = builder.withValue(Events.DESCRIPTION, event.getDescription());
 
 		return builder;
+	}
+	
+	
+	/* guess matching local timezone ID for given remote timezone */
+	protected String localTimezoneID(String remoteTZ) {
+		if (remoteTZ == null)
+			return null;
+		
+		String localTZs[] = SimpleTimeZone.getAvailableIDs();
+		for (String localTZ : localTZs)
+			if (remoteTZ.indexOf(localTZ, 0) != -1)
+				return localTZ;
+		
+		return null;
 	}
 }

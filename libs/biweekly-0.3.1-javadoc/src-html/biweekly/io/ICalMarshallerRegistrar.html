@@ -1,0 +1,468 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    package biweekly.io;<a name="line.1"></a>
+<FONT color="green">002</FONT>    <a name="line.2"></a>
+<FONT color="green">003</FONT>    import java.util.HashMap;<a name="line.3"></a>
+<FONT color="green">004</FONT>    import java.util.Map;<a name="line.4"></a>
+<FONT color="green">005</FONT>    <a name="line.5"></a>
+<FONT color="green">006</FONT>    import javax.xml.namespace.QName;<a name="line.6"></a>
+<FONT color="green">007</FONT>    <a name="line.7"></a>
+<FONT color="green">008</FONT>    import biweekly.ICalendar;<a name="line.8"></a>
+<FONT color="green">009</FONT>    import biweekly.component.ICalComponent;<a name="line.9"></a>
+<FONT color="green">010</FONT>    import biweekly.component.RawComponent;<a name="line.10"></a>
+<FONT color="green">011</FONT>    import biweekly.component.marshaller.DaylightSavingsTimeMarshaller;<a name="line.11"></a>
+<FONT color="green">012</FONT>    import biweekly.component.marshaller.ICalComponentMarshaller;<a name="line.12"></a>
+<FONT color="green">013</FONT>    import biweekly.component.marshaller.ICalendarMarshaller;<a name="line.13"></a>
+<FONT color="green">014</FONT>    import biweekly.component.marshaller.RawComponentMarshaller;<a name="line.14"></a>
+<FONT color="green">015</FONT>    import biweekly.component.marshaller.StandardTimeMarshaller;<a name="line.15"></a>
+<FONT color="green">016</FONT>    import biweekly.component.marshaller.VAlarmMarshaller;<a name="line.16"></a>
+<FONT color="green">017</FONT>    import biweekly.component.marshaller.VEventMarshaller;<a name="line.17"></a>
+<FONT color="green">018</FONT>    import biweekly.component.marshaller.VFreeBusyMarshaller;<a name="line.18"></a>
+<FONT color="green">019</FONT>    import biweekly.component.marshaller.VJournalMarshaller;<a name="line.19"></a>
+<FONT color="green">020</FONT>    import biweekly.component.marshaller.VTimezoneMarshaller;<a name="line.20"></a>
+<FONT color="green">021</FONT>    import biweekly.component.marshaller.VTodoMarshaller;<a name="line.21"></a>
+<FONT color="green">022</FONT>    import biweekly.io.xml.XCalNamespaceContext;<a name="line.22"></a>
+<FONT color="green">023</FONT>    import biweekly.property.ICalProperty;<a name="line.23"></a>
+<FONT color="green">024</FONT>    import biweekly.property.RawProperty;<a name="line.24"></a>
+<FONT color="green">025</FONT>    import biweekly.property.Xml;<a name="line.25"></a>
+<FONT color="green">026</FONT>    import biweekly.property.marshaller.ActionMarshaller;<a name="line.26"></a>
+<FONT color="green">027</FONT>    import biweekly.property.marshaller.AttachmentMarshaller;<a name="line.27"></a>
+<FONT color="green">028</FONT>    import biweekly.property.marshaller.AttendeeMarshaller;<a name="line.28"></a>
+<FONT color="green">029</FONT>    import biweekly.property.marshaller.CalendarScaleMarshaller;<a name="line.29"></a>
+<FONT color="green">030</FONT>    import biweekly.property.marshaller.CategoriesMarshaller;<a name="line.30"></a>
+<FONT color="green">031</FONT>    import biweekly.property.marshaller.ClassificationMarshaller;<a name="line.31"></a>
+<FONT color="green">032</FONT>    import biweekly.property.marshaller.CommentMarshaller;<a name="line.32"></a>
+<FONT color="green">033</FONT>    import biweekly.property.marshaller.CompletedMarshaller;<a name="line.33"></a>
+<FONT color="green">034</FONT>    import biweekly.property.marshaller.ContactMarshaller;<a name="line.34"></a>
+<FONT color="green">035</FONT>    import biweekly.property.marshaller.CreatedMarshaller;<a name="line.35"></a>
+<FONT color="green">036</FONT>    import biweekly.property.marshaller.DateDueMarshaller;<a name="line.36"></a>
+<FONT color="green">037</FONT>    import biweekly.property.marshaller.DateEndMarshaller;<a name="line.37"></a>
+<FONT color="green">038</FONT>    import biweekly.property.marshaller.DateStartMarshaller;<a name="line.38"></a>
+<FONT color="green">039</FONT>    import biweekly.property.marshaller.DateTimeStampMarshaller;<a name="line.39"></a>
+<FONT color="green">040</FONT>    import biweekly.property.marshaller.DescriptionMarshaller;<a name="line.40"></a>
+<FONT color="green">041</FONT>    import biweekly.property.marshaller.DurationPropertyMarshaller;<a name="line.41"></a>
+<FONT color="green">042</FONT>    import biweekly.property.marshaller.ExceptionDatesMarshaller;<a name="line.42"></a>
+<FONT color="green">043</FONT>    import biweekly.property.marshaller.ExceptionRuleMarshaller;<a name="line.43"></a>
+<FONT color="green">044</FONT>    import biweekly.property.marshaller.FreeBusyMarshaller;<a name="line.44"></a>
+<FONT color="green">045</FONT>    import biweekly.property.marshaller.GeoMarshaller;<a name="line.45"></a>
+<FONT color="green">046</FONT>    import biweekly.property.marshaller.ICalPropertyMarshaller;<a name="line.46"></a>
+<FONT color="green">047</FONT>    import biweekly.property.marshaller.LastModifiedMarshaller;<a name="line.47"></a>
+<FONT color="green">048</FONT>    import biweekly.property.marshaller.LocationMarshaller;<a name="line.48"></a>
+<FONT color="green">049</FONT>    import biweekly.property.marshaller.MethodMarshaller;<a name="line.49"></a>
+<FONT color="green">050</FONT>    import biweekly.property.marshaller.OrganizerMarshaller;<a name="line.50"></a>
+<FONT color="green">051</FONT>    import biweekly.property.marshaller.PercentCompleteMarshaller;<a name="line.51"></a>
+<FONT color="green">052</FONT>    import biweekly.property.marshaller.PriorityMarshaller;<a name="line.52"></a>
+<FONT color="green">053</FONT>    import biweekly.property.marshaller.ProductIdMarshaller;<a name="line.53"></a>
+<FONT color="green">054</FONT>    import biweekly.property.marshaller.RawPropertyMarshaller;<a name="line.54"></a>
+<FONT color="green">055</FONT>    import biweekly.property.marshaller.RecurrenceDatesMarshaller;<a name="line.55"></a>
+<FONT color="green">056</FONT>    import biweekly.property.marshaller.RecurrenceIdMarshaller;<a name="line.56"></a>
+<FONT color="green">057</FONT>    import biweekly.property.marshaller.RecurrenceRuleMarshaller;<a name="line.57"></a>
+<FONT color="green">058</FONT>    import biweekly.property.marshaller.RelatedToMarshaller;<a name="line.58"></a>
+<FONT color="green">059</FONT>    import biweekly.property.marshaller.RepeatMarshaller;<a name="line.59"></a>
+<FONT color="green">060</FONT>    import biweekly.property.marshaller.RequestStatusMarshaller;<a name="line.60"></a>
+<FONT color="green">061</FONT>    import biweekly.property.marshaller.ResourcesMarshaller;<a name="line.61"></a>
+<FONT color="green">062</FONT>    import biweekly.property.marshaller.SequenceMarshaller;<a name="line.62"></a>
+<FONT color="green">063</FONT>    import biweekly.property.marshaller.StatusMarshaller;<a name="line.63"></a>
+<FONT color="green">064</FONT>    import biweekly.property.marshaller.SummaryMarshaller;<a name="line.64"></a>
+<FONT color="green">065</FONT>    import biweekly.property.marshaller.TimezoneIdMarshaller;<a name="line.65"></a>
+<FONT color="green">066</FONT>    import biweekly.property.marshaller.TimezoneNameMarshaller;<a name="line.66"></a>
+<FONT color="green">067</FONT>    import biweekly.property.marshaller.TimezoneOffsetFromMarshaller;<a name="line.67"></a>
+<FONT color="green">068</FONT>    import biweekly.property.marshaller.TimezoneOffsetToMarshaller;<a name="line.68"></a>
+<FONT color="green">069</FONT>    import biweekly.property.marshaller.TimezoneUrlMarshaller;<a name="line.69"></a>
+<FONT color="green">070</FONT>    import biweekly.property.marshaller.TransparencyMarshaller;<a name="line.70"></a>
+<FONT color="green">071</FONT>    import biweekly.property.marshaller.TriggerMarshaller;<a name="line.71"></a>
+<FONT color="green">072</FONT>    import biweekly.property.marshaller.UidMarshaller;<a name="line.72"></a>
+<FONT color="green">073</FONT>    import biweekly.property.marshaller.UrlMarshaller;<a name="line.73"></a>
+<FONT color="green">074</FONT>    import biweekly.property.marshaller.VersionMarshaller;<a name="line.74"></a>
+<FONT color="green">075</FONT>    import biweekly.property.marshaller.XmlMarshaller;<a name="line.75"></a>
+<FONT color="green">076</FONT>    <a name="line.76"></a>
+<FONT color="green">077</FONT>    /*<a name="line.77"></a>
+<FONT color="green">078</FONT>     Copyright (c) 2013, Michael Angstadt<a name="line.78"></a>
+<FONT color="green">079</FONT>     All rights reserved.<a name="line.79"></a>
+<FONT color="green">080</FONT>    <a name="line.80"></a>
+<FONT color="green">081</FONT>     Redistribution and use in source and binary forms, with or without<a name="line.81"></a>
+<FONT color="green">082</FONT>     modification, are permitted provided that the following conditions are met: <a name="line.82"></a>
+<FONT color="green">083</FONT>    <a name="line.83"></a>
+<FONT color="green">084</FONT>     1. Redistributions of source code must retain the above copyright notice, this<a name="line.84"></a>
+<FONT color="green">085</FONT>     list of conditions and the following disclaimer. <a name="line.85"></a>
+<FONT color="green">086</FONT>     2. Redistributions in binary form must reproduce the above copyright notice,<a name="line.86"></a>
+<FONT color="green">087</FONT>     this list of conditions and the following disclaimer in the documentation<a name="line.87"></a>
+<FONT color="green">088</FONT>     and/or other materials provided with the distribution. <a name="line.88"></a>
+<FONT color="green">089</FONT>    <a name="line.89"></a>
+<FONT color="green">090</FONT>     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.90"></a>
+<FONT color="green">091</FONT>     ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.91"></a>
+<FONT color="green">092</FONT>     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.92"></a>
+<FONT color="green">093</FONT>     DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.93"></a>
+<FONT color="green">094</FONT>     ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.94"></a>
+<FONT color="green">095</FONT>     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.95"></a>
+<FONT color="green">096</FONT>     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND<a name="line.96"></a>
+<FONT color="green">097</FONT>     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.97"></a>
+<FONT color="green">098</FONT>     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.98"></a>
+<FONT color="green">099</FONT>     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.99"></a>
+<FONT color="green">100</FONT>     */<a name="line.100"></a>
+<FONT color="green">101</FONT>    <a name="line.101"></a>
+<FONT color="green">102</FONT>    /**<a name="line.102"></a>
+<FONT color="green">103</FONT>     * &lt;p&gt;<a name="line.103"></a>
+<FONT color="green">104</FONT>     * Manages a listing of component and property marshallers. This is useful for<a name="line.104"></a>
+<FONT color="green">105</FONT>     * injecting the marshallers of any experimental components or properties you<a name="line.105"></a>
+<FONT color="green">106</FONT>     * have defined into a reader or writer object. The same object instance can be<a name="line.106"></a>
+<FONT color="green">107</FONT>     * reused and injected into multiple reader/writer classes.<a name="line.107"></a>
+<FONT color="green">108</FONT>     * &lt;/p&gt;<a name="line.108"></a>
+<FONT color="green">109</FONT>     * &lt;p&gt;<a name="line.109"></a>
+<FONT color="green">110</FONT>     * &lt;b&gt;Example:&lt;/b&gt;<a name="line.110"></a>
+<FONT color="green">111</FONT>     * <a name="line.111"></a>
+<FONT color="green">112</FONT>     * &lt;pre class="brush:java"&gt;<a name="line.112"></a>
+<FONT color="green">113</FONT>     * //init the registrar<a name="line.113"></a>
+<FONT color="green">114</FONT>     * ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();<a name="line.114"></a>
+<FONT color="green">115</FONT>     * registrar.register(new CustomPropertyMarshaller());<a name="line.115"></a>
+<FONT color="green">116</FONT>     * registrar.register(new AnotherCustomPropertyMarshaller());<a name="line.116"></a>
+<FONT color="green">117</FONT>     * registrar.register(new CustomComponentMarshaller());<a name="line.117"></a>
+<FONT color="green">118</FONT>     * <a name="line.118"></a>
+<FONT color="green">119</FONT>     * //inject into a reader class<a name="line.119"></a>
+<FONT color="green">120</FONT>     * ICalReader textReader = new ICalReader(...);<a name="line.120"></a>
+<FONT color="green">121</FONT>     * textReader.setRegistrar(registrar);<a name="line.121"></a>
+<FONT color="green">122</FONT>     * List&amp;lt;ICalendar&amp;gt; icals = new ArrayList&amp;lt;ICalendar&amp;gt;();<a name="line.122"></a>
+<FONT color="green">123</FONT>     * ICalendar ical;<a name="line.123"></a>
+<FONT color="green">124</FONT>     * while ((ical = textReader.readNext()) != null){<a name="line.124"></a>
+<FONT color="green">125</FONT>     *   icals.add(ical);<a name="line.125"></a>
+<FONT color="green">126</FONT>     * }<a name="line.126"></a>
+<FONT color="green">127</FONT>     * <a name="line.127"></a>
+<FONT color="green">128</FONT>     * //inject the same instance in another reader/writer class<a name="line.128"></a>
+<FONT color="green">129</FONT>     * JCalWriter writer = new JCalWriter(...);<a name="line.129"></a>
+<FONT color="green">130</FONT>     * writer.setRegistrar(registrar);<a name="line.130"></a>
+<FONT color="green">131</FONT>     * for (ICalendar ical : icals){<a name="line.131"></a>
+<FONT color="green">132</FONT>     *   writer.write(ical);<a name="line.132"></a>
+<FONT color="green">133</FONT>     * }<a name="line.133"></a>
+<FONT color="green">134</FONT>     * &lt;/pre&gt;<a name="line.134"></a>
+<FONT color="green">135</FONT>     * <a name="line.135"></a>
+<FONT color="green">136</FONT>     * &lt;/p&gt;<a name="line.136"></a>
+<FONT color="green">137</FONT>     * @author Michael Angstadt<a name="line.137"></a>
+<FONT color="green">138</FONT>     */<a name="line.138"></a>
+<FONT color="green">139</FONT>    public class ICalMarshallerRegistrar {<a name="line.139"></a>
+<FONT color="green">140</FONT>            //define standard component marshallers<a name="line.140"></a>
+<FONT color="green">141</FONT>            private static final Map&lt;String, ICalComponentMarshaller&lt;? extends ICalComponent&gt;&gt; standardCompByName = new HashMap&lt;String, ICalComponentMarshaller&lt;? extends ICalComponent&gt;&gt;();<a name="line.141"></a>
+<FONT color="green">142</FONT>            private static final Map&lt;Class&lt;? extends ICalComponent&gt;, ICalComponentMarshaller&lt;? extends ICalComponent&gt;&gt; standardCompByClass = new HashMap&lt;Class&lt;? extends ICalComponent&gt;, ICalComponentMarshaller&lt;? extends ICalComponent&gt;&gt;();<a name="line.142"></a>
+<FONT color="green">143</FONT>            static {<a name="line.143"></a>
+<FONT color="green">144</FONT>                    registerStandard(new ICalendarMarshaller());<a name="line.144"></a>
+<FONT color="green">145</FONT>                    registerStandard(new VAlarmMarshaller());<a name="line.145"></a>
+<FONT color="green">146</FONT>                    registerStandard(new VEventMarshaller());<a name="line.146"></a>
+<FONT color="green">147</FONT>                    registerStandard(new VFreeBusyMarshaller());<a name="line.147"></a>
+<FONT color="green">148</FONT>                    registerStandard(new VJournalMarshaller());<a name="line.148"></a>
+<FONT color="green">149</FONT>                    registerStandard(new VTodoMarshaller());<a name="line.149"></a>
+<FONT color="green">150</FONT>                    registerStandard(new VTimezoneMarshaller());<a name="line.150"></a>
+<FONT color="green">151</FONT>                    registerStandard(new StandardTimeMarshaller());<a name="line.151"></a>
+<FONT color="green">152</FONT>                    registerStandard(new DaylightSavingsTimeMarshaller());<a name="line.152"></a>
+<FONT color="green">153</FONT>            }<a name="line.153"></a>
+<FONT color="green">154</FONT>    <a name="line.154"></a>
+<FONT color="green">155</FONT>            //define standard property marshallers<a name="line.155"></a>
+<FONT color="green">156</FONT>            private static final Map&lt;String, ICalPropertyMarshaller&lt;? extends ICalProperty&gt;&gt; standardPropByName = new HashMap&lt;String, ICalPropertyMarshaller&lt;? extends ICalProperty&gt;&gt;();<a name="line.156"></a>
+<FONT color="green">157</FONT>            private static final Map&lt;Class&lt;? extends ICalProperty&gt;, ICalPropertyMarshaller&lt;? extends ICalProperty&gt;&gt; standardPropByClass = new HashMap&lt;Class&lt;? extends ICalProperty&gt;, ICalPropertyMarshaller&lt;? extends ICalProperty&gt;&gt;();<a name="line.157"></a>
+<FONT color="green">158</FONT>            private static final Map&lt;QName, ICalPropertyMarshaller&lt;? extends ICalProperty&gt;&gt; standardPropByQName = new HashMap&lt;QName, ICalPropertyMarshaller&lt;? extends ICalProperty&gt;&gt;();<a name="line.158"></a>
+<FONT color="green">159</FONT>            static {<a name="line.159"></a>
+<FONT color="green">160</FONT>                    //RFC 5545<a name="line.160"></a>
+<FONT color="green">161</FONT>                    registerStandard(new ActionMarshaller());<a name="line.161"></a>
+<FONT color="green">162</FONT>                    registerStandard(new AttachmentMarshaller());<a name="line.162"></a>
+<FONT color="green">163</FONT>                    registerStandard(new AttendeeMarshaller());<a name="line.163"></a>
+<FONT color="green">164</FONT>                    registerStandard(new CalendarScaleMarshaller());<a name="line.164"></a>
+<FONT color="green">165</FONT>                    registerStandard(new CategoriesMarshaller());<a name="line.165"></a>
+<FONT color="green">166</FONT>                    registerStandard(new ClassificationMarshaller());<a name="line.166"></a>
+<FONT color="green">167</FONT>                    registerStandard(new CommentMarshaller());<a name="line.167"></a>
+<FONT color="green">168</FONT>                    registerStandard(new CompletedMarshaller());<a name="line.168"></a>
+<FONT color="green">169</FONT>                    registerStandard(new ContactMarshaller());<a name="line.169"></a>
+<FONT color="green">170</FONT>                    registerStandard(new CreatedMarshaller());<a name="line.170"></a>
+<FONT color="green">171</FONT>                    registerStandard(new DateDueMarshaller());<a name="line.171"></a>
+<FONT color="green">172</FONT>                    registerStandard(new DateEndMarshaller());<a name="line.172"></a>
+<FONT color="green">173</FONT>                    registerStandard(new DateStartMarshaller());<a name="line.173"></a>
+<FONT color="green">174</FONT>                    registerStandard(new DateTimeStampMarshaller());<a name="line.174"></a>
+<FONT color="green">175</FONT>                    registerStandard(new DescriptionMarshaller());<a name="line.175"></a>
+<FONT color="green">176</FONT>                    registerStandard(new DurationPropertyMarshaller());<a name="line.176"></a>
+<FONT color="green">177</FONT>                    registerStandard(new ExceptionDatesMarshaller());<a name="line.177"></a>
+<FONT color="green">178</FONT>                    registerStandard(new FreeBusyMarshaller());<a name="line.178"></a>
+<FONT color="green">179</FONT>                    registerStandard(new GeoMarshaller());<a name="line.179"></a>
+<FONT color="green">180</FONT>                    registerStandard(new LastModifiedMarshaller());<a name="line.180"></a>
+<FONT color="green">181</FONT>                    registerStandard(new LocationMarshaller());<a name="line.181"></a>
+<FONT color="green">182</FONT>                    registerStandard(new MethodMarshaller());<a name="line.182"></a>
+<FONT color="green">183</FONT>                    registerStandard(new OrganizerMarshaller());<a name="line.183"></a>
+<FONT color="green">184</FONT>                    registerStandard(new PercentCompleteMarshaller());<a name="line.184"></a>
+<FONT color="green">185</FONT>                    registerStandard(new PriorityMarshaller());<a name="line.185"></a>
+<FONT color="green">186</FONT>                    registerStandard(new ProductIdMarshaller());<a name="line.186"></a>
+<FONT color="green">187</FONT>                    registerStandard(new RecurrenceDatesMarshaller());<a name="line.187"></a>
+<FONT color="green">188</FONT>                    registerStandard(new RecurrenceIdMarshaller());<a name="line.188"></a>
+<FONT color="green">189</FONT>                    registerStandard(new RecurrenceRuleMarshaller());<a name="line.189"></a>
+<FONT color="green">190</FONT>                    registerStandard(new RelatedToMarshaller());<a name="line.190"></a>
+<FONT color="green">191</FONT>                    registerStandard(new RepeatMarshaller());<a name="line.191"></a>
+<FONT color="green">192</FONT>                    registerStandard(new RequestStatusMarshaller());<a name="line.192"></a>
+<FONT color="green">193</FONT>                    registerStandard(new ResourcesMarshaller());<a name="line.193"></a>
+<FONT color="green">194</FONT>                    registerStandard(new SequenceMarshaller());<a name="line.194"></a>
+<FONT color="green">195</FONT>                    registerStandard(new StatusMarshaller());<a name="line.195"></a>
+<FONT color="green">196</FONT>                    registerStandard(new SummaryMarshaller());<a name="line.196"></a>
+<FONT color="green">197</FONT>                    registerStandard(new TimezoneIdMarshaller());<a name="line.197"></a>
+<FONT color="green">198</FONT>                    registerStandard(new TimezoneNameMarshaller());<a name="line.198"></a>
+<FONT color="green">199</FONT>                    registerStandard(new TimezoneOffsetFromMarshaller());<a name="line.199"></a>
+<FONT color="green">200</FONT>                    registerStandard(new TimezoneOffsetToMarshaller());<a name="line.200"></a>
+<FONT color="green">201</FONT>                    registerStandard(new TimezoneUrlMarshaller());<a name="line.201"></a>
+<FONT color="green">202</FONT>                    registerStandard(new TransparencyMarshaller());<a name="line.202"></a>
+<FONT color="green">203</FONT>                    registerStandard(new TriggerMarshaller());<a name="line.203"></a>
+<FONT color="green">204</FONT>                    registerStandard(new UidMarshaller());<a name="line.204"></a>
+<FONT color="green">205</FONT>                    registerStandard(new UrlMarshaller());<a name="line.205"></a>
+<FONT color="green">206</FONT>                    registerStandard(new VersionMarshaller());<a name="line.206"></a>
+<FONT color="green">207</FONT>    <a name="line.207"></a>
+<FONT color="green">208</FONT>                    //RFC 6321<a name="line.208"></a>
+<FONT color="green">209</FONT>                    registerStandard(new XmlMarshaller());<a name="line.209"></a>
+<FONT color="green">210</FONT>    <a name="line.210"></a>
+<FONT color="green">211</FONT>                    //RFC 2445<a name="line.211"></a>
+<FONT color="green">212</FONT>                    registerStandard(new ExceptionRuleMarshaller());<a name="line.212"></a>
+<FONT color="green">213</FONT>            }<a name="line.213"></a>
+<FONT color="green">214</FONT>    <a name="line.214"></a>
+<FONT color="green">215</FONT>            private final Map&lt;String, ICalComponentMarshaller&lt;? extends ICalComponent&gt;&gt; experimentalCompByName = new HashMap&lt;String, ICalComponentMarshaller&lt;? extends ICalComponent&gt;&gt;(0);<a name="line.215"></a>
+<FONT color="green">216</FONT>            private final Map&lt;Class&lt;? extends ICalComponent&gt;, ICalComponentMarshaller&lt;? extends ICalComponent&gt;&gt; experimentalCompByClass = new HashMap&lt;Class&lt;? extends ICalComponent&gt;, ICalComponentMarshaller&lt;? extends ICalComponent&gt;&gt;(0);<a name="line.216"></a>
+<FONT color="green">217</FONT>    <a name="line.217"></a>
+<FONT color="green">218</FONT>            private final Map&lt;String, ICalPropertyMarshaller&lt;? extends ICalProperty&gt;&gt; experimentalPropByName = new HashMap&lt;String, ICalPropertyMarshaller&lt;? extends ICalProperty&gt;&gt;(0);<a name="line.218"></a>
+<FONT color="green">219</FONT>            private final Map&lt;Class&lt;? extends ICalProperty&gt;, ICalPropertyMarshaller&lt;? extends ICalProperty&gt;&gt; experimentalPropByClass = new HashMap&lt;Class&lt;? extends ICalProperty&gt;, ICalPropertyMarshaller&lt;? extends ICalProperty&gt;&gt;(0);<a name="line.219"></a>
+<FONT color="green">220</FONT>            private final Map&lt;QName, ICalPropertyMarshaller&lt;? extends ICalProperty&gt;&gt; experimentalPropByQName = new HashMap&lt;QName, ICalPropertyMarshaller&lt;? extends ICalProperty&gt;&gt;(0);<a name="line.220"></a>
+<FONT color="green">221</FONT>    <a name="line.221"></a>
+<FONT color="green">222</FONT>            /**<a name="line.222"></a>
+<FONT color="green">223</FONT>             * Gets a component marshaller by name.<a name="line.223"></a>
+<FONT color="green">224</FONT>             * @param componentName the component name (e.g. "VEVENT")<a name="line.224"></a>
+<FONT color="green">225</FONT>             * @return the component marshaller or a {@link RawComponentMarshaller} if<a name="line.225"></a>
+<FONT color="green">226</FONT>             * not found<a name="line.226"></a>
+<FONT color="green">227</FONT>             */<a name="line.227"></a>
+<FONT color="green">228</FONT>            public ICalComponentMarshaller&lt;? extends ICalComponent&gt; getComponentMarshaller(String componentName) {<a name="line.228"></a>
+<FONT color="green">229</FONT>                    componentName = componentName.toUpperCase();<a name="line.229"></a>
+<FONT color="green">230</FONT>    <a name="line.230"></a>
+<FONT color="green">231</FONT>                    ICalComponentMarshaller&lt;? extends ICalComponent&gt; marshaller = experimentalCompByName.get(componentName);<a name="line.231"></a>
+<FONT color="green">232</FONT>                    if (marshaller != null) {<a name="line.232"></a>
+<FONT color="green">233</FONT>                            return marshaller;<a name="line.233"></a>
+<FONT color="green">234</FONT>                    }<a name="line.234"></a>
+<FONT color="green">235</FONT>    <a name="line.235"></a>
+<FONT color="green">236</FONT>                    marshaller = standardCompByName.get(componentName);<a name="line.236"></a>
+<FONT color="green">237</FONT>                    if (marshaller != null) {<a name="line.237"></a>
+<FONT color="green">238</FONT>                            return marshaller;<a name="line.238"></a>
+<FONT color="green">239</FONT>                    }<a name="line.239"></a>
+<FONT color="green">240</FONT>    <a name="line.240"></a>
+<FONT color="green">241</FONT>                    return new RawComponentMarshaller(componentName);<a name="line.241"></a>
+<FONT color="green">242</FONT>            }<a name="line.242"></a>
+<FONT color="green">243</FONT>    <a name="line.243"></a>
+<FONT color="green">244</FONT>            /**<a name="line.244"></a>
+<FONT color="green">245</FONT>             * Gets a property marshaller by name.<a name="line.245"></a>
+<FONT color="green">246</FONT>             * @param propertyName the property name (e.g. "VERSION")<a name="line.246"></a>
+<FONT color="green">247</FONT>             * @return the property marshaller or a {@link RawPropertyMarshaller} if not<a name="line.247"></a>
+<FONT color="green">248</FONT>             * found<a name="line.248"></a>
+<FONT color="green">249</FONT>             */<a name="line.249"></a>
+<FONT color="green">250</FONT>            public ICalPropertyMarshaller&lt;? extends ICalProperty&gt; getPropertyMarshaller(String propertyName) {<a name="line.250"></a>
+<FONT color="green">251</FONT>                    propertyName = propertyName.toUpperCase();<a name="line.251"></a>
+<FONT color="green">252</FONT>    <a name="line.252"></a>
+<FONT color="green">253</FONT>                    ICalPropertyMarshaller&lt;? extends ICalProperty&gt; marshaller = experimentalPropByName.get(propertyName);<a name="line.253"></a>
+<FONT color="green">254</FONT>                    if (marshaller != null) {<a name="line.254"></a>
+<FONT color="green">255</FONT>                            return marshaller;<a name="line.255"></a>
+<FONT color="green">256</FONT>                    }<a name="line.256"></a>
+<FONT color="green">257</FONT>    <a name="line.257"></a>
+<FONT color="green">258</FONT>                    marshaller = standardPropByName.get(propertyName);<a name="line.258"></a>
+<FONT color="green">259</FONT>                    if (marshaller != null) {<a name="line.259"></a>
+<FONT color="green">260</FONT>                            return marshaller;<a name="line.260"></a>
+<FONT color="green">261</FONT>                    }<a name="line.261"></a>
+<FONT color="green">262</FONT>    <a name="line.262"></a>
+<FONT color="green">263</FONT>                    return new RawPropertyMarshaller(propertyName);<a name="line.263"></a>
+<FONT color="green">264</FONT>            }<a name="line.264"></a>
+<FONT color="green">265</FONT>    <a name="line.265"></a>
+<FONT color="green">266</FONT>            /**<a name="line.266"></a>
+<FONT color="green">267</FONT>             * Gets a component marshaller by class.<a name="line.267"></a>
+<FONT color="green">268</FONT>             * @param clazz the component class<a name="line.268"></a>
+<FONT color="green">269</FONT>             * @return the component marshaller or null if not found<a name="line.269"></a>
+<FONT color="green">270</FONT>             */<a name="line.270"></a>
+<FONT color="green">271</FONT>            public ICalComponentMarshaller&lt;? extends ICalComponent&gt; getComponentMarshaller(Class&lt;? extends ICalComponent&gt; clazz) {<a name="line.271"></a>
+<FONT color="green">272</FONT>                    ICalComponentMarshaller&lt;? extends ICalComponent&gt; marshaller = experimentalCompByClass.get(clazz);<a name="line.272"></a>
+<FONT color="green">273</FONT>                    if (marshaller != null) {<a name="line.273"></a>
+<FONT color="green">274</FONT>                            return marshaller;<a name="line.274"></a>
+<FONT color="green">275</FONT>                    }<a name="line.275"></a>
+<FONT color="green">276</FONT>    <a name="line.276"></a>
+<FONT color="green">277</FONT>                    return standardCompByClass.get(clazz);<a name="line.277"></a>
+<FONT color="green">278</FONT>            }<a name="line.278"></a>
+<FONT color="green">279</FONT>    <a name="line.279"></a>
+<FONT color="green">280</FONT>            /**<a name="line.280"></a>
+<FONT color="green">281</FONT>             * Gets a property marshaller by class.<a name="line.281"></a>
+<FONT color="green">282</FONT>             * @param clazz the property class<a name="line.282"></a>
+<FONT color="green">283</FONT>             * @return the property marshaller or null if not found<a name="line.283"></a>
+<FONT color="green">284</FONT>             */<a name="line.284"></a>
+<FONT color="green">285</FONT>            public ICalPropertyMarshaller&lt;? extends ICalProperty&gt; getPropertyMarshaller(Class&lt;? extends ICalProperty&gt; clazz) {<a name="line.285"></a>
+<FONT color="green">286</FONT>                    ICalPropertyMarshaller&lt;? extends ICalProperty&gt; marshaller = experimentalPropByClass.get(clazz);<a name="line.286"></a>
+<FONT color="green">287</FONT>                    if (marshaller != null) {<a name="line.287"></a>
+<FONT color="green">288</FONT>                            return marshaller;<a name="line.288"></a>
+<FONT color="green">289</FONT>                    }<a name="line.289"></a>
+<FONT color="green">290</FONT>    <a name="line.290"></a>
+<FONT color="green">291</FONT>                    return standardPropByClass.get(clazz);<a name="line.291"></a>
+<FONT color="green">292</FONT>            }<a name="line.292"></a>
+<FONT color="green">293</FONT>    <a name="line.293"></a>
+<FONT color="green">294</FONT>            /**<a name="line.294"></a>
+<FONT color="green">295</FONT>             * Gets the appropriate component marshaller for a given component instance.<a name="line.295"></a>
+<FONT color="green">296</FONT>             * @param component the component instance<a name="line.296"></a>
+<FONT color="green">297</FONT>             * @return the component marshaller or null if not found<a name="line.297"></a>
+<FONT color="green">298</FONT>             */<a name="line.298"></a>
+<FONT color="green">299</FONT>            public ICalComponentMarshaller&lt;? extends ICalComponent&gt; getComponentMarshaller(ICalComponent component) {<a name="line.299"></a>
+<FONT color="green">300</FONT>                    if (component instanceof RawComponent) {<a name="line.300"></a>
+<FONT color="green">301</FONT>                            RawComponent raw = (RawComponent) component;<a name="line.301"></a>
+<FONT color="green">302</FONT>                            return new RawComponentMarshaller(raw.getName());<a name="line.302"></a>
+<FONT color="green">303</FONT>                    }<a name="line.303"></a>
+<FONT color="green">304</FONT>    <a name="line.304"></a>
+<FONT color="green">305</FONT>                    return getComponentMarshaller(component.getClass());<a name="line.305"></a>
+<FONT color="green">306</FONT>            }<a name="line.306"></a>
+<FONT color="green">307</FONT>    <a name="line.307"></a>
+<FONT color="green">308</FONT>            /**<a name="line.308"></a>
+<FONT color="green">309</FONT>             * Gets the appropriate property marshaller for a given property instance.<a name="line.309"></a>
+<FONT color="green">310</FONT>             * @param property the property instance<a name="line.310"></a>
+<FONT color="green">311</FONT>             * @return the property marshaller or null if not found<a name="line.311"></a>
+<FONT color="green">312</FONT>             */<a name="line.312"></a>
+<FONT color="green">313</FONT>            public ICalPropertyMarshaller&lt;? extends ICalProperty&gt; getPropertyMarshaller(ICalProperty property) {<a name="line.313"></a>
+<FONT color="green">314</FONT>                    if (property instanceof RawProperty) {<a name="line.314"></a>
+<FONT color="green">315</FONT>                            RawProperty raw = (RawProperty) property;<a name="line.315"></a>
+<FONT color="green">316</FONT>                            return new RawPropertyMarshaller(raw.getName());<a name="line.316"></a>
+<FONT color="green">317</FONT>                    }<a name="line.317"></a>
+<FONT color="green">318</FONT>    <a name="line.318"></a>
+<FONT color="green">319</FONT>                    return getPropertyMarshaller(property.getClass());<a name="line.319"></a>
+<FONT color="green">320</FONT>            }<a name="line.320"></a>
+<FONT color="green">321</FONT>    <a name="line.321"></a>
+<FONT color="green">322</FONT>            /**<a name="line.322"></a>
+<FONT color="green">323</FONT>             * Gets a property marshaller by XML local name and namespace.<a name="line.323"></a>
+<FONT color="green">324</FONT>             * @param qname the XML local name and namespace<a name="line.324"></a>
+<FONT color="green">325</FONT>             * @return the property marshaller or a {@link XmlMarshaller} if not found<a name="line.325"></a>
+<FONT color="green">326</FONT>             */<a name="line.326"></a>
+<FONT color="green">327</FONT>            public ICalPropertyMarshaller&lt;? extends ICalProperty&gt; getPropertyMarshaller(QName qname) {<a name="line.327"></a>
+<FONT color="green">328</FONT>                    ICalPropertyMarshaller&lt;? extends ICalProperty&gt; marshaller = experimentalPropByQName.get(qname);<a name="line.328"></a>
+<FONT color="green">329</FONT>                    if (marshaller != null) {<a name="line.329"></a>
+<FONT color="green">330</FONT>                            return marshaller;<a name="line.330"></a>
+<FONT color="green">331</FONT>                    }<a name="line.331"></a>
+<FONT color="green">332</FONT>    <a name="line.332"></a>
+<FONT color="green">333</FONT>                    marshaller = standardPropByQName.get(qname);<a name="line.333"></a>
+<FONT color="green">334</FONT>                    if (marshaller != null) {<a name="line.334"></a>
+<FONT color="green">335</FONT>                            return marshaller;<a name="line.335"></a>
+<FONT color="green">336</FONT>                    }<a name="line.336"></a>
+<FONT color="green">337</FONT>    <a name="line.337"></a>
+<FONT color="green">338</FONT>                    if (XCalNamespaceContext.XCAL_NS.equals(qname.getNamespaceURI())) {<a name="line.338"></a>
+<FONT color="green">339</FONT>                            return new RawPropertyMarshaller(qname.getLocalPart().toUpperCase());<a name="line.339"></a>
+<FONT color="green">340</FONT>                    }<a name="line.340"></a>
+<FONT color="green">341</FONT>    <a name="line.341"></a>
+<FONT color="green">342</FONT>                    return getPropertyMarshaller(Xml.class);<a name="line.342"></a>
+<FONT color="green">343</FONT>            }<a name="line.343"></a>
+<FONT color="green">344</FONT>    <a name="line.344"></a>
+<FONT color="green">345</FONT>            /**<a name="line.345"></a>
+<FONT color="green">346</FONT>             * Registers a component marshaller.<a name="line.346"></a>
+<FONT color="green">347</FONT>             * @param marshaller the marshaller to register<a name="line.347"></a>
+<FONT color="green">348</FONT>             */<a name="line.348"></a>
+<FONT color="green">349</FONT>            public void register(ICalComponentMarshaller&lt;? extends ICalComponent&gt; marshaller) {<a name="line.349"></a>
+<FONT color="green">350</FONT>                    experimentalCompByName.put(marshaller.getComponentName().toUpperCase(), marshaller);<a name="line.350"></a>
+<FONT color="green">351</FONT>                    experimentalCompByClass.put(marshaller.getComponentClass(), marshaller);<a name="line.351"></a>
+<FONT color="green">352</FONT>            }<a name="line.352"></a>
+<FONT color="green">353</FONT>    <a name="line.353"></a>
+<FONT color="green">354</FONT>            /**<a name="line.354"></a>
+<FONT color="green">355</FONT>             * Registers a property marshaller.<a name="line.355"></a>
+<FONT color="green">356</FONT>             * @param marshaller the marshaller to register<a name="line.356"></a>
+<FONT color="green">357</FONT>             */<a name="line.357"></a>
+<FONT color="green">358</FONT>            public void register(ICalPropertyMarshaller&lt;? extends ICalProperty&gt; marshaller) {<a name="line.358"></a>
+<FONT color="green">359</FONT>                    experimentalPropByName.put(marshaller.getPropertyName().toUpperCase(), marshaller);<a name="line.359"></a>
+<FONT color="green">360</FONT>                    experimentalPropByClass.put(marshaller.getPropertyClass(), marshaller);<a name="line.360"></a>
+<FONT color="green">361</FONT>                    experimentalPropByQName.put(marshaller.getQName(), marshaller);<a name="line.361"></a>
+<FONT color="green">362</FONT>            }<a name="line.362"></a>
+<FONT color="green">363</FONT>    <a name="line.363"></a>
+<FONT color="green">364</FONT>            /**<a name="line.364"></a>
+<FONT color="green">365</FONT>             * Unregisters a component marshaller.<a name="line.365"></a>
+<FONT color="green">366</FONT>             * @param marshaller the marshaller to unregister<a name="line.366"></a>
+<FONT color="green">367</FONT>             */<a name="line.367"></a>
+<FONT color="green">368</FONT>            public void unregister(ICalComponentMarshaller&lt;? extends ICalComponent&gt; marshaller) {<a name="line.368"></a>
+<FONT color="green">369</FONT>                    experimentalCompByName.remove(marshaller.getComponentName().toUpperCase());<a name="line.369"></a>
+<FONT color="green">370</FONT>                    experimentalCompByClass.remove(marshaller.getComponentClass());<a name="line.370"></a>
+<FONT color="green">371</FONT>            }<a name="line.371"></a>
+<FONT color="green">372</FONT>    <a name="line.372"></a>
+<FONT color="green">373</FONT>            /**<a name="line.373"></a>
+<FONT color="green">374</FONT>             * Unregisters a property marshaller<a name="line.374"></a>
+<FONT color="green">375</FONT>             * @param marshaller the marshaller to unregister<a name="line.375"></a>
+<FONT color="green">376</FONT>             */<a name="line.376"></a>
+<FONT color="green">377</FONT>            public void unregister(ICalPropertyMarshaller&lt;? extends ICalProperty&gt; marshaller) {<a name="line.377"></a>
+<FONT color="green">378</FONT>                    experimentalPropByName.remove(marshaller.getPropertyName().toUpperCase());<a name="line.378"></a>
+<FONT color="green">379</FONT>                    experimentalPropByClass.remove(marshaller.getPropertyClass());<a name="line.379"></a>
+<FONT color="green">380</FONT>                    experimentalPropByQName.remove(marshaller.getQName());<a name="line.380"></a>
+<FONT color="green">381</FONT>            }<a name="line.381"></a>
+<FONT color="green">382</FONT>    <a name="line.382"></a>
+<FONT color="green">383</FONT>            /**<a name="line.383"></a>
+<FONT color="green">384</FONT>             * Convenience method for getting the marshaller of the root iCalendar<a name="line.384"></a>
+<FONT color="green">385</FONT>             * component ("VCALENDAR").<a name="line.385"></a>
+<FONT color="green">386</FONT>             * @return the marshaller<a name="line.386"></a>
+<FONT color="green">387</FONT>             */<a name="line.387"></a>
+<FONT color="green">388</FONT>            public static ICalendarMarshaller getICalendarMarshaller() {<a name="line.388"></a>
+<FONT color="green">389</FONT>                    return (ICalendarMarshaller) standardCompByClass.get(ICalendar.class);<a name="line.389"></a>
+<FONT color="green">390</FONT>            }<a name="line.390"></a>
+<FONT color="green">391</FONT>    <a name="line.391"></a>
+<FONT color="green">392</FONT>            private static void registerStandard(ICalComponentMarshaller&lt;? extends ICalComponent&gt; marshaller) {<a name="line.392"></a>
+<FONT color="green">393</FONT>                    standardCompByName.put(marshaller.getComponentName().toUpperCase(), marshaller);<a name="line.393"></a>
+<FONT color="green">394</FONT>                    standardCompByClass.put(marshaller.getComponentClass(), marshaller);<a name="line.394"></a>
+<FONT color="green">395</FONT>            }<a name="line.395"></a>
+<FONT color="green">396</FONT>    <a name="line.396"></a>
+<FONT color="green">397</FONT>            private static void registerStandard(ICalPropertyMarshaller&lt;? extends ICalProperty&gt; marshaller) {<a name="line.397"></a>
+<FONT color="green">398</FONT>                    standardPropByName.put(marshaller.getPropertyName().toUpperCase(), marshaller);<a name="line.398"></a>
+<FONT color="green">399</FONT>                    standardPropByClass.put(marshaller.getPropertyClass(), marshaller);<a name="line.399"></a>
+<FONT color="green">400</FONT>                    standardPropByQName.put(marshaller.getQName(), marshaller);<a name="line.400"></a>
+<FONT color="green">401</FONT>            }<a name="line.401"></a>
+<FONT color="green">402</FONT>    }<a name="line.402"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

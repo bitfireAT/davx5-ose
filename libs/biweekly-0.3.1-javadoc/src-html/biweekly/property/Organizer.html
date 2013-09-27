@@ -1,0 +1,186 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    package biweekly.property;<a name="line.1"></a>
+<FONT color="green">002</FONT>    <a name="line.2"></a>
+<FONT color="green">003</FONT>    import biweekly.component.VEvent;<a name="line.3"></a>
+<FONT color="green">004</FONT>    import biweekly.component.VFreeBusy;<a name="line.4"></a>
+<FONT color="green">005</FONT>    import biweekly.component.VJournal;<a name="line.5"></a>
+<FONT color="green">006</FONT>    import biweekly.component.VTodo;<a name="line.6"></a>
+<FONT color="green">007</FONT>    <a name="line.7"></a>
+<FONT color="green">008</FONT>    /*<a name="line.8"></a>
+<FONT color="green">009</FONT>     Copyright (c) 2013, Michael Angstadt<a name="line.9"></a>
+<FONT color="green">010</FONT>     All rights reserved.<a name="line.10"></a>
+<FONT color="green">011</FONT>    <a name="line.11"></a>
+<FONT color="green">012</FONT>     Redistribution and use in source and binary forms, with or without<a name="line.12"></a>
+<FONT color="green">013</FONT>     modification, are permitted provided that the following conditions are met: <a name="line.13"></a>
+<FONT color="green">014</FONT>    <a name="line.14"></a>
+<FONT color="green">015</FONT>     1. Redistributions of source code must retain the above copyright notice, this<a name="line.15"></a>
+<FONT color="green">016</FONT>     list of conditions and the following disclaimer. <a name="line.16"></a>
+<FONT color="green">017</FONT>     2. Redistributions in binary form must reproduce the above copyright notice,<a name="line.17"></a>
+<FONT color="green">018</FONT>     this list of conditions and the following disclaimer in the documentation<a name="line.18"></a>
+<FONT color="green">019</FONT>     and/or other materials provided with the distribution. <a name="line.19"></a>
+<FONT color="green">020</FONT>    <a name="line.20"></a>
+<FONT color="green">021</FONT>     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.21"></a>
+<FONT color="green">022</FONT>     ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.22"></a>
+<FONT color="green">023</FONT>     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.23"></a>
+<FONT color="green">024</FONT>     DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.24"></a>
+<FONT color="green">025</FONT>     ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.25"></a>
+<FONT color="green">026</FONT>     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.26"></a>
+<FONT color="green">027</FONT>     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND<a name="line.27"></a>
+<FONT color="green">028</FONT>     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.28"></a>
+<FONT color="green">029</FONT>     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.29"></a>
+<FONT color="green">030</FONT>     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.30"></a>
+<FONT color="green">031</FONT>     */<a name="line.31"></a>
+<FONT color="green">032</FONT>    <a name="line.32"></a>
+<FONT color="green">033</FONT>    /**<a name="line.33"></a>
+<FONT color="green">034</FONT>     * &lt;p&gt;<a name="line.34"></a>
+<FONT color="green">035</FONT>     * Defines an organizer. This property has different meanings depending on the<a name="line.35"></a>
+<FONT color="green">036</FONT>     * component it belongs to:<a name="line.36"></a>
+<FONT color="green">037</FONT>     * &lt;ul&gt;<a name="line.37"></a>
+<FONT color="green">038</FONT>     * &lt;li&gt;{@link VEvent} - The organizer of the event.&lt;/li&gt;<a name="line.38"></a>
+<FONT color="green">039</FONT>     * &lt;li&gt;{@link VTodo} - The creator of the to-do task.&lt;/li&gt;<a name="line.39"></a>
+<FONT color="green">040</FONT>     * &lt;li&gt;{@link VJournal} - The owner of the journal entry.&lt;/li&gt;<a name="line.40"></a>
+<FONT color="green">041</FONT>     * &lt;li&gt;{@link VFreeBusy} - The person requesting the free/busy time.&lt;/li&gt;<a name="line.41"></a>
+<FONT color="green">042</FONT>     * &lt;/ul&gt;<a name="line.42"></a>
+<FONT color="green">043</FONT>     * &lt;/p&gt;<a name="line.43"></a>
+<FONT color="green">044</FONT>     * &lt;p&gt;<a name="line.44"></a>
+<FONT color="green">045</FONT>     * &lt;b&gt;Examples:&lt;/b&gt;<a name="line.45"></a>
+<FONT color="green">046</FONT>     * <a name="line.46"></a>
+<FONT color="green">047</FONT>     * &lt;pre class="brush:java"&gt;<a name="line.47"></a>
+<FONT color="green">048</FONT>     * Organizer organizer = Organizer.email(&amp;quot;johndoe@example.com&amp;quot;);<a name="line.48"></a>
+<FONT color="green">049</FONT>     * organizer.setCommonName(&amp;quot;John Doe&amp;quot;);<a name="line.49"></a>
+<FONT color="green">050</FONT>     * &lt;/pre&gt;<a name="line.50"></a>
+<FONT color="green">051</FONT>     * <a name="line.51"></a>
+<FONT color="green">052</FONT>     * &lt;/p&gt;<a name="line.52"></a>
+<FONT color="green">053</FONT>     * @author Michael Angstadt<a name="line.53"></a>
+<FONT color="green">054</FONT>     * @rfc 5545 p.111-2<a name="line.54"></a>
+<FONT color="green">055</FONT>     */<a name="line.55"></a>
+<FONT color="green">056</FONT>    public class Organizer extends TextProperty {<a name="line.56"></a>
+<FONT color="green">057</FONT>            /**<a name="line.57"></a>
+<FONT color="green">058</FONT>             * Creates an organizer property<a name="line.58"></a>
+<FONT color="green">059</FONT>             * @param uri a URI representing the organizer (typically, an email address,<a name="line.59"></a>
+<FONT color="green">060</FONT>             * e.g. "mailto:johndoe@example.com")<a name="line.60"></a>
+<FONT color="green">061</FONT>             */<a name="line.61"></a>
+<FONT color="green">062</FONT>            public Organizer(String uri) {<a name="line.62"></a>
+<FONT color="green">063</FONT>                    super(uri);<a name="line.63"></a>
+<FONT color="green">064</FONT>            }<a name="line.64"></a>
+<FONT color="green">065</FONT>    <a name="line.65"></a>
+<FONT color="green">066</FONT>            /**<a name="line.66"></a>
+<FONT color="green">067</FONT>             * Creates an organizer property using an email address as its value.<a name="line.67"></a>
+<FONT color="green">068</FONT>             * @param email the email address (e.g. "johndoe@example.com")<a name="line.68"></a>
+<FONT color="green">069</FONT>             * @return the property<a name="line.69"></a>
+<FONT color="green">070</FONT>             */<a name="line.70"></a>
+<FONT color="green">071</FONT>            public static Organizer email(String email) {<a name="line.71"></a>
+<FONT color="green">072</FONT>                    return new Organizer("mailto:" + email);<a name="line.72"></a>
+<FONT color="green">073</FONT>            }<a name="line.73"></a>
+<FONT color="green">074</FONT>    <a name="line.74"></a>
+<FONT color="green">075</FONT>            @Override<a name="line.75"></a>
+<FONT color="green">076</FONT>            public String getSentBy() {<a name="line.76"></a>
+<FONT color="green">077</FONT>                    return super.getSentBy();<a name="line.77"></a>
+<FONT color="green">078</FONT>            }<a name="line.78"></a>
+<FONT color="green">079</FONT>    <a name="line.79"></a>
+<FONT color="green">080</FONT>            @Override<a name="line.80"></a>
+<FONT color="green">081</FONT>            public void setSentBy(String sentBy) {<a name="line.81"></a>
+<FONT color="green">082</FONT>                    super.setSentBy(sentBy);<a name="line.82"></a>
+<FONT color="green">083</FONT>            }<a name="line.83"></a>
+<FONT color="green">084</FONT>    <a name="line.84"></a>
+<FONT color="green">085</FONT>            @Override<a name="line.85"></a>
+<FONT color="green">086</FONT>            public String getCommonName() {<a name="line.86"></a>
+<FONT color="green">087</FONT>                    return super.getCommonName();<a name="line.87"></a>
+<FONT color="green">088</FONT>            }<a name="line.88"></a>
+<FONT color="green">089</FONT>    <a name="line.89"></a>
+<FONT color="green">090</FONT>            @Override<a name="line.90"></a>
+<FONT color="green">091</FONT>            public void setCommonName(String commonName) {<a name="line.91"></a>
+<FONT color="green">092</FONT>                    super.setCommonName(commonName);<a name="line.92"></a>
+<FONT color="green">093</FONT>            }<a name="line.93"></a>
+<FONT color="green">094</FONT>    <a name="line.94"></a>
+<FONT color="green">095</FONT>            @Override<a name="line.95"></a>
+<FONT color="green">096</FONT>            public String getDirectoryEntry() {<a name="line.96"></a>
+<FONT color="green">097</FONT>                    return super.getDirectoryEntry();<a name="line.97"></a>
+<FONT color="green">098</FONT>            }<a name="line.98"></a>
+<FONT color="green">099</FONT>    <a name="line.99"></a>
+<FONT color="green">100</FONT>            @Override<a name="line.100"></a>
+<FONT color="green">101</FONT>            public void setDirectoryEntry(String directoryEntry) {<a name="line.101"></a>
+<FONT color="green">102</FONT>                    super.setDirectoryEntry(directoryEntry);<a name="line.102"></a>
+<FONT color="green">103</FONT>            }<a name="line.103"></a>
+<FONT color="green">104</FONT>    <a name="line.104"></a>
+<FONT color="green">105</FONT>            /**<a name="line.105"></a>
+<FONT color="green">106</FONT>             * Gets the language that the common name parameter is written in.<a name="line.106"></a>
+<FONT color="green">107</FONT>             */<a name="line.107"></a>
+<FONT color="green">108</FONT>            @Override<a name="line.108"></a>
+<FONT color="green">109</FONT>            public String getLanguage() {<a name="line.109"></a>
+<FONT color="green">110</FONT>                    return super.getLanguage();<a name="line.110"></a>
+<FONT color="green">111</FONT>            }<a name="line.111"></a>
+<FONT color="green">112</FONT>    <a name="line.112"></a>
+<FONT color="green">113</FONT>            /**<a name="line.113"></a>
+<FONT color="green">114</FONT>             * Sets the language that the common name parameter is written in.<a name="line.114"></a>
+<FONT color="green">115</FONT>             */<a name="line.115"></a>
+<FONT color="green">116</FONT>            @Override<a name="line.116"></a>
+<FONT color="green">117</FONT>            public void setLanguage(String language) {<a name="line.117"></a>
+<FONT color="green">118</FONT>                    super.setLanguage(language);<a name="line.118"></a>
+<FONT color="green">119</FONT>            }<a name="line.119"></a>
+<FONT color="green">120</FONT>    }<a name="line.120"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

@@ -10,7 +10,6 @@ package at.bitfire.davdroid.resource;
 import java.util.ArrayList;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
 import android.content.OperationApplicationException;
