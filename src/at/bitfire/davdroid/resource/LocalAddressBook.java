@@ -47,7 +47,7 @@ import ezvcard.types.TelephoneType;
 import ezvcard.types.UrlType;
 
 public class LocalAddressBook extends LocalCollection {
-	private final static String TAG = "davdroid.LocalAddressBook";
+	//private final static String TAG = "davdroid.LocalAddressBook";
 
 	protected final static String
 		COLUMN_REMOTE_NAME = RawContacts.SOURCE_ID,

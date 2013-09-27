@@ -48,7 +48,7 @@ public class Event extends Resource {
 			return;
 		
 		// event		
-		VEvent event = ical.getEvents().get(0);		// DAV .ics may contain only one entry
+		VEvent event = ical.getEvents().get(0);		// DAV .ics may contain only one entry (RFC4791 4.1)
 		if (event == null)
 			return;
 		
@@ -82,8 +82,9 @@ public class Event extends Resource {
 			event.setLocation(location);
 		if (description != null)
 			event.setDescription(description);
-		
+
 		event.setDateStart(dtStart);
+		
 		event.setDateEnd(dtEnd);
 		
 		ical.addEvent(event);
