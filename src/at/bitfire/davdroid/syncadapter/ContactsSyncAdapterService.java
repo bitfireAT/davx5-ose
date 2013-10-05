@@ -32,10 +32,12 @@ import android.os.RemoteException;
 import android.util.Log;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.resource.CardDavAddressBook;
+import at.bitfire.davdroid.resource.Contact;
 import at.bitfire.davdroid.resource.IncapableResourceException;
 import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.RemoteCollection;
+import at.bitfire.davdroid.resource.Resource;
 
 public class ContactsSyncAdapterService extends Service {
 	private static SyncAdapter syncAdapter;

@@ -18,6 +18,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.ToString;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
@@ -34,9 +35,6 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
-
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
 
 
 @ToString
@@ -146,7 +144,8 @@ public class WebDavResource {
 	/* file hierarchy methods */
 	
 	public String getName() {
-		return Iterables.getLast(Splitter.on("/").split(location.getPath()));
+		String[] names = StringUtils.split(location.getPath(), "/");
+		return names[names.length - 1];
 	}
 
 	

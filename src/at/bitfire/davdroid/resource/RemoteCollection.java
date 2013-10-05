@@ -15,6 +15,7 @@ import java.util.List;
 
 import lombok.Getter;
 import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.ValidationException;
 
 import org.apache.http.HttpException;
 
@@ -89,20 +90,20 @@ public abstract class RemoteCollection<ResourceType extends Resource> {
 		return resource;
 	}
 	
-	public void add(ResourceType resource) throws IOException, HttpException {
-		WebDavResource member = new WebDavResource(collection, resource.getName(), resource.getETag());
+	public void add(Resource res) throws IOException, HttpException, ValidationException {
+		WebDavResource member = new WebDavResource(collection, res.getName(), res.getETag());
 		member.setContentType(memberContentType());
-		member.put(resource.toEntity().getBytes("UTF-8"), PutMode.ADD_DONT_OVERWRITE);
+		member.put(res.toEntity().getBytes("UTF-8"), PutMode.ADD_DONT_OVERWRITE);
 	}
 
-	public void delete(ResourceType resource) throws IOException, HttpException {
-		WebDavResource member = new WebDavResource(collection, resource.getName(), resource.getETag());
+	public void delete(Resource res) throws IOException, HttpException {
+		WebDavResource member = new WebDavResource(collection, res.getName(), res.getETag());
 		member.delete();
 	}
 	
-	public void update(ResourceType resource) throws IOException, HttpException {
-		WebDavResource member = new WebDavResource(collection, resource.getName(), resource.getETag());
+	public void update(Resource res) throws IOException, HttpException, ValidationException {
+		WebDavResource member = new WebDavResource(collection, res.getName(), res.getETag());
 		member.setContentType(memberContentType());
-		member.put(resource.toEntity().getBytes("UTF-8"), PutMode.UPDATE_DONT_OVERWRITE);
+		member.put(res.toEntity().getBytes("UTF-8"), PutMode.UPDATE_DONT_OVERWRITE);
 	}
 }

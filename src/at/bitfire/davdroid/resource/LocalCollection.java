@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
+
 import android.accounts.Account;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
@@ -23,8 +25,6 @@ import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
-
-import com.google.common.base.Joiner;
 
 public abstract class LocalCollection<ResourceType extends Resource> {
 	protected Account account;
@@ -100,7 +100,7 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 			
 			fresh.add(resource);
 		}
-		return fresh.toArray(new Event[0]);
+		return fresh.toArray(new Resource[0]);
 	}
 	
 	abstract public Resource findById(long localID, String resourceName, String eTag, boolean populate) throws RemoteException;
@@ -148,7 +148,7 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 			List<String> terms = new LinkedList<String>();
 			for (Resource res : remoteResources)
 				terms.add(entryColumnRemoteName() + "<>" + DatabaseUtils.sqlEscapeString(res.getName()));
-			String where = Joiner.on(" AND ").join(terms);
+			String where = StringUtils.join(terms, " AND ");
 			builder = builder.withSelection(where, new String[] {});
 		} else
 			builder = builder.withSelection(entryColumnRemoteName() + " IS NOT NULL", null);
