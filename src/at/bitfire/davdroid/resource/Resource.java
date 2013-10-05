@@ -12,11 +12,13 @@ import java.io.InputStream;
 
 import net.fortuna.ical4j.data.ParserException;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @ToString
 public abstract class Resource {
 	@Getter protected String name, ETag;
+	@Getter @Setter protected String uid;
 	@Getter protected long localID;
 	
 	@Getter protected boolean populated = false;

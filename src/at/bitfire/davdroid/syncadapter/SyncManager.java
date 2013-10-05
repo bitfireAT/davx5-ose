@@ -120,7 +120,7 @@ public class SyncManager {
 			return;
 		
 		for (Resource remoteResource : remoteResources) {
-			Resource localResource = local.getByRemoteName(remoteResource.getName());
+			Resource localResource = local.findByRemoteName(remoteResource.getName());
 			if (localResource == null)
 				resourcesToAdd.add(remoteResource);
 			else if (localResource.getETag() == null || !localResource.getETag().equals(remoteResource.getETag()))

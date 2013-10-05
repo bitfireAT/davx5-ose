@@ -34,9 +34,6 @@ import ezvcard.types.UrlType;
 public class Contact extends Resource {
 	public final String VCARD_STARRED = "X-DAVDROID-STARRED";
 	
-	@Getter @Setter private String uid;
-	
-	// VCard data
 	@Getter @Setter boolean starred;
 	
 	@Getter @Setter private String displayName;
