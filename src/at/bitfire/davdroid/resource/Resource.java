@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.ValidationException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -36,5 +37,5 @@ public abstract class Resource {
 	
 	
 	public abstract void parseEntity(InputStream entity) throws IOException, ParserException;
-	public abstract String toEntity();
+	public abstract String toEntity() throws IOException, ValidationException;
 }

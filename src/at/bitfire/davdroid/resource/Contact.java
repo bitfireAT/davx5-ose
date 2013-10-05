@@ -9,36 +9,58 @@ package at.bitfire.davdroid.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
-
-import com.google.common.base.Joiner;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ezvcard.Ezvcard;
-import ezvcard.VCard;
-import ezvcard.VCardVersion;
-import ezvcard.types.EmailType;
-import ezvcard.types.NicknameType;
-import ezvcard.types.NoteType;
-import ezvcard.types.PhotoType;
-import ezvcard.types.RawType;
-import ezvcard.types.StructuredNameType;
-import ezvcard.types.TelephoneType;
-import ezvcard.types.UidType;
-import ezvcard.types.UrlType;
+import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.ValidationException;
+import net.fortuna.ical4j.vcard.GroupRegistry;
+import net.fortuna.ical4j.vcard.ParameterFactoryRegistry;
+import net.fortuna.ical4j.vcard.Property;
+import net.fortuna.ical4j.vcard.Property.Id;
+import net.fortuna.ical4j.vcard.PropertyFactoryRegistry;
+import net.fortuna.ical4j.vcard.VCard;
+import net.fortuna.ical4j.vcard.VCardBuilder;
+import net.fortuna.ical4j.vcard.VCardOutputter;
+import net.fortuna.ical4j.vcard.property.Email;
+import net.fortuna.ical4j.vcard.property.Fn;
+import net.fortuna.ical4j.vcard.property.N;
+import net.fortuna.ical4j.vcard.property.Nickname;
+import net.fortuna.ical4j.vcard.property.Note;
+import net.fortuna.ical4j.vcard.property.Photo;
+import net.fortuna.ical4j.vcard.property.Telephone;
+import net.fortuna.ical4j.vcard.property.Uid;
+import net.fortuna.ical4j.vcard.property.Url;
+import net.fortuna.ical4j.vcard.property.Version;
 
-@ToString(callSuper=true)
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+
+import android.util.Base64;
+import android.util.Log;
+import at.bitfire.davdroid.ical4j.Starred;
+
+@ToString(callSuper = true)
 public class Contact extends Resource {
-	public final String VCARD_STARRED = "X-DAVDROID-STARRED";
+	private final static String TAG = "davdroid.Contact";
 	
 	@Getter @Setter boolean starred;
 	
 	@Getter @Setter private String displayName;
 	@Getter @Setter private String prefix, givenName, middleName, familyName, suffix;
-	@Getter @Setter private NicknameType nickNames = null;
+	@Getter @Setter private String[] nickNames;
+	
+	@Getter @Setter private byte[] photo;
 
 	
 	public Contact(String name, String ETag) {
@@ -53,28 +75,23 @@ public class Contact extends Resource {
 	
 	/* multiple-record fields */
 	
-	@Getter private List<PhotoType> photos = new LinkedList<PhotoType>();
-	public void addPhoto(PhotoType photo) {
-		photos.add(photo);
-	}
-	
-	@Getter private List<TelephoneType> phoneNumbers = new LinkedList<TelephoneType>();
-	public void addPhoneNumber(TelephoneType number) {
-		phoneNumbers.add(number);
-	}
-	
-	@Getter private List<EmailType> emails = new LinkedList<EmailType>();
-	public void addEmail(EmailType email) {
+	@Getter private List<Email> emails = new LinkedList<Email>();
+	public void addEmail(Email email) {
 		emails.add(email);
 	}
 	
-	@Getter private List<UrlType> URLs = new LinkedList<UrlType>();
-	public void addURL(UrlType url) {
+	@Getter private List<Telephone> phoneNumbers = new LinkedList<Telephone>();
+	public void addPhoneNumber(Telephone number) {
+		phoneNumbers.add(number);
+	}
+	
+	@Getter private List<URI> URLs = new LinkedList<URI>();
+	public void addURL(URI url) {
 		URLs.add(url);
 	}
 	
-	@Getter private List<NoteType> notes = new LinkedList<NoteType>();
-	public void addNote(NoteType note) {
+	@Getter private List<String> notes = new LinkedList<String>();
+	public void addNote(String note) {
 		notes.add(note);
 	}
 	
@@ -83,82 +100,151 @@ public class Contact extends Resource {
 	/* VCard methods */
 
 	@Override
-	public void parseEntity(InputStream is) throws IOException {
-		VCard vcard = Ezvcard.parse(is).first();
+	public void parseEntity(InputStream is) throws IOException, ParserException {
+		PropertyFactoryRegistry propertyFactoryRegistry = new PropertyFactoryRegistry();
+		propertyFactoryRegistry.register("X-" + Starred.PROPERTY_NAME, new Starred.Factory());
+
+		VCardBuilder builder = new VCardBuilder(
+				new InputStreamReader(is),
+				new GroupRegistry(),
+				propertyFactoryRegistry,
+				new ParameterFactoryRegistry()
+		);
+		VCard vcard = builder.build();
 		if (vcard == null)
 			return;
 		
-		if (vcard.getUid() != null)
-			uid = vcard.getUid().getValue();
+		Uid uid = (Uid)vcard.getProperty(Id.UID);
+		if (uid != null)
+			this.uid = uid.getValue();
+
+		for (Property p : vcard.getExtendedProperties(Starred.PROPERTY_NAME))
+			Log.i(TAG, p.getValue());
+		this.starred = vcard.getExtendedProperty(Starred.PROPERTY_NAME) != null;
 		
-		starred = false;
-		for (RawType rawStarred : vcard.getExtendedType(VCARD_STARRED))
-			starred = Boolean.parseBoolean(rawStarred.getValue());
+		Fn fn = (Fn)vcard.getProperty(Id.FN);
+		displayName = (fn != null) ? fn.getValue() : null;
+
+		Nickname nickname = (Nickname)vcard.getProperty(Id.NICKNAME);
+		if (nickname != null)
+			nickNames = nickname.getNames();
 		
-		if (vcard.getFormattedName() != null)
-			displayName = vcard.getFormattedName().getValue();
-		else
-			displayName = null;
-		
-		nickNames = vcard.getNickname();
-		
-		photos = vcard.getPhotos();
-		
-		if (vcard.getStructuredName() != null) {
-			prefix = Joiner.on(" ").join(vcard.getStructuredName().getPrefixes());
-			givenName = vcard.getStructuredName().getGiven();
-			middleName = Joiner.on(" ").join(vcard.getStructuredName().getAdditional());
-			familyName = vcard.getStructuredName().getFamily();
-			prefix = Joiner.on(" ").join(vcard.getStructuredName().getSuffixes());
-		} else {
-			prefix = givenName = middleName = familyName = suffix = null;
+		N n = (N)vcard.getProperty(Id.N);
+		if (n != null) {
+			prefix = StringUtils.join(n.getPrefixes(), " ");
+			givenName = n.getGivenName();
+			middleName = StringUtils.join(n.getAdditionalNames(), " ");
+			familyName = n.getFamilyName();
+			suffix = StringUtils.join(n.getSuffixes(), " ");
 		}
 		
-		phoneNumbers = vcard.getTelephoneNumbers();
-		emails = vcard.getEmails();
-		URLs = vcard.getUrls();
-		notes = vcard.getNotes();
+		for (Property p : vcard.getProperties(Id.EMAIL))
+			emails.add((Email)p);
+		
+		for (Property p : vcard.getProperties(Id.TEL))
+			phoneNumbers.add((Telephone)p);
+		
+		Photo photo = (Photo)vcard.getProperty(Id.PHOTO);
+		if (photo != null) {
+			if (photo.getBinary() != null)
+				this.photo = photo.getBinary();
+			else if (photo.getUri() != null) {
+				URI uri = photo.getUri();
+				try {
+					if (uri.getScheme().equalsIgnoreCase("data"))
+						this.photo = parseDataURI(uri);
+					else {
+						URL url = photo.getUri().toURL();
+						HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+						try {
+							this.photo = IOUtils.toByteArray(urlConnection.getInputStream());
+						} finally {
+					    	urlConnection.disconnect();
+					    }
+					}
+				} catch(MalformedURLException ex) {
+					Log.w(TAG, "Malformed photo URL given in VCard");
+				} catch(IOException ex) {
+					Log.w(TAG, "Couldn't download photo from URL given in VCard");
+				}
+			}
+		}
+		
+		for (Property p : vcard.getProperties(Id.URL))
+			URLs.add(((Url)p).getUri());
+		
+		for (Property p : vcard.getProperties(Id.NOTE))
+			notes.add(((Note)p).getValue());
 	}
 
 	
 	@Override
-	public String toEntity() {
+	public String toEntity() throws IOException, ValidationException {
 		VCard vcard = new VCard();
+		List<Property> properties = vcard.getProperties();
 		
-		if (uid != null)
-			vcard.setUid(new UidType(uid));
+		properties.add(Version.VERSION_4_0);
 		
-		vcard.addExtendedType(VCARD_STARRED, Boolean.toString(starred));
+		try {
+			if (uid != null)
+				properties.add(new Uid(new URI(uid)));
+		} catch (URISyntaxException e) {
+			Log.e(TAG, "Couldn't write UID to VCard");
+		}
+		
+		if (starred)
+			properties.add(new Starred());
 		
 		if (displayName != null)
-			vcard.setFormattedName(displayName);
+			properties.add(new Fn(displayName));
 		
 		if (nickNames != null)
-			vcard.setNickname(nickNames);
+			properties.add(new Nickname(nickNames));
 
-		for (PhotoType photo : photos)
-			vcard.addPhoto(photo);
+		if (photo != null) {
+			try {
+				String base64 = Base64.encodeToString(photo, Base64.NO_WRAP);
+				properties.add(new Photo(new URI("data", "image/jpeg;base64," + base64, null)));
+			} catch (URISyntaxException e) {
+				Log.w(TAG, "Couldn't encode photo");
+			}
+		}
+
+		if (familyName != null || middleName != null || givenName != null)
+			properties.add(new N(familyName, givenName, StringUtils.split(middleName),
+					StringUtils.split(prefix), StringUtils.split(suffix)));
 		
-		StructuredNameType n = new StructuredNameType();
-		if (prefix != null) n.addPrefix(prefix);
-		if (givenName != null) n.setGiven(givenName);
-		if (middleName != null) n.addAdditional(middleName);
-		if (familyName != null) n.setFamily(familyName);
-		if (suffix != null) n.addSuffix(suffix);
-		vcard.setStructuredName(n);
+		for (Email email : emails)
+			properties.add(email);
 		
-		for (TelephoneType number : phoneNumbers)
-			vcard.addTelephoneNumber(number);
+		for (Telephone number : phoneNumbers)
+			properties.add(number);
 		
-		for (EmailType email : emails)
-			vcard.addEmail(email);
+		for (URI uri : URLs)
+			properties.add(new Url(uri));
 		
-		for (UrlType url : URLs)
-			vcard.addUrl(url);
+		for (String note : notes)
+			properties.add(new Note(note));
 		
-		for (NoteType note : notes)
-			vcard.addNote(note);
+		StringWriter writer = new StringWriter();
+		new VCardOutputter(true).output(vcard, writer);
+		return writer.toString();
+	}
+	
+	
+	protected byte[] parseDataURI(URI uri) throws MalformedURLException {
+		String content = uri.getSchemeSpecificPart();
 		
-		return Ezvcard.write(vcard).version(VCardVersion.V4_0).go();
+		int commaPos = content.indexOf(',');
+		if (commaPos == -1)
+			throw new MalformedURLException("Malformed data: URL");
+		
+		String header = content.substring(0, commaPos);
+		String data = content.substring(commaPos + 1);
+		
+		if (header.endsWith(";base64"))
+			return Base64.decode(data, Base64.DEFAULT);
+		
+		return null;
 	}
 }

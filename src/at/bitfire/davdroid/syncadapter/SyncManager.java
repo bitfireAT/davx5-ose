@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.ValidationException;
 
 import org.apache.http.HttpException;
 
@@ -68,6 +69,8 @@ public class SyncManager {
 					dav.add(res);
 				} catch(PreconditionFailedException e) {
 					Log.i(TAG, "Didn't overwrite existing resource with other content");
+				} catch (ValidationException e) {
+					Log.e(TAG, "Couldn't create entity for adding: " + e.toString());
 				}
 				fetchCollection = true;
 				local.clearDirty(res);
@@ -84,6 +87,8 @@ public class SyncManager {
 					dav.update(res);
 				} catch(PreconditionFailedException e) {
 					Log.i(TAG, "Locally changed resource has been changed on the server in the meanwhile");
+				} catch (ValidationException e) {
+					Log.e(TAG, "Couldn't create entity for updating: " + e.toString());
 				}
 				fetchCollection = true;
 				local.clearDirty(res);

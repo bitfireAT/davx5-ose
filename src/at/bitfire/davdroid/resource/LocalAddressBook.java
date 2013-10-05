@@ -7,8 +7,14 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
-import java.util.Set;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.LinkedList;
+import java.util.List;
 
+import net.fortuna.ical4j.vcard.Parameter.Id;
+import net.fortuna.ical4j.vcard.parameter.Type;
+import net.fortuna.ical4j.vcard.property.Telephone;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentProviderClient;
@@ -27,19 +33,12 @@ import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.CommonDataKinds.Website;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.RawContacts;
+import android.util.Log;
 import at.bitfire.davdroid.Constants;
-import ezvcard.parameters.EmailTypeParameter;
-import ezvcard.parameters.ImageTypeParameter;
-import ezvcard.parameters.TelephoneTypeParameter;
-import ezvcard.types.EmailType;
-import ezvcard.types.NicknameType;
-import ezvcard.types.NoteType;
-import ezvcard.types.PhotoType;
-import ezvcard.types.TelephoneType;
-import ezvcard.types.UrlType;
+
 
 public class LocalAddressBook extends LocalCollection<Contact> {
-	//private final static String TAG = "davdroid.LocalAddressBook";
+	private final static String TAG = "davdroid.LocalAddressBook";
 	
 	protected AccountManager accountManager;
 	
@@ -137,91 +136,98 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		cursor = providerClient.query(dataURI(), new String[] { Nickname.NAME },
 				Nickname.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Nickname.CONTENT_ITEM_TYPE }, null);
-		NicknameType nickNames = new NicknameType();
+		List<String> nickNames = new LinkedList<String>();
 		while (cursor.moveToNext())
-			nickNames.addValue(cursor.getString(0));
-		if (!nickNames.getValues().isEmpty())
-			c.setNickNames(nickNames);
-		
-		// photos
-		cursor = providerClient.query(dataURI(), new String[] { Photo.PHOTO },
-			Photo.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-			new String[] { String.valueOf(c.getLocalID()), Photo.CONTENT_ITEM_TYPE }, null);
-		while (cursor.moveToNext())
-			c.addPhoto(new PhotoType(cursor.getBlob(0), ImageTypeParameter.JPEG));
-		
-		// phone numbers
-		cursor = providerClient.query(dataURI(), new String[] { Phone.TYPE, Phone.NUMBER },
-				Phone.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), Phone.CONTENT_ITEM_TYPE }, null);
-		while (cursor.moveToNext()) {
-			TelephoneType number = new TelephoneType(cursor.getString(1));
-			switch (cursor.getInt(0)) {
-			case Phone.TYPE_FAX_HOME:
-				number.addType(TelephoneTypeParameter.FAX);
-				number.addType(TelephoneTypeParameter.HOME);
-				break;
-			case Phone.TYPE_FAX_WORK:
-				number.addType(TelephoneTypeParameter.FAX);
-				number.addType(TelephoneTypeParameter.WORK);
-				break;
-			case Phone.TYPE_HOME:
-				number.addType(TelephoneTypeParameter.HOME);
-				break;
-			case Phone.TYPE_MOBILE:
-				number.addType(TelephoneTypeParameter.CELL);
-				break;
-			case Phone.TYPE_OTHER_FAX:
-				number.addType(TelephoneTypeParameter.FAX);
-				break;
-			case Phone.TYPE_PAGER:
-				number.addType(TelephoneTypeParameter.PAGER);
-				break;
-			case Phone.TYPE_WORK:
-				number.addType(TelephoneTypeParameter.WORK);
-				break;
-			case Phone.TYPE_WORK_MOBILE:
-				number.addType(TelephoneTypeParameter.CELL);
-				number.addType(TelephoneTypeParameter.WORK);
-				break;
-			case Phone.TYPE_WORK_PAGER:
-				number.addType(TelephoneTypeParameter.PAGER);
-				number.addType(TelephoneTypeParameter.WORK);
-				break;
-			}
-			c.addPhoneNumber(number);
-		}
+			nickNames.add(cursor.getString(0));
+		if (!nickNames.isEmpty())
+			c.setNickNames(nickNames.toArray(new String[0]));
 		
 		// email addresses
 		cursor = providerClient.query(dataURI(), new String[] { Email.TYPE, Email.ADDRESS },
 				Email.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Email.CONTENT_ITEM_TYPE }, null);
 		while (cursor.moveToNext()) {
-			EmailType email = new EmailType(cursor.getString(1));
+			net.fortuna.ical4j.vcard.property.Email email = new net.fortuna.ical4j.vcard.property.Email(cursor.getString(1));
 			switch (cursor.getInt(0)) {
 			case Email.TYPE_HOME:
-				email.addType(EmailTypeParameter.HOME);
+				email.getParameters().add(Type.HOME);
 				break;
 			case Email.TYPE_WORK:
-				email.addType(EmailTypeParameter.WORK);
+				email.getParameters().add(Type.WORK);
 				break;
 			}
 			c.addEmail(email);
 		}
+
+		// phone numbers
+		cursor = providerClient.query(dataURI(), new String[] { Phone.TYPE, Phone.NUMBER },
+				Phone.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
+				new String[] { String.valueOf(c.getLocalID()), Phone.CONTENT_ITEM_TYPE }, null);
+		while (cursor.moveToNext()) {
+			Telephone number = new Telephone(cursor.getString(1));
+			List<String> types = new LinkedList<String>();
+			
+			switch (cursor.getInt(0)) {
+			case Phone.TYPE_FAX_HOME:
+				types.add("fax");
+				types.add("home");
+				break;
+			case Phone.TYPE_FAX_WORK:
+				types.add("fax");
+				types.add("work");
+				break;
+			case Phone.TYPE_HOME:
+				types.add("home");
+				break;
+			case Phone.TYPE_MOBILE:
+				types.add("cell");
+				break;
+			case Phone.TYPE_OTHER_FAX:
+				types.add("fax");
+				break;
+			case Phone.TYPE_PAGER:
+				types.add("pager");
+				break;
+			case Phone.TYPE_WORK:
+				types.add("work");
+				break;
+			case Phone.TYPE_WORK_MOBILE:
+				types.add("cell");
+				types.add("work");
+				break;
+			case Phone.TYPE_WORK_PAGER:
+				types.add("pager");
+				types.add("work");
+				break;
+			}
+			number.getParameters().add(new Type(types.toArray(new String[0])));
+			c.addPhoneNumber(number);
+		}
+		
+		// photo
+		cursor = providerClient.query(dataURI(), new String[] { Photo.PHOTO },
+			Photo.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
+			new String[] { String.valueOf(c.getLocalID()), Photo.CONTENT_ITEM_TYPE }, null);
+		while (cursor.moveToNext())
+			c.setPhoto(cursor.getBlob(0));
 		
 		// URLs
 		cursor = providerClient.query(dataURI(), new String[] { Website.URL },
 				Website.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Website.CONTENT_ITEM_TYPE }, null);
 		while (cursor.moveToNext())
-			c.getURLs().add(new UrlType(cursor.getString(0)));
+			try {
+				c.addURL(new URI(cursor.getString(0)));
+			} catch (URISyntaxException ex) {
+				Log.w(TAG, "Found invalid contact URL in database: " + ex.toString());
+			}
 		
 		// notes
 		cursor = providerClient.query(dataURI(), new String[] { Note.NOTE },
 				Website.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Note.CONTENT_ITEM_TYPE }, null);
 		while (cursor.moveToNext())
-			c.addNote(new NoteType(cursor.getString(0)));
+			c.addNote(new String(cursor.getString(0)));
 		
 		c.populated = true;
 		return;
@@ -263,22 +269,22 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		pendingOperations.add(buildStructuredName(newDataInsertBuilder(localID, backrefIdx), contact).build());
 		
 		if (contact.getNickNames() != null)
-			for (String nick : contact.getNickNames().getValues())
+			for (String nick : contact.getNickNames())
 				pendingOperations.add(buildNickName(newDataInsertBuilder(localID, backrefIdx), nick).build());
 		
-		for (PhotoType photo : contact.getPhotos())
-			pendingOperations.add(buildPhoto(newDataInsertBuilder(localID, backrefIdx), photo).build());
-		
-		for (TelephoneType number : contact.getPhoneNumbers())
-			pendingOperations.add(buildPhoneNumber(newDataInsertBuilder(localID, backrefIdx), number).build());
-		
-		for (EmailType email : contact.getEmails())
+		for (net.fortuna.ical4j.vcard.property.Email email : contact.getEmails())
 			pendingOperations.add(buildEmail(newDataInsertBuilder(localID, backrefIdx), email).build());
 		
-		for (UrlType url : contact.getURLs())
-			pendingOperations.add(buildURL(newDataInsertBuilder(localID, backrefIdx), url).build());
+		for (Telephone number : contact.getPhoneNumbers())
+			pendingOperations.add(buildPhoneNumber(newDataInsertBuilder(localID, backrefIdx), number).build());
+
+		if (contact.getPhoto() != null)
+			pendingOperations.add(buildPhoto(newDataInsertBuilder(localID, backrefIdx), contact.getPhoto()).build());
 		
-		for (NoteType note : contact.getNotes())
+		for (URI uri : contact.getURLs())
+			pendingOperations.add(buildURL(newDataInsertBuilder(localID, backrefIdx), uri).build());
+		
+		for (String note : contact.getNotes())
 			pendingOperations.add(buildNote(newDataInsertBuilder(localID, backrefIdx), note).build());
 	}
 	
@@ -307,74 +313,94 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			.withValue(Nickname.NAME, nickName);
 	}
 	
-	protected Builder buildPhoto(Builder builder, PhotoType photo) {
-		return builder
-			.withValue(Data.MIMETYPE, Photo.CONTENT_ITEM_TYPE)
-			.withValue(Photo.PHOTO, photo.getData());
-	}
-	
-	protected Builder buildPhoneNumber(Builder builder, TelephoneType number) {
-		Set<TelephoneTypeParameter> types = number.getTypes();
-		int type;
-		if (types.contains(TelephoneTypeParameter.FAX)) {
-			if (types.contains(TelephoneTypeParameter.HOME))
-				type = Phone.TYPE_FAX_HOME;
-			else if (types.contains(TelephoneTypeParameter.WORK))
-				type = Phone.TYPE_FAX_WORK;
-			else
-				type = Phone.TYPE_OTHER_FAX;
-			
-		} else if (types.contains(TelephoneTypeParameter.CELL)) {
-			if (types.contains(TelephoneTypeParameter.WORK))
-				type = Phone.TYPE_WORK_MOBILE;
-			else
-				type = Phone.TYPE_MOBILE;
-			
-		} else if (types.contains(TelephoneTypeParameter.PAGER)) {
-			if (types.contains(TelephoneTypeParameter.WORK))
-				type = Phone.TYPE_WORK_PAGER;
-			else
-				type = Phone.TYPE_PAGER;
-			
-		} else if (types.contains(TelephoneTypeParameter.HOME)) {
-			type = Phone.TYPE_HOME;
-		} else if (types.contains(TelephoneTypeParameter.WORK)) {
-			type = Phone.TYPE_WORK;
-		} else
-			type = Phone.TYPE_OTHER;
-		
-		return builder
-			.withValue(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)
-			.withValue(Phone.NUMBER, number.getText())
-			.withValue(Email.TYPE, type);
-	}
-	
-	protected Builder buildEmail(Builder builder, EmailType email) {
+	protected Builder buildEmail(Builder builder, net.fortuna.ical4j.vcard.property.Email email) {
 		builder = builder
 			.withValue(Data.MIMETYPE, Email.CONTENT_ITEM_TYPE)
 			.withValue(Email.ADDRESS, email.getValue());
 		
 		int type = 0;
-		for (EmailTypeParameter emailType : email.getTypes()) {
-			if (emailType.equals(EmailTypeParameter.HOME))
-				type = Email.TYPE_HOME;
-			else if (emailType.equals(EmailTypeParameter.WORK))
-				type = Email.TYPE_WORK;
-		}
+		
+		Type emailType = (Type)email.getParameter(Id.TYPE);
+		if (emailType == Type.HOME)
+			type = Email.TYPE_HOME;
+		else if (emailType == Type.WORK)
+			type = Email.TYPE_WORK;
+		
 		if (type != 0)
 			builder = builder.withValue(Email.TYPE, type);
+		
 		return builder;
 	}
-
-	protected Builder buildURL(Builder builder, UrlType url) {
+	
+	protected Builder buildPhoneNumber(Builder builder, Telephone number) {
+		boolean	fax = false,
+				cell = false,
+				pager = false,
+				home = false,
+				work = false;
+		
+		Type phoneType = (Type)number.getParameter(Id.TYPE);
+		if (phoneType != null)			
+			for (String strType : phoneType.getTypes())
+				if (strType.equalsIgnoreCase("fax"))
+					fax = true;
+				else if (strType.equalsIgnoreCase("cell"))
+					cell = true;
+				else if (strType.equalsIgnoreCase("pager"))
+					pager = true;
+				else if (strType.equalsIgnoreCase("home"))
+					home = true;
+				else if (strType.equalsIgnoreCase("work"))
+					work = true;
+		
+		int type = Phone.TYPE_OTHER;
+		if (fax) {
+			if (home)
+				type = Phone.TYPE_FAX_HOME;
+			else if (work)
+				type = Phone.TYPE_FAX_WORK;
+			else
+				type = Phone.TYPE_OTHER_FAX;
+			
+		} else if (cell) {
+			if (work)
+				type = Phone.TYPE_WORK_MOBILE;
+			else
+				type = Phone.TYPE_MOBILE;
+			
+		} else if (pager) {
+			if (work)
+				type = Phone.TYPE_WORK_PAGER;
+			else
+				type = Phone.TYPE_PAGER;
+			
+		} else if (home) {
+			type = Phone.TYPE_HOME;
+		} else if (work) {
+			type = Phone.TYPE_WORK;
+		}
+		
 		return builder
-			.withValue(Data.MIMETYPE, Website.CONTENT_ITEM_TYPE)
-			.withValue(Website.URL, url.getValue());
+			.withValue(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)
+			.withValue(Phone.NUMBER, number.getValue())
+			.withValue(Phone.TYPE, type);
 	}
 	
-	protected Builder buildNote(Builder builder, NoteType note) {
+	protected Builder buildPhoto(Builder builder, byte[] photo) {
+		return builder
+			.withValue(Data.MIMETYPE, Photo.CONTENT_ITEM_TYPE)
+			.withValue(Photo.PHOTO, photo);
+	}
+	
+	protected Builder buildURL(Builder builder, URI uri) {
+		return builder
+			.withValue(Data.MIMETYPE, Website.CONTENT_ITEM_TYPE)
+			.withValue(Website.URL, uri.toString());
+	}
+	
+	protected Builder buildNote(Builder builder, String note) {
 		return builder
 			.withValue(Data.MIMETYPE, Note.CONTENT_ITEM_TYPE)
-			.withValue(Note.NOTE, note.getValue());
+			.withValue(Note.NOTE, note);
 	}
 }
