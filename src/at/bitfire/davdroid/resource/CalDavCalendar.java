@@ -12,6 +12,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
 
+import net.fortuna.ical4j.data.ParserException;
+
 import org.apache.http.HttpException;
 
 import at.bitfire.davdroid.webdav.WebDavCollection;
@@ -49,7 +51,7 @@ public class CalDavCalendar extends RemoteCollection {
 	}
 
 	@Override
-	public Event[] multiGet(Resource[] resources) throws IOException, IncapableResourceException, HttpException {
+	public Event[] multiGet(Resource[] resources) throws IOException, IncapableResourceException, HttpException, ParserException {
 		if (resources.length == 1)
 			return new Event[] { (Event)get(resources[0]) };
 		
