@@ -9,27 +9,78 @@ package at.bitfire.davdroid.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
+import ezvcard.types.PhotoType;
 import lombok.Getter;
 import lombok.Setter;
+import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.Component;
+import net.fortuna.ical4j.model.Date;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.DefaultTimeZoneRegistryFactory;
+import net.fortuna.ical4j.model.Property;
+import net.fortuna.ical4j.model.PropertyList;
+import net.fortuna.ical4j.model.TimeZoneRegistry;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.parameter.Value;
+import net.fortuna.ical4j.model.property.Attendee;
+import net.fortuna.ical4j.model.property.Clazz;
+import net.fortuna.ical4j.model.property.DateProperty;
+import net.fortuna.ical4j.model.property.Description;
+import net.fortuna.ical4j.model.property.DtEnd;
+import net.fortuna.ical4j.model.property.DtStart;
+import net.fortuna.ical4j.model.property.ExDate;
+import net.fortuna.ical4j.model.property.ExRule;
+import net.fortuna.ical4j.model.property.Location;
+import net.fortuna.ical4j.model.property.Organizer;
+import net.fortuna.ical4j.model.property.ProdId;
+import net.fortuna.ical4j.model.property.RDate;
+import net.fortuna.ical4j.model.property.RRule;
+import net.fortuna.ical4j.model.property.Status;
+import net.fortuna.ical4j.model.property.Summary;
+import net.fortuna.ical4j.model.property.Uid;
+import net.fortuna.ical4j.model.property.Version;
+import android.text.format.Time;
 import android.util.Log;
-import biweekly.Biweekly;
-import biweekly.ICalendar;
-import biweekly.component.VEvent;
-import biweekly.property.DateEnd;
-import biweekly.property.DateStart;
+import at.bitfire.davdroid.Constants;
 
 
 public class Event extends Resource {
 	private final static String TAG = "davdroid.Event";
 	
+	private TimeZoneRegistry tzRegistry;
+	
 	@Getter @Setter private String uid, summary, location, description;
-	@Getter @Setter private DateStart dtStart;
-	@Getter @Setter private DateEnd dtEnd;
+	
+	@Getter private DtStart dtStart;
+	@Getter private DtEnd dtEnd;
+	@Getter @Setter private RDate rdate;
+	@Getter @Setter private RRule rrule;
+	@Getter @Setter private ExDate exdate;
+	@Getter @Setter private ExRule exrule;
+	
+	@Getter @Setter private Boolean forPublic;
+	@Getter @Setter private Status status;
+	
+	
+	@Getter @Setter private Organizer organizer;
+	@Getter private List<Attendee> attendees = new LinkedList<Attendee>();
+	public void addAttendee(Attendee attendee) {
+		attendees.add(attendee);
+	}
 	
 
 	public Event(String name, String ETag) {
 		super(name, ETag);
+		
+		DefaultTimeZoneRegistryFactory factory = new DefaultTimeZoneRegistryFactory();
+		tzRegistry = factory.createRegistry();
 	}
 	
 	public Event(long localID, String name, String ETag) {
@@ -39,21 +90,30 @@ public class Event extends Resource {
 
 
 	@Override
-	public void parseEntity(InputStream entity) throws IOException {
+	public void parseEntity(InputStream entity) throws IOException, ParserException {
 		if (entity == null)
 			return;
 		
-		ICalendar ical = Biweekly.parse(entity).first();
+		CalendarBuilder builder = new CalendarBuilder();
+		net.fortuna.ical4j.model.Calendar ical = builder.build(entity);
 		if (ical == null)
 			return;
 		
-		// event		
-		VEvent event = ical.getEvents().get(0);		// DAV .ics may contain only one entry (RFC4791 4.1)
+		// event
+		VEvent event = (VEvent) ical.getComponents(Component.VEVENT).get(0);
 		if (event == null)
 			return;
 		
 		if (event.getUid() != null)
 			uid = event.getUid().toString();
+		
+		dtStart = event.getStartDate();	validateTimeZone(dtStart);
+		dtEnd = event.getEndDate();	validateTimeZone(dtEnd);
+		
+		rrule = (RRule)event.getProperty(Property.RRULE);
+		rdate = (RDate)event.getProperty(Property.RDATE);
+		exrule = (ExRule)event.getProperty(Property.EXRULE);
+		exdate = (ExDate)event.getProperty(Property.EXDATE);
 		
 		if (event.getSummary() != null)
 			summary = event.getSummary().getValue();
@@ -62,34 +122,173 @@ public class Event extends Resource {
 		if (event.getDescription() != null)
 			description = event.getDescription().getValue();
 		
-		dtStart = event.getDateStart();
-		dtEnd = event.getDateEnd();
+		status = event.getStatus();
 		
-		Log.i(TAG, "Parsed iCal: " + ical.write());
+		organizer = event.getOrganizer();
+		for (Object o : event.getProperties(Property.ATTENDEE))
+			attendees.add((Attendee)o);
+		
+		Clazz classification = event.getClassification();
+		if (classification != null) {
+			if (classification == Clazz.PUBLIC)
+				forPublic = true;
+			else if (classification == Clazz.CONFIDENTIAL || classification == Clazz.PRIVATE)
+				forPublic = false;
+		}
+		
+		Log.i(TAG, "Parsed iCal: " + ical.toString());
 	}
 
 	@Override
 	public String toEntity() {
-		ICalendar ical = new ICalendar();
+		net.fortuna.ical4j.model.Calendar ical = new net.fortuna.ical4j.model.Calendar();
+		ical.getProperties().add(new ProdId("-//bitfire web engineering//DAVdroid " + Constants.APP_VERSION + "//EN"));
+		ical.getProperties().add(Version.VERSION_2_0);
+		
 		VEvent event = new VEvent();
+		PropertyList props = event.getProperties();
 		
 		if (uid != null)
-			event.setUid(uid);
+			props.add(new Uid(uid));
+		
+		props.add(dtStart);
+		props.add(dtEnd);
+		
+		if (rrule != null)
+			props.add(rrule);
+		if (rdate != null)
+			props.add(rdate);
+		if (exrule != null)
+			props.add(exrule);
+		if (exdate != null)
+			props.add(exdate);
 		
 		if (summary != null)
-			event.setSummary(summary);
+			props.add(new Summary(summary));
 		if (location != null)
-			event.setLocation(location);
+			props.add(new Location(location));
 		if (description != null)
-			event.setDescription(description);
+			props.add(new Description(description));
+		
+		if (status != null)
+			props.add(status);
+		
+		if (organizer != null)
+			props.add(organizer);
+		for (Attendee attendee : attendees)
+			props.add(attendee);
+		
+		if (forPublic != null)
+			event.getProperties().add(forPublic ? Clazz.PUBLIC : Clazz.PRIVATE);
 
-		event.setDateStart(dtStart);
+		ical.getComponents().add(event);
 		
-		event.setDateEnd(dtEnd);
-		
-		ical.addEvent(event);
-		Log.i(TAG, "Generated iCAL:" + ical.write());
-		return ical.write();
+		/*if (dtStart.getTimeZone() != null)
+			ical.getComponents().add(dtStart.getTimeZone().getVTimeZone());
+		if (dtEnd.getTimeZone() != null)
+			ical.getComponents().add(dtEnd.getTimeZone().getVTimeZone());*/
+			
+		return ical.toString();
 	}
 
+	
+	public long getDtStartInMillis() {
+		return dtStart.getDate().getTime();
+	}
+	
+	public String getDtStartTzID() {
+		return getTzId(dtStart);
+	}
+	
+	public void setDtStart(long tsStart, String tzID) {
+		if (tzID == null) { 	// all-day
+			dtStart = new DtStart(new Date(tsStart));
+		} else {
+			DateTime start = new DateTime(tsStart);
+			start.setTimeZone(tzRegistry.getTimeZone(tzID));
+			dtStart = new DtStart(start);
+		}
+	}
+	
+	
+	public long getDtEndInMillis() {
+		if (hasNoTime(dtStart) && dtEnd == null) {
+			// dtEnd = dtStart + 1 day
+			Calendar c = Calendar.getInstance(TimeZone.getTimeZone(Time.TIMEZONE_UTC));
+			c.setTime(dtStart.getDate());
+			c.add(Calendar.DATE, 1);
+			return c.getTimeInMillis();
+		}
+		
+		return dtEnd.getDate().getTime();
+	}
+	
+	public String getDtEndTzID() {
+		return getTzId(dtEnd);
+	}
+	
+	public void setDtEnd(long tsEnd, String tzID) {
+		if (tzID == null) { 	// all-day
+			dtEnd = new DtEnd(new Date(tsEnd));
+		} else {
+			DateTime end = new DateTime(tsEnd);
+			end.setTimeZone(tzRegistry.getTimeZone(tzID));
+			dtEnd = new DtEnd(end);
+		}
+	}
+	
+	
+	// helpers
+	
+	public boolean isAllDay() {
+		if (hasNoTime(dtStart)) {
+			// events on that day
+			if (dtEnd == null)
+				return true;
+			
+			// all-day events
+			if (hasNoTime(dtEnd))
+				return true;
+		}
+		return false;
+	}
+
+	protected boolean hasNoTime(DateProperty date) {
+		return !(date.getDate() instanceof DateTime);
+	}
+
+	String getTzId(DateProperty date) {
+		if (date == null)
+			return null;
+		
+		if (hasNoTime(date) || date.isUtc())
+			return Time.TIMEZONE_UTC;
+		else if (date.getTimeZone() != null)
+			return date.getTimeZone().getID();
+		else if (date.getParameter(Value.TZID) != null)
+			return date.getParameter(Value.TZID).getValue();
+		return null;
+	}
+
+	/* guess matching Android timezone ID */
+	protected void validateTimeZone(DateProperty date) {
+		if (date.isUtc() || hasNoTime(date))
+			return;
+		
+		String tzID = getTzId(date);
+		if (tzID == null)
+			return;
+		
+		String localTZ = Time.TIMEZONE_UTC;
+		
+		String availableTZs[] = SimpleTimeZone.getAvailableIDs();
+		for (String availableTZ : availableTZs)
+			if (tzID.indexOf(availableTZ, 0) != -1) {
+				localTZ = availableTZ;
+				break;
+			}
+		
+		Log.i(TAG, "Assuming time zone " + localTZ + " for " + tzID);
+		date.setTimeZone(tzRegistry.getTimeZone(localTZ));
+	}
 }

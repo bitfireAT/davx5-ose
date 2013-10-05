@@ -12,6 +12,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
 
+import net.fortuna.ical4j.data.ParserException;
+
 import org.apache.http.HttpException;
 
 import at.bitfire.davdroid.webdav.WebDavCollection;
@@ -48,7 +50,7 @@ public class CardDavAddressBook extends RemoteCollection {
 	}
 
 	@Override
-	public Contact[] multiGet(Resource[] resources) throws IOException, IncapableResourceException, HttpException {
+	public Contact[] multiGet(Resource[] resources) throws IOException, IncapableResourceException, HttpException, ParserException {
 		if (resources.length == 1) {
 			Resource resource = get(resources[0]);
 			if (resource != null)

@@ -22,7 +22,9 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
+import android.provider.CalendarContract;
 import android.provider.ContactsContract;
+import android.provider.CalendarContract.Events;
 import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.CommonDataKinds.Nickname;
 import android.provider.ContactsContract.CommonDataKinds.Note;
@@ -300,12 +302,6 @@ public class LocalAddressBook extends LocalCollection {
 		// ... and insert new ones
 		addDataRows(remoteContact, localContact.getLocalID(), -1);
 	}
-	
-	@Override
-	public void delete(Resource contact) {
-		pendingOperations.add(ContentProviderOperation.newDelete(
-				ContentUris.withAppendedId(entriesURI(), contact.getLocalID())).build());
-	}
 
 	@Override
 	public void deleteAllExceptRemoteNames(Resource[] remoteResources) {
@@ -323,19 +319,21 @@ public class LocalAddressBook extends LocalCollection {
 		pendingOperations.add(builder.build());
 	}
 	
-	public void clearDirty(Resource resource) {
-		pendingOperations.add(ContentProviderOperation
-				.newUpdate(ContentUris.withAppendedId(entriesURI(), resource.getLocalID()))
-				.withValue(RawContacts.DIRTY, 0).build());
-	}
 	
 	
 	/* private helper methods */
 	
-	protected Uri dataURI() {
-		return Data.CONTENT_URI.buildUpon()
+	@Override
+	protected Uri syncAdapterURI(Uri baseURI) {
+		return baseURI.buildUpon()
+				.appendQueryParameter(RawContacts.ACCOUNT_NAME, account.name)
+				.appendQueryParameter(RawContacts.ACCOUNT_TYPE, account.type)
 				.appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
 				.build();
+	}
+	
+	protected Uri dataURI() {
+		return syncAdapterURI(Data.CONTENT_URI);
 	}
 
 	@Override
@@ -345,6 +343,13 @@ public class LocalAddressBook extends LocalCollection {
 				.appendQueryParameter(RawContacts.ACCOUNT_TYPE, account.type)
 				.appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
 				.build();
+	}
+	
+	@Override
+	public void clearDirty(Resource resource) {
+		pendingOperations.add(ContentProviderOperation
+				.newUpdate(ContentUris.withAppendedId(entriesURI(), resource.getLocalID()))
+				.withValue(RawContacts.DIRTY, 0).build());
 	}
 	
 	private Builder newInsertBuilder(long raw_contact_id, Integer backrefIdx) {

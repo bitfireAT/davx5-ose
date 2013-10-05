@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.fortuna.ical4j.data.ParserException;
+
 import org.apache.http.HttpException;
 
 import android.accounts.Account;
@@ -37,7 +39,7 @@ public class SyncManager {
 		this.accountManager = accountManager;
 	}
 
-	public void synchronize(LocalCollection local, RemoteCollection dav, boolean manualSync, SyncResult syncResult) throws RemoteException, OperationApplicationException, IOException, IncapableResourceException, HttpException {
+	public void synchronize(LocalCollection local, RemoteCollection dav, boolean manualSync, SyncResult syncResult) throws RemoteException, OperationApplicationException, IOException, IncapableResourceException, HttpException, ParserException {
 		boolean fetchCollection = false;
 		
 		// PHASE 1: UPLOAD LOCALLY-CHANGED RESOURCES
@@ -135,7 +137,7 @@ public class SyncManager {
 			}
 		local.commit();
 		
-		Log.i(TAG, "Updating " + resourcesToAdd.size() + " remote resource(s)");
+		Log.i(TAG, "Updating " + resourcesToUpdate.size() + " remote resource(s)");
 		if (!resourcesToUpdate.isEmpty())
 			for (Resource res : dav.multiGet(resourcesToUpdate.toArray(new Resource[0]))) {
 				local.updateByRemoteName(res);

@@ -9,6 +9,8 @@ package at.bitfire.davdroid.resource;
 
 import java.io.IOException;
 
+import net.fortuna.ical4j.data.ParserException;
+
 import org.apache.http.HttpException;
 
 import lombok.Getter;
@@ -40,12 +42,12 @@ public abstract class RemoteCollection {
 		return null;
 	}
 	
-	public abstract Resource[] multiGet(Resource[] resource) throws IOException, IncapableResourceException, HttpException;
+	public abstract Resource[] multiGet(Resource[] resource) throws IOException, IncapableResourceException, HttpException, ParserException;
 	
 	
 	/* internal member methods */
 
-	public Resource get(Resource resource) throws IOException, HttpException {
+	public Resource get(Resource resource) throws IOException, HttpException, ParserException {
 		WebDavResource member = new WebDavResource(collection, resource.getName());
 		member.get();
 		resource.parseEntity(member.getContent());

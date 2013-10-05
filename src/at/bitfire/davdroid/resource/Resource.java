@@ -10,6 +10,7 @@ package at.bitfire.davdroid.resource;
 import java.io.IOException;
 import java.io.InputStream;
 
+import net.fortuna.ical4j.data.ParserException;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -32,6 +33,6 @@ public abstract class Resource {
 	}
 	
 	
-	public abstract void parseEntity(InputStream entity) throws IOException;
+	public abstract void parseEntity(InputStream entity) throws IOException, ParserException;
 	public abstract String toEntity();
 }

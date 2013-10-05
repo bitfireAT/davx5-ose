@@ -12,9 +12,13 @@ import java.util.ArrayList;
 import android.accounts.Account;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
+import android.content.ContentUris;
 import android.content.OperationApplicationException;
 import android.net.Uri;
 import android.os.RemoteException;
+import android.provider.ContactsContract;
+import android.provider.CalendarContract.Events;
+import android.provider.ContactsContract.RawContacts;
 
 public abstract class LocalCollection {
 	protected Account account;
@@ -42,10 +46,17 @@ public abstract class LocalCollection {
 	// modify
 	public abstract void add(Resource resource);
 	public abstract void updateByRemoteName(Resource remoteResource) throws RemoteException;
-	public abstract void delete(Resource resource);
+	
+	public void delete(Resource resource) {
+		pendingOperations.add(ContentProviderOperation.newDelete(
+			ContentUris.withAppendedId(entriesURI(), resource.getLocalID()))
+			.build());
+	}
+	
 	public abstract void deleteAllExceptRemoteNames(Resource[] remoteRecords);
 	
 	// database operations
+	protected abstract Uri syncAdapterURI(Uri baseURI);
 	protected abstract Uri entriesURI();
 	public abstract void clearDirty(Resource resource);
 	

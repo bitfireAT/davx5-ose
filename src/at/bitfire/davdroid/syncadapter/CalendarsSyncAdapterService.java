@@ -12,6 +12,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import lombok.Synchronized;
+import net.fortuna.ical4j.data.ParserException;
 
 import org.apache.http.HttpException;
 
@@ -63,6 +64,9 @@ public class CalendarsSyncAdapterService extends Service {
 				SyncResult syncResult) {
 			Log.i(TAG, "Performing sync for authority " + authority);
 			
+			// set class loader for iCal4j ResourceLoader
+			Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
+			
 			try {
 				SyncManager syncManager = new SyncManager(account, accountManager);
 
@@ -76,6 +80,9 @@ public class CalendarsSyncAdapterService extends Service {
 				}
 				
 			} catch (HttpException e) {
+				syncResult.stats.numParseExceptions++;
+				Log.e(TAG, e.toString());
+			} catch (ParserException e) {
 				syncResult.stats.numParseExceptions++;
 				Log.e(TAG, e.toString());
 			} catch (RemoteException e) {
