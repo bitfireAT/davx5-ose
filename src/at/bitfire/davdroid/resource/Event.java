@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
-import ezvcard.types.PhotoType;
 import lombok.Getter;
 import lombok.Setter;
 import net.fortuna.ical4j.data.CalendarBuilder;
@@ -56,7 +55,7 @@ public class Event extends Resource {
 	
 	private TimeZoneRegistry tzRegistry;
 	
-	@Getter @Setter private String uid, summary, location, description;
+	@Getter @Setter private String summary, location, description;
 	
 	@Getter private DtStart dtStart;
 	@Getter private DtEnd dtEnd;

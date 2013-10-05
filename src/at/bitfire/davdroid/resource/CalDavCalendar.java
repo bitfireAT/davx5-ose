@@ -8,66 +8,30 @@
 package at.bitfire.davdroid.resource;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.LinkedList;
 
-import net.fortuna.ical4j.data.ParserException;
-
-import org.apache.http.HttpException;
-
-import at.bitfire.davdroid.webdav.WebDavCollection;
 import at.bitfire.davdroid.webdav.WebDavCollection.MultigetType;
-import at.bitfire.davdroid.webdav.WebDavResource;
 
-public class CalDavCalendar extends RemoteCollection {
+public class CalDavCalendar extends RemoteCollection<Event> { 
 	//private final static String TAG = "davdroid.CalDavCalendar";
-	
-	public CalDavCalendar(String baseURL, String user, String password) throws IOException {
-		try {
-			collection = new WebDavCollection(new URI(baseURL), user, password);
-		} catch (URISyntaxException e) {
-			throw new IOException();
-		}
-	}
-	
 	
 	@Override
 	protected String memberContentType() {
 		return "text/calendar";
 	}
+
+	@Override
+	protected MultigetType multiGetType() {
+		return MultigetType.CALENDAR;
+	}
 	
-
 	@Override
-	public Event[] getMemberETags() throws IOException, IncapableResourceException, HttpException {
-		super.getMemberETags();
-		
-		LinkedList<Event> resources = new LinkedList<Event>();
-		for (WebDavResource member : collection.getMembers()) {
-			Event e = new Event(member.getName(), member.getETag());
-			resources.add(e);
-		}
-		return resources.toArray(new Event[0]);
+	protected Event newResourceSkeleton(String name, String ETag) {
+		return new Event(name, ETag);
 	}
-
-	@Override
-	public Event[] multiGet(Resource[] resources) throws IOException, IncapableResourceException, HttpException, ParserException {
-		if (resources.length == 1)
-			return new Event[] { (Event)get(resources[0]) };
-		
-		LinkedList<String> names = new LinkedList<String>();
-		for (Resource c : resources)
-			names.add(c.getName());
-		
-		collection.multiGet(names.toArray(new String[0]), MultigetType.CALENDAR);
-		
-		LinkedList<Event> foundEvents = new LinkedList<Event>();
-		for (WebDavResource member : collection.getMembers()) {
-			Event e = new Event(member.getName(), member.getETag());
-			e.parseEntity(member.getContent());
-			foundEvents.add(e);
-		}
-		return foundEvents.toArray(new Event[0]);
+	
+	
+	public CalDavCalendar(String baseURL, String user, String password) throws IOException, URISyntaxException {
+		super(baseURL, user, password);
 	}
-
 }

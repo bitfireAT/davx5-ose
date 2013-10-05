@@ -8,24 +8,35 @@
 package at.bitfire.davdroid.resource;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.LinkedList;
+import java.util.List;
 
+import lombok.Getter;
 import net.fortuna.ical4j.data.ParserException;
 
 import org.apache.http.HttpException;
 
-import lombok.Getter;
 import at.bitfire.davdroid.webdav.HttpPropfind;
 import at.bitfire.davdroid.webdav.WebDavCollection;
+import at.bitfire.davdroid.webdav.WebDavCollection.MultigetType;
 import at.bitfire.davdroid.webdav.WebDavResource;
 import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
 
-public abstract class RemoteCollection {
+public abstract class RemoteCollection<ResourceType extends Resource> {
 	@Getter WebDavCollection collection;
 
-	protected abstract String memberContentType();
+	abstract protected String memberContentType();
+	abstract protected MultigetType multiGetType();
+	abstract protected ResourceType newResourceSkeleton(String name, String ETag);
+	
+	public RemoteCollection(String baseURL, String user, String password) throws IOException, URISyntaxException {
+		collection = new WebDavCollection(new URI(baseURL), user, password);
+	}
 
 	
-	/* collection methods */
+	/* collection operations */
 
 	public String getCTag() throws IOException, HttpException {
 		try {
@@ -39,33 +50,57 @@ public abstract class RemoteCollection {
 	
 	public Resource[] getMemberETags() throws IOException, IncapableResourceException, HttpException {
 		collection.propfind(HttpPropfind.Mode.MEMBERS_ETAG);
-		return null;
+			
+		List<ResourceType> resources = new LinkedList<ResourceType>();
+		for (WebDavResource member : collection.getMembers())
+			resources.add(newResourceSkeleton(member.getName(), member.getETag()));
+				return resources.toArray(new Resource[0]);
 	}
 	
-	public abstract Resource[] multiGet(Resource[] resource) throws IOException, IncapableResourceException, HttpException, ParserException;
+	@SuppressWarnings("unchecked")
+	public Resource[] multiGet(ResourceType[] resources) throws IOException, IncapableResourceException, HttpException, ParserException {
+		if (resources.length == 1) {
+			Resource resource = get(resources[0]);
+			return (resource != null) ? (ResourceType[]) new Resource[] { resource } : null;
+		}
+		
+		LinkedList<String> names = new LinkedList<String>();
+		for (ResourceType resource : resources)
+			names.add(resource.getName());
+		
+		collection.multiGet(names.toArray(new String[0]), multiGetType());
+		
+		LinkedList<ResourceType> foundResources = new LinkedList<ResourceType>();
+		for (WebDavResource member : collection.getMembers()) {
+			ResourceType resource = newResourceSkeleton(member.getName(), member.getETag());
+			resource.parseEntity(member.getContent());
+			foundResources.add(resource);
+		}
+		return foundResources.toArray(new Resource[0]);
+	}
 	
 	
-	/* internal member methods */
+	/* internal member operations */
 
-	public Resource get(Resource resource) throws IOException, HttpException, ParserException {
+	public ResourceType get(ResourceType resource) throws IOException, HttpException, ParserException {
 		WebDavResource member = new WebDavResource(collection, resource.getName());
 		member.get();
 		resource.parseEntity(member.getContent());
 		return resource;
 	}
 	
-	public void add(Resource resource) throws IOException, HttpException {
+	public void add(ResourceType resource) throws IOException, HttpException {
 		WebDavResource member = new WebDavResource(collection, resource.getName(), resource.getETag());
 		member.setContentType(memberContentType());
 		member.put(resource.toEntity().getBytes("UTF-8"), PutMode.ADD_DONT_OVERWRITE);
 	}
 
-	public void delete(Resource resource) throws IOException, HttpException {
+	public void delete(ResourceType resource) throws IOException, HttpException {
 		WebDavResource member = new WebDavResource(collection, resource.getName(), resource.getETag());
 		member.delete();
 	}
 	
-	public void update(Resource resource) throws IOException, HttpException {
+	public void update(ResourceType resource) throws IOException, HttpException {
 		WebDavResource member = new WebDavResource(collection, resource.getName(), resource.getETag());
 		member.setContentType(memberContentType());
 		member.put(resource.toEntity().getBytes("UTF-8"), PutMode.UPDATE_DONT_OVERWRITE);

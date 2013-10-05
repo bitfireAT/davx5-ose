@@ -10,8 +10,6 @@ package at.bitfire.davdroid.resource;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
 
 import lombok.Getter;
 import net.fortuna.ical4j.model.Parameter;
@@ -36,33 +34,44 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Attendees;
 import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
-import android.provider.ContactsContract.RawContacts;
 import android.provider.ContactsContract;
 import android.util.Log;
 import at.bitfire.davdroid.syncadapter.ServerInfo;
 
-import com.google.common.base.Joiner;
-
-public class LocalCalendar extends LocalCollection {
+public class LocalCalendar extends LocalCollection<Event> {
 	private static final String TAG = "davdroid.LocalCalendar";
-
-	protected final static String
-		CALENDARS_COLUMN_CTAG = Calendars.CAL_SYNC1,
-		EVENTS_COLUMN_REMOTE_NAME = Events._SYNC_ID,
-		EVENTS_COLUMN_ETAG = Events.SYNC_DATA1;
 
 	protected long id;
 	@Getter protected String path, cTag;
 	
+	protected static String COLLECTION_COLUMN_CTAG = Calendars.CAL_SYNC1;
+
 	
-	/* class methods */
+	/* database fields */
+	
+	@Override
+	protected Uri entriesURI() {
+		return syncAdapterURI(Events.CONTENT_URI);
+	}
+
+	protected String entryColumnAccountType()	{ return Events.ACCOUNT_TYPE; }
+	protected String entryColumnAccountName()	{ return Events.ACCOUNT_NAME; }
+	
+	protected String entryColumnID()			{ return Events._ID; }
+	protected String entryColumnRemoteName()	{ return Events._SYNC_ID; }
+	protected String entryColumnETag()			{ return Events.SYNC_DATA1; }
+
+	protected String entryColumnDirty()			{ return Events.DIRTY; }
+	protected String entryColumnDeleted()		{ return Events.DELETED; }
+
+	
+	/* class methods, constructor */
 
 	@SuppressLint("InlinedApi")
 	public static void create(Account account, ContentResolver resolver, ServerInfo.ResourceInfo info) throws RemoteException {
@@ -86,7 +95,7 @@ public class LocalCalendar extends LocalCollection {
 	
 	public static LocalCalendar[] findAll(Account account, ContentProviderClient providerClient) throws RemoteException {
 		Cursor cursor = providerClient.query(calendarsURI(account),
-				new String[] { Calendars._ID, Calendars.NAME, CALENDARS_COLUMN_CTAG },
+				new String[] { Calendars._ID, Calendars.NAME, COLLECTION_COLUMN_CTAG },
 				Calendars.DELETED + "=0 AND " + Calendars.SYNC_EVENTS + "=1", null, null);
 		LinkedList<LocalCalendar> calendars = new LinkedList<LocalCalendar>();
 		while (cursor.moveToNext())
@@ -100,72 +109,34 @@ public class LocalCalendar extends LocalCollection {
 		this.path = path;
 		this.cTag = cTag;
 	}
+
 	
-	
-	/* find multiple rows */
-
-	@Override
-	public Resource[] findDeleted() throws RemoteException {
-		Cursor cursor = providerClient.query(entriesURI(),
-				new String[] { Events._ID, EVENTS_COLUMN_REMOTE_NAME, EVENTS_COLUMN_ETAG },
-				Events.CALENDAR_ID + "=? AND " + Events.DELETED + "=1", new String[] { String.valueOf(id) }, null);
-		LinkedList<Event> events = new LinkedList<Event>();
-		while (cursor.moveToNext())
-			events.add(new Event(cursor.getLong(0), cursor.getString(1), cursor.getString(2)));
-		return events.toArray(new Event[0]);
-	}
-
-	@Override
-	public Resource[] findDirty() throws RemoteException {
-		Cursor cursor = providerClient.query(entriesURI(),
-				new String[] { Events._ID, EVENTS_COLUMN_REMOTE_NAME, EVENTS_COLUMN_ETAG },
-				Events.DIRTY + "=1", null, null);
-		LinkedList<Event> events = new LinkedList<Event>();
-		while (cursor.moveToNext()) {
-			Event e = new Event(cursor.getLong(0), cursor.getString(1), cursor.getString(2));
-			populate(e);
-			events.add(e);
-		}
-		return events.toArray(new Event[0]);
-	}
-
-	@Override
-	public Resource[] findNew() throws RemoteException {
-		Cursor cursor = providerClient.query(entriesURI(), new String[] { Events._ID },
-				Events.DIRTY + "=1 AND " + EVENTS_COLUMN_REMOTE_NAME + " IS NULL", null, null);
-		LinkedList<Event> events = new LinkedList<Event>();
-		while (cursor.moveToNext()) {
-			String uid = UUID.randomUUID().toString(),
-				   resourceName = uid + ".ics";
-			Event e = new Event(cursor.getLong(0), resourceName, null);
-			e.setUid(uid);
-			populate(e);
-
-			// new record: set resource name and UID in database
-			pendingOperations.add(ContentProviderOperation
-					.newUpdate(ContentUris.withAppendedId(entriesURI(), e.getLocalID()))
-					.withValue(EVENTS_COLUMN_REMOTE_NAME, resourceName)
-					.build());
-			
-			events.add(e);
-		}
-		return events.toArray(new Event[0]);
-	}
+	/* collection operations */
 	
 	@Override
 	public void setCTag(String cTag) {
 		pendingOperations.add(ContentProviderOperation.newUpdate(ContentUris.withAppendedId(calendarsURI(), id))
-			.withValue(CALENDARS_COLUMN_CTAG, cTag)
+			.withValue(COLLECTION_COLUMN_CTAG, cTag)
 			.build());
 	}
 
 	
-	/* get data */
+	/* content provider (= database) querying */
 	
 	@Override
-	public Event getByRemoteName(String remoteName) throws RemoteException {
-		Cursor cursor = providerClient.query(entriesURI(), new String[] { Events._ID, EVENTS_COLUMN_REMOTE_NAME, EVENTS_COLUMN_ETAG },
-				Events.CALENDAR_ID + "=? AND " + EVENTS_COLUMN_REMOTE_NAME + "=?", new String[] { String.valueOf(id), remoteName }, null);
+	public Event findById(long localID, String remoteName, String eTag, boolean populate) throws RemoteException {
+		Event e = new Event(localID, remoteName, eTag);
+		if (populate)
+			populate(e);
+		return e;
+	}
+	
+	@Override
+	public Event findByRemoteName(String remoteName) throws RemoteException {
+		Cursor cursor = providerClient.query(entriesURI(),
+				new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
+				Events.CALENDAR_ID + "=? AND " + entryColumnRemoteName() + "=?",
+				new String[] { String.valueOf(id), remoteName }, null);
 		if (cursor.moveToNext())
 			return new Event(cursor.getLong(0), cursor.getString(1), cursor.getString(2));
 		return null;
@@ -335,61 +306,13 @@ public class LocalCalendar extends LocalCollection {
 		}
 	}
 
-
-	/* create/update */
-
-	@Override
-	public void add(Resource resource) {
-		Event event = (Event) resource;
-
-		int idx = pendingOperations.size();
-		pendingOperations.add(buildEvent(ContentProviderOperation.newInsert(entriesURI()), event)
-				.withYieldAllowed(true)
-				.build());
-		
-		addDataRows(event, -1, idx);
-	}
-
-	@Override
-	public void updateByRemoteName(Resource remoteResource) throws RemoteException {
-		Event remoteEvent = (Event) remoteResource,
-			localEvent = (Event) getByRemoteName(remoteResource.getName());
-
-		pendingOperations.add(buildEvent(
-				ContentProviderOperation.newUpdate(ContentUris.withAppendedId(entriesURI(), localEvent.getLocalID())), remoteEvent)
-				.withYieldAllowed(true).build());
-		
-		pendingOperations.add(ContentProviderOperation.newDelete(syncAdapterURI(Attendees.CONTENT_URI))
-			.withSelection(Attendees.EVENT_ID + "=?",
-			new String[] { String.valueOf(localEvent.getLocalID()) }).build());
-		
-		addDataRows(remoteEvent, localEvent.getLocalID(), -1);
-	}
-
-	@Override
-	public void delete(Resource event) {
-		pendingOperations.add(ContentProviderOperation.newDelete(
-				ContentUris.withAppendedId(entriesURI(), event.getLocalID())).build());
-	}
-
-	@Override
-	public void deleteAllExceptRemoteNames(Resource[] remoteResources) {
-		Builder builder = ContentProviderOperation.newDelete(entriesURI());
-		
-		if (remoteResources.length != 0) {
-			List<String> terms = new LinkedList<String>();
-			for (Resource res : remoteResources)
-				terms.add(EVENTS_COLUMN_REMOTE_NAME + "<>" + DatabaseUtils.sqlEscapeString(res.getName()));
-			String where = Joiner.on(" AND ").join(terms);
-			builder = builder.withSelection(where, null);
-		} else
-			builder = builder.withSelection(EVENTS_COLUMN_REMOTE_NAME + " IS NOT NULL", null);
-		
-		pendingOperations.add(builder.build());
-	}
-
 	
 	/* private helper methods */
+	
+	@Override
+	protected String fileExtension() {
+		return ".ics";
+	}
 	
 	protected static Uri calendarsURI(Account account) {
 		return Calendars.CONTENT_URI.buildUpon().appendQueryParameter(Calendars.ACCOUNT_NAME, account.name)
@@ -401,47 +324,16 @@ public class LocalCalendar extends LocalCollection {
 		return calendarsURI(account);
 	}
 	
-	@Override
-	protected Uri syncAdapterURI(Uri baseURI) {
-		return baseURI.buildUpon()
-				.appendQueryParameter(Events.ACCOUNT_NAME, account.name)
-				.appendQueryParameter(Events.ACCOUNT_TYPE, account.type)
-				.appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-				.build();
-	}
-	
-	@Override
-	protected Uri entriesURI() {
-		return syncAdapterURI(Events.CONTENT_URI);
-	}
-
-	@Override
-	public void clearDirty(Resource resource) {
-		pendingOperations.add(ContentProviderOperation
-				.newUpdate(ContentUris.withAppendedId(entriesURI(), resource.getLocalID()))
-				.withValue(Events.DIRTY, 0).build());
-	}
-	
-	private Builder newInsertBuilder(Uri dataUri, String refFieldName, long raw_ref_id, Integer backrefIdx) {
-		Builder builder = ContentProviderOperation.newInsert(syncAdapterURI(dataUri));
-		if (backrefIdx != -1)
-			return builder.withValueBackReference(refFieldName, backrefIdx);
-		else
-			return builder.withValue(refFieldName, raw_ref_id);
-	}
-	
-	protected void addDataRows(Event event, long localID, int backrefIdx) {
-		for (Attendee attendee : event.getAttendees())
-			pendingOperations.add(buildAttendee(newInsertBuilder(Attendees.CONTENT_URI, Attendees.EVENT_ID, localID, backrefIdx), attendee).build());
-	}
 	
 	
 	/* content builder methods */
 
-	protected Builder buildEvent(Builder builder, Event event) {
-		builder = builder.withValue(Events.CALENDAR_ID, id)
-				.withValue(EVENTS_COLUMN_REMOTE_NAME, event.getName())
-				.withValue(EVENTS_COLUMN_ETAG, event.getETag())
+	@Override
+	protected Builder buildEntry(Builder builder, Event event) {
+		builder = builder
+				.withValue(Events.CALENDAR_ID, id)
+				.withValue(entryColumnRemoteName(), event.getName())
+				.withValue(entryColumnETag(), event.getETag())
 				.withValue(Events.ALL_DAY, event.isAllDay() ? 1 : 0)
 				.withValue(Events.DTSTART, event.getDtStartInMillis())
 				.withValue(Events.DTEND, event.getDtEndInMillis())
@@ -482,6 +374,21 @@ public class LocalCalendar extends LocalCollection {
 
 		return builder;
 	}
+
+	
+	@Override
+	protected void addDataRows(Event event, long localID, int backrefIdx) {
+		for (Attendee attendee : event.getAttendees())
+			pendingOperations.add(buildAttendee(newDataInsertBuilder(Attendees.CONTENT_URI, Attendees.EVENT_ID, localID, backrefIdx), attendee).build());
+	}
+	
+	@Override
+	protected void removeDataRows(Event event) {
+		pendingOperations.add(ContentProviderOperation.newDelete(syncAdapterURI(Attendees.CONTENT_URI))
+				.withSelection(Attendees.EVENT_ID + "=?",
+				new String[] { String.valueOf(event.getLocalID()) }).build());
+	}
+
 	
 	@SuppressLint("InlinedApi")
 	protected Builder buildAttendee(Builder builder, Attendee attendee) {

@@ -7,10 +7,7 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -19,12 +16,8 @@ import android.content.ContentProviderOperation;
 import android.content.ContentProviderOperation.Builder;
 import android.content.ContentUris;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
-import android.provider.CalendarContract;
-import android.provider.ContactsContract;
-import android.provider.CalendarContract.Events;
 import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.CommonDataKinds.Nickname;
 import android.provider.ContactsContract.CommonDataKinds.Note;
@@ -35,9 +28,6 @@ import android.provider.ContactsContract.CommonDataKinds.Website;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.RawContacts;
 import at.bitfire.davdroid.Constants;
-
-import com.google.common.base.Joiner;
-
 import ezvcard.parameters.EmailTypeParameter;
 import ezvcard.parameters.ImageTypeParameter;
 import ezvcard.parameters.TelephoneTypeParameter;
@@ -48,15 +38,31 @@ import ezvcard.types.PhotoType;
 import ezvcard.types.TelephoneType;
 import ezvcard.types.UrlType;
 
-public class LocalAddressBook extends LocalCollection {
+public class LocalAddressBook extends LocalCollection<Contact> {
 	//private final static String TAG = "davdroid.LocalAddressBook";
-
-	protected final static String
-		COLUMN_REMOTE_NAME = RawContacts.SOURCE_ID,
-		COLUMN_UID = RawContacts.SYNC1,
-		COLUMN_ETAG = RawContacts.SYNC2;
 	
 	protected AccountManager accountManager;
+	
+	
+	/* database fields */
+	
+	@Override
+	protected Uri entriesURI() {
+		return syncAdapterURI(RawContacts.CONTENT_URI);
+	}
+
+	protected String entryColumnAccountType()	{ return RawContacts.ACCOUNT_TYPE; }
+	protected String entryColumnAccountName()	{ return RawContacts.ACCOUNT_NAME; }
+	
+	protected String entryColumnID()			{ return RawContacts._ID; }
+	protected String entryColumnRemoteName()	{ return RawContacts.SOURCE_ID; }
+	protected String entryColumnETag()			{ return RawContacts.SYNC2; }
+	
+	protected String entryColumnDirty()			{ return RawContacts.DIRTY; }
+	protected String entryColumnDeleted()		{ return RawContacts.DELETED; }
+
+	protected String entryColumnUID()			{ return RawContacts.SYNC1; }
+
 
 
 	public LocalAddressBook(Account account, ContentProviderClient providerClient, AccountManager accountManager) {
@@ -65,55 +71,7 @@ public class LocalAddressBook extends LocalCollection {
 	}
 	
 	
-	/* find multiple rows */
-
-	@Override
-	public Contact[] findDeleted() throws RemoteException {
-		Cursor cursor = providerClient.query(entriesURI(),
-				new String[] { RawContacts._ID, COLUMN_REMOTE_NAME, COLUMN_ETAG },
-				RawContacts.DELETED + "=1", null, null);
-		LinkedList<Contact> contacts = new LinkedList<Contact>();
-		while (cursor.moveToNext())
-			contacts.add(new Contact(cursor.getLong(0), cursor.getString(1), cursor.getString(2)));
-		return contacts.toArray(new Contact[0]);
-	}
-
-	@Override
-	public Contact[] findDirty() throws RemoteException {
-		Cursor cursor = providerClient.query(entriesURI(),
-				new String[] { RawContacts._ID, COLUMN_REMOTE_NAME, COLUMN_ETAG },
-				RawContacts.DIRTY + "=1", null, null);
-		LinkedList<Contact> contacts = new LinkedList<Contact>();
-		while (cursor.moveToNext()) {
-			Contact c = new Contact(cursor.getLong(0), cursor.getString(1), cursor.getString(2));
-			populate(c);
-			contacts.add(c);
-		}
-		return contacts.toArray(new Contact[0]);
-	}
-	
-	@Override
-	public Contact[] findNew() throws RemoteException {
-		Cursor cursor = providerClient.query(entriesURI(), new String[] { RawContacts._ID },
-				RawContacts.DIRTY + "=1 AND " + COLUMN_REMOTE_NAME + " IS NULL", null, null);
-		LinkedList<Contact> contacts = new LinkedList<Contact>();
-		while (cursor.moveToNext()) {
-			String uid = UUID.randomUUID().toString(),
-				   resourceName = uid + ".vcf";
-			Contact c = new Contact(cursor.getLong(0), resourceName, null);
-			c.setUid(uid);
-			populate(c);
-
-			// new record: set resource name and UID in database
-			pendingOperations.add(ContentProviderOperation
-					.newUpdate(ContentUris.withAppendedId(entriesURI(), c.getLocalID()))
-					.withValue(COLUMN_REMOTE_NAME, resourceName)
-					.build());
-			
-			contacts.add(c);
-		}
-		return contacts.toArray(new Contact[0]);
-	}
+	/* collection operations */
 	
 	@Override
 	public String getCTag() {
@@ -126,13 +84,21 @@ public class LocalAddressBook extends LocalCollection {
 	}
 	
 	
-	/* get data */
+	/* content provider (= database) querying */
+	
+	@Override
+	public Contact findById(long localID, String remoteName, String eTag, boolean populate) throws RemoteException {
+		Contact c = new Contact(localID, remoteName, eTag);
+		if (populate)
+			populate(c);
+		return c;
+	}
 
 	@Override
-	public Contact getByRemoteName(String remoteName) throws RemoteException {
+	public Contact findByRemoteName(String remoteName) throws RemoteException {
 		Cursor cursor = providerClient.query(entriesURI(),
-				new String[] { RawContacts._ID, COLUMN_REMOTE_NAME, COLUMN_ETAG },
-				COLUMN_REMOTE_NAME + "=?", new String[] { remoteName }, null);
+				new String[] { RawContacts._ID, entryColumnRemoteName(), entryColumnETag() },
+				entryColumnRemoteName() + "=?", new String[] { remoteName }, null);
 		if (cursor.moveToNext())
 			return new Contact(cursor.getLong(0), cursor.getString(1), cursor.getString(2));
 		return null;
@@ -145,7 +111,7 @@ public class LocalAddressBook extends LocalCollection {
 			return;
 		
 		Cursor cursor = providerClient.query(ContentUris.withAppendedId(entriesURI(), c.getLocalID()),
-			new String[] { COLUMN_UID, RawContacts.STARRED }, null, null, null);
+			new String[] { entryColumnUID(), RawContacts.STARRED }, null, null, null);
 		if (cursor.moveToNext()) {
 			c.setUid(cursor.getString(0));
 			c.setStarred(cursor.getInt(1) != 0);
@@ -260,133 +226,70 @@ public class LocalAddressBook extends LocalCollection {
 		c.populated = true;
 		return;
 	}
-	
-	
-	/* create/update */	
-	
-	@Override
-	public void add(Resource resource) {
-		Contact contact = (Contact)resource;
-		
-		int idx = pendingOperations.size();
-		pendingOperations.add(ContentProviderOperation.newInsert(entriesURI())
-				.withValue(RawContacts.ACCOUNT_NAME, account.name)
-				.withValue(RawContacts.ACCOUNT_TYPE, account.type)
-				.withValue(COLUMN_REMOTE_NAME, contact.getName())
-				.withValue(COLUMN_UID, contact.getUid())
-				.withValue(COLUMN_ETAG, contact.getETag())
-				.withValue(RawContacts.STARRED, contact.isStarred())
-				.withYieldAllowed(true)
-				.build());
 
-		addDataRows(contact, -1, idx);
-	}
-	
-	@Override
-	public void updateByRemoteName(Resource resource) throws RemoteException {
-		Contact remoteContact = (Contact)resource,
-				localContact = getByRemoteName(remoteContact.getName());
-
-		pendingOperations.add(ContentProviderOperation
-				.newUpdate(ContentUris.withAppendedId(entriesURI(), localContact.getLocalID()))
-				.withValue(COLUMN_ETAG, remoteContact.getETag())
-				.withValue(RawContacts.STARRED, remoteContact.isStarred())
-				.withYieldAllowed(true)
-				.build());
-		
-		// remove all data rows ...
-		pendingOperations.add(ContentProviderOperation.newDelete(dataURI())
-				.withSelection(Data.RAW_CONTACT_ID + "=?",
-				new String[] { String.valueOf(localContact.getLocalID()) }).build());
-		
-		// ... and insert new ones
-		addDataRows(remoteContact, localContact.getLocalID(), -1);
-	}
-
-	@Override
-	public void deleteAllExceptRemoteNames(Resource[] remoteResources) {
-		Builder builder = ContentProviderOperation.newDelete(entriesURI());
-		
-		if (remoteResources.length != 0) {
-			List<String> terms = new LinkedList<String>();
-			for (Resource res : remoteResources)
-				terms.add(COLUMN_REMOTE_NAME + "<>" + DatabaseUtils.sqlEscapeString(res.getName()));
-			String where = Joiner.on(" AND ").join(terms);
-			builder = builder.withSelection(where, new String[] {});
-		} else
-			builder = builder.withSelection(COLUMN_REMOTE_NAME + " IS NOT NULL", null);
-		
-		pendingOperations.add(builder.build());
-	}
-	
-	
 	
 	/* private helper methods */
 	
 	@Override
-	protected Uri syncAdapterURI(Uri baseURI) {
-		return baseURI.buildUpon()
-				.appendQueryParameter(RawContacts.ACCOUNT_NAME, account.name)
-				.appendQueryParameter(RawContacts.ACCOUNT_TYPE, account.type)
-				.appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
-				.build();
+	protected String fileExtension() {
+		return ".vcf";
 	}
 	
 	protected Uri dataURI() {
 		return syncAdapterURI(Data.CONTENT_URI);
 	}
-
-	@Override
-	protected Uri entriesURI() {
-		return RawContacts.CONTENT_URI.buildUpon()
-				.appendQueryParameter(RawContacts.ACCOUNT_NAME, account.name)
-				.appendQueryParameter(RawContacts.ACCOUNT_TYPE, account.type)
-				.appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
-				.build();
-	}
 	
-	@Override
-	public void clearDirty(Resource resource) {
-		pendingOperations.add(ContentProviderOperation
-				.newUpdate(ContentUris.withAppendedId(entriesURI(), resource.getLocalID()))
-				.withValue(RawContacts.DIRTY, 0).build());
+	private Builder newDataInsertBuilder(long raw_contact_id, Integer backrefIdx) {
+		return newDataInsertBuilder(dataURI(), Data.RAW_CONTACT_ID, raw_contact_id, backrefIdx);
 	}
-	
-	private Builder newInsertBuilder(long raw_contact_id, Integer backrefIdx) {
-		Builder builder = ContentProviderOperation.newInsert(dataURI());
-		if (backrefIdx != -1)
-			return builder.withValueBackReference(Data.RAW_CONTACT_ID, backrefIdx);
-		else
-			return builder.withValue(Data.RAW_CONTACT_ID, raw_contact_id);
-	}
-	
-	protected void addDataRows(Contact contact, long localID, int backrefIdx) {
-		pendingOperations.add(buildStructuredName(newInsertBuilder(localID, backrefIdx), contact).build());
-		
-		if (contact.getNickNames() != null)
-			for (String nick : contact.getNickNames().getValues())
-				pendingOperations.add(buildNickName(newInsertBuilder(localID, backrefIdx), nick).build());
-		
-		for (PhotoType photo : contact.getPhotos())
-			pendingOperations.add(buildPhoto(newInsertBuilder(localID, backrefIdx), photo).build());
-		
-		for (TelephoneType number : contact.getPhoneNumbers())
-			pendingOperations.add(buildPhoneNumber(newInsertBuilder(localID, backrefIdx), number).build());
-		
-		for (EmailType email : contact.getEmails())
-			pendingOperations.add(buildEmail(newInsertBuilder(localID, backrefIdx), email).build());
-		
-		for (UrlType url : contact.getURLs())
-			pendingOperations.add(buildURL(newInsertBuilder(localID, backrefIdx), url).build());
-		
-		for (NoteType note : contact.getNotes())
-			pendingOperations.add(buildNote(newInsertBuilder(localID, backrefIdx), note).build());
-	}
-
 	
 	
 	/* content builder methods */
 	
+	@Override
+	protected Builder buildEntry(Builder builder, Contact contact) {
+		return builder
+			.withValue(RawContacts.ACCOUNT_NAME, account.name)
+			.withValue(RawContacts.ACCOUNT_TYPE, account.type)
+			.withValue(entryColumnRemoteName(), contact.getName())
+			.withValue(entryColumnUID(), contact.getUid())
+			.withValue(entryColumnETag(), contact.getETag())
+			.withValue(RawContacts.STARRED, contact.isStarred());
+	}
+	
+	
+	@Override
+	protected void addDataRows(Contact contact, long localID, int backrefIdx) {
+		pendingOperations.add(buildStructuredName(newDataInsertBuilder(localID, backrefIdx), contact).build());
+		
+		if (contact.getNickNames() != null)
+			for (String nick : contact.getNickNames().getValues())
+				pendingOperations.add(buildNickName(newDataInsertBuilder(localID, backrefIdx), nick).build());
+		
+		for (PhotoType photo : contact.getPhotos())
+			pendingOperations.add(buildPhoto(newDataInsertBuilder(localID, backrefIdx), photo).build());
+		
+		for (TelephoneType number : contact.getPhoneNumbers())
+			pendingOperations.add(buildPhoneNumber(newDataInsertBuilder(localID, backrefIdx), number).build());
+		
+		for (EmailType email : contact.getEmails())
+			pendingOperations.add(buildEmail(newDataInsertBuilder(localID, backrefIdx), email).build());
+		
+		for (UrlType url : contact.getURLs())
+			pendingOperations.add(buildURL(newDataInsertBuilder(localID, backrefIdx), url).build());
+		
+		for (NoteType note : contact.getNotes())
+			pendingOperations.add(buildNote(newDataInsertBuilder(localID, backrefIdx), note).build());
+	}
+	
+	@Override
+	protected void removeDataRows(Contact contact) {
+		pendingOperations.add(ContentProviderOperation.newDelete(dataURI())
+				.withSelection(Data.RAW_CONTACT_ID + "=?",
+				new String[] { String.valueOf(contact.getLocalID()) }).build());
+	}
+
+
 	protected Builder buildStructuredName(Builder builder, Contact contact) {
 		return builder
 			.withValue(Data.MIMETYPE, StructuredName.CONTENT_ITEM_TYPE)
