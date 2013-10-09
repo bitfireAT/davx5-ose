@@ -16,10 +16,12 @@ import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Component;
+import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.DefaultTimeZoneRegistryFactory;
@@ -90,19 +92,17 @@ public class Event extends Resource {
 
 
 	@Override
-	public void parseEntity(InputStream entity) throws IOException, ParserException {
-		if (entity == null)
-			return;
-		
+	public void parseEntity(@NonNull InputStream entity) throws IOException, ParserException {
 		CalendarBuilder builder = new CalendarBuilder();
 		net.fortuna.ical4j.model.Calendar ical = builder.build(entity);
 		if (ical == null)
 			return;
 		
 		// event
-		VEvent event = (VEvent) ical.getComponents(Component.VEVENT).get(0);
-		if (event == null)
+		ComponentList events = ical.getComponents(Component.VEVENT);
+		if (events == null || events.isEmpty())
 			return;
+		VEvent event = (VEvent)events.get(0); 
 		
 		if (event.getUid() != null)
 			uid = event.getUid().toString();

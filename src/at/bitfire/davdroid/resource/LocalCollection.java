@@ -29,6 +29,8 @@ import android.os.RemoteException;
 import android.provider.CalendarContract;
 
 public abstract class LocalCollection<ResourceType extends Resource> {
+	//private static final String TAG = "davdroid.LocalCollection";
+	
 	protected Account account;
 	protected ContentProviderClient providerClient;
 	protected ArrayList<ContentProviderOperation> pendingOperations = new ArrayList<ContentProviderOperation>();
@@ -147,22 +149,7 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 				.build());
 	}
 
-	public void deleteAllExceptRemoteNames(Resource[] remoteResources) {
-		Builder builder = ContentProviderOperation.newDelete(entriesURI());
-		
-		if (remoteResources.length != 0) {
-			List<String> terms = new LinkedList<String>();
-			for (Resource res : remoteResources)
-				terms.add(entryColumnRemoteName() + "<>" + DatabaseUtils.sqlEscapeString(res.getName()));
-			String where = StringUtils.join(terms, " AND ");
-			builder = builder.withSelection(where, new String[] {});
-		} else
-			builder = builder.withSelection(entryColumnRemoteName() + " IS NOT NULL", null);
-		
-		pendingOperations.add(builder
-				.withYieldAllowed(true)
-				.build());
-	}
+	public abstract void deleteAllExceptRemoteNames(Resource[] remoteResources);
 	
 	public void clearDirty(Resource resource) {
 		pendingOperations.add(ContentProviderOperation
