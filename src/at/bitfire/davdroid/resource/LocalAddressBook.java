@@ -15,6 +15,9 @@ import java.util.List;
 import net.fortuna.ical4j.vcard.Parameter.Id;
 import net.fortuna.ical4j.vcard.parameter.Type;
 import net.fortuna.ical4j.vcard.property.Telephone;
+
+import org.apache.commons.lang.StringUtils;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentProviderClient;
@@ -22,6 +25,7 @@ import android.content.ContentProviderOperation;
 import android.content.ContentProviderOperation.Builder;
 import android.content.ContentUris;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract.CommonDataKinds.Email;
@@ -231,6 +235,24 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		
 		c.populated = true;
 		return;
+	}
+	
+	
+	public void deleteAllExceptRemoteNames(Resource[] remoteResources) {
+		String where;
+		
+		if (remoteResources.length != 0) {
+			List<String> terms = new LinkedList<String>();
+			for (Resource res : remoteResources)
+				terms.add(entryColumnRemoteName() + "<>" + DatabaseUtils.sqlEscapeString(res.getName()));
+			where = StringUtils.join(terms, " AND ");
+		} else
+			where = entryColumnRemoteName() + " IS NOT NULL";
+			
+		Builder builder = ContentProviderOperation.newDelete(entriesURI()).withSelection(where, null);
+		pendingOperations.add(builder
+				.withYieldAllowed(true)
+				.build());
 	}
 
 	

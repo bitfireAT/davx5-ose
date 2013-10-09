@@ -10,6 +10,9 @@ package at.bitfire.davdroid.resource;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 
 import lombok.Getter;
 import net.fortuna.ical4j.model.Parameter;
@@ -34,6 +37,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
@@ -82,7 +86,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		values.put(Calendars.ACCOUNT_TYPE, account.type);
 		values.put(Calendars.NAME, info.getPath());
 		values.put(Calendars.CALENDAR_DISPLAY_NAME, info.getTitle());
-		values.put(Calendars.CALENDAR_COLOR, 0xC3EA6E);
+		values.put(Calendars.CALENDAR_COLOR, 0xFFC3EA6E);
 		values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER);
 		values.put(Calendars.ALLOWED_AVAILABILITY, Events.AVAILABILITY_BUSY + "," + Events.AVAILABILITY_FREE + "," + Events.AVAILABILITY_TENTATIVE);
 		values.put(Calendars.ALLOWED_ATTENDEE_TYPES, Attendees.TYPE_NONE + "," + Attendees.TYPE_REQUIRED + "," + Attendees.TYPE_OPTIONAL + "," + Attendees.TYPE_RESOURCE);
@@ -304,6 +308,25 @@ public class LocalCalendar extends LocalCollection<Event> {
 				e.setForPublic(true);
 			}
 		}
+	}
+
+	
+	public void deleteAllExceptRemoteNames(Resource[] remoteResources) {
+		String where;
+		
+		if (remoteResources.length != 0) {
+			List<String> terms = new LinkedList<String>();
+			for (Resource res : remoteResources)
+				terms.add(entryColumnRemoteName() + "<>" + DatabaseUtils.sqlEscapeString(res.getName()));
+			where = StringUtils.join(terms, " AND ");
+		} else
+			where = entryColumnRemoteName() + " IS NOT NULL";
+			
+		Builder builder = ContentProviderOperation.newDelete(entriesURI())
+				.withSelection(Events.CALENDAR_ID + "=? AND (" + where + ")", new String[] { String.valueOf(id) });
+		pendingOperations.add(builder
+				.withYieldAllowed(true)
+				.build());
 	}
 
 	

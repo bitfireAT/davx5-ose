@@ -132,7 +132,7 @@ public class SelectCollectionsFragment extends ListFragment {
 		ServerInfo serverInfo = (ServerInfo)getArguments().getSerializable(KEY_SERVER_INFO);
 		try {
 			URI baseURI = new URI(serverInfo.getBaseURL());
-			String accountName = serverInfo.getUserName() + "@" + baseURI.getHost();
+			String accountName = serverInfo.getUserName() + "@" + baseURI.getHost() + baseURI.getPath();
 			
 			AccountManager accountManager = AccountManager.get(getActivity());
 			Account account = new Account(accountName, Constants.ACCOUNT_TYPE);
