@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import net.fortuna.ical4j.model.ValidationException;
+
 import org.apache.commons.lang.StringUtils;
 
 import android.accounts.Account;
@@ -111,7 +113,9 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 	
 	// create/update/delete
 	
-	public void add(ResourceType resource) {
+	public void add(ResourceType resource) throws ValidationException {
+		resource.validate();
+		
 		int idx = pendingOperations.size();
 		pendingOperations.add(
 				buildEntry(ContentProviderOperation.newInsert(entriesURI()), resource)
@@ -121,8 +125,10 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 		addDataRows(resource, -1, idx);
 	}
 	
-	public void updateByRemoteName(ResourceType remoteResource) throws RemoteException {
+	public void updateByRemoteName(ResourceType remoteResource) throws RemoteException, ValidationException {
 		ResourceType localResource = findByRemoteName(remoteResource.getName());
+		
+		remoteResource.validate();
 
 		pendingOperations.add(
 				buildEntry(ContentProviderOperation.newUpdate(ContentUris.withAppendedId(entriesURI(), localResource.getLocalID())), remoteResource)

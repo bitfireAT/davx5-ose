@@ -247,4 +247,8 @@ public class Contact extends Resource {
 		
 		return null;
 	}
+
+	@Override
+	public void validate() throws ValidationException {
+	}
 }

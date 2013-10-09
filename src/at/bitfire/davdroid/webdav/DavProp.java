@@ -47,6 +47,9 @@ public class DavProp {
 	@Element(name="address-data",required=false)
 	DavPropAddressData addressData;
 
+	@Element(name="calendar-data",required=false)
+	DavPropCalendarData calendarData;
+
 
 	public static class DavCurrentUserPrincipal {
 		@Element(required=false)
@@ -111,5 +114,11 @@ public class DavProp {
 	public static class DavPropAddressData {
 		@Text(required=false)
 		@Getter String vcard;
+	}
+	
+	@Namespace(prefix="C",reference="urn:ietf:params:xml:ns:caldav")
+	public static class DavPropCalendarData {
+		@Text(required=false)
+		@Getter String ical;
 	}
 }

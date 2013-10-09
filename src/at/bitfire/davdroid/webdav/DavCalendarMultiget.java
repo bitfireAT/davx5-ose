@@ -14,8 +14,8 @@ import org.simpleframework.xml.Root;
 @Root(name="calendar-multiget")
 @NamespaceList({
 	@Namespace(reference="DAV:"),
-	@Namespace(prefix="CD",reference="urn:ietf:params:xml:ns:caldav")
+	@Namespace(prefix="C",reference="urn:ietf:params:xml:ns:caldav")
 })
-@Namespace(prefix="CD",reference="urn:ietf:params:xml:ns:caldav")
+@Namespace(prefix="C",reference="urn:ietf:params:xml:ns:caldav")
 public class DavCalendarMultiget extends DavMultiget {
 }

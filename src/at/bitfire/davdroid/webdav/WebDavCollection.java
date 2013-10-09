@@ -8,7 +8,9 @@
 package at.bitfire.davdroid.webdav;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ import java.util.List;
 
 import lombok.Getter;
 
+import org.apache.commons.io.input.TeeInputStream;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -65,9 +68,11 @@ public class WebDavCollection extends WebDavResource {
 			DavMultistatus multistatus;
 			try {
 				Serializer serializer = new Persister();
-				multistatus = serializer.read(DavMultistatus.class, response.getEntity().getContent());
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				InputStream is = new TeeInputStream(response.getEntity().getContent(), baos);
+				multistatus = serializer.read(DavMultistatus.class, is);
 				
-				Log.d(TAG, "Got PROPFIND response: " + multistatus.toString());
+				Log.d(TAG, "Received multistatus response: " + baos.toString("UTF-8"));
 			} catch (Exception e) {
 				Log.w(TAG, e);
 				throw new IncapableResourceException();
@@ -80,15 +85,15 @@ public class WebDavCollection extends WebDavResource {
 	}
 	
 	public boolean multiGet(String[] names, MultigetType type) throws IOException, IncapableResourceException, HttpException {
-		DavMultiget multiget;
-		if (type == MultigetType.ADDRESS_BOOK)
-			multiget = new DavAddressbookMultiget();
-		else // MultigetType.CALENDAR
-			multiget = new DavCalendarMultiget();
+		DavMultiget multiget = (type == MultigetType.ADDRESS_BOOK) ? new DavAddressbookMultiget() : new DavCalendarMultiget(); 
 			
 		multiget.prop = new DavProp();
 		multiget.prop.getetag = new DavProp.DavPropGetETag();
-		multiget.prop.addressData = new DavProp.DavPropAddressData();
+		
+		if (type == MultigetType.ADDRESS_BOOK)
+			multiget.prop.addressData = new DavProp.DavPropAddressData();
+		else if (type == MultigetType.CALENDAR)
+			multiget.prop.calendarData = new DavProp.DavPropCalendarData();
 		
 		multiget.hrefs = new ArrayList<DavHref>(names.length);
 		for (String name : names)
@@ -110,7 +115,11 @@ public class WebDavCollection extends WebDavResource {
 		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_MULTI_STATUS) {
 			DavMultistatus multistatus;
 			try {
-				multistatus = serializer.read(DavMultistatus.class, response.getEntity().getContent());
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				InputStream is = new TeeInputStream(response.getEntity().getContent(), baos);
+				multistatus = serializer.read(DavMultistatus.class, is);
+				
+				Log.d(TAG, "Received multistatus response: " + baos.toString("UTF-8"));
 			} catch (Exception e) {
 				Log.e(TAG, e.getLocalizedMessage());
 				return false;
@@ -208,8 +217,10 @@ public class WebDavCollection extends WebDavResource {
 
 				if (prop.getetag != null)
 					referenced.properties.put(Property.ETAG, prop.getetag.getETag());
-					
-				if (prop.addressData != null)
+				
+				if (prop.calendarData != null)
+					referenced.content = new ByteArrayInputStream(prop.calendarData.ical.getBytes());
+				else if (prop.addressData != null)
 					referenced.content = new ByteArrayInputStream(prop.addressData.vcard.getBytes());
 			}
 		}

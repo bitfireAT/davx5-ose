@@ -26,6 +26,7 @@ import net.fortuna.ical4j.model.DefaultTimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.PropertyList;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
+import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.Attendee;
@@ -289,5 +290,12 @@ public class Event extends Resource {
 		
 		Log.i(TAG, "Assuming time zone " + localTZ + " for " + tzID);
 		date.setTimeZone(tzRegistry.getTimeZone(localTZ));
+	}
+
+
+	@Override
+	public void validate() throws ValidationException {
+		if (dtStart == null)
+			throw new ValidationException("dtStart empty");
 	}
 }

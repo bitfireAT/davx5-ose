@@ -93,13 +93,13 @@ public class CalendarsSyncAdapterService extends Service {
 				Log.e(TAG, e.getLocalizedMessage());
 			} catch (IOException e) {
 				syncResult.stats.numIoExceptions++;
-				Log.e(TAG, e.getLocalizedMessage());
+				Log.e(TAG, e.toString());
 			} catch (IncapableResourceException e) {
 				syncResult.stats.numParseExceptions++;
-				Log.e(TAG, e.getLocalizedMessage());
+				Log.e(TAG, e.toString());
 			} catch (URISyntaxException e) {
 				syncResult.stats.numParseExceptions++;
-				Log.e(TAG, e.getLocalizedMessage());
+				Log.e(TAG, e.toString());
 			}
 		}
 	}

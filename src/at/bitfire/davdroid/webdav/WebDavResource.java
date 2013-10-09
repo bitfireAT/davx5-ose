@@ -9,6 +9,8 @@ package at.bitfire.davdroid.webdav;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,6 +20,8 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.ToString;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.TeeInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpException;
@@ -36,10 +40,12 @@ import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
 
+import android.util.Log;
+
 
 @ToString
 public class WebDavResource {
-	//private static final String TAG = "davdroid.WebDavResource";
+	private static final String TAG = "davdroid.WebDavResource";
 	
 	public enum Property {
 		CURRENT_USER_PRINCIPAL,

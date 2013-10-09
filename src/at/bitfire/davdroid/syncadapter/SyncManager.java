@@ -137,7 +137,11 @@ public class SyncManager {
 		if (!resourcesToAdd.isEmpty())
 			for (Resource res : dav.multiGet(resourcesToAdd.toArray(new Resource[0]))) {
 				Log.i(TAG, "Adding " + res.getName());
-				local.add(res);
+				try {
+					local.add(res);
+				} catch (ValidationException e) {
+					Log.e(TAG, "Invalid resource: " + res.getName());
+				}
 				syncResult.stats.numInserts++;
 			}
 		local.commit();
@@ -145,7 +149,11 @@ public class SyncManager {
 		Log.i(TAG, "Updating " + resourcesToUpdate.size() + " remote resource(s)");
 		if (!resourcesToUpdate.isEmpty())
 			for (Resource res : dav.multiGet(resourcesToUpdate.toArray(new Resource[0]))) {
-				local.updateByRemoteName(res);
+				try {
+					local.updateByRemoteName(res);
+				} catch (ValidationException e) {
+					Log.e(TAG, "Invalid resource: " + res.getName());
+				}
 				Log.i(TAG, "Updating " + res.getName());
 				syncResult.stats.numInserts++;
 			}
