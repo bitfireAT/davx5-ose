@@ -8,11 +8,14 @@
 package at.bitfire.davdroid.webdav;
 
 
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.entity.StringEntity;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
 
 import android.util.Log;
 
@@ -26,6 +29,8 @@ public class HttpReport extends HttpEntityEnclosingRequestBase {
 
 		try {
 			setEntity(new StringEntity(entity, "UTF-8"));
+			
+			Log.d(TAG, "Prepared REPORT request: " + entity);
 		} catch (UnsupportedEncodingException e) {
 			Log.e(TAG, e.getMessage());
 		}

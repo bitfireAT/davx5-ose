@@ -29,8 +29,8 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 	
 	public SelectCollectionsAdapter(ServerInfo serverInfo) {
 		this.serverInfo = serverInfo;
-		nAddressBooks = serverInfo.getAddressBooks().size();
-		nCalendars = serverInfo.getCalendars().size();
+		nAddressBooks = (serverInfo.getAddressBooks() == null) ? 0 : serverInfo.getAddressBooks().size();
+		nCalendars = (serverInfo.getCalendars() == null) ? 0 : serverInfo.getCalendars().size();
 	}
 	
 	

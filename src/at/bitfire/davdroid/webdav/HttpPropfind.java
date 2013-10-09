@@ -73,7 +73,7 @@ public class HttpPropfind extends HttpEntityEnclosingRequestBase {
 			setHeader("Depth", String.valueOf(depth));
 			setEntity(new StringEntity(writer.toString(), "UTF-8"));
 			
-			Log.d(TAG, "Sending PROPFIND request: " + writer.toString());
+			Log.d(TAG, "Prepared PROPFIND request: " + writer.toString());
 		} catch(Exception e) {
 			Log.w(TAG, e.getMessage());
 			abort();
