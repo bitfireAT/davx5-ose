@@ -13,13 +13,18 @@ public class Starred extends Property {
 
 	public static final String PROPERTY_NAME = "DAVDROID-STARRED";
 	
-	public Starred() {
+	protected boolean isStarred;
+	
+	
+	public Starred(String value) {
 		super(PROPERTY_NAME);
+		
+		isStarred = Integer.parseInt(value) > 0;
 	}
 
 	@Override
 	public String getValue() {
-		return "1";
+		return isStarred ? "1" : "0";		
 	}
 
 	@Override
@@ -30,12 +35,12 @@ public class Starred extends Property {
 	public static class Factory implements PropertyFactory<Property> {
 		@Override
 		public Starred createProperty(List<Parameter> params, String value) {
-			return new Starred();
+			return new Starred(value);
 		}
 
 		@Override
 		public Starred createProperty(Group group, List<Parameter> params, String value) {
-			return new Starred();
+			return new Starred(value);
 		}
 	}
 }
