@@ -35,9 +35,11 @@ import at.bitfire.davdroid.webdav.WebDavResource;
 
 public class QueryServerDialogFragment extends DialogFragment implements LoaderCallbacks<ServerInfo> {
 	private static final String TAG = "davdroid.QueryServerDialogFragment";
-	public static final String EXTRA_BASE_URL = "base_uri",
-			EXTRA_USER_NAME = "user_name",
-			EXTRA_PASSWORD = "password";
+	public static final String
+		EXTRA_BASE_URL = "base_uri",
+		EXTRA_USER_NAME = "user_name",
+		EXTRA_PASSWORD = "password",
+		EXTRA_AUTH_PREEMPTIVE = "auth_preemptive";
 	
 	ProgressBar progressBar;
 	
@@ -102,12 +104,14 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 			ServerInfo serverInfo = new ServerInfo(
 				args.getString(EXTRA_BASE_URL),
 				args.getString(EXTRA_USER_NAME),
-				args.getString(EXTRA_PASSWORD)
+				args.getString(EXTRA_PASSWORD),
+				args.getBoolean(EXTRA_AUTH_PREEMPTIVE)
 			);
 			
 			try {
 				// (1/5) detect capabilities
-				WebDavCollection base = new WebDavCollection(new URI(serverInfo.getBaseURL()), serverInfo.getUserName(), serverInfo.getPassword());
+				WebDavCollection base = new WebDavCollection(new URI(serverInfo.getBaseURL()), serverInfo.getUserName(),
+						serverInfo.getPassword(), serverInfo.isAuthPreemptive());
 				base.options();
 				
 				serverInfo.setCardDAV(base.supportsDAV("addressbook"));

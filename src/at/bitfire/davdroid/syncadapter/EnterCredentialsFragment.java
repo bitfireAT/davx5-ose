@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -32,6 +33,7 @@ public class EnterCredentialsFragment extends Fragment implements TextWatcher {
 	
 	TextView textHttpWarning;
 	EditText editBaseURL, editUserName, editPassword;
+	CheckBox checkboxPreemptive;
 	Button btnNext;
 	
 
@@ -72,6 +74,8 @@ public class EnterCredentialsFragment extends Fragment implements TextWatcher {
 		editPassword = (EditText) v.findViewById(R.id.password);
 		editPassword.addTextChangedListener(this);
 		
+		checkboxPreemptive = (CheckBox) v.findViewById(R.id.auth_preemptive);
+		
 		// hook into action bar
 		setHasOptionsMenu(true);
 
@@ -105,6 +109,7 @@ public class EnterCredentialsFragment extends Fragment implements TextWatcher {
 		args.putString(QueryServerDialogFragment.EXTRA_BASE_URL, protocol + host_path);
 		args.putString(QueryServerDialogFragment.EXTRA_USER_NAME, editUserName.getText().toString());
 		args.putString(QueryServerDialogFragment.EXTRA_PASSWORD, editPassword.getText().toString());
+		args.putBoolean(QueryServerDialogFragment.EXTRA_AUTH_PREEMPTIVE, checkboxPreemptive.isChecked());
 		
 		DialogFragment dialog = new QueryServerDialogFragment();
 		dialog.setArguments(args);

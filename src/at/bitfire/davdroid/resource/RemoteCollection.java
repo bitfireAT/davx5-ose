@@ -32,8 +32,8 @@ public abstract class RemoteCollection<ResourceType extends Resource> {
 	abstract protected MultigetType multiGetType();
 	abstract protected ResourceType newResourceSkeleton(String name, String ETag);
 	
-	public RemoteCollection(String baseURL, String user, String password) throws IOException, URISyntaxException {
-		collection = new WebDavCollection(new URI(baseURL), user, password);
+	public RemoteCollection(String baseURL, String user, String password, boolean preemptiveAuth) throws IOException, URISyntaxException {
+		collection = new WebDavCollection(new URI(baseURL), user, password, preemptiveAuth);
 	}
 
 	
@@ -60,30 +60,34 @@ public abstract class RemoteCollection<ResourceType extends Resource> {
 	
 	@SuppressWarnings("unchecked")
 	public Resource[] multiGet(ResourceType[] resources) throws IOException, IncapableResourceException, HttpException, ParserException {
-		if (resources.length == 1) {
-			Resource resource = get(resources[0]);
-			return (resource != null) ? (ResourceType[]) new Resource[] { resource } : null;
+		try {
+			if (resources.length == 1) {
+				Resource resource = get(resources[0]);
+				return (resource != null) ? (ResourceType[]) new Resource[] { resource } : null;
+			}
+			
+			LinkedList<String> names = new LinkedList<String>();
+			for (ResourceType resource : resources)
+				names.add(resource.getName());
+			
+			collection.multiGet(names.toArray(new String[0]), multiGetType());
+			
+			LinkedList<ResourceType> foundResources = new LinkedList<ResourceType>();
+			for (WebDavResource member : collection.getMembers()) {
+				ResourceType resource = newResourceSkeleton(member.getName(), member.getETag());
+				resource.parseEntity(member.getContent());
+				foundResources.add(resource);
+			}
+			return foundResources.toArray(new Resource[0]);
+		} catch(ValidationException ex) {
+			return null;
 		}
-		
-		LinkedList<String> names = new LinkedList<String>();
-		for (ResourceType resource : resources)
-			names.add(resource.getName());
-		
-		collection.multiGet(names.toArray(new String[0]), multiGetType());
-		
-		LinkedList<ResourceType> foundResources = new LinkedList<ResourceType>();
-		for (WebDavResource member : collection.getMembers()) {
-			ResourceType resource = newResourceSkeleton(member.getName(), member.getETag());
-			resource.parseEntity(member.getContent());
-			foundResources.add(resource);
-		}
-		return foundResources.toArray(new Resource[0]);
 	}
 	
 	
 	/* internal member operations */
 
-	public ResourceType get(ResourceType resource) throws IOException, HttpException, ParserException {
+	public ResourceType get(ResourceType resource) throws IOException, HttpException, ParserException, ValidationException {
 		WebDavResource member = new WebDavResource(collection, resource.getName());
 		member.get();
 		resource.parseEntity(member.getContent());

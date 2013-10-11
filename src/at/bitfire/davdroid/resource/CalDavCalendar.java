@@ -31,7 +31,7 @@ public class CalDavCalendar extends RemoteCollection<Event> {
 	}
 	
 	
-	public CalDavCalendar(String baseURL, String user, String password) throws IOException, URISyntaxException {
-		super(baseURL, user, password);
+	public CalDavCalendar(String baseURL, String user, String password, boolean preemptiveAuth) throws IOException, URISyntaxException {
+		super(baseURL, user, password, preemptiveAuth);
 	}
 }

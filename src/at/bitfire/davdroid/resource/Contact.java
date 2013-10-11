@@ -18,6 +18,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -117,6 +118,10 @@ public class Contact extends Resource {
 		Uid uid = (Uid)vcard.getProperty(Id.UID);
 		if (uid != null)
 			this.uid = uid.getValue();
+		else {
+			Log.w(TAG, "Received VCONTACT without UID, generating new one");
+			this.uid = UUID.randomUUID().toString();
+		}
 
 		Starred starred = (Starred)vcard.getExtendedProperty(Starred.PROPERTY_NAME);
 		this.starred = starred != null && starred.getValue().equals("1");

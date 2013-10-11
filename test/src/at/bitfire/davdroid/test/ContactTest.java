@@ -10,6 +10,7 @@ package at.bitfire.davdroid.test;
 import java.io.IOException;
 import java.io.InputStream;
 
+import net.fortuna.ical4j.data.ParserException;
 import junit.framework.Assert;
 import android.content.res.AssetManager;
 import android.test.InstrumentationTestCase;
@@ -23,7 +24,7 @@ public class ContactTest extends InstrumentationTestCase {
 	}
 
 	
-	public void testParseVcard3() throws IOException {
+	public void testParseVcard3() throws IOException, ParserException {
 		String fname = "vcard3-sample1.vcf";
 		InputStream in = assetMgr.open(fname, AssetManager.ACCESS_STREAMING);
 		
@@ -35,10 +36,12 @@ public class ContactTest extends InstrumentationTestCase {
 		Assert.assertEquals("Gump", c.getFamilyName());
 		
 		Assert.assertEquals(2, c.getPhoneNumbers().size());
-		Assert.assertEquals("(111) 555-1212", c.getPhoneNumbers().get(0).getText());
+		Assert.assertEquals("(111) 555-1212", c.getPhoneNumbers().get(0).getValue());
 		
 		Assert.assertEquals(1, c.getEmails().size());
 		Assert.assertEquals("forrestgump@example.com", c.getEmails().get(0).getValue());
+		
+		Assert.assertFalse(c.isStarred());
 	}
 
 }

@@ -9,8 +9,6 @@ package at.bitfire.davdroid.webdav;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringWriter;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,8 +18,6 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.ToString;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.TeeInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpException;
@@ -68,13 +64,19 @@ public class WebDavResource {
 	protected DefaultHttpClient client;
 	
 	
-	public WebDavResource(URI baseURL, String username, String password) throws IOException {
+	public WebDavResource(URI baseURL, String username, String password, boolean preemptive) throws IOException {
 		location = baseURL.normalize();
 		
 		client = new DefaultHttpClient();
 		client.getCredentialsProvider().setCredentials(new AuthScope(location.getHost(), location.getPort()),
 				new UsernamePasswordCredentials(username, password));
-		client.addRequestInterceptor(new PreemptiveAuthInterceptor(), 0);
+		
+		// preemptive auth is available for Basic auth only
+		if (preemptive) {
+			Log.i(TAG, "Using preemptive Basic Authentication");
+			client.addRequestInterceptor(new PreemptiveAuthInterceptor(), 0);
+		}
+		
 		client.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "DAVdroid");
 		GzipDecompressingEntity.enable(client);
 	}

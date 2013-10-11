@@ -30,5 +30,6 @@
     <string name="calendars">Calendars</string>
     <string name="select_address_book">Select up to one address book (tap again to unselect):</string>
     <string name="select_calendars">Select your calendars:</string>
+    <string name="auth_preemptive">Preemptive authentification (recommended, but incompatible with Digest auth)</string>
 
 </resources>

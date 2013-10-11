@@ -43,8 +43,8 @@ public class WebDavCollection extends WebDavResource {
 	@Getter protected List<WebDavResource> members;
 
 	
-	public WebDavCollection(URI baseURL, String username, String password) throws IOException {
-		super(baseURL, username, password);
+	public WebDavCollection(URI baseURL, String username, String password, boolean preemptiveAuth) throws IOException {
+		super(baseURL, username, password, preemptiveAuth);
 	}
 	
 	public WebDavCollection(WebDavCollection parent, URI member) {
