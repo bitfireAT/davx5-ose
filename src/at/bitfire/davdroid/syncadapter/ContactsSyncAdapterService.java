@@ -32,12 +32,10 @@ import android.os.RemoteException;
 import android.util.Log;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.resource.CardDavAddressBook;
-import at.bitfire.davdroid.resource.Contact;
 import at.bitfire.davdroid.resource.IncapableResourceException;
 import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.RemoteCollection;
-import at.bitfire.davdroid.resource.Resource;
 
 public class ContactsSyncAdapterService extends Service {
 	private static SyncAdapter syncAdapter;
@@ -75,8 +73,9 @@ public class ContactsSyncAdapterService extends Service {
 				
 				RemoteCollection dav = new CardDavAddressBook(
 					uri.toString(),
-					accountManager.getUserData(account,	Constants.ACCOUNT_KEY_USERNAME),
-					accountManager.getPassword(account));
+					accountManager.getUserData(account, Constants.ACCOUNT_KEY_USERNAME),
+					accountManager.getPassword(account),
+					Boolean.parseBoolean(accountManager.getUserData(account, Constants.ACCOUNT_KEY_AUTH_PREEMPTIVE)));
 				
 				LocalCollection database = new LocalAddressBook(account, provider, accountManager);
 				

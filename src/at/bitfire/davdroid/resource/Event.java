@@ -48,6 +48,7 @@ import net.fortuna.ical4j.model.property.Status;
 import net.fortuna.ical4j.model.property.Summary;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Version;
+import net.fortuna.ical4j.util.UidGenerator;
 import android.text.format.Time;
 import android.util.Log;
 import at.bitfire.davdroid.Constants;
@@ -106,6 +107,11 @@ public class Event extends Resource {
 		
 		if (event.getUid() != null)
 			uid = event.getUid().toString();
+		else {
+			Log.w(TAG, "Received VEVENT without UID, generating new one");
+			UidGenerator uidGenerator = new UidGenerator(Integer.toString(android.os.Process.myPid()));
+			uid = uidGenerator.generateUid().getValue();
+		}
 		
 		dtStart = event.getStartDate();	validateTimeZone(dtStart);
 		dtEnd = event.getEndDate();	validateTimeZone(dtEnd);

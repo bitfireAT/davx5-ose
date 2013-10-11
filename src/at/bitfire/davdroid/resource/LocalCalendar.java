@@ -12,8 +12,6 @@ import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import lombok.Getter;
 import net.fortuna.ical4j.model.Parameter;
 import net.fortuna.ical4j.model.ParameterList;
@@ -28,6 +26,9 @@ import net.fortuna.ical4j.model.property.Organizer;
 import net.fortuna.ical4j.model.property.RDate;
 import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.Status;
+
+import org.apache.commons.lang.StringUtils;
+
 import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.content.ContentProviderClient;
@@ -73,6 +74,12 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 	protected String entryColumnDirty()			{ return Events.DIRTY; }
 	protected String entryColumnDeleted()		{ return Events.DELETED; }
+	
+	@SuppressLint("InlinedApi")
+	protected String entryColumnUID() {
+		return (android.os.Build.VERSION.SDK_INT >= 17) ?
+			Events.UID_2445 : Events.SYNC_DATA2;
+	}
 
 	
 	/* class methods, constructor */
@@ -158,9 +165,12 @@ public class LocalCalendar extends LocalCollection<Event> {
 				/*  3 */ Events.DTSTART, Events.DTEND, Events.EVENT_TIMEZONE, Events.EVENT_END_TIMEZONE, Events.ALL_DAY,
 				/*  8 */ Events.STATUS, Events.ACCESS_LEVEL,
 				/* 10 */ Events.RRULE, Events.RDATE, Events.EXRULE, Events.EXDATE,
-				/* 14 */ Events.HAS_ATTENDEE_DATA, Events.ORGANIZER, Events.SELF_ATTENDEE_STATUS
+				/* 14 */ Events.HAS_ATTENDEE_DATA, Events.ORGANIZER, Events.SELF_ATTENDEE_STATUS,
+				/* 17 */ entryColumnUID()
 			}, null, null, null);
 		if (cursor.moveToNext()) {
+			e.setUid(cursor.getString(17));
+			
 			e.setSummary(cursor.getString(0));
 			e.setLocation(cursor.getString(1));
 			e.setDescription(cursor.getString(2));
@@ -357,6 +367,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 				.withValue(Events.CALENDAR_ID, id)
 				.withValue(entryColumnRemoteName(), event.getName())
 				.withValue(entryColumnETag(), event.getETag())
+				.withValue(entryColumnUID(), event.getUid())
 				.withValue(Events.ALL_DAY, event.isAllDay() ? 1 : 0)
 				.withValue(Events.DTSTART, event.getDtStartInMillis())
 				.withValue(Events.DTEND, event.getDtEndInMillis())

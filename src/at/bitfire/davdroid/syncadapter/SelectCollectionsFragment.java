@@ -139,6 +139,7 @@ public class SelectCollectionsFragment extends ListFragment {
 			Bundle userData = new Bundle();
 			userData.putString(Constants.ACCOUNT_KEY_BASE_URL, serverInfo.getBaseURL());
 			userData.putString(Constants.ACCOUNT_KEY_USERNAME, serverInfo.getUserName());
+			userData.putString(Constants.ACCOUNT_KEY_AUTH_PREEMPTIVE, Boolean.toString(serverInfo.isAuthPreemptive()));
 			
 			if (!addressBooks.isEmpty()) {
 				userData.putString(Constants.ACCOUNT_KEY_ADDRESSBOOK_PATH, addressBooks.get(0).getPath());

@@ -9,13 +9,9 @@ package at.bitfire.davdroid.resource;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 
 import net.fortuna.ical4j.model.ValidationException;
-
-import org.apache.commons.lang.StringUtils;
-
 import android.accounts.Account;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
@@ -23,7 +19,6 @@ import android.content.ContentProviderOperation.Builder;
 import android.content.ContentUris;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
@@ -49,6 +44,8 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 	
 	abstract protected String entryColumnDirty();
 	abstract protected String entryColumnDeleted();
+	
+	abstract protected String entryColumnUID();
 	
 
 	LocalCollection(Account account, ContentProviderClient providerClient) {

@@ -35,6 +35,7 @@ import at.bitfire.davdroid.resource.CalDavCalendar;
 import at.bitfire.davdroid.resource.IncapableResourceException;
 import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.davdroid.resource.RemoteCollection;
+import at.bitfire.davdroid.webdav.WebDavResource;
 
 public class CalendarsSyncAdapterService extends Service {
 	private static SyncAdapter syncAdapter;
@@ -75,7 +76,8 @@ public class CalendarsSyncAdapterService extends Service {
 					URI uri = new URI(accountManager.getUserData(account, Constants.ACCOUNT_KEY_BASE_URL)).resolve(calendar.getPath());
 					RemoteCollection dav = new CalDavCalendar(uri.toString(),
 						accountManager.getUserData(account, Constants.ACCOUNT_KEY_USERNAME),
-						accountManager.getPassword(account));
+						accountManager.getPassword(account),
+						Boolean.parseBoolean(accountManager.getUserData(account, Constants.ACCOUNT_KEY_AUTH_PREEMPTIVE)));
 					syncManager.synchronize(calendar, dav, extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL), syncResult);
 				}
 				
