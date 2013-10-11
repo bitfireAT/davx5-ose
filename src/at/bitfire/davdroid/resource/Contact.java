@@ -118,9 +118,8 @@ public class Contact extends Resource {
 		if (uid != null)
 			this.uid = uid.getValue();
 
-		for (Property p : vcard.getExtendedProperties(Starred.PROPERTY_NAME))
-			Log.i(TAG, p.getValue());
-		this.starred = vcard.getExtendedProperty(Starred.PROPERTY_NAME) != null;
+		Starred starred = (Starred)vcard.getExtendedProperty(Starred.PROPERTY_NAME);
+		this.starred = starred != null && starred.getValue().equals("1");
 		
 		Fn fn = (Fn)vcard.getProperty(Id.FN);
 		displayName = (fn != null) ? fn.getValue() : null;
@@ -193,7 +192,7 @@ public class Contact extends Resource {
 		}
 		
 		if (starred)
-			properties.add(new Starred());
+			properties.add(new Starred("1"));
 		
 		if (displayName != null)
 			properties.add(new Fn(displayName));
