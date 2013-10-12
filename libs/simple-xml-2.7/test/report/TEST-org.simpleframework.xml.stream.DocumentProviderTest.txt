@@ -1,5 +1,0 @@
-Testsuite: org.simpleframework.xml.stream.DocumentProviderTest
-Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.018 sec
-
-Testcase: testReader took 0.015 sec
-Testcase: testDirectory took 0 sec

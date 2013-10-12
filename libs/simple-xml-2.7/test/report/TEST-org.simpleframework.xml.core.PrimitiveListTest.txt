@@ -1,4 +1,0 @@
-Testsuite: org.simpleframework.xml.core.PrimitiveListTest
-Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.038 sec
-
-Testcase: testTwo took 0.035 sec

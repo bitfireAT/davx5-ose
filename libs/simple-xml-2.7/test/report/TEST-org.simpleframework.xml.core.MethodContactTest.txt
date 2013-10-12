@@ -1,4 +1,0 @@
-Testsuite: org.simpleframework.xml.core.MethodContactTest
-Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.039 sec
-
-Testcase: testContact took 0.036 sec

@@ -1,5 +1,0 @@
-Testsuite: org.simpleframework.xml.core.DefaultAnnotationTest
-Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.103 sec
-
-Testcase: testDefault took 0.101 sec
-Testcase: testDirectory took 0 sec

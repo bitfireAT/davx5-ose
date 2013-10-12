@@ -1,5 +1,0 @@
-Testsuite: org.simpleframework.xml.stream.FloatingTextTest
-Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 0.025 sec
-
-Testcase: testComplexSource took 0.02 sec
-Testcase: testEmptySource took 0.002 sec
