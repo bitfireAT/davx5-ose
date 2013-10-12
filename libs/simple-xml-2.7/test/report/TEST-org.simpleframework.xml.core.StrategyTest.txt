@@ -1,8 +1,0 @@
-Testsuite: org.simpleframework.xml.core.StrategyTest
-Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.092 sec
-------------- Standard Error -----------------
-<exampleExample key="attribute-example-key">
-   <text>attribute-example-text</text>
-</exampleExample>------------- ---------------- ---------------
-
-Testcase: testExampleStrategy took 0.089 sec

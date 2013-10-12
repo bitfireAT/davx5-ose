@@ -1,9 +1,0 @@
-Testsuite: org.simpleframework.xml.core.PathConstructorAmbiguityTest
-Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.09 sec
-------------- Standard Output ---------------
-<test1 iri="a">
-   <resource iri="b"/>
-</test1>
-------------- ---------------- ---------------
-
-Testcase: testParameters took 0.087 sec

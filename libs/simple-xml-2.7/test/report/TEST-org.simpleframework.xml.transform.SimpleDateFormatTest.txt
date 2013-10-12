@@ -1,8 +1,0 @@
-Testsuite: org.simpleframework.xml.transform.SimpleDateFormatTest
-Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.01 sec
-------------- Standard Error -----------------
-Sat Nov 03 00:46:03 EST 2007
-Fri Nov 02 14:46:03 EST 2007
-------------- ---------------- ---------------
-
-Testcase: testISO8601 took 0.007 sec

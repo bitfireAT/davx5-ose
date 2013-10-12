@@ -1,7 +1,0 @@
-Testsuite: org.simpleframework.xml.core.ScannerCreatorTest
-Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.054 sec
-------------- Standard Error -----------------
-public org.simpleframework.xml.core.ScannerCreatorTest$Example1(java.lang.String,java.lang.String)
-------------- ---------------- ---------------
-
-Testcase: testScanner took 0.052 sec

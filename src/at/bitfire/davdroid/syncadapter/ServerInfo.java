@@ -11,7 +11,9 @@ import java.io.Serializable;
 import java.util.List;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(suppressConstructorProperties=true)
 @Data
 public class ServerInfo implements Serializable {
 	private static final long serialVersionUID = 6744847358282980437L;
@@ -25,6 +27,7 @@ public class ServerInfo implements Serializable {
 	private boolean calDAV, cardDAV;
 	private List<ResourceInfo> addressBooks, calendars;
 	
+	@RequiredArgsConstructor(suppressConstructorProperties=true)
 	@Data
 	public static class ResourceInfo implements Serializable {
 		private static final long serialVersionUID = -5516934508229552112L;

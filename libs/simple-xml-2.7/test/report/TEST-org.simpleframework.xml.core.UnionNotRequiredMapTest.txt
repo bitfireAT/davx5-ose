@@ -1,6 +1,0 @@
-Testsuite: org.simpleframework.xml.core.UnionNotRequiredMapTest
-Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.091 sec
-
-Testcase: testOptionalMap took 0.086 sec
-Testcase: testMissingOptionalMap took 0.002 sec
-Testcase: testDirectory took 0 sec

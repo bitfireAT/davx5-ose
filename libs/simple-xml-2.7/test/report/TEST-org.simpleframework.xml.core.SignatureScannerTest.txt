@@ -1,9 +1,0 @@
-Testsuite: org.simpleframework.xml.core.SignatureScannerTest
-Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.074 sec
-------------- Standard Error -----------------
-public org.simpleframework.xml.core.ScannerCreatorTest$Example1(java.lang.String,java.lang.String)
-------------- ---------------- ---------------
-
-Testcase: testUnion took 0.036 sec
-Testcase: testUnionBigPermutation took 0.011 sec
-Testcase: testScanner took 0.025 sec

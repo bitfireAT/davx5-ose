@@ -1,7 +1,0 @@
-Testsuite: org.simpleframework.xml.core.SimpleConstructorInjectionTest
-Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.08 sec
-------------- Standard Output ---------------
-message: null
-------------- ---------------- ---------------
-
-Testcase: testConstructorInjection took 0.078 sec

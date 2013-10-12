@@ -1,4 +1,0 @@
-Testsuite: org.simpleframework.xml.core.AnnotationProviderTest
-Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.025 sec
-
-Testcase: testProvider took 0.023 sec

@@ -1,6 +1,0 @@
-Testsuite: org.simpleframework.xml.strategy.CycleStrategyTest
-Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 0.027 sec
-
-Testcase: testArray took 0.024 sec
-Testcase: testObject took 0.001 sec
-Testcase: testReference took 0.001 sec

@@ -1,9 +1,0 @@
-Testsuite: org.simpleframework.xml.core.ScannerTest
-Tests run: 6, Failures: 0, Errors: 0, Time elapsed: 0.079 sec
-
-Testcase: testExampleWithPath took 0.052 sec
-Testcase: testExample took 0.007 sec
-Testcase: testMixedExample took 0.005 sec
-Testcase: testDuplicateAttribute took 0.004 sec
-Testcase: testNonMatchingElement took 0.001 sec
-Testcase: testIllegalTextExample took 0.005 sec
