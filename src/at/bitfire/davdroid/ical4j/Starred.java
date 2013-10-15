@@ -18,8 +18,14 @@ public class Starred extends Property {
 	
 	public Starred(String value) {
 		super(PROPERTY_NAME);
-		
-		isStarred = Integer.parseInt(value) > 0;
+
+		try {
+			isStarred = Integer.parseInt(value) > 0;
+		} catch(NumberFormatException ex) {
+			// value is not an integer, assume it's true because
+			// otherwise, the property would probably not be present
+			isStarred = true;
+		}
 	}
 
 	@Override

@@ -20,5 +20,5 @@ public class Constants {
 		ACCOUNT_KEY_ADDRESSBOOK_PATH = "addressbook_path",
 		ACCOUNT_KEY_ADDRESSBOOK_CTAG = "addressbook_ctag",
 		
-		WEB_URL_HELP = "http://davdroid.bitfire.at/configuration";
+		WEB_URL_HELP = "http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app";
 }

@@ -9,9 +9,11 @@ package at.bitfire.davdroid.resource;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.vcard.Parameter.Id;
 import net.fortuna.ical4j.vcard.parameter.Type;
 import net.fortuna.ical4j.vcard.property.Telephone;
@@ -28,6 +30,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
+import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.CommonDataKinds.Nickname;
 import android.provider.ContactsContract.CommonDataKinds.Note;
@@ -212,8 +215,23 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		cursor = providerClient.query(dataURI(), new String[] { Photo.PHOTO },
 			Photo.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 			new String[] { String.valueOf(c.getLocalID()), Photo.CONTENT_ITEM_TYPE }, null);
-		while (cursor.moveToNext())
+		if (cursor.moveToNext())
 			c.setPhoto(cursor.getBlob(0));
+		
+		// events (birthday)
+		cursor = providerClient.query(dataURI(), new String[] { CommonDataKinds.Event.TYPE, CommonDataKinds.Event.START_DATE },
+				Photo.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
+				new String[] { String.valueOf(c.getLocalID()), CommonDataKinds.Event.CONTENT_ITEM_TYPE }, null);
+		while (cursor.moveToNext())
+			try {
+				switch (cursor.getInt(0)) {
+				case CommonDataKinds.Event.TYPE_BIRTHDAY:
+					c.setBirthDay(new Date(cursor.getString(1)));
+					break;
+				}
+			} catch (ParseException e) {
+				Log.w(TAG, "Ignoring event with unknown date format: " + cursor.getString(0));
+			}
 		
 		// URLs
 		cursor = providerClient.query(dataURI(), new String[] { Website.URL },
@@ -302,6 +320,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 
 		if (contact.getPhoto() != null)
 			pendingOperations.add(buildPhoto(newDataInsertBuilder(localID, backrefIdx), contact.getPhoto()).build());
+		
+		if (contact.getBirthDay() != null)
+			pendingOperations.add(buildBirthDay(newDataInsertBuilder(localID, backrefIdx), contact.getBirthDay()).build());
 		
 		for (URI uri : contact.getURLs())
 			pendingOperations.add(buildURL(newDataInsertBuilder(localID, backrefIdx), uri).build());
@@ -412,6 +433,13 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		return builder
 			.withValue(Data.MIMETYPE, Photo.CONTENT_ITEM_TYPE)
 			.withValue(Photo.PHOTO, photo);
+	}
+	
+	protected Builder buildBirthDay(Builder builder, Date birthDay) {
+		return builder
+			.withValue(Data.MIMETYPE, CommonDataKinds.Event.CONTENT_ITEM_TYPE)
+			.withValue(CommonDataKinds.Event.TYPE, CommonDataKinds.Event.TYPE_BIRTHDAY) 
+			.withValue(CommonDataKinds.Event.START_DATE, birthDay.toString());
 	}
 	
 	protected Builder buildURL(Builder builder, URI uri) {
