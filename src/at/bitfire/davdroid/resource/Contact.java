@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.vcard.GroupRegistry;
 import net.fortuna.ical4j.vcard.ParameterFactoryRegistry;
@@ -33,6 +34,7 @@ import net.fortuna.ical4j.vcard.PropertyFactoryRegistry;
 import net.fortuna.ical4j.vcard.VCard;
 import net.fortuna.ical4j.vcard.VCardBuilder;
 import net.fortuna.ical4j.vcard.VCardOutputter;
+import net.fortuna.ical4j.vcard.property.BDay;
 import net.fortuna.ical4j.vcard.property.Email;
 import net.fortuna.ical4j.vcard.property.Fn;
 import net.fortuna.ical4j.vcard.property.N;
@@ -60,8 +62,10 @@ public class Contact extends Resource {
 	@Getter @Setter private String displayName;
 	@Getter @Setter private String prefix, givenName, middleName, familyName, suffix;
 	@Getter @Setter private String[] nickNames;
-	
+
 	@Getter @Setter private byte[] photo;
+	
+	@Getter @Setter private Date birthDay;
 
 	
 	public Contact(String name, String ETag) {
@@ -174,6 +178,9 @@ public class Contact extends Resource {
 			}
 		}
 		
+		for (Property p : vcard.getProperties(Id.BDAY))
+			birthDay = ((BDay)p).getDate();
+		
 		for (Property p : vcard.getProperties(Id.URL))
 			URLs.add(((Url)p).getUri());
 		
@@ -213,7 +220,10 @@ public class Contact extends Resource {
 				Log.w(TAG, "Couldn't encode photo");
 			}
 		}
-
+		
+		if (birthDay != null)
+			properties.add(new BDay(birthDay));
+		
 		if (familyName != null || middleName != null || givenName != null)
 			properties.add(new N(familyName, givenName, StringUtils.split(middleName),
 					StringUtils.split(prefix), StringUtils.split(suffix)));
