@@ -70,7 +70,7 @@ public class WebDavCollection extends WebDavResource {
 				Serializer serializer = new Persister();
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				InputStream is = new TeeInputStream(response.getEntity().getContent(), baos);
-				multistatus = serializer.read(DavMultistatus.class, is);
+				multistatus = serializer.read(DavMultistatus.class, is, false);
 				
 				Log.d(TAG, "Received multistatus response: " + baos.toString("UTF-8"));
 			} catch (Exception e) {
@@ -117,7 +117,7 @@ public class WebDavCollection extends WebDavResource {
 			try {
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				InputStream is = new TeeInputStream(response.getEntity().getContent(), baos);
-				multistatus = serializer.read(DavMultistatus.class, is);
+				multistatus = serializer.read(DavMultistatus.class, is, false);
 				
 				Log.d(TAG, "Received multistatus response: " + baos.toString("UTF-8"));
 			} catch (Exception e) {
