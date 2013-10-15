@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -169,7 +170,7 @@ public class WebDavCollection extends WebDavResource {
 				
 				WebDavResource referenced = null;
 			
-				if (location.equals(location.resolve(href))) {
+				if (sameURL(location, location.resolve(href))) {
 					// response is about this property
 					referenced = this;
 					
@@ -225,5 +226,16 @@ public class WebDavCollection extends WebDavResource {
 			}
 		}
 		this.members = members;
+	}
+	
+	
+	private boolean sameURL(URI a, URI b) {
+	     try {
+	    	a = new URI(a.getScheme(), null, a.getHost(), a.getPort(), a.getPath(), a.getQuery(), a.getFragment());
+	    	b = new URI(b.getScheme(), null, b.getHost(), b.getPort(), b.getPath(), b.getQuery(), b.getFragment());
+			return a.equals(b);
+		} catch (URISyntaxException e) {
+			return false;
+		}
 	}
 }
