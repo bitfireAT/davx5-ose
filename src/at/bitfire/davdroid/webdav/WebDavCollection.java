@@ -40,8 +40,8 @@ public class WebDavCollection extends WebDavResource {
 		CALENDAR
 	}
 	
-	/* list of resource members, null until filled by propfind() or multiGet() */
-	@Getter protected List<WebDavResource> members;
+	/* list of resource members, empty until filled by propfind() or multiGet() */
+	@Getter protected List<WebDavResource> members = new LinkedList<WebDavResource>();
 
 	
 	public WebDavCollection(URI baseURL, String username, String password, boolean preemptiveAuth) throws IOException {
@@ -151,10 +151,11 @@ public class WebDavCollection extends WebDavResource {
 	/* HTTP support */
 	
 	protected void processMultiStatus(DavMultistatus multistatus) throws HttpException {
-		List<WebDavResource> members = new LinkedList<WebDavResource>();
-		
 		if (multistatus.response == null)	// empty response
 			return;
+		
+		// member list will be built from response
+		members.clear();
 		
 		for (DavResponse singleResponse : multistatus.response) {
 			String href = singleResponse.getHref().href;
@@ -225,7 +226,6 @@ public class WebDavCollection extends WebDavResource {
 					referenced.content = new ByteArrayInputStream(prop.addressData.vcard.getBytes());
 			}
 		}
-		this.members = members;
 	}
 	
 	
