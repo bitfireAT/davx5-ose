@@ -19,20 +19,24 @@ import net.fortuna.ical4j.model.ValidationException;
 
 import org.apache.http.HttpException;
 
+import android.util.Log;
 import at.bitfire.davdroid.webdav.HttpPropfind;
+import at.bitfire.davdroid.webdav.InvalidDavResponseException;
 import at.bitfire.davdroid.webdav.WebDavCollection;
 import at.bitfire.davdroid.webdav.WebDavCollection.MultigetType;
 import at.bitfire.davdroid.webdav.WebDavResource;
 import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
 
 public abstract class RemoteCollection<ResourceType extends Resource> {
+	private static final String TAG = "davdroid.RemoteCollection";
+	
 	@Getter WebDavCollection collection;
 
 	abstract protected String memberContentType();
 	abstract protected MultigetType multiGetType();
 	abstract protected ResourceType newResourceSkeleton(String name, String ETag);
 	
-	public RemoteCollection(String baseURL, String user, String password, boolean preemptiveAuth) throws IOException, URISyntaxException {
+	public RemoteCollection(String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {
 		collection = new WebDavCollection(new URI(baseURL), user, password, preemptiveAuth);
 	}
 
@@ -43,13 +47,13 @@ public abstract class RemoteCollection<ResourceType extends Resource> {
 		try {
 			if (collection.getCTag() == null && collection.getMembers() == null)	// not already fetched
 				collection.propfind(HttpPropfind.Mode.COLLECTION_CTAG);
-		} catch (IncapableResourceException e) {
+		} catch (InvalidDavResponseException e) {
 			return null;
 		}
 		return collection.getCTag();
 	}
 	
-	public Resource[] getMemberETags() throws IOException, IncapableResourceException, HttpException {
+	public Resource[] getMemberETags() throws IOException, InvalidDavResponseException, HttpException {
 		collection.propfind(HttpPropfind.Mode.MEMBERS_ETAG);
 			
 		List<ResourceType> resources = new LinkedList<ResourceType>();
@@ -59,7 +63,7 @@ public abstract class RemoteCollection<ResourceType extends Resource> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Resource[] multiGet(ResourceType[] resources) throws IOException, IncapableResourceException, HttpException, ParserException {
+	public Resource[] multiGet(ResourceType[] resources) throws IOException, InvalidDavResponseException, HttpException {
 		try {
 			if (resources.length == 1) {
 				Resource resource = get(resources[0]);
@@ -75,19 +79,25 @@ public abstract class RemoteCollection<ResourceType extends Resource> {
 			LinkedList<ResourceType> foundResources = new LinkedList<ResourceType>();
 			for (WebDavResource member : collection.getMembers()) {
 				ResourceType resource = newResourceSkeleton(member.getName(), member.getETag());
-				resource.parseEntity(member.getContent());
-				foundResources.add(resource);
+				try {
+					resource.parseEntity(member.getContent());
+					foundResources.add(resource);
+				} catch (ParserException ex) {
+					Log.e(TAG, "Ignoring unparseable entity in multi-response: " + ex.toString(), ex);
+				}
 			}
 			return foundResources.toArray(new Resource[0]);
-		} catch(ValidationException ex) {
-			return null;
+		} catch (ParserException ex) {
+			Log.w(TAG, "Couldn't parse single multi-get entity", ex);
 		}
+		
+		return new Resource[0];
 	}
 	
 	
 	/* internal member operations */
 
-	public ResourceType get(ResourceType resource) throws IOException, HttpException, ParserException, ValidationException {
+	public ResourceType get(ResourceType resource) throws IOException, HttpException, ParserException {
 		WebDavResource member = new WebDavResource(collection, resource.getName());
 		member.get();
 		resource.parseEntity(member.getContent());

@@ -44,7 +44,7 @@ public class WebDavCollection extends WebDavResource {
 	@Getter protected List<WebDavResource> members = new LinkedList<WebDavResource>();
 
 	
-	public WebDavCollection(URI baseURL, String username, String password, boolean preemptiveAuth) throws IOException {
+	public WebDavCollection(URI baseURL, String username, String password, boolean preemptiveAuth) {
 		super(baseURL, username, password, preemptiveAuth);
 	}
 	
@@ -60,7 +60,7 @@ public class WebDavCollection extends WebDavResource {
 	/* collection operations */
 
 
-	public boolean propfind(HttpPropfind.Mode mode) throws IOException, IncapableResourceException, HttpException {
+	public boolean propfind(HttpPropfind.Mode mode) throws IOException, InvalidDavResponseException, HttpException {
 		HttpPropfind propfind = new HttpPropfind(location, mode);
 		HttpResponse response = client.execute(propfind);
 		checkResponse(response);
@@ -74,9 +74,9 @@ public class WebDavCollection extends WebDavResource {
 				multistatus = serializer.read(DavMultistatus.class, is, false);
 				
 				Log.d(TAG, "Received multistatus response: " + baos.toString("UTF-8"));
-			} catch (Exception e) {
-				Log.w(TAG, e);
-				throw new IncapableResourceException();
+			} catch (Exception ex) {
+				Log.w(TAG, "Invalid PROPFIND XML response", ex);
+				throw new InvalidDavResponseException();
 			}
 			processMultiStatus(multistatus);
 			return true;
@@ -85,7 +85,7 @@ public class WebDavCollection extends WebDavResource {
 			return false;
 	}
 	
-	public boolean multiGet(String[] names, MultigetType type) throws IOException, IncapableResourceException, HttpException {
+	public boolean multiGet(String[] names, MultigetType type) throws IOException, InvalidDavResponseException, HttpException {
 		DavMultiget multiget = (type == MultigetType.ADDRESS_BOOK) ? new DavAddressbookMultiget() : new DavCalendarMultiget(); 
 			
 		multiget.prop = new DavProp();
@@ -128,7 +128,7 @@ public class WebDavCollection extends WebDavResource {
 			processMultiStatus(multistatus);
 			
 		} else
-			throw new IncapableResourceException();
+			throw new InvalidDavResponseException();
 		return true;
 	}
 	

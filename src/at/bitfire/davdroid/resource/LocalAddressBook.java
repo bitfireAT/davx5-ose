@@ -125,8 +125,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		
 		// structured name
 		cursor = providerClient.query(dataURI(), new String[] {
-				StructuredName.DISPLAY_NAME, StructuredName.PREFIX, StructuredName.GIVEN_NAME,
-				StructuredName.MIDDLE_NAME,	StructuredName.FAMILY_NAME, StructuredName.SUFFIX
+				/* 0 */ StructuredName.DISPLAY_NAME, StructuredName.PREFIX, StructuredName.GIVEN_NAME,
+				/* 3 */ StructuredName.MIDDLE_NAME,	StructuredName.FAMILY_NAME, StructuredName.SUFFIX,
+				/* 6 */ StructuredName.PHONETIC_GIVEN_NAME, StructuredName.PHONETIC_MIDDLE_NAME, StructuredName.PHONETIC_FAMILY_NAME
 			}, StructuredName.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 			new String[] { String.valueOf(res.getLocalID()), StructuredName.CONTENT_ITEM_TYPE }, null);
 		if (cursor.moveToNext()) {
@@ -137,6 +138,10 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			c.setMiddleName(cursor.getString(3));
 			c.setFamilyName(cursor.getString(4));
 			c.setSuffix(cursor.getString(5));
+			
+			c.setPhoneticGivenName(cursor.getString(6));
+			c.setPhoneticMiddleName(cursor.getString(7));
+			c.setPhoneticFamilyName(cursor.getString(8));
 		}
 		
 		// nick names
@@ -347,7 +352,10 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			.withValue(StructuredName.GIVEN_NAME, contact.getGivenName())
 			.withValue(StructuredName.MIDDLE_NAME, contact.getMiddleName())
 			.withValue(StructuredName.FAMILY_NAME, contact.getFamilyName())
-			.withValue(StructuredName.SUFFIX, contact.getSuffix());
+			.withValue(StructuredName.SUFFIX, contact.getSuffix())
+			.withValue(StructuredName.PHONETIC_GIVEN_NAME, contact.getPhoneticGivenName())
+			.withValue(StructuredName.PHONETIC_MIDDLE_NAME, contact.getPhoneticMiddleName())
+			.withValue(StructuredName.PHONETIC_FAMILY_NAME, contact.getPhoneticFamilyName());
 	}
 	
 	protected Builder buildNickName(Builder builder, String nickName) {
