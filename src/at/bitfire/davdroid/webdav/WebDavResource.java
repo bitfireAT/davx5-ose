@@ -64,7 +64,7 @@ public class WebDavResource {
 	protected DefaultHttpClient client;
 	
 	
-	public WebDavResource(URI baseURL, String username, String password, boolean preemptive) throws IOException {
+	public WebDavResource(URI baseURL, String username, String password, boolean preemptive) {
 		location = baseURL.normalize();
 		
 		client = new DefaultHttpClient();

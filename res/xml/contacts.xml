@@ -1,54 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ContactsSource xmlns:android="http://schemas.android.com/apk/res/android">
+<ContactsAccountType
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    
     <EditSchema>
-        <DataKind
-            kind="name"
-            maxOccurs="1"
-            supportsDisplayName="true"
-            supportsMiddleName="true"
-            supportsFamilyName="true"
-            supportsPhoneticFamilyName="false"
-            supportsPhoneticGivenName="false"
-            supportsPhoneticMiddleName="false"
-            supportsPrefix="true"
-            supportsSuffix="true" />
-        
-        <DataKind
-            kind="photo"
-            maxOccurs="1" />
-        
-        <DataKind kind="phone">
-            <Type type="fax_home" />
-            <Type type="fax_work" />
-            <Type type="home" />
-            <Type type="mobile" />
-            <Type type="other_fax" />
-            <Type type="pager" />
-            <Type type="work" />
-            <Type type="work_mobile" />
-            <Type type="work_pager" />            
-        </DataKind>
-        
-        <DataKind kind="email">
-            <Type type="home" />
-            <Type type="work" />
-            <Type type="other" />
-        </DataKind>
-        
-        <DataKind
-            kind="nickname"
-            maxOccurs="1" />
-        
-        <DataKind kind="website" />
-        <DataKind kind="note" />
-
-        <DataKind
-            dateWithTime="false"
-            kind="event">
-            <Type
-                maxOccurs="1"
-                type="birthday"
-                yearOptional="false" />
-        </DataKind>
-    </EditSchema>
-</ContactsSource>
+		<DataKind
+		    kind="name"
+		    maxOccurs="1"
+		    supportsDisplayName="true"
+		    supportsMiddleName="true"
+		    supportsFamilyName="true"
+		    supportsPhoneticFamilyName="true"
+		    supportsPhoneticGivenName="true"
+		    supportsPhoneticMiddleName="true"
+		    supportsPrefix="true"
+		    supportsSuffix="true" />
+		
+		<DataKind
+		    kind="photo"
+		    maxOccurs="1" />
+		
+		<DataKind kind="phone">
+		    <Type type="fax_home" />
+		    <Type type="fax_work" />
+		    <Type type="home" />
+		    <Type type="mobile" />
+		    <Type type="other_fax" />
+		    <Type type="pager" />
+		    <Type type="work" />
+		    <Type type="work_mobile" />
+		    <Type type="work_pager" />            
+		</DataKind>
+		
+		<DataKind kind="email">
+		    <Type type="home" />
+		    <Type type="work" />
+		    <Type type="other" />
+		</DataKind>
+		
+		<DataKind
+		    kind="nickname"
+		    maxOccurs="1" />
+		
+		<DataKind kind="website" />
+		<DataKind
+		    kind="note"
+    		maxOccurs="1" />
+		
+		<DataKind
+		    dateWithTime="false"
+		    kind="event">
+		    <Type
+		        maxOccurs="1"
+		        type="birthday"
+		        yearOptional="false" />
+		</DataKind>
+	</EditSchema>
+</ContactsAccountType>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="at.bitfire.davdroid"
-    android:versionCode="6"
-    android:versionName="0.3.3-alpha" >
+    android:versionCode="7"
+    android:versionName="0.3.4-alpha" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -34,7 +34,8 @@
         </service>
         <service
             android:name=".syncadapter.ContactsSyncAdapterService"
-            android:exported="true" >
+            android:exported="true"
+            android:process=":sync" >
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
@@ -48,7 +49,8 @@
         </service>
         <service
             android:name=".syncadapter.CalendarsSyncAdapterService"
-            android:exported="true" >
+            android:exported="true"
+            android:process=":sync" >
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>

@@ -10,11 +10,14 @@ package at.bitfire.davdroid.syncadapter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 import lombok.Synchronized;
 import net.fortuna.ical4j.data.ParserException;
 
 import org.apache.http.HttpException;
+import org.apache.http.auth.AuthenticationException;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -34,6 +37,7 @@ import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.resource.CalDavCalendar;
 import at.bitfire.davdroid.resource.IncapableResourceException;
 import at.bitfire.davdroid.resource.LocalCalendar;
+import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.RemoteCollection;
 import at.bitfire.davdroid.webdav.WebDavResource;
 
@@ -51,58 +55,35 @@ public class CalendarsSyncAdapterService extends Service {
 		return syncAdapter.getSyncAdapterBinder(); 
 	}
 
-	private static class SyncAdapter extends AbstractThreadedSyncAdapter {
+	private static class SyncAdapter extends DavSyncAdapter {
 		private final static String TAG = "davdroid.CalendarsSyncAdapter";
-		private AccountManager accountManager;
 		
 		public SyncAdapter(Context context) {
-			super(context, true);
-			accountManager = AccountManager.get(context);
+			super(context);
 		}
-
+		
 		@Override
-		public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
-				SyncResult syncResult) {
-			Log.i(TAG, "Performing sync for authority " + authority);
-			
-			// set class loader for iCal4j ResourceLoader
-			Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
-			
+		protected Map<LocalCollection, RemoteCollection> getSyncPairs(Account account, ContentProviderClient provider) {
 			try {
-				SyncManager syncManager = new SyncManager(account, accountManager);
-
-				LocalCalendar[] calendars = LocalCalendar.findAll(account, provider);
-				for (LocalCalendar calendar : calendars) {
+				Map<LocalCollection, RemoteCollection> map = new HashMap<LocalCollection, RemoteCollection>();
+				
+				for (LocalCalendar calendar : LocalCalendar.findAll(account, provider)) {
 					URI uri = new URI(accountManager.getUserData(account, Constants.ACCOUNT_KEY_BASE_URL)).resolve(calendar.getPath());
 					RemoteCollection dav = new CalDavCalendar(uri.toString(),
 						accountManager.getUserData(account, Constants.ACCOUNT_KEY_USERNAME),
 						accountManager.getPassword(account),
 						Boolean.parseBoolean(accountManager.getUserData(account, Constants.ACCOUNT_KEY_AUTH_PREEMPTIVE)));
-					syncManager.synchronize(calendar, dav, extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL), syncResult);
+					
+					map.put(calendar, dav);
 				}
-				
-			} catch (HttpException e) {
-				syncResult.stats.numParseExceptions++;
-				Log.e(TAG, e.toString());
-			} catch (ParserException e) {
-				syncResult.stats.numParseExceptions++;
-				Log.e(TAG, e.toString());
-			} catch (RemoteException e) {
-				syncResult.stats.numParseExceptions++;
-				Log.e(TAG, e.getLocalizedMessage());
-			} catch (OperationApplicationException e) {
-				syncResult.stats.numParseExceptions++;
-				Log.e(TAG, e.getLocalizedMessage());
-			} catch (IOException e) {
-				syncResult.stats.numIoExceptions++;
-				Log.e(TAG, e.toString());
-			} catch (IncapableResourceException e) {
-				syncResult.stats.numParseExceptions++;
-				Log.e(TAG, e.toString());
-			} catch (URISyntaxException e) {
-				syncResult.stats.numParseExceptions++;
-				Log.e(TAG, e.toString());
+				return map;
+			} catch (RemoteException ex) {
+				Log.e(TAG, "Couldn't find local calendars", ex);
+			} catch (URISyntaxException ex) {
+				Log.e(TAG, "Couldn't build calendar URI", ex);
 			}
+			
+			return null;
 		}
 	}
 }

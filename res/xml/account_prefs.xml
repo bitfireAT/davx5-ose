@@ -4,7 +4,7 @@
     <Preference android:title="DAVdroid Web site" >
         <intent
             android:action="android.intent.action.VIEW"
-            android:data="http://davdroid.bitfire.at" />
+            android:data="http://davdroid.bitfire.at/?pk_campaign=in-app" />
     </Preference>
 
 </PreferenceScreen>

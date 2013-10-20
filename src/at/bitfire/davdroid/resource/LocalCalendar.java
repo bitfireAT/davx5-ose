@@ -11,7 +11,6 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
-
 import lombok.Getter;
 import net.fortuna.ical4j.model.Parameter;
 import net.fortuna.ical4j.model.ParameterList;
@@ -26,11 +25,10 @@ import net.fortuna.ical4j.model.property.Organizer;
 import net.fortuna.ical4j.model.property.RDate;
 import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.Status;
-
 import org.apache.commons.lang.StringUtils;
-
 import android.accounts.Account;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderOperation.Builder;
@@ -40,6 +38,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
+import android.os.Build;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Attendees;
@@ -75,9 +74,9 @@ public class LocalCalendar extends LocalCollection<Event> {
 	protected String entryColumnDirty()			{ return Events.DIRTY; }
 	protected String entryColumnDeleted()		{ return Events.DELETED; }
 	
-	@SuppressLint("InlinedApi")
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	protected String entryColumnUID() {
-		return (android.os.Build.VERSION.SDK_INT >= 17) ?
+		return (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) ?
 			Events.UID_2445 : Events.SYNC_DATA2;
 	}
 

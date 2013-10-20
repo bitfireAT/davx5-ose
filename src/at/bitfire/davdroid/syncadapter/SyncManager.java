@@ -40,7 +40,7 @@ public class SyncManager {
 		this.accountManager = accountManager;
 	}
 
-	public void synchronize(LocalCollection local, RemoteCollection dav, boolean manualSync, SyncResult syncResult) throws RemoteException, OperationApplicationException, IOException, IncapableResourceException, HttpException, ParserException {
+	public void synchronize(LocalCollection local, RemoteCollection dav, boolean manualSync, SyncResult syncResult) throws RemoteException, OperationApplicationException, IOException, HttpException {
 		boolean fetchCollection = false;
 		
 		// PHASE 1: UPLOAD LOCALLY-CHANGED RESOURCES
@@ -139,8 +139,8 @@ public class SyncManager {
 				Log.i(TAG, "Adding " + res.getName());
 				try {
 					local.add(res);
-				} catch (ValidationException e) {
-					Log.e(TAG, "Invalid resource: " + res.getName());
+				} catch (ValidationException ex) {
+					Log.w(TAG, "Ignoring invalid remote resource: " + res.getName(), ex);
 				}
 				syncResult.stats.numInserts++;
 			}
@@ -151,8 +151,8 @@ public class SyncManager {
 			for (Resource res : dav.multiGet(resourcesToUpdate.toArray(new Resource[0]))) {
 				try {
 					local.updateByRemoteName(res);
-				} catch (ValidationException e) {
-					Log.e(TAG, "Invalid resource: " + res.getName());
+				} catch (ValidationException ex) {
+					Log.e(TAG, "Ignoring invalid remote resource: " + res.getName(), ex);
 				}
 				Log.i(TAG, "Updating " + res.getName());
 				syncResult.stats.numInserts++;

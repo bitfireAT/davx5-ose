@@ -51,6 +51,9 @@ import org.apache.commons.lang.StringUtils;
 
 import android.util.Base64;
 import android.util.Log;
+import at.bitfire.davdroid.ical4j.PhoneticFirstName;
+import at.bitfire.davdroid.ical4j.PhoneticLastName;
+import at.bitfire.davdroid.ical4j.PhoneticMiddleName;
 import at.bitfire.davdroid.ical4j.Starred;
 
 @ToString(callSuper = true)
@@ -61,6 +64,7 @@ public class Contact extends Resource {
 	
 	@Getter @Setter private String displayName;
 	@Getter @Setter private String prefix, givenName, middleName, familyName, suffix;
+	@Getter @Setter private String phoneticGivenName, phoneticMiddleName, phoneticFamilyName;
 	@Getter @Setter private String[] nickNames;
 
 	@Getter @Setter private byte[] photo;
@@ -107,7 +111,14 @@ public class Contact extends Resource {
 	@Override
 	public void parseEntity(InputStream is) throws IOException, ParserException {
 		PropertyFactoryRegistry propertyFactoryRegistry = new PropertyFactoryRegistry();
+
+		// add support for X-DAVDROID-STARRED
 		propertyFactoryRegistry.register("X-" + Starred.PROPERTY_NAME, new Starred.Factory());
+		
+		// add support for phonetic names
+		propertyFactoryRegistry.register("X-" + PhoneticFirstName.PROPERTY_NAME, new PhoneticFirstName.Factory());
+		propertyFactoryRegistry.register("X-" + PhoneticMiddleName.PROPERTY_NAME, new PhoneticMiddleName.Factory());
+		propertyFactoryRegistry.register("X-" + PhoneticLastName.PROPERTY_NAME, new PhoneticLastName.Factory());
 
 		VCardBuilder builder = new VCardBuilder(
 				new InputStreamReader(is),
@@ -115,9 +126,15 @@ public class Contact extends Resource {
 				propertyFactoryRegistry,
 				new ParameterFactoryRegistry()
 		);
-		VCard vcard = builder.build();
-		if (vcard == null)
-			return;
+		
+		VCard vcard;
+		try {
+			vcard = builder.build();
+			if (vcard == null)
+				return;
+		} catch(Exception ex) {
+			throw new ParserException("VCard parser crashed", -1);
+		}
 		
 		Uid uid = (Uid)vcard.getProperty(Id.UID);
 		if (uid != null)
@@ -137,6 +154,7 @@ public class Contact extends Resource {
 		if (nickname != null)
 			nickNames = nickname.getNames();
 		
+		// structured name
 		N n = (N)vcard.getProperty(Id.N);
 		if (n != null) {
 			prefix = StringUtils.join(n.getPrefixes(), " ");
@@ -145,6 +163,17 @@ public class Contact extends Resource {
 			familyName = n.getFamilyName();
 			suffix = StringUtils.join(n.getSuffixes(), " ");
 		}
+		
+		// phonetic name
+		PhoneticFirstName phoneticFirstName = (PhoneticFirstName)vcard.getExtendedProperty(PhoneticFirstName.PROPERTY_NAME);
+		if (phoneticFirstName != null)
+			phoneticGivenName = phoneticFirstName.getValue();
+		PhoneticMiddleName phoneticMiddleName = (PhoneticMiddleName)vcard.getExtendedProperty(PhoneticMiddleName.PROPERTY_NAME);
+		if (phoneticMiddleName != null)
+			this.phoneticMiddleName = phoneticMiddleName.getValue();
+		PhoneticLastName phoneticLastName = (PhoneticLastName)vcard.getExtendedProperty(PhoneticLastName.PROPERTY_NAME);
+		if (phoneticLastName != null)
+			phoneticFamilyName = phoneticLastName.getValue();
 		
 		for (Property p : vcard.getProperties(Id.EMAIL))
 			emails.add((Email)p);
@@ -227,6 +256,13 @@ public class Contact extends Resource {
 		if (familyName != null || middleName != null || givenName != null)
 			properties.add(new N(familyName, givenName, StringUtils.split(middleName),
 					StringUtils.split(prefix), StringUtils.split(suffix)));
+		
+		if (phoneticGivenName != null)
+			properties.add(new PhoneticFirstName(phoneticGivenName));
+		if (phoneticMiddleName != null)
+			properties.add(new PhoneticMiddleName(phoneticMiddleName));
+		if (phoneticFamilyName != null)
+			properties.add(new PhoneticLastName(phoneticFamilyName));
 		
 		for (Email email : emails)
 			properties.add(email);
