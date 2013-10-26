@@ -1,7 +1,6 @@
 package at.bitfire.davdroid.syncadapter;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Map;
 
 import org.apache.http.HttpException;
@@ -18,7 +17,6 @@ import android.content.SyncResult;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
-import at.bitfire.davdroid.resource.IncapableResourceException;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.RemoteCollection;
 import at.bitfire.davdroid.webdav.InvalidDavResponseException;
