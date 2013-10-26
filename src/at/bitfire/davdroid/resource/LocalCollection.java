@@ -22,9 +22,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
+import android.util.Log;
 
 public abstract class LocalCollection<ResourceType extends Resource> {
-	//private static final String TAG = "davdroid.LocalCollection";
+	private static final String TAG = "davdroid.LocalCollection";
 	
 	protected Account account;
 	protected ContentProviderClient providerClient;
@@ -126,9 +127,8 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 	
 	public void updateByRemoteName(ResourceType remoteResource) throws RemoteException, ValidationException {
 		ResourceType localResource = findByRemoteName(remoteResource.getName());
-		
 		remoteResource.validate();
-
+		
 		pendingOperations.add(
 				buildEntry(ContentProviderOperation.newUpdate(ContentUris.withAppendedId(entriesURI(), localResource.getLocalID())), remoteResource)
 				.withValue(entryColumnETag(), remoteResource.getETag())
@@ -155,6 +155,8 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 	}
 
 	public void commit() throws RemoteException, OperationApplicationException {
+		Log.i(TAG, "Committing " + pendingOperations.size() + " operations");
+		
 		if (!pendingOperations.isEmpty())
 			providerClient.applyBatch(pendingOperations);
 		
