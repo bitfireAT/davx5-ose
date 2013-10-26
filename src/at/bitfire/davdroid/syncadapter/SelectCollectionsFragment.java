@@ -51,8 +51,6 @@ public class SelectCollectionsFragment extends ListFragment {
 		
 		final ListView listView = getListView();
 		listView.setPadding(20, 30, 20, 30);
-	
-		// TODO setEmptyView
 		
 		View header = getActivity().getLayoutInflater().inflate(R.layout.select_collections_header, null);
 		listView.addHeaderView(header);

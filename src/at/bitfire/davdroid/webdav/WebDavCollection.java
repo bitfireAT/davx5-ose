@@ -58,7 +58,6 @@ public class WebDavCollection extends WebDavResource {
 
 	/* collection operations */
 
-
 	public boolean propfind(HttpPropfind.Mode mode) throws IOException, InvalidDavResponseException, HttpException {
 		HttpPropfind propfind = new HttpPropfind(location, mode);
 		HttpResponse response = client.execute(propfind);
@@ -157,37 +156,30 @@ public class WebDavCollection extends WebDavResource {
 		members.clear();
 		
 		for (DavResponse singleResponse : multistatus.response) {
-			String href = singleResponse.getHref().href;
+			URI href;
+			try {
+				href = location.resolve(singleResponse.getHref().href);
+			} catch(IllegalArgumentException ex) {
+				Log.w(TAG, "Ignoring illegal member URI in multi-status response", ex);
+				continue;
+			}
+			
+			// about which resource is this response?
+			WebDavResource referenced = null;
+			if (sameURL(location, href)) {	// -> ourselves
+				referenced = this;
+				
+			} else {						// -> about a member
+				referenced = new WebDavResource(this, href);
+				members.add(referenced);
+			}
 			
 			for (DavPropstat singlePropstat : singleResponse.getPropstat()) {
 				StatusLine status = BasicLineParser.parseStatusLine(singlePropstat.status, new BasicLineParser());
 				
-				try {
-					checkResponse(status);
-				} catch(NotFoundException e) {
+				// ignore information about missing properties etc.
+				if (status.getStatusCode()/100 != 1 && status.getStatusCode()/100 != 2)
 					continue;
-				}
-				
-				WebDavResource referenced = null;
-				
-				URI thisURI;
-				try {
-					thisURI = location.resolve(href);
-				} catch(IllegalArgumentException ex) {
-					Log.w(TAG, "Server returned illegal URI", ex);
-					continue;
-				}
-			
-				if (sameURL(location, thisURI)) {
-					// response is about this property
-					referenced = this;
-					
-				} else {
-					// response is about a member, add it
-					URI uri = location.resolve(href);
-					referenced = new WebDavResource(this, uri);
-					members.add(referenced);
-				}
 				
 				DavProp prop = singlePropstat.prop;
 
