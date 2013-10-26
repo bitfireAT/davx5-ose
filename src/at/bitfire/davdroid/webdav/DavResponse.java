@@ -19,7 +19,7 @@ import org.simpleframework.xml.Root;
 public class DavResponse {
 	@Element
 	@Getter DavHref href;
-	
+
 	@ElementList(inline=true)
 	@Getter List<DavPropstat> propstat;
 }

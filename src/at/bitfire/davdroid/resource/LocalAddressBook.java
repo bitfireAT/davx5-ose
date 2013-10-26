@@ -105,9 +105,10 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		Cursor cursor = providerClient.query(entriesURI(),
 				new String[] { RawContacts._ID, entryColumnRemoteName(), entryColumnETag() },
 				entryColumnRemoteName() + "=?", new String[] { remoteName }, null);
-		if (cursor.moveToNext())
+		if (cursor != null && cursor.moveToNext())
 			return new Contact(cursor.getLong(0), cursor.getString(1), cursor.getString(2));
-		return null;
+		else
+			return null;
 	}
 
 	@Override
@@ -118,7 +119,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		
 		Cursor cursor = providerClient.query(ContentUris.withAppendedId(entriesURI(), c.getLocalID()),
 			new String[] { entryColumnUID(), RawContacts.STARRED }, null, null, null);
-		if (cursor.moveToNext()) {
+		if (cursor != null && cursor.moveToNext()) {
 			c.setUid(cursor.getString(0));
 			c.setStarred(cursor.getInt(1) != 0);
 		}
@@ -130,7 +131,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				/* 6 */ StructuredName.PHONETIC_GIVEN_NAME, StructuredName.PHONETIC_MIDDLE_NAME, StructuredName.PHONETIC_FAMILY_NAME
 			}, StructuredName.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 			new String[] { String.valueOf(res.getLocalID()), StructuredName.CONTENT_ITEM_TYPE }, null);
-		if (cursor.moveToNext()) {
+		if (cursor != null && cursor.moveToNext()) {
 			c.setDisplayName(cursor.getString(0));
 			
 			c.setPrefix(cursor.getString(1));
@@ -149,7 +150,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				Nickname.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Nickname.CONTENT_ITEM_TYPE }, null);
 		List<String> nickNames = new LinkedList<String>();
-		while (cursor.moveToNext())
+		while (cursor != null && cursor.moveToNext())
 			nickNames.add(cursor.getString(0));
 		if (!nickNames.isEmpty())
 			c.setNickNames(nickNames.toArray(new String[0]));
@@ -158,7 +159,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		cursor = providerClient.query(dataURI(), new String[] { Email.TYPE, Email.ADDRESS },
 				Email.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Email.CONTENT_ITEM_TYPE }, null);
-		while (cursor.moveToNext()) {
+		while (cursor != null && cursor.moveToNext()) {
 			net.fortuna.ical4j.vcard.property.Email email = new net.fortuna.ical4j.vcard.property.Email(cursor.getString(1));
 			switch (cursor.getInt(0)) {
 			case Email.TYPE_HOME:
@@ -175,7 +176,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		cursor = providerClient.query(dataURI(), new String[] { Phone.TYPE, Phone.NUMBER },
 				Phone.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Phone.CONTENT_ITEM_TYPE }, null);
-		while (cursor.moveToNext()) {
+		while (cursor != null && cursor.moveToNext()) {
 			Telephone number = new Telephone(cursor.getString(1));
 			List<String> types = new LinkedList<String>();
 			
@@ -220,14 +221,14 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		cursor = providerClient.query(dataURI(), new String[] { Photo.PHOTO },
 			Photo.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 			new String[] { String.valueOf(c.getLocalID()), Photo.CONTENT_ITEM_TYPE }, null);
-		if (cursor.moveToNext())
+		if (cursor != null && cursor.moveToNext())
 			c.setPhoto(cursor.getBlob(0));
 		
 		// events (birthday)
 		cursor = providerClient.query(dataURI(), new String[] { CommonDataKinds.Event.TYPE, CommonDataKinds.Event.START_DATE },
 				Photo.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), CommonDataKinds.Event.CONTENT_ITEM_TYPE }, null);
-		while (cursor.moveToNext())
+		while (cursor != null && cursor.moveToNext())
 			try {
 				switch (cursor.getInt(0)) {
 				case CommonDataKinds.Event.TYPE_BIRTHDAY:
@@ -242,7 +243,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		cursor = providerClient.query(dataURI(), new String[] { Website.URL },
 				Website.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Website.CONTENT_ITEM_TYPE }, null);
-		while (cursor.moveToNext())
+		while (cursor != null && cursor.moveToNext())
 			try {
 				c.addURL(new URI(cursor.getString(0)));
 			} catch (URISyntaxException ex) {
@@ -253,7 +254,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		cursor = providerClient.query(dataURI(), new String[] { Note.NOTE },
 				Website.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Note.CONTENT_ITEM_TYPE }, null);
-		while (cursor.moveToNext())
+		while (cursor != null && cursor.moveToNext())
 			c.addNote(new String(cursor.getString(0)));
 		
 		c.populated = true;
