@@ -84,45 +84,51 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		/*if (convertView != null)
-			return convertView;*/
+		// step 1: get view (either by creating or recycling)
+		if (convertView == null) {
+			LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+			switch (getItemViewType(position)) {
+			case TYPE_ADDRESS_BOOKS_HEADING:
+				convertView = inflater.inflate(R.layout.address_books_heading, parent, false);
+				break;
+			case TYPE_ADDRESS_BOOKS_ROW:
+				convertView = inflater.inflate(android.R.layout.simple_list_item_single_choice, null);
+				prepareRowView((CheckedTextView)convertView, R.drawable.addressbook);
+				break;
+			case TYPE_CALENDARS_HEADING:
+				convertView = inflater.inflate(R.layout.calendars_heading, parent, false);
+				break;
+			case TYPE_CALENDARS_ROW:
+				convertView = inflater.inflate(android.R.layout.simple_list_item_multiple_choice, null);
+				prepareRowView((CheckedTextView)convertView, R.drawable.calendar);
+			}
+		}
 		
-		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-		
+		// step 2: fill view with content
 		switch (getItemViewType(position)) {
-		case TYPE_ADDRESS_BOOKS_HEADING:
-			convertView = inflater.inflate(R.layout.address_books_heading, parent, false);
-			break;
 		case TYPE_ADDRESS_BOOKS_ROW:
-			convertView = createEntry(inflater, R.drawable.addressbook, false, (ServerInfo.ResourceInfo)getItem(position));
-			break;
-		case TYPE_CALENDARS_HEADING:
-			convertView = inflater.inflate(R.layout.calendars_heading, parent, false);
+			setContent((CheckedTextView)convertView, (ServerInfo.ResourceInfo)getItem(position));
 			break;
 		case TYPE_CALENDARS_ROW:
-			convertView = createEntry(inflater, R.drawable.calendar, true, (ServerInfo.ResourceInfo)getItem(position));
+			setContent((CheckedTextView)convertView, (ServerInfo.ResourceInfo)getItem(position));
 		}
 		
 		return convertView;
 	}
 	
-	protected View createEntry(LayoutInflater inflater, int resIcon, boolean multipleChoice, ServerInfo.ResourceInfo info) {
-		CheckedTextView view = (CheckedTextView) inflater.inflate(multipleChoice ?
-			android.R.layout.simple_list_item_multiple_choice :
-			android.R.layout.simple_list_item_single_choice, null);
-		
+	protected void prepareRowView(CheckedTextView view, int resIcon) {
 		view.setPadding(10, 10, 10, 10);
 		view.setCompoundDrawablesWithIntrinsicBounds(resIcon, 0, 0, 0);
 		view.setCompoundDrawablePadding(10);
-		
+	}
+	
+	protected void setContent(CheckedTextView view, ServerInfo.ResourceInfo info) {
 		String description = info.getDescription();
 		if (description == null)
 			description = info.getPath();
 		
 		// FIXME escape HTML
 		view.setText(Html.fromHtml("<b>" + info.getTitle() + "</b><br/>" + description));
-		
-		return view;
 	}
 
 	@Override
