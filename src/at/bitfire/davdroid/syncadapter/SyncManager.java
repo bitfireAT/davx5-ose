@@ -49,7 +49,8 @@ public class SyncManager {
 			Log.i(TAG, "Remotely removing " + deletedResources.length + " deleted resource(s) (if not changed)");
 			for (Resource res : deletedResources) {
 				try {
-					dav.delete(res);
+					if (res.getName() != null)	// is this resource even present remotely?
+						dav.delete(res);
 				} catch(PreconditionFailedException e) {
 					Log.i(TAG, "Locally-deleted resource has been changed on the server in the meanwhile");
 				}
