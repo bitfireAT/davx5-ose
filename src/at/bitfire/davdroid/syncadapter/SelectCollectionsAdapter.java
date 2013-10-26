@@ -84,8 +84,8 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		if (convertView != null)
-			return convertView;
+		/*if (convertView != null)
+			return convertView;*/
 		
 		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 		
