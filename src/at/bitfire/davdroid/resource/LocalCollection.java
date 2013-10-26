@@ -39,6 +39,7 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 	abstract protected String entryColumnAccountType();
 	abstract protected String entryColumnAccountName();
 
+	abstract protected String entryColumnParentID();
 	abstract protected String entryColumnID();
 	abstract protected String entryColumnRemoteName();
 	abstract protected String entryColumnETag();
@@ -57,6 +58,7 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 
 	// collection operations
 	
+	abstract public long getId();
 	abstract public String getCTag();
 	abstract public void setCTag(String cTag);
 
@@ -64,9 +66,12 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 	// content provider (= database) querying
 	
 	public Resource[] findDirty() throws RemoteException {
+		String where = entryColumnDirty() + "=1";
+		if (entryColumnParentID() != null)
+			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
 		Cursor cursor = providerClient.query(entriesURI(),
 				new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
-				entryColumnDirty() + "=1", null, null);
+				where, null, null);
 		LinkedList<Resource> dirty = new LinkedList<Resource>();
 		while (cursor.moveToNext())
 			dirty.add(findById(cursor.getLong(0), cursor.getString(1), cursor.getString(2), true));
@@ -74,9 +79,12 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 	}
 
 	public Resource[] findDeleted() throws RemoteException {
+		String where = entryColumnDeleted() + "=1";
+		if (entryColumnParentID() != null)
+			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
 		Cursor cursor = providerClient.query(entriesURI(),
 				new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
-				entryColumnDeleted() + "=1", null, null);
+				where, null, null);
 		LinkedList<Resource> deleted = new LinkedList<Resource>();
 		while (cursor.moveToNext())
 			deleted.add(findById(cursor.getLong(0), cursor.getString(1), cursor.getString(2), false));
@@ -84,9 +92,12 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 	}
 
 	public Resource[] findNew() throws RemoteException {
+		String where = entryColumnDirty() + "=1 AND " + entryColumnRemoteName() + " IS NULL";
+		if (entryColumnParentID() != null)
+			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
 		Cursor cursor = providerClient.query(entriesURI(),
 				new String[] { entryColumnID() },
-				entryColumnDirty() + "=1 AND " + entryColumnRemoteName() + " IS NULL", null, null);
+				where, null, null);
 		LinkedList<Resource> fresh = new LinkedList<Resource>();
 		while (cursor.moveToNext()) {
 			String uid = UUID.randomUUID().toString(),
