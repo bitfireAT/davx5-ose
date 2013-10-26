@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
+
 import lombok.Getter;
 import net.fortuna.ical4j.model.Parameter;
 import net.fortuna.ical4j.model.ParameterList;
@@ -25,7 +26,9 @@ import net.fortuna.ical4j.model.property.Organizer;
 import net.fortuna.ical4j.model.property.RDate;
 import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.Status;
+
 import org.apache.commons.lang.StringUtils;
+
 import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -51,7 +54,7 @@ import at.bitfire.davdroid.syncadapter.ServerInfo;
 public class LocalCalendar extends LocalCollection<Event> {
 	private static final String TAG = "davdroid.LocalCalendar";
 
-	protected long id;
+	@Getter protected long id;
 	@Getter protected String path, cTag;
 	
 	protected static String COLLECTION_COLUMN_CTAG = Calendars.CAL_SYNC1;
@@ -67,6 +70,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 	protected String entryColumnAccountType()	{ return Events.ACCOUNT_TYPE; }
 	protected String entryColumnAccountName()	{ return Events.ACCOUNT_NAME; }
 	
+	protected String entryColumnParentID()		{ return Events.CALENDAR_ID; }
 	protected String entryColumnID()			{ return Events._ID; }
 	protected String entryColumnRemoteName()	{ return Events._SYNC_ID; }
 	protected String entryColumnETag()			{ return Events.SYNC_DATA1; }

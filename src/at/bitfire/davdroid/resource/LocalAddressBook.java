@@ -60,6 +60,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	protected String entryColumnAccountType()	{ return RawContacts.ACCOUNT_TYPE; }
 	protected String entryColumnAccountName()	{ return RawContacts.ACCOUNT_NAME; }
 	
+	protected String entryColumnParentID()		{ return null;	/* maybe use RawContacts.DATA_SET some day? */ }
 	protected String entryColumnID()			{ return RawContacts._ID; }
 	protected String entryColumnRemoteName()	{ return RawContacts.SOURCE_ID; }
 	protected String entryColumnETag()			{ return RawContacts.SYNC2; }
@@ -78,6 +79,11 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	
 	
 	/* collection operations */
+	
+	@Override
+	public long getId() {
+		return -1;
+	}
 	
 	@Override
 	public String getCTag() {
