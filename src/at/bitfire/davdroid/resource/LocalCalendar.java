@@ -107,8 +107,9 @@ public class LocalCalendar extends LocalCollection<Event> {
 		Cursor cursor = providerClient.query(calendarsURI(account),
 				new String[] { Calendars._ID, Calendars.NAME, COLLECTION_COLUMN_CTAG },
 				Calendars.DELETED + "=0 AND " + Calendars.SYNC_EVENTS + "=1", null, null);
+		
 		LinkedList<LocalCalendar> calendars = new LinkedList<LocalCalendar>();
-		while (cursor.moveToNext())
+		while (cursor != null && cursor.moveToNext())
 			calendars.add(new LocalCalendar(account, providerClient, cursor.getInt(0), cursor.getString(1), cursor.getString(2)));
 		return calendars.toArray(new LocalCalendar[0]);
 	}
@@ -147,9 +148,10 @@ public class LocalCalendar extends LocalCollection<Event> {
 				new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
 				Events.CALENDAR_ID + "=? AND " + entryColumnRemoteName() + "=?",
 				new String[] { String.valueOf(id), remoteName }, null);
-		if (cursor.moveToNext())
+		if (cursor != null && cursor.moveToNext())
 			return new Event(cursor.getLong(0), cursor.getString(1), cursor.getString(2));
-		return null;
+		else
+			return null;
 	}
 
 	@Override
@@ -167,7 +169,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 				/* 14 */ Events.HAS_ATTENDEE_DATA, Events.ORGANIZER, Events.SELF_ATTENDEE_STATUS,
 				/* 17 */ entryColumnUID()
 			}, null, null, null);
-		if (cursor.moveToNext()) {
+		if (cursor != null && cursor.moveToNext()) {
 			e.setUid(cursor.getString(17));
 			
 			e.setSummary(cursor.getString(0));
@@ -250,7 +252,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 						/* 0 */ Attendees.ATTENDEE_EMAIL, Attendees.ATTENDEE_NAME, Attendees.ATTENDEE_TYPE,
 						/* 3 */ Attendees.ATTENDEE_RELATIONSHIP, Attendees.STATUS
 					}, Attendees.EVENT_ID + "=?", new String[] { String.valueOf(e.getLocalID()) }, null);
-				while (c.moveToNext()) {
+				while (c != null && c.moveToNext()) {
 					try {
 						Attendee attendee = new Attendee("mailto:" + c.getString(0));
 						ParameterList params = attendee.getParameters();

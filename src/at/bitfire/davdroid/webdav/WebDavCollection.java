@@ -30,7 +30,6 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import android.util.Log;
-import at.bitfire.davdroid.resource.IncapableResourceException;
 
 public class WebDavCollection extends WebDavResource {
 	private static final String TAG = "davdroid.WebDavCollection";
@@ -170,8 +169,16 @@ public class WebDavCollection extends WebDavResource {
 				}
 				
 				WebDavResource referenced = null;
+				
+				URI thisURI;
+				try {
+					thisURI = location.resolve(href);
+				} catch(IllegalArgumentException ex) {
+					Log.w(TAG, "Server returned illegal URI", ex);
+					continue;
+				}
 			
-				if (sameURL(location, location.resolve(href))) {
+				if (sameURL(location, thisURI)) {
 					// response is about this property
 					referenced = this;
 					
