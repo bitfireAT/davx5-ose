@@ -32,12 +32,14 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.params.ClientPNames;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
 
 import android.util.Log;
+import at.bitfire.davdroid.Constants;
 
 
 @ToString
@@ -71,18 +73,24 @@ public class WebDavResource {
 		if (isCollection && !location.getPath().endsWith("/"))
 			location = new URI(location.getScheme(), location.getSchemeSpecificPart() + "/", null);
 		
+		// create new HTTP client
 		client = new DefaultHttpClient();
+		client.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "DAVdroid/" + Constants.APP_VERSION);
+		
+		// authenticate
 		client.getCredentialsProvider().setCredentials(new AuthScope(location.getHost(), location.getPort()),
 				new UsernamePasswordCredentials(username, password));
-		
 		// preemptive auth is available for Basic auth only
 		if (preemptive) {
 			Log.i(TAG, "Using preemptive Basic Authentication");
 			client.addRequestInterceptor(new PreemptiveAuthInterceptor(), 0);
 		}
 		
-		client.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "DAVdroid");
+		// allow gzip compression
 		GzipDecompressingEntity.enable(client);
+		
+		// redirections
+		client.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
 	}
 
 	protected WebDavResource(WebDavCollection parent, URI uri) {
