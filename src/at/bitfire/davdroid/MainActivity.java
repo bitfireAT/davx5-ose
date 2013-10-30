@@ -20,6 +20,8 @@ public class MainActivity extends Activity {
 		
 		setContentView(R.layout.activity_main);
 		
+		setTitle("DAVdroid " + Constants.APP_VERSION);
+		
 		TextView tv = (TextView)findViewById(R.id.text_info);
 		tv.setText(Html.fromHtml(getString(R.string.html_info)));
 	    tv.setMovementMethod(LinkMovementMethod.getInstance());
