@@ -336,9 +336,9 @@ public class LocalCalendar extends LocalCollection<Event> {
 			where = StringUtils.join(terms, " AND ");
 		} else
 			where = entryColumnRemoteName() + " IS NOT NULL";
-			
+		
 		Builder builder = ContentProviderOperation.newDelete(entriesURI())
-				.withSelection(Events.CALENDAR_ID + "=? AND (" + where + ")", new String[] { String.valueOf(id) });
+				.withSelection(entryColumnParentID() + "=? AND (" + where + ")", new String[] { String.valueOf(id) });
 		pendingOperations.add(builder
 				.withYieldAllowed(true)
 				.build());

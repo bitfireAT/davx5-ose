@@ -166,12 +166,11 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 	}
 
 	public void commit() throws RemoteException, OperationApplicationException {
-		Log.i(TAG, "Committing " + pendingOperations.size() + " operations");
-		
-		if (!pendingOperations.isEmpty())
+		if (!pendingOperations.isEmpty()) {
+			Log.i(TAG, "Committing " + pendingOperations.size() + " operations");
 			providerClient.applyBatch(pendingOperations);
-		
-		pendingOperations.clear();
+			pendingOperations.clear();
+		}
 	}
 
 	

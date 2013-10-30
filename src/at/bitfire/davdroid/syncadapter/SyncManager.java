@@ -28,7 +28,7 @@ import at.bitfire.davdroid.webdav.PreconditionFailedException;
 
 public class SyncManager {
 	private static final String TAG = "davdroid.SyncManager";
-	private static final int MAX_UPDATES_BEFORE_COMMIT = 100;
+	private static final int MAX_UPDATES_BEFORE_COMMIT = 25;
 	
 	protected Account account;
 	protected AccountManager accountManager;
