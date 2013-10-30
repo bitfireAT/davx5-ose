@@ -246,7 +246,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 				try {
 					e.setOrganizer(new Organizer("mailto:" + cursor.getString(15)));
 				} catch (URISyntaxException ex) {
-					Log.e(TAG, "Error parsing organizer email address, ignoring");
+					Log.e(TAG, "Error parsing organizer URI, ignoring");
 				}
 				
 				Uri attendeesUri = Attendees.CONTENT_URI.buildUpon()
