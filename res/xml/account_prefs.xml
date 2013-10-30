@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <Preference android:title="DAVdroid Web site" >
+    <Preference android:title="@string/davdroid_help" >
         <intent
-            android:action="android.intent.action.VIEW"
-            android:data="http://davdroid.bitfire.at/?pk_campaign=davdroid-app&amp;pk_kwd=accounts" />
+            android:targetPackage="at.bitfire.davdroid"
+            android:targetClass="at.bitfire.davdroid.MainActivity" />
     </Preference>
 
 </PreferenceScreen>

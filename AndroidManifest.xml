@@ -20,9 +20,9 @@
         android:allowBackup="false"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <service
-            android:name=".syncadapter.AccountAuthenticatorService"
+            android:name="at.bitfire.davdroid.syncadapter.AccountAuthenticatorService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
@@ -33,7 +33,7 @@
                 android:resource="@xml/account_authenticator" />
         </service>
         <service
-            android:name=".syncadapter.ContactsSyncAdapterService"
+            android:name="at.bitfire.davdroid.syncadapter.ContactsSyncAdapterService"
             android:exported="true"
             android:process=":sync" >
             <intent-filter>
@@ -48,7 +48,7 @@
                 android:resource="@xml/contacts" />
         </service>
         <service
-            android:name=".syncadapter.CalendarsSyncAdapterService"
+            android:name="at.bitfire.davdroid.syncadapter.CalendarsSyncAdapterService"
             android:exported="true"
             android:process=":sync" >
             <intent-filter>
@@ -61,7 +61,15 @@
         </service>
 
         <activity
-            android:name=".syncadapter.AddAccountActivity"
+            android:name="at.bitfire.davdroid.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="at.bitfire.davdroid.syncadapter.AddAccountActivity"
             android:excludeFromRecents="true" >
         </activity>
     </application>
