@@ -133,7 +133,8 @@ public class Contact extends Resource {
 			if (vcard == null)
 				return;
 		} catch(Exception ex) {
-			throw new ParserException("VCard parser crashed", -1);
+			Log.e(TAG, "VCard parser exception", ex);
+			throw new ParserException("VCard parser crashed", -1, ex);
 		}
 		
 		Uid uid = (Uid)vcard.getProperty(Id.UID);

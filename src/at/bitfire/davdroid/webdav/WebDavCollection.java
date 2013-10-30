@@ -43,8 +43,8 @@ public class WebDavCollection extends WebDavResource {
 	@Getter protected List<WebDavResource> members = new LinkedList<WebDavResource>();
 
 	
-	public WebDavCollection(URI baseURL, String username, String password, boolean preemptiveAuth) {
-		super(baseURL, username, password, preemptiveAuth);
+	public WebDavCollection(URI baseURL, String username, String password, boolean preemptiveAuth) throws URISyntaxException {
+		super(baseURL, username, password, preemptiveAuth, true);
 	}
 	
 	public WebDavCollection(WebDavCollection parent, URI member) {
