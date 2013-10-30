@@ -7,7 +7,6 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 
 import at.bitfire.davdroid.webdav.WebDavCollection.MultigetType;
