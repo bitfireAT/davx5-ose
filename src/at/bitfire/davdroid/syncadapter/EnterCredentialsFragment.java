@@ -103,7 +103,6 @@ public class EnterCredentialsFragment extends Fragment implements TextWatcher {
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		
 		String host_path = editBaseURL.getText().toString();
-		if (!host_path.endsWith("/")) host_path = host_path + "/";
 		
 		Bundle args = new Bundle();
 		args.putString(QueryServerDialogFragment.EXTRA_BASE_URL, protocol + host_path);

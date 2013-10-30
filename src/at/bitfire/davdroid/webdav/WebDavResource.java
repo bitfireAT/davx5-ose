@@ -10,6 +10,7 @@ package at.bitfire.davdroid.webdav;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -64,8 +65,11 @@ public class WebDavResource {
 	protected DefaultHttpClient client;
 	
 	
-	public WebDavResource(URI baseURL, String username, String password, boolean preemptive) {
+	public WebDavResource(URI baseURL, String username, String password, boolean preemptive, boolean isCollection) throws URISyntaxException {
 		location = baseURL.normalize();
+		
+		if (isCollection && !location.getPath().endsWith("/"))
+			location = new URI(location.getScheme(), location.getSchemeSpecificPart() + "/", null);
 		
 		client = new DefaultHttpClient();
 		client.getCredentialsProvider().setCredentials(new AuthScope(location.getHost(), location.getPort()),

@@ -83,7 +83,7 @@ public abstract class RemoteCollection<ResourceType extends Resource> {
 					resource.parseEntity(member.getContent());
 					foundResources.add(resource);
 				} catch (ParserException ex) {
-					Log.e(TAG, "Ignoring unparseable entity in multi-response: " + ex.toString(), ex);
+					Log.e(TAG, "Ignoring unparseable entity in multi-response", ex);
 				}
 			}
 			return foundResources.toArray(new Resource[0]);
