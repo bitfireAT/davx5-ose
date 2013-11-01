@@ -39,5 +39,7 @@ public abstract class Resource {
 	public abstract void parseEntity(InputStream entity) throws IOException, ParserException;
 	public abstract String toEntity() throws IOException, ValidationException;
 	
-	public abstract void validate() throws ValidationException;
+	public void validate() throws ValidationException {
+		if (name == null) throw new ValidationException("File name must be set");
+	}
 }

@@ -301,7 +301,9 @@ public class Event extends Resource {
 
 	@Override
 	public void validate() throws ValidationException {
+		super.validate();
+		
 		if (dtStart == null)
-			throw new ValidationException("dtStart empty");
+			throw new ValidationException("dtStart must not be empty");
 	}
 }

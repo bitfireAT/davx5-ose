@@ -11,11 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +31,7 @@ import net.fortuna.ical4j.vcard.PropertyFactoryRegistry;
 import net.fortuna.ical4j.vcard.VCard;
 import net.fortuna.ical4j.vcard.VCardBuilder;
 import net.fortuna.ical4j.vcard.VCardOutputter;
+import net.fortuna.ical4j.vcard.parameter.Type;
 import net.fortuna.ical4j.vcard.property.BDay;
 import net.fortuna.ical4j.vcard.property.Email;
 import net.fortuna.ical4j.vcard.property.Fn;
@@ -46,10 +44,8 @@ import net.fortuna.ical4j.vcard.property.Uid;
 import net.fortuna.ical4j.vcard.property.Url;
 import net.fortuna.ical4j.vcard.property.Version;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
-import android.util.Base64;
 import android.util.Log;
 import at.bitfire.davdroid.ical4j.PhoneticFirstName;
 import at.bitfire.davdroid.ical4j.PhoneticLastName;
@@ -183,30 +179,8 @@ public class Contact extends Resource {
 			phoneNumbers.add((Telephone)p);
 		
 		Photo photo = (Photo)vcard.getProperty(Id.PHOTO);
-		if (photo != null) {
-			if (photo.getBinary() != null)
-				this.photo = photo.getBinary();
-			else if (photo.getUri() != null) {
-				URI uri = photo.getUri();
-				try {
-					if (uri.getScheme().equalsIgnoreCase("data"))
-						this.photo = parseDataURI(uri);
-					else {
-						URL url = photo.getUri().toURL();
-						HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
-						try {
-							this.photo = IOUtils.toByteArray(urlConnection.getInputStream());
-						} finally {
-					    	urlConnection.disconnect();
-					    }
-					}
-				} catch(MalformedURLException ex) {
-					Log.w(TAG, "Malformed photo URL given in VCard");
-				} catch(IOException ex) {
-					Log.w(TAG, "Couldn't download photo from URL given in VCard");
-				}
-			}
-		}
+		if (photo != null)
+			this.photo = photo.getBinary();
 		
 		for (Property p : vcard.getProperties(Id.BDAY))
 			birthDay = ((BDay)p).getDate();
@@ -242,14 +216,9 @@ public class Contact extends Resource {
 		if (nickNames != null)
 			properties.add(new Nickname(nickNames));
 
-		if (photo != null) {
-			try {
-				String base64 = Base64.encodeToString(photo, Base64.NO_WRAP);
-				properties.add(new Photo(new URI("data", "image/jpeg;base64," + base64, null)));
-			} catch (URISyntaxException e) {
-				Log.w(TAG, "Couldn't encode photo");
-			}
-		}
+		if (photo != null)
+			properties.add(new Photo(photo, new Type("image/jpeg")));
+		Log.d(TAG, new Photo(photo, new Type("image/jpeg")).toString());
 		
 		if (birthDay != null)
 			properties.add(new BDay(birthDay));
@@ -282,24 +251,9 @@ public class Contact extends Resource {
 		return writer.toString();
 	}
 	
-	
-	protected byte[] parseDataURI(URI uri) throws MalformedURLException {
-		String content = uri.getSchemeSpecificPart();
-		
-		int commaPos = content.indexOf(',');
-		if (commaPos == -1)
-			throw new MalformedURLException("Malformed data: URL");
-		
-		String header = content.substring(0, commaPos);
-		String data = content.substring(commaPos + 1);
-		
-		if (header.endsWith(";base64"))
-			return Base64.decode(data, Base64.DEFAULT);
-		
-		return null;
-	}
 
 	@Override
 	public void validate() throws ValidationException {
+		super.validate();
 	}
 }
