@@ -330,10 +330,10 @@ public class LocalCalendar extends LocalCollection<Event> {
 		String where;
 		
 		if (remoteResources.length != 0) {
-			List<String> terms = new LinkedList<String>();
+			List<String> sqlFileNames = new LinkedList<String>();
 			for (Resource res : remoteResources)
-				terms.add(entryColumnRemoteName() + "<>" + DatabaseUtils.sqlEscapeString(res.getName()));
-			where = StringUtils.join(terms, " AND ");
+				sqlFileNames.add(DatabaseUtils.sqlEscapeString(res.getName()));
+			where = entryColumnRemoteName() + " NOT IN (" + StringUtils.join(sqlFileNames, ",") + ")";
 		} else
 			where = entryColumnRemoteName() + " IS NOT NULL";
 		
