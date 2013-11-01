@@ -34,12 +34,12 @@ import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
 
 import android.util.Log;
 import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.Utils;
 
 
 @ToString
@@ -99,14 +99,13 @@ public class WebDavResource {
 	}
 	
 	public WebDavResource(WebDavCollection parent, String member) {
-		location = parent.location.resolve(member);
+		location = Utils.resolveURI(parent.location, member);
 		client = parent.client;
 	}
 	
 	public WebDavResource(WebDavCollection parent, String member, String ETag) {
-		location = parent.location.resolve(member);
+		this(parent, member);
 		properties.put(Property.ETAG, ETag);
-		client = parent.client;
 	}
 	
 	protected void checkResponse(HttpResponse response) throws HttpException {
@@ -116,13 +115,10 @@ public class WebDavResource {
 	protected void checkResponse(StatusLine statusLine) throws HttpException {
 		int code = statusLine.getStatusCode();
 		
-		if (code/100 == 1 || code/100 == 2)
+		if (code/100 == 1 || code/100 == 2)		// everything OK
 			return;
 		
-		// handle known codes
-		EnglishReasonPhraseCatalog catalog = EnglishReasonPhraseCatalog.INSTANCE;
-		String reason = catalog.getReason(code, null);
-		
+		String reason = code + " " + statusLine.getReasonPhrase();
 		switch (code) {
 		case HttpStatus.SC_UNAUTHORIZED:
 			throw new AuthenticationException(reason);
@@ -167,7 +163,7 @@ public class WebDavResource {
 		String[] names = StringUtils.split(location.getPath(), "/");
 		return names[names.length - 1];
 	}
-
+	
 	
 	/* property methods */
 	

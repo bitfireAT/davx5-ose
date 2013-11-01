@@ -30,6 +30,7 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import android.util.Log;
+import at.bitfire.davdroid.Utils;
 
 public class WebDavCollection extends WebDavResource {
 	private static final String TAG = "davdroid.WebDavCollection";
@@ -95,8 +96,10 @@ public class WebDavCollection extends WebDavResource {
 			multiget.prop.calendarData = new DavProp.DavPropCalendarData();
 		
 		multiget.hrefs = new ArrayList<DavHref>(names.length);
-		for (String name : names)
-			multiget.hrefs.add(new DavHref(location.resolve(name).getPath()));
+		for (String name : names) {
+			if (!name.startsWith("/")) name = "./" + name;		// allow colons in relative URLs (see issue #45)
+			multiget.hrefs.add(new DavHref(Utils.resolveURI(location, name).getPath()));
+		}
 		
 		Serializer serializer = new Persister();
 		StringWriter writer = new StringWriter();
@@ -158,7 +161,7 @@ public class WebDavCollection extends WebDavResource {
 		for (DavResponse singleResponse : multistatus.response) {
 			URI href;
 			try {
-				href = location.resolve(singleResponse.getHref().href);
+				href = Utils.resolveURI(location, singleResponse.getHref().href);
 			} catch(IllegalArgumentException ex) {
 				Log.w(TAG, "Ignoring illegal member URI in multi-status response", ex);
 				continue;
@@ -166,7 +169,7 @@ public class WebDavCollection extends WebDavResource {
 			
 			// about which resource is this response?
 			WebDavResource referenced = null;
-			if (sameURL(location, href)) {	// -> ourselves
+			if (Utils.isSameURL(location, href)) {	// -> ourselves
 				referenced = this;
 				
 			} else {						// -> about a member
@@ -224,17 +227,6 @@ public class WebDavCollection extends WebDavResource {
 				else if (prop.addressData != null)
 					referenced.content = new ByteArrayInputStream(prop.addressData.vcard.getBytes());
 			}
-		}
-	}
-	
-	
-	private boolean sameURL(URI a, URI b) {
-	     try {
-	    	a = new URI(a.getScheme(), null, a.getHost(), a.getPort(), a.getPath(), a.getQuery(), a.getFragment());
-	    	b = new URI(b.getScheme(), null, b.getHost(), b.getPort(), b.getPath(), b.getQuery(), b.getFragment());
-			return a.equals(b);
-		} catch (URISyntaxException e) {
-			return false;
 		}
 	}
 }
