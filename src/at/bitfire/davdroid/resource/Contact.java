@@ -23,6 +23,7 @@ import lombok.ToString;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.ValidationException;
+import net.fortuna.ical4j.util.CompatibilityHints;
 import net.fortuna.ical4j.vcard.GroupRegistry;
 import net.fortuna.ical4j.vcard.ParameterFactoryRegistry;
 import net.fortuna.ical4j.vcard.Property;
@@ -44,6 +45,7 @@ import net.fortuna.ical4j.vcard.property.Uid;
 import net.fortuna.ical4j.vcard.property.Url;
 import net.fortuna.ical4j.vcard.property.Version;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import android.util.Log;
@@ -115,6 +117,8 @@ public class Contact extends Resource {
 		propertyFactoryRegistry.register("X-" + PhoneticFirstName.PROPERTY_NAME, new PhoneticFirstName.Factory());
 		propertyFactoryRegistry.register("X-" + PhoneticMiddleName.PROPERTY_NAME, new PhoneticMiddleName.Factory());
 		propertyFactoryRegistry.register("X-" + PhoneticLastName.PROPERTY_NAME, new PhoneticLastName.Factory());
+		
+		//Log.d(TAG, IOUtils.toString(is));
 
 		VCardBuilder builder = new VCardBuilder(
 				new InputStreamReader(is),
@@ -218,7 +222,6 @@ public class Contact extends Resource {
 
 		if (photo != null)
 			properties.add(new Photo(photo, new Type("image/jpeg")));
-		Log.d(TAG, new Photo(photo, new Type("image/jpeg")).toString());
 		
 		if (birthDay != null)
 			properties.add(new BDay(birthDay));
