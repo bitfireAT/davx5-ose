@@ -140,12 +140,14 @@ public class WebDavResource {
 		checkResponse(response);
 
 		Header[] allowHeaders = response.getHeaders("Allow");
-		for (Header allowHeader : allowHeaders)
-			methods.addAll(Arrays.asList(allowHeader.getValue().split(", ?")));
+		if (allowHeaders != null)
+			for (Header allowHeader : allowHeaders)
+				methods.addAll(Arrays.asList(allowHeader.getValue().split(", ?")));
 
 		Header[] capHeaders = response.getHeaders("DAV");
-		for (Header capHeader : capHeaders)
-			capabilities.addAll(Arrays.asList(capHeader.getValue().split(", ?")));
+		if (capHeaders != null)
+			for (Header capHeader : capHeaders)
+				capabilities.addAll(Arrays.asList(capHeader.getValue().split(", ?")));
 	}
 
 	public boolean supportsDAV(String capability) {

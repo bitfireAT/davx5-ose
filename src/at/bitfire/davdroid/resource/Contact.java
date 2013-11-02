@@ -23,7 +23,6 @@ import lombok.ToString;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.ValidationException;
-import net.fortuna.ical4j.util.CompatibilityHints;
 import net.fortuna.ical4j.vcard.GroupRegistry;
 import net.fortuna.ical4j.vcard.ParameterFactoryRegistry;
 import net.fortuna.ical4j.vcard.Property;
@@ -33,6 +32,7 @@ import net.fortuna.ical4j.vcard.VCard;
 import net.fortuna.ical4j.vcard.VCardBuilder;
 import net.fortuna.ical4j.vcard.VCardOutputter;
 import net.fortuna.ical4j.vcard.parameter.Type;
+import net.fortuna.ical4j.vcard.property.Address;
 import net.fortuna.ical4j.vcard.property.BDay;
 import net.fortuna.ical4j.vcard.property.Email;
 import net.fortuna.ical4j.vcard.property.Fn;
@@ -45,7 +45,6 @@ import net.fortuna.ical4j.vcard.property.Uid;
 import net.fortuna.ical4j.vcard.property.Url;
 import net.fortuna.ical4j.vcard.property.Version;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import android.util.Log;
@@ -64,7 +63,7 @@ public class Contact extends Resource {
 	@Getter @Setter private String prefix, givenName, middleName, familyName, suffix;
 	@Getter @Setter private String phoneticGivenName, phoneticMiddleName, phoneticFamilyName;
 	@Getter @Setter private String[] nickNames;
-
+	
 	@Getter @Setter private byte[] photo;
 	
 	@Getter @Setter private Date birthDay;
@@ -90,6 +89,11 @@ public class Contact extends Resource {
 	@Getter private List<Telephone> phoneNumbers = new LinkedList<Telephone>();
 	public void addPhoneNumber(Telephone number) {
 		phoneNumbers.add(number);
+	}
+	
+	@Getter private List<Address> addresses = new LinkedList<Address>();
+	public void addAddress(Address address) {
+		addresses.add(address);
 	}
 	
 	@Getter private List<URI> URLs = new LinkedList<URI>();
@@ -118,8 +122,6 @@ public class Contact extends Resource {
 		propertyFactoryRegistry.register("X-" + PhoneticMiddleName.PROPERTY_NAME, new PhoneticMiddleName.Factory());
 		propertyFactoryRegistry.register("X-" + PhoneticLastName.PROPERTY_NAME, new PhoneticLastName.Factory());
 		
-		//Log.d(TAG, IOUtils.toString(is));
-
 		VCardBuilder builder = new VCardBuilder(
 				new InputStreamReader(is),
 				new GroupRegistry(),
@@ -155,7 +157,6 @@ public class Contact extends Resource {
 		if (nickname != null)
 			nickNames = nickname.getNames();
 		
-		// structured name
 		N n = (N)vcard.getProperty(Id.N);
 		if (n != null) {
 			prefix = StringUtils.join(n.getPrefixes(), " ");
@@ -165,7 +166,6 @@ public class Contact extends Resource {
 			suffix = StringUtils.join(n.getSuffixes(), " ");
 		}
 		
-		// phonetic name
 		PhoneticFirstName phoneticFirstName = (PhoneticFirstName)vcard.getExtendedProperty(PhoneticFirstName.PROPERTY_NAME);
 		if (phoneticFirstName != null)
 			phoneticGivenName = phoneticFirstName.getValue();
@@ -181,6 +181,9 @@ public class Contact extends Resource {
 		
 		for (Property p : vcard.getProperties(Id.TEL))
 			phoneNumbers.add((Telephone)p);
+		
+		for (Property p : vcard.getProperties(Id.ADR))
+			addresses.add((Address)p);
 		
 		Photo photo = (Photo)vcard.getProperty(Id.PHOTO);
 		if (photo != null)
@@ -236,12 +239,15 @@ public class Contact extends Resource {
 			properties.add(new PhoneticMiddleName(phoneticMiddleName));
 		if (phoneticFamilyName != null)
 			properties.add(new PhoneticLastName(phoneticFamilyName));
+
+		if (!emails.isEmpty())
+			properties.addAll(emails);
+
+		if (!addresses.isEmpty())
+			properties.addAll(addresses);
 		
-		for (Email email : emails)
-			properties.add(email);
-		
-		for (Telephone number : phoneNumbers)
-			properties.add(number);
+		if (!phoneNumbers.isEmpty())
+			properties.addAll(phoneNumbers);
 		
 		for (URI uri : URLs)
 			properties.add(new Url(uri));

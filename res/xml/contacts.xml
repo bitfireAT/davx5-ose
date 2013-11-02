@@ -37,6 +37,13 @@
 		    <Type type="other" />
 		</DataKind>
 		
+		<DataKind kind="postal" needsStructured="true" >
+            <Type type="home" />
+            <Type type="work" />
+            <Type type="other" />
+            <Type type="custom" />
+        </DataKind>
+		
 		<DataKind
 		    kind="nickname"
 		    maxOccurs="1" />
