@@ -16,6 +16,7 @@ import java.util.List;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.vcard.Parameter.Id;
 import net.fortuna.ical4j.vcard.parameter.Type;
+import net.fortuna.ical4j.vcard.property.Address;
 import net.fortuna.ical4j.vcard.property.Telephone;
 
 import org.apache.commons.lang.StringUtils;
@@ -37,6 +38,7 @@ import android.provider.ContactsContract.CommonDataKinds.Note;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.CommonDataKinds.Photo;
 import android.provider.ContactsContract.CommonDataKinds.StructuredName;
+import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.provider.ContactsContract.CommonDataKinds.Website;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.RawContacts;
@@ -223,6 +225,32 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			c.addPhoneNumber(number);
 		}
 		
+		// postal addresses
+		cursor = providerClient.query(dataURI(), new String[] {
+				/* 0 */ StructuredPostal.FORMATTED_ADDRESS, StructuredPostal.TYPE,
+				/* 2 */ StructuredPostal.STREET, StructuredPostal.POBOX, StructuredPostal.NEIGHBORHOOD,
+				/* 5 */ StructuredPostal.CITY, StructuredPostal.REGION, StructuredPostal.POSTCODE,
+				/* 8 */ StructuredPostal.COUNTRY
+			}, StructuredPostal.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
+			new String[] { String.valueOf(c.getLocalID()), StructuredPostal.CONTENT_ITEM_TYPE }, null);
+		while (cursor != null && cursor.moveToNext()) {
+			Type[] types = new Type[] {};
+			switch (cursor.getInt(1)) {
+			case StructuredPostal.TYPE_HOME:
+				types = new Type[] { Type.HOME };
+				break;
+			case StructuredPostal.TYPE_WORK:
+				types = new Type[] { Type.WORK };
+				break;
+			}
+			Address address = new Address(
+				cursor.getString(3), cursor.getString(4), cursor.getString(2),
+				cursor.getString(5), cursor.getString(6), cursor.getString(7),
+				cursor.getString(8), types
+			);
+			c.addAddress(address);
+		}
+		
 		// photo
 		cursor = providerClient.query(dataURI(), new String[] { Photo.PHOTO },
 			Photo.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
@@ -329,6 +357,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		
 		for (Telephone number : contact.getPhoneNumbers())
 			pendingOperations.add(buildPhoneNumber(newDataInsertBuilder(localID, backrefIdx), number).build());
+		
+		for (Address address : contact.getAddresses())
+			pendingOperations.add(buildAddress(newDataInsertBuilder(localID, backrefIdx), address).build());
 
 		if (contact.getPhoto() != null)
 			pendingOperations.add(buildPhoto(newDataInsertBuilder(localID, backrefIdx), contact.getPhoto()).build());
@@ -444,6 +475,43 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			.withValue(Phone.TYPE, type);
 	}
 	
+	protected Builder buildAddress(Builder builder, Address address) {
+		/*	street po.box (extended)
+		 *	region
+		 *	postal code city
+		 *	country
+		 */
+		String	lineStreet = StringUtils.join(new String[] { address.getStreet(), address.getPoBox(), address.getExtended() }, " "),
+				lineLocality = StringUtils.join(new String[] { address.getPostcode(), address.getLocality() }, " ");
+		
+		List<String> lines = new LinkedList<String>();
+		if (lineStreet != null)
+			lines.add(lineStreet);
+		if (address.getRegion() != null && !address.getRegion().isEmpty())
+			lines.add(address.getRegion());
+		if (lineLocality != null)
+			lines.add(lineLocality);
+			
+		int typeCode = StructuredPostal.TYPE_OTHER;
+		Type type = (Type)address.getParameter(Id.TYPE);
+		if (type == Type.HOME)
+			typeCode = StructuredPostal.TYPE_HOME;
+		else if (type == Type.WORK)
+			typeCode = StructuredPostal.TYPE_WORK;
+		
+		return builder
+			.withValue(Data.MIMETYPE, StructuredPostal.CONTENT_ITEM_TYPE)
+			.withValue(StructuredPostal.FORMATTED_ADDRESS, StringUtils.join(lines, "\n"))
+			.withValue(StructuredPostal.TYPE, typeCode)
+			.withValue(StructuredPostal.STREET, address.getStreet())
+			.withValue(StructuredPostal.POBOX, address.getPoBox())
+			.withValue(StructuredPostal.NEIGHBORHOOD, address.getExtended())
+			.withValue(StructuredPostal.CITY, address.getLocality())
+			.withValue(StructuredPostal.REGION, address.getRegion())
+			.withValue(StructuredPostal.POSTCODE, address.getPostcode())
+			.withValue(StructuredPostal.COUNTRY, address.getCountry());
+	}
+
 	protected Builder buildPhoto(Builder builder, byte[] photo) {
 		return builder
 			.withValue(Data.MIMETYPE, Photo.CONTENT_ITEM_TYPE)

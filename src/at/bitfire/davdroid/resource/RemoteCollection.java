@@ -8,6 +8,7 @@
 package at.bitfire.davdroid.resource;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
@@ -80,8 +81,12 @@ public abstract class RemoteCollection<ResourceType extends Resource> {
 			for (WebDavResource member : collection.getMembers()) {
 				ResourceType resource = newResourceSkeleton(member.getName(), member.getETag());
 				try {
-					resource.parseEntity(member.getContent());
-					foundResources.add(resource);
+					InputStream is = member.getContent();
+					if (is != null) {
+						resource.parseEntity(is);
+						foundResources.add(resource);
+					} else
+						Log.e(TAG, "Ignoring entity without content");
 				} catch (ParserException ex) {
 					Log.e(TAG, "Ignoring unparseable entity in multi-response", ex);
 				}
