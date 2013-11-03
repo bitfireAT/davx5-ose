@@ -23,22 +23,21 @@ import org.apache.http.HttpException;
 import android.util.Log;
 import at.bitfire.davdroid.webdav.HttpPropfind;
 import at.bitfire.davdroid.webdav.InvalidDavResponseException;
-import at.bitfire.davdroid.webdav.WebDavCollection;
-import at.bitfire.davdroid.webdav.WebDavCollection.MultigetType;
 import at.bitfire.davdroid.webdav.WebDavResource;
+import at.bitfire.davdroid.webdav.WebDavResource.MultigetType;
 import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
 
 public abstract class RemoteCollection<ResourceType extends Resource> {
 	private static final String TAG = "davdroid.RemoteCollection";
 	
-	@Getter WebDavCollection collection;
+	@Getter WebDavResource collection;
 
 	abstract protected String memberContentType();
 	abstract protected MultigetType multiGetType();
 	abstract protected ResourceType newResourceSkeleton(String name, String ETag);
 	
 	public RemoteCollection(String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {
-		collection = new WebDavCollection(new URI(baseURL), user, password, preemptiveAuth);
+		collection = new WebDavResource(new URI(baseURL), user, password, preemptiveAuth, true);
 	}
 
 	
@@ -58,9 +57,12 @@ public abstract class RemoteCollection<ResourceType extends Resource> {
 		collection.propfind(HttpPropfind.Mode.MEMBERS_ETAG);
 			
 		List<ResourceType> resources = new LinkedList<ResourceType>();
-		for (WebDavResource member : collection.getMembers())
-			resources.add(newResourceSkeleton(member.getName(), member.getETag()));
-				return resources.toArray(new Resource[0]);
+		if (collection.getMembers() != null) {
+			for (WebDavResource member : collection.getMembers())
+				resources.add(newResourceSkeleton(member.getName(), member.getETag()));
+			return resources.toArray(new Resource[0]);
+		} else
+			return null;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -78,19 +80,23 @@ public abstract class RemoteCollection<ResourceType extends Resource> {
 			collection.multiGet(names.toArray(new String[0]), multiGetType());
 			
 			LinkedList<ResourceType> foundResources = new LinkedList<ResourceType>();
-			for (WebDavResource member : collection.getMembers()) {
-				ResourceType resource = newResourceSkeleton(member.getName(), member.getETag());
-				try {
-					InputStream is = member.getContent();
-					if (is != null) {
-						resource.parseEntity(is);
-						foundResources.add(resource);
-					} else
-						Log.e(TAG, "Ignoring entity without content");
-				} catch (ParserException ex) {
-					Log.e(TAG, "Ignoring unparseable entity in multi-response", ex);
+			if (collection.getMembers() != null)
+				for (WebDavResource member : collection.getMembers()) {
+					ResourceType resource = newResourceSkeleton(member.getName(), member.getETag());
+					try {
+						InputStream is = member.getContent();
+						if (is != null) {
+							resource.parseEntity(is);
+							foundResources.add(resource);
+						} else
+							Log.e(TAG, "Ignoring entity without content");
+					} catch (ParserException ex) {
+						Log.e(TAG, "Ignoring unparseable entity in multi-response", ex);
+					}
 				}
-			}
+			else
+				return null;
+			
 			return foundResources.toArray(new Resource[0]);
 		} catch (ParserException ex) {
 			Log.w(TAG, "Couldn't parse single multi-get entity", ex);
@@ -113,16 +119,22 @@ public abstract class RemoteCollection<ResourceType extends Resource> {
 		WebDavResource member = new WebDavResource(collection, res.getName(), res.getETag());
 		member.setContentType(memberContentType());
 		member.put(res.toEntity().getBytes("UTF-8"), PutMode.ADD_DONT_OVERWRITE);
+		
+		collection.invalidateCTag();
 	}
 
 	public void delete(Resource res) throws IOException, HttpException {
 		WebDavResource member = new WebDavResource(collection, res.getName(), res.getETag());
 		member.delete();
+		
+		collection.invalidateCTag();
 	}
 	
 	public void update(Resource res) throws IOException, HttpException, ValidationException {
 		WebDavResource member = new WebDavResource(collection, res.getName(), res.getETag());
 		member.setContentType(memberContentType());
 		member.put(res.toEntity().getBytes("UTF-8"), PutMode.UPDATE_DONT_OVERWRITE);
+		
+		collection.invalidateCTag();
 	}
 }

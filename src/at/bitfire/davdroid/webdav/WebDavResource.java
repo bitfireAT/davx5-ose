@@ -7,18 +7,25 @@
  ******************************************************************************/
 package at.bitfire.davdroid.webdav;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import lombok.Getter;
 import lombok.ToString;
 
+import org.apache.commons.io.input.TeeInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpException;
@@ -35,11 +42,14 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicLineParser;
 import org.apache.http.params.CoreProtocolPNames;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
 
 import android.util.Log;
 import at.bitfire.davdroid.Constants;
-import at.bitfire.davdroid.Utils;
+import at.bitfire.davdroid.URIUtils;
 
 
 @ToString
@@ -54,28 +64,53 @@ public class WebDavResource {
 		CTAG, ETAG,
 		CONTENT_TYPE
 	}
+	public enum MultigetType {
+		ADDRESS_BOOK,
+		CALENDAR
+	}
 	public enum PutMode {
 		ADD_DONT_OVERWRITE,
 		UPDATE_DONT_OVERWRITE
 	}
 
+	// location of this resource
 	@Getter protected URI location;
-	protected Set<String> capabilities = new HashSet<String>(), methods = new HashSet<String>();
+	
+	// DAV capabilities (DAV: header) and allowed DAV methods (set for OPTIONS request)
+	protected Set<String>	capabilities = new HashSet<String>(),
+							methods = new HashSet<String>();
+	
+	// DAV properties
 	protected HashMap<Property, String> properties = new HashMap<Property, String>();
+	
+	// list of members (only for collections)
+	@Getter protected List<WebDavResource> members;
+
+	// content (available after GET)
 	@Getter protected InputStream content;
 
 	protected DefaultHttpClient client;
 	
 	
-	public WebDavResource(URI baseURL, String username, String password, boolean preemptive, boolean isCollection) throws URISyntaxException {
+	public WebDavResource(URI baseURL, boolean trailingSlash) throws URISyntaxException {
 		location = baseURL.normalize();
 		
-		if (isCollection && !location.getPath().endsWith("/"))
+		if (trailingSlash && !location.getPath().endsWith("/"))
 			location = new URI(location.getScheme(), location.getSchemeSpecificPart() + "/", null);
 		
 		// create new HTTP client
 		client = new DefaultHttpClient();
 		client.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "DAVdroid/" + Constants.APP_VERSION);
+		
+		// allow gzip compression
+		GzipDecompressingEntity.enable(client);
+		
+		// redirections
+		client.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
+	}
+	
+	public WebDavResource(URI baseURL, String username, String password, boolean preemptive, boolean trailingSlash) throws URISyntaxException {
+		this(baseURL, trailingSlash);
 		
 		// authenticate
 		client.getCredentialsProvider().setCredentials(new AuthScope(location.getHost(), location.getPort()),
@@ -85,28 +120,23 @@ public class WebDavResource {
 			Log.i(TAG, "Using preemptive Basic Authentication");
 			client.addRequestInterceptor(new PreemptiveAuthInterceptor(), 0);
 		}
-		
-		// allow gzip compression
-		GzipDecompressingEntity.enable(client);
-		
-		// redirections
-		client.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
 	}
 
-	protected WebDavResource(WebDavCollection parent, URI uri) {
+	protected WebDavResource(WebDavResource parent, URI uri) {
 		location = uri;
 		client = parent.client;
 	}
 	
-	public WebDavResource(WebDavCollection parent, String member) {
-		location = Utils.resolveURI(parent.location, member);
+	public WebDavResource(WebDavResource parent, String member) {
+		location = URIUtils.resolve(parent.location, member);
 		client = parent.client;
 	}
 	
-	public WebDavResource(WebDavCollection parent, String member, String ETag) {
+	public WebDavResource(WebDavResource parent, String member, String ETag) {
 		this(parent, member);
 		properties.put(Property.ETAG, ETag);
 	}
+	
 	
 	protected void checkResponse(HttpResponse response) throws HttpException {
 		checkResponse(response.getStatusLine());
@@ -140,14 +170,12 @@ public class WebDavResource {
 		checkResponse(response);
 
 		Header[] allowHeaders = response.getHeaders("Allow");
-		if (allowHeaders != null)
-			for (Header allowHeader : allowHeaders)
-				methods.addAll(Arrays.asList(allowHeader.getValue().split(", ?")));
+		for (Header allowHeader : allowHeaders)
+			methods.addAll(Arrays.asList(allowHeader.getValue().split(", ?")));
 
 		Header[] capHeaders = response.getHeaders("DAV");
-		if (capHeaders != null)
-			for (Header capHeader : capHeaders)
-				capabilities.addAll(Arrays.asList(capHeader.getValue().split(", ?")));
+		for (Header capHeader : capHeaders)
+			capabilities.addAll(Arrays.asList(capHeader.getValue().split(", ?")));
 	}
 
 	public boolean supportsDAV(String capability) {
@@ -192,6 +220,9 @@ public class WebDavResource {
 	public String getCTag() {
 		return properties.get(Property.CTAG);
 	}
+	public void invalidateCTag() {
+		properties.remove(Property.CTAG);
+	}
 	
 	public String getETag() {
 		return properties.get(Property.ETAG);
@@ -214,6 +245,81 @@ public class WebDavResource {
 	}
 	
 	
+	/* collection operations */
+	
+	public boolean propfind(HttpPropfind.Mode mode) throws IOException, InvalidDavResponseException, HttpException {
+		HttpPropfind propfind = new HttpPropfind(location, mode);
+		HttpResponse response = client.execute(propfind);
+		checkResponse(response);
+		
+		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_MULTI_STATUS) {
+			DavMultistatus multistatus;
+			try {
+				Serializer serializer = new Persister();
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				InputStream is = new TeeInputStream(response.getEntity().getContent(), baos);
+				multistatus = serializer.read(DavMultistatus.class, is, false);
+				
+				Log.d(TAG, "Received multistatus response: " + baos.toString("UTF-8"));
+			} catch (Exception ex) {
+				Log.w(TAG, "Invalid PROPFIND XML response", ex);
+				throw new InvalidDavResponseException();
+			}
+			processMultiStatus(multistatus);
+			return true;
+			
+		} else
+			return false;
+	}
+
+	public boolean multiGet(String[] names, MultigetType type) throws IOException, InvalidDavResponseException, HttpException {
+		DavMultiget multiget = (type == MultigetType.ADDRESS_BOOK) ? new DavAddressbookMultiget() : new DavCalendarMultiget(); 
+			
+		multiget.prop = new DavProp();
+		multiget.prop.getetag = new DavProp.DavPropGetETag();
+		
+		if (type == MultigetType.ADDRESS_BOOK)
+			multiget.prop.addressData = new DavProp.DavPropAddressData();
+		else if (type == MultigetType.CALENDAR)
+			multiget.prop.calendarData = new DavProp.DavPropCalendarData();
+		
+		multiget.hrefs = new ArrayList<DavHref>(names.length);
+		for (String name : names)
+			multiget.hrefs.add(new DavHref(URIUtils.resolve(location, name).getPath()));
+		
+		Serializer serializer = new Persister();
+		StringWriter writer = new StringWriter();
+		try {
+			serializer.write(multiget, writer);
+		} catch (Exception e) {
+			Log.e(TAG, e.getLocalizedMessage());
+			return false;
+		}
+
+		HttpReport report = new HttpReport(location, writer.toString());
+		HttpResponse response = client.execute(report);
+		checkResponse(response);
+		
+		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_MULTI_STATUS) {
+			DavMultistatus multistatus;
+			try {
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				InputStream is = new TeeInputStream(response.getEntity().getContent(), baos);
+				multistatus = serializer.read(DavMultistatus.class, is, false);
+				
+				Log.d(TAG, "Received multistatus response: " + baos.toString("UTF-8"));
+			} catch (Exception e) {
+				Log.e(TAG, e.getLocalizedMessage());
+				return false;
+			}
+			processMultiStatus(multistatus);
+			
+		} else
+			throw new InvalidDavResponseException();
+		return true;
+	}
+
+	
 	/* resource operations */
 	
 	public void get() throws IOException, HttpException {
@@ -233,13 +339,13 @@ public class WebDavResource {
 			put.addHeader("If-None-Match", "*");
 			break;
 		case UPDATE_DONT_OVERWRITE:
-			put.addHeader("If-Match", getETag());
+			put.addHeader("If-Match", (getETag() != null) ? getETag() : "*");
 			break;
 		}
 		
 		if (getContentType() != null)
 			put.addHeader("Content-Type", getContentType());
-		
+
 		checkResponse(client.execute(put));
 	}
 	
@@ -252,4 +358,87 @@ public class WebDavResource {
 		checkResponse(client.execute(delete));
 	}
 	
+
+	/* helpers */
+	
+	protected void processMultiStatus(DavMultistatus multistatus) throws HttpException {
+		if (multistatus.response == null)	// empty response
+			return;
+		
+		// member list will be built from response
+		List<WebDavResource> members = new LinkedList<WebDavResource>();
+		
+		for (DavResponse singleResponse : multistatus.response) {
+			URI href;
+			try {
+				href = URIUtils.resolve(location, singleResponse.getHref().href);
+			} catch(IllegalArgumentException ex) {
+				Log.w(TAG, "Ignoring illegal member URI in multi-status response", ex);
+				continue;
+			}
+			
+			// about which resource is this response?
+			WebDavResource referenced = null;
+			if (URIUtils.isSame(location, href)) {	// -> ourselves
+				referenced = this;
+				
+			} else {						// -> about a member
+				referenced = new WebDavResource(this, href);
+				members.add(referenced);
+			}
+			
+			for (DavPropstat singlePropstat : singleResponse.getPropstat()) {
+				StatusLine status = BasicLineParser.parseStatusLine(singlePropstat.status, new BasicLineParser());
+				
+				// ignore information about missing properties etc.
+				if (status.getStatusCode()/100 != 1 && status.getStatusCode()/100 != 2)
+					continue;
+				
+				DavProp prop = singlePropstat.prop;
+
+				if (prop.currentUserPrincipal != null && prop.currentUserPrincipal.getHref() != null)
+					referenced.properties.put(Property.CURRENT_USER_PRINCIPAL, prop.currentUserPrincipal.getHref().href);
+				
+				if (prop.addressbookHomeSet != null && prop.addressbookHomeSet.getHref() != null)
+					referenced.properties.put(Property.ADDRESSBOOK_HOMESET, prop.addressbookHomeSet.getHref().href);
+				
+				if (singlePropstat.prop.calendarHomeSet != null && prop.calendarHomeSet.getHref() != null)
+					referenced.properties.put(Property.CALENDAR_HOMESET, prop.calendarHomeSet.getHref().href);
+				
+				if (prop.displayname != null)
+					referenced.properties.put(Property.DISPLAY_NAME, prop.displayname.getDisplayName());
+				
+				if (prop.resourcetype != null) {
+					if (prop.resourcetype.getAddressbook() != null) {
+						referenced.properties.put(Property.IS_ADDRESSBOOK, "1");
+						
+						if (prop.addressbookDescription != null)
+							referenced.properties.put(Property.DESCRIPTION, prop.addressbookDescription.getDescription());
+					} else
+						referenced.properties.remove(Property.IS_ADDRESSBOOK);
+					
+					if (prop.resourcetype.getCalendar() != null) {
+						referenced.properties.put(Property.IS_CALENDAR, "1");
+						
+						if (prop.calendarDescription != null)
+							referenced.properties.put(Property.DESCRIPTION, prop.calendarDescription.getDescription());
+					} else
+						referenced.properties.remove(Property.IS_CALENDAR);
+				}
+				
+				if (prop.getctag != null)
+					referenced.properties.put(Property.CTAG, prop.getctag.getCTag());
+
+				if (prop.getetag != null)
+					referenced.properties.put(Property.ETAG, prop.getetag.getETag());
+				
+				if (prop.calendarData != null)
+					referenced.content = new ByteArrayInputStream(prop.calendarData.ical.getBytes());
+				else if (prop.addressData != null)
+					referenced.content = new ByteArrayInputStream(prop.addressData.vcard.getBytes());
+			}
+		}
+		
+		this.members = members;
+	}
 }
