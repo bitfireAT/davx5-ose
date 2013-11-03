@@ -216,13 +216,12 @@ public class WebDavResource {
 	
 	/* resource operations */
 	
-	public boolean get() throws IOException, HttpException {
+	public void get() throws IOException, HttpException {
 		HttpGet get = new HttpGet(location);
 		HttpResponse response = client.execute(get);
 		checkResponse(response);
 		
 		content = response.getEntity().getContent();
-		return true;
 	}
 	
 	public void put(byte[] data, PutMode mode) throws IOException, HttpException {

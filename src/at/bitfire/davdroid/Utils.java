@@ -15,7 +15,7 @@ public class Utils {
 	}
 
 	public static URI resolveURI(URI parent, String member) {
-		if (!member.startsWith("/"))
+		if (!member.startsWith("/") && !member.startsWith("http:") && !member.startsWith("https://"))
 			member = "./" + member;
 		
 		return parent.resolve(member);
