@@ -7,10 +7,9 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 
-import at.bitfire.davdroid.webdav.WebDavCollection.MultigetType;
+import at.bitfire.davdroid.webdav.WebDavResource.MultigetType;
 
 public class CalDavCalendar extends RemoteCollection<Event> { 
 	//private final static String TAG = "davdroid.CalDavCalendar";

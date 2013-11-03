@@ -9,7 +9,7 @@ package at.bitfire.davdroid.resource;
 
 import java.net.URISyntaxException;
 
-import at.bitfire.davdroid.webdav.WebDavCollection.MultigetType;
+import at.bitfire.davdroid.webdav.WebDavResource.MultigetType;
 
 public class CardDavAddressBook extends RemoteCollection<Contact> {
 	//private final static String TAG = "davdroid.CardDavAddressBook"; 

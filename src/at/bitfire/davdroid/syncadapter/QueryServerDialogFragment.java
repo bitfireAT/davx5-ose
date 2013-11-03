@@ -30,7 +30,6 @@ import android.widget.Toast;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.IncapableResourceException;
 import at.bitfire.davdroid.webdav.HttpPropfind.Mode;
-import at.bitfire.davdroid.webdav.WebDavCollection;
 import at.bitfire.davdroid.webdav.WebDavResource;
 
 public class QueryServerDialogFragment extends DialogFragment implements LoaderCallbacks<ServerInfo> {
@@ -110,13 +109,15 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 			
 			try {
 				// (1/5) detect capabilities
-				WebDavCollection base = new WebDavCollection(new URI(serverInfo.getBaseURL()), serverInfo.getUserName(),
-						serverInfo.getPassword(), serverInfo.isAuthPreemptive());
+				WebDavResource base = new WebDavResource(new URI(serverInfo.getBaseURL()), serverInfo.getUserName(),
+						serverInfo.getPassword(), serverInfo.isAuthPreemptive(), true);
 				base.options();
 				
 				serverInfo.setCardDAV(base.supportsDAV("addressbook"));
 				serverInfo.setCalDAV(base.supportsDAV("calendar-access"));
-				if (!base.supportsMethod("PROPFIND") || (!serverInfo.isCalDAV() && !serverInfo.isCardDAV()))
+				if (!base.supportsMethod("PROPFIND") || !base.supportsMethod("GET") ||
+					!base.supportsMethod("PUT") || !base.supportsMethod("DELETE") ||
+					(!serverInfo.isCalDAV() && !serverInfo.isCardDAV()))
 					throw new IncapableResourceException(getContext().getString(R.string.neither_caldav_nor_carddav));
 				
 				// (2/5) get principal URL
@@ -129,7 +130,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 					throw new IncapableResourceException(getContext().getString(R.string.error_principal_path));
 				
 				// (3/5) get home sets
-				WebDavCollection principal = new WebDavCollection(base, principalPath);
+				WebDavResource principal = new WebDavResource(base, principalPath);
 				principal.propfind(Mode.HOME_SETS);
 				
 				String pathAddressBooks = null;
@@ -152,42 +153,44 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 				
 				// (4/5) get address books
 				if (serverInfo.isCardDAV()) {
-					WebDavCollection homeSetAddressBooks = new WebDavCollection(principal, pathAddressBooks);
+					WebDavResource homeSetAddressBooks = new WebDavResource(principal, pathAddressBooks);
 					homeSetAddressBooks.propfind(Mode.MEMBERS_COLLECTIONS);
 					
 					List<ServerInfo.ResourceInfo> addressBooks = new LinkedList<ServerInfo.ResourceInfo>();
-					for (WebDavResource resource : homeSetAddressBooks.getMembers())
-						if (resource.isAddressBook()) {
-							Log.i(TAG, "Found address book: " + resource.getLocation().getPath());
-							ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
-								ServerInfo.ResourceInfo.Type.ADDRESS_BOOK,
-								resource.getLocation().getPath(),
-								resource.getDisplayName(),
-								resource.getDescription()
-							);
-							addressBooks.add(info);
-						}
+					if (homeSetAddressBooks.getMembers() != null)
+						for (WebDavResource resource : homeSetAddressBooks.getMembers())
+							if (resource.isAddressBook()) {
+								Log.i(TAG, "Found address book: " + resource.getLocation().getPath());
+								ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
+									ServerInfo.ResourceInfo.Type.ADDRESS_BOOK,
+									resource.getLocation().getPath(),
+									resource.getDisplayName(),
+									resource.getDescription()
+								);
+								addressBooks.add(info);
+							}
 					
 					serverInfo.setAddressBooks(addressBooks);
 				}
 
 				// (5/5) get calendars
 				if (serverInfo.isCalDAV()) {
-					WebDavCollection homeSetCalendars = new WebDavCollection(principal, pathCalendars);
+					WebDavResource homeSetCalendars = new WebDavResource(principal, pathCalendars);
 					homeSetCalendars.propfind(Mode.MEMBERS_COLLECTIONS);
 					
 					List<ServerInfo.ResourceInfo> calendars = new LinkedList<ServerInfo.ResourceInfo>();
-					for (WebDavResource resource : homeSetCalendars.getMembers())
-						if (resource.isCalendar()) {
-							Log.i(TAG, "Found calendar: " + resource.getLocation().getPath());
-							ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
-								ServerInfo.ResourceInfo.Type.CALENDAR,
-								resource.getLocation().getPath(),
-								resource.getDisplayName(),
-								resource.getDescription()
-							);
-							calendars.add(info);
-						}
+					if (homeSetCalendars.getMembers() != null)
+						for (WebDavResource resource : homeSetCalendars.getMembers())
+							if (resource.isCalendar()) {
+								Log.i(TAG, "Found calendar: " + resource.getLocation().getPath());
+								ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
+									ServerInfo.ResourceInfo.Type.CALENDAR,
+									resource.getLocation().getPath(),
+									resource.getDisplayName(),
+									resource.getDescription()
+								);
+								calendars.add(info);
+							}
 					
 					serverInfo.setCalendars(calendars);
 				}

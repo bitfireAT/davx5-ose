@@ -1,64 +1,176 @@
 package at.bitfire.davdroid.webdav.test;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
 
+import android.content.res.AssetManager;
 import android.test.InstrumentationTestCase;
+import at.bitfire.davdroid.webdav.HttpPropfind;
+import at.bitfire.davdroid.webdav.NotFoundException;
+import at.bitfire.davdroid.webdav.PreconditionFailedException;
 import at.bitfire.davdroid.webdav.WebDavResource;
+import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
+
+// tests require running robohydra!
 
 public class WebDavResourceTest extends InstrumentationTestCase {
-	URI davBaseURI, uriWithoutDAV, uriWithRedirection;
-	final static String davUsername = "test", davPassword = "test";
+	static final String ROBOHYDRA_BASE = "http://10.0.0.119:3000/";
+	static byte[] SAMPLE_CONTENT = new byte[] { 1, 2, 3, 4, 5 };
+	
+	AssetManager assetMgr;
+	WebDavResource simpleFile,
+		davCollection, davNonExistingFile, davExistingFile;
 
+	@Override
 	protected void setUp() throws Exception {
-		davBaseURI = new URI("https://wurd.dev001.net/radicale/test/");
-		uriWithoutDAV = new URI("http://www.apache.org");
-		uriWithRedirection = new URI("http://wurd.dev001.net/public/");
+		assetMgr = getInstrumentation().getContext().getResources().getAssets();
+		
+		simpleFile = new WebDavResource(new URI(ROBOHYDRA_BASE + "assets/test.random"), false);
+		
+		davCollection = new WebDavResource(new URI(ROBOHYDRA_BASE + "dav"), true);
+		davNonExistingFile = new WebDavResource(davCollection, "collection/new.file");
+		davExistingFile = new WebDavResource(davCollection, "collection/existing.file");
 	}
 	
+
+	/* test resource name handling */
 	
-	public void testGet() throws URISyntaxException, IOException, HttpException {
-		WebDavResource dav = new WebDavResource(uriWithoutDAV, "", "", false, true);
-		dav.get();
-		InputStream is = dav.getContent();
-		assertNotNull(is);
+	public void testGetName() {
+		// collection names should have a trailing slash
+		assertEquals("dav", davCollection.getName());
+		// but non-collection names shouldn't
+		assertEquals("test.random", simpleFile.getName());
 	}
 	
 	public void testTrailingSlash() throws URISyntaxException {
-		WebDavResource dav = new WebDavResource(new URI("http://server/path"), "", "", false, true);
-		assertEquals("/path/", dav.getLocation().getPath());
-	}	
+		// collections should have a trailing slash
+		assertEquals("/dav/", davCollection.getLocation().getPath());
+		// but non-collection members shouldn't
+		assertEquals("/assets/test.random", simpleFile.getLocation().getPath());
+	}
+	
+	
+	/* test feature detection */
 	
 	public void testOptions() throws URISyntaxException, IOException, HttpException {
-		String[]	davMethods = new String[] { "PROPFIND", "PUT", "DELETE" },
+		String[]	davMethods = new String[] { "PROPFIND", "GET", "PUT", "DELETE" },
 					davCapabilities = new String[] { "addressbook", "calendar-access" };
 		
 		// server without DAV
-		WebDavResource dav = new WebDavResource(uriWithoutDAV, "", "", false, true);
-		dav.options();
+		simpleFile.options();
 		for (String method : davMethods)
-			assertFalse(dav.supportsMethod(method));
+			assertFalse(simpleFile.supportsMethod(method));
 		for (String capability : davCapabilities)
-			assertFalse(dav.supportsDAV(capability));
+			assertFalse(simpleFile.supportsDAV(capability));
 		
 		// server with DAV
-		dav = new WebDavResource(davBaseURI, davUsername, davPassword, false, true);
-		dav.options();
+		davCollection.options();
 		for (String davMethod : davMethods)
-			assert(dav.supportsMethod(davMethod));
+			assert(davCollection.supportsMethod(davMethod));
 		for (String capability : davCapabilities)
-			assert(dav.supportsDAV(capability));
+			assert(davCollection.supportsDAV(capability));
 	}
 
-	public void testRedirections() throws URISyntaxException, IOException {
-		WebDavResource dav = new WebDavResource(uriWithRedirection, "", "", false, true);
+	public void testPropfindCurrentUserPrincipal() throws IOException, HttpException {
+		assertTrue(davCollection.propfind(HttpPropfind.Mode.CURRENT_USER_PRINCIPAL));
+		assertEquals("/dav/principals/users/test", davCollection.getCurrentUserPrincipal());
+		
+		assertFalse(simpleFile.propfind(HttpPropfind.Mode.CURRENT_USER_PRINCIPAL));
+		assertNull(simpleFile.getCurrentUserPrincipal());
+	}
+		
+	public void testPropfindHomeSets() throws IOException, HttpException {
+		WebDavResource dav = new WebDavResource(davCollection, "principals/users/test");
+		dav.propfind(HttpPropfind.Mode.HOME_SETS);
+		assertEquals("/dav/addressbooks/test/", dav.getAddressbookHomeSet());
+		assertEquals("/dav/calendars/test/", dav.getCalendarHomeSet());
+	}
+	
+	public void testPropfindAddressBooks() throws IOException, HttpException {
+		WebDavResource dav = new WebDavResource(davCollection, "addressbooks/test");
+		dav.propfind(HttpPropfind.Mode.MEMBERS_COLLECTIONS);
+		assertEquals(2, dav.getMembers().size());
+		for (WebDavResource member : dav.getMembers()) {
+			if (member.getName().equals("default.vcf"))
+				assertTrue(member.isAddressBook());
+			else
+				assertFalse(member.isAddressBook());
+			assertFalse(member.isCalendar());
+		}
+	}
+	
+	public void testPropfindCalendars() throws IOException, HttpException {
+		WebDavResource dav = new WebDavResource(davCollection, "calendars/test");
+		dav.propfind(HttpPropfind.Mode.MEMBERS_COLLECTIONS);
+		assertEquals(3, dav.getMembers().size());
+		for (WebDavResource member : dav.getMembers()) {
+			if (member.getName().contains(".ics"))
+				assertTrue(member.isCalendar());
+			else
+				assertFalse(member.isCalendar());
+			assertFalse(member.isAddressBook());
+		}
+	}
+	
+	
+	/* test normal HTTP */
+	
+	public void testDontFollowRedirections() throws URISyntaxException, IOException {
+		WebDavResource redirection = new WebDavResource(new URI(ROBOHYDRA_BASE + "redirect"), false);
 		try {
-			dav.options();
+			redirection.get();
 		} catch (HttpException e) {
+			return;
+		}
+		fail();
+	}
+	
+	public void testGet() throws URISyntaxException, IOException, HttpException {
+		simpleFile.get();
+		assertTrue(IOUtils.contentEquals(
+			assetMgr.open("test.random", AssetManager.ACCESS_STREAMING),
+			simpleFile.getContent()
+		));
+	}
+	
+	public void testPutAddDontOverwrite() throws IOException, HttpException {
+		// should succeed on a non-existing file
+		davNonExistingFile.put(SAMPLE_CONTENT, PutMode.ADD_DONT_OVERWRITE);
+		
+		// should fail on an existing file
+		try {
+			davExistingFile.put(SAMPLE_CONTENT, PutMode.ADD_DONT_OVERWRITE);
+		} catch(PreconditionFailedException ex) {
+			return;
+		}
+		fail();
+	}
+	
+	public void testPutUpdateDontOverwrite() throws IOException, HttpException {
+		// should succeed on an existing file
+		davExistingFile.put(SAMPLE_CONTENT, PutMode.UPDATE_DONT_OVERWRITE);
+		
+		// should fail on a non-existing file
+		try {
+			davNonExistingFile.put(SAMPLE_CONTENT, PutMode.UPDATE_DONT_OVERWRITE);
+		} catch(PreconditionFailedException ex) {
+			return;
+		}
+		fail();
+	}
+	
+	public void testDelete() throws IOException, HttpException {
+		// should succeed on an existing file
+		davExistingFile.delete();
+		
+		// should fail on a non-existing file
+		try {
+			davNonExistingFile.delete();
+		} catch (NotFoundException e) {
 			return;
 		}
 		fail();
