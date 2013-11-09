@@ -53,6 +53,7 @@ public class HttpPropfind extends HttpEntityEnclosingRequestBase {
 			propfind.prop.resourcetype = new DavProp.DavPropResourceType();
 			propfind.prop.addressbookDescription = new DavProp.DavPropAddressbookDescription();
 			propfind.prop.calendarDescription = new DavProp.DavPropCalendarDescription();
+			propfind.prop.calendarColor = new DavProp.DavPropCalendarColor();
 			break;
 		case COLLECTION_CTAG:
 			depth = 0;

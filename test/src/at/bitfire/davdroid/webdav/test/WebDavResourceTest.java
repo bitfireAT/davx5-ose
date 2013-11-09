@@ -111,6 +111,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		WebDavResource dav = new WebDavResource(davCollection, "calendars/test", true);
 		dav.propfind(HttpPropfind.Mode.MEMBERS_COLLECTIONS);
 		assertEquals(3, dav.getMembers().size());
+		assertEquals("0xFF00FF", dav.getMembers().get(2).getColor());
 		for (WebDavResource member : dav.getMembers()) {
 			if (member.getName().contains(".ics"))
 				assertTrue(member.isCalendar());

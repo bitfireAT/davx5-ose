@@ -165,7 +165,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 									ServerInfo.ResourceInfo.Type.ADDRESS_BOOK,
 									resource.getLocation().getPath(),
 									resource.getDisplayName(),
-									resource.getDescription()
+									resource.getDescription(), resource.getColor()
 								);
 								addressBooks.add(info);
 							}
@@ -187,7 +187,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 									ServerInfo.ResourceInfo.Type.CALENDAR,
 									resource.getLocation().getPath(),
 									resource.getDisplayName(),
-									resource.getDescription()
+									resource.getDescription(), resource.getColor()
 								);
 								calendars.add(info);
 							}
