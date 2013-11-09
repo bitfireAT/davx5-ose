@@ -26,7 +26,9 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.URIUtils;
 
 public class EnterCredentialsFragment extends Fragment implements TextWatcher {
 	String protocol;
@@ -102,9 +104,10 @@ public class EnterCredentialsFragment extends Fragment implements TextWatcher {
 	void queryServer() {
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		
-		String host_path = editBaseURL.getText().toString();
+		String host_path = URIUtils.sanitize(editBaseURL.getText().toString());
 		
 		Bundle args = new Bundle();
+		
 		args.putString(QueryServerDialogFragment.EXTRA_BASE_URL, protocol + host_path);
 		args.putString(QueryServerDialogFragment.EXTRA_USER_NAME, editUserName.getText().toString());
 		args.putString(QueryServerDialogFragment.EXTRA_PASSWORD, editPassword.getText().toString());
@@ -122,6 +125,7 @@ public class EnterCredentialsFragment extends Fragment implements TextWatcher {
 	public void onPrepareOptionsMenu(Menu menu) {
 		boolean ok =
 			editBaseURL.getText().length() > 0 &&
+			!editBaseURL.getText().toString().startsWith("/") &&		// host name required
 			editUserName.getText().length() > 0 &&
 			editPassword.getText().length() > 0;
 			

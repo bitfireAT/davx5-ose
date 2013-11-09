@@ -128,7 +128,7 @@ public class WebDavResource {
 	}
 	
 	public WebDavResource(WebDavResource parent, String member) {
-		location = URIUtils.resolve(parent.location, member);
+		location = parent.location.resolve(URIUtils.sanitize(member));
 		client = parent.client;
 	}
 	
@@ -285,7 +285,7 @@ public class WebDavResource {
 		
 		multiget.hrefs = new ArrayList<DavHref>(names.length);
 		for (String name : names)
-			multiget.hrefs.add(new DavHref(URIUtils.resolve(location, name).getPath()));
+			multiget.hrefs.add(new DavHref(location.resolve(name).getPath()));
 		
 		Serializer serializer = new Persister();
 		StringWriter writer = new StringWriter();
@@ -371,7 +371,7 @@ public class WebDavResource {
 		for (DavResponse singleResponse : multistatus.response) {
 			URI href;
 			try {
-				href = URIUtils.resolve(location, singleResponse.getHref().href);
+				href = location.resolve(URIUtils.sanitize(singleResponse.getHref().href));
 			} catch(IllegalArgumentException ex) {
 				Log.w(TAG, "Ignoring illegal member URI in multi-status response", ex);
 				continue;
