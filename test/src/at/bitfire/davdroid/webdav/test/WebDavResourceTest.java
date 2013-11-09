@@ -90,12 +90,12 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	public void testPropfindHomeSets() throws IOException, HttpException {
 		WebDavResource dav = new WebDavResource(davCollection, "principals/users/test");
 		dav.propfind(HttpPropfind.Mode.HOME_SETS);
-		assertEquals("/dav/addressbooks/test/", dav.getAddressbookHomeSet());
+		assertEquals("/dav/addressbooks/test", dav.getAddressbookHomeSet());
 		assertEquals("/dav/calendars/test/", dav.getCalendarHomeSet());
 	}
 	
 	public void testPropfindAddressBooks() throws IOException, HttpException {
-		WebDavResource dav = new WebDavResource(davCollection, "addressbooks/test");
+		WebDavResource dav = new WebDavResource(davCollection, "addressbooks/test", true);
 		dav.propfind(HttpPropfind.Mode.MEMBERS_COLLECTIONS);
 		assertEquals(2, dav.getMembers().size());
 		for (WebDavResource member : dav.getMembers()) {
@@ -108,7 +108,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	}
 	
 	public void testPropfindCalendars() throws IOException, HttpException {
-		WebDavResource dav = new WebDavResource(davCollection, "calendars/test");
+		WebDavResource dav = new WebDavResource(davCollection, "calendars/test", true);
 		dav.propfind(HttpPropfind.Mode.MEMBERS_COLLECTIONS);
 		assertEquals(3, dav.getMembers().size());
 		for (WebDavResource member : dav.getMembers()) {
