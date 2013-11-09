@@ -3,6 +3,7 @@ package at.bitfire.davdroid.webdav.test;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
@@ -23,7 +24,8 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	
 	AssetManager assetMgr;
 	WebDavResource simpleFile,
-		davCollection, davNonExistingFile, davExistingFile;
+		davCollection, davNonExistingFile, davExistingFile,
+		davInvalid;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -34,6 +36,8 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		davCollection = new WebDavResource(new URI(ROBOHYDRA_BASE + "dav"), true);
 		davNonExistingFile = new WebDavResource(davCollection, "collection/new.file");
 		davExistingFile = new WebDavResource(davCollection, "collection/existing.file");
+		
+		davInvalid = new WebDavResource(new URI(ROBOHYDRA_BASE + "dav-invalid"), true);
 	}
 	
 
@@ -117,7 +121,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	}
 	
 	
-	/* test normal HTTP */
+	/* test normal HTTP/WebDAV */
 	
 	public void testDontFollowRedirections() throws URISyntaxException, IOException {
 		WebDavResource redirection = new WebDavResource(new URI(ROBOHYDRA_BASE + "redirect"), false);
@@ -175,4 +179,20 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		}
 		fail();
 	}
+	
+	
+	/* test CalDAV/CardDAV */
+	
+	
+	/* special test */
+	
+	public void testInvalidURLs() throws IOException, HttpException {
+		WebDavResource dav = new WebDavResource(davInvalid, "addressbooks/user%40domain/");
+		dav.propfind(HttpPropfind.Mode.MEMBERS_COLLECTIONS);
+		List<WebDavResource> members = dav.getMembers();
+		assertEquals(2, members.size());
+		assertEquals(ROBOHYDRA_BASE + "dav/addressbooks/user%40domain/My%20Contacts%3A1.vcf/", members.get(0).getLocation().toString());
+		assertEquals("HTTPS://example.com/user%40domain/absolute-url.vcf", members.get(1).getLocation().toString());
+	}
+	
 }

@@ -22,18 +22,8 @@ public class URIUtilsTest extends InstrumentationTestCase {
 		assertTrue(URIUtils.isSame(new URI(ROOT_URI + "my@email/"), new URI(ROOT_URI + "my%40email/")));
 	}
 
-	public void testResolve() {
-		// resolve absolute URL
-		assertEquals(ROOT_URI + "file", URIUtils.resolve(baseURI, "/file").toString());
-		
-		// resolve relative URL (default case)
-		assertEquals(BASE_URI + "file", URIUtils.resolve(baseURI, "file").toString());
-		
-		// resolve relative URL with special characters
-		assertEquals(BASE_URI + "fi:le", URIUtils.resolve(baseURI, "fi:le").toString());
-		assertEquals(BASE_URI + "fi@le", URIUtils.resolve(baseURI, "fi@le").toString());
-		
-		// resolve URL with other schema
-		assertEquals("https://server", URIUtils.resolve(baseURI, "https://server").toString());
+	public void testSanitize() {
+		assertEquals("/my%40email.com/dir", URIUtils.sanitize("/my@email.com/dir"));
+		assertEquals("my%3Afile.vcf", URIUtils.sanitize("my:file.vcf"));
 	}
 }
