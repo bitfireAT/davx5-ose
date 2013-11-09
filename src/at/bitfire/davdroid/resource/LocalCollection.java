@@ -73,7 +73,7 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 				new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
 				where, null, null);
 		LinkedList<Resource> dirty = new LinkedList<Resource>();
-		while (cursor.moveToNext())
+		while (cursor != null && cursor.moveToNext())
 			dirty.add(findById(cursor.getLong(0), cursor.getString(1), cursor.getString(2), true));
 		return dirty.toArray(new Resource[0]);
 	}
@@ -86,7 +86,7 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 				new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
 				where, null, null);
 		LinkedList<Resource> deleted = new LinkedList<Resource>();
-		while (cursor.moveToNext())
+		while (cursor != null && cursor.moveToNext())
 			deleted.add(findById(cursor.getLong(0), cursor.getString(1), cursor.getString(2), false));
 		return deleted.toArray(new Resource[0]);
 	}
@@ -99,7 +99,7 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 				new String[] { entryColumnID() },
 				where, null, null);
 		LinkedList<Resource> fresh = new LinkedList<Resource>();
-		while (cursor.moveToNext()) {
+		while (cursor != null && cursor.moveToNext()) {
 			String uid = UUID.randomUUID().toString(),
 				   resourceName = uid + fileExtension();
 			Resource resource = findById(cursor.getLong(0), resourceName, null, true); //new Event(cursor.getLong(0), resourceName, null);
