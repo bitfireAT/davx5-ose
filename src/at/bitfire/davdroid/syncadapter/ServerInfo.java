@@ -38,6 +38,6 @@ public class ServerInfo implements Serializable {
 		}
 		
 		final Type type;
-		final String path, title, description;
+		final String path, title, description, color;
 	}
 }

@@ -58,7 +58,7 @@ public class WebDavResource {
 	
 	public enum Property {
 		CURRENT_USER_PRINCIPAL,
-		DISPLAY_NAME, DESCRIPTION,
+		DISPLAY_NAME, DESCRIPTION, COLOR,
 		ADDRESSBOOK_HOMESET, CALENDAR_HOMESET,
 		IS_ADDRESSBOOK, IS_CALENDAR,
 		CTAG, ETAG,
@@ -211,6 +211,10 @@ public class WebDavResource {
 	
 	public String getDescription() {
 		return properties.get(Property.DESCRIPTION);
+	}
+	
+	public String getColor() {
+		return properties.get(Property.COLOR);
 	}
 	
 	public String getAddressbookHomeSet() {
@@ -426,6 +430,9 @@ public class WebDavResource {
 						
 						if (prop.calendarDescription != null)
 							referenced.properties.put(Property.DESCRIPTION, prop.calendarDescription.getDescription());
+						
+						if (prop.calendarColor != null)
+							referenced.properties.put(Property.COLOR, prop.calendarColor.getColor());
 					} else
 						referenced.properties.remove(Property.IS_CALENDAR);
 				}

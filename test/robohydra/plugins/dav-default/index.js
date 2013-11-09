@@ -116,6 +116,7 @@ exports.getBodyParts = function(conf) {
 												<collection/>\
 												<CAL:calendar/>\
 											</resourcetype>\
+											<A:calendar-color xmlns:A="http://apple.com/ns/ical/">0xFF00FF</A:calendar-color>\
 										</prop>\
 										<status>HTTP/1.1 200 OK</status>\
 									</propstat>\

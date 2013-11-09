@@ -91,12 +91,20 @@ public class LocalCalendar extends LocalCollection<Event> {
 	public static void create(Account account, ContentResolver resolver, ServerInfo.ResourceInfo info) throws RemoteException {
 		ContentProviderClient client = resolver.acquireContentProviderClient(CalendarContract.AUTHORITY);
 		
+		int color = 0xFFC3EA6E;
+		if (info.getColor() != null)
+			try {
+				color = Integer.decode(info.getColor());
+			} catch(Exception ex) {
+				Log.w(TAG, "Couldn't parse calendar color " + info.getColor());
+			}
+		
 		ContentValues values = new ContentValues();
 		values.put(Calendars.ACCOUNT_NAME, account.name);
 		values.put(Calendars.ACCOUNT_TYPE, account.type);
 		values.put(Calendars.NAME, info.getPath());
 		values.put(Calendars.CALENDAR_DISPLAY_NAME, info.getTitle());
-		values.put(Calendars.CALENDAR_COLOR, 0xFFC3EA6E);
+		values.put(Calendars.CALENDAR_COLOR, color);
 		values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER);
 		values.put(Calendars.ALLOWED_AVAILABILITY, Events.AVAILABILITY_BUSY + "," + Events.AVAILABILITY_FREE + "," + Events.AVAILABILITY_TENTATIVE);
 		values.put(Calendars.ALLOWED_ATTENDEE_TYPES, Attendees.TYPE_NONE + "," + Attendees.TYPE_REQUIRED + "," + Attendees.TYPE_OPTIONAL + "," + Attendees.TYPE_RESOURCE);

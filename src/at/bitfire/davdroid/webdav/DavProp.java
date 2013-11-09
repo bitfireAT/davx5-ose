@@ -38,6 +38,9 @@ public class DavProp {
 	@Element(required=false,name="calendar-description")
 	DavPropCalendarDescription calendarDescription;
 	
+	@Element(required=false,name="calendar-color")
+	DavPropCalendarColor calendarColor;
+	
 	@Element(required=false)
 	DavPropGetCTag getctag;
 	
@@ -97,6 +100,12 @@ public class DavProp {
 	public static class DavPropCalendarDescription {
 		@Text(required=false)
 		@Getter private String description;
+	}
+	
+	@Namespace(prefix="A",reference="http://apple.com/ns/ical/")
+	public static class DavPropCalendarColor {
+		@Text(required=false)
+		@Getter private String color;
 	}
 	
 	@Namespace(prefix="CS",reference="http://calendarserver.org/ns/")
