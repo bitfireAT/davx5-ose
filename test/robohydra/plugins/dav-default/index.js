@@ -22,7 +22,7 @@ exports.getBodyParts = function(conf) {
 									<propstat>\
 										<prop>\
 											<CARD:addressbook-home-set xmlns:CARD="urn:ietf:params:xml:ns:carddav">\
-												<href>/dav/addressbooks/test/</href>\
+												<href>/dav/addressbooks/test</href>\
 											</CARD:addressbook-home-set>\
 											<CAL:calendar-home-set xmlns:CAL="urn:ietf:params:xml:ns:caldav">\
 												<href>/dav/calendars/test/</href>\
@@ -39,9 +39,13 @@ exports.getBodyParts = function(conf) {
 
 			/* address-book home set */
             new RoboHydraHeadDAV({
-				path: "/dav/addressbooks/test",
+				path: "/dav/addressbooks/test/",
 				handler: function(req,res,next) {
-					if (req.method == "PROPFIND" && req.rawBody.toString().match(/addressbook-description/)) {
+					if (!req.url.match(/\/$/)) {
+						res.statusCode = 302;
+						res.headers['location'] = "/dav/addressbooks/test/";
+					}
+					else if (req.method == "PROPFIND" && req.rawBody.toString().match(/addressbook-description/)) {
 						res.statusCode = 207;
 						res.write('\<?xml version="1.0" encoding="utf-8" ?>\
 							<multistatus xmlns="DAV:">\
@@ -77,7 +81,7 @@ exports.getBodyParts = function(conf) {
 
 			/* calendar home set */
             new RoboHydraHeadDAV({
-				path: "/dav/calendars/test",
+				path: "/dav/calendars/test/",
 				handler: function(req,res,next) {
 					if (req.method == "PROPFIND" && req.rawBody.toString().match(/addressbook-description/)) {
 						res.statusCode = 207;

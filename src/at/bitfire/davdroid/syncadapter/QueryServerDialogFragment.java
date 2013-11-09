@@ -153,7 +153,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 				
 				// (4/5) get address books
 				if (serverInfo.isCardDAV()) {
-					WebDavResource homeSetAddressBooks = new WebDavResource(principal, pathAddressBooks);
+					WebDavResource homeSetAddressBooks = new WebDavResource(principal, pathAddressBooks, true);
 					homeSetAddressBooks.propfind(Mode.MEMBERS_COLLECTIONS);
 					
 					List<ServerInfo.ResourceInfo> addressBooks = new LinkedList<ServerInfo.ResourceInfo>();
@@ -175,7 +175,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 
 				// (5/5) get calendars
 				if (serverInfo.isCalDAV()) {
-					WebDavResource homeSetCalendars = new WebDavResource(principal, pathCalendars);
+					WebDavResource homeSetCalendars = new WebDavResource(principal, pathCalendars, true);
 					homeSetCalendars.propfind(Mode.MEMBERS_COLLECTIONS);
 					
 					List<ServerInfo.ResourceInfo> calendars = new LinkedList<ServerInfo.ResourceInfo>();

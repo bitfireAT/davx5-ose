@@ -132,6 +132,10 @@ public class WebDavResource {
 		client = parent.client;
 	}
 	
+	public WebDavResource(WebDavResource parent, String member, boolean trailingSlash) {
+		this(parent, (trailingSlash && !member.endsWith("/")) ? (member + "/") : member);
+	}
+	
 	public WebDavResource(WebDavResource parent, String member, String ETag) {
 		this(parent, member);
 		properties.put(Property.ETAG, ETag);
