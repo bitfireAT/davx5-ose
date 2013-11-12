@@ -115,8 +115,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 				
 				serverInfo.setCardDAV(base.supportsDAV("addressbook"));
 				serverInfo.setCalDAV(base.supportsDAV("calendar-access"));
-				if (!base.supportsMethod("PROPFIND") || !base.supportsMethod("GET") ||
-					!base.supportsMethod("PUT") || !base.supportsMethod("DELETE") ||
+				if (!base.supportsMethod("PROPFIND") || !base.supportsMethod("REPORT") ||
 					(!serverInfo.isCalDAV() && !serverInfo.isCardDAV()))
 					throw new IncapableResourceException(getContext().getString(R.string.neither_caldav_nor_carddav));
 				
@@ -160,10 +159,10 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 					if (homeSetAddressBooks.getMembers() != null)
 						for (WebDavResource resource : homeSetAddressBooks.getMembers())
 							if (resource.isAddressBook()) {
-								Log.i(TAG, "Found address book: " + resource.getLocation().getPath());
+								Log.i(TAG, "Found address book: " + resource.getLocation().getRawPath());
 								ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
 									ServerInfo.ResourceInfo.Type.ADDRESS_BOOK,
-									resource.getLocation().getPath(),
+									resource.getLocation().getRawPath(),
 									resource.getDisplayName(),
 									resource.getDescription(), resource.getColor()
 								);
@@ -182,10 +181,10 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 					if (homeSetCalendars.getMembers() != null)
 						for (WebDavResource resource : homeSetCalendars.getMembers())
 							if (resource.isCalendar()) {
-								Log.i(TAG, "Found calendar: " + resource.getLocation().getPath());
+								Log.i(TAG, "Found calendar: " + resource.getLocation().getRawPath());
 								ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
 									ServerInfo.ResourceInfo.Type.CALENDAR,
-									resource.getLocation().getPath(),
+									resource.getLocation().getRawPath(),
 									resource.getDisplayName(),
 									resource.getDescription(), resource.getColor()
 								);
