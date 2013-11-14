@@ -99,7 +99,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 			Matcher m = p.matcher(info.getColor());
 			if (m.find()) {
 				int color_rgb = Integer.parseInt(m.group(1), 16);
-				byte color_alpha = m.group(2) != null ? Byte.parseByte(m.group(2), 16) : -1;
+				int color_alpha = m.group(2) != null ? (Integer.parseInt(m.group(2), 16) & 0xFF) : 0xFF;
 				color = (color_alpha << 24) | color_rgb;
 			}
 		}
