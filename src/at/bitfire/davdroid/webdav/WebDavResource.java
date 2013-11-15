@@ -286,7 +286,7 @@ public class WebDavResource {
 			return false;
 	}
 
-	public boolean multiGet(String[] names, MultigetType type) throws IOException, InvalidDavResponseException, HttpException {
+	public void multiGet(String[] names, MultigetType type) throws IOException, InvalidDavResponseException, HttpException {
 		DavMultiget multiget = (type == MultigetType.ADDRESS_BOOK) ? new DavAddressbookMultiget() : new DavCalendarMultiget(); 
 			
 		multiget.prop = new DavProp();
@@ -305,9 +305,9 @@ public class WebDavResource {
 		StringWriter writer = new StringWriter();
 		try {
 			serializer.write(multiget, writer);
-		} catch (Exception e) {
-			Log.e(TAG, e.getLocalizedMessage());
-			return false;
+		} catch (Exception ex) {
+			Log.e(TAG, "Couldn't create XML multi-get request", ex);
+			throw new InvalidDavResponseException();
 		}
 
 		HttpReport report = new HttpReport(location, writer.toString());
@@ -322,15 +322,14 @@ public class WebDavResource {
 				multistatus = serializer.read(DavMultistatus.class, is, false);
 				
 				Log.d(TAG, "Received multistatus response: " + baos.toString("UTF-8"));
-			} catch (Exception e) {
-				Log.e(TAG, e.getLocalizedMessage());
-				return false;
+			} catch (Exception ex) {
+				Log.e(TAG, "Couldn't parse multi-get response", ex);
+				throw new InvalidDavResponseException();
 			}
 			processMultiStatus(multistatus);
 			
 		} else
 			throw new InvalidDavResponseException();
-		return true;
 	}
 
 	
@@ -390,6 +389,7 @@ public class WebDavResource {
 				Log.w(TAG, "Ignoring illegal member URI in multi-status response", ex);
 				continue;
 			}
+			Log.d(TAG, "Processing multi-status element: " + href);
 			
 			// about which resource is this response?
 			WebDavResource referenced = null;

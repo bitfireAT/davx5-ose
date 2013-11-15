@@ -11,9 +11,11 @@ import org.apache.http.HttpException;
 import android.content.res.AssetManager;
 import android.test.InstrumentationTestCase;
 import at.bitfire.davdroid.webdav.HttpPropfind;
+import at.bitfire.davdroid.webdav.InvalidDavResponseException;
 import at.bitfire.davdroid.webdav.NotFoundException;
 import at.bitfire.davdroid.webdav.PreconditionFailedException;
 import at.bitfire.davdroid.webdav.WebDavResource;
+import at.bitfire.davdroid.webdav.WebDavResource.MultigetType;
 import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
 
 // tests require running robohydra!
@@ -140,6 +142,15 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 			assetMgr.open("test.random", AssetManager.ACCESS_STREAMING),
 			simpleFile.getContent()
 		));
+	}
+	
+	public void testMultiGet() throws InvalidDavResponseException, IOException, HttpException {
+		WebDavResource davAddressBook = new WebDavResource(davCollection, "addressbooks/default.vcf", true);
+		davAddressBook.multiGet(new String[] { "1.vcf", "2.vcf" }, MultigetType.ADDRESS_BOOK);
+		assertEquals(2, davAddressBook.getMembers().size());
+		for (WebDavResource member : davAddressBook.getMembers()) {
+			assertNotNull(member.getContent());
+		}
 	}
 	
 	public void testPutAddDontOverwrite() throws IOException, HttpException {

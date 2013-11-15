@@ -43,7 +43,7 @@ public class URIUtils {
 			url = url.replace(String.valueOf(c), "%" + Integer.toHexString(c));
 		
 		if (!url.equals(original))
-			Log.w(TAG, "Tried to repair invalid URL/URL path: " + original + " -> " + url);
+			Log.w(TAG, "Trying to repair invalid URL: " + original + " -> " + url);
 		return url;
 	}
 }
