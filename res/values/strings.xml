@@ -20,10 +20,10 @@
     <string name="exception_io">I/O error: %s</string>
     <string name="exception_uri_syntax">Invalid URI: %s</string>
     <string name="exception_incapable_resource">Missing capabilities: %s</string>
-    <string name="neither_caldav_nor_carddav">neither CalDAV nor CardDAV available</string>
+    <string name="neither_caldav_nor_carddav">Neither CalDAV nor CardDAV available</string>
     <string name="error_principal_path">"Couldn't determine principal path (RFC 5397)"</string>
-    <string name="error_home_set_address_books">&quot;Couldn't determine address book home set&quot;</string>
-    <string name="error_home_set_calendars">&quot;Couldn't determine calendar home set&quot;</string>
+    <string name="error_home_set_address_books">"Couldn't determine address book home set"</string>
+    <string name="error_home_set_calendars">"Couldn't determine calendar home set"</string>
     <string name="add_account">Add account</string>
     <string name="querying_server">Querying server. Please wait…</string>
     <string name="exception_http">HTTP error: %s</string>
@@ -47,7 +47,7 @@
        Play Store</a> and use Android 4.1 or Samsung devices (for instance, Galaxy Note, Note 10.1, S2, S3, S4, …)
        you may have to install the
        <a href="https://play.google.com/store/apps/details?id=at.bitfire.davdroid.jbworkaround">DAVdroid JB Workaround</a>
-       to prevent data-loss on reboot (it\'s an Android bug).</p>
+       to prevent data-loss on reboot (it\'s an Android/Play Store bug).</p>
        
        <p>For more information, please see the <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid homepage</a>.
        There\'s a <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Setup guide</a>, too. DAVdroid respects

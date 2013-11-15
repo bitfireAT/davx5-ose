@@ -40,6 +40,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicLineParser;
@@ -101,6 +103,10 @@ public class WebDavResource {
 		// create new HTTP client
 		client = new DefaultHttpClient();
 		client.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "DAVdroid/" + Constants.APP_VERSION);
+		
+		// use our own, SNI-capable LayeredSocketFactory for https://
+	    SchemeRegistry schemeRegistry = client.getConnectionManager().getSchemeRegistry();
+	    schemeRegistry.register(new Scheme("https", new TlsSniSocketFactory(), 443));
 		
 		// allow gzip compression
 		GzipDecompressingEntity.enable(client);
