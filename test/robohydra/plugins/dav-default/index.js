@@ -155,7 +155,52 @@ exports.getBodyParts = function(conf) {
 					} else if (req.method == "DELETE")
 						res.statusCode = 204;
 				}
-            })
+            }),
+
+			/* address-book multiget */
+            new RoboHydraHeadDAV({
+				path: "/dav/addressbooks/default.vcf/",
+				handler: function(req,res,next) {
+					if (req.method == "REPORT" && req.rawBody.toString().match(/addressbook-multiget[\s\S]+<prop>[\s\S]+<href>/m)) {
+						res.statusCode = 207;
+						res.write('\<?xml version="1.0" encoding="utf-8" ?>\
+							<multistatus xmlns="DAV:" xmlns:CARD="urn:ietf:params:xml:ns:carddav">\
+								<response>\
+									<href>/dav/addressbooks/default.vcf/1.vcf</href>\
+									<propstat>\
+										<prop>\
+											<getetag/>\
+											<CARD:address-data>BEGIN:VCARD\
+											VERSION:3.0\
+											NICKNAME:MULTIGET1\
+											UID:1\
+											END:VCARD\
+											</CARD:address-data>\
+										</prop>\
+										<status>HTTP/1.1 200 OK</status>\
+									</propstat>\
+								</response>\
+								<response>\
+									<href>/dav/addressbooks/default.vcf/2.vcf</href>\
+									<propstat>\
+										<prop>\
+											<getetag/>\
+											<CARD:address-data>BEGIN:VCARD\
+											VERSION:3.0\
+											NICKNAME:MULTIGET2\
+											UID:2\
+											END:VCARD\
+											</CARD:address-data>\
+										</prop>\
+										<status>HTTP/1.1 200 OK</status>\
+									</propstat>\
+								</response>\
+							</multistatus>\
+						');
+					}
+				}
+            }),
+
         ]
     };
 };

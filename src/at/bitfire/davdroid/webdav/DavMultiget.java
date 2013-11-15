@@ -11,7 +11,9 @@ import java.util.List;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Order;
 
+@Order(elements={"prop","href"})
 public class DavMultiget {
 	@Element
 	DavProp prop;
