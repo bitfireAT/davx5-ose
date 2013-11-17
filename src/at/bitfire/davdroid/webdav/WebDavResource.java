@@ -97,7 +97,7 @@ public class WebDavResource {
 	public WebDavResource(URI baseURL, boolean trailingSlash) throws URISyntaxException {
 		location = baseURL.normalize();
 		
-		if (trailingSlash && !location.getPath().endsWith("/"))
+		if (trailingSlash && !location.getRawPath().endsWith("/"))
 			location = new URI(location.getScheme(), location.getSchemeSpecificPart() + "/", null);
 		
 		// create new HTTP client
@@ -200,7 +200,7 @@ public class WebDavResource {
 	/* file hierarchy methods */
 	
 	public String getName() {
-		String[] names = StringUtils.split(location.getPath(), "/");
+		String[] names = StringUtils.split(location.getRawPath(), "/");
 		return names[names.length - 1];
 	}
 	
@@ -299,7 +299,7 @@ public class WebDavResource {
 		
 		multiget.hrefs = new ArrayList<DavHref>(names.length);
 		for (String name : names)
-			multiget.hrefs.add(new DavHref(location.resolve(name).getPath()));
+			multiget.hrefs.add(new DavHref(location.resolve(name).getRawPath()));
 		
 		Serializer serializer = new Persister();
 		StringWriter writer = new StringWriter();
