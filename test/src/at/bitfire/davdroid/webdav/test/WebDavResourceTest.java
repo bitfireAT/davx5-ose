@@ -82,10 +82,14 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	}
 
 	public void testPropfindCurrentUserPrincipal() throws IOException, HttpException {
-		assertTrue(davCollection.propfind(HttpPropfind.Mode.CURRENT_USER_PRINCIPAL));
+		davCollection.propfind(HttpPropfind.Mode.CURRENT_USER_PRINCIPAL);
 		assertEquals("/dav/principals/users/test", davCollection.getCurrentUserPrincipal());
 		
-		assertFalse(simpleFile.propfind(HttpPropfind.Mode.CURRENT_USER_PRINCIPAL));
+		try {
+			simpleFile.propfind(HttpPropfind.Mode.CURRENT_USER_PRINCIPAL);
+			fail();
+		} catch(InvalidDavResponseException ex) {
+		}
 		assertNull(simpleFile.getCurrentUserPrincipal());
 	}
 		
@@ -130,10 +134,9 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		WebDavResource redirection = new WebDavResource(new URI(ROBOHYDRA_BASE + "redirect"), false);
 		try {
 			redirection.get();
+			fail();
 		} catch (HttpException e) {
-			return;
 		}
-		fail();
 	}
 	
 	public void testGet() throws URISyntaxException, IOException, HttpException {
@@ -160,10 +163,9 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		// should fail on an existing file
 		try {
 			davExistingFile.put(SAMPLE_CONTENT, PutMode.ADD_DONT_OVERWRITE);
+			fail();
 		} catch(PreconditionFailedException ex) {
-			return;
 		}
-		fail();
 	}
 	
 	public void testPutUpdateDontOverwrite() throws IOException, HttpException {
@@ -173,10 +175,9 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		// should fail on a non-existing file
 		try {
 			davNonExistingFile.put(SAMPLE_CONTENT, PutMode.UPDATE_DONT_OVERWRITE);
+			fail();
 		} catch(PreconditionFailedException ex) {
-			return;
 		}
-		fail();
 	}
 	
 	public void testDelete() throws IOException, HttpException {
@@ -186,10 +187,9 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		// should fail on a non-existing file
 		try {
 			davNonExistingFile.delete();
+			fail();
 		} catch (NotFoundException e) {
-			return;
 		}
-		fail();
 	}
 	
 	

@@ -39,18 +39,13 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicLineParser;
-import org.apache.http.params.CoreProtocolPNames;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import android.util.Log;
-import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.URIUtils;
 
 
@@ -91,7 +86,7 @@ public class WebDavResource {
 	// content (available after GET)
 	@Getter protected InputStream content;
 
-	protected DefaultHttpClient client;
+	protected DefaultHttpClient client = DavHttpClient.getInstance();
 	
 	
 	public WebDavResource(URI baseURL, boolean trailingSlash) throws URISyntaxException {
@@ -99,20 +94,6 @@ public class WebDavResource {
 		
 		if (trailingSlash && !location.getRawPath().endsWith("/"))
 			location = new URI(location.getScheme(), location.getSchemeSpecificPart() + "/", null);
-		
-		// create new HTTP client
-		client = new DefaultHttpClient();
-		client.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "DAVdroid/" + Constants.APP_VERSION);
-		
-		// use our own, SNI-capable LayeredSocketFactory for https://
-	    SchemeRegistry schemeRegistry = client.getConnectionManager().getSchemeRegistry();
-	    schemeRegistry.register(new Scheme("https", new TlsSniSocketFactory(), 443));
-		
-		// allow gzip compression
-		GzipDecompressingEntity.enable(client);
-		
-		// redirections
-		client.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
 	}
 	
 	public WebDavResource(URI baseURL, String username, String password, boolean preemptive, boolean trailingSlash) throws URISyntaxException {
@@ -130,12 +111,10 @@ public class WebDavResource {
 
 	protected WebDavResource(WebDavResource parent, URI uri) {
 		location = uri;
-		client = parent.client;
 	}
 	
 	public WebDavResource(WebDavResource parent, String member) {
 		location = parent.location.resolve(URIUtils.sanitize(member));
-		client = parent.client;
 	}
 	
 	public WebDavResource(WebDavResource parent, String member, boolean trailingSlash) {
@@ -146,7 +125,7 @@ public class WebDavResource {
 		this(parent, member);
 		properties.put(Property.ETAG, ETag);
 	}
-	
+
 	
 	protected void checkResponse(HttpResponse response) throws HttpException {
 		checkResponse(response.getStatusLine());
@@ -261,29 +240,36 @@ public class WebDavResource {
 	
 	/* collection operations */
 	
-	public boolean propfind(HttpPropfind.Mode mode) throws IOException, InvalidDavResponseException, HttpException {
+	public void propfind(HttpPropfind.Mode mode) throws IOException, InvalidDavResponseException, HttpException {
 		HttpPropfind propfind = new HttpPropfind(location, mode);
 		HttpResponse response = client.execute(propfind);
 		checkResponse(response);
-		
+
 		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_MULTI_STATUS) {
+			InputStream content = response.getEntity().getContent();
+			if (content == null)
+				throw new InvalidDavResponseException("Multistatus response without content");
+
+			// duplicate content for logging
+			ByteArrayOutputStream logStream = new ByteArrayOutputStream();
+			InputStream is = new TeeInputStream(content, logStream);
+
 			DavMultistatus multistatus;
 			try {
 				Serializer serializer = new Persister();
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				InputStream is = new TeeInputStream(response.getEntity().getContent(), baos);
 				multistatus = serializer.read(DavMultistatus.class, is, false);
-				
-				Log.d(TAG, "Received multistatus response: " + baos.toString("UTF-8"));
 			} catch (Exception ex) {
 				Log.w(TAG, "Invalid PROPFIND XML response", ex);
-				throw new InvalidDavResponseException();
+				throw new InvalidDavResponseException("Invalid PROPFIND response");
+			} finally {
+				Log.d(TAG, "Received multistatus response:\n" + logStream.toString("UTF-8"));
+				is.close();
+				content.close();
 			}
 			processMultiStatus(multistatus);
-			return true;
 			
 		} else
-			return false;
+			throw new InvalidDavResponseException("Multistatus response expected");
 	}
 
 	public void multiGet(String[] names, MultigetType type) throws IOException, InvalidDavResponseException, HttpException {
@@ -307,7 +293,7 @@ public class WebDavResource {
 			serializer.write(multiget, writer);
 		} catch (Exception ex) {
 			Log.e(TAG, "Couldn't create XML multi-get request", ex);
-			throw new InvalidDavResponseException();
+			throw new InvalidDavResponseException("Couldn't create multi-get request");
 		}
 
 		HttpReport report = new HttpReport(location, writer.toString());
@@ -315,21 +301,30 @@ public class WebDavResource {
 		checkResponse(response);
 		
 		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_MULTI_STATUS) {
+			InputStream content = response.getEntity().getContent();
+			if (content == null)
+				throw new InvalidDavResponseException("Multistatus response without content");
+			
 			DavMultistatus multistatus;
+			
+			// duplicate content for logging
+			ByteArrayOutputStream logStream = new ByteArrayOutputStream();
+			InputStream is = new TeeInputStream(content, logStream, true);
+			
 			try {
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				InputStream is = new TeeInputStream(response.getEntity().getContent(), baos);
 				multistatus = serializer.read(DavMultistatus.class, is, false);
-				
-				Log.d(TAG, "Received multistatus response: " + baos.toString("UTF-8"));
 			} catch (Exception ex) {
 				Log.e(TAG, "Couldn't parse multi-get response", ex);
-				throw new InvalidDavResponseException();
+				throw new InvalidDavResponseException("Invalid multi-get response");
+			} finally {
+				Log.d(TAG, "Received multistatus response:\n" + logStream.toString("UTF-8"));
+				is.close();
+				content.close();
 			}
 			processMultiStatus(multistatus);
 			
 		} else
-			throw new InvalidDavResponseException();
+			throw new InvalidDavResponseException("Multistatus response expected");
 	}
 
 	
@@ -393,7 +388,7 @@ public class WebDavResource {
 			
 			// about which resource is this response?
 			WebDavResource referenced = null;
-			if (URIUtils.isSame(location, href)) {	// -> ourselves
+			if (location.equals(href)) {	// -> ourselves
 				referenced = this;
 				
 			} else {						// -> about a member
