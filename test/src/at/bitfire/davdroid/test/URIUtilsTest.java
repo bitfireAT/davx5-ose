@@ -17,11 +17,6 @@ public class URIUtilsTest extends InstrumentationTestCase {
 		baseURI = new URI(BASE_URI);
 	}
 
-	
-	public void testIsSame() throws URISyntaxException {
-		assertTrue(URIUtils.isSame(new URI(ROOT_URI + "my@email/"), new URI(ROOT_URI + "my%40email/")));
-	}
-
 	public void testSanitize() {
 		assertEquals("/my%40email.com/dir", URIUtils.sanitize("/my@email.com/dir"));
 		assertEquals("my%3Afile.vcf", URIUtils.sanitize("my:file.vcf"));

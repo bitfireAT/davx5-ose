@@ -148,8 +148,8 @@ public class Event extends Resource {
 	@Override
 	public String toEntity() {
 		net.fortuna.ical4j.model.Calendar ical = new net.fortuna.ical4j.model.Calendar();
-		ical.getProperties().add(new ProdId("-//bitfire web engineering//DAVdroid " + Constants.APP_VERSION + "//EN"));
 		ical.getProperties().add(Version.VERSION_2_0);
+		ical.getProperties().add(new ProdId("-//bitfire web engineering//DAVdroid " + Constants.APP_VERSION + "//EN"));
 		
 		VEvent event = new VEvent();
 		PropertyList props = event.getProperties();
