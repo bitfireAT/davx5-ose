@@ -86,7 +86,7 @@ public class WebDavResource {
 	// content (available after GET)
 	@Getter protected InputStream content;
 
-	protected DefaultHttpClient client = DavHttpClient.getInstance();
+	protected DefaultHttpClient client;
 	
 	
 	public WebDavResource(URI baseURL, boolean trailingSlash) throws URISyntaxException {
@@ -99,22 +99,26 @@ public class WebDavResource {
 	public WebDavResource(URI baseURL, String username, String password, boolean preemptive, boolean trailingSlash) throws URISyntaxException {
 		this(baseURL, trailingSlash);
 		
+		client = DavHttpClient.getDefault();
+		
 		// authenticate
-		client.getCredentialsProvider().setCredentials(new AuthScope(location.getHost(), location.getPort()),
-				new UsernamePasswordCredentials(username, password));
-		// preemptive auth is available for Basic auth only
+		client.getCredentialsProvider().setCredentials(
+			new AuthScope(location.getHost(), location.getPort()),
+			new UsernamePasswordCredentials(username, password)
+		);
 		if (preemptive) {
-			Log.i(TAG, "Using preemptive Basic Authentication");
+			Log.i(TAG, "Using preemptive authentication (not compatible with Digest auth)");
 			client.addRequestInterceptor(new PreemptiveAuthInterceptor(), 0);
 		}
 	}
 
 	protected WebDavResource(WebDavResource parent, URI uri) {
 		location = uri;
+		client = parent.client;
 	}
 	
 	public WebDavResource(WebDavResource parent, String member) {
-		location = parent.location.resolve(URIUtils.sanitize(member));
+		this(parent, parent.location.resolve(URIUtils.sanitize(member)));
 	}
 	
 	public WebDavResource(WebDavResource parent, String member, boolean trailingSlash) {

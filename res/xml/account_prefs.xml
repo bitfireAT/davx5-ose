@@ -4,7 +4,8 @@
     <Preference android:title="@string/davdroid_help" >
         <intent
             android:targetPackage="at.bitfire.davdroid"
-            android:targetClass="at.bitfire.davdroid.MainActivity" />
+            android:targetClass="at.bitfire.davdroid.MainActivity"
+            android:action="ACTION_VIEW" />
     </Preference>
 
 </PreferenceScreen>

@@ -1,8 +1,5 @@
 package at.bitfire.davdroid;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import android.annotation.SuppressLint;
 import android.util.Log;
 

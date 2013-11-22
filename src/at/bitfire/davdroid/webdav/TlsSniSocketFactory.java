@@ -5,13 +5,14 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
 import org.apache.http.conn.scheme.LayeredSocketFactory;
+import org.apache.http.conn.ssl.StrictHostnameVerifier;
 import org.apache.http.params.HttpParams;
 
 import android.annotation.TargetApi;
@@ -27,6 +28,8 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
 	// we will do this ourselves so we can set up SNI before
 	SSLCertificateSocketFactory sslSocketFactory =
 			(SSLCertificateSocketFactory) SSLCertificateSocketFactory.getInsecure(0, null);
+	
+	final static HostnameVerifier hostnameVerifier = new StrictHostnameVerifier();
 
 	
 	// Plain TCP/IP (layer below TLS)
@@ -71,7 +74,7 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
             throw new SSLException("Cannot verify SSL socket without session");
 		
 		// verify host name (important!)
-		if (!HttpsURLConnection.getDefaultHostnameVerifier().verify(host, session))
+		if (!hostnameVerifier.verify(host, session))
             throw new SSLPeerUnverifiedException("Cannot verify hostname: " + host);
 		return ssl;
 	}
