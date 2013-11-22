@@ -47,6 +47,7 @@ import org.simpleframework.xml.core.Persister;
 
 import android.util.Log;
 import at.bitfire.davdroid.URIUtils;
+import at.bitfire.davdroid.resource.Event;
 
 
 @ToString
@@ -56,6 +57,7 @@ public class WebDavResource {
 	public enum Property {
 		CURRENT_USER_PRINCIPAL,
 		DISPLAY_NAME, DESCRIPTION, COLOR,
+		TIMEZONE,
 		ADDRESSBOOK_HOMESET, CALENDAR_HOMESET,
 		IS_ADDRESSBOOK, IS_CALENDAR,
 		CTAG, ETAG,
@@ -204,6 +206,10 @@ public class WebDavResource {
 	
 	public String getColor() {
 		return properties.get(Property.COLOR);
+	}
+	
+	public String getTimezone() {
+		return properties.get(Property.TIMEZONE);
 	}
 	
 	public String getAddressbookHomeSet() {
@@ -438,6 +444,9 @@ public class WebDavResource {
 						
 						if (prop.calendarColor != null)
 							referenced.properties.put(Property.COLOR, prop.calendarColor.getColor());
+						
+						if (prop.calendarTimezone != null)
+							referenced.properties.put(Property.TIMEZONE, Event.TimezoneDefToTzId(prop.calendarTimezone.getTimezone()));
 					} else
 						referenced.properties.remove(Property.IS_CALENDAR);
 				}
