@@ -188,6 +188,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 									resource.getDisplayName(),
 									resource.getDescription(), resource.getColor()
 								);
+								info.setTimezone(resource.getTimezone());
 								calendars.add(info);
 							}
 					

@@ -41,6 +41,9 @@ public class DavProp {
 	@Element(required=false,name="calendar-color")
 	DavPropCalendarColor calendarColor;
 	
+	@Element(required=false,name="calendar-timezone")
+	DavPropCalendarTimezone calendarTimezone;
+	
 	@Element(required=false)
 	DavPropGetCTag getctag;
 	
@@ -106,6 +109,12 @@ public class DavProp {
 	public static class DavPropCalendarColor {
 		@Text(required=false)
 		@Getter private String color;
+	}
+	
+	@Namespace(prefix="C",reference="urn:ietf:params:xml:ns:caldav")
+	public static class DavPropCalendarTimezone {
+		@Text(required=false)
+		@Getter private String timezone;
 	}
 	
 	@Namespace(prefix="CS",reference="http://calendarserver.org/ns/")

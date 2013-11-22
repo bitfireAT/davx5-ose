@@ -116,6 +116,10 @@ public class LocalCalendar extends LocalCollection<Event> {
 		values.put(Calendars.OWNER_ACCOUNT, account.name);
 		values.put(Calendars.SYNC_EVENTS, 1);
 		values.put(Calendars.VISIBLE, 1);
+		
+		if (info.getTimezone() != null)
+			values.put(Calendars.CALENDAR_TIME_ZONE, info.getTimezone());
+		
 		Log.i(TAG, "Inserting calendar: " + values.toString() + " -> " + calendarsURI(account).toString());
 		client.insert(calendarsURI(account), values);
 	}
