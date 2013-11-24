@@ -1,7 +1,6 @@
 package at.bitfire.davdroid.test;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import android.test.InstrumentationTestCase;
 import at.bitfire.davdroid.URIUtils;

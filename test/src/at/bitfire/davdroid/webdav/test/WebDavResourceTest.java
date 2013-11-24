@@ -21,7 +21,7 @@ import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
 // tests require running robohydra!
 
 public class WebDavResourceTest extends InstrumentationTestCase {
-	static final String ROBOHYDRA_BASE = "http://10.0.0.119:3000/";
+	static final String ROBOHYDRA_BASE = "http://10.0.0.11:3000/";
 	static byte[] SAMPLE_CONTENT = new byte[] { 1, 2, 3, 4, 5 };
 	
 	AssetManager assetMgr;

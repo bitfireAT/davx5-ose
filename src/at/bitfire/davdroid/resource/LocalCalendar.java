@@ -15,13 +15,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import lombok.Getter;
+import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Parameter;
 import net.fortuna.ical4j.model.ParameterList;
+import net.fortuna.ical4j.model.PropertyList;
+import net.fortuna.ical4j.model.component.VAlarm;
 import net.fortuna.ical4j.model.parameter.Cn;
 import net.fortuna.ical4j.model.parameter.CuType;
 import net.fortuna.ical4j.model.parameter.PartStat;
 import net.fortuna.ical4j.model.parameter.Role;
+import net.fortuna.ical4j.model.property.Action;
 import net.fortuna.ical4j.model.property.Attendee;
+import net.fortuna.ical4j.model.property.Description;
+import net.fortuna.ical4j.model.property.Duration;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.ExRule;
 import net.fortuna.ical4j.model.property.Organizer;
@@ -49,6 +55,7 @@ import android.provider.CalendarContract;
 import android.provider.CalendarContract.Attendees;
 import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
+import android.provider.CalendarContract.Reminders;
 import android.provider.ContactsContract;
 import android.util.Log;
 import at.bitfire.davdroid.syncadapter.ServerInfo;
@@ -188,7 +195,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 				/*  8 */ Events.STATUS, Events.ACCESS_LEVEL,
 				/* 10 */ Events.RRULE, Events.RDATE, Events.EXRULE, Events.EXDATE,
 				/* 14 */ Events.HAS_ATTENDEE_DATA, Events.ORGANIZER, Events.SELF_ATTENDEE_STATUS,
-				/* 17 */ entryColumnUID()
+				/* 17 */ entryColumnUID(), Events.DURATION
 			}, null, null, null);
 		if (cursor != null && cursor.moveToNext()) {
 			e.setUid(cursor.getString(17));
@@ -199,23 +206,27 @@ public class LocalCalendar extends LocalCollection<Event> {
 			
 			long tsStart = cursor.getLong(3),
 				 tsEnd = cursor.getLong(4);
-			if (cursor.getInt(7) != 0) {	// all-day, UTC
-				e.setDtStart(tsStart, null);
-				e.setDtEnd(tsEnd, null);
+			
+			String tzId;
+			if (cursor.getInt(7) != 0) {	// ALL_DAY != 0
+				tzId = null;				// -> use UTC
 			} else {
 				// use the start time zone for the end time, too
 				// because the Samsung Planner UI allows the user to change the time zone
 				// but it will change the start time zone only
-				
-				String	tzIdStart = cursor.getString(5);
-						//tzIdEnd = cursor.getString(6);
-				
-				e.setDtStart(tsStart, tzIdStart);
-				e.setDtEnd(tsEnd, tzIdStart /*(tzIdEnd != null) ? tzIdEnd : tzIdStart*/);
+				tzId = cursor.getString(5);
+				//tzIdEnd = cursor.getString(6);
 			}
-			
+			e.setDtStart(tsStart, tzId);
+			if (tsEnd != 0)
+				e.setDtEnd(tsEnd, tzId);
+
 			// recurrence
 			try {
+				String duration = cursor.getString(18);
+				if (duration != null)
+					e.setDuration(new Duration(new Dur(duration)));
+				
 				String strRRule = cursor.getString(10);
 				if (strRRule != null)
 					e.setRrule(new RRule(strRRule));
@@ -339,6 +350,28 @@ public class LocalCalendar extends LocalCollection<Event> {
 			case Events.ACCESS_PUBLIC:
 				e.setForPublic(true);
 			}
+			
+			// reminders
+			Uri remindersUri = Reminders.CONTENT_URI.buildUpon()
+					.appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
+					.build();
+			Cursor c = providerClient.query(remindersUri, new String[] {
+					/* 0 */ Reminders.MINUTES, Reminders.METHOD
+				}, Reminders.EVENT_ID + "=?", new String[] { String.valueOf(e.getLocalID()) }, null);
+			while (c != null && c.moveToNext()) {
+				VAlarm alarm = new VAlarm(new Dur(0, 0, -c.getInt(0), 0));
+				
+				PropertyList props = alarm.getProperties();
+				switch (c.getInt(1)) {
+				/*case Reminders.METHOD_EMAIL:
+					props.add(Action.EMAIL);
+					break;*/
+				default:
+					props.add(Action.DISPLAY);
+					props.add(new Description(e.getSummary()));
+				}
+				e.addAlarm(alarm);
+			}
 		}
 	}
 
@@ -436,12 +469,17 @@ public class LocalCalendar extends LocalCollection<Event> {
 	protected void addDataRows(Event event, long localID, int backrefIdx) {
 		for (Attendee attendee : event.getAttendees())
 			pendingOperations.add(buildAttendee(newDataInsertBuilder(Attendees.CONTENT_URI, Attendees.EVENT_ID, localID, backrefIdx), attendee).build());
+		for (VAlarm alarm : event.getAlarms())
+			pendingOperations.add(buildReminder(newDataInsertBuilder(Reminders.CONTENT_URI, Reminders.EVENT_ID, localID, backrefIdx), alarm).build());
 	}
 	
 	@Override
 	protected void removeDataRows(Event event) {
 		pendingOperations.add(ContentProviderOperation.newDelete(syncAdapterURI(Attendees.CONTENT_URI))
 				.withSelection(Attendees.EVENT_ID + "=?",
+				new String[] { String.valueOf(event.getLocalID()) }).build());
+		pendingOperations.add(ContentProviderOperation.newDelete(syncAdapterURI(Reminders.CONTENT_URI))
+				.withSelection(Reminders.EVENT_ID + "=?",
 				new String[] { String.valueOf(event.getLocalID()) }).build());
 	}
 
@@ -490,5 +528,19 @@ public class LocalCalendar extends LocalCollection<Event> {
 			.withValue(Attendees.ATTENDEE_EMAIL, email)
 			.withValue(Attendees.ATTENDEE_TYPE, type)
 			.withValue(Attendees.ATTENDEE_STATUS, status);
+	}
+	
+	protected Builder buildReminder(Builder builder, VAlarm alarm) {
+		int minutes = 0;
+		
+		Dur duration;
+		if (alarm.getTrigger() != null && (duration = alarm.getTrigger().getDuration()) != null)
+			minutes = duration.getDays() * 24*60 + duration.getHours()*60 + duration.getMinutes();
+		
+		Log.i(TAG, "Adding alarm " + minutes + " min before");
+		
+		return builder
+				.withValue(Reminders.METHOD, Reminders.METHOD_ALERT)
+				.withValue(Reminders.MINUTES, minutes);
 	}
 }

@@ -96,12 +96,12 @@ public class WebDavResource {
 		
 		if (trailingSlash && !location.getRawPath().endsWith("/"))
 			location = new URI(location.getScheme(), location.getSchemeSpecificPart() + "/", null);
+		
+		client = DavHttpClient.getDefault();
 	}
 	
 	public WebDavResource(URI baseURL, String username, String password, boolean preemptive, boolean trailingSlash) throws URISyntaxException {
 		this(baseURL, trailingSlash);
-		
-		client = DavHttpClient.getDefault();
 		
 		// authenticate
 		client.getCredentialsProvider().setCredentials(
@@ -350,6 +350,7 @@ public class WebDavResource {
 	
 	public void put(byte[] data, PutMode mode) throws IOException, HttpException {
 		HttpPut put = new HttpPut(location);
+		Log.d(TAG, "Sending PUT request: " + new String(data, "UTF-8"));
 		put.setEntity(new ByteArrayEntity(data));
 
 		switch (mode) {
