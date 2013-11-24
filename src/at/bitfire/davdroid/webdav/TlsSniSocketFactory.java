@@ -2,13 +2,11 @@ package at.bitfire.davdroid.webdav;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLPeerUnverifiedException;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
 import org.apache.http.conn.scheme.LayeredSocketFactory;
@@ -24,26 +22,19 @@ import android.util.Log;
 public class TlsSniSocketFactory implements LayeredSocketFactory {
 	private static final String TAG = "davdroid.SNISocketFactory";
 	
-	// "insecure" means that it doesn't verify the host name
-	// we will do this ourselves so we can set up SNI before
-	SSLCertificateSocketFactory sslSocketFactory =
-			(SSLCertificateSocketFactory) SSLCertificateSocketFactory.getInsecure(0, null);
-	
 	final static HostnameVerifier hostnameVerifier = new StrictHostnameVerifier();
-
+	
 	
 	// Plain TCP/IP (layer below TLS)
 
 	@Override
 	public Socket connectSocket(Socket s, String host, int port, InetAddress localAddress, int localPort, HttpParams params) throws IOException {
-		s.connect(new InetSocketAddress(host, port));
-		return s;
+		return null;
 	}
 
 	@Override
-	public Socket createSocket() {
-		Socket s = new Socket();
-		return s;
+	public Socket createSocket() throws IOException {
+		return null;
 	}
 
 	@Override
@@ -57,26 +48,27 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
 	// TLS layer
 
 	@Override
-	public Socket createSocket(Socket s, String host, int port, boolean autoClose) throws IOException {
-		SSLSocket ssl = (SSLSocket)sslSocketFactory.createSocket(s, host, port, autoClose);
-
-		// set SNI before the handshake
+	public Socket createSocket(Socket plainSocket, String host, int port, boolean autoClose) throws IOException, UnknownHostException {
+		if (autoClose) {
+			// we don't need the plainSocket
+			plainSocket.close();
+		}
+		
+		// create and connect SSL socket, but don't do hostname/certificate verification yet
+		SSLCertificateSocketFactory sslSocketFactory = (SSLCertificateSocketFactory) SSLCertificateSocketFactory.getDefault(0);
+		SSLSocket ssl = (SSLSocket)sslSocketFactory.createSocket(InetAddress.getByName(host), port);
+		
+		// set up SNI before the handshake
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
 			Log.i(TAG, "Setting SNI hostname");
 			sslSocketFactory.setHostname(ssl, host);
 		} else
-			Log.w(TAG, "No SNI support below Android 4.2!");
+			Log.i(TAG, "No SNI support below Android 4.2!");
 		
-		// now do the TLS handshake
-		ssl.startHandshake();
-		SSLSession session = ssl.getSession();
-		if (session == null)
-            throw new SSLException("Cannot verify SSL socket without session");
-		
-		// verify host name (important!)
-		if (!hostnameVerifier.verify(host, session))
-            throw new SSLPeerUnverifiedException("Cannot verify hostname: " + host);
+		// verify hostname and certificate
+		if (!hostnameVerifier.verify(host, ssl.getSession()))
+			throw new SSLPeerUnverifiedException("Cannot verify hostname: " + host);
+
 		return ssl;
 	}
-
 }
