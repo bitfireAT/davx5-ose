@@ -29,7 +29,7 @@ public class CalendarTest extends InstrumentationTestCase {
 		Assert.assertEquals("Test-Ereignis im schönen Wien", e.getSummary());		
 		
 		//DTSTART;TZID=/freeassociation.sourceforge.net/Tzfile/Europe/Vienna:20131009T170000
-		//Assert.assertEquals(1381327200, e.getDtStartInMillis());
+		Assert.assertEquals(1381327200, e.getDtStartInMillis());
 	}
 	
 	

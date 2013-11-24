@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
 import org.apache.http.conn.scheme.LayeredSocketFactory;
@@ -66,8 +67,12 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
 			Log.i(TAG, "No SNI support below Android 4.2!");
 		
 		// verify hostname and certificate
-		if (!hostnameVerifier.verify(host, ssl.getSession()))
+		SSLSession session = ssl.getSession();
+		if (!hostnameVerifier.verify(host, session))
 			throw new SSLPeerUnverifiedException("Cannot verify hostname: " + host);
+		
+		Log.i(TAG, "Established " + session.getProtocol() + " connection with " + session.getPeerHost() +
+				" using " + session.getCipherSuite());
 
 		return ssl;
 	}

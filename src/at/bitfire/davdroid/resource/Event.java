@@ -30,6 +30,7 @@ import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.PropertyList;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.ValidationException;
+import net.fortuna.ical4j.model.component.VAlarm;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.parameter.Value;
@@ -39,6 +40,7 @@ import net.fortuna.ical4j.model.property.DateProperty;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.DtEnd;
 import net.fortuna.ical4j.model.property.DtStart;
+import net.fortuna.ical4j.model.property.Duration;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.ExRule;
 import net.fortuna.ical4j.model.property.Location;
@@ -65,6 +67,7 @@ public class Event extends Resource {
 	
 	@Getter private DtStart dtStart;
 	@Getter private DtEnd dtEnd;
+	@Getter @Setter private Duration duration;
 	@Getter @Setter private RDate rdate;
 	@Getter @Setter private RRule rrule;
 	@Getter @Setter private ExDate exdate;
@@ -78,6 +81,11 @@ public class Event extends Resource {
 	@Getter private List<Attendee> attendees = new LinkedList<Attendee>();
 	public void addAttendee(Attendee attendee) {
 		attendees.add(attendee);
+	}
+	
+	@Getter private List<VAlarm> alarms = new LinkedList<VAlarm>();
+	public void addAlarm(VAlarm alarm) {
+		alarms.add(alarm);
 	}
 	
 
@@ -95,11 +103,14 @@ public class Event extends Resource {
 
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void parseEntity(@NonNull InputStream entity) throws IOException, ParserException {
 		CalendarBuilder builder = new CalendarBuilder();
 		net.fortuna.ical4j.model.Calendar ical = builder.build(entity);
 		if (ical == null)
 			return;
+		
+		Log.d(TAG, "Parsing iCal: " + ical.toString());
 		
 		// event
 		ComponentList events = ical.getComponents(Component.VEVENT);
@@ -108,7 +119,7 @@ public class Event extends Resource {
 		VEvent event = (VEvent)events.get(0); 
 		
 		if (event.getUid() != null)
-			uid = event.getUid().toString();
+			uid = event.getUid().getValue();
 		else {
 			Log.w(TAG, "Received VEVENT without UID, generating new one");
 			UidGenerator uidGenerator = new UidGenerator(Integer.toString(android.os.Process.myPid()));
@@ -116,8 +127,9 @@ public class Event extends Resource {
 		}
 		
 		dtStart = event.getStartDate();	validateTimeZone(dtStart);
-		dtEnd = event.getEndDate();	validateTimeZone(dtEnd);
+		dtEnd = event.getEndDate(); validateTimeZone(dtEnd);
 		
+		duration = event.getDuration();
 		rrule = (RRule)event.getProperty(Property.RRULE);
 		rdate = (RDate)event.getProperty(Property.RDATE);
 		exrule = (ExRule)event.getProperty(Property.EXRULE);
@@ -144,10 +156,11 @@ public class Event extends Resource {
 				forPublic = false;
 		}
 		
-		Log.i(TAG, "Parsed iCal: " + ical.toString());
+		this.alarms = event.getAlarms();
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public String toEntity() {
 		net.fortuna.ical4j.model.Calendar ical = new net.fortuna.ical4j.model.Calendar();
 		ical.getProperties().add(Version.VERSION_2_0);
@@ -160,7 +173,10 @@ public class Event extends Resource {
 			props.add(new Uid(uid));
 		
 		props.add(dtStart);
-		props.add(dtEnd);
+		if (dtEnd != null)
+			props.add(dtEnd);
+		if (duration != null)
+			props.add(duration);
 		
 		if (rrule != null)
 			props.add(rrule);
@@ -183,18 +199,23 @@ public class Event extends Resource {
 		
 		if (organizer != null)
 			props.add(organizer);
-		for (Attendee attendee : attendees)
-			props.add(attendee);
+		props.addAll(attendees);
 		
 		if (forPublic != null)
 			event.getProperties().add(forPublic ? Clazz.PUBLIC : Clazz.PRIVATE);
-
-		ical.getComponents().add(event);
 		
-		/*if (dtStart.getTimeZone() != null)
-			ical.getComponents().add(dtStart.getTimeZone().getVTimeZone());
-		if (dtEnd.getTimeZone() != null)
-			ical.getComponents().add(dtEnd.getTimeZone().getVTimeZone());*/
+		event.getAlarms().addAll(alarms);
+		
+		ical.getComponents().add(event);
+
+		// add VTIMEZONE components
+		net.fortuna.ical4j.model.TimeZone
+			tzStart = (dtStart == null ? null : dtStart.getTimeZone()),
+			tzEnd = (dtEnd == null ? null : dtEnd.getTimeZone());
+		if (tzStart != null)
+			ical.getComponents().add(tzStart.getVTimeZone());
+		if (tzEnd != null && tzEnd != tzStart)
+			ical.getComponents().add(tzEnd.getVTimeZone());
 			
 		return ical.toString();
 	}
@@ -280,7 +301,7 @@ public class Event extends Resource {
 
 	/* guess matching Android timezone ID */
 	protected void validateTimeZone(DateProperty date) {
-		if (date.isUtc() || hasNoTime(date))
+		if (date == null || date.isUtc() || hasNoTime(date))
 			return;
 		
 		String tzID = getTzId(date);
