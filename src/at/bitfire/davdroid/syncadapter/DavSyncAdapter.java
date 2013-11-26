@@ -33,7 +33,7 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter {
 	}
 	
 	
-	protected abstract Map<LocalCollection, RemoteCollection> getSyncPairs(Account account, ContentProviderClient provider);
+	protected abstract Map<LocalCollection<?>, RemoteCollection<?>> getSyncPairs(Account account, ContentProviderClient provider);
 	
 
 	@Override
@@ -45,12 +45,12 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter {
 		
 		SyncManager syncManager = new SyncManager(account, accountManager);
 		
-		Map<LocalCollection, RemoteCollection> syncCollections = getSyncPairs(account, provider);
+		Map<LocalCollection<?>, RemoteCollection<?>> syncCollections = getSyncPairs(account, provider);
 		if (syncCollections == null)
 			Log.i(TAG, "Nothing to synchronize");
 		else
 			try {
-				for (Map.Entry<LocalCollection, RemoteCollection> entry : syncCollections.entrySet())
+				for (Map.Entry<LocalCollection<?>, RemoteCollection<?>> entry : syncCollections.entrySet())
 					syncManager.synchronize(entry.getKey(), entry.getValue(), extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL), syncResult);
 				
 			} catch (AuthenticationException ex) {

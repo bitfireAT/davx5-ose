@@ -417,7 +417,9 @@ public class LocalCalendar extends LocalCollection<Event> {
 	/* content builder methods */
 
 	@Override
-	protected Builder buildEntry(Builder builder, Event event) {
+	protected Builder buildEntry(Builder builder, Resource resource) {
+		Event event = (Event)resource;
+
 		builder = builder
 				.withValue(Events.CALENDAR_ID, id)
 				.withValue(entryColumnRemoteName(), event.getName())
@@ -431,6 +433,9 @@ public class LocalCalendar extends LocalCollection<Event> {
 		
 		if (event.getDtEndTzID() != null)
 			builder = builder.withValue(Events.EVENT_END_TIMEZONE, event.getDtEndTzID());
+
+		if (event.getDuration() != null)
+			builder = builder.withValue(Events.DURATION, event.getDuration().getValue());
 		
 		if (event.getRrule() != null)
 			builder = builder.withValue(Events.RRULE, event.getRrule().getValue());
@@ -466,7 +471,8 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 	
 	@Override
-	protected void addDataRows(Event event, long localID, int backrefIdx) {
+	protected void addDataRows(Resource resource, long localID, int backrefIdx) {
+		Event event = (Event)resource;
 		for (Attendee attendee : event.getAttendees())
 			pendingOperations.add(buildAttendee(newDataInsertBuilder(Attendees.CONTENT_URI, Attendees.EVENT_ID, localID, backrefIdx), attendee).build());
 		for (VAlarm alarm : event.getAlarms())
@@ -474,7 +480,8 @@ public class LocalCalendar extends LocalCollection<Event> {
 	}
 	
 	@Override
-	protected void removeDataRows(Event event) {
+	protected void removeDataRows(Resource resource) {
+		Event event = (Event)resource;
 		pendingOperations.add(ContentProviderOperation.newDelete(syncAdapterURI(Attendees.CONTENT_URI))
 				.withSelection(Attendees.EVENT_ID + "=?",
 				new String[] { String.valueOf(event.getLocalID()) }).build());

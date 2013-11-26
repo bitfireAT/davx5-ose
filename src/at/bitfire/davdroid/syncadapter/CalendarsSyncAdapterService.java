@@ -7,39 +7,25 @@
  ******************************************************************************/
 package at.bitfire.davdroid.syncadapter;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
 import lombok.Synchronized;
-import net.fortuna.ical4j.data.ParserException;
-
-import org.apache.http.HttpException;
-import org.apache.http.auth.AuthenticationException;
-
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.Service;
-import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.OperationApplicationException;
-import android.content.SyncResult;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.resource.CalDavCalendar;
-import at.bitfire.davdroid.resource.IncapableResourceException;
 import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.RemoteCollection;
-import at.bitfire.davdroid.webdav.WebDavResource;
 
 public class CalendarsSyncAdapterService extends Service {
 	private static SyncAdapter syncAdapter;
@@ -63,13 +49,13 @@ public class CalendarsSyncAdapterService extends Service {
 		}
 		
 		@Override
-		protected Map<LocalCollection, RemoteCollection> getSyncPairs(Account account, ContentProviderClient provider) {
+		protected Map<LocalCollection<?>, RemoteCollection<?>> getSyncPairs(Account account, ContentProviderClient provider) {
 			try {
-				Map<LocalCollection, RemoteCollection> map = new HashMap<LocalCollection, RemoteCollection>();
+				Map<LocalCollection<?>, RemoteCollection<?>> map = new HashMap<LocalCollection<?>, RemoteCollection<?>>();
 				
 				for (LocalCalendar calendar : LocalCalendar.findAll(account, provider)) {
 					URI uri = new URI(accountManager.getUserData(account, Constants.ACCOUNT_KEY_BASE_URL)).resolve(calendar.getPath());
-					RemoteCollection dav = new CalDavCalendar(uri.toString(),
+					RemoteCollection<?> dav = new CalDavCalendar(uri.toString(),
 						accountManager.getUserData(account, Constants.ACCOUNT_KEY_USERNAME),
 						accountManager.getPassword(account),
 						Boolean.parseBoolean(accountManager.getUserData(account, Constants.ACCOUNT_KEY_AUTH_PREEMPTIVE)));

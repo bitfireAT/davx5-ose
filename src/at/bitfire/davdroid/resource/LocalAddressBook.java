@@ -333,7 +333,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	/* content builder methods */
 	
 	@Override
-	protected Builder buildEntry(Builder builder, Contact contact) {
+	protected Builder buildEntry(Builder builder, Resource resource) {
+		Contact contact = (Contact)resource;
+		
 		return builder
 			.withValue(RawContacts.ACCOUNT_NAME, account.name)
 			.withValue(RawContacts.ACCOUNT_TYPE, account.type)
@@ -345,7 +347,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	
 	
 	@Override
-	protected void addDataRows(Contact contact, long localID, int backrefIdx) {
+	protected void addDataRows(Resource resource, long localID, int backrefIdx) {
+		Contact contact = (Contact)resource;
+		
 		pendingOperations.add(buildStructuredName(newDataInsertBuilder(localID, backrefIdx), contact).build());
 		
 		if (contact.getNickNames() != null)
@@ -375,10 +379,10 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 	
 	@Override
-	protected void removeDataRows(Contact contact) {
+	protected void removeDataRows(Resource resource) {
 		pendingOperations.add(ContentProviderOperation.newDelete(dataURI())
 				.withSelection(Data.RAW_CONTACT_ID + "=?",
-				new String[] { String.valueOf(contact.getLocalID()) }).build());
+				new String[] { String.valueOf(resource.getLocalID()) }).build());
 	}
 
 

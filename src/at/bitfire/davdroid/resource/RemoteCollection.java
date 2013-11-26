@@ -27,14 +27,14 @@ import at.bitfire.davdroid.webdav.WebDavResource;
 import at.bitfire.davdroid.webdav.WebDavResource.MultigetType;
 import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
 
-public abstract class RemoteCollection<ResourceType extends Resource> {
+public abstract class RemoteCollection<T extends Resource> {
 	private static final String TAG = "davdroid.RemoteCollection";
 	
 	@Getter WebDavResource collection;
 
 	abstract protected String memberContentType();
 	abstract protected MultigetType multiGetType();
-	abstract protected ResourceType newResourceSkeleton(String name, String ETag);
+	abstract protected T newResourceSkeleton(String name, String ETag);
 	
 	public RemoteCollection(String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {
 		collection = new WebDavResource(new URI(baseURL), user, password, preemptiveAuth, true);
@@ -56,7 +56,7 @@ public abstract class RemoteCollection<ResourceType extends Resource> {
 	public Resource[] getMemberETags() throws IOException, InvalidDavResponseException, HttpException {
 		collection.propfind(HttpPropfind.Mode.MEMBERS_ETAG);
 			
-		List<ResourceType> resources = new LinkedList<ResourceType>();
+		List<T> resources = new LinkedList<T>();
 		if (collection.getMembers() != null) {
 			for (WebDavResource member : collection.getMembers())
 				resources.add(newResourceSkeleton(member.getName(), member.getETag()));
@@ -66,23 +66,23 @@ public abstract class RemoteCollection<ResourceType extends Resource> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Resource[] multiGet(ResourceType[] resources) throws IOException, InvalidDavResponseException, HttpException {
+	public Resource[] multiGet(Resource[] resources) throws IOException, InvalidDavResponseException, HttpException {
 		try {
 			if (resources.length == 1) {
 				Resource resource = get(resources[0]);
-				return (resource != null) ? (ResourceType[]) new Resource[] { resource } : null;
+				return (resource != null) ? (T[]) new Resource[] { resource } : null;
 			}
 			
 			LinkedList<String> names = new LinkedList<String>();
-			for (ResourceType resource : resources)
+			for (Resource resource : resources)
 				names.add(resource.getName());
 			
 			collection.multiGet(names.toArray(new String[0]), multiGetType());
 			
-			LinkedList<ResourceType> foundResources = new LinkedList<ResourceType>();
+			LinkedList<T> foundResources = new LinkedList<T>();
 			if (collection.getMembers() != null)
 				for (WebDavResource member : collection.getMembers()) {
-					ResourceType resource = newResourceSkeleton(member.getName(), member.getETag());
+					T resource = newResourceSkeleton(member.getName(), member.getETag());
 					try {
 						InputStream is = member.getContent();
 						if (is != null) {
@@ -108,11 +108,11 @@ public abstract class RemoteCollection<ResourceType extends Resource> {
 	
 	/* internal member operations */
 
-	public ResourceType get(ResourceType resource) throws IOException, HttpException, ParserException {
-		WebDavResource member = new WebDavResource(collection, resource.getName());
+	public Resource get(Resource resources) throws IOException, HttpException, ParserException {
+		WebDavResource member = new WebDavResource(collection, resources.getName());
 		member.get();
-		resource.parseEntity(member.getContent());
-		return resource;
+		resources.parseEntity(member.getContent());
+		return resources;
 	}
 	
 	public void add(Resource res) throws IOException, HttpException, ValidationException {

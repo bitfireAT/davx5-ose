@@ -24,7 +24,7 @@ import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.util.Log;
 
-public abstract class LocalCollection<ResourceType extends Resource> {
+public abstract class LocalCollection<T extends Resource> {
 	private static final String TAG = "davdroid.LocalCollection";
 	
 	protected Account account;
@@ -72,7 +72,7 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 		Cursor cursor = providerClient.query(entriesURI(),
 				new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
 				where, null, null);
-		LinkedList<Resource> dirty = new LinkedList<Resource>();
+		LinkedList<T> dirty = new LinkedList<T>();
 		while (cursor != null && cursor.moveToNext())
 			dirty.add(findById(cursor.getLong(0), cursor.getString(1), cursor.getString(2), true));
 		return dirty.toArray(new Resource[0]);
@@ -85,7 +85,7 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 		Cursor cursor = providerClient.query(entriesURI(),
 				new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
 				where, null, null);
-		LinkedList<Resource> deleted = new LinkedList<Resource>();
+		LinkedList<T> deleted = new LinkedList<T>();
 		while (cursor != null && cursor.moveToNext())
 			deleted.add(findById(cursor.getLong(0), cursor.getString(1), cursor.getString(2), false));
 		return deleted.toArray(new Resource[0]);
@@ -98,11 +98,11 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 		Cursor cursor = providerClient.query(entriesURI(),
 				new String[] { entryColumnID() },
 				where, null, null);
-		LinkedList<Resource> fresh = new LinkedList<Resource>();
+		LinkedList<T> fresh = new LinkedList<T>();
 		while (cursor != null && cursor.moveToNext()) {
 			String uid = UUID.randomUUID().toString(),
 				   resourceName = uid + fileExtension();
-			Resource resource = findById(cursor.getLong(0), resourceName, null, true); //new Event(cursor.getLong(0), resourceName, null);
+			T resource = findById(cursor.getLong(0), resourceName, null, true); //new Event(cursor.getLong(0), resourceName, null);
 			resource.setUid(uid);
 
 			// new record: set generated resource name in database
@@ -116,15 +116,15 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 		return fresh.toArray(new Resource[0]);
 	}
 	
-	abstract public Resource findById(long localID, String resourceName, String eTag, boolean populate) throws RemoteException;
-	abstract public ResourceType findByRemoteName(String name) throws RemoteException;
+	abstract public T findById(long localID, String resourceName, String eTag, boolean populate) throws RemoteException;
+	abstract public T findByRemoteName(String name) throws RemoteException;
 
 	public abstract void populate(Resource record) throws RemoteException;
 
 	
 	// create/update/delete
 	
-	public void add(ResourceType resource) throws ValidationException {
+	public void add(Resource resource) throws ValidationException {
 		resource.validate();
 		
 		int idx = pendingOperations.size();
@@ -136,8 +136,8 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 		addDataRows(resource, -1, idx);
 	}
 	
-	public void updateByRemoteName(ResourceType remoteResource) throws RemoteException, ValidationException {
-		ResourceType localResource = findByRemoteName(remoteResource.getName());
+	public void updateByRemoteName(Resource remoteResource) throws RemoteException, ValidationException {
+		T localResource = findByRemoteName(remoteResource.getName());
 		remoteResource.validate();
 		
 		pendingOperations.add(
@@ -197,8 +197,8 @@ public abstract class LocalCollection<ResourceType extends Resource> {
 	
 	// content builders
 
-	protected abstract Builder buildEntry(Builder builder, ResourceType resource);
+	protected abstract Builder buildEntry(Builder builder, Resource resource);
 	
-	protected abstract void addDataRows(ResourceType resource, long localID, int backrefIdx);
-	protected abstract void removeDataRows(ResourceType resource);
+	protected abstract void addDataRows(Resource resource, long localID, int backrefIdx);
+	protected abstract void removeDataRows(Resource resource);
 }
