@@ -40,7 +40,7 @@ public class SyncManager {
 		this.accountManager = accountManager;
 	}
 
-	public void synchronize(LocalCollection local, RemoteCollection dav, boolean manualSync, SyncResult syncResult) throws RemoteException, OperationApplicationException, IOException, HttpException {
+	public void synchronize(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> dav, boolean manualSync, SyncResult syncResult) throws RemoteException, OperationApplicationException, IOException, HttpException {
 		boolean fetchCollection = false;
 		
 		// PHASE 1: UPLOAD LOCALLY-CHANGED RESOURCES
