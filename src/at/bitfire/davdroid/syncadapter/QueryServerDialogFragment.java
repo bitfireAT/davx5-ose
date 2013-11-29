@@ -182,6 +182,15 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 						for (WebDavResource resource : homeSetCalendars.getMembers())
 							if (resource.isCalendar()) {
 								Log.i(TAG, "Found calendar: " + resource.getLocation().getRawPath());
+								if (resource.getSupportedComponents() != null) {
+									// CALDAV:supported-calendar-component-set available
+									boolean supportsEvents = false;
+									for (String supportedComponent : resource.getSupportedComponents())
+										if (supportedComponent.equalsIgnoreCase("VEVENT"))
+											supportsEvents = true;
+									if (!supportsEvents)	// ignore collections without VEVENT support
+										continue;
+								}
 								ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
 									ServerInfo.ResourceInfo.Type.CALENDAR,
 									resource.getLocation().getRawPath(),

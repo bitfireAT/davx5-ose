@@ -48,6 +48,7 @@ import org.simpleframework.xml.core.Persister;
 import android.util.Log;
 import at.bitfire.davdroid.URIUtils;
 import at.bitfire.davdroid.resource.Event;
+import at.bitfire.davdroid.webdav.DavProp.DavPropComp;
 
 
 @ToString
@@ -57,7 +58,7 @@ public class WebDavResource {
 	public enum Property {
 		CURRENT_USER_PRINCIPAL,
 		DISPLAY_NAME, DESCRIPTION, COLOR,
-		TIMEZONE,
+		TIMEZONE, SUPPORTED_COMPONENTS,
 		ADDRESSBOOK_HOMESET, CALENDAR_HOMESET,
 		IS_ADDRESSBOOK, IS_CALENDAR,
 		CTAG, ETAG,
@@ -81,6 +82,7 @@ public class WebDavResource {
 	
 	// DAV properties
 	protected HashMap<Property, String> properties = new HashMap<Property, String>();
+	@Getter protected List<String> supportedComponents;
 	
 	// list of members (only for collections)
 	@Getter protected List<WebDavResource> members;
@@ -415,39 +417,46 @@ public class WebDavResource {
 					continue;
 				
 				DavProp prop = singlePropstat.prop;
+				HashMap<Property, String> properties = referenced.properties;
 
 				if (prop.currentUserPrincipal != null && prop.currentUserPrincipal.getHref() != null)
-					referenced.properties.put(Property.CURRENT_USER_PRINCIPAL, prop.currentUserPrincipal.getHref().href);
+					properties.put(Property.CURRENT_USER_PRINCIPAL, prop.currentUserPrincipal.getHref().href);
 				
 				if (prop.addressbookHomeSet != null && prop.addressbookHomeSet.getHref() != null)
-					referenced.properties.put(Property.ADDRESSBOOK_HOMESET, prop.addressbookHomeSet.getHref().href);
+					properties.put(Property.ADDRESSBOOK_HOMESET, prop.addressbookHomeSet.getHref().href);
 				
 				if (singlePropstat.prop.calendarHomeSet != null && prop.calendarHomeSet.getHref() != null)
-					referenced.properties.put(Property.CALENDAR_HOMESET, prop.calendarHomeSet.getHref().href);
+					properties.put(Property.CALENDAR_HOMESET, prop.calendarHomeSet.getHref().href);
 				
 				if (prop.displayname != null)
-					referenced.properties.put(Property.DISPLAY_NAME, prop.displayname.getDisplayName());
+					properties.put(Property.DISPLAY_NAME, prop.displayname.getDisplayName());
 				
 				if (prop.resourcetype != null) {
 					if (prop.resourcetype.getAddressbook() != null) {
-						referenced.properties.put(Property.IS_ADDRESSBOOK, "1");
+						properties.put(Property.IS_ADDRESSBOOK, "1");
 						
 						if (prop.addressbookDescription != null)
-							referenced.properties.put(Property.DESCRIPTION, prop.addressbookDescription.getDescription());
+							properties.put(Property.DESCRIPTION, prop.addressbookDescription.getDescription());
 					} else
-						referenced.properties.remove(Property.IS_ADDRESSBOOK);
+						properties.remove(Property.IS_ADDRESSBOOK);
 					
 					if (prop.resourcetype.getCalendar() != null) {
-						referenced.properties.put(Property.IS_CALENDAR, "1");
+						properties.put(Property.IS_CALENDAR, "1");
 						
 						if (prop.calendarDescription != null)
-							referenced.properties.put(Property.DESCRIPTION, prop.calendarDescription.getDescription());
+							properties.put(Property.DESCRIPTION, prop.calendarDescription.getDescription());
 						
 						if (prop.calendarColor != null)
-							referenced.properties.put(Property.COLOR, prop.calendarColor.getColor());
+							properties.put(Property.COLOR, prop.calendarColor.getColor());
 						
 						if (prop.calendarTimezone != null)
-							referenced.properties.put(Property.TIMEZONE, Event.TimezoneDefToTzId(prop.calendarTimezone.getTimezone()));
+							properties.put(Property.TIMEZONE, Event.TimezoneDefToTzId(prop.calendarTimezone.getTimezone()));
+						
+						if (prop.supportedCalendarComponentSet != null && prop.supportedCalendarComponentSet.components != null) {
+							referenced.supportedComponents = new LinkedList<String>();
+							for (DavPropComp component : prop.supportedCalendarComponentSet.components)
+								referenced.supportedComponents.add(component.getName());
+						}
 					} else
 						referenced.properties.remove(Property.IS_CALENDAR);
 				}

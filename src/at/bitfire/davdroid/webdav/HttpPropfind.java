@@ -55,6 +55,7 @@ public class HttpPropfind extends HttpEntityEnclosingRequestBase {
 			propfind.prop.calendarDescription = new DavProp.DavPropCalendarDescription();
 			propfind.prop.calendarColor = new DavProp.DavPropCalendarColor();
 			propfind.prop.calendarTimezone = new DavProp.DavPropCalendarTimezone();
+			propfind.prop.supportedCalendarComponentSet = new DavProp.DavPropSupportedCalendarComponentSet();
 			break;
 		case COLLECTION_CTAG:
 			depth = 0;
