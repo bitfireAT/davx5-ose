@@ -7,9 +7,13 @@
  ******************************************************************************/
 package at.bitfire.davdroid.webdav;
 
+import java.util.List;
+
 import lombok.Getter;
 
+import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Text;
@@ -43,6 +47,9 @@ public class DavProp {
 	
 	@Element(required=false,name="calendar-timezone")
 	DavPropCalendarTimezone calendarTimezone;
+	
+	@Element(required=false,name="supported-calendar-component-set")
+	DavPropSupportedCalendarComponentSet supportedCalendarComponentSet;
 	
 	@Element(required=false)
 	DavPropGetCTag getctag;
@@ -115,6 +122,18 @@ public class DavProp {
 	public static class DavPropCalendarTimezone {
 		@Text(required=false)
 		@Getter private String timezone;
+	}
+	
+	@Namespace(prefix="C",reference="urn:ietf:params:xml:ns:caldav")
+	public static class DavPropSupportedCalendarComponentSet {
+		@ElementList(inline=true,entry="comp",required=false)
+		List<DavPropComp> components;
+	}
+	
+	@Namespace(prefix="C",reference="urn:ietf:params:xml:ns:caldav")
+	public static class DavPropComp {
+		@Attribute
+		@Getter String name;
 	}
 	
 	@Namespace(prefix="CS",reference="http://calendarserver.org/ns/")
