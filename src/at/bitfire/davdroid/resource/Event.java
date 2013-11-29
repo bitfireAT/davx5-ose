@@ -240,13 +240,16 @@ public class Event extends Resource {
 	}
 	
 	
-	public long getDtEndInMillis() {
-		if (hasNoTime(dtStart) && dtEnd == null) {
+	public Long getDtEndInMillis() {
+		if (hasNoTime(dtStart) && dtEnd == null) {		// "event on that day"
 			// dtEnd = dtStart + 1 day
 			Calendar c = Calendar.getInstance(TimeZone.getTimeZone(Time.TIMEZONE_UTC));
 			c.setTime(dtStart.getDate());
 			c.add(Calendar.DATE, 1);
 			return c.getTimeInMillis();
+			
+		} else if (dtEnd == null || dtEnd.getDate() == null) {	// no DTEND provided (maybe DURATION instead)
+			return null;
 		}
 		
 		return dtEnd.getDate().getTime();
@@ -317,7 +320,7 @@ public class Event extends Resource {
 				break;
 			}
 		
-		Log.i(TAG, "Assuming time zone " + localTZ + " for " + tzID);
+		Log.d(TAG, "Assuming time zone " + localTZ + " for " + tzID);
 		date.setTimeZone(tzRegistry.getTimeZone(localTZ));
 	}
 

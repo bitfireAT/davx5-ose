@@ -9,6 +9,7 @@ package at.bitfire.davdroid.resource;
 
 import java.net.URISyntaxException;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -427,24 +428,48 @@ public class LocalCalendar extends LocalCollection<Event> {
 				.withValue(entryColumnUID(), event.getUid())
 				.withValue(Events.ALL_DAY, event.isAllDay() ? 1 : 0)
 				.withValue(Events.DTSTART, event.getDtStartInMillis())
-				.withValue(Events.DTEND, event.getDtEndInMillis())
 				.withValue(Events.EVENT_TIMEZONE, event.getDtStartTzID())
 				.withValue(Events.HAS_ATTENDEE_DATA, event.getAttendees().isEmpty() ? 0 : 1);
 		
-		if (event.getDtEndTzID() != null)
-			builder = builder.withValue(Events.EVENT_END_TIMEZONE, event.getDtEndTzID());
-
-		if (event.getDuration() != null)
-			builder = builder.withValue(Events.DURATION, event.getDuration().getValue());
-		
-		if (event.getRrule() != null)
+		boolean recurring = false;
+		if (event.getRrule() != null) {
+			recurring = true;
 			builder = builder.withValue(Events.RRULE, event.getRrule().getValue());
-		if (event.getRdate() != null)
+		}
+		if (event.getRdate() != null) {
+			recurring = true;
 			builder = builder.withValue(Events.RDATE, event.getRdate().getValue());
+		}
 		if (event.getExrule() != null)
 			builder = builder.withValue(Events.EXRULE, event.getExrule().getValue());
 		if (event.getExdate() != null)
 			builder = builder.withValue(Events.EXDATE, event.getExdate().getValue());
+		
+		// set DTEND for single-time events or DURATION for recurring events
+		// because that's the way Android likes it
+		if (!recurring) {
+			// not recurring: set DTEND
+			long dtEnd = 0;
+			String tzEnd = null;
+			if (event.getDtEndInMillis() != null) {
+				dtEnd = event.getDtEndInMillis();
+				tzEnd = event.getDtEndTzID();
+			} else if (event.getDuration() != null) {
+				Date dateEnd = event.getDuration().getDuration().getTime(event.getDtStart().getDate());
+				dtEnd = dateEnd.getTime();
+			}
+			builder = builder
+					.withValue(Events.DTEND, dtEnd)
+					.withValue(Events.EVENT_END_TIMEZONE, tzEnd);
+		} else {
+			// recurring: set DURATION
+			String duration = null;
+			if (event.getDuration() != null)
+				duration = event.getDuration().getValue();
+			else if (event.getDtEnd() != null)
+				duration = new Duration(event.getDtStart().getDate(), event.getDtEnd().getDate()).getValue();
+			builder = builder.withValue(Events.DURATION, duration);
+		}
 		
 		if (event.getSummary() != null)
 			builder = builder.withValue(Events.TITLE, event.getSummary());
