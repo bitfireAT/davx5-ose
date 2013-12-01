@@ -8,6 +8,7 @@
 package at.bitfire.davdroid.syncadapter;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
 import lombok.Data;
@@ -25,7 +26,17 @@ public class ServerInfo implements Serializable {
 	private String errorMessage;
 	
 	private boolean calDAV, cardDAV;
-	private List<ResourceInfo> addressBooks, calendars;
+	private List<ResourceInfo>
+		addressBooks = new LinkedList<ResourceInfo>(),
+		calendars  = new LinkedList<ResourceInfo>();
+	
+	public boolean hasEnabledCalendars() {
+		for (ResourceInfo calendar : calendars)
+			if (calendar.enabled)
+				return true;
+		return false;
+	}
+	
 	
 	@RequiredArgsConstructor(suppressConstructorProperties=true)
 	@Data
@@ -36,6 +47,8 @@ public class ServerInfo implements Serializable {
 			ADDRESS_BOOK,
 			CALENDAR
 		}
+		
+		boolean enabled = false;
 		
 		final Type type;
 		final String path, title, description, color;

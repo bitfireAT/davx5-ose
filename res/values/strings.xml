@@ -83,5 +83,11 @@
 	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> (<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>)<br/>
 	   	* <a href="http://projectlombok.org/">Project Lombok</a> (<a href="http://opensource.org/licenses/mit-license.php">MIT License</a>)</p>
     ]]></string>
+    <string name="account_details">Account details</string>
+    <string name="account_name">Account name:</string>
+    <string name="account_name_hint">My CalDAV/CardDAV Account</string>
+    <string name="email_address">Email address:</string>
+    <string name="organizer_hint">"ORGANIZER of your events; required if you use attendee info"</string>
+    <string name="account_name_info">"Use your email address as account name because Android will use the account name as ORGANIZER field for events you create. You can't have two accounts with the same name.</string>
 
 </resources>

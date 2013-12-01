@@ -50,12 +50,13 @@ import net.fortuna.ical4j.model.property.RDate;
 import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.Status;
 import net.fortuna.ical4j.model.property.Summary;
+import net.fortuna.ical4j.model.property.Transp;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Version;
-import net.fortuna.ical4j.util.UidGenerator;
 import android.text.format.Time;
 import android.util.Log;
 import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.syncadapter.DavSyncAdapter;
 
 
 public class Event extends Resource {
@@ -76,6 +77,7 @@ public class Event extends Resource {
 	@Getter @Setter private Boolean forPublic;
 	@Getter @Setter private Status status;
 	
+	@Getter @Setter private boolean opaque;	
 	
 	@Getter @Setter private Organizer organizer;
 	@Getter private List<Attendee> attendees = new LinkedList<Attendee>();
@@ -122,8 +124,7 @@ public class Event extends Resource {
 			uid = event.getUid().getValue();
 		else {
 			Log.w(TAG, "Received VEVENT without UID, generating new one");
-			UidGenerator uidGenerator = new UidGenerator(Integer.toString(android.os.Process.myPid()));
-			uid = uidGenerator.generateUid().getValue();
+			uid = DavSyncAdapter.generateUID();
 		}
 		
 		dtStart = event.getStartDate();	validateTimeZone(dtStart);
@@ -143,6 +144,10 @@ public class Event extends Resource {
 			description = event.getDescription().getValue();
 		
 		status = event.getStatus();
+		
+		opaque = true;
+		if (event.getTransparency() == Transp.TRANSPARENT)
+			opaque = false;
 		
 		organizer = event.getOrganizer();
 		for (Object o : event.getProperties(Property.ATTENDEE))
@@ -196,6 +201,8 @@ public class Event extends Resource {
 		
 		if (status != null)
 			props.add(status);
+		if (!opaque)
+			props.add(Transp.TRANSPARENT);
 		
 		if (organizer != null)
 			props.add(organizer);
