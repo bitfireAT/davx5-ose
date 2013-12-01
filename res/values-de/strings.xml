@@ -75,5 +75,11 @@
 	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> (<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>)<br/>
 	   	* <a href="http://projectlombok.org/">Project Lombok</a> (<a href="http://opensource.org/licenses/mit-license.php">MIT License</a>)</p>
     ]]></string>
+    <string name="account_details">Konto-Details</string>
+    <string name="account_name">Kontoname:</string>
+    <string name="account_name_hint">Mein CalDAV/CardDAV-Konto</string>
+    <string name="email_address">Email-Adresse:</string>
+    <string name="organizer_hint">"ORGANIZER der von Ihnen angelegten Termine; notwendig für Teilnehmer-Info"</string>
+    <string name="account_name_info">"Verwenden Sie Ihre Email-Addresse als Kontoname, da Android den Kontonamen als ORGANIZER-Feld in Terminen benutzt. Sie können keine zwei Konten mit dem gleichen Namen anlegen.</string>
     
 </resources>

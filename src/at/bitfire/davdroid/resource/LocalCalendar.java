@@ -7,6 +7,7 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.Date;
@@ -120,7 +121,10 @@ public class LocalCalendar extends LocalCollection<Event> {
 		values.put(Calendars.CALENDAR_COLOR, color);
 		values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER);
 		values.put(Calendars.ALLOWED_AVAILABILITY, Events.AVAILABILITY_BUSY + "," + Events.AVAILABILITY_FREE + "," + Events.AVAILABILITY_TENTATIVE);
-		values.put(Calendars.ALLOWED_ATTENDEE_TYPES, Attendees.TYPE_NONE + "," + Attendees.TYPE_REQUIRED + "," + Attendees.TYPE_OPTIONAL + "," + Attendees.TYPE_RESOURCE);
+		values.put(Calendars.ALLOWED_ATTENDEE_TYPES, Attendees.TYPE_NONE + "," + Attendees.TYPE_OPTIONAL + "," + Attendees.TYPE_REQUIRED + "," + Attendees.TYPE_RESOURCE);
+		values.put(Calendars.ALLOWED_REMINDERS, Reminders.METHOD_ALERT);
+		values.put(Calendars.CAN_ORGANIZER_RESPOND, 1);
+		values.put(Calendars.CAN_MODIFY_TIME_ZONE, 1);
 		values.put(Calendars.OWNER_ACCOUNT, account.name);
 		values.put(Calendars.SYNC_EVENTS, 1);
 		values.put(Calendars.VISIBLE, 1);
@@ -196,7 +200,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 				/*  8 */ Events.STATUS, Events.ACCESS_LEVEL,
 				/* 10 */ Events.RRULE, Events.RDATE, Events.EXRULE, Events.EXDATE,
 				/* 14 */ Events.HAS_ATTENDEE_DATA, Events.ORGANIZER, Events.SELF_ATTENDEE_STATUS,
-				/* 17 */ entryColumnUID(), Events.DURATION
+				/* 17 */ entryColumnUID(), Events.DURATION, Events.AVAILABILITY
 			}, null, null, null);
 		if (cursor != null && cursor.moveToNext()) {
 			e.setUid(cursor.getString(17));
@@ -270,12 +274,15 @@ public class LocalCalendar extends LocalCollection<Event> {
 				e.setStatus(Status.VEVENT_CANCELLED);
 			}
 			
+			// availability
+			e.setOpaque(cursor.getInt(19) != Events.AVAILABILITY_FREE);
+				
 			// attendees
 			if (cursor.getInt(14) != 0) {	// has attendees
 				try {
-					e.setOrganizer(new Organizer("mailto:" + cursor.getString(15)));
+					e.setOrganizer(new Organizer(new URI("mailto", cursor.getString(15), null)));
 				} catch (URISyntaxException ex) {
-					Log.e(TAG, "Error parsing organizer URI, ignoring");
+					Log.e(TAG, "Error when creating ORGANIZER URI, ignoring", ex);
 				}
 				
 				Uri attendeesUri = Attendees.CONTENT_URI.buildUpon()
@@ -287,7 +294,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 					}, Attendees.EVENT_ID + "=?", new String[] { String.valueOf(e.getLocalID()) }, null);
 				while (c != null && c.moveToNext()) {
 					try {
-						Attendee attendee = new Attendee("mailto:" + c.getString(0));
+						Attendee attendee = new Attendee(new URI("mailto", c.getString(0), null));
 						ParameterList params = attendee.getParameters();
 						
 						String cn = c.getString(1);
@@ -314,13 +321,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 						}
 
 						// status
-						int status = Attendees.ATTENDEE_STATUS_NONE;
-						if (relationship == Attendees.RELATIONSHIP_ORGANIZER)	// we are organizer
-							status = cursor.getInt(16);
-						else
-							status = c.getInt(4);
-						
-						switch (status) {
+						switch (c.getInt(4)) {
 						case Attendees.ATTENDEE_STATUS_INVITED:
 							params.add(PartStat.NEEDS_ACTION);
 							break;
@@ -337,7 +338,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 						
 						e.addAttendee(attendee);
 					} catch (URISyntaxException ex) {
-						Log.e(TAG, "Couldn't parse attendee member URI, ignoring member");
+						Log.e(TAG, "Couldn't parse attendee information, ignoring", ex);
 					}
 				}
 			}
@@ -429,7 +430,10 @@ public class LocalCalendar extends LocalCollection<Event> {
 				.withValue(Events.ALL_DAY, event.isAllDay() ? 1 : 0)
 				.withValue(Events.DTSTART, event.getDtStartInMillis())
 				.withValue(Events.EVENT_TIMEZONE, event.getDtStartTzID())
-				.withValue(Events.HAS_ATTENDEE_DATA, event.getAttendees().isEmpty() ? 0 : 1);
+				.withValue(Events.HAS_ATTENDEE_DATA, event.getAttendees().isEmpty() ? 0 : 1)
+				.withValue(Events.GUESTS_CAN_INVITE_OTHERS, 1)
+				.withValue(Events.GUESTS_CAN_MODIFY, 1)
+				.withValue(Events.GUESTS_CAN_SEE_GUESTS, 1);
 		
 		boolean recurring = false;
 		if (event.getRrule() != null) {
@@ -478,6 +482,12 @@ public class LocalCalendar extends LocalCollection<Event> {
 		if (event.getDescription() != null)
 			builder = builder.withValue(Events.DESCRIPTION, event.getDescription());
 		
+		if (event.getOrganizer() != null && event.getOrganizer().getCalAddress() != null) {
+			URI organizer = event.getOrganizer().getCalAddress();
+			if (organizer.getScheme().equalsIgnoreCase("mailto"))
+				builder = builder.withValue(Events.ORGANIZER, organizer.getSchemeSpecificPart());
+		}
+		
 		Status status = event.getStatus();
 		if (status != null) {
 			int statusCode = Events.STATUS_TENTATIVE;
@@ -487,6 +497,8 @@ public class LocalCalendar extends LocalCollection<Event> {
 				statusCode = Events.STATUS_CANCELED;
 			builder = builder.withValue(Events.STATUS, statusCode);
 		}
+		
+		builder = builder.withValue(Events.AVAILABILITY, event.isOpaque() ? Events.AVAILABILITY_BUSY : Events.AVAILABILITY_FREE);
 		
 		if (event.getForPublic() != null)
 			builder = builder.withValue(Events.ACCESS_LEVEL, event.getForPublic() ? Events.ACCESS_PUBLIC : Events.ACCESS_PRIVATE);
@@ -547,7 +559,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		
 		int status = Attendees.ATTENDEE_STATUS_NONE;
 		PartStat partStat = (PartStat)attendee.getParameter(Parameter.PARTSTAT);
-		if (partStat == PartStat.NEEDS_ACTION)
+		if (partStat == null || partStat == PartStat.NEEDS_ACTION)
 			status = Attendees.ATTENDEE_STATUS_INVITED;
 		else if (partStat == PartStat.ACCEPTED)
 			status = Attendees.ATTENDEE_STATUS_ACCEPTED;

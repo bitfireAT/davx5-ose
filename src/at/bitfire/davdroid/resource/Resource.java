@@ -10,11 +10,11 @@ package at.bitfire.davdroid.resource;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.fortuna.ical4j.data.ParserException;
-import net.fortuna.ical4j.model.ValidationException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.ValidationException;
 
 @ToString
 public abstract class Resource {

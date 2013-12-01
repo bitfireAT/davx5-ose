@@ -7,6 +7,9 @@
  ******************************************************************************/
 package at.bitfire.davdroid.syncadapter;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -37,11 +40,6 @@ public class EnterCredentialsFragment extends Fragment implements TextWatcher {
 	CheckBox checkboxPreemptive;
 	Button btnNext;
 	
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -103,10 +101,9 @@ public class EnterCredentialsFragment extends Fragment implements TextWatcher {
 	void queryServer() {
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		
-		String host_path = editBaseURL.getText().toString();
-		
 		Bundle args = new Bundle();
 		
+		String host_path = editBaseURL.getText().toString();
 		args.putString(QueryServerDialogFragment.EXTRA_BASE_URL, URIUtils.sanitize(protocol + host_path));
 		args.putString(QueryServerDialogFragment.EXTRA_USER_NAME, editUserName.getText().toString());
 		args.putString(QueryServerDialogFragment.EXTRA_PASSWORD, editPassword.getText().toString());
@@ -118,15 +115,22 @@ public class EnterCredentialsFragment extends Fragment implements TextWatcher {
 	}
 
 	
-	// form validation
+	// input validation
 	
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
 		boolean ok =
-			editBaseURL.getText().length() > 0 &&
-			!editBaseURL.getText().toString().startsWith("/") &&		// host name required
 			editUserName.getText().length() > 0 &&
 			editPassword.getText().length() > 0;
+
+		// check host name
+		try {
+			URL url = new URL(protocol + editBaseURL.getText().toString());
+			if (url.getHost() == null || url.getHost().isEmpty())
+				ok = false;
+		} catch (MalformedURLException e) {
+			ok = false;
+		}
 			
 		MenuItem item = menu.findItem(R.id.next);
 		item.setEnabled(ok);

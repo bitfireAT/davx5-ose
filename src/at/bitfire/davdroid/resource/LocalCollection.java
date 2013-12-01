@@ -9,7 +9,6 @@ package at.bitfire.davdroid.resource;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.UUID;
 
 import net.fortuna.ical4j.model.ValidationException;
 import android.accounts.Account;
@@ -23,6 +22,7 @@ import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.util.Log;
+import at.bitfire.davdroid.syncadapter.DavSyncAdapter;
 
 public abstract class LocalCollection<T extends Resource> {
 	private static final String TAG = "davdroid.LocalCollection";
@@ -100,9 +100,9 @@ public abstract class LocalCollection<T extends Resource> {
 				where, null, null);
 		LinkedList<T> fresh = new LinkedList<T>();
 		while (cursor != null && cursor.moveToNext()) {
-			String uid = UUID.randomUUID().toString(),
-				   resourceName = uid + fileExtension();
-			T resource = findById(cursor.getLong(0), resourceName, null, true); //new Event(cursor.getLong(0), resourceName, null);
+			String uid = DavSyncAdapter.generateUID(),
+				   resourceName = uid.replace("@", "_") + fileExtension();
+			T resource = findById(cursor.getLong(0), resourceName, null, true);
 			resource.setUid(uid);
 
 			// new record: set generated resource name in database
