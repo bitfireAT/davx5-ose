@@ -484,7 +484,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		
 		if (event.getOrganizer() != null && event.getOrganizer().getCalAddress() != null) {
 			URI organizer = event.getOrganizer().getCalAddress();
-			if (organizer.getScheme().equalsIgnoreCase("mailto"))
+			if (organizer.getScheme() != null && organizer.getScheme().equalsIgnoreCase("mailto"))
 				builder = builder.withValue(Events.ORGANIZER, organizer.getSchemeSpecificPart());
 		}
 		
