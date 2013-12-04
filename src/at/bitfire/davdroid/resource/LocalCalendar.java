@@ -60,6 +60,7 @@ import android.provider.CalendarContract.Events;
 import android.provider.CalendarContract.Reminders;
 import android.provider.ContactsContract;
 import android.util.Log;
+import at.bitfire.davdroid.syncadapter.DavSyncAdapter;
 import at.bitfire.davdroid.syncadapter.ServerInfo;
 
 public class LocalCalendar extends LocalCollection<Event> {
@@ -402,6 +403,11 @@ public class LocalCalendar extends LocalCollection<Event> {
 	@Override
 	protected String fileExtension() {
 		return ".ics";
+	}
+	
+	@Override
+	protected String randomUID() {
+		return DavSyncAdapter.generateUID();
 	}
 	
 	protected static Uri calendarsURI(Account account) {

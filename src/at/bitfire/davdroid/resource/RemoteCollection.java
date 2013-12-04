@@ -20,6 +20,7 @@ import net.fortuna.ical4j.model.ValidationException;
 
 import org.apache.http.HttpException;
 
+import ezvcard.VCardException;
 import android.util.Log;
 import at.bitfire.davdroid.webdav.HttpPropfind;
 import at.bitfire.davdroid.webdav.InvalidDavResponseException;
@@ -91,7 +92,9 @@ public abstract class RemoteCollection<T extends Resource> {
 						} else
 							Log.e(TAG, "Ignoring entity without content");
 					} catch (ParserException ex) {
-						Log.e(TAG, "Ignoring unparseable entity in multi-response", ex);
+						Log.e(TAG, "Ignoring unparseable iCal in multi-response", ex);
+					} catch (VCardException ex) {
+						Log.e(TAG, "Ignoring unparseable vCard in multi-response", ex);
 					}
 				}
 			else
@@ -99,7 +102,9 @@ public abstract class RemoteCollection<T extends Resource> {
 			
 			return foundResources.toArray(new Resource[0]);
 		} catch (ParserException ex) {
-			Log.w(TAG, "Couldn't parse single multi-get entity", ex);
+			Log.e(TAG, "Couldn't parse iCal from GET", ex);
+		} catch (VCardException ex) {
+			Log.e(TAG, "Couldn't parse vCard from GET", ex);
 		}
 		
 		return new Resource[0];
@@ -108,7 +113,7 @@ public abstract class RemoteCollection<T extends Resource> {
 	
 	/* internal member operations */
 
-	public Resource get(Resource resources) throws IOException, HttpException, ParserException {
+	public Resource get(Resource resources) throws IOException, HttpException, ParserException, VCardException {
 		WebDavResource member = new WebDavResource(collection, resources.getName());
 		member.get();
 		resources.parseEntity(member.getContent());

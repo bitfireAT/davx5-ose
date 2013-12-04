@@ -7,19 +7,14 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
-
-import net.fortuna.ical4j.model.Date;
-import net.fortuna.ical4j.vcard.Parameter.Id;
-import net.fortuna.ical4j.vcard.parameter.Type;
-import net.fortuna.ical4j.vcard.property.Address;
-import net.fortuna.ical4j.vcard.property.Telephone;
+import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -42,8 +37,15 @@ import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.provider.ContactsContract.CommonDataKinds.Website;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.RawContacts;
-import android.util.Log;
 import at.bitfire.davdroid.Constants;
+import ezvcard.parameter.AddressType;
+import ezvcard.parameter.EmailType;
+import ezvcard.parameter.TelephoneType;
+import ezvcard.property.Address;
+import ezvcard.property.Anniversary;
+import ezvcard.property.Birthday;
+import ezvcard.property.DateOrTimeProperty;
+import ezvcard.property.Telephone;
 
 
 public class LocalAddressBook extends LocalCollection<Contact> {
@@ -153,102 +155,101 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			c.setPhoneticFamilyName(cursor.getString(8));
 		}
 		
-		// nick names
-		cursor = providerClient.query(dataURI(), new String[] { Nickname.NAME },
-				Nickname.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), Nickname.CONTENT_ITEM_TYPE }, null);
-		List<String> nickNames = new LinkedList<String>();
-		while (cursor != null && cursor.moveToNext())
-			nickNames.add(cursor.getString(0));
-		if (!nickNames.isEmpty())
-			c.setNickNames(nickNames.toArray(new String[0]));
-		
-		// email addresses
-		cursor = providerClient.query(dataURI(), new String[] { Email.TYPE, Email.ADDRESS },
-				Email.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), Email.CONTENT_ITEM_TYPE }, null);
-		while (cursor != null && cursor.moveToNext()) {
-			net.fortuna.ical4j.vcard.property.Email email = new net.fortuna.ical4j.vcard.property.Email(cursor.getString(1));
-			switch (cursor.getInt(0)) {
-			case Email.TYPE_HOME:
-				email.getParameters().add(Type.HOME);
-				break;
-			case Email.TYPE_WORK:
-				email.getParameters().add(Type.WORK);
-				break;
-			}
-			c.addEmail(email);
-		}
-
 		// phone numbers
-		cursor = providerClient.query(dataURI(), new String[] { Phone.TYPE, Phone.NUMBER },
+		cursor = providerClient.query(dataURI(), new String[] { Phone.TYPE, Phone.LABEL, Phone.NUMBER },
 				Phone.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Phone.CONTENT_ITEM_TYPE }, null);
 		while (cursor != null && cursor.moveToNext()) {
-			Telephone number = new Telephone(cursor.getString(1));
-			List<String> types = new LinkedList<String>();
-			
+			ezvcard.property.Telephone number = new ezvcard.property.Telephone(cursor.getString(2));
 			switch (cursor.getInt(0)) {
-			case Phone.TYPE_FAX_HOME:
-				types.add("fax");
-				types.add("home");
-				break;
-			case Phone.TYPE_FAX_WORK:
-				types.add("fax");
-				types.add("work");
-				break;
 			case Phone.TYPE_HOME:
-				types.add("home");
+				number.addType(TelephoneType.HOME);
 				break;
 			case Phone.TYPE_MOBILE:
-				types.add("cell");
-				break;
-			case Phone.TYPE_OTHER_FAX:
-				types.add("fax");
-				break;
-			case Phone.TYPE_PAGER:
-				types.add("pager");
+				number.addType(TelephoneType.CELL);
 				break;
 			case Phone.TYPE_WORK:
-				types.add("work");
+				number.addType(TelephoneType.WORK);
+				break;
+			case Phone.TYPE_FAX_WORK:
+				number.addType(TelephoneType.FAX);
+				number.addType(TelephoneType.WORK);
+				break;
+			case Phone.TYPE_FAX_HOME:
+				number.addType(TelephoneType.FAX);
+				number.addType(TelephoneType.HOME);
+				break;
+			case Phone.TYPE_PAGER:
+				number.addType(TelephoneType.PAGER);
+				break;
+			case Phone.TYPE_CALLBACK:
+				number.addType(Contact.PHONE_TYPE_CALLBACK);
+				break;
+			case Phone.TYPE_CAR:
+				number.addType(TelephoneType.CAR);
+				break;
+			case Phone.TYPE_COMPANY_MAIN:
+				number.addType(Contact.PHONE_TYPE_COMPANY_MAIN);
+				break;
+			case Phone.TYPE_ISDN:
+				number.addType(TelephoneType.ISDN);
+				break;
+			case Phone.TYPE_MAIN:
+				number.addType(TelephoneType.PREF);
+				break;
+			case Phone.TYPE_OTHER_FAX:
+				number.addType(TelephoneType.FAX);
+				break;
+			case Phone.TYPE_RADIO:
+				number.addType(Contact.PHONE_TYPE_RADIO);
+				break;
+			case Phone.TYPE_TELEX:
+				number.addType(TelephoneType.TEXTPHONE);
+				break;
+			case Phone.TYPE_TTY_TDD:
+				number.addType(TelephoneType.TEXT);
 				break;
 			case Phone.TYPE_WORK_MOBILE:
-				types.add("cell");
-				types.add("work");
+				number.addType(TelephoneType.CELL);
+				number.addType(TelephoneType.WORK);
 				break;
 			case Phone.TYPE_WORK_PAGER:
-				types.add("pager");
-				types.add("work");
+				number.addType(TelephoneType.PAGER);
+				number.addType(TelephoneType.WORK);
 				break;
+			case Phone.TYPE_ASSISTANT:
+				number.addType(Contact.PHONE_TYPE_ASSISTANT);
+				break;
+			case Phone.TYPE_MMS:
+				number.addType(Contact.PHONE_TYPE_MMS);
+				break;
+			case Phone.TYPE_CUSTOM:
+				number.addType(TelephoneType.get(labelToXName(cursor.getString(1))));
 			}
-			number.getParameters().add(new Type(types.toArray(new String[0])));
-			c.addPhoneNumber(number);
+			c.getPhoneNumbers().add(number);
 		}
 		
-		// postal addresses
-		cursor = providerClient.query(dataURI(), new String[] {
-				/* 0 */ StructuredPostal.FORMATTED_ADDRESS, StructuredPostal.TYPE,
-				/* 2 */ StructuredPostal.STREET, StructuredPostal.POBOX, StructuredPostal.NEIGHBORHOOD,
-				/* 5 */ StructuredPostal.CITY, StructuredPostal.REGION, StructuredPostal.POSTCODE,
-				/* 8 */ StructuredPostal.COUNTRY
-			}, StructuredPostal.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-			new String[] { String.valueOf(c.getLocalID()), StructuredPostal.CONTENT_ITEM_TYPE }, null);
+		// email addresses
+		cursor = providerClient.query(dataURI(), new String[] { Email.TYPE, Email.ADDRESS, Email.LABEL },
+				Email.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
+				new String[] { String.valueOf(c.getLocalID()), Email.CONTENT_ITEM_TYPE }, null);
 		while (cursor != null && cursor.moveToNext()) {
-			Type[] types = new Type[] {};
-			switch (cursor.getInt(1)) {
-			case StructuredPostal.TYPE_HOME:
-				types = new Type[] { Type.HOME };
+			ezvcard.property.Email email = new ezvcard.property.Email(cursor.getString(1));
+			switch (cursor.getInt(0)) {
+			case Email.TYPE_HOME:
+				email.addType(EmailType.HOME);
 				break;
-			case StructuredPostal.TYPE_WORK:
-				types = new Type[] { Type.WORK };
+			case Email.TYPE_WORK:
+				email.addType(EmailType.WORK);
+				break;
+			case Email.TYPE_MOBILE:
+				email.addType(Contact.EMAIL_TYPE_MOBILE);
+				break;
+			case Email.TYPE_CUSTOM:
+				email.addType(EmailType.get(labelToXName(cursor.getString(2))));
 				break;
 			}
-			Address address = new Address(
-				cursor.getString(3), cursor.getString(4), cursor.getString(2),
-				cursor.getString(5), cursor.getString(6), cursor.getString(7),
-				cursor.getString(8), types
-			);
-			c.addAddress(address);
+			c.getEmails().add(email);
 		}
 		
 		// photo
@@ -258,38 +259,73 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		if (cursor != null && cursor.moveToNext())
 			c.setPhoto(cursor.getBlob(0));
 		
+		// nick name (max. 1)
+		cursor = providerClient.query(dataURI(), new String[] { Nickname.NAME },
+				Nickname.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
+				new String[] { String.valueOf(c.getLocalID()), Nickname.CONTENT_ITEM_TYPE }, null);
+		if (cursor != null && cursor.moveToNext())
+			c.setNickName(cursor.getString(0));
+		
+		// note (max. 1)
+		cursor = providerClient.query(dataURI(), new String[] { Note.NOTE },
+				Website.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
+				new String[] { String.valueOf(c.getLocalID()), Note.CONTENT_ITEM_TYPE }, null);
+		if (cursor != null && cursor.moveToNext())
+			c.setNote(cursor.getString(0));
+
+		// postal addresses
+		cursor = providerClient.query(dataURI(), new String[] {
+				/* 0 */ StructuredPostal.FORMATTED_ADDRESS, StructuredPostal.TYPE, StructuredPostal.LABEL,
+				/* 3 */ StructuredPostal.STREET, StructuredPostal.POBOX, StructuredPostal.NEIGHBORHOOD,
+				/* 6 */ StructuredPostal.CITY, StructuredPostal.REGION, StructuredPostal.POSTCODE,
+				/* 9 */ StructuredPostal.COUNTRY
+			}, StructuredPostal.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
+			new String[] { String.valueOf(c.getLocalID()), StructuredPostal.CONTENT_ITEM_TYPE }, null);
+		while (cursor != null && cursor.moveToNext()) {
+			Address address = new Address();
+
+			address.setLabel(cursor.getString(0));
+			switch (cursor.getInt(1)) {
+			case StructuredPostal.TYPE_HOME:
+				address.addType(AddressType.HOME);
+				break;
+			case StructuredPostal.TYPE_WORK:
+				address.addType(AddressType.WORK);
+				break;
+			case StructuredPostal.TYPE_CUSTOM:
+				address.addType(AddressType.get(labelToXName(cursor.getString(2))));
+				break;
+			}
+			address.setStreetAddress(cursor.getString(3));
+			address.setPoBox(cursor.getString(4));
+			address.setExtendedAddress(cursor.getString(5));
+			address.setLocality(cursor.getString(6));
+			address.setRegion(cursor.getString(7));
+			address.setPostalCode(cursor.getString(8));
+			address.setCountry(cursor.getString(9));
+			c.getAddresses().add(address);
+		}
+		
+		// URL
+		cursor = providerClient.query(dataURI(), new String[] { Website.URL },
+				Website.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
+				new String[] { String.valueOf(c.getLocalID()), Website.CONTENT_ITEM_TYPE }, null);
+		if (cursor != null && cursor.moveToNext())
+			c.setURL(cursor.getString(0));
+
 		// events (birthday)
 		cursor = providerClient.query(dataURI(), new String[] { CommonDataKinds.Event.TYPE, CommonDataKinds.Event.START_DATE },
 				Photo.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), CommonDataKinds.Event.CONTENT_ITEM_TYPE }, null);
 		while (cursor != null && cursor.moveToNext())
-			try {
-				switch (cursor.getInt(0)) {
-				case CommonDataKinds.Event.TYPE_BIRTHDAY:
-					c.setBirthDay(new Date(cursor.getString(1)));
-					break;
-				}
-			} catch (ParseException e) {
-				Log.w(TAG, "Ignoring event with unknown date format: " + cursor.getString(0));
+			switch (cursor.getInt(0)) {
+			case CommonDataKinds.Event.TYPE_ANNIVERSARY:
+				c.setAnniversary(new Anniversary(cursor.getString(1)));
+				break;
+			case CommonDataKinds.Event.TYPE_BIRTHDAY:
+				c.setBirthDay(new Birthday(cursor.getString(1)));
+				break;
 			}
-		
-		// URLs
-		cursor = providerClient.query(dataURI(), new String[] { Website.URL },
-				Website.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), Website.CONTENT_ITEM_TYPE }, null);
-		while (cursor != null && cursor.moveToNext())
-			try {
-				c.addURL(new URI(cursor.getString(0)));
-			} catch (URISyntaxException ex) {
-				Log.w(TAG, "Found invalid contact URL in database: " + ex.toString());
-			}
-		
-		// notes
-		cursor = providerClient.query(dataURI(), new String[] { Note.NOTE },
-				Website.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), Note.CONTENT_ITEM_TYPE }, null);
-		while (cursor != null && cursor.moveToNext())
-			c.addNote(new String(cursor.getString(0)));
 		
 		c.populated = true;
 		return;
@@ -321,12 +357,31 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		return ".vcf";
 	}
 	
+	@Override
+	protected String randomUID() {
+		return UUID.randomUUID().toString();
+	}
+
 	protected Uri dataURI() {
 		return syncAdapterURI(Data.CONTENT_URI);
 	}
 	
+	protected String labelToXName(String label) {
+		String xName = "X-" + label.replaceAll(" ","_").replaceAll("[^\\p{L}\\p{Nd}\\-_]", "").toUpperCase(Locale.US);
+		return xName;
+	}
+	
 	private Builder newDataInsertBuilder(long raw_contact_id, Integer backrefIdx) {
 		return newDataInsertBuilder(dataURI(), Data.RAW_CONTACT_ID, raw_contact_id, backrefIdx);
+	}
+
+	protected String xNameToLabel(String xname) {
+		// "x-my_property"
+		// 1. ensure lower case -> "x-my_property"
+		// 2. remove x- from beginning -> "my_property"
+		// 3. replace "_" by " " -> "my property"
+		// 4. capitalize -> "My Property"
+		return WordUtils.capitalize(StringUtils.removeStart(xname.toLowerCase(Locale.US), "x-").replaceAll("_"," "));
 	}
 	
 	
@@ -352,30 +407,42 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		
 		pendingOperations.add(buildStructuredName(newDataInsertBuilder(localID, backrefIdx), contact).build());
 		
-		if (contact.getNickNames() != null)
-			for (String nick : contact.getNickNames())
-				pendingOperations.add(buildNickName(newDataInsertBuilder(localID, backrefIdx), nick).build());
-		
-		for (net.fortuna.ical4j.vcard.property.Email email : contact.getEmails())
-			pendingOperations.add(buildEmail(newDataInsertBuilder(localID, backrefIdx), email).build());
-		
 		for (Telephone number : contact.getPhoneNumbers())
 			pendingOperations.add(buildPhoneNumber(newDataInsertBuilder(localID, backrefIdx), number).build());
 		
-		for (Address address : contact.getAddresses())
-			pendingOperations.add(buildAddress(newDataInsertBuilder(localID, backrefIdx), address).build());
+		for (ezvcard.property.Email email : contact.getEmails())
+			pendingOperations.add(buildEmail(newDataInsertBuilder(localID, backrefIdx), email).build());
 
 		if (contact.getPhoto() != null)
 			pendingOperations.add(buildPhoto(newDataInsertBuilder(localID, backrefIdx), contact.getPhoto()).build());
 		
+		// TODO organization
+		// TODO im
+		
+		if (contact.getNickName() != null)
+			pendingOperations.add(buildNickName(newDataInsertBuilder(localID, backrefIdx), contact.getNickName()).build());
+		
+		if (contact.getNote() != null)
+			pendingOperations.add(buildNote(newDataInsertBuilder(localID, backrefIdx), contact.getNote()).build());
+		
+		for (Address address : contact.getAddresses())
+			pendingOperations.add(buildAddress(newDataInsertBuilder(localID, backrefIdx), address).build());
+		
+		// TODO group membership
+		
+		if (contact.getURL() != null)
+			pendingOperations.add(buildURL(newDataInsertBuilder(localID, backrefIdx), contact.getURL()).build());
+		
+		// events
+		if (contact.getAnniversary() != null)
+			pendingOperations.add(buildEvent(newDataInsertBuilder(localID, backrefIdx),
+				contact.getAnniversary(), CommonDataKinds.Event.TYPE_ANNIVERSARY).build());
 		if (contact.getBirthDay() != null)
-			pendingOperations.add(buildBirthDay(newDataInsertBuilder(localID, backrefIdx), contact.getBirthDay()).build());
+			pendingOperations.add(buildEvent(newDataInsertBuilder(localID, backrefIdx),
+					contact.getBirthDay(), CommonDataKinds.Event.TYPE_BIRTHDAY).build());
 		
-		for (URI uri : contact.getURLs())
-			pendingOperations.add(buildURL(newDataInsertBuilder(localID, backrefIdx), uri).build());
-		
-		for (String note : contact.getNotes())
-			pendingOperations.add(buildNote(newDataInsertBuilder(localID, backrefIdx), note).build());
+		// TODO relation
+		// TODO SIP address
 	}
 	
 	@Override
@@ -400,144 +467,171 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			.withValue(StructuredName.PHONETIC_FAMILY_NAME, contact.getPhoneticFamilyName());
 	}
 	
-	protected Builder buildNickName(Builder builder, String nickName) {
-		return builder
-			.withValue(Data.MIMETYPE, Nickname.CONTENT_ITEM_TYPE)
-			.withValue(Nickname.NAME, nickName);
-	}
-	
-	protected Builder buildEmail(Builder builder, net.fortuna.ical4j.vcard.property.Email email) {
+	protected Builder buildPhoneNumber(Builder builder, Telephone number) {
+		int typeCode = Phone.TYPE_OTHER;
+		String typeLabel = null;
+		Set<TelephoneType> types = number.getTypes();
+		// 1 Android type <-> 2 VCard types: fax, cell, pager
+		if (types.contains(TelephoneType.FAX)) {
+			if (types.contains(TelephoneType.HOME))
+				typeCode = Phone.TYPE_FAX_HOME;
+			else if (types.contains(TelephoneType.WORK))
+				typeCode = Phone.TYPE_FAX_WORK;
+			else
+				typeCode = Phone.TYPE_OTHER_FAX;
+		} else if (types.contains(TelephoneType.CELL)) {
+			if (types.contains(TelephoneType.WORK))
+				typeCode = Phone.TYPE_WORK_MOBILE;
+			else
+				typeCode = Phone.TYPE_MOBILE;
+		} else if (types.contains(TelephoneType.PAGER)) {
+			if (types.contains(TelephoneType.WORK))
+				typeCode = Phone.TYPE_WORK_PAGER;
+			else
+				typeCode = Phone.TYPE_PAGER;
+		// types with 1:1 translation
+		} else if (types.contains(TelephoneType.HOME)) {
+			typeCode = Phone.TYPE_HOME;
+		} else if (types.contains(TelephoneType.WORK)) {
+			typeCode = Phone.TYPE_WORK;
+		} else if (types.contains(Contact.PHONE_TYPE_CALLBACK)) {
+			typeCode = Phone.TYPE_CALLBACK;
+		} else if (types.contains(TelephoneType.CAR)) {
+			typeCode = Phone.TYPE_CAR;
+		} else if (types.contains(Contact.PHONE_TYPE_COMPANY_MAIN)) {
+			typeCode = Phone.TYPE_COMPANY_MAIN;
+		} else if (types.contains(TelephoneType.ISDN)) {
+			typeCode = Phone.TYPE_ISDN;
+		} else if (types.contains(TelephoneType.PREF)) {
+			typeCode = Phone.TYPE_MAIN;
+		} else if (types.contains(Contact.PHONE_TYPE_RADIO)) {
+			typeCode = Phone.TYPE_RADIO;
+		} else if (types.contains(TelephoneType.TEXTPHONE)) {
+			typeCode = Phone.TYPE_TELEX;
+		} else if (types.contains(TelephoneType.TEXT)) {
+			typeCode = Phone.TYPE_TTY_TDD;
+		} else if (types.contains(Contact.PHONE_TYPE_ASSISTANT)) {
+			typeCode = Phone.TYPE_ASSISTANT;
+		} else if (types.contains(Contact.PHONE_TYPE_MMS)) {
+			typeCode = Phone.TYPE_MMS;
+		} else if (!types.isEmpty()) {
+			TelephoneType type = types.iterator().next();
+			typeCode = Phone.TYPE_CUSTOM;
+			typeLabel = xNameToLabel(type.getValue());
+		}
+		
 		builder = builder
-			.withValue(Data.MIMETYPE, Email.CONTENT_ITEM_TYPE)
-			.withValue(Email.ADDRESS, email.getValue());
-		
-		int type = 0;
-		
-		Type emailType = (Type)email.getParameter(Id.TYPE);
-		if (emailType == Type.HOME)
-			type = Email.TYPE_HOME;
-		else if (emailType == Type.WORK)
-			type = Email.TYPE_WORK;
-		
-		if (type != 0)
-			builder = builder.withValue(Email.TYPE, type);
-		
+			.withValue(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)
+			.withValue(Phone.NUMBER, number.getText())
+			.withValue(Phone.TYPE, typeCode);
+		if (typeLabel != null)
+			builder = builder.withValue(Phone.LABEL, typeLabel);
 		return builder;
 	}
 	
-	protected Builder buildPhoneNumber(Builder builder, Telephone number) {
-		boolean	fax = false,
-				cell = false,
-				pager = false,
-				home = false,
-				work = false;
+	protected Builder buildEmail(Builder builder, ezvcard.property.Email email) {
+		int typeCode = Email.TYPE_OTHER;
+		String typeLabel = null;
 		
-		Type phoneType = (Type)number.getParameter(Id.TYPE);
-		if (phoneType != null)			
-			for (String strType : phoneType.getTypes())
-				if (strType.equalsIgnoreCase("fax"))
-					fax = true;
-				else if (strType.equalsIgnoreCase("cell"))
-					cell = true;
-				else if (strType.equalsIgnoreCase("pager"))
-					pager = true;
-				else if (strType.equalsIgnoreCase("home"))
-					home = true;
-				else if (strType.equalsIgnoreCase("work"))
-					work = true;
+		for (EmailType type : email.getTypes())
+			if (type == EmailType.HOME)
+				typeCode = Email.TYPE_HOME;
+			else if (type == EmailType.WORK)
+				typeCode = Email.TYPE_WORK;
+			else if (type == Contact.EMAIL_TYPE_MOBILE)
+				typeCode = Email.TYPE_MOBILE;
+			else {
+				typeCode = Email.TYPE_CUSTOM;
+				typeLabel = xNameToLabel(type.getValue());
+			}
 		
-		int type = Phone.TYPE_OTHER;
-		if (fax) {
-			if (home)
-				type = Phone.TYPE_FAX_HOME;
-			else if (work)
-				type = Phone.TYPE_FAX_WORK;
-			else
-				type = Phone.TYPE_OTHER_FAX;
-			
-		} else if (cell) {
-			if (work)
-				type = Phone.TYPE_WORK_MOBILE;
-			else
-				type = Phone.TYPE_MOBILE;
-			
-		} else if (pager) {
-			if (work)
-				type = Phone.TYPE_WORK_PAGER;
-			else
-				type = Phone.TYPE_PAGER;
-			
-		} else if (home) {
-			type = Phone.TYPE_HOME;
-		} else if (work) {
-			type = Phone.TYPE_WORK;
-		}
-		
-		return builder
-			.withValue(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)
-			.withValue(Phone.NUMBER, number.getValue())
-			.withValue(Phone.TYPE, type);
+		builder = builder
+				.withValue(Data.MIMETYPE, Email.CONTENT_ITEM_TYPE)
+				.withValue(Email.ADDRESS, email.getValue())
+				.withValue(Email.TYPE, typeCode);
+		if (typeLabel != null)
+			builder = builder.withValue(Email.LABEL, typeLabel);
+		return builder;
 	}
 	
-	protected Builder buildAddress(Builder builder, Address address) {
-		/*	street po.box (extended)
-		 *	region
-		 *	postal code city
-		 *	country
-		 */
-		String	lineStreet = StringUtils.join(new String[] { address.getStreet(), address.getPoBox(), address.getExtended() }, " "),
-				lineLocality = StringUtils.join(new String[] { address.getPostcode(), address.getLocality() }, " ");
-		
-		List<String> lines = new LinkedList<String>();
-		if (lineStreet != null)
-			lines.add(lineStreet);
-		if (address.getRegion() != null && !address.getRegion().isEmpty())
-			lines.add(address.getRegion());
-		if (lineLocality != null)
-			lines.add(lineLocality);
-			
-		int typeCode = StructuredPostal.TYPE_OTHER;
-		Type type = (Type)address.getParameter(Id.TYPE);
-		if (type == Type.HOME)
-			typeCode = StructuredPostal.TYPE_HOME;
-		else if (type == Type.WORK)
-			typeCode = StructuredPostal.TYPE_WORK;
-		
-		return builder
-			.withValue(Data.MIMETYPE, StructuredPostal.CONTENT_ITEM_TYPE)
-			.withValue(StructuredPostal.FORMATTED_ADDRESS, StringUtils.join(lines, "\n"))
-			.withValue(StructuredPostal.TYPE, typeCode)
-			.withValue(StructuredPostal.STREET, address.getStreet())
-			.withValue(StructuredPostal.POBOX, address.getPoBox())
-			.withValue(StructuredPostal.NEIGHBORHOOD, address.getExtended())
-			.withValue(StructuredPostal.CITY, address.getLocality())
-			.withValue(StructuredPostal.REGION, address.getRegion())
-			.withValue(StructuredPostal.POSTCODE, address.getPostcode())
-			.withValue(StructuredPostal.COUNTRY, address.getCountry());
-	}
-
 	protected Builder buildPhoto(Builder builder, byte[] photo) {
 		return builder
 			.withValue(Data.MIMETYPE, Photo.CONTENT_ITEM_TYPE)
 			.withValue(Photo.PHOTO, photo);
 	}
 	
-	protected Builder buildBirthDay(Builder builder, Date birthDay) {
+	protected Builder buildNickName(Builder builder, String nickName) {
 		return builder
-			.withValue(Data.MIMETYPE, CommonDataKinds.Event.CONTENT_ITEM_TYPE)
-			.withValue(CommonDataKinds.Event.TYPE, CommonDataKinds.Event.TYPE_BIRTHDAY) 
-			.withValue(CommonDataKinds.Event.START_DATE, birthDay.toString());
-	}
-	
-	protected Builder buildURL(Builder builder, URI uri) {
-		return builder
-			.withValue(Data.MIMETYPE, Website.CONTENT_ITEM_TYPE)
-			.withValue(Website.URL, uri.toString());
+			.withValue(Data.MIMETYPE, Nickname.CONTENT_ITEM_TYPE)
+			.withValue(Nickname.NAME, nickName);
 	}
 	
 	protected Builder buildNote(Builder builder, String note) {
 		return builder
 			.withValue(Data.MIMETYPE, Note.CONTENT_ITEM_TYPE)
 			.withValue(Note.NOTE, note);
+	}
+
+	protected Builder buildAddress(Builder builder, Address address) {
+		/*	street po.box (extended)
+		 *	region
+		 *	postal code city
+		 *	country
+		 */
+		String formattedAddress = address.getLabel();
+		if (formattedAddress == null || formattedAddress.isEmpty()) {
+			String	lineStreet = StringUtils.join(new String[] { address.getStreetAddress(), address.getPoBox(), address.getExtendedAddress() }, " "),
+					lineLocality = StringUtils.join(new String[] { address.getPostalCode(), address.getLocality() }, " ");
+			
+			List<String> lines = new LinkedList<String>();
+			if (lineStreet != null)
+				lines.add(lineStreet);
+			if (address.getRegion() != null && !address.getRegion().isEmpty())
+				lines.add(address.getRegion());
+			if (lineLocality != null)
+				lines.add(lineLocality);
+			
+			formattedAddress = StringUtils.join(lines, "\n");
+		}
+			
+		int typeCode = StructuredPostal.TYPE_OTHER;
+		String typeLabel = null;
+		for (AddressType type : address.getTypes())
+			if (type == AddressType.HOME)
+				typeCode = StructuredPostal.TYPE_HOME;
+			else if (type == AddressType.WORK)
+				typeCode = StructuredPostal.TYPE_WORK;
+			else {
+				typeCode = StructuredPostal.TYPE_CUSTOM;
+				typeLabel = xNameToLabel(type.getValue());
+			}
+		
+		builder = builder
+			.withValue(Data.MIMETYPE, StructuredPostal.CONTENT_ITEM_TYPE)
+			.withValue(StructuredPostal.FORMATTED_ADDRESS, formattedAddress)
+			.withValue(StructuredPostal.TYPE, typeCode)
+			.withValue(StructuredPostal.STREET, address.getStreetAddress())
+			.withValue(StructuredPostal.POBOX, address.getPoBox())
+			.withValue(StructuredPostal.NEIGHBORHOOD, address.getExtendedAddress())
+			.withValue(StructuredPostal.CITY, address.getLocality())
+			.withValue(StructuredPostal.REGION, address.getRegion())
+			.withValue(StructuredPostal.POSTCODE, address.getPostalCode())
+			.withValue(StructuredPostal.COUNTRY, address.getCountry());
+		if (typeLabel != null)
+			builder = builder.withValue(StructuredPostal.LABEL, typeLabel);
+		return builder;
+	}
+
+	protected Builder buildURL(Builder builder, String url) {
+		return builder
+			.withValue(Data.MIMETYPE, Website.CONTENT_ITEM_TYPE)
+			.withValue(Website.URL, url);
+	}
+	
+	protected Builder buildEvent(Builder builder, DateOrTimeProperty date, int type) {
+		return builder
+			.withValue(Data.MIMETYPE, CommonDataKinds.Event.CONTENT_ITEM_TYPE)
+			.withValue(CommonDataKinds.Event.TYPE, type) 
+			.withValue(CommonDataKinds.Event.START_DATE, date.getText());
 	}
 }

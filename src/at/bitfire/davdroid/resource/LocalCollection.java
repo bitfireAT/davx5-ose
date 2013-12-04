@@ -22,7 +22,13 @@ import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.util.Log;
-import at.bitfire.davdroid.syncadapter.DavSyncAdapter;
+
+/* TODO: move Android <-> iCal/VCard code to adapter class for better maintenance / testing
+ * RemoteCollection<>                            LocalCollection<>
+ * RemoteResource     <-- ResourceAdapter ---->  LocalResource
+ *   - RemoteContact  <--  - ContactAdapter -->    - LocalContact
+ *   - RemoteEvent    <--  - EventAdapter ---->    - LocalEvent
+ */
 
 public abstract class LocalCollection<T extends Resource> {
 	private static final String TAG = "davdroid.LocalCollection";
@@ -100,12 +106,12 @@ public abstract class LocalCollection<T extends Resource> {
 				where, null, null);
 		LinkedList<T> fresh = new LinkedList<T>();
 		while (cursor != null && cursor.moveToNext()) {
-			String uid = DavSyncAdapter.generateUID(),
+			String uid = randomUID(),
 				   resourceName = uid.replace("@", "_") + fileExtension();
 			T resource = findById(cursor.getLong(0), resourceName, null, true);
 			resource.setUid(uid);
 
-			// new record: set generated resource name in database
+			// new record: set generated UID + remote file name in database
 			pendingOperations.add(ContentProviderOperation
 					.newUpdate(ContentUris.withAppendedId(entriesURI(), resource.getLocalID()))
 					.withValue(entryColumnRemoteName(), resourceName)
@@ -124,9 +130,7 @@ public abstract class LocalCollection<T extends Resource> {
 	
 	// create/update/delete
 	
-	public void add(Resource resource) throws ValidationException {
-		resource.validate();
-		
+	public void add(Resource resource) {
 		int idx = pendingOperations.size();
 		pendingOperations.add(
 				buildEntry(ContentProviderOperation.newInsert(entriesURI()), resource)
@@ -138,7 +142,6 @@ public abstract class LocalCollection<T extends Resource> {
 	
 	public void updateByRemoteName(Resource remoteResource) throws RemoteException, ValidationException {
 		T localResource = findByRemoteName(remoteResource.getName());
-		remoteResource.validate();
 		
 		pendingOperations.add(
 				buildEntry(ContentProviderOperation.newUpdate(ContentUris.withAppendedId(entriesURI(), localResource.getLocalID())), remoteResource)
@@ -177,6 +180,8 @@ public abstract class LocalCollection<T extends Resource> {
 	// helpers
 	
 	protected abstract String fileExtension();
+	
+	protected abstract String randomUID();
 	
 	protected Uri syncAdapterURI(Uri baseURI) {
 		return baseURI.buildUpon()
