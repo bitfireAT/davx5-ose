@@ -140,11 +140,7 @@ public class SyncManager {
 		if (!resourcesToAdd.isEmpty()) {
 			for (Resource res : dav.multiGet(resourcesToAdd.toArray(new Resource[0]))) {
 				Log.i(TAG, "Adding " + res.getName());
-				try {
-					local.add(res);
-				} catch (ValidationException ex) {
-					Log.w(TAG, "Ignoring invalid remote resource: " + res.getName(), ex);
-				}
+				local.add(res);
 				
 				if (++syncResult.stats.numInserts % MAX_UPDATES_BEFORE_COMMIT == 0)	// avoid TransactionTooLargeException
 					local.commit();

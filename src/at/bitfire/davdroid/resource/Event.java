@@ -29,7 +29,6 @@ import net.fortuna.ical4j.model.DefaultTimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.PropertyList;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
-import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.component.VAlarm;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
@@ -111,8 +110,6 @@ public class Event extends Resource {
 		net.fortuna.ical4j.model.Calendar ical = builder.build(entity);
 		if (ical == null)
 			return;
-		
-		Log.d(TAG, "Parsing iCal: " + ical.toString());
 		
 		// event
 		ComponentList events = ical.getComponents(Component.VEVENT);
@@ -229,7 +226,7 @@ public class Event extends Resource {
 
 	
 	public long getDtStartInMillis() {
-		return dtStart.getDate().getTime();
+		return (dtStart != null && dtStart.getDate() != null) ? dtStart.getDate().getTime() : 0;
 	}
 	
 	public String getDtStartTzID() {
@@ -330,16 +327,6 @@ public class Event extends Resource {
 		Log.d(TAG, "Assuming time zone " + localTZ + " for " + tzID);
 		date.setTimeZone(tzRegistry.getTimeZone(localTZ));
 	}
-
-
-	@Override
-	public void validate() throws ValidationException {
-		super.validate();
-		
-		if (dtStart == null)
-			throw new ValidationException("dtStart must not be empty");
-	}
-
 
 	public static String TimezoneDefToTzId(String timezoneDef) {
 		try {

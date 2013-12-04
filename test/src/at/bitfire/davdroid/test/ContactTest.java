@@ -36,7 +36,7 @@ public class ContactTest extends InstrumentationTestCase {
 		Assert.assertEquals("Gump", c.getFamilyName());
 		
 		Assert.assertEquals(2, c.getPhoneNumbers().size());
-		Assert.assertEquals("(111) 555-1212", c.getPhoneNumbers().get(0).getValue());
+		Assert.assertEquals("(111) 555-1212", c.getPhoneNumbers().get(0).getText());
 		
 		Assert.assertEquals(1, c.getEmails().size());
 		Assert.assertEquals("forrestgump@example.com", c.getEmails().get(0).getValue());
