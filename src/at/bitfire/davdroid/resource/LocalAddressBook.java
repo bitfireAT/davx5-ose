@@ -7,7 +7,9 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -39,6 +41,7 @@ import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.provider.ContactsContract.CommonDataKinds.Website;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.RawContacts;
+import android.util.Log;
 import at.bitfire.davdroid.Constants;
 import ezvcard.parameter.AddressType;
 import ezvcard.parameter.EmailType;
@@ -53,7 +56,7 @@ import ezvcard.property.Telephone;
 
 
 public class LocalAddressBook extends LocalCollection<Contact> {
-	//private final static String TAG = "davdroid.LocalAddressBook";
+	private final static String TAG = "davdroid.LocalAddressBook";
 	
 	protected AccountManager accountManager;
 	
@@ -364,19 +367,26 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		if (cursor != null && cursor.moveToNext())
 			c.setURL(cursor.getString(0));
 
-		// events (birthday)
+		// events
 		cursor = providerClient.query(dataURI(), new String[] { CommonDataKinds.Event.TYPE, CommonDataKinds.Event.START_DATE },
 				Photo.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), CommonDataKinds.Event.CONTENT_ITEM_TYPE }, null);
-		while (cursor != null && cursor.moveToNext())
-			switch (cursor.getInt(0)) {
-			case CommonDataKinds.Event.TYPE_ANNIVERSARY:
-				c.setAnniversary(new Anniversary(cursor.getString(1)));
-				break;
-			case CommonDataKinds.Event.TYPE_BIRTHDAY:
-				c.setBirthDay(new Birthday(cursor.getString(1)));
-				break;
+		while (cursor != null && cursor.moveToNext()) {
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+			try {
+				Date date = formatter.parse(cursor.getString(1));
+				switch (cursor.getInt(0)) {
+				case CommonDataKinds.Event.TYPE_ANNIVERSARY:
+					c.setAnniversary(new Anniversary(date));
+					break;
+				case CommonDataKinds.Event.TYPE_BIRTHDAY:
+					c.setBirthDay(new Birthday(date));
+					break;
+				}
+			} catch (ParseException e) {
+				Log.w(TAG, "Couldn't parse local birthday/anniversary date", e);
 			}
+		}
 		
 		c.populated = true;
 		return;
@@ -751,9 +761,12 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	
 	protected Builder buildEvent(Builder builder, DateOrTimeProperty date, int type) {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-		return builder
-			.withValue(Data.MIMETYPE, CommonDataKinds.Event.CONTENT_ITEM_TYPE)
-			.withValue(CommonDataKinds.Event.TYPE, type) 
-			.withValue(CommonDataKinds.Event.START_DATE, formatter.format(date.getDate()));
+		if (date.getDate() != null)
+			return builder
+				.withValue(Data.MIMETYPE, CommonDataKinds.Event.CONTENT_ITEM_TYPE)
+				.withValue(CommonDataKinds.Event.TYPE, type) 
+				.withValue(CommonDataKinds.Event.START_DATE, formatter.format(date.getDate()));
+		else
+			return builder;
 	}
 }

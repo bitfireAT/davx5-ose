@@ -9,12 +9,10 @@ package at.bitfire.davdroid.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -40,6 +38,7 @@ import ezvcard.property.Nickname;
 import ezvcard.property.Note;
 import ezvcard.property.Organization;
 import ezvcard.property.Photo;
+import ezvcard.property.ProductId;
 import ezvcard.property.RawProperty;
 import ezvcard.property.Revision;
 import ezvcard.property.Role;
@@ -47,7 +46,6 @@ import ezvcard.property.StructuredName;
 import ezvcard.property.Telephone;
 import ezvcard.property.Uid;
 import ezvcard.property.Url;
-import ezvcard.util.IOUtils;
 
 @ToString(callSuper = true)
 public class Contact extends Resource {
@@ -150,19 +148,9 @@ public class Contact extends Resource {
 		phoneNumbers = vcard.getTelephoneNumbers();
 		emails = vcard.getEmails();
 		
-		List<Photo> photos = vcard.getPhotos();
-		if (!photos.isEmpty()) {
-			Photo photo = photos.get(0);
+		for (Photo photo : vcard.getPhotos()) {
 			this.photo = photo.getData();
-			if (this.photo == null) {
-				try {
-					URL url = new URL(photo.getUrl());
-					@Cleanup InputStream in = url.openStream();
-					this.photo = IOUtils.toByteArray(in);
-				} catch(IOException ex) {
-					Log.w(TAG, "Couldn't fetch photo from referenced URL", ex);
-				}
-			}
+			break;
 		}
 		
 		if (vcard.getOrganization() != null) {
@@ -170,9 +158,8 @@ public class Contact extends Resource {
 			if (!organizations.isEmpty())
 				organization = organizations.get(0);
 		}
-		List<Role> roles = vcard.getRoles();
-		if (!roles.isEmpty())
-			role = roles.get(0).getValue();
+		for (Role role : vcard.getRoles())
+			this.role = role.getValue();
 		
 		impps = vcard.getImpps();
 		
@@ -270,8 +257,8 @@ public class Contact extends Resource {
 			vcard.setAnniversary(anniversary);
 		if (birthDay != null)
 			vcard.setBirthday(birthDay);
-		
-		vcard.setProdId("DAVdroid/" + Constants.APP_VERSION);
+
+		vcard.setProdId(new ProductId("DAVdroid/" + Constants.APP_VERSION));
 		vcard.setRevision(Revision.now());
 		return Ezvcard
 			.write(vcard)
