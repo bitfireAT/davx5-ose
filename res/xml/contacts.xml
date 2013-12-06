@@ -20,21 +20,35 @@
 		    maxOccurs="1" />
 		
 		<DataKind kind="phone">
-		    <Type type="fax_home" />
-		    <Type type="fax_work" />
-		    <Type type="home" />
-		    <Type type="mobile" />
-		    <Type type="other_fax" />
-		    <Type type="pager" />
-		    <Type type="work" />
-		    <Type type="work_mobile" />
-		    <Type type="work_pager" />            
-		</DataKind>
+            <Type type="mobile" />
+            <Type type="home" />
+            <Type type="work" />
+            <Type type="fax_work" />
+            <Type type="fax_home" />
+            <Type type="pager" />
+            <Type type="other" />
+            <Type type="custom"/>
+            <Type type="callback" />
+            <Type type="car" />
+            <Type type="company_main" />
+            <Type type="isdn" />
+            <Type type="main" />
+            <Type type="other_fax" />
+            <Type type="radio" />
+            <Type type="telex" />
+            <Type type="tty_tdd" />
+            <Type type="work_mobile"/>
+            <Type type="work_pager" />
+            <Type type="assistant" />
+            <Type type="mms" />
+        </DataKind>
 		
 		<DataKind kind="email">
-		    <Type type="home" />
-		    <Type type="work" />
-		    <Type type="other" />
+            <Type type="home" />
+            <Type type="work" />
+            <Type type="other" />
+            <Type type="mobile" />
+            <Type type="custom" />
 		</DataKind>
 		
 		<DataKind kind="postal" needsStructured="true" >
@@ -56,10 +70,8 @@
 		<DataKind
 		    dateWithTime="false"
 		    kind="event">
-		    <Type
-		        maxOccurs="1"
-		        type="birthday"
-		        yearOptional="false" />
+		    <Type maxOccurs="1" type="birthday" yearOptional="false" />
+		    <Type type="anniversary" />
 		</DataKind>
 	</EditSchema>
 </ContactsAccountType>
