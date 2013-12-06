@@ -60,7 +60,6 @@ import android.provider.CalendarContract.Events;
 import android.provider.CalendarContract.Reminders;
 import android.provider.ContactsContract;
 import android.util.Log;
-import at.bitfire.davdroid.syncadapter.DavSyncAdapter;
 import at.bitfire.davdroid.syncadapter.ServerInfo;
 
 public class LocalCalendar extends LocalCollection<Event> {
@@ -167,26 +166,6 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 	
 	/* content provider (= database) querying */
-	
-	@Override
-	public Event findById(long localID, String remoteName, String eTag, boolean populate) throws RemoteException {
-		Event e = new Event(localID, remoteName, eTag);
-		if (populate)
-			populate(e);
-		return e;
-	}
-	
-	@Override
-	public Event findByRemoteName(String remoteName) throws RemoteException {
-		Cursor cursor = providerClient.query(entriesURI(),
-				new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
-				Events.CALENDAR_ID + "=? AND " + entryColumnRemoteName() + "=?",
-				new String[] { String.valueOf(id), remoteName }, null);
-		if (cursor != null && cursor.moveToNext())
-			return new Event(cursor.getLong(0), cursor.getString(1), cursor.getString(2));
-		else
-			return null;
-	}
 
 	@Override
 	public void populate(Resource resource) throws RemoteException {
@@ -398,17 +377,14 @@ public class LocalCalendar extends LocalCollection<Event> {
 	}
 
 	
+	/* create/update/delete */
+	
+	public Event newResource(long localID, String resourceName, String eTag) {
+		return new Event(localID, resourceName, eTag);
+	}
+	
+	
 	/* private helper methods */
-	
-	@Override
-	protected String fileExtension() {
-		return ".ics";
-	}
-	
-	@Override
-	protected String randomUID() {
-		return DavSyncAdapter.generateUID();
-	}
 	
 	protected static Uri calendarsURI(Account account) {
 		return Calendars.CONTENT_URI.buildUpon().appendQueryParameter(Calendars.ACCOUNT_NAME, account.name)

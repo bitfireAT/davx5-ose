@@ -80,7 +80,7 @@ public abstract class LocalCollection<T extends Resource> {
 				where, null, null);
 		LinkedList<T> dirty = new LinkedList<T>();
 		while (cursor != null && cursor.moveToNext())
-			dirty.add(findById(cursor.getLong(0), cursor.getString(1), cursor.getString(2), true));
+			dirty.add(findById(cursor.getLong(0), true));
 		return dirty.toArray(new Resource[0]);
 	}
 
@@ -93,7 +93,7 @@ public abstract class LocalCollection<T extends Resource> {
 				where, null, null);
 		LinkedList<T> deleted = new LinkedList<T>();
 		while (cursor != null && cursor.moveToNext())
-			deleted.add(findById(cursor.getLong(0), cursor.getString(1), cursor.getString(2), false));
+			deleted.add(findById(cursor.getLong(0), false));
 		return deleted.toArray(new Resource[0]);
 	}
 
@@ -106,15 +106,17 @@ public abstract class LocalCollection<T extends Resource> {
 				where, null, null);
 		LinkedList<T> fresh = new LinkedList<T>();
 		while (cursor != null && cursor.moveToNext()) {
-			String uid = randomUID(),
-				   resourceName = uid.replace("@", "_") + fileExtension();
-			T resource = findById(cursor.getLong(0), resourceName, null, true);
-			resource.setUid(uid);
+			T resource = findById(cursor.getLong(0), true);
+			/*String	uid = randomUID(),
+					resourceName = uid.replace("@", "_") + fileExtension();
+			resource.setUid(uid);*/
+			resource.initialize();
 
 			// new record: set generated UID + remote file name in database
 			pendingOperations.add(ContentProviderOperation
 					.newUpdate(ContentUris.withAppendedId(entriesURI(), resource.getLocalID()))
-					.withValue(entryColumnRemoteName(), resourceName)
+					.withValue(entryColumnUID(), resource.getUid())
+					.withValue(entryColumnRemoteName(), resource.getName())
 					.build());
 			
 			fresh.add(resource);
@@ -122,13 +124,38 @@ public abstract class LocalCollection<T extends Resource> {
 		return fresh.toArray(new Resource[0]);
 	}
 	
-	abstract public T findById(long localID, String resourceName, String eTag, boolean populate) throws RemoteException;
-	abstract public T findByRemoteName(String name) throws RemoteException;
+	public T findById(long localID, boolean populate) throws RemoteException {
+		Cursor cursor = providerClient.query(ContentUris.withAppendedId(entriesURI(), localID),
+				new String[] { entryColumnRemoteName(), entryColumnETag() }, null, null, null);
+		if (cursor != null && cursor.moveToNext()) {
+			T resource = newResource(localID, cursor.getString(0), cursor.getString(1));
+			if (populate)
+				populate(resource);
+			return resource;
+		} else
+			return null;
+	}
+	
+	public T findByRemoteName(String remoteName, boolean populate) throws RemoteException {
+		Cursor cursor = providerClient.query(entriesURI(),
+				new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
+				entryColumnRemoteName() + "=?", new String[] { remoteName }, null);
+		if (cursor != null && cursor.moveToNext()) {
+			T resource = newResource(cursor.getLong(0), cursor.getString(1), cursor.getString(2));
+			if (populate)
+				populate(resource);
+			return resource;
+		} else
+			return null;
+	}
+
 
 	public abstract void populate(Resource record) throws RemoteException;
 
 	
 	// create/update/delete
+	
+	abstract public T newResource(long localID, String resourceName, String eTag);
 	
 	public void add(Resource resource) {
 		int idx = pendingOperations.size();
@@ -141,7 +168,7 @@ public abstract class LocalCollection<T extends Resource> {
 	}
 	
 	public void updateByRemoteName(Resource remoteResource) throws RemoteException, ValidationException {
-		T localResource = findByRemoteName(remoteResource.getName());
+		T localResource = findByRemoteName(remoteResource.getName(), false);
 		
 		pendingOperations.add(
 				buildEntry(ContentProviderOperation.newUpdate(ContentUris.withAppendedId(entriesURI(), localResource.getLocalID())), remoteResource)
@@ -178,10 +205,6 @@ public abstract class LocalCollection<T extends Resource> {
 
 	
 	// helpers
-	
-	protected abstract String fileExtension();
-	
-	protected abstract String randomUID();
 	
 	protected Uri syncAdapterURI(Uri baseURI) {
 		return baseURI.buildUpon()

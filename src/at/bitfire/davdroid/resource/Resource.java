@@ -36,6 +36,9 @@ public abstract class Resource {
 		this.localID = localID;
 	}
 	
+	// sets resource name and UID
+	public abstract void initialize();
+	
 	public abstract void parseEntity(InputStream entity) throws IOException, ParserException, VCardException;
 	public abstract String toEntity() throws IOException, ValidationException;
 }

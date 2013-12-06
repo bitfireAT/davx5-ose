@@ -35,11 +35,14 @@ import ezvcard.property.Anniversary;
 import ezvcard.property.Birthday;
 import ezvcard.property.Email;
 import ezvcard.property.FormattedName;
+import ezvcard.property.Impp;
 import ezvcard.property.Nickname;
 import ezvcard.property.Note;
+import ezvcard.property.Organization;
 import ezvcard.property.Photo;
 import ezvcard.property.RawProperty;
 import ezvcard.property.Revision;
+import ezvcard.property.Role;
 import ezvcard.property.StructuredName;
 import ezvcard.property.Telephone;
 import ezvcard.property.Uid;
@@ -71,12 +74,20 @@ public class Contact extends Resource {
 	@Getter @Setter private String prefix, givenName, middleName, familyName, suffix;
 	@Getter @Setter private String phoneticGivenName, phoneticMiddleName, phoneticFamilyName;
 	@Getter @Setter private String note, URL;
+	@Getter @Setter private String organization, role;
 	
 	@Getter @Setter private byte[] photo;
 	
 	@Getter @Setter private Anniversary anniversary;
 	@Getter @Setter private Birthday birthDay;
 
+	@Getter private List<Email> emails = new LinkedList<Email>();
+	@Getter private List<Telephone> phoneNumbers = new LinkedList<Telephone>();
+	@Getter private List<Address> addresses = new LinkedList<Address>();
+	@Getter private List<Impp> impps = new LinkedList<Impp>();
+
+
+	/* instance methods */
 	
 	public Contact(String name, String ETag) {
 		super(name, ETag);
@@ -87,12 +98,11 @@ public class Contact extends Resource {
 		this.localID = localID;
 	}
 
-	
-	/* multiple-record fields */
-	
-	@Getter private List<Email> emails = new LinkedList<Email>();
-	@Getter private List<Telephone> phoneNumbers = new LinkedList<Telephone>();
-	@Getter private List<Address> addresses = new LinkedList<Address>();
+	@Override
+	public void initialize() {
+		uid = UUID.randomUUID().toString();
+		name = uid + ".vcf";
+	}
 
 	
 	/* VCard methods */
@@ -154,6 +164,17 @@ public class Contact extends Resource {
 				}
 			}
 		}
+		
+		if (vcard.getOrganization() != null) {
+			List<String> organizations = vcard.getOrganization().getValues();
+			if (!organizations.isEmpty())
+				organization = organizations.get(0);
+		}
+		List<Role> roles = vcard.getRoles();
+		if (!roles.isEmpty())
+			role = roles.get(0).getValue();
+		
+		impps = vcard.getImpps();
 		
 		Nickname nicknames = vcard.getNickname();
 		if (nicknames != null && nicknames.getValues() != null)
@@ -221,17 +242,28 @@ public class Contact extends Resource {
 
 		if (photo != null)
 			vcard.addPhoto(new Photo(photo, ImageType.JPEG));
+		
+		if (organization != null) {
+			Organization org = new Organization();
+			org.addValue(organization);
+			vcard.addOrganization(org);
+		}
+		if (role != null)
+			vcard.addRole(role);
+		
+		for (Impp impp : impps)
+			vcard.addImpp(impp);
 
-		if (nickName != null)
+		if (nickName != null && !nickName.isEmpty())
 			vcard.setNickname(nickName);
 		
-		if (note != null)
+		if (note != null && !note.isEmpty())
 			vcard.addNote(note);
 		
 		for (Address address : addresses)
 			vcard.addAddress(address);
 		
-		if (URL != null)
+		if (URL != null && !URL.isEmpty())
 			vcard.addUrl(URL);
 		
 		if (anniversary != null)

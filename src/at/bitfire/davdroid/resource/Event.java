@@ -101,6 +101,12 @@ public class Event extends Resource {
 		this(name, ETag);
 		this.localID = localID;
 	}
+	
+	@Override
+	public void initialize() {
+		uid = DavSyncAdapter.generateUID();
+		name = uid.replace("@", "_") + ".ics";
+	}
 
 
 	@Override
