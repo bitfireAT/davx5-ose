@@ -42,6 +42,7 @@ import net.fortuna.ical4j.model.property.DtStart;
 import net.fortuna.ical4j.model.property.Duration;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.ExRule;
+import net.fortuna.ical4j.model.property.LastModified;
 import net.fortuna.ical4j.model.property.Location;
 import net.fortuna.ical4j.model.property.Organizer;
 import net.fortuna.ical4j.model.property.ProdId;
@@ -216,6 +217,7 @@ public class Event extends Resource {
 		
 		event.getAlarms().addAll(alarms);
 		
+		props.add(new LastModified());
 		ical.getComponents().add(event);
 
 		// add VTIMEZONE components
@@ -296,6 +298,8 @@ public class Event extends Resource {
 	}
 
 	protected boolean hasNoTime(DateProperty date) {
+		if (date == null)
+			return false;
 		return !(date.getDate() instanceof DateTime);
 	}
 

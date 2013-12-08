@@ -38,7 +38,6 @@ import ezvcard.property.Nickname;
 import ezvcard.property.Note;
 import ezvcard.property.Organization;
 import ezvcard.property.Photo;
-import ezvcard.property.ProductId;
 import ezvcard.property.RawProperty;
 import ezvcard.property.Revision;
 import ezvcard.property.Role;
@@ -258,7 +257,7 @@ public class Contact extends Resource {
 		if (birthDay != null)
 			vcard.setBirthday(birthDay);
 
-		vcard.setProdId(new ProductId("DAVdroid/" + Constants.APP_VERSION));
+		vcard.setProdId("DAVdroid/" + Constants.APP_VERSION);
 		vcard.setRevision(Revision.now());
 		return Ezvcard
 			.write(vcard)
