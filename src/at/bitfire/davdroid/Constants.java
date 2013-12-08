@@ -9,7 +9,7 @@ package at.bitfire.davdroid;
 
 public class Constants {
 	public static final String
-		APP_VERSION = "0.5-alpha",
+		APP_VERSION = "0.5.1-alpha",
 		
 		ACCOUNT_TYPE = "bitfire.at.davdroid",
 		
