@@ -425,6 +425,8 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 	
 	protected String labelToXName(String label) {
+		if (label == null)
+			return null;
 		String xName = "X-" + label.replaceAll(" ","_").replaceAll("[^\\p{L}\\p{Nd}\\-_]", "").toUpperCase(Locale.US);
 		return xName;
 	}
@@ -434,6 +436,8 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 
 	protected String xNameToLabel(String xname) {
+		if (xname == null)
+			return null;
 		// "x-my_property"
 		// 1. ensure lower case -> "x-my_property"
 		// 2. remove x- from beginning -> "my_property"
@@ -466,41 +470,39 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		pendingOperations.add(buildStructuredName(newDataInsertBuilder(localID, backrefIdx), contact).build());
 		
 		for (Telephone number : contact.getPhoneNumbers())
-			pendingOperations.add(buildPhoneNumber(newDataInsertBuilder(localID, backrefIdx), number).build());
+			queueOperation(buildPhoneNumber(newDataInsertBuilder(localID, backrefIdx), number));
 		
 		for (ezvcard.property.Email email : contact.getEmails())
-			pendingOperations.add(buildEmail(newDataInsertBuilder(localID, backrefIdx), email).build());
+			queueOperation(buildEmail(newDataInsertBuilder(localID, backrefIdx), email));
 
 		if (contact.getPhoto() != null)
-			pendingOperations.add(buildPhoto(newDataInsertBuilder(localID, backrefIdx), contact.getPhoto()).build());
+			queueOperation(buildPhoto(newDataInsertBuilder(localID, backrefIdx), contact.getPhoto()));
 		
 		if (contact.getOrganization() != null || contact.getRole() != null)
-			pendingOperations.add(buildOrganization(newDataInsertBuilder(localID, backrefIdx), contact.getOrganization(), contact.getRole()).build());
+			queueOperation(buildOrganization(newDataInsertBuilder(localID, backrefIdx), contact.getOrganization(), contact.getRole()));
 			
 		for (Impp impp : contact.getImpps())
-			pendingOperations.add(buildIMPP(newDataInsertBuilder(localID, backrefIdx), impp).build());
+			queueOperation(buildIMPP(newDataInsertBuilder(localID, backrefIdx), impp));
 		
 		if (contact.getNickName() != null)
-			pendingOperations.add(buildNickName(newDataInsertBuilder(localID, backrefIdx), contact.getNickName()).build());
+			queueOperation(buildNickName(newDataInsertBuilder(localID, backrefIdx), contact.getNickName()));
 		
 		if (contact.getNote() != null)
-			pendingOperations.add(buildNote(newDataInsertBuilder(localID, backrefIdx), contact.getNote()).build());
+			queueOperation(buildNote(newDataInsertBuilder(localID, backrefIdx), contact.getNote()));
 		
 		for (Address address : contact.getAddresses())
-			pendingOperations.add(buildAddress(newDataInsertBuilder(localID, backrefIdx), address).build());
+			queueOperation(buildAddress(newDataInsertBuilder(localID, backrefIdx), address));
 		
 		// TODO group membership
 		
 		if (contact.getURL() != null)
-			pendingOperations.add(buildURL(newDataInsertBuilder(localID, backrefIdx), contact.getURL()).build());
+			queueOperation(buildURL(newDataInsertBuilder(localID, backrefIdx), contact.getURL()));
 		
 		// events
 		if (contact.getAnniversary() != null)
-			pendingOperations.add(buildEvent(newDataInsertBuilder(localID, backrefIdx),
-				contact.getAnniversary(), CommonDataKinds.Event.TYPE_ANNIVERSARY).build());
+			queueOperation(buildEvent(newDataInsertBuilder(localID, backrefIdx), contact.getAnniversary(), CommonDataKinds.Event.TYPE_ANNIVERSARY));
 		if (contact.getBirthDay() != null)
-			pendingOperations.add(buildEvent(newDataInsertBuilder(localID, backrefIdx),
-					contact.getBirthDay(), CommonDataKinds.Event.TYPE_BIRTHDAY).build());
+			queueOperation(buildEvent(newDataInsertBuilder(localID, backrefIdx), contact.getBirthDay(), CommonDataKinds.Event.TYPE_BIRTHDAY));
 		
 		// TODO relation
 		// TODO SIP address
@@ -650,6 +652,13 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		
 		int protocolCode;
 		String protocolLabel = null;
+		
+		String protocol = impp.getProtocol();
+		if (protocol == null) {
+			Log.w(TAG, "Ignoring IMPP address without protocol");
+			return null;
+		}
+		
 		if (impp.isAim())
 			protocolCode = Im.PROTOCOL_AIM;
 		else if (impp.isMsn())
@@ -658,20 +667,17 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			protocolCode = Im.PROTOCOL_YAHOO;
 		else if (impp.isSkype())
 			protocolCode = Im.PROTOCOL_SKYPE;
-		else if (impp.getProtocol().equalsIgnoreCase("qq"))
+		else if (protocol.equalsIgnoreCase("qq"))
 			protocolCode = Im.PROTOCOL_QQ;
-		else if (impp.getProtocol().equalsIgnoreCase("google-talk"))
+		else if (protocol.equalsIgnoreCase("google-talk"))
 			protocolCode = Im.PROTOCOL_GOOGLE_TALK;
 		else if (impp.isIcq())
 			protocolCode = Im.PROTOCOL_ICQ;
-		else if (impp.isXmpp())
+		else if (impp.isXmpp() || protocol.equalsIgnoreCase("jabber"))
 			protocolCode = Im.PROTOCOL_JABBER;
-		else if (impp.getProtocol().equalsIgnoreCase("netmeeting"))
+		else if (protocol.equalsIgnoreCase("netmeeting"))
 			protocolCode = Im.PROTOCOL_NETMEETING;
 		else {
-			String protocol = impp.getProtocol();
-			if (protocol == null)
-				protocol = "unknown";
 			protocolCode = Im.PROTOCOL_CUSTOM;
 			protocolLabel = protocol;
 		}
@@ -761,12 +767,13 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	
 	protected Builder buildEvent(Builder builder, DateOrTimeProperty date, int type) {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-		if (date.getDate() != null)
-			return builder
-				.withValue(Data.MIMETYPE, CommonDataKinds.Event.CONTENT_ITEM_TYPE)
-				.withValue(CommonDataKinds.Event.TYPE, type) 
-				.withValue(CommonDataKinds.Event.START_DATE, formatter.format(date.getDate()));
-		else
-			return builder;
+		if (date.getDate() == null) {
+			Log.i(TAG, "Ignoring contact event without date");
+			return null;
+		}
+		return builder
+			.withValue(Data.MIMETYPE, CommonDataKinds.Event.CONTENT_ITEM_TYPE)
+			.withValue(CommonDataKinds.Event.TYPE, type) 
+			.withValue(CommonDataKinds.Event.START_DATE, formatter.format(date.getDate()));
 	}
 }

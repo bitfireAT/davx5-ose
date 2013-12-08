@@ -23,13 +23,6 @@ import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.util.Log;
 
-/* TODO: move Android <-> iCal/VCard code to adapter class for better maintenance / testing
- * RemoteCollection<>                            LocalCollection<>
- * RemoteResource     <-- ResourceAdapter ---->  LocalResource
- *   - RemoteContact  <--  - ContactAdapter -->    - LocalContact
- *   - RemoteEvent    <--  - EventAdapter ---->    - LocalEvent
- */
-
 public abstract class LocalCollection<T extends Resource> {
 	private static final String TAG = "davdroid.LocalCollection";
 	
@@ -151,6 +144,11 @@ public abstract class LocalCollection<T extends Resource> {
 
 
 	public abstract void populate(Resource record) throws RemoteException;
+	
+	protected void queueOperation(Builder builder) {
+		if (builder != null)
+			pendingOperations.add(builder.build());
+	}
 
 	
 	// create/update/delete
