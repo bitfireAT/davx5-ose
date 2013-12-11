@@ -1,25 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ContactsAccountType
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    
+<ContactsAccountType xmlns:android="http://schemas.android.com/apk/res/android" >
+
     <EditSchema>
-		<DataKind
-		    kind="name"
-		    maxOccurs="1"
-		    supportsDisplayName="true"
-		    supportsMiddleName="true"
-		    supportsFamilyName="true"
-		    supportsPhoneticFamilyName="true"
-		    supportsPhoneticGivenName="true"
-		    supportsPhoneticMiddleName="true"
-		    supportsPrefix="true"
-		    supportsSuffix="true" />
-		
-		<DataKind
-		    kind="photo"
-		    maxOccurs="1" />
-		
-		<DataKind kind="phone">
+        <DataKind
+            kind="name"
+            maxOccurs="1"
+            supportsDisplayName="true"
+            supportsFamilyName="true"
+            supportsMiddleName="true"
+            supportsPhoneticFamilyName="true"
+            supportsPhoneticGivenName="true"
+            supportsPhoneticMiddleName="true"
+            supportsPrefix="true"
+            supportsSuffix="true" />
+        
+        <DataKind kind="phone" >
             <Type type="mobile" />
             <Type type="home" />
             <Type type="work" />
@@ -27,7 +22,7 @@
             <Type type="fax_home" />
             <Type type="pager" />
             <Type type="other" />
-            <Type type="custom"/>
+            <Type type="custom" />
             <Type type="callback" />
             <Type type="car" />
             <Type type="company_main" />
@@ -37,41 +32,68 @@
             <Type type="radio" />
             <Type type="telex" />
             <Type type="tty_tdd" />
-            <Type type="work_mobile"/>
+            <Type type="work_mobile" />
             <Type type="work_pager" />
             <Type type="assistant" />
             <Type type="mms" />
         </DataKind>
-		
-		<DataKind kind="email">
+        
+        <DataKind kind="email" >
             <Type type="home" />
             <Type type="work" />
             <Type type="other" />
             <Type type="mobile" />
             <Type type="custom" />
-		</DataKind>
-		
-		<DataKind kind="postal" needsStructured="true" >
+        </DataKind>
+        
+        <DataKind
+            kind="photo"
+            maxOccurs="1" />
+        
+        <DataKind
+            kind="organization"
+            maxOccurs="1" />
+        
+        <DataKind kind="im" >
+            <Type type="aim" />
+            <Type type="msn" />
+            <Type type="yahoo" />
+            <Type type="skype" />
+            <Type type="qq" />
+            <Type type="google_talk" />
+            <Type type="icq" />
+            <Type type="jabber" />
+            <Type type="custom" />
+        </DataKind>
+        
+        <DataKind
+            kind="nickname"
+            maxOccurs="1" />
+        
+        <DataKind
+            kind="note"
+            maxOccurs="1" />
+        
+        <DataKind
+            kind="postal"
+            needsStructured="true" >
             <Type type="home" />
             <Type type="work" />
             <Type type="other" />
             <Type type="custom" />
         </DataKind>
-		
-		<DataKind
-		    kind="nickname"
-		    maxOccurs="1" />
-		
+        
 		<DataKind kind="website" />
-		<DataKind
-		    kind="note"
-    		maxOccurs="1" />
-		
-		<DataKind
-		    dateWithTime="false"
-		    kind="event">
-		    <Type maxOccurs="1" type="birthday" yearOptional="false" />
-		    <Type type="anniversary" />
-		</DataKind>
-	</EditSchema>
+
+        <DataKind
+            dateWithTime="false"
+            kind="event" >
+            <Type
+                maxOccurs="1"
+                type="birthday"
+                yearOptional="false" />
+            <Type type="anniversary" />
+        </DataKind>
+    </EditSchema>
+
 </ContactsAccountType>
