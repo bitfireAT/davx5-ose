@@ -100,9 +100,6 @@ public abstract class LocalCollection<T extends Resource> {
 		LinkedList<T> fresh = new LinkedList<T>();
 		while (cursor != null && cursor.moveToNext()) {
 			T resource = findById(cursor.getLong(0), true);
-			/*String	uid = randomUID(),
-					resourceName = uid.replace("@", "_") + fileExtension();
-			resource.setUid(uid);*/
 			resource.initialize();
 
 			// new record: set generated UID + remote file name in database

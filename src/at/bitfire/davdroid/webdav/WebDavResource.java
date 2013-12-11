@@ -294,7 +294,7 @@ public class WebDavResource {
 			multiget.prop.addressData = new DavProp.DavPropAddressData();
 		else if (type == MultigetType.CALENDAR)
 			multiget.prop.calendarData = new DavProp.DavPropCalendarData();
-		
+				
 		multiget.hrefs = new ArrayList<DavHref>(names.length);
 		for (String name : names)
 			multiget.hrefs.add(new DavHref(location.resolve(name).getRawPath()));
