@@ -23,7 +23,8 @@ public class HttpReport extends HttpEntityEnclosingRequestBase {
 		setURI(uri);
 		
 		setHeader("Content-Type", "text/xml; charset=UTF-8");
-
+		setHeader("Depth", "0");
+		
 		try {
 			setEntity(new StringEntity(entity, "UTF-8"));
 			

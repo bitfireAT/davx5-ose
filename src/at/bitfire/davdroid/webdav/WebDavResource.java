@@ -437,9 +437,7 @@ public class WebDavResource {
 						
 						if (prop.addressbookDescription != null)
 							properties.put(Property.DESCRIPTION, prop.addressbookDescription.getDescription());
-					} else
-						properties.remove(Property.IS_ADDRESSBOOK);
-					
+					}
 					if (prop.resourcetype.getCalendar() != null) {
 						properties.put(Property.IS_CALENDAR, "1");
 						
@@ -457,19 +455,18 @@ public class WebDavResource {
 							for (DavPropComp component : prop.supportedCalendarComponentSet.components)
 								referenced.supportedComponents.add(component.getName());
 						}
-					} else
-						referenced.properties.remove(Property.IS_CALENDAR);
+					}
 				}
 				
 				if (prop.getctag != null)
-					referenced.properties.put(Property.CTAG, prop.getctag.getCTag());
+					properties.put(Property.CTAG, prop.getctag.getCTag());
 
 				if (prop.getetag != null)
-					referenced.properties.put(Property.ETAG, prop.getetag.getETag());
+					properties.put(Property.ETAG, prop.getetag.getETag());
 				
-				if (prop.calendarData != null)
+				if (prop.calendarData != null && prop.calendarData.ical != null)
 					referenced.content = new ByteArrayInputStream(prop.calendarData.ical.getBytes());
-				else if (prop.addressData != null)
+				else if (prop.addressData != null && prop.addressData.vcard != null)
 					referenced.content = new ByteArrayInputStream(prop.addressData.vcard.getBytes());
 			}
 		}
