@@ -212,7 +212,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				number.addType(Contact.PHONE_TYPE_MMS);
 				break;
 			case Phone.TYPE_CUSTOM:
-				number.addType(TelephoneType.get(labelToXName(cursor.getString(1))));
+				String customType = cursor.getString(1);
+				if (customType != null && !customType.isEmpty())
+					number.addType(TelephoneType.get(labelToXName(customType)));
 			}
 			c.getPhoneNumbers().add(number);
 		}
@@ -234,7 +236,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				email.addType(Contact.EMAIL_TYPE_MOBILE);
 				break;
 			case Email.TYPE_CUSTOM:
-				email.addType(EmailType.get(labelToXName(cursor.getString(2))));
+				String customType = cursor.getString(2);
+				if (customType != null && !customType.isEmpty())
+					email.addType(EmailType.get(labelToXName(customType)));
 				break;
 			}
 			c.getEmails().add(email);
@@ -310,7 +314,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 					impp.addType(ImppType.WORK);
 					break;
 				case Im.TYPE_CUSTOM:
-					impp.addType(ImppType.get(labelToXName(cursor.getString(2))));
+					String customType = cursor.getString(2);
+					if (customType != null && !customType.isEmpty())
+						impp.addType(ImppType.get(labelToXName(customType)));
 					break;
 				}
 				c.getImpps().add(impp);
@@ -351,7 +357,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				address.addType(AddressType.WORK);
 				break;
 			case StructuredPostal.TYPE_CUSTOM:
-				address.addType(AddressType.get(labelToXName(cursor.getString(2))));
+				String customType = cursor.getString(2);
+				if (customType != null && !customType.isEmpty())
+					address.addType(AddressType.get(labelToXName(customType)));
 				break;
 			}
 			address.setStreetAddress(cursor.getString(3));

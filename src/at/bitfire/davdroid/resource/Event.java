@@ -122,7 +122,7 @@ public class Event extends Resource {
 		ComponentList events = ical.getComponents(Component.VEVENT);
 		if (events == null || events.isEmpty())
 			return;
-		VEvent event = (VEvent)events.get(0); 
+		VEvent event = (VEvent)events.get(0);
 		
 		if (event.getUid() != null)
 			uid = event.getUid().getValue();
