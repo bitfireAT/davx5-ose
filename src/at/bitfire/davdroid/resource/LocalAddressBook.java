@@ -464,7 +464,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	@Override
 	protected Builder buildEntry(Builder builder, Resource resource) {
 		Contact contact = (Contact)resource;
-		
+
 		return builder
 			.withValue(RawContacts.ACCOUNT_NAME, account.name)
 			.withValue(RawContacts.ACCOUNT_TYPE, account.type)

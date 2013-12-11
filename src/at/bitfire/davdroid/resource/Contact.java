@@ -92,8 +92,7 @@ public class Contact extends Resource {
 	}
 	
 	public Contact(long localID, String resourceName, String eTag) {
-		super(resourceName, eTag);
-		this.localID = localID;
+		super(localID, resourceName, eTag);
 	}
 
 	@Override

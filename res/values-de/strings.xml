@@ -41,6 +41,9 @@
        <a href="https://play.google.com/store/apps/details?id=at.bitfire.davdroid.jbworkaround">DAVdroid JB Workaround</a>
        installieren, um Datenverlust beim Neustart zu vermeiden (dies ist ein Android/Play Store-Bug).</p>
        
+       <p>Wenn Sie CyanogenMod benutzen, muss die "Datenschutz"-Funktion für DAVdroid deaktiviert sein, da DAVdroid sonst
+       keinen Zugriff auf die Kontakte und Kalendar hat und auch nicht synchronisieren kann.</p>
+       
        <p>Weitere Informationen erhalten Sie auf der <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid-Homepage</a>.
        Dort finden Sie auch eine <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Anleitung zum Einrichten</a>.
        DAVdroid respektiert Ihre Privatsphäre (siehe <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Datenschutzrichtlinie</a>).</p>
@@ -71,7 +74,7 @@
 	   <h2>Benutzte Bibliotheken</h2>
 	   <p>
 	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> (<a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
-	   	* <a href="http://wiki.modularity.net.au/ical4j/index.php?title=VCard">iCal4j-vcard</a> (<a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
+	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> (<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a>)<br/>
 	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> (<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>)<br/>
 	   	* <a href="http://projectlombok.org/">Project Lombok</a> (<a href="http://opensource.org/licenses/mit-license.php">MIT License</a>)</p>
     ]]></string>
