@@ -49,6 +49,9 @@
        <a href="https://play.google.com/store/apps/details?id=at.bitfire.davdroid.jbworkaround">DAVdroid JB Workaround</a>
        to prevent data-loss on reboot (it\'s an Android/Play Store bug).</p>
        
+       <p>If you use CyanogenMod, "Privacy Guard" must be disabled for DAVdroid. Otherwise, DAVdroid is not allowed to access
+       and synchronize your contacts and events.</p>
+       
        <p>For more information, please see the <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid homepage</a>.
        There\'s a <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Setup guide</a>, too. DAVdroid respects
        your privacy, see our <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Privacy Policy</a>.</p>
@@ -79,7 +82,7 @@
 	   <h2>Used third-party libraries</h2>
 	   <p>
 	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> (<a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
-	   	* <a href="http://wiki.modularity.net.au/ical4j/index.php?title=VCard">iCal4j-vcard</a> (<a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
+	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> (<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a>)<br/>
 	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> (<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>)<br/>
 	   	* <a href="http://projectlombok.org/">Project Lombok</a> (<a href="http://opensource.org/licenses/mit-license.php">MIT License</a>)</p>
     ]]></string>

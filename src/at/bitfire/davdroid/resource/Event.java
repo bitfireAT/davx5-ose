@@ -62,7 +62,7 @@ import at.bitfire.davdroid.syncadapter.DavSyncAdapter;
 public class Event extends Resource {
 	private final static String TAG = "davdroid.Event";
 	
-	private TimeZoneRegistry tzRegistry;
+	private TimeZoneRegistry tzRegistry = new DefaultTimeZoneRegistryFactory().createRegistry();
 	
 	@Getter @Setter private String summary, location, description;
 	
@@ -93,14 +93,10 @@ public class Event extends Resource {
 
 	public Event(String name, String ETag) {
 		super(name, ETag);
-		
-		DefaultTimeZoneRegistryFactory factory = new DefaultTimeZoneRegistryFactory();
-		tzRegistry = factory.createRegistry();
 	}
 	
 	public Event(long localID, String name, String ETag) {
-		this(name, ETag);
-		this.localID = localID;
+		super(localID, name, ETag);
 	}
 	
 	@Override
