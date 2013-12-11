@@ -209,37 +209,38 @@ public class LocalCalendar extends LocalCollection<Event> {
 			// recurrence
 			try {
 				String duration = cursor.getString(18);
-				if (duration != null)
+				if (duration != null && !duration.isEmpty())
 					e.setDuration(new Duration(new Dur(duration)));
 				
 				String strRRule = cursor.getString(10);
-				if (strRRule != null)
+				if (strRRule != null && !strRRule.isEmpty())
 					e.setRrule(new RRule(strRRule));
 				
 				String strRDate = cursor.getString(11);
-				if (strRDate != null) {
+				if (strRDate != null && !strRDate.isEmpty()) {
 					RDate rDate = new RDate();
 					rDate.setValue(strRDate);
 					e.setRdate(rDate);
 				}
 			
 				String strExRule = cursor.getString(12);
-				if (strExRule != null) {
+				if (strExRule != null && !strExRule.isEmpty()) {
 					ExRule exRule = new ExRule();
 					exRule.setValue(strExRule);
 					e.setExrule(exRule);
 				}
 				
 				String strExDate = cursor.getString(13);
-				if (strExDate != null) {
+				if (strExDate != null && !strExDate.isEmpty()) {
 					// ignored, see https://code.google.com/p/android/issues/detail?id=21426
 					ExDate exDate = new ExDate();
 					exDate.setValue(strExDate);
 					e.setExdate(exDate);
 				}
-				
 			} catch (ParseException ex) {
-				Log.e(TAG, "Couldn't parse recurrence rules, ignoring");
+				Log.w(TAG, "Couldn't parse recurrence rules, ignoring", ex);
+			} catch (IllegalArgumentException ex) {
+				Log.w(TAG, "Invalid recurrence rules, ignoring", ex);
 			}
 
 			// status
