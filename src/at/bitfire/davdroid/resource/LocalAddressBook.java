@@ -252,8 +252,12 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				Photo.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Organization.CONTENT_ITEM_TYPE }, null);
 		if (cursor != null && cursor.moveToNext()) {
-			c.setOrganization(cursor.getString(0));
-			c.setRole(cursor.getString(1));
+			String	org = cursor.getString(0),
+					role = cursor.getString(1);
+			if (org != null && !org.isEmpty())
+				c.setOrganization(org);
+			if (role != null && !role.isEmpty())
+				c.setRole(role);
 		}
 		
 		// IMPPs
@@ -365,7 +369,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				Website.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Website.CONTENT_ITEM_TYPE }, null);
 		if (cursor != null && cursor.moveToNext())
-			c.setURL(cursor.getString(0));
+			c.getURLs().add(cursor.getString(0));
 
 		// events
 		cursor = providerClient.query(dataURI(), new String[] { CommonDataKinds.Event.TYPE, CommonDataKinds.Event.START_DATE },
@@ -495,8 +499,8 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		
 		// TODO group membership
 		
-		if (contact.getURL() != null)
-			queueOperation(buildURL(newDataInsertBuilder(localID, backrefIdx), contact.getURL()));
+		for (String url : contact.getURLs())
+			queueOperation(buildURL(newDataInsertBuilder(localID, backrefIdx), url));
 		
 		// events
 		if (contact.getAnniversary() != null)
