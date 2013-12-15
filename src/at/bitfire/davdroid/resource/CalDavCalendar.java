@@ -9,7 +9,7 @@ package at.bitfire.davdroid.resource;
 
 import java.net.URISyntaxException;
 
-import at.bitfire.davdroid.webdav.WebDavResource.MultigetType;
+import at.bitfire.davdroid.webdav.DavMultiget;
 
 public class CalDavCalendar extends RemoteCollection<Event> { 
 	//private final static String TAG = "davdroid.CalDavCalendar";
@@ -20,8 +20,8 @@ public class CalDavCalendar extends RemoteCollection<Event> {
 	}
 
 	@Override
-	protected MultigetType multiGetType() {
-		return MultigetType.CALENDAR;
+	protected DavMultiget.Type multiGetType() {
+		return DavMultiget.Type.CALENDAR;
 	}
 	
 	@Override

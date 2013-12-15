@@ -192,11 +192,11 @@ public class Event extends Resource {
 		if (exdate != null)
 			props.add(exdate);
 		
-		if (summary != null)
+		if (summary != null && !summary.isEmpty())
 			props.add(new Summary(summary));
-		if (location != null)
+		if (location != null && !location.isEmpty())
 			props.add(new Location(location));
-		if (description != null)
+		if (description != null && !description.isEmpty())
 			props.add(new Description(description));
 		
 		if (status != null)

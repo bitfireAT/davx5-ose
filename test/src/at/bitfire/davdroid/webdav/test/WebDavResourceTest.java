@@ -10,12 +10,12 @@ import org.apache.http.HttpException;
 
 import android.content.res.AssetManager;
 import android.test.InstrumentationTestCase;
+import at.bitfire.davdroid.webdav.DAVException;
+import at.bitfire.davdroid.webdav.DavMultiget;
 import at.bitfire.davdroid.webdav.HttpPropfind;
-import at.bitfire.davdroid.webdav.InvalidDavResponseException;
 import at.bitfire.davdroid.webdav.NotFoundException;
 import at.bitfire.davdroid.webdav.PreconditionFailedException;
 import at.bitfire.davdroid.webdav.WebDavResource;
-import at.bitfire.davdroid.webdav.WebDavResource.MultigetType;
 import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
 
 // tests require running robohydra!
@@ -88,7 +88,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		try {
 			simpleFile.propfind(HttpPropfind.Mode.CURRENT_USER_PRINCIPAL);
 			fail();
-		} catch(InvalidDavResponseException ex) {
+		} catch(DAVException ex) {
 		}
 		assertNull(simpleFile.getCurrentUserPrincipal());
 	}
@@ -147,9 +147,9 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		));
 	}
 	
-	public void testMultiGet() throws InvalidDavResponseException, IOException, HttpException {
+	public void testMultiGet() throws DAVException, IOException, HttpException {
 		WebDavResource davAddressBook = new WebDavResource(davCollection, "addressbooks/default.vcf", true);
-		davAddressBook.multiGet(new String[] { "1.vcf", "2.vcf" }, MultigetType.ADDRESS_BOOK);
+		davAddressBook.multiGet(DavMultiget.Type.ADDRESS_BOOK, new String[] { "1.vcf", "2.vcf" });
 		assertEquals(2, davAddressBook.getMembers().size());
 		for (WebDavResource member : davAddressBook.getMembers()) {
 			assertNotNull(member.getContent());

@@ -8,13 +8,11 @@
 package at.bitfire.davdroid.webdav;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,12 +20,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import lombok.Cleanup;
 import lombok.Getter;
 import lombok.ToString;
 
-import org.apache.commons.io.input.TeeInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -46,6 +45,7 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import android.util.Log;
+import at.bitfire.davdroid.LoggingInputStream;
 import at.bitfire.davdroid.URIUtils;
 import at.bitfire.davdroid.resource.Event;
 import at.bitfire.davdroid.webdav.DavProp.DavPropComp;
@@ -63,10 +63,6 @@ public class WebDavResource {
 		IS_ADDRESSBOOK, IS_CALENDAR,
 		CTAG, ETAG,
 		CONTENT_TYPE
-	}
-	public enum MultigetType {
-		ADDRESS_BOOK,
-		CALENDAR
 	}
 	public enum PutMode {
 		ADD_DONT_OVERWRITE,
@@ -141,6 +137,8 @@ public class WebDavResource {
 	
 	protected void checkResponse(StatusLine statusLine) throws HttpException {
 		int code = statusLine.getStatusCode();
+		
+		Log.d(TAG, "Received " + statusLine.getProtocolVersion() + " " + code + " " + statusLine.getReasonPhrase());
 		
 		if (code/100 == 1 || code/100 == 2)		// everything OK
 			return;
@@ -252,52 +250,38 @@ public class WebDavResource {
 	
 	/* collection operations */
 	
-	public void propfind(HttpPropfind.Mode mode) throws IOException, InvalidDavResponseException, HttpException {
+	public void propfind(HttpPropfind.Mode mode) throws IOException, DAVException, HttpException {
 		HttpPropfind propfind = new HttpPropfind(location, mode);
 		HttpResponse response = client.execute(propfind);
 		checkResponse(response);
 
-		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_MULTI_STATUS) {
-			InputStream content = response.getEntity().getContent();
-			if (content == null)
-				throw new InvalidDavResponseException("Multistatus response without content");
+		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_MULTI_STATUS)
+			throw new DAVNoMultiStatusException();
 
-			// duplicate content for logging
-			ByteArrayOutputStream logStream = new ByteArrayOutputStream();
-			InputStream is = new TeeInputStream(content, logStream);
-
-			DavMultistatus multistatus;
-			try {
-				Serializer serializer = new Persister();
-				multistatus = serializer.read(DavMultistatus.class, is, false);
-			} catch (Exception ex) {
-				Log.w(TAG, "Invalid PROPFIND XML response", ex);
-				throw new InvalidDavResponseException("Invalid PROPFIND response");
-			} finally {
-				Log.d(TAG, "Received multistatus response:\n" + logStream.toString("UTF-8"));
-				is.close();
-				content.close();
-			}
-			processMultiStatus(multistatus);
-			
-		} else
-			throw new InvalidDavResponseException("Multistatus response expected");
+		@Cleanup("consumeContent") HttpEntity entity = response.getEntity();
+		if (entity == null)
+			throw new DAVNoContentException();
+		InputStream content = entity.getContent();
+		if (content == null)
+			throw new DAVNoContentException();
+		
+		@Cleanup LoggingInputStream loggedContent = new LoggingInputStream(TAG, content);
+		
+		DavMultistatus multistatus;
+		try {
+			Serializer serializer = new Persister();
+			multistatus = serializer.read(DavMultistatus.class, loggedContent, false);
+		} catch (Exception ex) {
+			throw new DAVException("Couldn't parse Multi-Status response on PROPFIND", ex);
+		}
+		processMultiStatus(multistatus);
 	}
 
-	public void multiGet(String[] names, MultigetType type) throws IOException, InvalidDavResponseException, HttpException {
-		DavMultiget multiget = (type == MultigetType.ADDRESS_BOOK) ? new DavAddressbookMultiget() : new DavCalendarMultiget(); 
-			
-		multiget.prop = new DavProp();
-		multiget.prop.getetag = new DavProp.DavPropGetETag();
-		
-		if (type == MultigetType.ADDRESS_BOOK)
-			multiget.prop.addressData = new DavProp.DavPropAddressData();
-		else if (type == MultigetType.CALENDAR)
-			multiget.prop.calendarData = new DavProp.DavPropCalendarData();
-				
-		multiget.hrefs = new ArrayList<DavHref>(names.length);
+	public void multiGet(DavMultiget.Type type, String[] names) throws IOException, DAVException, HttpException {
+		List<String> hrefs = new LinkedList<String>();
 		for (String name : names)
-			multiget.hrefs.add(new DavHref(location.resolve(name).getRawPath()));
+			hrefs.add(location.resolve(name).getRawPath());
+		DavMultiget multiget = DavMultiget.newRequest(type, hrefs.toArray(new String[0]));
 		
 		Serializer serializer = new Persister();
 		StringWriter writer = new StringWriter();
@@ -305,38 +289,32 @@ public class WebDavResource {
 			serializer.write(multiget, writer);
 		} catch (Exception ex) {
 			Log.e(TAG, "Couldn't create XML multi-get request", ex);
-			throw new InvalidDavResponseException("Couldn't create multi-get request");
+			throw new DAVException("Couldn't create multi-get request");
 		}
 
 		HttpReport report = new HttpReport(location, writer.toString());
 		HttpResponse response = client.execute(report);
 		checkResponse(response);
 		
-		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_MULTI_STATUS) {
-			InputStream content = response.getEntity().getContent();
-			if (content == null)
-				throw new InvalidDavResponseException("Multistatus response without content");
-			
-			DavMultistatus multistatus;
-			
-			// duplicate content for logging
-			ByteArrayOutputStream logStream = new ByteArrayOutputStream();
-			InputStream is = new TeeInputStream(content, logStream, true);
-			
-			try {
-				multistatus = serializer.read(DavMultistatus.class, is, false);
-			} catch (Exception ex) {
-				Log.e(TAG, "Couldn't parse multi-get response", ex);
-				throw new InvalidDavResponseException("Invalid multi-get response");
-			} finally {
-				Log.d(TAG, "Received multistatus response:\n" + logStream.toString("UTF-8"));
-				is.close();
-				content.close();
-			}
-			processMultiStatus(multistatus);
-			
-		} else
-			throw new InvalidDavResponseException("Multistatus response expected");
+		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_MULTI_STATUS)
+			throw new DAVNoMultiStatusException();
+		
+		@Cleanup("consumeContent") HttpEntity entity = response.getEntity();
+		if (entity == null)
+			throw new DAVNoContentException();
+		InputStream content = entity.getContent();
+		if (content == null)
+			throw new DAVNoContentException();
+		
+		@Cleanup LoggingInputStream loggedContent = new LoggingInputStream(TAG, content);
+		
+		DavMultistatus multiStatus;
+		try {
+			multiStatus = serializer.read(DavMultistatus.class, loggedContent, false);
+		} catch (Exception ex) {
+			throw new DAVException("Couldn't parse Multi-Status response on REPORT multi-get", ex);
+		}
+		processMultiStatus(multiStatus);
 	}
 
 	
@@ -473,4 +451,5 @@ public class WebDavResource {
 		
 		this.members = members;
 	}
+
 }
