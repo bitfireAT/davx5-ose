@@ -61,7 +61,7 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
 		
 		// set up SNI before the handshake
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-			Log.i(TAG, "Setting SNI hostname");
+			Log.d(TAG, "Setting SNI hostname");
 			sslSocketFactory.setHostname(ssl, host);
 		} else
 			Log.i(TAG, "No SNI support below Android 4.2!");

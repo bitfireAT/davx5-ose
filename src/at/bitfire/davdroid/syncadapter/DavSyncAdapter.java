@@ -23,7 +23,7 @@ import android.provider.Settings;
 import android.util.Log;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.RemoteCollection;
-import at.bitfire.davdroid.webdav.InvalidDavResponseException;
+import at.bitfire.davdroid.webdav.DAVException;
 
 public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter {
 	private final static String TAG = "davdroid.DavSyncAdapter";
@@ -72,7 +72,7 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter {
 			} catch (AuthenticationException ex) {
 				syncResult.stats.numAuthExceptions++;
 				Log.e(TAG, "HTTP authorization error", ex);
-			} catch (InvalidDavResponseException ex) {
+			} catch (DAVException ex) {
 				syncResult.stats.numParseExceptions++;
 				Log.e(TAG, "Invalid DAV response", ex);
 			} catch (HttpException ex) {

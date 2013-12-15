@@ -13,7 +13,11 @@ public class LombokTest extends TestCase {
 	}
 
 	public void testNonNull() {
-		assertNull(appendSlash(null));
-		//assertEquals("1/", appendSlash("1"));
+		try {
+			appendSlash(null);
+			fail();
+		} catch(NullPointerException e) {
+		}
+		assertEquals("1/", appendSlash("1"));
 	}
 }

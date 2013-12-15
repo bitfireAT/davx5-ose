@@ -148,15 +148,11 @@ public class SyncManager {
 			local.commit();
 		}
 		
-		Log.i(TAG, "Updating " + resourcesToUpdate.size() + " remote resource(s)");
+		Log.i(TAG, "Updating from " + resourcesToUpdate.size() + " remote resource(s)");
 		if (!resourcesToUpdate.isEmpty())
 			for (Resource res : dav.multiGet(resourcesToUpdate.toArray(new Resource[0]))) {
 				Log.i(TAG, "Updating " + res.getName());
-				try {
-					local.updateByRemoteName(res);
-				} catch (ValidationException ex) {
-					Log.e(TAG, "Ignoring invalid remote resource: " + res.getName(), ex);
-				}
+				local.updateByRemoteName(res);
 				
 				if (++syncResult.stats.numUpdates % MAX_UPDATES_BEFORE_COMMIT == 0)	// avoid TransactionTooLargeException
 					local.commit();

@@ -14,19 +14,21 @@ import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 
+import lombok.Cleanup;
 import lombok.Getter;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.ValidationException;
 
 import org.apache.http.HttpException;
 
-import ezvcard.VCardException;
 import android.util.Log;
+import at.bitfire.davdroid.LoggingInputStream;
+import at.bitfire.davdroid.webdav.DAVException;
+import at.bitfire.davdroid.webdav.DavMultiget;
 import at.bitfire.davdroid.webdav.HttpPropfind;
-import at.bitfire.davdroid.webdav.InvalidDavResponseException;
 import at.bitfire.davdroid.webdav.WebDavResource;
-import at.bitfire.davdroid.webdav.WebDavResource.MultigetType;
 import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
+import ezvcard.VCardException;
 
 public abstract class RemoteCollection<T extends Resource> {
 	private static final String TAG = "davdroid.RemoteCollection";
@@ -34,7 +36,7 @@ public abstract class RemoteCollection<T extends Resource> {
 	@Getter WebDavResource collection;
 
 	abstract protected String memberContentType();
-	abstract protected MultigetType multiGetType();
+	abstract protected DavMultiget.Type multiGetType();
 	abstract protected T newResourceSkeleton(String name, String ETag);
 	
 	public RemoteCollection(String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {
@@ -48,13 +50,13 @@ public abstract class RemoteCollection<T extends Resource> {
 		try {
 			if (collection.getCTag() == null && collection.getMembers() == null)	// not already fetched
 				collection.propfind(HttpPropfind.Mode.COLLECTION_CTAG);
-		} catch (InvalidDavResponseException e) {
+		} catch (DAVException e) {
 			return null;
 		}
 		return collection.getCTag();
 	}
 	
-	public Resource[] getMemberETags() throws IOException, InvalidDavResponseException, HttpException {
+	public Resource[] getMemberETags() throws IOException, DAVException, HttpException {
 		collection.propfind(HttpPropfind.Mode.MEMBERS_ETAG);
 			
 		List<T> resources = new LinkedList<T>();
@@ -67,7 +69,7 @@ public abstract class RemoteCollection<T extends Resource> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Resource[] multiGet(Resource[] resources) throws IOException, InvalidDavResponseException, HttpException {
+	public Resource[] multiGet(Resource[] resources) throws IOException, DAVException, HttpException {
 		try {
 			if (resources.length == 1) {
 				Resource resource = get(resources[0]);
@@ -78,7 +80,7 @@ public abstract class RemoteCollection<T extends Resource> {
 			for (Resource resource : resources)
 				names.add(resource.getName());
 			
-			collection.multiGet(names.toArray(new String[0]), multiGetType());
+			collection.multiGet(multiGetType(), names.toArray(new String[0]));
 			
 			LinkedList<T> foundResources = new LinkedList<T>();
 			if (collection.getMembers() != null)
@@ -116,7 +118,9 @@ public abstract class RemoteCollection<T extends Resource> {
 	public Resource get(Resource resources) throws IOException, HttpException, ParserException, VCardException {
 		WebDavResource member = new WebDavResource(collection, resources.getName());
 		member.get();
-		resources.parseEntity(member.getContent());
+		
+		@Cleanup InputStream loggedContent = new LoggingInputStream(TAG, member.getContent());
+		resources.parseEntity(loggedContent);
 		return resources;
 	}
 	

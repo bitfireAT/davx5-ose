@@ -10,7 +10,6 @@ package at.bitfire.davdroid.resource;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import net.fortuna.ical4j.model.ValidationException;
 import android.accounts.Account;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
@@ -72,8 +71,11 @@ public abstract class LocalCollection<T extends Resource> {
 				new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
 				where, null, null);
 		LinkedList<T> dirty = new LinkedList<T>();
-		while (cursor != null && cursor.moveToNext())
-			dirty.add(findById(cursor.getLong(0), true));
+		while (cursor != null && cursor.moveToNext()) {
+			T resource = findById(cursor.getLong(0), true); 
+			if (resource != null)
+				dirty.add(resource);
+		}
 		return dirty.toArray(new Resource[0]);
 	}
 
@@ -85,8 +87,11 @@ public abstract class LocalCollection<T extends Resource> {
 				new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
 				where, null, null);
 		LinkedList<T> deleted = new LinkedList<T>();
-		while (cursor != null && cursor.moveToNext())
-			deleted.add(findById(cursor.getLong(0), false));
+		while (cursor != null && cursor.moveToNext()) {
+			T resource = findById(cursor.getLong(0), false);
+			if (resource != null)
+				deleted.add(resource);
+		}
 		return deleted.toArray(new Resource[0]);
 	}
 
@@ -100,16 +105,18 @@ public abstract class LocalCollection<T extends Resource> {
 		LinkedList<T> fresh = new LinkedList<T>();
 		while (cursor != null && cursor.moveToNext()) {
 			T resource = findById(cursor.getLong(0), true);
-			resource.initialize();
-
-			// new record: set generated UID + remote file name in database
-			pendingOperations.add(ContentProviderOperation
-					.newUpdate(ContentUris.withAppendedId(entriesURI(), resource.getLocalID()))
-					.withValue(entryColumnUID(), resource.getUid())
-					.withValue(entryColumnRemoteName(), resource.getName())
-					.build());
-			
-			fresh.add(resource);
+			if (resource != null) {
+				resource.initialize();
+	
+				// new record: set generated UID + remote file name in database
+				pendingOperations.add(ContentProviderOperation
+						.newUpdate(ContentUris.withAppendedId(entriesURI(), resource.getLocalID()))
+						.withValue(entryColumnUID(), resource.getUid())
+						.withValue(entryColumnRemoteName(), resource.getName())
+						.build());
+				
+				fresh.add(resource);
+			}
 		}
 		return fresh.toArray(new Resource[0]);
 	}
@@ -162,17 +169,18 @@ public abstract class LocalCollection<T extends Resource> {
 		addDataRows(resource, -1, idx);
 	}
 	
-	public void updateByRemoteName(Resource remoteResource) throws RemoteException, ValidationException {
+	public void updateByRemoteName(Resource remoteResource) throws RemoteException {
 		T localResource = findByRemoteName(remoteResource.getName(), false);
-		
-		pendingOperations.add(
-				buildEntry(ContentProviderOperation.newUpdate(ContentUris.withAppendedId(entriesURI(), localResource.getLocalID())), remoteResource)
-				.withValue(entryColumnETag(), remoteResource.getETag())
-				.withYieldAllowed(true)
-				.build());
-		
-		removeDataRows(localResource);
-		addDataRows(remoteResource, localResource.getLocalID(), -1);
+		if (localResource != null) {		
+			pendingOperations.add(
+					buildEntry(ContentProviderOperation.newUpdate(ContentUris.withAppendedId(entriesURI(), localResource.getLocalID())), remoteResource)
+					.withValue(entryColumnETag(), remoteResource.getETag())
+					.withYieldAllowed(true)
+					.build());
+			
+			removeDataRows(localResource);
+			addDataRows(remoteResource, localResource.getLocalID(), -1);
+		}
 	}
 
 	public void delete(Resource resource) {
