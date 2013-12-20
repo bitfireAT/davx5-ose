@@ -17,11 +17,11 @@ import org.apache.http.HttpException;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.OperationApplicationException;
 import android.content.SyncResult;
-import android.os.RemoteException;
 import android.util.Log;
 import at.bitfire.davdroid.resource.LocalCollection;
+import at.bitfire.davdroid.resource.LocalStorageException;
+import at.bitfire.davdroid.resource.RecordNotFoundException;
 import at.bitfire.davdroid.resource.RemoteCollection;
 import at.bitfire.davdroid.resource.Resource;
 import at.bitfire.davdroid.webdav.NotFoundException;
@@ -29,7 +29,6 @@ import at.bitfire.davdroid.webdav.PreconditionFailedException;
 
 public class SyncManager {
 	private static final String TAG = "davdroid.SyncManager";
-	private static final int MAX_UPDATES_BEFORE_COMMIT = 25;
 	
 	protected Account account;
 	protected AccountManager accountManager;
@@ -40,132 +39,149 @@ public class SyncManager {
 		this.accountManager = accountManager;
 	}
 
-	public void synchronize(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> dav, boolean manualSync, SyncResult syncResult) throws RemoteException, OperationApplicationException, IOException, HttpException {
-		boolean fetchCollection = false;
+	public void synchronize(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote, boolean manualSync, SyncResult syncResult) throws LocalStorageException, IOException, HttpException {
+		// PHASE 1: push local changes to server
+		int	deletedRemotely = pushDeleted(local, remote),
+			addedRemotely = pushNew(local, remote),
+			updatedRemotely = pushDirty(local, remote);
 		
-		// PHASE 1: UPLOAD LOCALLY-CHANGED RESOURCES
-		// remove deleted resources from remote
+		syncResult.stats.numEntries = deletedRemotely + addedRemotely + updatedRemotely;
+		
+		// PHASE 2A: check if there's a reason to do a sync with remote (= forced sync or remote CTag changed)
+		boolean fetchCollection = syncResult.stats.numEntries > 0;
+		if (manualSync) {
+			Log.i(TAG, "Synchronization forced");
+			fetchCollection = true;
+		}
+		if (!fetchCollection) {
+			String	currentCTag = remote.getCTag(),
+					lastCTag = local.getCTag();
+			if (currentCTag == null || !currentCTag.equals(lastCTag))
+				fetchCollection = true;
+		}
+		
+		// PHASE 2B: detect details of remote changes
+		Log.i(TAG, "Fetching remote resource list");
+		Set<Resource>	remotelyAdded = new HashSet<Resource>(),
+						remotelyUpdated = new HashSet<Resource>();
+		
+		Resource[] remoteResources = remote.getMemberETags();
+		if (remoteResources != null) {
+			for (Resource remoteResource : remoteResources) {
+				try {
+					Resource localResource = local.findByRemoteName(remoteResource.getName(), false);
+					if (localResource.getETag() == null || !localResource.getETag().equals(remoteResource.getETag()))
+						remotelyUpdated.add(remoteResource);
+				} catch(RecordNotFoundException e) {
+					remotelyAdded.add(remoteResource);
+				}
+			}
+		}
+		
+		// PHASE 3: pull remote changes from server
+		syncResult.stats.numInserts = pullNew(local, remote, remotelyAdded);
+		syncResult.stats.numUpdates = pullChanged(local, remote, remotelyUpdated);
+		
+		Log.i(TAG, "Removing non-dirty resources that are not present remotely anymore");
+		local.deleteAllExceptRemoteNames(remoteResources);
+		local.commit();
+
+		// update collection CTag
+		Log.i(TAG, "Sync complete, fetching new CTag");
+		local.setCTag(remote.getCTag());
+		local.commit();
+	}
+	
+	
+	private int pushDeleted(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote) throws LocalStorageException, IOException, HttpException {
+		int count = 0;
 		Resource[] deletedResources = local.findDeleted();
 		if (deletedResources != null) {
 			Log.i(TAG, "Remotely removing " + deletedResources.length + " deleted resource(s) (if not changed)");
 			for (Resource res : deletedResources) {
 				try {
 					if (res.getName() != null)	// is this resource even present remotely?
-						dav.delete(res);
+						remote.delete(res);
 				} catch(NotFoundException e) {
 					Log.i(TAG, "Locally-deleted resource has already been removed from server");
 				} catch(PreconditionFailedException e) {
 					Log.i(TAG, "Locally-deleted resource has been changed on the server in the meanwhile");
 				}
-				fetchCollection = true;
 				local.delete(res);
+				count++;
 			}
 			local.commit();
 		}
-		
-		// upload new resources
+		return count;
+	}
+	
+	private int pushNew(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote) throws LocalStorageException, IOException, HttpException {
+		int count = 0;
 		Resource[] newResources = local.findNew();
 		if (newResources != null) {
 			Log.i(TAG, "Uploading " + newResources.length + " new resource(s) (if not existing)");
 			for (Resource res : newResources) {
 				try {
-					dav.add(res);
+					remote.add(res);
 				} catch(PreconditionFailedException e) {
 					Log.i(TAG, "Didn't overwrite existing resource with other content");
 				} catch (ValidationException e) {
 					Log.e(TAG, "Couldn't create entity for adding: " + e.toString());
 				}
-				fetchCollection = true;
 				local.clearDirty(res);
+				count++;
 			}
 			local.commit();
 		}
-		
-		// upload modified resources
+		return count;
+	}
+	
+	private int pushDirty(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote) throws LocalStorageException, IOException, HttpException {
+		int count = 0;
 		Resource[] dirtyResources = local.findDirty();
 		if (dirtyResources != null) {
 			Log.i(TAG, "Uploading " + dirtyResources.length + " modified resource(s) (if not changed)");
 			for (Resource res : dirtyResources) {
 				try {
-					dav.update(res);
+					remote.update(res);
 				} catch(PreconditionFailedException e) {
 					Log.i(TAG, "Locally changed resource has been changed on the server in the meanwhile");
 				} catch (ValidationException e) {
 					Log.e(TAG, "Couldn't create entity for updating: " + e.toString());
 				}
-				fetchCollection = true;
 				local.clearDirty(res);
+				count++;
 			}
 			local.commit();
 		}
-		
-		
-		// PHASE 2A: FETCH REMOTE COLLECTION STATUS
-		// has collection changed -> fetch resources?
-		if (manualSync) {
-			Log.i(TAG, "Synchronization forced");
-			fetchCollection = true;
-		}
-		if (!fetchCollection) {
-			String	currentCTag = dav.getCTag(),
-					lastCTag = local.getCTag();
-			if (currentCTag == null || !currentCTag.equals(lastCTag))
-				fetchCollection = true;
-		}
-		
-		if (!fetchCollection)
-			return;
-
-		// PHASE 2B: FETCH REMOTE COLLECTION SUMMARY
-		// fetch remote resources -> add/overwrite local resources
-		Log.i(TAG, "Fetching remote resource list");
-		
-		Set<Resource> resourcesToAdd = new HashSet<Resource>(),
-				resourcesToUpdate = new HashSet<Resource>();
-		
-		Resource[] remoteResources = dav.getMemberETags();
-		if (remoteResources == null)	// failure
-			return;
-		
-		for (Resource remoteResource : remoteResources) {
-			Resource localResource = local.findByRemoteName(remoteResource.getName(), true);
-			if (localResource == null)
-				resourcesToAdd.add(remoteResource);
-			else if (localResource.getETag() == null || !localResource.getETag().equals(remoteResource.getETag()))
-				resourcesToUpdate.add(remoteResource);
-		}
-		
-		// PHASE 3: DOWNLOAD NEW/REMOTELY-CHANGED RESOURCES
-		Log.i(TAG, "Adding " + resourcesToAdd.size() + " remote resource(s)");
+		return count;
+	}
+	
+	private int pullNew(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote, Set<Resource> resourcesToAdd) throws LocalStorageException, IOException, HttpException {
+		int count = 0;
+		Log.i(TAG, "Fetching " + resourcesToAdd.size() + " new remote resource(s)");
 		if (!resourcesToAdd.isEmpty()) {
-			for (Resource res : dav.multiGet(resourcesToAdd.toArray(new Resource[0]))) {
+			for (Resource res : remote.multiGet(resourcesToAdd.toArray(new Resource[0]))) {
 				Log.i(TAG, "Adding " + res.getName());
 				local.add(res);
-				
-				if (++syncResult.stats.numInserts % MAX_UPDATES_BEFORE_COMMIT == 0)	// avoid TransactionTooLargeException
-					local.commit();
+				local.commit();
+				count++;
 			}
-			local.commit();
 		}
-		
-		Log.i(TAG, "Updating from " + resourcesToUpdate.size() + " remote resource(s)");
+		return count;
+	}
+	
+	private int pullChanged(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote, Set<Resource> resourcesToUpdate) throws LocalStorageException, IOException, HttpException {
+		int count = 0;
+		Log.i(TAG, "Fetching " + resourcesToUpdate.size() + " updated remote resource(s)");
 		if (!resourcesToUpdate.isEmpty())
-			for (Resource res : dav.multiGet(resourcesToUpdate.toArray(new Resource[0]))) {
+			for (Resource res : remote.multiGet(resourcesToUpdate.toArray(new Resource[0]))) {
 				Log.i(TAG, "Updating " + res.getName());
 				local.updateByRemoteName(res);
-				
-				if (++syncResult.stats.numUpdates % MAX_UPDATES_BEFORE_COMMIT == 0)	// avoid TransactionTooLargeException
-					local.commit();
+				local.commit();
+				count++;
 			}
-		local.commit();
-
-		// delete remotely removed resources
-		Log.i(TAG, "Removing resources that are missing remotely");
-		local.deleteAllExceptRemoteNames(remoteResources);
-		local.commit();
-
-		// update collection CTag
-		local.setCTag(dav.getCTag());
-		local.commit();
+		return count;
 	}
+
 }

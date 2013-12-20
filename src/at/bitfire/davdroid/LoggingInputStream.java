@@ -14,11 +14,14 @@ public class LoggingInputStream extends FilterInputStream {
 
 	ByteArrayOutputStream log = new ByteArrayOutputStream(MAX_LENGTH);
 	int logSize = 0;
+	boolean overflow = false;
+	
 
 	public LoggingInputStream(String tag, InputStream proxy) {
 		super(proxy);
 		this.tag = tag;
 	}
+	
 
 	@Override
 	public boolean markSupported() {
@@ -31,7 +34,8 @@ public class LoggingInputStream extends FilterInputStream {
 		if (logSize < MAX_LENGTH) {
 			log.write(b);
 			logSize++;
-		}
+		} else
+			overflow = true;
 		return b;
 	}
 
@@ -40,8 +44,10 @@ public class LoggingInputStream extends FilterInputStream {
 			throws IOException {
 		int read = super.read(buffer, byteOffset, byteCount);
 		int bytesToLog = read;
-		if (bytesToLog + logSize > MAX_LENGTH)
+		if (bytesToLog + logSize > MAX_LENGTH) {
 			bytesToLog = MAX_LENGTH - logSize;
+			overflow = true;
+		}
 		if (bytesToLog > 0) {
 			log.write(buffer, byteOffset, bytesToLog);
 			logSize += bytesToLog;
@@ -51,7 +57,7 @@ public class LoggingInputStream extends FilterInputStream {
 
 	@Override
 	public void close() throws IOException {
-		Log.d(tag, "Content: " + log.toString());
+		Log.d(tag, "Content: " + log.toString() + (overflow ? "…" : ""));
 		super.close();
 	}
 

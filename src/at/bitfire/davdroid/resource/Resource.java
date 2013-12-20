@@ -23,8 +23,6 @@ public abstract class Resource {
 	@Getter @Setter protected String uid;
 	@Getter protected long localID;
 	
-	@Getter protected boolean populated = false;
-	
 	
 	public Resource(String name, String ETag) {
 		this.name = name;

@@ -15,13 +15,12 @@ import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.OperationApplicationException;
 import android.content.SyncResult;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.provider.Settings;
 import android.util.Log;
 import at.bitfire.davdroid.resource.LocalCollection;
+import at.bitfire.davdroid.resource.LocalStorageException;
 import at.bitfire.davdroid.resource.RemoteCollection;
 import at.bitfire.davdroid.webdav.DAVException;
 
@@ -71,19 +70,16 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter {
 				
 			} catch (AuthenticationException ex) {
 				syncResult.stats.numAuthExceptions++;
-				Log.e(TAG, "HTTP authorization error", ex);
+				Log.e(TAG, "HTTP authentication failed", ex);
 			} catch (DAVException ex) {
 				syncResult.stats.numParseExceptions++;
 				Log.e(TAG, "Invalid DAV response", ex);
 			} catch (HttpException ex) {
 				syncResult.stats.numIoExceptions++;
 				Log.e(TAG, "HTTP error", ex);
-			} catch (OperationApplicationException ex) {
+			} catch (LocalStorageException ex) {
 				syncResult.databaseError = true;
-				Log.e(TAG, "Content provider operation error", ex);
-			} catch (RemoteException ex) {
-				syncResult.databaseError = true;
-				Log.e(TAG, "Remote process (content provider?) died", ex);
+				Log.e(TAG, "Local storage (content provider) exception", ex);
 			} catch (IOException ex) {
 				syncResult.stats.numIoExceptions++;
 				Log.e(TAG, "I/O error", ex);
