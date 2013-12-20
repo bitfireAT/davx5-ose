@@ -10,6 +10,7 @@ package at.bitfire.davdroid.resource;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import lombok.Cleanup;
 import android.accounts.Account;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
@@ -63,91 +64,111 @@ public abstract class LocalCollection<T extends Resource> {
 	
 	// content provider (= database) querying
 	
-	public Resource[] findDirty() throws RemoteException {
+	public Resource[] findDirty() throws LocalStorageException {
 		String where = entryColumnDirty() + "=1";
 		if (entryColumnParentID() != null)
 			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
-		Cursor cursor = providerClient.query(entriesURI(),
-				new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
-				where, null, null);
-		LinkedList<T> dirty = new LinkedList<T>();
-		while (cursor != null && cursor.moveToNext()) {
-			T resource = findById(cursor.getLong(0), true); 
-			if (resource != null)
-				dirty.add(resource);
+		try {
+			@Cleanup("close") Cursor cursor = providerClient.query(entriesURI(),
+					new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
+					where, null, null);
+			LinkedList<T> dirty = new LinkedList<T>();
+			while (cursor != null && cursor.moveToNext()) {
+				T resource = findById(cursor.getLong(0), true); 
+				if (resource != null)
+					dirty.add(resource);
+			}
+			return dirty.toArray(new Resource[0]);
+		} catch(RemoteException ex) {
+			throw new LocalStorageException(ex);
 		}
-		return dirty.toArray(new Resource[0]);
 	}
 
-	public Resource[] findDeleted() throws RemoteException {
+	public Resource[] findDeleted() throws LocalStorageException {
 		String where = entryColumnDeleted() + "=1";
 		if (entryColumnParentID() != null)
 			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
-		Cursor cursor = providerClient.query(entriesURI(),
-				new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
-				where, null, null);
-		LinkedList<T> deleted = new LinkedList<T>();
-		while (cursor != null && cursor.moveToNext()) {
-			T resource = findById(cursor.getLong(0), false);
-			if (resource != null)
-				deleted.add(resource);
+		try {
+			@Cleanup("close") Cursor cursor = providerClient.query(entriesURI(),
+					new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
+					where, null, null);
+			LinkedList<T> deleted = new LinkedList<T>();
+			while (cursor != null && cursor.moveToNext()) {
+				T resource = findById(cursor.getLong(0), false);
+				if (resource != null)
+					deleted.add(resource);
+			}
+			return deleted.toArray(new Resource[0]);
+		} catch(RemoteException ex) {
+			throw new LocalStorageException(ex);
 		}
-		return deleted.toArray(new Resource[0]);
 	}
 
-	public Resource[] findNew() throws RemoteException {
+	public Resource[] findNew() throws LocalStorageException {
 		String where = entryColumnDirty() + "=1 AND " + entryColumnRemoteName() + " IS NULL";
 		if (entryColumnParentID() != null)
 			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
-		Cursor cursor = providerClient.query(entriesURI(),
-				new String[] { entryColumnID() },
-				where, null, null);
-		LinkedList<T> fresh = new LinkedList<T>();
-		while (cursor != null && cursor.moveToNext()) {
-			T resource = findById(cursor.getLong(0), true);
-			if (resource != null) {
-				resource.initialize();
-	
-				// new record: set generated UID + remote file name in database
-				pendingOperations.add(ContentProviderOperation
-						.newUpdate(ContentUris.withAppendedId(entriesURI(), resource.getLocalID()))
-						.withValue(entryColumnUID(), resource.getUid())
-						.withValue(entryColumnRemoteName(), resource.getName())
-						.build());
-				
-				fresh.add(resource);
+		try {
+			@Cleanup("close") Cursor cursor = providerClient.query(entriesURI(),
+					new String[] { entryColumnID() },
+					where, null, null);
+			LinkedList<T> fresh = new LinkedList<T>();
+			while (cursor != null && cursor.moveToNext()) {
+				T resource = findById(cursor.getLong(0), true);
+				if (resource != null) {
+					resource.initialize();
+		
+					// new record: set generated UID + remote file name in database
+					pendingOperations.add(ContentProviderOperation
+							.newUpdate(ContentUris.withAppendedId(entriesURI(), resource.getLocalID()))
+							.withValue(entryColumnUID(), resource.getUid())
+							.withValue(entryColumnRemoteName(), resource.getName())
+							.build());
+					
+					fresh.add(resource);
+				}
 			}
+			return fresh.toArray(new Resource[0]);
+		} catch(RemoteException ex) {
+			throw new LocalStorageException(ex);
 		}
-		return fresh.toArray(new Resource[0]);
 	}
 	
-	public T findById(long localID, boolean populate) throws RemoteException {
-		Cursor cursor = providerClient.query(ContentUris.withAppendedId(entriesURI(), localID),
-				new String[] { entryColumnRemoteName(), entryColumnETag() }, null, null, null);
-		if (cursor != null && cursor.moveToNext()) {
-			T resource = newResource(localID, cursor.getString(0), cursor.getString(1));
-			if (populate)
-				populate(resource);
-			return resource;
-		} else
-			return null;
+	public T findById(long localID, boolean populate) throws LocalStorageException {
+		try {
+			@Cleanup("close") Cursor cursor = providerClient.query(ContentUris.withAppendedId(entriesURI(), localID),
+					new String[] { entryColumnRemoteName(), entryColumnETag() }, null, null, null);
+			if (cursor != null && cursor.moveToNext()) {
+				T resource = newResource(localID, cursor.getString(0), cursor.getString(1));
+				if (populate)
+					populate(resource);
+				return resource;
+			} else
+				throw new RecordNotFoundException();
+		} catch(RemoteException ex) {
+			throw new LocalStorageException(ex);
+		}
 	}
 	
-	public T findByRemoteName(String remoteName, boolean populate) throws RemoteException {
-		Cursor cursor = providerClient.query(entriesURI(),
-				new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
-				entryColumnRemoteName() + "=?", new String[] { remoteName }, null);
-		if (cursor != null && cursor.moveToNext()) {
-			T resource = newResource(cursor.getLong(0), cursor.getString(1), cursor.getString(2));
-			if (populate)
-				populate(resource);
-			return resource;
-		} else
-			return null;
+	public T findByRemoteName(String remoteName, boolean populate) throws LocalStorageException {
+		try {
+			@Cleanup("close") Cursor cursor = providerClient.query(entriesURI(),
+					new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
+					entryColumnRemoteName() + "=?", new String[] { remoteName }, null);
+			if (cursor != null && cursor.moveToNext()) {
+				T resource = newResource(cursor.getLong(0), cursor.getString(1), cursor.getString(2));
+				if (populate)
+					populate(resource);
+				return resource;
+			} else
+				throw new RecordNotFoundException();
+		} catch(RemoteException ex) {
+			throw new LocalStorageException(ex);
+		}
 	}
 
 
-	public abstract void populate(Resource record) throws RemoteException;
+	public abstract void populate(Resource record) throws LocalStorageException;
 	
 	protected void queueOperation(Builder builder) {
 		if (builder != null)
@@ -169,18 +190,16 @@ public abstract class LocalCollection<T extends Resource> {
 		addDataRows(resource, -1, idx);
 	}
 	
-	public void updateByRemoteName(Resource remoteResource) throws RemoteException {
+	public void updateByRemoteName(Resource remoteResource) throws LocalStorageException {
 		T localResource = findByRemoteName(remoteResource.getName(), false);
-		if (localResource != null) {		
-			pendingOperations.add(
-					buildEntry(ContentProviderOperation.newUpdate(ContentUris.withAppendedId(entriesURI(), localResource.getLocalID())), remoteResource)
-					.withValue(entryColumnETag(), remoteResource.getETag())
-					.withYieldAllowed(true)
-					.build());
-			
-			removeDataRows(localResource);
-			addDataRows(remoteResource, localResource.getLocalID(), -1);
-		}
+		pendingOperations.add(
+				buildEntry(ContentProviderOperation.newUpdate(ContentUris.withAppendedId(entriesURI(), localResource.getLocalID())), remoteResource)
+				.withValue(entryColumnETag(), remoteResource.getETag())
+				.withYieldAllowed(true)
+				.build());
+		
+		removeDataRows(localResource);
+		addDataRows(remoteResource, localResource.getLocalID(), -1);
 	}
 
 	public void delete(Resource resource) {
@@ -198,12 +217,17 @@ public abstract class LocalCollection<T extends Resource> {
 				.withValue(entryColumnDirty(), 0).build());
 	}
 
-	public void commit() throws RemoteException, OperationApplicationException {
-		if (!pendingOperations.isEmpty()) {
-			Log.i(TAG, "Committing " + pendingOperations.size() + " operations");
-			providerClient.applyBatch(pendingOperations);
-			pendingOperations.clear();
-		}
+	public void commit() throws LocalStorageException {
+		if (!pendingOperations.isEmpty())
+			try {
+				Log.i(TAG, "Committing " + pendingOperations.size() + " operations");
+				providerClient.applyBatch(pendingOperations);
+				pendingOperations.clear();
+			} catch (RemoteException ex) {
+				throw new LocalStorageException(ex);
+			} catch(OperationApplicationException ex) {
+				throw new LocalStorageException(ex);
+			}
 	}
 
 	
