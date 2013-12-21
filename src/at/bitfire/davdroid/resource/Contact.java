@@ -7,6 +7,7 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
@@ -183,7 +184,7 @@ public class Contact extends Resource {
 
 	
 	@Override
-	public String toEntity() throws IOException {
+	public ByteArrayOutputStream toEntity() throws IOException {
 		VCard vcard = new VCard();
 		vcard.setProdId("DAVdroid/" + Constants.APP_VERSION + " (ez-vcard/" + Ezvcard.VERSION + ")");
 		
@@ -257,10 +258,13 @@ public class Contact extends Resource {
 			vcard.setBirthday(birthDay);
 
 		vcard.setRevision(Revision.now());
-		return Ezvcard
+		
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		Ezvcard
 			.write(vcard)
 			.version(VCardVersion.V3_0)
 			.prodId(false)		// we provide or own PRODID
-			.go();
+			.go(os);
+		return os;
 	}
 }

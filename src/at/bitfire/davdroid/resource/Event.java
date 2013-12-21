@@ -7,6 +7,7 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -20,6 +21,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ComponentList;
@@ -29,6 +31,7 @@ import net.fortuna.ical4j.model.DefaultTimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.PropertyList;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
+import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.component.VAlarm;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
@@ -166,7 +169,7 @@ public class Event extends Resource {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public String toEntity() {
+	public ByteArrayOutputStream toEntity() throws IOException, ValidationException {
 		net.fortuna.ical4j.model.Calendar ical = new net.fortuna.ical4j.model.Calendar();
 		ical.getProperties().add(Version.VERSION_2_0);
 		ical.getProperties().add(new ProdId("-//bitfire web engineering//DAVdroid " + Constants.APP_VERSION + "//EN"));
@@ -224,8 +227,11 @@ public class Event extends Resource {
 			ical.getComponents().add(tzStart.getVTimeZone());
 		if (tzEnd != null && tzEnd != tzStart)
 			ical.getComponents().add(tzEnd.getVTimeZone());
-			
-		return ical.toString();
+
+		CalendarOutputter output = new CalendarOutputter(false);
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		output.output(ical, os);
+		return os;
 	}
 
 	

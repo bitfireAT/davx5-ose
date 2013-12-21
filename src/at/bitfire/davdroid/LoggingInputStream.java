@@ -11,6 +11,7 @@ public class LoggingInputStream extends FilterInputStream {
 	private static final int MAX_LENGTH = 10*1024;	// don't log more than 10 kB of data
 
 	String tag;
+	InputStream proxy;
 
 	ByteArrayOutputStream log = new ByteArrayOutputStream(MAX_LENGTH);
 	int logSize = 0;
@@ -20,6 +21,7 @@ public class LoggingInputStream extends FilterInputStream {
 	public LoggingInputStream(String tag, InputStream proxy) {
 		super(proxy);
 		this.tag = tag;
+		this.proxy = proxy;
 	}
 	
 

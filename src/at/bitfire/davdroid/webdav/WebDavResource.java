@@ -7,7 +7,6 @@
  ******************************************************************************/
 package at.bitfire.davdroid.webdav;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -24,6 +23,7 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.ToString;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -41,6 +41,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicLineParser;
+import org.apache.http.protocol.HTTP;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
@@ -84,7 +85,7 @@ public class WebDavResource {
 	@Getter protected List<WebDavResource> members;
 
 	// content (available after GET)
-	@Getter protected InputStream content;
+	@Getter protected byte[] content;
 
 	protected DefaultHttpClient client;
 	
@@ -129,32 +130,6 @@ public class WebDavResource {
 		this(parent, member);
 		properties.put(Property.ETAG, ETag);
 	}
-
-	
-	protected void checkResponse(HttpResponse response) throws HttpException {
-		checkResponse(response.getStatusLine());
-	}
-	
-	protected void checkResponse(StatusLine statusLine) throws HttpException {
-		int code = statusLine.getStatusCode();
-		
-		Log.d(TAG, "Received " + statusLine.getProtocolVersion() + " " + code + " " + statusLine.getReasonPhrase());
-		
-		if (code/100 == 1 || code/100 == 2)		// everything OK
-			return;
-		
-		String reason = code + " " + statusLine.getReasonPhrase();
-		switch (code) {
-		case HttpStatus.SC_UNAUTHORIZED:
-			throw new AuthenticationException(reason);
-		case HttpStatus.SC_NOT_FOUND:
-			throw new NotFoundException(reason);
-		case HttpStatus.SC_PRECONDITION_FAILED:
-			throw new PreconditionFailedException(reason);
-		default:
-			throw new HttpException(reason);
-		}
-	}
 	
 
 	/* feature detection */
@@ -163,7 +138,10 @@ public class WebDavResource {
 		HttpOptions options = new HttpOptions(location);
 		HttpResponse response = client.execute(options);
 		checkResponse(response);
-
+		
+		if (response.getEntity() != null)
+			response.getEntity().consumeContent();
+		
 		Header[] allowHeaders = response.getHeaders("Allow");
 		for (Header allowHeader : allowHeaders)
 			methods.addAll(Arrays.asList(allowHeader.getValue().split(", ?")));
@@ -250,34 +228,34 @@ public class WebDavResource {
 	
 	/* collection operations */
 	
-	public void propfind(HttpPropfind.Mode mode) throws IOException, DAVException, HttpException {
+	public void propfind(HttpPropfind.Mode mode) throws IOException, DavException, HttpException {
 		HttpPropfind propfind = new HttpPropfind(location, mode);
 		HttpResponse response = client.execute(propfind);
 		checkResponse(response);
 
 		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_MULTI_STATUS)
-			throw new DAVNoMultiStatusException();
+			throw new DavNoMultiStatusException();
 
 		@Cleanup("consumeContent") HttpEntity entity = response.getEntity();
 		if (entity == null)
-			throw new DAVNoContentException();
-		InputStream content = entity.getContent();
-		if (content == null)
-			throw new DAVNoContentException();
+			throw new DavNoContentException();
 		
-		@Cleanup LoggingInputStream loggedContent = new LoggingInputStream(TAG, content);
+		InputStream rawContent = entity.getContent();
+		if (content == null)
+			throw new DavNoContentException();
+		@Cleanup LoggingInputStream content = new LoggingInputStream(TAG, rawContent);
 		
 		DavMultistatus multistatus;
 		try {
 			Serializer serializer = new Persister();
-			multistatus = serializer.read(DavMultistatus.class, loggedContent, false);
+			multistatus = serializer.read(DavMultistatus.class, content, false);
 		} catch (Exception ex) {
-			throw new DAVException("Couldn't parse Multi-Status response on PROPFIND", ex);
+			throw new DavException("Couldn't parse Multi-Status response on PROPFIND", ex);
 		}
 		processMultiStatus(multistatus);
 	}
 
-	public void multiGet(DavMultiget.Type type, String[] names) throws IOException, DAVException, HttpException {
+	public void multiGet(DavMultiget.Type type, String[] names) throws IOException, DavException, HttpException {
 		List<String> hrefs = new LinkedList<String>();
 		for (String name : names)
 			hrefs.add(location.resolve(name).getRawPath());
@@ -289,7 +267,7 @@ public class WebDavResource {
 			serializer.write(multiget, writer);
 		} catch (Exception ex) {
 			Log.e(TAG, "Couldn't create XML multi-get request", ex);
-			throw new DAVException("Couldn't create multi-get request");
+			throw new DavException("Couldn't create multi-get request");
 		}
 
 		HttpReport report = new HttpReport(location, writer.toString());
@@ -297,22 +275,22 @@ public class WebDavResource {
 		checkResponse(response);
 		
 		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_MULTI_STATUS)
-			throw new DAVNoMultiStatusException();
+			throw new DavNoMultiStatusException();
 		
 		@Cleanup("consumeContent") HttpEntity entity = response.getEntity();
 		if (entity == null)
-			throw new DAVNoContentException();
-		InputStream content = entity.getContent();
-		if (content == null)
-			throw new DAVNoContentException();
+			throw new DavNoContentException();
 		
-		@Cleanup LoggingInputStream loggedContent = new LoggingInputStream(TAG, content);
+		InputStream rawContent = entity.getContent();
+		if (rawContent == null)
+			throw new DavNoContentException();
+		@Cleanup LoggingInputStream content = new LoggingInputStream(TAG, rawContent);
 		
 		DavMultistatus multiStatus;
 		try {
-			multiStatus = serializer.read(DavMultistatus.class, loggedContent, false);
+			multiStatus = serializer.read(DavMultistatus.class, content, false);
 		} catch (Exception ex) {
-			throw new DAVException("Couldn't parse Multi-Status response on REPORT multi-get", ex);
+			throw new DavException("Couldn't parse Multi-Status response on REPORT multi-get", ex);
 		}
 		processMultiStatus(multiStatus);
 	}
@@ -325,12 +303,17 @@ public class WebDavResource {
 		HttpResponse response = client.execute(get);
 		checkResponse(response);
 		
-		content = response.getEntity().getContent();
+		@Cleanup("consumeContent") HttpEntity entity = response.getEntity();
+		if (entity.getContent() == null)
+			throw new DavNoContentException();
+		content = IOUtils.toByteArray(entity.getContent());
 	}
 	
 	public void put(byte[] data, PutMode mode) throws IOException, HttpException {
+		Log.d(TAG, "Sending PUT request:");
+		Log.d(TAG, IOUtils.toString(data, HTTP.UTF_8));
+		
 		HttpPut put = new HttpPut(location);
-		Log.d(TAG, "Sending PUT request: " + new String(data, "UTF-8"));
 		put.setEntity(new ByteArrayEntity(data));
 
 		switch (mode) {
@@ -360,9 +343,34 @@ public class WebDavResource {
 
 	/* helpers */
 	
+	protected void checkResponse(HttpResponse response) throws HttpException {
+		checkResponse(response.getStatusLine());
+	}
+	
+	protected void checkResponse(StatusLine statusLine) throws HttpException {
+		int code = statusLine.getStatusCode();
+		
+		Log.d(TAG, "Received " + statusLine.getProtocolVersion() + " " + code + " " + statusLine.getReasonPhrase());
+		
+		if (code/100 == 1 || code/100 == 2)		// everything OK
+			return;
+		
+		String reason = code + " " + statusLine.getReasonPhrase();
+		switch (code) {
+		case HttpStatus.SC_UNAUTHORIZED:
+			throw new AuthenticationException(reason);
+		case HttpStatus.SC_NOT_FOUND:
+			throw new NotFoundException(reason);
+		case HttpStatus.SC_PRECONDITION_FAILED:
+			throw new PreconditionFailedException(reason);
+		default:
+			throw new HttpException(reason);
+		}
+	}
+	
 	protected void processMultiStatus(DavMultistatus multistatus) throws HttpException {
 		if (multistatus.response == null)	// empty response
-			return;
+			throw new DavNoContentException();
 		
 		// member list will be built from response
 		List<WebDavResource> members = new LinkedList<WebDavResource>();
@@ -443,9 +451,9 @@ public class WebDavResource {
 					properties.put(Property.ETAG, prop.getetag.getETag());
 				
 				if (prop.calendarData != null && prop.calendarData.ical != null)
-					referenced.content = new ByteArrayInputStream(prop.calendarData.ical.getBytes());
+					referenced.content = prop.calendarData.ical.getBytes();
 				else if (prop.addressData != null && prop.addressData.vcard != null)
-					referenced.content = new ByteArrayInputStream(prop.addressData.vcard.getBytes());
+					referenced.content = prop.addressData.vcard.getBytes();
 			}
 		}
 		

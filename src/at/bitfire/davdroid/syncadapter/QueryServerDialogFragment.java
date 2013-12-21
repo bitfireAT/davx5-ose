@@ -28,8 +28,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.resource.IncapableResourceException;
 import at.bitfire.davdroid.webdav.HttpPropfind.Mode;
+import at.bitfire.davdroid.webdav.DavIncapableException;
 import at.bitfire.davdroid.webdav.WebDavResource;
 
 public class QueryServerDialogFragment extends DialogFragment implements LoaderCallbacks<ServerInfo> {
@@ -117,7 +117,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 				serverInfo.setCalDAV(base.supportsDAV("calendar-access"));
 				if (!base.supportsMethod("PROPFIND") || !base.supportsMethod("REPORT") ||
 					(!serverInfo.isCalDAV() && !serverInfo.isCardDAV()))
-					throw new IncapableResourceException(getContext().getString(R.string.neither_caldav_nor_carddav));
+					throw new DavIncapableException(getContext().getString(R.string.neither_caldav_nor_carddav));
 				
 				// (2/5) get principal URL
 				base.propfind(Mode.CURRENT_USER_PRINCIPAL);
@@ -126,7 +126,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 				if (principalPath != null)
 					Log.i(TAG, "Found principal path: " + principalPath);
 				else
-					throw new IncapableResourceException(getContext().getString(R.string.error_principal_path));
+					throw new DavIncapableException(getContext().getString(R.string.error_principal_path));
 				
 				// (3/5) get home sets
 				WebDavResource principal = new WebDavResource(base, principalPath);
@@ -138,7 +138,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 					if (pathAddressBooks != null)
 						Log.i(TAG, "Found address book home set: " + pathAddressBooks);
 					else
-						throw new IncapableResourceException(getContext().getString(R.string.error_home_set_address_books));
+						throw new DavIncapableException(getContext().getString(R.string.error_home_set_address_books));
 				}
 				
 				String pathCalendars = null;
@@ -147,7 +147,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 					if (pathCalendars != null)
 						Log.i(TAG, "Found calendar home set: " + pathCalendars);
 					else
-						throw new IncapableResourceException(getContext().getString(R.string.error_home_set_calendars));
+						throw new DavIncapableException(getContext().getString(R.string.error_home_set_calendars));
 				}
 				
 				// (4/5) get address books
@@ -208,10 +208,10 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_uri_syntax, e.getMessage()));
 			}  catch (IOException e) {
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_io, e.getLocalizedMessage()));
+			} catch (DavIncapableException e) {
+				serverInfo.setErrorMessage(getContext().getString(R.string.exception_incapable_resource, e.getLocalizedMessage()));
 			} catch (HttpException e) {
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_http, e.getLocalizedMessage()));
-			} catch (IncapableResourceException e) {
-				serverInfo.setErrorMessage(getContext().getString(R.string.exception_incapable_resource, e.getLocalizedMessage()));
 			}
 			
 			return serverInfo;

@@ -7,6 +7,7 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -38,5 +39,5 @@ public abstract class Resource {
 	public abstract void initialize();
 	
 	public abstract void parseEntity(InputStream entity) throws IOException, ParserException, VCardException;
-	public abstract String toEntity() throws IOException, ValidationException;
+	public abstract ByteArrayOutputStream toEntity() throws IOException, ValidationException;
 }
