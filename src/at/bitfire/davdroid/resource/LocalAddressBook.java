@@ -144,7 +144,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		Contact c = (Contact)res;
 		
 		try {
-			@Cleanup("close") Cursor cursor = providerClient.query(ContentUris.withAppendedId(entriesURI(), c.getLocalID()),
+			@Cleanup Cursor cursor = providerClient.query(ContentUris.withAppendedId(entriesURI(), c.getLocalID()),
 				new String[] { entryColumnUID(), RawContacts.STARRED }, null, null, null);
 			if (cursor != null && cursor.moveToNext()) {
 				c.setUid(cursor.getString(0));
@@ -169,7 +169,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 
 	private void populateStructuredName(Contact c) throws RemoteException {
-		@Cleanup("close") Cursor cursor = providerClient.query(dataURI(), new String[] {
+		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] {
 				/* 0 */ StructuredName.DISPLAY_NAME, StructuredName.PREFIX, StructuredName.GIVEN_NAME,
 				/* 3 */ StructuredName.MIDDLE_NAME,	StructuredName.FAMILY_NAME, StructuredName.SUFFIX,
 				/* 6 */ StructuredName.PHONETIC_GIVEN_NAME, StructuredName.PHONETIC_MIDDLE_NAME, StructuredName.PHONETIC_FAMILY_NAME
@@ -191,7 +191,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 	
 	protected void populatePhoneNumbers(Contact c) throws RemoteException {
-		@Cleanup("close") Cursor cursor = providerClient.query(dataURI(), new String[] { Phone.TYPE, Phone.LABEL, Phone.NUMBER },
+		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Phone.TYPE, Phone.LABEL, Phone.NUMBER },
 				Phone.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Phone.CONTENT_ITEM_TYPE }, null);
 		while (cursor != null && cursor.moveToNext()) {
@@ -268,7 +268,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 	
 	protected void populateEmailAddresses(Contact c) throws RemoteException {
-		@Cleanup("close") Cursor cursor = providerClient.query(dataURI(), new String[] { Email.TYPE, Email.ADDRESS, Email.LABEL },
+		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Email.TYPE, Email.ADDRESS, Email.LABEL },
 				Email.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Email.CONTENT_ITEM_TYPE }, null);
 		while (cursor != null && cursor.moveToNext()) {
@@ -306,7 +306,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 	
 	protected void populateOrganization(Contact c) throws RemoteException {
-		@Cleanup("close") Cursor cursor = providerClient.query(dataURI(), new String[] { Organization.COMPANY, Organization.TITLE },
+		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Organization.COMPANY, Organization.TITLE },
 				Photo.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Organization.CONTENT_ITEM_TYPE }, null);
 		if (cursor != null && cursor.moveToNext()) {
@@ -320,7 +320,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 	
 	protected void populateIMPPs(Contact c) throws RemoteException {
-		@Cleanup("close") Cursor cursor = providerClient.query(dataURI(), new String[] { Im.DATA, Im.TYPE, Im.LABEL, Im.PROTOCOL, Im.CUSTOM_PROTOCOL },
+		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Im.DATA, Im.TYPE, Im.LABEL, Im.PROTOCOL, Im.CUSTOM_PROTOCOL },
 				Photo.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Im.CONTENT_ITEM_TYPE }, null);
 		while (cursor != null && cursor.moveToNext()) {
@@ -378,7 +378,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 
 	protected void populateNickname(Contact c) throws RemoteException {
-		@Cleanup("close") Cursor cursor = providerClient.query(dataURI(), new String[] { Nickname.NAME },
+		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Nickname.NAME },
 				Nickname.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Nickname.CONTENT_ITEM_TYPE }, null);
 		if (cursor != null && cursor.moveToNext())
@@ -386,7 +386,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 	
 	protected void populateNote(Contact c) throws RemoteException {
-		@Cleanup("close") Cursor cursor = providerClient.query(dataURI(), new String[] { Note.NOTE },
+		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Note.NOTE },
 				Website.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Note.CONTENT_ITEM_TYPE }, null);
 		if (cursor != null && cursor.moveToNext())
@@ -394,7 +394,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 	
 	protected void populatePostalAddresses(Contact c) throws RemoteException {
-		@Cleanup("close") Cursor cursor = providerClient.query(dataURI(), new String[] {
+		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] {
 				/* 0 */ StructuredPostal.FORMATTED_ADDRESS, StructuredPostal.TYPE, StructuredPostal.LABEL,
 				/* 3 */ StructuredPostal.STREET, StructuredPostal.POBOX, StructuredPostal.NEIGHBORHOOD,
 				/* 6 */ StructuredPostal.CITY, StructuredPostal.REGION, StructuredPostal.POSTCODE,
@@ -430,7 +430,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 	
 	protected void populateURLs(Contact c) throws RemoteException {
-		@Cleanup("close") Cursor cursor = providerClient.query(dataURI(), new String[] { Website.URL },
+		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Website.URL },
 				Website.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Website.CONTENT_ITEM_TYPE }, null);
 		if (cursor != null && cursor.moveToNext())
@@ -438,7 +438,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 	
 	protected void populateEvents(Contact c) throws RemoteException {
-		@Cleanup("close") Cursor cursor = providerClient.query(dataURI(), new String[] { CommonDataKinds.Event.TYPE, CommonDataKinds.Event.START_DATE },
+		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { CommonDataKinds.Event.TYPE, CommonDataKinds.Event.START_DATE },
 				Photo.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), CommonDataKinds.Event.CONTENT_ITEM_TYPE }, null);
 		while (cursor != null && cursor.moveToNext()) {

@@ -69,14 +69,18 @@ public abstract class LocalCollection<T extends Resource> {
 		if (entryColumnParentID() != null)
 			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
 		try {
-			@Cleanup("close") Cursor cursor = providerClient.query(entriesURI(),
+			@Cleanup Cursor cursor = providerClient.query(entriesURI(),
 					new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
 					where, null, null);
 			LinkedList<T> dirty = new LinkedList<T>();
 			while (cursor != null && cursor.moveToNext()) {
-				T resource = findById(cursor.getLong(0), true); 
-				if (resource != null)
+				long id = cursor.getLong(0);
+				try {
+					T resource = findById(id, true); 
 					dirty.add(resource);
+				} catch (RecordNotFoundException e) {
+					Log.w(TAG, "Couldn't load dirty resource: " + ContentUris.appendId(entriesURI().buildUpon(), id), e);
+				}
 			}
 			return dirty.toArray(new Resource[0]);
 		} catch(RemoteException ex) {
@@ -89,14 +93,18 @@ public abstract class LocalCollection<T extends Resource> {
 		if (entryColumnParentID() != null)
 			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
 		try {
-			@Cleanup("close") Cursor cursor = providerClient.query(entriesURI(),
+			@Cleanup Cursor cursor = providerClient.query(entriesURI(),
 					new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
 					where, null, null);
 			LinkedList<T> deleted = new LinkedList<T>();
 			while (cursor != null && cursor.moveToNext()) {
-				T resource = findById(cursor.getLong(0), false);
-				if (resource != null)
+				long id = cursor.getLong(0);
+				try {
+					T resource = findById(id, false);
 					deleted.add(resource);
+				} catch (RecordNotFoundException e) {
+					Log.w(TAG, "Couldn't load resource marked for deletion: " + ContentUris.appendId(entriesURI().buildUpon(), id), e);
+				}
 			}
 			return deleted.toArray(new Resource[0]);
 		} catch(RemoteException ex) {
@@ -109,13 +117,14 @@ public abstract class LocalCollection<T extends Resource> {
 		if (entryColumnParentID() != null)
 			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
 		try {
-			@Cleanup("close") Cursor cursor = providerClient.query(entriesURI(),
+			@Cleanup Cursor cursor = providerClient.query(entriesURI(),
 					new String[] { entryColumnID() },
 					where, null, null);
 			LinkedList<T> fresh = new LinkedList<T>();
 			while (cursor != null && cursor.moveToNext()) {
-				T resource = findById(cursor.getLong(0), true);
-				if (resource != null) {
+				long id = cursor.getLong(0);
+				try {
+					T resource = findById(id, true);
 					resource.initialize();
 		
 					// new record: set generated UID + remote file name in database
@@ -126,6 +135,8 @@ public abstract class LocalCollection<T extends Resource> {
 							.build());
 					
 					fresh.add(resource);
+				} catch (RecordNotFoundException e) {
+					Log.w(TAG, "Couldn't load fresh resource: " + ContentUris.appendId(entriesURI().buildUpon(), id), e);
 				}
 			}
 			return fresh.toArray(new Resource[0]);
@@ -136,7 +147,7 @@ public abstract class LocalCollection<T extends Resource> {
 	
 	public T findById(long localID, boolean populate) throws LocalStorageException {
 		try {
-			@Cleanup("close") Cursor cursor = providerClient.query(ContentUris.withAppendedId(entriesURI(), localID),
+			@Cleanup Cursor cursor = providerClient.query(ContentUris.withAppendedId(entriesURI(), localID),
 					new String[] { entryColumnRemoteName(), entryColumnETag() }, null, null, null);
 			if (cursor != null && cursor.moveToNext()) {
 				T resource = newResource(localID, cursor.getString(0), cursor.getString(1));
@@ -152,7 +163,7 @@ public abstract class LocalCollection<T extends Resource> {
 	
 	public T findByRemoteName(String remoteName, boolean populate) throws LocalStorageException {
 		try {
-			@Cleanup("close") Cursor cursor = providerClient.query(entriesURI(),
+			@Cleanup Cursor cursor = providerClient.query(entriesURI(),
 					new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
 					entryColumnRemoteName() + "=?", new String[] { remoteName }, null);
 			if (cursor != null && cursor.moveToNext()) {

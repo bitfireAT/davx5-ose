@@ -138,7 +138,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 	}
 	
 	public static LocalCalendar[] findAll(Account account, ContentProviderClient providerClient) throws RemoteException {
-		@Cleanup("close") Cursor cursor = providerClient.query(calendarsURI(account),
+		@Cleanup Cursor cursor = providerClient.query(calendarsURI(account),
 				new String[] { Calendars._ID, Calendars.NAME, COLLECTION_COLUMN_CTAG },
 				Calendars.DELETED + "=0 AND " + Calendars.SYNC_EVENTS + "=1", null, null);
 		
@@ -199,7 +199,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		Event e = (Event)resource;
 		
 		try {
-			@Cleanup("close") Cursor cursor = providerClient.query(ContentUris.withAppendedId(entriesURI(), e.getLocalID()),
+			@Cleanup Cursor cursor = providerClient.query(ContentUris.withAppendedId(entriesURI(), e.getLocalID()),
 				new String[] {
 					/*  0 */ Events.TITLE, Events.EVENT_LOCATION, Events.DESCRIPTION,
 					/*  3 */ Events.DTSTART, Events.DTEND, Events.EVENT_TIMEZONE, Events.EVENT_END_TIMEZONE, Events.ALL_DAY,
@@ -317,7 +317,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		Uri attendeesUri = Attendees.CONTENT_URI.buildUpon()
 				.appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
 				.build();
-		@Cleanup("close") Cursor c = providerClient.query(attendeesUri, new String[] {
+		@Cleanup Cursor c = providerClient.query(attendeesUri, new String[] {
 				/* 0 */ Attendees.ATTENDEE_EMAIL, Attendees.ATTENDEE_NAME, Attendees.ATTENDEE_TYPE,
 				/* 3 */ Attendees.ATTENDEE_RELATIONSHIP, Attendees.STATUS
 			}, Attendees.EVENT_ID + "=?", new String[] { String.valueOf(e.getLocalID()) }, null);
@@ -377,7 +377,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		Uri remindersUri = Reminders.CONTENT_URI.buildUpon()
 				.appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
 				.build();
-		@Cleanup("close") Cursor c = providerClient.query(remindersUri, new String[] {
+		@Cleanup Cursor c = providerClient.query(remindersUri, new String[] {
 				/* 0 */ Reminders.MINUTES, Reminders.METHOD
 			}, Reminders.EVENT_ID + "=?", new String[] { String.valueOf(e.getLocalID()) }, null);
 		while (c != null && c.moveToNext()) {
