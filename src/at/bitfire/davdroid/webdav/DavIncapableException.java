@@ -5,15 +5,12 @@
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  ******************************************************************************/
-package at.bitfire.davdroid.resource;
+package at.bitfire.davdroid.webdav;
 
-public class IncapableResourceException extends Exception {
+public class DavIncapableException extends DavException {
 	private static final long serialVersionUID = -7199786680939975667L;
-
-	public IncapableResourceException() {
-	}
 	
-	public IncapableResourceException(String msg) {
+	public DavIncapableException(String msg) {
 		super(msg);
 	}
 }
