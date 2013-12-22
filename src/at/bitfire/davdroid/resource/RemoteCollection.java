@@ -21,9 +21,7 @@ import lombok.Getter;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.ValidationException;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
-import org.apache.http.protocol.HTTP;
 
 import android.util.Log;
 import at.bitfire.davdroid.webdav.DavException;
@@ -82,11 +80,11 @@ public abstract class RemoteCollection<T extends Resource> {
 			for (Resource resource : resources)
 				names.add(resource.getName());
 			
+			LinkedList<T> foundResources = new LinkedList<T>();
 			collection.multiGet(multiGetType(), names.toArray(new String[0]));
 			if (collection.getMembers() == null)
 				throw new DavNoContentException();
 			
-			LinkedList<T> foundResources = new LinkedList<T>();
 			for (WebDavResource member : collection.getMembers()) {
 				T resource = newResourceSkeleton(member.getName(), member.getETag());
 				try {
@@ -123,9 +121,6 @@ public abstract class RemoteCollection<T extends Resource> {
 		byte[] data = member.getContent();
 		if (data == null)
 			throw new DavNoContentException();
-		
-		Log.i(TAG, "Received content:");
-		Log.i(TAG, IOUtils.toString(data, HTTP.UTF_8));
 		
 		@Cleanup InputStream is = new ByteArrayInputStream(data);
 		resource.parseEntity(is);

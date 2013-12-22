@@ -8,10 +8,9 @@ import java.io.InputStream;
 import android.util.Log;
 
 public class LoggingInputStream extends FilterInputStream {
-	private static final int MAX_LENGTH = 10*1024;	// don't log more than 10 kB of data
+	private static final int MAX_LENGTH = 1000;	// don't log more than this amount of data
 
 	String tag;
-	InputStream proxy;
 
 	ByteArrayOutputStream log = new ByteArrayOutputStream(MAX_LENGTH);
 	int logSize = 0;
@@ -21,7 +20,6 @@ public class LoggingInputStream extends FilterInputStream {
 	public LoggingInputStream(String tag, InputStream proxy) {
 		super(proxy);
 		this.tag = tag;
-		this.proxy = proxy;
 	}
 	
 
@@ -59,7 +57,7 @@ public class LoggingInputStream extends FilterInputStream {
 
 	@Override
 	public void close() throws IOException {
-		Log.d(tag, "Content: " + log.toString() + (overflow ? "…" : ""));
+		Log.d(tag, log.toString() + (overflow ? "…" : ""));
 		super.close();
 	}
 

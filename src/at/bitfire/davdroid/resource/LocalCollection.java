@@ -10,12 +10,15 @@ package at.bitfire.davdroid.resource;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import org.apache.commons.lang.ArrayUtils;
+
 import lombok.Cleanup;
 import android.accounts.Account;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderOperation.Builder;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
@@ -64,7 +67,7 @@ public abstract class LocalCollection<T extends Resource> {
 	
 	// content provider (= database) querying
 	
-	public Resource[] findDirty() throws LocalStorageException {
+	public long[] findDirty() throws LocalStorageException {
 		String where = entryColumnDirty() + "=1";
 		if (entryColumnParentID() != null)
 			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
@@ -72,23 +75,16 @@ public abstract class LocalCollection<T extends Resource> {
 			@Cleanup Cursor cursor = providerClient.query(entriesURI(),
 					new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
 					where, null, null);
-			LinkedList<T> dirty = new LinkedList<T>();
-			while (cursor != null && cursor.moveToNext()) {
-				long id = cursor.getLong(0);
-				try {
-					T resource = findById(id, true); 
-					dirty.add(resource);
-				} catch (RecordNotFoundException e) {
-					Log.w(TAG, "Couldn't load dirty resource: " + ContentUris.appendId(entriesURI().buildUpon(), id), e);
-				}
-			}
-			return dirty.toArray(new Resource[0]);
+			LinkedList<Long> dirty = new LinkedList<Long>();
+			while (cursor != null && cursor.moveToNext())
+				dirty.add(cursor.getLong(0));
+			return ArrayUtils.toPrimitive(dirty.toArray(new Long[0]), -1);
 		} catch(RemoteException ex) {
 			throw new LocalStorageException(ex);
 		}
 	}
 
-	public Resource[] findDeleted() throws LocalStorageException {
+	public long[] findDeleted() throws LocalStorageException {
 		String where = entryColumnDeleted() + "=1";
 		if (entryColumnParentID() != null)
 			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
@@ -96,23 +92,17 @@ public abstract class LocalCollection<T extends Resource> {
 			@Cleanup Cursor cursor = providerClient.query(entriesURI(),
 					new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
 					where, null, null);
-			LinkedList<T> deleted = new LinkedList<T>();
-			while (cursor != null && cursor.moveToNext()) {
-				long id = cursor.getLong(0);
-				try {
-					T resource = findById(id, false);
-					deleted.add(resource);
-				} catch (RecordNotFoundException e) {
-					Log.w(TAG, "Couldn't load resource marked for deletion: " + ContentUris.appendId(entriesURI().buildUpon(), id), e);
-				}
-			}
-			return deleted.toArray(new Resource[0]);
+			LinkedList<Long> deleted = new LinkedList<Long>();
+			while (cursor != null && cursor.moveToNext())
+				deleted.add(cursor.getLong(0));
+			return ArrayUtils.toPrimitive(deleted.toArray(new Long[0]), -1);
 		} catch(RemoteException ex) {
 			throw new LocalStorageException(ex);
 		}
 	}
 
-	public Resource[] findNew() throws LocalStorageException {
+	public long[] findNew() throws LocalStorageException {
+		// new records are 1) dirty, and 2) don't have a remote file name yet
 		String where = entryColumnDirty() + "=1 AND " + entryColumnRemoteName() + " IS NULL";
 		if (entryColumnParentID() != null)
 			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
@@ -120,26 +110,22 @@ public abstract class LocalCollection<T extends Resource> {
 			@Cleanup Cursor cursor = providerClient.query(entriesURI(),
 					new String[] { entryColumnID() },
 					where, null, null);
-			LinkedList<T> fresh = new LinkedList<T>();
+			LinkedList<Long> fresh = new LinkedList<Long>();
 			while (cursor != null && cursor.moveToNext()) {
 				long id = cursor.getLong(0);
-				try {
-					T resource = findById(id, true);
-					resource.initialize();
-		
-					// new record: set generated UID + remote file name in database
-					pendingOperations.add(ContentProviderOperation
-							.newUpdate(ContentUris.withAppendedId(entriesURI(), resource.getLocalID()))
-							.withValue(entryColumnUID(), resource.getUid())
-							.withValue(entryColumnRemoteName(), resource.getName())
-							.build());
-					
-					fresh.add(resource);
-				} catch (RecordNotFoundException e) {
-					Log.w(TAG, "Couldn't load fresh resource: " + ContentUris.appendId(entriesURI().buildUpon(), id), e);
-				}
+				
+				// new record: generate UID + remote file name so that we can upload
+				T resource = findById(id, false);
+				resource.initialize();
+				// write generated UID + remote file name into database
+				ContentValues values = new ContentValues(2);
+				values.put(entryColumnUID(), resource.getUid());
+				values.put(entryColumnRemoteName(), resource.getName());
+				providerClient.update(ContentUris.withAppendedId(entriesURI(), id), values, null, null);
+				
+				fresh.add(id);
 			}
-			return fresh.toArray(new Resource[0]);
+			return ArrayUtils.toPrimitive(fresh.toArray(new Long[0]), -1);
 		} catch(RemoteException ex) {
 			throw new LocalStorageException(ex);
 		}
