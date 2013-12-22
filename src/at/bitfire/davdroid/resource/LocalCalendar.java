@@ -562,7 +562,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		if (alarm.getTrigger() != null && (duration = alarm.getTrigger().getDuration()) != null)
 			minutes = duration.getDays() * 24*60 + duration.getHours()*60 + duration.getMinutes();
 		
-		Log.i(TAG, "Adding alarm " + minutes + " min before");
+		Log.d(TAG, "Adding alarm " + minutes + " min before");
 		
 		return builder
 				.withValue(Reminders.METHOD, Reminders.METHOD_ALERT)

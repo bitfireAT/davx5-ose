@@ -240,8 +240,8 @@ public class WebDavResource {
 		if (entity == null)
 			throw new DavNoContentException();
 		
-		InputStream rawContent = entity.getContent();
-		if (content == null)
+		@Cleanup InputStream rawContent = entity.getContent();
+		if (rawContent == null)
 			throw new DavNoContentException();
 		@Cleanup LoggingInputStream content = new LoggingInputStream(TAG, rawContent);
 		
@@ -304,9 +304,15 @@ public class WebDavResource {
 		checkResponse(response);
 		
 		@Cleanup("consumeContent") HttpEntity entity = response.getEntity();
-		if (entity.getContent() == null)
+		if (entity == null)
 			throw new DavNoContentException();
-		content = IOUtils.toByteArray(entity.getContent());
+		
+		@Cleanup InputStream rawContent = entity.getContent();
+		if (rawContent == null)
+			throw new DavNoContentException();
+		@Cleanup LoggingInputStream content = new LoggingInputStream(TAG, rawContent);
+		
+		this.content = IOUtils.toByteArray(content);
 	}
 	
 	public void put(byte[] data, PutMode mode) throws IOException, HttpException {
@@ -328,7 +334,9 @@ public class WebDavResource {
 		if (getContentType() != null)
 			put.addHeader("Content-Type", getContentType());
 
-		checkResponse(client.execute(put));
+		HttpResponse response = client.execute(put);
+		@Cleanup("consumeContent") HttpEntity entity = response.getEntity();
+		checkResponse(response);
 	}
 	
 	public void delete() throws IOException, HttpException {
@@ -337,7 +345,9 @@ public class WebDavResource {
 		if (getETag() != null)
 			delete.addHeader("If-Match", getETag());
 		
-		checkResponse(client.execute(delete));
+		HttpResponse response = client.execute(delete);
+		@Cleanup("consumeContent") HttpEntity entity = response.getEntity();
+		checkResponse(response);
 	}
 	
 

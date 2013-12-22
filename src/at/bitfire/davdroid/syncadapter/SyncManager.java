@@ -95,20 +95,21 @@ public class SyncManager {
 	
 	private int pushDeleted(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote) throws LocalStorageException, IOException, HttpException {
 		int count = 0;
-		Resource[] deletedResources = local.findDeleted();
-		if (deletedResources != null) {
-			Log.i(TAG, "Remotely removing " + deletedResources.length + " deleted resource(s) (if not changed)");
-			for (Resource res : deletedResources) {
+		long[] deletedIDs = local.findDeleted();
+		if (deletedIDs != null) {
+			Log.i(TAG, "Remotely removing " + deletedIDs.length + " deleted resource(s) (if not changed)");
+			for (long id : deletedIDs) {
 				try {
+					Resource res = local.findById(id, false);
 					if (res.getName() != null)	// is this resource even present remotely?
 						remote.delete(res);
+					local.delete(res);
+					count++;
 				} catch(NotFoundException e) {
 					Log.i(TAG, "Locally-deleted resource has already been removed from server");
 				} catch(PreconditionFailedException e) {
 					Log.i(TAG, "Locally-deleted resource has been changed on the server in the meanwhile");
 				}
-				local.delete(res);
-				count++;
 			}
 			local.commit();
 		}
@@ -117,18 +118,20 @@ public class SyncManager {
 	
 	private int pushNew(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote) throws LocalStorageException, IOException, HttpException {
 		int count = 0;
-		Resource[] newResources = local.findNew();
-		if (newResources != null) {
-			Log.i(TAG, "Uploading " + newResources.length + " new resource(s) (if not existing)");
-			for (Resource res : newResources) {
+		long[] newIDs = local.findNew();
+		if (newIDs != null) {
+			Log.i(TAG, "Uploading " + newIDs.length + " new resource(s) (if not existing)");
+			for (long id : newIDs) {
 				try {
+					Resource res = local.findById(id, true);
+					Log.d(TAG, "Uploading " + res.toString());
 					remote.add(res);
+					local.clearDirty(res);
 				} catch(PreconditionFailedException e) {
 					Log.i(TAG, "Didn't overwrite existing resource with other content");
 				} catch (ValidationException e) {
 					Log.e(TAG, "Couldn't create entity for adding: " + e.toString());
 				}
-				local.clearDirty(res);
 				count++;
 			}
 			local.commit();
@@ -138,18 +141,19 @@ public class SyncManager {
 	
 	private int pushDirty(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote) throws LocalStorageException, IOException, HttpException {
 		int count = 0;
-		Resource[] dirtyResources = local.findDirty();
-		if (dirtyResources != null) {
-			Log.i(TAG, "Uploading " + dirtyResources.length + " modified resource(s) (if not changed)");
-			for (Resource res : dirtyResources) {
+		long[] dirtyIDs = local.findDirty();
+		if (dirtyIDs != null) {
+			Log.i(TAG, "Uploading " + dirtyIDs.length + " modified resource(s) (if not changed)");
+			for (long id : dirtyIDs) {
 				try {
+					Resource res = local.findById(id, true);
 					remote.update(res);
+					local.clearDirty(res);
 				} catch(PreconditionFailedException e) {
 					Log.i(TAG, "Locally changed resource has been changed on the server in the meanwhile");
 				} catch (ValidationException e) {
 					Log.e(TAG, "Couldn't create entity for updating: " + e.toString());
 				}
-				local.clearDirty(res);
 				count++;
 			}
 			local.commit();
