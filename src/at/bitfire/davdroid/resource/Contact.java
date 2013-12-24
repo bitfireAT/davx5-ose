@@ -97,7 +97,7 @@ public class Contact extends Resource {
 	}
 
 	@Override
-	public void initialize() {
+	public void initRemoteFields() {
 		uid = UUID.randomUUID().toString();
 		name = uid + ".vcf";
 	}
@@ -113,7 +113,7 @@ public class Contact extends Resource {
 		
 		Uid uid = vcard.getUid();
 		if (uid == null) {
-			Log.w(TAG, "Received VCONTACT without UID, generating new one");
+			Log.w(TAG, "Received VCard without UID, generating new one");
 			uid = new Uid(UUID.randomUUID().toString());
 		}
 		this.uid = uid.getValue();

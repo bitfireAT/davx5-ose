@@ -76,6 +76,8 @@ public abstract class RemoteCollection<T extends Resource> {
 			if (resources.length == 1)
 				return (T[]) new Resource[] { get(resources[0]) };
 			
+			Log.i(TAG, "Multi-getting " + resources.length + " remote resource(s)");
+			
 			LinkedList<String> names = new LinkedList<String>();
 			for (Resource resource : resources)
 				names.add(resource.getName());

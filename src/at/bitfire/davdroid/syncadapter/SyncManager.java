@@ -15,10 +15,9 @@ import net.fortuna.ical4j.model.ValidationException;
 
 import org.apache.http.HttpException;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.SyncResult;
 import android.util.Log;
+import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.LocalStorageException;
 import at.bitfire.davdroid.resource.RecordNotFoundException;
@@ -30,14 +29,8 @@ import at.bitfire.davdroid.webdav.PreconditionFailedException;
 public class SyncManager {
 	private static final String TAG = "davdroid.SyncManager";
 	
-	protected Account account;
-	protected AccountManager accountManager;
+	private static final int MAX_MULTIGET_RESOURCES = 50;
 	
-	
-	public SyncManager(Account account, AccountManager accountManager) {
-		this.account = account;
-		this.accountManager = accountManager;
-	}
 
 	public void synchronize(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote, boolean manualSync, SyncResult syncResult) throws LocalStorageException, IOException, HttpException {
 		// PHASE 1: push local changes to server
@@ -79,8 +72,8 @@ public class SyncManager {
 		}
 		
 		// PHASE 3: pull remote changes from server
-		syncResult.stats.numInserts = pullNew(local, remote, remotelyAdded);
-		syncResult.stats.numUpdates = pullChanged(local, remote, remotelyUpdated);
+		syncResult.stats.numInserts = pullNew(local, remote, remotelyAdded.toArray(new Resource[0]));
+		syncResult.stats.numUpdates = pullChanged(local, remote, remotelyUpdated.toArray(new Resource[0]));
 		
 		Log.i(TAG, "Removing non-dirty resources that are not present remotely anymore");
 		local.deleteAllExceptRemoteNames(remoteResources);
@@ -96,9 +89,10 @@ public class SyncManager {
 	private int pushDeleted(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote) throws LocalStorageException, IOException, HttpException {
 		int count = 0;
 		long[] deletedIDs = local.findDeleted();
-		if (deletedIDs != null) {
+		
+		try {
 			Log.i(TAG, "Remotely removing " + deletedIDs.length + " deleted resource(s) (if not changed)");
-			for (long id : deletedIDs) {
+			for (long id : deletedIDs)
 				try {
 					Resource res = local.findById(id, false);
 					if (res.getName() != null)	// is this resource even present remotely?
@@ -109,8 +103,10 @@ public class SyncManager {
 					Log.i(TAG, "Locally-deleted resource has already been removed from server");
 				} catch(PreconditionFailedException e) {
 					Log.i(TAG, "Locally-deleted resource has been changed on the server in the meanwhile");
+				} catch (RecordNotFoundException e) {
+					Log.e(TAG, "Couldn't read locally-deleted record", e);
 				}
-			}
+		} finally {
 			local.commit();
 		}
 		return count;
@@ -119,21 +115,22 @@ public class SyncManager {
 	private int pushNew(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote) throws LocalStorageException, IOException, HttpException {
 		int count = 0;
 		long[] newIDs = local.findNew();
-		if (newIDs != null) {
-			Log.i(TAG, "Uploading " + newIDs.length + " new resource(s) (if not existing)");
-			for (long id : newIDs) {
+		Log.i(TAG, "Uploading " + newIDs.length + " new resource(s) (if not existing)");
+		try {
+			for (long id : newIDs)
 				try {
 					Resource res = local.findById(id, true);
-					Log.d(TAG, "Uploading " + res.toString());
 					remote.add(res);
 					local.clearDirty(res);
+					count++;
 				} catch(PreconditionFailedException e) {
 					Log.i(TAG, "Didn't overwrite existing resource with other content");
 				} catch (ValidationException e) {
 					Log.e(TAG, "Couldn't create entity for adding: " + e.toString());
+				} catch (RecordNotFoundException e) {
+					Log.e(TAG, "Couldn't read new record", e);
 				}
-				count++;
-			}
+		} finally {
 			local.commit();
 		}
 		return count;
@@ -142,48 +139,58 @@ public class SyncManager {
 	private int pushDirty(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote) throws LocalStorageException, IOException, HttpException {
 		int count = 0;
 		long[] dirtyIDs = local.findDirty();
-		if (dirtyIDs != null) {
-			Log.i(TAG, "Uploading " + dirtyIDs.length + " modified resource(s) (if not changed)");
+		Log.i(TAG, "Uploading " + dirtyIDs.length + " modified resource(s) (if not changed)");
+		try {
 			for (long id : dirtyIDs) {
 				try {
 					Resource res = local.findById(id, true);
 					remote.update(res);
 					local.clearDirty(res);
+					count++;
 				} catch(PreconditionFailedException e) {
 					Log.i(TAG, "Locally changed resource has been changed on the server in the meanwhile");
 				} catch (ValidationException e) {
 					Log.e(TAG, "Couldn't create entity for updating: " + e.toString());
+				} catch (RecordNotFoundException e) {
+					Log.e(TAG, "Couldn't read dirty record", e);
 				}
-				count++;
 			}
+		} finally {
 			local.commit();
 		}
 		return count;
 	}
 	
-	private int pullNew(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote, Set<Resource> resourcesToAdd) throws LocalStorageException, IOException, HttpException {
+	private int pullNew(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote, Resource[] resourcesToAdd) throws LocalStorageException, IOException, HttpException {
 		int count = 0;
-		Log.i(TAG, "Fetching " + resourcesToAdd.size() + " new remote resource(s)");
-		if (!resourcesToAdd.isEmpty()) {
-			for (Resource res : remote.multiGet(resourcesToAdd.toArray(new Resource[0]))) {
-				Log.i(TAG, "Adding " + res.getName());
-				local.add(res);
+		Log.i(TAG, "Fetching " + resourcesToAdd.length + " new remote resource(s)");
+		
+		for (Resource[] resources : ArrayUtils.partition(resourcesToAdd, MAX_MULTIGET_RESOURCES))
+			try {
+				for (Resource res : remote.multiGet(resources)) {
+					Log.d(TAG, "Adding " + res.getName());
+					local.add(res);
+					count++;
+				}
+			} finally {
 				local.commit();
-				count++;
 			}
-		}
 		return count;
 	}
 	
-	private int pullChanged(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote, Set<Resource> resourcesToUpdate) throws LocalStorageException, IOException, HttpException {
+	private int pullChanged(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote, Resource[] resourcesToUpdate) throws LocalStorageException, IOException, HttpException {
 		int count = 0;
-		Log.i(TAG, "Fetching " + resourcesToUpdate.size() + " updated remote resource(s)");
-		if (!resourcesToUpdate.isEmpty())
-			for (Resource res : remote.multiGet(resourcesToUpdate.toArray(new Resource[0]))) {
-				Log.i(TAG, "Updating " + res.getName());
-				local.updateByRemoteName(res);
+		Log.i(TAG, "Fetching " + resourcesToUpdate.length + " updated remote resource(s)");
+		
+		for (Resource[] resources : ArrayUtils.partition(resourcesToUpdate, MAX_MULTIGET_RESOURCES))
+			try {
+				for (Resource res : remote.multiGet(resources)) {
+					Log.i(TAG, "Updating " + res.getName());
+					local.updateByRemoteName(res);
+					count++;
+				}
+			} finally {
 				local.commit();
-				count++;
 			}
 		return count;
 	}
