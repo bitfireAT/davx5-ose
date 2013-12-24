@@ -236,7 +236,7 @@ public class WebDavResource {
 		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_MULTI_STATUS)
 			throw new DavNoMultiStatusException();
 
-		@Cleanup("consumeContent") HttpEntity entity = response.getEntity();
+		HttpEntity entity = response.getEntity();
 		if (entity == null)
 			throw new DavNoContentException();
 		
@@ -277,11 +277,11 @@ public class WebDavResource {
 		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_MULTI_STATUS)
 			throw new DavNoMultiStatusException();
 		
-		@Cleanup("consumeContent") HttpEntity entity = response.getEntity();
+		HttpEntity entity = response.getEntity();
 		if (entity == null)
 			throw new DavNoContentException();
 		
-		InputStream rawContent = entity.getContent();
+		@Cleanup InputStream rawContent = entity.getContent();
 		if (rawContent == null)
 			throw new DavNoContentException();
 		@Cleanup LoggingInputStream content = new LoggingInputStream(TAG, rawContent);
@@ -303,7 +303,7 @@ public class WebDavResource {
 		HttpResponse response = client.execute(get);
 		checkResponse(response);
 		
-		@Cleanup("consumeContent") HttpEntity entity = response.getEntity();
+		HttpEntity entity = response.getEntity();
 		if (entity == null)
 			throw new DavNoContentException();
 		

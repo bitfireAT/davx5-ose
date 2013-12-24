@@ -58,7 +58,7 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter {
 		// set class loader for iCal4j ResourceLoader
 		Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
 		
-		SyncManager syncManager = new SyncManager(account, accountManager);
+		SyncManager syncManager = new SyncManager();
 		
 		Map<LocalCollection<?>, RemoteCollection<?>> syncCollections = getSyncPairs(account, provider);
 		if (syncCollections == null)

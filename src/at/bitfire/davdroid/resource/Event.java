@@ -103,7 +103,7 @@ public class Event extends Resource {
 	}
 	
 	@Override
-	public void initialize() {
+	public void initRemoteFields() {
 		uid = DavSyncAdapter.generateUID();
 		name = uid.replace("@", "_") + ".ics";
 	}

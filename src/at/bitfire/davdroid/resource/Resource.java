@@ -36,7 +36,7 @@ public abstract class Resource {
 	}
 	
 	// sets resource name and UID
-	public abstract void initialize();
+	public abstract void initRemoteFields();
 	
 	public abstract void parseEntity(InputStream entity) throws IOException, ParserException, VCardException;
 	public abstract ByteArrayOutputStream toEntity() throws IOException, ValidationException;

@@ -8,9 +8,6 @@
 package at.bitfire.davdroid.resource;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-
-import org.apache.commons.lang.ArrayUtils;
 
 import lombok.Cleanup;
 import android.accounts.Account;
@@ -75,10 +72,13 @@ public abstract class LocalCollection<T extends Resource> {
 			@Cleanup Cursor cursor = providerClient.query(entriesURI(),
 					new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
 					where, null, null);
-			LinkedList<Long> dirty = new LinkedList<Long>();
-			while (cursor != null && cursor.moveToNext())
-				dirty.add(cursor.getLong(0));
-			return ArrayUtils.toPrimitive(dirty.toArray(new Long[0]), -1);
+			if (cursor == null)
+				throw new LocalStorageException("Couldn't query dirty records");
+			
+			long[] dirty = new long[cursor.getCount()];
+			for (int idx = 0; cursor.moveToNext(); idx++)
+				dirty[idx] = cursor.getLong(0);
+			return dirty;
 		} catch(RemoteException ex) {
 			throw new LocalStorageException(ex);
 		}
@@ -92,10 +92,13 @@ public abstract class LocalCollection<T extends Resource> {
 			@Cleanup Cursor cursor = providerClient.query(entriesURI(),
 					new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
 					where, null, null);
-			LinkedList<Long> deleted = new LinkedList<Long>();
-			while (cursor != null && cursor.moveToNext())
-				deleted.add(cursor.getLong(0));
-			return ArrayUtils.toPrimitive(deleted.toArray(new Long[0]), -1);
+			if (cursor == null)
+				throw new LocalStorageException("Couldn't query dirty records");
+			
+			long deleted[] = new long[cursor.getCount()];
+			for (int idx = 0; cursor.moveToNext(); idx++)
+				deleted[idx] = cursor.getLong(0);
+			return deleted;
 		} catch(RemoteException ex) {
 			throw new LocalStorageException(ex);
 		}
@@ -110,22 +113,25 @@ public abstract class LocalCollection<T extends Resource> {
 			@Cleanup Cursor cursor = providerClient.query(entriesURI(),
 					new String[] { entryColumnID() },
 					where, null, null);
-			LinkedList<Long> fresh = new LinkedList<Long>();
-			while (cursor != null && cursor.moveToNext()) {
+			if (cursor == null)
+				throw new LocalStorageException("Couldn't query new records");
+			
+			long[] fresh = new long[cursor.getCount()];
+			for (int idx = 0; cursor.moveToNext(); idx++) {
 				long id = cursor.getLong(0);
 				
 				// new record: generate UID + remote file name so that we can upload
 				T resource = findById(id, false);
-				resource.initialize();
+				resource.initRemoteFields();
 				// write generated UID + remote file name into database
 				ContentValues values = new ContentValues(2);
 				values.put(entryColumnUID(), resource.getUid());
 				values.put(entryColumnRemoteName(), resource.getName());
 				providerClient.update(ContentUris.withAppendedId(entriesURI(), id), values, null, null);
 				
-				fresh.add(id);
+				fresh[idx] = id;
 			}
-			return ArrayUtils.toPrimitive(fresh.toArray(new Long[0]), -1);
+			return fresh;
 		} catch(RemoteException ex) {
 			throw new LocalStorageException(ex);
 		}
@@ -217,7 +223,7 @@ public abstract class LocalCollection<T extends Resource> {
 	public void commit() throws LocalStorageException {
 		if (!pendingOperations.isEmpty())
 			try {
-				Log.i(TAG, "Committing " + pendingOperations.size() + " operations");
+				Log.d(TAG, "Committing " + pendingOperations.size() + " operations");
 				providerClient.applyBatch(pendingOperations);
 				pendingOperations.clear();
 			} catch (RemoteException ex) {
