@@ -29,7 +29,7 @@ import at.bitfire.davdroid.webdav.PreconditionFailedException;
 public class SyncManager {
 	private static final String TAG = "davdroid.SyncManager";
 	
-	private static final int MAX_MULTIGET_RESOURCES = 50;
+	private static final int MAX_MULTIGET_RESOURCES = 35;
 	
 
 	public void synchronize(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote, boolean manualSync, SyncResult syncResult) throws LocalStorageException, IOException, HttpException {
@@ -74,6 +74,7 @@ public class SyncManager {
 		// PHASE 3: pull remote changes from server
 		syncResult.stats.numInserts = pullNew(local, remote, remotelyAdded.toArray(new Resource[0]));
 		syncResult.stats.numUpdates = pullChanged(local, remote, remotelyUpdated.toArray(new Resource[0]));
+		syncResult.stats.numEntries += syncResult.stats.numInserts + syncResult.stats.numUpdates;
 		
 		Log.i(TAG, "Removing non-dirty resources that are not present remotely anymore");
 		local.deleteAllExceptRemoteNames(remoteResources);
