@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 
 import lombok.Cleanup;
@@ -146,7 +147,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		simpleFile.get();
 		@Cleanup InputStream is = assetMgr.open("test.random", AssetManager.ACCESS_STREAMING);
 		byte[] expected = IOUtils.toByteArray(is);
-		assertEquals(expected, simpleFile.getContent());
+		assertTrue(Arrays.equals(expected, simpleFile.getContent()));
 	}
 	
 	public void testMultiGet() throws DavException, IOException, HttpException {
