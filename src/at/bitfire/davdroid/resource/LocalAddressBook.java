@@ -42,6 +42,7 @@ import android.provider.ContactsContract.CommonDataKinds.Note;
 import android.provider.ContactsContract.CommonDataKinds.Organization;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.CommonDataKinds.Photo;
+import android.provider.ContactsContract.CommonDataKinds.SipAddress;
 import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.provider.ContactsContract.CommonDataKinds.Website;
@@ -163,6 +164,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			populatePostalAddresses(c);
 			populateURLs(c);
 			populateEvents(c);
+			populateSipAddress(c);
 		} catch(RemoteException ex) {
 			throw new LocalStorageException(ex);
 		}
@@ -301,7 +303,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			@Cleanup InputStream is = fd.createInputStream();
 			c.setPhoto(IOUtils.toByteArray(is));
 		} catch(IOException ex) {
-			Log.w(TAG, "Couldn't read contact photo", ex);
+			Log.v(TAG, "Couldn't read contact photo", ex);
 		}
 	}
 	
@@ -458,6 +460,29 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			}
 		}
 	}
+	
+	protected void populateSipAddress(Contact c) throws RemoteException {
+		@Cleanup Cursor cursor = providerClient.query(dataURI(),
+				new String[] { CommonDataKinds.SipAddress.SIP_ADDRESS, CommonDataKinds.SipAddress.TYPE, CommonDataKinds.SipAddress.LABEL },
+				Website.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
+				new String[] { String.valueOf(c.getLocalID()), CommonDataKinds.SipAddress.CONTENT_ITEM_TYPE }, null);
+		if (cursor != null && cursor.moveToNext()) {
+			Impp impp = new Impp("sip:" + cursor.getString(0));
+			switch (cursor.getInt(1)) {
+			case Im.TYPE_HOME:
+				impp.addType(ImppType.HOME);
+				break;
+			case Im.TYPE_WORK:
+				impp.addType(ImppType.WORK);
+				break;
+			case Im.TYPE_CUSTOM:
+				String customType = cursor.getString(2);
+				if (customType != null && !customType.isEmpty())
+					impp.addType(ImppType.get(labelToXName(customType)));
+			}
+			c.getImpps().add(impp);
+		}
+	}
 
 	
 	/* content builder methods */
@@ -517,8 +542,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		if (contact.getBirthDay() != null)
 			queueOperation(buildEvent(newDataInsertBuilder(localID, backrefIdx), contact.getBirthDay(), CommonDataKinds.Event.TYPE_BIRTHDAY));
 		
-		// TODO relation
-		// TODO SIP address
+		// TODO relations
+		
+		// SIP address built by buildIMPP
 	}
 	
 	@Override
@@ -663,7 +689,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				typeLabel = xNameToLabel(impp.getTypes().iterator().next().getValue());
 			}
 		
-		int protocolCode;
+		int protocolCode = 0;
 		String protocolLabel = null;
 		
 		String protocol = impp.getProtocol();
@@ -671,6 +697,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			Log.w(TAG, "Ignoring IMPP address without protocol");
 			return null;
 		}
+		
+		// SIP addresses are IMPP entries in the VCard but locally stored in SipAddress rather than Im
+		boolean sipAddress = false;
 		
 		if (impp.isAim())
 			protocolCode = Im.PROTOCOL_AIM;
@@ -690,20 +719,31 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			protocolCode = Im.PROTOCOL_JABBER;
 		else if (protocol.equalsIgnoreCase("netmeeting"))
 			protocolCode = Im.PROTOCOL_NETMEETING;
+		else if (protocol.equalsIgnoreCase("sip"))
+			sipAddress = true;
 		else {
 			protocolCode = Im.PROTOCOL_CUSTOM;
 			protocolLabel = protocol;
 		}
 		
-		builder = builder
-			.withValue(Data.MIMETYPE, Im.CONTENT_ITEM_TYPE)
-			.withValue(Im.DATA, impp.getHandle())
-			.withValue(Im.TYPE, typeCode)
-			.withValue(Im.PROTOCOL, protocolCode);
+		if (sipAddress)
+			// save as SIP address
+			builder = builder
+				.withValue(Data.MIMETYPE, SipAddress.CONTENT_ITEM_TYPE)
+				.withValue(Im.DATA, impp.getHandle())
+				.withValue(Im.TYPE, typeCode);
+		else {
+			// save as IM address
+			builder = builder
+				.withValue(Data.MIMETYPE, Im.CONTENT_ITEM_TYPE)
+				.withValue(Im.DATA, impp.getHandle())
+				.withValue(Im.TYPE, typeCode)
+				.withValue(Im.PROTOCOL, protocolCode);
+			if (protocolLabel != null)
+				builder = builder.withValue(Im.CUSTOM_PROTOCOL, protocolLabel);
+		}
 		if (typeLabel != null)
 			builder = builder.withValue(Im.LABEL, typeLabel);
-		if (protocolLabel != null)
-			builder = builder.withValue(Im.CUSTOM_PROTOCOL, protocolLabel);
 		return builder;
 	}
 
