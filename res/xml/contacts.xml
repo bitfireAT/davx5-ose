@@ -94,6 +94,8 @@
                 yearOptional="false" />
             <Type type="anniversary" />
         </DataKind>
+        
+        <DataKind kind="sip_address" maxOccurs="1" />
     </EditSchema>
 
 </ContactsAccountType>

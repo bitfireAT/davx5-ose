@@ -55,10 +55,11 @@ public class Contact extends Resource {
 		PROPERTY_STARRED = "X-DAVDROID-STARRED",
 		PROPERTY_PHONETIC_FIRST_NAME = "X-PHONETIC-FIRST-NAME",
 		PROPERTY_PHONETIC_MIDDLE_NAME = "X-PHONETIC-MIDDLE-NAME",
-		PROPERTY_PHONETIC_LAST_NAME = "X-PHONETIC-LAST-NAME";
+		PROPERTY_PHONETIC_LAST_NAME = "X-PHONETIC-LAST-NAME",
+		PROPERTY_SIP = "X-SIP";
 		
 	public final static EmailType EMAIL_TYPE_MOBILE = EmailType.get("X-MOBILE");
-				
+
 	public final static TelephoneType
 		PHONE_TYPE_CALLBACK = TelephoneType.get("X-CALLBACK"),
 		PHONE_TYPE_COMPANY_MAIN = TelephoneType.get("X-COMPANY_MAIN"),
@@ -160,7 +161,7 @@ public class Contact extends Resource {
 		}
 		for (Role role : vcard.getRoles())
 			this.role = role.getValue();
-		
+	
 		impps = vcard.getImpps();
 		
 		Nickname nicknames = vcard.getNickname();
@@ -180,6 +181,10 @@ public class Contact extends Resource {
 
 		birthDay = vcard.getBirthday();
 		anniversary = vcard.getAnniversary();
+		
+		// get X-SIP and import as IMPP
+		for (RawProperty sip : vcard.getExtendedProperties(PROPERTY_SIP))
+			impps.add(new Impp("sip", sip.getValue()));
 	}
 
 	
@@ -226,9 +231,6 @@ public class Contact extends Resource {
 		for (Email email : emails)
 			vcard.addEmail(email);
 
-		if (photo != null)
-			vcard.addPhoto(new Photo(photo, ImageType.JPEG));
-		
 		if (organization != null) {
 			Organization org = new Organization();
 			org.addValue(organization);
@@ -256,14 +258,17 @@ public class Contact extends Resource {
 			vcard.setAnniversary(anniversary);
 		if (birthDay != null)
 			vcard.setBirthday(birthDay);
-
+		
+		if (photo != null)
+			vcard.addPhoto(new Photo(photo, ImageType.JPEG));
+		
 		vcard.setRevision(Revision.now());
 		
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		Ezvcard
 			.write(vcard)
 			.version(VCardVersion.V3_0)
-			.prodId(false)		// we provide or own PRODID
+			.prodId(false)		// we provide our own PRODID
 			.go(os);
 		return os;
 	}
