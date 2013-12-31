@@ -838,7 +838,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		return syncAdapterURI(Data.CONTENT_URI);
 	}
 	
-	protected String labelToXName(String label) {
+	protected static String labelToXName(String label) {
 		return "X-" + label.replaceAll(" ","_").replaceAll("[^\\p{L}\\p{Nd}\\-_]", "").toUpperCase(Locale.US);
 	}
 	
@@ -846,7 +846,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		return newDataInsertBuilder(dataURI(), Data.RAW_CONTACT_ID, raw_contact_id, backrefIdx);
 	}
 
-	protected String xNameToLabel(String xname) {
+	protected static String xNameToLabel(String xname) {
 		// "X-MY_PROPERTY"
 		// 1. ensure lower case -> "x-my_property"
 		// 2. remove x- from beginning -> "my_property"

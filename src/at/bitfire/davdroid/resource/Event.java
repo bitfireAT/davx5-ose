@@ -67,7 +67,7 @@ import at.bitfire.davdroid.syncadapter.DavSyncAdapter;
 public class Event extends Resource {
 	private final static String TAG = "davdroid.Event";
 	
-	private TimeZoneRegistry tzRegistry = new DefaultTimeZoneRegistryFactory().createRegistry();
+	private final static TimeZoneRegistry tzRegistry = new DefaultTimeZoneRegistryFactory().createRegistry();
 	
 	@Getter @Setter private String summary, location, description;
 	
@@ -307,13 +307,13 @@ public class Event extends Resource {
 		return false;
 	}
 
-	protected boolean hasNoTime(DateProperty date) {
+	protected static boolean hasNoTime(DateProperty date) {
 		if (date == null)
 			return false;
 		return !(date.getDate() instanceof DateTime);
 	}
 
-	String getTzId(DateProperty date) {
+	protected static String getTzId(DateProperty date) {
 		if (date == null)
 			return null;
 		
@@ -327,7 +327,7 @@ public class Event extends Resource {
 	}
 
 	/* guess matching Android timezone ID */
-	protected void validateTimeZone(DateProperty date) {
+	protected static void validateTimeZone(DateProperty date) {
 		if (date == null || date.isUtc() || hasNoTime(date))
 			return;
 		
