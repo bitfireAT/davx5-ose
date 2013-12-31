@@ -273,6 +273,7 @@ public class Contact extends Resource {
 		Ezvcard
 			.write(vcard)
 			.version(VCardVersion.V3_0)
+			.versionStrict(false)
 			.prodId(false)		// we provide our own PRODID
 			.go(os);
 		return os;
