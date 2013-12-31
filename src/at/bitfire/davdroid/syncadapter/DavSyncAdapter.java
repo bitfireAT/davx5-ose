@@ -3,8 +3,7 @@ package at.bitfire.davdroid.syncadapter;
 import java.io.IOException;
 import java.util.Map;
 
-import net.fortuna.ical4j.util.SimpleHostInfo;
-import net.fortuna.ical4j.util.UidGenerator;
+import lombok.Getter;
 
 import org.apache.http.HttpException;
 import org.apache.http.auth.AuthenticationException;
@@ -29,24 +28,19 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter {
 	
 	protected AccountManager accountManager;
 	
-	private static String androidID;
+	@Getter private static String androidID;
 
 	
-
 	public DavSyncAdapter(Context context) {
 		super(context, true);
 		
-		androidID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+		synchronized(this) {
+			if (androidID == null)
+				androidID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+		}
 		
 		accountManager = AccountManager.get(context);
 	}
-
-	
-	public static String generateUID() {
-		UidGenerator generator = new UidGenerator(new SimpleHostInfo(androidID), String.valueOf(android.os.Process.myPid()));
-		return generator.generateUid().getValue();
-	}
-
 	
 	protected abstract Map<LocalCollection<?>, RemoteCollection<?>> getSyncPairs(Account account, ContentProviderClient provider);
 	

@@ -235,29 +235,29 @@ public class LocalCalendar extends LocalCollection<Event> {
 				// recurrence
 				try {
 					String duration = cursor.getString(18);
-					if (duration != null && !duration.isEmpty())
+					if (!StringUtils.isEmpty(duration))
 						e.setDuration(new Duration(new Dur(duration)));
 					
 					String strRRule = cursor.getString(10);
-					if (strRRule != null && !strRRule.isEmpty())
+					if (!StringUtils.isEmpty(strRRule))
 						e.setRrule(new RRule(strRRule));
 					
 					String strRDate = cursor.getString(11);
-					if (strRDate != null && !strRDate.isEmpty()) {
+					if (!StringUtils.isEmpty(strRDate)) {
 						RDate rDate = new RDate();
 						rDate.setValue(strRDate);
 						e.setRdate(rDate);
 					}
 				
 					String strExRule = cursor.getString(12);
-					if (strExRule != null && !strExRule.isEmpty()) {
+					if (!StringUtils.isEmpty(strExRule)) {
 						ExRule exRule = new ExRule();
 						exRule.setValue(strExRule);
 						e.setExrule(exRule);
 					}
 					
 					String strExDate = cursor.getString(13);
-					if (strExDate != null && !strExDate.isEmpty()) {
+					if (!StringUtils.isEmpty(strExDate)) {
 						// ignored, see https://code.google.com/p/android/issues/detail?id=21426
 						ExDate exDate = new ExDate();
 						exDate.setValue(strExDate);

@@ -10,9 +10,6 @@ public class URIUtils {
 	
 	// handles invalid URLs/paths as good as possible
 	public static String sanitize(String original) {
-		if (original == null)
-			return null;
-		
 		String url = original;
 
 		// ":" is reserved as scheme/port separator, but we assume http:// and https:// URLs only

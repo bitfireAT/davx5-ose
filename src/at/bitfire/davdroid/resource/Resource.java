@@ -35,8 +35,9 @@ public abstract class Resource {
 		this.localID = localID;
 	}
 	
-	// sets resource name and UID
-	public abstract void initRemoteFields();
+	// sets UID and resource name (= remote file name)
+	public abstract void generateUID();
+	public abstract void generateName();
 	
 	public abstract void parseEntity(InputStream entity) throws IOException, ParserException, VCardException;
 	public abstract ByteArrayOutputStream toEntity() throws IOException, ValidationException;
