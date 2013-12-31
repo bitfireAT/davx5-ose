@@ -97,9 +97,14 @@ public class Contact extends Resource {
 		super(localID, resourceName, eTag);
 	}
 
+	
 	@Override
-	public void initRemoteFields() {
+	public void generateUID() {
 		uid = UUID.randomUUID().toString();
+	}
+	
+	@Override
+	public void generateName() {
 		name = uid + ".vcf";
 	}
 

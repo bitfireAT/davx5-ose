@@ -262,7 +262,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				break;
 			case Phone.TYPE_CUSTOM:
 				String customType = cursor.getString(1);
-				if (customType != null && !customType.isEmpty())
+				if (!StringUtils.isEmpty(customType))
 					number.addType(TelephoneType.get(labelToXName(customType)));
 			}
 			c.getPhoneNumbers().add(number);
@@ -287,7 +287,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				break;
 			case Email.TYPE_CUSTOM:
 				String customType = cursor.getString(2);
-				if (customType != null && !customType.isEmpty())
+				if (!StringUtils.isEmpty(customType))
 					email.addType(EmailType.get(labelToXName(customType)));
 			}
 			c.getEmails().add(email);
@@ -314,9 +314,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		if (cursor != null && cursor.moveToNext()) {
 			String	org = cursor.getString(0),
 					role = cursor.getString(1);
-			if (org != null && !org.isEmpty())
+			if (!StringUtils.isEmpty(org))
 				c.setOrganization(org);
-			if (role != null && !role.isEmpty())
+			if (!StringUtils.isEmpty(role))
 				c.setRole(role);
 		}
 	}
@@ -371,7 +371,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 					break;
 				case Im.TYPE_CUSTOM:
 					String customType = cursor.getString(2);
-					if (customType != null && !customType.isEmpty())
+					if (!StringUtils.isEmpty(customType))
 						impp.addType(ImppType.get(labelToXName(customType)));
 				}
 				c.getImpps().add(impp);
@@ -416,7 +416,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				break;
 			case StructuredPostal.TYPE_CUSTOM:
 				String customType = cursor.getString(2);
-				if (customType != null && !customType.isEmpty())
+				if (!StringUtils.isEmpty(customType))
 					address.addType(AddressType.get(labelToXName(customType)));
 				break;
 			}
@@ -469,15 +469,15 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		if (cursor != null && cursor.moveToNext()) {
 			Impp impp = new Impp("sip:" + cursor.getString(0));
 			switch (cursor.getInt(1)) {
-			case Im.TYPE_HOME:
+			case SipAddress.TYPE_HOME:
 				impp.addType(ImppType.HOME);
 				break;
-			case Im.TYPE_WORK:
+			case SipAddress.TYPE_WORK:
 				impp.addType(ImppType.WORK);
 				break;
-			case Im.TYPE_CUSTOM:
+			case SipAddress.TYPE_CUSTOM:
 				String customType = cursor.getString(2);
-				if (customType != null && !customType.isEmpty())
+				if (!StringUtils.isEmpty(customType))
 					impp.addType(ImppType.get(labelToXName(customType)));
 			}
 			c.getImpps().add(impp);
@@ -544,7 +544,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		
 		// TODO relations
 		
-		// SIP address built by buildIMPP
+		// SIP addresses built by buildIMPP
 	}
 	
 	@Override
@@ -766,7 +766,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		 *	country
 		 */
 		String formattedAddress = address.getLabel();
-		if (formattedAddress == null || formattedAddress.isEmpty()) {
+		if (StringUtils.isEmpty(formattedAddress)) {
 			String	lineStreet = StringUtils.join(new String[] { address.getStreetAddress(), address.getPoBox(), address.getExtendedAddress() }, " "),
 					lineLocality = StringUtils.join(new String[] { address.getPostalCode(), address.getLocality() }, " ");
 			
@@ -847,14 +847,15 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 
 	protected String xNameToLabel(String xname) {
-		if (xname == null)
-			return null;
-		// "x-my_property"
+		// "X-MY_PROPERTY"
 		// 1. ensure lower case -> "x-my_property"
 		// 2. remove x- from beginning -> "my_property"
 		// 3. replace "_" by " " -> "my property"
 		// 4. capitalize -> "My Property"
-		return WordUtils.capitalize(StringUtils.removeStart(xname.toLowerCase(Locale.US), "x-").replaceAll("_"," "));
+		String	lowerCase = StringUtils.lowerCase(xname, Locale.US),
+				withoutPrefix = StringUtils.removeStart(lowerCase, "x-"),
+				withSpaces = StringUtils.replace(withoutPrefix, "_", " ");
+		return WordUtils.capitalize(withSpaces);
 	}
 
 }

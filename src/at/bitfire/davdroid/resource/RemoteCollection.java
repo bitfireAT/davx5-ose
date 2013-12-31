@@ -65,9 +65,8 @@ public abstract class RemoteCollection<T extends Resource> {
 		if (collection.getMembers() != null) {
 			for (WebDavResource member : collection.getMembers())
 				resources.add(newResourceSkeleton(member.getName(), member.getETag()));
-			return resources.toArray(new Resource[0]);
-		} else
-			return null;
+		}
+		return resources.toArray(new Resource[0]);
 	}
 	
 	@SuppressWarnings("unchecked")

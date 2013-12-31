@@ -56,6 +56,8 @@ import net.fortuna.ical4j.model.property.Summary;
 import net.fortuna.ical4j.model.property.Transp;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Version;
+import net.fortuna.ical4j.util.SimpleHostInfo;
+import net.fortuna.ical4j.util.UidGenerator;
 import android.text.format.Time;
 import android.util.Log;
 import at.bitfire.davdroid.Constants;
@@ -101,10 +103,16 @@ public class Event extends Resource {
 	public Event(long localID, String name, String ETag) {
 		super(localID, name, ETag);
 	}
+
 	
 	@Override
-	public void initRemoteFields() {
-		uid = DavSyncAdapter.generateUID();
+	public void generateUID() {
+		UidGenerator generator = new UidGenerator(new SimpleHostInfo(DavSyncAdapter.getAndroidID()), String.valueOf(android.os.Process.myPid()));
+		uid = generator.generateUid().getValue();
+	}
+	
+	@Override
+	public void generateName() {
 		name = uid.replace("@", "_") + ".ics";
 	}
 
@@ -127,7 +135,7 @@ public class Event extends Resource {
 			uid = event.getUid().getValue();
 		else {
 			Log.w(TAG, "Received VEVENT without UID, generating new one");
-			uid = DavSyncAdapter.generateUID();
+			generateUID();
 		}
 		
 		dtStart = event.getStartDate();	validateTimeZone(dtStart);

@@ -59,15 +59,13 @@ public class SyncManager {
 						remotelyUpdated = new HashSet<Resource>();
 		
 		Resource[] remoteResources = remote.getMemberETags();
-		if (remoteResources != null) {
-			for (Resource remoteResource : remoteResources) {
-				try {
-					Resource localResource = local.findByRemoteName(remoteResource.getName(), false);
-					if (localResource.getETag() == null || !localResource.getETag().equals(remoteResource.getETag()))
-						remotelyUpdated.add(remoteResource);
-				} catch(RecordNotFoundException e) {
-					remotelyAdded.add(remoteResource);
-				}
+		for (Resource remoteResource : remoteResources) {
+			try {
+				Resource localResource = local.findByRemoteName(remoteResource.getName(), false);
+				if (!remoteResource.getETag().equals(localResource.getETag()))
+					remotelyUpdated.add(remoteResource);
+			} catch(RecordNotFoundException e) {
+				remotelyAdded.add(remoteResource);
 			}
 		}
 		
