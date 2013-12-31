@@ -353,11 +353,11 @@ public class WebDavResource {
 
 	/* helpers */
 	
-	protected void checkResponse(HttpResponse response) throws HttpException {
+	protected static void checkResponse(HttpResponse response) throws HttpException {
 		checkResponse(response.getStatusLine());
 	}
 	
-	protected void checkResponse(StatusLine statusLine) throws HttpException {
+	protected static void checkResponse(StatusLine statusLine) throws HttpException {
 		int code = statusLine.getStatusCode();
 		
 		Log.d(TAG, "Received " + statusLine.getProtocolVersion() + " " + code + " " + statusLine.getReasonPhrase());
