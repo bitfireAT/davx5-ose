@@ -46,13 +46,9 @@
             <Type type="custom" />
         </DataKind>
         
-        <DataKind
-            kind="photo"
-            maxOccurs="1" />
+        <DataKind kind="photo" maxOccurs="1" />
         
-        <DataKind
-            kind="organization"
-            maxOccurs="1" />
+        <DataKind kind="organization" maxOccurs="1" />
         
         <DataKind kind="im" >
             <Type type="aim" />
@@ -66,17 +62,11 @@
             <Type type="custom" />
         </DataKind>
         
-        <DataKind
-            kind="nickname"
-            maxOccurs="1" />
+        <DataKind kind="nickname" maxOccurs="1" />
         
-        <DataKind
-            kind="note"
-            maxOccurs="1" />
+        <DataKind kind="note" maxOccurs="1" />
         
-        <DataKind
-            kind="postal"
-            needsStructured="true" >
+        <DataKind kind="postal" needsStructured="true" >
             <Type type="home" />
             <Type type="work" />
             <Type type="other" />
@@ -85,13 +75,8 @@
         
 		<DataKind kind="website" />
 
-        <DataKind
-            dateWithTime="false"
-            kind="event" >
-            <Type
-                maxOccurs="1"
-                type="birthday"
-                yearOptional="false" />
+        <DataKind kind="event" dateWithTime="false" >
+            <Type maxOccurs="1" type="birthday" yearOptional="false" />
             <Type type="anniversary" />
         </DataKind>
         

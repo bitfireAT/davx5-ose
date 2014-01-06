@@ -6,6 +6,8 @@ import at.bitfire.davdroid.URIUtils;
 public class URIUtilsTest extends TestCase {
 
 	public void testSanitize() {
+		assertNull(URIUtils.sanitize(null));
+		
 		// escape "@"
 		assertEquals("https://my%40server/my%40email.com/dir", URIUtils.sanitize("https://my@server/my@email.com/dir"));
 		assertEquals("http://my%40server/my%40email.com/dir", URIUtils.sanitize("http://my@server/my@email.com/dir"));

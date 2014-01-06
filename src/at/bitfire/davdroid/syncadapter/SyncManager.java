@@ -146,7 +146,7 @@ public class SyncManager {
 	
 	private int pushDirty() throws LocalStorageException, IOException, HttpException {
 		int count = 0;
-		long[] dirtyIDs = local.findDirty();
+		long[] dirtyIDs = local.findUpdated();
 		Log.i(TAG, "Uploading " + dirtyIDs.length + " modified resource(s) (if not changed)");
 		try {
 			for (long id : dirtyIDs) {
