@@ -193,7 +193,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 	
 	protected void populatePhoneNumbers(Contact c) throws RemoteException {
-		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Phone.TYPE, Phone.LABEL, Phone.NUMBER },
+		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Phone.TYPE, Phone.LABEL, Phone.NUMBER, Phone.IS_SUPER_PRIMARY },
 				Phone.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Phone.CONTENT_ITEM_TYPE }, null);
 		while (cursor != null && cursor.moveToNext()) {
@@ -265,12 +265,14 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				if (!StringUtils.isEmpty(customType))
 					number.addType(TelephoneType.get(labelToXName(customType)));
 			}
+			if (cursor.getInt(3) != 0)	// IS_PRIMARY
+				number.addType(TelephoneType.PREF);
 			c.getPhoneNumbers().add(number);
 		}
 	}
 	
 	protected void populateEmailAddresses(Contact c) throws RemoteException {
-		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Email.TYPE, Email.ADDRESS, Email.LABEL },
+		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Email.TYPE, Email.ADDRESS, Email.LABEL, Email.IS_SUPER_PRIMARY },
 				Email.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Email.CONTENT_ITEM_TYPE }, null);
 		while (cursor != null && cursor.moveToNext()) {
@@ -290,6 +292,8 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				if (!StringUtils.isEmpty(customType))
 					email.addType(EmailType.get(labelToXName(customType)));
 			}
+			if (cursor.getInt(3) != 0)	// IS_PRIMARY
+				email.addType(EmailType.PREF);
 			c.getEmails().add(email);
 		}
 	}
@@ -572,7 +576,13 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	protected Builder buildPhoneNumber(Builder builder, Telephone number) {
 		int typeCode = Phone.TYPE_OTHER;
 		String typeLabel = null;
+		boolean is_primary = false;
+		
 		Set<TelephoneType> types = number.getTypes();
+		// preferred number?
+		if (types.contains(TelephoneType.PREF))
+			is_primary = true;
+		
 		// 1 Android type <-> 2 VCard types: fax, cell, pager
 		if (types.contains(TelephoneType.FAX)) {
 			if (types.contains(TelephoneType.HOME))
@@ -625,7 +635,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		builder = builder
 			.withValue(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)
 			.withValue(Phone.NUMBER, number.getText())
-			.withValue(Phone.TYPE, typeCode);
+			.withValue(Phone.TYPE, typeCode)
+			.withValue(Phone.IS_PRIMARY, is_primary ? 1 : 0)
+			.withValue(Phone.IS_SUPER_PRIMARY, is_primary ? 1 : 0);
 		if (typeLabel != null)
 			builder = builder.withValue(Phone.LABEL, typeLabel);
 		return builder;
@@ -634,9 +646,12 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	protected Builder buildEmail(Builder builder, ezvcard.property.Email email) {
 		int typeCode = 0;
 		String typeLabel = null;
+		boolean is_primary = false;
 		
 		for (EmailType type : email.getTypes())
-			if (type == EmailType.HOME)
+			if (type == EmailType.PREF)
+				is_primary = true;
+			else if (type == EmailType.HOME)
 				typeCode = Email.TYPE_HOME;
 			else if (type == EmailType.WORK)
 				typeCode = Email.TYPE_WORK;
@@ -654,7 +669,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		builder = builder
 				.withValue(Data.MIMETYPE, Email.CONTENT_ITEM_TYPE)
 				.withValue(Email.ADDRESS, email.getValue())
-				.withValue(Email.TYPE, typeCode);
+				.withValue(Email.TYPE, typeCode)
+				.withValue(Email.IS_PRIMARY, is_primary ? 1 : 0)
+				.withValue(Phone.IS_SUPER_PRIMARY, is_primary ? 1 : 0);;
 		if (typeLabel != null)
 			builder = builder.withValue(Email.LABEL, typeLabel);
 		return builder;

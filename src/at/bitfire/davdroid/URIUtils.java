@@ -23,6 +23,9 @@ public class URIUtils {
 	
 	// handles invalid URLs/paths as good as possible
 	public static String sanitize(String original) {
+		if (original == null)
+			return null;
+		
 		Pattern p = Pattern.compile("^((https?:)?//([^/]+))?(.*)", Pattern.CASE_INSENSITIVE);
 		// $1: "http://hostname" or "https://hostname" or "//hostname" or empty (hostname may end with":port")
 		// $2: "http:" or "https:" or empty
@@ -30,7 +33,7 @@ public class URIUtils {
 		// $4: path or empty
 
 		Matcher m = p.matcher(original);
-		if (m.find()) {
+		if (m.matches()) {
 			String	schema = m.group(2),
 					host = m.group(3),
 					path = m.group(4);

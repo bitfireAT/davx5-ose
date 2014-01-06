@@ -66,9 +66,44 @@ public abstract class LocalCollection<T extends Resource> {
 
 	
 	// content provider (= database) querying
+
+	public long[] findNew() throws LocalStorageException {
+		// new records are 1) dirty, and 2) don't have a remote file name yet
+		String where = entryColumnDirty() + "=1 AND " + entryColumnRemoteName() + " IS NULL";
+		if (entryColumnParentID() != null)
+			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
+		try {
+			@Cleanup Cursor cursor = providerClient.query(entriesURI(),
+					new String[] { entryColumnID() },
+					where, null, null);
+			if (cursor == null)
+				throw new LocalStorageException("Couldn't query new records");
+			
+			long[] fresh = new long[cursor.getCount()];
+			for (int idx = 0; cursor.moveToNext(); idx++) {
+				long id = cursor.getLong(0);
+				
+				// new record: generate UID + remote file name so that we can upload
+				T resource = findById(id, false);
+				resource.generateUID();
+				resource.generateName();
+				// write generated UID + remote file name into database
+				ContentValues values = new ContentValues(2);
+				values.put(entryColumnUID(), resource.getUid());
+				values.put(entryColumnRemoteName(), resource.getName());
+				providerClient.update(ContentUris.withAppendedId(entriesURI(), id), values, null, null);
+				
+				fresh[idx] = id;
+			}
+			return fresh;
+		} catch(RemoteException ex) {
+			throw new LocalStorageException(ex);
+		}
+	}
 	
-	public long[] findDirty() throws LocalStorageException {
-		String where = entryColumnDirty() + "=1";
+	public long[] findUpdated() throws LocalStorageException {
+		// updated records are 1) dirty, and 2) already have a remote file name
+		String where = entryColumnDirty() + "=1 AND " + entryColumnRemoteName() + " IS NOT NULL";
 		if (entryColumnParentID() != null)
 			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
 		try {
@@ -102,40 +137,6 @@ public abstract class LocalCollection<T extends Resource> {
 			for (int idx = 0; cursor.moveToNext(); idx++)
 				deleted[idx] = cursor.getLong(0);
 			return deleted;
-		} catch(RemoteException ex) {
-			throw new LocalStorageException(ex);
-		}
-	}
-
-	public long[] findNew() throws LocalStorageException {
-		// new records are 1) dirty, and 2) don't have a remote file name yet
-		String where = entryColumnDirty() + "=1 AND " + entryColumnRemoteName() + " IS NULL";
-		if (entryColumnParentID() != null)
-			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
-		try {
-			@Cleanup Cursor cursor = providerClient.query(entriesURI(),
-					new String[] { entryColumnID() },
-					where, null, null);
-			if (cursor == null)
-				throw new LocalStorageException("Couldn't query new records");
-			
-			long[] fresh = new long[cursor.getCount()];
-			for (int idx = 0; cursor.moveToNext(); idx++) {
-				long id = cursor.getLong(0);
-				
-				// new record: generate UID + remote file name so that we can upload
-				T resource = findById(id, false);
-				resource.generateUID();
-				resource.generateName();
-				// write generated UID + remote file name into database
-				ContentValues values = new ContentValues(2);
-				values.put(entryColumnUID(), resource.getUid());
-				values.put(entryColumnRemoteName(), resource.getName());
-				providerClient.update(ContentUris.withAppendedId(entriesURI(), id), values, null, null);
-				
-				fresh[idx] = id;
-			}
-			return fresh;
 		} catch(RemoteException ex) {
 			throw new LocalStorageException(ex);
 		}

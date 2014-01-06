@@ -206,7 +206,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		dav.propfind(HttpPropfind.Mode.MEMBERS_COLLECTIONS);
 		List<WebDavResource> members = dav.getMembers();
 		assertEquals(2, members.size());
-		assertEquals(ROBOHYDRA_BASE + "dav/addressbooks/user%40domain/My%20Contacts%3A1.vcf/", members.get(0).getLocation().toString());
+		assertEquals(ROBOHYDRA_BASE + "dav/addressbooks/user%40domain/My%20Contacts%3a1.vcf/", members.get(0).getLocation().toString());
 		assertEquals("HTTPS://example.com/user%40domain/absolute-url.vcf", members.get(1).getLocation().toString());
 	}
 	
