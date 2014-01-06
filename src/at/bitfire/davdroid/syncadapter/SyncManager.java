@@ -174,14 +174,11 @@ public class SyncManager {
 		Log.i(TAG, "Fetching " + resourcesToAdd.length + " new remote resource(s)");
 		
 		for (Resource[] resources : ArrayUtils.partition(resourcesToAdd, MAX_MULTIGET_RESOURCES))
-			try {
-				for (Resource res : remote.multiGet(resources)) {
-					Log.d(TAG, "Adding " + res.getName());
-					local.add(res);
-					count++;
-				}
-			} finally {
+			for (Resource res : remote.multiGet(resources)) {
+				Log.d(TAG, "Adding " + res.getName());
+				local.add(res);
 				local.commit();
+				count++;
 			}
 		return count;
 	}
@@ -191,14 +188,11 @@ public class SyncManager {
 		Log.i(TAG, "Fetching " + resourcesToUpdate.length + " updated remote resource(s)");
 		
 		for (Resource[] resources : ArrayUtils.partition(resourcesToUpdate, MAX_MULTIGET_RESOURCES))
-			try {
-				for (Resource res : remote.multiGet(resources)) {
-					Log.i(TAG, "Updating " + res.getName());
-					local.updateByRemoteName(res);
-					count++;
-				}
-			} finally {
+			for (Resource res : remote.multiGet(resources)) {
+				Log.i(TAG, "Updating " + res.getName());
+				local.updateByRemoteName(res);
 				local.commit();
+				count++;
 			}
 		return count;
 	}
