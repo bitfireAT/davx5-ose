@@ -439,7 +439,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Website.URL },
 				Website.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Website.CONTENT_ITEM_TYPE }, null);
-		if (cursor != null && cursor.moveToNext())
+		while (cursor != null && cursor.moveToNext())
 			c.getURLs().add(cursor.getString(0));
 	}
 	

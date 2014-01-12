@@ -71,7 +71,7 @@ public class SyncManager {
 		for (Resource remoteResource : remoteResources) {
 			try {
 				Resource localResource = local.findByRemoteName(remoteResource.getName(), false);
-				if (!remoteResource.getETag().equals(localResource.getETag()))
+				if (localResource.getETag() == null || localResource.getETag() != remoteResource.getETag())
 					remotelyUpdated.add(remoteResource);
 			} catch(RecordNotFoundException e) {
 				remotelyAdded.add(remoteResource);
