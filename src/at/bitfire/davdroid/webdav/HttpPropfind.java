@@ -42,11 +42,9 @@ public class HttpPropfind extends HttpEntityEnclosingRequestBase {
 		int depth = 0;
 		switch (mode) {
 		case CURRENT_USER_PRINCIPAL:
-			depth = 0;
 			propfind.prop.currentUserPrincipal = new DavProp.DavCurrentUserPrincipal();
 			break;
 		case HOME_SETS:
-			depth = 0;
 			propfind.prop.addressbookHomeSet = new DavProp.DavAddressbookHomeSet();
 			propfind.prop.calendarHomeSet = new DavProp.DavCalendarHomeSet();
 			break;
@@ -61,7 +59,6 @@ public class HttpPropfind extends HttpEntityEnclosingRequestBase {
 			propfind.prop.supportedCalendarComponentSet = new DavProp.DavPropSupportedCalendarComponentSet();
 			break;
 		case COLLECTION_CTAG:
-			depth = 0;
 			propfind.prop.getctag = new DavProp.DavPropGetCTag(); 
 			break;
 		case MEMBERS_ETAG:
@@ -79,9 +76,9 @@ public class HttpPropfind extends HttpEntityEnclosingRequestBase {
 			setHeader("Depth", String.valueOf(depth));
 			setEntity(new StringEntity(writer.toString(), "UTF-8"));
 			
-			Log.d(TAG, "Prepared PROPFIND request: " + writer.toString());
+			Log.d(TAG, "Prepared PROPFIND request for " + uri + ": " + writer.toString());
 		} catch(Exception ex) {
-			Log.e(TAG, "Couldn't prepare PROPFIND request", ex);
+			Log.e(TAG, "Couldn't prepare PROPFIND request for " + uri, ex);
 			abort();
 		}
 	}

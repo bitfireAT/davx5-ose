@@ -21,7 +21,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
 import org.apache.http.conn.scheme.LayeredSocketFactory;
-import org.apache.http.conn.ssl.StrictHostnameVerifier;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.params.HttpParams;
 
 import android.annotation.TargetApi;
@@ -33,7 +33,7 @@ import android.util.Log;
 public class TlsSniSocketFactory implements LayeredSocketFactory {
 	private static final String TAG = "davdroid.SNISocketFactory";
 	
-	final static HostnameVerifier hostnameVerifier = new StrictHostnameVerifier();
+	final static HostnameVerifier hostnameVerifier = SSLSocketFactory.STRICT_HOSTNAME_VERIFIER;
 	
 	
 	// Plain TCP/IP (layer below TLS)
