@@ -31,7 +31,7 @@ public class HttpReport extends HttpEntityEnclosingRequestBase {
 		try {
 			setEntity(new StringEntity(entity, "UTF-8"));
 			
-			Log.d(TAG, "Prepared REPORT request: " + entity);
+			Log.d(TAG, "Prepared REPORT request for " + uri + ": " + entity);
 		} catch (UnsupportedEncodingException e) {
 			Log.e(TAG, e.getMessage());
 		}

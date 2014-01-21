@@ -58,6 +58,7 @@ public class SyncManager {
 		if (!fetchCollection) {
 			String	currentCTag = remote.getCTag(),
 					lastCTag = local.getCTag();
+			Log.d(TAG, "Last local CTag = " + lastCTag + "; current remote CTag = " + currentCTag);
 			if (currentCTag == null || !currentCTag.equals(lastCTag))
 				fetchCollection = true;
 		}
