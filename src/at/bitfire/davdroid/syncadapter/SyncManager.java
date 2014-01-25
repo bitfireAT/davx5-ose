@@ -64,7 +64,7 @@ public class SyncManager {
 		}
 		
 		if (!fetchCollection) {
-			Log.i(TAG, "No local changes and CTags match, ne need to sync");
+			Log.i(TAG, "No local changes and CTags match, no need to sync");
 			return;
 		}
 		

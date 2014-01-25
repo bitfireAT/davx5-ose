@@ -44,6 +44,7 @@ import ezvcard.property.Revision;
 import ezvcard.property.Role;
 import ezvcard.property.StructuredName;
 import ezvcard.property.Telephone;
+import ezvcard.property.Title;
 import ezvcard.property.Uid;
 import ezvcard.property.Url;
 
@@ -73,7 +74,7 @@ public class Contact extends Resource {
 	@Getter @Setter private String prefix, givenName, middleName, familyName, suffix;
 	@Getter @Setter private String phoneticGivenName, phoneticMiddleName, phoneticFamilyName;
 	@Getter @Setter private String note;
-	@Getter @Setter private String organization, role;
+	@Getter @Setter private String organization, jobTitle, department;
 	
 	@Getter @Setter private byte[] photo;
 	
@@ -164,8 +165,14 @@ public class Contact extends Resource {
 			if (!organizations.isEmpty())
 				organization = organizations.get(0);
 		}
-		for (Role role : vcard.getRoles())
-			this.role = role.getValue();
+		for (Title title : vcard.getTitles()) {
+			jobTitle = title.getValue();
+			break;
+		}
+		for (Role role : vcard.getRoles()) {
+			this.department = role.getValue();
+			break;
+		}
 	
 		impps = vcard.getImpps();
 		
@@ -241,8 +248,10 @@ public class Contact extends Resource {
 			org.addValue(organization);
 			vcard.addOrganization(org);
 		}
-		if (role != null)
-			vcard.addRole(role);
+		if (jobTitle != null)
+			vcard.addTitle(jobTitle);
+		if (department != null)
+			vcard.addRole(department);
 		
 		for (Impp impp : impps)
 			vcard.addImpp(impp);
