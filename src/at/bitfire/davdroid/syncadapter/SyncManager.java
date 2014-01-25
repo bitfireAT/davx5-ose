@@ -63,6 +63,11 @@ public class SyncManager {
 				fetchCollection = true;
 		}
 		
+		if (!fetchCollection) {
+			Log.i(TAG, "No local changes and CTags match, ne need to sync");
+			return;
+		}
+		
 		// PHASE 2B: detect details of remote changes
 		Log.i(TAG, "Fetching remote resource list");
 		Set<Resource>	remotelyAdded = new HashSet<Resource>(),
@@ -72,7 +77,7 @@ public class SyncManager {
 		for (Resource remoteResource : remoteResources) {
 			try {
 				Resource localResource = local.findByRemoteName(remoteResource.getName(), false);
-				if (localResource.getETag() == null || localResource.getETag() != remoteResource.getETag())
+				if (localResource.getETag() == null || !localResource.getETag().equals(remoteResource.getETag()))
 					remotelyUpdated.add(remoteResource);
 			} catch(RecordNotFoundException e) {
 				remotelyAdded.add(remoteResource);
