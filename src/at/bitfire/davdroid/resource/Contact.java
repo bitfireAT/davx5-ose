@@ -74,7 +74,8 @@ public class Contact extends Resource {
 	@Getter @Setter private String prefix, givenName, middleName, familyName, suffix;
 	@Getter @Setter private String phoneticGivenName, phoneticMiddleName, phoneticFamilyName;
 	@Getter @Setter private String note;
-	@Getter @Setter private String organization, jobTitle, department;
+	@Getter @Setter private Organization organization;
+	@Getter @Setter private String jobTitle, jobDescription;
 	
 	@Getter @Setter private byte[] photo;
 	
@@ -159,18 +160,14 @@ public class Contact extends Resource {
 			this.photo = photo.getData();
 			break;
 		}
-		
-		if (vcard.getOrganization() != null) {
-			List<String> organizations = vcard.getOrganization().getValues();
-			if (!organizations.isEmpty())
-				organization = organizations.get(0);
-		}
+
+		organization = vcard.getOrganization();
 		for (Title title : vcard.getTitles()) {
 			jobTitle = title.getValue();
 			break;
 		}
 		for (Role role : vcard.getRoles()) {
-			this.department = role.getValue();
+			this.jobDescription = role.getValue();
 			break;
 		}
 	
@@ -243,15 +240,12 @@ public class Contact extends Resource {
 		for (Email email : emails)
 			vcard.addEmail(email);
 
-		if (organization != null) {
-			Organization org = new Organization();
-			org.addValue(organization);
-			vcard.addOrganization(org);
-		}
+		if (organization != null)
+			vcard.addOrganization(organization);
 		if (jobTitle != null)
 			vcard.addTitle(jobTitle);
-		if (department != null)
-			vcard.addRole(department);
+		if (jobDescription != null)
+			vcard.addRole(jobDescription);
 		
 		for (Impp impp : impps)
 			vcard.addImpp(impp);
