@@ -312,16 +312,20 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 	
 	protected void populateOrganization(Contact c) throws RemoteException {
-		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Organization.COMPANY, Organization.TITLE },
+		@Cleanup Cursor cursor = providerClient.query(dataURI(),
+				new String[] { Organization.COMPANY, Organization.TITLE, Organization.DEPARTMENT },
 				Photo.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), Organization.CONTENT_ITEM_TYPE }, null);
 		if (cursor != null && cursor.moveToNext()) {
 			String	org = cursor.getString(0),
-					role = cursor.getString(1);
+					title = cursor.getString(1),
+					department = cursor.getString(2);
 			if (!StringUtils.isEmpty(org))
 				c.setOrganization(org);
-			if (!StringUtils.isEmpty(role))
-				c.setRole(role);
+			if (!StringUtils.isEmpty(title))
+				c.setJobTitle(title);
+			if (!StringUtils.isEmpty(department))
+				c.setDepartment(department);
 		}
 	}
 	
@@ -520,8 +524,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		if (contact.getPhoto() != null)
 			queueOperation(buildPhoto(newDataInsertBuilder(localID, backrefIdx), contact.getPhoto()));
 		
-		if (contact.getOrganization() != null || contact.getRole() != null)
-			queueOperation(buildOrganization(newDataInsertBuilder(localID, backrefIdx), contact.getOrganization(), contact.getRole()));
+		if (contact.getOrganization() != null || contact.getJobTitle() != null || contact.getDepartment() != null)
+			queueOperation(buildOrganization(newDataInsertBuilder(localID, backrefIdx),
+				contact.getOrganization(), contact.getJobTitle(), contact.getDepartment()));
 			
 		for (Impp impp : contact.getImpps())
 			queueOperation(buildIMPP(newDataInsertBuilder(localID, backrefIdx), impp));
@@ -683,11 +688,12 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			.withValue(Photo.PHOTO, photo);
 	}
 	
-	protected Builder buildOrganization(Builder builder, String organization, String role) {
+	protected Builder buildOrganization(Builder builder, String organization, String jobTitle, String department) {
 		return builder
 				.withValue(Data.MIMETYPE, Organization.CONTENT_ITEM_TYPE)
 				.withValue(Organization.COMPANY, organization)
-				.withValue(Organization.TITLE, role);
+				.withValue(Organization.TITLE, jobTitle)
+				.withValue(Organization.DEPARTMENT, department);
 	}
 
 	protected Builder buildIMPP(Builder builder, Impp impp) {
