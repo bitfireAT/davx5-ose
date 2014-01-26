@@ -699,11 +699,13 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	protected Builder buildOrganization(Builder builder, ezvcard.property.Organization organization, String jobTitle, String jobDescription) {
 		String company = null, department = null;
 		
-		Iterator<String> org = organization.getValues().iterator();
-		if (org.hasNext())
-			company = org.next();
-		if (org.hasNext())
-			department = org.next();
+		if (organization != null) {
+			Iterator<String> org = organization.getValues().iterator();
+			if (org.hasNext())
+				company = org.next();
+			if (org.hasNext())
+				department = org.next();
+		}
 		
 		return builder
 				.withValue(Data.MIMETYPE, Organization.CONTENT_ITEM_TYPE)
