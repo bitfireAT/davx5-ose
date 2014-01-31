@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">DAVdroid</string>
+    <string name="menu_settings">Ajustes</string>
+
+    <string-array name="http_protocols">
+        <item>http://</item>
+        <item>https://</item>
+    </string-array>
+
+    <string name="http_warning">"Si no usas encriptación (HTTPS), otras personas pueden interceptar facilmente tus datos de ingreso, contactos y eventos."</string>
+    <string name="user_name">Nombre de usuario:</string>
+    <string name="password">Contraseña:</string>
+    <string name="root_url">URL raiz (las colecciones son autodetectadas):</string>
+    <string name="next">Siguiente</string>
+    <string name="help">Ayuda</string>
+    <string name="invalid_base_url">URL base no válida: </string>
+    <string name="title_select_collections">DAVdroid: Selecciona las colecciones</string>
+    <string name="exception_io">I/O error: %s</string>
+    <string name="exception_uri_syntax">URI no válida: %s</string>
+    <string name="exception_incapable_resource">Se han perdido capacidades: %s</string>
+    <string name="neither_caldav_nor_carddav">Ni CalDAV ni CardDAV están disponibles</string>
+    <string name="error_principal_path">"No se ha podido determinar la ruta principal (RFC 5397)"</string>
+    <string name="error_home_set_address_books">"No se ha podido determinar la configuración de inicio de la agenda"</string>
+    <string name="error_home_set_calendars">"No se ha podido determinar la configuración de inicio del calendario"</string>
+    <string name="add_account">Añadir cuenta</string>
+    <string name="querying_server">Consultando el servidor. Espera, por favor…</string>
+    <string name="exception_http">error HTTP: %s</string>
+    <string name="what_to_sync">Qué colecciones quieres sincronizar?</string>
+    <string name="address_books">Agendas</string>
+    <string name="calendars">Calendarios</string>
+    <string name="select_address_book">Seleciona una agenda (pulsar de nuevo para desmarcar):</string>
+    <string name="select_calendars">Selecciona tus calendarios:</string>
+    <string name="auth_preemptive">Autentificación preferente (recomendado, pero incompatible con la autentificación de Digest)</string>
+    
+    <string name="davdroid_help">Ayuda de DAVdroid</string>
+    <string name="show_sync_settings">Administrar las cuentas sincronizadas</string>
+    <string name="show_website">Sitio web de DAVdroid</string>
+    <string name="html_info"><![CDATA[
+       <h1>¡Bienvenido a DAVdroid!</h1>
+       
+       <p>DAVdroid es un adaptador de sincronización entre Android 4+ y CalDAV/CardDAV. Para usarlo, simplemente añade una cuenta en DAVdroid para tu servidor de CalDAV/CardDAV y tus contactos y eventos serán sincronizados en ambas direcciones.</p>
+       
+       <p>Si has adquirido <a href="https://play.google.com/store/apps/details?id=at.bitfire.davdroid">DAVdroid en
+       Play Store</a> y usas Android 4.1 o un dispositivo Samsung (por ejemplo, un Galaxy Note, o un Note 10.1, o los S2, S3, S4, …)
+       deberás instalar <a href="https://play.google.com/store/apps/details?id=at.bitfire.davdroid.jbworkaround">DAVdroid JB Workaround</a>
+       para evitar que se pierdan datos al arrancar (es un bug de Android/Play Store).</p>
+       
+       <p>Si usas CyanogenMod, "Privacy Guard" deberá ser desactivado para DAVdroid. De otro modo, DAVdroid no tendrá autorización para acceder y sincronizar tus contactos y eventos.</p>
+       
+       <p>Para más información, por favor lee la <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">página de DAVdroid</a>.
+       Hay una <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Guía de configuración</a>, también. DAVdroid respeta tu privacidad, lee nuestra <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Politica de Privacidad</a>.</p>
+       
+       <p><b>Si tienes problemas, por favor lee las <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a> first.
+       Si te encuentras un bug that que esté claramente relacionado con DAVdroid, entra en
+       <a href="https://github.com/rfc2822/davdroid">Github issues</a> en lugar de contactar con nosotros directamente o de darle una mala votación a la aplicación.</b></p>
+              
+	   <h1>Código abierto</h1>
+	   <p>DAVdroid ha sido diseñado como un proyecto de código abierto desde sus inicios. Siempre es posible compilar la app por ti mismo y usarla de forma gratuita sin ninguna obligación. El código fuente está
+	   <a href="https://github.com/rfc2822/davdroid">disponible en Github</a>, y puedes
+	   <a href="https://f-droid.org/app/at.bitfire.davdroid">descargar la app desde F-droid</a>.</p>
+	   
+	   <p>Sin embargo, hay mucho trabajo detrás de la creación de esta aplicación, así que hemos decidido ponerla en las tiendas (Google Play,
+	   <a href="http://apps.samsung.com/earth/topApps/topAppsDetail.as?productId=000000665458">Samsung Store</a>) a cambio de un pequeño pago.
+	   Si quieres apoyar este proyecto, por favor piensa en <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">hacer una donación a DAVdroid</a>
+	   o en comprarla.</p>
+	   
+	   <h1>Licencia</h1>
+	   <p>Copyright (c) 2013 Richard Hirner (<a href="http://www.bitfire.at">bitfire web engineering</a>). Todos los derechos reservados.
+	   Este programa y los materiales que la acompañan está disponible bajo las condiciones de la GNU Public License v3.0 que acompaña a esta distribución, y está a tu disposición en <a
+	   href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. En lo relativo a Google Play or Samsung requieren otras condiciones, éstas han sido descargadas a través de estos servicios.</p>
+	   
+	   <h2>Librerías third-party usadas</h2>
+	   <p>
+	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> (<a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
+	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> (<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a>)<br/>
+	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> (<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>)<br/>
+	   	* <a href="http://projectlombok.org/">Project Lombok</a> (<a href="http://opensource.org/licenses/mit-license.php">MIT License</a>)</p>
+    ]]></string>
+    <string name="account_details">Detalles de la cuenta</string>
+    <string name="account_name">Nombre de la cuenta:</string>
+    <string name="account_name_hint">Mi cuenta CalDAV/CardDAV</string>
+    <string name="email_address">Dirección de correo:</string>
+    <string name="organizer_hint">"ORGANIZADOR de tus eventos; se necesita si se usa información de los asistentes"</string>
+    <string name="account_name_info">"Usa tu dirección de correo electrónico como nombre de cuenta porque Android usará el nombre de cuenta como campo de ORGANIZADOR para los eventos que crees. No puedes tener dos cuentas con el mismo nombre.</string>
+
+</resources>
