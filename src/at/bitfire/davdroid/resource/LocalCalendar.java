@@ -226,16 +226,26 @@ public class LocalCalendar extends LocalCollection<Event> {
 				String duration = cursor.getString(18);
 				
 				String tzId = null;
-				if (!allDay) {
+				if (allDay) {
+					e.setDtStart(tsStart, null);
+					// provide only DTEND and not DURATION for all-day events
+					if (tsEnd == 0) {
+						Dur dur = new Dur(duration);
+						java.util.Date dEnd = dur.getTime(new java.util.Date(tsStart));
+						tsEnd = dEnd.getTime();
+					}
+					e.setDtEnd(tsEnd, null);
+					
+				} else {
 					// use the start time zone for the end time, too
 					// because apps like Samsung Planner allow the user to change "the" time zone but change the start time zone only
 					tzId = cursor.getString(5);
+					e.setDtStart(tsStart, tzId);
+					if (tsEnd != 0)
+						e.setDtEnd(tsEnd, tzId);
+					else if (!StringUtils.isEmpty(duration))
+						e.setDuration(new Duration(new Dur(duration)));
 				}
-				e.setDtStart(tsStart, tzId);
-				if (tsEnd != 0)
-					e.setDtEnd(tsEnd, tzId);
-				else if (!StringUtils.isEmpty(duration))
-					e.setDuration(new Duration(new Dur(duration)));
 					
 				// recurrence
 				try {
