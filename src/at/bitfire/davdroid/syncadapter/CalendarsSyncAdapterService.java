@@ -57,7 +57,8 @@ public class CalendarsSyncAdapterService extends Service {
 				Map<LocalCollection<?>, RemoteCollection<?>> map = new HashMap<LocalCollection<?>, RemoteCollection<?>>();
 				
 				for (LocalCalendar calendar : LocalCalendar.findAll(account, provider)) {
-					URI uri = new URI(accountManager.getUserData(account, Constants.ACCOUNT_KEY_BASE_URL)).resolve(calendar.getPath());
+					URI baseURI = new URI(accountManager.getUserData(account, Constants.ACCOUNT_KEY_BASE_URL));
+					URI uri = baseURI.resolve(calendar.getPath());
 					RemoteCollection<?> dav = new CalDavCalendar(uri.toString(),
 						accountManager.getUserData(account, Constants.ACCOUNT_KEY_USERNAME),
 						accountManager.getPassword(account),
