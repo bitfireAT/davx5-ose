@@ -13,7 +13,6 @@ package at.bitfire.davdroid.resource;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -221,29 +220,25 @@ public class LocalCalendar extends LocalCollection<Event> {
 				e.setLocation(cursor.getString(1));
 				e.setDescription(cursor.getString(2));
 				
+				boolean allDay = cursor.getInt(7) != 0;
 				long tsStart = cursor.getLong(3),
 					 tsEnd = cursor.getLong(4);
+				String duration = cursor.getString(18);
 				
-				String tzId;
-				if (cursor.getInt(7) != 0) {	// ALL_DAY != 0
-					tzId = null;				// -> use UTC
-				} else {
+				String tzId = null;
+				if (!allDay) {
 					// use the start time zone for the end time, too
-					// because the Samsung Planner UI allows the user to change the time zone
-					// but it will change the start time zone only
+					// because apps like Samsung Planner allow the user to change "the" time zone but change the start time zone only
 					tzId = cursor.getString(5);
-					//tzIdEnd = cursor.getString(6);
 				}
 				e.setDtStart(tsStart, tzId);
 				if (tsEnd != 0)
 					e.setDtEnd(tsEnd, tzId);
-	
+				else if (!StringUtils.isEmpty(duration))
+					e.setDuration(new Duration(new Dur(duration)));
+					
 				// recurrence
 				try {
-					String duration = cursor.getString(18);
-					if (!StringUtils.isEmpty(duration))
-						e.setDuration(new Duration(new Dur(duration)));
-					
 					String strRRule = cursor.getString(10);
 					if (!StringUtils.isEmpty(strRRule))
 						e.setRrule(new RRule(strRRule));
@@ -436,30 +431,16 @@ public class LocalCalendar extends LocalCollection<Event> {
 		if (event.getExdate() != null)
 			builder = builder.withValue(Events.EXDATE, event.getExdate().getValue());
 		
-		// set DTEND for single-time events or DURATION for recurring events
-		// because that's the way Android likes it
-		if (!recurring) {
-			// not recurring: set DTEND
-			long dtEnd = 0;
-			String tzEnd = null;
-			if (event.getDtEndInMillis() != null) {
-				dtEnd = event.getDtEndInMillis();
-				tzEnd = event.getDtEndTzID();
-			} else if (event.getDuration() != null) {
-				Date dateEnd = event.getDuration().getDuration().getTime(event.getDtStart().getDate());
-				dtEnd = dateEnd.getTime();
-			}
-			builder = builder
-					.withValue(Events.DTEND, dtEnd)
-					.withValue(Events.EVENT_END_TIMEZONE, tzEnd);
+		// set either DTEND for single-time events or DURATION for recurring events
+		// because that's the way Android likes it (see docs)
+		if (recurring) {
+			// calculate DURATION from start and end date
+			Duration duration = new Duration(event.getDtStart().getDate(), event.getDtEnd().getDate());
+			builder = builder.withValue(Events.DURATION, duration.getValue());
 		} else {
-			// recurring: set DURATION
-			String duration = null;
-			if (event.getDuration() != null)
-				duration = event.getDuration().getValue();
-			else if (event.getDtEnd() != null)
-				duration = new Duration(event.getDtStart().getDate(), event.getDtEnd().getDate()).getValue();
-			builder = builder.withValue(Events.DURATION, duration);
+			builder = builder
+					.withValue(Events.DTEND, event.getDtEndInMillis())
+					.withValue(Events.EVENT_END_TIMEZONE, event.getDtEndTzID());
 		}
 		
 		if (event.getSummary() != null)

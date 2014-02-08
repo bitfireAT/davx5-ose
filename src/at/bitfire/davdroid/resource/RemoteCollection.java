@@ -21,7 +21,6 @@ import java.util.List;
 
 import lombok.Cleanup;
 import lombok.Getter;
-import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.ValidationException;
 
 import org.apache.http.HttpException;
@@ -33,7 +32,6 @@ import at.bitfire.davdroid.webdav.DavNoContentException;
 import at.bitfire.davdroid.webdav.HttpPropfind;
 import at.bitfire.davdroid.webdav.WebDavResource;
 import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
-import ezvcard.VCardException;
 
 public abstract class RemoteCollection<T extends Resource> {
 	private static final String TAG = "davdroid.RemoteCollection";
@@ -98,18 +96,14 @@ public abstract class RemoteCollection<T extends Resource> {
 						foundResources.add(resource);
 					} else
 						Log.e(TAG, "Ignoring entity without content");
-				} catch (ParserException ex) {
-					Log.e(TAG, "Ignoring unparseable iCal in multi-response", ex);
-				} catch (VCardException ex) {
-					Log.e(TAG, "Ignoring unparseable vCard in multi-response", ex);
+				} catch (InvalidResourceException e) {
+					Log.e(TAG, "Ignoring unparseable entity in multi-response", e);
 				}
 			}
 			
 			return foundResources.toArray(new Resource[0]);
-		} catch (ParserException ex) {
-			Log.e(TAG, "Couldn't parse iCal from GET", ex);
-		} catch (VCardException ex) {
-			Log.e(TAG, "Couldn't parse vCard from GET", ex);
+		} catch (InvalidResourceException e) {
+			Log.e(TAG, "Couldn't parse entity from GET", e);
 		}
 		
 		return new Resource[0];
@@ -118,7 +112,7 @@ public abstract class RemoteCollection<T extends Resource> {
 	
 	/* internal member operations */
 
-	public Resource get(Resource resource) throws IOException, HttpException, ParserException, VCardException {
+	public Resource get(Resource resource) throws IOException, HttpException, InvalidResourceException {
 		WebDavResource member = new WebDavResource(collection, resource.getName());
 		member.get();
 		
