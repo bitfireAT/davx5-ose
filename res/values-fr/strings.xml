@@ -9,30 +9,30 @@
         <item>https://</item>
     </string-array>
 
-    <string name="http_warning">"Si vous n'utilisez pas de chiffrement(HTTPS), d'autres personnes peuvent facilement intercepter vos informations de connexion, contacts et événements."</string>
+    <string name="http_warning">Si vous n\'utilisez pas de chiffrement(HTTPS), d\'autres personnes peuvent facilement intercepter vos informations de connexion, contacts et événements.</string>
     <string name="user_name">Utilisateur:</string>
     <string name="password">Mot de passe:</string>
     <string name="root_url">URL racine(les collections seront autodétectées):</string>
     <string name="next">Suivant</string>
     <string name="help">Aide</string>
-    <string name="invalid_base_url">Racine de l'URL incorrecte:</string>
+    <string name="invalid_base_url">Racine de l\'URL incorrecte:</string>
     <string name="title_select_collections">DAVdroid: Sélectionnez les collections</string>
     <string name="exception_io">Erreur I/O: %s</string>
     <string name="exception_uri_syntax">URI incorrecte: %s</string>
     <string name="exception_incapable_resource">Capacités manquantes: %s</string>
-    <string name="neither_caldav_nor_carddav">"Aucun CalDAV ou CardDAV disponible"</string>
-    <string name="error_principal_path">"Impossible de déterminer le chemin principal(RFC 5397)"</string>
-    <string name="error_home_set_address_books">"Impossible de déterminer le type de carnets d'adresses"</string>
-    <string name="error_home_set_calendars">"Impossible de déterminer le type d'agendas"</string>
+    <string name="neither_caldav_nor_carddav">Aucun CalDAV ou CardDAV disponible</string>
+    <string name="error_principal_path">Impossible de déterminer le chemin principal(RFC 5397)</string>
+    <string name="error_home_set_address_books">Impossible de déterminer le type de carnets d\'adresses</string>
+    <string name="error_home_set_calendars">Impossible de déterminer le type d\'agendas"</string>
     <string name="add_account">Ajouter un compte</string>
     <string name="querying_server">Interroge le serveur. Patientez svp.</string>
     <string name="exception_http">Erreur HTTP: %s</string>
     <string name="what_to_sync">Quelles collections doivent être synchronisées ?</string>
-    <string name="address_books">Carnets d'adresses</string>
+    <string name="address_books">Carnets d\'adresses</string>
     <string name="calendars">Agendas</string>
-    <string name="select_address_book">Choisissez un carnet d'adresses(toucher à nouveau pour désélectionner):</string>
+    <string name="select_address_book">Choisissez un carnet d\'adresses(toucher à nouveau pour désélectionner):</string>
     <string name="select_calendars">Choisissez vos agendas:</string>
-    <string name="auth_preemptive">Authentification préventive(recommandé, mais incompatible avec l'authentification Digest)</string>
+    <string name="auth_preemptive">Authentification préventive(recommandé, mais incompatible avec l\'authentification Digest)</string>
     
     <string name="davdroid_help">Aide de DAVdroid</string>
     <string name="show_sync_settings">Gérer les comptes synchronisés</string>
@@ -48,10 +48,10 @@
        vous devez installer <a href="https://play.google.com/store/apps/details?id=at.bitfire.davdroid.jbworkaround">l\'application DAVdroid JB Workaround</a>
        pour éviter la perte de données en cas de redémarrage(c\'est un bug de Android/Play Store).</p>
        
-       <p>Si vous utilisez CyanogenMod, "Privacy Guard" doit ^tre désactivé pour DAVdroid. Sinon DAVdroid ne sera pas en mesure d'accéder 
+       <p>Si vous utilisez CyanogenMod, "Privacy Guard" doit être désactivé pour DAVdroid. Sinon DAVdroid ne sera pas en mesure d\'accéder
        et synchroniser vos contacts et évènements</p>
        
-       <p>Pour plus d'informations, visitez <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">la page d\'accueil de DAVdroid</a>.
+       <p>Pour plus d\'informations, visitez <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">la page d\'accueil de DAVdroid</a>.
        Il y a <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Un guide d\'installation</a> également. DAVdroid respecte
        votre vie privée, see our <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Politique de confidentialité</a>.</p>
        
@@ -86,8 +86,8 @@
     <string name="account_name">Nom du compte:</string>
     <string name="account_name_hint">Mon compte CalDAV/CardDAV</string>
     <string name="email_address">Adresse Email:</string>
-    <string name="organizer_hint">"ORGANISATEUR de vos événements; nécessaire pour l'information des participants"</string>
-    <string name="account_name_info">"Utilisez votre adresse email en tant que nom de compte car Android utilise ce nom pour le champ ORGANISATEUR des évènements que vous créez."
-    Vous ne pouvez pas avoir deux comptes du même nom."</string>
+    <string name="organizer_hint">ORGANISATEUR de vos événements; nécessaire pour l\'information des participants</string>
+    <string name="account_name_info">Utilisez votre adresse email en tant que nom de compte car Android utilise ce nom pour le champ ORGANISATEUR des évènements que vous créez."
+    Vous ne pouvez pas avoir deux comptes du même nom.</string>
 
 </resources>
