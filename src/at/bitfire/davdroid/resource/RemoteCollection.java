@@ -22,13 +22,11 @@ import java.util.List;
 import lombok.Cleanup;
 import lombok.Getter;
 import net.fortuna.ical4j.model.ValidationException;
-
-import org.apache.http.HttpException;
-
 import android.util.Log;
 import at.bitfire.davdroid.webdav.DavException;
 import at.bitfire.davdroid.webdav.DavMultiget;
 import at.bitfire.davdroid.webdav.DavNoContentException;
+import at.bitfire.davdroid.webdav.HttpException;
 import at.bitfire.davdroid.webdav.HttpPropfind;
 import at.bitfire.davdroid.webdav.WebDavResource;
 import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
@@ -112,7 +110,7 @@ public abstract class RemoteCollection<T extends Resource> {
 	
 	/* internal member operations */
 
-	public Resource get(Resource resource) throws IOException, HttpException, InvalidResourceException {
+	public Resource get(Resource resource) throws IOException, HttpException, DavException, InvalidResourceException {
 		WebDavResource member = new WebDavResource(collection, resource.getName());
 		member.get();
 		

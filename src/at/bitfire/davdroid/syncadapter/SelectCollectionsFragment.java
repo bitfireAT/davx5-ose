@@ -51,7 +51,7 @@ public class SelectCollectionsFragment extends ListFragment {
 		listView.addHeaderView(header);
 		
 		final ServerInfo serverInfo = (ServerInfo)getArguments().getSerializable(KEY_SERVER_INFO);
-		final SelectCollectionsAdapter adapter = new SelectCollectionsAdapter(serverInfo);
+		final SelectCollectionsAdapter adapter = new SelectCollectionsAdapter(view.getContext(), serverInfo);
 		setListAdapter(adapter);
 		
 		listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);

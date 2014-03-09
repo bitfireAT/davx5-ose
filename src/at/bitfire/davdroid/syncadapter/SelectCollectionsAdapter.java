@@ -11,6 +11,7 @@
 package at.bitfire.davdroid.syncadapter;
 
 import lombok.Getter;
+import android.content.Context;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,11 +27,14 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 		TYPE_CALENDARS_HEADING = 2,
 		TYPE_CALENDARS_ROW = 3;
 	
+	protected Context context;
 	protected ServerInfo serverInfo;
 	@Getter protected int nAddressBooks, nCalendars;
 	
 	
-	public SelectCollectionsAdapter(ServerInfo serverInfo) {
+	public SelectCollectionsAdapter(Context context, ServerInfo serverInfo) {
+		this.context = context;
+		
 		this.serverInfo = serverInfo;
 		nAddressBooks = (serverInfo.getAddressBooks() == null) ? 0 : serverInfo.getAddressBooks().size();
 		nCalendars = (serverInfo.getCalendars() == null) ? 0 : serverInfo.getCalendars().size();
@@ -130,8 +134,12 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 		if (description == null)
 			description = info.getPath();
 		
+		String title = "<b>" + info.getTitle() + "</b>";
+		if (info.isReadOnly())
+			title = title + " (" + context.getString(R.string.read_only) + ")";
+		
 		// FIXME escape HTML
-		view.setText(Html.fromHtml("<b>" + info.getTitle() + "</b><br/>" + description));
+		view.setText(Html.fromHtml(title + "<br/>" + description));
 	}
 
 	@Override

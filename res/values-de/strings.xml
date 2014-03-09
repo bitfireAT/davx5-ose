@@ -83,6 +83,7 @@
     <string name="account_name_hint">Mein CalDAV/CardDAV-Konto</string>
     <string name="email_address">Email-Adresse:</string>
     <string name="organizer_hint">"ORGANIZER der von Ihnen angelegten Termine; notwendig für Teilnehmer-Info"</string>
-    <string name="account_name_info">"Verwenden Sie Ihre Email-Addresse als Kontoname, da Android den Kontonamen als ORGANIZER-Feld in Terminen benutzt. Sie können keine zwei Konten mit dem gleichen Namen anlegen.</string>
+    <string name="account_name_info">&quot;Verwenden Sie Ihre Email-Adresse als Kontoname, da Android den Kontonamen als ORGANIZER-Feld in Terminen benutzt. Sie können keine zwei Konten mit dem gleichen Namen anlegen.</string>
+    <string name="read_only">schreibgeschützt</string>
     
 </resources>
