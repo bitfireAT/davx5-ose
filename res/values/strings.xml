@@ -92,5 +92,6 @@
     <string name="email_address">Email address:</string>
     <string name="organizer_hint">"ORGANIZER of your events; required if you use attendee info"</string>
     <string name="account_name_info">"Use your email address as account name because Android will use the account name as ORGANIZER field for events you create. You can't have two accounts with the same name.</string>
+    <string name="read_only">read-only</string>
 
 </resources>

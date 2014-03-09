@@ -12,9 +12,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.fortuna.ical4j.model.ValidationException;
-
-import org.apache.http.HttpException;
-
 import android.content.SyncResult;
 import android.util.Log;
 import at.bitfire.davdroid.ArrayUtils;
@@ -23,6 +20,8 @@ import at.bitfire.davdroid.resource.LocalStorageException;
 import at.bitfire.davdroid.resource.RecordNotFoundException;
 import at.bitfire.davdroid.resource.RemoteCollection;
 import at.bitfire.davdroid.resource.Resource;
+import at.bitfire.davdroid.webdav.DavException;
+import at.bitfire.davdroid.webdav.HttpException;
 import at.bitfire.davdroid.webdav.NotFoundException;
 import at.bitfire.davdroid.webdav.PreconditionFailedException;
 
@@ -41,7 +40,7 @@ public class SyncManager {
 	}
 
 	
-	public void synchronize(boolean manualSync, SyncResult syncResult) throws LocalStorageException, IOException, HttpException {
+	public void synchronize(boolean manualSync, SyncResult syncResult) throws LocalStorageException, IOException, HttpException, DavException {
 		// PHASE 1: push local changes to server
 		int	deletedRemotely = pushDeleted(),
 			addedRemotely = pushNew(),
@@ -175,7 +174,7 @@ public class SyncManager {
 		return count;
 	}
 	
-	private int pullNew(Resource[] resourcesToAdd) throws LocalStorageException, IOException, HttpException {
+	private int pullNew(Resource[] resourcesToAdd) throws LocalStorageException, IOException, HttpException, DavException {
 		int count = 0;
 		Log.i(TAG, "Fetching " + resourcesToAdd.length + " new remote resource(s)");
 		
@@ -189,7 +188,7 @@ public class SyncManager {
 		return count;
 	}
 	
-	private int pullChanged(Resource[] resourcesToUpdate) throws LocalStorageException, IOException, HttpException {
+	private int pullChanged(Resource[] resourcesToUpdate) throws LocalStorageException, IOException, HttpException, DavException {
 		int count = 0;
 		Log.i(TAG, "Fetching " + resourcesToUpdate.length + " updated remote resource(s)");
 		

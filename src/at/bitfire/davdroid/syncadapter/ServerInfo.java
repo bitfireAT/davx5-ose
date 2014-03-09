@@ -54,6 +54,7 @@ public class ServerInfo implements Serializable {
 		boolean enabled = false;
 		
 		final Type type;
+		final boolean readOnly;
 		final String path, title, description, color;
 		
 		String timezone;

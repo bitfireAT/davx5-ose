@@ -13,11 +13,9 @@ package at.bitfire.davdroid.syncadapter;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.http.HttpStatus;
+
 import lombok.Getter;
-
-import org.apache.http.HttpException;
-import org.apache.http.auth.AuthenticationException;
-
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
@@ -32,10 +30,12 @@ import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.LocalStorageException;
 import at.bitfire.davdroid.resource.RemoteCollection;
 import at.bitfire.davdroid.webdav.DavException;
+import at.bitfire.davdroid.webdav.HttpException;
 
 public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter {
 	private final static String TAG = "davdroid.DavSyncAdapter";
 	
+	protected Context context;
 	protected AccountManager accountManager;
 	
 	@Getter private static String androidID;
@@ -48,7 +48,8 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter {
 			if (androidID == null)
 				androidID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
 		}
-		
+
+		this.context = context;
 		accountManager = AccountManager.get(context);
 	}
 	
@@ -70,15 +71,22 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter {
 				for (Map.Entry<LocalCollection<?>, RemoteCollection<?>> entry : syncCollections.entrySet())
 					new SyncManager(entry.getKey(), entry.getValue()).synchronize(extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL), syncResult);
 				
-			} catch (AuthenticationException ex) {
-				syncResult.stats.numAuthExceptions++;
-				Log.e(TAG, "HTTP authentication failed", ex);
 			} catch (DavException ex) {
 				syncResult.stats.numParseExceptions++;
 				Log.e(TAG, "Invalid DAV response", ex);
+				
 			} catch (HttpException ex) {
-				syncResult.stats.numIoExceptions++;
-				Log.e(TAG, "HTTP error", ex);
+				if (ex.getCode() == HttpStatus.SC_UNAUTHORIZED) {
+					Log.e(TAG, "HTTP Unauthorized " + ex.getCode(), ex);
+					syncResult.stats.numAuthExceptions++;
+				} else if (ex.isClientError()) {
+					Log.e(TAG, "Hard HTTP error " + ex.getCode(), ex);
+					syncResult.stats.numParseExceptions++;
+				} else {
+					Log.w(TAG, "Soft HTTP error" + ex.getCode(), ex);
+					syncResult.stats.numIoExceptions++;
+				}
+				
 			} catch (LocalStorageException ex) {
 				syncResult.databaseError = true;
 				Log.e(TAG, "Local storage (content provider) exception", ex);

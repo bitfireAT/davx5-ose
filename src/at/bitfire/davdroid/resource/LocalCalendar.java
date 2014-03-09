@@ -122,13 +122,18 @@ public class LocalCalendar extends LocalCollection<Event> {
 		values.put(Calendars.NAME, info.getPath());
 		values.put(Calendars.CALENDAR_DISPLAY_NAME, info.getTitle());
 		values.put(Calendars.CALENDAR_COLOR, color);
-		values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER);
-		values.put(Calendars.ALLOWED_REMINDERS, Reminders.METHOD_ALERT);
-		values.put(Calendars.CAN_ORGANIZER_RESPOND, 1);
-		values.put(Calendars.CAN_MODIFY_TIME_ZONE, 1);
 		values.put(Calendars.OWNER_ACCOUNT, account.name);
 		values.put(Calendars.SYNC_EVENTS, 1);
 		values.put(Calendars.VISIBLE, 1);
+		values.put(Calendars.ALLOWED_REMINDERS, Reminders.METHOD_ALERT);
+		
+		if (info.isReadOnly())
+			values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ);
+		else {
+			values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER);
+			values.put(Calendars.CAN_ORGANIZER_RESPOND, 1);
+			values.put(Calendars.CAN_MODIFY_TIME_ZONE, 1);
+		}
 		
 		if (android.os.Build.VERSION.SDK_INT >= 15) {
 			values.put(Calendars.ALLOWED_AVAILABILITY, Events.AVAILABILITY_BUSY + "," + Events.AVAILABILITY_FREE + "," + Events.AVAILABILITY_TENTATIVE);

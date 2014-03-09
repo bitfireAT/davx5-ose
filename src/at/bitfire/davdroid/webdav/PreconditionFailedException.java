@@ -10,12 +10,12 @@
  ******************************************************************************/
 package at.bitfire.davdroid.webdav;
 
-import org.apache.http.HttpException;
+import org.apache.http.HttpStatus;
 
 public class PreconditionFailedException extends HttpException {
 	private static final long serialVersionUID = 102282229174086113L;
 	
 	public PreconditionFailedException(String reason) {
-		super(reason);
+		super(HttpStatus.SC_PRECONDITION_FAILED, reason);
 	}
 }

@@ -10,12 +10,12 @@
  ******************************************************************************/
 package at.bitfire.davdroid.webdav;
 
-import org.apache.http.HttpException;
+import org.apache.http.HttpStatus;
 
 public class NotFoundException extends HttpException {
 	private static final long serialVersionUID = 1565961502781880483L;
 	
 	public NotFoundException(String reason) {
-		super(reason);
+		super(HttpStatus.SC_NOT_FOUND, reason);
 	}
 }

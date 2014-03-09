@@ -12,6 +12,7 @@ package at.bitfire.davdroid.webdav;
 
 import java.io.StringWriter;
 import java.net.URI;
+import java.util.LinkedList;
 
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.entity.StringEntity;
@@ -52,11 +53,12 @@ public class HttpPropfind extends HttpEntityEnclosingRequestBase {
 			depth = 1;
 			propfind.prop.displayname = new DavProp.DavPropDisplayName();
 			propfind.prop.resourcetype = new DavProp.DavPropResourceType();
+			propfind.prop.currentUserPrivilegeSet = new LinkedList<DavProp.DavPropPrivilege>();
 			propfind.prop.addressbookDescription = new DavProp.DavPropAddressbookDescription();
 			propfind.prop.calendarDescription = new DavProp.DavPropCalendarDescription();
 			propfind.prop.calendarColor = new DavProp.DavPropCalendarColor();
 			propfind.prop.calendarTimezone = new DavProp.DavPropCalendarTimezone();
-			propfind.prop.supportedCalendarComponentSet = new DavProp.DavPropSupportedCalendarComponentSet();
+			propfind.prop.supportedCalendarComponentSet = new LinkedList<DavProp.DavPropComp>();
 			break;
 		case COLLECTION_CTAG:
 			propfind.prop.getctag = new DavProp.DavPropGetCTag(); 

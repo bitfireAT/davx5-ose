@@ -30,12 +30,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.AuthenticationException;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -61,6 +59,7 @@ public class WebDavResource {
 	
 	public enum Property {
 		CURRENT_USER_PRINCIPAL,
+		READ_ONLY,
 		DISPLAY_NAME, DESCRIPTION, COLOR,
 		TIMEZONE, SUPPORTED_COMPONENTS,
 		ADDRESSBOOK_HOMESET, CALENDAR_HOMESET,
@@ -175,6 +174,10 @@ public class WebDavResource {
 	
 	public String getCurrentUserPrincipal() {
 		return properties.get(Property.CURRENT_USER_PRINCIPAL);
+	}
+	
+	public boolean isReadOnly() {
+		return properties.containsKey(Property.READ_ONLY);
 	}
 	
 	public String getDisplayName() {
@@ -301,7 +304,7 @@ public class WebDavResource {
 	
 	/* resource operations */
 	
-	public void get() throws IOException, HttpException {
+	public void get() throws IOException, HttpException, DavException {
 		HttpGet get = new HttpGet(location);
 		HttpResponse response = client.execute(get);
 		checkResponse(response);
@@ -370,18 +373,16 @@ public class WebDavResource {
 		
 		String reason = code + " " + statusLine.getReasonPhrase();
 		switch (code) {
-		case HttpStatus.SC_UNAUTHORIZED:
-			throw new AuthenticationException(reason);
 		case HttpStatus.SC_NOT_FOUND:
 			throw new NotFoundException(reason);
 		case HttpStatus.SC_PRECONDITION_FAILED:
 			throw new PreconditionFailedException(reason);
 		default:
-			throw new HttpException(reason);
+			throw new HttpException(code, reason);
 		}
 	}
 	
-	protected void processMultiStatus(DavMultistatus multistatus) throws HttpException {
+	protected void processMultiStatus(DavMultistatus multistatus) throws HttpException, DavException {
 		if (multistatus.response == null)	// empty response
 			throw new DavNoContentException();
 		
@@ -421,6 +422,16 @@ public class WebDavResource {
 				if (prop.currentUserPrincipal != null && prop.currentUserPrincipal.getHref() != null)
 					properties.put(Property.CURRENT_USER_PRINCIPAL, prop.currentUserPrincipal.getHref().href);
 				
+				if (prop.currentUserPrivilegeSet != null) {
+					// privilege info available
+					boolean hasWrite = false;
+					for (DavProp.DavPropPrivilege privilege : prop.currentUserPrivilegeSet) {
+						if (privilege.getAll() != null || privilege.getWrite() != null)
+							hasWrite = true;
+					}
+					if (!hasWrite) properties.put(Property.READ_ONLY, "1");
+				}
+				
 				if (prop.addressbookHomeSet != null && prop.addressbookHomeSet.getHref() != null)
 					properties.put(Property.ADDRESSBOOK_HOMESET, prop.addressbookHomeSet.getHref().href);
 				
@@ -449,9 +460,9 @@ public class WebDavResource {
 						if (prop.calendarTimezone != null)
 							properties.put(Property.TIMEZONE, Event.TimezoneDefToTzId(prop.calendarTimezone.getTimezone()));
 						
-						if (prop.supportedCalendarComponentSet != null && prop.supportedCalendarComponentSet.components != null) {
+						if (prop.supportedCalendarComponentSet != null) {
 							referenced.supportedComponents = new LinkedList<String>();
-							for (DavPropComp component : prop.supportedCalendarComponentSet.components)
+							for (DavPropComp component : prop.supportedCalendarComponentSet)
 								referenced.supportedComponents.add(component.getName());
 						}
 					}

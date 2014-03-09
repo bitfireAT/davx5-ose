@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.webdav.DavException;
 import at.bitfire.davdroid.webdav.HttpPropfind.Mode;
 import at.bitfire.davdroid.webdav.DavIncapableException;
 import at.bitfire.davdroid.webdav.WebDavResource;
@@ -165,6 +166,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 								Log.i(TAG, "Found address book: " + resource.getLocation().getRawPath());
 								ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
 									ServerInfo.ResourceInfo.Type.ADDRESS_BOOK,
+									resource.isReadOnly(),
 									resource.getLocation().getRawPath(),
 									resource.getDisplayName(),
 									resource.getDescription(), resource.getColor()
@@ -196,6 +198,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 								}
 								ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
 									ServerInfo.ResourceInfo.Type.CALENDAR,
+									resource.isReadOnly(),
 									resource.getLocation().getRawPath(),
 									resource.getDisplayName(),
 									resource.getDescription(), resource.getColor()
@@ -211,9 +214,11 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_uri_syntax, e.getMessage()));
 			}  catch (IOException e) {
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_io, e.getLocalizedMessage()));
-			} catch (DavIncapableException e) {
+			} catch (DavException e) {
+				Log.e(TAG, "DAV error while querying server info", e);
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_incapable_resource, e.getLocalizedMessage()));
 			} catch (HttpException e) {
+				Log.e(TAG, "HTTP error while querying server info", e);
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_http, e.getLocalizedMessage()));
 			}
 			
