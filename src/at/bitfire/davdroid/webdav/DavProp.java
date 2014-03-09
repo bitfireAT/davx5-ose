@@ -91,10 +91,22 @@ public class DavProp {
 		@Getter private PrivAll all;
 		
 		@Element(required=false)
+		@Getter private PrivBind bind;
+		
+		@Element(required=false)
+		@Getter private PrivUnbind unbind;
+		
+		@Element(required=false)
 		@Getter private PrivWrite write;
 		
+		@Element(required=false,name="write-content")
+		@Getter private PrivWriteContent writeContent;
+		
 		public static class PrivAll { }
+		public static class PrivBind { }
+		public static class PrivUnbind { }
 		public static class PrivWrite { }
+		public static class PrivWriteContent { }
 	}
 
 	

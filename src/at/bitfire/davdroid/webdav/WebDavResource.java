@@ -424,12 +424,20 @@ public class WebDavResource {
 				
 				if (prop.currentUserPrivilegeSet != null) {
 					// privilege info available
-					boolean hasWrite = false;
+					boolean mayAll = false,
+							mayBind = false,
+							mayUnbind = false,
+							mayWrite = false,
+							mayWriteContent = false;
 					for (DavProp.DavPropPrivilege privilege : prop.currentUserPrivilegeSet) {
-						if (privilege.getAll() != null || privilege.getWrite() != null)
-							hasWrite = true;
+						if (privilege.getAll() != null) mayAll = true;
+						if (privilege.getBind() != null) mayBind = true;
+						if (privilege.getUnbind() != null) mayUnbind = true;
+						if (privilege.getWrite() != null) mayWrite = true;
+						if (privilege.getWriteContent() != null) mayWriteContent = true;
 					}
-					if (!hasWrite) properties.put(Property.READ_ONLY, "1");
+					if (!mayAll && !mayWrite && !(mayWriteContent && mayBind && mayUnbind))
+						properties.put(Property.READ_ONLY, "1");
 				}
 				
 				if (prop.addressbookHomeSet != null && prop.addressbookHomeSet.getHref() != null)
