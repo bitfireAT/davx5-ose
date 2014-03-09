@@ -100,43 +100,41 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 				break;
 			case TYPE_ADDRESS_BOOKS_ROW:
 				convertView = inflater.inflate(android.R.layout.simple_list_item_single_choice, null);
-				prepareRowView((CheckedTextView)convertView, R.drawable.addressbook);
 				break;
 			case TYPE_CALENDARS_HEADING:
 				convertView = inflater.inflate(R.layout.calendars_heading, parent, false);
 				break;
 			case TYPE_CALENDARS_ROW:
 				convertView = inflater.inflate(android.R.layout.simple_list_item_multiple_choice, null);
-				prepareRowView((CheckedTextView)convertView, R.drawable.calendar);
 			}
 		}
 		
 		// step 2: fill view with content
 		switch (getItemViewType(position)) {
 		case TYPE_ADDRESS_BOOKS_ROW:
-			setContent((CheckedTextView)convertView, (ServerInfo.ResourceInfo)getItem(position));
+			setContent((CheckedTextView)convertView, R.drawable.addressbook, (ServerInfo.ResourceInfo)getItem(position));
 			break;
 		case TYPE_CALENDARS_ROW:
-			setContent((CheckedTextView)convertView, (ServerInfo.ResourceInfo)getItem(position));
+			setContent((CheckedTextView)convertView, R.drawable.calendar, (ServerInfo.ResourceInfo)getItem(position));
 		}
 		
 		return convertView;
 	}
 	
-	protected void prepareRowView(CheckedTextView view, int resIcon) {
+	protected void setContent(CheckedTextView view, int collectionIcon, ServerInfo.ResourceInfo info) {
+		// set layout and icons
 		view.setPadding(10, 10, 10, 10);
-		view.setCompoundDrawablesWithIntrinsicBounds(resIcon, 0, 0, 0);
+		view.setCompoundDrawablesWithIntrinsicBounds(collectionIcon, 0, info.isReadOnly() ? R.drawable.ic_read_only : 0, 0);
 		view.setCompoundDrawablePadding(10);
-	}
-	
-	protected void setContent(CheckedTextView view, ServerInfo.ResourceInfo info) {
-		String description = info.getDescription();
-		if (description == null)
-			description = info.getPath();
 		
+		// set text		
 		String title = "<b>" + info.getTitle() + "</b>";
 		if (info.isReadOnly())
 			title = title + " (" + context.getString(R.string.read_only) + ")";
+		
+		String description = info.getDescription();
+		if (description == null)
+			description = info.getPath();
 		
 		// FIXME escape HTML
 		view.setText(Html.fromHtml(title + "<br/>" + description));

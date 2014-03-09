@@ -89,5 +89,6 @@
     <string name="organizer_hint">ORGANISATEUR de vos événements; nécessaire pour l\'information des participants</string>
     <string name="account_name_info">Utilisez votre adresse email en tant que nom de compte car Android utilise ce nom pour le champ ORGANISATEUR des évènements que vous créez."
     Vous ne pouvez pas avoir deux comptes du même nom.</string>
+    <string name="read_only">Lecture seule</string>
 
 </resources>
