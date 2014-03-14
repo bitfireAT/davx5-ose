@@ -109,15 +109,20 @@ public class SyncManager {
 				try {
 					Resource res = local.findById(id, false);
 					if (res.getName() != null)	// is this resource even present remotely?
-						remote.delete(res);
+						try {
+							remote.delete(res);
+						} catch(NotFoundException e) {
+							Log.i(TAG, "Locally-deleted resource has already been removed from server");
+						} catch(PreconditionFailedException e) {
+							Log.i(TAG, "Locally-deleted resource has been changed on the server in the meanwhile");
+						}
+					
+					// always delete locally so that the record with the DELETED flag doesn't cause another deletion attempt
 					local.delete(res);
+					
 					count++;
-				} catch(NotFoundException e) {
-					Log.i(TAG, "Locally-deleted resource has already been removed from server");
-				} catch(PreconditionFailedException e) {
-					Log.i(TAG, "Locally-deleted resource has been changed on the server in the meanwhile");
 				} catch (RecordNotFoundException e) {
-					Log.e(TAG, "Couldn't read locally-deleted record", e);
+					Log.wtf(TAG, "Couldn't read locally-deleted record", e);
 				}
 		} finally {
 			local.commit();
@@ -141,7 +146,7 @@ public class SyncManager {
 				} catch (ValidationException e) {
 					Log.e(TAG, "Couldn't create entity for adding: " + e.toString());
 				} catch (RecordNotFoundException e) {
-					Log.e(TAG, "Couldn't read new record", e);
+					Log.wtf(TAG, "Couldn't read new record", e);
 				}
 		} finally {
 			local.commit();

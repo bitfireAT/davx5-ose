@@ -222,7 +222,8 @@ public abstract class LocalCollection<T extends Resource> {
 	public void clearDirty(Resource resource) {
 		pendingOperations.add(ContentProviderOperation
 				.newUpdate(ContentUris.withAppendedId(entriesURI(), resource.getLocalID()))
-				.withValue(entryColumnDirty(), 0).build());
+				.withValue(entryColumnDirty(), 0)
+				.build());
 	}
 
 	public void commit() throws LocalStorageException {
