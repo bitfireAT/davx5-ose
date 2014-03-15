@@ -10,8 +10,10 @@
  ******************************************************************************/
 package at.bitfire.davdroid.syncadapter;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.apache.commons.lang.StringUtils;
 
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -128,10 +130,10 @@ public class EnterCredentialsFragment extends Fragment implements TextWatcher {
 
 		// check host name
 		try {
-			URL url = new URL(URIUtils.sanitize(protocol + editBaseURL.getText().toString()));
-			if (url.getHost() == null || url.getHost().isEmpty())
+			URI uri = new URI(URIUtils.sanitize(protocol + editBaseURL.getText().toString()));
+			if (StringUtils.isBlank(uri.getHost()))
 				ok = false;
-		} catch (MalformedURLException e) {
+		} catch (URISyntaxException e) {
 			ok = false;
 		}
 			
