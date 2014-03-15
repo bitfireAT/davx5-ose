@@ -82,6 +82,5 @@
     <string name="email_address">Dirección de correo:</string>
     <string name="organizer_hint">"ORGANIZADOR de tus eventos; se necesita si se usa información de los asistentes"</string>
     <string name="account_name_info">"Usa tu dirección de correo electrónico como nombre de cuenta porque Android usará el nombre de cuenta como campo de ORGANIZADOR para los eventos que crees. No puedes tener dos cuentas con el mismo nombre.</string>
-    <string name="read_only">sólo lectura</string>
 
 </resources>
