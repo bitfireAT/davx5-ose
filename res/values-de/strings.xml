@@ -29,17 +29,35 @@
 	<string name="davdroid_help">Hilfe zu DAVdroid</string>
 	<string name="show_sync_settings">Sync-Konten anzeigen</string>
     <string name="show_website">DAVdroid-Website</string>
-    <string name="html_info"><![CDATA[
-       <h1>Willkommen bei DAVdroid!</h1>
+    <string name="html_main_workaround"><![CDATA[
+        <p>Vielen Dank, dass Sie DAVdroid im Play Store erworben haben und das Projekt dadurch unterstützen.       
+        Leider gibt es derzeit zwei Probleme, die vom Play Store verursacht werden:</p>
+
+		<h2>1. DAVdroid-Accounts verschwinden nach einem Neustart</h2>
+		<p>Möglicherweise <strong>verschwinden alle Ihre DAVdroid-Accounts samt Kontakten und Terminen nach einem Neustart</strong>
+		des Geräts. Die Ursache ist ein <a href="https://code.google.com/p/android/issues/detail?id=34880">Fehler in Android</a>,
+		der zur irrtümlichen Entfernung von Accounts von Bezahlapps bei einem Neustart führt, da die Prüfung auf verwaiste
+		und damit zu löschende Accounts schon *vor* dem Entschlüsseln der App erfolgt.</p>
+        <p>Betroffene Benutzer*Innen:<br/>
+        * alle mit Android 4.1, die DAVdroid über Play Store bezogen haben;<br/>
+        * einige mit Android 4.2, die DAVdroid über Play Store bezogen und bestimmte Geräte haben (zB die meisten Samsung-Geräte)</p>
+        
+        <h2>2. DAVdroid-Accounts verschwinden nach einer DAVdroid-Aktualisierung</h2>
+        <p>Möglicherweise <strong>verschwinden alle Ihre DAVdroid-Accounts samt Kontakten und Terminen während eines
+        DAVdroid-Updates</strong>, das von Play Store durchgeführt wird. Die Ursache ist ein
+        <a href="https://code.google.com/p/android/issues/detail?id=66905">anderer Fehler in Android</a>,
+		der zur irrtümlichen Entfernung von Accounts von Bezahlapps bei der Aktualisierung dieser Apps führt.</p>
+        <p>Betroffene Benutzer*Innen:<br/>
+        einige mit Android 4.4.2, die DAVdroid über Play Store bezogen haben (bekannt sind Nexus-Geräte und Moto G)</p>
+        
+        <p><strong>Sollten Sie von einem dieser Fehler betroffen sein, <a href="market://details?id=at.bitfire.davdroid.jbworkaround">installieren
+        Sie den DAVdroid JB Workaround</a>.</strong></p>
+    ]]></string>
+    <string name="html_main_info"><![CDATA[
+       <h1>Willkommen bei DAVdroid/%s!</h1>
        
        <p>DAVdroid ist ein Android 4+-CalDAV/CardDAV-Sync-Adapter. Um ihn zu verwenden, müssen Sie ein DAVdroid-Konto
        für Ihren Server hinzufügen. Die Kontakte/Termine werden dann automatisch in beide Richtungen synchronisiert.</p>
-       
-       <p>Wenn Sie <a href="https://play.google.com/store/apps/details?id=at.bitfire.davdroid">DAVdroid über den
-       Play-Store bezogen haben</a> und Android 4.1 oder Samsung-Geräte (wie zB das Galaxy Note, Note 10.1, S2, S3, S4, …)
-       benutzen, müssen Sie möglicherweise den
-       <a href="https://play.google.com/store/apps/details?id=at.bitfire.davdroid.jbworkaround">DAVdroid JB Workaround</a>
-       installieren, um Datenverlust beim Neustart zu vermeiden (dies ist ein Android/Play Store-Bug).</p>
        
        <p>Wenn Sie CyanogenMod benutzen, muss die "Datenschutz"-Funktion für DAVdroid deaktiviert sein, da DAVdroid sonst
        keinen Zugriff auf die Kontakte und Kalendar hat und auch nicht synchronisieren kann.</p>
@@ -60,16 +78,17 @@
 	   <a href="https://f-droid.org/app/at.bitfire.davdroid">über F-Droid bezogen werden</a>.</p>
 	   
 	   <p>Es ist jedoch viel Arbeit, die App zu entwickeln und besser zu machen. Daher haben wir uns entschlossen, sie
-	   auch gegen eine kleine Gebühr in die Stores (Google Play, <a href="samsungapps://ProductDetail/at.bitfire.davdroid">Samsung Store</a>)
-	   zu stellen. Wenn Sie das Projekt unterstützen wollen, können Sie
+	   auch gegen eine kleine Gebühr in die kommerziellen App-Stores zu stellen. Wenn Sie das Projekt unterstützen wollen, können Sie
 	   <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">für DAVdroid spenden</a> oder die App kaufen.</p>
 	   
 	   <h1>Lizenz</h1>
-	   <p>Copyright (c) 2013 Richard Hirner (<a href="http://www.bitfire.at">bitfire web engineering</a>), alle Rechte
+	   <p>Copyright (c) 2013 – 2014 Richard Hirner (<a href="http://www.bitfire.at">bitfire web engineering</a>), alle Rechte
 	   vorbehalten. Dieses Programm ist freie Software. Sie können es unter den Bedingungen der <a href="http://www.gnu.org/licenses/gpl.html">GNU
 	   General Public License Version 3</a>, wie von der Free Software Foundation veröffentlicht, weitergeben und/oder modifizieren.
 	   Sofern Google Play oder Samsung Store andere Bedingungen benötigen, gelten für über den jeweiligen Markt heruntergeladene
 	   Apps diese Bedingungen.</p>
+	   
+	   <p>Übersetzungen: Französisch von Unbekannt, Spanisch von <a href="https://github.com/xphnx">@xphnx</a></p>
 	   
 	   <h2>Benutzte Bibliotheken</h2>
 	   <p>

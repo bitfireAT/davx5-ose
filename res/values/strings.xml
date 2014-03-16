@@ -37,24 +37,39 @@
     <string name="davdroid_help">DAVdroid Help</string>
     <string name="show_sync_settings">Manage sync accounts</string>
     <string name="show_website">DAVdroid Web site</string>
-    <string name="html_info"><![CDATA[
-       <h1>Welcome to DAVdroid!</h1>
+    <string name="html_main_workaround"><![CDATA[
+		<p>Thank you for buying DAVdroid via Google Play and thus supporting the project. Unfortunately, there are two issues with Google Play:</p>
+		
+		<h2>1. Accounts may be gone after a reboot</h2>
+		<p>You may encounter the problem that all your <strong>DAVdroid accounts (including contacts and events) are gone
+        after rebooting your device</strong>. The reason is a <a href="https://code.google.com/p/android/issues/detail?id=34880">bug in Android</a>
+        that causes accounts of paid apps to be removed on start-up because the (encrypted) APK files are
+        loaded <i>after</i> checking for orphaned accounts.</p>
+        <p>Affected users:<br/>
+        * all Android 4.1 users who have got DAVdroid from Play Store;<br/>
+        * Android 4.2 users who have got DAVdroid from Play Store only with certain devices (for instance, most Samsung devices)</p>
+        
+        <h2>2. Accounts may be gone after upgrading DAVdroid</h2>
+        <p>You may encounter the problem that all your <strong>DAVdroid accounts (including contacts and events) when Play Store
+        updates DAVdroid</strong>. The reason is <a href="https://code.google.com/p/android/issues/detail?id=66905">another bug in Android</a>
+        that causes accounts of paid apps to be removed when upgrading for a similar reason.</p>
+        <p>Affected users: some Android 4.4.2 users who have got DAVdroid from Play Store (known for Nexus devices and Moto G)</p>
+        
+        <p><strong>If you\'re affected by one of these bugs, please <a href="market://details?id=at.bitfire.davdroid.jbworkaround">install the
+        DAVdroid JB Workaround</a>.</strong></p>
+    ]]></string>
+    <string name="html_main_info"><![CDATA[
+       <h1>Welcome to DAVdroid/%s!</h1>
        
        <p>DAVdroid is an Android 4+ sync adapter for CalDAV/CardDAV. To use it, just add a DAVdroid account
        for your CalDAV/CardDAV server and your contacts/events will be synchronized in both directions.</p>
        
-       <p>If you have bought <a href="https://play.google.com/store/apps/details?id=at.bitfire.davdroid">DAVdroid via
-       Play Store</a> and use Android 4.1 or Samsung devices (for instance, Galaxy Note, Note 10.1, S2, S3, S4, …)
-       you may have to install the
-       <a href="https://play.google.com/store/apps/details?id=at.bitfire.davdroid.jbworkaround">DAVdroid JB Workaround</a>
-       to prevent data-loss on reboot (it\'s an Android/Play Store bug).</p>
-       
-       <p>If you use CyanogenMod, "Privacy Guard" must be disabled for DAVdroid. Otherwise, DAVdroid is not allowed to access
-       and synchronize your contacts and events.</p>
-       
        <p>For more information, please see the <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid homepage</a>.
        There\'s a <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Setup guide</a>, too. DAVdroid respects
        your privacy, see our <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Privacy Policy</a>.</p>
+       
+       <p>If you use CyanogenMod, "Privacy Guard" must be disabled for DAVdroid. Otherwise, DAVdroid is not allowed to access
+       and synchronize your contacts and events.</p>
        
        <p><b>In case of problems, please read the <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a> first.
        If you encounter a bug that is clearly related to DAVdroid, enter it on
@@ -67,17 +82,19 @@
 	   <a href="https://github.com/rfc2822/davdroid">available on Github</a>, and you can
 	   <a href="https://f-droid.org/app/at.bitfire.davdroid">download the app on F-droid</a>.</p>
 	   
-	   <p>However, it was much work to create this app, so we have decided to put it into the stores (Google Play,
-	   <a href="http://apps.samsung.com/earth/topApps/topAppsDetail.as?productId=000000665458">Samsung Store</a>) for a small fee.
+	   <p>However, it was much work to create this app, so we have decided to put it into the commercial stores for a small fee.
 	   If you want to support this project, please consider <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">donating to DAVdroid</a>
 	   or purchasing it.</p>
 	   
 	   <h1>License</h1>
-	   <p>Copyright (c) 2013 Richard Hirner (<a href="http://www.bitfire.at">bitfire web engineering</a>). All rights reserved.
+	   <p>Copyright (c) 2013 – 2014 Richard Hirner (<a href="http://www.bitfire.at">bitfire web engineering</a>). All rights reserved.
 	   This program and the accompanying materials are made available under the terms of the GNU Public License v3.0 which
 	   accompanies this distribution, and is available at <a
-	   href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. As far as Google Play or Samsung
-	   Store Store require other terms, the respective terms apply for versions that are downloaded via these services.</p>
+	   href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. As far as Google Play, Samsung
+	   Store, AndroidPit App Center or Amazon Appstore require other terms, the respective terms apply for versions
+	   that are downloaded via these services.</p>
+	   
+	   <p>Translations: French by unknown contributor, Spanish by <a href="https://github.com/xphnx">@xphnx</a></p>
 	   
 	   <h2>Used third-party libraries</h2>
 	   <p>
@@ -86,6 +103,7 @@
 	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> (<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>)<br/>
 	   	* <a href="http://projectlombok.org/">Project Lombok</a> (<a href="http://opensource.org/licenses/mit-license.php">MIT License</a>)</p>
     ]]></string>
+    
     <string name="account_details">Account details</string>
     <string name="account_name">Account name:</string>
     <string name="account_name_hint">My CalDAV/CardDAV Account</string>
