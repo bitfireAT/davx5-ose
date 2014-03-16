@@ -10,7 +10,6 @@
  ******************************************************************************/
 package at.bitfire.davdroid.syncadapter;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
-import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.resource.CardDavAddressBook;
 import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.davdroid.resource.LocalCollection;
@@ -52,19 +50,18 @@ public class ContactsSyncAdapterService extends Service {
 
 		@Override
 		protected Map<LocalCollection<?>, RemoteCollection<?>> getSyncPairs(Account account, ContentProviderClient provider) {
-			String addressBookPath = accountManager.getUserData(account, Constants.ACCOUNT_KEY_ADDRESSBOOK_PATH);
-			if (addressBookPath == null)
+			AccountSettings settings = new AccountSettings(context, account);
+			String	userName = settings.getUserName(),
+					password = settings.getPassword();
+			boolean preemptive = settings.getPreemptiveAuth();
+
+			String addressBookURL = settings.getAddressBookURL();
+			if (addressBookURL == null)
 				return null;
 			
 			try {
-				LocalCollection<?> database = new LocalAddressBook(account, provider, accountManager);
-				
-				URI uri = new URI(accountManager.getUserData(account, Constants.ACCOUNT_KEY_BASE_URL)).resolve(addressBookPath);
-				RemoteCollection<?> dav = new CardDavAddressBook(
-					uri.toString(),
-					accountManager.getUserData(account, Constants.ACCOUNT_KEY_USERNAME),
-					accountManager.getPassword(account),
-					Boolean.parseBoolean(accountManager.getUserData(account, Constants.ACCOUNT_KEY_AUTH_PREEMPTIVE)));
+				LocalCollection<?> database = new LocalAddressBook(account, provider, settings);
+				RemoteCollection<?> dav = new CardDavAddressBook(addressBookURL, userName, password, preemptive);
 				
 				Map<LocalCollection<?>, RemoteCollection<?>> map = new HashMap<LocalCollection<?>, RemoteCollection<?>>();
 				map.put(database, dav);

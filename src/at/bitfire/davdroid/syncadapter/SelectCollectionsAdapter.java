@@ -134,7 +134,7 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 		
 		String description = info.getDescription();
 		if (description == null)
-			description = info.getPath();
+			description = info.getURL();
 		
 		// FIXME escape HTML
 		view.setText(Html.fromHtml(title + "<br/>" + description));

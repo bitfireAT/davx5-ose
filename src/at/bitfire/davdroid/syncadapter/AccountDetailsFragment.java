@@ -86,15 +86,11 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
 			
 			AccountManager accountManager = AccountManager.get(getActivity());
 			Account account = new Account(accountName, Constants.ACCOUNT_TYPE);
-			Bundle userData = new Bundle();
-			userData.putString(Constants.ACCOUNT_KEY_BASE_URL, serverInfo.getBaseURL());
-			userData.putString(Constants.ACCOUNT_KEY_USERNAME, serverInfo.getUserName());
-			userData.putString(Constants.ACCOUNT_KEY_AUTH_PREEMPTIVE, Boolean.toString(serverInfo.isAuthPreemptive()));
+			Bundle userData = AccountSettings.createBundle(serverInfo);
 			
 			boolean syncContacts = false;
 			for (ServerInfo.ResourceInfo addressBook : serverInfo.getAddressBooks())
 				if (addressBook.isEnabled()) {
-					userData.putString(Constants.ACCOUNT_KEY_ADDRESSBOOK_PATH, addressBook.getPath());
 					ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
 					syncContacts = true;
 					continue;

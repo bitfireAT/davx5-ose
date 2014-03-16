@@ -167,7 +167,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 								ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
 									ServerInfo.ResourceInfo.Type.ADDRESS_BOOK,
 									resource.isReadOnly(),
-									resource.getLocation().getRawPath(),
+									resource.getLocation().toASCIIString(),
 									resource.getDisplayName(),
 									resource.getDescription(), resource.getColor()
 								);
@@ -199,7 +199,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 								ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
 									ServerInfo.ResourceInfo.Type.CALENDAR,
 									resource.isReadOnly(),
-									resource.getLocation().getRawPath(),
+									resource.getLocation().toASCIIString(),
 									resource.getDisplayName(),
 									resource.getDescription(), resource.getColor()
 								);

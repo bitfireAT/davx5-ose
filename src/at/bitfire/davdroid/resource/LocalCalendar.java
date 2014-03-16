@@ -69,7 +69,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 	private static final String TAG = "davdroid.LocalCalendar";
 
 	@Getter protected long id;
-	@Getter protected String path, cTag;
+	@Getter protected String url, cTag;
 	
 	protected static String COLLECTION_COLUMN_CTAG = Calendars.CAL_SYNC1;
 
@@ -119,7 +119,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		ContentValues values = new ContentValues();
 		values.put(Calendars.ACCOUNT_NAME, account.name);
 		values.put(Calendars.ACCOUNT_TYPE, account.type);
-		values.put(Calendars.NAME, info.getPath());
+		values.put(Calendars.NAME, info.getURL());
 		values.put(Calendars.CALENDAR_DISPLAY_NAME, info.getTitle());
 		values.put(Calendars.CALENDAR_COLOR, color);
 		values.put(Calendars.OWNER_ACCOUNT, account.name);
@@ -158,10 +158,10 @@ public class LocalCalendar extends LocalCollection<Event> {
 		return calendars.toArray(new LocalCalendar[0]);
 	}
 
-	public LocalCalendar(Account account, ContentProviderClient providerClient, int id, String path, String cTag) throws RemoteException {
+	public LocalCalendar(Account account, ContentProviderClient providerClient, int id, String url, String cTag) throws RemoteException {
 		super(account, providerClient);
 		this.id = id;
-		this.path = path;
+		this.url = url;
 		this.cTag = cTag;
 	}
 

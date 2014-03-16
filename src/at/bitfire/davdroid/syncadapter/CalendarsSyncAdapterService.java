@@ -10,7 +10,6 @@
  ******************************************************************************/
 package at.bitfire.davdroid.syncadapter;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,6 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
-import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.resource.CalDavCalendar;
 import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.davdroid.resource.LocalCollection;
@@ -53,17 +51,16 @@ public class CalendarsSyncAdapterService extends Service {
 		
 		@Override
 		protected Map<LocalCollection<?>, RemoteCollection<?>> getSyncPairs(Account account, ContentProviderClient provider) {
+			AccountSettings settings = new AccountSettings(context, account);
+			String	userName = settings.getUserName(),
+					password = settings.getPassword();
+			boolean preemptive = settings.getPreemptiveAuth();
+			
 			try {
 				Map<LocalCollection<?>, RemoteCollection<?>> map = new HashMap<LocalCollection<?>, RemoteCollection<?>>();
 				
 				for (LocalCalendar calendar : LocalCalendar.findAll(account, provider)) {
-					URI baseURI = new URI(accountManager.getUserData(account, Constants.ACCOUNT_KEY_BASE_URL));
-					URI uri = baseURI.resolve(calendar.getPath());
-					RemoteCollection<?> dav = new CalDavCalendar(uri.toString(),
-						accountManager.getUserData(account, Constants.ACCOUNT_KEY_USERNAME),
-						accountManager.getPassword(account),
-						Boolean.parseBoolean(accountManager.getUserData(account, Constants.ACCOUNT_KEY_AUTH_PREEMPTIVE)));
-					
+					RemoteCollection<?> dav = new CalDavCalendar(calendar.getUrl(), userName, password, preemptive);
 					map.put(calendar, dav);
 				}
 				return map;
