@@ -25,7 +25,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderOperation.Builder;
@@ -50,7 +49,7 @@ import android.provider.ContactsContract.CommonDataKinds.Website;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.RawContacts;
 import android.util.Log;
-import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.syncadapter.AccountSettings;
 import ezvcard.parameter.AddressType;
 import ezvcard.parameter.EmailType;
 import ezvcard.parameter.ImppType;
@@ -66,7 +65,7 @@ import ezvcard.property.Telephone;
 public class LocalAddressBook extends LocalCollection<Contact> {
 	private final static String TAG = "davdroid.LocalAddressBook";
 	
-	protected AccountManager accountManager;
+	protected AccountSettings accountSettings;
 	
 	
 	/* database fields */
@@ -91,9 +90,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 
 
 
-	public LocalAddressBook(Account account, ContentProviderClient providerClient, AccountManager accountManager) {
+	public LocalAddressBook(Account account, ContentProviderClient providerClient, AccountSettings accountSettings) {
 		super(account, providerClient);
-		this.accountManager = accountManager;
+		this.accountSettings = accountSettings;
 	}
 	
 	
@@ -106,12 +105,12 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	
 	@Override
 	public String getCTag() {
-		return accountManager.getUserData(account, Constants.ACCOUNT_KEY_ADDRESSBOOK_CTAG);
+		return accountSettings.getAddressBookCTag();
 	}
 
 	@Override
 	public void setCTag(String cTag) {
-		accountManager.setUserData(account, Constants.ACCOUNT_KEY_ADDRESSBOOK_CTAG, cTag);
+		accountSettings.setAddressBookCTag(cTag);
 	}
 
 	
