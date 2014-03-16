@@ -2,14 +2,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+	android:padding="20dp"
     tools:context=".MainActivity" >
 
-    <TextView
-        android:id="@+id/text_info"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:linksClickable="true"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/text_workaround"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:linksClickable="true" />
+        
+        <TextView
+            android:id="@+id/text_info"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:linksClickable="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        
+    </LinearLayout>
 
 </ScrollView>

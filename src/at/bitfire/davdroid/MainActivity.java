@@ -20,6 +20,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
@@ -30,11 +31,16 @@ public class MainActivity extends Activity {
 		
 		setContentView(R.layout.activity_main);
 		
-		setTitle("DAVdroid " + Constants.APP_VERSION);
+		TextView tvWorkaround = (TextView)findViewById(R.id.text_workaround);
+		if (fromPlayStore()) {
+			tvWorkaround.setVisibility(View.VISIBLE);
+			tvWorkaround.setText(Html.fromHtml(getString(R.string.html_main_workaround)));
+		    tvWorkaround.setMovementMethod(LinkMovementMethod.getInstance());
+		}
 		
-		TextView tv = (TextView)findViewById(R.id.text_info);
-		tv.setText(Html.fromHtml(getString(R.string.html_info)));
-	    tv.setMovementMethod(LinkMovementMethod.getInstance());
+		TextView tvInfo = (TextView)findViewById(R.id.text_info);
+		tvInfo.setText(Html.fromHtml(getString(R.string.html_main_info, Constants.APP_VERSION)));
+		tvInfo.setMovementMethod(LinkMovementMethod.getInstance());
 	}
 
 	@Override
@@ -59,5 +65,14 @@ public class MainActivity extends Activity {
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.setData(Uri.parse(Constants.WEB_URL_HELP + "&pk_kwd=main-activity"));
 		startActivity(intent);
+	}
+	
+	
+	private boolean fromPlayStore() {
+		try {
+			return "com.android.vending".equals(getPackageManager().getInstallerPackageName("at.bitfire.davdroid"));
+		} catch(IllegalArgumentException e) {
+		}
+		return false;
 	}
 }
