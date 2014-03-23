@@ -12,6 +12,9 @@ package at.bitfire.davdroid.webdav;
 
 import at.bitfire.davdroid.Constants;
 import ch.boye.httpclientandroidlib.client.config.RequestConfig;
+import ch.boye.httpclientandroidlib.config.Registry;
+import ch.boye.httpclientandroidlib.config.RegistryBuilder;
+import ch.boye.httpclientandroidlib.conn.socket.ConnectionSocketFactory;
 import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
 import ch.boye.httpclientandroidlib.impl.client.HttpClients;
 import ch.boye.httpclientandroidlib.impl.conn.ManagedHttpClientConnectionFactory;
@@ -19,9 +22,14 @@ import ch.boye.httpclientandroidlib.impl.conn.PoolingHttpClientConnectionManager
 
 public class DavHttpClient {
 	
-	protected final static RequestConfig defaultRqConfig;
+	private final static RequestConfig defaultRqConfig;
+	private final static Registry<ConnectionSocketFactory> socketFactoryRegistry;
 		
 	static {
+		socketFactoryRegistry =	RegistryBuilder.<ConnectionSocketFactory> create()
+				.register("https", TlsSniSocketFactory.INSTANCE)
+				.build();
+		
 		// use request defaults from AndroidHttpClient
 		defaultRqConfig = RequestConfig.copy(RequestConfig.DEFAULT)
 				.setConnectTimeout(20*1000)
@@ -36,14 +44,14 @@ public class DavHttpClient {
 
 
 	public static CloseableHttpClient create() {
-		PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+		
+		PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 		// limits per DavHttpClient (= per DavSyncAdapter extends AbstractThreadedSyncAdapter)
 		connectionManager.setMaxTotal(2);				// max.  2 connections in total
 		connectionManager.setDefaultMaxPerRoute(2);		// max.  2 connections per host
-
+		
 		return HttpClients.custom()
 				.useSystemProperties()
-				.setSSLSocketFactory(TlsSniSocketFactory.INSTANCE)
 				.setConnectionManager(connectionManager)
 				.setDefaultRequestConfig(defaultRqConfig)
 				.setUserAgent("DAVdroid/" + Constants.APP_VERSION)
