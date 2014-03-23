@@ -10,35 +10,31 @@
  ******************************************************************************/
 package at.bitfire.davdroid.webdav;
 
-
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.entity.StringEntity;
-
-import android.util.Log;
+import ch.boye.httpclientandroidlib.client.methods.HttpEntityEnclosingRequestBase;
+import ch.boye.httpclientandroidlib.entity.StringEntity;
 
 public class HttpReport extends HttpEntityEnclosingRequestBase {
-	private static final String TAG = "DavHttpReport";
+	
+	public final static String METHOD_NAME = "REPORT";
+	
+	
+	HttpReport(URI uri) {
+		setURI(uri);
+	}
 
 	HttpReport(URI uri, String entity) {
-		setURI(uri);
+		this(uri);
 		
 		setHeader("Content-Type", "text/xml; charset=UTF-8");
 		setHeader("Depth", "0");
 		
-		try {
-			setEntity(new StringEntity(entity, "UTF-8"));
-			
-			Log.d(TAG, "Prepared REPORT request for " + uri + ": " + entity);
-		} catch (UnsupportedEncodingException e) {
-			Log.e(TAG, e.getMessage());
-		}
+		setEntity(new StringEntity(entity, "UTF-8"));
 	}
 
 	@Override
 	public String getMethod() {
-		return "REPORT";
+		return METHOD_NAME;
 	}
 }

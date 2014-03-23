@@ -12,6 +12,7 @@ package at.bitfire.davdroid.resource;
 
 import java.net.URISyntaxException;
 
+import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
 import at.bitfire.davdroid.webdav.DavMultiget;
 
 public class CardDavAddressBook extends RemoteCollection<Contact> {
@@ -33,7 +34,7 @@ public class CardDavAddressBook extends RemoteCollection<Contact> {
 	}
 	
 
-	public CardDavAddressBook(String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {
-		super(baseURL, user, password, preemptiveAuth);
+	public CardDavAddressBook(CloseableHttpClient httpClient, String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {
+		super(httpClient, baseURL, user, password, preemptiveAuth);
 	}
 }

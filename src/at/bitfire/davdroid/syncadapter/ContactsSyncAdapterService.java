@@ -29,6 +29,7 @@ import at.bitfire.davdroid.resource.RemoteCollection;
 
 public class ContactsSyncAdapterService extends Service {
 	private static ContactsSyncAdapter syncAdapter;
+	
 
 	@Override @Synchronized
 	public void onCreate() {
@@ -37,20 +38,29 @@ public class ContactsSyncAdapterService extends Service {
 	}
 
 	@Override
+	public void onDestroy() {
+		syncAdapter.close();
+		syncAdapter = null;
+	}
+
+	@Override
 	public IBinder onBind(Intent intent) {
 		return syncAdapter.getSyncAdapterBinder();
 	}
+	
 
 	private static class ContactsSyncAdapter extends DavSyncAdapter {
 		private final static String TAG = "davdroid.ContactsSyncAdapter";
 
-		public ContactsSyncAdapter(Context context) {
+		
+		private ContactsSyncAdapter(Context context) {
 			super(context);
+			Log.i(TAG, "httpClient = " + httpClient);
 		}
 
 		@Override
 		protected Map<LocalCollection<?>, RemoteCollection<?>> getSyncPairs(Account account, ContentProviderClient provider) {
-			AccountSettings settings = new AccountSettings(context, account);
+			AccountSettings settings = new AccountSettings(getContext(), account);
 			String	userName = settings.getUserName(),
 					password = settings.getPassword();
 			boolean preemptive = settings.getPreemptiveAuth();
@@ -61,7 +71,8 @@ public class ContactsSyncAdapterService extends Service {
 			
 			try {
 				LocalCollection<?> database = new LocalAddressBook(account, provider, settings);
-				RemoteCollection<?> dav = new CardDavAddressBook(addressBookURL, userName, password, preemptive);
+				Log.i(TAG, "httpClient 2 = " + httpClient);
+				RemoteCollection<?> dav = new CardDavAddressBook(httpClient, addressBookURL, userName, password, preemptive);
 				
 				Map<LocalCollection<?>, RemoteCollection<?>> map = new HashMap<LocalCollection<?>, RemoteCollection<?>>();
 				map.put(database, dav);

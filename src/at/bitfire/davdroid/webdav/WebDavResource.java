@@ -26,31 +26,36 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.ToString;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicLineParser;
-import org.apache.http.protocol.HTTP;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import android.util.Log;
-import at.bitfire.davdroid.LoggingInputStream;
 import at.bitfire.davdroid.URIUtils;
 import at.bitfire.davdroid.resource.Event;
 import at.bitfire.davdroid.webdav.DavProp.DavPropComp;
+import ch.boye.httpclientandroidlib.Header;
+import ch.boye.httpclientandroidlib.HttpEntity;
+import ch.boye.httpclientandroidlib.HttpHost;
+import ch.boye.httpclientandroidlib.HttpResponse;
+import ch.boye.httpclientandroidlib.HttpStatus;
+import ch.boye.httpclientandroidlib.StatusLine;
+import ch.boye.httpclientandroidlib.auth.AuthScope;
+import ch.boye.httpclientandroidlib.auth.UsernamePasswordCredentials;
+import ch.boye.httpclientandroidlib.client.AuthCache;
+import ch.boye.httpclientandroidlib.client.methods.CloseableHttpResponse;
+import ch.boye.httpclientandroidlib.client.methods.HttpDelete;
+import ch.boye.httpclientandroidlib.client.methods.HttpGet;
+import ch.boye.httpclientandroidlib.client.methods.HttpOptions;
+import ch.boye.httpclientandroidlib.client.methods.HttpPut;
+import ch.boye.httpclientandroidlib.client.protocol.HttpClientContext;
+import ch.boye.httpclientandroidlib.entity.ByteArrayEntity;
+import ch.boye.httpclientandroidlib.impl.auth.BasicScheme;
+import ch.boye.httpclientandroidlib.impl.client.BasicAuthCache;
+import ch.boye.httpclientandroidlib.impl.client.BasicCredentialsProvider;
+import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
+import ch.boye.httpclientandroidlib.message.BasicLineParser;
+import ch.boye.httpclientandroidlib.util.EntityUtils;
 
 
 @ToString
@@ -89,39 +94,50 @@ public class WebDavResource {
 	// content (available after GET)
 	@Getter protected byte[] content;
 
-	protected DefaultHttpClient client;
+	protected CloseableHttpClient httpClient;
+	protected HttpClientContext context;
 	
 	
-	public WebDavResource(URI baseURL, boolean trailingSlash) throws URISyntaxException {
+	public WebDavResource(CloseableHttpClient httpClient, URI baseURL, boolean trailingSlash) throws URISyntaxException {
+		this.httpClient = httpClient;
 		location = baseURL.normalize();
 		
 		if (trailingSlash && !location.getRawPath().endsWith("/"))
 			location = new URI(location.getScheme(), location.getSchemeSpecificPart() + "/", null);
 		
-		client = DavHttpClient.getDefault();
+		context = HttpClientContext.create();
+		context.setCredentialsProvider(new BasicCredentialsProvider());
 	}
 	
-	public WebDavResource(URI baseURL, String username, String password, boolean preemptive, boolean trailingSlash) throws URISyntaxException {
-		this(baseURL, trailingSlash);
+	public WebDavResource(CloseableHttpClient httpClient, URI baseURL, String username, String password, boolean preemptive, boolean trailingSlash) throws URISyntaxException {
+		this(httpClient, baseURL, trailingSlash);
 		
-		// authenticate
-		client.getCredentialsProvider().setCredentials(
-			new AuthScope(location.getHost(), location.getPort()),
-			new UsernamePasswordCredentials(username, password)
-		);
+		HttpHost host = new HttpHost(baseURL.getHost(), baseURL.getPort(), baseURL.getScheme());
+		context.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+		
 		if (preemptive) {
-			Log.i(TAG, "Using preemptive authentication (not compatible with Digest auth)");
-			client.addRequestInterceptor(new PreemptiveAuthInterceptor(), 0);
+			Log.d(TAG, "Using preemptive authentication (not compatible with Digest auth)");
+			AuthCache authCache = context.getAuthCache();
+			if (authCache == null)
+				authCache = new BasicAuthCache();
+			authCache.put(host, new BasicScheme());
+			context.setAuthCache(authCache);
 		}
+	}
+	
+	private WebDavResource(WebDavResource parent) {		// based on existing WebDavResource, reuse settings
+		httpClient = parent.httpClient;
+		context = parent.context;
 	}
 
 	protected WebDavResource(WebDavResource parent, URI uri) {
+		this(parent);
 		location = uri;
-		client = parent.client;
 	}
 	
 	public WebDavResource(WebDavResource parent, String member) {
-		this(parent, parent.location.resolve(URIUtils.sanitize(member)));
+		this(parent);
+		location = parent.location.resolve(URIUtils.sanitize(member));
 	}
 	
 	public WebDavResource(WebDavResource parent, String member, boolean trailingSlash) {
@@ -132,25 +148,27 @@ public class WebDavResource {
 		this(parent, member);
 		properties.put(Property.ETAG, ETag);
 	}
+
 	
 
 	/* feature detection */
 
 	public void options() throws IOException, HttpException {
 		HttpOptions options = new HttpOptions(location);
-		HttpResponse response = client.execute(options);
-		checkResponse(response);
-		
-		if (response.getEntity() != null)
-			response.getEntity().consumeContent();
-		
-		Header[] allowHeaders = response.getHeaders("Allow");
-		for (Header allowHeader : allowHeaders)
-			methods.addAll(Arrays.asList(allowHeader.getValue().split(", ?")));
-
-		Header[] capHeaders = response.getHeaders("DAV");
-		for (Header capHeader : capHeaders)
-			capabilities.addAll(Arrays.asList(capHeader.getValue().split(", ?")));
+		CloseableHttpResponse response = httpClient.execute(options, context);
+		try {
+			checkResponse(response);
+			
+			Header[] allowHeaders = response.getHeaders("Allow");
+			for (Header allowHeader : allowHeaders)
+				methods.addAll(Arrays.asList(allowHeader.getValue().split(", ?")));
+	
+			Header[] capHeaders = response.getHeaders("DAV");
+			for (Header capHeader : capHeaders)
+				capabilities.addAll(Arrays.asList(capHeader.getValue().split(", ?")));
+		} finally {
+			response.close();
+		}
 	}
 
 	public boolean supportsDAV(String capability) {
@@ -236,29 +254,29 @@ public class WebDavResource {
 	
 	public void propfind(HttpPropfind.Mode mode) throws IOException, DavException, HttpException {
 		HttpPropfind propfind = new HttpPropfind(location, mode);
-		HttpResponse response = client.execute(propfind);
-		checkResponse(response);
-
-		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_MULTI_STATUS)
-			throw new DavNoMultiStatusException();
-
-		HttpEntity entity = response.getEntity();
-		if (entity == null)
-			throw new DavNoContentException();
-		
-		@Cleanup InputStream rawContent = entity.getContent();
-		if (rawContent == null)
-			throw new DavNoContentException();
-		@Cleanup LoggingInputStream content = new LoggingInputStream(TAG, rawContent);
-		
-		DavMultistatus multistatus;
+		CloseableHttpResponse response = httpClient.execute(propfind, context);
 		try {
-			Serializer serializer = new Persister();
-			multistatus = serializer.read(DavMultistatus.class, content, false);
-		} catch (Exception ex) {
-			throw new DavException("Couldn't parse Multi-Status response on PROPFIND", ex);
+			checkResponse(response);
+	
+			if (response.getStatusLine().getStatusCode() != HttpStatus.SC_MULTI_STATUS)
+				throw new DavNoMultiStatusException();
+	
+			HttpEntity entity = response.getEntity();
+			if (entity == null)
+				throw new DavNoContentException();
+			@Cleanup InputStream content = entity.getContent();
+			
+			DavMultistatus multistatus;
+			try {
+				Serializer serializer = new Persister();
+				multistatus = serializer.read(DavMultistatus.class, content, false);
+			} catch (Exception ex) {
+				throw new DavException("Couldn't parse Multi-Status response on PROPFIND", ex);
+			}
+			processMultiStatus(multistatus);
+		} finally {
+			response.close();
 		}
-		processMultiStatus(multistatus);
 	}
 
 	public void multiGet(DavMultiget.Type type, String[] names) throws IOException, DavException, HttpException {
@@ -277,28 +295,28 @@ public class WebDavResource {
 		}
 
 		HttpReport report = new HttpReport(location, writer.toString());
-		HttpResponse response = client.execute(report);
-		checkResponse(response);
-		
-		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_MULTI_STATUS)
-			throw new DavNoMultiStatusException();
-		
-		HttpEntity entity = response.getEntity();
-		if (entity == null)
-			throw new DavNoContentException();
-		
-		@Cleanup InputStream rawContent = entity.getContent();
-		if (rawContent == null)
-			throw new DavNoContentException();
-		@Cleanup LoggingInputStream content = new LoggingInputStream(TAG, rawContent);
-		
-		DavMultistatus multiStatus;
+		CloseableHttpResponse response = httpClient.execute(report, context);
 		try {
-			multiStatus = serializer.read(DavMultistatus.class, content, false);
-		} catch (Exception ex) {
-			throw new DavException("Couldn't parse Multi-Status response on REPORT multi-get", ex);
+			checkResponse(response);
+			
+			if (response.getStatusLine().getStatusCode() != HttpStatus.SC_MULTI_STATUS)
+				throw new DavNoMultiStatusException();
+			
+			HttpEntity entity = response.getEntity();
+			if (entity == null)
+				throw new DavNoContentException();
+			@Cleanup InputStream content = entity.getContent();
+			
+			DavMultistatus multiStatus;
+			try {
+				multiStatus = serializer.read(DavMultistatus.class, content, false);
+			} catch (Exception ex) {
+				throw new DavException("Couldn't parse Multi-Status response on REPORT multi-get", ex);
+			}
+			processMultiStatus(multiStatus);
+		} finally {
+			response.close();
 		}
-		processMultiStatus(multiStatus);
 	}
 
 	
@@ -306,25 +324,21 @@ public class WebDavResource {
 	
 	public void get() throws IOException, HttpException, DavException {
 		HttpGet get = new HttpGet(location);
-		HttpResponse response = client.execute(get);
-		checkResponse(response);
-		
-		HttpEntity entity = response.getEntity();
-		if (entity == null)
-			throw new DavNoContentException();
-		
-		@Cleanup InputStream rawContent = entity.getContent();
-		if (rawContent == null)
-			throw new DavNoContentException();
-		@Cleanup LoggingInputStream content = new LoggingInputStream(TAG, rawContent);
-		
-		this.content = IOUtils.toByteArray(content);
+		CloseableHttpResponse response = httpClient.execute(get, context);
+		try {
+			checkResponse(response);
+			
+			HttpEntity entity = response.getEntity();
+			if (entity == null)
+				throw new DavNoContentException();
+			
+			content = EntityUtils.toByteArray(entity);
+		} finally {
+			response.close();
+		}
 	}
 	
 	public void put(byte[] data, PutMode mode) throws IOException, HttpException {
-		Log.d(TAG, "Sending PUT request:");
-		Log.d(TAG, IOUtils.toString(data, HTTP.UTF_8));
-		
 		HttpPut put = new HttpPut(location);
 		put.setEntity(new ByteArrayEntity(data));
 
@@ -340,9 +354,12 @@ public class WebDavResource {
 		if (getContentType() != null)
 			put.addHeader("Content-Type", getContentType());
 
-		HttpResponse response = client.execute(put);
-		@Cleanup("consumeContent") HttpEntity entity = response.getEntity();
-		checkResponse(response);
+		CloseableHttpResponse response = httpClient.execute(put, context);
+		try {
+			checkResponse(response);
+		} finally {
+			response.close();
+		}
 	}
 	
 	public void delete() throws IOException, HttpException {
@@ -351,9 +368,12 @@ public class WebDavResource {
 		if (getETag() != null)
 			delete.addHeader("If-Match", getETag());
 		
-		HttpResponse response = client.execute(delete);
-		@Cleanup("consumeContent") HttpEntity entity = response.getEntity();
-		checkResponse(response);
+		CloseableHttpResponse response = httpClient.execute(delete, context);
+		try {
+			checkResponse(response);
+		} finally {
+			response.close();
+		}
 	}
 	
 
@@ -365,8 +385,6 @@ public class WebDavResource {
 	
 	protected static void checkResponse(StatusLine statusLine) throws HttpException {
 		int code = statusLine.getStatusCode();
-		
-		Log.d(TAG, "Received " + statusLine.getProtocolVersion() + " " + code + " " + statusLine.getReasonPhrase());
 		
 		if (code/100 == 1 || code/100 == 2)		// everything OK
 			return;

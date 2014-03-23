@@ -12,6 +12,7 @@ package at.bitfire.davdroid.webdav;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -20,50 +21,43 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
-import org.apache.http.conn.scheme.LayeredSocketFactory;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.params.HttpParams;
-
+import ch.boye.httpclientandroidlib.HttpHost;
+import ch.boye.httpclientandroidlib.conn.socket.LayeredConnectionSocketFactory;
+import ch.boye.httpclientandroidlib.conn.ssl.BrowserCompatHostnameVerifier;
+import ch.boye.httpclientandroidlib.protocol.HttpContext;
 import android.annotation.TargetApi;
 import android.net.SSLCertificateSocketFactory;
 import android.os.Build;
 import android.util.Log;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-public class TlsSniSocketFactory implements LayeredSocketFactory {
+public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 	private static final String TAG = "davdroid.SNISocketFactory";
 	
-	final static HostnameVerifier hostnameVerifier = SSLSocketFactory.STRICT_HOSTNAME_VERIFIER;
+	final static HostnameVerifier hostnameVerifier = new BrowserCompatHostnameVerifier();
+	
+	final static TlsSniSocketFactory INSTANCE = new TlsSniSocketFactory();
 	
 	
 	// Plain TCP/IP (layer below TLS)
 
 	@Override
-	public Socket connectSocket(Socket s, String host, int port, InetAddress localAddress, int localPort, HttpParams params) throws IOException {
+	public Socket createSocket(HttpContext context) throws IOException {
 		return null;
 	}
 
 	@Override
-	public Socket createSocket() throws IOException {
+	public Socket connectSocket(int timeout, Socket socket, HttpHost host, InetSocketAddress remoteAddr, InetSocketAddress localAddr, HttpContext context)
+			throws IOException {
 		return null;
-	}
-
-	@Override
-	public boolean isSecure(Socket s) throws IllegalArgumentException {
-		if (s instanceof SSLSocket)
-			return ((SSLSocket)s).isConnected();
-		return false;
 	}
 
 	
 	// TLS layer
 
 	@Override
-	public Socket createSocket(Socket plainSocket, String host, int port, boolean autoClose) throws IOException, UnknownHostException {
-		if (autoClose) {
-			// we don't need the plainSocket
-			plainSocket.close();
-		}
+	public Socket createLayeredSocket(Socket plainSocket, String host, int port, HttpContext context) throws IOException, UnknownHostException {
+		plainSocket.close();
 		
 		// create and connect SSL socket, but don't do hostname/certificate verification yet
 		SSLCertificateSocketFactory sslSocketFactory = (SSLCertificateSocketFactory) SSLCertificateSocketFactory.getDefault(0);
