@@ -31,36 +31,45 @@ import at.bitfire.davdroid.resource.RemoteCollection;
 public class CalendarsSyncAdapterService extends Service {
 	private static SyncAdapter syncAdapter;
 	
+	
 	@Override @Synchronized
 	public void onCreate() {
 		if (syncAdapter == null)
 			syncAdapter = new SyncAdapter(getApplicationContext());
 	}
 
+	@Override @Synchronized
+	public void onDestroy() {
+		syncAdapter.close();
+		syncAdapter = null;
+	}
+
 	@Override
 	public IBinder onBind(Intent intent) {
 		return syncAdapter.getSyncAdapterBinder(); 
 	}
+	
 
 	private static class SyncAdapter extends DavSyncAdapter {
 		private final static String TAG = "davdroid.CalendarsSyncAdapter";
+
 		
-		public SyncAdapter(Context context) {
+		private SyncAdapter(Context context) {
 			super(context);
 		}
 		
 		@Override
 		protected Map<LocalCollection<?>, RemoteCollection<?>> getSyncPairs(Account account, ContentProviderClient provider) {
-			AccountSettings settings = new AccountSettings(context, account);
+			AccountSettings settings = new AccountSettings(getContext(), account);
 			String	userName = settings.getUserName(),
 					password = settings.getPassword();
 			boolean preemptive = settings.getPreemptiveAuth();
-			
+
 			try {
 				Map<LocalCollection<?>, RemoteCollection<?>> map = new HashMap<LocalCollection<?>, RemoteCollection<?>>();
 				
 				for (LocalCalendar calendar : LocalCalendar.findAll(account, provider)) {
-					RemoteCollection<?> dav = new CalDavCalendar(calendar.getUrl(), userName, password, preemptive);
+					RemoteCollection<?> dav = new CalDavCalendar(httpClient, calendar.getUrl(), userName, password, preemptive);
 					map.put(calendar, dav);
 				}
 				return map;

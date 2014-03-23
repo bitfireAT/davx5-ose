@@ -10,11 +10,13 @@
  ******************************************************************************/
 package at.bitfire.davdroid.syncadapter;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Map;
 
 import org.apache.http.HttpStatus;
 
+import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
 import lombok.Getter;
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -23,6 +25,7 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SyncResult;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -30,15 +33,16 @@ import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.LocalStorageException;
 import at.bitfire.davdroid.resource.RemoteCollection;
 import at.bitfire.davdroid.webdav.DavException;
+import at.bitfire.davdroid.webdav.DavHttpClient;
 import at.bitfire.davdroid.webdav.HttpException;
 
-public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter {
+public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter implements Closeable {
 	private final static String TAG = "davdroid.DavSyncAdapter";
 	
-	protected Context context;
-	protected AccountManager accountManager;
-	
 	@Getter private static String androidID;
+	
+	protected AccountManager accountManager;
+	protected CloseableHttpClient httpClient;
 
 	
 	public DavSyncAdapter(Context context) {
@@ -48,10 +52,27 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter {
 			if (androidID == null)
 				androidID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
 		}
-
-		this.context = context;
+		
 		accountManager = AccountManager.get(context);
+		httpClient = DavHttpClient.create();
 	}
+	
+	@Override public void close() {
+		// apparently may be called from a GUI thread
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected Void doInBackground(Void... params) {
+				try {
+					httpClient.close();
+					httpClient = null;
+				} catch (IOException e) {
+					Log.w(TAG, "Couldn't close HTTP client", e);
+				}
+				return null;
+			}
+		}.execute();
+	}
+	
 	
 	protected abstract Map<LocalCollection<?>, RemoteCollection<?>> getSyncPairs(Account account, ContentProviderClient provider);
 	

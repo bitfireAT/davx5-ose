@@ -14,15 +14,17 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.util.LinkedList;
 
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.entity.StringEntity;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import android.util.Log;
+import ch.boye.httpclientandroidlib.client.methods.HttpEntityEnclosingRequestBase;
+import ch.boye.httpclientandroidlib.entity.StringEntity;
 
 public class HttpPropfind extends HttpEntityEnclosingRequestBase {
 	private static final String TAG = "davdroid.HttpPropfind";
+	
+	public final static String METHOD_NAME = "PROPFIND";
 	
 	public enum Mode {
 		CURRENT_USER_PRINCIPAL,
@@ -32,10 +34,15 @@ public class HttpPropfind extends HttpEntityEnclosingRequestBase {
 		MEMBERS_ETAG
 	}
 
-	HttpPropfind(URI uri, Mode mode) {
+	
+	HttpPropfind(URI uri) {
 		setURI(uri);
+	}
+
+	HttpPropfind(URI uri, Mode mode) {
+		this(uri);
 		
-		setHeader("Content-Type", "text/xml; charset=\"utf-8\"");
+		setHeader("Content-Type", "text/xml; charset=UTF-8");
 
 		DavPropfind propfind = new DavPropfind();
 		propfind.prop = new DavProp();
@@ -77,8 +84,6 @@ public class HttpPropfind extends HttpEntityEnclosingRequestBase {
 		
 			setHeader("Depth", String.valueOf(depth));
 			setEntity(new StringEntity(writer.toString(), "UTF-8"));
-			
-			Log.d(TAG, "Prepared PROPFIND request for " + uri + ": " + writer.toString());
 		} catch(Exception ex) {
 			Log.e(TAG, "Couldn't prepare PROPFIND request for " + uri, ex);
 			abort();
@@ -87,6 +92,6 @@ public class HttpPropfind extends HttpEntityEnclosingRequestBase {
 
 	@Override
 	public String getMethod() {
-		return "PROPFIND";
+		return METHOD_NAME;
 	}
 }

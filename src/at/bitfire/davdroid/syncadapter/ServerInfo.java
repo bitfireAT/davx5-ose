@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class ServerInfo implements Serializable {
 	private static final long serialVersionUID = 6744847358282980437L;
 	
-	final private String baseURL;
+	final private String providedURL;
 	final private String userName, password;
 	final boolean authPreemptive;
 	

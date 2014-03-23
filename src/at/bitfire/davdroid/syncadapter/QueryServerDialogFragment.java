@@ -16,8 +16,6 @@ import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.http.HttpException;
-
 import android.app.DialogFragment;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.AsyncTaskLoader;
@@ -32,9 +30,12 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.webdav.DavException;
-import at.bitfire.davdroid.webdav.HttpPropfind.Mode;
+import at.bitfire.davdroid.webdav.DavHttpClient;
 import at.bitfire.davdroid.webdav.DavIncapableException;
+import at.bitfire.davdroid.webdav.HttpPropfind.Mode;
 import at.bitfire.davdroid.webdav.WebDavResource;
+import ch.boye.httpclientandroidlib.HttpException;
+import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
 
 public class QueryServerDialogFragment extends DialogFragment implements LoaderCallbacks<ServerInfo> {
 	private static final String TAG = "davdroid.QueryServerDialogFragment";
@@ -111,9 +112,10 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 				args.getBoolean(EXTRA_AUTH_PREEMPTIVE)
 			);
 			
+			CloseableHttpClient httpClient = DavHttpClient.create();
 			try {
 				// (1/5) detect capabilities
-				WebDavResource base = new WebDavResource(new URI(serverInfo.getBaseURL()), serverInfo.getUserName(),
+				WebDavResource base = new WebDavResource(httpClient, new URI(serverInfo.getProvidedURL()), serverInfo.getUserName(),
 						serverInfo.getPassword(), serverInfo.isAuthPreemptive(), true);
 				base.options();
 				

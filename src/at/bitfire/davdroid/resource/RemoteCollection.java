@@ -30,18 +30,22 @@ import at.bitfire.davdroid.webdav.HttpException;
 import at.bitfire.davdroid.webdav.HttpPropfind;
 import at.bitfire.davdroid.webdav.WebDavResource;
 import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
+import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
 
 public abstract class RemoteCollection<T extends Resource> {
 	private static final String TAG = "davdroid.RemoteCollection";
 	
+	CloseableHttpClient httpClient;
 	@Getter WebDavResource collection;
 
 	abstract protected String memberContentType();
 	abstract protected DavMultiget.Type multiGetType();
 	abstract protected T newResourceSkeleton(String name, String ETag);
 	
-	public RemoteCollection(String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {
-		collection = new WebDavResource(new URI(baseURL), user, password, preemptiveAuth, true);
+	public RemoteCollection(CloseableHttpClient httpClient, String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {
+		this.httpClient = httpClient;
+		
+		collection = new WebDavResource(httpClient, new URI(baseURL), user, password, preemptiveAuth, true);
 	}
 
 	
