@@ -10,17 +10,19 @@ import java.util.List;
 import lombok.Cleanup;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpException;
 
 import android.content.res.AssetManager;
 import android.test.InstrumentationTestCase;
 import at.bitfire.davdroid.webdav.DavException;
+import at.bitfire.davdroid.webdav.DavHttpClient;
 import at.bitfire.davdroid.webdav.DavMultiget;
+import at.bitfire.davdroid.webdav.HttpException;
 import at.bitfire.davdroid.webdav.HttpPropfind;
 import at.bitfire.davdroid.webdav.NotFoundException;
 import at.bitfire.davdroid.webdav.PreconditionFailedException;
 import at.bitfire.davdroid.webdav.WebDavResource;
 import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
+import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
 
 // tests require running robohydra!
 
@@ -29,26 +31,35 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	static byte[] SAMPLE_CONTENT = new byte[] { 1, 2, 3, 4, 5 };
 	
 	AssetManager assetMgr;
+	CloseableHttpClient httpClient;
+	
 	WebDavResource simpleFile,
 		davCollection, davNonExistingFile, davExistingFile,
 		davInvalid;
 
 	@Override
 	protected void setUp() throws Exception {
+		httpClient = DavHttpClient.create(); 
+				
 		assetMgr = getInstrumentation().getContext().getResources().getAssets();
 		
-		simpleFile = new WebDavResource(new URI(ROBOHYDRA_BASE + "assets/test.random"), false);
+		simpleFile = new WebDavResource(httpClient, new URI(ROBOHYDRA_BASE + "assets/test.random"), false);
 		
-		davCollection = new WebDavResource(new URI(ROBOHYDRA_BASE + "dav"), true);
+		davCollection = new WebDavResource(httpClient, new URI(ROBOHYDRA_BASE + "dav"), true);
 		davNonExistingFile = new WebDavResource(davCollection, "collection/new.file");
 		davExistingFile = new WebDavResource(davCollection, "collection/existing.file");
 		
-		davInvalid = new WebDavResource(new URI(ROBOHYDRA_BASE + "dav-invalid"), true);
+		davInvalid = new WebDavResource(httpClient, new URI(ROBOHYDRA_BASE + "dav-invalid"), true);
 	}
 	
+	@Override
+	protected void tearDown() throws Exception {
+		httpClient.close();
+	}
+
 
 	/* test resource name handling */
-	
+
 	public void testGetName() {
 		// collection names should have a trailing slash
 		assertEquals("dav", davCollection.getName());
@@ -85,7 +96,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 			assert(davCollection.supportsDAV(capability));
 	}
 
-	public void testPropfindCurrentUserPrincipal() throws IOException, HttpException {
+	public void testPropfindCurrentUserPrincipal() throws IOException, HttpException, DavException {
 		davCollection.propfind(HttpPropfind.Mode.CURRENT_USER_PRINCIPAL);
 		assertEquals("/dav/principals/users/test", davCollection.getCurrentUserPrincipal());
 		
@@ -97,14 +108,14 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		assertNull(simpleFile.getCurrentUserPrincipal());
 	}
 		
-	public void testPropfindHomeSets() throws IOException, HttpException {
+	public void testPropfindHomeSets() throws IOException, HttpException, DavException {
 		WebDavResource dav = new WebDavResource(davCollection, "principals/users/test");
 		dav.propfind(HttpPropfind.Mode.HOME_SETS);
 		assertEquals("/dav/addressbooks/test", dav.getAddressbookHomeSet());
 		assertEquals("/dav/calendars/test/", dav.getCalendarHomeSet());
 	}
 	
-	public void testPropfindAddressBooks() throws IOException, HttpException {
+	public void testPropfindAddressBooks() throws IOException, HttpException, DavException {
 		WebDavResource dav = new WebDavResource(davCollection, "addressbooks/test", true);
 		dav.propfind(HttpPropfind.Mode.MEMBERS_COLLECTIONS);
 		assertEquals(2, dav.getMembers().size());
@@ -117,7 +128,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		}
 	}
 	
-	public void testPropfindCalendars() throws IOException, HttpException {
+	public void testPropfindCalendars() throws IOException, HttpException, DavException {
 		WebDavResource dav = new WebDavResource(davCollection, "calendars/test", true);
 		dav.propfind(HttpPropfind.Mode.MEMBERS_COLLECTIONS);
 		assertEquals(3, dav.getMembers().size());
@@ -134,16 +145,12 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	
 	/* test normal HTTP/WebDAV */
 	
-	public void testDontFollowRedirections() throws URISyntaxException, IOException {
-		WebDavResource redirection = new WebDavResource(new URI(ROBOHYDRA_BASE + "redirect"), false);
-		try {
-			redirection.get();
-			fail();
-		} catch (HttpException e) {
-		}
+	public void testFollowGetRedirections() throws URISyntaxException, IOException, DavException, HttpException {
+		WebDavResource redirection = new WebDavResource(httpClient, new URI(ROBOHYDRA_BASE + "redirect"), false);
+		redirection.get();
 	}
 	
-	public void testGet() throws URISyntaxException, IOException, HttpException {
+	public void testGet() throws URISyntaxException, IOException, HttpException, DavException {
 		simpleFile.get();
 		@Cleanup InputStream is = assetMgr.open("test.random", AssetManager.ACCESS_STREAMING);
 		byte[] expected = IOUtils.toByteArray(is);
@@ -201,7 +208,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	
 	/* special test */
 	
-	public void testInvalidURLs() throws IOException, HttpException {
+	public void testInvalidURLs() throws IOException, HttpException, DavException {
 		WebDavResource dav = new WebDavResource(davInvalid, "addressbooks/user%40domain/");
 		dav.propfind(HttpPropfind.Mode.MEMBERS_COLLECTIONS);
 		List<WebDavResource> members = dav.getMembers();
