@@ -15,6 +15,7 @@ import ch.boye.httpclientandroidlib.client.config.RequestConfig;
 import ch.boye.httpclientandroidlib.config.Registry;
 import ch.boye.httpclientandroidlib.config.RegistryBuilder;
 import ch.boye.httpclientandroidlib.conn.socket.ConnectionSocketFactory;
+import ch.boye.httpclientandroidlib.conn.socket.PlainConnectionSocketFactory;
 import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
 import ch.boye.httpclientandroidlib.impl.client.HttpClients;
 import ch.boye.httpclientandroidlib.impl.conn.ManagedHttpClientConnectionFactory;
@@ -28,6 +29,7 @@ public class DavHttpClient {
 	static {
 		socketFactoryRegistry =	RegistryBuilder.<ConnectionSocketFactory> create()
 				.register("https", TlsSniSocketFactory.INSTANCE)
+				.register("http", PlainConnectionSocketFactory.getSocketFactory())
 				.build();
 		
 		// use request defaults from AndroidHttpClient
