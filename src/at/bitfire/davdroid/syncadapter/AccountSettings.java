@@ -126,9 +126,11 @@ public class AccountSettings {
 		URI principalURI = new URI(v0_principalURL);
 
 		// update address book
-		String addressBookURL = principalURI.resolve(v0_addressBookPath).toASCIIString();
-		Log.d(TAG, "New address book URL = " + addressBookURL);
-		accountManager.setUserData(account, "addressbook_url", addressBookURL);
+		if (v0_addressBookPath != null) {
+			String addressBookURL = principalURI.resolve(v0_addressBookPath).toASCIIString();
+			Log.d(TAG, "New address book URL = " + addressBookURL);
+			accountManager.setUserData(account, "addressbook_url", addressBookURL);
+		}
 		
 		// update calendars
 		ContentResolver resolver = context.getContentResolver();
