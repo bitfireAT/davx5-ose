@@ -10,7 +10,7 @@
     </string-array>
 
     <string name="http_warning">"Si no feu servir cap encriptació (HTTPS), altres usuaris poden interceptar fàcilment les vostres credencials, contactes i events."</string>
-    <string name="user_name">Nom d'usuari:</string>
+    <string name="user_name">Nom d\'usuari:</string>
     <string name="password">Contrasenya:</string>
     <string name="root_url">URL Arrel (les coleccions es detecten automàticament):</string>
     <string name="next">Següent</string>
@@ -21,9 +21,9 @@
     <string name="exception_uri_syntax">URI invàlida: %s</string>
     <string name="exception_incapable_resource">Missing capabilities: %s</string>
     <string name="neither_caldav_nor_carddav">Ni CalDAV ni CardDAV estan disponibles</string>
-    <string name="error_principal_path">"No s'ha pogut determinar la ruta principal (RFC 5397)"</string>
-    <string name="error_home_set_address_books">"No s'ha pogut determinar l'arrel de les llibretes de contactes"</string>
-    <string name="error_home_set_calendars">"No s'ha pogut determinar l'arrel dels calendaris"</string>
+    <string name="error_principal_path">"No s\'ha pogut determinar la ruta principal (RFC 5397)"</string>
+    <string name="error_home_set_address_books">"No s\'ha pogut determinar l\'arrel de les llibretes de contactes"</string>
+    <string name="error_home_set_calendars">"No s\'ha pogut determinar l\'arrel dels calendaris"</string>
     <string name="add_account">Afegir compte</string>
     <string name="querying_server">Querying server. Please wait…</string>
     <string name="exception_http">Error HTTP: %s</string>
@@ -32,7 +32,7 @@
     <string name="calendars">Calendaris</string>
     <string name="select_address_book">Seleccioneu com a molt una llibreta de contactes (Polseu de nou per deseleccionar):</string>
     <string name="select_calendars">Seleccioneu els vostres calendaris:</string>
-    <string name="auth_preemptive">Autentificació preferent (recomanat, però incompatible amb l'autentificació Digest)</string>
+    <string name="auth_preemptive">Autentificació preferent (recomanat, però incompatible amb l\'autentificació Digest)</string>
 
     <string name="davdroid_help">Ajuda DAVdroid</string>
     <string name="show_sync_settings">Gestioneu les comptes sincronitzades</string>
@@ -43,57 +43,57 @@
 		<h2>1. Les comptes poden desaparèixer desprès de reiniciar</h2>
 		<p>Podeu trobar-vos amb el problema de que totes les vostres <strong>comptes de DAVdroid (contactes i events inclosos) han desaparegut
         desprès de reiniciar el dispositiu</strong>. La raó és un <a href="https://code.google.com/p/android/issues/detail?id=34880">error de Android</a>
-        que causa que totes les comptes de les aplicacións de pagament s'eliminen al iniciar perquè els fitxers (encriptats) APK es
+        que causa que totes les comptes de les aplicacións de pagament s\'eliminen al iniciar perquè els fitxers (encriptats) APK es
         carreguen <i>desprès</i> de revisar si existeixen comptes orfanes.</p>
         <p>Usuaris afectats:<br/>
         * Tots els usuaris de Android 4.1 que han obtingut el DAVdroid del Play Store;<br/>
         * El usuaris de Android 4.2 que han obtingut el DAVdroid del Play Store només en alguns dispositius (per exemple, la majoria de dispositius Samsung)</p>
 
-        <h2>2. Els comptes poden desaparèixer desprès d'actualitar el DAVdroid</h2>
+        <h2>2. Els comptes poden desaparèixer desprès d\'actualitar el DAVdroid</h2>
         <p>Podeu trobar-vos amb el problema de que totes les vostres <strong>comptes de DAVdroid (contactes i events inclosos) han desaparegut quan el Play Store
         actualitza el DAVdroid</strong>. La raó és un<a href="https://code.google.com/p/android/issues/detail?id=66905">altre error de Android</a>
-        que causa que les comptes del les aplicacións de pagament s'esborrin al actualitzar per alguna raó similar.</p>
+        que causa que les comptes del les aplicacións de pagament s\'esborrin al actualitzar per alguna raó similar.</p>
         <p>Usuaris afectats: alguns de Android 4.4.2 que han obtingut el DAVdroid desde el Play Store (es coneix per dispositius Nexus i Moto G)</p>
 
-        <p><strong>Si esteu afectats per algun d'aquests errors, sisuplau <a href="market://details?id=at.bitfire.davdroid.jbworkaround">instaleu el 
+        <p><strong>Si esteu afectats per algun d\'aquests errors, sisuplau <a href="market://details?id=at.bitfire.davdroid.jbworkaround">instaleu el
         DAVdroid JB Workaround</a>.</strong></p>
     ]]></string>
     <string name="html_main_info"><![CDATA[
        <h1>Benvingut a DAVdroid/%s!</h1>
 
-       <p>DAVdroid es un adaptador de Android 4+ per la sincronització de CalDAV/CardDAV. Per a utilitzar-lo afegieu una compte de DAVdroid 
+       <p>DAVdroid es un adaptador de Android 4+ per la sincronització de CalDAV/CardDAV. Per a utilitzar-lo afegieu una compte de DAVdroid
        pel vostre servidor de CalDAV/CardDAV i els vostres contactes/esdeveiments es sincronitzaràn de forma bidireccional.</p>
 
        <p>Per mes informació, podeu visitar la <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">pàgina web de DAVdroid</a>.
        També hi ha una <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">guia de configuració</a>. El DAVdroid respecta
        la teva privacitat, feu una ullada a <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">la nostra politica de privacitat</a>.</p>
 
-       <p>Si feu servir CyanogenMod, "Privacy Guard" ha d'estar deshabilitat pel DAVdroid. Si no es així, el DAVdroid no pot accedir ni sincronitzar
+       <p>Si feu servir CyanogenMod, "Privacy Guard" ha d\'estar deshabilitat pel DAVdroid. Si no es així, el DAVdroid no pot accedir ni sincronitzar
        els vostres contactes i events.</p>
 
        <p><b>En cas de problemes, sisplau llegiu el <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a> primer.
-       Si trobeu una errada que està clarament relacionada amb el DAVdroid, afegiu-la directament a 
-       <a href="https://github.com/rfc2822/davdroid">Github</a> en comptes de contactar-nos directament o de donar una 
-       valoració pobra de l'aplicació.</b></p>
+       Si trobeu una errada que està clarament relacionada amb el DAVdroid, afegiu-la directament a
+       <a href="https://github.com/rfc2822/davdroid">Github</a> en comptes de contactar-nos directament o de donar una
+       valoració pobra de l\'aplicació.</b></p>
 
 	   <h1>Codi Obert</h1>
-	   <p>DAVdroid està disenyat per a ser un proejcte de codi obert desde bon principi. Sempres es possible compilar l'aplicació per la vostra part
-           i utilitzar-la gratuitament sense cap obligació. El codi font es troba 
+	   <p>DAVdroid està disenyat per a ser un proejcte de codi obert desde bon principi. Sempres es possible compilar l\'aplicació per la vostra part
+           i utilitzar-la gratuitament sense cap obligació. El codi font es troba
 	   app yourself and use it for free without any obligations. The source code is
-	   <a href="https://github.com/rfc2822/davdroid">disponible a Github</a>, i també podeu 
-	   <a href="https://f-droid.org/app/at.bitfire.davdroid">descarregar l'aplicació al F-droid</a>.</p>
+	   <a href="https://github.com/rfc2822/davdroid">disponible a Github</a>, i també podeu
+	   <a href="https://f-droid.org/app/at.bitfire.davdroid">descarregar l\'aplicació al F-droid</a>.</p>
 
-	   <p>De totes formes, es va fer molta feina per crear aquesta applicació, així que vam decidir ficar-la a les tendes comercials per un petit import. 
+	   <p>De totes formes, es va fer molta feina per crear aquesta applicació, així que vam decidir ficar-la a les tendes comercials per un petit import.
 	   Si voleu suportar aquest project, siusplau considereu <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">fer una donació a DAVdroid</a>
 	   o comprar-lo.</p>
 
 	   <h1>Llicència</h1>
 	   <p>Copyright (c) 2013 – 2014 Richard Hirner (<a href="http://www.bitfire.at">bitfire web engineering</a>). Tots els drets reservats.
-	   Aquest programa i tots els materials que l'acompanyen estan disponibles sota els termes de la GNU Public License v3.0 que acompanya
+	   Aquest programa i tots els materials que l\'acompanyen estan disponibles sota els termes de la GNU Public License v3.0 que acompanya
 	   aquesta distribució i està disponible a <a
 	   href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. Respecte al Google Play, Samsung
-	   Store, AndroidPit App Center o Amazon Appstore que requereixen altres condicions, els termes respectius apliquen per les versions 
-	   que s'han descàrregat a travès d'aquests serveis.</p>
+	   Store, AndroidPit App Center o Amazon Appstore que requereixen altres condicions, els termes respectius apliquen per les versions
+	   que s\'han descàrregat a travès d\'aquests serveis.</p>
 
 	   <p>Traducción: Frances per un contribuïdor desconegut, Castellà per <a href="https://github.com/xphnx">@xphnx</a> i català per <a href="https://github.com/pokoli">@pokoli</a></p>
 
