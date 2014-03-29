@@ -56,10 +56,18 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 		
 		// set up SNI before the handshake
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+			// Android 4.2+, use documented way to set SNI host name
 			Log.d(TAG, "Setting SNI hostname");
 			sslSocketFactory.setHostname(ssl, host.getHostName());
-		} else
-			Log.i(TAG, "No SNI support below Android 4.2!");
+		} else {
+			Log.d(TAG, "No documented SNI support on Android <4.2, trying with reflection");
+			try {
+				java.lang.reflect.Method setHostnameMethod = ssl.getClass().getMethod("setHostname", String.class);
+				setHostnameMethod.invoke(ssl, host.getHostName());
+			} catch (Exception e) {
+				Log.w(TAG, "SNI not useable", e);
+			}
+		}
 		
 		// verify hostname and certificate
 		SSLSession session = ssl.getSession();
