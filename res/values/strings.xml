@@ -94,14 +94,16 @@
 	   Store, AndroidPit App Center or Amazon Appstore require other terms, the respective terms apply for versions
 	   that are downloaded via these services.</p>
 	   
-	   <p>Translations: French by unknown contributor, Spanish by <a href="https://github.com/xphnx">@xphnx</a></p>
+	   <p>Translations: Catalanian by <a href="https://github.com/pokoli">@pokoli</a>, French by unknown contributor,
+	   Spanish by <a href="https://github.com/xphnx">@xphnx</a></p>
 	   
 	   <h2>Used third-party libraries</h2>
 	   <p>
-	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> (<a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
-	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> (<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a>)<br/>
-	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> (<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>)<br/>
-	   	* <a href="http://projectlombok.org/">Project Lombok</a> (<a href="http://opensource.org/licenses/mit-license.php">MIT License</a>)</p>
+	    * <a href="http://hc.apache.org">Apache HttpClient</a> (<a href="https://code.google.com/p/httpclientandroidlib/">httpclientandroidlib</a> flavour) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>
+	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
+	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a><br/>
+	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a><br/>
+	   	* <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a></p>
     ]]></string>
     
     <string name="account_details">Account details</string>

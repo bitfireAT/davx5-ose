@@ -38,8 +38,6 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 	private final static SSLCertificateSocketFactory sslSocketFactory = (SSLCertificateSocketFactory) SSLCertificateSocketFactory.getDefault(0);
 	private final static HostnameVerifier hostnameVerifier = new BrowserCompatHostnameVerifier();
 	
-	
-	// Plain TCP/IP (layer below TLS)
 
 	@Override
 	public Socket createSocket(HttpContext context) throws IOException {
@@ -48,7 +46,7 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 
 	@Override
 	public Socket connectSocket(int timeout, Socket socket, HttpHost host, InetSocketAddress remoteAddr, InetSocketAddress localAddr, HttpContext context) throws IOException {
-		// we don't need the non-SSL socket
+		// we'll rather create a new socket
 		socket.close();
 		
 		// create and connect SSL socket, but don't do hostname/certificate verification yet
