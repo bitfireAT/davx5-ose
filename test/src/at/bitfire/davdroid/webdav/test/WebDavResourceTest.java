@@ -166,20 +166,14 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	public void testGetHttpsWithSni() throws URISyntaxException, HttpException, IOException, DavException {
 		WebDavResource file = new WebDavResource(httpClient, new URI("https://sni.velox.ch"), false);
 		
-		boolean	sniWorking;
+		boolean	sniWorking = false;
 		try {
 			file.get();
 			sniWorking = true; 
 		} catch (SSLPeerUnverifiedException e) {
-			sniWorking = false;
 		}
 		
-		if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-			// SNI should be available in Android 4.2+
-			assertTrue(sniWorking);
-		} else
-			Log.i(TAG, "SNI not tested (only available in Android 4.2+)");
-		
+		assertTrue(sniWorking);
 	}
 	
 	public void testMultiGet() throws DavException, IOException, HttpException {
