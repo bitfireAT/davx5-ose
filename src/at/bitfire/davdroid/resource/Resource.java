@@ -23,7 +23,7 @@ public abstract class Resource {
 	@Getter protected String name, ETag;
 	@Getter @Setter protected String uid;
 	@Getter protected long localID;
-	
+
 	
 	public Resource(String name, String ETag) {
 		this.name = name;
@@ -36,8 +36,7 @@ public abstract class Resource {
 	}
 	
 	// sets UID and resource name (= remote file name)
-	public abstract void generateUID();
-	public abstract void generateName();
+	public abstract void initialize();
 	
 	public abstract void parseEntity(InputStream entity) throws IOException, InvalidResourceException;
 	public abstract ByteArrayOutputStream toEntity() throws IOException;
