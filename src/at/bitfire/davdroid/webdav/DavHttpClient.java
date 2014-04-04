@@ -36,7 +36,7 @@ public class DavHttpClient {
 		defaultRqConfig = RequestConfig.copy(RequestConfig.DEFAULT)
 				.setConnectTimeout(20*1000)
 				.setSocketTimeout(20*1000)
-				.setStaleConnectionCheckEnabled(true)
+				.setStaleConnectionCheckEnabled(false)
 				.build();
 		
 		// enable logging
