@@ -13,6 +13,7 @@ package at.bitfire.davdroid.syncadapter;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.http.HttpStatus;
 
@@ -42,7 +43,9 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 	@Getter private static String androidID;
 	
 	protected AccountManager accountManager;
-	protected CloseableHttpClient httpClient;
+	
+	protected CloseableHttpClient httpClient = DavHttpClient.create();
+	final ReentrantReadWriteLock httpClientLock = new ReentrantReadWriteLock();
 
 	
 	public DavSyncAdapter(Context context) {
@@ -54,7 +57,6 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 		}
 		
 		accountManager = AccountManager.get(context);
-		httpClient = DavHttpClient.create();
 	}
 	
 	@Override
@@ -64,8 +66,10 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 			@Override
 			protected Void doInBackground(Void... params) {
 				try {
+					httpClientLock.writeLock().lock();
 					httpClient.close();
 					httpClient = null;
+					httpClientLock.writeLock().unlock();
 				} catch (IOException e) {
 					Log.w(TAG, "Couldn't close HTTP client", e);
 				}
@@ -90,6 +94,9 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 			Log.i(TAG, "Nothing to synchronize");
 		else
 			try {
+				// prevent httpClient shutdown until we're ready
+				httpClientLock.readLock().lock();
+				
 				for (Map.Entry<LocalCollection<?>, RemoteCollection<?>> entry : syncCollections.entrySet())
 					new SyncManager(entry.getKey(), entry.getValue()).synchronize(extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL), syncResult);
 				
@@ -115,6 +122,9 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 			} catch (IOException ex) {
 				syncResult.stats.numIoExceptions++;
 				Log.e(TAG, "I/O error (Android will try again later)", ex);
+			} finally {
+				// allow httpClient shutdown
+				httpClientLock.readLock().unlock();
 			}
 	}
 }
