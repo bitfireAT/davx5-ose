@@ -36,7 +36,7 @@ public class DavHttpClient {
 		defaultRqConfig = RequestConfig.copy(RequestConfig.DEFAULT)
 				.setConnectTimeout(20*1000)
 				.setSocketTimeout(20*1000)
-				.setStaleConnectionCheckEnabled(false)
+				.setStaleConnectionCheckEnabled(true)
 				.build();
 		
 		// enable logging
@@ -56,6 +56,7 @@ public class DavHttpClient {
 				.useSystemProperties()
 				.setConnectionManager(connectionManager)
 				.setDefaultRequestConfig(defaultRqConfig)
+				.setRetryHandler(DavHttpRequestRetryHandler.INSTANCE)
 				.setUserAgent("DAVdroid/" + Constants.APP_VERSION)
 				.disableCookieManagement()
 				.build();

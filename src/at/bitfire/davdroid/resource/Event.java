@@ -109,14 +109,14 @@ public class Event extends Resource {
 
 	
 	@Override
-	public void generateUID() {
-		UidGenerator generator = new UidGenerator(new SimpleHostInfo(DavSyncAdapter.getAndroidID()), String.valueOf(android.os.Process.myPid()));
-		uid = generator.generateUid().getValue();
+	public void initialize() {
+		generateUID();
+		name = uid.replace("@", "_") + ".ics";
 	}
 	
-	@Override
-	public void generateName() {
-		name = uid.replace("@", "_") + ".ics";
+	protected void generateUID() {
+		UidGenerator generator = new UidGenerator(new SimpleHostInfo(DavSyncAdapter.getAndroidID()), String.valueOf(android.os.Process.myPid()));
+		uid = generator.generateUid().getValue();
 	}
 
 

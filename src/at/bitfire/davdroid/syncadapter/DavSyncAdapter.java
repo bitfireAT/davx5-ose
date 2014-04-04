@@ -57,7 +57,8 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 		httpClient = DavHttpClient.create();
 	}
 	
-	@Override public void close() {
+	@Override
+	public void close() {
 		// apparently may be called from a GUI thread
 		new AsyncTask<Void, Void, Void>() {
 			@Override
@@ -104,7 +105,7 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 					Log.e(TAG, "Hard HTTP error " + ex.getCode(), ex);
 					syncResult.stats.numParseExceptions++;
 				} else {
-					Log.w(TAG, "Soft HTTP error" + ex.getCode(), ex);
+					Log.w(TAG, "Soft HTTP error " + ex.getCode() + " (Android will try again later)", ex);
 					syncResult.stats.numIoExceptions++;
 				}
 				
@@ -113,7 +114,7 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 				Log.e(TAG, "Local storage (content provider) exception", ex);
 			} catch (IOException ex) {
 				syncResult.stats.numIoExceptions++;
-				Log.e(TAG, "I/O error", ex);
+				Log.e(TAG, "I/O error (Android will try again later)", ex);
 			}
 	}
 }

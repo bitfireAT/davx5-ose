@@ -35,6 +35,7 @@ import ezvcard.property.Birthday;
 import ezvcard.property.Email;
 import ezvcard.property.FormattedName;
 import ezvcard.property.Impp;
+import ezvcard.property.Logo;
 import ezvcard.property.Nickname;
 import ezvcard.property.Note;
 import ezvcard.property.Organization;
@@ -42,11 +43,14 @@ import ezvcard.property.Photo;
 import ezvcard.property.RawProperty;
 import ezvcard.property.Revision;
 import ezvcard.property.Role;
+import ezvcard.property.Sound;
+import ezvcard.property.Source;
 import ezvcard.property.StructuredName;
 import ezvcard.property.Telephone;
 import ezvcard.property.Title;
 import ezvcard.property.Uid;
 import ezvcard.property.Url;
+
 
 @ToString(callSuper = true)
 public class Contact extends Resource {
@@ -68,7 +72,9 @@ public class Contact extends Resource {
 		PHONE_TYPE_ASSISTANT = TelephoneType.get("X-ASSISTANT"),
 		PHONE_TYPE_MMS = TelephoneType.get("X-MMS");
 	
-	@Getter @Setter boolean starred;
+	@Getter @Setter private String unknownProperties;
+	
+	@Getter @Setter private boolean starred;
 	
 	@Getter @Setter private String displayName, nickName;
 	@Getter @Setter private String prefix, givenName, middleName, familyName, suffix;
@@ -98,16 +104,16 @@ public class Contact extends Resource {
 	public Contact(long localID, String resourceName, String eTag) {
 		super(localID, resourceName, eTag);
 	}
-
+	
 	
 	@Override
-	public void generateUID() {
-		uid = UUID.randomUUID().toString();
+	public void initialize() {
+		generateUID();
+		name = uid + ".vcf";
 	}
 	
-	@Override
-	public void generateName() {
-		name = uid + ".vcf";
+	protected void generateUID() {
+		uid = UUID.randomUUID().toString();
 	}
 
 	
@@ -119,20 +125,37 @@ public class Contact extends Resource {
 		if (vcard == null)
 			return;
 		
-		Uid uid = vcard.getUid();
-		if (uid == null) {
-			Log.w(TAG, "Received VCard without UID, generating new one");
-			uid = new Uid(UUID.randomUUID().toString());
-		}
-		this.uid = uid.getValue();
-
-		RawProperty starred = vcard.getExtendedProperty(PROPERTY_STARRED);
-		this.starred = starred != null && starred.getValue().equals("1");
+		// now work through all supported properties
+		// supported properties are removed from the VCard after parsing
+		// so that only unknown properties are left and can be stored separately
 		
-		FormattedName fn = vcard.getFormattedName();
-		if (fn != null)
-			displayName = fn.getValue();
+		// UID
+		Uid uid = vcard.getUid();
+		if (uid != null) {
+			this.uid = uid.getValue();
+			vcard.removeProperties(Uid.class);
+		} else {
+			Log.w(TAG, "Received VCard without UID, generating new one");
+			generateUID();
+		}
 
+		// X-DAVDROID-STARRED
+		RawProperty starred = vcard.getExtendedProperty(PROPERTY_STARRED);
+		if (starred != null && starred.getValue() != null) {
+			this.starred = starred.getValue().equals("1");
+			vcard.removeExtendedProperty(PROPERTY_STARRED);
+		} else
+			this.starred = false;
+		
+		// FN
+		FormattedName fn = vcard.getFormattedName();
+		if (fn != null) {
+			displayName = fn.getValue();
+			vcard.removeProperties(FormattedName.class);
+		} else
+			Log.w(TAG, "Received invalid VCard without FN (formatted name) property");
+
+		// N
 		StructuredName n = vcard.getStructuredName();
 		if (n != null) {
 			prefix = StringUtils.join(n.getPrefixes(), " ");
@@ -140,77 +163,141 @@ public class Contact extends Resource {
 			middleName = StringUtils.join(n.getAdditional(), " ");
 			familyName = n.getFamily();
 			suffix = StringUtils.join(n.getSuffixes(), " ");
+			vcard.removeProperties(StructuredName.class);
 		}
 		
+		// phonetic names
 		RawProperty
 			phoneticFirstName = vcard.getExtendedProperty(PROPERTY_PHONETIC_FIRST_NAME),
 			phoneticMiddleName = vcard.getExtendedProperty(PROPERTY_PHONETIC_MIDDLE_NAME),
 			phoneticLastName = vcard.getExtendedProperty(PROPERTY_PHONETIC_LAST_NAME);
-		if (phoneticFirstName != null)
+		if (phoneticFirstName != null) {
 			phoneticGivenName = phoneticFirstName.getValue();
-		if (phoneticMiddleName != null)
+			vcard.removeExtendedProperty(PROPERTY_PHONETIC_FIRST_NAME);
+		}
+		if (phoneticMiddleName != null) {
 			this.phoneticMiddleName = phoneticMiddleName.getValue();
-		if (phoneticLastName != null)
+			vcard.removeExtendedProperty(PROPERTY_PHONETIC_MIDDLE_NAME);
+		}
+		if (phoneticLastName != null) {
 			phoneticFamilyName = phoneticLastName.getValue();
+			vcard.removeExtendedProperty(PROPERTY_PHONETIC_LAST_NAME);
+		}
 		
+		// TEL
 		phoneNumbers = vcard.getTelephoneNumbers();
-		emails = vcard.getEmails();
+		vcard.removeProperties(Telephone.class);
 		
+		// EMAIL
+		emails = vcard.getEmails();
+		vcard.removeProperties(Email.class);
+		
+		// PHOTO
 		for (Photo photo : vcard.getPhotos()) {
 			this.photo = photo.getData();
+			vcard.removeProperties(Photo.class);
 			break;
 		}
 
+		// ORG
 		organization = vcard.getOrganization();
+		vcard.removeProperties(Organization.class);
+		// TITLE
 		for (Title title : vcard.getTitles()) {
 			jobTitle = title.getValue();
+			vcard.removeProperties(Title.class);
 			break;
 		}
+		// ROLE
 		for (Role role : vcard.getRoles()) {
 			this.jobDescription = role.getValue();
+			vcard.removeProperties(Role.class);
 			break;
 		}
 	
+		// IMPP
 		impps = vcard.getImpps();
+		vcard.removeProperties(Impp.class);
 		
+		// NICKNAME
 		Nickname nicknames = vcard.getNickname();
-		if (nicknames != null && nicknames.getValues() != null)
-			nickName = StringUtils.join(nicknames.getValues(), ", ");
+		if (nicknames != null) {
+			if (nicknames.getValues() != null)
+				nickName = StringUtils.join(nicknames.getValues(), ", ");
+			vcard.removeProperties(Nickname.class);
+		}
 		
+		// NOTE
 		List<String> notes = new LinkedList<String>();
 		for (Note note : vcard.getNotes())
 			notes.add(note.getValue());
 		if (!notes.isEmpty())
 			note = StringUtils.join(notes, "\n---\n");
+		vcard.removeProperties(Note.class);
 
+		// ADR
 		addresses = vcard.getAddresses();
+		vcard.removeProperties(Address.class);
 		
+		// URL
 		for (Url url : vcard.getUrls())
 			URLs.add(url.getValue());
+		vcard.removeProperties(Url.class);
 
+		// BDAY
 		birthDay = vcard.getBirthday();
+		vcard.removeProperties(Birthday.class);
+		// ANNIVERSARY
 		anniversary = vcard.getAnniversary();
+		vcard.removeProperties(Anniversary.class);
 		
-		// get X-SIP and import as IMPP
+		// X-SIP
 		for (RawProperty sip : vcard.getExtendedProperties(PROPERTY_SIP))
 			impps.add(new Impp("sip", sip.getValue()));
+		vcard.removeExtendedProperty(PROPERTY_SIP);
+
+		// remove binary properties because of potential OutOfMemory / TransactionTooLarge exceptions
+		vcard.removeProperties(Logo.class);
+		vcard.removeProperties(Sound.class);
+		// remove properties that don't apply anymore
+		vcard.removeProperties(Revision.class);
+		vcard.removeProperties(Source.class);
+		// store all remaining properties into unknownProperties
+		if (!vcard.getProperties().isEmpty() || !vcard.getExtendedProperties().isEmpty())
+			unknownProperties = vcard.write();
+		else
+			unknownProperties = null;
 	}
 
 	
 	@Override
 	public ByteArrayOutputStream toEntity() throws IOException {
-		VCard vcard = new VCard();
-		vcard.setProdId("DAVdroid/" + Constants.APP_VERSION + " (ez-vcard/" + Ezvcard.VERSION + ")");
+		VCard vcard = null;
+		try {
+			if (unknownProperties != null)
+				vcard = Ezvcard.parse(unknownProperties).first();
+		} catch (Exception e) {
+			Log.w(TAG, "Couldn't parse original property set, beginning from scratch");
+		}
+		if (vcard == null)
+			vcard = new VCard();
 		
 		if (uid != null)
 			vcard.setUid(new Uid(uid));
+		else
+			Log.wtf(TAG, "Generating VCard without UID");
 		
 		if (starred)
 			vcard.setExtendedProperty(PROPERTY_STARRED, "1");
 		
 		if (displayName != null)
 			vcard.setFormattedName(displayName);
+		else if (organization != null && organization.getValues() != null && organization.getValues().get(0) != null)
+			vcard.setFormattedName(organization.getValues().get(0));
+		else
+			Log.w(TAG, "No FN (formatted name) available to generate VCard");
 
+		// N
 		if (familyName != null || middleName != null || givenName != null) {
 			StructuredName n = new StructuredName();
 			if (prefix != null)
@@ -227,6 +314,7 @@ public class Contact extends Resource {
 			vcard.setStructuredName(n);
 		}
 		
+		// phonetic names
 		if (phoneticGivenName != null)
 			vcard.addExtendedProperty(PROPERTY_PHONETIC_FIRST_NAME, phoneticGivenName);
 		if (phoneticMiddleName != null)
@@ -234,42 +322,55 @@ public class Contact extends Resource {
 		if (phoneticFamilyName != null)
 			vcard.addExtendedProperty(PROPERTY_PHONETIC_LAST_NAME, phoneticFamilyName);
 		
+		// TEL
 		for (Telephone phoneNumber : phoneNumbers)
 			vcard.addTelephoneNumber(phoneNumber);
 		
+		// EMAIL
 		for (Email email : emails)
 			vcard.addEmail(email);
 
+		// ORG, TITLE, ROLE
 		if (organization != null)
-			vcard.addOrganization(organization);
+			vcard.setOrganization(organization);
 		if (jobTitle != null)
 			vcard.addTitle(jobTitle);
 		if (jobDescription != null)
 			vcard.addRole(jobDescription);
 		
+		// IMPP
 		for (Impp impp : impps)
 			vcard.addImpp(impp);
 
-		if (nickName != null && !nickName.isEmpty())
+		// NICKNAME
+		if (!StringUtils.isBlank(nickName))
 			vcard.setNickname(nickName);
 		
-		if (note != null && !note.isEmpty())
+		// NOTE
+		if (!StringUtils.isBlank(note))
 			vcard.addNote(note);
 		
+		// ADR
 		for (Address address : addresses)
 			vcard.addAddress(address);
 		
+		// URL
 		for (String url : URLs)
 			vcard.addUrl(url);
-		
+
+		// ANNIVERSARY
 		if (anniversary != null)
 			vcard.setAnniversary(anniversary);
+		// BDAY
 		if (birthDay != null)
 			vcard.setBirthday(birthDay);
 		
+		// PHOTO
 		if (photo != null)
 			vcard.addPhoto(new Photo(photo, ImageType.JPEG));
 		
+		// PRODID, REV
+		vcard.setProdId("DAVdroid/" + Constants.APP_VERSION + " (ez-vcard/" + Ezvcard.VERSION + ")");
 		vcard.setRevision(Revision.now());
 		
 		ByteArrayOutputStream os = new ByteArrayOutputStream();

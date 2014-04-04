@@ -14,7 +14,6 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import lombok.Synchronized;
 import android.accounts.Account;
 import android.app.Service;
 import android.content.ContentProviderClient;
@@ -32,13 +31,13 @@ public class CalendarsSyncAdapterService extends Service {
 	private static SyncAdapter syncAdapter;
 	
 	
-	@Override @Synchronized
+	@Override
 	public void onCreate() {
 		if (syncAdapter == null)
 			syncAdapter = new SyncAdapter(getApplicationContext());
 	}
 
-	@Override @Synchronized
+	@Override
 	public void onDestroy() {
 		syncAdapter.close();
 		syncAdapter = null;
