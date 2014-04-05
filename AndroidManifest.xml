@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="at.bitfire.davdroid"
-    android:versionCode="34"
-    android:versionName="0.5.11" android:installLocation="internalOnly">
+    android:versionCode="35"
+    android:versionName="0.5.12-alpha" android:installLocation="internalOnly">
 
     <uses-sdk
         android:minSdkVersion="14"
