@@ -29,13 +29,12 @@ import ch.boye.httpclientandroidlib.conn.socket.LayeredConnectionSocketFactory;
 import ch.boye.httpclientandroidlib.conn.ssl.BrowserCompatHostnameVerifier;
 import ch.boye.httpclientandroidlib.protocol.HttpContext;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 	private static final String TAG = "davdroid.SNISocketFactory";
 	
 	final static TlsSniSocketFactory INSTANCE = new TlsSniSocketFactory();
 	
-	private final static SSLCertificateSocketFactory sslSocketFactory = (SSLCertificateSocketFactory) SSLCertificateSocketFactory.getDefault(0);
+	private final static SSLCertificateSocketFactory sslSocketFactory = (SSLCertificateSocketFactory)SSLCertificateSocketFactory.getDefault(0);
 	private final static HostnameVerifier hostnameVerifier = new BrowserCompatHostnameVerifier();
 	
 
@@ -44,6 +43,7 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 		return sslSocketFactory.createSocket();
 	}
 
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	@Override
 	public Socket connectSocket(int timeout, Socket socket, HttpHost host, InetSocketAddress remoteAddr, InetSocketAddress localAddr, HttpContext context) throws IOException {
 		// we'll rather create a new socket
@@ -52,11 +52,14 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 		// create and connect SSL socket, but don't do hostname/certificate verification yet
 		SSLSocket ssl = (SSLSocket)sslSocketFactory.createSocket(remoteAddr.getAddress(), host.getPort());
 		
-		// set up SNI before the handshake
+		// set reasonable SSL/TLS settings before the handshake:
+		// - enable all supported protocols (enables TLSv1.1 and TLSv1.2 on Android <4.4.3, if available)
+		ssl.setEnabledProtocols(ssl.getSupportedProtocols());
+		
+		// - set SNI host name
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-			// Android 4.2+, use documented way to set SNI host name
-			Log.d(TAG, "Setting SNI hostname");
 			sslSocketFactory.setHostname(ssl, host.getHostName());
+			// TODO sslSocketFactory.setUseSessionTickets(ssl, true);
 		} else {
 			Log.d(TAG, "No documented SNI support on Android <4.2, trying with reflection");
 			try {
