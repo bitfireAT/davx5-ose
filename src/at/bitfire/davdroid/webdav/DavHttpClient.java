@@ -10,6 +10,10 @@
  ******************************************************************************/
 package at.bitfire.davdroid.webdav;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import at.bitfire.davdroid.Constants;
 import ch.boye.httpclientandroidlib.client.config.RequestConfig;
 import ch.boye.httpclientandroidlib.config.Registry;
@@ -17,11 +21,13 @@ import ch.boye.httpclientandroidlib.config.RegistryBuilder;
 import ch.boye.httpclientandroidlib.conn.socket.ConnectionSocketFactory;
 import ch.boye.httpclientandroidlib.conn.socket.PlainConnectionSocketFactory;
 import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
+import ch.boye.httpclientandroidlib.impl.client.HttpClientBuilder;
 import ch.boye.httpclientandroidlib.impl.client.HttpClients;
 import ch.boye.httpclientandroidlib.impl.conn.ManagedHttpClientConnectionFactory;
 import ch.boye.httpclientandroidlib.impl.conn.PoolingHttpClientConnectionManager;
 
 public class DavHttpClient {
+	private final static String TAG = "davdroid.DavHttpClient";
 	
 	private final static RequestConfig defaultRqConfig;
 	private final static Registry<ConnectionSocketFactory> socketFactoryRegistry;
@@ -38,28 +44,34 @@ public class DavHttpClient {
 				.setSocketTimeout(20*1000)
 				.setStaleConnectionCheckEnabled(false)
 				.build();
-		
-		// enable logging
-		ManagedHttpClientConnectionFactory.INSTANCE.wirelog.enableDebug(true);
-		ManagedHttpClientConnectionFactory.INSTANCE.log.enableDebug(true);
 	}
 
 
-	public static CloseableHttpClient create() {
-		
+	public static CloseableHttpClient create(Context context) {
 		PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 		// limits per DavHttpClient (= per DavSyncAdapter extends AbstractThreadedSyncAdapter)
-		connectionManager.setMaxTotal(2);				// max.  2 connections in total
+		connectionManager.setMaxTotal(3);				// max.  3 connections in total
 		connectionManager.setDefaultMaxPerRoute(2);		// max.  2 connections per host
 		
-		return HttpClients.custom()
+		HttpClientBuilder builder = HttpClients.custom()
 				.useSystemProperties()
 				.setConnectionManager(connectionManager)
 				.setDefaultRequestConfig(defaultRqConfig)
 				.setRetryHandler(DavHttpRequestRetryHandler.INSTANCE)
 				.setUserAgent("DAVdroid/" + Constants.APP_VERSION)
-				.disableCookieManagement()
-				.build();
+				.disableCookieManagement();
+
+		// debug options
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+		if (settings.getBoolean(Constants.SETTING_DISABLE_COMPRESSION, false))
+			builder = builder.disableContentCompression();
+		
+		boolean networkLogging = settings.getBoolean(Constants.SETTING_NETWORK_LOGGING, false);
+		Log.d(TAG, "Network logging: " + networkLogging);
+		ManagedHttpClientConnectionFactory.INSTANCE.wirelog.enableDebug(networkLogging);
+		ManagedHttpClientConnectionFactory.INSTANCE.log.enableDebug(networkLogging);
+
+		return builder.build();
 	}
 
 }

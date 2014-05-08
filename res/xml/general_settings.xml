@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <CheckBoxPreference
+        android:key="disable_compression"
+        android:summaryOff="@string/http_compression_enabled"
+        android:summaryOn="@string/http_compression_disabled"
+        android:title="@string/disable_http_compression" />
+    <CheckBoxPreference android:title="@string/network_logging" android:summaryOn="@string/network_logging_enabled" android:key="network_logging" android:summaryOff="@string/network_logging_disabled"/>
+
+</PreferenceScreen>

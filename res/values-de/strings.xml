@@ -107,4 +107,13 @@
     <string name="account_name_info">&quot;Verwenden Sie Ihre Email-Adresse als Kontoname, da Android den Kontonamen als ORGANIZER-Feld in Terminen benutzt. Sie können keine zwei Konten mit dem gleichen Namen anlegen.</string>
     <string name="read_only">schreibgeschützt</string>
     
+    <string name="general_settings">Allgemeine Einstellungen</string>
+    <string name="debug_settings">Einstellungen zur Fehlersuche</string>
+    <string name="disable_http_compression">HTTP-Komprimierung deaktivieren</string>
+    <string name="http_compression_disabled">HTTP-Komprimierung ist deaktiviert (zur Fehlersuche)</string>
+    <string name="http_compression_enabled">HTTP-Komprimierung wird verwendet, falls möglich</string>
+    <string name="network_logging">Netzwerkverkehr aufzeichnen</string>
+    <string name="network_logging_enabled">Der gesamte Netzwerkverkehr wird in den Android-Logs mitgeschrieben (zur Fehlersuche)</string>
+    <string name="network_logging_disabled">Netzwerkverkehr wird nicht aufgezeichnet</string>
+
 </resources>

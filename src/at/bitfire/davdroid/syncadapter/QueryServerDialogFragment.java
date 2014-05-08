@@ -96,10 +96,12 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 	
 	static class ServerInfoLoader extends AsyncTaskLoader<ServerInfo> {
 		private static final String TAG = "davdroid.ServerInfoLoader";
-		Bundle args;
+		final Bundle args;
+		final Context context;
 		
 		public ServerInfoLoader(Context context, Bundle args) {
 			super(context);
+			this.context = context;
 			this.args = args;
 		}
 
@@ -112,7 +114,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 				args.getBoolean(EXTRA_AUTH_PREEMPTIVE)
 			);
 			
-			CloseableHttpClient httpClient = DavHttpClient.create();
+			CloseableHttpClient httpClient = DavHttpClient.create(context);
 			try {
 				// (1/5) detect capabilities
 				WebDavResource base = new WebDavResource(httpClient, new URI(serverInfo.getProvidedURL()), serverInfo.getUserName(),
