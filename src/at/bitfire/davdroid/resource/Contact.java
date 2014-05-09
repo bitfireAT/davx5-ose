@@ -264,9 +264,11 @@ public class Contact extends Resource {
 		vcard.removeProperties(Source.class);
 		// store all remaining properties into unknownProperties
 		if (!vcard.getProperties().isEmpty() || !vcard.getExtendedProperties().isEmpty())
-			unknownProperties = vcard.write();
-		else
-			unknownProperties = null;
+			try {
+				unknownProperties = vcard.write();
+			} catch(Exception e) {
+				Log.w(TAG, "Couldn't store unknown properties (maybe illegal syntax), dropping them");
+			}
 	}
 
 	
