@@ -26,6 +26,7 @@ import ezvcard.Ezvcard;
 import ezvcard.VCard;
 import ezvcard.VCardException;
 import ezvcard.VCardVersion;
+import ezvcard.ValidationWarnings;
 import ezvcard.parameter.EmailType;
 import ezvcard.parameter.ImageType;
 import ezvcard.parameter.TelephoneType;
@@ -374,6 +375,11 @@ public class Contact extends Resource {
 		// PRODID, REV
 		vcard.setProdId("DAVdroid/" + Constants.APP_VERSION + " (ez-vcard/" + Ezvcard.VERSION + ")");
 		vcard.setRevision(Revision.now());
+		
+		// validate and print warnings
+		ValidationWarnings warnings = vcard.validate(VCardVersion.V3_0);
+		if (!warnings.isEmpty())
+			Log.w(TAG, "Created potentially invalid VCard! " + warnings);
 		
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		Ezvcard

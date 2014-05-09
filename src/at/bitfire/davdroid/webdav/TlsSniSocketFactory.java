@@ -60,7 +60,7 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 
 	@Override
 	public Socket createSocket(HttpContext context) throws IOException {
-		return new Socket();
+		return sslSocketFactory.createSocket();
 	}
 
 	@Override
@@ -87,6 +87,7 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 		SSLSocket ssl = (SSLSocket)sslSocketFactory.createSocket(plain, host, port, true);
 
 		// already connected, but verify host name again and print some connection info
+		Log.w(TAG, "Setting SNI/TLSv1.2 will silently fail because the handshake is already done");
 		connectWithSNI(ssl, host);
 
 		return ssl;
@@ -95,26 +96,23 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 	
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	private void connectWithSNI(SSLSocket ssl, String host) throws SSLPeerUnverifiedException {
-		if (!ssl.isConnected()) {
-			// set reasonable SSL/TLS settings before the handshake:
-			// - enable all supported protocols (enables TLSv1.1 and TLSv1.2 on Android <4.4.3, if available)
-			ssl.setEnabledProtocols(ssl.getSupportedProtocols());
-			
-			// - set SNI host name
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-				Log.d(TAG, "Using documented SNI with host name " + host);
-				sslSocketFactory.setHostname(ssl, host);
-			} else {
-				Log.d(TAG, "No documented SNI support on Android <4.2, trying with reflection");
-				try {
-					java.lang.reflect.Method setHostnameMethod = ssl.getClass().getMethod("setHostname", String.class);
-					setHostnameMethod.invoke(ssl, host);
-				} catch (Exception e) {
-					Log.w(TAG, "SNI not useable", e);
-				}
+		// set reasonable SSL/TLS settings before the handshake:
+		// - enable all supported protocols (enables TLSv1.1 and TLSv1.2 on Android <4.4.3, if available)
+		ssl.setEnabledProtocols(ssl.getSupportedProtocols());
+		
+		// - set SNI host name
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+			Log.d(TAG, "Using documented SNI with host name " + host);
+			sslSocketFactory.setHostname(ssl, host);
+		} else {
+			Log.d(TAG, "No documented SNI support on Android <4.2, trying with reflection");
+			try {
+				java.lang.reflect.Method setHostnameMethod = ssl.getClass().getMethod("setHostname", String.class);
+				setHostnameMethod.invoke(ssl, host);
+			} catch (Exception e) {
+				Log.w(TAG, "SNI not useable", e);
 			}
-		} else
-			Log.d(TAG, "Socket is already connected, SNI/TLv1.2 not available unless activated by Android defaults");
+		}
 		
 		// verify hostname and certificate
 		SSLSession session = ssl.getSession();
