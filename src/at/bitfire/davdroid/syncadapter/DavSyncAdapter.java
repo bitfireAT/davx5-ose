@@ -25,11 +25,14 @@ import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
+import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.LocalStorageException;
 import at.bitfire.davdroid.resource.RemoteCollection;
@@ -106,7 +109,11 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 		httpClientLock.writeLock().lock();
 		if (httpClient == null) {
 			Log.d(TAG, "Creating new DavHttpClient");
-			httpClient = DavHttpClient.create(getContext());
+			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
+			httpClient = DavHttpClient.create(
+				settings.getBoolean(Constants.SETTING_DISABLE_COMPRESSION, false),
+				settings.getBoolean(Constants.SETTING_NETWORK_LOGGING, false)
+			);
 		}
 		
 		// prevent httpClient shutdown until we're ready by holding a read lock

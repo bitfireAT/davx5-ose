@@ -10,9 +10,6 @@
  ******************************************************************************/
 package at.bitfire.davdroid.webdav;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import at.bitfire.davdroid.Constants;
 import ch.boye.httpclientandroidlib.client.config.RequestConfig;
@@ -41,13 +38,13 @@ public class DavHttpClient {
 		// use request defaults from AndroidHttpClient
 		defaultRqConfig = RequestConfig.copy(RequestConfig.DEFAULT)
 				.setConnectTimeout(20*1000)
-				.setSocketTimeout(20*1000)
+				.setSocketTimeout(45*1000)
 				.setStaleConnectionCheckEnabled(false)
 				.build();
 	}
 
 
-	public static CloseableHttpClient create(Context context) {
+	public static CloseableHttpClient create(boolean disableCompression, boolean logTraffic) {
 		PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 		// limits per DavHttpClient (= per DavSyncAdapter extends AbstractThreadedSyncAdapter)
 		connectionManager.setMaxTotal(3);				// max.  3 connections in total
@@ -60,16 +57,16 @@ public class DavHttpClient {
 				.setRetryHandler(DavHttpRequestRetryHandler.INSTANCE)
 				.setUserAgent("DAVdroid/" + Constants.APP_VERSION)
 				.disableCookieManagement();
-
-		// debug options
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-		if (settings.getBoolean(Constants.SETTING_DISABLE_COMPRESSION, false))
-			builder = builder.disableContentCompression();
 		
-		boolean networkLogging = settings.getBoolean(Constants.SETTING_NETWORK_LOGGING, false);
-		Log.d(TAG, "Network logging: " + networkLogging);
-		ManagedHttpClientConnectionFactory.INSTANCE.wirelog.enableDebug(networkLogging);
-		ManagedHttpClientConnectionFactory.INSTANCE.log.enableDebug(networkLogging);
+		if (disableCompression) {
+			Log.d(TAG, "Disabling compression for debugging purposes");
+			builder = builder.disableContentCompression();
+		}
+
+		if (logTraffic)
+			Log.d(TAG, "Logging network traffic for debugging purposes");
+		ManagedHttpClientConnectionFactory.INSTANCE.wirelog.enableDebug(logTraffic);
+		ManagedHttpClientConnectionFactory.INSTANCE.log.enableDebug(logTraffic);
 
 		return builder.build();
 	}

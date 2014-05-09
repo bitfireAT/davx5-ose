@@ -42,9 +42,8 @@ public class AddAccountActivity extends Activity {
 		return true;
 	}
 
-	public boolean showHelp(MenuItem item) {
+	public void showHelp(MenuItem item) {
 		startActivityForResult(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.WEB_URL_HELP)), 0);
-		return true;
 	}
 
 }

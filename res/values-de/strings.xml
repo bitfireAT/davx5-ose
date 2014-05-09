@@ -115,5 +115,6 @@
     <string name="network_logging">Netzwerkverkehr aufzeichnen</string>
     <string name="network_logging_enabled">Der gesamte Netzwerkverkehr wird in den Android-Logs mitgeschrieben (zur Fehlersuche)</string>
     <string name="network_logging_disabled">Netzwerkverkehr wird nicht aufgezeichnet</string>
-
+    <string name="report_an_issue">Problem berichten</string>
+    
 </resources>
