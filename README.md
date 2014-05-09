@@ -1,7 +1,13 @@
 
-Please see the [DAVdroid Web site](http://davdroid.bitfire.at) for more information.
+DAVDROID
+========
 
-Twitter: https://twitter.com/davdroidapp
+Please see the [DAVdroid Web site](http://davdroid.bitfire.at) for
+detailled information about DAVdroid.
+
+DAVdroid is licensed under the [GPLv3 License](COPYING).
+
+Twitter: [@davdroidapp](https://twitter.com/davdroidapp)
 
 
 USED THIRD-PARTY LIBRARIES

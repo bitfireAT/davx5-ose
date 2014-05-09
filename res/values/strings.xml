@@ -122,5 +122,6 @@
     <string name="network_logging">Log network traffic</string>
     <string name="network_logging_enabled">All network traffic is being logged verbosely (debug mode)</string>
     <string name="network_logging_disabled">Network traffic is not being logged</string>
+    <string name="report_an_issue">Report an issue</string>
 
 </resources>

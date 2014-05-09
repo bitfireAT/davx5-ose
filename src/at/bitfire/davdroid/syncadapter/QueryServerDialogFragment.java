@@ -114,7 +114,9 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 				args.getBoolean(EXTRA_AUTH_PREEMPTIVE)
 			);
 			
-			CloseableHttpClient httpClient = DavHttpClient.create(context);
+			// disable compression and enable network logging for debugging purposes 
+			CloseableHttpClient httpClient = DavHttpClient.create(true, true);
+			
 			try {
 				// (1/5) detect capabilities
 				WebDavResource base = new WebDavResource(httpClient, new URI(serverInfo.getProvidedURL()), serverInfo.getUserName(),
