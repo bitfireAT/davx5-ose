@@ -1,6 +1,9 @@
 package at.bitfire.davdroid.resource.test;
 
+import java.util.Calendar;
+
 import lombok.Cleanup;
+import android.accounts.Account;
 import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -9,40 +12,51 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Attendees;
 import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
 import android.provider.CalendarContract.Reminders;
 import android.test.InstrumentationTestCase;
+import android.util.Log;
+import at.bitfire.davdroid.resource.LocalCalendar;
+import at.bitfire.davdroid.resource.LocalStorageException;
 
 public class LocalCalendarTest extends InstrumentationTestCase {
 	
-	private static final String calendarName = "DavdroidTest";
+	private static final String
+		TAG = "davroid.LocalCalendarTest",
+		calendarName = "DAVdroid_Test";
 	
-	ContentProviderClient client;
-	long calendarID;
+	ContentProviderClient providerClient;
+	Account testAccount = new Account(calendarName, CalendarContract.ACCOUNT_TYPE_LOCAL);
+	LocalCalendar testCalendar;
 	
 
 	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
 	protected void setUp() throws Exception {
 		// get content resolver
 		ContentResolver resolver = getInstrumentation().getContext().getContentResolver();
-		client = resolver.acquireContentProviderClient(CalendarContract.AUTHORITY);
+		providerClient = resolver.acquireContentProviderClient(CalendarContract.AUTHORITY);
 		
-		@Cleanup Cursor cursor = client.query(Calendars.CONTENT_URI,
+		long id;
+		
+		@Cleanup Cursor cursor = providerClient.query(Calendars.CONTENT_URI,
 				new String[] { Calendars._ID },
 				Calendars.ACCOUNT_TYPE + "=? AND " + Calendars.NAME + "=?",
 				new String[] { CalendarContract.ACCOUNT_TYPE_LOCAL, calendarName },
 				null);
 		if (cursor.moveToNext()) {
 			// found local test calendar
-			calendarID = cursor.getLong(0);
+			id = cursor.getLong(0);
+			Log.i(TAG, "Found test calendar with ID " + id);
+			
 		} else {
 			// no local test calendar found, create 
 			ContentValues values = new ContentValues();
-			values.put(Calendars.ACCOUNT_NAME, calendarName);
-			values.put(Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL);
+			values.put(Calendars.ACCOUNT_NAME, testAccount.name);
+			values.put(Calendars.ACCOUNT_TYPE, testAccount.type);
 			values.put(Calendars.NAME, calendarName);
 			values.put(Calendars.CALENDAR_DISPLAY_NAME, calendarName);
 			values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER);
@@ -55,21 +69,39 @@ public class LocalCalendarTest extends InstrumentationTestCase {
 				values.put(Calendars.ALLOWED_ATTENDEE_TYPES, Attendees.TYPE_NONE + "," + Attendees.TYPE_OPTIONAL + "," + Attendees.TYPE_REQUIRED + "," + Attendees.TYPE_RESOURCE);
 			}
 			
-			Uri calendarURI = client.insert(calendarsURI(), values);
-			calendarID = ContentUris.parseId(calendarURI);
+			Uri calendarURI = providerClient.insert(calendarsURI(), values);
+			
+			id = ContentUris.parseId(calendarURI);
+			Log.i(TAG, "Created test calendar with ID " + id);
 		}
+		
+		testCalendar = new LocalCalendar(testAccount, providerClient, id, null, null);
 	}
 
 	protected void tearDown() throws Exception {
-		Uri uri = ContentUris.withAppendedId(calendarsURI(), calendarID);
-		client.delete(uri, null, null);
+		Uri uri = ContentUris.withAppendedId(calendarsURI(), testCalendar.getId());
+		providerClient.delete(uri, null, null);
 	}
 
 	
 	// tests
 	
-	public void testNothing() {
-		assert(true);
+	public void testFindNew() throws LocalStorageException, RemoteException {
+		// at the beginning, there are no dirty events 
+		assertTrue(testCalendar.findNew().length == 0);
+		assertTrue(testCalendar.findUpdated().length == 0);
+		
+		// insert a "new" event
+		insertNewEvent();
+		
+		// there must be one "new" event now
+		assertTrue(testCalendar.findNew().length == 1);
+		assertTrue(testCalendar.findUpdated().length == 0);
+				
+		// nothing has changed, the record must still be "new"
+		// see issue #233
+		assertTrue(testCalendar.findNew().length == 1);
+		assertTrue(testCalendar.findUpdated().length == 0);
 	}
 
 	
@@ -81,6 +113,24 @@ public class LocalCalendarTest extends InstrumentationTestCase {
 			.appendQueryParameter(Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL)
 			.appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").
 		build();
+	}
+	
+	protected long insertNewEvent() throws LocalStorageException, RemoteException {
+		Uri uri = Events.CONTENT_URI.buildUpon()
+				.appendQueryParameter(Calendars.ACCOUNT_TYPE, testAccount.type)
+				.appendQueryParameter(Calendars.ACCOUNT_NAME, testAccount.name)
+				.appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+				.build();
+		
+		ContentValues values = new ContentValues();
+		values.put(Events.CALENDAR_ID, testCalendar.getId());
+		values.put(Events.TITLE, "Test Event");
+		values.put(Events.ALL_DAY, 0);
+		values.put(Events.DTSTART, Calendar.getInstance().getTimeInMillis());
+		values.put(Events.DTEND, Calendar.getInstance().getTimeInMillis());
+		values.put(Events.EVENT_TIMEZONE, "UTC");
+		values.put(Events.DIRTY, 1);
+		return ContentUris.parseId(providerClient.insert(uri, values));
 	}
 
 }

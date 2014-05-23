@@ -338,7 +338,8 @@ public class WebDavResource {
 		}
 	}
 	
-	public void put(byte[] data, PutMode mode) throws IOException, HttpException {
+	// returns the ETag of the created/updated resource, if available (null otherwise)
+	public String put(byte[] data, PutMode mode) throws IOException, HttpException {
 		HttpPut put = new HttpPut(location);
 		put.setEntity(new ByteArrayEntity(data));
 
@@ -357,9 +358,15 @@ public class WebDavResource {
 		CloseableHttpResponse response = httpClient.execute(put, context);
 		try {
 			checkResponse(response);
+
+			Header eTag = response.getLastHeader("ETag");
+			if (eTag != null)
+				return eTag.getValue();
 		} finally {
 			response.close();
 		}
+		
+		return null;
 	}
 	
 	public void delete() throws IOException, HttpException {

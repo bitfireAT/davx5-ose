@@ -183,7 +183,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	
 	public void testPutAddDontOverwrite() throws IOException, HttpException {
 		// should succeed on a non-existing file
-		davNonExistingFile.put(SAMPLE_CONTENT, PutMode.ADD_DONT_OVERWRITE);
+		assertEquals("has-just-been-created", davNonExistingFile.put(SAMPLE_CONTENT, PutMode.ADD_DONT_OVERWRITE));
 		
 		// should fail on an existing file
 		try {
@@ -195,7 +195,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	
 	public void testPutUpdateDontOverwrite() throws IOException, HttpException {
 		// should succeed on an existing file
-		davExistingFile.put(SAMPLE_CONTENT, PutMode.UPDATE_DONT_OVERWRITE);
+		assertEquals("has-just-been-updated", davExistingFile.put(SAMPLE_CONTENT, PutMode.UPDATE_DONT_OVERWRITE));
 		
 		// should fail on a non-existing file
 		try {

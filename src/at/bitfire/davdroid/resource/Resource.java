@@ -20,7 +20,7 @@ import lombok.ToString;
 
 @ToString
 public abstract class Resource {
-	@Getter protected String name, ETag;
+	@Getter @Setter protected String name, ETag;
 	@Getter @Setter protected String uid;
 	@Getter protected long localID;
 

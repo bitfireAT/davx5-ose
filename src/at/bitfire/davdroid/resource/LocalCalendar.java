@@ -158,7 +158,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		return calendars.toArray(new LocalCalendar[0]);
 	}
 
-	public LocalCalendar(Account account, ContentProviderClient providerClient, int id, String url, String cTag) throws RemoteException {
+	public LocalCalendar(Account account, ContentProviderClient providerClient, long id, String url, String cTag) throws RemoteException {
 		super(account, providerClient);
 		this.id = id;
 		this.url = url;

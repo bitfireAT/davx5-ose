@@ -138,7 +138,9 @@ public class SyncManager {
 			for (long id : newIDs)
 				try {
 					Resource res = local.findById(id, true);
-					remote.add(res);
+					String eTag = remote.add(res);
+					if (eTag != null)
+						local.updateETag(res, eTag);
 					local.clearDirty(res);
 					count++;
 				} catch(PreconditionFailedException e) {
@@ -162,7 +164,9 @@ public class SyncManager {
 			for (long id : dirtyIDs) {
 				try {
 					Resource res = local.findById(id, true);
-					remote.update(res);
+					String eTag = remote.update(res);
+					if (eTag != null)
+						local.updateETag(res, eTag);
 					local.clearDirty(res);
 					count++;
 				} catch(PreconditionFailedException e) {
