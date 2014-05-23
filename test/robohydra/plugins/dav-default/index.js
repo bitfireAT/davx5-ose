@@ -134,8 +134,10 @@ exports.getBodyParts = function(conf) {
 					if (req.method == "PUT") {
 						if (req.headers['if-match'])	/* can't overwrite new file */
 							res.statusCode = 412;
-						else
+						else {
 							res.statusCode = 201;
+                            res.headers["ETag"] = "has-just-been-created";
+                        }
 
 					} else if (req.method == "DELETE")
 						res.statusCode = 404;
@@ -149,8 +151,10 @@ exports.getBodyParts = function(conf) {
 					if (req.method == "PUT") {
 						if (req.headers['if-none-match'])	/* requested "don't overwrite", but this file exists */
 							res.statusCode = 412;
-						else
+						else {
 							res.statusCode = 204;
+                            res.headers["ETag"] = "has-just-been-updated";
+                        }
 
 					} else if (req.method == "DELETE")
 						res.statusCode = 204;

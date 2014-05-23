@@ -127,14 +127,18 @@ public abstract class RemoteCollection<T extends Resource> {
 		return resource;
 	}
 	
-	public void add(Resource res) throws IOException, HttpException, ValidationException {
+	// returns ETag of the created resource, if returned by server
+	public String add(Resource res) throws IOException, HttpException, ValidationException {
 		WebDavResource member = new WebDavResource(collection, res.getName(), res.getETag());
 		member.setContentType(memberContentType());
 		
 		@Cleanup ByteArrayOutputStream os = res.toEntity();
-		member.put(os.toByteArray(), PutMode.ADD_DONT_OVERWRITE);
+		String eTag = member.put(os.toByteArray(), PutMode.ADD_DONT_OVERWRITE);
 		
+		// after a successful upload, the collection has implicitely changed, too
 		collection.invalidateCTag();
+		
+		return eTag;
 	}
 
 	public void delete(Resource res) throws IOException, HttpException {
@@ -144,13 +148,17 @@ public abstract class RemoteCollection<T extends Resource> {
 		collection.invalidateCTag();
 	}
 	
-	public void update(Resource res) throws IOException, HttpException, ValidationException {
+	// returns ETag of the updated resource, if returned by server
+	public String update(Resource res) throws IOException, HttpException, ValidationException {
 		WebDavResource member = new WebDavResource(collection, res.getName(), res.getETag());
 		member.setContentType(memberContentType());
 		
 		@Cleanup ByteArrayOutputStream os = res.toEntity();
-		member.put(os.toByteArray(), PutMode.UPDATE_DONT_OVERWRITE);
+		String eTag = member.put(os.toByteArray(), PutMode.UPDATE_DONT_OVERWRITE);
 		
+		// after a successful upload, the collection has implicitely changed, too
 		collection.invalidateCTag();
+		
+		return eTag;
 	}
 }

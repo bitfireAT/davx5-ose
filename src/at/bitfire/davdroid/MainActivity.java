@@ -22,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import at.bitfire.davdroid.syncadapter.GeneralSettingsActivity;
 
 public class MainActivity extends Activity {
 
@@ -53,6 +54,11 @@ public class MainActivity extends Activity {
 	
 	public void addAccount(MenuItem item) {
 		Intent intent = new Intent(Settings.ACTION_ADD_ACCOUNT);
+		startActivity(intent);
+	}
+	
+	public void showDebugSettings(MenuItem item) {
+		Intent intent = new Intent(this, GeneralSettingsActivity.class);
 		startActivity(intent);
 	}
 

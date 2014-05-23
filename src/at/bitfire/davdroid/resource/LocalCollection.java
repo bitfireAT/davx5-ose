@@ -68,8 +68,8 @@ public abstract class LocalCollection<T extends Resource> {
 	// content provider (= database) querying
 
 	public long[] findNew() throws LocalStorageException {
-		// new records are 1) dirty, and 2) don't have a remote file name yet
-		String where = entryColumnDirty() + "=1 AND " + entryColumnRemoteName() + " IS NULL";
+		// new records are 1) dirty, and 2) don't have an ETag yet
+		String where = entryColumnDirty() + "=1 AND " + entryColumnETag() + " IS NULL";
 		if (entryColumnParentID() != null)
 			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
 		try {
@@ -101,8 +101,8 @@ public abstract class LocalCollection<T extends Resource> {
 	}
 	
 	public long[] findUpdated() throws LocalStorageException {
-		// updated records are 1) dirty, and 2) already have a remote file name
-		String where = entryColumnDirty() + "=1 AND " + entryColumnRemoteName() + " IS NOT NULL";
+		// updated records are 1) dirty, and 2) already have an ETag
+		String where = entryColumnDirty() + "=1 AND " + entryColumnETag() + " IS NOT NULL";
 		if (entryColumnParentID() != null)
 			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
 		try {
@@ -110,12 +110,12 @@ public abstract class LocalCollection<T extends Resource> {
 					new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
 					where, null, null);
 			if (cursor == null)
-				throw new LocalStorageException("Couldn't query dirty records");
+				throw new LocalStorageException("Couldn't query updated records");
 			
-			long[] dirty = new long[cursor.getCount()];
+			long[] updated = new long[cursor.getCount()];
 			for (int idx = 0; cursor.moveToNext(); idx++)
-				dirty[idx] = cursor.getLong(0);
-			return dirty;
+				updated[idx] = cursor.getLong(0);
+			return updated;
 		} catch(RemoteException ex) {
 			throw new LocalStorageException(ex);
 		}
@@ -217,6 +217,18 @@ public abstract class LocalCollection<T extends Resource> {
 	}
 
 	public abstract void deleteAllExceptRemoteNames(Resource[] remoteResources);
+	
+	public void updateETag(Resource res, String eTag) throws LocalStorageException {
+		Log.d(TAG, "Setting ETag of local resource " + res + " to " + eTag);
+		
+		ContentValues values = new ContentValues(1);
+		values.put(entryColumnETag(), eTag);
+		try {
+			providerClient.update(ContentUris.withAppendedId(entriesURI(), res.getLocalID()), values, null, new String[] {});
+		} catch (RemoteException e) {
+			throw new LocalStorageException(e);
+		}
+	}
 	
 	public void clearDirty(Resource resource) {
 		pendingOperations.add(ContentProviderOperation
