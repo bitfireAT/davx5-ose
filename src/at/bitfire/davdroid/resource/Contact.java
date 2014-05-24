@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Richard Hirner (bitfire web engineering).
+ * Copyright (c) 2014 Ricki Hirner (bitfire web engineering).
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
@@ -53,6 +53,10 @@ import ezvcard.property.Uid;
 import ezvcard.property.Url;
 
 
+/**
+ * Represents a contact. Locally, this is a Contact in the Android
+ * device; remote, this is a VCard.
+ */
 @ToString(callSuper = true)
 public class Contact extends Resource {
 	private final static String TAG = "davdroid.Contact";
