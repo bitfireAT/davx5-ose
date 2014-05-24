@@ -1,12 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2014 Richard Hirner (bitfire web engineering).
+ * Copyright (c) 2014 Ricki Hirner (bitfire web engineering).
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
- * 
- * Contributors:
- *     Richard Hirner (bitfire web engineering) - initial API and implementation
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
@@ -65,11 +62,16 @@ import android.provider.ContactsContract;
 import android.util.Log;
 import at.bitfire.davdroid.syncadapter.ServerInfo;
 
+/**
+ * Represents a locally stored calendar, containing Events.
+ * Communicates with the Android Contacts Provider which uses an SQLite
+ * database to store the contacts.
+ */
 public class LocalCalendar extends LocalCollection<Event> {
 	private static final String TAG = "davdroid.LocalCalendar";
 
 	@Getter protected long id;
-	@Getter protected String url, cTag;
+	@Getter protected String url;
 	
 	protected static String COLLECTION_COLUMN_CTAG = Calendars.CAL_SYNC1;
 
@@ -149,30 +151,47 @@ public class LocalCalendar extends LocalCollection<Event> {
 	
 	public static LocalCalendar[] findAll(Account account, ContentProviderClient providerClient) throws RemoteException {
 		@Cleanup Cursor cursor = providerClient.query(calendarsURI(account),
-				new String[] { Calendars._ID, Calendars.NAME, COLLECTION_COLUMN_CTAG },
+				new String[] { Calendars._ID, Calendars.NAME },
 				Calendars.DELETED + "=0 AND " + Calendars.SYNC_EVENTS + "=1", null, null);
 		
 		LinkedList<LocalCalendar> calendars = new LinkedList<LocalCalendar>();
 		while (cursor != null && cursor.moveToNext())
-			calendars.add(new LocalCalendar(account, providerClient, cursor.getInt(0), cursor.getString(1), cursor.getString(2)));
+			calendars.add(new LocalCalendar(account, providerClient, cursor.getInt(0), cursor.getString(1)));
 		return calendars.toArray(new LocalCalendar[0]);
 	}
 
-	public LocalCalendar(Account account, ContentProviderClient providerClient, long id, String url, String cTag) throws RemoteException {
+	public LocalCalendar(Account account, ContentProviderClient providerClient, long id, String url) throws RemoteException {
 		super(account, providerClient);
 		this.id = id;
 		this.url = url;
-		this.cTag = cTag;
 	}
 
 	
 	/* collection operations */
 	
 	@Override
-	public void setCTag(String cTag) {
-		pendingOperations.add(ContentProviderOperation.newUpdate(ContentUris.withAppendedId(calendarsURI(), id))
-			.withValue(COLLECTION_COLUMN_CTAG, cTag)
-			.build());
+	public String getCTag() throws LocalStorageException {
+		try {
+			@Cleanup Cursor c = providerClient.query(ContentUris.withAppendedId(calendarsURI(), id),
+					new String[] { COLLECTION_COLUMN_CTAG }, null, null, null);
+			if (c.moveToFirst()) {
+				return c.getString(0);
+			} else
+				throw new LocalStorageException("Couldn't query calendar CTag");
+		} catch(RemoteException e) {
+			throw new LocalStorageException(e);
+		}
+	}
+	
+	@Override
+	public void setCTag(String cTag) throws LocalStorageException {
+		ContentValues values = new ContentValues(1);
+		values.put(COLLECTION_COLUMN_CTAG, cTag);
+		try {
+			providerClient.update(ContentUris.withAppendedId(calendarsURI(), id), values, null, null);
+		} catch(RemoteException e) {
+			throw new LocalStorageException(e);
+		}
 	}
 
 
