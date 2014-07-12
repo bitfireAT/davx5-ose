@@ -77,7 +77,7 @@
 
         <DataKind kind="event" dateWithTime="false" >
             <Type maxOccurs="1" type="birthday" yearOptional="false" />
-            <Type type="anniversary" />
+            <Type maxOccurs="1" type="anniversary" />
         </DataKind>
         
         <DataKind kind="sip_address" maxOccurs="1" />
