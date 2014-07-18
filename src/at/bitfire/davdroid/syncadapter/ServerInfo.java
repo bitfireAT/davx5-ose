@@ -25,7 +25,7 @@ public class ServerInfo implements Serializable {
 	
 	private String errorMessage;
 	
-	private boolean calDAV, cardDAV;
+	private boolean calDAV = false, cardDAV = false;
 	private List<ResourceInfo>
 		addressBooks = new LinkedList<ResourceInfo>(),
 		calendars  = new LinkedList<ResourceInfo>();
