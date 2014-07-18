@@ -48,7 +48,7 @@ public abstract class RemoteCollection<T extends Resource> {
 	public RemoteCollection(CloseableHttpClient httpClient, String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {
 		this.httpClient = httpClient;
 		
-		collection = new WebDavResource(httpClient, new URI(baseURL), user, password, preemptiveAuth, true);
+		collection = new WebDavResource(httpClient, new URI(baseURL), user, password, preemptiveAuth);
 	}
 
 	

@@ -125,14 +125,15 @@ public class EnterCredentialsFragment extends Fragment implements TextWatcher {
 			editUserName.getText().length() > 0 &&
 			editPassword.getText().length() > 0;
 
-		// check host name
-		try {
-			URI uri = new URI(URIUtils.sanitize(protocol + editBaseURL.getText().toString()));
-			if (StringUtils.isBlank(uri.getHost()))
+		if (ok)
+			// check host name
+			try {
+				URI uri = new URI(URIUtils.sanitize(protocol + editBaseURL.getText().toString()));
+				if (StringUtils.isBlank(uri.getHost()))
+					ok = false;
+			} catch (URISyntaxException e) {
 				ok = false;
-		} catch (URISyntaxException e) {
-			ok = false;
-		}
+			}
 			
 		MenuItem item = menu.findItem(R.id.next);
 		item.setEnabled(ok);
