@@ -27,6 +27,7 @@ import at.bitfire.davdroid.webdav.DavHttpClient;
 import at.bitfire.davdroid.webdav.DavMultiget;
 import at.bitfire.davdroid.webdav.HttpException;
 import at.bitfire.davdroid.webdav.HttpPropfind;
+import at.bitfire.davdroid.webdav.HttpPropfind.Mode;
 import at.bitfire.davdroid.webdav.NotFoundException;
 import at.bitfire.davdroid.webdav.PreconditionFailedException;
 import at.bitfire.davdroid.webdav.WebDavResource;
@@ -52,13 +53,13 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 				
 		assetMgr = getInstrumentation().getContext().getResources().getAssets();
 		
-		simpleFile = new WebDavResource(httpClient, new URI(ROBOHYDRA_BASE + "assets/test.random"), false);
+		simpleFile = new WebDavResource(httpClient, new URI(ROBOHYDRA_BASE + "assets/test.random"));
 		
-		davCollection = new WebDavResource(httpClient, new URI(ROBOHYDRA_BASE + "dav"), true);
+		davCollection = new WebDavResource(httpClient, new URI(ROBOHYDRA_BASE + "dav/"));
 		davNonExistingFile = new WebDavResource(davCollection, "collection/new.file");
 		davExistingFile = new WebDavResource(davCollection, "collection/existing.file");
 		
-		davInvalid = new WebDavResource(httpClient, new URI(ROBOHYDRA_BASE + "dav-invalid"), true);
+		davInvalid = new WebDavResource(httpClient, new URI(ROBOHYDRA_BASE + "dav-invalid/"));
 	}
 	
 	@Override
@@ -112,6 +113,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		try {
 			simpleFile.propfind(HttpPropfind.Mode.CURRENT_USER_PRINCIPAL);
 			fail();
+			
 		} catch(DavException ex) {
 		}
 		assertNull(simpleFile.getCurrentUserPrincipal());
@@ -154,8 +156,14 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	
 	/* test normal HTTP/WebDAV */
 	
-	public void testFollowGetRedirections() throws URISyntaxException, IOException, DavException, HttpException {
-		WebDavResource redirection = new WebDavResource(httpClient, new URI(ROBOHYDRA_BASE + "redirect"), false);
+	public void testRedirections() throws URISyntaxException, IOException, DavException, HttpException {
+		// PROPFIND redirection
+		WebDavResource redirection = new WebDavResource(httpClient, new URI(ROBOHYDRA_BASE + "redirect/301?to=/dav/"));
+		redirection.propfind(Mode.CURRENT_USER_PRINCIPAL);
+		assertEquals("/dav/", redirection.getLocation().getPath());
+		
+		// normal GET redirection
+		redirection = new WebDavResource(httpClient, new URI(ROBOHYDRA_BASE + "redirect/301"));
 		redirection.get();
 	}
 	
@@ -167,7 +175,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	}
 	
 	public void testGetHttpsWithSni() throws URISyntaxException, HttpException, IOException, DavException {
-		WebDavResource file = new WebDavResource(httpClient, new URI("https://sni.velox.ch"), false);
+		WebDavResource file = new WebDavResource(httpClient, new URI("https://sni.velox.ch"));
 		
 		boolean	sniWorking = false;
 		try {

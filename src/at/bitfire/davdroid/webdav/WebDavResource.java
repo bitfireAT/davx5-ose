@@ -95,19 +95,16 @@ public class WebDavResource {
 	protected HttpClientContext context;
 	
 	
-	public WebDavResource(CloseableHttpClient httpClient, URI baseURL, boolean trailingSlash) throws URISyntaxException {
+	public WebDavResource(CloseableHttpClient httpClient, URI baseURL) throws URISyntaxException {
 		this.httpClient = httpClient;
 		location = baseURL.normalize();
-		
-		if (trailingSlash && !location.getRawPath().endsWith("/"))
-			location = new URI(location.getScheme(), location.getSchemeSpecificPart() + "/", null);
 		
 		context = HttpClientContext.create();
 		context.setCredentialsProvider(new BasicCredentialsProvider());
 	}
 	
-	public WebDavResource(CloseableHttpClient httpClient, URI baseURL, String username, String password, boolean preemptive, boolean trailingSlash) throws URISyntaxException {
-		this(httpClient, baseURL, trailingSlash);
+	public WebDavResource(CloseableHttpClient httpClient, URI baseURL, String username, String password, boolean preemptive) throws URISyntaxException {
+		this(httpClient, baseURL);
 		
 		HttpHost host = new HttpHost(baseURL.getHost(), baseURL.getPort(), baseURL.getScheme());
 		context.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
@@ -250,67 +247,75 @@ public class WebDavResource {
 	/* collection operations */
 	
 	public void propfind(HttpPropfind.Mode mode) throws IOException, DavException, HttpException {
-		HttpPropfind propfind = new HttpPropfind(location, mode);
-		CloseableHttpResponse response = httpClient.execute(propfind, context);
-		try {
-			checkResponse(response);
-	
-			if (response.getStatusLine().getStatusCode() != HttpStatus.SC_MULTI_STATUS)
-				throw new DavNoMultiStatusException();
-	
-			HttpEntity entity = response.getEntity();
-			if (entity == null)
-				throw new DavNoContentException();
-			@Cleanup InputStream content = entity.getContent();
+		CloseableHttpResponse response = null;
+		
+		// processMultiStatus() requires knowledge of the actual content location,
+		// so we have to handle redirections manually and create a new request for the new location
+		for (int i = context.getRequestConfig().getMaxRedirects(); i > 0; i--) {
+			HttpPropfind propfind = new HttpPropfind(location, mode);
+			response = httpClient.execute(propfind, context);
 			
-			DavMultistatus multistatus;
-			try {
-				Serializer serializer = new Persister();
-				multistatus = serializer.read(DavMultistatus.class, content, false);
-			} catch (Exception ex) {
-				throw new DavException("Couldn't parse Multi-Status response on PROPFIND", ex);
-			}
-			processMultiStatus(multistatus);
+			if (response.getStatusLine().getStatusCode()/100 == 3) {
+				location = DavRedirectStrategy.getLocation(propfind, response, context);
+				Log.i(TAG, "Redirection on PROPFIND; trying again at new content URL: " + location);
+				// don't forget to throw away the unneeded response content
+				HttpEntity entity = response.getEntity();
+				if (entity != null) { @Cleanup InputStream content = entity.getContent(); }
+			} else
+				break;		// answer was NOT a redirection, continue
+		}
+		if (response == null)
+			throw new DavNoContentException();
+		
+		try {
+			checkResponse(response);		// will also handle Content-Location
+			processMultiStatus(response);
 		} finally {
 			response.close();
 		}
 	}
 
 	public void multiGet(DavMultiget.Type type, String[] names) throws IOException, DavException, HttpException {
-		List<String> hrefs = new LinkedList<String>();
-		for (String name : names)
-			hrefs.add(location.resolve(name).getRawPath());
-		DavMultiget multiget = DavMultiget.newRequest(type, hrefs.toArray(new String[0]));
+		CloseableHttpResponse response = null;
 		
-		Serializer serializer = new Persister();
-		StringWriter writer = new StringWriter();
-		try {
-			serializer.write(multiget, writer);
-		} catch (Exception ex) {
-			Log.e(TAG, "Couldn't create XML multi-get request", ex);
-			throw new DavException("Couldn't create multi-get request");
-		}
-
-		HttpReport report = new HttpReport(location, writer.toString());
-		CloseableHttpResponse response = httpClient.execute(report, context);
-		try {
-			checkResponse(response);
+		// processMultiStatus() requires knowledge of the actual content location,
+		// so we have to handle redirections manually and create a new request for the new location
+		for (int i = context.getRequestConfig().getMaxRedirects(); i > 0; i--) {
+			// build multi-get XML request 
+			List<String> hrefs = new LinkedList<String>();
+			for (String name : names)
+				hrefs.add(location.resolve(name).getRawPath());
+			DavMultiget multiget = DavMultiget.newRequest(type, hrefs.toArray(new String[0]));
 			
-			if (response.getStatusLine().getStatusCode() != HttpStatus.SC_MULTI_STATUS)
-				throw new DavNoMultiStatusException();
-			
-			HttpEntity entity = response.getEntity();
-			if (entity == null)
-				throw new DavNoContentException();
-			@Cleanup InputStream content = entity.getContent();
-			
-			DavMultistatus multiStatus;
+			StringWriter writer = new StringWriter();
 			try {
-				multiStatus = serializer.read(DavMultistatus.class, content, false);
+				Serializer serializer = new Persister();
+				serializer.write(multiget, writer);
 			} catch (Exception ex) {
-				throw new DavException("Couldn't parse Multi-Status response on REPORT multi-get", ex);
+				Log.e(TAG, "Couldn't create XML multi-get request", ex);
+				throw new DavException("Couldn't create multi-get request");
 			}
-			processMultiStatus(multiStatus);
+	
+			// submit REPORT request
+			HttpReport report = new HttpReport(location, writer.toString());
+			response = httpClient.execute(report, context);
+			
+			if (response.getStatusLine().getStatusCode()/100 == 3) {
+				location = DavRedirectStrategy.getLocation(report, response, context);
+				Log.i(TAG, "Redirection on REPORT multi-get; trying again at new content URL: " + location);
+				
+				// don't forget to throw away the unneeded response content
+				HttpEntity entity = response.getEntity();
+				if (entity != null) { @Cleanup InputStream content = entity.getContent(); }
+			} else
+				break;		// answer was NOT a redirection, continue
+		}
+		if (response == null)
+			throw new DavNoContentException();
+		
+		try {
+			checkResponse(response);		// will also handle Content-Location
+			processMultiStatus(response);
 		} finally {
 			response.close();
 		}
@@ -383,8 +388,19 @@ public class WebDavResource {
 
 	/* helpers */
 	
-	protected static void checkResponse(HttpResponse response) throws HttpException {
+	protected void checkResponse(HttpResponse response) throws HttpException {
 		checkResponse(response.getStatusLine());
+		
+		// handle Content-Location header (see RFC 4918 5.2 Collection Resources)
+		Header contentLocationHdr = response.getFirstHeader("Content-Location");
+		if (contentLocationHdr != null)
+			try {
+				// Content-Location was set, update location correspondingly
+				location = location.resolve(new URI(contentLocationHdr.getValue()));
+				Log.d(TAG, "Set Content-Location to " + location);
+			} catch (URISyntaxException e) {
+				Log.w(TAG, "Ignoring invalid Content-Location", e);
+			}
 	}
 	
 	protected static void checkResponse(StatusLine statusLine) throws HttpException {
@@ -404,14 +420,30 @@ public class WebDavResource {
 		}
 	}
 	
-	protected void processMultiStatus(DavMultistatus multistatus) throws HttpException, DavException {
-		if (multistatus.response == null)	// empty response
+	protected void processMultiStatus(HttpResponse response) throws IOException, HttpException, DavException {
+		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_MULTI_STATUS)
+			throw new DavNoMultiStatusException();
+		
+		HttpEntity entity = response.getEntity();
+		if (entity == null)
+			throw new DavNoContentException();
+		@Cleanup InputStream content = entity.getContent();
+		
+		DavMultistatus multiStatus;
+		try {
+			Serializer serializer = new Persister();
+			multiStatus = serializer.read(DavMultistatus.class, content, false);
+		} catch (Exception ex) {
+			throw new DavException("Couldn't parse Multi-Status response on REPORT multi-get", ex);
+		}
+
+		if (multiStatus.response == null)	// empty response
 			throw new DavNoContentException();
 		
 		// member list will be built from response
 		List<WebDavResource> members = new LinkedList<WebDavResource>();
 		
-		for (DavResponse singleResponse : multistatus.response) {
+		for (DavResponse singleResponse : multiStatus.response) {
 			URI href;
 			try {
 				href = location.resolve(URIUtils.sanitize(singleResponse.getHref().href));
@@ -423,12 +455,28 @@ public class WebDavResource {
 			
 			// about which resource is this response?
 			WebDavResource referenced = null;
+			
+			// "this" resource is either at "location" …
 			if (location.equals(href)) {	// -> ourselves
 				referenced = this;
+			} else {
+				// … or at location + "/" (in case of a collection where the server has implicitly appended the trailing slash)
+				if (!location.getRawPath().endsWith("/"))	// this is only possible if location doesn't have a trailing slash
+					try {
+						URI locationAsCollection = new URI(location.getScheme(), location.getAuthority(), location.getPath() + "/", location.getQuery(), null);
+						if (locationAsCollection.equals(href)) {
+							Log.d(TAG, "Server implicitly appended trailing slash to " + locationAsCollection);
+							referenced = this;
+						}
+					} catch (URISyntaxException e) {
+						Log.wtf(TAG, "Couldn't understand our own URI", e);
+					}
 				
-			} else {						// -> about a member
-				referenced = new WebDavResource(this, href);
-				members.add(referenced);
+				// otherwise, the referenced resource is a member
+				if (referenced == null) {
+					referenced = new WebDavResource(this, href);
+					members.add(referenced);
+				}
 			}
 			
 			for (DavPropstat singlePropstat : singleResponse.getPropstat()) {

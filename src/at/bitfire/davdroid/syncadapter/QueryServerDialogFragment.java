@@ -117,7 +117,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 			try {
 				// (1/5) detect capabilities
 				WebDavResource base = new WebDavResource(httpClient, new URI(serverInfo.getProvidedURL()), serverInfo.getUserName(),
-						serverInfo.getPassword(), serverInfo.isAuthPreemptive(), true);
+						serverInfo.getPassword(), serverInfo.isAuthPreemptive());
 				base.options();
 				
 				serverInfo.setCardDAV(base.supportsDAV("addressbook"));
