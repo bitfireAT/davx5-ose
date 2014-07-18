@@ -49,7 +49,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		httpClient = DavHttpClient.create(true, true); 
+		httpClient = DavHttpClient.create(true, true);
 				
 		assetMgr = getInstrumentation().getContext().getResources().getAssets();
 		
@@ -127,7 +127,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	}
 	
 	public void testPropfindAddressBooks() throws IOException, HttpException, DavException {
-		WebDavResource dav = new WebDavResource(davCollection, "addressbooks/test", true);
+		WebDavResource dav = new WebDavResource(davCollection, "addressbooks/test");
 		dav.propfind(HttpPropfind.Mode.MEMBERS_COLLECTIONS);
 		assertEquals(2, dav.getMembers().size());
 		for (WebDavResource member : dav.getMembers()) {
@@ -140,7 +140,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	}
 	
 	public void testPropfindCalendars() throws IOException, HttpException, DavException {
-		WebDavResource dav = new WebDavResource(davCollection, "calendars/test", true);
+		WebDavResource dav = new WebDavResource(davCollection, "calendars/test");
 		dav.propfind(HttpPropfind.Mode.MEMBERS_COLLECTIONS);
 		assertEquals(3, dav.getMembers().size());
 		assertEquals("0xFF00FF", dav.getMembers().get(2).getColor());
@@ -188,7 +188,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	}
 	
 	public void testMultiGet() throws DavException, IOException, HttpException {
-		WebDavResource davAddressBook = new WebDavResource(davCollection, "addressbooks/default.vcf", true);
+		WebDavResource davAddressBook = new WebDavResource(davCollection, "addressbooks/default.vcf");
 		davAddressBook.multiGet(DavMultiget.Type.ADDRESS_BOOK, new String[] { "1.vcf", "2.vcf" });
 		assertEquals(2, davAddressBook.getMembers().size());
 		for (WebDavResource member : davAddressBook.getMembers()) {

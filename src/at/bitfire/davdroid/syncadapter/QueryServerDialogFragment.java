@@ -115,51 +115,22 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 			CloseableHttpClient httpClient = DavHttpClient.create(true, true);
 			
 			try {
-				// (1/5) detect capabilities
 				WebDavResource base = new WebDavResource(httpClient, new URI(serverInfo.getProvidedURL()), serverInfo.getUserName(),
 						serverInfo.getPassword(), serverInfo.isAuthPreemptive());
-				base.options();
+
+				// CardDAV
+				WebDavResource principal = getCurrentUserPrincipal(base, "carddav", "addressbook");
+				if (principal != null) {
+					serverInfo.setCardDAV(true);
 				
-				serverInfo.setCardDAV(base.supportsDAV("addressbook"));
-				serverInfo.setCalDAV(base.supportsDAV("calendar-access"));
-				if (!base.supportsMethod("PROPFIND") || !base.supportsMethod("REPORT") ||
-					(!serverInfo.isCalDAV() && !serverInfo.isCardDAV()))
-					throw new DavIncapableException(getContext().getString(R.string.neither_caldav_nor_carddav));
-				
-				// (2/5) get principal URL
-				base.propfind(Mode.CURRENT_USER_PRINCIPAL);
-				
-				String principalPath = base.getCurrentUserPrincipal();
-				if (principalPath != null)
-					Log.i(TAG, "Found principal path: " + principalPath);
-				else
-					throw new DavIncapableException(getContext().getString(R.string.error_principal_path));
-				
-				// (3/5) get home sets
-				WebDavResource principal = new WebDavResource(base, principalPath);
-				principal.propfind(Mode.HOME_SETS);
-				
-				String pathAddressBooks = null;
-				if (serverInfo.isCardDAV()) {
-					pathAddressBooks = principal.getAddressbookHomeSet();
+					principal.propfind(Mode.HOME_SETS);
+					String pathAddressBooks = principal.getAddressbookHomeSet();
 					if (pathAddressBooks != null)
 						Log.i(TAG, "Found address book home set: " + pathAddressBooks);
 					else
 						throw new DavIncapableException(getContext().getString(R.string.error_home_set_address_books));
-				}
-				
-				String pathCalendars = null;
-				if (serverInfo.isCalDAV()) {
-					pathCalendars = principal.getCalendarHomeSet();
-					if (pathCalendars != null)
-						Log.i(TAG, "Found calendar home set: " + pathCalendars);
-					else
-						throw new DavIncapableException(getContext().getString(R.string.error_home_set_calendars));
-				}
-				
-				// (4/5) get address books
-				if (serverInfo.isCardDAV()) {
-					WebDavResource homeSetAddressBooks = new WebDavResource(principal, pathAddressBooks, true);
+					
+					WebDavResource homeSetAddressBooks = new WebDavResource(principal, pathAddressBooks);
 					homeSetAddressBooks.propfind(Mode.MEMBERS_COLLECTIONS);
 					
 					List<ServerInfo.ResourceInfo> addressBooks = new LinkedList<ServerInfo.ResourceInfo>();
@@ -176,13 +147,22 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 								);
 								addressBooks.add(info);
 							}
-					
 					serverInfo.setAddressBooks(addressBooks);
 				}
+				
+				// CalDAV
+				principal = getCurrentUserPrincipal(base, "caldav", "calendar-access");
+				if (principal != null) {
+					serverInfo.setCalDAV(true);
 
-				// (5/5) get calendars
-				if (serverInfo.isCalDAV()) {
-					WebDavResource homeSetCalendars = new WebDavResource(principal, pathCalendars, true);
+					principal.propfind(Mode.HOME_SETS);
+					String pathCalendars = principal.getCalendarHomeSet();
+					if (pathCalendars != null)
+						Log.i(TAG, "Found calendar home set: " + pathCalendars);
+					else
+						throw new DavIncapableException(getContext().getString(R.string.error_home_set_calendars));
+					
+					WebDavResource homeSetCalendars = new WebDavResource(principal, pathCalendars);
 					homeSetCalendars.propfind(Mode.MEMBERS_COLLECTIONS);
 					
 					List<ServerInfo.ResourceInfo> calendars = new LinkedList<ServerInfo.ResourceInfo>();
@@ -209,23 +189,88 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 								info.setTimezone(resource.getTimezone());
 								calendars.add(info);
 							}
-					
 					serverInfo.setCalendars(calendars);
 				}
+								
+				if (!serverInfo.isCalDAV() && !serverInfo.isCardDAV())
+					throw new DavIncapableException(getContext().getString(R.string.neither_caldav_nor_carddav));
 				
 			} catch (URISyntaxException e) {
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_uri_syntax, e.getMessage()));
 			}  catch (IOException e) {
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_io, e.getLocalizedMessage()));
-			} catch (DavException e) {
-				Log.e(TAG, "DAV error while querying server info", e);
-				serverInfo.setErrorMessage(getContext().getString(R.string.exception_incapable_resource, e.getLocalizedMessage()));
 			} catch (HttpException e) {
 				Log.e(TAG, "HTTP error while querying server info", e);
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_http, e.getLocalizedMessage()));
+			} catch (DavException e) {
+				Log.e(TAG, "DAV error while querying server info", e);
+				serverInfo.setErrorMessage(getContext().getString(R.string.exception_incapable_resource, e.getLocalizedMessage()));
 			}
 			
 			return serverInfo;
+		}
+		
+		/**
+		 * Detects the current-user-principal for a given WebDavResource. At first, /.well-known/ is tried. Only
+		 * if no current-user-principal can be detected for the .well-known location, the given location of the resource
+		 * is tried.
+		 * When a current-user-principal is found, it is queried for davCapability via OPTIONS.  
+		 * @param resource 		Location that will be queried
+		 * @param serviceName	Well-known service name ("carddav", "caldav")
+		 * @param davCapability	DAV capability to check for ("addressbook", "calendar-access")
+		 * @return	WebDavResource of current-user-principal for the given service, or null if it can't be found or it is incapable
+		 */
+		private WebDavResource getCurrentUserPrincipal(WebDavResource resource, String serviceName, String davCapability) throws IOException {
+			// look for well-known service (RFC 5785)
+			try {
+				WebDavResource wellKnown = new WebDavResource(resource, "/.well-known/" + serviceName);
+				wellKnown.propfind(Mode.CURRENT_USER_PRINCIPAL);
+				if (wellKnown.getCurrentUserPrincipal() != null) {
+					WebDavResource principal = new WebDavResource(wellKnown, wellKnown.getCurrentUserPrincipal());
+					if (checkCapabilities(principal, davCapability))
+						return principal;
+					else
+						Log.w(TAG, "Current-user-principal " + resource.getLocation() + " found via well-known service, but it doesn't support required DAV facilities");
+				}
+			} catch (HttpException e) {
+				Log.d(TAG, "Well-known service detection failed with HTTP error", e);
+			} catch (DavException e) {
+				Log.d(TAG, "Well-known service detection failed at DAV level", e);
+			}
+
+			try {
+				// fall back to user-given initial context path 
+				resource.propfind(Mode.CURRENT_USER_PRINCIPAL);
+				if (resource.getCurrentUserPrincipal() != null) {
+					WebDavResource principal = new WebDavResource(resource, resource.getCurrentUserPrincipal());
+					if (checkCapabilities(principal, davCapability))
+						return principal;
+					else
+						Log.w(TAG, "Current-user-principal " + resource.getLocation() + " found at user-given location, but it doesn't support required DAV facilities");
+				}
+			} catch (HttpException e) {
+				Log.d(TAG, "Service detection failed with HTTP error", e);
+			} catch (DavException e) {
+				Log.d(TAG, "Service detection failed at DAV level", e);
+			}
+			return null;
+		}
+		
+		private boolean checkCapabilities(WebDavResource resource, String davCapability) throws IOException {
+			// check for necessary capabilities
+			try {
+				resource.options();
+				if (resource.supportsDAV(davCapability) &&
+					resource.supportsMethod("PROPFIND") &&
+					resource.supportsMethod("GET") &&
+					resource.supportsMethod("REPORT") &&
+					resource.supportsMethod("PUT") &&
+					resource.supportsMethod("DELETE"))
+					return true;
+			} catch(HttpException e) {
+				// for instance, 405 Method not allowed
+			}
+			return false;
 		}
 	}
 }
