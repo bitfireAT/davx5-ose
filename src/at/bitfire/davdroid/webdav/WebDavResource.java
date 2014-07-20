@@ -55,6 +55,10 @@ import ch.boye.httpclientandroidlib.message.BasicLineParser;
 import ch.boye.httpclientandroidlib.util.EntityUtils;
 
 
+/**
+ * Represents a WebDAV resource (file or collection).
+ * This class is used for all CalDAV/CardDAV communcation.
+ */
 @ToString
 public class WebDavResource {
 	private static final String TAG = "davdroid.WebDavResource";
@@ -119,9 +123,10 @@ public class WebDavResource {
 		}
 	}
 	
-	private WebDavResource(WebDavResource parent) {		// based on existing WebDavResource, reuse settings
+	WebDavResource(WebDavResource parent) {		// copy constructor: based on existing WebDavResource, reuse settings
 		httpClient = parent.httpClient;
 		context = parent.context;
+		location = parent.location;
 	}
 
 	protected WebDavResource(WebDavResource parent, URI uri) {
