@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 
 import android.util.Log;
 import ch.boye.httpclientandroidlib.Header;
+import ch.boye.httpclientandroidlib.HttpHost;
 import ch.boye.httpclientandroidlib.HttpRequest;
 import ch.boye.httpclientandroidlib.HttpResponse;
 import ch.boye.httpclientandroidlib.ProtocolException;
@@ -13,6 +14,7 @@ import ch.boye.httpclientandroidlib.client.RedirectStrategy;
 import ch.boye.httpclientandroidlib.client.methods.HttpUriRequest;
 import ch.boye.httpclientandroidlib.client.methods.RequestBuilder;
 import ch.boye.httpclientandroidlib.client.protocol.HttpClientContext;
+import ch.boye.httpclientandroidlib.client.utils.URIUtils;
 import ch.boye.httpclientandroidlib.protocol.HttpContext;
 
 /**
@@ -75,13 +77,15 @@ public class DavRedirectStrategy implements RedirectStrategy {
 			
 			// some servers don't return absolute URLs as required by RFC 2616
 			if (!location.isAbsolute()) {
-				Log.w(TAG, "Received invalid redirection with relative URL, repairing");
-				
-				// determine original URL
-				final HttpClientContext clientContext = HttpClientContext.adapt(context);
-				final URI originalURI = new URI(clientContext.getTargetHost() + request.getRequestLine().getUri());
-				
-				// determine new location relative to original URL
+				Log.w(TAG, "Received invalid redirection to relative URL, repairing");
+				URI originalURI = new URI(request.getRequestLine().getUri());
+				if (!originalURI.isAbsolute()) {
+					final HttpHost target = HttpClientContext.adapt(context).getTargetHost();
+					if (target != null)
+						originalURI = URIUtils.rewriteURI(originalURI, target);
+					else
+						return null;
+				}
 				location = originalURI.resolve(location);
 			}
 			return location;
