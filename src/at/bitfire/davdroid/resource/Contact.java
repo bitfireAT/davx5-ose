@@ -33,6 +33,7 @@ import ezvcard.parameter.TelephoneType;
 import ezvcard.property.Address;
 import ezvcard.property.Anniversary;
 import ezvcard.property.Birthday;
+import ezvcard.property.Categories;
 import ezvcard.property.Email;
 import ezvcard.property.FormattedName;
 import ezvcard.property.Impp;
@@ -97,6 +98,7 @@ public class Contact extends Resource {
 	@Getter private List<Email> emails = new LinkedList<Email>();
 	@Getter private List<Impp> impps = new LinkedList<Impp>();
 	@Getter private List<Address> addresses = new LinkedList<Address>();
+	@Getter private List<String> categories = new LinkedList<String>();
 	@Getter private List<String> URLs = new LinkedList<String>();
 
 
@@ -244,6 +246,12 @@ public class Contact extends Resource {
 		addresses = vcard.getAddresses();
 		vcard.removeProperties(Address.class);
 		
+		// CATEGORY
+		Categories categories = vcard.getCategories();
+		if (categories != null)
+			this.categories = categories.getValues();
+		vcard.removeProperties(Categories.class);
+		
 		// URL
 		for (Url url : vcard.getUrls())
 			URLs.add(url.getValue());
@@ -360,6 +368,10 @@ public class Contact extends Resource {
 		// ADR
 		for (Address address : addresses)
 			vcard.addAddress(address);
+		
+		// CATEGORY
+		if (!categories.isEmpty())
+			vcard.setCategories(categories.toArray(new String[0]));
 		
 		// URL
 		for (String url : URLs)
