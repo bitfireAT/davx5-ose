@@ -220,7 +220,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 		 * @param davCapability	DAV capability to check for ("addressbook", "calendar-access")
 		 * @return	WebDavResource of current-user-principal for the given service, or null if it can't be found or it is incapable
 		 */
-		private WebDavResource getCurrentUserPrincipal(WebDavResource resource, String serviceName, String davCapability) throws IOException {
+		private WebDavResource getCurrentUserPrincipal(WebDavResource resource, String serviceName, String davCapability) throws IOException, HttpException, DavException {
 			// look for well-known service (RFC 5785)
 			try {
 				WebDavResource wellKnown = new WebDavResource(resource, "/.well-known/" + serviceName);
@@ -238,20 +238,14 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 				Log.d(TAG, "Well-known service detection failed at DAV level", e);
 			}
 
-			try {
-				// fall back to user-given initial context path 
-				resource.propfind(Mode.CURRENT_USER_PRINCIPAL);
-				if (resource.getCurrentUserPrincipal() != null) {
-					WebDavResource principal = new WebDavResource(resource, resource.getCurrentUserPrincipal());
-					if (checkCapabilities(principal, davCapability))
-						return principal;
-					else
-						Log.w(TAG, "Current-user-principal " + resource.getLocation() + " found at user-given location, but it doesn't support required DAV facilities");
-				}
-			} catch (HttpException e) {
-				Log.d(TAG, "Service detection failed with HTTP error", e);
-			} catch (DavException e) {
-				Log.d(TAG, "Service detection failed at DAV level", e);
+			// fall back to user-given initial context path 
+			resource.propfind(Mode.CURRENT_USER_PRINCIPAL);
+			if (resource.getCurrentUserPrincipal() != null) {
+				WebDavResource principal = new WebDavResource(resource, resource.getCurrentUserPrincipal());
+				if (checkCapabilities(principal, davCapability))
+					return principal;
+				else
+					Log.w(TAG, "Current-user-principal " + resource.getLocation() + " found at user-given location, but it doesn't support required DAV facilities");
 			}
 			return null;
 		}
