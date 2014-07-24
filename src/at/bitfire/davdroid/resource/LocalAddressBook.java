@@ -20,11 +20,16 @@ import java.util.Set;
 
 import lombok.Cleanup;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
+
 import android.accounts.Account;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderOperation.Builder;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -32,6 +37,7 @@ import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.CommonDataKinds.Email;
+import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
 import android.provider.ContactsContract.CommonDataKinds.Im;
 import android.provider.ContactsContract.CommonDataKinds.Nickname;
 import android.provider.ContactsContract.CommonDataKinds.Note;
@@ -43,13 +49,10 @@ import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.provider.ContactsContract.CommonDataKinds.Website;
 import android.provider.ContactsContract.Data;
+import android.provider.ContactsContract.Groups;
 import android.provider.ContactsContract.RawContacts;
 import android.util.Log;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
-
+import at.bitfire.davdroid.syncadapter.AccountSettings;
 import ezvcard.parameter.AddressType;
 import ezvcard.parameter.EmailType;
 import ezvcard.parameter.ImppType;
@@ -60,8 +63,6 @@ import ezvcard.property.Birthday;
 import ezvcard.property.DateOrTimeProperty;
 import ezvcard.property.Impp;
 import ezvcard.property.Telephone;
-
-import at.bitfire.davdroid.syncadapter.AccountSettings;
 
 
 public class LocalAddressBook extends LocalCollection<Contact> {
@@ -142,6 +143,33 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				.build());
 	}
 	
+	@Override
+	public void commit() throws LocalStorageException {
+		super.commit();
+		
+		// update group details for groups we have just created
+		Uri groupsUri = syncAdapterURI(Groups.CONTENT_URI);
+		try {
+			// newly created groups don't have a TITLE
+			@Cleanup Cursor cursor = providerClient.query(groupsUri,
+				new String[] { Groups.SOURCE_ID },
+				Groups.TITLE + " IS NULL", null, null
+			);
+			while (cursor != null && cursor.moveToNext()) {
+				// found group, set TITLE to SOURCE_ID and other details
+				String sourceID = cursor.getString(0);
+				pendingOperations.add(ContentProviderOperation.newUpdate(groupsUri)
+					.withSelection(Groups.SOURCE_ID + "=?", new String[] { sourceID })
+					.withValue(Groups.TITLE, sourceID)
+					.withValue(Groups.GROUP_VISIBLE, 1)
+					.build());
+				super.commit();
+			}
+		} catch (RemoteException e) {
+			throw new LocalStorageException("Couldn't update group names", e);
+		}
+	}
+	
 	
 	/* methods for populating the data object from the content provider */
 
@@ -168,6 +196,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			populateNickname(c);
 			populateNote(c);
 			populatePostalAddresses(c);
+			populateCategories(c);
 			populateURLs(c);
 			populateEvents(c);
 			populateSipAddress(c);
@@ -462,6 +491,57 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		}
 	}
 	
+	protected void populateCategories(Contact c) throws RemoteException {
+		@Cleanup Cursor cursorMemberships = providerClient.query(dataURI(),
+				new String[] { GroupMembership.GROUP_ROW_ID, GroupMembership.GROUP_SOURCE_ID },
+				GroupMembership.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
+				new String[] { String.valueOf(c.getLocalID()), GroupMembership.CONTENT_ITEM_TYPE }, null);
+		List<String> categories = c.getCategories();
+		while (cursorMemberships != null && cursorMemberships.moveToNext()) {
+			long rowID = cursorMemberships.getLong(0);
+			String sourceID = cursorMemberships.getString(1);
+
+			// either a row ID or a source ID must be available
+			String where, whereArg;
+			if (sourceID == null) {
+				where = Groups._ID + "=?";
+				whereArg = String.valueOf(rowID);
+			} else {
+				where = Groups.SOURCE_ID + "=?";
+				whereArg = sourceID;
+			}
+			where += " AND " + Groups.DELETED + "=0";		// ignore deleted groups
+			Log.d(TAG, "Populating group from " + where + " " + whereArg);
+			
+			// fetch group
+			@Cleanup Cursor cursorGroups = providerClient.query(Groups.CONTENT_URI,
+				new String[] { Groups.TITLE },
+				where, new String[] { whereArg }, null
+			);
+			if (cursorGroups != null && cursorGroups.moveToNext()) {
+				String title = cursorGroups.getString(0);
+				
+				if (sourceID == null) {		// Group wasn't created by DAVdroid
+					// SOURCE_ID IS NULL <=> _ID IS NOT NULL
+					Log.d(TAG, "Setting SOURCE_ID of non-DAVdroid group to title: " + title);
+					
+					ContentValues v = new ContentValues(1);
+					v.put(Groups.SOURCE_ID, title);
+					v.put(Groups.GROUP_IS_READ_ONLY, 0);
+					v.put(Groups.GROUP_VISIBLE, 1);
+					providerClient.update(syncAdapterURI(Groups.CONTENT_URI), v, Groups._ID + "=?", new String[] { String.valueOf(rowID) });
+					
+					sourceID = title;
+	 			}
+				
+				// add group to CATEGORIES
+				if (sourceID != null)
+					categories.add(sourceID);
+			} else
+				Log.d(TAG, "Group not found (maybe deleted)");
+		}
+	}
+	
 	protected void populateURLs(Contact c) throws RemoteException {
 		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Website.URL },
 				Website.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
@@ -562,7 +642,8 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		for (Address address : contact.getAddresses())
 			queueOperation(buildAddress(newDataInsertBuilder(localID, backrefIdx), address));
 		
-		// TODO group membership
+		for (String category : contact.getCategories())
+			queueOperation(buildGroupMembership(newDataInsertBuilder(localID, backrefIdx), category));
 		
 		for (String url : contact.getURLs())
 			queueOperation(buildURL(newDataInsertBuilder(localID, backrefIdx), url));
@@ -869,6 +950,12 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		if (typeLabel != null)
 			builder = builder.withValue(StructuredPostal.LABEL, typeLabel);
 		return builder;
+	}
+	
+	protected Builder buildGroupMembership(Builder builder, String group) {
+		return builder
+			.withValue(Data.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
+			.withValue(GroupMembership.GROUP_SOURCE_ID, group);
 	}
 
 	protected Builder buildURL(Builder builder, String url) {
