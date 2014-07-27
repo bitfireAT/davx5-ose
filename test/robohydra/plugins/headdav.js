@@ -4,7 +4,8 @@ var roboHydra = require("robohydra"),
 
 RoboHydraHeadDAV = roboHydraHeads.roboHydraHeadType({
 	name: 'WebDAV Server',
-	mandatoryProperties: [ 'path', 'handler' ],
+	mandatoryProperties: [ 'path' ],
+    optionalProperties: [ 'handler' ],
 
 	parentPropBuilder: function() {
 		var myHandler = this.handler;
@@ -18,7 +19,7 @@ RoboHydraHeadDAV = roboHydraHeads.roboHydraHeadType({
 				// DAV operations that work on all URLs
 				if (req.method == "OPTIONS") {
 					res.statusCode = 204;
-					res.headers['Allow'] = 'OPTIONS, PROPFIND, GET, PUT, DELETE';
+					res.headers['Allow'] = 'OPTIONS, PROPFIND, GET, PUT, DELETE, REPORT';
 
 				} else if (req.method == "PROPFIND" && req.rawBody.toString().match(/current-user-principal/)) {
 					res.statusCode = 207;
@@ -38,7 +39,7 @@ RoboHydraHeadDAV = roboHydraHeads.roboHydraHeadType({
 						</multistatus>\
 					');
 					
-				} else
+				} else if (typeof myHandler != 'undefined')
 					myHandler(req,res,next);
 
 				res.end();

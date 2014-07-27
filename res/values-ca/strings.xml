@@ -21,9 +21,6 @@
     <string name="exception_uri_syntax">URI invàlida: %s</string>
     <string name="exception_incapable_resource">Missing capabilities: %s</string>
     <string name="neither_caldav_nor_carddav">Ni CalDAV ni CardDAV estan disponibles</string>
-    <string name="error_principal_path">"No s\'ha pogut determinar la ruta principal (RFC 5397)"</string>
-    <string name="error_home_set_address_books">"No s\'ha pogut determinar l\'arrel de les llibretes de contactes"</string>
-    <string name="error_home_set_calendars">"No s\'ha pogut determinar l\'arrel dels calendaris"</string>
     <string name="add_account">Afegir compte</string>
     <string name="querying_server">Querying server. Please wait…</string>
     <string name="exception_http">Error HTTP: %s</string>

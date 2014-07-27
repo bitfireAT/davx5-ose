@@ -20,10 +20,7 @@
     <string name="exception_io">I/O error: %s</string>
     <string name="exception_uri_syntax">Invalid URI: %s</string>
     <string name="exception_incapable_resource">Missing capabilities: %s</string>
-    <string name="neither_caldav_nor_carddav">Neither CalDAV nor CardDAV available</string>
-    <string name="error_principal_path">"Couldn't determine principal path (RFC 5397)"</string>
-    <string name="error_home_set_address_books">"Couldn't determine address book home set"</string>
-    <string name="error_home_set_calendars">"Couldn't determine calendar home set"</string>
+    <string name="neither_caldav_nor_carddav">No CalDAV-/CardDAV service is available at this location.</string>
     <string name="add_account">Add account</string>
     <string name="querying_server">Querying server. Please wait…</string>
     <string name="exception_http">HTTP error: %s</string>

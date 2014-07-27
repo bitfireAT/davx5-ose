@@ -21,9 +21,6 @@
     <string name="exception_uri_syntax">URI no válida: %s</string>
     <string name="exception_incapable_resource">Se han perdido capacidades: %s</string>
     <string name="neither_caldav_nor_carddav">Ni CalDAV ni CardDAV están disponibles</string>
-    <string name="error_principal_path">"No se ha podido determinar la ruta principal (RFC 5397)"</string>
-    <string name="error_home_set_address_books">"No se ha podido determinar la configuración de inicio de la agenda"</string>
-    <string name="error_home_set_calendars">"No se ha podido determinar la configuración de inicio del calendario"</string>
     <string name="add_account">Añadir cuenta</string>
     <string name="querying_server">Consultando el servidor. Espera, por favor…</string>
     <string name="exception_http">error HTTP: %s</string>
