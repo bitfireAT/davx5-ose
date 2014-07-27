@@ -12,7 +12,7 @@ exports.getBodyParts = function(conf) {
                 headers: { Location: '/dav/' }
             }),
             new SimpleResponseHead({
-                path: '/.well-known/caldav',
+                path: '/.well-known/carddav',
                 status: 302,
                 headers: { Location: '/dav/' }
             }),

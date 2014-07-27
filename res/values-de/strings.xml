@@ -12,10 +12,7 @@
     <string name="exception_io">E/A-Fehler: %s</string>
     <string name="exception_uri_syntax">Ungültiger URI: %s</string>
     <string name="exception_incapable_resource">Fehlende Server-Unterstützung: %s</string>
-    <string name="neither_caldav_nor_carddav">Weder CalDAV noch CardDAV ist verfügbar.</string>
-    <string name="error_principal_path">Benutzerpfad konnte nicht festgestellt werden (RFC 5397)</string>
-    <string name="error_home_set_address_books">Adressbuch-Ordner konnte nicht festgestellt werden</string>
-    <string name="error_home_set_calendars">Kalender-Ordner konnte nicht festgestellt werden</string>
+    <string name="neither_caldav_nor_carddav">An dieser Adresse konnte kein CalDAV- oder CardDAV-Dienst gefunden werden.</string>
     <string name="add_account">Konto hinzufügen</string>
     <string name="querying_server">Daten werden vom Server abgefragt. Bitte warten…</string>
     <string name="exception_http">HTTP-Fehler: %s</string>

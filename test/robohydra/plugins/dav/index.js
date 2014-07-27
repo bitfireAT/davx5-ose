@@ -3,11 +3,8 @@ var roboHydraHeadDAV = require("../headdav");
 exports.getBodyParts = function(conf) {
     return {
         heads: [
-			/* base URL */
-			new RoboHydraHeadDAV({
-				path: "/dav/",
-				handler: function(req,res,next) { }
-			}),
+			/* base URL, provide default DAV here */
+			new RoboHydraHeadDAV({ path: "/dav/" }),
 
 			/* principal URL */
             new RoboHydraHeadDAV({
@@ -66,9 +63,7 @@ exports.getBodyParts = function(conf) {
 												<collection/>\
 												<CARD:addressbook/>\
 											</resourcetype>\
-											<CARD:addressbook-description>\
-												Default Address Book\
-											</CARD:addressbook-description>\
+											<CARD:addressbook-description>Default Address Book</CARD:addressbook-description>\
 										</prop>\
 										<status>HTTP/1.1 200 OK</status>\
 									</propstat>\
@@ -104,6 +99,8 @@ exports.getBodyParts = function(conf) {
 												<collection/>\
 												<CAL:calendar/>\
 											</resourcetype>\
+                                            <displayname>Private Calendar</displayname>\
+                                            <CAL:calendar-description>This is my private calendar.</CAL:calendar-description>\
 										</prop>\
 										<status>HTTP/1.1 200 OK</status>\
 									</propstat>\
@@ -116,6 +113,10 @@ exports.getBodyParts = function(conf) {
 												<collection/>\
 												<CAL:calendar/>\
 											</resourcetype>\
+                                            <current-user-privilege-set>\
+                                                <privilege><read/></privilege>\
+                                            </current-user-privilege-set>\
+                                            <displayname>Work Calendar</displayname>\
 											<A:calendar-color xmlns:A="http://apple.com/ns/ical/">0xFF00FF</A:calendar-color>\
 										</prop>\
 										<status>HTTP/1.1 200 OK</status>\

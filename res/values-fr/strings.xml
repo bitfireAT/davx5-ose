@@ -21,9 +21,6 @@
     <string name="exception_uri_syntax">URI incorrecte: %s</string>
     <string name="exception_incapable_resource">Capacités manquantes: %s</string>
     <string name="neither_caldav_nor_carddav">Aucun CalDAV ou CardDAV disponible</string>
-    <string name="error_principal_path">Impossible de déterminer le chemin principal(RFC 5397)</string>
-    <string name="error_home_set_address_books">Impossible de déterminer le type de carnets d\'adresses</string>
-    <string name="error_home_set_calendars">Impossible de déterminer le type d\'agendas"</string>
     <string name="add_account">Ajouter un compte</string>
     <string name="querying_server">Interroge le serveur. Patientez svp.</string>
     <string name="exception_http">Erreur HTTP: %s</string>

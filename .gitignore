@@ -31,6 +31,9 @@ proguard/
 *.iws
 .idea/
 
+# private files
+.private
+
 
 ### ECLIPSE
 

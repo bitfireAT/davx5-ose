@@ -2,7 +2,7 @@ package at.bitfire.davdroid.webdav;
 
 import java.io.IOException;
 
-import android.test.InstrumentationTestCase;
+import junit.framework.TestCase;
 import at.bitfire.davdroid.test.Constants;
 import ch.boye.httpclientandroidlib.HttpResponse;
 import ch.boye.httpclientandroidlib.client.methods.HttpOptions;
@@ -12,7 +12,7 @@ import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
 import ch.boye.httpclientandroidlib.impl.client.HttpClientBuilder;
 import ch.boye.httpclientandroidlib.protocol.HttpContext;
 
-public class DavRedirectStrategyTest extends InstrumentationTestCase {
+public class DavRedirectStrategyTest extends TestCase {
 	
 	CloseableHttpClient httpClient;
 	DavRedirectStrategy strategy = DavRedirectStrategy.INSTANCE;
