@@ -2,6 +2,7 @@ package at.bitfire.davdroid.syncadapter;
 
 import java.util.List;
 
+import ezvcard.VCardVersion;
 import android.test.InstrumentationTestCase;
 import at.bitfire.davdroid.syncadapter.ServerInfo.ResourceInfo;
 import at.bitfire.davdroid.test.Constants;
@@ -18,6 +19,7 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
 		assertEquals(1, collections.size());
 		
 		assertEquals("Default Address Book", collections.get(0).getDescription());
+		assertEquals(VCardVersion.V4_0, collections.get(0).getVCardVersion());
 		
 		// CalDAV
 		assertTrue(info.isCalDAV());

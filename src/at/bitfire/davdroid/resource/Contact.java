@@ -24,7 +24,6 @@ import android.util.Log;
 import at.bitfire.davdroid.Constants;
 import ezvcard.Ezvcard;
 import ezvcard.VCard;
-import ezvcard.VCardException;
 import ezvcard.VCardVersion;
 import ezvcard.ValidationWarnings;
 import ezvcard.parameter.EmailType;
@@ -127,7 +126,7 @@ public class Contact extends Resource {
 	/* VCard methods */
 
 	@Override
-	public void parseEntity(InputStream is) throws IOException, VCardException {
+	public void parseEntity(InputStream is) throws IOException {
 		VCard vcard = Ezvcard.parse(is).first();
 		if (vcard == null)
 			return;
@@ -389,7 +388,7 @@ public class Contact extends Resource {
 			vcard.addPhoto(new Photo(photo, ImageType.JPEG));
 		
 		// PRODID, REV
-		vcard.setProdId("DAVdroid/" + Constants.APP_VERSION + " (ez-vcard/" + Ezvcard.VERSION + ")");
+		vcard.setProductId("DAVdroid/" + Constants.APP_VERSION + " (ez-vcard/" + Ezvcard.VERSION + ")");
 		vcard.setRevision(Revision.now());
 		
 		// validate and print warnings

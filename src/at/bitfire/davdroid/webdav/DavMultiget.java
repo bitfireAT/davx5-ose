@@ -32,12 +32,12 @@ public class DavMultiget {
 		DavMultiget multiget = (type == Type.ADDRESS_BOOK) ? new DavAddressbookMultiget() : new DavCalendarMultiget(); 
 		
 		multiget.prop = new DavProp();
-		multiget.prop.getetag = new DavProp.DavPropGetETag();
+		multiget.prop.getetag = new DavProp.GetETag();
 		
 		if (type == Type.ADDRESS_BOOK)
-			multiget.prop.addressData = new DavProp.DavPropAddressData();
+			multiget.prop.addressData = new DavProp.AddressData();
 		else if (type == Type.CALENDAR)
-			multiget.prop.calendarData = new DavProp.DavPropCalendarData();
+			multiget.prop.calendarData = new DavProp.CalendarData();
 
 		multiget.hrefs = new ArrayList<DavHref>(names.length);
 		for (String name : names)

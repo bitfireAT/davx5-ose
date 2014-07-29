@@ -15,7 +15,6 @@ import net.fortuna.ical4j.data.ParserException;
 import android.content.res.AssetManager;
 import android.test.InstrumentationTestCase;
 import at.bitfire.davdroid.resource.Contact;
-import ezvcard.VCardException;
 import ezvcard.property.Impp;
 
 public class ContactTest extends InstrumentationTestCase {
@@ -25,7 +24,7 @@ public class ContactTest extends InstrumentationTestCase {
 		assetMgr = getInstrumentation().getContext().getResources().getAssets();
 	}
 	
-	public void testIMPP() throws VCardException, IOException {
+	public void testIMPP() throws IOException {
 		Contact c = parseVCard("impp.vcf");
 		assertEquals("test mctest", c.getDisplayName());
 		
@@ -52,7 +51,7 @@ public class ContactTest extends InstrumentationTestCase {
 	}
 
 	
-	private Contact parseVCard(String fileName) throws VCardException, IOException {
+	private Contact parseVCard(String fileName) throws IOException {
 		@Cleanup InputStream in = assetMgr.open(fileName, AssetManager.ACCESS_STREAMING);
 		
 		Contact c = new Contact(fileName, null);

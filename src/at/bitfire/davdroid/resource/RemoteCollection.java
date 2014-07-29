@@ -28,6 +28,7 @@ import at.bitfire.davdroid.webdav.HttpPropfind;
 import at.bitfire.davdroid.webdav.WebDavResource;
 import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
 import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
+import ezvcard.io.text.VCardParseException;
 
 /**
  * Represents a remotely stored synchronizable collection (collection as in
@@ -126,7 +127,11 @@ public abstract class RemoteCollection<T extends Resource> {
 			throw new DavNoContentException();
 		
 		@Cleanup InputStream is = new ByteArrayInputStream(data);
-		resource.parseEntity(is);
+		try {
+			resource.parseEntity(is);
+		} catch(VCardParseException e) {
+			throw new InvalidResourceException(e);
+		}
 		return resource;
 	}
 	

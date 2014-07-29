@@ -25,19 +25,19 @@ public class DavProp {
 	/* RFC 4918 WebDAV */
 	
 	@Element(required=false)
-	DavPropResourceType resourcetype;
+	ResourceType resourcetype;
 	
 	@Element(required=false)
-	DavPropDisplayName displayname;
+	DisplayName displayname;
 	
 	@Element(required=false)
-	DavPropGetCTag getctag;
+	GetCTag getctag;
 	
 	@Element(required=false)
-	DavPropGetETag getetag;
+	GetETag getetag;
 	
 	@Root(strict=false)
-	public static class DavPropResourceType {
+	public static class ResourceType {
 		@Element(required=false)
 		@Getter private Addressbook addressbook;
 		@Element(required=false)
@@ -50,18 +50,18 @@ public class DavProp {
 		public static class Calendar { }
 	}
 	
-	public static class DavPropDisplayName {
+	public static class DisplayName {
 		@Text(required=false)
 		@Getter private String displayName;
 	}
 	
 	@Namespace(prefix="CS",reference="http://calendarserver.org/ns/")
-	public static class DavPropGetCTag {
+	public static class GetCTag {
 		@Text(required=false)
 		@Getter private String CTag;
 	}
 	
-	public static class DavPropGetETag {
+	public static class GetETag {
 		@Text(required=false)
 		@Getter private String ETag;
 	}
@@ -70,9 +70,9 @@ public class DavProp {
 	/* RFC 5397 WebDAV Current Principal Extension */
 	
 	@Element(required=false,name="current-user-principal")
-	DavCurrentUserPrincipal currentUserPrincipal;
+	CurrentUserPrincipal currentUserPrincipal;
 
-	public static class DavCurrentUserPrincipal {
+	public static class CurrentUserPrincipal {
 		@Element(required=false)
 		@Getter private DavHref href;
 	}
@@ -81,9 +81,9 @@ public class DavProp {
 	/* RFC 3744 WebDAV Access Control Protocol */
 	
 	@ElementList(required=false,name="current-user-privilege-set",entry="privilege")
-	List<DavPropPrivilege> currentUserPrivilegeSet;
+	List<Privilege> currentUserPrivilegeSet;
 	
-	public static class DavPropPrivilege {
+	public static class Privilege {
 		@Element(required=false)
 		@Getter private PrivAll all;
 		
@@ -111,84 +111,97 @@ public class DavProp {
 	/* RFC 4791 CalDAV, RFC 6352 CardDAV */
 	
 	@Element(required=false,name="addressbook-home-set")
-	DavAddressbookHomeSet addressbookHomeSet;
+	AddressbookHomeSet addressbookHomeSet;
 	
 	@Element(required=false,name="calendar-home-set")
-	DavCalendarHomeSet calendarHomeSet;
+	CalendarHomeSet calendarHomeSet;
 
 	@Element(required=false,name="addressbook-description")
-	DavPropAddressbookDescription addressbookDescription;
+	AddressbookDescription addressbookDescription;
+
+	@Namespace(prefix="CD",reference="urn:ietf:params:xml:ns:carddav")
+	@ElementList(required=false,name="supported-address-data",entry="address-data-type")
+	List<AddressDataType> supportedAddressData;
 	
 	@Element(required=false,name="calendar-description")
-	DavPropCalendarDescription calendarDescription;
+	CalendarDescription calendarDescription;
 	
 	@Element(required=false,name="calendar-color")
-	DavPropCalendarColor calendarColor;
+	CalendarColor calendarColor;
 	
 	@Element(required=false,name="calendar-timezone")
-	DavPropCalendarTimezone calendarTimezone;
+	CalendarTimezone calendarTimezone;
 	
 	@Namespace(prefix="C",reference="urn:ietf:params:xml:ns:caldav")
 	@ElementList(required=false,name="supported-calendar-component-set",entry="comp")
-	List<DavPropComp> supportedCalendarComponentSet;
+	List<Comp> supportedCalendarComponentSet;
 	
 	@Element(name="address-data",required=false)
-	DavPropAddressData addressData;
+	AddressData addressData;
 
 	@Element(name="calendar-data",required=false)
-	DavPropCalendarData calendarData;
+	CalendarData calendarData;
 
 	
 	@Namespace(prefix="CD",reference="urn:ietf:params:xml:ns:carddav")
-	public static class DavAddressbookHomeSet {
+	public static class AddressbookHomeSet {
 		@Element(required=false)
 		@Getter private DavHref href;
 	}
 	
 	@Namespace(prefix="C",reference="urn:ietf:params:xml:ns:caldav")
-	public static class DavCalendarHomeSet {
+	public static class CalendarHomeSet {
 		@Element(required=false)
 		@Getter private DavHref href;
 	}
 	
 	@Namespace(prefix="CD",reference="urn:ietf:params:xml:ns:carddav")
-	public static class DavPropAddressbookDescription {
+	public static class AddressbookDescription {
 		@Text(required=false)
 		@Getter private String description;
 	}
 	
+	@Namespace(prefix="CD",reference="urn:ietf:params:xml:ns:carddav")
+	public static class AddressDataType {
+		@Attribute(name="content-type")
+		@Getter private String contentType;
+		
+		@Attribute
+		@Getter private String version;
+	}
+	
 	@Namespace(prefix="C",reference="urn:ietf:params:xml:ns:caldav")
-	public static class DavPropCalendarDescription {
+	public static class CalendarDescription {
 		@Text(required=false)
 		@Getter private String description;
 	}
 	
 	@Namespace(prefix="A",reference="http://apple.com/ns/ical/")
-	public static class DavPropCalendarColor {
+	public static class CalendarColor {
 		@Text(required=false)
 		@Getter private String color;
 	}
 	
 	@Namespace(prefix="C",reference="urn:ietf:params:xml:ns:caldav")
-	public static class DavPropCalendarTimezone {
+	public static class CalendarTimezone {
 		@Text(required=false)
 		@Getter private String timezone;
 	}
 	
 	@Namespace(prefix="C",reference="urn:ietf:params:xml:ns:caldav")
-	public static class DavPropComp {
+	public static class Comp {
 		@Attribute
 		@Getter String name;
 	}
 
 	@Namespace(prefix="CD",reference="urn:ietf:params:xml:ns:carddav")
-	public static class DavPropAddressData {
+	public static class AddressData {
 		@Text(required=false)
 		@Getter String vcard;
 	}
 	
 	@Namespace(prefix="C",reference="urn:ietf:params:xml:ns:caldav")
-	public static class DavPropCalendarData {
+	public static class CalendarData {
 		@Text(required=false)
 		@Getter String ical;
 	}
