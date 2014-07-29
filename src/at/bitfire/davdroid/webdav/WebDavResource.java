@@ -30,7 +30,7 @@ import org.simpleframework.xml.core.Persister;
 import android.util.Log;
 import at.bitfire.davdroid.URIUtils;
 import at.bitfire.davdroid.resource.Event;
-import at.bitfire.davdroid.webdav.DavProp.DavPropComp;
+import at.bitfire.davdroid.webdav.DavProp.Comp;
 import ch.boye.httpclientandroidlib.Header;
 import ch.boye.httpclientandroidlib.HttpEntity;
 import ch.boye.httpclientandroidlib.HttpHost;
@@ -53,6 +53,7 @@ import ch.boye.httpclientandroidlib.impl.client.BasicCredentialsProvider;
 import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
 import ch.boye.httpclientandroidlib.message.BasicLineParser;
 import ch.boye.httpclientandroidlib.util.EntityUtils;
+import ezvcard.VCardVersion;
 
 
 /**
@@ -64,14 +65,12 @@ public class WebDavResource {
 	private static final String TAG = "davdroid.WebDavResource";
 	
 	public enum Property {
-		CURRENT_USER_PRINCIPAL,
-		READ_ONLY,
-		DISPLAY_NAME, DESCRIPTION, COLOR,
-		TIMEZONE, SUPPORTED_COMPONENTS,
+		CURRENT_USER_PRINCIPAL,							// resource detection
 		ADDRESSBOOK_HOMESET, CALENDAR_HOMESET,
-		IS_ADDRESSBOOK, IS_CALENDAR,
-		CTAG, ETAG,
-		CONTENT_TYPE
+		CONTENT_TYPE, READ_ONLY,						// WebDAV (common)
+		DISPLAY_NAME, DESCRIPTION, CTAG, ETAG,
+		IS_CALENDAR, COLOR, TIMEZONE, 					// CalDAV
+		IS_ADDRESSBOOK, VCARD_VERSION					// CardDAV
 	}
 	public enum PutMode {
 		ADD_DONT_OVERWRITE,
@@ -189,6 +188,22 @@ public class WebDavResource {
 		return properties.get(Property.CURRENT_USER_PRINCIPAL);
 	}
 	
+	public String getAddressbookHomeSet() {
+		return properties.get(Property.ADDRESSBOOK_HOMESET);
+	}
+	
+	public String getCalendarHomeSet() {
+		return properties.get(Property.CALENDAR_HOMESET);
+	}
+	
+	public String getContentType() {
+		return properties.get(Property.CONTENT_TYPE);
+	}
+	
+	public void setContentType(String mimeType) {
+		properties.put(Property.CONTENT_TYPE, mimeType);
+	}
+
 	public boolean isReadOnly() {
 		return properties.containsKey(Property.READ_ONLY);
 	}
@@ -201,22 +216,6 @@ public class WebDavResource {
 		return properties.get(Property.DESCRIPTION);
 	}
 	
-	public String getColor() {
-		return properties.get(Property.COLOR);
-	}
-	
-	public String getTimezone() {
-		return properties.get(Property.TIMEZONE);
-	}
-	
-	public String getAddressbookHomeSet() {
-		return properties.get(Property.ADDRESSBOOK_HOMESET);
-	}
-	
-	public String getCalendarHomeSet() {
-		return properties.get(Property.CALENDAR_HOMESET);
-	}
-
 	public String getCTag() {
 		return properties.get(Property.CTAG);
 	}
@@ -227,21 +226,26 @@ public class WebDavResource {
 	public String getETag() {
 		return properties.get(Property.ETAG);
 	}
-	
-	public String getContentType() {
-		return properties.get(Property.CONTENT_TYPE);
+
+	public boolean isCalendar() {
+		return properties.containsKey(Property.IS_CALENDAR);
 	}
 	
-	public void setContentType(String mimeType) {
-		properties.put(Property.CONTENT_TYPE, mimeType);
+	public String getColor() {
+		return properties.get(Property.COLOR);
+	}
+	
+	public String getTimezone() {
+		return properties.get(Property.TIMEZONE);
 	}
 	
 	public boolean isAddressBook() {
 		return properties.containsKey(Property.IS_ADDRESSBOOK);
 	}
 	
-	public boolean isCalendar() {
-		return properties.containsKey(Property.IS_CALENDAR);
+	public VCardVersion getVCardVersion() {
+		String versionStr = properties.get(Property.VCARD_VERSION);
+		return (versionStr != null) ? VCardVersion.valueOfByStr(versionStr) : null;
 	}
 	
 	
@@ -500,7 +504,7 @@ public class WebDavResource {
 							mayUnbind = false,
 							mayWrite = false,
 							mayWriteContent = false;
-					for (DavProp.DavPropPrivilege privilege : prop.currentUserPrivilegeSet) {
+					for (DavProp.Privilege privilege : prop.currentUserPrivilegeSet) {
 						if (privilege.getAll() != null) mayAll = true;
 						if (privilege.getBind() != null) mayBind = true;
 						if (privilege.getUnbind() != null) mayUnbind = true;
@@ -514,20 +518,26 @@ public class WebDavResource {
 				if (prop.addressbookHomeSet != null && prop.addressbookHomeSet.getHref() != null)
 					properties.put(Property.ADDRESSBOOK_HOMESET, prop.addressbookHomeSet.getHref().href);
 				
-				if (singlePropstat.prop.calendarHomeSet != null && prop.calendarHomeSet.getHref() != null)
+				if (prop.calendarHomeSet != null && prop.calendarHomeSet.getHref() != null)
 					properties.put(Property.CALENDAR_HOMESET, prop.calendarHomeSet.getHref().href);
 				
 				if (prop.displayname != null)
 					properties.put(Property.DISPLAY_NAME, prop.displayname.getDisplayName());
 				
 				if (prop.resourcetype != null) {
-					if (prop.resourcetype.getAddressbook() != null) {
+					if (prop.resourcetype.getAddressbook() != null) {	// CardDAV collection properties
 						properties.put(Property.IS_ADDRESSBOOK, "1");
 						
 						if (prop.addressbookDescription != null)
 							properties.put(Property.DESCRIPTION, prop.addressbookDescription.getDescription());
+						if (prop.supportedAddressData != null)
+							for (DavProp.AddressDataType dataType : prop.supportedAddressData)
+								if ("text/vcard".equalsIgnoreCase(dataType.getContentType()))
+									// ignore "3.0" as it MUST be supported anyway
+									if ("4.0".equals(dataType.getVersion()))
+										properties.put(Property.VCARD_VERSION, VCardVersion.V4_0.getVersion());
 					}
-					if (prop.resourcetype.getCalendar() != null) {
+					if (prop.resourcetype.getCalendar() != null) {		// CalDAV collection propertioes
 						properties.put(Property.IS_CALENDAR, "1");
 						
 						if (prop.calendarDescription != null)
@@ -541,7 +551,7 @@ public class WebDavResource {
 						
 						if (prop.supportedCalendarComponentSet != null) {
 							referenced.supportedComponents = new LinkedList<String>();
-							for (DavPropComp component : prop.supportedCalendarComponentSet)
+							for (Comp component : prop.supportedCalendarComponentSet)
 								referenced.supportedComponents.add(component.getName());
 						}
 					}

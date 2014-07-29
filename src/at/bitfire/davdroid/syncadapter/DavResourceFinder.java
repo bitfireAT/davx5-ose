@@ -8,6 +8,7 @@ import java.util.List;
 
 import ch.boye.httpclientandroidlib.HttpException;
 import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
+import ezvcard.VCardVersion;
 import android.content.Context;
 import android.util.Log;
 import at.bitfire.davdroid.R;
@@ -40,7 +41,7 @@ public class DavResourceFinder {
 			
 				WebDavResource homeSetAddressBooks = new WebDavResource(principal, pathAddressBooks);
 				if (checkCapabilities(homeSetAddressBooks, "addressbook")) {
-					homeSetAddressBooks.propfind(Mode.MEMBERS_COLLECTIONS);
+					homeSetAddressBooks.propfind(Mode.CARDDAV_COLLECTIONS);
 					
 					List<ServerInfo.ResourceInfo> addressBooks = new LinkedList<ServerInfo.ResourceInfo>();
 					if (homeSetAddressBooks.getMembers() != null)
@@ -54,6 +55,12 @@ public class DavResourceFinder {
 									resource.getDisplayName(),
 									resource.getDescription(), resource.getColor()
 								);
+								
+								VCardVersion version = resource.getVCardVersion();
+								if (version == null)
+									version = VCardVersion.V3_0;	// VCard 3.0 MUST be supported
+								info.setVCardVersion(version);
+								
 								addressBooks.add(info);
 							}
 					serverInfo.setAddressBooks(addressBooks);
@@ -74,7 +81,7 @@ public class DavResourceFinder {
 			
 				WebDavResource homeSetCalendars = new WebDavResource(principal, pathCalendars);
 				if (checkCapabilities(homeSetCalendars, "calendar-access")) {
-					homeSetCalendars.propfind(Mode.MEMBERS_COLLECTIONS);
+					homeSetCalendars.propfind(Mode.CALDAV_COLLECTIONS);
 					
 					List<ServerInfo.ResourceInfo> calendars = new LinkedList<ServerInfo.ResourceInfo>();
 					if (homeSetCalendars.getMembers() != null)

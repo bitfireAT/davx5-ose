@@ -109,10 +109,10 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	
 	public void testPropfindAddressBooks() throws IOException, HttpException, DavException {
 		WebDavResource dav = new WebDavResource(davCollection, "addressbooks/test");
-		dav.propfind(HttpPropfind.Mode.MEMBERS_COLLECTIONS);
+		dav.propfind(HttpPropfind.Mode.CARDDAV_COLLECTIONS);
 		assertEquals(2, dav.getMembers().size());
 		for (WebDavResource member : dav.getMembers()) {
-			if (member.getName().equals("default.vcf"))
+			if (member.getName().equals("default-v4.vcf"))
 				assertTrue(member.isAddressBook());
 			else
 				assertFalse(member.isAddressBook());
@@ -122,7 +122,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	
 	public void testPropfindCalendars() throws IOException, HttpException, DavException {
 		WebDavResource dav = new WebDavResource(davCollection, "calendars/test");
-		dav.propfind(HttpPropfind.Mode.MEMBERS_COLLECTIONS);
+		dav.propfind(HttpPropfind.Mode.CALDAV_COLLECTIONS);
 		assertEquals(3, dav.getMembers().size());
 		assertEquals("0xFF00FF", dav.getMembers().get(2).getColor());
 		for (WebDavResource member : dav.getMembers()) {
@@ -217,7 +217,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	
 	public void testInvalidURLs() throws IOException, HttpException, DavException {
 		WebDavResource dav = new WebDavResource(davInvalid, "addressbooks/user%40domain/");
-		dav.propfind(HttpPropfind.Mode.MEMBERS_COLLECTIONS);
+		dav.propfind(HttpPropfind.Mode.CARDDAV_COLLECTIONS);
 		List<WebDavResource> members = dav.getMembers();
 		assertEquals(2, members.size());
 		assertEquals(Constants.ROBOHYDRA_BASE + "dav/addressbooks/user%40domain/My%20Contacts%3a1.vcf/", members.get(0).getLocation().toString());
