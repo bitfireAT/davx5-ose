@@ -29,6 +29,7 @@ import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.davdroid.resource.LocalStorageException;
+import at.bitfire.davdroid.resource.ServerInfo;
 
 public class AccountDetailsFragment extends Fragment implements TextWatcher {
 	public static final String KEY_SERVER_INFO = "server_info";

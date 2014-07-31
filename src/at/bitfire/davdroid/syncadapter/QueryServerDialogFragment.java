@@ -23,6 +23,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.resource.DavResourceFinder;
+import at.bitfire.davdroid.resource.ServerInfo;
 import at.bitfire.davdroid.webdav.DavException;
 import ch.boye.httpclientandroidlib.HttpException;
 

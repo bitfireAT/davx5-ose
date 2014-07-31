@@ -17,6 +17,7 @@ import android.widget.BaseAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListAdapter;
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.resource.ServerInfo;
 
 public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter {
 	final static int TYPE_ADDRESS_BOOKS_HEADING = 0,

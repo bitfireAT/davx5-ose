@@ -4,7 +4,9 @@ import java.util.List;
 
 import ezvcard.VCardVersion;
 import android.test.InstrumentationTestCase;
-import at.bitfire.davdroid.syncadapter.ServerInfo.ResourceInfo;
+import at.bitfire.davdroid.resource.DavResourceFinder;
+import at.bitfire.davdroid.resource.ServerInfo;
+import at.bitfire.davdroid.resource.ServerInfo.ResourceInfo;
 import at.bitfire.davdroid.test.Constants;
 
 public class DavResourceFinderTest extends InstrumentationTestCase {
