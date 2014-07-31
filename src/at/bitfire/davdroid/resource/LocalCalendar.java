@@ -60,7 +60,6 @@ import android.provider.CalendarContract.Events;
 import android.provider.CalendarContract.Reminders;
 import android.provider.ContactsContract;
 import android.util.Log;
-import at.bitfire.davdroid.syncadapter.ServerInfo;
 
 /**
  * Represents a locally stored calendar, containing Events.

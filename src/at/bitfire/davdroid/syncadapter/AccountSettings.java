@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
 import android.util.Log;
+import at.bitfire.davdroid.resource.ServerInfo;
 import ezvcard.VCardVersion;
 
 public class AccountSettings {

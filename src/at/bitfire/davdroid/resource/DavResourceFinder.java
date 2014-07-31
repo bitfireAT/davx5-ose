@@ -1,4 +1,4 @@
-package at.bitfire.davdroid.syncadapter;
+package at.bitfire.davdroid.resource;
 
 import java.io.IOException;
 import java.net.URI;
@@ -40,7 +40,7 @@ public class DavResourceFinder {
 				Log.i(TAG, "Found address book home set: " + pathAddressBooks);
 			
 				WebDavResource homeSetAddressBooks = new WebDavResource(principal, pathAddressBooks);
-				if (checkCapabilities(homeSetAddressBooks, "addressbook")) {
+				if (checkHomesetCapabilities(homeSetAddressBooks, "addressbook")) {
 					homeSetAddressBooks.propfind(Mode.CARDDAV_COLLECTIONS);
 					
 					List<ServerInfo.ResourceInfo> addressBooks = new LinkedList<ServerInfo.ResourceInfo>();
@@ -80,7 +80,7 @@ public class DavResourceFinder {
 				Log.i(TAG, "Found calendar home set: " + pathCalendars);
 			
 				WebDavResource homeSetCalendars = new WebDavResource(principal, pathCalendars);
-				if (checkCapabilities(homeSetCalendars, "calendar-access")) {
+				if (checkHomesetCapabilities(homeSetCalendars, "calendar-access")) {
 					homeSetCalendars.propfind(Mode.CALDAV_COLLECTIONS);
 					
 					List<ServerInfo.ResourceInfo> calendars = new LinkedList<ServerInfo.ResourceInfo>();
@@ -147,16 +147,12 @@ public class DavResourceFinder {
 		return null;
 	}
 	
-	private static boolean checkCapabilities(WebDavResource resource, String davCapability) throws IOException {
+	private static boolean checkHomesetCapabilities(WebDavResource resource, String davCapability) throws IOException {
 		// check for necessary capabilities
 		try {
 			resource.options();
 			if (resource.supportsDAV(davCapability) &&
-				resource.supportsMethod("PROPFIND") &&
-				resource.supportsMethod("GET") &&
-				resource.supportsMethod("REPORT") &&
-				resource.supportsMethod("PUT") &&
-				resource.supportsMethod("DELETE"))
+				resource.supportsMethod("PROPFIND"))		// check only for methods that MUST be available for home sets
 				return true;
 		} catch(HttpException e) {
 			// for instance, 405 Method not allowed
