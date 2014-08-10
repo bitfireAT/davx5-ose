@@ -609,7 +609,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			.withValue(entryColumnUID(), contact.getUid())
 			.withValue(entryColumnETag(), contact.getETag())
 			.withValue(COLUMN_UNKNOWN_PROPERTIES, contact.getUnknownProperties())
-			.withValue(RawContacts.STARRED, contact.isStarred());
+			.withValue(RawContacts.STARRED, contact.isStarred() ? 1 : 0);
 	}
 	
 	
