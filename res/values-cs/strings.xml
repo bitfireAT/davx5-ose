@@ -19,17 +19,17 @@
     <string name="title_select_collections">DAVdroid: Vybrat sbírky</string>
     <string name="exception_io">I/O chyba: %s</string>
     <string name="exception_uri_syntax">Neplatné URI: %s</string>
-    <string name="exception_incapable_resource">Missing capabilities: %s</string>
-    <string name="neither_caldav_nor_carddav">V tomto umístění není CalDAV-/CardDAV servis dostupný.</string>
+    <string name="exception_incapable_resource">Chybějící možnosti: %s</string>
+    <string name="neither_caldav_nor_carddav">V tomto umístění není CalDAV-/CardDAV služba dostupná.</string>
     <string name="add_account">Přidat účet</string>
     <string name="querying_server">Probíhá komunikace se servrem. Počkejte prosím…</string>
     <string name="exception_http">HTTP chyba: %s</string>
     <string name="what_to_sync">Které sbírky mají být synchronizovány?</string>
     <string name="address_books">Adresáře</string>
     <string name="calendars">Kalendáře</string>
-    <string name="select_address_book">Vybrat alespoň jeden adresář (opakovaně tapnout pro odebrán):</string>
+    <string name="select_address_book">Vybrat alespoň jeden adresář (opakovaně tapnout pro odebrání):</string>
     <string name="select_calendars">Vybrat své kalendáře:</string>
-    <string name="auth_preemptive">Preemptivní ověření (doporučeno, ale není kompatibilní s Digest ověřováním)</string>
+    <string name="auth_preemptive">Preemptivní ověření (doporučeno, ale není kompatibilní s Digest ověřením)</string>
     
     <string name="davdroid_help">Pomoc s DAVdroid</string>
     <string name="show_sync_settings">Spravovat synchronizované účty</string>
@@ -117,7 +117,7 @@
     <string name="http_compression_disabled">HTTP komprese je vypnuta (ladící mód)</string>
     <string name="http_compression_enabled">HTTP komprese je použita všude kde možno</string>
     <string name="network_logging">Logovat síťový provoz</string>
-    <string name="network_logging_enabled">Veškerý síťový provoz je detailně logován (ladící mode)</string>
+    <string name="network_logging_enabled">Veškerý síťový provoz je detailně logován (ladící mód)</string>
     <string name="network_logging_disabled">Síťový provoz není logován</string>
     <string name="report_an_issue">Nahlásit problém</string>
 
