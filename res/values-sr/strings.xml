@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">ДАВдроид</string>
-    <string name="menu_settings">Поставке/string>
+    <string name="menu_settings">Поставке</string>
 
     <string-array name="http_protocols">
         <item>http://</item>
@@ -67,7 +67,7 @@
        <p>Ако користите Цијаноген Мод, „Privacy Guard“ мора бити онемогућен за ДАВдроид. У супротном, ДАВдроиду неће бити дозвољени
        приступ и синхронизација ваших контаката и догађаја.</p>
        
-       <p><b>У случају проблема, најпре прочитајте <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a>.
+       <p><b>У случају проблема, најпре прочитајте <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">најчешћа питања</a>.
        Ако вам се деси грешка која је сигурно везана за ДАВдроид, поднесите пријаву на
        <a href="https://github.com/rfc2822/davdroid">Гитхабовом пратиоцу</a> уместо да нас контактирате директно или да апликацији дате лошу оцену.</b></p>
               
