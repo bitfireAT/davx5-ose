@@ -15,6 +15,7 @@ import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.webdav.DavException;
 import at.bitfire.davdroid.webdav.DavHttpClient;
 import at.bitfire.davdroid.webdav.DavIncapableException;
+import at.bitfire.davdroid.webdav.NotAuthorizedException;
 import at.bitfire.davdroid.webdav.WebDavResource;
 import at.bitfire.davdroid.webdav.HttpPropfind.Mode;
 
@@ -127,15 +128,18 @@ public class DavResourceFinder {
 	 * @param serviceName	Well-known service name ("carddav", "caldav")
 	 * @return	WebDavResource of current-user-principal for the given service, or null if it can't be found
 	 */
-	private static WebDavResource getCurrentUserPrincipal(WebDavResource resource, String serviceName) throws IOException, HttpException, DavException {
+	private static WebDavResource getCurrentUserPrincipal(WebDavResource resource, String serviceName) throws IOException, NotAuthorizedException {
 		// look for well-known service (RFC 5785)
 		try {
 			WebDavResource wellKnown = new WebDavResource(resource, "/.well-known/" + serviceName);
 			wellKnown.propfind(Mode.CURRENT_USER_PRINCIPAL);
 			if (wellKnown.getCurrentUserPrincipal() != null)
 				return new WebDavResource(wellKnown, wellKnown.getCurrentUserPrincipal());
+		} catch (NotAuthorizedException e) {
+			Log.d(TAG, "Well-known " + serviceName + " service detection not authorized", e);
+			throw e;
 		} catch (HttpException e) {
-			Log.d(TAG, "well-known " + serviceName + " service detection failed with HTTP error", e);
+			Log.d(TAG, "Well-known " + serviceName + " service detection failed with HTTP error", e);
 		} catch (DavException e) {
 			Log.d(TAG, "Well-known " + serviceName + " service detection failed at DAV level", e);
 		}
@@ -145,6 +149,9 @@ public class DavResourceFinder {
 			resource.propfind(Mode.CURRENT_USER_PRINCIPAL);
 			if (resource.getCurrentUserPrincipal() != null)
 				return new WebDavResource(resource, resource.getCurrentUserPrincipal());
+		} catch (NotAuthorizedException e) {
+			Log.d(TAG, "Not authorized for querying principal for " + serviceName + " service", e);
+			throw e;
 		} catch (HttpException e) {
 			Log.d(TAG, "HTTP error when querying principal for " + serviceName + " service", e);
 		} catch (DavException e) {
