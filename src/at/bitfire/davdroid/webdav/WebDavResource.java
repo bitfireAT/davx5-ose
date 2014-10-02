@@ -416,6 +416,8 @@ public class WebDavResource {
 		
 		String reason = code + " " + statusLine.getReasonPhrase();
 		switch (code) {
+		case HttpStatus.SC_UNAUTHORIZED:
+			throw new NotAuthorizedException(reason);
 		case HttpStatus.SC_NOT_FOUND:
 			throw new NotFoundException(reason);
 		case HttpStatus.SC_PRECONDITION_FAILED:
