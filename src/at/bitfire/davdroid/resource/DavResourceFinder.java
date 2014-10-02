@@ -135,15 +135,21 @@ public class DavResourceFinder {
 			if (wellKnown.getCurrentUserPrincipal() != null)
 				return new WebDavResource(wellKnown, wellKnown.getCurrentUserPrincipal());
 		} catch (HttpException e) {
-			Log.d(TAG, "Well-known service detection failed with HTTP error", e);
+			Log.d(TAG, "well-known " + serviceName + " service detection failed with HTTP error", e);
 		} catch (DavException e) {
-			Log.d(TAG, "Well-known service detection failed at DAV level", e);
+			Log.d(TAG, "Well-known " + serviceName + " service detection failed at DAV level", e);
 		}
 
-		// fall back to user-given initial context path 
-		resource.propfind(Mode.CURRENT_USER_PRINCIPAL);
-		if (resource.getCurrentUserPrincipal() != null)
-			return new WebDavResource(resource, resource.getCurrentUserPrincipal());
+		// fall back to user-given initial context path
+		try {
+			resource.propfind(Mode.CURRENT_USER_PRINCIPAL);
+			if (resource.getCurrentUserPrincipal() != null)
+				return new WebDavResource(resource, resource.getCurrentUserPrincipal());
+		} catch (HttpException e) {
+			Log.d(TAG, "HTTP error when querying principal for " + serviceName + " service", e);
+		} catch (DavException e) {
+			Log.d(TAG, "DAV error when querying principal for " + serviceName + " service", e);
+		}
 		return null;
 	}
 	
