@@ -91,8 +91,12 @@
 	   Store, AndroidPit App Center or Amazon Appstore require other terms, the respective terms apply for versions
 	   that are downloaded via these services.</p>
 	   
-	   <p>Translations: Catalanian by <a href="https://github.com/pokoli">@pokoli</a>, French by unknown contributor,
-	   Spanish by <a href="https://github.com/xphnx">@xphnx</a></p>
+	   <p>Translations.
+	     Catalanian: <a href="https://github.com/pokoli">@pokoli</a>,
+	     Czech: <a href="https://github.com/svetlemodry">Jaroslav Lichtblau</a>,
+	     Serbian: <a href="https://github.com/pejakm">@pejakm</a>,
+	     Spanish: <a href="https://github.com/xphnx">@xphnx</a>
+	   </p>
 	   
 	   <h2>Used third-party libraries</h2>
 	   <p>
