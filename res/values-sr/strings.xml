@@ -87,9 +87,13 @@
 	   и доступна на <a href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. Ако сервиси „Google Play“,
 	   „Samsung Store“, „AndroidPit App Center“ или „Amazon Appstore“ захтевају друге услове, исти важе за издања преузета са ових сервиса.</p>
 	   
-	   <p>Преводи: каталонски (<a href="https://github.com/pokoli">@pokoli</a>), француски (непознати аутор),
-	   шпански (<a href="https://github.com/xphnx">@xphnx</a>), српски (<a href="https://github.com/pejakm">@pejakm</a>)</p>
-	   
+	   <p>Преводи.
+	     Catalanian: <a href="https://github.com/pokoli">@pokoli</a>,
+	     Czech: <a href="https://github.com/svetlemodry">Jaroslav Lichtblau</a>,
+	     Serbian: <a href="https://github.com/pejakm">@pejakm</a>,
+	     Spanish: <a href="https://github.com/xphnx">@xphnx</a>
+	   </p>
+	   	   
 	   <h2>Кориштене друге библиотеке</h2>
 	   <p>
 	    * <a href="http://hc.apache.org">Апачи ХТТП клијент</a> (<a href="https://code.google.com/p/httpclientandroidlib/">httpclientandroidlib</a> издање) – <a href="http://www.apache.org/licenses/">Апачи лиценца, издање 2.0</a><br/>
