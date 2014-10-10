@@ -67,6 +67,8 @@ import at.bitfire.davdroid.syncadapter.DavSyncAdapter;
 public class Event extends Resource {
 	private final static String TAG = "davdroid.Event";
 	
+	public final static String MIME_TYPE = "text/calendar";
+	
 	private final static TimeZoneRegistry tzRegistry = new DefaultTimeZoneRegistryFactory().createRegistry();
 	
 	@Getter @Setter private String summary, location, description;

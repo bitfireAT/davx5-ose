@@ -145,7 +145,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	}
 	
 	public void testGet() throws URISyntaxException, IOException, HttpException, DavException {
-		simpleFile.get();
+		simpleFile.get("*/*");
 		@Cleanup InputStream is = assetMgr.open("test.random", AssetManager.ACCESS_STREAMING);
 		byte[] expected = IOUtils.toByteArray(is);
 		assertTrue(Arrays.equals(expected, simpleFile.getContent()));
@@ -156,7 +156,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		
 		boolean	sniWorking = false;
 		try {
-			file.get();
+			file.get("*/*");
 			sniWorking = true; 
 		} catch (SSLPeerUnverifiedException e) {
 		}

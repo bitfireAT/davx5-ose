@@ -61,6 +61,8 @@ import ezvcard.property.Url;
 public class Contact extends Resource {
 	private final static String TAG = "davdroid.Contact";
 	
+	public final static String MIME_TYPE = "text/vcard";
+	
 	public final static String
 		PROPERTY_STARRED = "X-DAVDROID-STARRED",
 		PROPERTY_PHONETIC_FIRST_NAME = "X-PHONETIC-FIRST-NAME",
