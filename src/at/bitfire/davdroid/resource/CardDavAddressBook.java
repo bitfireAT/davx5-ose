@@ -17,7 +17,7 @@ public class CardDavAddressBook extends RemoteCollection<Contact> {
 	
 	@Override
 	protected String memberContentType() {
-		return "text/vcard";
+		return Contact.MIME_TYPE;
 	}
 	
 	@Override

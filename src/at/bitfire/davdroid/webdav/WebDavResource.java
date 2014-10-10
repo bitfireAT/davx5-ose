@@ -329,8 +329,10 @@ public class WebDavResource {
 	
 	/* resource operations */
 	
-	public void get() throws IOException, HttpException, DavException {
+	public void get(String acceptedType) throws IOException, HttpException, DavException {
 		HttpGet get = new HttpGet(location);
+		get.addHeader("Accept", acceptedType);
+		
 		CloseableHttpResponse response = httpClient.execute(get, context);
 		try {
 			checkResponse(response);

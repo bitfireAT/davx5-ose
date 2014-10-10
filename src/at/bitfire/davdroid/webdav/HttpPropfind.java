@@ -39,8 +39,6 @@ public class HttpPropfind extends HttpEntityEnclosingRequestBase {
 
 	HttpPropfind(URI uri, Mode mode) {
 		this(uri);
-		
-		setHeader("Content-Type", "text/xml; charset=UTF-8");
 
 		DavPropfind propfind = new DavPropfind();
 		propfind.prop = new DavProp();
@@ -87,6 +85,8 @@ public class HttpPropfind extends HttpEntityEnclosingRequestBase {
 			StringWriter writer = new StringWriter();
 			serializer.write(propfind, writer);
 		
+			setHeader("Content-Type", "text/xml; charset=UTF-8");
+			setHeader("Accept", "text/xml");
 			setHeader("Depth", String.valueOf(depth));
 			setEntity(new StringEntity(writer.toString(), "UTF-8"));
 		} catch(Exception ex) {

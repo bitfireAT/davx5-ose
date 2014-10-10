@@ -16,8 +16,14 @@ RoboHydraHeadDAV = roboHydraHeads.roboHydraHeadType({
 				res.headers['DAV'] = 'addressbook, calendar-access';
 				res.statusCode = 500;
 
+                // verify Accept header
+                var accept = req.headers['accept'];
+                if (req.method == "GET" && (accept == undefined || !accept.match(/text\/(calendar|vcard|xml)/)) ||
+                    (req.method == "PROPFIND" || req.method == "REPORT") && (accept == undefined || accept != "text/xml"))
+                    res.statusCode = 406;
+
 				// DAV operations that work on all URLs
-				if (req.method == "OPTIONS") {
+				else if (req.method == "OPTIONS") {
 					res.statusCode = 204;
 					res.headers['Allow'] = 'OPTIONS, PROPFIND, GET, PUT, DELETE, REPORT';
 
