@@ -68,7 +68,8 @@ public class WebDavResource {
 		CURRENT_USER_PRINCIPAL,							// resource detection
 		ADDRESSBOOK_HOMESET, CALENDAR_HOMESET,
 		CONTENT_TYPE, READ_ONLY,						// WebDAV (common)
-		DISPLAY_NAME, DESCRIPTION, CTAG, ETAG,
+		DISPLAY_NAME, DESCRIPTION, ETAG,
+		IS_COLLECTION, CTAG,							// collections
 		IS_CALENDAR, COLOR, TIMEZONE, 					// CalDAV
 		IS_ADDRESSBOOK, VCARD_VERSION					// CardDAV
 	}
@@ -452,6 +453,7 @@ public class WebDavResource {
 		// member list will be built from response
 		List<WebDavResource> members = new LinkedList<WebDavResource>();
 		
+		// iterate through all resources (either ourselves or member)
 		for (DavResponse singleResponse : multiStatus.response) {
 			URI href;
 			try {
@@ -461,42 +463,19 @@ public class WebDavResource {
 				continue;
 			}
 			Log.d(TAG, "Processing multi-status element: " + href);
-			
-			// about which resource is this response?
-			WebDavResource referenced = null;
-			
-			// "this" resource is either at "location" …
-			if (location.equals(href)) {	// -> ourselves
-				referenced = this;
-			} else {
-				// … or at location + "/" (in case of a collection where the server has implicitly appended the trailing slash)
-				if (!location.getRawPath().endsWith("/"))	// this is only possible if location doesn't have a trailing slash
-					try {
-						URI locationAsCollection = new URI(location.getScheme(), location.getAuthority(), location.getPath() + "/", location.getQuery(), null);
-						if (locationAsCollection.equals(href)) {
-							Log.d(TAG, "Server implicitly appended trailing slash to " + locationAsCollection);
-							referenced = this;
-						}
-					} catch (URISyntaxException e) {
-						Log.wtf(TAG, "Couldn't understand our own URI", e);
-					}
-				
-				// otherwise, the referenced resource is a member
-				if (referenced == null) {
-					referenced = new WebDavResource(this, href);
-					members.add(referenced);
-				}
-			}
-			
+
+			// process known properties
+			HashMap<Property, String> properties = new HashMap<Property, String>();
+			List<String> supportedComponents = null;
+			byte[] data = null;
+
 			for (DavPropstat singlePropstat : singleResponse.getPropstat()) {
 				StatusLine status = BasicLineParser.parseStatusLine(singlePropstat.status, new BasicLineParser());
 				
 				// ignore information about missing properties etc.
 				if (status.getStatusCode()/100 != 1 && status.getStatusCode()/100 != 2)
 					continue;
-				
 				DavProp prop = singlePropstat.prop;
-				HashMap<Property, String> properties = referenced.properties;
 
 				if (prop.currentUserPrincipal != null && prop.currentUserPrincipal.getHref() != null)
 					properties.put(Property.CURRENT_USER_PRINCIPAL, prop.currentUserPrincipal.getHref().href);
@@ -520,15 +499,20 @@ public class WebDavResource {
 				}
 				
 				if (prop.addressbookHomeSet != null && prop.addressbookHomeSet.getHref() != null)
-					properties.put(Property.ADDRESSBOOK_HOMESET, prop.addressbookHomeSet.getHref().href);
+					properties.put(Property.ADDRESSBOOK_HOMESET, URIUtils.ensureTrailingSlash(prop.addressbookHomeSet.getHref().href));
 				
 				if (prop.calendarHomeSet != null && prop.calendarHomeSet.getHref() != null)
-					properties.put(Property.CALENDAR_HOMESET, prop.calendarHomeSet.getHref().href);
+					properties.put(Property.CALENDAR_HOMESET, URIUtils.ensureTrailingSlash(prop.calendarHomeSet.getHref().href));
 				
 				if (prop.displayname != null)
 					properties.put(Property.DISPLAY_NAME, prop.displayname.getDisplayName());
 				
 				if (prop.resourcetype != null) {
+					if (prop.resourcetype.getCollection() != null) {
+						properties.put(Property.IS_COLLECTION, "1");
+						// is a collection, ensure trailing slash
+						href = URIUtils.ensureTrailingSlash(href);
+					}
 					if (prop.resourcetype.getAddressbook() != null) {	// CardDAV collection properties
 						properties.put(Property.IS_ADDRESSBOOK, "1");
 						
@@ -554,9 +538,9 @@ public class WebDavResource {
 							properties.put(Property.TIMEZONE, Event.TimezoneDefToTzId(prop.calendarTimezone.getTimezone()));
 						
 						if (prop.supportedCalendarComponentSet != null) {
-							referenced.supportedComponents = new LinkedList<String>();
+							supportedComponents = new LinkedList<String>();
 							for (Comp component : prop.supportedCalendarComponentSet)
-								referenced.supportedComponents.add(component.getName());
+								supportedComponents.add(component.getName());
 						}
 					}
 				}
@@ -568,9 +552,26 @@ public class WebDavResource {
 					properties.put(Property.ETAG, prop.getetag.getETag());
 				
 				if (prop.calendarData != null && prop.calendarData.ical != null)
-					referenced.content = prop.calendarData.ical.getBytes();
+					data = prop.calendarData.ical.getBytes();
 				else if (prop.addressData != null && prop.addressData.vcard != null)
-					referenced.content = prop.addressData.vcard.getBytes();
+					data = prop.addressData.vcard.getBytes();
+			}
+			
+			// about which resource is this response?
+			// "this" resource is either at "location" …
+			if (location.equals(href)) {	// -> ourselves
+				this.properties.putAll(properties);
+				if (supportedComponents != null)
+					this.supportedComponents = supportedComponents;
+				this.content = data;
+				
+			} else {
+				WebDavResource member = new WebDavResource(this, href);
+				member.properties = properties;
+				member.supportedComponents = supportedComponents;
+				member.content = data;
+				
+				members.add(member);
 			}
 		}
 		
