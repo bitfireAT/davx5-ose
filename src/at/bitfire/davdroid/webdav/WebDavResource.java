@@ -558,14 +558,13 @@ public class WebDavResource {
 			}
 			
 			// about which resource is this response?
-			// "this" resource is either at "location" …
-			if (location.equals(href)) {	// -> ourselves
+			if (location.equals(href)) {	// about ourselves
 				this.properties.putAll(properties);
 				if (supportedComponents != null)
 					this.supportedComponents = supportedComponents;
 				this.content = data;
 				
-			} else {
+			} else {						// about a member
 				WebDavResource member = new WebDavResource(this, href);
 				member.properties = properties;
 				member.supportedComponents = supportedComponents;
