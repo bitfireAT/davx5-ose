@@ -135,7 +135,7 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 		for (String protocol : ssl.getSupportedProtocols())
 			if (!protocol.toUpperCase().contains("SSL"))
 				protocols.add(protocol);
-		Log.d(TAG, "Setting allowed TLS protocols: " + StringUtils.join(protocols, ", "));
+		Log.v(TAG, "Setting allowed TLS protocols: " + StringUtils.join(protocols, ", "));
 		ssl.setEnabledProtocols(protocols.toArray(new String[0]));
 
 		// choose secure cipher suites
@@ -173,7 +173,7 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 		HashSet<String> enabledCiphers = new HashSet<String>(Arrays.asList(ssl.getEnabledCipherSuites()));
 		enabledCiphers.addAll(preferredCiphers);
 		
-		Log.d(TAG, "Setting allowed TLS ciphers: " + StringUtils.join(enabledCiphers, ", "));
+		Log.v(TAG, "Setting allowed TLS ciphers: " + StringUtils.join(enabledCiphers, ", "));
 		ssl.setEnabledCipherSuites(enabledCiphers.toArray(new String[0]));
 	}
 	

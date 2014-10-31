@@ -12,6 +12,7 @@ import ezvcard.VCardVersion;
 import android.content.Context;
 import android.util.Log;
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.URIUtils;
 import at.bitfire.davdroid.webdav.DavException;
 import at.bitfire.davdroid.webdav.DavHttpClient;
 import at.bitfire.davdroid.webdav.DavIncapableException;
@@ -27,8 +28,9 @@ public class DavResourceFinder {
 		// disable compression and enable network logging for debugging purposes 
 		CloseableHttpClient httpClient = DavHttpClient.create(true, true);
 		
-		WebDavResource base = new WebDavResource(httpClient, new URI(serverInfo.getProvidedURL()), serverInfo.getUserName(),
-				serverInfo.getPassword(), serverInfo.isAuthPreemptive());
+		WebDavResource base = new WebDavResource(httpClient,
+				new URI(URIUtils.ensureTrailingSlash(serverInfo.getProvidedURL())),
+				serverInfo.getUserName(), serverInfo.getPassword(), serverInfo.isAuthPreemptive());
 
 		// CardDAV
 		WebDavResource principal = getCurrentUserPrincipal(base, "carddav");
@@ -159,6 +161,7 @@ public class DavResourceFinder {
 		} catch (DavException e) {
 			Log.d(TAG, "DAV error when querying principal for " + serviceName + " service", e);
 		}
+		Log.i(TAG, "Couldn't find current-user-principal for service " + serviceName);
 		return null;
 	}
 	
