@@ -35,7 +35,7 @@ exports.getBodyParts = function(conf) {
 												<CARD:addressbook/>\
 											</resourcetype>\
 											<CARD:addressbook-description>\
-												Address Book with absolute URL\
+												Address Book with absolute URL and at sign in path\
 											</CARD:addressbook-description>\
 										</prop>\
 										<status>HTTP/1.1 200 OK</status>\

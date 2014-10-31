@@ -7,10 +7,23 @@
  ******************************************************************************/
 package at.bitfire.davdroid.test;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import junit.framework.TestCase;
 import at.bitfire.davdroid.URIUtils;
 
 public class URIUtilsTest extends TestCase {
+
+	public void testEnsureTrailingSlash() throws URISyntaxException {
+		assertEquals("/test/", URIUtils.ensureTrailingSlash("/test"));
+		assertEquals("/test/", URIUtils.ensureTrailingSlash("/test/"));
+
+		String	withoutSlash = "http://www.test.at/dav/collection",
+				withSlash = withoutSlash + "/";
+		assertEquals(new URI(withSlash), URIUtils.ensureTrailingSlash(new URI(withoutSlash)));
+		assertEquals(new URI(withSlash), URIUtils.ensureTrailingSlash(new URI(withSlash)));
+	}
 
 	public void testSanitize() {
 		assertNull(URIUtils.sanitize(null));

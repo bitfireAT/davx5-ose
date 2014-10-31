@@ -88,15 +88,17 @@ public class DavResourceFinder {
 					if (homeSetCalendars.getMembers() != null)
 						for (WebDavResource resource : homeSetCalendars.getMembers())
 							if (resource.isCalendar()) {
-								Log.i(TAG, "Found calendar: " + resource.getLocation().getRawPath());
+								Log.i(TAG, "Found calendar: " + resource.getLocation().getPath());
 								if (resource.getSupportedComponents() != null) {
 									// CALDAV:supported-calendar-component-set available
 									boolean supportsEvents = false;
 									for (String supportedComponent : resource.getSupportedComponents())
 										if (supportedComponent.equalsIgnoreCase("VEVENT"))
 											supportsEvents = true;
-									if (!supportsEvents)	// ignore collections without VEVENT support
+									if (!supportsEvents) {	// ignore collections without VEVENT support
+										Log.i(TAG, "Ignoring this calendar because of missing VEVENT support");
 										continue;
+									}
 								}
 								ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
 									ServerInfo.ResourceInfo.Type.CALENDAR,

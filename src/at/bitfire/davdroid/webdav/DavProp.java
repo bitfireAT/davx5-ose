@@ -39,13 +39,16 @@ public class DavProp {
 	@Root(strict=false)
 	public static class ResourceType {
 		@Element(required=false)
-		@Getter private Addressbook addressbook;
-		@Element(required=false)
-		@Getter private Calendar calendar;
+		@Getter private Collection collection;
+		public static class Collection { }
 		
+		@Element(required=false)
+		@Getter private Addressbook addressbook;
 		@Namespace(prefix="CD",reference="urn:ietf:params:xml:ns:carddav")
 		public static class Addressbook { }
 		
+		@Element(required=false)
+		@Getter private Calendar calendar;
 		@Namespace(prefix="C",reference="urn:ietf:params:xml:ns:caldav")
 		public static class Calendar { }
 	}
