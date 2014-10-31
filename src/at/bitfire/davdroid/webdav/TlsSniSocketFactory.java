@@ -11,12 +11,16 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
-
+import org.apache.commons.lang.StringUtils;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.net.SSLCertificateSocketFactory;
 import android.os.Build;
@@ -57,7 +61,9 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 
 	@Override
 	public Socket createSocket(HttpContext context) throws IOException {
-		return sslSocketFactory.createSocket();
+		SSLSocket ssl = (SSLSocket)sslSocketFactory.createSocket();
+		setReasonableEncryption(ssl);
+		return ssl;
 	}
 
 	@Override
@@ -69,6 +75,7 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 		
 		// create a plain SSL socket, but don't do hostname/certificate verification yet
 		SSLSocket ssl = (SSLSocket)sslSocketFactory.createSocket(remoteAddr.getAddress(), host.getPort());
+		setReasonableEncryption(ssl);
 		
 		// connect, set SNI, shake hands, verify, print connection info
 		connectWithSNI(ssl, host.getHostName());
@@ -82,6 +89,7 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 		
 		// create a layered SSL socket, but don't do hostname/certificate verification yet
 		SSLSocket ssl = (SSLSocket)sslSocketFactory.createSocket(plain, host, port, true);
+		setReasonableEncryption(ssl);
 
 		// already connected, but verify host name again and print some connection info
 		Log.w(TAG, "Setting SNI/TLSv1.2 will silently fail because the handshake is already done");
@@ -93,10 +101,6 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 	
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	private void connectWithSNI(SSLSocket ssl, String host) throws SSLPeerUnverifiedException {
-		// set reasonable SSL/TLS settings before the handshake:
-		// - enable all supported protocols (enables TLSv1.1 and TLSv1.2 on Android <4.4.3, if available)
-		ssl.setEnabledProtocols(ssl.getSupportedProtocols());
-		
 		// - set SNI host name
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
 			Log.d(TAG, "Using documented SNI with host name " + host);
@@ -118,6 +122,59 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 
 		Log.i(TAG, "Established " + session.getProtocol() + " connection with " + session.getPeerHost() +
 				" using " + session.getCipherSuite());
+	}
+	
+	
+	@SuppressLint("DefaultLocale")
+	private void setReasonableEncryption(SSLSocket ssl) {
+		// set reasonable SSL/TLS settings before the handshake:
+		
+		// - enable all supported protocols (enables TLSv1.1 and TLSv1.2 on Android <4.4.3, if available)
+		// - remove all SSL versions (especially SSLv3) because they're insecure now
+		List<String> protocols = new LinkedList<String>();
+		for (String protocol : ssl.getSupportedProtocols())
+			if (!protocol.toUpperCase().contains("SSL"))
+				protocols.add(protocol);
+		Log.d(TAG, "Setting allowed TLS protocols: " + StringUtils.join(protocols, ", "));
+		ssl.setEnabledProtocols(protocols.toArray(new String[0]));
+
+		// choose secure cipher suites
+		List<String> allowedCiphers = Arrays.asList(new String[] {
+			// allowed secure ciphers according to NIST.SP.800-52r1.pdf Section 3.3.1 (see docs directory)
+			// TLS 1.2
+			"TLS_RSA_WITH_AES_256_GCM_SHA384",
+			"TLS_RSA_WITH_AES_128_GCM_SHA256",
+			"TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
+			"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+			"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+			"TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+			"TLS_ECHDE_RSA_WITH_AES_128_GCM_SHA256",
+			// maximum interoperability
+			"TLS_RSA_WITH_3DES_EDE_CBC_SHA",
+			"TLS_RSA_WITH_AES_128_CBC_SHA",
+			// additionally
+			"TLS_RSA_WITH_AES_256_CBC_SHA",
+			"TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA",
+			"TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
+			"TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
+			"TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+		});
+		
+		List<String> availableCiphers = Arrays.asList(ssl.getSupportedCipherSuites());
+		
+		// preferred ciphers = allowed Ciphers \ availableCiphers
+		HashSet<String> preferredCiphers = new HashSet<String>(allowedCiphers);
+		preferredCiphers.retainAll(availableCiphers);
+		
+		// add preferred ciphers to enabled ciphers
+		// for maximum security, preferred ciphers should *replace* enabled ciphers,
+		// but I guess for the security level of DAVdroid, disabling of insecure
+		// ciphers should be a server-side task
+		HashSet<String> enabledCiphers = new HashSet<String>(Arrays.asList(ssl.getEnabledCipherSuites()));
+		enabledCiphers.addAll(preferredCiphers);
+		
+		Log.d(TAG, "Setting allowed TLS ciphers: " + StringUtils.join(enabledCiphers, ", "));
+		ssl.setEnabledCipherSuites(enabledCiphers.toArray(new String[0]));
 	}
 	
 }
