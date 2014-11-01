@@ -87,14 +87,23 @@
 	   Ez a program és a kapcsolódó anyagok a GNU Public License v3.0 hatálya alatt áll, mely részét képezi a jelen csomagnak, és amely elérhető <a
 	   href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a> oldalon. Amennyiben a Google Play, Samsung
 	   Store, AndroidPit App Center vagy Amazon Appstore áruház eltérő feltéeleket szabnak, akkor annak az áruháznak a szabályai irányadóak, ahonnan az alkalmazást letöltötte.</p>
-	      
+	 
+	   <p>Fordítások.
+	   cseh: <a href="https://github.com/svetlemodry">Jaroslav Lichtblau</a>,
+	   katalán: <a href="https://github.com/pokoli">@pokoli</a>,
+	   kínai (egyszerűsített): <a href="https://github.com/phy25">@phy25</a>,
+	   magyar: <a href="https://github.com/gjtoth">Gábor J.Tóth</a>,
+	   szerb: <a href="https://github.com/pejakm">@pejakm</a>,
+	   spanyol: <a href="https://github.com/xphnx">@xphnx</a>.
+	   </p>
+     
 	   <h2>Harmadik felek által fejlesztett programcsomagok</h2>
 	   <p>
-	    * <a href="http://hc.apache.org">Apache HttpClient</a> (<a href="https://code.google.com/p/httpclientandroidlib/">httpclientandroidlib</a> változat) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>
-	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
-	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a><br/>
-	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a><br/>
-	   	* <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a></p>
+	   * <a href="http://hc.apache.org">Apache HttpClient</a> (<a href="https://code.google.com/p/httpclientandroidlib/">httpclientandroidlib</a> változat) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>
+	   * <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
+	   * <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a><br/>
+	   * <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a><br/>
+	   * <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a></p>
     ]]></string>
     
     <string name="account_details">További beállítások</string>
