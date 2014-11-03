@@ -23,15 +23,7 @@ import org.apache.commons.io.IOUtils;
 import android.content.res.AssetManager;
 import android.test.InstrumentationTestCase;
 import at.bitfire.davdroid.test.Constants;
-import at.bitfire.davdroid.webdav.DavException;
-import at.bitfire.davdroid.webdav.DavHttpClient;
-import at.bitfire.davdroid.webdav.DavMultiget;
-import at.bitfire.davdroid.webdav.HttpException;
-import at.bitfire.davdroid.webdav.HttpPropfind;
 import at.bitfire.davdroid.webdav.HttpPropfind.Mode;
-import at.bitfire.davdroid.webdav.NotFoundException;
-import at.bitfire.davdroid.webdav.PreconditionFailedException;
-import at.bitfire.davdroid.webdav.WebDavResource;
 import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
 import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
 
@@ -122,7 +114,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	
 	public void testPropfindCalendars() throws IOException, HttpException, DavException {
 		WebDavResource dav = new WebDavResource(davCollection, "calendars/test");
-		dav.propfind(HttpPropfind.Mode.CALDAV_COLLECTIONS);
+		dav.propfind(Mode.CALDAV_COLLECTIONS);
 		assertEquals(3, dav.getMembers().size());
 		assertEquals("0xFF00FF", dav.getMembers().get(2).getColor());
 		for (WebDavResource member : dav.getMembers()) {
@@ -131,6 +123,23 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 			else
 				assertFalse(member.isCalendar());
 			assertFalse(member.isAddressBook());
+		}
+	}
+	
+	public void testPropfindTrailingSlashes() throws IOException, HttpException, DavException {
+		final String principalOK = "/principals/ok";
+		
+		String requestPaths[] = {
+			"/dav/collection-response-with-trailing-slash",
+			"/dav/collection-response-with-trailing-slash/",
+			"/dav/collection-response-without-trailing-slash",
+			"/dav/collection-response-without-trailing-slash/"
+		};
+		
+		for (String path : requestPaths) {
+			WebDavResource davSlash = new WebDavResource(davCollection, path);
+			davSlash.propfind(Mode.CARDDAV_COLLECTIONS);
+			assertEquals(principalOK, davSlash.getCurrentUserPrincipal());
 		}
 	}
 	

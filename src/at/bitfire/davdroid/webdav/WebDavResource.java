@@ -558,7 +558,7 @@ public class WebDavResource {
 			}
 			
 			// about which resource is this response?
-			if (location.equals(href)) {	// about ourselves
+			if (location.equals(href) || URIUtils.ensureTrailingSlash(location).equals(href)) {	// about ourselves
 				this.properties.putAll(properties);
 				if (supportedComponents != null)
 					this.supportedComponents = supportedComponents;
