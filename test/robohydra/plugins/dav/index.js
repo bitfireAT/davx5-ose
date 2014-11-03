@@ -6,6 +6,60 @@ exports.getBodyParts = function(conf) {
 			/* base URL, provide default DAV here */
 			new RoboHydraHeadDAV({ path: "/dav/" }),
 
+            /* multistatus parsing */
+            new RoboHydraHeadDAV({
+				path: "/dav/collection-response-with-trailing-slash",
+				handler: function(req,res,next) {
+					if (req.method == "PROPFIND") {
+                        res.statusCode = 207;
+						res.write('\<?xml version="1.0" encoding="utf-8" ?>\
+							<multistatus xmlns="DAV:">\
+								<response>\
+									<href>/dav/collection-response-with-trailing-slash/</href> \
+									<propstat>\
+										<prop>\
+                                            <current-user-principal>\
+                                                <href>/principals/ok</href>\
+                                            </current-user-principal>\
+                                            <resourcetype>\
+                                                <collection/>\
+                                            </resourcetype>\
+										</prop>\
+										<status>HTTP/1.1 200 OK</status>\
+									</propstat>\
+								</response>\
+							</multistatus>\
+						');
+                    }
+                }
+            }),
+            new RoboHydraHeadDAV({
+				path: "/dav/collection-response-without-trailing-slash",
+				handler: function(req,res,next) {
+					if (req.method == "PROPFIND") {
+                        res.statusCode = 207;
+						res.write('\<?xml version="1.0" encoding="utf-8" ?>\
+							<multistatus xmlns="DAV:">\
+								<response>\
+									<href>/dav/collection-response-without-trailing-slash</href> \
+									<propstat>\
+										<prop>\
+                                            <current-user-principal>\
+                                                <href>/principals/ok</href>\
+                                            </current-user-principal>\
+                                            <resourcetype>\
+                                                <collection/>\
+                                            </resourcetype>\
+										</prop>\
+										<status>HTTP/1.1 200 OK</status>\
+									</propstat>\
+								</response>\
+							</multistatus>\
+						');
+                    }
+                }
+            }),
+
 			/* principal URL */
             new RoboHydraHeadDAV({
 				path: "/dav/principals/users/test",
