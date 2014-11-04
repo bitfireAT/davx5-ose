@@ -8,6 +8,7 @@
 package at.bitfire.davdroid.resource;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,7 +21,11 @@ import lombok.RequiredArgsConstructor;
 public class ServerInfo implements Serializable {
 	private static final long serialVersionUID = 6744847358282980437L;
 	
-	final private String providedURL;
+	enum Scheme {
+		HTTP, HTTPS, MAILTO
+	}
+	
+	final private URI baseURI;
 	final private String userName, password;
 	final boolean authPreemptive;
 	

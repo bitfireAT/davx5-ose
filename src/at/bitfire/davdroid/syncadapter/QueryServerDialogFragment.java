@@ -8,8 +8,10 @@
 package at.bitfire.davdroid.syncadapter;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 
+import lombok.Cleanup;
 import android.app.DialogFragment;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.AsyncTaskLoader;
@@ -31,7 +33,7 @@ import ch.boye.httpclientandroidlib.HttpException;
 public class QueryServerDialogFragment extends DialogFragment implements LoaderCallbacks<ServerInfo> {
 	private static final String TAG = "davdroid.QueryServerDialogFragment";
 	public static final String
-		EXTRA_BASE_URL = "base_uri",
+		EXTRA_BASE_URI = "base_uri",
 		EXTRA_USER_NAME = "user_name",
 		EXTRA_PASSWORD = "password",
 		EXTRA_AUTH_PREEMPTIVE = "auth_preemptive";
@@ -99,14 +101,15 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 		@Override
 		public ServerInfo loadInBackground() {
 			ServerInfo serverInfo = new ServerInfo(
-				args.getString(EXTRA_BASE_URL),
+				URI.create(args.getString(EXTRA_BASE_URI)),
 				args.getString(EXTRA_USER_NAME),
 				args.getString(EXTRA_PASSWORD),
 				args.getBoolean(EXTRA_AUTH_PREEMPTIVE)
 			);
 			
 			try {
-				DavResourceFinder.findResources(context, serverInfo);
+				@Cleanup DavResourceFinder finder = new DavResourceFinder(context);
+				finder.findResources(serverInfo);
 			} catch (URISyntaxException e) {
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_uri_syntax, e.getMessage()));
 			}  catch (IOException e) {

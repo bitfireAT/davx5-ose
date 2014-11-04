@@ -9,6 +9,7 @@ package at.bitfire.davdroid.syncadapter;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -131,11 +132,9 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 				try {
 					for (Map.Entry<LocalCollection<?>, RemoteCollection<?>> entry : syncCollections.entrySet())
 						new SyncManager(entry.getKey(), entry.getValue()).synchronize(extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL), syncResult);
-					
 				} catch (DavException ex) {
 					syncResult.stats.numParseExceptions++;
 					Log.e(TAG, "Invalid DAV response", ex);
-					
 				} catch (HttpException ex) {
 					if (ex.getCode() == HttpStatus.SC_UNAUTHORIZED) {
 						Log.e(TAG, "HTTP Unauthorized " + ex.getCode(), ex);
@@ -147,13 +146,14 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 						Log.w(TAG, "Soft HTTP error " + ex.getCode() + " (Android will try again later)", ex);
 						syncResult.stats.numIoExceptions++;
 					}
-					
 				} catch (LocalStorageException ex) {
 					syncResult.databaseError = true;
 					Log.e(TAG, "Local storage (content provider) exception", ex);
 				} catch (IOException ex) {
 					syncResult.stats.numIoExceptions++;
 					Log.e(TAG, "I/O error (Android will try again later)", ex);
+				} catch (URISyntaxException ex) {
+					Log.e(TAG, "Invalid URI (file name) syntax", ex);
 				}
 		} finally {
 			// allow httpClient shutdown

@@ -1,6 +1,7 @@
 package at.bitfire.davdroid.webdav;
 
 import java.io.IOException;
+import java.net.URL;
 
 import junit.framework.TestCase;
 import at.bitfire.davdroid.test.Constants;
@@ -34,7 +35,7 @@ public class DavRedirectStrategyTest extends TestCase {
 	// happy cases
 	
 	public void testNonRedirection() throws Exception {
-		HttpUriRequest request = new HttpOptions(Constants.roboHydra);
+		HttpUriRequest request = new HttpOptions(Constants.roboHydra.toURI());
 		HttpResponse response = httpClient.execute(request);
 		assertFalse(strategy.isRedirected(request, response, null));
 	}
@@ -43,12 +44,12 @@ public class DavRedirectStrategyTest extends TestCase {
 		final String newLocation = "/new-location";
 		
 		HttpContext context = HttpClientContext.create();
-		HttpUriRequest request = new HttpOptions(Constants.roboHydra.resolve("redirect/301?to=" + newLocation));
+		HttpUriRequest request = new HttpOptions(new URL(Constants.roboHydra, "redirect/301?to=" + newLocation).toURI());
 		HttpResponse response = httpClient.execute(request, context);
 		assertTrue(strategy.isRedirected(request, response, context));
 		
 		HttpUriRequest redirected = strategy.getRedirect(request, response, context);
-		assertEquals(Constants.roboHydra.resolve(newLocation), redirected.getURI());
+		assertEquals(new URL(Constants.roboHydra, newLocation).toURI(), redirected.getURI());
 	}
 	
 	
@@ -56,18 +57,18 @@ public class DavRedirectStrategyTest extends TestCase {
 	
 	public void testMissingLocation() throws Exception {
 		HttpContext context = HttpClientContext.create();
-		HttpUriRequest request = new HttpOptions(Constants.roboHydra.resolve("redirect/without-location"));
+		HttpUriRequest request = new HttpOptions(new URL(Constants.roboHydra, "redirect/without-location").toURI());
 		HttpResponse response = httpClient.execute(request, context);
 		assertFalse(strategy.isRedirected(request, response, context));
 	}
 	
 	public void testRelativeLocation() throws Exception {
 		HttpContext context = HttpClientContext.create();
-		HttpUriRequest request = new HttpOptions(Constants.roboHydra.resolve("redirect/relative"));
+		HttpUriRequest request = new HttpOptions(new URL(Constants.roboHydra, "redirect/relative").toURI());
 		HttpResponse response = httpClient.execute(request, context);
 		assertTrue(strategy.isRedirected(request, response, context));
 		
 		HttpUriRequest redirected = strategy.getRedirect(request, response, context);
-		assertEquals(Constants.roboHydra.resolve("/new/location"), redirected.getURI());
+		assertEquals(new URL(Constants.roboHydra, "/new/location").toURI(), redirected.getURI());
 	}
 }
