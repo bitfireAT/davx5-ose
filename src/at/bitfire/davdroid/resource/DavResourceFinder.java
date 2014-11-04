@@ -1,39 +1,57 @@
 package at.bitfire.davdroid.resource;
 
+import java.io.Closeable;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
-import ch.boye.httpclientandroidlib.HttpException;
-import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
-import ezvcard.VCardVersion;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.SRVRecord;
+import org.xbill.DNS.TXTRecord;
+import org.xbill.DNS.TextParseException;
+import org.xbill.DNS.Type;
+
 import android.content.Context;
 import android.util.Log;
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.URIUtils;
 import at.bitfire.davdroid.webdav.DavException;
 import at.bitfire.davdroid.webdav.DavHttpClient;
 import at.bitfire.davdroid.webdav.DavIncapableException;
+import at.bitfire.davdroid.webdav.HttpPropfind.Mode;
 import at.bitfire.davdroid.webdav.NotAuthorizedException;
 import at.bitfire.davdroid.webdav.WebDavResource;
-import at.bitfire.davdroid.webdav.HttpPropfind.Mode;
+import ch.boye.httpclientandroidlib.HttpException;
+import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
+import ezvcard.VCardVersion;
 
-public class DavResourceFinder {
+public class DavResourceFinder implements Closeable {
 	private final static String TAG = "davdroid.DavResourceFinder";
 	
+	protected Context context;
+	protected CloseableHttpClient httpClient;
 	
-	public static void findResources(Context context, ServerInfo serverInfo) throws URISyntaxException, DavException, HttpException, IOException {
-		// disable compression and enable network logging for debugging purposes 
-		CloseableHttpClient httpClient = DavHttpClient.create(true, true);
+	
+	public DavResourceFinder(Context context) {
+		this.context = context;
 		
-		WebDavResource base = new WebDavResource(httpClient,
-				new URI(URIUtils.ensureTrailingSlash(serverInfo.getProvidedURL())),
-				serverInfo.getUserName(), serverInfo.getPassword(), serverInfo.isAuthPreemptive());
+		// disable compression and enable network logging for debugging purposes 
+		httpClient = DavHttpClient.create(true, true);
+	}
 
+	@Override
+	public void close() throws IOException {
+		httpClient.close();
+	}
+	
+	
+	public void findResources(ServerInfo serverInfo) throws URISyntaxException, DavException, HttpException, IOException {
 		// CardDAV
-		WebDavResource principal = getCurrentUserPrincipal(base, "carddav");
+		WebDavResource principal = getCurrentUserPrincipal(serverInfo, "carddav");
 		if (principal != null) {
 			serverInfo.setCardDAV(true);
 		
@@ -50,11 +68,11 @@ public class DavResourceFinder {
 					if (homeSetAddressBooks.getMembers() != null)
 						for (WebDavResource resource : homeSetAddressBooks.getMembers())
 							if (resource.isAddressBook()) {
-								Log.i(TAG, "Found address book: " + resource.getLocation().getRawPath());
+								Log.i(TAG, "Found address book: " + resource.getLocation().getPath());
 								ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
 									ServerInfo.ResourceInfo.Type.ADDRESS_BOOK,
 									resource.isReadOnly(),
-									resource.getLocation().toASCIIString(),
+									resource.getLocation().toString(),
 									resource.getDisplayName(),
 									resource.getDescription(), resource.getColor()
 								);
@@ -73,7 +91,7 @@ public class DavResourceFinder {
 		}
 		
 		// CalDAV
-		principal = getCurrentUserPrincipal(base, "caldav");
+		principal = getCurrentUserPrincipal(serverInfo, "caldav");
 		if (principal != null) {
 			serverInfo.setCalDAV(true);
 
@@ -105,7 +123,7 @@ public class DavResourceFinder {
 								ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
 									ServerInfo.ResourceInfo.Type.CALENDAR,
 									resource.isReadOnly(),
-									resource.getLocation().toASCIIString(),
+									resource.getLocation().toString(),
 									resource.getDisplayName(),
 									resource.getDescription(), resource.getColor()
 								);
@@ -125,6 +143,75 @@ public class DavResourceFinder {
 	
 	
 	/**
+	 * Finds the initial service URL from a given base URI (HTTP[S] or mailto URI, user name, password)
+	 * @param serverInfo	User-given service information (including base URI, i.e. HTTP[S] URL+user name+password or mailto URI and password)
+	 * @param serviceName	Service name ("carddav" or "caldav")
+	 * @return				Initial service URL (HTTP/HTTPS), without user credentials
+	 * @throws URISyntaxException when the user-given URI is invalid
+	 * @throws MalformedURLException when the user-given URI is invalid
+	 * @throws UnknownServiceURLException when no intial service URL could be determined
+	 */
+	URL getInitialURL(ServerInfo serverInfo, String serviceName) throws URISyntaxException, MalformedURLException {
+		String	scheme = null,
+				domain = null;
+		int		port = -1;
+		String	path = "/";
+		
+		URI baseURI = serverInfo.getBaseURI();
+		if ("mailto".equalsIgnoreCase(baseURI.getScheme())) {
+			// mailto URIs
+			String mailbox = serverInfo.getBaseURI().getSchemeSpecificPart();
+
+			// determine service FQDN
+			int pos = mailbox.lastIndexOf("@");
+			if (pos == -1)
+				throw new URISyntaxException(mailbox, "Email address doesn't contain @");
+			domain = mailbox.substring(pos + 1);
+		} else {
+			// HTTP(S) URLs
+			scheme = baseURI.getScheme();
+			domain = baseURI.getHost();
+			port = baseURI.getPort();
+			path = baseURI.getPath();
+		}
+
+		// try to determine FQDN and port number using SRV records
+		try {
+			String name = "_" + serviceName + "s._tcp." + domain;
+			Log.d(TAG, "Looking up SRV records for " + name);
+			Record[] records = new Lookup(name, Type.SRV).run();
+			if (records != null && records.length >= 1) {
+				SRVRecord srv = selectSRVRecord(records);
+				
+				scheme = "https";
+				domain = srv.getTarget().toString(true);
+				port = srv.getPort();
+				Log.d(TAG, "Found " + serviceName + "s service for " + domain + " -> " + domain + ":" + port);
+
+				// SRV record found, look for TXT record too (for initial context path)
+				records = new Lookup(name, Type.TXT).run();
+				if (records != null && records.length >= 1) {
+					TXTRecord txt = (TXTRecord)records[0];
+					for (String segment : (String[])txt.getStrings().toArray())
+						if (segment.startsWith("path=")) {
+							path = segment.substring(5);
+							Log.d(TAG, "Found initial context path for " + serviceName + " at " + domain + " -> " + path);
+							break;
+						}
+				}
+			}
+		} catch (TextParseException e) {
+			throw new URISyntaxException(domain, "Invalid domain name");
+		}
+		
+		if (port != -1)
+			return new URL(scheme, domain, port, path);
+		else
+			return new URL(scheme, domain, path);
+	}
+	
+	
+	/**
 	 * Detects the current-user-principal for a given WebDavResource. At first, /.well-known/ is tried. Only
 	 * if no current-user-principal can be detected for the .well-known location, the given location of the resource
 	 * is tried.
@@ -132,10 +219,18 @@ public class DavResourceFinder {
 	 * @param serviceName	Well-known service name ("carddav", "caldav")
 	 * @return	WebDavResource of current-user-principal for the given service, or null if it can't be found
 	 */
-	private static WebDavResource getCurrentUserPrincipal(WebDavResource resource, String serviceName) throws IOException, NotAuthorizedException {
+	WebDavResource getCurrentUserPrincipal(ServerInfo serverInfo, String serviceName) throws URISyntaxException, IOException, NotAuthorizedException {
+		URL initialURL = getInitialURL(serverInfo, serviceName);
+		
+		// determine base URL (host name and initial context path)
+		WebDavResource base = new WebDavResource(httpClient,
+				//new URI(URIUtils.ensureTrailingSlash(serverInfo.getBaseURI())),
+				initialURL,
+				serverInfo.getUserName(), serverInfo.getPassword(), serverInfo.isAuthPreemptive());
+		
 		// look for well-known service (RFC 5785)
 		try {
-			WebDavResource wellKnown = new WebDavResource(resource, "/.well-known/" + serviceName);
+			WebDavResource wellKnown = new WebDavResource(base, "/.well-known/" + serviceName);
 			wellKnown.propfind(Mode.CURRENT_USER_PRINCIPAL);
 			if (wellKnown.getCurrentUserPrincipal() != null)
 				return new WebDavResource(wellKnown, wellKnown.getCurrentUserPrincipal());
@@ -150,9 +245,9 @@ public class DavResourceFinder {
 
 		// fall back to user-given initial context path
 		try {
-			resource.propfind(Mode.CURRENT_USER_PRINCIPAL);
-			if (resource.getCurrentUserPrincipal() != null)
-				return new WebDavResource(resource, resource.getCurrentUserPrincipal());
+			base.propfind(Mode.CURRENT_USER_PRINCIPAL);
+			if (base.getCurrentUserPrincipal() != null)
+				return new WebDavResource(base, base.getCurrentUserPrincipal());
 		} catch (NotAuthorizedException e) {
 			Log.d(TAG, "Not authorized for querying principal for " + serviceName + " service", e);
 			throw e;
@@ -165,7 +260,7 @@ public class DavResourceFinder {
 		return null;
 	}
 	
-	private static boolean checkHomesetCapabilities(WebDavResource resource, String davCapability) throws IOException {
+	private static boolean checkHomesetCapabilities(WebDavResource resource, String davCapability) throws URISyntaxException, IOException {
 		// check for necessary capabilities
 		try {
 			resource.options();
@@ -178,4 +273,11 @@ public class DavResourceFinder {
 		return false;
 	}
 	
+	
+	SRVRecord selectSRVRecord(Record[] records) {
+		if (records.length > 1)
+			Log.w(TAG, "Multiple SRV records not supported yet; using first one");
+		return (SRVRecord)records[0];
+	}
+
 }

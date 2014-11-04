@@ -8,6 +8,7 @@
 package at.bitfire.davdroid.syncadapter;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,7 +41,7 @@ public class SyncManager {
 	}
 
 	
-	public void synchronize(boolean manualSync, SyncResult syncResult) throws LocalStorageException, IOException, HttpException, DavException {
+	public void synchronize(boolean manualSync, SyncResult syncResult) throws URISyntaxException, LocalStorageException, IOException, HttpException, DavException {
 		// PHASE 1: push local changes to server
 		int	deletedRemotely = pushDeleted(),
 			addedRemotely = pushNew(),
@@ -98,7 +99,7 @@ public class SyncManager {
 	}
 	
 	
-	private int pushDeleted() throws LocalStorageException, IOException, HttpException {
+	private int pushDeleted() throws URISyntaxException, LocalStorageException, IOException, HttpException {
 		int count = 0;
 		long[] deletedIDs = local.findDeleted();
 		
@@ -129,7 +130,7 @@ public class SyncManager {
 		return count;
 	}
 	
-	private int pushNew() throws LocalStorageException, IOException, HttpException {
+	private int pushNew() throws URISyntaxException, LocalStorageException, IOException, HttpException {
 		int count = 0;
 		long[] newIDs = local.findNew();
 		Log.i(TAG, "Uploading " + newIDs.length + " new resource(s) (if not existing)");
@@ -155,7 +156,7 @@ public class SyncManager {
 		return count;
 	}
 	
-	private int pushDirty() throws LocalStorageException, IOException, HttpException {
+	private int pushDirty() throws URISyntaxException, LocalStorageException, IOException, HttpException {
 		int count = 0;
 		long[] dirtyIDs = local.findUpdated();
 		Log.i(TAG, "Uploading " + dirtyIDs.length + " modified resource(s) (if not changed)");
@@ -182,7 +183,7 @@ public class SyncManager {
 		return count;
 	}
 	
-	private int pullNew(Resource[] resourcesToAdd) throws LocalStorageException, IOException, HttpException, DavException {
+	private int pullNew(Resource[] resourcesToAdd) throws URISyntaxException, LocalStorageException, IOException, HttpException, DavException {
 		int count = 0;
 		Log.i(TAG, "Fetching " + resourcesToAdd.length + " new remote resource(s)");
 		
@@ -196,7 +197,7 @@ public class SyncManager {
 		return count;
 	}
 	
-	private int pullChanged(Resource[] resourcesToUpdate) throws LocalStorageException, IOException, HttpException, DavException {
+	private int pullChanged(Resource[] resourcesToUpdate) throws URISyntaxException, LocalStorageException, IOException, HttpException, DavException {
 		int count = 0;
 		Log.i(TAG, "Fetching " + resourcesToUpdate.length + " updated remote resource(s)");
 		

@@ -4,9 +4,10 @@
     <string name="app_name">DAVdroid</string>
     <string name="menu_settings">Settings</string>
 
-    <string-array name="http_protocols">
+    <string-array name="uri_scheme">
         <item>http://</item>
         <item>https://</item>
+        <item>mailto:</item>
     </string-array>
 
     <string name="http_warning">"If you don't use encryption (HTTPS), other people may easily intercept your login details, contacts and events."</string>

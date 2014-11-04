@@ -10,8 +10,9 @@ package at.bitfire.davdroid.webdav;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.net.URI;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,7 +29,7 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import android.util.Log;
-import at.bitfire.davdroid.URIUtils;
+import at.bitfire.davdroid.URLUtils;
 import at.bitfire.davdroid.resource.Event;
 import at.bitfire.davdroid.webdav.DavProp.Comp;
 import ch.boye.httpclientandroidlib.Header;
@@ -79,7 +80,7 @@ public class WebDavResource {
 	}
 
 	// location of this resource
-	@Getter protected URI location;
+	@Getter protected URL location;
 	
 	// DAV capabilities (DAV: header) and allowed DAV methods (set for OPTIONS request)
 	protected Set<String>	capabilities = new HashSet<String>(),
@@ -99,18 +100,18 @@ public class WebDavResource {
 	protected HttpClientContext context;
 	
 	
-	public WebDavResource(CloseableHttpClient httpClient, URI baseURL) throws URISyntaxException {
+	public WebDavResource(CloseableHttpClient httpClient, URL baseURL) {
 		this.httpClient = httpClient;
-		location = baseURL.normalize();
+		location = baseURL;
 		
 		context = HttpClientContext.create();
 		context.setCredentialsProvider(new BasicCredentialsProvider());
 	}
 	
-	public WebDavResource(CloseableHttpClient httpClient, URI baseURL, String username, String password, boolean preemptive) throws URISyntaxException {
+	public WebDavResource(CloseableHttpClient httpClient, URL baseURL, String username, String password, boolean preemptive) {
 		this(httpClient, baseURL);
 		
-		HttpHost host = new HttpHost(baseURL.getHost(), baseURL.getPort(), baseURL.getScheme());
+		HttpHost host = new HttpHost(baseURL.getHost(), baseURL.getPort(), baseURL.getProtocol());
 		context.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
 		
 		if (preemptive) {
@@ -129,17 +130,17 @@ public class WebDavResource {
 		location = parent.location;
 	}
 
-	protected WebDavResource(WebDavResource parent, URI uri) {
+	protected WebDavResource(WebDavResource parent, URL url) {
 		this(parent);
-		location = uri;
+		location = url;
 	}
 	
-	public WebDavResource(WebDavResource parent, String member) {
+	public WebDavResource(WebDavResource parent, String member) throws MalformedURLException {
 		this(parent);
-		location = parent.location.resolve(URIUtils.sanitize(member));
+		location = new URL(parent.location, URLUtils.sanitize(member));
 	}
 	
-	public WebDavResource(WebDavResource parent, String member, String ETag) {
+	public WebDavResource(WebDavResource parent, String member, String ETag) throws MalformedURLException {
 		this(parent, member);
 		properties.put(Property.ETAG, ETag);
 	}
@@ -148,8 +149,8 @@ public class WebDavResource {
 
 	/* feature detection */
 
-	public void options() throws IOException, HttpException {
-		HttpOptions options = new HttpOptions(location);
+	public void options() throws URISyntaxException, IOException, HttpException {
+		HttpOptions options = new HttpOptions(location.toURI());
 		CloseableHttpResponse response = httpClient.execute(options, context);
 		try {
 			checkResponse(response);
@@ -178,7 +179,7 @@ public class WebDavResource {
 	/* file hierarchy methods */
 	
 	public String getName() {
-		String[] names = StringUtils.split(location.getRawPath(), "/");
+		String[] names = StringUtils.split(location.getPath(), "/");
 		return names[names.length - 1];
 	}
 	
@@ -252,13 +253,13 @@ public class WebDavResource {
 	
 	/* collection operations */
 	
-	public void propfind(HttpPropfind.Mode mode) throws IOException, DavException, HttpException {
+	public void propfind(HttpPropfind.Mode mode) throws URISyntaxException, IOException, DavException, HttpException {
 		CloseableHttpResponse response = null;
 		
 		// processMultiStatus() requires knowledge of the actual content location,
 		// so we have to handle redirections manually and create a new request for the new location
 		for (int i = context.getRequestConfig().getMaxRedirects(); i > 0; i--) {
-			HttpPropfind propfind = new HttpPropfind(location, mode);
+			HttpPropfind propfind = new HttpPropfind(location.toURI(), mode);
 			response = httpClient.execute(propfind, context);
 			
 			if (response.getStatusLine().getStatusCode()/100 == 3) {
@@ -281,7 +282,7 @@ public class WebDavResource {
 		}
 	}
 
-	public void multiGet(DavMultiget.Type type, String[] names) throws IOException, DavException, HttpException {
+	public void multiGet(DavMultiget.Type type, String[] names) throws URISyntaxException, IOException, DavException, HttpException {
 		CloseableHttpResponse response = null;
 		
 		// processMultiStatus() requires knowledge of the actual content location,
@@ -290,7 +291,7 @@ public class WebDavResource {
 			// build multi-get XML request 
 			List<String> hrefs = new LinkedList<String>();
 			for (String name : names)
-				hrefs.add(location.resolve(name).getRawPath());
+				hrefs.add(new URL(location, name).getPath());
 			DavMultiget multiget = DavMultiget.newRequest(type, hrefs.toArray(new String[0]));
 			
 			StringWriter writer = new StringWriter();
@@ -303,7 +304,7 @@ public class WebDavResource {
 			}
 	
 			// submit REPORT request
-			HttpReport report = new HttpReport(location, writer.toString());
+			HttpReport report = new HttpReport(location.toURI(), writer.toString());
 			response = httpClient.execute(report, context);
 			
 			if (response.getStatusLine().getStatusCode()/100 == 3) {
@@ -330,8 +331,8 @@ public class WebDavResource {
 	
 	/* resource operations */
 	
-	public void get(String acceptedType) throws IOException, HttpException, DavException {
-		HttpGet get = new HttpGet(location);
+	public void get(String acceptedType) throws URISyntaxException, IOException, HttpException, DavException {
+		HttpGet get = new HttpGet(location.toURI());
 		get.addHeader("Accept", acceptedType);
 		
 		CloseableHttpResponse response = httpClient.execute(get, context);
@@ -349,8 +350,8 @@ public class WebDavResource {
 	}
 	
 	// returns the ETag of the created/updated resource, if available (null otherwise)
-	public String put(byte[] data, PutMode mode) throws IOException, HttpException {
-		HttpPut put = new HttpPut(location);
+	public String put(byte[] data, PutMode mode) throws URISyntaxException, IOException, HttpException {
+		HttpPut put = new HttpPut(location.toURI());
 		put.setEntity(new ByteArrayEntity(data));
 
 		switch (mode) {
@@ -379,8 +380,8 @@ public class WebDavResource {
 		return null;
 	}
 	
-	public void delete() throws IOException, HttpException {
-		HttpDelete delete = new HttpDelete(location);
+	public void delete() throws URISyntaxException, IOException, HttpException {
+		HttpDelete delete = new HttpDelete(location.toURI());
 		
 		if (getETag() != null)
 			delete.addHeader("If-Match", getETag());
@@ -404,9 +405,9 @@ public class WebDavResource {
 		if (contentLocationHdr != null)
 			try {
 				// Content-Location was set, update location correspondingly
-				location = location.resolve(new URI(contentLocationHdr.getValue()));
+				location = new URL(location, contentLocationHdr.getValue());
 				Log.d(TAG, "Set Content-Location to " + location);
-			} catch (URISyntaxException e) {
+			} catch (MalformedURLException e) {
 				Log.w(TAG, "Ignoring invalid Content-Location", e);
 			}
 	}
@@ -455,9 +456,9 @@ public class WebDavResource {
 		
 		// iterate through all resources (either ourselves or member)
 		for (DavResponse singleResponse : multiStatus.response) {
-			URI href;
+			URL href;
 			try {
-				href = location.resolve(URIUtils.sanitize(singleResponse.getHref().href));
+				href = new URL(location, URLUtils.sanitize(singleResponse.getHref().href));
 			} catch(IllegalArgumentException ex) {
 				Log.w(TAG, "Ignoring illegal member URI in multi-status response", ex);
 				continue;
@@ -499,10 +500,10 @@ public class WebDavResource {
 				}
 				
 				if (prop.addressbookHomeSet != null && prop.addressbookHomeSet.getHref() != null)
-					properties.put(Property.ADDRESSBOOK_HOMESET, URIUtils.ensureTrailingSlash(prop.addressbookHomeSet.getHref().href));
+					properties.put(Property.ADDRESSBOOK_HOMESET, URLUtils.ensureTrailingSlash(prop.addressbookHomeSet.getHref().href));
 				
 				if (prop.calendarHomeSet != null && prop.calendarHomeSet.getHref() != null)
-					properties.put(Property.CALENDAR_HOMESET, URIUtils.ensureTrailingSlash(prop.calendarHomeSet.getHref().href));
+					properties.put(Property.CALENDAR_HOMESET, URLUtils.ensureTrailingSlash(prop.calendarHomeSet.getHref().href));
 				
 				if (prop.displayname != null)
 					properties.put(Property.DISPLAY_NAME, prop.displayname.getDisplayName());
@@ -511,7 +512,7 @@ public class WebDavResource {
 					if (prop.resourcetype.getCollection() != null) {
 						properties.put(Property.IS_COLLECTION, "1");
 						// is a collection, ensure trailing slash
-						href = URIUtils.ensureTrailingSlash(href);
+						href = URLUtils.ensureTrailingSlash(href);
 					}
 					if (prop.resourcetype.getAddressbook() != null) {	// CardDAV collection properties
 						properties.put(Property.IS_ADDRESSBOOK, "1");
@@ -558,7 +559,7 @@ public class WebDavResource {
 			}
 			
 			// about which resource is this response?
-			if (location.equals(href) || URIUtils.ensureTrailingSlash(location).equals(href)) {	// about ourselves
+			if (location.equals(href) || URLUtils.ensureTrailingSlash(location).equals(href)) {	// about ourselves
 				this.properties.putAll(properties);
 				if (supportedComponents != null)
 					this.supportedComponents = supportedComponents;

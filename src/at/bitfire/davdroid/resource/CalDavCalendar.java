@@ -7,7 +7,7 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 
 import at.bitfire.davdroid.webdav.DavMultiget;
 import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
@@ -31,7 +31,7 @@ public class CalDavCalendar extends RemoteCollection<Event> {
 	}
 	
 	
-	public CalDavCalendar(CloseableHttpClient httpClient, String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {
+	public CalDavCalendar(CloseableHttpClient httpClient, String baseURL, String user, String password, boolean preemptiveAuth) throws MalformedURLException {
 		super(httpClient, baseURL, user, password, preemptiveAuth);
 	}
 }

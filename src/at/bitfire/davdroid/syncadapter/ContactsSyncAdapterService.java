@@ -7,7 +7,7 @@
  ******************************************************************************/
 package at.bitfire.davdroid.syncadapter;
 
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,7 +72,7 @@ public class ContactsSyncAdapterService extends Service {
 				map.put(database, dav);
 				
 				return map;
-			} catch (URISyntaxException ex) {
+			} catch (MalformedURLException ex) {
 				Log.e(TAG, "Couldn't build address book URI", ex);
 			}
 			

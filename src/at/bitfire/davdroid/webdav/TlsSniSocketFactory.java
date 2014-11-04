@@ -120,7 +120,7 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 		if (!hostnameVerifier.verify(host, session))
 			throw new SSLPeerUnverifiedException("Cannot verify hostname: " + host);
 
-		Log.i(TAG, "Established " + session.getProtocol() + " connection with " + session.getPeerHost() +
+		Log.d(TAG, "Established " + session.getProtocol() + " connection with " + session.getPeerHost() +
 				" using " + session.getCipherSuite());
 	}
 	
