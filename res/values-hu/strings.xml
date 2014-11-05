@@ -19,17 +19,17 @@
     <string name="title_select_collections">DAVdroid: Gyűjtemény kiválasztása</string>
     <string name="exception_io">I/O hiba: %s</string>
     <string name="exception_uri_syntax">Érvénytelen URI: %s</string>
-    <string name="exception_incapable_resource">Hiányzó képesség: %s</string>
+    <string name="exception_incapable_resource">Hiányzó szolgáltatás: %s</string>
     <string name="neither_caldav_nor_carddav">Nincs CalDAV-/CardDAV szolgáltatás a megadott helyen.</string>
     <string name="add_account">Fiók hozzáadása</string>
     <string name="querying_server">Kapcsolódás a szerverhez. Egy pillanat…</string>
     <string name="exception_http">HTTP hiba: %s</string>
     <string name="what_to_sync">Melyik gyűjtemények legyenek szinkronizálva?</string>
     <string name="address_books">Címjegyzékek</string>
-    <string name="select_address_book">Egy címjegyzék választható (a kijelölés megfordítása újbóli érintéssel):</string>
+    <string name="select_address_book">Egy címjegyzék választható (a kijelölés visszavonása újbóli érintéssel vagy másik tétel kiválasztásával):</string>
     <string name="calendars">Naptárak</string>
     <string name="select_calendars">Naptárak kiválasztása:</string>
-    <string name="auth_preemptive">Preemptív autentikáció (ajánlott, de Digest autentikációval nem működik)</string>
+    <string name="auth_preemptive">Preemptív authentikáció (ajánlott, de Digest authentikációval nem működik)</string>
     
     <string name="davdroid_help">DAVdroid súgó</string>
     <string name="show_sync_settings">Szinkronizációs fiókok kezelése</string>
@@ -54,7 +54,7 @@
 		eltűnik, miután a Google Play áruház frissítette a DAVdroid alkalmazást</strong>.  Ezt szintén egy, az előzőhöz hasonló, <a href="https://code.google.com/p/android/issues/detail?id=34880">Android szoftverhiba</a> okozza.
 		<p>Érintett felhasználók:<br/>
 		* egyes Android 4.4.2 felhasználók, akik a DAVdroid alkalmazást a Google Play áruházból töltötték le, a használt eszköz
-		típusától függően (például Nexus és Moto G eszközök felhasználók)</p>
+		típusától függően (például Nexus és Moto G eszközök felhasználói)</p>
                 
         <p><strong>A probléma a <a href="market://details?id=at.bitfire.davdroid.jbworkaround">JB DAVdroid gyorsjavítás</a> 
 		telepítésével kiküszöbölhető.</strong></p>
@@ -62,31 +62,31 @@
     <string name="html_main_info"><![CDATA[
        <h1>Üdvözöljük a DAVdroid/%s felhasználók között!</h1>
        
-       <p>DAVdroid egy Android 4+ CalDAV/CardDAV szinkrinizációs adapter. Használatához hozzon létre egy DAVdroid fiókot a 
-	   CalDAV/CardDav szerverhez, ezt követően a névjegyek és események szinkronizálva lesznek, mindkét irányban.</p>
+       <p>DAVdroid egy Android 4+ CalDAV/CardDAV szinkronizációs adapter. Használatához hozzon létre egy DAVdroid fiókot a használni kívánt 
+	   CalDAV/CardDav szerverhez.  Ezt követően a névjegyek és események szinkronizálva lesznek, mindkét irányban.</p>
        
        <p>További információkat a <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid
-	   honlap</a> tartalmaz.  A beállításokkal kapcsolatban a <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">beállítások</a> oldalon találhat. DAVdroid tiszteletben tartja adatait bizalmasságát, részleteket az 
+	   honlap</a> tartalmaz.  A beállításokkal kapcsolatban a <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">beállítások</a> oldalon találhat információkat. A DAVdroid tiszteletben tartja adatait bizalmasságát, részleteket az 
 	   <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">adatkezelési nyilatkozat</a> tartalmaz.</p>
        
-       <p>Ha Ön CyanogenMod felhasználó, vonja ki a DAVdroid-ot a "Privacy Guard" hatálya alól, különben a DAVdroid nem fog tudni hozzáférni
+       <p>Ha Ön CyanogenMod felhasználó, vonja ki a DAVdroidot a "Privacy Guard" hatálya alól, különben a DAVdroid nem fog tudni hozzáférni
 	   a névjegyekhez és eseményekhez.</p>
        
        <p><b>Probléma esetén olvassa el a <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">GYIK</a>-et.
-       Ha egyértelműen a DAVdroidhoz köthető hibába ütközik, ahelyett, hogy közvetlenül keresne minket, vagy lepotozná az alkalmazást, inkább a <a href="https://github.com/rfc2822/davdroid">Problémák</a> oldalon jelentse be.</b></p>
+       Ha egyértelműen a DAVdroidhoz köthető hibába ütközik, ahelyett, hogy közvetlenül keresne minket, vagy lepontozná az alkalmazást, inkább a <a href="https://github.com/rfc2822/davdroid">Problémák</a> oldalon jelentse be.</b></p>
               
 	   <h1>Nyílt forráskód</h1>
 	   <p>A DAVdroid kezdettől fogva nyílt forráskódú projekt.  Bármikor lehetősége van az alkalmazást lefordítani és használni, mindenféle
-	   kötelezettség nélkül.  A forráskód elérhető a <a href="https://github.com/rfc2822/davdroid">Github</a>-on, a lefordított alkalmazás pedig az 
-	   <a href="https://f-droid.org/app/at.bitfire.davdroid">F-droid</a>-on.</p>
+	   kötelezettség nélkül.  A forráskód elérhető a <a href="https://github.com/rfc2822/davdroid">Github</a>on, a lefordított alkalmazás pedig az 
+	   <a href="https://f-droid.org/app/at.bitfire.davdroid">F-droid</a>on.</p>
 	   
-	   <p>Mindemellett, az alkalmazás kifejlesztése sok munkát igényelt, ezért úgy döntöttönk, hogy az alkalmazást más áruházakban is elérhetővé tesszük, egy szerény díj ellenében.  Ha szeretné támogatni ezt a projektet, kérjük, fontolja meg az alkalmazás megvásárlását vagy <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">közvetlen támogatását</a>.</p>
+	   <p>Mindemellett, az alkalmazás kifejlesztése sok munkát igényelt, ezért úgy döntöttünk, hogy az alkalmazást más áruházakban is elérhetővé tesszük, egy szerény díj ellenében.  Ha szeretné támogatni ezt a projektet, kérjük, fontolja meg az alkalmazás megvásárlását vagy <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">közvetlen támogatását</a>.</p>
 	   
 	   <h1>Licenc</h1>
 	   <p>Copyright (c) 2013 – 2014 Ricki Hirner (<a href="http://www.bitfire.at">bitfire web engineering</a>). Minden jog fenntartva.
-	   Ez a program és a kapcsolódó anyagok a GNU Public License v3.0 hatálya alatt áll, mely részét képezi a jelen csomagnak, és amely elérhető <a
+	   Ez a program és a kapcsolódó anyagok a GNU Public License v3.0 hatálya alatt állnak, amely részét képezi a jelen csomagnak, és amely elérhető <a
 	   href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a> oldalon. Amennyiben a Google Play, Samsung
-	   Store, AndroidPit App Center vagy Amazon Appstore áruház eltérő feltéeleket szabnak, akkor annak az áruháznak a szabályai irányadóak, ahonnan az alkalmazást letöltötte.</p>
+	   Store, AndroidPit App Center vagy Amazon Appstore áruház eltérő feltételeket szab, akkor annak az áruháznak a szabályai irányadóak, ahonnan az alkalmazást letöltötte.</p>
 	 
 	   <p>Fordítások.
 	   cseh: <a href="https://github.com/svetlemodry">Jaroslav Lichtblau</a>,
@@ -100,7 +100,7 @@
 	   <h2>Harmadik felek által fejlesztett programcsomagok</h2>
 	   <p>
 	   * <a href="http://hc.apache.org">Apache HttpClient</a> (<a href="https://code.google.com/p/httpclientandroidlib/">httpclientandroidlib</a> változat) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>
-	   * <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
+	   * <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a><br/>
 	   * <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a><br/>
 	   * <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a><br/>
 	   * <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a></p>
