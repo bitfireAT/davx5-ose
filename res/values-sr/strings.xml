@@ -16,24 +16,24 @@
     <string name="next">Следеће</string>
     <string name="help">Помоћ</string>
     <string name="login_invalid_base_url">Неисправан основни УРИ: </string>
-    <string name="select_collections">ДАВдроид: Изаберите збирке</string>
+    <string name="setup_select_collections">ДАВдроид: Изаберите збирке</string>
     <string name="login_exception_io">И/О грешка: %s</string>
     <string name="exception_uri_syntax">Неисправан УРИ: %s</string>
     <string name="exception_incapable_resource">Недостају могућности: %s</string>
-    <string name="neither_caldav_nor_carddav">Нема доступног КалДАВ/КардДАВ сервиса на овој локацији.</string>
-    <string name="add_account">Додај налог</string>
-    <string name="querying_server">Шаљем упит серверу. Сачекајте…</string>
+    <string name="setup_neither_caldav_nor_carddav">Нема доступног КалДАВ/КардДАВ сервиса на овој локацији.</string>
+    <string name="setup_add_account">Додај налог</string>
+    <string name="setup_querying_server">Шаљем упит серверу. Сачекајте…</string>
     <string name="exception_http">ХТТП грешка: %s</string>
-    <string name="what_to_sync">Које збирке да синхронизујем?</string>
-    <string name="address_books">Адресари</string>
-    <string name="calendars">Календари</string>
-    <string name="select_address_book">Изаберите један адресар (додирните поново да поништите избор):</string>
-    <string name="select_calendars">Изаберите ваше календаре:</string>
-    <string name="auth_preemptive">Превентивна аутентификација (препоручено, али није компатибилно са Дигест аутентификацијом)</string>
+    <string name="setup_what_to_sync">Које збирке да синхронизујем?</string>
+    <string name="setup_address_books">Адресари</string>
+    <string name="setup_calendars">Календари</string>
+    <string name="setup_select_address_book">Изаберите један адресар (додирните поново да поништите избор):</string>
+    <string name="setup_select_calendars">Изаберите ваше календаре:</string>
+    <string name="login_auth_preemptive">Превентивна аутентификација (препоручено, али није компатибилно са Дигест аутентификацијом)</string>
     
     <string name="davdroid_help">ДАВдроид помоћ</string>
-    <string name="show_sync_settings">Управљај налозима синхронизације</string>
-    <string name="show_website">ДАВдроид вебсајт</string>
+    <string name="main_manage_accounts">Управљај налозима синхронизације</string>
+    <string name="davdroid_website">ДАВдроид вебсајт</string>
     <string name="html_main_workaround"><![CDATA[
 		<p>Хвала вам што сте купили ДАВдроид преко Google Play сервиса и тиме подржали овај пројекат. Нажалост, постоје два проблема са Google Play сервисом:</p>
 		
@@ -104,22 +104,22 @@
 	   	* <a href="http://projectlombok.org/">Пројекат Ломбок</a> – <a href="http://opensource.org/licenses/mit-license.php">МИТ лиценца</a></p>
     ]]></string>
     
-    <string name="account_details">Детаљи налога</string>
-    <string name="account_name">Име налога:</string>
-    <string name="account_name_hint">Мој КалДАВ/КардДАВ налог</string>
-    <string name="email_address">Е-адреса:</string>
-    <string name="organizer_hint">"ОРГАНИЗАТОР ваших догађаја; потребно ако користите податке о учеснику"</string>
-    <string name="account_name_info">"Користите вашу е-адресу као име налога јер Андроид користи име налога за поље ОРГАНИЗАТОР за догађаје које направите. Не можете имати два налога истог имена.</string>
-    <string name="read_only">само-за-читање</string>
+    <string name="setup_account_details">Детаљи налога</string>
+    <string name="setup_account_name">Име налога:</string>
+    <string name="setup_account_name_hint">Мој КалДАВ/КардДАВ налог</string>
+    <string name="setup_email_address">Е-адреса:</string>
+    <string name="setup_organizer_hint">"ОРГАНИЗАТОР ваших догађаја; потребно ако користите податке о учеснику"</string>
+    <string name="setup_account_name_info">"Користите вашу е-адресу као име налога јер Андроид користи име налога за поље ОРГАНИЗАТОР за догађаје које направите. Не можете имати два налога истог имена.</string>
+    <string name="setup_read_only">само-за-читање</string>
     
-    <string name="general_settings">Опште поставке</string>
-    <string name="debug_settings">Поставке проналаска грешака</string>
-    <string name="disable_http_compression">Искључи ХТТП компресију</string>
-    <string name="http_compression_disabled">ХТТП компресија је искључена (режим проналаска грешака)</string>
-    <string name="http_compression_enabled">ХТТП компресија се користи кад год је могуће</string>
-    <string name="network_logging">Бележи мрежни саобраћај</string>
-    <string name="network_logging_enabled">Сав мрежни саобраћај се исцрпно бележи у дневник (режим проналаска грешака)</string>
-    <string name="network_logging_disabled">Мрежни саобраћај се не бележи у дневник</string>
-    <string name="report_an_issue">Пријави грешку</string>
+    <string name="settings_general">Опште поставке</string>
+    <string name="settings_debug">Поставке проналаска грешака</string>
+    <string name="settings_disable_http_compression">Искључи ХТТП компресију</string>
+    <string name="settings_http_compression_disabled">ХТТП компресија је искључена (режим проналаска грешака)</string>
+    <string name="settings_http_compression_enabled">ХТТП компресија се користи кад год је могуће</string>
+    <string name="settings_network_logging">Бележи мрежни саобраћај</string>
+    <string name="settings_network_logging_enabled">Сав мрежни саобраћај се исцрпно бележи у дневник (режим проналаска грешака)</string>
+    <string name="settings_network_logging_disabled">Мрежни саобраћај се не бележи у дневник</string>
+    <string name="settings_report_an_issue">Пријави грешку</string>
 
 </resources>

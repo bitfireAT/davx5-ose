@@ -16,24 +16,24 @@
     <string name="next">继续</string>
     <string name="help">帮助</string>
     <string name="login_invalid_base_url">基准地址无效: </string>
-    <string name="select_collections">DAVdroid: 选择同步项</string>
+    <string name="setup_select_collections">DAVdroid: 选择同步项</string>
     <string name="login_exception_io">I/O error: %s</string>
     <string name="exception_uri_syntax">URI 无效: %s</string>
     <string name="exception_incapable_resource">服务器缺少功能: %s</string>
-    <string name="neither_caldav_nor_carddav">此服务器地址上没有可用的 CalDAV-/CardDAV 服务。</string>
-    <string name="add_account">增加账户</string>
-    <string name="querying_server">正在请求，请稍等…</string>
+    <string name="setup_neither_caldav_nor_carddav">此服务器地址上没有可用的 CalDAV-/CardDAV 服务。</string>
+    <string name="setup_add_account">增加账户</string>
+    <string name="setup_querying_server">正在请求，请稍等…</string>
     <string name="exception_http">HTTP 错误: %s</string>
-    <string name="what_to_sync">需要同步哪些集合？</string>
-    <string name="address_books">通讯录</string>
-    <string name="calendars">日历</string>
-    <string name="select_address_book">最多可选择一个通讯录：（再次点按可取消选择）</string>
-    <string name="select_calendars">选择日历：</string>
-    <string name="auth_preemptive">使用抢先认证模式（推荐使用，但不兼容 Digest 认证方式）</string>
+    <string name="setup_what_to_sync">需要同步哪些集合？</string>
+    <string name="setup_address_books">通讯录</string>
+    <string name="setup_calendars">日历</string>
+    <string name="setup_select_address_book">最多可选择一个通讯录：（再次点按可取消选择）</string>
+    <string name="setup_select_calendars">选择日历：</string>
+    <string name="login_auth_preemptive">使用抢先认证模式（推荐使用，但不兼容 Digest 认证方式）</string>
     
     <string name="davdroid_help">DAVdroid 帮助</string>
-    <string name="show_sync_settings">管理同步账户</string>
-    <string name="show_website">DAVdroid 网站</string>
+    <string name="main_manage_accounts">管理同步账户</string>
+    <string name="davdroid_website">DAVdroid 网站</string>
     <string name="html_main_workaround"><![CDATA[
 		<p>感谢您在 Google Play 上购买 DAVdroid 支持本项目。然而 Google Play 版应用有两个问题：</p>
 		
@@ -94,22 +94,22 @@
 	   	* <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a></p>
     ]]></string>
     
-    <string name="account_details">账户信息</string>
-    <string name="account_name">帐户名：</string>
-    <string name="account_name_hint">我的 CalDAV/CardDAV 账户</string>
-    <string name="email_address">Email 地址：</string>
-    <string name="organizer_hint">"日程的组织者 (ORGANIZER)；如果您使用参与者信息，则必填"</string>
-    <string name="account_name_info">"请使用您的 E-mail 地址作为账户名，因为 Android 会将帐户名用于您创建的日程的参与者 (ORGANIZER) 项。您不能有两个重名的账户。</string>
-    <string name="read_only">只读</string>
+    <string name="setup_account_details">账户信息</string>
+    <string name="setup_account_name">帐户名：</string>
+    <string name="setup_account_name_hint">我的 CalDAV/CardDAV 账户</string>
+    <string name="setup_email_address">Email 地址：</string>
+    <string name="setup_organizer_hint">"日程的组织者 (ORGANIZER)；如果您使用参与者信息，则必填"</string>
+    <string name="setup_account_name_info">"请使用您的 E-mail 地址作为账户名，因为 Android 会将帐户名用于您创建的日程的参与者 (ORGANIZER) 项。您不能有两个重名的账户。</string>
+    <string name="setup_read_only">只读</string>
     
-    <string name="general_settings">普通设置</string>
-    <string name="debug_settings">调试设置</string>
-    <string name="disable_http_compression">停用 HTTP 压缩</string>
-    <string name="http_compression_disabled">HTTP 压缩已停用（调试模式）</string>
-    <string name="http_compression_enabled">HTTP 压缩会在可用时使用</string>
-    <string name="network_logging">记录网络传输</string>
-    <string name="network_logging_enabled">所有网络传输内容会被日志记录（调试模式）</string>
-    <string name="network_logging_disabled">网络传输不会被日志记录</string>
-    <string name="report_an_issue">报告问题</string>
+    <string name="settings_general">普通设置</string>
+    <string name="settings_debug">调试设置</string>
+    <string name="settings_disable_http_compression">停用 HTTP 压缩</string>
+    <string name="settings_http_compression_disabled">HTTP 压缩已停用（调试模式）</string>
+    <string name="settings_http_compression_enabled">HTTP 压缩会在可用时使用</string>
+    <string name="settings_network_logging">记录网络传输</string>
+    <string name="settings_network_logging_enabled">所有网络传输内容会被日志记录（调试模式）</string>
+    <string name="settings_network_logging_disabled">网络传输不会被日志记录</string>
+    <string name="settings_report_an_issue">报告问题</string>
 
 </resources>

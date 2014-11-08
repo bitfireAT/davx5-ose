@@ -9,13 +9,13 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="@string/calendars" />
+        android:text="@string/setup_calendars" />
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
-        android:text="@string/select_calendars" />
+        android:text="@string/setup_select_calendars" />
 
 </LinearLayout>

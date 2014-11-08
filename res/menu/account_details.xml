@@ -5,7 +5,7 @@
         android:id="@+id/add_account"
         android:icon="@drawable/navigation_accept"
         android:showAsAction="always|withText"
-        android:title="@string/add_account">
+        android:title="@string/setup_add_account">
     </item>
     
 </menu>

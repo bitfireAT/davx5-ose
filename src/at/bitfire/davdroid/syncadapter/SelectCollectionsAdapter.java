@@ -128,7 +128,7 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 		// set text		
 		String title = "<b>" + info.getTitle() + "</b>";
 		if (info.isReadOnly())
-			title = title + " (" + context.getString(R.string.read_only) + ")";
+			title = title + " (" + context.getString(R.string.setup_read_only) + ")";
 		
 		String description = info.getDescription();
 		if (description == null)

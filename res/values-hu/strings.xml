@@ -16,24 +16,24 @@
     <string name="next">Tovább</string>
     <string name="help">Súgó</string>
     <string name="login_invalid_base_url">A fiók URL hibás: </string>
-    <string name="select_collections">DAVdroid: Gyűjtemény kiválasztása</string>
+    <string name="setup_select_collections">DAVdroid: Gyűjtemény kiválasztása</string>
     <string name="login_exception_io">I/O hiba: %s</string>
     <string name="exception_uri_syntax">Érvénytelen URI: %s</string>
     <string name="exception_incapable_resource">Hiányzó képesség: %s</string>
-    <string name="neither_caldav_nor_carddav">Nincs CalDAV-/CardDAV szolgáltatás a megadott helyen.</string>
-    <string name="add_account">Fiók hozzáadása</string>
-    <string name="querying_server">Kapcsolódás a szerverhez. Egy pillanat…</string>
+    <string name="setup_neither_caldav_nor_carddav">Nincs CalDAV-/CardDAV szolgáltatás a megadott helyen.</string>
+    <string name="setup_add_account">Fiók hozzáadása</string>
+    <string name="setup_querying_server">Kapcsolódás a szerverhez. Egy pillanat…</string>
     <string name="exception_http">HTTP hiba: %s</string>
-    <string name="what_to_sync">Melyik gyűjtemények legyenek szinkronizálva?</string>
-    <string name="address_books">Címjegyzékek</string>
-    <string name="select_address_book">Egy címjegyzék választható (a kijelölés megfordítása újbóli érintéssel):</string>
-    <string name="calendars">Naptárak</string>
-    <string name="select_calendars">Naptárak kiválasztása:</string>
-    <string name="auth_preemptive">Preemptív autentikáció (ajánlott, de Digest autentikációval nem működik)</string>
+    <string name="setup_what_to_sync">Melyik gyűjtemények legyenek szinkronizálva?</string>
+    <string name="setup_address_books">Címjegyzékek</string>
+    <string name="setup_select_address_book">Egy címjegyzék választható (a kijelölés megfordítása újbóli érintéssel):</string>
+    <string name="setup_calendars">Naptárak</string>
+    <string name="setup_select_calendars">Naptárak kiválasztása:</string>
+    <string name="login_auth_preemptive">Preemptív autentikáció (ajánlott, de Digest autentikációval nem működik)</string>
     
     <string name="davdroid_help">DAVdroid súgó</string>
-    <string name="show_sync_settings">Szinkronizációs fiókok kezelése</string>
-    <string name="show_website">DAVdroid web oldal</string>
+    <string name="main_manage_accounts">Szinkronizációs fiókok kezelése</string>
+    <string name="davdroid_website">DAVdroid web oldal</string>
     <string name="html_main_workaround"><![CDATA[
 		<p>Köszönjük, hogy megvásárolta a DAVdroid alkalmazást a Google Play áruházban, támogatva ezzel a projektet.  Sajnos, 
 		a Google Play áruházzal két probléma is van:</p>
@@ -97,22 +97,22 @@
 	   	* <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a></p>
     ]]></string>
     
-    <string name="account_details">További beállítások</string>
-    <string name="account_name">A fiók neve:</string>
-    <string name="account_name_hint">CalDAV/CardDAV fiók</string>
-    <string name="email_address">Email cím:</string>
-    <string name="organizer_hint">"Szervező (ORGANIZER mező értéke), résztvevők kezelése esetén"</string>
-    <string name="account_name_info">"Használja az email címet fióknévként, mert később a létrehozandó események szervezőjeként (ORGANIZER mező) az Android ezt fogja használni. Két fiókot nem lehet azonos néven létrehozni.</string>
-    <string name="read_only">csak olvasható</string>
+    <string name="setup_account_details">További beállítások</string>
+    <string name="setup_account_name">A fiók neve:</string>
+    <string name="setup_account_name_hint">CalDAV/CardDAV fiók</string>
+    <string name="setup_email_address">Email cím:</string>
+    <string name="setup_organizer_hint">"Szervező (ORGANIZER mező értéke), résztvevők kezelése esetén"</string>
+    <string name="setup_account_name_info">"Használja az email címet fióknévként, mert később a létrehozandó események szervezőjeként (ORGANIZER mező) az Android ezt fogja használni. Két fiókot nem lehet azonos néven létrehozni.</string>
+    <string name="setup_read_only">csak olvasható</string>
     
-    <string name="general_settings">Általános beállítások</string>
-    <string name="debug_settings">Hibakeresési beállítások</string>
-    <string name="disable_http_compression">HTTP tömörítés kikapcsolása</string>
-    <string name="http_compression_disabled">HTTP tömörítés kikapcsolva (hibakeresés)</string>
-    <string name="http_compression_enabled">HTTP tömörítés bekapcsolva (ahol csak lehetséges)</string>
-    <string name="network_logging">Hálózati forgalom naplózása</string>
-    <string name="network_logging_enabled">A teljes hálózati forgalom részletes naplózása (hibakeresés)</string>
-    <string name="network_logging_disabled">A hálózati forgalom naplózása kikapcsolva</string>
-    <string name="report_an_issue">Probléma bejelentése</string>
+    <string name="settings_general">Általános beállítások</string>
+    <string name="settings_debug">Hibakeresési beállítások</string>
+    <string name="settings_disable_http_compression">HTTP tömörítés kikapcsolása</string>
+    <string name="settings_http_compression_disabled">HTTP tömörítés kikapcsolva (hibakeresés)</string>
+    <string name="settings_http_compression_enabled">HTTP tömörítés bekapcsolva (ahol csak lehetséges)</string>
+    <string name="settings_network_logging">Hálózati forgalom naplózása</string>
+    <string name="settings_network_logging_enabled">A teljes hálózati forgalom részletes naplózása (hibakeresés)</string>
+    <string name="settings_network_logging_disabled">A hálózati forgalom naplózása kikapcsolva</string>
+    <string name="settings_report_an_issue">Probléma bejelentése</string>
 
 </resources>

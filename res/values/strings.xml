@@ -4,6 +4,7 @@
     <!-- common strings -->
     <string name="app_name">DAVdroid</string>
     
+    <string name="davdroid_website">DAVdroid Web site</string>
     <string name="next">Next</string>
     <string name="help">Help</string>
     
@@ -13,6 +14,8 @@
     <string name="exception_uri_syntax">Invalid URI: %s</string>
     
     <!-- MainActivity -->
+    <string name="main_manage_accounts">Manage sync accounts</string>
+    
     <string name="html_main_workaround"><![CDATA[
 		<p>Thank you for buying DAVdroid via Google Play and thus supporting the project. Unfortunately, there are two issues with Google Play:</p>
 		
@@ -63,20 +66,15 @@
 	   or purchasing it.</p>
 	   
 	   <h1>License</h1>
-	   <p>Copyright (c) 2013 – 2014 Ricki Hirner (<a href="http://www.bitfire.at">bitfire web engineering</a>). All rights reserved.
+	   <p>Copyright (c) 2013 – 2014 Ricki Hirner, Bernhard Stockmann (<a href="http://www.bitfire.at">bitfire web engineering</a>). All rights reserved.
 	   This program and the accompanying materials are made available under the terms of the GNU Public License v3.0 which
 	   accompanies this distribution, and is available at <a
 	   href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. As far as Google Play, Samsung
 	   Store, AndroidPit App Center or Amazon Appstore require other terms, the respective terms apply for versions
 	   that are downloaded via these services.</p>
 	   
-	   <p>Translations.
-	     Catalanian: <a href="https://github.com/pokoli">@pokoli</a>,
-	     Chinese (simplified): <a href="https://github.com/phy25">@phy25</a>,
-	     Czech: <a href="https://github.com/svetlemodry">Jaroslav Lichtblau</a>,
-	     Serbian: <a href="https://github.com/pejakm">@pejakm</a>,
-	     Spanish: <a href="https://github.com/xphnx">@xphnx</a>
-	   </p>
+	   <p>Translation for German is provided by the authors. Translations to other languages have been contributed by
+	   various people which are mentioned in their respective language version.</p>
 	   
 	   <h2>Used third-party libraries</h2>
 	   <p>
@@ -93,8 +91,6 @@
     <string name="login_type_url">Login with URL and user name</string>
     <string name="login_type_url_description">Service details will be auto-detected by initial URL and user name. Mostly used for self-hosted services.</string>
     
-    <string name="login_password">Password:</string>
-    
     <string name="login_email_description">Please enter your email address. Its domain name will be used to auto-detect service settings.</string>
     <string name="login_email_address">Email:</string>
     
@@ -105,40 +101,37 @@
     <string name="login_http_warning">"If you don't use encryption (HTTPS), other people may easily intercept your login details, contacts and events."</string>
     <string name="login_user_name">User name:</string>
     <string name="login_base_url">Base URL (collections will be auto-detected):</string>
-    <string name="login_invalid_base_url">Invalid base URL: </string>
+    <string name="login_auth_preemptive">Preemptive authentication (recommended, but incompatible with Digest auth)</string>
+
+    <string name="login_password">Password:</string>
     
-    <string name="select_collections">DAVdroid: Select collections</string>
-    <string name="neither_caldav_nor_carddav">No CalDAV-/CardDAV service is available at this location.</string>
-    <string name="add_account">Add account</string>
-    <string name="querying_server">Querying server. Please wait…</string>
-    <string name="what_to_sync">Which collections shall be synchronized?</string>
-    <string name="address_books">Address books</string>
-    <string name="calendars">Calendars</string>
-    <string name="select_address_book">Select up to one address book (tap again to unselect):</string>
-    <string name="select_calendars">Select your calendars:</string>
-    <string name="auth_preemptive">Preemptive authentication (recommended, but incompatible with Digest auth)</string>
+    <string name="setup_select_collections">DAVdroid: Select collections</string>
+    <string name="setup_neither_caldav_nor_carddav">No CalDAV-/CardDAV service is available at this location.</string>
+    <string name="setup_add_account">Add account</string>
+    <string name="setup_querying_server">Querying server. Please wait…</string>
+    <string name="setup_what_to_sync">Which collections shall be synchronized?</string>
+    <string name="setup_address_books">Address books</string>
+    <string name="setup_calendars">Calendars</string>
+    <string name="setup_select_address_book">Select up to one address book (tap again to unselect):</string>
+    <string name="setup_select_calendars">Select your calendars:</string>
     
-    <string name="davdroid_help">DAVdroid Help</string>
-    <string name="show_sync_settings">Manage sync accounts</string>
-    <string name="show_website">DAVdroid Web site</string>
-    
-    <string name="account_details">Account details</string>
-    <string name="account_name">Account name:</string>
-    <string name="account_name_hint">My CalDAV/CardDAV Account</string>
-    <string name="email_address">Email address:</string>
-    <string name="organizer_hint">"ORGANIZER of your events; required if you use attendee info"</string>
-    <string name="account_name_info">"Use your email address as account name because Android will use the account name as ORGANIZER field for events you create. You can't have two accounts with the same name.</string>
-    <string name="read_only">read-only</string>
-    
-    <string name="menu_settings">Settings</string>
-    <string name="general_settings">General settings</string>
-    <string name="debug_settings">Debug settings</string>
-    <string name="disable_http_compression">Disable HTTP compression</string>
-    <string name="http_compression_disabled">HTTP compression is disabled (debug mode)</string>
-    <string name="http_compression_enabled">HTTP compression is used whenever possible</string>
-    <string name="network_logging">Log network traffic</string>
-    <string name="network_logging_enabled">All network traffic is being logged verbosely (debug mode)</string>
-    <string name="network_logging_disabled">Network traffic is not being logged</string>
-    <string name="report_an_issue">Report an issue</string>
+    <string name="setup_account_details">Account details</string>
+    <string name="setup_account_name">Account name:</string>
+    <string name="setup_account_name_hint">My CalDAV/CardDAV Account</string>
+    <string name="setup_email_address">Email address:</string>
+    <string name="setup_organizer_hint">"ORGANIZER of your events; required if you use attendee info"</string>
+    <string name="setup_account_name_info">"Use your email address as account name because Android will use the account name as ORGANIZER field for events you create. You can't have two accounts with the same name.</string>
+    <string name="setup_read_only">read-only</string>
+
+    <!-- account settings -->
+    <string name="settings_general">General settings</string>
+    <string name="settings_debug">Debug settings</string>
+    <string name="settings_disable_http_compression">Disable HTTP compression</string>
+    <string name="settings_http_compression_disabled">HTTP compression is disabled (debug mode)</string>
+    <string name="settings_http_compression_enabled">HTTP compression is used whenever possible</string>
+    <string name="settings_network_logging">Log network traffic</string>
+    <string name="settings_network_logging_enabled">All network traffic is being logged verbosely (debug mode)</string>
+    <string name="settings_network_logging_disabled">Network traffic is not being logged</string>
+    <string name="settings_report_an_issue">Report an issue</string>
     
 </resources>

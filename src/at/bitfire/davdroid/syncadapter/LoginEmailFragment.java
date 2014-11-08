@@ -77,7 +77,8 @@ public class LoginEmailFragment extends Fragment implements TextWatcher {
 			URI uri = new URI("mailto:" + email);
 			if (uri.isOpaque()) {
 				int pos = email.lastIndexOf("@");
-				emailOk = pos != -1;
+				if (pos != -1)
+					emailOk = !email.substring(pos+1).isEmpty();
 			}
 		} catch (URISyntaxException e) {
 			// invalid mailto: URI

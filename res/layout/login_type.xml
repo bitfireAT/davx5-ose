@@ -16,8 +16,8 @@
             android:layout_height="wrap_content"
             android:checked="true"
             android:text="@string/login_type_email" />
-
         <TextView
+            android:labelFor="@+id/login_type_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
@@ -28,8 +28,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/login_type_url" />
-
         <TextView
+            android:labelFor="@+id/login_type_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/login_type_url_description" />

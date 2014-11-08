@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     
-    <PreferenceScreen android:title="@string/davdroid_help" >
+    <PreferenceScreen android:title="@string/davdroid_website" >
         <intent
             android:targetPackage="at.bitfire.davdroid"
             android:targetClass="at.bitfire.davdroid.MainActivity"
@@ -9,9 +9,9 @@
     </PreferenceScreen>
 
     
-    <PreferenceCategory android:title="@string/general_settings" />
+    <PreferenceCategory android:title="@string/settings_general" />
     
-    <PreferenceScreen android:title="@string/debug_settings">
+    <PreferenceScreen android:title="@string/settings_debug">
         <intent
             android:targetPackage="at.bitfire.davdroid"
             android:targetClass="at.bitfire.davdroid.syncadapter.GeneralSettingsActivity"

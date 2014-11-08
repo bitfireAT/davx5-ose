@@ -16,24 +16,24 @@
     <string name="next">Siguiente</string>
     <string name="help">Ayuda</string>
     <string name="login_invalid_base_url">URL base no válida: </string>
-    <string name="select_collections">DAVdroid: Selecciona las colecciones</string>
+    <string name="setup_select_collections">DAVdroid: Selecciona las colecciones</string>
     <string name="login_exception_io">I/O error: %s</string>
     <string name="exception_uri_syntax">URI no válida: %s</string>
     <string name="exception_incapable_resource">Se han perdido capacidades: %s</string>
-    <string name="neither_caldav_nor_carddav">Ni CalDAV ni CardDAV están disponibles</string>
-    <string name="add_account">Añadir cuenta</string>
-    <string name="querying_server">Consultando el servidor. Espera, por favor…</string>
+    <string name="setup_neither_caldav_nor_carddav">Ni CalDAV ni CardDAV están disponibles</string>
+    <string name="setup_add_account">Añadir cuenta</string>
+    <string name="setup_querying_server">Consultando el servidor. Espera, por favor…</string>
     <string name="exception_http">error HTTP: %s</string>
-    <string name="what_to_sync">Qué colecciones quieres sincronizar?</string>
-    <string name="address_books">Agendas</string>
-    <string name="calendars">Calendarios</string>
-    <string name="select_address_book">Seleciona una agenda (pulsar de nuevo para desmarcar):</string>
-    <string name="select_calendars">Selecciona tus calendarios:</string>
-    <string name="auth_preemptive">Autentificación preferente (recomendado, pero incompatible con la autentificación de Digest)</string>
+    <string name="setup_what_to_sync">Qué colecciones quieres sincronizar?</string>
+    <string name="setup_address_books">Agendas</string>
+    <string name="setup_calendars">Calendarios</string>
+    <string name="setup_select_address_book">Seleciona una agenda (pulsar de nuevo para desmarcar):</string>
+    <string name="setup_select_calendars">Selecciona tus calendarios:</string>
+    <string name="login_auth_preemptive">Autentificación preferente (recomendado, pero incompatible con la autentificación de Digest)</string>
     
     <string name="davdroid_help">Ayuda de DAVdroid</string>
-    <string name="show_sync_settings">Administrar las cuentas sincronizadas</string>
-    <string name="show_website">Sitio web de DAVdroid</string>
+    <string name="main_manage_accounts">Administrar las cuentas sincronizadas</string>
+    <string name="davdroid_website">Sitio web de DAVdroid</string>
     <string name="html_main_info"><![CDATA[
        <h1>¡Bienvenido a DAVdroid/%s!</h1>
        
@@ -76,11 +76,11 @@
 	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> (<a href="http://www.apache.org/licenses/LICENSE-2.0">Licencia Apache Version 2.0</a>)<br/>
 	   	* <a href="http://projectlombok.org/">Project Lombok</a> (<a href="http://opensource.org/licenses/mit-license.php">Licencia MIT</a>)</p>
     ]]></string>
-    <string name="account_details">Detalles de la cuenta</string>
-    <string name="account_name">Nombre de la cuenta:</string>
-    <string name="account_name_hint">Mi cuenta CalDAV/CardDAV</string>
-    <string name="email_address">Dirección de correo:</string>
-    <string name="organizer_hint">"ORGANIZADOR de tus eventos; se necesita si se usa información de los asistentes"</string>
-    <string name="account_name_info">"Usa tu dirección de correo electrónico como nombre de cuenta porque Android usará el nombre de cuenta como campo de ORGANIZADOR para los eventos que crees. No puedes tener dos cuentas con el mismo nombre.</string>
+    <string name="setup_account_details">Detalles de la cuenta</string>
+    <string name="setup_account_name">Nombre de la cuenta:</string>
+    <string name="setup_account_name_hint">Mi cuenta CalDAV/CardDAV</string>
+    <string name="setup_email_address">Dirección de correo:</string>
+    <string name="setup_organizer_hint">"ORGANIZADOR de tus eventos; se necesita si se usa información de los asistentes"</string>
+    <string name="setup_account_name_info">"Usa tu dirección de correo electrónico como nombre de cuenta porque Android usará el nombre de cuenta como campo de ORGANIZADOR para los eventos que crees. No puedes tener dos cuentas con el mismo nombre.</string>
 
 </resources>

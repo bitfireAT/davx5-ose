@@ -18,8 +18,9 @@
             android:text="@string/login_email_description" />
         
         <TextView
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/login_email_address" />
+            android:labelFor="@+id/email_address"
+            android:text="@string/login_email_address"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
         <EditText
             android:id="@+id/email_address"
             android:layout_gravity="fill_horizontal"
@@ -28,9 +29,12 @@
             android:layout_width="0dp"
             android:scrollHorizontally="true"
             android:scrollbars="horizontal"
-            android:hint="myaccount@icloud.com" />
+            android:hint="myaccount@icloud.com">
+            <requestFocus />
+        </EditText>
 
         <TextView
+            android:labelFor="@+id/password"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@string/login_password" />
         <EditText
