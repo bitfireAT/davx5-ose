@@ -1,31 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="login_http_warning">Ohne Verschlüsselung (HTTPS) können Ihre Zugangsdaten, Kontakte und Termine leicht abgefangen werden.</string>
-    <string name="login_user_name">Benutzername:</string>
-    <string name="login_password">Passwort:</string>
-    <string name="login_base_url">Basis-URL (Ordner werden automatisch gefunden):</string>
+    <!-- common strings -->
+    <string name="davdroid_website">DAVdroid-Website</string>
     <string name="next">Weiter</string>
     <string name="help">Hilfe</string>
-    <string name="select_collections">DAVdroid: Ordner auswählen</string>
-    <string name="login_invalid_base_url">Ungültiger Basis-URL: </string>
-    <string name="login_exception_io">E/A-Fehler: %s</string>
-    <string name="exception_uri_syntax">Ungültiger URI: %s</string>
-    <string name="exception_incapable_resource">Fehlende Server-Unterstützung: %s</string>
-    <string name="neither_caldav_nor_carddav">An dieser Adresse konnte kein CalDAV- oder CardDAV-Dienst gefunden werden.</string>
-    <string name="add_account">Konto hinzufügen</string>
-    <string name="querying_server">Daten werden vom Server abgefragt. Bitte warten…</string>
-    <string name="exception_http">HTTP-Fehler: %s</string>
-    <string name="what_to_sync">Welche Ordner sollen synchronisiert werden?</string>
-    <string name="address_books">Adressbücher</string>
-    <string name="calendars">Kalender</string>
-    <string name="select_address_book">Ein oder kein Adressbuch auswählen (nochmal berühren, um abzuwählen):</string>
-    <string name="select_calendars">Kalender zur Synchronisation auswählen:</string>
-    <string name="auth_preemptive">Präemptive Authentifizierung (empfohlen, aber nicht kompatibel mit Digest-Auth.)</string>
     
-	<string name="davdroid_help">Hilfe zu DAVdroid</string>
-	<string name="show_sync_settings">Sync-Konten anzeigen</string>
-    <string name="show_website">DAVdroid-Website</string>
+    <string name="exception_http">HTTP-Fehler: %s</string>
+    <string name="exception_incapable_resource">Fehlende Server-Unterstützung: %s</string>
+    <string name="exception_io">E/A-Fehler: %s</string>
+    <string name="exception_uri_syntax">URI ungültig: %s</string>
+    
+    <!-- MainActivity -->    
+	<string name="main_manage_accounts">Sync-Konten anzeigen</string>
+    
     <string name="html_main_workaround"><![CDATA[
         <p>Vielen Dank, dass Sie DAVdroid im Play Store erworben haben und das Projekt dadurch unterstützen.       
         Leider gibt es derzeit zwei Probleme, die vom Play Store verursacht werden:</p>
@@ -79,19 +67,14 @@
 	   <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">für DAVdroid spenden</a> oder die App kaufen.</p>
 	   
 	   <h1>Lizenz</h1>
-	   <p>Copyright (c) 2013 – 2014 Ricki Hirner (<a href="http://www.bitfire.at">bitfire web engineering</a>), alle Rechte
+	   <p>Copyright (c) 2013 – 2014 Ricki Hirner, Bernhard Stockmann (<a href="http://www.bitfire.at">bitfire web engineering</a>), alle Rechte
 	   vorbehalten. Dieses Programm ist freie Software. Sie können es unter den Bedingungen der <a href="http://www.gnu.org/licenses/gpl.html">GNU
 	   General Public License Version 3</a>, wie von der Free Software Foundation veröffentlicht, weitergeben und/oder modifizieren.
 	   Sofern Google Play oder Samsung Store andere Bedingungen benötigen, gelten für über den jeweiligen Markt heruntergeladene
 	   Apps diese Bedingungen.</p>
 	   
-	   <p>Übersetzungen.
-	     Catalanian: <a href="https://github.com/pokoli">@pokoli</a>,
-	     Chinese (simplified): <a href="https://github.com/phy25">@phy25</a>,
-	     Czech: <a href="https://github.com/svetlemodry">Jaroslav Lichtblau</a>,
-	     Serbian: <a href="https://github.com/pejakm">@pejakm</a>,
-	     Spanish: <a href="https://github.com/xphnx">@xphnx</a>
-	   </p>
+	   <p>Die Übersetzung auf Deutsch wird von den Autoren zur Verfügung gestellt. Übersetzungen für andere Sprachen
+	   wurden von verschiedenen Leuten beigetragen, die in der jeweiligen Sprachversion erwähnt sind.</p>
 	   	   
 	   <h2>Verwendete Bibliotheken</h2>
 	   <p>
@@ -101,22 +84,52 @@
 	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a><br/>
 	   	* <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a></p>
     ]]></string>
-    <string name="account_details">Konto-Details</string>
-    <string name="account_name">Kontoname:</string>
-    <string name="account_name_hint">Mein CalDAV/CardDAV-Konto</string>
-    <string name="email_address">Email-Adresse:</string>
-    <string name="organizer_hint">"ORGANIZER der von Ihnen angelegten Termine; notwendig für Teilnehmer-Info"</string>
-    <string name="account_name_info">&quot;Verwenden Sie Ihre Email-Adresse als Kontoname, da Android den Kontonamen als ORGANIZER-Feld in Terminen benutzt. Sie können keine zwei Konten mit dem gleichen Namen anlegen.</string>
-    <string name="read_only">schreibgeschützt</string>
+
+    <!-- AddAccountActivity -->
+    <string name="login_type_email">Mit Email-Adresse anmelden</string>
+    <string name="login_type_email_description">Domänenname wird verwendet, um die Servereinstellungen herauszufinden. Beispiel: myaccount@icloud.com</string>
+    <string name="login_type_url">Mit URL und Benutzername anmelden</string>
+    <string name="login_type_url_description">Basis-URL und Benutzername werden verwendet, um die Servereinstellungen herauszufinden; z.B. bei einem eigenen Server.</string>
     
-    <string name="general_settings">Allgemeine Einstellungen</string>
-    <string name="debug_settings">Einstellungen zur Fehlersuche</string>
-    <string name="disable_http_compression">HTTP-Komprimierung deaktivieren</string>
-    <string name="http_compression_disabled">HTTP-Komprimierung ist deaktiviert (zur Fehlersuche)</string>
-    <string name="http_compression_enabled">HTTP-Komprimierung wird verwendet, falls möglich</string>
-    <string name="network_logging">Netzwerkverkehr aufzeichnen</string>
-    <string name="network_logging_enabled">Der gesamte Netzwerkverkehr wird in den Android-Logs mitgeschrieben (zur Fehlersuche)</string>
-    <string name="network_logging_disabled">Netzwerkverkehr wird nicht aufgezeichnet</string>
-    <string name="report_an_issue">Problem berichten</string>
+    <string name="login_email_description">Geben Sie Ihre Email-Adresse ein. Der Domänenname wird verwendet, um die Servereinstellungen herauszufinden.</string>
+    <string name="login_email_address">Email:</string>
+    
+    <string name="login_http_warning">Ohne Verschlüsselung (HTTPS) können Ihre Zugangsdaten, Kontakte und Termine leicht abgefangen werden.</string>
+    <string name="login_user_name">Benutzername:</string>
+    <string name="login_base_url">Basis-URL (Ordner werden automatisch gefunden):</string>
+    <string name="login_auth_preemptive">Präemptive Authentifizierung (empfohlen, aber nicht kompatibel mit Digest-Auth.)</string>
+    
+    <string name="login_password">Passwort:</string>
+    
+    <string name="setup_select_collections">DAVdroid: Ordner auswählen</string>
+    <string name="setup_neither_caldav_nor_carddav">An dieser Adresse konnte kein CalDAV- oder CardDAV-Dienst gefunden werden.</string>
+    <string name="setup_add_account">Konto hinzufügen</string>
+    <string name="setup_querying_server">Daten werden vom Server abgefragt. Bitte warten…</string>
+    <string name="setup_what_to_sync">Welche Ordner sollen synchronisiert werden?</string>
+    <string name="setup_address_books">Adressbücher</string>
+    <string name="setup_calendars">Kalender</string>
+    <string name="setup_select_address_book">Ein oder kein Adressbuch auswählen (nochmal berühren, um abzuwählen):</string>
+    <string name="setup_select_calendars">Kalender zur Synchronisation auswählen:</string>
+
+    <string name="setup_account_details">Konto-Details</string>
+    <string name="setup_account_name">Kontoname:</string>
+    <string name="setup_account_name_hint">Mein CalDAV/CardDAV-Konto</string>
+    <string name="setup_email_address">Email-Adresse:</string>
+    <string name="setup_organizer_hint">"ORGANIZER der von Ihnen angelegten Termine; notwendig für Teilnehmer-Info"</string>
+    <string name="setup_account_name_info">&quot;Verwenden Sie Ihre Email-Adresse als Kontoname, da Android den Kontonamen als ORGANIZER-Feld in Terminen benutzt. Sie können keine zwei Konten mit dem gleichen Namen anlegen.</string>
+    <string name="setup_read_only">schreibgeschützt</string>
+    
+    <!-- account settings -->
+	<string name="davdroid_help">Hilfe zu DAVdroid</string>
+    
+    <string name="settings_general">Allgemeine Einstellungen</string>
+    <string name="settings_debug">Einstellungen zur Fehlersuche</string>
+    <string name="settings_disable_http_compression">HTTP-Komprimierung deaktivieren</string>
+    <string name="settings_http_compression_disabled">HTTP-Komprimierung ist deaktiviert (zur Fehlersuche)</string>
+    <string name="settings_http_compression_enabled">HTTP-Komprimierung wird verwendet, falls möglich</string>
+    <string name="settings_network_logging">Netzwerkverkehr aufzeichnen</string>
+    <string name="settings_network_logging_enabled">Der gesamte Netzwerkverkehr wird in den Android-Logs mitgeschrieben (zur Fehlersuche)</string>
+    <string name="settings_network_logging_disabled">Netzwerkverkehr wird nicht aufgezeichnet</string>
+    <string name="settings_report_an_issue">Problem berichten</string>
     
 </resources>

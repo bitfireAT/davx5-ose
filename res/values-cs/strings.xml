@@ -16,24 +16,24 @@
     <string name="next">Další</string>
     <string name="help">Pomoc</string>
     <string name="login_invalid_base_url">Neplatná základní URL: </string>
-    <string name="select_collections">DAVdroid: Vybrat sbírky</string>
+    <string name="setup_select_collections">DAVdroid: Vybrat sbírky</string>
     <string name="login_exception_io">I/O chyba: %s</string>
     <string name="exception_uri_syntax">Neplatné URI: %s</string>
     <string name="exception_incapable_resource">Chybějící možnosti: %s</string>
-    <string name="neither_caldav_nor_carddav">V tomto umístění není CalDAV-/CardDAV služba dostupná.</string>
-    <string name="add_account">Přidat účet</string>
-    <string name="querying_server">Probíhá komunikace se servrem. Počkejte prosím…</string>
+    <string name="setup_neither_caldav_nor_carddav">V tomto umístění není CalDAV-/CardDAV služba dostupná.</string>
+    <string name="setup_add_account">Přidat účet</string>
+    <string name="setup_querying_server">Probíhá komunikace se servrem. Počkejte prosím…</string>
     <string name="exception_http">HTTP chyba: %s</string>
-    <string name="what_to_sync">Které sbírky mají být synchronizovány?</string>
-    <string name="address_books">Adresáře</string>
-    <string name="calendars">Kalendáře</string>
-    <string name="select_address_book">Vybrat alespoň jeden adresář (opakovaně tapnout pro odebrání):</string>
-    <string name="select_calendars">Vybrat své kalendáře:</string>
-    <string name="auth_preemptive">Preemptivní ověření (doporučeno, ale není kompatibilní s Digest ověřením)</string>
+    <string name="setup_what_to_sync">Které sbírky mají být synchronizovány?</string>
+    <string name="setup_address_books">Adresáře</string>
+    <string name="setup_calendars">Kalendáře</string>
+    <string name="setup_select_address_book">Vybrat alespoň jeden adresář (opakovaně tapnout pro odebrání):</string>
+    <string name="setup_select_calendars">Vybrat své kalendáře:</string>
+    <string name="login_auth_preemptive">Preemptivní ověření (doporučeno, ale není kompatibilní s Digest ověřením)</string>
     
     <string name="davdroid_help">Pomoc s DAVdroid</string>
-    <string name="show_sync_settings">Spravovat synchronizované účty</string>
-    <string name="show_website">Webová stránka DAVdroid</string>
+    <string name="main_manage_accounts">Spravovat synchronizované účty</string>
+    <string name="davdroid_website">Webová stránka DAVdroid</string>
     <string name="html_main_workaround"><![CDATA[
 		<p>Thank you for buying DAVdroid via Google Play and thus supporting the project. Unfortunately, there are two issues with Google Play:</p>
 		
@@ -108,22 +108,22 @@
 	   	* <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a></p>
     ]]></string>
     
-    <string name="account_details">Detaily účtu</string>
-    <string name="account_name">Jméno účtu:</string>
-    <string name="account_name_hint">Můj CalDAV/CardDAV účet</string>
-    <string name="email_address">Emailová adresa:</string>
-    <string name="organizer_hint">"ORGANIZÁTOR událostí; vyžadováno pokud budete přidávat účastníky"</string>
-    <string name="account_name_info">"Použijte svou emailovou adresu jako jméno účtu, protože Android bude používat tuto hodnotu jako jméno ORGANIZÁTORA událostí které vytvoříte. Nemůžete mít dva účty se stejným jménem.</string>
-    <string name="read_only">pouze pro čtení</string>
+    <string name="setup_account_details">Detaily účtu</string>
+    <string name="setup_account_name">Jméno účtu:</string>
+    <string name="setup_account_name_hint">Můj CalDAV/CardDAV účet</string>
+    <string name="setup_email_address">Emailová adresa:</string>
+    <string name="setup_organizer_hint">"ORGANIZÁTOR událostí; vyžadováno pokud budete přidávat účastníky"</string>
+    <string name="setup_account_name_info">"Použijte svou emailovou adresu jako jméno účtu, protože Android bude používat tuto hodnotu jako jméno ORGANIZÁTORA událostí které vytvoříte. Nemůžete mít dva účty se stejným jménem.</string>
+    <string name="setup_read_only">pouze pro čtení</string>
     
-    <string name="general_settings">Obecná nastavení</string>
-    <string name="debug_settings">Ladící nastavení</string>
-    <string name="disable_http_compression">Vypnout HTTP kompresi</string>
-    <string name="http_compression_disabled">HTTP komprese je vypnuta (ladící mód)</string>
-    <string name="http_compression_enabled">HTTP komprese je použita všude kde možno</string>
-    <string name="network_logging">Logovat síťový provoz</string>
-    <string name="network_logging_enabled">Veškerý síťový provoz je detailně logován (ladící mód)</string>
-    <string name="network_logging_disabled">Síťový provoz není logován</string>
-    <string name="report_an_issue">Nahlásit problém</string>
+    <string name="settings_general">Obecná nastavení</string>
+    <string name="settings_debug">Ladící nastavení</string>
+    <string name="settings_disable_http_compression">Vypnout HTTP kompresi</string>
+    <string name="settings_http_compression_disabled">HTTP komprese je vypnuta (ladící mód)</string>
+    <string name="settings_http_compression_enabled">HTTP komprese je použita všude kde možno</string>
+    <string name="settings_network_logging">Logovat síťový provoz</string>
+    <string name="settings_network_logging_enabled">Veškerý síťový provoz je detailně logován (ladící mód)</string>
+    <string name="settings_network_logging_disabled">Síťový provoz není logován</string>
+    <string name="settings_report_an_issue">Nahlásit problém</string>
 
 </resources>

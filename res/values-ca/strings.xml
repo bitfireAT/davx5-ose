@@ -16,24 +16,24 @@
     <string name="next">Següent</string>
     <string name="help">Ajuda</string>
     <string name="login_invalid_base_url">URL base invàlida: </string>
-    <string name="select_collections">DAVdroid: Seleccioneu col·leccions</string>
+    <string name="setup_select_collections">DAVdroid: Seleccioneu col·leccions</string>
     <string name="login_exception_io">Error de E/S: %s</string>
     <string name="exception_uri_syntax">URI invàlida: %s</string>
     <string name="exception_incapable_resource">Missing capabilities: %s</string>
-    <string name="neither_caldav_nor_carddav">Ni CalDAV ni CardDAV estan disponibles</string>
-    <string name="add_account">Afegir compte</string>
-    <string name="querying_server">Querying server. Please wait…</string>
+    <string name="setup_neither_caldav_nor_carddav">Ni CalDAV ni CardDAV estan disponibles</string>
+    <string name="setup_add_account">Afegir compte</string>
+    <string name="setup_querying_server">Querying server. Please wait…</string>
     <string name="exception_http">Error HTTP: %s</string>
-    <string name="what_to_sync">Which collections shall be synchronized?</string>
-    <string name="address_books">Llibretes de contactes</string>
-    <string name="calendars">Calendaris</string>
-    <string name="select_address_book">Seleccioneu com a molt una llibreta de contactes (Polseu de nou per deseleccionar):</string>
-    <string name="select_calendars">Seleccioneu els vostres calendaris:</string>
-    <string name="auth_preemptive">Autentificació preferent (recomanat, però incompatible amb l\'autentificació Digest)</string>
+    <string name="setup_what_to_sync">Which collections shall be synchronized?</string>
+    <string name="setup_address_books">Llibretes de contactes</string>
+    <string name="setup_calendars">Calendaris</string>
+    <string name="setup_select_address_book">Seleccioneu com a molt una llibreta de contactes (Polseu de nou per deseleccionar):</string>
+    <string name="setup_select_calendars">Seleccioneu els vostres calendaris:</string>
+    <string name="login_auth_preemptive">Autentificació preferent (recomanat, però incompatible amb l\'autentificació Digest)</string>
 
     <string name="davdroid_help">Ajuda DAVdroid</string>
-    <string name="show_sync_settings">Gestioneu les comptes sincronitzades</string>
-    <string name="show_website">Lloc web de DAVdroid</string>
+    <string name="main_manage_accounts">Gestioneu les comptes sincronitzades</string>
+    <string name="davdroid_website">Lloc web de DAVdroid</string>
     <string name="html_main_workaround"><![CDATA[
 		<p>Gràcies per comprar DAVDroid a travès de Google Play i així donar suport al projecte. De totes formes, hi ha dos incidències amb el Google Play:</p>
 
@@ -108,12 +108,12 @@
 	   	* <a href="http://projectlombok.org/">Project Lombok</a> (<a href="http://opensource.org/licenses/mit-license.php">MIT License</a>)</p>
     ]]></string>
 
-    <string name="account_details">Detalls del compte</string>
-    <string name="account_name">Nom del compte:</string>
-    <string name="account_name_hint">El meu compte CalDAV/CardDAV</string>
-    <string name="email_address">Correu electrònic:</string>
-    <string name="organizer_hint">"ORGANITZADOR dels teus events. Es requereix si feu servir la informació dels assitents"</string>
-    <string name="account_name_info">"Podeu fer servir la vostra addreça de correu electrònic com a nom de la compta ja que el Android utiltizar el nom de la compta com a camp ORGANITZADOR pels events que vosaltres creeu. No podeu tenir dos comptes amb el mateix nom.</string>
-    <string name="read_only">només-lectura</string>
+    <string name="setup_account_details">Detalls del compte</string>
+    <string name="setup_account_name">Nom del compte:</string>
+    <string name="setup_account_name_hint">El meu compte CalDAV/CardDAV</string>
+    <string name="setup_email_address">Correu electrònic:</string>
+    <string name="setup_organizer_hint">"ORGANITZADOR dels teus events. Es requereix si feu servir la informació dels assitents"</string>
+    <string name="setup_account_name_info">"Podeu fer servir la vostra addreça de correu electrònic com a nom de la compta ja que el Android utiltizar el nom de la compta com a camp ORGANITZADOR pels events que vosaltres creeu. No podeu tenir dos comptes amb el mateix nom.</string>
+    <string name="setup_read_only">només-lectura</string>
 
 </resources>

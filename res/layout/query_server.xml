@@ -16,6 +16,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:text="@string/querying_server" />
+        android:text="@string/setup_querying_server" />
 
 </LinearLayout>

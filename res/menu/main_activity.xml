@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:onClick="addAccount" android:title="@string/add_account" android:showAsAction="always" android:icon="@drawable/ic_action_new_account"></item>
-    <item android:onClick="showSyncSettings" android:title="@string/show_sync_settings" android:showAsAction="always" android:icon="@drawable/show_sync_settings"></item>
-    <item android:onClick="showWebsite" android:title="@string/show_website" android:showAsAction="ifRoom" android:icon="@drawable/view_website"></item>
-    <item android:showAsAction="never" android:title="@string/debug_settings" android:onClick="showDebugSettings"></item>
+    <item android:onClick="addAccount" android:title="@string/setup_add_account" android:showAsAction="always" android:icon="@drawable/ic_action_new_account"></item>
+    <item android:onClick="showSyncSettings" android:title="@string/main_manage_accounts" android:showAsAction="always" android:icon="@drawable/show_sync_settings"></item>
+    <item android:onClick="showWebsite" android:title="@string/davdroid_website" android:showAsAction="ifRoom" android:icon="@drawable/view_website"></item>
+    <item android:showAsAction="never" android:title="@string/settings_debug" android:onClick="showDebugSettings"></item>
 </menu>

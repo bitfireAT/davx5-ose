@@ -8,13 +8,13 @@
         style="@style/TextView.Heading"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/address_books" />
+        android:text="@string/setup_address_books" />
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
-        android:text="@string/select_address_book" />
+        android:text="@string/setup_select_address_book" />
 
 </LinearLayout>

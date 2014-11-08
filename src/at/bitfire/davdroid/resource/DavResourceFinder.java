@@ -137,7 +137,7 @@ public class DavResourceFinder implements Closeable {
 		}
 						
 		if (!serverInfo.isCalDAV() && !serverInfo.isCardDAV())
-			throw new DavIncapableException(context.getString(R.string.neither_caldav_nor_carddav));
+			throw new DavIncapableException(context.getString(R.string.setup_neither_caldav_nor_carddav));
 
 	}
 	
@@ -149,7 +149,6 @@ public class DavResourceFinder implements Closeable {
 	 * @return				Initial service URL (HTTP/HTTPS), without user credentials
 	 * @throws URISyntaxException when the user-given URI is invalid
 	 * @throws MalformedURLException when the user-given URI is invalid
-	 * @throws UnknownServiceURLException when no intial service URL could be determined
 	 */
 	public URL getInitialContextURL(ServerInfo serverInfo, String serviceName) throws URISyntaxException, MalformedURLException {
 		String	scheme = null,
@@ -165,8 +164,12 @@ public class DavResourceFinder implements Closeable {
 			// determine service FQDN
 			int pos = mailbox.lastIndexOf("@");
 			if (pos == -1)
-				throw new URISyntaxException(mailbox, "Email address doesn't contain @");
+				throw new URISyntaxException(mailbox, "Missing @ sign");
+			
+			scheme = "https";
 			domain = mailbox.substring(pos + 1);
+			if (domain.isEmpty())
+				throw new URISyntaxException(mailbox, "Missing domain name");
 		} else {
 			// HTTP(S) URLs
 			scheme = baseURI.getScheme();
@@ -221,44 +224,45 @@ public class DavResourceFinder implements Closeable {
 	 */
 	WebDavResource getCurrentUserPrincipal(ServerInfo serverInfo, String serviceName) throws URISyntaxException, IOException, NotAuthorizedException {
 		URL initialURL = getInitialContextURL(serverInfo, serviceName);
-		
-		// determine base URL (host name and initial context path)
-		WebDavResource base = new WebDavResource(httpClient,
-				//new URI(URIUtils.ensureTrailingSlash(serverInfo.getBaseURI())),
-				initialURL,
-				serverInfo.getUserName(), serverInfo.getPassword(), serverInfo.isAuthPreemptive());
-		
-		// look for well-known service (RFC 5785)
-		try {
-			WebDavResource wellKnown = new WebDavResource(base, "/.well-known/" + serviceName);
-			wellKnown.propfind(Mode.CURRENT_USER_PRINCIPAL);
-			if (wellKnown.getCurrentUserPrincipal() != null)
-				return new WebDavResource(wellKnown, wellKnown.getCurrentUserPrincipal());
-		} catch (NotAuthorizedException e) {
-			Log.w(TAG, "Not authorized for well-known " + serviceName + " service detection", e);
-			throw e;
-		} catch (URISyntaxException e) {
-			Log.w(TAG, "Well-known" + serviceName + " service detection failed because of invalid URIs", e);
-		} catch (HttpException e) {
-			Log.d(TAG, "Well-known " + serviceName + " service detection failed with HTTP error", e);
-		} catch (DavException e) {
-			Log.w(TAG, "Well-known " + serviceName + " service detection failed with unexpected DAV response", e);
+		if (initialURL != null) {
+			// determine base URL (host name and initial context path)
+			WebDavResource base = new WebDavResource(httpClient,
+					//new URI(URIUtils.ensureTrailingSlash(serverInfo.getBaseURI())),
+					initialURL,
+					serverInfo.getUserName(), serverInfo.getPassword(), serverInfo.isAuthPreemptive());
+			
+			// look for well-known service (RFC 5785)
+			try {
+				WebDavResource wellKnown = new WebDavResource(base, "/.well-known/" + serviceName);
+				wellKnown.propfind(Mode.CURRENT_USER_PRINCIPAL);
+				if (wellKnown.getCurrentUserPrincipal() != null)
+					return new WebDavResource(wellKnown, wellKnown.getCurrentUserPrincipal());
+			} catch (NotAuthorizedException e) {
+				Log.w(TAG, "Not authorized for well-known " + serviceName + " service detection", e);
+				throw e;
+			} catch (URISyntaxException e) {
+				Log.w(TAG, "Well-known" + serviceName + " service detection failed because of invalid URIs", e);
+			} catch (HttpException e) {
+				Log.d(TAG, "Well-known " + serviceName + " service detection failed with HTTP error", e);
+			} catch (DavException e) {
+				Log.w(TAG, "Well-known " + serviceName + " service detection failed with unexpected DAV response", e);
+			}
+	
+			// fall back to user-given initial context path
+			try {
+				base.propfind(Mode.CURRENT_USER_PRINCIPAL);
+				if (base.getCurrentUserPrincipal() != null)
+					return new WebDavResource(base, base.getCurrentUserPrincipal());
+			} catch (NotAuthorizedException e) {
+				Log.e(TAG, "Not authorized for querying principal", e);
+				throw e;
+			} catch (HttpException e) {
+				Log.e(TAG, "HTTP error when querying principal", e);
+			} catch (DavException e) {
+				Log.e(TAG, "DAV error when querying principal", e);
+			}
+			Log.i(TAG, "Couldn't find current-user-principal for service " + serviceName);
 		}
-
-		// fall back to user-given initial context path
-		try {
-			base.propfind(Mode.CURRENT_USER_PRINCIPAL);
-			if (base.getCurrentUserPrincipal() != null)
-				return new WebDavResource(base, base.getCurrentUserPrincipal());
-		} catch (NotAuthorizedException e) {
-			Log.e(TAG, "Not authorized for querying principal", e);
-			throw e;
-		} catch (HttpException e) {
-			Log.e(TAG, "HTTP error when querying principal", e);
-		} catch (DavException e) {
-			Log.e(TAG, "DAV error when querying principal", e);
-		}
-		Log.i(TAG, "Couldn't find current-user-principal for service " + serviceName);
 		return null;
 	}
 	

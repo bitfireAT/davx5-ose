@@ -16,24 +16,24 @@
     <string name="next">Suivant</string>
     <string name="help">Aide</string>
     <string name="login_invalid_base_url">Racine de l\'URL incorrecte:</string>
-    <string name="select_collections">DAVdroid: Sélectionnez les collections</string>
+    <string name="setup_select_collections">DAVdroid: Sélectionnez les collections</string>
     <string name="login_exception_io">Erreur I/O: %s</string>
     <string name="exception_uri_syntax">URI incorrecte: %s</string>
     <string name="exception_incapable_resource">Capacités manquantes: %s</string>
-    <string name="neither_caldav_nor_carddav">Aucun CalDAV ou CardDAV disponible</string>
-    <string name="add_account">Ajouter un compte</string>
-    <string name="querying_server">Interroge le serveur. Patientez svp.</string>
+    <string name="setup_neither_caldav_nor_carddav">Aucun CalDAV ou CardDAV disponible</string>
+    <string name="setup_add_account">Ajouter un compte</string>
+    <string name="setup_querying_server">Interroge le serveur. Patientez svp.</string>
     <string name="exception_http">Erreur HTTP: %s</string>
-    <string name="what_to_sync">Quelles collections doivent être synchronisées ?</string>
-    <string name="address_books">Carnets d\'adresses</string>
-    <string name="calendars">Agendas</string>
-    <string name="select_address_book">Choisissez un carnet d\'adresses(toucher à nouveau pour désélectionner):</string>
-    <string name="select_calendars">Choisissez vos agendas:</string>
-    <string name="auth_preemptive">Authentification préventive(recommandé, mais incompatible avec l\'authentification Digest)</string>
+    <string name="setup_what_to_sync">Quelles collections doivent être synchronisées ?</string>
+    <string name="setup_address_books">Carnets d\'adresses</string>
+    <string name="setup_calendars">Agendas</string>
+    <string name="setup_select_address_book">Choisissez un carnet d\'adresses(toucher à nouveau pour désélectionner):</string>
+    <string name="setup_select_calendars">Choisissez vos agendas:</string>
+    <string name="login_auth_preemptive">Authentification préventive(recommandé, mais incompatible avec l\'authentification Digest)</string>
     
     <string name="davdroid_help">Aide de DAVdroid</string>
-    <string name="show_sync_settings">Gérer les comptes synchronisés</string>
-    <string name="show_website">Site Web de DAVdroid</string>
+    <string name="main_manage_accounts">Gérer les comptes synchronisés</string>
+    <string name="davdroid_website">Site Web de DAVdroid</string>
     <string name="html_main_info"><![CDATA[
        <h1>Bienvenue dans DAVdroid/%s!</h1>
        
@@ -82,12 +82,12 @@
 	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> (<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>)<br/>
 	   	* <a href="http://projectlombok.org/">Project Lombok</a> (<a href="http://opensource.org/licenses/mit-license.php">MIT License</a>)</p>
     ]]></string>
-    <string name="account_details">Détails du compte</string>
-    <string name="account_name">Nom du compte:</string>
-    <string name="account_name_hint">Mon compte CalDAV/CardDAV</string>
-    <string name="email_address">Adresse Email:</string>
-    <string name="organizer_hint">ORGANISATEUR de vos événements; nécessaire pour l\'information des participants</string>
-    <string name="account_name_info">Utilisez votre adresse email en tant que nom de compte car Android utilise ce nom pour le champ ORGANISATEUR des évènements que vous créez."
+    <string name="setup_account_details">Détails du compte</string>
+    <string name="setup_account_name">Nom du compte:</string>
+    <string name="setup_account_name_hint">Mon compte CalDAV/CardDAV</string>
+    <string name="setup_email_address">Adresse Email:</string>
+    <string name="setup_organizer_hint">ORGANISATEUR de vos événements; nécessaire pour l\'information des participants</string>
+    <string name="setup_account_name_info">Utilisez votre adresse email en tant que nom de compte car Android utilise ce nom pour le champ ORGANISATEUR des évènements que vous créez."
     Vous ne pouvez pas avoir deux comptes du même nom.</string>
 
 </resources>

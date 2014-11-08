@@ -16,18 +16,18 @@
             android:layout_columnSpan="2"
             android:layout_gravity="left"
             android:layout_marginBottom="20dp"
-            android:text="@string/account_details"
+            android:text="@string/setup_account_details"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
             android:layout_gravity="left"
-            android:text="@string/account_name"
+            android:text="@string/setup_account_name"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
             android:id="@+id/account_name"
             android:layout_gravity="fill_horizontal"
-            android:hint="@string/account_name_hint"
+            android:hint="@string/setup_account_name_hint"
             android:inputType="textEmailAddress" />
         
         <TextView
@@ -38,7 +38,7 @@
             android:drawableLeft="@drawable/extra_actions_about"
             android:drawablePadding="10dp"
             android:padding="10dp"
-            android:text="@string/account_name_info"
+            android:text="@string/setup_account_name_info"
             android:textAppearance="?android:attr/textAppearanceMedium" />
         
         <Space

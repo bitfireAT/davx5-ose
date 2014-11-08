@@ -31,7 +31,9 @@
             android:layout_width="0dp"
             android:scrollHorizontally="true"
             android:scrollbars="horizontal"
-            android:hint="my.webhost.com" />
+            android:hint="my.webhost.com">
+            <requestFocus />
+        </EditText>
 
         <TextView
             android:id="@+id/http_warning"
@@ -77,7 +79,7 @@
             android:layout_columnSpan="2"
             android:checked="true"
             android:layout_gravity="left"
-            android:text="@string/auth_preemptive" />
+            android:text="@string/login_auth_preemptive" />
         
         <Space android:layout_gravity="left|top" />
         
