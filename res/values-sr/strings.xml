@@ -9,15 +9,15 @@
         <item>https://</item>
     </string-array>
 
-    <string name="http_warning">"Ако не користите шифровање (ХТТПС), други људи вам лако могу пресрести детаље пријаве, контакте и догађаје."</string>
-    <string name="user_name">Корисничко име:</string>
-    <string name="password">Лозинка:</string>
-    <string name="root_url">Корени УРЛ (збирке ће бити аутоматски откривене):</string>
+    <string name="login_http_warning">"Ако не користите шифровање (ХТТПС), други људи вам лако могу пресрести детаље пријаве, контакте и догађаје."</string>
+    <string name="login_user_name">Корисничко име:</string>
+    <string name="login_password">Лозинка:</string>
+    <string name="login_base_url">Корени УРЛ (збирке ће бити аутоматски откривене):</string>
     <string name="next">Следеће</string>
     <string name="help">Помоћ</string>
-    <string name="invalid_base_url">Неисправан основни УРИ: </string>
-    <string name="title_select_collections">ДАВдроид: Изаберите збирке</string>
-    <string name="exception_io">И/О грешка: %s</string>
+    <string name="login_invalid_base_url">Неисправан основни УРИ: </string>
+    <string name="select_collections">ДАВдроид: Изаберите збирке</string>
+    <string name="login_exception_io">И/О грешка: %s</string>
     <string name="exception_uri_syntax">Неисправан УРИ: %s</string>
     <string name="exception_incapable_resource">Недостају могућности: %s</string>
     <string name="neither_caldav_nor_carddav">Нема доступног КалДАВ/КардДАВ сервиса на овој локацији.</string>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
     <GridLayout
         android:layout_width="fill_parent"
@@ -15,23 +15,23 @@
             android:layout_columnSpan="2"
             android:layout_gravity="left"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/root_url" />
+            android:text="@string/login_base_url" />
 
         <Spinner
             android:id="@+id/login_scheme"
             android:layout_width="wrap_content"
             android:layout_gravity="left"
-            android:entries="@array/uri_scheme" />
+            android:entries="@array/login_url_scheme" />
 
         <EditText
-            android:id="@+id/login_authority_path"
+            android:id="@+id/login_host_path"
             android:layout_gravity="fill_horizontal"
             android:imeOptions="flagForceAscii|actionNext"
             android:inputType="textUri"
             android:layout_width="0dp"
             android:scrollHorizontally="true"
             android:scrollbars="horizontal"
-            android:text="" />
+            android:hint="my.webhost.com" />
 
         <TextView
             android:id="@+id/http_warning"
@@ -42,11 +42,11 @@
             android:drawableLeft="@drawable/alerts_and_states_warning"
             android:drawablePadding="10dp"
             android:padding="10dp"
-            android:text="@string/http_warning" />
+            android:text="@string/login_http_warning" />
 
         <TextView
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/user_name" />
+            android:text="@string/login_user_name" />
 
         <EditText
             android:id="@+id/userName"
@@ -60,7 +60,7 @@
 
         <TextView
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/password" />
+            android:text="@string/login_password" />
 
         <EditText
             android:id="@+id/password"

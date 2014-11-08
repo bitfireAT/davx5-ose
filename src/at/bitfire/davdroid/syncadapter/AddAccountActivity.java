@@ -27,7 +27,7 @@ public class AddAccountActivity extends Activity {
 		
 		if (savedInstanceState == null) {	// first call
 			getFragmentManager().beginTransaction()
-				.add(R.id.fragment_container, new EnterCredentialsFragment(), "enter_credentials")
+				.add(R.id.fragment_container, new LoginTypeFragment(), "login_type")
 				.commit();
 		}
 	}

@@ -19,7 +19,7 @@ import android.view.MenuItem;
 import at.bitfire.davdroid.R;
 
 public class GeneralSettingsActivity extends Activity {
-	final static String URL_REPORT_ISSUE = "https://github.com/rfc2822/davdroid/blob/master/CONTRIBUTING.md"; 
+	final static String URL_REPORT_ISSUE = "https://github.com/bitfireAT/davdroid/blob/master/CONTRIBUTING.md#reporting-issues"; 
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
