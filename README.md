@@ -18,4 +18,4 @@ USED THIRD-PARTY LIBRARIES
 * [ez-vcard](https://code.google.com/p/ez-vcard/) – [New BSD License](http://opensource.org/licenses/BSD-3-Clause)
 * [Simple XML Serialization](http://simple.sourceforge.net/) – [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 * [Project Lombok](http://projectlombok.org/) – [MIT License](http://opensource.org/licenses/mit-license.php)
-
+* [dnsjava](http://www.xbill.org/dnsjava/) – [BSD license](http://www.xbill.org/dnsjava/dnsjava-current/LICENSE)
