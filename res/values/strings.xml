@@ -1,40 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- common strings -->
     <string name="app_name">DAVdroid</string>
-    <string name="menu_settings">Settings</string>
-
-    <string-array name="uri_scheme">
-        <item>http://</item>
-        <item>https://</item>
-        <item>mailto:</item>
-    </string-array>
-
-    <string name="http_warning">"If you don't use encryption (HTTPS), other people may easily intercept your login details, contacts and events."</string>
-    <string name="user_name">User name:</string>
-    <string name="password">Password:</string>
-    <string name="root_url">Root URL (collections will be auto-detected):</string>
+    
     <string name="next">Next</string>
     <string name="help">Help</string>
-    <string name="invalid_base_url">Invalid base URL: </string>
-    <string name="title_select_collections">DAVdroid: Select collections</string>
+    
+    <string name="exception_http">HTTP error: %s</string>
+    <string name="exception_incapable_resource">Missing capabilities: %s</string>
     <string name="exception_io">I/O error: %s</string>
     <string name="exception_uri_syntax">Invalid URI: %s</string>
-    <string name="exception_incapable_resource">Missing capabilities: %s</string>
-    <string name="neither_caldav_nor_carddav">No CalDAV-/CardDAV service is available at this location.</string>
-    <string name="add_account">Add account</string>
-    <string name="querying_server">Querying server. Please wait…</string>
-    <string name="exception_http">HTTP error: %s</string>
-    <string name="what_to_sync">Which collections shall be synchronized?</string>
-    <string name="address_books">Address books</string>
-    <string name="calendars">Calendars</string>
-    <string name="select_address_book">Select up to one address book (tap again to unselect):</string>
-    <string name="select_calendars">Select your calendars:</string>
-    <string name="auth_preemptive">Preemptive authentication (recommended, but incompatible with Digest auth)</string>
     
-    <string name="davdroid_help">DAVdroid Help</string>
-    <string name="show_sync_settings">Manage sync accounts</string>
-    <string name="show_website">DAVdroid Web site</string>
+    <!-- MainActivity -->
     <string name="html_main_workaround"><![CDATA[
 		<p>Thank you for buying DAVdroid via Google Play and thus supporting the project. Unfortunately, there are two issues with Google Play:</p>
 		
@@ -108,6 +86,41 @@
 	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a><br/>
 	   	* <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a></p>
     ]]></string>
+
+    <!-- AddAccountActivity -->
+    <string name="login_type_email">Login with email address</string>
+    <string name="login_type_email_description">Service details will be auto-detected by domain name. Example: myaccount@icloud.com</string>
+    <string name="login_type_url">Login with URL and user name</string>
+    <string name="login_type_url_description">Service details will be auto-detected by initial URL and user name. Mostly used for self-hosted services.</string>
+    
+    <string name="login_password">Password:</string>
+    
+    <string name="login_email_description">Please enter your email address. Its domain name will be used to auto-detect service settings.</string>
+    <string name="login_email_address">Email:</string>
+    
+    <string-array name="login_url_scheme">
+        <item>http://</item>
+        <item>https://</item>
+    </string-array>
+    <string name="login_http_warning">"If you don't use encryption (HTTPS), other people may easily intercept your login details, contacts and events."</string>
+    <string name="login_user_name">User name:</string>
+    <string name="login_base_url">Base URL (collections will be auto-detected):</string>
+    <string name="login_invalid_base_url">Invalid base URL: </string>
+    
+    <string name="select_collections">DAVdroid: Select collections</string>
+    <string name="neither_caldav_nor_carddav">No CalDAV-/CardDAV service is available at this location.</string>
+    <string name="add_account">Add account</string>
+    <string name="querying_server">Querying server. Please wait…</string>
+    <string name="what_to_sync">Which collections shall be synchronized?</string>
+    <string name="address_books">Address books</string>
+    <string name="calendars">Calendars</string>
+    <string name="select_address_book">Select up to one address book (tap again to unselect):</string>
+    <string name="select_calendars">Select your calendars:</string>
+    <string name="auth_preemptive">Preemptive authentication (recommended, but incompatible with Digest auth)</string>
+    
+    <string name="davdroid_help">DAVdroid Help</string>
+    <string name="show_sync_settings">Manage sync accounts</string>
+    <string name="show_website">DAVdroid Web site</string>
     
     <string name="account_details">Account details</string>
     <string name="account_name">Account name:</string>
@@ -117,6 +130,7 @@
     <string name="account_name_info">"Use your email address as account name because Android will use the account name as ORGANIZER field for events you create. You can't have two accounts with the same name.</string>
     <string name="read_only">read-only</string>
     
+    <string name="menu_settings">Settings</string>
     <string name="general_settings">General settings</string>
     <string name="debug_settings">Debug settings</string>
     <string name="disable_http_compression">Disable HTTP compression</string>
@@ -126,5 +140,5 @@
     <string name="network_logging_enabled">All network traffic is being logged verbosely (debug mode)</string>
     <string name="network_logging_disabled">Network traffic is not being logged</string>
     <string name="report_an_issue">Report an issue</string>
-
+    
 </resources>

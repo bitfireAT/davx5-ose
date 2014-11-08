@@ -9,15 +9,15 @@
         <item>https://</item>
     </string-array>
 
-    <string name="http_warning">"如果不使用加密连接 (HTTPS)，其他人能很容易获取到你的登录信息、通讯录和日程。"</string>
-    <string name="user_name">用户名：</string>
-    <string name="password">密码：</string>
-    <string name="root_url">服务器根地址（集合会自动检测）：</string>
+    <string name="login_http_warning">"如果不使用加密连接 (HTTPS)，其他人能很容易获取到你的登录信息、通讯录和日程。"</string>
+    <string name="login_user_name">用户名：</string>
+    <string name="login_password">密码：</string>
+    <string name="login_base_url">服务器根地址（集合会自动检测）：</string>
     <string name="next">继续</string>
     <string name="help">帮助</string>
-    <string name="invalid_base_url">基准地址无效: </string>
-    <string name="title_select_collections">DAVdroid: 选择同步项</string>
-    <string name="exception_io">I/O error: %s</string>
+    <string name="login_invalid_base_url">基准地址无效: </string>
+    <string name="select_collections">DAVdroid: 选择同步项</string>
+    <string name="login_exception_io">I/O error: %s</string>
     <string name="exception_uri_syntax">URI 无效: %s</string>
     <string name="exception_incapable_resource">服务器缺少功能: %s</string>
     <string name="neither_caldav_nor_carddav">此服务器地址上没有可用的 CalDAV-/CardDAV 服务。</string>

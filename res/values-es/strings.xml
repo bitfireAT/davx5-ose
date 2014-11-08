@@ -9,15 +9,15 @@
         <item>https://</item>
     </string-array>
 
-    <string name="http_warning">"Si no usas encriptación (HTTPS), otras personas pueden interceptar fácilmente tus datos de ingreso, contactos y eventos."</string>
-    <string name="user_name">Nombre de usuario:</string>
-    <string name="password">Contraseña:</string>
-    <string name="root_url">URL raiz (colecciones autodetectadas):</string>
+    <string name="login_http_warning">"Si no usas encriptación (HTTPS), otras personas pueden interceptar fácilmente tus datos de ingreso, contactos y eventos."</string>
+    <string name="login_user_name">Nombre de usuario:</string>
+    <string name="login_password">Contraseña:</string>
+    <string name="login_base_url">URL raiz (colecciones autodetectadas):</string>
     <string name="next">Siguiente</string>
     <string name="help">Ayuda</string>
-    <string name="invalid_base_url">URL base no válida: </string>
-    <string name="title_select_collections">DAVdroid: Selecciona las colecciones</string>
-    <string name="exception_io">I/O error: %s</string>
+    <string name="login_invalid_base_url">URL base no válida: </string>
+    <string name="select_collections">DAVdroid: Selecciona las colecciones</string>
+    <string name="login_exception_io">I/O error: %s</string>
     <string name="exception_uri_syntax">URI no válida: %s</string>
     <string name="exception_incapable_resource">Se han perdido capacidades: %s</string>
     <string name="neither_caldav_nor_carddav">Ni CalDAV ni CardDAV están disponibles</string>

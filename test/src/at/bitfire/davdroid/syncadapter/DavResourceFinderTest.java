@@ -2,6 +2,7 @@ package at.bitfire.davdroid.syncadapter;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.util.List;
 
 import android.test.InstrumentationTestCase;
@@ -51,6 +52,19 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
 		resource = collections.get(1);
 		assertEquals("Work Calendar", resource.getTitle());
 		assertTrue(resource.isReadOnly());
+	}
+	
+	
+	public void testGetInitialContextURL() throws Exception {
+		// without SRV records, but with well-known paths
+		ServerInfo roboHydra = new ServerInfo(new URI(Constants.ROBOHYDRA_BASE), "test", "test", true);
+		assertEquals(new URL(Constants.roboHydra, "/"), finder.getInitialContextURL(roboHydra, "caldav"));
+		assertEquals(new URL(Constants.roboHydra, "/"), finder.getInitialContextURL(roboHydra, "carddav"));
+		
+		// with SRV records and well-known paths
+		ServerInfo iCloud = new ServerInfo(new URI("mailto:test@icloud.com"), "", "", true);
+		assertEquals(new URL("https://contacts.icloud.com/"), finder.getInitialContextURL(iCloud, "carddav"));
+		assertEquals(new URL("https://caldav.icloud.com/"), finder.getInitialContextURL(iCloud, "caldav"));
 	}
 
 }

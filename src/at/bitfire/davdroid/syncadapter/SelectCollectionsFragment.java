@@ -71,7 +71,7 @@ public class SelectCollectionsFragment extends ListFragment {
 	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-	    inflater.inflate(R.menu.select_collections, menu);
+	    inflater.inflate(R.menu.only_next, menu);
 	}
 	
 	@Override

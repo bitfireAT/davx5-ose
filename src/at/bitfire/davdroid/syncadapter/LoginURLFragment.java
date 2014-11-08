@@ -7,6 +7,11 @@
  ******************************************************************************/
 package at.bitfire.davdroid.syncadapter;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.apache.commons.lang.StringUtils;
+
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -27,19 +32,20 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.URLUtils;
 
-public class EnterCredentialsFragment extends Fragment implements TextWatcher {
-	String scheme;
+public class LoginURLFragment extends Fragment implements TextWatcher {
+	protected String scheme;
 	
-	TextView textHttpWarning;
-	EditText editBaseURI, editUserName, editPassword;
-	CheckBox checkboxPreemptive;
-	Button btnNext;
+	protected TextView textHttpWarning;
+	protected EditText editBaseURI, editUserName, editPassword;
+	protected CheckBox checkboxPreemptive;
+	protected Button btnNext;
 	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.enter_credentials, container, false);
+		View v = inflater.inflate(R.layout.login_url, container, false);
 		
 		// protocol selection spinner
 		textHttpWarning = (TextView) v.findViewById(R.id.http_warning);
@@ -60,7 +66,7 @@ public class EnterCredentialsFragment extends Fragment implements TextWatcher {
 		spnrScheme.setSelection(1);	// HTTPS
 
 		// other input fields
-		editBaseURI = (EditText) v.findViewById(R.id.login_authority_path);
+		editBaseURI = (EditText) v.findViewById(R.id.login_host_path);
 		editBaseURI.addTextChangedListener(this);
 		
 		editUserName = (EditText) v.findViewById(R.id.userName);
@@ -79,36 +85,30 @@ public class EnterCredentialsFragment extends Fragment implements TextWatcher {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-	    inflater.inflate(R.menu.enter_credentials, menu);
+	    inflater.inflate(R.menu.only_next, menu);
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.next:
-			queryServer();
+			FragmentTransaction ft = getFragmentManager().beginTransaction();
+			
+			Bundle args = new Bundle();
+			String host_path = editBaseURI.getText().toString();
+			args.putString(QueryServerDialogFragment.EXTRA_BASE_URI, URLUtils.sanitize(scheme + host_path));
+			args.putString(QueryServerDialogFragment.EXTRA_USER_NAME, editUserName.getText().toString());
+			args.putString(QueryServerDialogFragment.EXTRA_PASSWORD, editPassword.getText().toString());
+			args.putBoolean(QueryServerDialogFragment.EXTRA_AUTH_PREEMPTIVE, checkboxPreemptive.isChecked());
+			
+			DialogFragment dialog = new QueryServerDialogFragment();
+			dialog.setArguments(args);
+		    dialog.show(ft, QueryServerDialogFragment.class.getName());
 			break;
 		default:
 			return false;
 		}
 		return true;
-	}
-
-	void queryServer() {
-		FragmentTransaction ft = getFragmentManager().beginTransaction();
-		
-		Bundle args = new Bundle();
-		
-		String authority_path = editBaseURI.getText().toString();
-		//args.putString(QueryServerDialogFragment.EXTRA_BASE_URI, URIUtils.sanitize(scheme + host_path));
-		args.putString(QueryServerDialogFragment.EXTRA_BASE_URI, scheme + authority_path);
-		args.putString(QueryServerDialogFragment.EXTRA_USER_NAME, editUserName.getText().toString());
-		args.putString(QueryServerDialogFragment.EXTRA_PASSWORD, editPassword.getText().toString());
-		args.putBoolean(QueryServerDialogFragment.EXTRA_AUTH_PREEMPTIVE, checkboxPreemptive.isChecked());
-		
-		DialogFragment dialog = new QueryServerDialogFragment();
-		dialog.setArguments(args);
-	    dialog.show(ft, QueryServerDialogFragment.class.getName());
 	}
 
 	
@@ -120,15 +120,15 @@ public class EnterCredentialsFragment extends Fragment implements TextWatcher {
 			editUserName.getText().length() > 0 &&
 			editPassword.getText().length() > 0;
 
-		/*if (ok)
+		if (ok)
 			// check host name
 			try {
-				URI uri = new URI(URIUtils.sanitize(scheme + editBaseURI.getText().toString()));
+				URI uri = new URI(URLUtils.sanitize(scheme + editBaseURI.getText().toString()));
 				if (StringUtils.isBlank(uri.getHost()))
 					ok = false;
 			} catch (URISyntaxException e) {
 				ok = false;
-			}*/
+			}
 			
 		MenuItem item = menu.findItem(R.id.next);
 		item.setEnabled(ok);

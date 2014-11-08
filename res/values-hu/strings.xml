@@ -9,15 +9,15 @@
         <item>https://</item>
     </string-array>
 
-    <string name="http_warning">"Titkosítás (HTTPS) nélkül a bejelentkezési azonosítókat, névjegyeket és eseményeket könnyen megismerhetik mások is."</string>
-    <string name="user_name">Felhasználónév:</string>
-    <string name="password">Jelszó:</string>
-    <string name="root_url">Fiók URL (a gyűjtemények detektálása automatikus):</string>
+    <string name="login_http_warning">"Titkosítás (HTTPS) nélkül a bejelentkezési azonosítókat, névjegyeket és eseményeket könnyen megismerhetik mások is."</string>
+    <string name="login_user_name">Felhasználónév:</string>
+    <string name="login_password">Jelszó:</string>
+    <string name="login_base_url">Fiók URL (a gyűjtemények detektálása automatikus):</string>
     <string name="next">Tovább</string>
     <string name="help">Súgó</string>
-    <string name="invalid_base_url">A fiók URL hibás: </string>
-    <string name="title_select_collections">DAVdroid: Gyűjtemény kiválasztása</string>
-    <string name="exception_io">I/O hiba: %s</string>
+    <string name="login_invalid_base_url">A fiók URL hibás: </string>
+    <string name="select_collections">DAVdroid: Gyűjtemény kiválasztása</string>
+    <string name="login_exception_io">I/O hiba: %s</string>
     <string name="exception_uri_syntax">Érvénytelen URI: %s</string>
     <string name="exception_incapable_resource">Hiányzó képesség: %s</string>
     <string name="neither_caldav_nor_carddav">Nincs CalDAV-/CardDAV szolgáltatás a megadott helyen.</string>

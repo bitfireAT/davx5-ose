@@ -151,7 +151,7 @@ public class DavResourceFinder implements Closeable {
 	 * @throws MalformedURLException when the user-given URI is invalid
 	 * @throws UnknownServiceURLException when no intial service URL could be determined
 	 */
-	URL getInitialURL(ServerInfo serverInfo, String serviceName) throws URISyntaxException, MalformedURLException {
+	public URL getInitialContextURL(ServerInfo serverInfo, String serviceName) throws URISyntaxException, MalformedURLException {
 		String	scheme = null,
 				domain = null;
 		int		port = -1;
@@ -220,7 +220,7 @@ public class DavResourceFinder implements Closeable {
 	 * @return	WebDavResource of current-user-principal for the given service, or null if it can't be found
 	 */
 	WebDavResource getCurrentUserPrincipal(ServerInfo serverInfo, String serviceName) throws URISyntaxException, IOException, NotAuthorizedException {
-		URL initialURL = getInitialURL(serverInfo, serviceName);
+		URL initialURL = getInitialContextURL(serverInfo, serviceName);
 		
 		// determine base URL (host name and initial context path)
 		WebDavResource base = new WebDavResource(httpClient,
@@ -235,12 +235,14 @@ public class DavResourceFinder implements Closeable {
 			if (wellKnown.getCurrentUserPrincipal() != null)
 				return new WebDavResource(wellKnown, wellKnown.getCurrentUserPrincipal());
 		} catch (NotAuthorizedException e) {
-			Log.d(TAG, "Well-known " + serviceName + " service detection not authorized", e);
+			Log.w(TAG, "Not authorized for well-known " + serviceName + " service detection", e);
 			throw e;
+		} catch (URISyntaxException e) {
+			Log.w(TAG, "Well-known" + serviceName + " service detection failed because of invalid URIs", e);
 		} catch (HttpException e) {
 			Log.d(TAG, "Well-known " + serviceName + " service detection failed with HTTP error", e);
 		} catch (DavException e) {
-			Log.d(TAG, "Well-known " + serviceName + " service detection failed at DAV level", e);
+			Log.w(TAG, "Well-known " + serviceName + " service detection failed with unexpected DAV response", e);
 		}
 
 		// fall back to user-given initial context path
@@ -249,18 +251,18 @@ public class DavResourceFinder implements Closeable {
 			if (base.getCurrentUserPrincipal() != null)
 				return new WebDavResource(base, base.getCurrentUserPrincipal());
 		} catch (NotAuthorizedException e) {
-			Log.d(TAG, "Not authorized for querying principal for " + serviceName + " service", e);
+			Log.e(TAG, "Not authorized for querying principal", e);
 			throw e;
 		} catch (HttpException e) {
-			Log.d(TAG, "HTTP error when querying principal for " + serviceName + " service", e);
+			Log.e(TAG, "HTTP error when querying principal", e);
 		} catch (DavException e) {
-			Log.d(TAG, "DAV error when querying principal for " + serviceName + " service", e);
+			Log.e(TAG, "DAV error when querying principal", e);
 		}
 		Log.i(TAG, "Couldn't find current-user-principal for service " + serviceName);
 		return null;
 	}
 	
-	private static boolean checkHomesetCapabilities(WebDavResource resource, String davCapability) throws URISyntaxException, IOException {
+	public static boolean checkHomesetCapabilities(WebDavResource resource, String davCapability) throws URISyntaxException, IOException {
 		// check for necessary capabilities
 		try {
 			resource.options();

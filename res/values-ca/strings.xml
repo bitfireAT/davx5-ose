@@ -9,15 +9,15 @@
         <item>https://</item>
     </string-array>
 
-    <string name="http_warning">"Si no feu servir cap encriptació (HTTPS), altres usuaris poden interceptar fàcilment les vostres credencials, contactes i events."</string>
-    <string name="user_name">Nom d\'usuari:</string>
-    <string name="password">Contrasenya:</string>
-    <string name="root_url">URL Arrel (les coleccions es detecten automàticament):</string>
+    <string name="login_http_warning">"Si no feu servir cap encriptació (HTTPS), altres usuaris poden interceptar fàcilment les vostres credencials, contactes i events."</string>
+    <string name="login_user_name">Nom d\'usuari:</string>
+    <string name="login_password">Contrasenya:</string>
+    <string name="login_base_url">URL Arrel (les coleccions es detecten automàticament):</string>
     <string name="next">Següent</string>
     <string name="help">Ajuda</string>
-    <string name="invalid_base_url">URL base invàlida: </string>
-    <string name="title_select_collections">DAVdroid: Seleccioneu col·leccions</string>
-    <string name="exception_io">Error de E/S: %s</string>
+    <string name="login_invalid_base_url">URL base invàlida: </string>
+    <string name="select_collections">DAVdroid: Seleccioneu col·leccions</string>
+    <string name="login_exception_io">Error de E/S: %s</string>
     <string name="exception_uri_syntax">URI invàlida: %s</string>
     <string name="exception_incapable_resource">Missing capabilities: %s</string>
     <string name="neither_caldav_nor_carddav">Ni CalDAV ni CardDAV estan disponibles</string>

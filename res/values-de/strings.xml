@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="http_warning">Ohne Verschlüsselung (HTTPS) können Ihre Zugangsdaten, Kontakte und Termine leicht abgefangen werden.</string>
-    <string name="user_name">Benutzername:</string>
-    <string name="password">Passwort:</string>
-    <string name="root_url">Basis-URL (Ordner werden automatisch gefunden):</string>
+    <string name="login_http_warning">Ohne Verschlüsselung (HTTPS) können Ihre Zugangsdaten, Kontakte und Termine leicht abgefangen werden.</string>
+    <string name="login_user_name">Benutzername:</string>
+    <string name="login_password">Passwort:</string>
+    <string name="login_base_url">Basis-URL (Ordner werden automatisch gefunden):</string>
     <string name="next">Weiter</string>
     <string name="help">Hilfe</string>
-    <string name="title_select_collections">DAVdroid: Ordner auswählen</string>
-    <string name="invalid_base_url">Ungültiger Basis-URL: </string>
-    <string name="exception_io">E/A-Fehler: %s</string>
+    <string name="select_collections">DAVdroid: Ordner auswählen</string>
+    <string name="login_invalid_base_url">Ungültiger Basis-URL: </string>
+    <string name="login_exception_io">E/A-Fehler: %s</string>
     <string name="exception_uri_syntax">Ungültiger URI: %s</string>
     <string name="exception_incapable_resource">Fehlende Server-Unterstützung: %s</string>
     <string name="neither_caldav_nor_carddav">An dieser Adresse konnte kein CalDAV- oder CardDAV-Dienst gefunden werden.</string>
