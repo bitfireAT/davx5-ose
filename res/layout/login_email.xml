@@ -29,7 +29,7 @@
             android:layout_width="0dp"
             android:scrollHorizontally="true"
             android:scrollbars="horizontal"
-            android:hint="myaccount@icloud.com">
+            android:hint="myaccount@myservice.com">
             <requestFocus />
         </EditText>
 
