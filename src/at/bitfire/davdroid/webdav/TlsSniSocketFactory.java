@@ -127,9 +127,13 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 	
 	@SuppressLint("DefaultLocale")
 	private void setReasonableEncryption(SSLSocket ssl) {
-		// set reasonable SSL/TLS settings before the handshake:
+		// set reasonable SSL/TLS settings before the handshake
 		
-		// - enable all supported protocols (enables TLSv1.1 and TLSv1.2 on Android <4.4.3, if available)
+		// Android 5.0+ (API level21) provides reasonable default settings
+		// but it still allows SSLv3
+		// https://developer.android.com/about/versions/android-5.0-changes.html#ssl
+
+		// - enable all supported protocols (enables TLSv1.1 and TLSv1.2 on Android <5.0, if available)
 		// - remove all SSL versions (especially SSLv3) because they're insecure now
 		List<String> protocols = new LinkedList<String>();
 		for (String protocol : ssl.getSupportedProtocols())
@@ -138,43 +142,45 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 		Log.v(TAG, "Setting allowed TLS protocols: " + StringUtils.join(protocols, ", "));
 		ssl.setEnabledProtocols(protocols.toArray(new String[0]));
 
-		// choose secure cipher suites
-		List<String> allowedCiphers = Arrays.asList(new String[] {
-			// allowed secure ciphers according to NIST.SP.800-52r1.pdf Section 3.3.1 (see docs directory)
-			// TLS 1.2
-			"TLS_RSA_WITH_AES_256_GCM_SHA384",
-			"TLS_RSA_WITH_AES_128_GCM_SHA256",
-			"TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
-			"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
-			"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-			"TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-			"TLS_ECHDE_RSA_WITH_AES_128_GCM_SHA256",
-			// maximum interoperability
-			"TLS_RSA_WITH_3DES_EDE_CBC_SHA",
-			"TLS_RSA_WITH_AES_128_CBC_SHA",
-			// additionally
-			"TLS_RSA_WITH_AES_256_CBC_SHA",
-			"TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA",
-			"TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
-			"TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
-			"TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
-		});
-		
-		List<String> availableCiphers = Arrays.asList(ssl.getSupportedCipherSuites());
-		
-		// preferred ciphers = allowed Ciphers \ availableCiphers
-		HashSet<String> preferredCiphers = new HashSet<String>(allowedCiphers);
-		preferredCiphers.retainAll(availableCiphers);
-		
-		// add preferred ciphers to enabled ciphers
-		// for maximum security, preferred ciphers should *replace* enabled ciphers,
-		// but I guess for the security level of DAVdroid, disabling of insecure
-		// ciphers should be a server-side task
-		HashSet<String> enabledCiphers = new HashSet<String>(Arrays.asList(ssl.getEnabledCipherSuites()));
-		enabledCiphers.addAll(preferredCiphers);
-		
-		Log.v(TAG, "Setting allowed TLS ciphers: " + StringUtils.join(enabledCiphers, ", "));
-		ssl.setEnabledCipherSuites(enabledCiphers.toArray(new String[0]));
+		if (android.os.Build.VERSION.SDK_INT < 21) {	
+			// choose secure cipher suites
+			List<String> allowedCiphers = Arrays.asList(new String[] {
+				// allowed secure ciphers according to NIST.SP.800-52r1.pdf Section 3.3.1 (see docs directory)
+				// TLS 1.2
+				"TLS_RSA_WITH_AES_256_GCM_SHA384",
+				"TLS_RSA_WITH_AES_128_GCM_SHA256",
+				"TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
+				"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+				"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+				"TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+				"TLS_ECHDE_RSA_WITH_AES_128_GCM_SHA256",
+				// maximum interoperability
+				"TLS_RSA_WITH_3DES_EDE_CBC_SHA",
+				"TLS_RSA_WITH_AES_128_CBC_SHA",
+				// additionally
+				"TLS_RSA_WITH_AES_256_CBC_SHA",
+				"TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA",
+				"TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
+				"TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
+				"TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+			});
+			
+			List<String> availableCiphers = Arrays.asList(ssl.getSupportedCipherSuites());
+			
+			// preferred ciphers = allowed Ciphers \ availableCiphers
+			HashSet<String> preferredCiphers = new HashSet<String>(allowedCiphers);
+			preferredCiphers.retainAll(availableCiphers);
+			
+			// add preferred ciphers to enabled ciphers
+			// for maximum security, preferred ciphers should *replace* enabled ciphers,
+			// but I guess for the security level of DAVdroid, disabling of insecure
+			// ciphers should be a server-side task
+			HashSet<String> enabledCiphers = preferredCiphers;
+			enabledCiphers.addAll(new HashSet<String>(Arrays.asList(ssl.getEnabledCipherSuites())));
+			
+			Log.v(TAG, "Setting allowed TLS ciphers: " + StringUtils.join(enabledCiphers, ", "));
+			ssl.setEnabledCipherSuites(enabledCiphers.toArray(new String[0]));
+		}
 	}
 	
 }

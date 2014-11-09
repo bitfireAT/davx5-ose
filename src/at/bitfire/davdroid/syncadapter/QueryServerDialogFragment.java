@@ -113,7 +113,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 			} catch (URISyntaxException e) {
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_uri_syntax, e.getMessage()));
 			}  catch (IOException e) {
-				serverInfo.setErrorMessage(getContext().getString(R.string.login_exception_io, e.getLocalizedMessage()));
+				serverInfo.setErrorMessage(getContext().getString(R.string.exception_io, e.getLocalizedMessage()));
 			} catch (HttpException e) {
 				Log.e(TAG, "HTTP error while querying server info", e);
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_http, e.getLocalizedMessage()));
