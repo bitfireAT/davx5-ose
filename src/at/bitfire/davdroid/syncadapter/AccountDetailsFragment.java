@@ -47,6 +47,7 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
 		
 		editAccountName = (EditText)v.findViewById(R.id.account_name);
 		editAccountName.addTextChangedListener(this);
+		editAccountName.setText(serverInfo.getUserName());
 		
 		TextView textAccountNameInfo = (TextView)v.findViewById(R.id.account_name_info);
 		if (!serverInfo.hasEnabledCalendars())

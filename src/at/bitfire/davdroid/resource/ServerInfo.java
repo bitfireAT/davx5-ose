@@ -50,7 +50,7 @@ public class ServerInfo implements Serializable {
 	public static class ResourceInfo implements Serializable {
 		private static final long serialVersionUID = -5516934508229552112L;
 		
-		enum Type {
+		public enum Type {
 			ADDRESS_BOOK,
 			CALENDAR
 		}

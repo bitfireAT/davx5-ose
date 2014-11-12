@@ -18,6 +18,7 @@ import android.widget.CheckedTextView;
 import android.widget.ListAdapter;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.ServerInfo;
+import at.bitfire.davdroid.resource.ServerInfo.ResourceInfo.Type;
 
 public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter {
 	final static int TYPE_ADDRESS_BOOKS_HEADING = 0,
@@ -126,7 +127,11 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 		view.setCompoundDrawablePadding(10);
 		
 		// set text		
-		String title = "<b>" + info.getTitle() + "</b>";
+		String title = info.getTitle();
+		if (title == null)		// unnamed collection
+			title = context.getString((info.getType() == Type.ADDRESS_BOOK) ?
+					R.string.setup_address_book : R.string.setup_calendar);
+		title = "<b>" + title + "</b>";
 		if (info.isReadOnly())
 			title = title + " (" + context.getString(R.string.setup_read_only) + ")";
 		
