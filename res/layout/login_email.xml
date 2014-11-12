@@ -13,7 +13,7 @@
         
         <TextView
             android:layout_columnSpan="2"
-            android:layout_gravity="left"
+            android:layout_gravity="start"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@string/login_email_description" />
         

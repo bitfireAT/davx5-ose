@@ -13,14 +13,14 @@
 
         <TextView
             android:layout_columnSpan="2"
-            android:layout_gravity="left"
+            android:layout_gravity="start"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@string/login_base_url" />
 
         <Spinner
             android:id="@+id/login_scheme"
             android:layout_width="wrap_content"
-            android:layout_gravity="left"
+            android:layout_gravity="start"
             android:entries="@array/login_url_scheme" />
 
         <EditText
@@ -40,8 +40,9 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="fill_parent"
             android:layout_columnSpan="2"
-            android:layout_gravity="left"
+            android:layout_gravity="start"
             android:drawableLeft="@drawable/alerts_and_states_warning"
+            android:drawableStart="@drawable/alerts_and_states_warning"
             android:drawablePadding="10dp"
             android:padding="10dp"
             android:text="@string/login_http_warning" />
@@ -78,10 +79,10 @@
             android:id="@+id/auth_preemptive"
             android:layout_columnSpan="2"
             android:checked="true"
-            android:layout_gravity="left"
+            android:layout_gravity="start"
             android:text="@string/login_auth_preemptive" />
         
-        <Space android:layout_gravity="left|top" />
+        <Space android:layout_gravity="start|top" />
         
     </GridLayout>
 

@@ -108,7 +108,9 @@
     <string name="setup_querying_server">Daten werden vom Server abgefragt. Bitte warten…</string>
     <string name="setup_what_to_sync">Welche Ordner sollen synchronisiert werden?</string>
     <string name="setup_address_books">Adressbücher</string>
+    <string name="setup_address_book">Adressbuch</string>
     <string name="setup_calendars">Kalender</string>
+    <string name="setup_calendar">Kalender</string>
     <string name="setup_select_address_book">Ein oder kein Adressbuch auswählen (nochmal berühren, um abzuwählen):</string>
     <string name="setup_select_calendars">Kalender zur Synchronisation auswählen:</string>
 
