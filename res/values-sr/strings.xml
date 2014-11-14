@@ -1,43 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- common strings -->
     <string name="app_name">ДАВдроид</string>
-    <string name="menu_settings">Поставке</string>
-
-    <string-array name="http_protocols">
-        <item>http://</item>
-        <item>https://</item>
-    </string-array>
-
-    <string name="login_http_warning">"Ако не користите шифровање (ХТТПС), други људи вам лако могу пресрести детаље пријаве, контакте и догађаје."</string>
-    <string name="login_user_name">Корисничко име:</string>
-    <string name="login_password">Лозинка:</string>
-    <string name="login_base_url">Корени УРЛ (збирке ће бити аутоматски откривене):</string>
+    
+    <string name="davdroid_website">ДАВдроид вебсајт</string>
     <string name="next">Следеће</string>
     <string name="help">Помоћ</string>
-    <string name="login_invalid_base_url">Неисправан основни УРИ: </string>
-    <string name="setup_select_collections">ДАВдроид: Изаберите збирке</string>
-    <string name="login_exception_io">И/О грешка: %s</string>
-    <string name="exception_uri_syntax">Неисправан УРИ: %s</string>
-    <string name="exception_incapable_resource">Недостају могућности: %s</string>
-    <string name="setup_neither_caldav_nor_carddav">Нема доступног КалДАВ/КардДАВ сервиса на овој локацији.</string>
-    <string name="setup_add_account">Додај налог</string>
-    <string name="setup_querying_server">Шаљем упит серверу. Сачекајте…</string>
-    <string name="exception_http">ХТТП грешка: %s</string>
-    <string name="setup_what_to_sync">Које збирке да синхронизујем?</string>
-    <string name="setup_address_books">Адресари</string>
-    <string name="setup_calendars">Календари</string>
-    <string name="setup_select_address_book">Изаберите један адресар (додирните поново да поништите избор):</string>
-    <string name="setup_select_calendars">Изаберите ваше календаре:</string>
-    <string name="login_auth_preemptive">Превентивна аутентификација (препоручено, али није компатибилно са Дигест аутентификацијом)</string>
     
-    <string name="davdroid_help">ДАВдроид помоћ</string>
+    <string name="exception_http">ХТТП грешка: %s</string>
+    <string name="exception_incapable_resource">Недостају могућности: %s</string>
+    <string name="exception_io">У/И грешка: %s</string>
+    <string name="exception_uri_syntax">Неисправан УРИ: %s</string>
+    
+    <!-- MainActivity -->
     <string name="main_manage_accounts">Управљај налозима синхронизације</string>
-    <string name="davdroid_website">ДАВдроид вебсајт</string>
+    
     <string name="html_main_workaround"><![CDATA[
 		<p>Хвала вам што сте купили ДАВдроид преко Google Play сервиса и тиме подржали овај пројекат. Нажалост, постоје два проблема са Google Play сервисом:</p>
 		
-		<h2>1. Налози могу да нестану након поновног покретања</h2>
+		<h2>1. Налози могу нестати након поновног покретања</h2>
 		<p>Може вам се десити да сви ваши <strong>ДАВдроид налози (укључујући контакте и догађаје) нестану након
         поновног покретања вашег уређаја</strong>. Разлог је <a href="https://code.google.com/p/android/issues/detail?id=34880">грешка у Андроиду</a>
         која узрокује уклањање налога плаћених апликација приликом покретања јер се (шифровани) АПК фајлови
@@ -55,7 +37,7 @@
         <p><strong>Ако имате један од наведених проблема, <a href="market://details?id=at.bitfire.davdroid.jbworkaround">инсталирајте „DAVdroid JB Workaround“</a>.</strong></p>
     ]]></string>
     <string name="html_main_info"><![CDATA[
-       <h1>Добро дошли у ДАВдроид/%s!</h1>
+       <h1>Welcome to DAVdroid/%s!</h1>
        
        <p>ДАВдроид (DAVdroid) је Андроид 4+ адаптер синхронизације за КалДАВ/КардДАВ (CalDAV/CardDAV). Да бисте га користили,
        само додајте ДАВдроид налог за ваш КалДАВ/КардДАВ сервер и ваши контакти/догађаји ће бити синхронизовани у оба смера.</p>
@@ -82,27 +64,55 @@
 	   или га купите.</p>
 	   
 	   <h1>Лиценца</h1>
-	   <p>Ауторско право © 2013 – 2014 Рики Хирнер (Ricki Hirner) (<a href="http://www.bitfire.at">Битфајер веб инжињеринг</a>). Сва права задржана.
+	   <p>Ауторско право © 2013 – 2014 Рики Хирнер (Ricki Hirner), Бернхарт Стокман (Bernhard Stockmann) (<a href="http://www.bitfire.at">Битфајер веб инжињеринг</a>). Сва права задржана.
 	   Овај програм и пратећи материјали су доступни под условима ГНУ-ове Јавне Лиценце в3.0 која је приложена,
 	   и доступна на <a href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. Ако сервиси „Google Play“,
 	   „Samsung Store“, „AndroidPit App Center“ или „Amazon Appstore“ захтевају друге услове, исти важе за издања преузета са ових сервиса.</p>
 	   
-	   <p>Преводи.
-	     Каталонски: <a href="https://github.com/pokoli">@pokoli</a>,
-	     Chinese (simplified): <a href="https://github.com/phy25">@phy25</a>,
-	     чешки: <a href="https://github.com/svetlemodry">Jaroslav Lichtblau</a>,
-	     српски: <a href="https://github.com/pejakm">@pejakm</a>,
-	     шпански: <a href="https://github.com/xphnx">@xphnx</a>
-	   </p>
-	   	   
+	   <p>Превод на српски: <a href="https://github.com/pejakm">@pejakm</a>. Превод на немачки: аутори. Остале преводе
+	   допринели су људи поменути у преводима одговарајућих језика.</p>
+	   
 	   <h2>Кориштене друге библиотеке</h2>
 	   <p>
-	    * <a href="http://hc.apache.org">Апачи ХТТП клијент</a> (<a href="https://code.google.com/p/httpclientandroidlib/">httpclientandroidlib</a> издање) – <a href="http://www.apache.org/licenses/">Апачи лиценца, издање 2.0</a><br/>
+	    <a href="http://hc.apache.org">Апачи ХТТП клијент</a> (<a href="https://code.google.com/p/httpclientandroidlib/">httpclientandroidlib</a> издање) – <a href="http://www.apache.org/licenses/">Апачи лиценца, издање 2.0</a><br/>
 	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">Нова БСД лиценца</a>)<br/>
 	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">Нова БСД лиценца</a><br/>
 	   	* <a href="http://simple.sourceforge.net/">Симпле ИксМЛ серијализација</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Апачи лиценца, издање 2.0</a><br/>
 	   	* <a href="http://projectlombok.org/">Пројекат Ломбок</a> – <a href="http://opensource.org/licenses/mit-license.php">МИТ лиценца</a></p>
+		* <a href="http://www.xbill.org/dnsjava/">dnsjava</a> – <a href="http://www.xbill.org/dnsjava/dnsjava-current/LICENSE">БСД лиценца</a></p>
     ]]></string>
+
+    <!-- AddAccountActivity -->
+    <string name="login_type_email">Пријавите се адресом е-поште</string>
+    <string name="login_type_email_description">Детаљи сервиса ће бити аутоматски откривени по имену домена. Пример: mojnalog@icloud.com</string>
+    <string name="login_type_url">Пријавите се УРЛ-ом и корисничким именом</string>
+    <string name="login_type_url_description">Детаљи сервиса ће бити аутоматски откривени по почетном УРЛ-у и корисничком имену. Углавном се користи за самохостоване сервисе.</string>
+    
+    <string name="login_email_description">Унесите вашу адресу е-поште. Име домена ће бити коришћено за аутоматско откривање поставки сервиса.</string>
+    <string name="login_email_address">Е-адреса:</string>
+    
+    <string-array name="login_url_scheme">
+        <item>http://</item>
+        <item>https://</item>
+    </string-array>
+    <string name="login_http_warning">"Ако не користите шифровање (ХТТПС), други људи вам лако могу пресрести детаље пријаве, контакте и догађаје."</string>
+    <string name="login_user_name">Корисничко име:</string>
+    <string name="login_base_url">Корени УРЛ (збирке ће бити аутоматски откривене):</string>
+    <string name="login_auth_preemptive">Превентивна аутентификација (препоручено, али некомпатибилно са Дигест аутентификацијом)</string>
+
+    <string name="login_password">Лозинка:</string>
+    
+    <string name="setup_select_collections">ДАВдроид: Изаберите збирке</string>
+    <string name="setup_neither_caldav_nor_carddav">Нема доступног КалДАВ/КардДАВ сервиса на овој локацији.</string>
+    <string name="setup_add_account">Додај налог</string>
+    <string name="setup_querying_server">Шаљем упит серверу. Сачекајте…</string>
+    <string name="setup_what_to_sync">Које збирке да синхронизујем?</string>
+    <string name="setup_address_books">Адресари</string>
+    <string name="setup_address_book">Адресар</string>
+    <string name="setup_calendars">Календари</string>
+    <string name="setup_calendar">Календар</string>
+    <string name="setup_select_address_book">Изаберите један адресар (додирните поново да поништите избор):</string>
+    <string name="setup_select_calendars">Изаберите ваше календаре:</string>
     
     <string name="setup_account_details">Детаљи налога</string>
     <string name="setup_account_name">Име налога:</string>
@@ -111,15 +121,16 @@
     <string name="setup_organizer_hint">"ОРГАНИЗАТОР ваших догађаја; потребно ако користите податке о учеснику"</string>
     <string name="setup_account_name_info">"Користите вашу е-адресу као име налога јер Андроид користи име налога за поље ОРГАНИЗАТОР за догађаје које направите. Не можете имати два налога истог имена.</string>
     <string name="setup_read_only">само-за-читање</string>
-    
+
+    <!-- account settings -->
     <string name="settings_general">Опште поставке</string>
     <string name="settings_debug">Поставке проналаска грешака</string>
-    <string name="settings_disable_http_compression">Искључи ХТТП компресију</string>
-    <string name="settings_http_compression_disabled">ХТТП компресија је искључена (режим проналаска грешака)</string>
+    <string name="settings_disable_http_compression">Онемогући ХТТП компресију</string>
+    <string name="settings_http_compression_disabled">ХТТП компресија је онемогућена (режим проналаска грешака)</string>
     <string name="settings_http_compression_enabled">ХТТП компресија се користи кад год је могуће</string>
     <string name="settings_network_logging">Бележи мрежни саобраћај</string>
     <string name="settings_network_logging_enabled">Сав мрежни саобраћај се исцрпно бележи у дневник (режим проналаска грешака)</string>
     <string name="settings_network_logging_disabled">Мрежни саобраћај се не бележи у дневник</string>
     <string name="settings_report_an_issue">Пријави грешку</string>
-
+    
 </resources>
