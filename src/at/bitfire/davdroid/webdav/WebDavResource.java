@@ -536,7 +536,10 @@ public class WebDavResource {
 							properties.put(Property.COLOR, prop.calendarColor.getColor());
 						
 						if (prop.calendarTimezone != null)
-							properties.put(Property.TIMEZONE, Event.TimezoneDefToTzId(prop.calendarTimezone.getTimezone()));
+							try {
+								properties.put(Property.TIMEZONE, Event.TimezoneDefToTzId(prop.calendarTimezone.getTimezone()));
+							} catch(IllegalArgumentException e) {
+							}
 						
 						if (prop.supportedCalendarComponentSet != null) {
 							supportedComponents = new LinkedList<String>();
