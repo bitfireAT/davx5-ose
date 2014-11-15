@@ -110,7 +110,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		
 		int color = 0xFFC3EA6E;		// fallback: "DAVdroid green"
 		if (info.getColor() != null) {
-			Pattern p = Pattern.compile("#(\\p{XDigit}{6})(\\p{XDigit}{2})?");
+			Pattern p = Pattern.compile("#?(\\p{XDigit}{6})(\\p{XDigit}{2})?");
 			Matcher m = p.matcher(info.getColor());
 			if (m.find()) {
 				int color_rgb = Integer.parseInt(m.group(1), 16);
