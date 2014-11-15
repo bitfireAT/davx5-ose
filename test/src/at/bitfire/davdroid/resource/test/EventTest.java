@@ -73,6 +73,47 @@ public class EventTest extends InstrumentationTestCase {
 		assertEquals(Time.TIMEZONE_UTC, eAllDay0Sec.getDtEndTzID());
 	}
 	
+	public void testTimezoneDefToTzId() {
+		final String VTIMEZONE_SAMPLE =		// taken from RFC 4791, 5.2.2. CALDAV:calendar-timezone Property 
+				"BEGIN:VCALENDAR\n" + 
+				"PRODID:-//Example Corp.//CalDAV Client//EN\n" + 
+				"VERSION:2.0\n" + 
+				"BEGIN:VTIMEZONE\n" + 
+				"TZID:US-Eastern\n" + 
+				"LAST-MODIFIED:19870101T000000Z\n" + 
+				"BEGIN:STANDARD\n" + 
+				"DTSTART:19671029T020000\n" + 
+				"RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10\n" + 
+				"TZOFFSETFROM:-0400\n" + 
+				"TZOFFSETTO:-0500\n" + 
+				"TZNAME:Eastern Standard Time (US &amp; Canada)\n" + 
+				"END:STANDARD\n" + 
+				"BEGIN:DAYLIGHT\n" + 
+				"DTSTART:19870405T020000\n" + 
+				"RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4\n" + 
+				"TZOFFSETFROM:-0500\n" + 
+				"TZOFFSETTO:-0400\n" + 
+				"TZNAME:Eastern Daylight Time (US &amp; Canada)\n" + 
+				"END:DAYLIGHT\n" + 
+				"END:VTIMEZONE\n" + 
+				"END:VCALENDAR";
+		assertEquals("US-Eastern", Event.TimezoneDefToTzId(VTIMEZONE_SAMPLE));
+		
+		try {
+			Event.TimezoneDefToTzId(null);
+			fail();
+		} catch(IllegalArgumentException e) {
+			assert(true);
+		}
+		
+		try {
+			Event.TimezoneDefToTzId("/* invalid content */");
+			fail();
+		} catch(IllegalArgumentException e) {
+			assert(true);
+		}
+	}
+	
 	
 	protected Event parseCalendar(String fname) throws IOException, InvalidResourceException {
 		@Cleanup InputStream in = assetMgr.open(fname, AssetManager.ACCESS_STREAMING);

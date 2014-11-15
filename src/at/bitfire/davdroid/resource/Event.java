@@ -352,15 +352,17 @@ public class Event extends Resource {
 		date.setTimeZone(tzRegistry.getTimeZone(localTZ));
 	}
 
-	public static String TimezoneDefToTzId(String timezoneDef) {
+	public static String TimezoneDefToTzId(String timezoneDef) throws IllegalArgumentException {
 		try {
-			CalendarBuilder builder = new CalendarBuilder();
-			net.fortuna.ical4j.model.Calendar cal = builder.build(new StringReader(timezoneDef));
-			VTimeZone timezone = (VTimeZone)cal.getComponent(VTimeZone.VTIMEZONE);
-			return timezone.getTimeZoneId().getValue();
+			if (timezoneDef != null) {
+				CalendarBuilder builder = new CalendarBuilder();
+				net.fortuna.ical4j.model.Calendar cal = builder.build(new StringReader(timezoneDef));
+				VTimeZone timezone = (VTimeZone)cal.getComponent(VTimeZone.VTIMEZONE);
+				return timezone.getTimeZoneId().getValue();
+			}
 		} catch (Exception ex) {
 			Log.w(TAG, "Can't understand time zone definition", ex);
 		}
-		return null;
+		throw new IllegalArgumentException();
 	}
 }
