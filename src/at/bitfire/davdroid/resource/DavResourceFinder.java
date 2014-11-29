@@ -202,12 +202,14 @@ public class DavResourceFinder implements Closeable {
 				records = new Lookup(name, Type.TXT).run();
 				if (records != null && records.length >= 1) {
 					TXTRecord txt = (TXTRecord)records[0];
-					for (String segment : (String[])txt.getStrings().toArray())
+					for (Object o : txt.getStrings().toArray()) {
+						String segment = (String)o;
 						if (segment.startsWith("path=")) {
 							path = segment.substring(5);
 							Log.d(TAG, "Found initial context path for " + serviceName + " at " + domain + " -> " + path);
 							break;
 						}
+					}
 				}
 			}
 		} catch (TextParseException e) {
@@ -228,13 +230,14 @@ public class DavResourceFinder implements Closeable {
 	 * @param resource 		Location that will be queried
 	 * @param serviceName	Well-known service name ("carddav", "caldav")
 	 * @return	WebDavResource of current-user-principal for the given service, or null if it can't be found
+	 * 
+	 * TODO: If a TXT record is given, always use it instead of trying .well-known first
 	 */
 	WebDavResource getCurrentUserPrincipal(ServerInfo serverInfo, String serviceName) throws URISyntaxException, IOException, NotAuthorizedException {
 		URL initialURL = getInitialContextURL(serverInfo, serviceName);
 		if (initialURL != null) {
 			// determine base URL (host name and initial context path)
 			WebDavResource base = new WebDavResource(httpClient,
-					//new URI(URIUtils.ensureTrailingSlash(serverInfo.getBaseURI())),
 					initialURL,
 					serverInfo.getUserName(), serverInfo.getPassword(), serverInfo.isAuthPreemptive());
 			
