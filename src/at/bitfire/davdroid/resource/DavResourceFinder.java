@@ -202,12 +202,14 @@ public class DavResourceFinder implements Closeable {
 				records = new Lookup(name, Type.TXT).run();
 				if (records != null && records.length >= 1) {
 					TXTRecord txt = (TXTRecord)records[0];
-					for (String segment : (String[])txt.getStrings().toArray())
+					for (Object o : txt.getStrings().toArray()) {
+						String segment = (String)o;
 						if (segment.startsWith("path=")) {
 							path = segment.substring(5);
 							Log.d(TAG, "Found initial context path for " + serviceName + " at " + domain + " -> " + path);
 							break;
 						}
+					}
 				}
 			}
 		} catch (TextParseException e) {
@@ -234,7 +236,6 @@ public class DavResourceFinder implements Closeable {
 		if (initialURL != null) {
 			// determine base URL (host name and initial context path)
 			WebDavResource base = new WebDavResource(httpClient,
-					//new URI(URIUtils.ensureTrailingSlash(serverInfo.getBaseURI())),
 					initialURL,
 					serverInfo.getUserName(), serverInfo.getPassword(), serverInfo.isAuthPreemptive());
 			

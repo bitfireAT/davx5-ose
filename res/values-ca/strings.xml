@@ -111,7 +111,7 @@
 
     <string name="setup_add_account">Afegir compte</string>
     <string name="setup_querying_server">Contactant servidor. Espereu sisuplau.</string>
-    <string name="setup_what_to_sync">Quines col·leccions s'han de sincronitzar?</string>
+    <string name="setup_what_to_sync">Quines col·leccions s\'han de sincronitzar?</string>
     <string name="setup_address_books">Llibretes de contactes</string>
     <string name="setup_address_book">Llibreta de contactes</string>
     <string name="setup_calendars">Calendaris</string>
@@ -136,7 +136,7 @@
     <string name="settings_network_logging">Registra el tràfic de xarxa</string>
     <string name="settings_network_logging_enabled">Tot el tràfic de xarxa es reigstra (mode depuració)</string>
     <string name="settings_network_logging_disabled">No es registra el tràfic de xarxa</string>
-    <string name="settings_report_an_issue">Informa d'un error</string>
+    <string name="settings_report_an_issue">Informa d\'un error</string>
 
 
 </resources>
