@@ -25,6 +25,7 @@ import at.bitfire.davdroid.resource.ServerInfo;
 public class SelectCollectionsFragment extends ListFragment {
 	public static final String KEY_SERVER_INFO = "server_info";
 	
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = super.onCreateView(inflater, container, savedInstanceState);
@@ -45,8 +46,8 @@ public class SelectCollectionsFragment extends ListFragment {
 		final ListView listView = getListView();
 		listView.setPadding(20, 30, 20, 30);
 		
-		View header = getActivity().getLayoutInflater().inflate(R.layout.select_collections_header, null);
-		listView.addHeaderView(header);
+		View header = getActivity().getLayoutInflater().inflate(R.layout.select_collections_header, getListView(), false);
+		listView.addHeaderView(header, getListView(), false);
 		
 		final ServerInfo serverInfo = (ServerInfo)getArguments().getSerializable(KEY_SERVER_INFO);
 		final SelectCollectionsAdapter adapter = new SelectCollectionsAdapter(view.getContext(), serverInfo);

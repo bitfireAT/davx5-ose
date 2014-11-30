@@ -74,6 +74,7 @@ public class EventTest extends InstrumentationTestCase {
 	}
 	
 	public void testTimezoneDefToTzId() {
+		// test valid definition
 		final String VTIMEZONE_SAMPLE =		// taken from RFC 4791, 5.2.2. CALDAV:calendar-timezone Property 
 				"BEGIN:VCALENDAR\n" + 
 				"PRODID:-//Example Corp.//CalDAV Client//EN\n" + 
@@ -98,7 +99,8 @@ public class EventTest extends InstrumentationTestCase {
 				"END:VTIMEZONE\n" + 
 				"END:VCALENDAR";
 		assertEquals("US-Eastern", Event.TimezoneDefToTzId(VTIMEZONE_SAMPLE));
-		
+
+		// test null value
 		try {
 			Event.TimezoneDefToTzId(null);
 			fail();
@@ -106,6 +108,7 @@ public class EventTest extends InstrumentationTestCase {
 			assert(true);
 		}
 		
+		// test invalid time zone
 		try {
 			Event.TimezoneDefToTzId("/* invalid content */");
 			fail();
