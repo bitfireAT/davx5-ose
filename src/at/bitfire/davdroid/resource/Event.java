@@ -361,7 +361,7 @@ public class Event extends Resource {
 				return timezone.getTimeZoneId().getValue();
 			}
 		} catch (Exception ex) {
-			Log.w(TAG, "Can't understand time zone definition", ex);
+			Log.w(TAG, "Can't understand time zone definition, ignoring", ex);
 		}
 		throw new IllegalArgumentException();
 	}

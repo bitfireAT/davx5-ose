@@ -8,6 +8,7 @@
 package at.bitfire.davdroid.syncadapter;
 
 import lombok.Getter;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -89,40 +90,43 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 	}
 
 	@Override
+	@SuppressLint("InflateParams")
 	public View getView(int position, View convertView, ViewGroup parent) {
+		View v = convertView;
+		
 		// step 1: get view (either by creating or recycling)
-		if (convertView == null) {
+		if (v == null) {
 			LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 			switch (getItemViewType(position)) {
 			case TYPE_ADDRESS_BOOKS_HEADING:
-				convertView = inflater.inflate(R.layout.address_books_heading, parent, false);
+				v = inflater.inflate(R.layout.address_books_heading, parent, false);
 				break;
 			case TYPE_ADDRESS_BOOKS_ROW:
-				convertView = inflater.inflate(android.R.layout.simple_list_item_single_choice, null);
+				v = inflater.inflate(android.R.layout.simple_list_item_single_choice, null);
 				break;
 			case TYPE_CALENDARS_HEADING:
-				convertView = inflater.inflate(R.layout.calendars_heading, parent, false);
+				v = inflater.inflate(R.layout.calendars_heading, parent, false);
 				break;
 			case TYPE_CALENDARS_ROW:
-				convertView = inflater.inflate(android.R.layout.simple_list_item_multiple_choice, null);
+				v = inflater.inflate(android.R.layout.simple_list_item_multiple_choice, null);
 			}
 		}
 		
 		// step 2: fill view with content
 		switch (getItemViewType(position)) {
 		case TYPE_ADDRESS_BOOKS_ROW:
-			setContent((CheckedTextView)convertView, R.drawable.addressbook, (ServerInfo.ResourceInfo)getItem(position));
+			setContent((CheckedTextView)v, R.drawable.addressbook, (ServerInfo.ResourceInfo)getItem(position));
 			break;
 		case TYPE_CALENDARS_ROW:
-			setContent((CheckedTextView)convertView, R.drawable.calendar, (ServerInfo.ResourceInfo)getItem(position));
+			setContent((CheckedTextView)v, R.drawable.calendar, (ServerInfo.ResourceInfo)getItem(position));
 		}
 		
-		return convertView;
+		return v;
 	}
 	
 	protected void setContent(CheckedTextView view, int collectionIcon, ServerInfo.ResourceInfo info) {
 		// set layout and icons
-		view.setPadding(10, 10, 10, 10);
+		view.setPadding(view.getPaddingLeft(), 8, view.getPaddingRight(), 8);
 		view.setCompoundDrawablesWithIntrinsicBounds(collectionIcon, 0, info.isReadOnly() ? R.drawable.ic_read_only : 0, 0);
 		view.setCompoundDrawablePadding(10);
 		
