@@ -2,7 +2,7 @@
 DAVDROID
 ========
 
-Please see the [DAVdroid Web site](http://davdroid.bitfire.at) for
+Please see the [DAVdroid Web site](https://davdroid.bitfire.at) for
 detailled information about DAVdroid.
 
 DAVdroid is licensed under the [GPLv3 License](COPYING).
