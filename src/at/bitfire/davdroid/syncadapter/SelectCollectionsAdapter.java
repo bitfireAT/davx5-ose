@@ -103,12 +103,14 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 				break;
 			case TYPE_ADDRESS_BOOKS_ROW:
 				v = inflater.inflate(android.R.layout.simple_list_item_single_choice, null);
+				v.setPadding(0, 8, 0, 8);
 				break;
 			case TYPE_CALENDARS_HEADING:
 				v = inflater.inflate(R.layout.calendars_heading, parent, false);
 				break;
 			case TYPE_CALENDARS_ROW:
 				v = inflater.inflate(android.R.layout.simple_list_item_multiple_choice, null);
+				v.setPadding(0, 8, 0, 8);
 			}
 		}
 		
@@ -126,7 +128,6 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 	
 	protected void setContent(CheckedTextView view, int collectionIcon, ServerInfo.ResourceInfo info) {
 		// set layout and icons
-		view.setPadding(view.getPaddingLeft(), 8, view.getPaddingRight(), 8);
 		view.setCompoundDrawablesWithIntrinsicBounds(collectionIcon, 0, info.isReadOnly() ? R.drawable.ic_read_only : 0, 0);
 		view.setCompoundDrawablePadding(10);
 		
