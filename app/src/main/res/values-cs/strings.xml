@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- common strings -->
+    <string name="app_name">DAVdroid</string>
+    
+    <string name="davdroid_website">Webová stránka DAVdroid</string>
+    <string name="next">Další</string>
+    <string name="help">Pomoc</string>
+    
+    <string name="exception_http">HTTP chyba: %s</string>
+    <string name="exception_incapable_resource">Chybějící možnosti: %s</string>
+    <string name="exception_io">I/O chyba: %s</string>
+    <string name="exception_uri_syntax">Neplatné URI: %s</string>
+    
+    <!-- MainActivity -->
+    <string name="main_manage_accounts">Spravovat synchronizované účty</string>
+    
+    <string name="html_main_workaround"><![CDATA[
+		<p>Thank you for buying DAVdroid via Google Play and thus supporting the project. Unfortunately, there are two issues with Google Play:</p>
+		
+		<h2>1. Accounts may be gone after a reboot</h2>
+		<p>You may encounter the problem that all your <strong>DAVdroid accounts (including contacts and events) are gone
+        after rebooting your device</strong>. The reason is a <a href="https://code.google.com/p/android/issues/detail?id=34880">bug in Android</a>
+        that causes accounts of paid apps to be removed on start-up because the (encrypted) APK files are
+        loaded <i>after</i> checking for orphaned accounts.</p>
+        <p>Affected users:<br/>
+        * all Android 4.1 users who have got DAVdroid from Play Store;<br/>
+        * Android 4.2 users who have got DAVdroid from Play Store only with certain devices (for instance, most Samsung devices)</p>
+        
+        <h2>2. Accounts may be gone after upgrading DAVdroid</h2>
+        <p>You may encounter the problem that all your <strong>DAVdroid accounts (including contacts and events) when Play Store
+        updates DAVdroid</strong>. The reason is <a href="https://code.google.com/p/android/issues/detail?id=66905">another bug in Android</a>
+        that causes accounts of paid apps to be removed when upgrading for a similar reason.</p>
+        <p>Affected users: some Android 4.4.2 users who have got DAVdroid from Play Store (known for Nexus devices and Moto G)</p>
+        
+        <p><strong>If you\'re affected by one of these bugs, please <a href="market://details?id=at.bitfire.davdroid.jbworkaround">install the
+        DAVdroid JB Workaround</a>.</strong></p>
+    ]]></string>
+    <string name="html_main_info"><![CDATA[
+       <h1>Vítejte do aplikace DAVdroid/%s!</h1>
+       
+       <p>DAVdroid je aplikace pro Android 4+ na synchronizaci CalDAV/CardDAV účtů. Stačí přidat účet DAVdroid
+       pro CalDAV/CardDAV server a vaše kontakty/události budou synchronizovány oběma směry.</p>
+       
+       <p>Pro více informací se podívejte na domovskou stránku <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">aplikace DAVdroid</a>.
+       Najdete tam i <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">návod pro nastavení</a>. DAVdroid respektuje
+       vaše soukromí, přečtěte si naši <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Privacy Policy</a>.</p>
+       
+       <p>If you use CyanogenMod, "Privacy Guard" must be disabled for DAVdroid. Otherwise, DAVdroid is not allowed to access
+       and synchronize your contacts and events.</p>
+       
+       <p><b>In case of problems, please read the <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a> first.
+       If you encounter a bug that is clearly related to DAVdroid, enter it on
+       <a href="https://github.com/rfc2822/davdroid">Github issues</a> instead of contacting us directly or giving a poor
+       rating for the app.</b></p>
+              
+	   <h1>Open-source</h1>
+	   <p>DAVdroid is designed to be an open-source project from the very first beginning. It is always possible to compile the
+	   app yourself and use it for free without any obligations. The source code is
+	   <a href="https://github.com/rfc2822/davdroid">available on Github</a>, and you can
+	   <a href="https://f-droid.org/app/at.bitfire.davdroid">download the app on F-droid</a>.</p>
+	   
+	   <p>However, it was much work to create this app, so we have decided to put it into the commercial stores for a small fee.
+	   If you want to support this project, please consider <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">donating to DAVdroid</a>
+	   or purchasing it.</p>
+	   
+	   <h1>License</h1>
+	   <p>Copyright (c) 2013 – 2014 Ricki Hirner, Bernhard Stockmann (<a href="http://www.bitfire.at">bitfire web engineering</a>). All rights reserved.
+	   This program and the accompanying materials are made available under the terms of the GNU Public License v3.0 which
+	   accompanies this distribution, and is available at <a
+	   href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. As far as Google Play, Samsung
+	   Store, AndroidPit App Center or Amazon Appstore require other terms, the respective terms apply for versions
+	   that are downloaded via these services.</p>
+	   
+	   <p>Překlad.
+	     Čeština: <a href="https://github.com/svetlemodry">Jaroslav Lichtblau</a>
+	   </p>
+	   
+	   <h2>Použité knihovny třetích stran</h2>
+	   <p>
+	    * <a href="http://hc.apache.org">Apache HttpClient</a> (<a href="https://code.google.com/p/httpclientandroidlib/">httpclientandroidlib</a> flavour) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>
+	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
+	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a><br/>
+	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a><br/>
+	   	* <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a><br/>
+		* <a href="http://www.xbill.org/dnsjava/">dnsjava</a> – <a href="http://www.xbill.org/dnsjava/dnsjava-current/LICENSE">BSD License</a></p>
+    ]]></string>
+
+    <!-- AddAccountActivity -->
+    <string name="login_type_email">Přihlášení s emailovou adresou</string>
+    <string name="login_type_email_description">Detaily účtu budou automaticky detekovány podle doménového jména. Příkald: mujucet@icloud.com</string>
+    <string name="login_type_url">Přihlášení s URL a uživatelským jménem</string>
+    <string name="login_type_url_description">Detaily účtu budou automaticky rozpoznány podle URL a uživatelského jména. Nejčastější volba pro vlastní servery.</string>
+    
+    <string name="login_email_description">Vložte prosím svou emailovou adresu. Její doménová adresa bude použita pro automatické zjištění nastavení služby.</string>
+    <string name="login_email_address">Email:</string>
+    
+    <string-array name="login_url_scheme">
+        <item>http://</item>
+        <item>https://</item>
+    </string-array>
+    <string name="login_http_warning">"Pokud nepoužijete šifrované připojení (HTTPS), ostatní budou moci lehce získat vaše přihlašovací údaje, kontakty a události."</string>
+    <string name="login_user_name">Uživatelské jméno:</string>
+    <string name="login_base_url">Kořenová URL (sbírky budou detekovány automaticky):</string>
+    <string name="login_auth_preemptive">Preemptivní ověření (doporučeno, ale není kompatibilní s Digest ověřením)</string>
+
+    <string name="login_password">Heslo:</string>
+    
+    <string name="setup_select_collections">DAVdroid: Vybrat sbírky</string>
+    <string name="setup_neither_caldav_nor_carddav">V tomto umístění není CalDAV-/CardDAV služba dostupná.</string>
+    <string name="setup_add_account">Přidat účet</string>
+    <string name="setup_querying_server">Probíhá komunikace se serverem. Chvilku strpení…</string>
+    <string name="setup_what_to_sync">Které sbírky mají být synchronizovány?</string>
+    <string name="setup_address_books">Adresáře</string>
+    <string name="setup_address_book">Adresář</string>
+    <string name="setup_calendars">Kalendáře</string>
+    <string name="setup_calendar">Kalendář</string>
+    <string name="setup_select_address_book">Vybrat alespoň jeden adresář (opakovaně tapnout pro odebrání):</string>
+    <string name="setup_select_calendars">Vybrat své kalendáře:</string>
+    
+    <string name="setup_account_details">Detaily účtu</string>
+    <string name="setup_account_name">Jméno účtu:</string>
+    <string name="setup_account_name_hint">Můj CalDAV/CardDAV účet</string>
+    <string name="setup_email_address">Emailová adresa:</string>
+    <string name="setup_organizer_hint">"ORGANIZÁTOR událostí; vyžadováno pokud budete přidávat účastníky"</string>
+    <string name="setup_account_name_info">"Použijte svou emailovou adresu jako jméno účtu. Android bude používat tuto hodnotu jako jméno ORGANIZÁTORA událostí které vytvoříte. Nelze mít dva účty se stejným jménem.</string>
+    <string name="setup_read_only">pouze pro čtení</string>
+
+    <!-- account settings -->
+    <string name="settings_general">Obecná nastavení</string>
+    <string name="settings_debug">Ladící nastavení</string>
+    <string name="settings_disable_http_compression">Vypnout HTTP kompresi</string>
+    <string name="settings_http_compression_disabled">HTTP komprese je vypnuta (ladící mód)</string>
+    <string name="settings_http_compression_enabled">HTTP komprese je použita všude kde možno</string>
+    <string name="settings_network_logging">Logovat síťový provoz</string>
+    <string name="settings_network_logging_enabled">Veškerý síťový provoz je detailně logován (ladící mód)</string>
+    <string name="settings_network_logging_disabled">Síťový provoz není logován</string>
+    <string name="settings_report_an_issue">Nahlásit problém</string>
+    
+</resources>

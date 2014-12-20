@@ -1,0 +1,62 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+        applicationId "at.bitfire.davdroid"
+        minSdkVersion 14
+        targetSdkVersion 21
+
+        testApplicationId "at.bitfire.davdroid.test"
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+    dexOptions {
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+}
+
+dependencies {
+    // Apache Commons
+    compile 'commons-lang:commons-lang:2.6'
+    compile 'org.apache.commons:commons-io:1.3.2'
+
+    // Lombok for useful @helpers
+    compile 'org.projectlombok:lombok:1.14.8'
+
+    // ical4j for parsing/generating iCalendars
+    compile 'org.mnode.ical4j:ical4j:1.0.6'
+
+    // ez-vcard for parsing/generating VCards
+    compile('com.googlecode.ez-vcard:ez-vcard:0.9.6') {
+        // hCard functionality not needed
+        exclude group: 'org.jsoup', module: 'jsoup'
+        exclude group: 'org.freemarker', module: 'freemarker'
+        // jCard functionality not needed
+        exclude group: 'com.fasterxml.jackson.core', module: 'jackson-core'
+    }
+
+    // dnsjava for querying SRV/TXT records
+    compile 'dnsjava:dnsjava:2.1.6'
+
+    // HttpClient 4.3, Android flavour for WebDAV operations
+    compile 'org.apache.httpcomponents:httpclient-android:4.3.5'
+
+    // SimpleXML for parsing and generating WebDAV messages
+    compile('org.simpleframework:simple-xml:2.7.1') {
+        exclude group: 'stax', module: 'stax-api'
+        exclude group: 'xpp3', module: 'xpp3'
+    }
+}
