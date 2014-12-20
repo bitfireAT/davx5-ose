@@ -20,10 +20,10 @@ import org.apache.commons.io.IOUtils;
 
 import android.content.res.AssetManager;
 import android.test.InstrumentationTestCase;
-import at.bitfire.davdroid.test.Constants;
+import at.bitfire.davdroid.TestConstants;
 import at.bitfire.davdroid.webdav.HttpPropfind.Mode;
 import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
-import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
 
 // tests require running robohydra!
 
@@ -46,15 +46,15 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 				
 		assetMgr = getInstrumentation().getContext().getResources().getAssets();
 		
-		baseDAV = new WebDavResource(httpClient, Constants.roboHydra.resolve("/dav/"));
+		baseDAV = new WebDavResource(httpClient, TestConstants.roboHydra.resolve("/dav/"));
 		
-		simpleFile = new WebDavResource(httpClient, Constants.roboHydra.resolve("assets/test.random"));
+		simpleFile = new WebDavResource(httpClient, TestConstants.roboHydra.resolve("assets/test.random"));
 		
-		davCollection = new WebDavResource(httpClient, Constants.roboHydra.resolve("dav/"));
+		davCollection = new WebDavResource(httpClient, TestConstants.roboHydra.resolve("dav/"));
 		davNonExistingFile = new WebDavResource(davCollection, "collection/new.file");
 		davExistingFile = new WebDavResource(davCollection, "collection/existing.file");
 		
-		davInvalid = new WebDavResource(httpClient, Constants.roboHydra.resolve("dav-invalid/"));
+		davInvalid = new WebDavResource(httpClient, TestConstants.roboHydra.resolve("dav-invalid/"));
 	}
 	
 	@Override
@@ -227,7 +227,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		dav.propfind(HttpPropfind.Mode.CARDDAV_COLLECTIONS);
 		List<WebDavResource> members = dav.getMembers();
 		assertEquals(1, members.size());
-		assertEquals(Constants.ROBOHYDRA_BASE + "dav-invalid/addressbooks/~user1/My%20Contacts:1.vcf/", members.get(0).getLocation().toASCIIString());
+		assertEquals(TestConstants.ROBOHYDRA_BASE + "dav-invalid/addressbooks/~user1/My%20Contacts:1.vcf/", members.get(0).getLocation().toASCIIString());
 	}
 	
 }

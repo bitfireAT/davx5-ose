@@ -8,9 +8,6 @@ android {
         applicationId "at.bitfire.davdroid"
         minSdkVersion 14
         targetSdkVersion 21
-
-        testApplicationId "at.bitfire.davdroid.test"
-        testInstrumentationRunner "android.test.InstrumentationTestRunner"
     }
 
     buildTypes {
