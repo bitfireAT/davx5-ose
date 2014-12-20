@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">DAVdroid</string>
-    <string name="menu_settings">Paramètres</string>
 
     <string-array name="http_protocols">
         <item>http://</item>
@@ -15,9 +14,8 @@
     <string name="login_base_url">URL racine(les collections seront autodétectées):</string>
     <string name="next">Suivant</string>
     <string name="help">Aide</string>
-    <string name="login_invalid_base_url">Racine de l\'URL incorrecte:</string>
     <string name="setup_select_collections">DAVdroid: Sélectionnez les collections</string>
-    <string name="login_exception_io">Erreur I/O: %s</string>
+    <string name="exception_io">Erreur I/O: %s</string>
     <string name="exception_uri_syntax">URI incorrecte: %s</string>
     <string name="exception_incapable_resource">Capacités manquantes: %s</string>
     <string name="setup_neither_caldav_nor_carddav">Aucun CalDAV ou CardDAV disponible</string>
@@ -31,7 +29,6 @@
     <string name="setup_select_calendars">Choisissez vos agendas:</string>
     <string name="login_auth_preemptive">Authentification préventive(recommandé, mais incompatible avec l\'authentification Digest)</string>
     
-    <string name="davdroid_help">Aide de DAVdroid</string>
     <string name="main_manage_accounts">Gérer les comptes synchronisés</string>
     <string name="davdroid_website">Site Web de DAVdroid</string>
     <string name="html_main_info"><![CDATA[

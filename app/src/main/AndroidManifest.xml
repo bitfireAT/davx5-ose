@@ -71,9 +71,6 @@
             android:name=".syncadapter.AddAccountActivity"
             android:excludeFromRecents="true" >
         </activity>
-        <activity
-            android:name=".syncadapter.GeneralSettingsActivity" >
-        </activity>
-        </application>
+    </application>
 
 </manifest>

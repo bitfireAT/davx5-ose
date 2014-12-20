@@ -133,15 +133,4 @@
     <string name="setup_account_name_info">"Használja az email címet fióknévként, mert később a létrehozandó események szervezőjeként (ORGANIZER mező) az Android ezt fogja használni. Két fiókot nem lehet azonos néven létrehozni.</string>
     <string name="setup_read_only">csak olvasható</string>
 
-    <!-- account settings -->
-    <string name="settings_general">Általános beállítások</string>
-    <string name="settings_debug">Hibakeresési beállítások</string>
-    <string name="settings_disable_http_compression">HTTP tömörítés kikapcsolása</string>
-    <string name="settings_http_compression_disabled">HTTP tömörítés kikapcsolva (hibakeresés)</string>
-    <string name="settings_http_compression_enabled">HTTP tömörítés bekapcsolva (ahol csak lehetséges)</string>
-    <string name="settings_network_logging">Hálózati forgalom naplózása</string>
-    <string name="settings_network_logging_enabled">A teljes hálózati forgalom részletes naplózása (hibakeresés)</string>
-    <string name="settings_network_logging_disabled">A hálózati forgalom naplózása kikapcsolva</string>
-    <string name="settings_report_an_issue">Probléma bejelentése</string>
-    
 </resources>

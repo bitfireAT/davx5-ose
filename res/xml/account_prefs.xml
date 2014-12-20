@@ -8,14 +8,4 @@
             android:action="ACTION_VIEW" />
     </PreferenceScreen>
 
-    
-    <PreferenceCategory android:title="@string/settings_general" />
-    
-    <PreferenceScreen android:title="@string/settings_debug">
-        <intent
-            android:targetPackage="at.bitfire.davdroid"
-            android:targetClass="at.bitfire.davdroid.syncadapter.GeneralSettingsActivity"
-            android:action="ACTION_VIEW" />
-    </PreferenceScreen>
-    
 </PreferenceScreen>

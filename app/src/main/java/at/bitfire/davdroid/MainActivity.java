@@ -19,8 +19,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
 import at.bitfire.davdroid.syncadapter.AddAccountActivity;
-import at.bitfire.davdroid.syncadapter.GeneralSettingsActivity;
 
 public class MainActivity extends Activity {
 
@@ -55,11 +55,6 @@ public class MainActivity extends Activity {
 		startActivity(intent);
 	}
 	
-	public void showDebugSettings(MenuItem item) {
-		Intent intent = new Intent(this, GeneralSettingsActivity.class);
-		startActivity(intent);
-	}
-
 	public void showSyncSettings(MenuItem item) {
 		Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
 		startActivity(intent);
@@ -76,7 +71,7 @@ public class MainActivity extends Activity {
 		try {
 			return "com.android.vending".equals(getPackageManager().getInstallerPackageName("at.bitfire.davdroid"));
 		} catch(IllegalArgumentException e) {
+            return false;
 		}
-		return false;
 	}
 }
