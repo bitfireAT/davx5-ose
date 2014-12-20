@@ -3,7 +3,7 @@
 
     <string name="app_name">DAVdroid</string>
 
-    <string-array name="http_protocols">
+    <string-array name="login_url_scheme">
         <item>http://</item>
         <item>https://</item>
     </string-array>
