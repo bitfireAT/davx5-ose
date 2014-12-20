@@ -1,0 +1,9 @@
+BEGIN:VCARD
+VERSION:3.0
+UID:2de59c6cc9
+PRODID:-//ownCloud//NONSGML Contacts 0.2.5//EN
+REV:2013-12-08T00:04:30+00:00
+FN:test mctest
+N:mctest;test;;;
+IMPP;TYPE=WORK;X-SERVICE-TYPE=jabber:test-without-valid-scheme@test.tld
+END:VCARD

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:columnCount="2"
+        android:padding="10dp"
+        android:useDefaultMargins="true" >
+
+        <TextView
+            android:layout_columnSpan="2"
+            android:layout_gravity="start"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/login_base_url" />
+
+        <Spinner
+            android:id="@+id/login_scheme"
+            android:layout_width="wrap_content"
+            android:layout_gravity="start"
+            android:entries="@array/login_url_scheme" />
+
+        <EditText
+            android:id="@+id/login_host_path"
+            android:layout_gravity="fill_horizontal"
+            android:imeOptions="flagForceAscii|actionNext"
+            android:inputType="textUri"
+            android:layout_width="0dp"
+            android:scrollHorizontally="true"
+            android:scrollbars="horizontal"
+            android:hint="my.webhost.com">
+            <requestFocus />
+        </EditText>
+
+        <TextView
+            android:id="@+id/http_warning"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="fill_parent"
+            android:layout_columnSpan="2"
+            android:layout_gravity="start"
+            android:drawableLeft="@drawable/alerts_and_states_warning"
+            android:drawableStart="@drawable/alerts_and_states_warning"
+            android:drawablePadding="10dp"
+            android:padding="10dp"
+            android:text="@string/login_http_warning" />
+
+        <TextView
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/login_user_name" />
+
+        <EditText
+            android:id="@+id/userName"
+            android:layout_gravity="fill_horizontal"
+            android:inputType="textNoSuggestions|textEmailAddress"
+            android:imeOptions="actionNext"
+            android:layout_width="0dp"
+            android:scrollHorizontally="true"
+            android:scrollbars="horizontal"
+            android:text="" />
+
+        <TextView
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/login_password" />
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_gravity="fill_horizontal"
+            android:inputType="textPassword"
+            android:imeOptions="actionGo"
+            android:layout_width="0dp"
+            android:scrollHorizontally="true"
+            android:scrollbars="horizontal"
+            android:text="" />
+        
+        <CheckBox
+            android:id="@+id/auth_preemptive"
+            android:layout_columnSpan="2"
+            android:checked="true"
+            android:layout_gravity="start"
+            android:text="@string/login_auth_preemptive" />
+        
+        <Space android:layout_gravity="start|top" />
+        
+    </GridLayout>
+
+</ScrollView>

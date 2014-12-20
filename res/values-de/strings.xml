@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- common strings -->
+    <string name="davdroid_website">DAVdroid-Website</string>
+    <string name="next">Weiter</string>
+    <string name="help">Hilfe</string>
+    
+    <string name="exception_http">HTTP-Fehler: %s</string>
+    <string name="exception_incapable_resource">Fehlende Server-Unterstützung: %s</string>
+    <string name="exception_io">E/A-Fehler: %s</string>
+    <string name="exception_uri_syntax">URI ungültig: %s</string>
+    
+    <!-- MainActivity -->    
+	<string name="main_manage_accounts">Sync-Konten anzeigen</string>
+    
+    <string name="html_main_workaround"><![CDATA[
+        <p>Vielen Dank, dass Sie DAVdroid im Play Store erworben haben und das Projekt dadurch unterstützen.       
+        Leider gibt es derzeit zwei Probleme, die vom Play Store verursacht werden:</p>
+
+		<h2>1. DAVdroid-Accounts verschwinden nach einem Neustart</h2>
+		<p>Möglicherweise <strong>verschwinden alle Ihre DAVdroid-Accounts samt Kontakten und Terminen nach einem Neustart</strong>
+		des Geräts. Die Ursache ist ein <a href="https://code.google.com/p/android/issues/detail?id=34880">Fehler in Android</a>,
+		der zur irrtümlichen Entfernung von Accounts von Bezahlapps bei einem Neustart führt, da die Prüfung auf verwaiste
+		und damit zu löschende Accounts schon *vor* dem Entschlüsseln der App erfolgt.</p>
+        <p>Betroffene Benutzer*Innen:<br/>
+        * alle mit Android 4.1, die DAVdroid über Play Store bezogen haben;<br/>
+        * einige mit Android 4.2, die DAVdroid über Play Store bezogen und bestimmte Geräte haben (zB die meisten Samsung-Geräte)</p>
+        
+        <h2>2. DAVdroid-Accounts verschwinden nach einer DAVdroid-Aktualisierung</h2>
+        <p>Möglicherweise <strong>verschwinden alle Ihre DAVdroid-Accounts samt Kontakten und Terminen während eines
+        DAVdroid-Updates</strong>, das von Play Store durchgeführt wird. Die Ursache ist ein
+        <a href="https://code.google.com/p/android/issues/detail?id=66905">anderer Fehler in Android</a>,
+		der zur irrtümlichen Entfernung von Accounts von Bezahlapps bei der Aktualisierung dieser Apps führt.</p>
+        <p>Betroffene Benutzer*Innen:<br/>
+        einige mit Android 4.4.2, die DAVdroid über Play Store bezogen haben (bekannt sind Nexus-Geräte und Moto G)</p>
+        
+        <p><strong>Sollten Sie von einem dieser Fehler betroffen sein, <a href="market://details?id=at.bitfire.davdroid.jbworkaround">installieren
+        Sie den DAVdroid JB Workaround</a>.</strong></p>
+    ]]></string>
+    <string name="html_main_info"><![CDATA[
+       <h1>Willkommen bei DAVdroid/%s!</h1>
+       
+       <p>DAVdroid ist ein Android 4+-CalDAV/CardDAV-Sync-Adapter. Um ihn zu verwenden, müssen Sie ein DAVdroid-Konto
+       für Ihren Server hinzufügen. Die Kontakte/Termine werden dann automatisch in beide Richtungen synchronisiert.</p>
+       
+       <p>Wenn Sie CyanogenMod benutzen, muss die "Datenschutz"-Funktion für DAVdroid deaktiviert sein, da DAVdroid sonst
+       keinen Zugriff auf die Kontakte und Kalendar hat und auch nicht synchronisieren kann.</p>
+       
+       <p>Weitere Informationen erhalten Sie auf der <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid-Homepage</a>.
+       Dort finden Sie auch eine <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Anleitung zum Einrichten</a>.
+       DAVdroid respektiert Ihre Privatsphäre (siehe <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Datenschutzrichtlinie</a>).</p>
+       
+       <p><b>Bei Problemen lesen Sie bitte die <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">häufig gestellten Fragen</a>.
+       Im Falle eines Fehlers, der eindeutig durch DAVdroid verursacht wird, berichten Sie diesen wenn möglich auf
+       <a href="https://github.com/rfc2822/davdroid">Github Issues</a>, anstatt uns direkt zu kontaktieren oder die App
+       schlecht zu bewerten.</b></p>
+       
+	   <h1>Open-Source</h1>
+	   <p>DAVdroid ist von Anfang an als Open-Source-Projekt ausgelegt. Der Quellcode kann jederzeit selbst kompiliert und
+	   die App unter den Bedingungen der GPLv3 verwendet werden. Der Quellcode ist
+	   <a href="https://github.com/rfc2822/davdroid">auf Github verfügbar</a>, die App kann auch
+	   <a href="https://f-droid.org/app/at.bitfire.davdroid">über F-Droid bezogen werden</a>.</p>
+	   
+	   <p>Es ist jedoch viel Arbeit, die App zu entwickeln und besser zu machen. Daher haben wir uns entschlossen, sie
+	   auch gegen eine kleine Gebühr in die kommerziellen App-Stores zu stellen. Wenn Sie das Projekt unterstützen wollen, können Sie
+	   <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">für DAVdroid spenden</a> oder die App kaufen.</p>
+	   
+	   <h1>Lizenz</h1>
+	   <p>Copyright (c) 2013 – 2014 Ricki Hirner, Bernhard Stockmann (<a href="http://www.bitfire.at">bitfire web engineering</a>), alle Rechte
+	   vorbehalten. Dieses Programm ist freie Software. Sie können es unter den Bedingungen der <a href="http://www.gnu.org/licenses/gpl.html">GNU
+	   General Public License Version 3</a>, wie von der Free Software Foundation veröffentlicht, weitergeben und/oder modifizieren.
+	   Sofern Google Play oder Samsung Store andere Bedingungen benötigen, gelten für über den jeweiligen Markt heruntergeladene
+	   Apps diese Bedingungen.</p>
+	   
+	   <p>Die Übersetzung auf Deutsch wird von den Autoren zur Verfügung gestellt. Übersetzungen für andere Sprachen
+	   wurden von verschiedenen Leuten beigetragen, die in der jeweiligen Sprachversion erwähnt sind.</p>
+	   	   
+	   <h2>Verwendete Bibliotheken</h2>
+	   <p>
+	    * <a href="http://hc.apache.org">Apache HttpClient</a> (mittels <a href="https://code.google.com/p/httpclientandroidlib/">httpclientandroidlib</a>) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>
+	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a><br/>
+	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a><br/>
+	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a><br/>
+	   	* <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a><br/>
+		* <a href="http://www.xbill.org/dnsjava/">dnsjava</a> – <a href="http://www.xbill.org/dnsjava/dnsjava-current/LICENSE">BSD License</a></p>
+    ]]></string>
+
+    <!-- AddAccountActivity -->
+    <string name="login_type_email">Mit Email-Adresse anmelden</string>
+    <string name="login_type_email_description">Domänenname wird verwendet, um die Servereinstellungen herauszufinden. Beispiel: myaccount@icloud.com</string>
+    <string name="login_type_url">Mit URL und Benutzername anmelden</string>
+    <string name="login_type_url_description">Basis-URL und Benutzername werden verwendet, um die Servereinstellungen herauszufinden; z.B. bei einem eigenen Server.</string>
+    
+    <string name="login_email_description">Geben Sie Ihre Email-Adresse ein. Der Domänenname wird verwendet, um die Servereinstellungen herauszufinden.</string>
+    <string name="login_email_address">Email:</string>
+    
+    <string name="login_http_warning">Ohne Verschlüsselung (HTTPS) können Ihre Zugangsdaten, Kontakte und Termine leicht abgefangen werden.</string>
+    <string name="login_user_name">Benutzername:</string>
+    <string name="login_base_url">Basis-URL (Ordner werden automatisch gefunden):</string>
+    <string name="login_auth_preemptive">Präemptive Authentifizierung (empfohlen, aber nicht kompatibel mit Digest-Auth.)</string>
+    
+    <string name="login_password">Passwort:</string>
+    
+    <string name="setup_select_collections">DAVdroid: Ordner auswählen</string>
+    <string name="setup_neither_caldav_nor_carddav">An dieser Adresse konnte kein CalDAV- oder CardDAV-Dienst gefunden werden.</string>
+    <string name="setup_add_account">Konto hinzufügen</string>
+    <string name="setup_querying_server">Daten werden vom Server abgefragt. Bitte warten…</string>
+    <string name="setup_what_to_sync">Welche Ordner sollen synchronisiert werden?</string>
+    <string name="setup_address_books">Adressbücher</string>
+    <string name="setup_address_book">Adressbuch</string>
+    <string name="setup_calendars">Kalender</string>
+    <string name="setup_calendar">Kalender</string>
+    <string name="setup_select_address_book">Ein oder kein Adressbuch auswählen (nochmal berühren, um abzuwählen):</string>
+    <string name="setup_select_calendars">Kalender zur Synchronisation auswählen:</string>
+
+    <string name="setup_account_details">Konto-Details</string>
+    <string name="setup_account_name">Kontoname:</string>
+    <string name="setup_account_name_hint">Mein CalDAV/CardDAV-Konto</string>
+    <string name="setup_email_address">Email-Adresse:</string>
+    <string name="setup_organizer_hint">"ORGANIZER der von Ihnen angelegten Termine; notwendig für Teilnehmer-Info"</string>
+    <string name="setup_account_name_info">&quot;Verwenden Sie Ihre Email-Adresse als Kontoname, da Android den Kontonamen als ORGANIZER-Feld in Terminen benutzt. Sie können keine zwei Konten mit dem gleichen Namen anlegen.</string>
+    <string name="setup_read_only">schreibgeschützt</string>
+    
+    <!-- account settings -->
+	<string name="davdroid_help">Hilfe zu DAVdroid</string>
+    
+    <string name="settings_general">Allgemeine Einstellungen</string>
+    <string name="settings_debug">Einstellungen zur Fehlersuche</string>
+    <string name="settings_disable_http_compression">HTTP-Komprimierung deaktivieren</string>
+    <string name="settings_http_compression_disabled">HTTP-Komprimierung ist deaktiviert (zur Fehlersuche)</string>
+    <string name="settings_http_compression_enabled">HTTP-Komprimierung wird verwendet, falls möglich</string>
+    <string name="settings_network_logging">Netzwerkverkehr aufzeichnen</string>
+    <string name="settings_network_logging_enabled">Der gesamte Netzwerkverkehr wird in den Android-Logs mitgeschrieben (zur Fehlersuche)</string>
+    <string name="settings_network_logging_disabled">Netzwerkverkehr wird nicht aufgezeichnet</string>
+    <string name="settings_report_an_issue">Problem berichten</string>
+    
+</resources>
