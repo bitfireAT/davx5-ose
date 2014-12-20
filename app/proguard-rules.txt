@@ -1,0 +1,33 @@
+
+# ProGuard usage for DAVdroid:
+# 	shrinking		yes - main reason for using ProGuard
+# 	optimization		no - too risky
+# 	obfuscation		no - DAVdroid is open-source
+# 	preverification		no (Android default)
+
+-dontobfuscate
+
+
+# SimpleXML
+-keep class org.simpleframework.** { *; }	# keep all interfaces etc. to allow reflection
+-dontwarn com.bea.xml.stream.**			# StAX API not used
+-dontwarn javax.xml.stream.**
+
+# ez-vcard
+-dontwarn com.fasterxml.jackson.**		# Jackson JSON Processor (for jCards) not used
+-dontwarn freemarker.**				# freemarker templating library (for creating hCards) not used
+-dontwarn org.jsoup.**				# jsoup library (for hCard parsing) not used
+-dontwarn sun.misc.Perf
+
+# ical4j: ignore unused dynamic libraries
+-dontwarn groovy.**				# Groovy-based ContentBuilder not used
+-dontwarn org.codehaus.groovy.**
+-dontwarn org.apache.commons.logging.**		# Commons logging is not available
+-dontwarn net.fortuna.ical4j.model.**		# ignore warnings from Groovy dependency
+
+# dnsjava
+-dontwarn sun.net.spi.nameservice.**		# not available on Android
+
+# DAVdroid
+-keep class at.bitfire.davdroid.** { *; }	# all DAVdroid code is required
+
