@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- common strings -->
+    <string name="app_name">DAVdroid</string>
+    
+    <string name="davdroid_website">DAVdroid 网站</string>
+    <string name="next">继续</string>
+    <string name="help">帮助</string>
+    
+    <string name="exception_http">HTTP 错误: %s</string>
+    <string name="exception_incapable_resource">服务器缺少功能: %s</string>
+    <string name="exception_io">I/O 错误: %s</string>
+    <string name="exception_uri_syntax">URI 无效: %s</string>
+    
+    <!-- MainActivity -->
+    <string name="main_manage_accounts">管理同步账户</string>
+    
+    <string name="html_main_workaround"><![CDATA[
+        <p>感谢您在 Google Play 上购买 DAVdroid 支持本项目。然而 Google Play 版应用有两个问题：</p>
+        
+        <h2>1. 账户可能在重启后消失</h2>
+        <p>您可能会遇到以下问题：您所有的 <strong>DAVdroid 同步账户（包括通讯录和日历）在设备重启后消失</strong>。这是由于 <a href="https://code.google.com/p/android/issues/detail?id=34880">Android 系统的一个 BUG</a>，开机时，在检查完孤立账户后才会载入（加密的）程序文件，从而导致了付费应用创建的账户被移除。</p>
+        <p>受影响的用户：<br/>
+        * 从 Play 商店安装 DAVdroid 的所有 Android 4.1 用户；<br/>
+        * 从 Play 商店安装 DAVdroid 的部分设备（如大部分的三星设备）的 Android 4.2 用户。</p>
+        
+        <h2>2. 账户可能会在升级 DAVdroid 后消失</h2>
+        <p>您可能会遇到以下问题：您所有的 <strong>DAVdroid 同步账户（包括通讯录和日历）在使用 Play 商店升级 DAVdroid 后消失</strong>。这是 <a href="https://code.google.com/p/android/issues/detail?id=66905">Android 系统的另一个 BUG</a>，由于相似的原因，使得在升级应用后，付费应用创建的账户被移除。</p>
+        <p>受影响的用户：从 Play 商店安装 DAVdroid 的部分 Android 4.4.2 用户（如 Nexus 设备和 Moto G）。</p>
+        
+        <p><strong>如果您遇到了这些问题，请<a href="market://details?id=at.bitfire.davdroid.jbworkaround">安装 
+        DAVdroid JB 修复程序</a>。</strong></p>
+    ]]></string>
+    <string name="html_main_info"><![CDATA[
+       <h1>欢迎使用 DAVdroid/%s！</h1>
+       
+       <p>DAVdroid 是一个 Android 4+ 的 CalDAV/CardDAV 同步程序。<strong>开始使用本程序，只需增加一个 DAVdroid 账户，在其中设置 CalDAV/CardDAV 服务器，您的通讯录和日程就可以被双向同步了。</strong></p>
+       
+       <p>更多信息请查阅 <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid 英文主页</a>，其中包括<a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">首次使用的配置指南</a>。DAVdroid 尊重您的隐私，请查阅我们的<a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">隐私政策</a>。</p>
+       
+       <p>如果您使用 CyanogenMod 等修改版系统，请停用针对 DAVdroid 的“隐私防护”功能，否则 DAVdroid 无法访问、同步您的通讯录和日程。</p>
+       
+       <p><b>如果您在使用中遇到问题，请先阅读 <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a>。如果您遇到了明显与 DAVdroid 有关的 BUG，请在 <a href="https://github.com/rfc2822/davdroid">Github issues</a> 上提交，不要直接联系我们，甚至给应用差评。</b></p>
+              
+       <h1>开源</h1>
+       <p>DAVdroid 从一开始就是开源项目。您可以自己编译应用，并可以没有限制地免费使用。源代码
+       <a href="https://github.com/rfc2822/davdroid">存放在 Github 上</a>，您也可以
+       <a href="https://f-droid.org/app/at.bitfire.davdroid">在 F-droid 上下载应用</a>。</p>
+       
+       <p>然而，编写这个应用是一个大工程，所以我们已经决定把它作为付费应用放在应用商店上，收一笔小费。
+       如果您想支持这个项目，请考虑 <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">给 DAVdroid 捐款</a> 或购买其付费版。</p>
+       
+       <h1>许可</h1>
+       <p>Copyright (c) 2013 – 2014 Ricki Hirner (<a href="http://www.bitfire.at">bitfire web engineering</a>). All rights reserved.
+       This program and the accompanying materials are made available under the terms of the GNU Public License v3.0 which
+       accompanies this distribution, and is available at <a
+       href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. As far as Google Play, Samsung
+       Store, AndroidPit App Center or Amazon Appstore require other terms, the respective terms apply for versions
+       that are downloaded via these services.</p>
+       
+       <p>Translation for German is provided by the authors. Translation for Chinese Simplified is by <a href="https://github.com/phy25">@phy25</a>. Translations to other languages have been contributed by
+       various people which are mentioned in their respective language version.</p>
+       
+       <h2>使用的第三方程序库</h2>
+       <p>
+        * <a href="http://hc.apache.org">Apache HttpClient</a> (<a href="https://code.google.com/p/httpclientandroidlib/">httpclientandroidlib</a> flavour) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>
+        * <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
+        * <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a><br/>
+        * <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a><br/>
+        * <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a><br/>
+        * <a href="http://www.xbill.org/dnsjava/">dnsjava</a> – <a href="http://www.xbill.org/dnsjava/dnsjava-current/LICENSE">BSD License</a></p>
+    ]]></string>
+
+    <!-- AddAccountActivity -->
+    <string name="login_type_email">使用邮箱地址登录</string>
+    <string name="login_type_email_description">服务器信息会通过域名进行发现。例如: myaccount@icloud.com</string>
+    <string name="login_type_url">使用 URL 和用户名登录</string>
+    <string name="login_type_url_description">服务器信息会通过 URL 和用户名进行发现。个人搭建的服务通常使用此项。</string>
+    
+    <string name="login_email_description">请输入您的邮箱地址。邮箱的域名会被用来自动发现服务器信息。</string>
+    <string name="login_email_address">Email：</string>
+    
+    <string-array name="login_url_scheme">
+        <item>http://</item>
+        <item>https://</item>
+    </string-array>
+    <string name="login_http_warning">"如果不使用加密连接 (HTTPS)，其他人将很容易获取到你的登录信息、通讯录和日程。"</string>
+    <string name="login_user_name">用户名：</string>
+    <string name="login_base_url">服务器根地址（集合会自动检测）：</string>
+    <string name="login_auth_preemptive">抢先认证模式（推荐使用，但不兼容 Digest 认证方式）</string>
+
+    <string name="login_password">密码：</string>
+    
+    <string name="setup_select_collections">DAVdroid: 选择同步项</string>
+    <string name="setup_neither_caldav_nor_carddav">找不到可用的 CalDAV-/CardDAV 服务。</string>
+    <string name="setup_add_account">增加账户</string>
+    <string name="setup_querying_server">正在请求，请稍等…</string>
+    <string name="setup_what_to_sync">需要同步哪些集合？</string>
+    <string name="setup_address_books">通讯录</string>
+    <string name="setup_address_book">通讯录</string>
+    <string name="setup_calendars">日历</string>
+    <string name="setup_calendar">日历</string>
+    <string name="setup_select_address_book">最多选择一个通讯录：（再次点按可取消选择）</string>
+    <string name="setup_select_calendars">选择日历：</string>
+    
+    <string name="setup_account_details">账户信息</string>
+    <string name="setup_account_name">账户显示名：</string>
+    <string name="setup_account_name_hint">我的 CalDAV/CardDAV 账户</string>
+    <string name="setup_email_address">Email 地址：</string>
+    <string name="setup_organizer_hint">"日程的组织者 (ORGANIZER)；如果您使用参与者信息，则必填"</string>
+    <string name="setup_account_name_info">"请使用您的 E-mail 地址作为账户名，因为 Android 会将帐户名用于您创建的日程的参与者 (ORGANIZER) 项。您不能有两个重名的账户。</string>
+    <string name="setup_read_only">只读</string>
+
+    <!-- account settings -->
+    <string name="settings_general">普通设置</string>
+    <string name="settings_debug">调试设置</string>
+    <string name="settings_disable_http_compression">停用 HTTP 压缩</string>
+    <string name="settings_http_compression_disabled">HTTP 压缩已停用（调试模式）</string>
+    <string name="settings_http_compression_enabled">HTTP 压缩会在可用时使用</string>
+    <string name="settings_network_logging">记录网络传输</string>
+    <string name="settings_network_logging_enabled">传输内容会被日志记录（调试模式）</string>
+    <string name="settings_network_logging_disabled">传输内容不会被日志记录</string>
+    <string name="settings_report_an_issue">报告问题</string>
+    
+</resources>

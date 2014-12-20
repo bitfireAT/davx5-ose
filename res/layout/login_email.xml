@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:columnCount="2"
+        android:padding="10dp"
+        android:useDefaultMargins="true" >
+        
+        <TextView
+            android:layout_columnSpan="2"
+            android:layout_gravity="start"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/login_email_description" />
+        
+        <TextView
+            android:labelFor="@+id/email_address"
+            android:text="@string/login_email_address"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        <EditText
+            android:id="@+id/email_address"
+            android:layout_gravity="fill_horizontal"
+            android:inputType="textNoSuggestions|textEmailAddress"
+            android:imeOptions="actionNext"
+            android:layout_width="0dp"
+            android:scrollHorizontally="true"
+            android:scrollbars="horizontal"
+            android:hint="myaccount@myservice.com">
+            <requestFocus />
+        </EditText>
+
+        <TextView
+            android:labelFor="@+id/password"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/login_password" />
+        <EditText
+            android:id="@+id/password"
+            android:layout_gravity="fill_horizontal"
+            android:inputType="textPassword"
+            android:imeOptions="actionGo"
+            android:layout_width="0dp"
+            android:scrollHorizontally="true"
+            android:scrollbars="horizontal"
+            android:text="" />
+        
+    </GridLayout>    
+
+</ScrollView>

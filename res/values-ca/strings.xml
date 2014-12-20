@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- common strings -->
+    <string name="app_name">DAVdroid</string>
+
+    <string name="davdroid_website">Lloc web de DAVdroid</string>
+    <string name="next">Següent</string>
+    <string name="help">Ajuda</string>
+
+    <string name="exception_http">Error HTTP: %s</string>
+    <string name="exception_incapable_resource">Falten capacitats: %s</string>
+    <string name="exception_io">Error E/S: %s</string>
+    <string name="exception_uri_syntax">URI invàlida: %s</string>
+
+    <!-- MainActivity -->
+    <string name="main_manage_accounts">Gestioneu els comptes a sincronitzar</string>
+    <string name="html_main_workaround"><![CDATA[
+		<p>Gràcies per comprar DAVDroid a travès de Google Play i així donar suport al projecte. De totes formes, hi ha dos incidències amb el Google Play:</p>
+
+		<h2>1. Les comptes poden desaparèixer desprès de reiniciar</h2>
+		<p>Podeu trobar-vos amb el problema de que totes les vostres <strong>comptes de DAVdroid (contactes i events inclosos) han desaparegut
+        desprès de reiniciar el dispositiu</strong>. La raó és un <a href="https://code.google.com/p/android/issues/detail?id=34880">error de Android</a>
+        que causa que totes les comptes de les aplicacións de pagament s\'eliminen al iniciar perquè els fitxers (encriptats) APK es
+        carreguen <i>desprès</i> de revisar si existeixen comptes orfanes.</p>
+        <p>Usuaris afectats:<br/>
+        * Tots els usuaris de Android 4.1 que han obtingut el DAVdroid del Play Store;<br/>
+        * El usuaris de Android 4.2 que han obtingut el DAVdroid del Play Store només en alguns dispositius (per exemple, la majoria de dispositius Samsung)</p>
+
+        <h2>2. Els comptes poden desaparèixer desprès d\'actualitar el DAVdroid</h2>
+        <p>Podeu trobar-vos amb el problema de que totes les vostres <strong>comptes de DAVdroid (contactes i events inclosos) han desaparegut quan el Play Store
+        actualitza el DAVdroid</strong>. La raó és un<a href="https://code.google.com/p/android/issues/detail?id=66905">altre error de Android</a>
+        que causa que les comptes del les aplicacións de pagament s\'esborrin al actualitzar per alguna raó similar.</p>
+        <p>Usuaris afectats: alguns de Android 4.4.2 que han obtingut el DAVdroid desde el Play Store (es coneix per dispositius Nexus i Moto G)</p>
+
+        <p><strong>Si esteu afectats per algun d\'aquests errors, sisuplau <a href="market://details?id=at.bitfire.davdroid.jbworkaround">instaleu el
+        DAVdroid JB Workaround</a>.</strong></p>
+    ]]></string>
+    <string name="html_main_info"><![CDATA[
+       <h1>Benvingut a DAVdroid/%s!</h1>
+
+       <p>DAVdroid es un adaptador de Android 4+ per la sincronització de CalDAV/CardDAV. Per a utilitzar-lo afegieu una compte de DAVdroid
+       pel vostre servidor de CalDAV/CardDAV i els vostres contactes/esdeveiments es sincronitzaràn de forma bidireccional.</p>
+
+       <p>Per mes informació, podeu visitar la <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">pàgina web de DAVdroid</a>.
+       També hi ha una <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">guia de configuració</a>. El DAVdroid respecta
+       la teva privacitat, feu una ullada a <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">la nostra politica de privacitat</a>.</p>
+
+       <p>Si feu servir CyanogenMod, "Privacy Guard" ha d\'estar deshabilitat pel DAVdroid. Si no es així, el DAVdroid no pot accedir ni sincronitzar
+       els vostres contactes i events.</p>
+
+       <p><b>En cas de problemes, sisplau llegiu el <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a> primer.
+       Si trobeu una errada que està clarament relacionada amb el DAVdroid, afegiu-la directament a
+       <a href="https://github.com/rfc2822/davdroid">Github</a> en comptes de contactar-nos directament o de donar una
+       valoració pobra de l\'aplicació.</b></p>
+
+	   <h1>Codi Obert</h1>
+	   <p>DAVdroid està disenyat per a ser un proejcte de codi obert desde bon principi. Sempres es possible compilar l\'aplicació per la vostra part
+           i utilitzar-la gratuitament sense cap obligació. El codi font es troba
+	   app yourself and use it for free without any obligations. The source code is
+	   <a href="https://github.com/rfc2822/davdroid">disponible a Github</a>, i també podeu
+	   <a href="https://f-droid.org/app/at.bitfire.davdroid">descarregar l\'aplicació al F-droid</a>.</p>
+
+	   <p>De totes formes, es va fer molta feina per crear aquesta applicació, així que vam decidir ficar-la a les tendes comercials per un petit import.
+	   Si voleu suportar aquest project, siusplau considereu <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">fer una donació a DAVdroid</a>
+	   o comprar-lo.</p>
+
+	   <h1>Llicència</h1>
+	   <p>Copyright (c) 2013 – 2014 Ricki Hirner (<a href="http://www.bitfire.at">bitfire web engineering</a>). Tots els drets reservats.
+	   Aquest programa i tots els materials que l\'acompanyen estan disponibles sota els termes de la GNU Public License v3.0 que acompanya
+	   aquesta distribució i està disponible a <a
+	   href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. Respecte al Google Play, Samsung
+	   Store, AndroidPit App Center o Amazon Appstore que requereixen altres condicions, els termes respectius apliquen per les versions
+	   que s\'han descàrregat a travès d\'aquests serveis.</p>
+
+       <p>La traducció alemana es realitzada pels mateixos autors. Les traduccions a altres idiomes han estat contribucións de varies persones que es mencionen en el seu idioma específic.
+	   </p>
+	   <p>Traducció:
+	     Català: <a href="https://github.com/pokoli">Sergi Almacellas Abellana</a>
+	   </p>
+
+	   <h2>Llibraries de tercers utilitzades</h2>
+	   <p>
+	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> (<a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
+	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> (<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a>)<br/>
+	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> (<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>)<br/>
+	   	* <a href="http://projectlombok.org/">Project Lombok</a> (<a href="http://opensource.org/licenses/mit-license.php">MIT License</a>)</p>
+		* <a href="http://www.xbill.org/dnsjava/">dnsjava</a> – <a href="http://www.xbill.org/dnsjava/dnsjava-current/LICENSE">BSD License</a></p>
+    ]]></string>
+
+    <!-- AddAccountActivity -->
+    <string name="login_type_email">Entra amb una adreça de correu electrònic</string>
+    <string name="login_type_email_description">Els detalls del servei es detectaran automàticament amb el nom del servidor. Per exemple: elmeucompte@icloud.com</string>
+    <string name="login_type_url">Entra amb una URL i un nom d\'usuari</string>
+    <string name="login_type_url_description">Els detalls del servei es detectaran de forma automàtica amb al URL inicial i el nom d\'usuari. Normalment utilitzat per servers allotjats en servidors propis.</string>
+
+    <string name="login_email_description">Si us plau, introduïu la vostra adreça de correu electrònic. El seu nom de domini s\'utiltizara per auto-detectar la configuració dels serveis.</string>
+    <string name="login_email_address">Correu electrònic:</string>
+    <string-array name="login_url_scheme">
+        <item>http://</item>
+        <item>https://</item>
+    </string-array>
+
+    <string name="login_http_warning">"Si no feu servir cap encriptació (HTTPS), altres usuaris poden interceptar fàcilment les vostres credencials, contactes i events."</string>
+    <string name="login_user_name">Nom d\'usuari:</string>
+    <string name="login_base_url">URL Arrel (les coleccions es detecten automàticament):</string>
+    <string name="login_auth_preemptive">Autentificació preferent (recomanat però incompatible amb l\'autentificació Digest)</string>
+    <string name="login_password">Contrasenya:</string>
+    <string name="setup_select_collections">DAVdroid: Seleccioneu col·leccions</string>
+    <string name="setup_neither_caldav_nor_carddav">Ni CalDAV ni CardDAV estan disponibles a aquesta ubicació.</string>
+
+    <string name="setup_add_account">Afegir compte</string>
+    <string name="setup_querying_server">Contactant servidor. Espereu sisuplau.</string>
+    <string name="setup_what_to_sync">Quines col·leccions s\'han de sincronitzar?</string>
+    <string name="setup_address_books">Llibretes de contactes</string>
+    <string name="setup_address_book">Llibreta de contactes</string>
+    <string name="setup_calendars">Calendaris</string>
+    <string name="setup_calendar">Calendari</string>
+    <string name="setup_select_address_book">Seleccioneu com a molt una llibreta de contactes (Polseu de nou per deseleccionar):</string>
+    <string name="setup_select_calendars">Seleccioneu els vostres calendaris:</string>
+
+    <string name="setup_account_details">Detalls del compte</string>
+    <string name="setup_account_name">Nom del compte:</string>
+    <string name="setup_account_name_hint">El meu compte CalDAV/CardDAV</string>
+    <string name="setup_email_address">Correu electrònic:</string>
+    <string name="setup_organizer_hint">"ORGANITZADOR dels teus events. Es requereix si feu servir la informació dels assitents"</string>
+    <string name="setup_account_name_info">"Podeu fer servir la vostra addreça de correu electrònic com a nom de la compta ja que el Android utiltizar el nom de la compta com a camp ORGANITZADOR pels events que vosaltres creeu. No podeu tenir dos comptes amb el mateix nom.</string>
+    <string name="setup_read_only">només-lectura</string>
+
+    <!-- account settings -->
+    <string name="settings_general">Configuració general</string>
+    <string name="settings_debug">Configuració deputarció</string>
+    <string name="settings_disable_http_compression">Desactiva compressió HTTP</string>
+    <string name="settings_http_compression_disabled">La compressió HTTP està desactivada (mode depuració)</string>
+    <string name="settings_http_compression_enabled">La compressió HTTP s\'utilitza quan es possible.</string>
+    <string name="settings_network_logging">Registra el tràfic de xarxa</string>
+    <string name="settings_network_logging_enabled">Tot el tràfic de xarxa es reigstra (mode depuració)</string>
+    <string name="settings_network_logging_disabled">No es registra el tràfic de xarxa</string>
+    <string name="settings_report_an_issue">Informa d\'un error</string>
+
+
+</resources>
