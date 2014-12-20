@@ -1,11 +1,11 @@
-package at.bitfire.davdroid.test;
+package at.bitfire.davdroid;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import android.util.Log;
 
-public class Constants {
+public class TestConstants {
 	public static final String ROBOHYDRA_BASE = "http://10.0.0.11:3000/";
 	
 	public static URI roboHydra;

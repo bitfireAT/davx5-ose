@@ -8,7 +8,7 @@ import android.test.InstrumentationTestCase;
 import at.bitfire.davdroid.resource.DavResourceFinder;
 import at.bitfire.davdroid.resource.ServerInfo;
 import at.bitfire.davdroid.resource.ServerInfo.ResourceInfo;
-import at.bitfire.davdroid.test.Constants;
+import at.bitfire.davdroid.TestConstants;
 import ezvcard.VCardVersion;
 
 public class DavResourceFinderTest extends InstrumentationTestCase {
@@ -27,7 +27,7 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
 	
 
 	public void testFindResourcesRobohydra() throws Exception {
-		ServerInfo info = new ServerInfo(new URI(Constants.ROBOHYDRA_BASE), "test", "test", true);
+		ServerInfo info = new ServerInfo(new URI(TestConstants.ROBOHYDRA_BASE), "test", "test", true);
 		finder.findResources(info);
 		
 		// CardDAV
@@ -56,9 +56,9 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
 	
 	public void testGetInitialContextURL() throws Exception {
 		// without SRV records, but with well-known paths
-		ServerInfo roboHydra = new ServerInfo(new URI(Constants.ROBOHYDRA_BASE), "test", "test", true);
-		assertEquals(Constants.roboHydra.resolve("/"), finder.getInitialContextURL(roboHydra, "caldav"));
-		assertEquals(Constants.roboHydra.resolve("/"), finder.getInitialContextURL(roboHydra, "carddav"));
+		ServerInfo roboHydra = new ServerInfo(new URI(TestConstants.ROBOHYDRA_BASE), "test", "test", true);
+		assertEquals(TestConstants.roboHydra.resolve("/"), finder.getInitialContextURL(roboHydra, "caldav"));
+		assertEquals(TestConstants.roboHydra.resolve("/"), finder.getInitialContextURL(roboHydra, "carddav"));
 		
 		// with SRV records and well-known paths
 		ServerInfo iCloud = new ServerInfo(new URI("mailto:test@icloud.com"), "", "", true);
