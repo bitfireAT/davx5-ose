@@ -127,15 +127,4 @@
     <string name="setup_account_name_info">"Použijte svou emailovou adresu jako jméno účtu. Android bude používat tuto hodnotu jako jméno ORGANIZÁTORA událostí které vytvoříte. Nelze mít dva účty se stejným jménem.</string>
     <string name="setup_read_only">pouze pro čtení</string>
 
-    <!-- account settings -->
-    <string name="settings_general">Obecná nastavení</string>
-    <string name="settings_debug">Ladící nastavení</string>
-    <string name="settings_disable_http_compression">Vypnout HTTP kompresi</string>
-    <string name="settings_http_compression_disabled">HTTP komprese je vypnuta (ladící mód)</string>
-    <string name="settings_http_compression_enabled">HTTP komprese je použita všude kde možno</string>
-    <string name="settings_network_logging">Logovat síťový provoz</string>
-    <string name="settings_network_logging_enabled">Veškerý síťový provoz je detailně logován (ladící mód)</string>
-    <string name="settings_network_logging_disabled">Síťový provoz není logován</string>
-    <string name="settings_report_an_issue">Nahlásit problém</string>
-    
 </resources>

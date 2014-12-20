@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <!-- common strings -->
+    <string name="app_name">DAVdroid</string>
     <string name="davdroid_website">DAVdroid-Website</string>
     <string name="next">Weiter</string>
     <string name="help">Hilfe</string>
@@ -121,18 +121,5 @@
     <string name="setup_organizer_hint">"ORGANIZER der von Ihnen angelegten Termine; notwendig für Teilnehmer-Info"</string>
     <string name="setup_account_name_info">&quot;Verwenden Sie Ihre Email-Adresse als Kontoname, da Android den Kontonamen als ORGANIZER-Feld in Terminen benutzt. Sie können keine zwei Konten mit dem gleichen Namen anlegen.</string>
     <string name="setup_read_only">schreibgeschützt</string>
-    
-    <!-- account settings -->
-	<string name="davdroid_help">Hilfe zu DAVdroid</string>
-    
-    <string name="settings_general">Allgemeine Einstellungen</string>
-    <string name="settings_debug">Einstellungen zur Fehlersuche</string>
-    <string name="settings_disable_http_compression">HTTP-Komprimierung deaktivieren</string>
-    <string name="settings_http_compression_disabled">HTTP-Komprimierung ist deaktiviert (zur Fehlersuche)</string>
-    <string name="settings_http_compression_enabled">HTTP-Komprimierung wird verwendet, falls möglich</string>
-    <string name="settings_network_logging">Netzwerkverkehr aufzeichnen</string>
-    <string name="settings_network_logging_enabled">Der gesamte Netzwerkverkehr wird in den Android-Logs mitgeschrieben (zur Fehlersuche)</string>
-    <string name="settings_network_logging_disabled">Netzwerkverkehr wird nicht aufgezeichnet</string>
-    <string name="settings_report_an_issue">Problem berichten</string>
-    
+
 </resources>

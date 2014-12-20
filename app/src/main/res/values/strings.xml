@@ -126,15 +126,4 @@
     <string name="setup_account_name_info">"Use your email address as account name because Android will use the account name as ORGANIZER field for events you create. You can't have two accounts with the same name.</string>
     <string name="setup_read_only">read-only</string>
 
-    <!-- account settings -->
-    <string name="settings_general">General settings</string>
-    <string name="settings_debug">Debug settings</string>
-    <string name="settings_disable_http_compression">Disable HTTP compression</string>
-    <string name="settings_http_compression_disabled">HTTP compression is disabled (debug mode)</string>
-    <string name="settings_http_compression_enabled">HTTP compression is used whenever possible</string>
-    <string name="settings_network_logging">Log network traffic</string>
-    <string name="settings_network_logging_enabled">All network traffic is being logged verbosely (debug mode)</string>
-    <string name="settings_network_logging_disabled">Network traffic is not being logged</string>
-    <string name="settings_report_an_issue">Report an issue</string>
-    
 </resources>

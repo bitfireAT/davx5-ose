@@ -127,16 +127,4 @@
     <string name="setup_account_name_info">"Podeu fer servir la vostra addreça de correu electrònic com a nom de la compta ja que el Android utiltizar el nom de la compta com a camp ORGANITZADOR pels events que vosaltres creeu. No podeu tenir dos comptes amb el mateix nom.</string>
     <string name="setup_read_only">només-lectura</string>
 
-    <!-- account settings -->
-    <string name="settings_general">Configuració general</string>
-    <string name="settings_debug">Configuració deputarció</string>
-    <string name="settings_disable_http_compression">Desactiva compressió HTTP</string>
-    <string name="settings_http_compression_disabled">La compressió HTTP està desactivada (mode depuració)</string>
-    <string name="settings_http_compression_enabled">La compressió HTTP s\'utilitza quan es possible.</string>
-    <string name="settings_network_logging">Registra el tràfic de xarxa</string>
-    <string name="settings_network_logging_enabled">Tot el tràfic de xarxa es reigstra (mode depuració)</string>
-    <string name="settings_network_logging_disabled">No es registra el tràfic de xarxa</string>
-    <string name="settings_report_an_issue">Informa d\'un error</string>
-
-
 </resources>
