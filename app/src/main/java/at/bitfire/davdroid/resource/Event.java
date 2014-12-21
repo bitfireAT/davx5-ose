@@ -180,10 +180,7 @@ public class Event extends Resource {
 			description = event.getDescription().getValue();
 		
 		status = event.getStatus();
-		
-		opaque = true;
-		if (event.getTransparency() == Transp.TRANSPARENT)
-			opaque = false;
+        opaque = event.getTransparency() != Transp.TRANSPARENT;
 		
 		organizer = event.getOrganizer();
 		for (Object o : event.getProperties(Property.ATTENDEE))

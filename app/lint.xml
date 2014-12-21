@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
-    <issue id="InvalidPackage" severity="warning" />
+    <issue id="InvalidPackage" severity="ignore" />
     <issue id="MissingTranslation" severity="warning" />
 </lint>

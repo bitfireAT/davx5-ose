@@ -127,7 +127,8 @@ public class Contact extends Resource {
 	
 	/* VCard methods */
 
-	@Override
+	@SuppressWarnings("LoopStatementThatDoesntLoop")
+    @Override
 	public void parseEntity(InputStream is) throws IOException {
 		VCard vcard = Ezvcard.parse(is).first();
 		if (vcard == null)
