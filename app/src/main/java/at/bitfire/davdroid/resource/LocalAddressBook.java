@@ -779,7 +779,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				.withValue(Email.ADDRESS, email.getValue())
 				.withValue(Email.TYPE, typeCode)
 				.withValue(Email.IS_PRIMARY, is_primary ? 1 : 0)
-				.withValue(Phone.IS_SUPER_PRIMARY, is_primary ? 1 : 0);;
+				.withValue(Phone.IS_SUPER_PRIMARY, is_primary ? 1 : 0);
 		if (typeLabel != null)
 			builder = builder.withValue(Email.LABEL, typeLabel);
 		return builder;

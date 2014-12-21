@@ -55,8 +55,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.query_server, container, false);
-		return v;
+		return inflater.inflate(R.layout.query_server, container, false);
 	}
 
 	@Override
