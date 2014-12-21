@@ -7,10 +7,6 @@
  ******************************************************************************/
 package at.bitfire.davdroid.syncadapter;
 
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.accounts.Account;
 import android.app.Service;
 import android.content.ContentProviderClient;
@@ -18,6 +14,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+
 import at.bitfire.davdroid.resource.CardDavAddressBook;
 import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.davdroid.resource.LocalCollection;

@@ -7,11 +7,6 @@
  ******************************************************************************/
 package at.bitfire.davdroid.syncadapter;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import org.apache.commons.lang.StringUtils;
-
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -31,6 +26,12 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import org.apache.commons.lang.StringUtils;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import at.bitfire.davdroid.R;
 
 public class LoginURLFragment extends Fragment implements TextWatcher {

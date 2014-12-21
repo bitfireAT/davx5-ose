@@ -7,18 +7,18 @@
  ******************************************************************************/
 package at.bitfire.davdroid.webdav;
 
+import android.util.Log;
+
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBaseHC4;
+import org.apache.http.entity.StringEntity;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
+
 import java.io.StringWriter;
 import java.net.URI;
 import java.util.LinkedList;
 
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
-
-import android.util.Log;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.entity.StringEntity;
-
-public class HttpPropfind extends HttpEntityEnclosingRequestBase {
+public class HttpPropfind extends HttpEntityEnclosingRequestBaseHC4 {
 	private static final String TAG = "davdroid.HttpPropfind";
 	
 	public final static String METHOD_NAME = "PROPFIND";

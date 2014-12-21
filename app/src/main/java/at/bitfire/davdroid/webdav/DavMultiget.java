@@ -7,12 +7,12 @@
  ******************************************************************************/
 package at.bitfire.davdroid.webdav;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Order;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Order(elements={"prop","href"})
 public class DavMultiget {

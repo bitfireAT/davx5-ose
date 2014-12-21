@@ -7,6 +7,10 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
+import android.util.Log;
+
+import org.apache.commons.lang.StringUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,13 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-import org.apache.commons.lang.StringUtils;
-
-import android.util.Log;
 import at.bitfire.davdroid.Constants;
 import ezvcard.Ezvcard;
 import ezvcard.VCard;
@@ -51,6 +48,9 @@ import ezvcard.property.Telephone;
 import ezvcard.property.Title;
 import ezvcard.property.Uid;
 import ezvcard.property.Url;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 
 /**

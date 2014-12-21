@@ -7,14 +7,16 @@
  ******************************************************************************/
 package at.bitfire.davdroid.syncadapter;
 
+import android.content.SyncResult;
+import android.util.Log;
+
+import net.fortuna.ical4j.model.ValidationException;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.fortuna.ical4j.model.ValidationException;
-import android.content.SyncResult;
-import android.util.Log;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.LocalStorageException;

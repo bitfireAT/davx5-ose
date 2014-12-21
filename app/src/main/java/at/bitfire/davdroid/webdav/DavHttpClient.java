@@ -8,7 +8,7 @@
 package at.bitfire.davdroid.webdav;
 
 import android.util.Log;
-import at.bitfire.davdroid.Constants;
+
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -17,10 +17,9 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.ManagedHttpClientConnectionFactory;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
-import java.lang.reflect.Method;
+import at.bitfire.davdroid.Constants;
 
 
 public class DavHttpClient {
@@ -44,7 +43,7 @@ public class DavHttpClient {
 	}
 
 
-	public static CloseableHttpClient create(boolean disableCompression, boolean logTraffic) {
+	public static CloseableHttpClient create() {
 		PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 		// limits per DavHttpClient (= per DavSyncAdapter extends AbstractThreadedSyncAdapter)
 		connectionManager.setMaxTotal(3);				// max.  3 connections in total

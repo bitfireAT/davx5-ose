@@ -11,8 +11,5 @@ public class Constants {
 	public static final String
 		APP_VERSION = "0.6.9",
 		ACCOUNT_TYPE = "bitfire.at.davdroid",
-		WEB_URL_HELP = "https://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app",
-		
-		SETTING_DISABLE_COMPRESSION = "disable_compression",
-		SETTING_NETWORK_LOGGING = "network_logging";
+		WEB_URL_HELP = "https://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app";
 }

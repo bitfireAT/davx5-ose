@@ -7,6 +7,12 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
+import android.util.Log;
+
+import net.fortuna.ical4j.model.ValidationException;
+
+import org.apache.http.impl.client.CloseableHttpClient;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,10 +21,6 @@ import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 
-import lombok.Cleanup;
-import lombok.Getter;
-import net.fortuna.ical4j.model.ValidationException;
-import android.util.Log;
 import at.bitfire.davdroid.URIUtils;
 import at.bitfire.davdroid.webdav.DavException;
 import at.bitfire.davdroid.webdav.DavMultiget;
@@ -27,8 +29,9 @@ import at.bitfire.davdroid.webdav.HttpException;
 import at.bitfire.davdroid.webdav.HttpPropfind;
 import at.bitfire.davdroid.webdav.WebDavResource;
 import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
-import org.apache.http.impl.client.CloseableHttpClient;
 import ezvcard.io.text.VCardParseException;
+import lombok.Cleanup;
+import lombok.Getter;
 
 /**
  * Represents a remotely stored synchronizable collection (collection as in

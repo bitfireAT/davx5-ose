@@ -7,11 +7,8 @@
  ******************************************************************************/
 package at.bitfire.davdroid.webdav;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import android.util.Log;
-import at.bitfire.davdroid.URIUtils;
+
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -23,6 +20,11 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.protocol.HttpContext;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import at.bitfire.davdroid.URIUtils;
 
 /**
  * Custom Redirect Strategy that handles 30x for CalDAV/CardDAV-specific requests correctly
@@ -89,7 +91,7 @@ public class DavRedirectStrategy implements RedirectStrategy {
 				if (!originalURI.isAbsolute()) {
 					final HttpHost target = HttpClientContext.adapt(context).getTargetHost();
 					if (target != null)
-						originalURI = org.apache.http.client.utils.URIUtils.rewriteURI(originalURI, target);
+						originalURI = org.apache.http.client.utils.URIUtilsHC4.rewriteURI(originalURI, target);
 					else
 						return null;
 				}

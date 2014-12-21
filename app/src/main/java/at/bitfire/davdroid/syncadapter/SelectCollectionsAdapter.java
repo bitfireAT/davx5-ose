@@ -7,7 +7,6 @@
  ******************************************************************************/
 package at.bitfire.davdroid.syncadapter;
 
-import lombok.Getter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.Html;
@@ -17,9 +16,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListAdapter;
+
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.ServerInfo;
 import at.bitfire.davdroid.resource.ServerInfo.ResourceInfo.Type;
+import lombok.Getter;
 
 public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter {
 	final static int TYPE_ADDRESS_BOOKS_HEADING = 0,
