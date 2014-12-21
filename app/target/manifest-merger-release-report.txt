@@ -1,0 +1,137 @@
+-- Merging decision tree log ---
+manifest
+ADDED from AndroidManifest.xml:2:1
+	package
+		ADDED from AndroidManifest.xml:3:5
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+	android:versionName
+		ADDED from AndroidManifest.xml:5:5
+	android:versionCode
+		ADDED from AndroidManifest.xml:4:5
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+	xmlns:android
+		ADDED from AndroidManifest.xml:2:11
+	android:installLocation
+		ADDED from AndroidManifest.xml:5:33
+uses-sdk
+ADDED from AndroidManifest.xml:7:5
+	android:targetSdkVersion
+		ADDED from AndroidManifest.xml:9:9
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+	android:minSdkVersion
+		ADDED from AndroidManifest.xml:8:9
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+uses-permission#android.permission.INTERNET
+ADDED from AndroidManifest.xml:11:5
+	android:name
+		ADDED from AndroidManifest.xml:11:22
+uses-permission#android.permission.AUTHENTICATE_ACCOUNTS
+ADDED from AndroidManifest.xml:12:5
+	android:name
+		ADDED from AndroidManifest.xml:12:22
+uses-permission#android.permission.READ_CONTACTS
+ADDED from AndroidManifest.xml:13:5
+	android:name
+		ADDED from AndroidManifest.xml:13:22
+uses-permission#android.permission.WRITE_CONTACTS
+ADDED from AndroidManifest.xml:14:5
+	android:name
+		ADDED from AndroidManifest.xml:14:22
+uses-permission#android.permission.READ_CALENDAR
+ADDED from AndroidManifest.xml:15:5
+	android:name
+		ADDED from AndroidManifest.xml:15:22
+uses-permission#android.permission.WRITE_CALENDAR
+ADDED from AndroidManifest.xml:16:5
+	android:name
+		ADDED from AndroidManifest.xml:16:22
+uses-permission#android.permission.WRITE_SYNC_SETTINGS
+ADDED from AndroidManifest.xml:17:5
+	android:name
+		ADDED from AndroidManifest.xml:17:22
+application
+ADDED from AndroidManifest.xml:19:5
+	android:process
+		ADDED from AndroidManifest.xml:24:9
+	android:label
+		ADDED from AndroidManifest.xml:22:9
+	android:allowBackup
+		ADDED from AndroidManifest.xml:20:9
+	android:icon
+		ADDED from AndroidManifest.xml:21:9
+	android:theme
+		ADDED from AndroidManifest.xml:23:9
+service#at.bitfire.davdroid.syncadapter.AccountAuthenticatorService
+ADDED from AndroidManifest.xml:25:9
+	android:exported
+		ADDED from AndroidManifest.xml:27:13
+	android:name
+		ADDED from AndroidManifest.xml:26:13
+intent-filter#android.accounts.AccountAuthenticator
+ADDED from AndroidManifest.xml:28:13
+action#android.accounts.AccountAuthenticator
+ADDED from AndroidManifest.xml:29:17
+	android:name
+		ADDED from AndroidManifest.xml:29:25
+meta-data#android.accounts.AccountAuthenticator
+ADDED from AndroidManifest.xml:32:13
+	android:resource
+		ADDED from AndroidManifest.xml:34:17
+	android:name
+		ADDED from AndroidManifest.xml:33:17
+service#at.bitfire.davdroid.syncadapter.ContactsSyncAdapterService
+ADDED from AndroidManifest.xml:36:9
+	android:exported
+		ADDED from AndroidManifest.xml:38:13
+	android:name
+		ADDED from AndroidManifest.xml:37:13
+intent-filter#android.content.SyncAdapter
+ADDED from AndroidManifest.xml:39:13
+action#android.content.SyncAdapter
+ADDED from AndroidManifest.xml:40:17
+	android:name
+		ADDED from AndroidManifest.xml:40:25
+meta-data#android.content.SyncAdapter
+ADDED from AndroidManifest.xml:43:13
+	android:resource
+		ADDED from AndroidManifest.xml:45:17
+	android:name
+		ADDED from AndroidManifest.xml:44:17
+meta-data#android.provider.CONTACTS_STRUCTURE
+ADDED from AndroidManifest.xml:46:13
+	android:resource
+		ADDED from AndroidManifest.xml:48:17
+	android:name
+		ADDED from AndroidManifest.xml:47:17
+service#at.bitfire.davdroid.syncadapter.CalendarsSyncAdapterService
+ADDED from AndroidManifest.xml:50:9
+	android:exported
+		ADDED from AndroidManifest.xml:52:13
+	android:name
+		ADDED from AndroidManifest.xml:51:13
+activity#at.bitfire.davdroid.MainActivity
+ADDED from AndroidManifest.xml:62:9
+	android:label
+		ADDED from AndroidManifest.xml:64:13
+	android:name
+		ADDED from AndroidManifest.xml:63:13
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from AndroidManifest.xml:65:13
+action#android.intent.action.MAIN
+ADDED from AndroidManifest.xml:66:17
+	android:name
+		ADDED from AndroidManifest.xml:66:25
+category#android.intent.category.LAUNCHER
+ADDED from AndroidManifest.xml:67:17
+	android:name
+		ADDED from AndroidManifest.xml:67:27
+activity#at.bitfire.davdroid.syncadapter.AddAccountActivity
+ADDED from AndroidManifest.xml:70:9
+	android:excludeFromRecents
+		ADDED from AndroidManifest.xml:72:13
+	android:name
+		ADDED from AndroidManifest.xml:71:13

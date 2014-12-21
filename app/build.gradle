@@ -12,9 +12,9 @@ android {
 
     buildTypes {
         debug {
-            minifyEnabled false
-            //minifyEnabled true
-            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            //minifyEnabled false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
         release {
             minifyEnabled true
@@ -28,6 +28,10 @@ android {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
     }
+}
+
+configurations.all {
+    exclude module: 'commons-logging'       // undocumented part of Android
 }
 
 dependencies {
@@ -54,7 +58,9 @@ dependencies {
     compile 'dnsjava:dnsjava:2.1.6'
 
     // HttpClient 4.3, Android flavour for WebDAV operations
-    compile 'org.apache.httpcomponents:httpclient-android:4.3.5'
+    // we have to use our patched version of 4.3.5 to avoid https://issues.apache.org/jira/browse/HTTPCLIENT-1566
+    compile files('lib/httpclient-android-4.3.5.davdroid1.jar')
+    // compile 'org.apache.httpcomponents:httpclient-android:4.3.5'
 
     // SimpleXML for parsing and generating WebDAV messages
     compile('org.simpleframework:simple-xml:2.7.1') {

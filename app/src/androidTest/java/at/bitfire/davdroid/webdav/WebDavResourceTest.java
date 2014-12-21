@@ -42,7 +42,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		httpClient = DavHttpClient.create(true, true);
+		httpClient = DavHttpClient.create();
 				
 		assetMgr = getInstrumentation().getContext().getResources().getAssets();
 		
