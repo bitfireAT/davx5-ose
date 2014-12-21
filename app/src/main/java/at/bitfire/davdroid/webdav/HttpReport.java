@@ -9,13 +9,13 @@ package at.bitfire.davdroid.webdav;
 
 import android.util.Log;
 
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBaseHC4;
+import org.apache.http.entity.StringEntity;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.entity.StringEntity;
-
-public class HttpReport extends HttpEntityEnclosingRequestBase {
+public class HttpReport extends HttpEntityEnclosingRequestBaseHC4 {
     private static final String TAG = "davdroid.HttpEntityEncloseRequestBase";
 	
 	public final static String METHOD_NAME = "REPORT";

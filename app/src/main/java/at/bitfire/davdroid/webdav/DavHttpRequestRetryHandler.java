@@ -7,14 +7,13 @@
  ******************************************************************************/
 package at.bitfire.davdroid.webdav;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.http.HttpRequest;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandlerHC4;
+
 import java.util.Locale;
 
-import org.apache.commons.lang.ArrayUtils;
-
-import org.apache.http.HttpRequest;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
-
-public class DavHttpRequestRetryHandler extends DefaultHttpRequestRetryHandler {
+public class DavHttpRequestRetryHandler extends DefaultHttpRequestRetryHandlerHC4 {
 	final static DavHttpRequestRetryHandler INSTANCE = new DavHttpRequestRetryHandler();
 	
 	// see http://www.iana.org/assignments/http-methods/http-methods.xhtml
@@ -27,7 +26,7 @@ public class DavHttpRequestRetryHandler extends DefaultHttpRequestRetryHandler {
         super(/* retry count */ 3, /* retry already sent requests? */ false);
     }
 
-    //@Override
+    @Override
     protected boolean handleAsIdempotent(final HttpRequest request) {
         final String method = request.getRequestLine().getMethod().toUpperCase(Locale.ROOT);
         return ArrayUtils.contains(idempotentMethods, method);

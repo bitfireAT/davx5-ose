@@ -7,6 +7,18 @@
  ******************************************************************************/
 package at.bitfire.davdroid.webdav;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.net.SSLCertificateSocketFactory;
+import android.os.Build;
+import android.util.Log;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHost;
+import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
+import org.apache.http.conn.ssl.BrowserCompatHostnameVerifierHC4;
+import org.apache.http.protocol.HttpContext;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -15,20 +27,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
-import org.apache.commons.lang.StringUtils;
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.net.SSLCertificateSocketFactory;
-import android.os.Build;
-import android.util.Log;
-import org.apache.http.HttpHost;
-import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
-import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
-import org.apache.http.protocol.HttpContext;
 
 public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 	private static final String TAG = "davdroid.SNISocketFactory";
@@ -37,7 +40,7 @@ public class TlsSniSocketFactory implements LayeredConnectionSocketFactory {
 	
 	private final static SSLCertificateSocketFactory sslSocketFactory =
 			(SSLCertificateSocketFactory)SSLCertificateSocketFactory.getDefault(0);
-	private final static HostnameVerifier hostnameVerifier = new BrowserCompatHostnameVerifier();
+	private final static HostnameVerifier hostnameVerifier = new BrowserCompatHostnameVerifierHC4();
 
 	
 	/*

@@ -7,10 +7,11 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
+import org.apache.http.impl.client.CloseableHttpClient;
+
 import java.net.URISyntaxException;
 
 import at.bitfire.davdroid.webdav.DavMultiget;
-import org.apache.http.impl.client.CloseableHttpClient;
 
 public class CardDavAddressBook extends RemoteCollection<Contact> {
 	//private final static String TAG = "davdroid.CardDavAddressBook"; 

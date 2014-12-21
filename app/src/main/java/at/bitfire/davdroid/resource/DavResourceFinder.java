@@ -7,6 +7,18 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
+import android.content.Context;
+import android.util.Log;
+
+import org.apache.http.HttpException;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.SRVRecord;
+import org.xbill.DNS.TXTRecord;
+import org.xbill.DNS.TextParseException;
+import org.xbill.DNS.Type;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -15,15 +27,6 @@ import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.xbill.DNS.Lookup;
-import org.xbill.DNS.Record;
-import org.xbill.DNS.SRVRecord;
-import org.xbill.DNS.TXTRecord;
-import org.xbill.DNS.TextParseException;
-import org.xbill.DNS.Type;
-
-import android.content.Context;
-import android.util.Log;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.webdav.DavException;
 import at.bitfire.davdroid.webdav.DavHttpClient;
@@ -31,8 +34,6 @@ import at.bitfire.davdroid.webdav.DavIncapableException;
 import at.bitfire.davdroid.webdav.HttpPropfind.Mode;
 import at.bitfire.davdroid.webdav.NotAuthorizedException;
 import at.bitfire.davdroid.webdav.WebDavResource;
-import org.apache.http.HttpException;
-import org.apache.http.impl.client.CloseableHttpClient;
 import ezvcard.VCardVersion;
 
 public class DavResourceFinder implements Closeable {
@@ -46,7 +47,7 @@ public class DavResourceFinder implements Closeable {
 		this.context = context;
 		
 		// disable compression and enable network logging for debugging purposes 
-		httpClient = DavHttpClient.create(true, true);
+		httpClient = DavHttpClient.create();
 	}
 
 	@Override

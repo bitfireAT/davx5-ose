@@ -7,6 +7,34 @@
  ******************************************************************************/
 package at.bitfire.davdroid.webdav;
 
+import android.util.Log;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDeleteHC4;
+import org.apache.http.client.methods.HttpGetHC4;
+import org.apache.http.client.methods.HttpOptionsHC4;
+import org.apache.http.client.methods.HttpPutHC4;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.entity.ByteArrayEntityHC4;
+import org.apache.http.impl.auth.BasicSchemeHC4;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCredentialsProviderHC4;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicLineParserHC4;
+import org.apache.http.util.EntityUtilsHC4;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -19,42 +47,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import lombok.Cleanup;
-import lombok.Getter;
-import lombok.ToString;
-
-import org.apache.commons.lang.StringUtils;
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
-
-import android.util.Log;
 import at.bitfire.davdroid.URIUtils;
 import at.bitfire.davdroid.resource.Event;
 import at.bitfire.davdroid.webdav.DavProp.Comp;
-
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicLineParser;
-import org.apache.http.util.EntityUtils;
 import ezvcard.VCardVersion;
+import lombok.Cleanup;
+import lombok.Getter;
+import lombok.ToString;
 
 
 /**
@@ -105,21 +104,21 @@ public class WebDavResource {
 		location = baseURI;
 		
 		context = HttpClientContext.create();
-		context.setCredentialsProvider(new BasicCredentialsProvider());
+		context.setCredentialsProvider(new BasicCredentialsProviderHC4());
 	}
 	
 	public WebDavResource(CloseableHttpClient httpClient, URI baseURI, String username, String password, boolean preemptive) {
 		this(httpClient, baseURI);
 		
-		HttpHost host = new HttpHost(baseURI.getHost(), baseURI.getPort(), baseURI.getScheme());
 		context.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
-		
+
 		if (preemptive) {
+            HttpHost host = new HttpHost(baseURI.getHost(), baseURI.getPort(), baseURI.getScheme());
 			Log.d(TAG, "Using preemptive authentication (not compatible with Digest auth)");
 			AuthCache authCache = context.getAuthCache();
 			if (authCache == null)
 				authCache = new BasicAuthCache();
-			authCache.put(host, new BasicScheme());
+			authCache.put(host, new BasicSchemeHC4());
 			context.setAuthCache(authCache);
 		}
 	}
@@ -150,7 +149,7 @@ public class WebDavResource {
 	/* feature detection */
 
 	public void options() throws URISyntaxException, IOException, HttpException {
-		HttpOptions options = new HttpOptions(location);
+		HttpOptionsHC4 options = new HttpOptionsHC4(location);
 		CloseableHttpResponse response = httpClient.execute(options, context);
 		try {
 			checkResponse(response);
@@ -332,7 +331,7 @@ public class WebDavResource {
 	/* resource operations */
 	
 	public void get(String acceptedType) throws URISyntaxException, IOException, HttpException, DavException {
-		HttpGet get = new HttpGet(location);
+		HttpGetHC4 get = new HttpGetHC4(location);
 		get.addHeader("Accept", acceptedType);
 		
 		CloseableHttpResponse response = httpClient.execute(get, context);
@@ -343,7 +342,7 @@ public class WebDavResource {
 			if (entity == null)
 				throw new DavNoContentException();
 			
-			content = EntityUtils.toByteArray(entity);
+			content = EntityUtilsHC4.toByteArray(entity);
 		} finally {
 			response.close();
 		}
@@ -351,8 +350,8 @@ public class WebDavResource {
 	
 	// returns the ETag of the created/updated resource, if available (null otherwise)
 	public String put(byte[] data, PutMode mode) throws URISyntaxException, IOException, HttpException {
-		HttpPut put = new HttpPut(location);
-		put.setEntity(new ByteArrayEntity(data));
+		HttpPutHC4 put = new HttpPutHC4(location);
+		put.setEntity(new ByteArrayEntityHC4(data));
 
 		switch (mode) {
 		case ADD_DONT_OVERWRITE:
@@ -381,7 +380,7 @@ public class WebDavResource {
 	}
 	
 	public void delete() throws URISyntaxException, IOException, HttpException {
-		HttpDelete delete = new HttpDelete(location);
+		HttpDeleteHC4 delete = new HttpDeleteHC4(location);
 		
 		if (getETag() != null)
 			delete.addHeader("If-Match", getETag());
@@ -468,7 +467,7 @@ public class WebDavResource {
 			byte[] data = null;
 
 			for (DavPropstat singlePropstat : singleResponse.getPropstat()) {
-				StatusLine status = BasicLineParser.parseStatusLine(singlePropstat.status, new BasicLineParser());
+				StatusLine status = BasicLineParserHC4.parseStatusLine(singlePropstat.status, new BasicLineParserHC4());
 				
 				// ignore information about missing properties etc.
 				if (status.getStatusCode()/100 != 1 && status.getStatusCode()/100 != 2)

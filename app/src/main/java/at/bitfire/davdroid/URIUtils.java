@@ -7,10 +7,10 @@
  ******************************************************************************/
 package at.bitfire.davdroid;
 
+import android.util.Log;
+
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import android.util.Log;
 
 public class URIUtils {
 	private static final String TAG = "davdroid.URIUtils";

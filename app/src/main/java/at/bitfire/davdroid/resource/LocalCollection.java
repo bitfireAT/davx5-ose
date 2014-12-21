@@ -7,9 +7,6 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
-import java.util.ArrayList;
-
-import lombok.Cleanup;
 import android.accounts.Account;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
@@ -22,6 +19,10 @@ import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.util.Log;
+
+import java.util.ArrayList;
+
+import lombok.Cleanup;
 
 /**
  * Represents a locally-stored synchronizable collection (for instance, the

@@ -7,9 +7,6 @@
  ******************************************************************************/
 package at.bitfire.davdroid.syncadapter;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -23,6 +20,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import at.bitfire.davdroid.R;
 
 public class LoginEmailFragment extends Fragment implements TextWatcher {

@@ -7,16 +7,6 @@
  ******************************************************************************/
 package at.bitfire.davdroid.syncadapter;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Map;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import lombok.Getter;
-
-import org.apache.http.HttpStatus;
-
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
@@ -30,14 +20,23 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
-import at.bitfire.davdroid.Constants;
+
+import org.apache.http.HttpStatus;
+import org.apache.http.impl.client.CloseableHttpClient;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Map;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.LocalStorageException;
 import at.bitfire.davdroid.resource.RemoteCollection;
 import at.bitfire.davdroid.webdav.DavException;
 import at.bitfire.davdroid.webdav.DavHttpClient;
 import at.bitfire.davdroid.webdav.HttpException;
-import org.apache.http.impl.client.CloseableHttpClient;
+import lombok.Getter;
 
 public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter implements Closeable {
 	private final static String TAG = "davdroid.DavSyncAdapter";
@@ -108,10 +107,7 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 		if (httpClient == null) {
 			Log.d(TAG, "Creating new DavHttpClient");
 			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
-			httpClient = DavHttpClient.create(
-				settings.getBoolean(Constants.SETTING_DISABLE_COMPRESSION, false),
-				settings.getBoolean(Constants.SETTING_NETWORK_LOGGING, false)
-			);
+			httpClient = DavHttpClient.create();
 		}
 		
 		// prevent httpClient shutdown until we're ready by holding a read lock

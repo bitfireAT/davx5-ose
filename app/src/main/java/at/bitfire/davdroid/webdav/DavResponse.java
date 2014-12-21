@@ -7,13 +7,13 @@
  ******************************************************************************/
 package at.bitfire.davdroid.webdav;
 
-import java.util.List;
-
-import lombok.Getter;
-
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
+
+import java.util.List;
+
+import lombok.Getter;
 
 @Root(strict=false)
 public class DavResponse {

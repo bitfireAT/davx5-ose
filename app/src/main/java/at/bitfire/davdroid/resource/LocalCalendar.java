@@ -7,16 +7,28 @@
  ******************************************************************************/
 package at.bitfire.davdroid.resource;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.ParseException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import android.accounts.Account;
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.content.ContentProviderClient;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderOperation.Builder;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.net.Uri;
+import android.os.Build;
+import android.os.RemoteException;
+import android.provider.CalendarContract;
+import android.provider.CalendarContract.Attendees;
+import android.provider.CalendarContract.Calendars;
+import android.provider.CalendarContract.Events;
+import android.provider.CalendarContract.Reminders;
+import android.provider.ContactsContract;
+import android.util.Log;
 
-import lombok.Cleanup;
-import lombok.Getter;
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Parameter;
 import net.fortuna.ical4j.model.ParameterList;
@@ -39,27 +51,16 @@ import net.fortuna.ical4j.model.property.Status;
 
 import org.apache.commons.lang.StringUtils;
 
-import android.accounts.Account;
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.content.ContentProviderClient;
-import android.content.ContentProviderOperation;
-import android.content.ContentProviderOperation.Builder;
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.net.Uri;
-import android.os.Build;
-import android.os.RemoteException;
-import android.provider.CalendarContract;
-import android.provider.CalendarContract.Attendees;
-import android.provider.CalendarContract.Calendars;
-import android.provider.CalendarContract.Events;
-import android.provider.CalendarContract.Reminders;
-import android.provider.ContactsContract;
-import android.util.Log;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import lombok.Cleanup;
+import lombok.Getter;
 
 /**
  * Represents a locally stored calendar, containing Events.

@@ -7,11 +7,6 @@
  ******************************************************************************/
 package at.bitfire.davdroid.syncadapter;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import lombok.Cleanup;
 import android.app.DialogFragment;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.AsyncTaskLoader;
@@ -24,11 +19,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import org.apache.http.HttpException;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.DavResourceFinder;
 import at.bitfire.davdroid.resource.ServerInfo;
 import at.bitfire.davdroid.webdav.DavException;
-import org.apache.http.HttpException;
+import lombok.Cleanup;
 
 public class QueryServerDialogFragment extends DialogFragment implements LoaderCallbacks<ServerInfo> {
 	private static final String TAG = "davdroid.QueryServerDialogFragment";
