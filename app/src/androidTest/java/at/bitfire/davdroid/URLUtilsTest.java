@@ -43,25 +43,29 @@ public class URLUtilsTest extends TestCase {
 
 	public void testParseURI() throws Exception {
 		// don't escape valid characters
-		String validPath = "/;:@&=$-_.+!*'(),";
+	    String validPath = "/;:@&=$-_.+!*'(),";
 		assertEquals(new URI("https://www.test.example:123" + validPath), URIUtils.parseURI("https://www.test.example:123" + validPath, false));
 		assertEquals(new URI(validPath), URIUtils.parseURI(validPath, true));
 		
 		// keep literal IPv6 addresses (only in host name)
 		assertEquals(new URI("https://[1:2::1]/"), URIUtils.parseURI("https://[1:2::1]/", false));
 		
-		// "~" as home directory
+		// "~" as home directory (valid)
 		assertEquals(new URI("http://www.test.example/~user1/"), URIUtils.parseURI("http://www.test.example/~user1/", false));
 		assertEquals(new URI("/~user1/"), URIUtils.parseURI("/%7euser1/", true));
 		
-		// "@" in directory name
+		// "@" in path names (valid)
 		assertEquals(new URI("http://www.test.example/user@server.com/"), URIUtils.parseURI("http://www.test.example/user@server.com/", false));
         assertEquals(new URI("/user@server.com/"), URIUtils.parseURI("/user%40server.com/", true));
 		assertEquals(new URI("user@server.com"), URIUtils.parseURI("user%40server.com", true));
         
-        // ":" in path names
+        // ":" in path names (valid)
         assertEquals(new URI("http://www.test.example/my:cal.ics"), URIUtils.parseURI("http://www.test.example/my:cal.ics", false));
         assertEquals(new URI("/my:cal.ics"), URIUtils.parseURI("/my%3Acal.ics", true));
         assertEquals(new URI(null, null, "my:cal.ics", null, null), URIUtils.parseURI("my%3Acal.ics", true));
+
+        // common invalid path names
+        assertEquals(new URI(null, null, "my cal.ics", null, null), URIUtils.parseURI("my cal.ics", true));
+        assertEquals(new URI(null, null, "{1234}.vcf", null, null), URIUtils.parseURI("{1234}.vcf", true));
 	}
 }
