@@ -35,7 +35,7 @@ public class URLUtilsTest extends TestCase {
 		assertEquals("/test/", URIUtils.ensureTrailingSlash("/test"));
 		assertEquals("/test/", URIUtils.ensureTrailingSlash("/test/"));
 
-		String	withoutSlash = "http://www.test.at/dav/collection",
+		String	withoutSlash = "http://www.test.example/dav/collection",
 				withSlash = withoutSlash + "/";
 		assertEquals(new URI(withSlash), URIUtils.ensureTrailingSlash(new URI(withoutSlash)));
 		assertEquals(new URI(withSlash), URIUtils.ensureTrailingSlash(new URI(withSlash)));
@@ -44,18 +44,24 @@ public class URLUtilsTest extends TestCase {
 	public void testParseURI() throws Exception {
 		// don't escape valid characters
 		String validPath = "/;:@&=$-_.+!*'(),";
-		assertEquals(new URI("https://www.test.at:123" + validPath), URIUtils.parseURI("https://www.test.at:123" + validPath));
-		assertEquals(new URI(validPath), URIUtils.parseURI(validPath));
+		assertEquals(new URI("https://www.test.example:123" + validPath), URIUtils.parseURI("https://www.test.example:123" + validPath, false));
+		assertEquals(new URI(validPath), URIUtils.parseURI(validPath, true));
 		
 		// keep literal IPv6 addresses (only in host name)
-		assertEquals(new URI("https://[1:2::1]/"), URIUtils.parseURI("https://[1:2::1]/"));
+		assertEquals(new URI("https://[1:2::1]/"), URIUtils.parseURI("https://[1:2::1]/", false));
 		
-		// ~ as home directory
-		assertEquals(new URI("http://www.test.at/~user1/"), URIUtils.parseURI("http://www.test.at/~user1/"));
-		assertEquals(new URI("http://www.test.at/~user1/"), URIUtils.parseURI("http://www.test.at/%7euser1/"));
+		// "~" as home directory
+		assertEquals(new URI("http://www.test.example/~user1/"), URIUtils.parseURI("http://www.test.example/~user1/", false));
+		assertEquals(new URI("/~user1/"), URIUtils.parseURI("/%7euser1/", true));
 		
-		// @ in directory name
-		assertEquals(new URI("http://www.test.at/user@server.com/"), URIUtils.parseURI("http://www.test.at/user@server.com/"));
-		assertEquals(new URI("http://www.test.at/user@server.com/"), URIUtils.parseURI("http://www.test.at/user%40server.com/"));
+		// "@" in directory name
+		assertEquals(new URI("http://www.test.example/user@server.com/"), URIUtils.parseURI("http://www.test.example/user@server.com/", false));
+        assertEquals(new URI("/user@server.com/"), URIUtils.parseURI("/user%40server.com/", true));
+		assertEquals(new URI("user@server.com"), URIUtils.parseURI("user%40server.com", true));
+        
+        // ":" in path names
+        assertEquals(new URI("http://www.test.example/my:cal.ics"), URIUtils.parseURI("http://www.test.example/my:cal.ics", false));
+        assertEquals(new URI("/my:cal.ics"), URIUtils.parseURI("/my%3Acal.ics", true));
+        assertEquals(new URI(null, null, "my:cal.ics", null, null), URIUtils.parseURI("my%3Acal.ics", true));
 	}
 }

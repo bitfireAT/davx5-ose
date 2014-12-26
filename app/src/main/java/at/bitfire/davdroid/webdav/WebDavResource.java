@@ -123,7 +123,7 @@ public class WebDavResource {
 		}
 	}
 	
-	WebDavResource(WebDavResource parent) {		// copy constructor: based on existing WebDavResource, reuse settings
+	public WebDavResource(WebDavResource parent) {		// copy constructor: based on existing WebDavResource, reuse settings
 		httpClient = parent.httpClient;
 		context = parent.context;
 		location = parent.location;
@@ -133,10 +133,16 @@ public class WebDavResource {
 		this(parent);
 		location = parent.location.resolve(url);
 	}
-	
+
+    /**
+     * Creates a WebDavResource representing a member of the parent collection.
+     * @param parent Parent collection
+     * @param member File name of the member. This may contain ":" without leading "./"!
+     * @throws URISyntaxException
+     */
 	public WebDavResource(WebDavResource parent, String member) throws URISyntaxException {
 		this(parent);
-		location = parent.location.resolve(URIUtils.parseURI(member));
+		location = parent.location.resolve(URIUtils.parseURI(member, true));
 	}
 	
 	public WebDavResource(WebDavResource parent, String member, String ETag) throws URISyntaxException {
@@ -454,7 +460,7 @@ public class WebDavResource {
 		for (DavResponse singleResponse : multiStatus.response) {
 			URI href;
 			try {
-				href = location.resolve(URIUtils.parseURI(singleResponse.getHref().href));
+				href = location.resolve(URIUtils.parseURI(singleResponse.getHref().href, false));
 			} catch(Exception ex) {
 				Log.w(TAG, "Ignoring illegal member URI in multi-status response", ex);
 				continue;

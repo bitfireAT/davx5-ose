@@ -32,4 +32,3 @@
 
 # DAVdroid
 -keep class at.bitfire.davdroid.** { *; }	# all DAVdroid code is required
-

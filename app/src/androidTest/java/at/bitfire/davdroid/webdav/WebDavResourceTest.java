@@ -36,9 +36,8 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	CloseableHttpClient httpClient;
 	
 	WebDavResource baseDAV;
-	WebDavResource simpleFile,
-		davCollection, davNonExistingFile, davExistingFile,
-		davInvalid;
+	WebDavResource davAssets,
+		davCollection, davNonExistingFile, davExistingFile;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -47,14 +46,11 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		assetMgr = getInstrumentation().getContext().getResources().getAssets();
 		
 		baseDAV = new WebDavResource(httpClient, TestConstants.roboHydra.resolve("/dav/"));
-		
-		simpleFile = new WebDavResource(httpClient, TestConstants.roboHydra.resolve("assets/test.random"));
-		
+		davAssets = new WebDavResource(httpClient, TestConstants.roboHydra.resolve("assets/"));
 		davCollection = new WebDavResource(httpClient, TestConstants.roboHydra.resolve("dav/"));
+
 		davNonExistingFile = new WebDavResource(davCollection, "collection/new.file");
 		davExistingFile = new WebDavResource(davCollection, "collection/existing.file");
-		
-		davInvalid = new WebDavResource(httpClient, TestConstants.roboHydra.resolve("dav-invalid/"));
 	}
 	
 	@Override
@@ -80,7 +76,8 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	public void testPropfindCurrentUserPrincipal() throws Exception {
 		davCollection.propfind(HttpPropfind.Mode.CURRENT_USER_PRINCIPAL);
 		assertEquals("/dav/principals/users/test", davCollection.getCurrentUserPrincipal());
-		
+
+        WebDavResource simpleFile = new WebDavResource(davAssets, "test.random");
 		try {
 			simpleFile.propfind(HttpPropfind.Mode.CURRENT_USER_PRINCIPAL);
 			fail();
@@ -152,6 +149,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	}
 	
 	public void testGet() throws Exception {
+        WebDavResource simpleFile = new WebDavResource(davAssets, "test.random");
 		simpleFile.get("*/*");
 		@Cleanup InputStream is = assetMgr.open("test.random", AssetManager.ACCESS_STREAMING);
 		byte[] expected = IOUtils.toByteArray(is);
@@ -163,7 +161,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		
 		boolean	sniWorking = false;
 		try {
-			file.get("*/*");
+			file.get("* /*");
 			sniWorking = true; 
 		} catch (SSLPeerUnverifiedException e) {
 		}
@@ -222,12 +220,14 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	
 	/* special test */
 	
-	public void testInvalidURLs() throws Exception {
-		WebDavResource dav = new WebDavResource(davInvalid, "addressbooks/%7euser1/");
-		dav.propfind(HttpPropfind.Mode.CARDDAV_COLLECTIONS);
-		List<WebDavResource> members = dav.getMembers();
-		assertEquals(1, members.size());
-		assertEquals(TestConstants.ROBOHYDRA_BASE + "dav-invalid/addressbooks/~user1/My%20Contacts:1.vcf/", members.get(0).getLocation().toASCIIString());
+	public void testGetSpecialURLs() throws Exception {
+        WebDavResource dav = new WebDavResource(davAssets, "member-with:colon.vcf");
+        try {
+            dav.get("*/*");
+            fail();
+        } catch(NotFoundException e) {
+            assertTrue(true);
+        }
 	}
 	
 }
