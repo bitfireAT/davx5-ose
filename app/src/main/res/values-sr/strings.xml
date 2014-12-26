@@ -74,7 +74,7 @@
 	   
 	   <h2>Коришћене друге библиотеке</h2>
 	   <p>
-	    * <a href="http://hc.apache.org">Апачи ХТТП клијент</a> (<a href="https://code.google.com/p/httpclientandroidlib/">httpclientandroidlib</a> издање) – <a href="http://www.apache.org/licenses/">Апачи лиценца, издање 2.0</a><br/>
+	    * <a href="http://hc.apache.org">Апачи ХТТП клијент</a> (Android port) – <a href="http://www.apache.org/licenses/">Апачи лиценца, издање 2.0</a><br/>
 	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">Нова БСД лиценца</a>)<br/>
 	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">Нова БСД лиценца</a><br/>
 	   	* <a href="http://simple.sourceforge.net/">Симпле ИксМЛ серијализација</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Апачи лиценца, издање 2.0</a><br/>

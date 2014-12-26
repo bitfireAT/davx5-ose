@@ -74,6 +74,7 @@
 	   
 	   <h2>Bibliothèques tiers</h2>
 	   <p>
+	    * <a href="http://hc.apache.org">Apache HttpClient</a> (Android port) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>
 	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> (<a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
 	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> (<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a>)<br/>
 	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> (<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>)<br/>
