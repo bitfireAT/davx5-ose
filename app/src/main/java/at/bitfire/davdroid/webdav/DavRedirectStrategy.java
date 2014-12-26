@@ -31,7 +31,7 @@ import at.bitfire.davdroid.URIUtils;
  */
 public class DavRedirectStrategy implements RedirectStrategy {
 	private final static String TAG = "davdroid.DavRedirectStrategy";
-	final static DavRedirectStrategy INSTANCE = new DavRedirectStrategy();
+	public final static DavRedirectStrategy INSTANCE = new DavRedirectStrategy();
 	
 	protected final static String REDIRECTABLE_METHODS[] = {
 		"OPTIONS", "GET", "PUT", "DELETE"
@@ -82,12 +82,12 @@ public class DavRedirectStrategy implements RedirectStrategy {
 			return null;
 		}
 		try {
-			URI location = URIUtils.parseURI(locationHdr.getValue());
+			URI location = URIUtils.parseURI(locationHdr.getValue(), false);
 			
 			// some servers don't return absolute URLs as required by RFC 2616
 			if (!location.isAbsolute()) {
 				Log.w(TAG, "Received invalid redirection to relative URL, repairing");
-				URI originalURI = URIUtils.parseURI(request.getRequestLine().getUri());
+				URI originalURI = URIUtils.parseURI(request.getRequestLine().getUri(), false);
 				if (!originalURI.isAbsolute()) {
 					final HttpHost target = HttpClientContext.adapt(context).getTargetHost();
 					if (target != null)
