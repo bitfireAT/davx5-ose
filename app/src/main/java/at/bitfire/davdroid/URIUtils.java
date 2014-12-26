@@ -9,6 +9,11 @@ package at.bitfire.davdroid;
 
 import android.util.Log;
 
+import org.apache.commons.codec.EncoderException;
+import org.apache.commons.codec.net.URLCodec;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -61,7 +66,16 @@ public class URIUtils {
             }
         }
 
-		URI uri = new URI(original);
+        // escape some common invalid characters – servers keep sending unescaped crap like "my calendar.ics" or "{guid}.vcf"
+        // this is only a hack, because for instance, "[" may be valid in URLs (IPv6 literal in host name)
+        String repaired = original
+                .replaceAll(" ", "%20")
+                .replaceAll("\\{", "%7B")
+                .replaceAll("\\}", "%7D");
+        if (!repaired.equals(original))
+            Log.w(TAG, "Repaired invalid URL: " + original + " -> " + repaired);
+
+		URI uri = new URI(repaired);
 		URI normalized = new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), uri.getQuery(), uri.getFragment());
 		Log.v(TAG, "Normalized URL " + original + " -> " + normalized.toASCIIString());
 		return normalized;
