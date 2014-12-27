@@ -170,10 +170,16 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	}
 	
 	public void testMultiGet() throws Exception {
-		WebDavResource davAddressBook = new WebDavResource(davCollection, "addressbooks/default.vcf");
-		davAddressBook.multiGet(DavMultiget.Type.ADDRESS_BOOK, new String[] { "1.vcf", "2.vcf" });
+		WebDavResource davAddressBook = new WebDavResource(davCollection, "addressbooks/default.vcf/");
+		davAddressBook.multiGet(DavMultiget.Type.ADDRESS_BOOK, new String[] { "1.vcf", "2:3@my%40pc.vcf" });
+		// queried address book has a name
 		assertEquals("My Book", davAddressBook.getDisplayName());
+		// there are two contacts
 		assertEquals(2, davAddressBook.getMembers().size());
+		// contact file names should be unescaped (yes, it's really named ...%40pc... to check double-encoding)
+		assertEquals("1.vcf", davAddressBook.getMembers().get(0).getName());
+		assertEquals("2:3@my%40pc.vcf", davAddressBook.getMembers().get(1).getName());
+		// both contacts have content
 		for (WebDavResource member : davAddressBook.getMembers())
 			assertNotNull(member.getContent());
 	}

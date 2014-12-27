@@ -224,14 +224,16 @@ exports.getBodyParts = function(conf) {
             new RoboHydraHeadDAV({
 				path: "/dav/addressbooks/default.vcf/",
 				handler: function(req,res,next) {
-					if (req.method == "REPORT" && req.rawBody.toString().match(/addressbook-multiget[\s\S]+<prop>[\s\S]+<href>/m)) {
+					if (req.method == "REPORT" && req.rawBody.toString().match(/addressbook-multiget[\s\S]+<prop>[\s\S]+<href>/m &&
+                        req.rawBody.toString().match(/<href>\/dav\/addressbooks\/default\.vcf\/2:3@my%2540pc\.vcf<\/href>/m))) {
 						res.statusCode = 207;
 						res.write('\<?xml version="1.0" encoding="utf-8" ?>\
 							<multistatus xmlns="DAV:" xmlns:CARD="urn:ietf:params:xml:ns:carddav">\
 								<response>\
-									<href>/dav/addressbooks/d%65fault.vcf</href>\
+									<href>/dav/addressbooks/default.vcf</href>\
 									<propstat>\
 										<prop>\
+                                            <resourcetype><collection/></resourcetype>\
                                             <displayname>My Book</displayname>\
 										</prop>\
 										<status>HTTP/1.1 200 OK</status>\
@@ -253,7 +255,7 @@ exports.getBodyParts = function(conf) {
 									</propstat>\
 								</response>\
 								<response>\
-									<href>/dav/addressbooks/default.vcf/2.vcf</href>\
+									<href>/dav/addressbooks/default.vcf/2:3%40my%2540pc.vcf</href>\
 									<propstat>\
 										<prop>\
 											<getetag/>\

@@ -296,7 +296,10 @@ public class WebDavResource {
 			// build multi-get XML request 
 			List<String> hrefs = new LinkedList<String>();
 			for (String name : names)
-				hrefs.add(location.resolve(name).getPath());
+				// name may contain "%" which have to be encoded → use non-quoting URI constructor and getRawPath()
+				// name may also contain ":", so prepend "./" because even the non-quoting URI constructor parses after constructing
+				// DAVdroid ensures that collections always have a trailing slash, so "./" won't go down in directory hierarchy
+				hrefs.add(location.resolve(new URI(null, null, "./" + name, null)).getRawPath());
 			DavMultiget multiget = DavMultiget.newRequest(type, hrefs.toArray(new String[0]));
 			
 			StringWriter writer = new StringWriter();
