@@ -7,10 +7,12 @@
     <string name="davdroid_website">DAVdroid Web site</string>
     <string name="next">Next</string>
     <string name="help">Help</string>
-    
+
+    <string name="exception_cert_path_validation">Untrusted certificate in certificate path. See FAQ for more info.</string>
     <string name="exception_http">HTTP error: %s</string>
     <string name="exception_incapable_resource">Missing capabilities: %s</string>
     <string name="exception_io">I/O error: %s</string>
+    <string name="exception_peer_unverified">Certificate not issued for \"%s\"</string>
     <string name="exception_uri_syntax">Invalid URI: %s</string>
     
     <!-- MainActivity -->

@@ -5,10 +5,12 @@
     <string name="davdroid_website">DAVdroid-Website</string>
     <string name="next">Weiter</string>
     <string name="help">Hilfe</string>
-    
+
+    <string name="exception_cert_path_validation">Nicht vertrauenswürdiges Zertifikat in der Zertifikatskette (siehe FAQ)</string>
     <string name="exception_http">HTTP-Fehler: %s</string>
     <string name="exception_incapable_resource">Fehlende Server-Unterstützung: %s</string>
     <string name="exception_io">E/A-Fehler: %s</string>
+    <string name="exception_peer_unverified">Zertifikat ist nicht für \"%s\" ausgestellt</string>
     <string name="exception_uri_syntax">URI ungültig: %s</string>
     
     <!-- MainActivity -->    
