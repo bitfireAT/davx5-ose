@@ -20,11 +20,17 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.HttpException;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.cert.CertPathValidatorException;
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLPeerUnverifiedException;
 
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.DavResourceFinder;
@@ -113,8 +119,14 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 				finder.findResources(serverInfo);
 			} catch (URISyntaxException e) {
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_uri_syntax, e.getMessage()));
-			}  catch (IOException e) {
+			} catch (IOException e) {
+				// general message
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_io, e.getLocalizedMessage()));
+				// overwrite by more specific message, if possible
+				if (ExceptionUtils.indexOfType(e, CertPathValidatorException.class) != -1)
+					serverInfo.setErrorMessage(getContext().getString(R.string.exception_cert_path_validation, e.getMessage()));
+				else if (ExceptionUtils.indexOfType(e, SSLPeerUnverifiedException.class) != -1)
+					serverInfo.setErrorMessage(getContext().getString(R.string.exception_peer_unverified, e.getMessage()));
 			} catch (HttpException e) {
 				Log.e(TAG, "HTTP error while querying server info", e);
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_http, e.getLocalizedMessage()));
