@@ -63,15 +63,15 @@ public class DavResourceFinder implements Closeable {
 			serverInfo.setCardDAV(true);
 		
 			principal.propfind(Mode.HOME_SETS);
-			String pathAddressBooks = principal.getAddressbookHomeSet();
-			if (pathAddressBooks != null) {
-				Log.i(TAG, "Found address book home set: " + pathAddressBooks);
+			URI uriAddressBookHomeSet = principal.getAddressbookHomeSet();
+			if (uriAddressBookHomeSet != null) {
+				Log.i(TAG, "Found address book home set: " + uriAddressBookHomeSet);
 			
-				WebDavResource homeSetAddressBooks = new WebDavResource(principal, pathAddressBooks);
+				WebDavResource homeSetAddressBooks = new WebDavResource(principal, uriAddressBookHomeSet);
 				if (checkHomesetCapabilities(homeSetAddressBooks, "addressbook")) {
 					homeSetAddressBooks.propfind(Mode.CARDDAV_COLLECTIONS);
 					
-					List<ServerInfo.ResourceInfo> addressBooks = new LinkedList<ServerInfo.ResourceInfo>();
+					List<ServerInfo.ResourceInfo> addressBooks = new LinkedList<>();
 					if (homeSetAddressBooks.getMembers() != null)
 						for (WebDavResource resource : homeSetAddressBooks.getMembers())
 							if (resource.isAddressBook()) {
@@ -103,15 +103,15 @@ public class DavResourceFinder implements Closeable {
 			serverInfo.setCalDAV(true);
 
 			principal.propfind(Mode.HOME_SETS);
-			String pathCalendars = principal.getCalendarHomeSet();
-			if (pathCalendars != null) {
-				Log.i(TAG, "Found calendar home set: " + pathCalendars);
+			URI uriCalendarHomeSet = principal.getCalendarHomeSet();
+			if (uriCalendarHomeSet != null) {
+				Log.i(TAG, "Found calendar home set: " + uriCalendarHomeSet);
 			
-				WebDavResource homeSetCalendars = new WebDavResource(principal, pathCalendars);
+				WebDavResource homeSetCalendars = new WebDavResource(principal, uriCalendarHomeSet);
 				if (checkHomesetCapabilities(homeSetCalendars, "calendar-access")) {
 					homeSetCalendars.propfind(Mode.CALDAV_COLLECTIONS);
 					
-					List<ServerInfo.ResourceInfo> calendars = new LinkedList<ServerInfo.ResourceInfo>();
+					List<ServerInfo.ResourceInfo> calendars = new LinkedList<>();
 					if (homeSetCalendars.getMembers() != null)
 						for (WebDavResource resource : homeSetCalendars.getMembers())
 							if (resource.isCalendar()) {
@@ -159,7 +159,7 @@ public class DavResourceFinder implements Closeable {
 	 */
 	public URI getInitialContextURL(ServerInfo serverInfo, String serviceName) throws URISyntaxException, MalformedURLException {
 		String	scheme = null,
-				domain = null;
+				domain;
 		int		port = -1;
 		String	path = "/";
 		
@@ -227,9 +227,9 @@ public class DavResourceFinder implements Closeable {
 	 * Detects the current-user-principal for a given WebDavResource. At first, /.well-known/ is tried. Only
 	 * if no current-user-principal can be detected for the .well-known location, the given location of the resource
 	 * is tried.
-	 * @param resource 		Location that will be queried
+	 * @param serverInfo	Location that will be queried
 	 * @param serviceName	Well-known service name ("carddav", "caldav")
-	 * @return	WebDavResource of current-user-principal for the given service, or null if it can't be found
+	 * @return	            WebDavResource of current-user-principal for the given service, or null if it can't be found
 	 * 
 	 * TODO: If a TXT record is given, always use it instead of trying .well-known first
 	 */

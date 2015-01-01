@@ -59,7 +59,11 @@ public class ServerInfo implements Serializable {
 		
 		final Type type;
 		final boolean readOnly;
-		final String URL, title, description, color;
+
+		final String URL,       // absolute URL of resource
+			  title,
+			  description,
+			  color;
 
 		VCardVersion vCardVersion;
 

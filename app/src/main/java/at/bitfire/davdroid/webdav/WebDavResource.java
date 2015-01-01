@@ -25,6 +25,7 @@ import org.apache.http.client.methods.HttpGetHC4;
 import org.apache.http.client.methods.HttpOptionsHC4;
 import org.apache.http.client.methods.HttpPutHC4;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.client.utils.URIUtilsHC4;
 import org.apache.http.entity.ByteArrayEntityHC4;
 import org.apache.http.impl.auth.BasicSchemeHC4;
 import org.apache.http.impl.client.BasicAuthCache;
@@ -129,7 +130,7 @@ public class WebDavResource {
 		location = parent.location;
 	}
 
-	protected WebDavResource(WebDavResource parent, URI url) {
+	public WebDavResource(WebDavResource parent, URI url) {
 		this(parent);
 		location = parent.location.resolve(url);
 	}
@@ -191,16 +192,19 @@ public class WebDavResource {
 	
 	/* property methods */
 	
-	public String getCurrentUserPrincipal() {
-		return properties.get(Property.CURRENT_USER_PRINCIPAL);
+	public URI getCurrentUserPrincipal() throws URISyntaxException {
+		String principal = properties.get(Property.CURRENT_USER_PRINCIPAL);
+		return principal != null ? URIUtils.parseURI(principal, false) : null;
 	}
 	
-	public String getAddressbookHomeSet() {
-		return properties.get(Property.ADDRESSBOOK_HOMESET);
+	public URI getAddressbookHomeSet() throws URISyntaxException {
+		String homeset = properties.get(Property.ADDRESSBOOK_HOMESET);
+		return homeset != null ? URIUtils.parseURI(homeset, false) : null;
 	}
 	
-	public String getCalendarHomeSet() {
-		return properties.get(Property.CALENDAR_HOMESET);
+	public URI getCalendarHomeSet() throws URISyntaxException {
+		String homeset = properties.get(Property.CALENDAR_HOMESET);
+		return homeset != null ? URIUtils.parseURI(homeset, false) : null;
 	}
 	
 	public String getContentType() {
