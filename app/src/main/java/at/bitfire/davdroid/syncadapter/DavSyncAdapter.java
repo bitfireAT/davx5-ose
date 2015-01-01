@@ -9,18 +9,27 @@ package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncResult;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.impl.client.CloseableHttpClient;
 
@@ -30,6 +39,8 @@ import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.LocalStorageException;
 import at.bitfire.davdroid.resource.RemoteCollection;
@@ -42,9 +53,9 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 	private final static String TAG = "davdroid.DavSyncAdapter";
 	
 	@Getter private static String androidID;
-	
-	protected AccountManager accountManager;
-	
+
+	protected Context context;
+
 	/* We use one static httpClient for
 	 *   - all sync adapters  (CalendarsSyncAdapter, ContactsSyncAdapter)
 	 *   - and all threads (= accounts) of each sync adapter
@@ -65,8 +76,8 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 			if (androidID == null)
 				androidID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
 		}
-		
-		accountManager = AccountManager.get(context);
+
+		this.context = context;
 	}
 	
 	@Override
@@ -93,8 +104,8 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 	}
 	
 	protected abstract Map<LocalCollection<?>, RemoteCollection<?>> getSyncPairs(Account account, ContentProviderClient provider);
-	
 
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority,	ContentProviderClient provider, SyncResult syncResult) {
 		Log.i(TAG, "Performing sync for authority " + authority);
@@ -119,6 +130,7 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 		AccountSettings accountSettings = new AccountSettings(getContext(), account);
 		Log.d(TAG, "Server supports VCard version " + accountSettings.getAddressBookVCardVersion());
 
+		Exception syncException = null;
 		try {
 			// get local <-> remote collection pairs
 			Map<LocalCollection<?>, RemoteCollection<?>> syncCollections = getSyncPairs(account, provider);
@@ -129,13 +141,16 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 					for (Map.Entry<LocalCollection<?>, RemoteCollection<?>> entry : syncCollections.entrySet())
 						new SyncManager(entry.getKey(), entry.getValue()).synchronize(extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL), syncResult);
 				} catch (DavException ex) {
+					syncException = ex;
 					syncResult.stats.numParseExceptions++;
 					Log.e(TAG, "Invalid DAV response", ex);
 				} catch (HttpException ex) {
 					if (ex.getCode() == HttpStatus.SC_UNAUTHORIZED) {
+						syncException = ex;
 						Log.e(TAG, "HTTP Unauthorized " + ex.getCode(), ex);
 						syncResult.stats.numAuthExceptions++;
 					} else if (ex.isClientError()) {
+						syncException = ex;
 						Log.e(TAG, "Hard HTTP error " + ex.getCode(), ex);
 						syncResult.stats.numParseExceptions++;
 					} else {
@@ -143,19 +158,41 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 						syncResult.stats.numIoExceptions++;
 					}
 				} catch (LocalStorageException ex) {
+					syncException = ex;
 					syncResult.databaseError = true;
 					Log.e(TAG, "Local storage (content provider) exception", ex);
 				} catch (IOException ex) {
+					syncException = ex;
 					syncResult.stats.numIoExceptions++;
 					Log.e(TAG, "I/O error (Android will try again later)", ex);
 				} catch (URISyntaxException ex) {
+					syncException = ex;
 					Log.e(TAG, "Invalid URI (file name) syntax", ex);
 				}
 		} finally {
 			// allow httpClient shutdown
 			httpClientLock.readLock().unlock();
 		}
-		
+
+		// show sync errors as notification
+		if (syncException != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+			Intent intentHelp = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.WEB_URL_VIEW_LOGS));
+			PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intentHelp, 0);
+			Notification.Builder builder = new Notification.Builder(context)
+					.setSmallIcon(R.drawable.ic_launcher)
+					.setPriority(Notification.PRIORITY_LOW)
+					.setOnlyAlertOnce(true)
+					.setWhen(System.currentTimeMillis())
+					.setContentTitle(context.getString(R.string.sync_error_title))
+					.setContentText(syncException.getLocalizedMessage())
+					.setContentInfo(account.name)
+					.setStyle(new Notification.BigTextStyle().bigText(account.name + ":\n" + ExceptionUtils.getFullStackTrace(syncException)))
+					.setContentIntent(contentIntent);
+
+			NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+			notificationManager.notify(account.name.hashCode(), builder.build());
+		}
+
 		Log.i(TAG, "Sync complete for " + authority);
 	}
 
