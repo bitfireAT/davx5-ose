@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 
+import ezvcard.VCardVersion;
 import lombok.Cleanup;
 
 import org.apache.commons.io.IOUtils;
@@ -75,7 +76,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 
 	public void testPropfindCurrentUserPrincipal() throws Exception {
 		davCollection.propfind(HttpPropfind.Mode.CURRENT_USER_PRINCIPAL);
-		assertEquals("/dav/principals/users/test", davCollection.getCurrentUserPrincipal());
+		assertEquals(new URI("/dav/principals/users/test"), davCollection.getCurrentUserPrincipal());
 
         WebDavResource simpleFile = new WebDavResource(davAssets, "test.random");
 		try {
@@ -90,21 +91,36 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 	public void testPropfindHomeSets() throws Exception {
 		WebDavResource dav = new WebDavResource(davCollection, "principals/users/test");
 		dav.propfind(HttpPropfind.Mode.HOME_SETS);
-		assertEquals("/dav/addressbooks/test/", dav.getAddressbookHomeSet());
-		assertEquals("/dav/calendars/test/", dav.getCalendarHomeSet());
+		assertEquals(new URI("/dav/addressbooks/test/"), dav.getAddressbookHomeSet());
+		assertEquals(new URI("/dav/calendars/test/"), dav.getCalendarHomeSet());
 	}
 	
 	public void testPropfindAddressBooks() throws Exception {
 		WebDavResource dav = new WebDavResource(davCollection, "addressbooks/test");
 		dav.propfind(HttpPropfind.Mode.CARDDAV_COLLECTIONS);
-		assertEquals(2, dav.getMembers().size());
-		for (WebDavResource member : dav.getMembers()) {
-			if (member.getName().equals("default-v4.vcf"))
-				assertTrue(member.isAddressBook());
-			else
-				assertFalse(member.isAddressBook());
-			assertFalse(member.isCalendar());
-		}
+
+		// there should be two address books
+		assertEquals(3, dav.getMembers().size());
+
+		// the first one is not an address book and not even a collection (referenced by relative URI)
+		WebDavResource ab = dav.getMembers().get(0);
+		assertEquals(TestConstants.roboHydra.resolve("/dav/addressbooks/test/useless-member"), ab.getLocation());
+		assertEquals("useless-member", ab.getName());
+		assertFalse(ab.isAddressBook());
+
+		// the second one is a VCard4-capable address book (referenced by relative URI)
+		ab = dav.getMembers().get(1);
+		assertEquals(TestConstants.roboHydra.resolve("/dav/addressbooks/test/default-v4.vcf/"), ab.getLocation());
+		assertEquals("default-v4.vcf", ab.getName());
+		assertTrue(ab.isAddressBook());
+		assertEquals(VCardVersion.V4_0, ab.getVCardVersion());
+
+		// the third one is a (non-VCard4-capable) address book (referenced by an absolute URI)
+		ab = dav.getMembers().get(2);
+		assertEquals(new URI("https://my.server/absolute:uri/my-address-book/"), ab.getLocation());
+		assertEquals("my-address-book", ab.getName());
+		assertTrue(ab.isAddressBook());
+		assertNull(ab.getVCardVersion());
 	}
 	
 	public void testPropfindCalendars() throws Exception {
@@ -134,7 +150,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		for (String path : requestPaths) {
 			WebDavResource davSlash = new WebDavResource(davCollection, path);
 			davSlash.propfind(Mode.CARDDAV_COLLECTIONS);
-			assertEquals(principalOK, davSlash.getCurrentUserPrincipal());
+			assertEquals(new URI(principalOK), davSlash.getCurrentUserPrincipal());
 		}
 	}
 	
