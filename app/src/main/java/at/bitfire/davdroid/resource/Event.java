@@ -46,6 +46,7 @@ import net.fortuna.ical4j.model.property.Summary;
 import net.fortuna.ical4j.model.property.Transp;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Version;
+import net.fortuna.ical4j.util.CompatibilityHints;
 import net.fortuna.ical4j.util.SimpleHostInfo;
 import net.fortuna.ical4j.util.UidGenerator;
 
@@ -97,6 +98,15 @@ public class Event extends Resource {
 	@Getter private List<VAlarm> alarms = new LinkedList<VAlarm>();
 	public void addAlarm(VAlarm alarm) {
 		alarms.add(alarm);
+	}
+
+	static {
+		CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_UNFOLDING, true);
+		CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_PARSING, true);
+		CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_OUTLOOK_COMPATIBILITY, true);
+
+		// disable automatic time-zone updates (causes unnecessary network traffic for most people)
+		System.setProperty("net.fortuna.ical4j.timezone.update.enabled", "false");
 	}
 	
 

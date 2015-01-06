@@ -21,13 +21,11 @@ import at.bitfire.davdroid.resource.InvalidResourceException;
 public class EventTest extends InstrumentationTestCase {
 	AssetManager assetMgr;
 	
-	Event	eViennaEvolution,
-			eOnThatDay, eAllDay1Day, eAllDay10Days, eAllDay0Sec;
+	Event eOnThatDay, eAllDay1Day, eAllDay10Days, eAllDay0Sec;
 	
 	public void setUp() throws IOException, InvalidResourceException {
 		assetMgr = getInstrumentation().getContext().getResources().getAssets();
 		
-		eViennaEvolution = parseCalendar("vienna-evolution.ics");
 		eOnThatDay = parseCalendar("event-on-that-day.ics");
 		eAllDay1Day = parseCalendar("all-day-1day.ics");
 		eAllDay10Days = parseCalendar("all-day-10days.ics");
@@ -37,8 +35,9 @@ public class EventTest extends InstrumentationTestCase {
 	}
 	
 	
-	public void testStartEndTimes() throws IOException, ParserException {
+	public void testStartEndTimes() throws IOException, ParserException, InvalidResourceException {
 		// event with start+end date-time
+		Event eViennaEvolution = parseCalendar("vienna-evolution.ics");
 		assertEquals(1381330800000L, eViennaEvolution.getDtStartInMillis());
 		assertEquals("Europe/Vienna", eViennaEvolution.getDtStartTzID());
 		assertEquals(1381334400000L, eViennaEvolution.getDtEndInMillis());
@@ -115,6 +114,11 @@ public class EventTest extends InstrumentationTestCase {
 		} catch(IllegalArgumentException e) {
 			assert(true);
 		}
+	}
+
+	public void testUnfolding() throws IOException, InvalidResourceException {
+		Event e = parseCalendar("two-line-description-without-crlf.ics");
+		assertEquals("http://www.tgbornheim.de/index.php?sessionid=&page=&id=&sportcentergroup=&day=6", e.getDescription());
 	}
 	
 	
