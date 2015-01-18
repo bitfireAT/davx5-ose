@@ -14,6 +14,8 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.security.cert.CertPathValidatorException;
 
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocket;
 
@@ -29,7 +31,7 @@ import lombok.Cleanup;
 public class TlsSniSocketFactoryTest extends TestCase {
 	private static final String TAG = "davdroid.TlsSniSocketFactoryTest";
 
-	TlsSniSocketFactory factory = TlsSniSocketFactory.INSTANCE;
+	TlsSniSocketFactory factory = TlsSniSocketFactory.getSocketFactory();
 
 	private InetSocketAddress sampleTlsEndpoint;
 
@@ -41,7 +43,7 @@ public class TlsSniSocketFactoryTest extends TestCase {
 
 	public void testCreateSocket() {
 		try {
-			@Cleanup SSLSocket socket = factory.createSocket(null);
+			@Cleanup Socket socket = factory.createSocket(null);
 			assertFalse(socket.isConnected());
 		} catch (IOException e) {
 			fail();
@@ -50,9 +52,7 @@ public class TlsSniSocketFactoryTest extends TestCase {
 
 	public void testConnectSocket() {
 		try {
-			@Cleanup SSLSocket socket = factory.createSocket(null);
-
-			factory.connectSocket(1000, socket, new HttpHost(sampleTlsEndpoint.getHostName()), sampleTlsEndpoint, null, null);
+			factory.connectSocket(1000, null, new HttpHost(sampleTlsEndpoint.getHostName()), sampleTlsEndpoint, null, null);
 		} catch (IOException e) {
 			Log.e(TAG, "I/O exception", e);
 			fail();
@@ -67,7 +67,7 @@ public class TlsSniSocketFactoryTest extends TestCase {
 			assertTrue(plain.isConnected());
 
 			// then create TLS socket on top of it and establish TLS Connection
-			@Cleanup SSLSocket socket = factory.createLayeredSocket(plain, sampleTlsEndpoint.getHostName(), sampleTlsEndpoint.getPort(), null);
+			@Cleanup Socket socket = factory.createLayeredSocket(plain, sampleTlsEndpoint.getHostName(), sampleTlsEndpoint.getPort(), null);
 			assertTrue(socket.isConnected());
 
 		} catch (IOException e) {
@@ -76,11 +76,8 @@ public class TlsSniSocketFactoryTest extends TestCase {
 		}
 	}
 
-	public void testSetTlsParameters() throws IOException {
-		@Cleanup SSLSocket socket = factory.createSocket(null);
-		factory.setTlsParameters(socket);
-
-		String enabledProtocols[] = socket.getEnabledProtocols();
+	public void testProtocolVersions() throws IOException {
+		String enabledProtocols[] = factory.protocols;
 		// SSL (all versions) should be disabled
 		for (String protocol : enabledProtocols)
 			assertFalse(protocol.contains("SSL"));
@@ -91,27 +88,29 @@ public class TlsSniSocketFactoryTest extends TestCase {
 	}
 
 
-	public void testHostnameNotInCertificate() {
+	public void testHostnameNotInCertificate() throws IOException {
 		try {
 			// host with certificate that doesn't match host name
 			// use the IP address as host name because IP addresses are usually not in the certificate subject
-			InetSocketAddress host = new InetSocketAddress(sampleTlsEndpoint.getAddress().getHostAddress(), 443);
-
-			@Cleanup SSLSocket socket = factory.connectSocket(0, null, new HttpHost(host.getHostName()), host, null, null);
+			final String ipHostname = sampleTlsEndpoint.getAddress().getHostAddress();
+			InetSocketAddress host = new InetSocketAddress(ipHostname, 443);
+			@Cleanup Socket socket = factory.connectSocket(0, null, new HttpHost(ipHostname), host, null, null);
 			fail();
-		} catch (IOException e) {
-			assertFalse(ExceptionUtils.indexOfType(e, SSLPeerUnverifiedException.class) == -1);
+		} catch (SSLException e) {
+			Log.i(TAG, "Expected exception", e);
+			assertFalse(ExceptionUtils.indexOfType(e, SSLException.class) == -1);
 		}
 	}
 
-	public void testUntrustedCertificate() {
+	public void testUntrustedCertificate() throws IOException {
 		try {
 			// host with certificate that is not trusted by default
 			InetSocketAddress host = new InetSocketAddress("cacert.org", 443);
 
-			@Cleanup SSLSocket socket = factory.connectSocket(0, null, new HttpHost(host.getHostName()), host, null, null);
+			@Cleanup Socket socket = factory.connectSocket(0, null, new HttpHost(host.getHostName()), host, null, null);
 			fail();
-		} catch (IOException e) {
+		} catch (SSLHandshakeException e) {
+			Log.i(TAG, "Expected exception", e);
 			assertFalse(ExceptionUtils.indexOfType(e, CertPathValidatorException.class) == -1);
 		}
 	}

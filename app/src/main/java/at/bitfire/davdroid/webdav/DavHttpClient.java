@@ -31,7 +31,7 @@ public class DavHttpClient {
 	static {
 		socketFactoryRegistry =	RegistryBuilder.<ConnectionSocketFactory> create()
 				.register("http", PlainConnectionSocketFactory.getSocketFactory())
-				.register("https", TlsSniSocketFactory.INSTANCE)
+				.register("https", TlsSniSocketFactory.getSocketFactory())
 				.build();
 		
 		// use request defaults from AndroidHttpClient
