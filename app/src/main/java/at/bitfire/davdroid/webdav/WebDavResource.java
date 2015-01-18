@@ -110,8 +110,11 @@ public class WebDavResource {
 	
 	public WebDavResource(CloseableHttpClient httpClient, URI baseURI, String username, String password, boolean preemptive) {
 		this(httpClient, baseURI);
-		
-		context.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+
+		context.getCredentialsProvider().setCredentials(
+				AuthScope.ANY,
+				new UsernamePasswordCredentials(username, password)
+		);
 
 		if (preemptive) {
             HttpHost host = new HttpHost(baseURI.getHost(), baseURI.getPort(), baseURI.getScheme());
@@ -125,6 +128,7 @@ public class WebDavResource {
 	}
 	
 	public WebDavResource(WebDavResource parent) {		// copy constructor: based on existing WebDavResource, reuse settings
+		// reuse httpClient, context and location (no deep copy)
 		httpClient = parent.httpClient;
 		context = parent.context;
 		location = parent.location;
@@ -151,26 +155,22 @@ public class WebDavResource {
 		properties.put(Property.ETAG, ETag);
 	}
 
-	
 
 	/* feature detection */
 
 	public void options() throws URISyntaxException, IOException, HttpException {
 		HttpOptionsHC4 options = new HttpOptionsHC4(location);
-		CloseableHttpResponse response = httpClient.execute(options, context);
-		try {
-			checkResponse(response);
-			
-			Header[] allowHeaders = response.getHeaders("Allow");
-			for (Header allowHeader : allowHeaders)
-				methods.addAll(Arrays.asList(allowHeader.getValue().split(", ?")));
-	
-			Header[] capHeaders = response.getHeaders("DAV");
-			for (Header capHeader : capHeaders)
-				capabilities.addAll(Arrays.asList(capHeader.getValue().split(", ?")));
-		} finally {
-			response.close();
-		}
+
+		@Cleanup CloseableHttpResponse response = httpClient.execute(options, context);
+		checkResponse(response);
+
+		Header[] allowHeaders = response.getHeaders("Allow");
+		for (Header allowHeader : allowHeaders)
+			methods.addAll(Arrays.asList(allowHeader.getValue().split(", ?")));
+
+		Header[] capHeaders = response.getHeaders("DAV");
+		for (Header capHeader : capHeaders)
+			capabilities.addAll(Arrays.asList(capHeader.getValue().split(", ?")));
 	}
 
 	public boolean supportsDAV(String capability) {
@@ -263,7 +263,7 @@ public class WebDavResource {
 	/* collection operations */
 	
 	public void propfind(HttpPropfind.Mode mode) throws URISyntaxException, IOException, DavException, HttpException {
-		CloseableHttpResponse response = null;
+		@Cleanup CloseableHttpResponse response = null;
 		
 		// processMultiStatus() requires knowledge of the actual content location,
 		// so we have to handle redirections manually and create a new request for the new location
@@ -283,16 +283,12 @@ public class WebDavResource {
 		if (response == null)
 			throw new DavNoContentException();
 		
-		try {
-			checkResponse(response);		// will also handle Content-Location
-			processMultiStatus(response);
-		} finally {
-			response.close();
-		}
+		checkResponse(response);		// will also handle Content-Location
+		processMultiStatus(response);
 	}
 
 	public void multiGet(DavMultiget.Type type, String[] names) throws URISyntaxException, IOException, DavException, HttpException {
-		CloseableHttpResponse response = null;
+		@Cleanup CloseableHttpResponse response = null;
 		
 		// processMultiStatus() requires knowledge of the actual content location,
 		// so we have to handle redirections manually and create a new request for the new location
@@ -332,12 +328,8 @@ public class WebDavResource {
 		if (response == null)
 			throw new DavNoContentException();
 		
-		try {
-			checkResponse(response);		// will also handle Content-Location
-			processMultiStatus(response);
-		} finally {
-			response.close();
-		}
+		checkResponse(response);		// will also handle Content-Location
+		processMultiStatus(response);
 	}
 
 	
@@ -347,18 +339,14 @@ public class WebDavResource {
 		HttpGetHC4 get = new HttpGetHC4(location);
 		get.addHeader("Accept", acceptedType);
 		
-		CloseableHttpResponse response = httpClient.execute(get, context);
-		try {
-			checkResponse(response);
-			
-			HttpEntity entity = response.getEntity();
-			if (entity == null)
-				throw new DavNoContentException();
-			
-			content = EntityUtilsHC4.toByteArray(entity);
-		} finally {
-			response.close();
-		}
+		@Cleanup CloseableHttpResponse response = httpClient.execute(get, context);
+		checkResponse(response);
+
+		HttpEntity entity = response.getEntity();
+		if (entity == null)
+			throw new DavNoContentException();
+
+		content = EntityUtilsHC4.toByteArray(entity);
 	}
 	
 	// returns the ETag of the created/updated resource, if available (null otherwise)
@@ -378,17 +366,13 @@ public class WebDavResource {
 		if (getContentType() != null)
 			put.addHeader("Content-Type", getContentType());
 
-		CloseableHttpResponse response = httpClient.execute(put, context);
-		try {
-			checkResponse(response);
+		@Cleanup CloseableHttpResponse response = httpClient.execute(put, context);
+		checkResponse(response);
 
-			Header eTag = response.getLastHeader("ETag");
-			if (eTag != null)
-				return eTag.getValue();
-		} finally {
-			response.close();
-		}
-		
+		Header eTag = response.getLastHeader("ETag");
+		if (eTag != null)
+			return eTag.getValue();
+
 		return null;
 	}
 	
@@ -398,12 +382,8 @@ public class WebDavResource {
 		if (getETag() != null)
 			delete.addHeader("If-Match", getETag());
 		
-		CloseableHttpResponse response = httpClient.execute(delete, context);
-		try {
-			checkResponse(response);
-		} finally {
-			response.close();
-		}
+		@Cleanup CloseableHttpResponse response = httpClient.execute(delete, context);
+		checkResponse(response);
 	}
 	
 

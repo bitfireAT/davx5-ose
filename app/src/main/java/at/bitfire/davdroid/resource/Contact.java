@@ -14,6 +14,8 @@ import org.apache.commons.lang.StringUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -129,7 +131,7 @@ public class Contact extends Resource {
 
 	@SuppressWarnings("LoopStatementThatDoesntLoop")
     @Override
-	public void parseEntity(InputStream is) throws IOException {
+	public void parseEntity(InputStream is, AssetDownloader downloader) throws IOException {
 		VCard vcard = Ezvcard.parse(is).first();
 		if (vcard == null)
 			return;
@@ -204,6 +206,14 @@ public class Contact extends Resource {
 		// PHOTO
 		for (Photo photo : vcard.getPhotos()) {
 			this.photo = photo.getData();
+			if (this.photo == null && photo.getUrl() != null)
+				try {
+					URI uri = new URI(photo.getUrl());
+					Log.i(TAG, "Downloading contact photo from " + uri);
+					this.photo = downloader.download(uri);
+				} catch(Exception e) {
+					Log.w(TAG, "Couldn't fetch contact photo", e);
+				}
 			vcard.removeProperties(Photo.class);
 			break;
 		}

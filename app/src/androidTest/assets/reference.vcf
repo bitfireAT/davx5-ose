@@ -4,7 +4,7 @@ N:Gump;Forrest;Mr.
 FN:Forrest Gump
 ORG:Bubba Gump Shrimp Co.
 TITLE:Shrimp Man
-PHOTO;VALUE=URL;TYPE=GIF:http://www.example.com/dir_photos/my_photo.gif
+PHOTO;VALUE=URL;TYPE=PNG:http://10.0.0.11:3000/assets/davdroid-logo-192.png
 TEL;TYPE=WORK,VOICE:(111) 555-1212
 TEL;TYPE=HOME,VOICE:(404) 555-1212
 ADR;TYPE=WORK:;;100 Waters Edge;Baytown;LA;30314;United States of America

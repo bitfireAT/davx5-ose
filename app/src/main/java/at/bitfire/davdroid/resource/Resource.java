@@ -10,7 +10,12 @@ package at.bitfire.davdroid.resource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
+import at.bitfire.davdroid.webdav.DavException;
+import at.bitfire.davdroid.webdav.HttpException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -39,8 +44,17 @@ public abstract class Resource {
 	/** initializes UID and remote file name (required for first upload) */
 	public abstract void initialize();
 	
-	/** fills the resource data from an input stream (for instance, .vcf file for Contact) */
-	public abstract void parseEntity(InputStream entity) throws IOException, InvalidResourceException;
+	/** fills the resource data from an input stream (for instance, .vcf file for Contact)
+	 * @param entity        entity to parse
+	 * @param downloader    will be used to fetch additional resources like contact images
+	 **/
+	public abstract void parseEntity(InputStream entity, AssetDownloader downloader) throws IOException, InvalidResourceException;
+
 	/** writes the resource data to an output stream (for instance, .vcf file for Contact) */
 	public abstract ByteArrayOutputStream toEntity() throws IOException;
+
+
+	public interface AssetDownloader {
+		public byte[] download(URI url) throws URISyntaxException, IOException, HttpException, DavException;
+	}
 }

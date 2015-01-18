@@ -44,8 +44,9 @@ public class DavRedirectStrategy implements RedirectStrategy {
 
 		String location = getLocation(request, response, context).toString();
 		Log.i(TAG, "Following redirection: " + line.getMethod() + " " + line.getUri() + " -> " + location);
-		
-		return	RequestBuilder.copy(request)
+
+		return RequestBuilder
+				.copy(request)
 				.setUri(location)
 				.removeHeaders("Content-Length")	// Content-Length will be set again automatically, if required;
 													// remove it now to avoid duplicate header
