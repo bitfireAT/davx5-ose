@@ -133,7 +133,7 @@ public class Event extends Resource {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void parseEntity(@NonNull InputStream entity) throws IOException, InvalidResourceException {
+	public void parseEntity(@NonNull InputStream entity, AssetDownloader downloader) throws IOException, InvalidResourceException {
 		net.fortuna.ical4j.model.Calendar ical;
 		try {
 			CalendarBuilder builder = new CalendarBuilder();

@@ -55,7 +55,7 @@ public class ContactTest extends InstrumentationTestCase {
 		@Cleanup InputStream in = assetMgr.open(fileName, AssetManager.ACCESS_STREAMING);
 		
 		Contact c = new Contact(fileName, null);
-		c.parseEntity(in);
+		c.parseEntity(in, null);
 		
 		return c;
 	}

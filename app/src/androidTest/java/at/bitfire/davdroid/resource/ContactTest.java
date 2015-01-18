@@ -9,12 +9,20 @@ package at.bitfire.davdroid.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 
+import at.bitfire.davdroid.webdav.DavException;
+import at.bitfire.davdroid.webdav.HttpException;
 import ezvcard.property.Email;
 import ezvcard.property.Telephone;
 import lombok.Cleanup;
 import android.content.res.AssetManager;
 import android.test.InstrumentationTestCase;
+
+import org.apache.commons.io.IOUtils;
+
 import at.bitfire.davdroid.resource.Contact;
 import at.bitfire.davdroid.resource.InvalidResourceException;
 
@@ -47,8 +55,12 @@ public class ContactTest extends InstrumentationTestCase {
 		assertEquals("forrestgump@example.com", email.getValue());
 		assertEquals("PREF", email.getParameters("TYPE").get(0));
 		assertEquals("INTERNET", email.getParameters("TYPE").get(1));
+
+		@Cleanup InputStream photoStream = assetMgr.open("davdroid-logo-192.png", AssetManager.ACCESS_STREAMING);
+		byte[] expectedPhoto = IOUtils.toByteArray(photoStream);
+		assertTrue(Arrays.equals(c.getPhoto(), expectedPhoto));
 	}
-	
+
 	public void testParseInvalidUnknownProperties() throws IOException, InvalidResourceException {
 		Contact c = parseVCF("invalid-unknown-properties.vcf");
 		assertEquals("VCard with invalid unknown properties", c.getDisplayName());
@@ -59,7 +71,12 @@ public class ContactTest extends InstrumentationTestCase {
 	protected Contact parseVCF(String fname) throws IOException, InvalidResourceException {
 		@Cleanup InputStream in = assetMgr.open(fname, AssetManager.ACCESS_STREAMING);
 		Contact c = new Contact(fname, null);
-		c.parseEntity(in);
+		c.parseEntity(in, new Resource.AssetDownloader() {
+			@Override
+			public byte[] download(URI uri) throws URISyntaxException, IOException, HttpException, DavException {
+				return IOUtils.toByteArray(uri);
+			}
+		});
 		return c;
 	}
 }
