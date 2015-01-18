@@ -39,6 +39,8 @@ import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.net.ssl.SSLException;
+
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalCollection;
@@ -130,7 +132,7 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 		AccountSettings accountSettings = new AccountSettings(getContext(), account);
 		Log.d(TAG, "Server supports VCard version " + accountSettings.getAddressBookVCardVersion());
 
-		Exception syncException = null;
+		Exception exceptionToShow = null;     // exception to show notification for
 		try {
 			// get local <-> remote collection pairs
 			Map<LocalCollection<?>, RemoteCollection<?>> syncCollections = getSyncPairs(account, provider);
@@ -141,32 +143,32 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 					for (Map.Entry<LocalCollection<?>, RemoteCollection<?>> entry : syncCollections.entrySet())
 						new SyncManager(entry.getKey(), entry.getValue()).synchronize(extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL), syncResult);
 				} catch (DavException ex) {
-					syncException = ex;
+					exceptionToShow = ex;
 					syncResult.stats.numParseExceptions++;
 					Log.e(TAG, "Invalid DAV response", ex);
 				} catch (HttpException ex) {
 					if (ex.getCode() == HttpStatus.SC_UNAUTHORIZED) {
-						syncException = ex;
+						exceptionToShow = ex;
 						Log.e(TAG, "HTTP Unauthorized " + ex.getCode(), ex);
-						syncResult.stats.numAuthExceptions++;
+						syncResult.stats.numAuthExceptions++;   // hard error
 					} else if (ex.isClientError()) {
-						syncException = ex;
+						exceptionToShow = ex;
 						Log.e(TAG, "Hard HTTP error " + ex.getCode(), ex);
-						syncResult.stats.numParseExceptions++;
+						syncResult.stats.numParseExceptions++;  // hard error
 					} else {
 						Log.w(TAG, "Soft HTTP error " + ex.getCode() + " (Android will try again later)", ex);
-						syncResult.stats.numIoExceptions++;
+						syncResult.stats.numIoExceptions++;     // soft error
 					}
 				} catch (LocalStorageException ex) {
-					syncException = ex;
-					syncResult.databaseError = true;
+					exceptionToShow = ex;
+					syncResult.databaseError = true;    // hard error
 					Log.e(TAG, "Local storage (content provider) exception", ex);
 				} catch (IOException ex) {
-					syncException = ex;
-					syncResult.stats.numIoExceptions++;
+					syncResult.stats.numIoExceptions++;     // soft error
 					Log.e(TAG, "I/O error (Android will try again later)", ex);
 				} catch (URISyntaxException ex) {
-					syncException = ex;
+					exceptionToShow = ex;
+					syncResult.stats.numParseExceptions++;  // hard error
 					Log.e(TAG, "Invalid URI (file name) syntax", ex);
 				}
 		} finally {
@@ -175,7 +177,7 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 		}
 
 		// show sync errors as notification
-		if (syncException != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+		if (exceptionToShow != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 			Intent intentHelp = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.WEB_URL_VIEW_LOGS));
 			PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intentHelp, 0);
 			Notification.Builder builder = new Notification.Builder(context)
@@ -184,9 +186,9 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 					.setOnlyAlertOnce(true)
 					.setWhen(System.currentTimeMillis())
 					.setContentTitle(context.getString(R.string.sync_error_title))
-					.setContentText(syncException.getLocalizedMessage())
+					.setContentText(exceptionToShow.getLocalizedMessage())
 					.setContentInfo(account.name)
-					.setStyle(new Notification.BigTextStyle().bigText(account.name + ":\n" + ExceptionUtils.getFullStackTrace(syncException)))
+					.setStyle(new Notification.BigTextStyle().bigText(account.name + ":\n" + ExceptionUtils.getFullStackTrace(exceptionToShow)))
 					.setContentIntent(contentIntent);
 
 			NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
