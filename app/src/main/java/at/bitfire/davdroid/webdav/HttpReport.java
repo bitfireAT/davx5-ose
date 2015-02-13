@@ -30,7 +30,7 @@ public class HttpReport extends HttpEntityEnclosingRequestBaseHC4 {
 		
 		setHeader("Content-Type", "text/xml; charset=UTF-8");
 		setHeader("Accept", "text/xml");
-		setHeader("Depth", "0");
+		setHeader("Depth", "1");
 
         try {
             setEntity(new StringEntity(entity, "UTF-8"));
