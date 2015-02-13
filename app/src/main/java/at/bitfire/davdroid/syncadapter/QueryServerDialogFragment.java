@@ -125,8 +125,6 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 				// overwrite by more specific message, if possible
 				if (ExceptionUtils.indexOfType(e, CertPathValidatorException.class) != -1)
 					serverInfo.setErrorMessage(getContext().getString(R.string.exception_cert_path_validation, e.getMessage()));
-				else if (ExceptionUtils.indexOfType(e, SSLPeerUnverifiedException.class) != -1)
-					serverInfo.setErrorMessage(getContext().getString(R.string.exception_peer_unverified, e.getMessage()));
 			} catch (HttpException e) {
 				Log.e(TAG, "HTTP error while querying server info", e);
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_http, e.getLocalizedMessage()));

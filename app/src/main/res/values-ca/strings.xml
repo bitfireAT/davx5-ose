@@ -114,9 +114,7 @@
     <string name="setup_querying_server">Contactant servidor. Espereu sisuplau.</string>
     <string name="setup_what_to_sync">Quines col·leccions s\'han de sincronitzar?</string>
     <string name="setup_address_books">Llibretes de contactes</string>
-    <string name="setup_address_book">Llibreta de contactes</string>
     <string name="setup_calendars">Calendaris</string>
-    <string name="setup_calendar">Calendari</string>
     <string name="setup_select_address_book">Seleccioneu com a molt una llibreta de contactes (Polseu de nou per deseleccionar):</string>
     <string name="setup_select_calendars">Seleccioneu els vostres calendaris:</string>
 
