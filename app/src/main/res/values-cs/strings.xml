@@ -113,9 +113,7 @@
     <string name="setup_querying_server">Probíhá komunikace se serverem. Chvilku strpení…</string>
     <string name="setup_what_to_sync">Které sbírky mají být synchronizovány?</string>
     <string name="setup_address_books">Adresáře</string>
-    <string name="setup_address_book">Adresář</string>
     <string name="setup_calendars">Kalendáře</string>
-    <string name="setup_calendar">Kalendář</string>
     <string name="setup_select_address_book">Vybrat alespoň jeden adresář (opakovaně tapnout pro odebrání):</string>
     <string name="setup_select_calendars">Vybrat své kalendáře:</string>
     

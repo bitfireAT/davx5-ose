@@ -51,8 +51,10 @@ import net.fortuna.ical4j.model.property.Status;
 
 import org.apache.commons.lang.StringUtils;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
@@ -119,7 +121,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 				color = (color_alpha << 24) | color_rgb;
 			}
 		}
-		
+
 		ContentValues values = new ContentValues();
 		values.put(Calendars.ACCOUNT_NAME, account.name);
 		values.put(Calendars.ACCOUNT_TYPE, account.type);

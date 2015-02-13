@@ -117,9 +117,7 @@
     <string name="setup_querying_server">Kapcsolódás a szerverhez. Egy pillanat…</string>
     <string name="setup_what_to_sync">Melyik gyűjtemények legyenek szinkronizálva?</string>
     <string name="setup_address_books">Címjegyzékek</string>
-    <string name="setup_address_book">Címjegyzék</string>
     <string name="setup_calendars">Naptárak</string>
-    <string name="setup_calendar">Naptár</string>
     <string name="setup_select_address_book">Egy címjegyzék választható (a kijelölés visszavonása újbóli érintéssel vagy másik tétel kiválasztásával):</string>
     <string name="setup_select_calendars">Naptárak kiválasztása:</string>
     
