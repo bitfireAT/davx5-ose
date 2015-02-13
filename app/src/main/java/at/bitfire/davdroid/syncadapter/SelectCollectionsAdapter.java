@@ -30,7 +30,7 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 	
 	protected Context context;
 	protected ServerInfo serverInfo;
-	@Getter protected int nAddressBooks, nCalendars;
+	@Getter protected int nAddressBooks, nAddressbookHeadings, nCalendars, nCalendarHeadings;
 	
 	
 	public SelectCollectionsAdapter(Context context, ServerInfo serverInfo) {
@@ -38,7 +38,9 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 		
 		this.serverInfo = serverInfo;
 		nAddressBooks = (serverInfo.getAddressBooks() == null) ? 0 : serverInfo.getAddressBooks().size();
+		nAddressbookHeadings = (nAddressBooks == 0) ? 0 : 1;
 		nCalendars = (serverInfo.getCalendars() == null) ? 0 : serverInfo.getCalendars().size();
+		nCalendarHeadings = (nCalendars == 0) ? 0 : 1;
 	}
 	
 	
@@ -46,15 +48,17 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 	
 	@Override
 	public int getCount() {
-		return nAddressBooks + nCalendars + 2;
+		return nAddressbookHeadings + nAddressBooks + nCalendarHeadings + nCalendars;
 	}
 
 	@Override
 	public Object getItem(int position) {
-		if (position > 0 && position <= nAddressBooks)
-			return serverInfo.getAddressBooks().get(position - 1);
-		else if (position > nAddressBooks + 1)
-			return serverInfo.getCalendars().get(position - nAddressBooks - 2);
+		if (position >= nAddressbookHeadings &&
+			position < (nAddressbookHeadings + nAddressBooks))
+			return serverInfo.getAddressBooks().get(position - nAddressbookHeadings);
+		else if (position >= (nAddressbookHeadings + nAddressBooks + nCalendarHeadings) &&
+				(position < (nAddressbookHeadings + nAddressBooks + nCalendarHeadings + nCalendars)))
+			return serverInfo.getCalendars().get(position - (nAddressbookHeadings + nAddressBooks + nCalendarHeadings));
 		return null;
 	}
 	
@@ -78,13 +82,13 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 
 	@Override
 	public int getItemViewType(int position) {
-		if (position == 0)
+		if ((nAddressbookHeadings != 0) && (position == 0))
 			return TYPE_ADDRESS_BOOKS_HEADING;
-		else if (position <= nAddressBooks)
+		else if ((nAddressbookHeadings != 0) && (position > 0) && (position < nAddressbookHeadings + nAddressBooks))
 			return TYPE_ADDRESS_BOOKS_ROW;
-		else if (position == nAddressBooks + 1)
+		else if ((nCalendars != 0) && (position == nAddressbookHeadings + nAddressBooks))
 			return TYPE_CALENDARS_HEADING;
-		else if (position <= nAddressBooks + nCalendars + 1)
+		else if ((nCalendars != 0) && (position > nAddressbookHeadings + nAddressBooks) && (position < nAddressbookHeadings + nAddressBooks + nCalendarHeadings + nCalendars))
 			return TYPE_CALENDARS_ROW;
 		else
 			return IGNORE_ITEM_VIEW_TYPE;
@@ -133,11 +137,7 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 		view.setCompoundDrawablePadding(10);
 		
 		// set text		
-		String title = info.getTitle();
-		if (title == null)		// unnamed collection
-			title = context.getString((info.getType() == Type.ADDRESS_BOOK) ?
-					R.string.setup_address_book : R.string.setup_calendar);
-		title = "<b>" + title + "</b>";
+		String title = "<b>" + info.getTitle() + "</b>";
 		if (info.isReadOnly())
 			title = title + " (" + context.getString(R.string.setup_read_only) + ")";
 		

@@ -108,9 +108,7 @@
     <string name="setup_querying_server">Шаљем упит серверу. Сачекајте…</string>
     <string name="setup_what_to_sync">Које збирке да синхронизујем?</string>
     <string name="setup_address_books">Адресари</string>
-    <string name="setup_address_book">Адресар</string>
     <string name="setup_calendars">Календари</string>
-    <string name="setup_calendar">Календар</string>
     <string name="setup_select_address_book">Изаберите један адресар (додирните поново да поништите избор):</string>
     <string name="setup_select_calendars">Изаберите ваше календаре:</string>
     

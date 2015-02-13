@@ -8,6 +8,7 @@
 package at.bitfire.davdroid.resource;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
@@ -68,5 +69,18 @@ public class ServerInfo implements Serializable {
 		VCardVersion vCardVersion;
 
 		String timezone;
+
+
+		public String getTitle() {
+			if (title == null) {
+				try {
+					java.net.URL url = new java.net.URL(URL);
+					return url.getPath();
+				} catch (MalformedURLException e) {
+					return URL;
+				}
+			} else
+				return title;
+		}
 	}
 }
