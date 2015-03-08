@@ -1,10 +1,10 @@
-/*******************************************************************************
- * Copyright (c) 2014 Ricki Hirner (bitfire web engineering).
+/*
+ * Copyright (c) 2013 – 2015 Ricki Hirner (bitfire web engineering).
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
- ******************************************************************************/
+ */
 package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
@@ -13,15 +13,18 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.PeriodicSync;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import at.bitfire.davdroid.resource.ServerInfo;
 import ezvcard.VCardVersion;
@@ -40,7 +43,9 @@ public class AccountSettings {
 		KEY_ADDRESSBOOK_URL = "addressbook_url",
 		KEY_ADDRESSBOOK_CTAG = "addressbook_ctag",
 		KEY_ADDRESSBOOK_VCARD_VERSION = "addressbook_vcard_version";
-	
+
+	public final static long SYNC_INTERVAL_MANUALLY = -1;
+
 	Context context;
 	AccountManager accountManager;
 	Account account;
@@ -79,21 +84,71 @@ public class AccountSettings {
 	}
 	
 	
-	// general settings
-	
+	// authentication settings
+
 	public String getUserName() {
 		return accountManager.getUserData(account, KEY_USERNAME);		
 	}
+	void setUserName(String userName) { accountManager.setUserData(account, KEY_USERNAME, userName); }
 	
 	public String getPassword() {
 		return accountManager.getPassword(account);
 	}
+	void setPassword(String password) { accountManager.setPassword(account, password); }
 	
-	public boolean getPreemptiveAuth() {
-		return Boolean.parseBoolean(accountManager.getUserData(account, KEY_AUTH_PREEMPTIVE));
+	public boolean getPreemptiveAuth() { return Boolean.parseBoolean(accountManager.getUserData(account, KEY_AUTH_PREEMPTIVE)); }
+	void setPreemptiveAuth(boolean preemptive) { accountManager.setUserData(account, KEY_AUTH_PREEMPTIVE, Boolean.toString(preemptive)); }
+
+
+	// sync. settings
+
+	public Long getContactsSyncInterval() {
+		if (ContentResolver.getIsSyncable(account, ContactsContract.AUTHORITY) <= 0)
+			return null;
+
+		if (ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY)) {
+			List<PeriodicSync> syncs = ContentResolver.getPeriodicSyncs(account, ContactsContract.AUTHORITY);
+			if (syncs.isEmpty())
+				return SYNC_INTERVAL_MANUALLY;
+			else
+				return syncs.get(0).period;
+		} else
+			return SYNC_INTERVAL_MANUALLY;
 	}
-	
-	
+
+	public void setContactsSyncInterval(long seconds) {
+		if (seconds == SYNC_INTERVAL_MANUALLY) {
+			ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, false);
+		} else {
+			ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
+			ContentResolver.addPeriodicSync(account, ContactsContract.AUTHORITY, new Bundle(), seconds);
+		}
+	}
+
+	public Long getCalendarsSyncInterval() {
+		if (ContentResolver.getIsSyncable(account, CalendarContract.AUTHORITY) <= 0)
+			return null;
+
+		if (ContentResolver.getSyncAutomatically(account, CalendarContract.AUTHORITY)) {
+			List<PeriodicSync> syncs = ContentResolver.getPeriodicSyncs(account, CalendarContract.AUTHORITY);
+			if (syncs.isEmpty())
+				return SYNC_INTERVAL_MANUALLY;
+			else
+				return syncs.get(0).period;
+		} else
+			return SYNC_INTERVAL_MANUALLY;
+	}
+
+	public void setCalendarsSyncInterval(long seconds) {
+		if (seconds == SYNC_INTERVAL_MANUALLY) {
+			ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, false);
+		} else {
+			ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true);
+			ContentResolver.addPeriodicSync(account, CalendarContract.AUTHORITY, new Bundle(), seconds);
+		}
+	}
+
+
 	// address book (CardDAV) settings
 	
 	public String getAddressBookURL() {
