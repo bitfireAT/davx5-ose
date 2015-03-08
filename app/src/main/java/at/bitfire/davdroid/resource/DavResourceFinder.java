@@ -1,10 +1,10 @@
-/*******************************************************************************
- * Copyright (c) 2014 Ricki Hirner (bitfire web engineering).
+/*
+ * Copyright (c) 2013 – 2015 Ricki Hirner (bitfire web engineering).
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
- ******************************************************************************/
+ */
 package at.bitfire.davdroid.resource;
 
 import android.content.Context;
@@ -67,11 +67,11 @@ public class DavResourceFinder implements Closeable {
 			Log.i(TAG, "Couldn't find address-book home set", e);
 		}
 		if (uriAddressBookHomeSet != null) {
-			serverInfo.setCardDAV(true);
 			Log.i(TAG, "Found address-book home set: " + uriAddressBookHomeSet);
 
 			WebDavResource homeSetAddressBooks = new WebDavResource(principal, uriAddressBookHomeSet);
 			if (checkHomesetCapabilities(homeSetAddressBooks, "addressbook")) {
+				serverInfo.setCardDAV(true);
 				homeSetAddressBooks.propfind(Mode.CARDDAV_COLLECTIONS);
 
 				List<ServerInfo.ResourceInfo> addressBooks = new LinkedList<>();
@@ -109,11 +109,11 @@ public class DavResourceFinder implements Closeable {
 			Log.i(TAG, "Couldn't find calendar home set", e);
 		}
 		if (uriCalendarHomeSet != null) {
-			serverInfo.setCalDAV(true);
 			Log.i(TAG, "Found calendar home set: " + uriCalendarHomeSet);
 
 			WebDavResource homeSetCalendars = new WebDavResource(principal, uriCalendarHomeSet);
 			if (checkHomesetCapabilities(homeSetCalendars, "calendar-access")) {
+				serverInfo.setCalDAV(true);
 				homeSetCalendars.propfind(Mode.CALDAV_COLLECTIONS);
 
 				List<ServerInfo.ResourceInfo> calendars = new LinkedList<>();
