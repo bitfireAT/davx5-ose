@@ -1,11 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    
-    <PreferenceScreen android:title="@string/davdroid_website" >
-        <intent
-            android:targetPackage="at.bitfire.davdroid"
-            android:targetClass="at.bitfire.davdroid.MainActivity"
-            android:action="ACTION_VIEW" />
-    </PreferenceScreen>
+<!--
+  ~ Copyright (c) 2013 – 2015 Ricki Hirner (bitfire web engineering).
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0
+  ~ which accompanies this distribution, and is available at
+  ~ http://www.gnu.org/licenses/gpl.html
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/settings_authentication">
+
+        <EditTextPreference
+            android:key="username"
+            android:title="@string/settings_username"
+            android:persistent="false"
+            android:dialogTitle="@string/settings_enter_username" />
+
+        <EditTextPreference
+            android:key="password"
+            android:title="@string/settings_password"
+            android:persistent="false"
+            android:password="true"
+            android:summary="@string/settings_password_summary"
+            android:dialogTitle="@string/settings_enter_password" />
+
+        <CheckBoxPreference
+            android:key="preemptive"
+            android:persistent="false"
+            android:title="@string/settings_preemptive"
+            android:summaryOn="@string/settings_preemptive_on"
+            android:summaryOff="@string/settings_preemptive_off" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/settings_sync">
+
+        <ListPreference
+            android:key="sync_interval_contacts"
+            android:persistent="false"
+            android:title="@string/settings_sync_interval_contacts"
+            android:entries="@array/settings_sync_interval_names"
+            android:entryValues="@array/settings_sync_interval_seconds" />
+
+        <ListPreference
+            android:key="sync_interval_calendars"
+            android:persistent="false"
+            android:title="@string/settings_sync_interval_calendars"
+            android:entries="@array/settings_sync_interval_names"
+            android:entryValues="@array/settings_sync_interval_seconds" />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>
