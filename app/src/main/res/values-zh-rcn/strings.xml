@@ -11,11 +11,10 @@
 
     <!-- common strings -->
     <string name="app_name">DAVdroid</string>
-    
-    <string name="davdroid_website">DAVdroid 网站</string>
     <string name="next">继续</string>
     <string name="help">帮助</string>
-    
+
+    <string name="exception_cert_path_validation">证书路径中出现不信任的证书，更多信息请查看帮助</string>
     <string name="exception_http">HTTP 错误: %s</string>
     <string name="exception_incapable_resource">服务器缺少功能: %s</string>
     <string name="exception_io">I/O 错误: %s</string>
@@ -28,7 +27,7 @@
         <p>感谢您在 Google Play 上购买 DAVdroid 支持本项目。然而 Google Play 版应用有两个问题：</p>
         
         <h2>1. 账户可能在重启后消失</h2>
-        <p>您可能会遇到以下问题：您所有的 <strong>DAVdroid 同步账户（包括通讯录和日历）在设备重启后消失</strong>。这是由于 <a href="https://code.google.com/p/android/issues/detail?id=34880">Android 系统的一个 BUG</a>，开机时，在检查完孤立账户后才会载入（加密的）程序文件，从而导致了付费应用创建的账户被移除。</p>
+        <p>您可能会遇到以下问题：您所有的 <strong>DAVdroid 同步账户（包括通讯录和日历）在设备重启后消失</strong>。这是由于 <a href="https://code.google.com/p/android/issues/detail?id=34880">Android 系统的一个 BUG</a>，开机时，系统先检查账户是否有效，再加载加密的程序，从而导致了付费应用创建的账户被移除。</p>
         <p>受影响的用户：<br/>
         * 从 Play 商店安装 DAVdroid 的所有 Android 4.1 用户；<br/>
         * 从 Play 商店安装 DAVdroid 的部分设备（如大部分的三星设备）的 Android 4.2 用户。</p>
@@ -60,11 +59,11 @@
        如果您想支持这个项目，请考虑 <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">给 DAVdroid 捐款</a> 或购买其付费版。</p>
        
        <h1>许可</h1>
-       <p>Copyright (c) 2013 – 2014 Ricki Hirner (<a href="http://www.bitfire.at">bitfire web engineering</a>). All rights reserved.
+       <p>Copyright (c) 2013 – 2015 Ricki Hirner, Bernhard Stockmann (<a href="http://www.bitfire.at">bitfire web engineering</a>). All rights reserved.
        This program and the accompanying materials are made available under the terms of the GNU Public License v3.0 which
        accompanies this distribution, and is available at <a
        href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. As far as Google Play, Samsung
-       Store, AndroidPit App Center or Amazon Appstore require other terms, the respective terms apply for versions
+       Store or Amazon Appstore require other terms, the respective terms apply for versions
        that are downloaded via these services.</p>
        
        <p>Translation for German is provided by the authors. Translation for Chinese Simplified is by <a href="https://github.com/phy25">@phy25</a>. Translations to other languages have been contributed by
@@ -82,11 +81,11 @@
 
     <!-- AddAccountActivity -->
     <string name="login_type_email">使用邮箱地址登录</string>
-    <string name="login_type_email_description">服务器信息会通过域名进行发现。例如: myaccount@icloud.com</string>
+    <string name="login_type_email_description">服务器连接信息由域名本身提供。例如: myaccount@icloud.com</string>
     <string name="login_type_url">使用 URL 和用户名登录</string>
-    <string name="login_type_url_description">服务器信息会通过 URL 和用户名进行发现。个人搭建的服务通常使用此项。</string>
+    <string name="login_type_url_description">服务器连接通过 URL 和用户名进行。个人搭建的服务通常使用此项。</string>
     
-    <string name="login_email_description">请输入您的邮箱地址。邮箱的域名会被用来自动发现服务器信息。</string>
+    <string name="login_email_description">请输入您的邮箱地址。邮箱的域名会被用来自动连接服务器。</string>
     <string name="login_email_address">Email：</string>
     
     <string-array name="login_url_scheme">
@@ -96,14 +95,52 @@
     <string name="login_http_warning">"如果不使用加密连接 (HTTPS)，其他人将很容易获取到你的登录信息、通讯录和日程。"</string>
     <string name="login_user_name">用户名：</string>
     <string name="login_base_url">服务器根地址（集合会自动检测）：</string>
-    <string name="login_auth_preemptive">抢先认证模式（推荐使用，但不兼容 Digest 认证方式）</string>
+    <string name="login_auth_preemptive">强制认证模式（推荐使用，但不兼容 Digest 认证方式）</string>
 
     <string name="login_password">密码：</string>
-    
+
+    <string name="settings_title">设置</string>
+    <string name="settings_no_accounts">找不到 DAVdroid 账户</string>
+    <string name="settings_authentication">认证</string>
+    <string name="settings_username">用户名</string>
+    <string name="settings_enter_username">输入用户名</string>
+    <string name="settings_password">密码</string>
+    <string name="settings_password_summary">点按以修改密码</string>
+    <string name="settings_enter_password">输入密码</string>
+    <string name="settings_preemptive">强制认证模式</string>
+    <string name="settings_preemptive_on">认证信息在每次请求中发送（推荐）</string>
+    <string name="settings_preemptive_off">认证信息在服务器要求后才发送</string>
+    <string name="settings_sync">同步</string>
+    <string name="settings_sync_interval_contacts">通讯录自动同步间隔</string>
+    <string name="settings_sync_summary_manually">手动同步</string>
+    <string name="settings_sync_summary_periodically">每 %d 分钟或本地修改后</string>
+    <string name="settings_sync_summary_not_available">不可用</string>
+    <string name="settings_sync_interval_calendars">日历自动同步间隔</string>
+    <string-array name="settings_sync_interval_seconds">
+        <item>-1</item>
+        <item>300</item>
+        <item>600</item>
+        <item>900</item>
+        <item>3600</item>
+        <item>7200</item>
+        <item>14400</item>
+        <item>86400</item>
+    </string-array>
+    <string-array name="settings_sync_interval_names">
+        <item>手动同步</item>
+        <item>每 5 分钟</item>
+        <item>每 10 分钟</item>
+        <item>每 15 分钟</item>
+        <item>每 1 小时</item>
+        <item>每 2 小时</item>
+        <item>每 4 小时</item>
+        <item>每 24 小时</item>
+    </string-array>
+
     <string name="setup_select_collections">DAVdroid: 选择同步项</string>
-    <string name="setup_neither_caldav_nor_carddav">找不到可用的 CalDAV-/CardDAV 服务。</string>
+    <string name="setup_neither_caldav_nor_carddav">找不到可用的 CalDAV/CardDAV 服务。</string>
     <string name="setup_add_account">增加账户</string>
-    <string name="setup_querying_server">正在请求，请稍等…</string>
+    <string name="setup_querying_server">正在尝试，请稍等…</string>
     <string name="setup_what_to_sync">需要同步哪些集合？</string>
     <string name="setup_address_books">通讯录</string>
     <string name="setup_calendars">日历</string>
@@ -117,5 +154,7 @@
     <string name="setup_organizer_hint">"日程的组织者 (ORGANIZER)；如果您使用参与者信息，则必填"</string>
     <string name="setup_account_name_info">"请使用您的 E-mail 地址作为账户名，因为 Android 会将帐户名用于您创建的日程的参与者 (ORGANIZER) 项。您不能有两个重名的账户。</string>
     <string name="setup_read_only">只读</string>
+
+    <string name="sync_error_title">同步失败</string>
 
 </resources>
