@@ -11,11 +11,10 @@
 
     <!-- common strings -->
     <string name="app_name">DAVdroid</string>
-    
-    <string name="davdroid_website">Webová stránka DAVdroid</string>
     <string name="next">Další</string>
     <string name="help">Pomoc</string>
-    
+
+    <string name="exception_cert_path_validation">Nedůvěryhodný certifikát ve vybrané cestě. Pro více informací přečtěte FAQ.</string>
     <string name="exception_http">HTTP chyba: %s</string>
     <string name="exception_incapable_resource">Chybějící možnosti: %s</string>
     <string name="exception_io">I/O chyba: %s</string>
@@ -23,7 +22,7 @@
     
     <!-- MainActivity -->
     <string name="main_manage_accounts">Spravovat synchronizované účty</string>
-    
+
     <string name="html_main_workaround"><![CDATA[
 		<p>Thank you for buying DAVdroid via Google Play and thus supporting the project. Unfortunately, there are two issues with Google Play:</p>
 		
@@ -45,24 +44,22 @@
         <p><strong>If you\'re affected by one of these bugs, please <a href="market://details?id=at.bitfire.davdroid.jbworkaround">install the
         DAVdroid JB Workaround</a>.</strong></p>
     ]]></string>
-    <string name="html_main_info"><![CDATA[
-       <h1>Vítejte do aplikace DAVdroid/%s!</h1>
-       
-       <p>DAVdroid je aplikace pro Android 4+ na synchronizaci CalDAV/CardDAV účtů. Stačí přidat účet DAVdroid
-       pro CalDAV/CardDAV server a vaše kontakty/události budou synchronizovány oběma směry.</p>
-       
-       <p>Pro více informací se podívejte na domovskou stránku <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">aplikace DAVdroid</a>.
-       Najdete tam i <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">návod pro nastavení</a>. DAVdroid respektuje
-       vaše soukromí, přečtěte si naši <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Privacy Policy</a>.</p>
-       
-       <p>If you use CyanogenMod, "Privacy Guard" must be disabled for DAVdroid. Otherwise, DAVdroid is not allowed to access
-       and synchronize your contacts and events.</p>
-       
-       <p><b>In case of problems, please read the <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a> first.
-       If you encounter a bug that is clearly related to DAVdroid, enter it on
-       <a href="https://github.com/rfc2822/davdroid">Github issues</a> instead of contacting us directly or giving a poor
-       rating for the app.</b></p>
-              
+    <string name="html_main_info"><![CDATA[<h1>Vítejte do aplikace DAVdroid/%s!</h1>
+      
+      <p>DAVdroid je aplikace pro Android 4+ na synchronizaci CalDAV/CardDAV účtů. Stačí přidat účet DAVdroid
+      pro CalDAV/CardDAV server a vaše kontakty/události budou synchronizovány oběma směry.</p>
+      
+      <p>Pro více informací se podívejte na domovskou stránku <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">aplikace DAVdroid</a>.
+      Najdete tam i <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">návod pro nastavení</a>. DAVdroid respektuje
+      vaše soukromí, přečtěte si naši <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Privacy Policy</a>.</p>
+      
+      <p>Pokud používáte CyanogenMod, "Privacy Guard" musí být pro DAVdroid vypnut. Jinak nebude DAVdroid moci přistupovat ke kontaktům
+      a událostem a synchronizovat je.</p>
+      
+      <p><b>V případě jakýchkoliv problémů si prosím nejdříve přečtěte <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a>.
+      Pokud narazíte na chybu v aplikaci DAVdroid, nahlaste ji na portálu
+      <a href="https://github.com/rfc2822/davdroid">Github</a> místo přímého kontaktování vývojářů nebo vyplnění špatného hodnocení.</b></p>
+      
 	   <h1>Open-source</h1>
 	   <p>DAVdroid is designed to be an open-source project from the very first beginning. It is always possible to compile the
 	   app yourself and use it for free without any obligations. The source code is
@@ -81,9 +78,7 @@
 	   Store, AndroidPit App Center or Amazon Appstore require other terms, the respective terms apply for versions
 	   that are downloaded via these services.</p>
 	   
-	   <p>Překlad.
-	     Čeština: <a href="https://github.com/svetlemodry">Jaroslav Lichtblau</a>
-	   </p>
+	   <p>Čeština: <a href="https://github.com/svetlemodry">Jaroslav Lichtblau</a></p>
 	   
 	   <h2>Použité knihovny třetích stran</h2>
 	   <p>
@@ -97,7 +92,7 @@
 
     <!-- AddAccountActivity -->
     <string name="login_type_email">Přihlášení s emailovou adresou</string>
-    <string name="login_type_email_description">Detaily účtu budou automaticky detekovány podle doménového jména. Příkald: mujucet@icloud.com</string>
+    <string name="login_type_email_description">Detaily účtu budou automaticky rozpoznány podle doménového jména. Příklad: mujucet@icloud.com</string>
     <string name="login_type_url">Přihlášení s URL a uživatelským jménem</string>
     <string name="login_type_url_description">Detaily účtu budou automaticky rozpoznány podle URL a uživatelského jména. Nejčastější volba pro vlastní servery.</string>
     
@@ -114,16 +109,54 @@
     <string name="login_auth_preemptive">Preemptivní ověření (doporučeno, ale není kompatibilní s Digest ověřením)</string>
 
     <string name="login_password">Heslo:</string>
-    
+
+    <string name="settings_title">Nastavení</string>
+    <string name="settings_no_accounts">Nebyl nalezen účet DAVdroid</string>
+    <string name="settings_authentication">Ověření</string>
+    <string name="settings_username">Uživatelské jméno</string>
+    <string name="settings_enter_username">Zadat uživatelské jméno</string>
+    <string name="settings_password">Heslo</string>
+    <string name="settings_password_summary">Aktualizovat heslo dle svého serveru.</string>
+    <string name="settings_enter_password">Vložit své heslo:</string>
+    <string name="settings_preemptive">Preemptivní ověření</string>
+    <string name="settings_preemptive_on">Přihlašovací údaje jsou zasílány s každým požadavkem (doporučeno)</string>
+    <string name="settings_preemptive_off">Přihlašovací údaje jsou zasílány po vyžádání serverem</string>
+    <string name="settings_sync">Synchronizace</string>
+    <string name="settings_sync_interval_contacts">Interval synchronizace kontaktů</string>
+    <string name="settings_sync_summary_manually">Pouze manuálně</string>
+    <string name="settings_sync_summary_periodically">Každých %d minut a ihned při lokálních změnách</string>
+    <string name="settings_sync_summary_not_available">Nedostupný</string>
+    <string name="settings_sync_interval_calendars">Interval synchronizace kalendáře</string>
+    <string-array name="settings_sync_interval_seconds">
+        <item>-1</item>
+        <item>300</item>
+        <item>600</item>
+        <item>900</item>
+        <item>3600</item>
+        <item>7200</item>
+        <item>14400</item>
+        <item>86400</item>
+    </string-array>
+    <string-array name="settings_sync_interval_names">
+        <item>Pouze manuálně</item>
+        <item>Každých 5 minut</item>
+        <item>Každých 10 minut</item>
+        <item>Každých 15 minut</item>
+        <item>Každou hodinu</item>
+        <item>Každé 2 hodiny</item>
+        <item>Každé 4 hodiny</item>
+        <item>Jednou za den</item>
+    </string-array>
+
     <string name="setup_select_collections">DAVdroid: Vybrat sbírky</string>
-    <string name="setup_neither_caldav_nor_carddav">V tomto umístění není CalDAV-/CardDAV služba dostupná.</string>
+    <string name="setup_neither_caldav_nor_carddav">V tomto umístění není služba Cal-/CardDAV dostupná.</string>
     <string name="setup_add_account">Přidat účet</string>
-    <string name="setup_querying_server">Probíhá komunikace se serverem. Chvilku strpení…</string>
+    <string name="setup_querying_server">Dotazování serveru. Chvíli strpení…</string>
     <string name="setup_what_to_sync">Které sbírky mají být synchronizovány?</string>
     <string name="setup_address_books">Adresáře</string>
     <string name="setup_calendars">Kalendáře</string>
-    <string name="setup_select_address_book">Vybrat alespoň jeden adresář (opakovaně tapnout pro odebrání):</string>
-    <string name="setup_select_calendars">Vybrat své kalendáře:</string>
+    <string name="setup_select_address_book">Vybrat nejvýše jeden adresář (opakovaně tapnout pro odebrání):</string>
+    <string name="setup_select_calendars">Vyberte své kalendáře:</string>
     
     <string name="setup_account_details">Detaily účtu</string>
     <string name="setup_account_name">Jméno účtu:</string>
@@ -132,5 +165,7 @@
     <string name="setup_organizer_hint">"ORGANIZÁTOR událostí; vyžadováno pokud budete přidávat účastníky"</string>
     <string name="setup_account_name_info">"Použijte svou emailovou adresu jako jméno účtu. Android bude používat tuto hodnotu jako jméno ORGANIZÁTORA událostí které vytvoříte. Nelze mít dva účty se stejným jménem.</string>
     <string name="setup_read_only">pouze pro čtení</string>
+
+    <string name="sync_error_title">Synchronizace selhala</string>
 
 </resources>
