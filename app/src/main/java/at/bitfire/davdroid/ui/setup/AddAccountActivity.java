@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  */
-package at.bitfire.davdroid.syncadapter;
+package at.bitfire.davdroid.ui.setup;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -24,11 +24,11 @@ public class AddAccountActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.add_account);
+		setContentView(R.layout.setup_add_account);
 		
 		if (savedInstanceState == null) {	// first call
 			getFragmentManager().beginTransaction()
-				.add(R.id.right_pane, new LoginTypeFragment(), "login_type")
+				.add(R.id.right_pane, new LoginTypeFragment())
 				.commit();
 		}
 	}
@@ -36,7 +36,7 @@ public class AddAccountActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.add_account, menu);
+		inflater.inflate(R.menu.setup_add_account, menu);
 		return true;
 	}
 

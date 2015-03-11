@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  */
-package at.bitfire.davdroid.syncadapter;
+package at.bitfire.davdroid.ui.setup;
 
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -33,7 +33,7 @@ public class LoginEmailFragment extends Fragment implements TextWatcher {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.login_email, container, false);
+		View v = inflater.inflate(R.layout.setup_login_email, container, false);
 
 		editEmail = (EditText)v.findViewById(R.id.email_address);
 		editEmail.addTextChangedListener(this);

@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  */
-package at.bitfire.davdroid.syncadapter;
+package at.bitfire.davdroid.ui.setup;
 
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -45,7 +45,7 @@ public class LoginURLFragment extends Fragment implements TextWatcher {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.login_url, container, false);
+		View v = inflater.inflate(R.layout.setup_login_url, container, false);
 		
 		// protocol selection spinner
 		textHttpWarning = (TextView)v.findViewById(R.id.http_warning);
