@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  */
-package at.bitfire.davdroid.syncadapter;
+package at.bitfire.davdroid.ui.setup;
 
 import android.content.Context;
 import android.view.LayoutInflater;

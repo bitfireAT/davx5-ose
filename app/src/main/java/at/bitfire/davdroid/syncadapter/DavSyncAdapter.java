@@ -46,6 +46,7 @@ import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.LocalStorageException;
 import at.bitfire.davdroid.resource.RemoteCollection;
+import at.bitfire.davdroid.ui.settings.AccountActivity;
 import at.bitfire.davdroid.webdav.DavException;
 import at.bitfire.davdroid.webdav.DavHttpClient;
 import at.bitfire.davdroid.webdav.HttpException;
@@ -133,6 +134,7 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 		Log.d(TAG, "Server supports VCard version " + accountSettings.getAddressBookVCardVersion());
 
 		Exception exceptionToShow = null;     // exception to show notification for
+		Intent exceptionIntent = null;        // what shall happen when clicking on the exception notification
 		try {
 			// get local <-> remote collection pairs
 			Map<LocalCollection<?>, RemoteCollection<?>> syncCollections = getSyncPairs(account, provider);
@@ -142,34 +144,41 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 				try {
 					for (Map.Entry<LocalCollection<?>, RemoteCollection<?>> entry : syncCollections.entrySet())
 						new SyncManager(entry.getKey(), entry.getValue()).synchronize(extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL), syncResult);
+
 				} catch (DavException ex) {
-					exceptionToShow = ex;
 					syncResult.stats.numParseExceptions++;
 					Log.e(TAG, "Invalid DAV response", ex);
+					exceptionToShow = ex;
+
 				} catch (HttpException ex) {
 					if (ex.getCode() == HttpStatus.SC_UNAUTHORIZED) {
-						exceptionToShow = ex;
 						Log.e(TAG, "HTTP Unauthorized " + ex.getCode(), ex);
 						syncResult.stats.numAuthExceptions++;   // hard error
-					} else if (ex.isClientError()) {
+
 						exceptionToShow = ex;
+						exceptionIntent = new Intent(context, AccountActivity.class);
+						exceptionIntent.putExtra(AccountActivity.EXTRA_ACCOUNT, account);
+					} else if (ex.isClientError()) {
 						Log.e(TAG, "Hard HTTP error " + ex.getCode(), ex);
 						syncResult.stats.numParseExceptions++;  // hard error
+						exceptionToShow = ex;
 					} else {
 						Log.w(TAG, "Soft HTTP error " + ex.getCode() + " (Android will try again later)", ex);
 						syncResult.stats.numIoExceptions++;     // soft error
 					}
 				} catch (LocalStorageException ex) {
-					exceptionToShow = ex;
 					syncResult.databaseError = true;    // hard error
 					Log.e(TAG, "Local storage (content provider) exception", ex);
+					exceptionToShow = ex;
 				} catch (IOException ex) {
 					syncResult.stats.numIoExceptions++;     // soft error
 					Log.e(TAG, "I/O error (Android will try again later)", ex);
+					if (ex instanceof SSLException)         // always notify on SSL/TLS errors
+						exceptionToShow = ex;
 				} catch (URISyntaxException ex) {
-					exceptionToShow = ex;
 					syncResult.stats.numParseExceptions++;  // hard error
 					Log.e(TAG, "Invalid URI (file name) syntax", ex);
+					exceptionToShow = ex;
 				}
 		} finally {
 			// allow httpClient shutdown
@@ -178,8 +187,10 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 
 		// show sync errors as notification
 		if (exceptionToShow != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-			Intent intentHelp = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.WEB_URL_VIEW_LOGS));
-			PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intentHelp, 0);
+			if (exceptionIntent == null)
+				exceptionIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.WEB_URL_VIEW_LOGS));
+
+			PendingIntent contentIntent = PendingIntent.getActivity(context, 0, exceptionIntent, 0);
 			Notification.Builder builder = new Notification.Builder(context)
 					.setSmallIcon(R.drawable.ic_launcher)
 					.setPriority(Notification.PRIORITY_LOW)

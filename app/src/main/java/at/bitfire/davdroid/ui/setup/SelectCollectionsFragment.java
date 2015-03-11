@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  */
-package at.bitfire.davdroid.syncadapter;
+package at.bitfire.davdroid.ui.setup;
 
 import android.app.ListFragment;
 import android.os.Bundle;
@@ -47,7 +47,7 @@ public class SelectCollectionsFragment extends ListFragment {
 		final ListView listView = getListView();
 		listView.setPadding(20, 30, 20, 30);
 		
-		View header = getActivity().getLayoutInflater().inflate(R.layout.select_collections_header, getListView(), false);
+		View header = getActivity().getLayoutInflater().inflate(R.layout.setup_select_collections_header, getListView(), false);
 		listView.addHeaderView(header, getListView(), false);
 		
 		final ServerInfo serverInfo = (ServerInfo)getArguments().getSerializable(KEY_SERVER_INFO);
