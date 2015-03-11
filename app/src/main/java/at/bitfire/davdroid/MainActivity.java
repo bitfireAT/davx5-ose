@@ -21,7 +21,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import at.bitfire.davdroid.syncadapter.AddAccountActivity;
-import at.bitfire.davdroid.syncadapter.SettingsActivity;
+import at.bitfire.davdroid.ui.settings.SettingsActivity;
 
 public class MainActivity extends Activity {
 

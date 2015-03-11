@@ -16,8 +16,8 @@
     <fragment
         android:layout_width="@dimen/titles_width"
         android:layout_height="match_parent"
-        android:tag="scope"
-        android:name="at.bitfire.davdroid.syncadapter.SettingsScopeFragment" />
+        android:id="@+id/settings_scope"
+        android:name="at.bitfire.davdroid.ui.settings.SettingsScopeFragment" />
 
     <FrameLayout
         android:id="@+id/right_pane"

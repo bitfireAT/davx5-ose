@@ -14,7 +14,7 @@ import java.net.URISyntaxException;
 import android.util.Log;
 
 public class TestConstants {
-	public static final String ROBOHYDRA_BASE = "http://10.0.0.11:3000/";
+	public static final String ROBOHYDRA_BASE = "http://192.168.0.11:3000/";
 	
 	public static URI roboHydra;
 	static {

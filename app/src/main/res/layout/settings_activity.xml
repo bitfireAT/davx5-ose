@@ -7,11 +7,8 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/content_pane"
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_margin="10dp"
-    android:orientation="horizontal"
-    android:layout_height="match_parent">
-
-</FrameLayout>
+    android:layout_height="match_parent"
+    android:tag="scope"
+    android:name="at.bitfire.davdroid.ui.settings.SettingsScopeFragment" />
