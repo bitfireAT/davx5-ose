@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  */
-package at.bitfire.davdroid.syncadapter;
+package at.bitfire.davdroid.ui.setup;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -26,7 +26,7 @@ public class LoginTypeFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.login_type, container, false);
+		View v = inflater.inflate(R.layout.setup_login_type, container, false);
 		
 		btnTypeEmail = (RadioButton)v.findViewById(R.id.login_type_email);
 		btnTypeURL = (RadioButton)v.findViewById(R.id.login_type_url);

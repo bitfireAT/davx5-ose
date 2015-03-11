@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  */
-package at.bitfire.davdroid;
+package at.bitfire.davdroid.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,7 +20,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import at.bitfire.davdroid.syncadapter.AddAccountActivity;
+import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.ui.setup.AddAccountActivity;
 import at.bitfire.davdroid.ui.settings.SettingsActivity;
 
 public class MainActivity extends Activity {
@@ -29,7 +31,7 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.main_activity);
 		
 		TextView tvWorkaround = (TextView)findViewById(R.id.text_workaround);
 		if (fromPlayStore()) {

@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  */
-package at.bitfire.davdroid.syncadapter;
+package at.bitfire.davdroid.ui.setup;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -19,7 +19,6 @@ import android.widget.ListAdapter;
 
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.ServerInfo;
-import at.bitfire.davdroid.resource.ServerInfo.ResourceInfo.Type;
 import lombok.Getter;
 
 public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter {
@@ -104,14 +103,14 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 			LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 			switch (getItemViewType(position)) {
 			case TYPE_ADDRESS_BOOKS_HEADING:
-				v = inflater.inflate(R.layout.address_books_heading, parent, false);
+				v = inflater.inflate(R.layout.setup_address_books_heading, parent, false);
 				break;
 			case TYPE_ADDRESS_BOOKS_ROW:
 				v = inflater.inflate(android.R.layout.simple_list_item_single_choice, null);
 				v.setPadding(0, 8, 0, 8);
 				break;
 			case TYPE_CALENDARS_HEADING:
-				v = inflater.inflate(R.layout.calendars_heading, parent, false);
+				v = inflater.inflate(R.layout.setup_calendars_heading, parent, false);
 				break;
 			case TYPE_CALENDARS_ROW:
 				v = inflater.inflate(android.R.layout.simple_list_item_multiple_choice, null);

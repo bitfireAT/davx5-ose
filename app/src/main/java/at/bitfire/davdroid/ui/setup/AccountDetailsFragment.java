@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  */
-package at.bitfire.davdroid.syncadapter;
+package at.bitfire.davdroid.ui.setup;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -31,6 +31,7 @@ import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.davdroid.resource.LocalStorageException;
 import at.bitfire.davdroid.resource.ServerInfo;
+import at.bitfire.davdroid.syncadapter.AccountSettings;
 
 public class AccountDetailsFragment extends Fragment implements TextWatcher {
 	public static final String KEY_SERVER_INFO = "server_info";
@@ -42,7 +43,7 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.account_details, container, false);
+		View v = inflater.inflate(R.layout.setup_account_details, container, false);
 		
 		serverInfo = (ServerInfo)getArguments().getSerializable(KEY_SERVER_INFO);
 		
@@ -61,7 +62,7 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
 	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-	    inflater.inflate(R.menu.account_details, menu);
+	    inflater.inflate(R.menu.setup_account_details, menu);
 	}
 	
 	@Override
