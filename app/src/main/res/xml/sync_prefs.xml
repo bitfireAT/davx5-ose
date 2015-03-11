@@ -9,10 +9,10 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     
-    <PreferenceScreen android:title="@string/settings_title" >
+    <PreferenceScreen android:title="@string/settings_title">
         <intent
             android:targetPackage="at.bitfire.davdroid"
-            android:targetClass="at.bitfire.davdroid.syncadapter.SettingsActivity"
+            android:targetClass="at.bitfire.davdroid.ui.settings.SettingsActivity"
             android:action="ACTION_VIEW" />
     </PreferenceScreen>
 

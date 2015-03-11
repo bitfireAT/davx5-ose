@@ -113,6 +113,7 @@
 
     <string name="login_password">Password:</string>
 
+    <!-- Settings activity -->
     <string name="settings_title">Settings</string>
     <string name="settings_no_accounts">No DAVdroid accounts found</string>
     <string name="settings_authentication">Authentication</string>
