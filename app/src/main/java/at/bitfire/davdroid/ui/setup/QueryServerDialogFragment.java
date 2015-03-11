@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  */
-package at.bitfire.davdroid.syncadapter;
+package at.bitfire.davdroid.ui.setup;
 
 import android.app.DialogFragment;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -57,7 +57,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.query_server, container, false);
+		return inflater.inflate(R.layout.setup_query_server, container, false);
 	}
 
 	@Override

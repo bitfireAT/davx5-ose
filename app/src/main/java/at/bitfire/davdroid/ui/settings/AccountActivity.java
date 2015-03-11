@@ -17,7 +17,7 @@ import android.util.Log;
 import at.bitfire.davdroid.R;
 
 public class AccountActivity extends Activity {
-	static final String EXTRA_ACCOUNT = "account";
+	public static final String EXTRA_ACCOUNT = "account";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
