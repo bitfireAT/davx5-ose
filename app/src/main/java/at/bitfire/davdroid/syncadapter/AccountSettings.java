@@ -89,15 +89,15 @@ public class AccountSettings {
 	public String getUserName() {
 		return accountManager.getUserData(account, KEY_USERNAME);		
 	}
-	void setUserName(String userName) { accountManager.setUserData(account, KEY_USERNAME, userName); }
+	public void setUserName(String userName) { accountManager.setUserData(account, KEY_USERNAME, userName); }
 	
 	public String getPassword() {
 		return accountManager.getPassword(account);
 	}
-	void setPassword(String password) { accountManager.setPassword(account, password); }
+	public void setPassword(String password) { accountManager.setPassword(account, password); }
 	
 	public boolean getPreemptiveAuth() { return Boolean.parseBoolean(accountManager.getUserData(account, KEY_AUTH_PREEMPTIVE)); }
-	void setPreemptiveAuth(boolean preemptive) { accountManager.setUserData(account, KEY_AUTH_PREEMPTIVE, Boolean.toString(preemptive)); }
+	public void setPreemptiveAuth(boolean preemptive) { accountManager.setUserData(account, KEY_AUTH_PREEMPTIVE, Boolean.toString(preemptive)); }
 
 
 	// sync. settings

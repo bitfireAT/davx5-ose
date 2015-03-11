@@ -6,7 +6,7 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid.syncadapter;
+package at.bitfire.davdroid.ui.settings;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -26,15 +26,20 @@ public class SettingsScopeFragment extends ListFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final AccountManager manager = AccountManager.get(this.getActivity());
+		final AccountManager manager = AccountManager.get(getActivity());
 		accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
 
 		final String[] accountNames = new String[accounts.length];
 		for (int i = 0; i < accounts.length; i++)
 			accountNames[i] = accounts[i].name;
-		setListAdapter(new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_list_item_activated_1, accountNames));
+		setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_activated_1, accountNames));
 
 		return super.onCreateView(inflater, container, savedInstanceState);
+	}
+
+	public void setLayout(boolean tabletLayout) {
+		if (tabletLayout)
+			getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 	}
 
 	@Override
