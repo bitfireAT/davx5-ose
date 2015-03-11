@@ -6,11 +6,9 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid.syncadapter;
+package at.bitfire.davdroid.ui.settings;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -19,19 +17,21 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.syncadapter.AccountSettings;
+import lombok.Setter;
 
-public class SettingsAccountFragment extends PreferenceFragment {
-	final static String KEY_ACCOUNT = "account";
+public class AccountFragment extends PreferenceFragment {
+	final static String ARG_ACCOUNT = "account";
 
-	protected Account account;
+	Account account;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		addPreferencesFromResource(R.xml.account_prefs);
+		addPreferencesFromResource(R.xml.settings_account_prefs);
 
-		account = getArguments().getParcelable(KEY_ACCOUNT);
+		account = getArguments().getParcelable(ARG_ACCOUNT);
 		readFromAccount();
 	}
 
