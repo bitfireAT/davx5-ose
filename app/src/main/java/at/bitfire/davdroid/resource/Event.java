@@ -50,6 +50,8 @@ import net.fortuna.ical4j.util.CompatibilityHints;
 import net.fortuna.ical4j.util.SimpleHostInfo;
 import net.fortuna.ical4j.util.UidGenerator;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -348,28 +350,32 @@ public class Event extends Resource {
         if (tzID == null)
             return;
 
-        String localTZ = Time.TIMEZONE_UTC;
-        boolean foundMatch = false;
-        String availableTZs[] = SimpleTimeZone.getAvailableIDs();
+        String localTZ = null;
+		String availableTZs[] = SimpleTimeZone.getAvailableIDs();
 
-        // Try to find an exact match
-        for (String availableTZ : availableTZs) {
-            if (tzID.equals(availableTZ)) {
+        // first, try to find an exact match (case insensitive)
+        for (String availableTZ : availableTZs)
+            if (tzID.equalsIgnoreCase(availableTZ)) {
                 localTZ = availableTZ;
-                foundMatch = true;
                 break;
             }
+
+		// if that doesn't work, try to find something else that matches
+        if (localTZ == null) {
+	        Log.w(TAG, "Coulnd't find time zone with matching identifiers, trying to guess");
+	        for (String availableTZ : availableTZs)
+		        if (StringUtils.indexOfIgnoreCase(tzID, availableTZ) != -1) {
+			        localTZ = availableTZ;
+			        break;
+		        }
         }
 
-        if (!foundMatch) {
-            // Try to find something else that matches
-            for (String availableTZ : availableTZs) {
-                if (tzID.indexOf(availableTZ, 0) != -1) {
-                    localTZ = availableTZ;
-                    break;
-                }
-            }
-        }
+		// if that doesn't work, use UTC as fallback
+		if (localTZ == null) {
+			Log.e(TAG, "Couldn't identify time zone, using UTC as fallback");
+			localTZ = Time.TIMEZONE_UTC;
+		}
+
         Log.d(TAG, "Assuming time zone " + localTZ + " for " + tzID);
         date.setTimeZone(tzRegistry.getTimeZone(localTZ));
     }
