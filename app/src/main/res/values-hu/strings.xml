@@ -118,6 +118,45 @@
     <string name="login_auth_preemptive">Preemptív authentikáció (ajánlott, de Digest authentikációval nem működik)</string>
 
     <string name="login_password">Jelszó:</string>
+
+    <!-- Settings activity -->
+    <string name="settings_title">Beállítások</string>
+    <string name="settings_no_accounts">Nem található DAVdroid fiók</string>
+    <string name="settings_authentication">Authentikáció</string>
+    <string name="settings_username">Felhasználónév</string>
+    <string name="settings_enter_username">Adja meg a felhasználónevet:</string>
+    <string name="settings_password">Jelszó</string>
+    <string name="settings_password_summary">Adja meg a szerveren érvényes új jelszót.</string>
+    <string name="settings_enter_password">Adja meg a jelszót:</string>
+    <string name="settings_preemptive">>Preemptív authentikáció</string>
+    <string name="settings_preemptive_on">A hitelesítő adatok elküldése minden kérésnél (ajánlott)</string>
+    <string name="settings_preemptive_off">A hitelesítő adatok elküldése, csak ha a szerver azt igényli</string>
+    <string name="settings_sync">Szinkronizálás</string>
+    <string name="settings_sync_interval_contacts">Névjegyszinkronizálás sűrűsége</string>
+    <string name="settings_sync_summary_manually">Manuális</string>
+    <string name="settings_sync_summary_periodically">Minden %d percben + az eszközön történt módosítás után</string>
+    <string name="settings_sync_summary_not_available">Nem elérhető</string>
+    <string name="settings_sync_interval_calendars">Naptárszinkronizálás sűrűsége</string>
+    <string-array name="settings_sync_interval_seconds">
+        <item>-1</item>
+        <item>300</item>
+        <item>600</item>
+        <item>900</item>
+        <item>3600</item>
+        <item>7200</item>
+        <item>14400</item>
+        <item>86400</item>
+    </string-array>
+    <string-array name="settings_sync_interval_names">
+        <item>Manuális</item>
+        <item>5 percenként</item>
+        <item>10 percenként</item>
+        <item>15 percenként</item>
+        <item>Óránként</item>
+        <item>2 óránként</item>
+        <item>4 óránként</item>
+        <item>Naponta</item>
+    </string-array>
    
     <string name="setup_select_collections">DAVdroid: Gyűjtemény kiválasztása</string>
     <string name="setup_neither_caldav_nor_carddav">Nincs CalDAV-/CardDAV szolgáltatás a megadott helyen.</string>

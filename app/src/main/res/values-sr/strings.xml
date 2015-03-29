@@ -11,11 +11,10 @@
 
     <!-- common strings -->
     <string name="app_name">ДАВдроид</string>
-    
-    <string name="davdroid_website">ДАВдроид вебсајт</string>
     <string name="next">Следеће</string>
     <string name="help">Помоћ</string>
-    
+
+    <string name="exception_cert_path_validation">Непоуздан сертификат у путањи сертификата: Погледајте ЧПП за више информација.</string>
     <string name="exception_http">ХТТП грешка: %s</string>
     <string name="exception_incapable_resource">Недостају могућности: %s</string>
     <string name="exception_io">У/И грешка: %s</string>
@@ -23,9 +22,9 @@
     
     <!-- MainActivity -->
     <string name="main_manage_accounts">Управљај налозима синхронизације</string>
-    
+
     <string name="html_main_workaround"><![CDATA[
-		<p>Хвала вам што сте купили ДАВдроид преко Google Play сервиса и тиме подржали овај пројекат. Нажалост, постоје два проблема са Google Play сервисом:</p>
+		<p>Хвала вам што сте купили ДАВдроид преко Гугловог Плеј сервиса и тиме подржали овај пројекат. Нажалост, постоје два проблема са Гугловим Плеј сервисом:</p>
 		
 		<h2>1. Налози могу нестати након поновног покретања</h2>
 		<p>Може вам се десити да сви ваши <strong>ДАВдроид налози (укључујући контакте и догађаје) нестану након
@@ -33,14 +32,14 @@
         која узрокује уклањање налога плаћених апликација приликом покретања јер се (шифровани) АПК фајлови
         учитавају <i>након</i> провере за налоге без апликација.</p>
         <p>Захваћени корисници:<br/>
-        * сви корисници Андроида 4.1 који су инсталирали ДАВдроид са Play Store сервиса;<br/>
-        * корисници Андроида 4.2 који су инсталирали ДАВдроид са Play Store сервиса само на неким уређајима (нпр. већина Самсунгових уређаја)</p>
+        * сви корисници Андроида 4.1 који су инсталирали ДАВдроид са Плеј продавнице;<br/>
+        * корисници Андроида 4.2 који су инсталирали ДАВдроид са Плеј продавнице само на неким уређајима (нпр. већина Самсунгових уређаја)</p>
         
         <h2>2. Налози могу да нестану након надоградње ДАВдроида</h2>
         <p>Може вам се десити да сви ваши <strong>ДАВдроид налози (укључујући контакте и догађаје) нестану након
         надоградње ДАВдроида</strong>. Разлог је <a href="https://code.google.com/p/android/issues/detail?id=66905">опет грешка у Андроиду</a>
         која узрокује уклањање налога плаћених апликација приликом надоградње из сличног разлога.</p>
-        <p>Захваћени корисници: неки корисници Андроида 4.4.2 који су инсталирали ДАВдроид са Play Store сервиса (Нексус и Мото Г уређаји)</p>
+        <p>Захваћени корисници: неки корисници Андроида 4.4.2 који су инсталирали ДАВдроид са Плеј продавнице (Нексус и Мото Г уређаји)</p>
         
         <p><strong>Ако имате један од наведених проблема, <a href="market://details?id=at.bitfire.davdroid.jbworkaround">инсталирајте „DAVdroid JB Workaround“</a>.</strong></p>
     ]]></string>
@@ -57,7 +56,7 @@
        <p>Ако користите Цијаноген Мод, „Privacy Guard“ мора бити онемогућен за ДАВдроид. У супротном, ДАВдроиду неће бити дозвољени
        приступ и синхронизација ваших контаката и догађаја.</p>
        
-       <p><b>У случају проблема, најпре прочитајте <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">најчешћа питања</a>.
+       <p><b>У случају проблема, најпре прочитајте <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">често постављана питања</a>.
        Ако вам се деси грешка која је сигурно везана за ДАВдроид, поднесите пријаву на
        <a href="https://github.com/rfc2822/davdroid">Гитхабовом пратиоцу</a> уместо да нас контактирате директно или да апликацији дате лошу оцену.</b></p>
               
@@ -65,7 +64,7 @@
 	   <p>ДАВдроид је испочетка дизајниран као пројекат отвореног кода. Увек је могуће да сами компајлирате
 	   апликацију и да је слободно користите без икаквих обавеза. Изворни код је
 	   <a href="https://github.com/rfc2822/davdroid">доступан на Гитхабу</a>, а можете и
-	   <a href="https://f-droid.org/app/at.bitfire.davdroid">преузети апликацију са Ф-Дроида</a>.</p>
+	   <a href="https://f-droid.org/app/at.bitfire.davdroid">преузети апликацију са Ф-дроида</a>.</p>
 	   
 	   <p>Међутим, уложено је много рада у ову апликацију па смо одлучили да је ставимо у комерцијалне продавнице за малу накнаду.
 	   Ако желите да подржите овај пројекат, <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">донирајте ДАВдроиду</a>
@@ -77,7 +76,7 @@
 	   и доступна на <a href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. Ако сервиси „Google Play“,
 	   „Samsung Store“, „AndroidPit App Center“ или „Amazon Appstore“ захтевају друге услове, исти важе за издања преузета са ових сервиса.</p>
 	   
-	   <p>Превод на српски: <a href="https://github.com/pejakm">@pejakm</a>. Превод на немачки: аутори. Остале преводе
+	   <p>Превод на српски: <a href="https://github.com/pejakm">@pejakm</a>. Превод на немачки: аутори. Остале преводе 
 	   допринели су људи поменути у преводима одговарајућих језика.</p>
 	   
 	   <h2>Коришћене друге библиотеке</h2>
@@ -86,7 +85,7 @@
 	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">Нова БСД лиценца</a>)<br/>
 	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">Нова БСД лиценца</a><br/>
 	   	* <a href="http://simple.sourceforge.net/">Симпле ИксМЛ серијализација</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Апачи лиценца, издање 2.0</a><br/>
-	   	* <a href="http://projectlombok.org/">Пројекат Ломбок</a> – <a href="http://opensource.org/licenses/mit-license.php">МИТ лиценца</a></p>
+	   	* <a href="http://projectlombok.org/">Пројекат Ломбок</a> – <a href="http://opensource.org/licenses/mit-license.php">МИТ лиценца</a><br/>
 		* <a href="http://www.xbill.org/dnsjava/">dnsjava</a> – <a href="http://www.xbill.org/dnsjava/dnsjava-current/LICENSE">БСД лиценца</a></p>
     ]]></string>
 
@@ -109,7 +108,37 @@
     <string name="login_auth_preemptive">Превентивна аутентификација (препоручено, али некомпатибилно са Дигест аутентификацијом)</string>
 
     <string name="login_password">Лозинка:</string>
-    
+
+    <!-- Settings activity -->
+    <string name="settings_title">Поставке</string>
+    <string name="settings_no_accounts">Нема ДАВдроид налога</string>
+    <string name="settings_authentication">Аутентификација</string>
+    <string name="settings_username">Корисничко име</string>
+    <string name="settings_enter_username">Унесите корисничко име:</string>
+    <string name="settings_password">Лозинка</string>
+    <string name="settings_password_summary">Ажурирајте лозинку за ваш сервер.</string>
+    <string name="settings_enter_password">Унесите лозинку:</string>
+    <string name="settings_preemptive">Превентивна аутентификација</string>
+    <string name="settings_preemptive_on">Слање акредитива са сваким захтевом (препоручено)</string>
+    <string name="settings_preemptive_off">Слање акредитива по захтеву сервера</string>
+    <string name="settings_sync">Синхронизација</string>
+    <string name="settings_sync_interval_contacts">Интервал синх. контаката</string>
+    <string name="settings_sync_summary_manually">Само ручно</string>
+    <string name="settings_sync_summary_periodically">Сваких %d минута + одмах по локалним изменама</string>
+    <string name="settings_sync_summary_not_available">Није доступно</string>
+    <string name="settings_sync_interval_calendars">Интервал синх. календара</string>
+
+    <string-array name="settings_sync_interval_names">
+        <item>Само ручно</item>
+        <item>Сваких 5 минута</item>
+        <item>Сваких 10 минута</item>
+        <item>Сваких 15 минута</item>
+        <item>Сваког сата</item>
+        <item>Свака 2 сата</item>
+        <item>Свака 4 сата</item>
+        <item>Једном дневно</item>
+    </string-array>
+
     <string name="setup_select_collections">ДАВдроид: Изаберите збирке</string>
     <string name="setup_neither_caldav_nor_carddav">Нема доступног КалДАВ/КардДАВ сервиса на овој локацији.</string>
     <string name="setup_add_account">Додај налог</string>
@@ -117,15 +146,17 @@
     <string name="setup_what_to_sync">Које збирке да синхронизујем?</string>
     <string name="setup_address_books">Адресари</string>
     <string name="setup_calendars">Календари</string>
-    <string name="setup_select_address_book">Изаберите један адресар (додирните поново да поништите избор):</string>
+    <string name="setup_select_address_book">Изаберите један адресар (тапните поново за поништење):</string>
     <string name="setup_select_calendars">Изаберите ваше календаре:</string>
     
     <string name="setup_account_details">Детаљи налога</string>
-    <string name="setup_account_name">Име налога:</string>
+    <string name="setup_account_name">Назив налога:</string>
     <string name="setup_account_name_hint">Мој КалДАВ/КардДАВ налог</string>
     <string name="setup_email_address">Е-адреса:</string>
     <string name="setup_organizer_hint">"ОРГАНИЗАТОР ваших догађаја; потребно ако користите податке о учеснику"</string>
-    <string name="setup_account_name_info">"Користите вашу е-адресу као име налога јер Андроид користи име налога за поље ОРГАНИЗАТОР за догађаје које направите. Не можете имати два налога истог имена.</string>
+    <string name="setup_account_name_info">"Користите вашу е-адресу за назив налога јер Андроид користи назив налога за поље ОРГАНИЗАТОР за догађаје које направите. Не можете имати два налога истог назива.</string>
     <string name="setup_read_only">само-за-читање</string>
+
+    <string name="sync_error_title">Синхронизација није успела</string>
 
 </resources>

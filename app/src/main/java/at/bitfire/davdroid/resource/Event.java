@@ -341,25 +341,38 @@ public class Event extends Resource {
 
 	/* guess matching Android timezone ID */
 	protected static void validateTimeZone(DateProperty date) {
-		if (date.isUtc() || !hasTime(date))
-			return;
-		
-		String tzID = getTzId(date);
-		if (tzID == null)
-			return;
-		
-		String localTZ = Time.TIMEZONE_UTC;
-		
-		String availableTZs[] = SimpleTimeZone.getAvailableIDs();
-		for (String availableTZ : availableTZs)
-			if (tzID.indexOf(availableTZ, 0) != -1) {
-				localTZ = availableTZ;
-				break;
-			}
-		
-		Log.d(TAG, "Assuming time zone " + localTZ + " for " + tzID);
-		date.setTimeZone(tzRegistry.getTimeZone(localTZ));
-	}
+        if (date.isUtc() || !hasTime(date))
+            return;
+
+        String tzID = getTzId(date);
+        if (tzID == null)
+            return;
+
+        String localTZ = Time.TIMEZONE_UTC;
+        boolean foundMatch = false;
+        String availableTZs[] = SimpleTimeZone.getAvailableIDs();
+
+        // Try to find an exact match
+        for (String availableTZ : availableTZs) {
+            if (tzID.equals(availableTZ)) {
+                localTZ = availableTZ;
+                foundMatch = true;
+                break;
+            }
+        }
+
+        if (!foundMatch) {
+            // Try to find something else that matches
+            for (String availableTZ : availableTZs) {
+                if (tzID.indexOf(availableTZ, 0) != -1) {
+                    localTZ = availableTZ;
+                    break;
+                }
+            }
+        }
+        Log.d(TAG, "Assuming time zone " + localTZ + " for " + tzID);
+        date.setTimeZone(tzRegistry.getTimeZone(localTZ));
+    }
 
 	public static String TimezoneDefToTzId(String timezoneDef) throws IllegalArgumentException {
 		try {
