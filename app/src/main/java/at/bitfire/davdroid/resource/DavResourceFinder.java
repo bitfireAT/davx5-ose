@@ -37,7 +37,7 @@ import at.bitfire.davdroid.webdav.WebDavResource;
 import ezvcard.VCardVersion;
 
 public class DavResourceFinder implements Closeable {
-	private final static String TAG = "davdroid.DavResourceFinder";
+	private final static String TAG = "davdroid.ResourceFinder";
 	
 	protected Context context;
 	protected CloseableHttpClient httpClient;
@@ -58,6 +58,7 @@ public class DavResourceFinder implements Closeable {
 	
 	public void findResources(ServerInfo serverInfo) throws URISyntaxException, DavException, HttpException, IOException {
 		// CardDAV
+		Log.i(TAG, "*** Starting CardDAV resource detection");
 		WebDavResource principal = getCurrentUserPrincipal(serverInfo, "carddav");
 		URI uriAddressBookHomeSet = null;
 		try {
@@ -74,32 +75,37 @@ public class DavResourceFinder implements Closeable {
 				serverInfo.setCardDAV(true);
 				homeSetAddressBooks.propfind(Mode.CARDDAV_COLLECTIONS);
 
-				List<ServerInfo.ResourceInfo> addressBooks = new LinkedList<>();
+				List<WebDavResource> possibleAddressBooks = new LinkedList<>();
+				possibleAddressBooks.add(homeSetAddressBooks);
 				if (homeSetAddressBooks.getMembers() != null)
-					for (WebDavResource resource : homeSetAddressBooks.getMembers())
-						if (resource.isAddressBook()) {
-							Log.i(TAG, "Found address book: " + resource.getLocation().getPath());
-							ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
-								ServerInfo.ResourceInfo.Type.ADDRESS_BOOK,
-								resource.isReadOnly(),
-								resource.getLocation().toString(),
-								resource.getDisplayName(),
-								resource.getDescription(), resource.getColor()
-							);
+					possibleAddressBooks.addAll(homeSetAddressBooks.getMembers());
 
-							VCardVersion version = resource.getVCardVersion();
-							if (version == null)
-								version = VCardVersion.V3_0;	// VCard 3.0 MUST be supported
-							info.setVCardVersion(version);
+				List<ServerInfo.ResourceInfo> addressBooks = new LinkedList<>();
+				for (WebDavResource resource : possibleAddressBooks)
+					if (resource.isAddressBook()) {
+						Log.i(TAG, "Found address book: " + resource.getLocation().getPath());
+						ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
+							ServerInfo.ResourceInfo.Type.ADDRESS_BOOK,
+							resource.isReadOnly(),
+							resource.getLocation().toString(),
+							resource.getDisplayName(),
+							resource.getDescription(), resource.getColor()
+						);
 
-							addressBooks.add(info);
-						}
+						VCardVersion version = resource.getVCardVersion();
+						if (version == null)
+							version = VCardVersion.V3_0;	// VCard 3.0 MUST be supported
+						info.setVCardVersion(version);
+
+						addressBooks.add(info);
+					}
 				serverInfo.setAddressBooks(addressBooks);
 			} else
 				Log.w(TAG, "Found address-book home set, but it doesn't advertise CardDAV support");
 		}
 
 		// CalDAV
+		Log.i(TAG, "*** Starting CalDAV resource detection");
 		principal = getCurrentUserPrincipal(serverInfo, "caldav");
 		URI uriCalendarHomeSet = null;
 		try {
@@ -116,32 +122,36 @@ public class DavResourceFinder implements Closeable {
 				serverInfo.setCalDAV(true);
 				homeSetCalendars.propfind(Mode.CALDAV_COLLECTIONS);
 
-				List<ServerInfo.ResourceInfo> calendars = new LinkedList<>();
+				List<WebDavResource> possibleCalendars = new LinkedList<>();
+				possibleCalendars.add(homeSetCalendars);
 				if (homeSetCalendars.getMembers() != null)
-					for (WebDavResource resource : homeSetCalendars.getMembers())
-						if (resource.isCalendar()) {
-							Log.i(TAG, "Found calendar: " + resource.getLocation().getPath());
-							if (resource.getSupportedComponents() != null) {
-								// CALDAV:supported-calendar-component-set available
-								boolean supportsEvents = false;
-								for (String supportedComponent : resource.getSupportedComponents())
-									if (supportedComponent.equalsIgnoreCase("VEVENT"))
-										supportsEvents = true;
-								if (!supportsEvents) {	// ignore collections without VEVENT support
-									Log.i(TAG, "Ignoring this calendar because of missing VEVENT support");
-									continue;
-								}
+					possibleCalendars.addAll(homeSetCalendars.getMembers());
+
+				List<ServerInfo.ResourceInfo> calendars = new LinkedList<>();
+				for (WebDavResource resource : possibleCalendars)
+					if (resource.isCalendar()) {
+						Log.i(TAG, "Found calendar: " + resource.getLocation().getPath());
+						if (resource.getSupportedComponents() != null) {
+							// CALDAV:supported-calendar-component-set available
+							boolean supportsEvents = false;
+							for (String supportedComponent : resource.getSupportedComponents())
+								if (supportedComponent.equalsIgnoreCase("VEVENT"))
+									supportsEvents = true;
+							if (!supportsEvents) {	// ignore collections without VEVENT support
+								Log.i(TAG, "Ignoring this calendar because of missing VEVENT support");
+								continue;
 							}
-							ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
-								ServerInfo.ResourceInfo.Type.CALENDAR,
-								resource.isReadOnly(),
-								resource.getLocation().toString(),
-								resource.getDisplayName(),
-								resource.getDescription(), resource.getColor()
-							);
-							info.setTimezone(resource.getTimezone());
-							calendars.add(info);
 						}
+						ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
+							ServerInfo.ResourceInfo.Type.CALENDAR,
+							resource.isReadOnly(),
+							resource.getLocation().toString(),
+							resource.getDisplayName(),
+							resource.getDescription(), resource.getColor()
+						);
+						info.setTimezone(resource.getTimezone());
+						calendars.add(info);
+					}
 				serverInfo.setCalendars(calendars);
 			} else
 				Log.w(TAG, "Found calendar home set, but it doesn't advertise CalDAV support");
@@ -240,6 +250,8 @@ public class DavResourceFinder implements Closeable {
 	WebDavResource getCurrentUserPrincipal(ServerInfo serverInfo, String serviceName) throws URISyntaxException, IOException, NotAuthorizedException {
 		URI initialURL = getInitialContextURL(serverInfo, serviceName);
 		if (initialURL != null) {
+			Log.i(TAG, "Looking up principal URL for service " + serviceName + "; initial context: " + initialURL);
+
 			// determine base URL (host name and initial context path)
 			WebDavResource base = new WebDavResource(httpClient,
 					initialURL,
@@ -249,8 +261,11 @@ public class DavResourceFinder implements Closeable {
 			try {
 				WebDavResource wellKnown = new WebDavResource(base, "/.well-known/" + serviceName);
 				wellKnown.propfind(Mode.CURRENT_USER_PRINCIPAL);
-				if (wellKnown.getCurrentUserPrincipal() != null)
-					return new WebDavResource(wellKnown, wellKnown.getCurrentUserPrincipal());
+				if (wellKnown.getCurrentUserPrincipal() != null) {
+					URI principal = wellKnown.getCurrentUserPrincipal();
+					Log.i(TAG, "Principal URL found from Well-Known URI: " + principal);
+					return new WebDavResource(wellKnown, principal);
+				}
 			} catch (NotAuthorizedException e) {
 				Log.w(TAG, "Not authorized for well-known " + serviceName + " service detection", e);
 				throw e;
@@ -263,12 +278,16 @@ public class DavResourceFinder implements Closeable {
 			} catch (IOException e) {
 				Log.e(TAG, "Well-known " + serviceName + " service detection failed with I/O error", e);
 			}
-	
+
 			// fall back to user-given initial context path
+			Log.d(TAG, "Well-known service detection failed, trying initial context path " + initialURL);
 			try {
 				base.propfind(Mode.CURRENT_USER_PRINCIPAL);
-				if (base.getCurrentUserPrincipal() != null)
-					return new WebDavResource(base, base.getCurrentUserPrincipal());
+				if (base.getCurrentUserPrincipal() != null) {
+					URI principal = base.getCurrentUserPrincipal();
+					Log.i(TAG, "Principal URL found from initial context path: " + principal);
+					return new WebDavResource(base, principal);
+				}
 			} catch (NotAuthorizedException e) {
 				Log.e(TAG, "Not authorized for querying principal", e);
 				throw e;
@@ -278,7 +297,7 @@ public class DavResourceFinder implements Closeable {
 				Log.e(TAG, "DAV error when querying principal", e);
 			}
 
-			Log.i(TAG, "Couldn't find current-user-principal for service " + serviceName + ", assuming user-given path is principal path");
+			Log.i(TAG, "Couldn't find current-user-principal for service " + serviceName + ", assuming initial context path is principal path");
 			return base;
 		}
 		return null;
