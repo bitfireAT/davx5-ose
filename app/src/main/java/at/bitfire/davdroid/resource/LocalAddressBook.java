@@ -578,20 +578,24 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				SipAddress.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] { String.valueOf(c.getLocalID()), SipAddress.CONTENT_ITEM_TYPE }, null);
 		if (cursor != null && cursor.moveToNext()) {
-			Impp impp = new Impp("sip:" + cursor.getString(0));
-			switch (cursor.getInt(1)) {
-			case SipAddress.TYPE_HOME:
-				impp.addType(ImppType.HOME);
-				break;
-			case SipAddress.TYPE_WORK:
-				impp.addType(ImppType.WORK);
-				break;
-			case SipAddress.TYPE_CUSTOM:
-				String customType = cursor.getString(2);
-				if (!StringUtils.isEmpty(customType))
-					impp.addType(ImppType.get(labelToXName(customType)));
+			try {
+				Impp impp = new Impp("sip:" + cursor.getString(0));
+				switch (cursor.getInt(1)) {
+					case SipAddress.TYPE_HOME:
+						impp.addType(ImppType.HOME);
+						break;
+					case SipAddress.TYPE_WORK:
+						impp.addType(ImppType.WORK);
+						break;
+					case SipAddress.TYPE_CUSTOM:
+						String customType = cursor.getString(2);
+						if (!StringUtils.isEmpty(customType))
+							impp.addType(ImppType.get(labelToXName(customType)));
+				}
+				c.getImpps().add(impp);
+			} catch(IllegalArgumentException e) {
+				Log.e(TAG, "Illegal SIP URI", e);
 			}
-			c.getImpps().add(impp);
 		}
 	}
 
