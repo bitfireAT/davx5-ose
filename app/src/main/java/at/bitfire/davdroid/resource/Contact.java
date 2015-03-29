@@ -325,7 +325,7 @@ public class Contact extends Resource {
 			Log.w(TAG, "No FN (formatted name) available to generate VCard");
 
 		// N
-		if (familyName != null || middleName != null || givenName != null) {
+		if (prefix != null || familyName != null || middleName != null || givenName != null || suffix != null) {
 			StructuredName n = new StructuredName();
 			if (prefix != null)
 				for (String p : StringUtils.split(prefix))
