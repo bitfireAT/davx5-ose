@@ -50,9 +50,9 @@
        <p>DAVdroid это адаптер синхронизации CalDAV/CardDAV для Android 4+. Для его использования просто добавьте аккаунт DAVdroid
         для вашего сервера CalDAV/CardDAV после чего ваши контакты и события календаря будут синхронизироваться в оба направления.</p>
        
-       <p>For more information, please see the <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid homepage</a>.
-       There\'s a <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Setup guide</a>, too. DAVdroid respects
-       your privacy, see our <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Privacy Policy</a>.</p>
+       <p>Для более подробной информации, просмотрите веб-сайт <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid</a>,
+       Руководство <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">по установке</a>. Также прочитайте
+       <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Политику Конфиденциальности</a> DAVdroid.</p>
        
        <p>Если вы пользователь CyanogenMod, "Privacy Guard" должно быть отключено для DAVdroid. Если этого не сделать,
        DAVdroid не получит необходимый доступ для синхронизации ваших контактов и календарей.</p>
@@ -115,7 +115,7 @@
     <string name="login_base_url">Базовый URL (коллекции будут определены автоматически):</string>
     <string name="login_auth_preemptive">Упреждающая идентификация (рекомендовано, но несовместимо с Digest идентификацией)</string>
 
-    <string name="login_password">Password:</string>
+    <string name="login_password">Пароль:</string>
 
     <!-- Settings activity -->
     <string name="settings_title">Настройки</string>
@@ -124,7 +124,7 @@
     <string name="settings_username">Имя</string>
     <string name="settings_enter_username">Введите имя пользователя:</string>
     <string name="settings_password">Пароль</string>
-    <string name="settings_password_summary">Update the password according to your server.</string>
+    <string name="settings_password_summary">Обновить пароль в соответствии с вашим сервером.</string>
     <string name="settings_enter_password">Введите свой пароль:</string>
     <string name="settings_preemptive">Упреждающая идентификация</string>
     <string name="settings_preemptive_on">Учетные данные посылаются с каждым запросом (рекомендовано)</string>
