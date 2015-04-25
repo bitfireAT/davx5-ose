@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2013 – 2015 Ricki Hirner (bitfire web engineering).
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0
+  ~ which accompanies this distribution, and is available at
+  ~ http://www.gnu.org/licenses/gpl.html
+  -->
+
+<resources>
+
+    <!-- common strings -->
+    <string name="app_name">DAVdroid</string>
+    <string name="next">Далее</string>
+    <string name="help">Помощь</string>
+
+    <string name="exception_cert_path_validation">Недоверенный сертификат в цепочке сертификации. Прочитайте FAQ для полной информации.</string>
+    <string name="exception_http">Ошибка HTTP: %s</string>
+    <string name="exception_incapable_resource">Отсутствуют возможности: %s</string>
+    <string name="exception_io">ошибка I/O: %s</string>
+    <string name="exception_uri_syntax">Неверный URI: %s</string>
+    
+    <!-- MainActivity -->
+    <string name="main_manage_accounts">Управление аккаунтами синхронизации</string>
+
+    <string name="html_main_workaround"><![CDATA[
+		<p>Благодарим за поддержку проекта через покупку DAVdroid на Google Play. К сожалению есть две небольших проблемы для программ приобретенных в Google Play:</p>
+		
+		<h2>1. Аккаунты могут исчезнуть после перезагрузки</h2>
+		<p>Вы можете столкнуться с проблемой когда все ваши <strong>аккаунты DAVdroid (включая события и контакты) исчезнут после перезагрузки устройства</strong>.
+		Причина - <a href="https://code.google.com/p/android/issues/detail?id=34880">ошибка в Android</a>
+        по причине которой аккаунты платных приложений удаляются при загрузке устройства из за (зашифрованного) APK файла который загружается
+        <i>после</i> проверки аккаунтов.</p>
+        <p>Затронутые пользователи:<br/>
+        * все пользователи Android 4.1 которые установили DAVdroid через Play Store;<br/>
+        * Пользователи Android 4.2 которые установили DAVdroid через Play Store на некоторых устройствах (например на большинстве устройств Samsung)</p>
+        
+        <h2>2. Аккаунты могут исчезнуть после обновления DAVdroid</h2>
+        <p>Вы можете столкнуться с проблемой когда все ваши <strong>аккаунты DAVdroid (включая события и контакты) исчезнут после
+         после обновления DAVdroid через Play Store</strong>. Причина это <a href="https://code.google.com/p/android/issues/detail?id=66905">другая ошибка в Android</a>
+        которая вызывает удаление аккаунтов  платных приложений по аналогичной причине.</p>
+        <p>Затронутые пользователи:<br/> некоторые пользователи Android 4.4.2 которые установили DAVdroid через Play Store (подтверждено для устройств Nexus и Moto G)</p>
+        
+        <p><strong>Если вы столкнулись с этими ошибками, пожалуйста установите дополнительное приложение <a href="market://details?id=at.bitfire.davdroid.jbworkaround">
+        DAVdroid JB Workaround</a> для их устранения.</strong></p>
+    ]]></string>
+    <string name="html_main_info"><![CDATA[
+       <h1>Добро пожаловать в DAVdroid/%s!</h1>
+       
+       <p>DAVdroid это адаптер синхронизации CalDAV/CardDAV для Android 4+. Для его использования просто добавьте аккаунт DAVdroid
+        для вашего сервера CalDAV/CardDAV после чего ваши контакты и события календаря будут синхронизироваться в оба направления.</p>
+       
+       <p>Для более подробной информации, просмотрите веб-сайт <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid</a>,
+       Руководство <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">по установке</a>. Также прочитайте
+       <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Политику Конфиденциальности</a> DAVdroid.</p>
+       
+       <p>Если вы пользователь CyanogenMod, "Privacy Guard" должно быть отключено для DAVdroid. Если этого не сделать,
+       DAVdroid не получит необходимый доступ для синхронизации ваших контактов и календарей.</p>
+       
+       <p><b>В случае каких либо проблем, прожалуйста сначала прочитайте <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a>.
+       Если вы столкнулись с ошибкой, которая явно связана с DAVdroid, опишите её в соответствующем разделе
+       <a href="https://github.com/rfc2822/davdroid">Issues at Github</a> вместо связи с нами напрямую или
+       плохой оценки приложения.</b></p>
+              
+	   <h1>ПО с открытым исходным кодом</h1>
+	   <p>С самого начала DAVdroid был задуман как проект с отрытым исходным кодом. Всегда можно скомпилировать
+        это приложение для себя и использовать его бесплатно без каких-либо обязательств. Исходный код
+	   <a href="https://github.com/rfc2822/davdroid">доступен на Github</a>, и вы всегда сможете
+	   <a href="https://f-droid.org/app/at.bitfire.davdroid">скачать</a> программу через сайт F-droid.</p>
+	   
+	   <p>Тем не менее, командой разработчиков была проделана большая работа чтобы создать это приложение, поэтому мы решили сделать программу доступной через коммерческие сервисы приложений.
+	   Если вы хотите поддержать этот проект, рассмотрите возможность <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">пожертования на DAVdroid</a>
+	   или его приобретения.</p>
+	   
+	   <h1>Лицензия</h1>
+	   <p>Авторское право © 2013 – 2015 Ricki Hirner, Bernhard Stockmann (<a href="http://www.bitfire.at">bitfire web engineering</a>). Все права защищены.
+	   Эта программа и сопутствующие материалы предоставлены на условиях лицензии GNU Public License v3.0 доступной
+	   по адресу <a
+	   href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>.
+	   Ввиду того, что Google Play, Samsung
+	   Store или Amazon Appstore требуют иные условия лицензирования,
+	   их требования распространяются на версии, которые загружены через соответствующие сервисы.</p>
+	   
+	   <p>Перевод на Немецкий язык выполнен авторами программы. Переводы на остальные языки предоставлены разными людьми, которые
+	   перечислены в соответствующей языковой версии программы.</p>
+
+	   <p>Перевод на русский язык Василий Поломарь (vasp@zabmail.ru).</p>
+
+	   <h2>Использованные библиотеки</h2>
+	   <p>
+	    * <a href="http://hc.apache.org">Apache HttpClient</a> (Android port) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>
+	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
+	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a><br/>
+	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a><br/>
+	   	* <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a><br/>
+		* <a href="http://www.xbill.org/dnsjava/">dnsjava</a> – <a href="http://www.xbill.org/dnsjava/dnsjava-current/LICENSE">BSD License</a></p>
+    ]]></string>
+
+    <!-- AddAccountActivity -->
+    <string name="login_type_email">Вход по адресу email</string>
+    <string name="login_type_email_description">Данные сервиса будут автоматически определены через имя домена. Пример: myaccount@icloud.com</string>
+    <string name="login_type_url">Вход через URL  и именем пользователя</string>
+    <string name="login_type_url_description">Данные сервиса будут автоматически определены через начальную часть URL и имя пользователя. Обычно
+        используется для частных сервисов поддерживаемых самостоятельно.</string>
+    
+    <string name="login_email_description">Введите свой адрес электронной почты. Имя домена из него будет использовано для автоматического определения настроек сервиса.</string>
+    <string name="login_email_address">Email:</string>
+    
+    <string-array name="login_url_scheme">
+        <item>http://</item>
+        <item>https://</item>
+    </string-array>
+    <string name="login_http_warning">"Если вы не используете шифрование (HTTPS), кто-нибудь может легко перехватить ваши имена, пароли, контакты и события календарей."</string>
+    <string name="login_user_name">Имя пользователя:</string>
+    <string name="login_base_url">Базовый URL (коллекции будут определены автоматически):</string>
+    <string name="login_auth_preemptive">Упреждающая идентификация (рекомендовано, но несовместимо с Digest идентификацией)</string>
+
+    <string name="login_password">Пароль:</string>
+
+    <!-- Settings activity -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_no_accounts">Не найдено учётных записей DAVdroid</string>
+    <string name="settings_authentication">Идентификация</string>
+    <string name="settings_username">Имя</string>
+    <string name="settings_enter_username">Введите имя пользователя:</string>
+    <string name="settings_password">Пароль</string>
+    <string name="settings_password_summary">Обновить пароль в соответствии с вашим сервером.</string>
+    <string name="settings_enter_password">Введите свой пароль:</string>
+    <string name="settings_preemptive">Упреждающая идентификация</string>
+    <string name="settings_preemptive_on">Учетные данные посылаются с каждым запросом (рекомендовано)</string>
+    <string name="settings_preemptive_off">Учетные данные посылаются после их запроса сервером</string>
+    <string name="settings_sync">Синхронизация</string>
+    <string name="settings_sync_interval_contacts">Интервал синхронизации контактов</string>
+    <string name="settings_sync_summary_manually">Вручную</string>
+    <string name="settings_sync_summary_periodically">Каждые %d минут и немедленно при локальных изменениях</string>
+    <string name="settings_sync_summary_not_available">Недоступно</string>
+    <string name="settings_sync_interval_calendars">Интервал синхронизации календарей</string>
+    <string-array name="settings_sync_interval_seconds">
+        <item>-1</item>
+        <item>300</item>
+        <item>600</item>
+        <item>900</item>
+        <item>3600</item>
+        <item>7200</item>
+        <item>14400</item>
+        <item>86400</item>
+    </string-array>
+    <string-array name="settings_sync_interval_names">
+        <item>Вручную</item>
+        <item>Каждые 5 минут</item>
+        <item>Каждые 10 минут</item>
+        <item>Каждые 15 минут</item>
+        <item>Каждый час</item>
+        <item>Каждые 2 часа</item>
+        <item>Каждые 4 часа</item>
+        <item>Раз в сутки</item>
+    </string-array>
+
+    <string name="setup_select_collections">DAVdroid: Выберите коллекции</string>
+    <string name="setup_neither_caldav_nor_carddav">Никакие CalDAV-/CardDAV сервисы недоступны по этому адресу.</string>
+    <string name="setup_add_account">Добавить аккаунт</string>
+    <string name="setup_querying_server">Опрашиваем сервер. Пожалуйста подождите…</string>
+    <string name="setup_what_to_sync">Какие коллекции будут синхронизироваться?</string>
+    <string name="setup_address_books">Контакты</string>
+    <string name="setup_calendars">Календари</string>
+    <string name="setup_select_address_book">Выберите единственную адресную книгу (нажмите снова для отмены выбора):</string>
+    <string name="setup_select_calendars">Выберите ваши календари:</string>
+    
+    <string name="setup_account_details">Данные аккаунта</string>
+    <string name="setup_account_name">Имя аккаунта:</string>
+    <string name="setup_account_name_hint">Мой аккаунт CalDAV/CardDAV</string>
+    <string name="setup_email_address">Адрес Email:</string>
+    <string name="setup_organizer_hint">"ОРГАНИЗАТОР ваших событий; обязательно если вы используете данные участников"</string>
+    <string name="setup_account_name_info">"Используйте свой адрес email как имя аккаунта, так как Android будет использовать это имя как поле ОРГАНИЗАТОР для событий которые вы будете создавать. Вы не можете использовать одинаковое имя для разных аккаунтов.</string>
+    <string name="setup_read_only">только чтение</string>
+
+    <string name="sync_error_title">Ошибка синхронизации</string>
+
+</resources>
