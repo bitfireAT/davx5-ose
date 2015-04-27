@@ -41,6 +41,7 @@ import net.fortuna.ical4j.model.property.Organizer;
 import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.RDate;
 import net.fortuna.ical4j.model.property.RRule;
+import net.fortuna.ical4j.model.property.RecurrenceId;
 import net.fortuna.ical4j.model.property.Status;
 import net.fortuna.ical4j.model.property.Summary;
 import net.fortuna.ical4j.model.property.Transp;
@@ -75,32 +76,29 @@ public class Event extends Resource {
 	public final static String MIME_TYPE = "text/calendar";
 	
 	private final static TimeZoneRegistry tzRegistry = new DefaultTimeZoneRegistryFactory().createRegistry();
+
+	@Getter @Setter protected RecurrenceId recurrenceId;
+
+	@Getter @Setter protected String summary, location, description;
 	
-	@Getter @Setter private String summary, location, description;
+	@Getter protected DtStart dtStart;
+	@Getter protected DtEnd dtEnd;
+	@Getter @Setter protected Duration duration;
+	@Getter @Setter protected RDate rdate;
+	@Getter @Setter protected RRule rrule;
+	@Getter @Setter protected ExDate exdate;
+	@Getter @Setter protected ExRule exrule;
+	@Getter protected List<Event> exceptions = new LinkedList<>();
+
+	@Getter @Setter protected Boolean forPublic;
+	@Getter @Setter protected Status status;
 	
-	@Getter private DtStart dtStart;
-	@Getter private DtEnd dtEnd;
-	@Getter @Setter private Duration duration;
-	@Getter @Setter private RDate rdate;
-	@Getter @Setter private RRule rrule;
-	@Getter @Setter private ExDate exdate;
-	@Getter @Setter private ExRule exrule;
+	@Getter @Setter protected boolean opaque;
 	
-	@Getter @Setter private Boolean forPublic;
-	@Getter @Setter private Status status;
-	
-	@Getter @Setter private boolean opaque;	
-	
-	@Getter @Setter private Organizer organizer;
-	@Getter private List<Attendee> attendees = new LinkedList<Attendee>();
-	public void addAttendee(Attendee attendee) {
-		attendees.add(attendee);
-	}
-	
-	@Getter private List<VAlarm> alarms = new LinkedList<VAlarm>();
-	public void addAlarm(VAlarm alarm) {
-		alarms.add(alarm);
-	}
+	@Getter @Setter protected Organizer organizer;
+	@Getter protected List<Attendee> attendees = new LinkedList<Attendee>();
+
+	@Getter protected List<VAlarm> alarms = new LinkedList<VAlarm>();
 
 	static {
 		CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_UNFOLDING, true);
@@ -215,51 +213,18 @@ public class Event extends Resource {
 		net.fortuna.ical4j.model.Calendar ical = new net.fortuna.ical4j.model.Calendar();
 		ical.getProperties().add(Version.VERSION_2_0);
 		ical.getProperties().add(new ProdId("-//bitfire web engineering//DAVdroid " + Constants.APP_VERSION + " (ical4j 1.0.x)//EN"));
-		
-		VEvent event = new VEvent();
-		PropertyList props = event.getProperties();
-		
-		if (uid != null)
-			props.add(new Uid(uid));
-		
-		props.add(dtStart);
-		if (dtEnd != null)
-			props.add(dtEnd);
-		if (duration != null)
-			props.add(duration);
-		
-		if (rrule != null)
-			props.add(rrule);
-		if (rdate != null)
-			props.add(rdate);
-		if (exrule != null)
-			props.add(exrule);
-		if (exdate != null)
-			props.add(exdate);
-		
-		if (summary != null && !summary.isEmpty())
-			props.add(new Summary(summary));
-		if (location != null && !location.isEmpty())
-			props.add(new Location(location));
-		if (description != null && !description.isEmpty())
-			props.add(new Description(description));
-		
-		if (status != null)
-			props.add(status);
-		if (!opaque)
-			props.add(Transp.TRANSPARENT);
-		
-		if (organizer != null)
-			props.add(organizer);
-		props.addAll(attendees);
-		
-		if (forPublic != null)
-			event.getProperties().add(forPublic ? Clazz.PUBLIC : Clazz.PRIVATE);
-		
-		event.getAlarms().addAll(alarms);
-		
-		props.add(new LastModified());
-		ical.getComponents().add(event);
+
+		// "main event" (without exceptions)
+		ComponentList components = ical.getComponents();
+		VEvent mainEvent = toVEvent(this);
+		components.add(mainEvent);
+
+		// recurrence exceptions
+		for (Event exception : exceptions) {
+			VEvent vException = toVEvent(exception);
+			vException.getProperties().add(mainEvent.getProperty(Property.UID));
+			components.add(vException);
+		}
 
 		// add VTIMEZONE components
 		net.fortuna.ical4j.model.TimeZone
@@ -278,6 +243,55 @@ public class Event extends Resource {
 			Log.e(TAG, "Generated invalid iCalendar");
 		}
 		return os;
+	}
+
+	protected static VEvent toVEvent(Event e) {
+		VEvent event = new VEvent();
+		PropertyList props = event.getProperties();
+
+		if (e.uid != null)
+			props.add(new Uid(e.uid));
+		if (e.recurrenceId != null)
+			props.add(e.recurrenceId);
+
+		props.add(e.dtStart);
+		if (e.dtEnd != null)
+			props.add(e.dtEnd);
+		if (e.duration != null)
+			props.add(e.duration);
+
+		if (e.rrule != null)
+			props.add(e.rrule);
+		if (e.rdate != null)
+			props.add(e.rdate);
+		if (e.exrule != null)
+			props.add(e.exrule);
+		if (e.exdate != null)
+			props.add(e.exdate);
+
+		if (e.summary != null && !e.summary.isEmpty())
+			props.add(new Summary(e.summary));
+		if (e.location != null && !e.location.isEmpty())
+			props.add(new Location(e.location));
+		if (e.description != null && !e.description.isEmpty())
+			props.add(new Description(e.description));
+
+		if (e.status != null)
+			props.add(e.status);
+		if (!e.opaque)
+			props.add(Transp.TRANSPARENT);
+
+		if (e.organizer != null)
+			props.add(e.organizer);
+		props.addAll(e.attendees);
+
+		if (e.forPublic != null)
+			event.getProperties().add(e.forPublic ? Clazz.PUBLIC : Clazz.PRIVATE);
+
+		event.getAlarms().addAll(e.alarms);
+
+		props.add(new LastModified());
+		return event;
 	}
 
 	

@@ -32,7 +32,7 @@ import lombok.Cleanup;
  * @param <T> Subtype of Resource that can be stored in the collection 
  */
 public abstract class LocalCollection<T extends Resource> {
-	private static final String TAG = "davdroid.LocalCollection";
+	private static final String TAG = "davdroid.Collection";
 	
 	protected Account account;
 	protected ContentProviderClient providerClient;
@@ -66,6 +66,9 @@ public abstract class LocalCollection<T extends Resource> {
 	
 	/** column name of an entry's UID */
 	abstract protected String entryColumnUID();
+
+	/** SQL filter expression */
+	String sqlFilter;
 	
 
 	LocalCollection(Account account, ContentProviderClient providerClient) {
@@ -97,6 +100,8 @@ public abstract class LocalCollection<T extends Resource> {
 		String where = entryColumnDirty() + "=1 AND " + entryColumnETag() + " IS NULL";
 		if (entryColumnParentID() != null)
 			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
+		if (sqlFilter != null)
+			where += " AND (" + sqlFilter + ")";
 		try {
 			@Cleanup Cursor cursor = providerClient.query(entriesURI(),
 					new String[] { entryColumnID() },
@@ -136,6 +141,8 @@ public abstract class LocalCollection<T extends Resource> {
 		String where = entryColumnDirty() + "=1 AND " + entryColumnETag() + " IS NOT NULL";
 		if (entryColumnParentID() != null)
 			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
+		if (sqlFilter != null)
+			where += " AND (" + sqlFilter + ")";
 		try {
 			@Cleanup Cursor cursor = providerClient.query(entriesURI(),
 					new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
@@ -163,6 +170,8 @@ public abstract class LocalCollection<T extends Resource> {
 		String where = entryColumnDeleted() + "=1";
 		if (entryColumnParentID() != null)
 			where += " AND " + entryColumnParentID() + "=" + String.valueOf(getId());
+		if (sqlFilter != null)
+			where += " AND (" + sqlFilter + ")";
 		try {
 			@Cleanup Cursor cursor = providerClient.query(entriesURI(),
 					new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
@@ -191,7 +200,7 @@ public abstract class LocalCollection<T extends Resource> {
 	public T findById(long localID, boolean populate) throws LocalStorageException {
 		try {
 			@Cleanup Cursor cursor = providerClient.query(ContentUris.withAppendedId(entriesURI(), localID),
-					new String[] { entryColumnRemoteName(), entryColumnETag() }, null, null, null);
+					new String[] { entryColumnRemoteName(), entryColumnETag() }, sqlFilter, null, null);
 			if (cursor != null && cursor.moveToNext()) {
 				T resource = newResource(localID, cursor.getString(0), cursor.getString(1));
 				if (populate)
@@ -214,10 +223,13 @@ public abstract class LocalCollection<T extends Resource> {
 	 * @throws LocalStorageException when the content provider couldn't be queried
 	 */
 	public T findByRemoteName(String remoteName, boolean populate) throws LocalStorageException {
+		String where = entryColumnRemoteName() + "=?";
+		if (sqlFilter != null)
+			where += " AND (" + sqlFilter + ")";
 		try {
 			@Cleanup Cursor cursor = providerClient.query(entriesURI(),
 					new String[] { entryColumnID(), entryColumnRemoteName(), entryColumnETag() },
-					entryColumnRemoteName() + "=?", new String[] { remoteName }, null);
+					where, new String[] { remoteName }, null);
 			if (cursor != null && cursor.moveToNext()) {
 				T resource = newResource(cursor.getLong(0), cursor.getString(1), cursor.getString(2));
 				if (populate)

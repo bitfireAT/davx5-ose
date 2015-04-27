@@ -29,6 +29,8 @@ import android.provider.CalendarContract.Reminders;
 import android.provider.ContactsContract;
 import android.util.Log;
 
+import net.fortuna.ical4j.model.Date;
+import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Parameter;
 import net.fortuna.ical4j.model.ParameterList;
@@ -47,6 +49,7 @@ import net.fortuna.ical4j.model.property.ExRule;
 import net.fortuna.ical4j.model.property.Organizer;
 import net.fortuna.ical4j.model.property.RDate;
 import net.fortuna.ical4j.model.property.RRule;
+import net.fortuna.ical4j.model.property.RecurrenceId;
 import net.fortuna.ical4j.model.property.Status;
 
 import org.apache.commons.lang.StringUtils;
@@ -172,6 +175,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		super(account, providerClient);
 		this.id = id;
 		this.url = url;
+		sqlFilter = "ORIGINAL_ID IS NULL";
 	}
 
 	
@@ -210,18 +214,20 @@ public class LocalCalendar extends LocalCollection<Event> {
 	}
 	
 	public void deleteAllExceptRemoteNames(Resource[] remoteResources) {
-		String where;
+		String where = entryColumnParentID() + "=?";
 		
 		if (remoteResources.length != 0) {
 			List<String> sqlFileNames = new LinkedList<String>();
 			for (Resource res : remoteResources)
 				sqlFileNames.add(DatabaseUtils.sqlEscapeString(res.getName()));
-			where = entryColumnRemoteName() + " NOT IN (" + StringUtils.join(sqlFileNames, ",") + ")";
+			where += " AND " + entryColumnRemoteName() + " NOT IN (" + StringUtils.join(sqlFileNames, ",") + ")";
 		} else
-			where = entryColumnRemoteName() + " IS NOT NULL";
-		
+			where += " AND " + entryColumnRemoteName() + " IS NOT NULL";
+		if (sqlFilter != null)
+			where += " AND (" + sqlFilter + ")";
+
 		Builder builder = ContentProviderOperation.newDelete(entriesURI())
-				.withSelection(entryColumnParentID() + "=? AND (" + where + ")", new String[] { String.valueOf(id) });
+				.withSelection(where, new String[] { String.valueOf(id) });
 		pendingOperations.add(builder
 				.withYieldAllowed(true)
 				.build());
@@ -229,7 +235,6 @@ public class LocalCalendar extends LocalCollection<Event> {
 	
 	
 	/* methods for populating the data object from the content provider */
-	
 
 	@Override
 	public void populate(Resource resource) throws LocalStorageException {
@@ -243,7 +248,8 @@ public class LocalCalendar extends LocalCollection<Event> {
 					/*  8 */ Events.STATUS, Events.ACCESS_LEVEL,
 					/* 10 */ Events.RRULE, Events.RDATE, Events.EXRULE, Events.EXDATE,
 					/* 14 */ Events.HAS_ATTENDEE_DATA, Events.ORGANIZER, Events.SELF_ATTENDEE_STATUS,
-					/* 17 */ entryColumnUID(), Events.DURATION, Events.AVAILABILITY
+					/* 17 */ entryColumnUID(), Events.DURATION, Events.AVAILABILITY,
+					/* 20 */ Events.ORIGINAL_ALL_DAY, Events.ORIGINAL_INSTANCE_TIME
 				}, null, null, null);
 			if (cursor != null && cursor.moveToNext()) {
 				e.setUid(cursor.getString(17));
@@ -311,7 +317,21 @@ public class LocalCalendar extends LocalCollection<Event> {
 				} catch (IllegalArgumentException ex) {
 					Log.w(TAG, "Invalid recurrence rules, ignoring", ex);
 				}
-	
+
+				// recurrence exceptions
+				if (!cursor.isNull(21)) {
+					long originalInstanceTime = cursor.getLong(21);
+					boolean originalAllDay = cursor.getInt(20) != 0;
+					Date originalDate = originalAllDay ?
+							new Date(originalInstanceTime) :
+							new DateTime(originalInstanceTime);
+					if (originalDate instanceof DateTime)
+						((DateTime)originalDate).setUtc(true);
+					e.setRecurrenceId(new RecurrenceId(originalDate));
+				} else
+					// this event may have exceptions
+					populateExceptions(e);
+
 				// status
 				switch (cursor.getInt(8)) {
 				case Events.STATUS_CONFIRMED:
@@ -355,15 +375,35 @@ public class LocalCalendar extends LocalCollection<Event> {
 		}
 	}
 
-	
+	void populateExceptions(Event e) throws RemoteException {
+		Uri exceptionsUri = Events.CONTENT_URI.buildUpon()
+				.appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
+				.build();
+		@Cleanup Cursor c = providerClient.query(exceptionsUri, new String[] {
+				/* 0 */ Events._ID, entryColumnRemoteName()
+		}, Events.ORIGINAL_ID + "=?", new String[] { String.valueOf(e.getLocalID()) }, null);
+		while (c != null && c.moveToNext()) {
+			long exceptionId = c.getLong(0);
+			String exceptionRemoteName = c.getString(1);
+			Log.i(TAG, "Found exception ID " + exceptionId + " of original ID " + e.getLocalID());
+			try {
+				Event exception = new Event(exceptionId, exceptionRemoteName, null);
+				populate(exception);
+				e.getExceptions().add(exception);
+			} catch (LocalStorageException ex) {
+				Log.e(TAG, "Couldn't find exception details, ignoring");
+			}
+		}
+	}
+
 	void populateAttendees(Event e) throws RemoteException {
 		Uri attendeesUri = Attendees.CONTENT_URI.buildUpon()
 				.appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
 				.build();
-		@Cleanup Cursor c = providerClient.query(attendeesUri, new String[] {
+		@Cleanup Cursor c = providerClient.query(attendeesUri, new String[]{
 				/* 0 */ Attendees.ATTENDEE_EMAIL, Attendees.ATTENDEE_NAME, Attendees.ATTENDEE_TYPE,
 				/* 3 */ Attendees.ATTENDEE_RELATIONSHIP, Attendees.STATUS
-			}, Attendees.EVENT_ID + "=?", new String[] { String.valueOf(e.getLocalID()) }, null);
+		}, Attendees.EVENT_ID + "=?", new String[]{String.valueOf(e.getLocalID())}, null);
 		while (c != null && c.moveToNext()) {
 			try {
 				Attendee attendee = new Attendee(new URI("mailto", c.getString(0), null));
@@ -408,13 +448,13 @@ public class LocalCalendar extends LocalCollection<Event> {
 					break;
 				}
 				
-				e.addAttendee(attendee);
+				e.getAttendees().add(attendee);
 			} catch (URISyntaxException ex) {
 				Log.e(TAG, "Couldn't parse attendee information, ignoring", ex);
 			}
 		}
 	}
-	
+
 	void populateReminders(Event e) throws RemoteException {
 		// reminders
 		Uri remindersUri = Reminders.CONTENT_URI.buildUpon()
@@ -435,7 +475,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 				props.add(Action.DISPLAY);
 				props.add(new Description(e.getSummary()));
 			}
-			e.addAlarm(alarm);
+			e.getAlarms().add(alarm);
 		}
 	}
 	
