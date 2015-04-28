@@ -300,7 +300,7 @@ public abstract class LocalCollection<T extends Resource> {
 	
 	/** Updates the locally-known ETag of a resource. */
 	public void updateETag(Resource res, String eTag) throws LocalStorageException {
-		Log.d(TAG, "Setting ETag of local resource " + res + " to " + eTag);
+		Log.d(TAG, "Setting ETag of local resource " + res.getName() + " to " + eTag);
 		
 		ContentValues values = new ContentValues(1);
 		values.put(entryColumnETag(), eTag);

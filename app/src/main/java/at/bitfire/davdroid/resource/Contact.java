@@ -9,6 +9,8 @@ package at.bitfire.davdroid.resource;
 
 import android.util.Log;
 
+import net.fortuna.ical4j.model.property.ProdId;
+
 import org.apache.commons.lang.StringUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -40,6 +42,7 @@ import ezvcard.property.Nickname;
 import ezvcard.property.Note;
 import ezvcard.property.Organization;
 import ezvcard.property.Photo;
+import ezvcard.property.ProductId;
 import ezvcard.property.RawProperty;
 import ezvcard.property.Revision;
 import ezvcard.property.Role;
@@ -285,6 +288,7 @@ public class Contact extends Resource {
 		vcard.removeProperties(Logo.class);
 		vcard.removeProperties(Sound.class);
 		// remove properties that don't apply anymore
+		vcard.removeProperties(ProductId.class);
 		vcard.removeProperties(Revision.class);
 		vcard.removeProperties(Source.class);
 		// store all remaining properties into unknownProperties

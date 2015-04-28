@@ -10,12 +10,16 @@ package at.bitfire.davdroid.resource;
 import java.util.Calendar;
 
 import lombok.Cleanup;
+
+import android.Manifest;
 import android.accounts.Account;
 import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -26,6 +30,8 @@ import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
 import android.provider.CalendarContract.Reminders;
 import android.test.InstrumentationTestCase;
+import android.test.IsolatedContext;
+import android.test.mock.MockContentResolver;
 import android.util.Log;
 import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.davdroid.resource.LocalStorageException;
@@ -33,20 +39,23 @@ import at.bitfire.davdroid.resource.LocalStorageException;
 public class LocalCalendarTest extends InstrumentationTestCase {
 	
 	private static final String
-		TAG = "davroid.test",
+		TAG = "davdroid.test",
+		accountName = "at.bitfire.davdroid.test",
 		calendarName = "DAVdroid_Test";
-	
+
+	Context targetContext;
+
 	ContentProviderClient providerClient;
 	Account testAccount = new Account(calendarName, CalendarContract.ACCOUNT_TYPE_LOCAL);
 	LocalCalendar testCalendar;
-	
-	
+
+
 	// helpers
 	
 	private Uri syncAdapterURI(Uri uri) {
 		return uri.buildUpon()
-				.appendQueryParameter(Calendars.ACCOUNT_NAME, calendarName)
 				.appendQueryParameter(Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL)
+				.appendQueryParameter(Calendars.ACCOUNT_NAME, accountName)
 				.appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").
 				build();
 	}
@@ -72,20 +81,21 @@ public class LocalCalendarTest extends InstrumentationTestCase {
 	
 	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
 	protected void setUp() throws Exception {
-		ContentResolver resolver = getInstrumentation().getContext().getContentResolver();
-		providerClient = resolver.acquireContentProviderClient(CalendarContract.AUTHORITY);
+		targetContext = getInstrumentation().getTargetContext();
+		targetContext.enforceCallingOrSelfPermission(Manifest.permission.READ_CALENDAR, "No privileges for enumerating calendars");
+
+		providerClient = targetContext.getContentResolver().acquireContentProviderClient(CalendarContract.AUTHORITY);
 		
-		long id;
+		long calendarId;
 
 		@Cleanup Cursor cursor = providerClient.query(Calendars.CONTENT_URI,
-				new String[]{Calendars._ID},
-				Calendars.ACCOUNT_TYPE + "=? AND " + Calendars.NAME + "=?",
-				new String[]{ CalendarContract.ACCOUNT_TYPE_LOCAL, calendarName },
+				new String[]{ Calendars._ID },
+				Calendars.ACCOUNT_TYPE + "=? AND " + Calendars.ACCOUNT_NAME + "=? AND " + Calendars.NAME + "=?",
+				new String[] { CalendarContract.ACCOUNT_TYPE_LOCAL, accountName, calendarName },
 				null);
 		if (cursor != null && cursor.moveToNext()) {
-			// found local test calendar
-			id = cursor.getLong(0);
-			Log.d(TAG, "Found test calendar with ID " + id);
+			calendarId = cursor.getLong(0);
+			Log.i(TAG, "Found test calendar with ID " + calendarId);
 			
 		} else {
 			// no local test calendar found, create 
@@ -106,11 +116,11 @@ public class LocalCalendarTest extends InstrumentationTestCase {
 			
 			Uri calendarURI = providerClient.insert(syncAdapterURI(Calendars.CONTENT_URI), values);
 			
-			id = ContentUris.parseId(calendarURI);
-			Log.d(TAG, "Created test calendar with ID " + id);
+			calendarId = ContentUris.parseId(calendarURI);
+			Log.d(TAG, "Created test calendar with ID " + calendarId);
 		}
 		
-		testCalendar = new LocalCalendar(testAccount, providerClient, id, null);
+		testCalendar = new LocalCalendar(testAccount, providerClient, calendarId, null);
 	}
 
 	protected void tearDown() throws Exception {
