@@ -561,9 +561,6 @@ public class LocalCalendar extends LocalCollection<Event> {
 					.withValue(entryColumnETag(), event.getETag())
 					.withValue(entryColumnUID(), event.getUid());
 		} else {
-			// this event is an exception for a recurring event -> calculate
-			// 1. ORIGINAL_INSTANCE_TIME    when the original instance would have occured (ms UTC)
-			// 2. ORIGINAL_ALL_DAY          was the original instance an all-day event?
 			builder = builder.withValue(Events.ORIGINAL_SYNC_ID, event.getName());
 
 			// ORIGINAL_INSTANCE_TIME and ORIGINAL_ALL_DAY is set in buildExceptions.
@@ -674,8 +671,6 @@ public class LocalCalendar extends LocalCollection<Event> {
 		Date date = recurrenceId.getDate();
 
 		boolean originalAllDay = master.isAllDay();
-		long originalInstanceTime;
-
 		if (originalAllDay && date instanceof DateTime) {
 			String value = recurrenceId.getValue();
 			if (value.matches("^\\d{8}T\\d{6}$"))
@@ -687,12 +682,9 @@ public class LocalCalendar extends LocalCollection<Event> {
 					Log.e(TAG, "Couldn't parse DATE part of DATE-TIME RECURRENCE-ID", e);
 				}
 		}
-		originalInstanceTime = date.getTime();
-		Log.i(TAG, "Original instance time: " + date.getTime()/1000);
 
-		builder.withValue(Events.ORIGINAL_INSTANCE_TIME, originalInstanceTime);
+		builder.withValue(Events.ORIGINAL_INSTANCE_TIME, date.getTime());
 		builder.withValue(Events.ORIGINAL_ALL_DAY, originalAllDay ? 1 : 0);
-
 		return builder;
 	}
 	
