@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- common strings -->
+    <string name="app_name">DAVDroid</string>
+    <string name="next">Próximo</string>
+    <string name="help">Ajuda</string>
+
+    <string name="exception_cert_path_validation">Certificado não confiável. Veja o FAQ para maiores informações.</string>
+    <string name="exception_http">Erro HTTP: %s</string>
+    <string name="exception_incapable_resource">Recuros esgotados: %s</string>
+    <string name="exception_io">Erro de E/S: %s</string>
+    <string name="exception_uri_syntax">URI inválida: %s</string>
+
+
+     <!-- MainActivity -->
+    <string name="main_manage_accounts">Administrar as contas sincronizadas</string>
+
+    <string name="html_main_workaround"><![CDATA[
+        <p>Obrigado por adquirir o DAVdroid pelo Google Play apoiando, assim, o projeto. Infelizmente existem dos problemas com o Google Play:</p>
+        <h2>1. Contas podem desaparecer após reinicial</h2>
+        <p>Você pode encontrar problemas com todas as suas <strong>contas DAVdroid (incluindo contatos e eventos) 
+        após reiniciar o dispositivo</strong>. A rasão disto é <a href="https://code.google.com/p/android/issues/detail?id=34880">defeito no Android</a>
+        que pode fazer com que  aplicativos pagos sejam removidos na inicialização porque os arquivos de APKs (criptografados)  
+        rodam <i>após</i> a verificação se a conta é orfã.</p>
+        <p>Usuários Afeados:<br/>
+        * todos os usuários do Android 4.1 que possuem um DAVdroid obtido no Play Store;<br/>
+        * usuários do Android 4.2 que obtiveram o DAVdroid do Play Store apenas com certos aparelhos (por exemplo, vários Samsung devices)</p>
+        <h2>2. Contas podem ser perdidas após atualização do DAVdroid</h2>
+        <p>Você pode encontrar problemas em todas as suas <strong>contas DAVdroid (incluindo contatos e eventos) quando o Play Store
+        atualiza o DAVdroid</strong>. A razão é <a href="https://code.google.com/p/android/issues/detail?id=66905">outro defeito no Android</a>
+        que causa a remoção da conta quando este é atualizado por outro aplicativo semelhante.</p>
+        <p>Usuários afetados: alguns usuários do Android 4.4.2 que obtiveram o  DAVdroid do Play Store (conhecido para dispositivos Nexus e Moto G)</p>
+        <p><strong>Se você for afetado por algum destes defeitos, por favor acesse <a href="market://details?id=at.bitfire.davdroid.jbworkaround">
+        para instalar a sulução DAVdroid</a>.</strong></p>
+    ]]></string>
+
+    <string name="html_main_info"><![CDATA[
+           <h1>Bem vindo ao DAVDroid</h1>
+
+           <p>DAVDroid é uma aplicativo de sincronização entre Android 4+ e CalDAV/CardDAV baseado no aplicativo DAVdroid. Para usar o aplicativo basta adicionar uma conta
+            DAVDroid para seu servidor de CalDAV/CardDAV e seus contatos e eventos serão sincronizados.</p>
+
+           <p>Se você usa o CyanogenMod, deve desativar o "Privacy Guard" para DAVDroid, caso contrário o DAVDroid não terá autorização para
+           acessar e sincronizar seus contatos e eventos.</p>
+
+        <p><b>Em caso de problemas, por favor leia o <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a> (em inglês).
+        Se você encontrar algum problema claramente relacionado ao DAVDroid, informe-o em
+        <a href="https://github.com/rfc2822/davdroid">Github issues</a> ao invés de dar uma avaliação negativa ao aplicativo</b></p>
+
+
+           <h1>Software Livre</h1>
+           <p>O DAVDroid foi criado como um projeto de código aberto desde o início, permitindo que você mesmo compile a aplicação e use de forma gratuíta
+           sem nenhuma obrigação. O código fonte está disponível em <a href="https://github.com/rfc2822/ExpressoDav">Github</a>, e você pode
+           <a href="https://f-droid.org/app/at.bitfire.DAVDroid">também baixar o app em F-droid</a>.</p>
+
+            <p>Foi muito trabalhoso criar este aplicativo por isso decidimos coloca-lo nas lojas comerciais por uma pequena taxa.
+            Se você quiser apoiar este projeto considere uma <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">doação</a> ou compre-o</p>
+
+           <h1>Licença do DAVdroid</h1>
+           <p>Copyright © 2013 – 2014 Ricki Hirner (<a href="http://www.bitfire.at">bitfire web engineering</a>). Todos os direitos reservados.
+           Este programa e os materias que o acompanham estão de acordo com a GNU Public License v3.0 e está disponível em <a
+           href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. Em relação ao Google Play, Samsung Store ou Amazon Appstore são requeridas outras condições, realize o download destas nestes serviços.</p>
+
+           <p>Traduções.
+                
+           </p>
+
+           <h2>Bibliotecas de terceiros utilizadas</h2>
+           <p>
+            * <a href="http://hc.apache.org">Apache HttpClient</a> (Android port) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>
+            * <a href="http://ical4j.sourceforge.net/">iCal4j<a> (<a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">Licencia New BSD</a>)<br/>
+            * <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> (<a href="http://opensource.org/licenses/BSD-3-Clause">Licencia New BSD</a>)<br/>
+            * <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> (<a href="http://www.apache.org/licenses/LICENSE-2.0">Licencia Apache Version 2.0</a>)<br/>
+            * <a href="http://projectlombok.org/">Project Lombok</a> (<a href="http://opensource.org/licenses/mit-license.php">Licencia MIT</a>)</p>
+        ]]></string>
+
+     <!-- AddAccountActivity -->
+    <string name="login_type_email">Login com seu enderço de email</string>
+    <string name="login_type_email_description">Detalhes do serviço poderão ser detectados automaticamente pelo nome do
+        domínio. Exemplo: myaccount@icloud.com</string>
+    <string name="login_type_url">Login com URL e nome do usuário</string>
+    <string name="login_type_url_description">Detalhes do serviço poderão ser detectados automaticamente pela URL inicial e nome do usuário.
+        Usado principalmente para serviços de hospedagem própria.</string>
+    <string name="login_email_description">Por favor entre com seu endereço de email.
+        Seu nome de domínio será usado para detectar automaticamente as configurações de serviço</string>
+    <string name="login_email_address">Email:</string>
+
+    <string-array name="login_url_scheme">
+        <item>http://</item>
+        <item>https://</item>
+    </string-array>
+
+    <string name="login_http_warning">"Ser não utilizar encriptação (HTTPS), outras pessoas podem facilmente interceptar seus dados pessoais, contatos e eventos."</string>
+    <string name="login_user_name">Usuário:</string>
+    <string name="login_base_url">URL inicial (container de dados detectados automáticamente):</string>
+    <string name="login_auth_preemptive">Autenticação preferida (recomendado, mas incompatível com Digest)</string>
+
+    <string name="login_password">Senha:</string>
+
+
+    <!-- Settings activity -->
+    <string name="settings_title">Configurações</string>
+    <string name="settings_no_accounts">Conta DAVdroid não encontrada</string>
+    <string name="settings_authentication">Autenticação</string>
+    <string name="settings_username">Nome de usuário</string>
+    <string name="settings_enter_username">Informe o nome de usuário:</string>
+    <string name="settings_password">Senha</string>
+    <string name="settings_password_summary">Atualize sua denha de acordo com a do seu servidor.</string>
+    <string name="settings_enter_password">Informe sua senha:</string>
+    <string name="settings_preemptive">Pre-emptive authentication</string>
+    <string name="settings_preemptive_on">Credenciais são enviadas com cadas requisição (recomendado)</string>
+    <string name="settings_preemptive_off">Credenciais são enviadas apos o servidor requisitar</string>
+    <string name="settings_sync">Sincronização</string>
+    <string name="settings_sync_interval_contacts">Intervalo de sincronização dos contatos</string>
+    <string name="settings_sync_summary_manually">Manualmente apenas</string>
+    <string name="settings_sync_summary_periodically">A cada %d minutos + imediatamente em alterações locais</string>
+    <string name="settings_sync_summary_not_available">Não avaliado</string>
+    <string name="settings_sync_interval_calendars">Intervalo de sincronização do calendário</string>
+    <string-array name="settings_sync_interval_seconds">
+        <item>-1</item>
+        <item>300</item>
+        <item>600</item>
+        <item>900</item>
+        <item>3600</item>
+        <item>7200</item>
+        <item>14400</item>
+        <item>86400</item>
+    </string-array>
+    <string-array name="settings_sync_interval_names">
+        <item>Apenas manualmente</item>
+        <item>A cada 5 minutos</item>
+        <item>A cada 10 minutos</item>
+        <item>A cada 15 minutos</item>
+        <item>A cada hora</item>
+        <item>A cada 2 horas</item>
+        <item>A cada 4 horas</item>
+        <item>Diáriamente</item>
+    </string-array>
+    <string name="setup_select_collections">DAVdroid: Selecionar Coleções</string>
+    <string name="setup_neither_caldav_nor_carddav">Nenhum CalDAV-/CardDAV serviço disponível neste endereço.</string>
+    <string name="setup_add_account">Adicionar conta</string>
+    <string name="setup_querying_server">Consultando o servidor. Por favor aguarde…</string>
+    <string name="setup_what_to_sync">Quais coleções serão sincronizadas?</string>
+    <string name="setup_address_books">Catálogo de Endereços</string>
+    <string name="setup_calendars">Calendarios</string>
+    <string name="setup_select_address_book">Selecione pelo menos um endereço (toque novamente para descelecionar):</string>
+    <string name="setup_select_calendars">Selecione seus calendários:</string>
+    <string name="setup_account_details">Detalhes da conta</string>
+    <string name="setup_account_name">Nome da conta:</string>
+    <string name="setup_account_name_hint">Minha conta CalDAV/CardDAV</string>
+    <string name="setup_email_address">Endereço de e-mail:</string>
+    <string name="setup_organizer_hint">"ORGANIZADOR de seus evento; requerido se você usa informações dos participantes"</string>
+    <string name="setup_account_name_info">"Use seu endereço de e-mail como nome da conta porque o Android irá usar esta informação com ORGANIZADOR para eventos criados. Você não pode ter duas contas com o mesmo nome.</string>
+    <string name="setup_read_only">apenas leitura</string>
+    <string name="sync_error_title">Falha na sincronização</string>
+</resources>
