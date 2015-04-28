@@ -35,6 +35,9 @@ import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Parameter;
 import net.fortuna.ical4j.model.ParameterList;
 import net.fortuna.ical4j.model.PropertyList;
+import net.fortuna.ical4j.model.TimeZone;
+import net.fortuna.ical4j.model.TimeZoneRegistry;
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VAlarm;
 import net.fortuna.ical4j.model.parameter.Cn;
 import net.fortuna.ical4j.model.parameter.CuType;
@@ -51,6 +54,7 @@ import net.fortuna.ical4j.model.property.RDate;
 import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.RecurrenceId;
 import net.fortuna.ical4j.model.property.Status;
+import net.fortuna.ical4j.util.TimeZones;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -211,11 +215,12 @@ public class LocalCalendar extends LocalCollection<Event> {
 		// mark (recurring) events with changed/deleted exceptions as dirty
 		String where = entryColumnID() + " IN (SELECT DISTINCT " + Events.ORIGINAL_ID + " FROM events WHERE " +
 			Events.ORIGINAL_ID + " IS NOT NULL AND (" + Events.DIRTY + "=1 OR " + Events.DELETED + "=1))";
-		Log.i(TAG, where);
 		ContentValues dirty = new ContentValues(1);
 		dirty.put(CalendarContract.Events.DIRTY, 1);
 		try {
-			providerClient.update(entriesURI(), dirty, where, null);
+			int rows = providerClient.update(entriesURI(), dirty, where, null);
+			if (rows > 0)
+				Log.d(TAG, rows + " event(s) marked as dirty because of dirty/deleted exceptions");
 		} catch (RemoteException e) {
 			Log.e(TAG, "Couldn't mark events with updated exceptions as dirty", e);
 		}
@@ -540,9 +545,6 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 		builder = builder
 				.withValue(Events.CALENDAR_ID, id)
-				.withValue(entryColumnRemoteName(), event.getName())
-				.withValue(entryColumnETag(), event.getETag())
-				.withValue(entryColumnUID(), event.getUid())
 				.withValue(Events.ALL_DAY, event.isAllDay() ? 1 : 0)
 				.withValue(Events.DTSTART, event.getDtStartInMillis())
 				.withValue(Events.EVENT_TIMEZONE, event.getDtStartTzID())
@@ -550,7 +552,26 @@ public class LocalCalendar extends LocalCollection<Event> {
 				.withValue(Events.GUESTS_CAN_INVITE_OTHERS, 1)
 				.withValue(Events.GUESTS_CAN_MODIFY, 1)
 				.withValue(Events.GUESTS_CAN_SEE_GUESTS, 1);
-		
+
+		RecurrenceId recurrenceId = event.getRecurrenceId();
+		if (recurrenceId == null) {
+			// this event is a "master event" (not an exception)
+			builder = builder
+					.withValue(entryColumnRemoteName(), event.getName())
+					.withValue(entryColumnETag(), event.getETag())
+					.withValue(entryColumnUID(), event.getUid());
+		} else {
+			// this event is an exception for a recurring event -> calculate
+			// 1. ORIGINAL_INSTANCE_TIME    when the original instance would have occured (ms UTC)
+			// 2. ORIGINAL_ALL_DAY          was the original instance an all-day event?
+			builder = builder.withValue(Events.ORIGINAL_SYNC_ID, event.getName());
+
+			// ORIGINAL_INSTANCE_TIME and ORIGINAL_ALL_DAY is set in buildExceptions.
+			// It's not possible to use only the RECURRENCE-ID to calculate
+			// ORIGINAL_INSTANCE_TIME and ORIGINAL_ALL_DAY because iCloud sends DATE-TIME
+			// RECURRENCE-IDs even if the original event is an all-day event.
+		}
+
 		boolean recurring = false;
 		if (event.getRrule() != null) {
 			recurring = true;
@@ -612,8 +633,13 @@ public class LocalCalendar extends LocalCollection<Event> {
 	@Override
 	protected void addDataRows(Resource resource, long localID, int backrefIdx) {
 		Event event = (Event)resource;
+		// add exceptions
+		for (Event exception : event.getExceptions())
+			pendingOperations.add(buildException(newDataInsertBuilder(Events.CONTENT_URI, Events.ORIGINAL_ID, localID, backrefIdx), event, exception).build());
+		// add attendees
 		for (Attendee attendee : event.getAttendees())
 			pendingOperations.add(buildAttendee(newDataInsertBuilder(Attendees.CONTENT_URI, Attendees.EVENT_ID, localID, backrefIdx), attendee).build());
+		// add reminders
 		for (VAlarm alarm : event.getAlarms())
 			pendingOperations.add(buildReminder(newDataInsertBuilder(Reminders.CONTENT_URI, Reminders.EVENT_ID, localID, backrefIdx), alarm).build());
 	}
@@ -621,14 +647,54 @@ public class LocalCalendar extends LocalCollection<Event> {
 	@Override
 	protected void removeDataRows(Resource resource) {
 		Event event = (Event)resource;
+		// delete exceptions
+		pendingOperations.add(ContentProviderOperation.newDelete(entriesURI())
+				.withSelection(Events.ORIGINAL_ID + "=?",
+				new String[] { String.valueOf(event.getLocalID()) }).build());
+		// delete attendees
 		pendingOperations.add(ContentProviderOperation.newDelete(syncAdapterURI(Attendees.CONTENT_URI))
 				.withSelection(Attendees.EVENT_ID + "=?",
 				new String[] { String.valueOf(event.getLocalID()) }).build());
+		// delete reminders
 		pendingOperations.add(ContentProviderOperation.newDelete(syncAdapterURI(Reminders.CONTENT_URI))
 				.withSelection(Reminders.EVENT_ID + "=?",
 				new String[] { String.valueOf(event.getLocalID()) }).build());
 	}
 
+
+	protected Builder buildException(Builder builder, Event master, Event exception) {
+		buildEntry(builder, exception);
+		builder.withValue(Events.ORIGINAL_SYNC_ID, exception.getName());
+
+		// Some servers (iCloud, for instance) return RECURRENCE-ID with DATE-TIME even if
+		// the original event is an all-day event. Workaround: determine value of ORIGINAL_ALL_DAY
+		// by original event type (all-day or not) and not by whether RECURRENCE-ID is DATE or DATE-TIME.
+
+		RecurrenceId recurrenceId = exception.getRecurrenceId();
+		Date date = recurrenceId.getDate();
+
+		boolean originalAllDay = master.isAllDay();
+		long originalInstanceTime;
+
+		if (originalAllDay && date instanceof DateTime) {
+			String value = recurrenceId.getValue();
+			if (value.matches("^\\d{8}T\\d{6}$"))
+				try {
+					// no "Z" at the end indicates "local" time
+					// so this is a "local" time, but it should be a ical4j Date without time
+					date = new Date(value.substring(0, 8));
+				} catch (ParseException e) {
+					Log.e(TAG, "Couldn't parse DATE part of DATE-TIME RECURRENCE-ID", e);
+				}
+		}
+		originalInstanceTime = date.getTime();
+		Log.i(TAG, "Original instance time: " + date.getTime()/1000);
+
+		builder.withValue(Events.ORIGINAL_INSTANCE_TIME, originalInstanceTime);
+		builder.withValue(Events.ORIGINAL_ALL_DAY, originalAllDay ? 1 : 0);
+
+		return builder;
+	}
 	
 	@SuppressLint("InlinedApi")
 	protected Builder buildAttendee(Builder builder, Attendee attendee) {

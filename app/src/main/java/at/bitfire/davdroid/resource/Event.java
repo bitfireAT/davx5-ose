@@ -58,8 +58,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
@@ -145,19 +147,44 @@ public class Event extends Resource {
 			throw new InvalidResourceException(e);
 		}
 		
-		// event
 		ComponentList events = ical.getComponents(Component.VEVENT);
 		if (events == null || events.isEmpty())
 			throw new InvalidResourceException("No VEVENT found");
-		VEvent event = (VEvent)events.get(0);
-		
+
+		// find master VEVENT (the one that is not an exception, i.e. the one without RECURRENCE-ID)
+		VEvent master = null;
+		for (Object objEvent : events) {
+			VEvent event = (VEvent)objEvent;
+			if (event.getRecurrenceId() == null) {
+				master = event;
+				break;
+			}
+		}
+		if (master == null)
+			throw new InvalidResourceException("No VEVENT without RECURRENCE-ID found");
+		// set event data from master VEVENT
+		fromVEvent(master);
+
+		// find and process exceptions
+		for (Object objEvent : events) {
+			VEvent event = (VEvent)objEvent;
+			if (event.getRecurrenceId() != null) {
+				Event exception = new Event(name, null);
+				exception.fromVEvent(event);
+				exceptions.add(exception);
+			}
+		}
+	}
+
+	protected void fromVEvent(VEvent event) throws InvalidResourceException {
 		if (event.getUid() != null)
 			uid = event.getUid().getValue();
 		else {
 			Log.w(TAG, "Received VEVENT without UID, generating new one");
 			generateUID();
 		}
-		
+		recurrenceId = event.getRecurrenceId();
+
 		if ((dtStart = event.getStartDate()) == null || (dtEnd = event.getEndDate()) == null)
 			throw new InvalidResourceException("Invalid start time/end time/duration");
 
@@ -165,7 +192,7 @@ public class Event extends Resource {
 			validateTimeZone(dtStart);
 			validateTimeZone(dtEnd);
 		}
-		
+
 		// all-day events and "events on that day":
 		// * related UNIX times must be in UTC
 		// * must have a duration (set to one day if missing)
@@ -176,26 +203,26 @@ public class Event extends Resource {
 			c.add(Calendar.DATE, 1);
 			dtEnd.setDate(new Date(c.getTimeInMillis()));
 		}
-		
+
 		rrule = (RRule)event.getProperty(Property.RRULE);
 		rdate = (RDate)event.getProperty(Property.RDATE);
 		exrule = (ExRule)event.getProperty(Property.EXRULE);
 		exdate = (ExDate)event.getProperty(Property.EXDATE);
-		
+
 		if (event.getSummary() != null)
 			summary = event.getSummary().getValue();
 		if (event.getLocation() != null)
 			location = event.getLocation().getValue();
 		if (event.getDescription() != null)
 			description = event.getDescription().getValue();
-		
+
 		status = event.getStatus();
-        opaque = event.getTransparency() != Transp.TRANSPARENT;
-		
+		opaque = event.getTransparency() != Transp.TRANSPARENT;
+
 		organizer = event.getOrganizer();
 		for (Object o : event.getProperties(Property.ATTENDEE))
 			attendees.add((Attendee)o);
-		
+
 		Clazz classification = event.getClassification();
 		if (classification != null) {
 			if (classification == Clazz.PUBLIC)
@@ -203,9 +230,11 @@ public class Event extends Resource {
 			else if (classification == Clazz.CONFIDENTIAL || classification == Clazz.PRIVATE)
 				forPublic = false;
 		}
-		
+
 		this.alarms = event.getAlarms();
+
 	}
+
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -214,26 +243,38 @@ public class Event extends Resource {
 		ical.getProperties().add(Version.VERSION_2_0);
 		ical.getProperties().add(new ProdId("-//bitfire web engineering//DAVdroid " + Constants.APP_VERSION + " (ical4j 1.0.x)//EN"));
 
-		// "main event" (without exceptions)
+		// "master event" (without exceptions)
 		ComponentList components = ical.getComponents();
-		VEvent mainEvent = toVEvent(this);
-		components.add(mainEvent);
+		VEvent master = toVEvent();
+		components.add(master);
+
+		// remember used time zones
+		Set<net.fortuna.ical4j.model.TimeZone> usedTimeZones = new HashSet<>();
+		if (dtStart != null && dtStart.getTimeZone() != null)
+			usedTimeZones.add(dtStart.getTimeZone());
+		if (dtEnd != null && dtEnd.getTimeZone() != null)
+			usedTimeZones.add(dtEnd.getTimeZone());
 
 		// recurrence exceptions
 		for (Event exception : exceptions) {
-			VEvent vException = toVEvent(exception);
-			vException.getProperties().add(mainEvent.getProperty(Property.UID));
+			// create VEVENT for exception
+			VEvent vException = exception.toVEvent();
+
+			// set UID to UID of master event
+			vException.getProperties().add(master.getProperty(Property.UID));
+
 			components.add(vException);
+
+			// remember used time zones
+			if (exception.dtStart != null && exception.dtStart.getTimeZone() != null)
+				usedTimeZones.add(exception.dtStart.getTimeZone());
+			if (exception.dtEnd != null && exception.dtEnd.getTimeZone() != null)
+				usedTimeZones.add(exception.dtEnd.getTimeZone());
 		}
 
 		// add VTIMEZONE components
-		net.fortuna.ical4j.model.TimeZone
-			tzStart = (dtStart == null ? null : dtStart.getTimeZone()),
-			tzEnd = (dtEnd == null ? null : dtEnd.getTimeZone());
-		if (tzStart != null)
-			ical.getComponents().add(tzStart.getVTimeZone());
-		if (tzEnd != null && tzEnd != tzStart)
-			ical.getComponents().add(tzEnd.getVTimeZone());
+		for (net.fortuna.ical4j.model.TimeZone timeZone : usedTimeZones)
+			ical.getComponents().add(timeZone.getVTimeZone());
 
 		CalendarOutputter output = new CalendarOutputter(false);
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -245,50 +286,50 @@ public class Event extends Resource {
 		return os;
 	}
 
-	protected static VEvent toVEvent(Event e) {
+	protected VEvent toVEvent() {
 		VEvent event = new VEvent();
 		PropertyList props = event.getProperties();
 
-		if (e.uid != null)
-			props.add(new Uid(e.uid));
-		if (e.recurrenceId != null)
-			props.add(e.recurrenceId);
+		if (uid != null)
+			props.add(new Uid(uid));
+		if (recurrenceId != null)
+			props.add(recurrenceId);
 
-		props.add(e.dtStart);
-		if (e.dtEnd != null)
-			props.add(e.dtEnd);
-		if (e.duration != null)
-			props.add(e.duration);
+		props.add(dtStart);
+		if (dtEnd != null)
+			props.add(dtEnd);
+		if (duration != null)
+			props.add(duration);
 
-		if (e.rrule != null)
-			props.add(e.rrule);
-		if (e.rdate != null)
-			props.add(e.rdate);
-		if (e.exrule != null)
-			props.add(e.exrule);
-		if (e.exdate != null)
-			props.add(e.exdate);
+		if (rrule != null)
+			props.add(rrule);
+		if (rdate != null)
+			props.add(rdate);
+		if (exrule != null)
+			props.add(exrule);
+		if (exdate != null)
+			props.add(exdate);
 
-		if (e.summary != null && !e.summary.isEmpty())
-			props.add(new Summary(e.summary));
-		if (e.location != null && !e.location.isEmpty())
-			props.add(new Location(e.location));
-		if (e.description != null && !e.description.isEmpty())
-			props.add(new Description(e.description));
+		if (summary != null && !summary.isEmpty())
+			props.add(new Summary(summary));
+		if (location != null && !location.isEmpty())
+			props.add(new Location(location));
+		if (description != null && !description.isEmpty())
+			props.add(new Description(description));
 
-		if (e.status != null)
-			props.add(e.status);
-		if (!e.opaque)
+		if (status != null)
+			props.add(status);
+		if (!opaque)
 			props.add(Transp.TRANSPARENT);
 
-		if (e.organizer != null)
-			props.add(e.organizer);
-		props.addAll(e.attendees);
+		if (organizer != null)
+			props.add(organizer);
+		props.addAll(attendees);
 
-		if (e.forPublic != null)
-			event.getProperties().add(e.forPublic ? Clazz.PUBLIC : Clazz.PRIVATE);
+		if (forPublic != null)
+			event.getProperties().add(forPublic ? Clazz.PUBLIC : Clazz.PRIVATE);
 
-		event.getAlarms().addAll(e.alarms);
+		event.getAlarms().addAll(alarms);
 
 		props.add(new LastModified());
 		return event;

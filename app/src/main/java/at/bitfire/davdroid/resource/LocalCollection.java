@@ -350,7 +350,7 @@ public abstract class LocalCollection<T extends Resource> {
 				.build();
 	}
 	
-	protected Builder newDataInsertBuilder(Uri dataUri, String refFieldName, long raw_ref_id, Integer backrefIdx) {
+	protected Builder newDataInsertBuilder(Uri dataUri, String refFieldName, long raw_ref_id, int backrefIdx) {
 		Builder builder = ContentProviderOperation.newInsert(syncAdapterURI(dataUri));
 		if (backrefIdx != -1)
 			return builder.withValueBackReference(refFieldName, backrefIdx);
