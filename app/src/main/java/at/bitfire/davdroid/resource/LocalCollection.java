@@ -92,6 +92,7 @@ public abstract class LocalCollection<T extends Resource> {
 	/**
 	 * Finds new resources (resources which haven't been uploaded yet).
 	 * New resources are 1) dirty, and 2) don't have an ETag yet.
+	 * Only records matching sqlFilter will be returned.
 	 * 
 	 * @return IDs of new resources
 	 * @throws LocalStorageException when the content provider couldn't be queried
@@ -132,7 +133,8 @@ public abstract class LocalCollection<T extends Resource> {
 	
 	/**
 	 * Finds updated resources (resources which have already been uploaded, but have changed locally).
-	 * Updated resources are 1) dirty, and 2) already have an ETag.
+	 * Updated resources are 1) dirty, and 2) already have an ETag. Only records matching sqlFilter
+	 * will be returned.
 	 * 
 	 * @return IDs of updated resources
 	 * @throws LocalStorageException when the content provider couldn't be queried
@@ -162,6 +164,7 @@ public abstract class LocalCollection<T extends Resource> {
 	/**
 	 * Finds deleted resources (resources which have been marked for deletion).
 	 * Deleted resources have the "deleted" flag set.
+	 * Only records matching sqlFilter will be returned.
 	 * 
 	 * @return IDs of deleted resources
 	 * @throws LocalStorageException when the content provider couldn't be queried
@@ -189,7 +192,7 @@ public abstract class LocalCollection<T extends Resource> {
 	}
 	
 	/**
-	 * Finds a specific resource by ID.
+	 * Finds a specific resource by ID. Only records matching sqlFilter are taken into account.
 	 * @param localID	ID of the resource
 	 * @param populate	true: populates all data fields (for instance, contact or event details);
 	 * 					false: only remote file name and ETag are populated
@@ -214,7 +217,7 @@ public abstract class LocalCollection<T extends Resource> {
 	}
 	
 	/**
-	 * Finds a specific resource by remote file name.
+	 * Finds a specific resource by remote file name. Only records matching sqlFilter are taken into account.
 	 * @param localID	remote file name of the resource
 	 * @param populate	true: populates all data fields (for instance, contact or event details);
 	 * 					false: only remote file name and ETag are populated

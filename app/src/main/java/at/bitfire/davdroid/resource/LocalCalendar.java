@@ -206,6 +206,24 @@ public class LocalCalendar extends LocalCollection<Event> {
 		}
 	}
 
+	@Override
+	public long[] findUpdated() throws LocalStorageException {
+		// mark (recurring) events with changed/deleted exceptions as dirty
+		String where = entryColumnID() + " IN (SELECT DISTINCT " + Events.ORIGINAL_ID + " FROM events WHERE " +
+			Events.ORIGINAL_ID + " IS NOT NULL AND (" + Events.DIRTY + "=1 OR " + Events.DELETED + "=1))";
+		Log.i(TAG, where);
+		ContentValues dirty = new ContentValues(1);
+		dirty.put(CalendarContract.Events.DIRTY, 1);
+		try {
+			providerClient.update(entriesURI(), dirty, where, null);
+		} catch (RemoteException e) {
+			Log.e(TAG, "Couldn't mark events with updated exceptions as dirty", e);
+		}
+
+		// new find and return updated (master) events
+		return super.findUpdated();
+	}
+
 
 	/* create/update/delete */
 	
@@ -214,23 +232,57 @@ public class LocalCalendar extends LocalCollection<Event> {
 	}
 	
 	public void deleteAllExceptRemoteNames(Resource[] remoteResources) {
+		List<String> sqlFileNames = new LinkedList<>();
+		for (Resource res : remoteResources)
+			sqlFileNames.add(DatabaseUtils.sqlEscapeString(res.getName()));
+
+		// delete master events
 		String where = entryColumnParentID() + "=?";
-		
-		if (remoteResources.length != 0) {
-			List<String> sqlFileNames = new LinkedList<String>();
-			for (Resource res : remoteResources)
-				sqlFileNames.add(DatabaseUtils.sqlEscapeString(res.getName()));
-			where += " AND " + entryColumnRemoteName() + " NOT IN (" + StringUtils.join(sqlFileNames, ",") + ")";
-		} else
-			where += " AND " + entryColumnRemoteName() + " IS NOT NULL";
+		where += sqlFileNames.isEmpty() ?
+				" AND " + entryColumnRemoteName() + " IS NOT NULL"  :   // don't retain anything (delete all)
+				" AND " + entryColumnRemoteName() + " NOT IN (" + StringUtils.join(sqlFileNames, ",") + ")";    // retain by remote file name
 		if (sqlFilter != null)
 			where += " AND (" + sqlFilter + ")";
-
-		Builder builder = ContentProviderOperation.newDelete(entriesURI())
-				.withSelection(where, new String[] { String.valueOf(id) });
-		pendingOperations.add(builder
-				.withYieldAllowed(true)
+		pendingOperations.add(ContentProviderOperation.newDelete(entriesURI())
+				.withSelection(where, new String[] { String.valueOf(id) })
 				.build());
+
+		// delete exceptions, too
+		where = entryColumnParentID() + "=?";
+		where += sqlFileNames.isEmpty() ?
+				" AND " + Events.ORIGINAL_SYNC_ID + " IS NOT NULL"  :   // don't retain anything (delete all)
+				" AND " + Events.ORIGINAL_SYNC_ID + " NOT IN (" + StringUtils.join(sqlFileNames, ",") + ")";    // retain by remote file name
+		pendingOperations.add(ContentProviderOperation
+				.newDelete(entriesURI())
+				.withSelection(where, new String[] { String.valueOf(id) })
+				.withYieldAllowed(true)
+				.build()
+		);
+	}
+
+	@Override
+	public void delete(Resource resource) {
+		super.delete(resource);
+
+		// delete all exceptions of this event, too
+		pendingOperations.add(ContentProviderOperation
+				.newDelete(entriesURI())
+				.withSelection(Events.ORIGINAL_ID+"=?", new String[] { Long.toString(resource.getLocalID()) })
+				.build()
+		);
+	}
+
+	@Override
+	public void clearDirty(Resource resource) {
+		super.clearDirty(resource);
+
+		// clear dirty flag of all exceptions of this event
+		pendingOperations.add(ContentProviderOperation
+				.newUpdate(entriesURI())
+				.withValue(Events.DIRTY, 0)
+				.withSelection(Events.ORIGINAL_ID+"=?", new String[] { Long.toString(resource.getLocalID()) })
+				.build()
+		);
 	}
 	
 	
@@ -478,7 +530,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 			e.getAlarms().add(alarm);
 		}
 	}
-	
+
 	
 	/* content builder methods */
 
