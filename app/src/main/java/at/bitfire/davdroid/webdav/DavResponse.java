@@ -18,8 +18,11 @@ import lombok.Getter;
 @Root(strict=false)
 public class DavResponse {
 	@Element
-	@Getter DavHref href;
+	DavHref href;
 
-	@ElementList(inline=true)
-	@Getter List<DavPropstat> propstat;
+	@Element(required=false)
+	String status;
+
+	@ElementList(inline=true,required=false)
+	List<DavPropstat> propstat;
 }

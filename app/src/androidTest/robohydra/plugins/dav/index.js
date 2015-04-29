@@ -288,6 +288,35 @@ exports.getBodyParts = function(conf) {
 				}
             }),
 
+			/* address-book multiget where one resource has 404 Not Found */
+            new RoboHydraHeadDAV({
+				path: "/dav/addressbooks/default-with-404.vcf/",
+				handler: function(req,res,next) {
+					if (req.method == "REPORT" && req.rawBody.toString().match(/addressbook-multiget[\s\S]+<prop>[\s\S]+<href>/m &&
+                        req.rawBody.toString().match(/<href>\/dav\/addressbooks\/default-with-404\.vcf\/notexisting<\/href>/m))) {
+						res.statusCode = 207;
+						res.write('\<?xml version="1.0" encoding="utf-8" ?>\
+							<multistatus xmlns="DAV:" xmlns:CARD="urn:ietf:params:xml:ns:carddav">\
+								<response>\
+									<href>/dav/addressbooks/default-with-404.vcf</href>\
+									<propstat>\
+										<prop>\
+                                            <resourcetype><collection/></resourcetype>\
+										</prop>\
+										<status>HTTP/1.1 200 OK</status>\
+									</propstat>\
+								</response>\
+								<response>\
+                                    <href>/dav/addressbooks/default-with-404.vcf/notexisting</href>\
+                                    <status>HTTP/1.1 404 Not Found</status>\
+								</response>\
+							</multistatus>\
+						');
+					}
+				}
+            }),
+
+
         ]
     };
 };

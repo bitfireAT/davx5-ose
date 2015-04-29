@@ -419,7 +419,10 @@ public class WebDavResource {
 			throw new HttpException(code, reason);
 		}
 	}
-	
+
+	/**
+	 * Process a 207 Multi-status response as defined in RFC 4918 "13. Multi-Status Response"
+	 */
 	protected void processMultiStatus(HttpResponse response) throws IOException, HttpException, DavException {
 		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_MULTI_STATUS)
 			throw new DavNoMultiStatusException();
@@ -447,7 +450,7 @@ public class WebDavResource {
 		for (DavResponse singleResponse : multiStatus.response) {
 			URI href;
 			try {
-				href = location.resolve(URIUtils.parseURI(singleResponse.getHref().href, false));
+				href = location.resolve(URIUtils.parseURI(singleResponse.href.href, false));
 			} catch(Exception ex) {
 				Log.w(TAG, "Ignoring illegal member URI in multi-status response", ex);
 				continue;
@@ -459,7 +462,12 @@ public class WebDavResource {
 			List<String> supportedComponents = null;
 			byte[] data = null;
 
-			for (DavPropstat singlePropstat : singleResponse.getPropstat()) {
+			// in <response>, either <status> or <propstat> must be present
+			if (singleResponse.status != null) {   // method 1 (status of resource as a whole)
+				StatusLine status = BasicLineParserHC4.parseStatusLine(singleResponse.status, new BasicLineParserHC4());
+				checkResponse(status);
+
+			} else for (DavPropstat singlePropstat : singleResponse.propstat) {      // method 2 (propstat)
 				StatusLine status = BasicLineParserHC4.parseStatusLine(singlePropstat.status, new BasicLineParserHC4());
 				
 				// ignore information about missing properties etc.
