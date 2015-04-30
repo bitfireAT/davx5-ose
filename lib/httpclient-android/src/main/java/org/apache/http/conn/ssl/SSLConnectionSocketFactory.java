@@ -282,7 +282,7 @@ public class SSLConnectionSocketFactory implements LayeredConnectionSocketFactor
         }
     }
 
-    @TargetApi(17)
+    @TargetApi(9)
     public Socket createLayeredSocket(
             final Socket socket,
             final String target,
@@ -319,7 +319,7 @@ public class SSLConnectionSocketFactory implements LayeredConnectionSocketFactor
         prepareSocket(sslsock);
 
         // Android specific code to enable SNI
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
             if (Log.isLoggable(TAG, Log.DEBUG)) {
                 Log.d(TAG, "Enabling SNI for " + target);
             }

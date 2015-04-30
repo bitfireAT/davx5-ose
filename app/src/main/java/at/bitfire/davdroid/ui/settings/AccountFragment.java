@@ -9,15 +9,18 @@
 package at.bitfire.davdroid.ui.settings;
 
 import android.accounts.Account;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.SwitchPreference;
 
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
+import ezvcard.VCardVersion;
 import lombok.Setter;
 
 public class AccountFragment extends PreferenceFragment {
@@ -38,6 +41,7 @@ public class AccountFragment extends PreferenceFragment {
 	public void readFromAccount() {
 		final AccountSettings settings = new AccountSettings(getActivity(), account);
 
+		// category: authentication
 		final EditTextPreference prefUserName = (EditTextPreference)findPreference("username");
 		prefUserName.setSummary(settings.getUserName());
 		prefUserName.setText(settings.getUserName());
@@ -61,7 +65,7 @@ public class AccountFragment extends PreferenceFragment {
 			}
 		});
 
-		final CheckBoxPreference prefPreemptive = (CheckBoxPreference)findPreference("preemptive");
+		final SwitchPreference prefPreemptive = (SwitchPreference)findPreference("preemptive");
 		prefPreemptive.setChecked(settings.getPreemptiveAuth());
 		prefPreemptive.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 			@Override
@@ -72,6 +76,7 @@ public class AccountFragment extends PreferenceFragment {
 			}
 		});
 
+		// category: synchronization
 		final ListPreference prefSyncContacts = (ListPreference)findPreference("sync_interval_contacts");
 		final Long syncIntervalContacts = settings.getContactsSyncInterval();
 		if (syncIntervalContacts != null) {
@@ -113,5 +118,23 @@ public class AccountFragment extends PreferenceFragment {
 			prefSyncCalendars.setEnabled(false);
 			prefSyncCalendars.setSummary(R.string.settings_sync_summary_not_available);
 		}
+
+		// category: address book
+		final CheckBoxPreference prefVCard4 = (CheckBoxPreference) findPreference("vcard4_support");
+		if (settings.getAddressBookURL() != null) {     // does this account even have an address book?
+			final VCardVersion vCardVersion = settings.getAddressBookVCardVersion();
+			prefVCard4.setChecked(vCardVersion == VCardVersion.V4_0);
+			prefVCard4.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+				@Override
+				public boolean onPreferenceChange(Preference preference, Object newValue) {
+					// don't change the value (it's not really a setting, only a display)
+					return false;
+				}
+			});
+		} else {
+			// account doesn't have an adress book, disable contact settings
+			prefVCard4.setEnabled(false);
+		}
+
 	}
 }

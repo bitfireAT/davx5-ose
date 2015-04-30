@@ -30,7 +30,6 @@ public abstract class Resource {
 	@Getter @Setter protected String uid;
 	@Getter protected long localID;
 
-	
 	public Resource(String name, String ETag) {
 		this.name = name;
 		this.ETag = ETag;
@@ -49,6 +48,10 @@ public abstract class Resource {
 	 * @param downloader    will be used to fetch additional resources like contact images
 	 **/
 	public abstract void parseEntity(InputStream entity, AssetDownloader downloader) throws IOException, InvalidResourceException;
+
+
+	/* returns the MIME type that toEntity() will produce */
+	public abstract String getMimeType();
 
 	/** writes the resource data to an output stream (for instance, .vcf file for Contact) */
 	public abstract ByteArrayOutputStream toEntity() throws IOException;

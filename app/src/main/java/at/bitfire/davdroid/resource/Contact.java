@@ -65,9 +65,9 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class Contact extends Resource {
 	private final static String TAG = "davdroid.Contact";
-	
-	public final static String MIME_TYPE = "text/vcard";
-	
+
+	@Getter @Setter protected VCardVersion vCardVersion = VCardVersion.V3_0;
+
 	public final static String
 		PROPERTY_STARRED = "X-DAVDROID-STARRED",
 		PROPERTY_PHONETIC_FIRST_NAME = "X-PHONETIC-FIRST-NAME",
@@ -110,11 +110,11 @@ public class Contact extends Resource {
 
 	/* instance methods */
 	
-	public Contact(String name, String ETag) {
+	Contact(String name, String ETag) {
 		super(name, ETag);
 	}
 	
-	public Contact(long localID, String resourceName, String eTag) {
+	Contact(long localID, String resourceName, String eTag) {
 		super(localID, resourceName, eTag);
 	}
 	
@@ -300,6 +300,14 @@ public class Contact extends Resource {
 			}
 	}
 
+
+	@Override
+	public String getMimeType() {
+		if (vCardVersion == VCardVersion.V4_0)
+			return "text/vcard;version=4.0";
+		else
+			return "text/vcard";
+	}
 	
 	@Override
 	public ByteArrayOutputStream toEntity() throws IOException {
@@ -409,14 +417,14 @@ public class Contact extends Resource {
 		vcard.setRevision(Revision.now());
 		
 		// validate and print warnings
-		ValidationWarnings warnings = vcard.validate(VCardVersion.V3_0);
+		ValidationWarnings warnings = vcard.validate(vCardVersion);
 		if (!warnings.isEmpty())
 			Log.w(TAG, "Created potentially invalid VCard! " + warnings);
 		
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		Ezvcard
 			.write(vcard)
-			.version(VCardVersion.V3_0)
+			.version(vCardVersion)
 			.versionStrict(false)
 			.prodId(false)		// we provide our own PRODID
 			.go(os);

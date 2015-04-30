@@ -137,6 +137,10 @@
         <item>Alle 4 Stunden</item>
         <item>Täglich</item>
     </string-array>
+    <string name="settings_carddav">Adressbuch</string>
+    <string name="settings_carddav_vcard4_support">VCard 4.0-Unterstützung</string>
+    <string name="settings_carddav_vcard4_supported">Kontakte werden als VCard 4.0 gesendet</string>
+    <string name="settings_carddav_vcard4_not_supported">Kontakte werden als VCard 3.0 gesendet</string>
     
     <string name="setup_select_collections">DAVdroid: Ordner auswählen</string>
     <string name="setup_neither_caldav_nor_carddav">An dieser Adresse konnte kein CalDAV- oder CardDAV-Dienst gefunden werden.</string>

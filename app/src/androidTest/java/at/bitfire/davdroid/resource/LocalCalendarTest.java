@@ -7,19 +7,13 @@
  */
 package at.bitfire.davdroid.resource;
 
-import java.util.Calendar;
-
-import lombok.Cleanup;
-
 import android.Manifest;
 import android.accounts.Account;
 import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -30,11 +24,11 @@ import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
 import android.provider.CalendarContract.Reminders;
 import android.test.InstrumentationTestCase;
-import android.test.IsolatedContext;
-import android.test.mock.MockContentResolver;
 import android.util.Log;
-import at.bitfire.davdroid.resource.LocalCalendar;
-import at.bitfire.davdroid.resource.LocalStorageException;
+
+import java.util.Calendar;
+
+import lombok.Cleanup;
 
 public class LocalCalendarTest extends InstrumentationTestCase {
 	

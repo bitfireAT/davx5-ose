@@ -18,6 +18,7 @@ import java.util.List;
 public class DavMultiget {
 	public enum Type {
 		ADDRESS_BOOK,
+		ADDRESS_BOOK_V4,
 		CALENDAR
 	}
 	
@@ -29,15 +30,24 @@ public class DavMultiget {
 	
 	
 	public static DavMultiget newRequest(Type type, String names[]) {
-		DavMultiget multiget = (type == Type.ADDRESS_BOOK) ? new DavAddressbookMultiget() : new DavCalendarMultiget(); 
+		DavMultiget multiget = (type == Type.CALENDAR) ? new DavCalendarMultiget() : new DavAddressbookMultiget();
 		
 		multiget.prop = new DavProp();
 		multiget.prop.getetag = new DavProp.GetETag();
-		
-		if (type == Type.ADDRESS_BOOK)
-			multiget.prop.addressData = new DavProp.AddressData();
-		else if (type == Type.CALENDAR)
-			multiget.prop.calendarData = new DavProp.CalendarData();
+
+		switch (type) {
+			case ADDRESS_BOOK:
+				multiget.prop.addressData = new DavProp.AddressData();
+				break;
+			case ADDRESS_BOOK_V4:
+				DavProp.AddressData addressData = new DavProp.AddressData();
+				addressData.setContentType("text/vcard");
+				addressData.setVersion("4.0");
+				multiget.prop.addressData = addressData;
+				break;
+			case CALENDAR:
+				multiget.prop.calendarData = new DavProp.CalendarData();
+		}
 
 		multiget.hrefs = new ArrayList<DavHref>(names.length);
 		for (String name : names)
