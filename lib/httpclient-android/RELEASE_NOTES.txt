@@ -1,0 +1,38 @@
+Release 4.3.5.1
+-------------------
+
+This release fixes a number of issues related to Android specific modifications made to
+the original HttpClient 4.3.5 code used as a base for the Android port.
+
+Please note that as of this release HttpClient disables all versions of SSL (including SSLv3)
+in favor of the TLS protocol by default. Those users who wish to continue using SSLv3 need
+to explicitly enable support for it.
+
+Users of all versions of Apache HttpClient 4.3 port for Android are advised to upgrade.
+
+
+Changelog
+-------------------
+
+* SSLv3 protocol is disabled by default
+  Contributed by Oleg Kalnichevski <olegk at apache.org>
+
+* [HTTPCLIENT-1597] Hostname verifiers incorrectly reject certificates with empty attributes
+  in the certificate subject
+  Contributed by Oleg Kalnichevski <olegk at apache.org>
+
+* [HTTPCLIENT-1591] Invoke Android specific SNI method via reflection
+  Contributed by Oleg Kalnichevski <olegk at apache.org>
+
+* [HTTPCLIENT-1566] Fixed broken Base64 encoding in BasicScheme
+  Contributed by Oleg Kalnichevski <olegk at apache.org>
+
+* [HTTPCLIENT-1554] RequestConfig has no effect when using Android HttpRequest classes. 
+  Contributed by Oleg Kalnichevski <olegk at apache.org>
+
+* [HTTPCLIENT-1555] SSL handshake timeout is always zero (infinite).
+  Contributed by Oleg Kalnichevski <olegk at apache.org>
+
+* [HTTPCLIENT-1553] Fixed IllegalArgumentException in HttpClientBuilder.build() if system
+  properties are not used.
+  Contributed by Oleg Kalnichevski <olegk at apache.org>

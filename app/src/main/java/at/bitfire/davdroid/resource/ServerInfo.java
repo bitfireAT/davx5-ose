@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 public class ServerInfo implements Serializable {
 	private static final long serialVersionUID = 6744847358282980437L;
-	
+
 	enum Scheme {
 		HTTP, HTTPS, MAILTO
 	}

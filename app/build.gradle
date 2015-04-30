@@ -60,7 +60,8 @@ dependencies {
     // dnsjava for querying SRV/TXT records
     compile 'dnsjava:dnsjava:2.1.6'
     // HttpClient 4.3, Android flavour for WebDAV operations
-    compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
+    //compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
+    compile project(':lib:httpclient-android')
     // SimpleXML for parsing and generating WebDAV messages
     compile('org.simpleframework:simple-xml:2.7.1') {
         exclude group: 'stax', module: 'stax-api'

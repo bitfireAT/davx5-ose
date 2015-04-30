@@ -195,7 +195,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		// contact file names should be unescaped (yes, it's really named ...%40pc... to check double-encoding)
 		assertEquals("1.vcf", davAddressBook.getMembers().get(0).getName());
 		assertEquals("2:3@my%40pc.vcf", davAddressBook.getMembers().get(1).getName());
-		// both contacts have content
+		// all contacts have some content
 		for (WebDavResource member : davAddressBook.getMembers())
 			assertNotNull(member.getContent());
 	}

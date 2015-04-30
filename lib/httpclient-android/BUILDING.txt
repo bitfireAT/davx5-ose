@@ -1,0 +1,39 @@
+Building HttpComponents Client for Android 
+============================
+
+(1) Requisites
+--------------
+Android SDK rev. 17 (4.2.2 or Jelly Bean MR1) or newer is required in order 
+to compile HttpClient for Android. Android SDK can be downloaded either separately 
+or bundled with Android Studio.   
+
+HttpClient for Android utilizes Gradle as a building and packaging tool.
+Version 2.2.1 or later is recommended.
+
+Gradle installation and configuration instructions can be found here:
+
+http://www.gradle.org/
+
+(2) Building artifacts 
+
+Set environmental variable ANDROID_HOME to the location of the Android SDK.
+
+Execute the following command in order to build binary, source and javadoc artifacts.
+
+gradle -q assemble
+
+Please note that when building a release version (project version does not have 
+'-SNAPSHOT' qualifier) one must also provide signing key details in gradle.properties
+file in order to be able to sign the artifacts and successfully build the release. 
+
+---
+signing.keyId=AEAEAEAE
+signing.secretKeyRingFile=~/.gnupg/secring.gpg
+---
+
+The artifacts can be found in the 'build/libs' folder
+
+build/libs/httpclient-android-<VERSION>.jar
+build/libs/httpclient-android-<VERSION>-javadoc.jar
+build/libs/httpclient-android-<VERSION>-sources.jar
+

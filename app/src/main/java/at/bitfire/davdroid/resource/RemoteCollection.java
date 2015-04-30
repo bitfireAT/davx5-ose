@@ -44,7 +44,7 @@ import lombok.Getter;
  * @param <T> Subtype of Resource that can be stored in the collection
  */
 public abstract class RemoteCollection<T extends Resource> {
-	private static final String TAG = "davdroid.RemoteCollection";
+	private static final String TAG = "davdroid.resource";
 
 	CloseableHttpClient httpClient;
 	URI baseURI;
@@ -80,10 +80,10 @@ public abstract class RemoteCollection<T extends Resource> {
 		collection.propfind(HttpPropfind.Mode.MEMBERS_ETAG);
 
 		List<T> resources = new LinkedList<T>();
-		if (collection.getMembers() != null) {
+		if (collection.getMembers() != null)
 			for (WebDavResource member : collection.getMembers())
 				resources.add(newResourceSkeleton(member.getName(), member.getETag()));
-		}
+
 		return resources.toArray(new Resource[0]);
 	}
 
