@@ -7,6 +7,11 @@
  */
 package at.bitfire.davdroid.resource;
 
+import android.content.res.AssetManager;
+import android.test.InstrumentationTestCase;
+
+import org.apache.commons.io.IOUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -15,22 +20,29 @@ import java.util.Arrays;
 
 import at.bitfire.davdroid.webdav.DavException;
 import at.bitfire.davdroid.webdav.HttpException;
+import ezvcard.VCardVersion;
 import ezvcard.property.Email;
 import ezvcard.property.Telephone;
 import lombok.Cleanup;
-import android.content.res.AssetManager;
-import android.test.InstrumentationTestCase;
-
-import org.apache.commons.io.IOUtils;
-
-import at.bitfire.davdroid.resource.Contact;
-import at.bitfire.davdroid.resource.InvalidResourceException;
 
 public class ContactTest extends InstrumentationTestCase {
 	AssetManager assetMgr;
 	
 	public void setUp() throws IOException, InvalidResourceException {
 		assetMgr = getInstrumentation().getContext().getResources().getAssets();
+	}
+
+	public void testGenerateDifferentVersions() throws Exception {
+		Contact c = new Contact("test.vcf", null);
+
+		// should generate VCard 3.0 by default
+		assertEquals("text/vcard", c.getMimeType());
+		assertTrue(new String(c.toEntity().toByteArray()).contains("VERSION:3.0"));
+
+		// now let's generate VCard 4.0
+		c.setVCardVersion(VCardVersion.V4_0);
+		assertEquals("text/vcard;version=4.0", c.getMimeType());
+		assertTrue(new String(c.toEntity().toByteArray()).contains("VERSION:4.0"));
 	}
 	
 	public void testReferenceVCard() throws IOException, InvalidResourceException {

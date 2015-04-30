@@ -17,6 +17,7 @@ import org.simpleframework.xml.Text;
 import java.util.List;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Namespace(prefix="D",reference="DAV:")
 @Root(strict=false)
@@ -199,6 +200,12 @@ public class DavProp {
 
 	@Namespace(prefix="CD",reference="urn:ietf:params:xml:ns:carddav")
 	public static class AddressData {
+		@Attribute(name="content-type", required=false)
+		@Getter @Setter	String contentType;
+
+		@Attribute(required=false)
+		@Getter @Setter String version;
+
 		@Text(required=false)
 		@Getter String vcard;
 	}

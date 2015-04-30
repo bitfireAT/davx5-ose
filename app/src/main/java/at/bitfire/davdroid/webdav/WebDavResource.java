@@ -335,9 +335,9 @@ public class WebDavResource {
 	
 	/* resource operations */
 	
-	public void get(String acceptedType) throws URISyntaxException, IOException, HttpException, DavException {
+	public void get(String acceptedMimeTypes) throws URISyntaxException, IOException, HttpException, DavException {
 		HttpGetHC4 get = new HttpGetHC4(location);
-		get.addHeader("Accept", acceptedType);
+		get.addHeader("Accept", acceptedMimeTypes);
 		
 		@Cleanup CloseableHttpResponse response = httpClient.execute(get, context);
 		checkResponse(response);

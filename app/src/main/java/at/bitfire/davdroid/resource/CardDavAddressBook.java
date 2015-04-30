@@ -7,23 +7,28 @@
  */
 package at.bitfire.davdroid.resource;
 
+import android.accounts.Account;
+
 import org.apache.http.impl.client.CloseableHttpClient;
 
 import java.net.URISyntaxException;
 
+import at.bitfire.davdroid.syncadapter.AccountSettings;
 import at.bitfire.davdroid.webdav.DavMultiget;
+import ezvcard.VCardVersion;
 
 public class CardDavAddressBook extends RemoteCollection<Contact> {
-	//private final static String TAG = "davdroid.CardDavAddressBook"; 
-	
+	AccountSettings accountSettings;
+
 	@Override
-	protected String memberContentType() {
-		return Contact.MIME_TYPE;
+	protected String memberAcceptedMimeTypes() {
+		return "text/vcard;q=0.8, text/vcard;version=4.0";
 	}
 	
 	@Override
 	protected DavMultiget.Type multiGetType() {
-		return DavMultiget.Type.ADDRESS_BOOK;
+		return accountSettings.getAddressBookVCardVersion() == VCardVersion.V4_0 ?
+				DavMultiget.Type.ADDRESS_BOOK_V4 : DavMultiget.Type.ADDRESS_BOOK;
 	}
 
 	@Override
@@ -32,7 +37,8 @@ public class CardDavAddressBook extends RemoteCollection<Contact> {
 	}
 	
 
-	public CardDavAddressBook(CloseableHttpClient httpClient, String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {
+	public CardDavAddressBook(AccountSettings settings, CloseableHttpClient httpClient, String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {
 		super(httpClient, baseURL, user, password, preemptiveAuth);
+		accountSettings = settings;
 	}
 }

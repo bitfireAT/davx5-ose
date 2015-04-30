@@ -25,7 +25,7 @@
             android:summary="@string/settings_password_summary"
             android:dialogTitle="@string/settings_enter_password" />
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:key="preemptive"
             android:persistent="false"
             android:title="@string/settings_preemptive"
@@ -49,6 +49,17 @@
             android:title="@string/settings_sync_interval_calendars"
             android:entries="@array/settings_sync_interval_names"
             android:entryValues="@array/settings_sync_interval_seconds" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/settings_carddav">
+
+        <CheckBoxPreference
+            android:key="vcard4_support"
+            android:title="@string/settings_carddav_vcard4_support"
+            android:persistent="false"
+            android:summaryOn="@string/settings_carddav_vcard4_supported"
+            android:summaryOff="@string/settings_carddav_vcard4_not_supported" />
 
     </PreferenceCategory>
 

@@ -7,16 +7,16 @@
  */
 package at.bitfire.davdroid.resource;
 
+import android.content.res.AssetManager;
+import android.test.InstrumentationTestCase;
+import android.text.format.Time;
+
+import net.fortuna.ical4j.data.ParserException;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 import lombok.Cleanup;
-import net.fortuna.ical4j.data.ParserException;
-import android.content.res.AssetManager;
-import android.test.InstrumentationTestCase;
-import android.text.format.Time;
-import at.bitfire.davdroid.resource.Event;
-import at.bitfire.davdroid.resource.InvalidResourceException;
 
 public class EventTest extends InstrumentationTestCase {
 	AssetManager assetMgr;

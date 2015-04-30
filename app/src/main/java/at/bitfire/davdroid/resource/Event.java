@@ -75,8 +75,6 @@ import lombok.Setter;
 public class Event extends Resource {
 	private final static String TAG = "davdroid.Event";
 	
-	public final static String MIME_TYPE = "text/calendar";
-	
 	private final static TimeZoneRegistry tzRegistry = new DefaultTimeZoneRegistryFactory().createRegistry();
 
 	@Getter @Setter protected RecurrenceId recurrenceId;
@@ -235,6 +233,11 @@ public class Event extends Resource {
 
 	}
 
+
+	@Override
+	public String getMimeType() {
+		return "text/calendar";
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")

@@ -123,7 +123,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	/* create/update/delete */
 	
 	public Contact newResource(long localID, String resourceName, String eTag) {
-		return new Contact(localID, resourceName, eTag);
+		Contact c = new Contact(localID, resourceName, eTag);
+		c.setVCardVersion(accountSettings.getAddressBookVCardVersion());
+		return c;
 	}
 	
 	public void deleteAllExceptRemoteNames(Resource[] remoteResources) {

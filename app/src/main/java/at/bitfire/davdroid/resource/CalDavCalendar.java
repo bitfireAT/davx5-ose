@@ -7,17 +7,20 @@
  */
 package at.bitfire.davdroid.resource;
 
+import android.accounts.Account;
+
 import org.apache.http.impl.client.CloseableHttpClient;
 
 import java.net.URISyntaxException;
 
+import at.bitfire.davdroid.syncadapter.AccountSettings;
 import at.bitfire.davdroid.webdav.DavMultiget;
 
 public class CalDavCalendar extends RemoteCollection<Event> { 
-	//private final static String TAG = "davdroid.CalDavCalendar";
-	
+
 	@Override
-	protected String memberContentType() {
+	protected String memberAcceptedMimeTypes()
+	{
 		return "text/calendar";
 	}
 
