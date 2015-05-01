@@ -18,8 +18,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import at.bitfire.davdroid.Constants;
@@ -27,8 +30,10 @@ import ezvcard.Ezvcard;
 import ezvcard.VCard;
 import ezvcard.VCardVersion;
 import ezvcard.ValidationWarnings;
+import ezvcard.Warning;
 import ezvcard.parameter.EmailType;
 import ezvcard.parameter.ImageType;
+import ezvcard.parameter.RelatedType;
 import ezvcard.parameter.TelephoneType;
 import ezvcard.property.Address;
 import ezvcard.property.Anniversary;
@@ -44,6 +49,7 @@ import ezvcard.property.Organization;
 import ezvcard.property.Photo;
 import ezvcard.property.ProductId;
 import ezvcard.property.RawProperty;
+import ezvcard.property.Related;
 import ezvcard.property.Revision;
 import ezvcard.property.Role;
 import ezvcard.property.Sound;
@@ -53,6 +59,8 @@ import ezvcard.property.Telephone;
 import ezvcard.property.Title;
 import ezvcard.property.Uid;
 import ezvcard.property.Url;
+import ezvcard.property.VCardProperty;
+import ezvcard.util.ListMultimap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -83,6 +91,13 @@ public class Contact extends Resource {
 		PHONE_TYPE_RADIO = TelephoneType.get("X-RADIO"),
 		PHONE_TYPE_ASSISTANT = TelephoneType.get("X-ASSISTANT"),
 		PHONE_TYPE_MMS = TelephoneType.get("X-MMS");
+	public final static RelatedType
+		RELATED_TYPE_BROTHER = RelatedType.get("brother"),
+		RELATED_TYPE_FATHER = RelatedType.get("father"),
+		RELATED_TYPE_MANAGER = RelatedType.get("manager"),
+		RELATED_TYPE_MOTHER = RelatedType.get("mother"),
+		RELATED_TYPE_REFERRED_BY = RelatedType.get("referred-by"),
+		RELATED_TYPE_SISTER = RelatedType.get("sister");
 	
 	@Getter @Setter private String unknownProperties;
 	
@@ -100,13 +115,13 @@ public class Contact extends Resource {
 	@Getter @Setter private Anniversary anniversary;
 	@Getter @Setter private Birthday birthDay;
 
-	@Getter private List<Telephone> phoneNumbers = new LinkedList<Telephone>();
-	@Getter private List<Email> emails = new LinkedList<Email>();
-	@Getter private List<Impp> impps = new LinkedList<Impp>();
-	@Getter private List<Address> addresses = new LinkedList<Address>();
-	@Getter private List<String> categories = new LinkedList<String>();
-	@Getter private List<String> URLs = new LinkedList<String>();
-
+	@Getter private List<Telephone> phoneNumbers = new LinkedList<>();
+	@Getter private List<Email> emails = new LinkedList<>();
+	@Getter private List<Impp> impps = new LinkedList<>();
+	@Getter private List<Address> addresses = new LinkedList<>();
+	@Getter private List<String> categories = new LinkedList<>();
+	@Getter private List<String> URLs = new LinkedList<>();
+	@Getter private List<Related> relations = new LinkedList<>();
 
 	/* instance methods */
 	
@@ -278,7 +293,17 @@ public class Contact extends Resource {
 		// ANNIVERSARY
 		anniversary = vcard.getAnniversary();
 		vcard.removeProperties(Anniversary.class);
-		
+
+		// RELATED
+		for (Related related : vcard.getRelations()) {
+			String text = related.getText();
+			if (!StringUtils.isNotEmpty(text)) {
+				// process only free-form relations with text
+				relations.add(related);
+				vcard.removeProperty(related);
+			}
+		}
+
 		// X-SIP
 		for (RawProperty sip : vcard.getExtendedProperties(PROPERTY_SIP))
 			impps.add(new Impp("sip", sip.getValue()));
@@ -411,6 +436,9 @@ public class Contact extends Resource {
 		// PHOTO
 		if (photo != null)
 			vcard.addPhoto(new Photo(photo, ImageType.JPEG));
+
+		for (Related related : relations)
+			vcard.addRelated(related);
 		
 		// PRODID, REV
 		vcard.setProductId("DAVdroid/" + Constants.APP_VERSION + " (ez-vcard/" + Ezvcard.VERSION + ")");
@@ -419,8 +447,8 @@ public class Contact extends Resource {
 		// validate and print warnings
 		ValidationWarnings warnings = vcard.validate(vCardVersion);
 		if (!warnings.isEmpty())
-			Log.w(TAG, "Created potentially invalid VCard! " + warnings);
-		
+			Log.w(TAG, "Created potentially invalid VCard:\n" + warnings);
+
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		Ezvcard
 			.write(vcard)
