@@ -87,6 +87,24 @@
             <Type maxOccurs="1" type="birthday" yearOptional="false" />
             <Type maxOccurs="1" type="anniversary" />
         </DataKind>
+
+        <DataKind kind="relationship">
+            <Type type="assistant"/>
+            <Type type="brother"/>
+            <Type type="child"/>
+            <Type type="domestic_partner"/>
+            <Type type="father"/>
+            <Type type="friend"/>
+            <Type type="manager"/>
+            <Type type="mother"/>
+            <Type type="parent"/>
+            <Type type="partner"/>
+            <Type type="referred_by"/>
+            <Type type="relative"/>
+            <Type type="sister"/>
+            <Type type="spouse"/>
+            <Type type="custom"/>
+        </DataKind>
         
         <DataKind kind="sip_address" maxOccurs="1" />
     </EditSchema>

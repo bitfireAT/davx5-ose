@@ -27,6 +27,7 @@ import android.provider.ContactsContract.CommonDataKinds.Note;
 import android.provider.ContactsContract.CommonDataKinds.Organization;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.CommonDataKinds.Photo;
+import android.provider.ContactsContract.CommonDataKinds.Relation;
 import android.provider.ContactsContract.CommonDataKinds.SipAddress;
 import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
@@ -45,22 +46,27 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import at.bitfire.davdroid.syncadapter.AccountSettings;
 import ezvcard.parameter.AddressType;
 import ezvcard.parameter.EmailType;
 import ezvcard.parameter.ImppType;
+import ezvcard.parameter.RelatedType;
 import ezvcard.parameter.TelephoneType;
 import ezvcard.property.Address;
 import ezvcard.property.Anniversary;
 import ezvcard.property.Birthday;
 import ezvcard.property.DateOrTimeProperty;
 import ezvcard.property.Impp;
+import ezvcard.property.Related;
 import ezvcard.property.Telephone;
 import lombok.Cleanup;
 
@@ -201,6 +207,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			populateCategories(c);
 			populateURLs(c);
 			populateEvents(c);
+			populateRelations(c);
 			populateSipAddress(c);
 		} catch(RemoteException ex) {
 			throw new LocalStorageException(ex);
@@ -573,6 +580,80 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			}
 		}
 	}
+
+	protected void populateRelations(Contact c) throws RemoteException {
+		@Cleanup Cursor cursor = providerClient.query(dataURI(),
+				new String[] { Relation.NAME, Relation.TYPE, Relation.LABEL },
+				Relation.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
+				new String[] { String.valueOf(c.getLocalID()), Relation.CONTENT_ITEM_TYPE }, null);
+
+		Map<String, List<RelatedType>> relations = new HashMap<>();
+		while (cursor != null && cursor.moveToNext()) {
+			String name = cursor.getString(0);
+			List<RelatedType> types = relations.get(name);
+			if (types == null) {
+				types = new LinkedList<>();
+				relations.put(name, types);
+			}
+
+			switch (cursor.getInt(1)) {
+				case Relation.TYPE_ASSISTANT:
+					types.add(RelatedType.AGENT);
+					break;
+				case Relation.TYPE_BROTHER:
+					types.add(RelatedType.SIBLING);
+					types.add(Contact.RELATED_TYPE_BROTHER);
+					break;
+				case Relation.TYPE_CHILD:
+					types.add(RelatedType.CHILD);
+					break;
+				case Relation.TYPE_DOMESTIC_PARTNER:
+					types.add(RelatedType.CO_RESIDENT);
+					break;
+				case Relation.TYPE_FATHER:
+					types.add(Contact.RELATED_TYPE_FATHER);
+					break;
+				case Relation.TYPE_FRIEND:
+					types.add(RelatedType.FRIEND);
+					break;
+				case Relation.TYPE_MANAGER:
+					types.add(Contact.RELATED_TYPE_MANAGER);
+					break;
+				case Relation.TYPE_MOTHER:
+					types.add(Contact.RELATED_TYPE_MOTHER);
+					break;
+				case Relation.TYPE_PARENT:
+					types.add(RelatedType.PARENT);
+					break;
+				case Relation.TYPE_PARTNER:
+					types.add(RelatedType.SWEETHEART);
+					break;
+				case Relation.TYPE_REFERRED_BY:
+					types.add(Contact.RELATED_TYPE_REFERRED_BY);
+				case Relation.TYPE_RELATIVE:
+					types.add(RelatedType.KIN);
+					break;
+				case Relation.TYPE_SISTER:
+					types.add(RelatedType.SIBLING);
+					types.add(Contact.RELATED_TYPE_SISTER);
+					break;
+				case Relation.TYPE_SPOUSE:
+					types.add(RelatedType.SPOUSE);
+				case Relation.TYPE_CUSTOM:
+					String customType = cursor.getString(2);
+					if (!StringUtils.isEmpty(customType))
+						types.add(RelatedType.get(customType));
+			}
+		}
+
+		for (String name : relations.keySet()) {
+			Related related = new Related();
+			related.setText(name);
+			for (RelatedType type : relations.get(name))
+				related.addType(type);
+			c.getRelations().add(related);
+		}
+	}
 	
 	protected void populateSipAddress(Contact c) throws RemoteException {
 		@Cleanup Cursor cursor = providerClient.query(dataURI(),
@@ -659,9 +740,11 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			queueOperation(buildEvent(newDataInsertBuilder(localID, backrefIdx), contact.getAnniversary(), CommonDataKinds.Event.TYPE_ANNIVERSARY));
 		if (contact.getBirthDay() != null)
 			queueOperation(buildEvent(newDataInsertBuilder(localID, backrefIdx), contact.getBirthDay(), CommonDataKinds.Event.TYPE_BIRTHDAY));
-		
-		// TODO relations
-		
+
+		for (Related related : contact.getRelations())
+			for (RelatedType type : related.getTypes())
+				queueOperation(buildRelated(newDataInsertBuilder(localID, backrefIdx), type, related.getText()));
+
 		// SIP addresses are built by buildIMPP
 	}
 	
@@ -981,7 +1064,35 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			.withValue(CommonDataKinds.Event.TYPE, type) 
 			.withValue(CommonDataKinds.Event.START_DATE, formatter.format(date.getDate()));
 	}
-	
+
+	protected Builder buildRelated(Builder builder, RelatedType type, String name) {
+		int typeCode = 0;
+		String typeLabel = null;
+		if (type == RelatedType.CHILD)
+			typeCode = Relation.TYPE_CHILD;
+		else if (type == RelatedType.CO_RESIDENT)
+			typeCode = Relation.TYPE_DOMESTIC_PARTNER;
+		else if (type == RelatedType.FRIEND)
+			typeCode = Relation.TYPE_FRIEND;
+		else if (type == RelatedType.PARENT)
+			typeCode = Relation.TYPE_PARENT;
+		else if (type == RelatedType.SPOUSE)
+			typeCode = Relation.TYPE_SPOUSE;
+		else if (type == RelatedType.KIN)
+			typeCode = Relation.TYPE_RELATIVE;
+		else if (type == RelatedType.SWEETHEART)
+			typeCode = Relation.TYPE_PARTNER;
+		else {
+			typeCode = Relation.TYPE_CUSTOM;
+			typeLabel = type.getValue();
+		}
+
+		return builder
+				.withValue(Data.MIMETYPE, Relation.CONTENT_ITEM_TYPE)
+				.withValue(Relation.TYPE, typeCode)
+				.withValue(Relation.NAME, name)
+				.withValue(Relation.LABEL, typeLabel);
+	}
 
 	
 	/* helper methods */
