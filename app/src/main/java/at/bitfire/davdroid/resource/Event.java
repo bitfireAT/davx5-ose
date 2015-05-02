@@ -66,6 +66,7 @@ import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
 import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.DateUtils;
 import at.bitfire.davdroid.syncadapter.DavSyncAdapter;
 import lombok.Getter;
 import lombok.NonNull;
@@ -408,33 +409,7 @@ public class Event extends Resource {
         if (tzID == null)
             return;
 
-        String localTZ = null;
-		String availableTZs[] = SimpleTimeZone.getAvailableIDs();
-
-        // first, try to find an exact match (case insensitive)
-        for (String availableTZ : availableTZs)
-            if (tzID.equalsIgnoreCase(availableTZ)) {
-                localTZ = availableTZ;
-                break;
-            }
-
-		// if that doesn't work, try to find something else that matches
-        if (localTZ == null) {
-	        Log.w(TAG, "Coulnd't find time zone with matching identifiers, trying to guess");
-	        for (String availableTZ : availableTZs)
-		        if (StringUtils.indexOfIgnoreCase(tzID, availableTZ) != -1) {
-			        localTZ = availableTZ;
-			        break;
-		        }
-        }
-
-		// if that doesn't work, use UTC as fallback
-		if (localTZ == null) {
-			Log.e(TAG, "Couldn't identify time zone, using UTC as fallback");
-			localTZ = Time.TIMEZONE_UTC;
-		}
-
-        Log.d(TAG, "Assuming time zone " + localTZ + " for " + tzID);
+        String localTZ = DateUtils.findAndroidTimezoneID(tzID);
         date.setTimeZone(tzRegistry.getTimeZone(localTZ));
     }
 
