@@ -52,12 +52,12 @@ ext.inceptionYear = '1999'
 android {
 
     // SDK versions and compileOptions adapted to DAVdroid needs
-    compileSdkVersion 21
+    compileSdkVersion 22
     buildToolsVersion '21.1.2'
 
     defaultConfig {
         minSdkVersion 8
-        targetSdkVersion 21
+        targetSdkVersion 22
     }
 
     /*compileOptions {
