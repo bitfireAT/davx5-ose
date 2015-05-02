@@ -68,6 +68,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import at.bitfire.davdroid.DateUtils;
 import lombok.Cleanup;
 import lombok.Getter;
 
@@ -576,7 +577,12 @@ public class LocalCalendar extends LocalCollection<Event> {
 		}
 		if (event.getRdate() != null) {
 			recurring = true;
-			builder = builder.withValue(Events.RDATE, event.getRdate().getValue());
+			RDate rDate = event.getRdate();
+			String rDateStr = event.getRdate().getValue();
+			if (rDate.getTimeZone() != null)
+				rDateStr = DateUtils.findAndroidTimezoneID(rDate.getTimeZone().getID()) + ";" + rDateStr;
+			Log.i(TAG, "Setting RDate in DB: " + rDateStr);
+			builder = builder.withValue(Events.RDATE, rDateStr);
 		}
 		if (event.getExrule() != null)
 			builder = builder.withValue(Events.EXRULE, event.getExrule().getValue());
