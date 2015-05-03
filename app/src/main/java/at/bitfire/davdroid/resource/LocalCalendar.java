@@ -581,7 +581,6 @@ public class LocalCalendar extends LocalCollection<Event> {
 			String rDateStr = event.getRdate().getValue();
 			if (rDate.getTimeZone() != null)
 				rDateStr = DateUtils.findAndroidTimezoneID(rDate.getTimeZone().getID()) + ";" + rDateStr;
-			Log.i(TAG, "Setting RDate in DB: " + rDateStr);
 			builder = builder.withValue(Events.RDATE, rDateStr);
 		}
 		if (event.getExrule() != null)

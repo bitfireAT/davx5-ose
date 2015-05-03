@@ -13,11 +13,14 @@ import android.content.ContentProviderOperation;
 import android.content.ContentProviderOperation.Builder;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Entity;
+import android.content.EntityIterator;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
+import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
@@ -61,6 +64,7 @@ import ezvcard.parameter.EmailType;
 import ezvcard.parameter.ImppType;
 import ezvcard.parameter.RelatedType;
 import ezvcard.parameter.TelephoneType;
+import ezvcard.parameter.VCardParameter;
 import ezvcard.property.Address;
 import ezvcard.property.Anniversary;
 import ezvcard.property.Birthday;
@@ -72,7 +76,7 @@ import lombok.Cleanup;
 
 
 public class LocalAddressBook extends LocalCollection<Contact> {
-	private final static String TAG = "davdroid.LocalAddressBook";
+	private final static String TAG = "davdroid.resource";
 	
 	protected final static String COLUMN_UNKNOWN_PROPERTIES = RawContacts.SYNC3;
 
@@ -160,8 +164,8 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		try {
 			// newly created groups don't have a TITLE
 			@Cleanup Cursor cursor = providerClient.query(groupsUri,
-				new String[] { Groups.SOURCE_ID },
-				Groups.TITLE + " IS NULL", null, null
+					new String[]{Groups.SOURCE_ID},
+					Groups.TITLE + " IS NULL", null, null
 			);
 			while (cursor != null && cursor.moveToNext()) {
 				// found group, set TITLE to SOURCE_ID and other details
@@ -186,64 +190,94 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		Contact c = (Contact)res;
 		
 		try {
-			@Cleanup Cursor cursor = providerClient.query(ContentUris.withAppendedId(entriesURI(), c.getLocalID()),
-				new String[] { entryColumnUID(), COLUMN_UNKNOWN_PROPERTIES, RawContacts.STARRED }, null, null, null);
-			if (cursor != null && cursor.moveToNext()) {
-				c.setUid(cursor.getString(0));
-				c.setUnknownProperties(cursor.getString(1));
-				c.setStarred(cursor.getInt(2) != 0);
+			@Cleanup EntityIterator iter = ContactsContract.RawContacts.newEntityIterator(providerClient.query(
+					ContactsContract.RawContactsEntity.CONTENT_URI,
+					null, RawContacts._ID + "="  + c.getLocalID(),
+					null, null));
+
+			if (iter.hasNext()) {
+				Entity e = iter.next();
+
+				ContentValues values = e.getEntityValues();
+				c.setUid(values.getAsString(entryColumnUID()));
+				c.setUnknownProperties(values.getAsString(COLUMN_UNKNOWN_PROPERTIES));
+				c.setStarred(values.getAsBoolean(RawContacts.STARRED));
+
+				List<Entity.NamedContentValues> subValues = e.getSubValues();
+				for (Entity.NamedContentValues subValue : subValues) {
+					values = subValue.values;
+					String mimeType = values.getAsString(ContactsContract.RawContactsEntity.MIMETYPE);
+					switch (mimeType) {
+						case StructuredName.CONTENT_ITEM_TYPE:
+							populateStructuredName(c, values);
+							break;
+						case Phone.CONTENT_ITEM_TYPE:
+							populatePhoneNumber(c, values);
+							break;
+						case Email.CONTENT_ITEM_TYPE:
+							populateEmailAddress(c, values);
+							break;
+						case Photo.CONTENT_ITEM_TYPE:
+							populatePhoto(c, values);
+							break;
+						case Organization.CONTENT_ITEM_TYPE:
+							populateOrganization(c, values);
+							break;
+						case Im.CONTENT_ITEM_TYPE:
+							populateIMPP(c, values);
+							break;
+						case Nickname.CONTENT_ITEM_TYPE:
+							populateNickname(c, values);
+							break;
+						case Note.CONTENT_ITEM_TYPE:
+							populateNote(c, values);
+							break;
+						case StructuredPostal.CONTENT_ITEM_TYPE:
+							populatePostalAddress(c, values);
+							break;
+						case GroupMembership.CONTENT_ITEM_TYPE:
+							populateGroupMembership(c, values);
+							break;
+						case Website.CONTENT_ITEM_TYPE:
+							populateURL(c, values);
+							break;
+						case CommonDataKinds.Event.CONTENT_ITEM_TYPE:
+							populateEvent(c, values);
+							break;
+						case Relation.CONTENT_ITEM_TYPE:
+							populateRelation(c, values);
+							break;
+						case SipAddress.CONTENT_ITEM_TYPE:
+							populateSipAddress(c, values);
+							break;
+					}
+				}
+
+				Log.i(TAG, "Populated contact: " + c);
 			} else
 				throw new RecordNotFoundException();
-		
-			populateStructuredName(c);
-			populatePhoneNumbers(c);
-			populateEmailAddresses(c);
-			populatePhoto(c);
-			populateOrganization(c);
-			populateIMPPs(c);
-			populateNickname(c);
-			populateNote(c);
-			populatePostalAddresses(c);
-			populateCategories(c);
-			populateURLs(c);
-			populateEvents(c);
-			populateRelations(c);
-			populateSipAddress(c);
 		} catch(RemoteException ex) {
 			throw new LocalStorageException(ex);
 		}
 	}
 
-	private void populateStructuredName(Contact c) throws RemoteException {
-		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] {
-				/* 0 */ StructuredName.DISPLAY_NAME, StructuredName.PREFIX, StructuredName.GIVEN_NAME,
-				/* 3 */ StructuredName.MIDDLE_NAME,	StructuredName.FAMILY_NAME, StructuredName.SUFFIX,
-				/* 6 */ StructuredName.PHONETIC_GIVEN_NAME, StructuredName.PHONETIC_MIDDLE_NAME, StructuredName.PHONETIC_FAMILY_NAME
-			}, StructuredName.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-			new String[] { String.valueOf(c.getLocalID()), StructuredName.CONTENT_ITEM_TYPE }, null);
-		
-		if (cursor != null && cursor.moveToNext()) {
-			c.setDisplayName(cursor.getString(0));
-			
-			c.setPrefix(cursor.getString(1));
-			c.setGivenName(cursor.getString(2));
-			c.setMiddleName(cursor.getString(3));
-			c.setFamilyName(cursor.getString(4));
-			c.setSuffix(cursor.getString(5));
-			
-			c.setPhoneticGivenName(cursor.getString(6));
-			c.setPhoneticMiddleName(cursor.getString(7));
-			c.setPhoneticFamilyName(cursor.getString(8));
-		}
+	private void populateStructuredName(Contact c, ContentValues row) {
+		c.setDisplayName(row.getAsString(StructuredName.DISPLAY_NAME));
+
+		c.setPrefix(row.getAsString(StructuredName.PREFIX));
+		c.setGivenName(row.getAsString(StructuredName.GIVEN_NAME));
+		c.setMiddleName(row.getAsString(StructuredName.MIDDLE_NAME));
+		c.setFamilyName(row.getAsString(StructuredName.FAMILY_NAME));
+		c.setSuffix(row.getAsString(StructuredName.SUFFIX));
+
+		c.setPhoneticGivenName(row.getAsString(StructuredName.PHONETIC_GIVEN_NAME));
+		c.setPhoneticMiddleName(row.getAsString(StructuredName.PHONETIC_MIDDLE_NAME));
+		c.setPhoneticFamilyName(row.getAsString(StructuredName.PHONETIC_FAMILY_NAME));
 	}
 	
-	protected void populatePhoneNumbers(Contact c) throws RemoteException {
-		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Phone.TYPE, Phone.LABEL, Phone.NUMBER, Phone.IS_SUPER_PRIMARY },
-				Phone.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), Phone.CONTENT_ITEM_TYPE }, null);
-		while (cursor != null && cursor.moveToNext()) {
-			ezvcard.property.Telephone number = new ezvcard.property.Telephone(cursor.getString(2));
-			switch (cursor.getInt(0)) {
+	protected void populatePhoneNumber(Contact c, ContentValues row) {
+		ezvcard.property.Telephone number = new ezvcard.property.Telephone(row.getAsString(Phone.NUMBER));
+		switch (row.getAsInteger(Phone.TYPE)) {
 			case Phone.TYPE_HOME:
 				number.addType(TelephoneType.HOME);
 				break;
@@ -306,23 +340,18 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				number.addType(Contact.PHONE_TYPE_MMS);
 				break;
 			case Phone.TYPE_CUSTOM:
-				String customType = cursor.getString(1);
+				String customType = row.getAsString(Phone.LABEL);
 				if (!StringUtils.isEmpty(customType))
 					number.addType(TelephoneType.get(labelToXName(customType)));
-			}
-			if (cursor.getInt(3) != 0)	// IS_PRIMARY
-				number.addType(TelephoneType.PREF);
-			c.getPhoneNumbers().add(number);
 		}
+		if (row.getAsBoolean(Phone.IS_PRIMARY))
+			number.addType(TelephoneType.PREF);
+		c.getPhoneNumbers().add(number);
 	}
 	
-	protected void populateEmailAddresses(Contact c) throws RemoteException {
-		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Email.TYPE, Email.ADDRESS, Email.LABEL, Email.IS_SUPER_PRIMARY },
-				Email.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), Email.CONTENT_ITEM_TYPE }, null);
-		while (cursor != null && cursor.moveToNext()) {
-			ezvcard.property.Email email = new ezvcard.property.Email(cursor.getString(1));
-			switch (cursor.getInt(0)) {
+	protected void populateEmailAddress(Contact c, ContentValues row) {
+		ezvcard.property.Email email = new ezvcard.property.Email(row.getAsString(Email.ADDRESS));
+		switch (row.getAsInteger(Email.TYPE)) {
 			case Email.TYPE_HOME:
 				email.addType(EmailType.HOME);
 				break;
@@ -333,72 +362,57 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				email.addType(Contact.EMAIL_TYPE_MOBILE);
 				break;
 			case Email.TYPE_CUSTOM:
-				String customType = cursor.getString(2);
+				String customType = row.getAsString(Email.LABEL);
 				if (!StringUtils.isEmpty(customType))
 					email.addType(EmailType.get(labelToXName(customType)));
+		}
+		if (row.getAsBoolean(Email.IS_PRIMARY))
+			email.addType(EmailType.PREF);
+		c.getEmails().add(email);
+	}
+	
+	protected void populatePhoto(Contact c, ContentValues row) throws RemoteException {
+		if (row.containsKey(Photo.PHOTO_FILE_ID)) {
+			Uri photoUri = Uri.withAppendedPath(
+					 ContentUris.withAppendedId(RawContacts.CONTENT_URI, c.getLocalID()),
+					 RawContacts.DisplayPhoto.CONTENT_DIRECTORY);
+			try {
+				@Cleanup AssetFileDescriptor fd = providerClient.openAssetFile(photoUri, "r");
+				@Cleanup InputStream is = fd.createInputStream();
+				c.setPhoto(IOUtils.toByteArray(is));
+			} catch(IOException ex) {
+				Log.w(TAG, "Couldn't read high-res contact photo", ex);
 			}
-			if (cursor.getInt(3) != 0)	// IS_PRIMARY
-				email.addType(EmailType.PREF);
-			c.getEmails().add(email);
-		}
+		} else
+			c.setPhoto(row.getAsByteArray(Photo.PHOTO));
 	}
 	
-	protected void populatePhoto(Contact c) throws RemoteException {
-		@Cleanup Cursor cursor = providerClient.query(dataURI(),
-				new String[] { Photo.PHOTO_FILE_ID, Photo.PHOTO },
-				Photo.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), Photo.CONTENT_ITEM_TYPE }, null);
-		if (cursor != null && cursor.moveToNext()) {
-			if (!cursor.isNull(0)) {
-				Uri photoUri = Uri.withAppendedPath(
-			             ContentUris.withAppendedId(RawContacts.CONTENT_URI, c.getLocalID()),
-			             RawContacts.DisplayPhoto.CONTENT_DIRECTORY);
-				try {
-					@Cleanup AssetFileDescriptor fd = providerClient.openAssetFile(photoUri, "r");
-					@Cleanup InputStream is = fd.createInputStream();
-					c.setPhoto(IOUtils.toByteArray(is));
-				} catch(IOException ex) {
-					Log.w(TAG, "Couldn't read high-res contact photo", ex);
-				}
-			} else
-				c.setPhoto(cursor.getBlob(1));
+	protected void populateOrganization(Contact c, ContentValues row) {
+		String	company = row.getAsString(Organization.COMPANY),
+				department = row.getAsString(Organization.DEPARTMENT),
+				title = row.getAsString(Organization.TITLE),
+				role = row.getAsString(Organization.JOB_DESCRIPTION);
+
+		if (!StringUtils.isEmpty(company) || !StringUtils.isEmpty(department)) {
+			ezvcard.property.Organization org = new ezvcard.property.Organization();
+			if (!StringUtils.isEmpty(company))
+				org.addValue(company);
+			if (!StringUtils.isEmpty(department))
+				org.addValue(department);
+			c.setOrganization(org);
 		}
+
+		if (!StringUtils.isEmpty(title))
+			c.setJobTitle(title);
+		if (!StringUtils.isEmpty(role))
+			c.setJobDescription(role);
 	}
 	
-	protected void populateOrganization(Contact c) throws RemoteException {
-		@Cleanup Cursor cursor = providerClient.query(dataURI(),
-				new String[] { Organization.COMPANY, Organization.DEPARTMENT, Organization.TITLE, Organization.JOB_DESCRIPTION },
-				Organization.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), Organization.CONTENT_ITEM_TYPE }, null);
-		if (cursor != null && cursor.moveToNext()) {
-			String	company = cursor.getString(0),
-					department = cursor.getString(1),
-					title = cursor.getString(2),
-					role = cursor.getString(3);
-			if (!StringUtils.isEmpty(company) || !StringUtils.isEmpty(department)) {
-				ezvcard.property.Organization org = new ezvcard.property.Organization();
-				if (!StringUtils.isEmpty(company))
-					org.addValue(company);
-				if (!StringUtils.isEmpty(department))
-					org.addValue(department);
-				c.setOrganization(org);
-			}
-			if (!StringUtils.isEmpty(title))
-				c.setJobTitle(title);
-			if (!StringUtils.isEmpty(role))
-				c.setJobDescription(role);
-		}
-	}
-	
-	protected void populateIMPPs(Contact c) throws RemoteException {
-		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Im.DATA, Im.TYPE, Im.LABEL, Im.PROTOCOL, Im.CUSTOM_PROTOCOL },
-				Im.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), Im.CONTENT_ITEM_TYPE }, null);
-		while (cursor != null && cursor.moveToNext()) {
-			String handle = cursor.getString(0);
-			
-			Impp impp = null;
-			switch (cursor.getInt(3)) {
+	protected void populateIMPP(Contact c, ContentValues row) {
+		String handle = row.getAsString(Im.DATA);
+
+		Impp impp = null;
+		switch (row.getAsInteger(Im.PROTOCOL)) {
 			case Im.PROTOCOL_AIM:
 				impp = Impp.aim(handle);
 				break;
@@ -427,11 +441,11 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				impp = new Impp("netmeeting", handle);
 				break;
 			case Im.PROTOCOL_CUSTOM:
-				impp = new Impp(cursor.getString(4), handle);
-			}
-			
-			if (impp != null) {
-				switch (cursor.getInt(1)) {
+				impp = new Impp(row.getAsString(Im.CUSTOM_PROTOCOL), handle);
+		}
+
+		if (impp != null) {
+			switch (row.getAsInteger(Im.TYPE)) {
 				case Im.TYPE_HOME:
 					impp.addType(ImppType.HOME);
 					break;
@@ -439,44 +453,28 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 					impp.addType(ImppType.WORK);
 					break;
 				case Im.TYPE_CUSTOM:
-					String customType = cursor.getString(2);
+					String customType = row.getAsString(Im.LABEL);
 					if (!StringUtils.isEmpty(customType))
 						impp.addType(ImppType.get(labelToXName(customType)));
-				}
-				c.getImpps().add(impp);
 			}
+
+			c.getImpps().add(impp);
 		}
 	}
 
-	protected void populateNickname(Contact c) throws RemoteException {
-		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Nickname.NAME },
-				Nickname.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), Nickname.CONTENT_ITEM_TYPE }, null);
-		if (cursor != null && cursor.moveToNext())
-			c.setNickName(cursor.getString(0));
+	protected void populateNickname(Contact c, ContentValues row) {
+		// TYPE (maiden name, short name, …) and LABEL are not processed here because Contacts app doesn't support it
+		c.setNickName(row.getAsString(Nickname.NAME));
 	}
 	
-	protected void populateNote(Contact c) throws RemoteException {
-		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Note.NOTE },
-				Note.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), Note.CONTENT_ITEM_TYPE }, null);
-		if (cursor != null && cursor.moveToNext())
-			c.setNote(cursor.getString(0));
+	protected void populateNote(Contact c, ContentValues row) {
+		c.setNote(row.getAsString(Note.NOTE));
 	}
 	
-	protected void populatePostalAddresses(Contact c) throws RemoteException {
-		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] {
-				/* 0 */ StructuredPostal.FORMATTED_ADDRESS, StructuredPostal.TYPE, StructuredPostal.LABEL,
-				/* 3 */ StructuredPostal.STREET, StructuredPostal.POBOX, StructuredPostal.NEIGHBORHOOD,
-				/* 6 */ StructuredPostal.CITY, StructuredPostal.REGION, StructuredPostal.POSTCODE,
-				/* 9 */ StructuredPostal.COUNTRY
-			}, StructuredPostal.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-			new String[] { String.valueOf(c.getLocalID()), StructuredPostal.CONTENT_ITEM_TYPE }, null);
-		while (cursor != null && cursor.moveToNext()) {
-			Address address = new Address();
-	
-			address.setLabel(cursor.getString(0));
-			switch (cursor.getInt(1)) {
+	protected void populatePostalAddress(Contact c, ContentValues row) {
+		Address address = new Address();
+		address.setLabel(row.getAsString(StructuredPostal.FORMATTED_ADDRESS));
+		switch (row.getAsInteger(StructuredPostal.TYPE)) {
 			case StructuredPostal.TYPE_HOME:
 				address.addType(AddressType.HOME);
 				break;
@@ -484,201 +482,173 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				address.addType(AddressType.WORK);
 				break;
 			case StructuredPostal.TYPE_CUSTOM:
-				String customType = cursor.getString(2);
+				String customType = row.getAsString(StructuredPostal.LABEL);
 				if (!StringUtils.isEmpty(customType))
 					address.addType(AddressType.get(labelToXName(customType)));
 				break;
-			}
-			address.setStreetAddress(cursor.getString(3));
-			address.setPoBox(cursor.getString(4));
-			address.setExtendedAddress(cursor.getString(5));
-			address.setLocality(cursor.getString(6));
-			address.setRegion(cursor.getString(7));
-			address.setPostalCode(cursor.getString(8));
-			address.setCountry(cursor.getString(9));
-			c.getAddresses().add(address);
 		}
+		address.setStreetAddress(row.getAsString(StructuredPostal.STREET));
+		address.setPoBox(row.getAsString(StructuredPostal.POBOX));
+		address.setExtendedAddress(row.getAsString(StructuredPostal.NEIGHBORHOOD));
+		address.setLocality(row.getAsString(StructuredPostal.CITY));
+		address.setRegion(row.getAsString(StructuredPostal.REGION));
+		address.setPostalCode(row.getAsString(StructuredPostal.POSTCODE));
+		address.setCountry(row.getAsString(StructuredPostal.COUNTRY));
+		c.getAddresses().add(address);
 	}
 	
-	protected void populateCategories(Contact c) throws RemoteException {
-		@Cleanup Cursor cursorMemberships = providerClient.query(dataURI(),
-				new String[] { GroupMembership.GROUP_ROW_ID, GroupMembership.GROUP_SOURCE_ID },
-				GroupMembership.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), GroupMembership.CONTENT_ITEM_TYPE }, null);
+	protected void populateGroupMembership(Contact c, ContentValues row) throws RemoteException {
 		List<String> categories = c.getCategories();
-		while (cursorMemberships != null && cursorMemberships.moveToNext()) {
-			long rowID = cursorMemberships.getLong(0);
-			String sourceID = cursorMemberships.getString(1);
 
-			// either a row ID or a source ID must be available
-			String where, whereArg;
-			if (sourceID == null) {
-				where = Groups._ID + "=?";
-				whereArg = String.valueOf(rowID);
-			} else {
-				where = Groups.SOURCE_ID + "=?";
-				whereArg = sourceID;
-			}
-			where += " AND " + Groups.DELETED + "=0";		// ignore deleted groups
-			Log.d(TAG, "Populating group from " + where + " " + whereArg);
-			
-			// fetch group
-			@Cleanup Cursor cursorGroups = providerClient.query(Groups.CONTENT_URI,
-				new String[] { Groups.TITLE },
-				where, new String[] { whereArg }, null
-			);
-			if (cursorGroups != null && cursorGroups.moveToNext()) {
-				String title = cursorGroups.getString(0);
-				
-				if (sourceID == null) {		// Group wasn't created by DAVdroid
-					// SOURCE_ID IS NULL <=> _ID IS NOT NULL
-					Log.d(TAG, "Setting SOURCE_ID of non-DAVdroid group to title: " + title);
-					
-					ContentValues v = new ContentValues(1);
-					v.put(Groups.SOURCE_ID, title);
-					v.put(Groups.GROUP_IS_READ_ONLY, 0);
-					v.put(Groups.GROUP_VISIBLE, 1);
-					providerClient.update(syncAdapterURI(Groups.CONTENT_URI), v, Groups._ID + "=?", new String[] { String.valueOf(rowID) });
-					
-					sourceID = title;
-	 			}
-				
-				// add group to CATEGORIES
-				if (sourceID != null)
-					categories.add(sourceID);
-			} else
-				Log.d(TAG, "Group not found (maybe deleted)");
+		long rowID = row.getAsLong(GroupMembership.GROUP_ROW_ID);
+		String sourceID = row.getAsString(GroupMembership.GROUP_SOURCE_ID);
+
+		// either a row ID or a source ID must be available
+		String where, whereArg;
+		if (sourceID == null) {
+			where = Groups._ID + "=?";
+			whereArg = String.valueOf(rowID);
+		} else {
+			where = Groups.SOURCE_ID + "=?";
+			whereArg = sourceID;
 		}
+		where += " AND " + Groups.DELETED + "=0";		// ignore deleted groups
+		Log.d(TAG, "Populating group from " + where + " " + whereArg);
+
+		// fetch group
+		@Cleanup Cursor cursorGroups = providerClient.query(Groups.CONTENT_URI,
+			new String[] { Groups.TITLE },
+			where, new String[] { whereArg }, null
+		);
+		if (cursorGroups != null && cursorGroups.moveToNext()) {
+			String title = cursorGroups.getString(0);
+
+			if (sourceID == null) {		// Group wasn't created by DAVdroid
+				// SOURCE_ID IS NULL <=> _ID IS NOT NULL
+				Log.d(TAG, "Setting SOURCE_ID of non-DAVdroid group to title: " + title);
+
+				ContentValues v = new ContentValues(1);
+				v.put(Groups.SOURCE_ID, title);
+				v.put(Groups.GROUP_IS_READ_ONLY, 0);
+				v.put(Groups.GROUP_VISIBLE, 1);
+				providerClient.update(syncAdapterURI(Groups.CONTENT_URI), v, Groups._ID + "=?", new String[] { String.valueOf(rowID) });
+
+				sourceID = title;
+			}
+
+			// add group to CATEGORIES
+			if (sourceID != null)
+				categories.add(sourceID);
+		} else
+			Log.d(TAG, "Group not found (maybe deleted)");
 	}
 	
-	protected void populateURLs(Contact c) throws RemoteException {
-		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { Website.URL },
-				Website.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), Website.CONTENT_ITEM_TYPE }, null);
-		while (cursor != null && cursor.moveToNext())
-			c.getURLs().add(cursor.getString(0));
+	protected void populateURL(Contact c, ContentValues row) throws RemoteException {
+		c.getURLs().add(row.getAsString(Website.URL));
 	}
 	
-	protected void populateEvents(Contact c) throws RemoteException {
-		@Cleanup Cursor cursor = providerClient.query(dataURI(), new String[] { CommonDataKinds.Event.TYPE, CommonDataKinds.Event.START_DATE },
-				Photo.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), CommonDataKinds.Event.CONTENT_ITEM_TYPE }, null);
-		while (cursor != null && cursor.moveToNext()) {
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-			try {
-				Date date = formatter.parse(cursor.getString(1));
-				switch (cursor.getInt(0)) {
+	protected void populateEvent(Contact c, ContentValues row) throws RemoteException {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+		try {
+			Date date = formatter.parse(row.getAsString(CommonDataKinds.Event.START_DATE));
+			switch (row.getAsInteger(CommonDataKinds.Event.TYPE)) {
 				case CommonDataKinds.Event.TYPE_ANNIVERSARY:
 					c.setAnniversary(new Anniversary(date));
 					break;
 				case CommonDataKinds.Event.TYPE_BIRTHDAY:
 					c.setBirthDay(new Birthday(date));
 					break;
-				}
-			} catch (ParseException e) {
-				Log.w(TAG, "Couldn't parse local birthday/anniversary date", e);
 			}
+		} catch (ParseException e) {
+			Log.w(TAG, "Couldn't parse local birthday/anniversary date", e);
 		}
 	}
 
-	protected void populateRelations(Contact c) throws RemoteException {
-		@Cleanup Cursor cursor = providerClient.query(dataURI(),
-				new String[] { Relation.NAME, Relation.TYPE, Relation.LABEL },
-				Relation.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), Relation.CONTENT_ITEM_TYPE }, null);
+	protected void populateRelation(Contact c, ContentValues row) throws RemoteException {
+		String name = row.getAsString(Relation.NAME);
 
-		Map<String, List<RelatedType>> relations = new HashMap<>();
-		while (cursor != null && cursor.moveToNext()) {
-			String name = cursor.getString(0);
-			List<RelatedType> types = relations.get(name);
-			if (types == null) {
-				types = new LinkedList<>();
-				relations.put(name, types);
-			}
-
-			switch (cursor.getInt(1)) {
-				case Relation.TYPE_ASSISTANT:
-					types.add(RelatedType.AGENT);
-					break;
-				case Relation.TYPE_BROTHER:
-					types.add(RelatedType.SIBLING);
-					types.add(Contact.RELATED_TYPE_BROTHER);
-					break;
-				case Relation.TYPE_CHILD:
-					types.add(RelatedType.CHILD);
-					break;
-				case Relation.TYPE_DOMESTIC_PARTNER:
-					types.add(RelatedType.CO_RESIDENT);
-					break;
-				case Relation.TYPE_FATHER:
-					types.add(Contact.RELATED_TYPE_FATHER);
-					break;
-				case Relation.TYPE_FRIEND:
-					types.add(RelatedType.FRIEND);
-					break;
-				case Relation.TYPE_MANAGER:
-					types.add(Contact.RELATED_TYPE_MANAGER);
-					break;
-				case Relation.TYPE_MOTHER:
-					types.add(Contact.RELATED_TYPE_MOTHER);
-					break;
-				case Relation.TYPE_PARENT:
-					types.add(RelatedType.PARENT);
-					break;
-				case Relation.TYPE_PARTNER:
-					types.add(RelatedType.SWEETHEART);
-					break;
-				case Relation.TYPE_REFERRED_BY:
-					types.add(Contact.RELATED_TYPE_REFERRED_BY);
-				case Relation.TYPE_RELATIVE:
-					types.add(RelatedType.KIN);
-					break;
-				case Relation.TYPE_SISTER:
-					types.add(RelatedType.SIBLING);
-					types.add(Contact.RELATED_TYPE_SISTER);
-					break;
-				case Relation.TYPE_SPOUSE:
-					types.add(RelatedType.SPOUSE);
-				case Relation.TYPE_CUSTOM:
-					String customType = cursor.getString(2);
-					if (!StringUtils.isEmpty(customType))
-						types.add(RelatedType.get(customType));
+		// find relation by name or create new one
+		Related related = null;
+		for (Related rel : c.getRelations()) {
+			if (rel.getText().equals(name)) {
+				related = rel;
+				break;
 			}
 		}
-
-		for (String name : relations.keySet()) {
-			Related related = new Related();
-			related.setText(name);
-			for (RelatedType type : relations.get(name))
-				related.addType(type);
+		if (related == null) {
+			related = new Related();
 			c.getRelations().add(related);
+		}
+
+		Set<RelatedType> types = related.getTypes();
+		switch (row.getAsInteger(Relation.TYPE)) {
+			case Relation.TYPE_ASSISTANT:
+				types.add(RelatedType.AGENT);
+				break;
+			case Relation.TYPE_BROTHER:
+				types.add(RelatedType.SIBLING);
+				types.add(Contact.RELATED_TYPE_BROTHER);
+				break;
+			case Relation.TYPE_CHILD:
+				types.add(RelatedType.CHILD);
+				break;
+			case Relation.TYPE_DOMESTIC_PARTNER:
+				types.add(RelatedType.CO_RESIDENT);
+				break;
+			case Relation.TYPE_FATHER:
+				types.add(Contact.RELATED_TYPE_FATHER);
+				break;
+			case Relation.TYPE_FRIEND:
+				types.add(RelatedType.FRIEND);
+				break;
+			case Relation.TYPE_MANAGER:
+				types.add(Contact.RELATED_TYPE_MANAGER);
+				break;
+			case Relation.TYPE_MOTHER:
+				types.add(Contact.RELATED_TYPE_MOTHER);
+				break;
+			case Relation.TYPE_PARENT:
+				types.add(RelatedType.PARENT);
+				break;
+			case Relation.TYPE_PARTNER:
+				types.add(RelatedType.SWEETHEART);
+				break;
+			case Relation.TYPE_REFERRED_BY:
+				types.add(Contact.RELATED_TYPE_REFERRED_BY);
+			case Relation.TYPE_RELATIVE:
+				types.add(RelatedType.KIN);
+				break;
+			case Relation.TYPE_SISTER:
+				types.add(RelatedType.SIBLING);
+				types.add(Contact.RELATED_TYPE_SISTER);
+				break;
+			case Relation.TYPE_SPOUSE:
+				types.add(RelatedType.SPOUSE);
+			case Relation.TYPE_CUSTOM:
+				String customType = row.getAsString(Relation.LABEL);
+				if (!StringUtils.isEmpty(customType))
+					types.add(RelatedType.get(customType));
 		}
 	}
 	
-	protected void populateSipAddress(Contact c) throws RemoteException {
-		@Cleanup Cursor cursor = providerClient.query(dataURI(),
-				new String[] { SipAddress.SIP_ADDRESS, SipAddress.TYPE, SipAddress.LABEL },
-				SipAddress.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] { String.valueOf(c.getLocalID()), SipAddress.CONTENT_ITEM_TYPE }, null);
-		if (cursor != null && cursor.moveToNext()) {
-			try {
-				Impp impp = new Impp("sip:" + cursor.getString(0));
-				switch (cursor.getInt(1)) {
-					case SipAddress.TYPE_HOME:
-						impp.addType(ImppType.HOME);
-						break;
-					case SipAddress.TYPE_WORK:
-						impp.addType(ImppType.WORK);
-						break;
-					case SipAddress.TYPE_CUSTOM:
-						String customType = cursor.getString(2);
-						if (!StringUtils.isEmpty(customType))
-							impp.addType(ImppType.get(labelToXName(customType)));
-				}
-				c.getImpps().add(impp);
-			} catch(IllegalArgumentException e) {
-				Log.e(TAG, "Illegal SIP URI", e);
+	protected void populateSipAddress(Contact c, ContentValues row) throws RemoteException {
+		try {
+			Impp impp = new Impp("sip:" + row.getAsString(SipAddress.SIP_ADDRESS));
+			switch (row.getAsInteger(SipAddress.TYPE)) {
+				case SipAddress.TYPE_HOME:
+					impp.addType(ImppType.HOME);
+					break;
+				case SipAddress.TYPE_WORK:
+					impp.addType(ImppType.WORK);
+					break;
+				case SipAddress.TYPE_CUSTOM:
+					String customType = row.getAsString(SipAddress.LABEL);
+					if (!StringUtils.isEmpty(customType))
+						impp.addType(ImppType.get(labelToXName(customType)));
 			}
+			c.getImpps().add(impp);
+		} catch(IllegalArgumentException e) {
+			Log.e(TAG, "Illegal SIP URI", e);
 		}
 	}
 
@@ -735,7 +705,6 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		for (String url : contact.getURLs())
 			queueOperation(buildURL(newDataInsertBuilder(localID, backrefIdx), url));
 		
-		// events
 		if (contact.getAnniversary() != null)
 			queueOperation(buildEvent(newDataInsertBuilder(localID, backrefIdx), contact.getAnniversary(), CommonDataKinds.Event.TYPE_ANNIVERSARY));
 		if (contact.getBirthDay() != null)
@@ -773,13 +742,16 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	protected Builder buildPhoneNumber(Builder builder, Telephone number) {
 		int typeCode = Phone.TYPE_OTHER;
 		String typeLabel = null;
-		boolean is_primary = false;
-		
+
 		Set<TelephoneType> types = number.getTypes();
+
 		// preferred number?
-		if (types.contains(TelephoneType.PREF))
+		boolean is_primary = false;
+		if (types.contains(TelephoneType.PREF)) {
 			is_primary = true;
-		
+			types.remove(TelephoneType.PREF);
+		}
+
 		// 1 Android type <-> 2 VCard types: fax, cell, pager
 		if (types.contains(TelephoneType.FAX)) {
 			if (types.contains(TelephoneType.HOME))
@@ -811,8 +783,6 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			typeCode = Phone.TYPE_COMPANY_MAIN;
 		} else if (types.contains(TelephoneType.ISDN)) {
 			typeCode = Phone.TYPE_ISDN;
-		} else if (types.contains(TelephoneType.PREF)) {
-			typeCode = Phone.TYPE_MAIN;
 		} else if (types.contains(Contact.PHONE_TYPE_RADIO)) {
 			typeCode = Phone.TYPE_RADIO;
 		} else if (types.contains(TelephoneType.TEXTPHONE)) {
@@ -844,7 +814,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		int typeCode = 0;
 		String typeLabel = null;
 		boolean is_primary = false;
-		
+
 		for (EmailType type : email.getTypes())
 			if (type == EmailType.PREF)
 				is_primary = true;
