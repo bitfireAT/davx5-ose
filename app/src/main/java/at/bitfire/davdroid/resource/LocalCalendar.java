@@ -511,7 +511,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 	}
 
 	void populateReminder(Event event, ContentValues row) throws RemoteException {
-		VAlarm alarm = new VAlarm(new Dur(0, 0, row.getAsInteger(Reminders.MINUTES), 0));
+		VAlarm alarm = new VAlarm(new Dur(0, 0, -row.getAsInteger(Reminders.MINUTES), 0));
 
 		PropertyList props = alarm.getProperties();
 		props.add(Action.DISPLAY);
@@ -722,12 +722,18 @@ public class LocalCalendar extends LocalCollection<Event> {
 	protected Builder buildReminder(Builder builder, VAlarm alarm) {
 		int minutes = 0;
 		
-		Dur duration;
-		if (alarm.getTrigger() != null && (duration = alarm.getTrigger().getDuration()) != null)
-			minutes = duration.getDays() * 24*60 + duration.getHours()*60 + duration.getMinutes();
-		
-		Log.d(TAG, "Adding alarm " + minutes + " min before");
-		
+		if (alarm.getTrigger() != null) {
+			Dur duration = alarm.getTrigger().getDuration();
+			if (duration != null) {
+				// negative value in TRIGGER means positive value in Reminders.MINUTES and vice versa
+				minutes = -(((duration.getWeeks() * 7 + duration.getDays()) * 24 + duration.getHours()) * 60 + duration.getMinutes());
+				if (duration.isNegative())
+					minutes *= -1;
+			}
+		}
+
+		Log.d(TAG, "Adding alarm " + minutes + " minutes before");
+
 		return builder
 				.withValue(Reminders.METHOD, Reminders.METHOD_ALERT)
 				.withValue(Reminders.MINUTES, minutes);
