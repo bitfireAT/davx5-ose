@@ -16,6 +16,8 @@ import android.content.ContentProviderOperation.Builder;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Entity;
+import android.content.EntityIterator;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
@@ -260,7 +262,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 				" AND " + Events.ORIGINAL_SYNC_ID + " NOT IN (" + StringUtils.join(sqlFileNames, ",") + ")";    // retain by remote file name
 		pendingOperations.add(ContentProviderOperation
 				.newDelete(entriesURI())
-				.withSelection(where, new String[] { String.valueOf(id) })
+				.withSelection(where, new String[]{String.valueOf(id)})
 				.withYieldAllowed(true)
 				.build()
 		);
@@ -273,7 +275,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		// delete all exceptions of this event, too
 		pendingOperations.add(ContentProviderOperation
 				.newDelete(entriesURI())
-				.withSelection(Events.ORIGINAL_ID+"=?", new String[] { Long.toString(resource.getLocalID()) })
+				.withSelection(Events.ORIGINAL_ID + "=?", new String[] { Long.toString(resource.getLocalID()) })
 				.build()
 		);
 	}
@@ -286,7 +288,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		pendingOperations.add(ContentProviderOperation
 				.newUpdate(entriesURI())
 				.withValue(Events.DIRTY, 0)
-				.withSelection(Events.ORIGINAL_ID+"=?", new String[] { Long.toString(resource.getLocalID()) })
+				.withSelection(Events.ORIGINAL_ID + "=?", new String[] { Long.toString(resource.getLocalID()) })
 				.build()
 		);
 	}
@@ -296,102 +298,119 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 	@Override
 	public void populate(Resource resource) throws LocalStorageException {
-		Event e = (Event)resource;
-		
+		Event event = (Event)resource;
+
 		try {
-			@Cleanup Cursor cursor = providerClient.query(ContentUris.withAppendedId(entriesURI(), e.getLocalID()),
-				new String[] {
-					/*  0 */ Events.TITLE, Events.EVENT_LOCATION, Events.DESCRIPTION,
-					/*  3 */ Events.DTSTART, Events.DTEND, Events.EVENT_TIMEZONE, Events.EVENT_END_TIMEZONE, Events.ALL_DAY,
-					/*  8 */ Events.STATUS, Events.ACCESS_LEVEL,
-					/* 10 */ Events.RRULE, Events.RDATE, Events.EXRULE, Events.EXDATE,
-					/* 14 */ Events.HAS_ATTENDEE_DATA, Events.ORGANIZER, Events.SELF_ATTENDEE_STATUS,
-					/* 17 */ entryColumnUID(), Events.DURATION, Events.AVAILABILITY,
-					/* 20 */ Events.ORIGINAL_ALL_DAY, Events.ORIGINAL_INSTANCE_TIME
-				}, null, null, null);
-			if (cursor != null && cursor.moveToNext()) {
-				e.setUid(cursor.getString(17));
-				
-				e.setSummary(cursor.getString(0));
-				e.setLocation(cursor.getString(1));
-				e.setDescription(cursor.getString(2));
-				
-				boolean allDay = cursor.getInt(7) != 0;
-				long tsStart = cursor.getLong(3),
-					 tsEnd = cursor.getLong(4);
-				String duration = cursor.getString(18);
-				
-				String tzId = null;
-				if (allDay) {
-					e.setDtStart(tsStart, null);
-					// provide only DTEND and not DURATION for all-day events
-					if (tsEnd == 0) {
-						Dur dur = new Dur(duration);
-						java.util.Date dEnd = dur.getTime(new java.util.Date(tsStart));
-						tsEnd = dEnd.getTime();
-					}
-					e.setDtEnd(tsEnd, null);
-					
-				} else {
-					// use the start time zone for the end time, too
-					// because apps like Samsung Planner allow the user to change "the" time zone but change the start time zone only
-					tzId = cursor.getString(5);
-					e.setDtStart(tsStart, tzId);
-					if (tsEnd != 0)
-						e.setDtEnd(tsEnd, tzId);
-					else if (!StringUtils.isEmpty(duration))
-						e.setDuration(new Duration(new Dur(duration)));
-				}
-					
-				// recurrence
-				try {
-					String strRRule = cursor.getString(10);
-					if (!StringUtils.isEmpty(strRRule))
-						e.setRrule(new RRule(strRRule));
-					
-					String strRDate = cursor.getString(11);
-					if (!StringUtils.isEmpty(strRDate)) {
-						RDate rDate = new RDate();
-						rDate.setValue(strRDate);
-						e.setRdate(rDate);
-					}
-				
-					String strExRule = cursor.getString(12);
-					if (!StringUtils.isEmpty(strExRule)) {
-						ExRule exRule = new ExRule();
-						exRule.setValue(strExRule);
-						e.setExrule(exRule);
-					}
-					
-					String strExDate = cursor.getString(13);
-					if (!StringUtils.isEmpty(strExDate)) {
-						// ignored, see https://code.google.com/p/android/issues/detail?id=21426
-						ExDate exDate = new ExDate();
-						exDate.setValue(strExDate);
-						e.setExdate(exDate);
-					}
-				} catch (ParseException ex) {
-					Log.w(TAG, "Couldn't parse recurrence rules, ignoring", ex);
-				} catch (IllegalArgumentException ex) {
-					Log.w(TAG, "Invalid recurrence rules, ignoring", ex);
+			@Cleanup EntityIterator iterEvents = CalendarContract.EventsEntity.newEntityIterator(
+					providerClient.query(
+							syncAdapterURI(CalendarContract.EventsEntity.CONTENT_URI),
+							null, Events._ID + "=" + event.getLocalID(),
+							null, null),
+					providerClient
+			);
+			while (iterEvents.hasNext()) {
+				Entity e = iterEvents.next();
+
+				ContentValues values = e.getEntityValues();
+				populateEvent(event, values);
+
+				List<Entity.NamedContentValues> subValues = e.getSubValues();
+				for (Entity.NamedContentValues subValue : subValues) {
+					values = subValue.values;
+					if (Attendees.CONTENT_URI.equals(subValue.uri))
+						populateAttendee(event, values);
+					if (Reminders.CONTENT_URI.equals(subValue.uri))
+						populateReminder(event, values);
 				}
 
-				// recurrence exceptions
-				if (!cursor.isNull(21)) {
-					long originalInstanceTime = cursor.getLong(21);
-					boolean originalAllDay = cursor.getInt(20) != 0;
-					Date originalDate = originalAllDay ?
-							new Date(originalInstanceTime) :
-							new DateTime(originalInstanceTime);
-					if (originalDate instanceof DateTime)
-						((DateTime)originalDate).setUtc(true);
-					e.setRecurrenceId(new RecurrenceId(originalDate));
-				} else
-					// this event may have exceptions
-					populateExceptions(e);
+				populateExceptions(event);
+			}
+		} catch (RemoteException ex) {
+			throw new LocalStorageException("Couldn't process locally stored event", ex);
+		}
+	}
 
-				// status
-				switch (cursor.getInt(8)) {
+	protected void populateEvent(Event e, ContentValues values) {
+		e.setUid(values.getAsString(entryColumnUID()));
+
+		e.setSummary(values.getAsString(Events.TITLE));
+		e.setLocation(values.getAsString(Events.EVENT_LOCATION));
+		e.setDescription(values.getAsString(Events.DESCRIPTION));
+
+		boolean allDay = values.getAsBoolean(Events.ALL_DAY);
+		long tsStart = values.getAsLong(Events.DTSTART);
+		Long tsEnd = values.getAsLong(Events.DTEND);
+		String duration = values.getAsString(Events.DURATION);
+
+		String tzId = null;
+		if (allDay) {
+			e.setDtStart(tsStart, null);
+			if (tsEnd == null) {
+				Dur dur = new Dur(duration);
+				java.util.Date dEnd = dur.getTime(new java.util.Date(tsStart));
+				tsEnd = dEnd.getTime();
+			}
+			e.setDtEnd(tsEnd, null);
+
+		} else {
+			// use the start time zone for the end time, too
+			// because apps like Samsung Planner allow the user to change "the" time zone but change the start time zone only
+			tzId = values.getAsString(Events.EVENT_TIMEZONE);
+			e.setDtStart(tsStart, tzId);
+			if (tsEnd != null)
+				e.setDtEnd(tsEnd, tzId);
+			else if (!StringUtils.isEmpty(duration))
+				e.setDuration(new Duration(new Dur(duration)));
+		}
+
+		// recurrence
+		try {
+			String strRRule = values.getAsString(Events.RRULE);
+			if (!StringUtils.isEmpty(strRRule))
+				e.setRrule(new RRule(strRRule));
+
+			String strRDate = values.getAsString(Events.RDATE);
+			if (!StringUtils.isEmpty(strRDate)) {
+				RDate rDate = new RDate();
+				rDate.setValue(strRDate);
+				e.setRdate(rDate);
+			}
+
+			String strExRule = values.getAsString(Events.EXRULE);
+			if (!StringUtils.isEmpty(strExRule)) {
+				ExRule exRule = new ExRule();
+				exRule.setValue(strExRule);
+				e.setExrule(exRule);
+			}
+
+			String strExDate = values.getAsString(Events.EXDATE);
+			if (!StringUtils.isEmpty(strExDate)) {
+				// ignored, see https://code.google.com/p/android/issues/detail?id=21426
+				ExDate exDate = new ExDate();
+				exDate.setValue(strExDate);
+				e.setExdate(exDate);
+			}
+		} catch (ParseException ex) {
+			Log.w(TAG, "Couldn't parse recurrence rules, ignoring", ex);
+		} catch (IllegalArgumentException ex) {
+			Log.w(TAG, "Invalid recurrence rules, ignoring", ex);
+		}
+
+		if (values.containsKey(Events.ORIGINAL_INSTANCE_TIME)) {
+			// this event is an exception of a recurring event
+			long originalInstanceTime = values.getAsLong(Events.ORIGINAL_INSTANCE_TIME);
+			boolean originalAllDay = values.getAsBoolean(Events.ORIGINAL_ALL_DAY);
+			Date originalDate = originalAllDay ?
+					new Date(originalInstanceTime) :
+					new DateTime(originalInstanceTime);
+			if (originalDate instanceof DateTime)
+				((DateTime)originalDate).setUtc(true);
+			e.setRecurrenceId(new RecurrenceId(originalDate));
+		}
+
+		// status
+		if (values.containsKey(Events.STATUS))
+			switch (values.getAsInteger(Events.STATUS)) {
 				case Events.STATUS_CONFIRMED:
 					e.setStatus(Status.VEVENT_CONFIRMED);
 					break;
@@ -400,50 +419,37 @@ public class LocalCalendar extends LocalCollection<Event> {
 					break;
 				case Events.STATUS_CANCELED:
 					e.setStatus(Status.VEVENT_CANCELLED);
-				}
-				
-				// availability
-				e.setOpaque(cursor.getInt(19) != Events.AVAILABILITY_FREE);
-					
-				// attendees
-				if (cursor.getInt(14) != 0) {	// has attendees
-					try {
-						e.setOrganizer(new Organizer(new URI("mailto", cursor.getString(15), null)));
-					} catch (URISyntaxException ex) {
-						Log.e(TAG, "Error when creating ORGANIZER URI, ignoring", ex);
-					}
-					populateAttendees(e);
-				}
-				
-				// classification
-				switch (cursor.getInt(9)) {
-				case Events.ACCESS_CONFIDENTIAL:
-				case Events.ACCESS_PRIVATE:
-					e.setForPublic(false);
-					break;
-				case Events.ACCESS_PUBLIC:
-					e.setForPublic(true);
-				}
-				
-				populateReminders(e);
-			} else
-				throw new RecordNotFoundException();
-		} catch(RemoteException ex) {
-			throw new LocalStorageException(ex);
+			}
+
+		// availability
+		e.setOpaque(values.getAsInteger(Events.AVAILABILITY) != Events.AVAILABILITY_FREE);
+
+		// set ORGANIZER only when there are attendees
+		if (values.getAsBoolean(Events.HAS_ATTENDEE_DATA) && values.containsKey(Events.ORGANIZER))
+			try {
+				e.setOrganizer(new Organizer(new URI("mailto", values.getAsString(Events.ORGANIZER), null)));
+			} catch (URISyntaxException ex) {
+				Log.e(TAG, "Error when creating ORGANIZER URI, ignoring", ex);
+			}
+
+		// classification
+		switch (values.getAsInteger(Events.ACCESS_LEVEL)) {
+			case Events.ACCESS_CONFIDENTIAL:
+			case Events.ACCESS_PRIVATE:
+				e.setForPublic(false);
+				break;
+			case Events.ACCESS_PUBLIC:
+				e.setForPublic(true);
 		}
 	}
 
 	void populateExceptions(Event e) throws RemoteException {
-		Uri exceptionsUri = Events.CONTENT_URI.buildUpon()
-				.appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
-				.build();
-		@Cleanup Cursor c = providerClient.query(exceptionsUri, new String[] {
-				/* 0 */ Events._ID, entryColumnRemoteName()
-		}, Events.ORIGINAL_ID + "=?", new String[] { String.valueOf(e.getLocalID()) }, null);
+		@Cleanup Cursor c = providerClient.query(syncAdapterURI(Events.CONTENT_URI),
+				new String[]{Events._ID, entryColumnRemoteName()},
+				Events.ORIGINAL_ID + "=?", new String[]{ String.valueOf(e.getLocalID()) }, null);
 		while (c != null && c.moveToNext()) {
 			long exceptionId = c.getLong(0);
 			String exceptionRemoteName = c.getString(1);
-			Log.i(TAG, "Found exception ID " + exceptionId + " of original ID " + e.getLocalID());
 			try {
 				Event exception = new Event(exceptionId, exceptionRemoteName, null);
 				populate(exception);
@@ -454,30 +460,22 @@ public class LocalCalendar extends LocalCollection<Event> {
 		}
 	}
 
-	void populateAttendees(Event e) throws RemoteException {
-		Uri attendeesUri = Attendees.CONTENT_URI.buildUpon()
-				.appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
-				.build();
-		@Cleanup Cursor c = providerClient.query(attendeesUri, new String[]{
-				/* 0 */ Attendees.ATTENDEE_EMAIL, Attendees.ATTENDEE_NAME, Attendees.ATTENDEE_TYPE,
-				/* 3 */ Attendees.ATTENDEE_RELATIONSHIP, Attendees.STATUS
-		}, Attendees.EVENT_ID + "=?", new String[]{String.valueOf(e.getLocalID())}, null);
-		while (c != null && c.moveToNext()) {
-			try {
-				Attendee attendee = new Attendee(new URI("mailto", c.getString(0), null));
-				ParameterList params = attendee.getParameters();
-				
-				String cn = c.getString(1);
-				if (cn != null)
-					params.add(new Cn(cn));
-				
-				// type
-				int type = c.getInt(2);
-				params.add((type == Attendees.TYPE_RESOURCE) ? CuType.RESOURCE : CuType.INDIVIDUAL);
-				
-				// role
-				int relationship = c.getInt(3); 
-				switch (relationship) {
+	void populateAttendee(Event event, ContentValues values) throws RemoteException {
+		try {
+			Attendee attendee = new Attendee(new URI("mailto", values.getAsString(Attendees.ATTENDEE_EMAIL), null));
+			ParameterList params = attendee.getParameters();
+
+			String cn = values.getAsString(Attendees.ATTENDEE_NAME);
+			if (cn != null)
+				params.add(new Cn(cn));
+
+			// type
+			int type = values.getAsInteger(Attendees.ATTENDEE_TYPE);
+			params.add((type == Attendees.TYPE_RESOURCE) ? CuType.RESOURCE : CuType.INDIVIDUAL);
+
+			// role
+			int relationship = values.getAsInteger(Attendees.ATTENDEE_RELATIONSHIP);
+			switch (relationship) {
 				case Attendees.RELATIONSHIP_ORGANIZER:
 					params.add(Role.CHAIR);
 					break;
@@ -488,10 +486,10 @@ public class LocalCalendar extends LocalCollection<Event> {
 					break;
 				case Attendees.RELATIONSHIP_NONE:
 					params.add(Role.NON_PARTICIPANT);
-				}
-	
-				// status
-				switch (c.getInt(4)) {
+			}
+
+			// status
+			switch (values.getAsInteger(Attendees.ATTENDEE_STATUS)) {
 				case Attendees.ATTENDEE_STATUS_INVITED:
 					params.add(PartStat.NEEDS_ACTION);
 					break;
@@ -504,37 +502,21 @@ public class LocalCalendar extends LocalCollection<Event> {
 				case Attendees.ATTENDEE_STATUS_TENTATIVE:
 					params.add(PartStat.TENTATIVE);
 					break;
-				}
-				
-				e.getAttendees().add(attendee);
-			} catch (URISyntaxException ex) {
-				Log.e(TAG, "Couldn't parse attendee information, ignoring", ex);
 			}
+
+			event.getAttendees().add(attendee);
+		} catch (URISyntaxException ex) {
+			Log.e(TAG, "Couldn't parse attendee information, ignoring", ex);
 		}
 	}
 
-	void populateReminders(Event e) throws RemoteException {
-		// reminders
-		Uri remindersUri = Reminders.CONTENT_URI.buildUpon()
-				.appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
-				.build();
-		@Cleanup Cursor c = providerClient.query(remindersUri, new String[] {
-				/* 0 */ Reminders.MINUTES, Reminders.METHOD
-			}, Reminders.EVENT_ID + "=?", new String[] { String.valueOf(e.getLocalID()) }, null);
-		while (c != null && c.moveToNext()) {
-			VAlarm alarm = new VAlarm(new Dur(0, 0, -c.getInt(0), 0));
-			
-			PropertyList props = alarm.getProperties();
-			switch (c.getInt(1)) {
-			/*case Reminders.METHOD_EMAIL:
-				props.add(Action.EMAIL);
-				break;*/
-			default:
-				props.add(Action.DISPLAY);
-				props.add(new Description(e.getSummary()));
-			}
-			e.getAlarms().add(alarm);
-		}
+	void populateReminder(Event event, ContentValues row) throws RemoteException {
+		VAlarm alarm = new VAlarm(new Dur(0, 0, row.getAsInteger(Reminders.MINUTES), 0));
+
+		PropertyList props = alarm.getProperties();
+		props.add(Action.DISPLAY);
+		props.add(new Description(event.getSummary()));
+		event.getAlarms().add(alarm);
 	}
 
 	
@@ -549,6 +531,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 				.withValue(Events.ALL_DAY, event.isAllDay() ? 1 : 0)
 				.withValue(Events.DTSTART, event.getDtStartInMillis())
 				.withValue(Events.EVENT_TIMEZONE, event.getDtStartTzID())
+				.withValue(Events.HAS_ALARM, event.getAlarms().isEmpty() ? 0 : 1)
 				.withValue(Events.HAS_ATTENDEE_DATA, event.getAttendees().isEmpty() ? 0 : 1)
 				.withValue(Events.GUESTS_CAN_INVITE_OTHERS, 1)
 				.withValue(Events.GUESTS_CAN_MODIFY, 1)
@@ -650,17 +633,14 @@ public class LocalCalendar extends LocalCollection<Event> {
 	protected void removeDataRows(Resource resource) {
 		Event event = (Event)resource;
 		// delete exceptions
-		pendingOperations.add(ContentProviderOperation.newDelete(entriesURI())
-				.withSelection(Events.ORIGINAL_ID + "=?",
-				new String[] { String.valueOf(event.getLocalID()) }).build());
+		pendingOperations.add(ContentProviderOperation.newDelete(syncAdapterURI(Events.CONTENT_URI))
+				.withSelection(Events.ORIGINAL_ID + "=?", new String[] { String.valueOf(event.getLocalID())}).build());
 		// delete attendees
 		pendingOperations.add(ContentProviderOperation.newDelete(syncAdapterURI(Attendees.CONTENT_URI))
-				.withSelection(Attendees.EVENT_ID + "=?",
-				new String[] { String.valueOf(event.getLocalID()) }).build());
+				.withSelection(Attendees.EVENT_ID + "=?", new String[] { String.valueOf(event.getLocalID()) }).build());
 		// delete reminders
 		pendingOperations.add(ContentProviderOperation.newDelete(syncAdapterURI(Reminders.CONTENT_URI))
-				.withSelection(Reminders.EVENT_ID + "=?",
-				new String[] { String.valueOf(event.getLocalID()) }).build());
+				.withSelection(Reminders.EVENT_ID + "=?", new String[] { String.valueOf(event.getLocalID()) }).build());
 	}
 
 

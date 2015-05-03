@@ -191,7 +191,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		
 		try {
 			@Cleanup EntityIterator iter = ContactsContract.RawContacts.newEntityIterator(providerClient.query(
-					ContactsContract.RawContactsEntity.CONTENT_URI,
+					syncAdapterURI(ContactsContract.RawContactsEntity.CONTENT_URI),
 					null, RawContacts._ID + "="  + c.getLocalID(),
 					null, null));
 
@@ -252,8 +252,6 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 							break;
 					}
 				}
-
-				Log.i(TAG, "Populated contact: " + c);
 			} else
 				throw new RecordNotFoundException();
 		} catch(RemoteException ex) {
@@ -341,7 +339,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				break;
 			case Phone.TYPE_CUSTOM:
 				String customType = row.getAsString(Phone.LABEL);
-				if (!StringUtils.isEmpty(customType))
+				if (StringUtils.isNotEmpty(customType))
 					number.addType(TelephoneType.get(labelToXName(customType)));
 		}
 		if (row.getAsBoolean(Phone.IS_PRIMARY))
@@ -363,7 +361,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				break;
 			case Email.TYPE_CUSTOM:
 				String customType = row.getAsString(Email.LABEL);
-				if (!StringUtils.isEmpty(customType))
+				if (StringUtils.isNotEmpty(customType))
 					email.addType(EmailType.get(labelToXName(customType)));
 		}
 		if (row.getAsBoolean(Email.IS_PRIMARY))
@@ -393,18 +391,18 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				title = row.getAsString(Organization.TITLE),
 				role = row.getAsString(Organization.JOB_DESCRIPTION);
 
-		if (!StringUtils.isEmpty(company) || !StringUtils.isEmpty(department)) {
+		if (StringUtils.isNotEmpty(company) || StringUtils.isNotEmpty(department)) {
 			ezvcard.property.Organization org = new ezvcard.property.Organization();
-			if (!StringUtils.isEmpty(company))
+			if (StringUtils.isNotEmpty(company))
 				org.addValue(company);
-			if (!StringUtils.isEmpty(department))
+			if (StringUtils.isNotEmpty(department))
 				org.addValue(department);
 			c.setOrganization(org);
 		}
 
-		if (!StringUtils.isEmpty(title))
+		if (StringUtils.isNotEmpty(title))
 			c.setJobTitle(title);
-		if (!StringUtils.isEmpty(role))
+		if (StringUtils.isNotEmpty(role))
 			c.setJobDescription(role);
 	}
 	
@@ -454,7 +452,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 					break;
 				case Im.TYPE_CUSTOM:
 					String customType = row.getAsString(Im.LABEL);
-					if (!StringUtils.isEmpty(customType))
+					if (StringUtils.isNotEmpty(customType))
 						impp.addType(ImppType.get(labelToXName(customType)));
 			}
 
@@ -483,7 +481,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				break;
 			case StructuredPostal.TYPE_CUSTOM:
 				String customType = row.getAsString(StructuredPostal.LABEL);
-				if (!StringUtils.isEmpty(customType))
+				if (StringUtils.isNotEmpty(customType))
 					address.addType(AddressType.get(labelToXName(customType)));
 				break;
 		}
@@ -626,7 +624,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				types.add(RelatedType.SPOUSE);
 			case Relation.TYPE_CUSTOM:
 				String customType = row.getAsString(Relation.LABEL);
-				if (!StringUtils.isEmpty(customType))
+				if (StringUtils.isNotEmpty(customType))
 					types.add(RelatedType.get(customType));
 		}
 	}
@@ -643,7 +641,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 					break;
 				case SipAddress.TYPE_CUSTOM:
 					String customType = row.getAsString(SipAddress.LABEL);
-					if (!StringUtils.isEmpty(customType))
+					if (StringUtils.isNotEmpty(customType))
 						impp.addType(ImppType.get(labelToXName(customType)));
 			}
 			c.getImpps().add(impp);
