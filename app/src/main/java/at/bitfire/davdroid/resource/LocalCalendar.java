@@ -262,7 +262,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 				" AND " + Events.ORIGINAL_SYNC_ID + " NOT IN (" + StringUtils.join(sqlFileNames, ",") + ")";    // retain by remote file name
 		pendingOperations.add(ContentProviderOperation
 				.newDelete(entriesURI())
-				.withSelection(where, new String[]{String.valueOf(id)})
+				.withSelection(where, new String[]{ String.valueOf(id) })
 				.withYieldAllowed(true)
 				.build()
 		);
@@ -275,7 +275,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		// delete all exceptions of this event, too
 		pendingOperations.add(ContentProviderOperation
 				.newDelete(entriesURI())
-				.withSelection(Events.ORIGINAL_ID + "=?", new String[] { Long.toString(resource.getLocalID()) })
+				.withSelection(Events.ORIGINAL_ID + "=?", new String[] { String.valueOf(resource.getLocalID()) })
 				.build()
 		);
 	}
@@ -288,7 +288,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		pendingOperations.add(ContentProviderOperation
 				.newUpdate(entriesURI())
 				.withValue(Events.DIRTY, 0)
-				.withSelection(Events.ORIGINAL_ID + "=?", new String[] { Long.toString(resource.getLocalID()) })
+				.withSelection(Events.ORIGINAL_ID + "=?", new String[]{ String.valueOf(resource.getLocalID()) })
 				.build()
 		);
 	}
@@ -561,15 +561,20 @@ public class LocalCalendar extends LocalCollection<Event> {
 		if (event.getRdate() != null) {
 			recurring = true;
 			RDate rDate = event.getRdate();
-			String rDateStr = event.getRdate().getValue();
+			String rDateStr = rDate.getValue();
 			if (rDate.getTimeZone() != null)
 				rDateStr = DateUtils.findAndroidTimezoneID(rDate.getTimeZone().getID()) + ";" + rDateStr;
 			builder = builder.withValue(Events.RDATE, rDateStr);
 		}
 		if (event.getExrule() != null)
 			builder = builder.withValue(Events.EXRULE, event.getExrule().getValue());
-		if (event.getExdate() != null)
-			builder = builder.withValue(Events.EXDATE, event.getExdate().getValue());
+		if (event.getExdate() != null) {
+			ExDate exDate = event.getExdate();
+			String exDateStr = exDate.getValue();
+			if (exDate.getTimeZone() != null)
+				exDateStr = DateUtils.findAndroidTimezoneID(exDate.getTimeZone().getID()) + ";" + exDateStr;
+			builder = builder.withValue(Events.EXDATE, exDateStr);
+		}
 		
 		// set either DTEND for single-time events or DURATION for recurring events
 		// because that's the way Android likes it (see docs)
