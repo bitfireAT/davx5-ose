@@ -26,7 +26,18 @@ import android.provider.CalendarContract.Reminders;
 import android.test.InstrumentationTestCase;
 import android.util.Log;
 
+import net.fortuna.ical4j.model.DateList;
+import net.fortuna.ical4j.model.TimeZone;
+import net.fortuna.ical4j.model.TimeZoneRegistry;
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
+import net.fortuna.ical4j.model.parameter.Value;
+import net.fortuna.ical4j.model.property.RDate;
+
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.SimpleTimeZone;
 
 import lombok.Cleanup;
 
@@ -140,7 +151,7 @@ public class LocalCalendarTest extends InstrumentationTestCase {
 		assertTrue(testCalendar.findUpdated().length == 0);
 		
 		// insert a "new" event
-		long id = insertNewEvent();
+		final long id = insertNewEvent();
 		try {
 			// there must be one "new" event now
 			assertTrue(testCalendar.findNew().length == 1);
@@ -153,6 +164,25 @@ public class LocalCalendarTest extends InstrumentationTestCase {
 		} finally {
 			deleteEvent(id);
 		}
+	}
+
+	public void testRecurrenceSetsToAndroidString() throws ParseException {
+		final String tzId = "Europe/Vienna";
+
+		// one entry without time zone
+		final List<RDate> list = new ArrayList<>(2);
+		list.add(new RDate(new DateList("20150101T103000,20150102T103000", Value.DATE_TIME)));
+		assertEquals("20150101T103000,20150102T103000", LocalCalendar.recurrenceSetsToAndroidString(list));
+
+		// two entries with time zone
+		list.add(new RDate(new DateList("20150103T103000,20150104T103000", Value.DATE_TIME)));
+
+		final TimeZoneRegistry tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry();
+		final TimeZone tz = tzRegistry.getTimeZone(tzId);
+		for (RDate rdate : list)
+			rdate.setTimeZone(tz);
+
+		assertEquals(tzId + ";20150101T103000,20150102T103000,20150103T103000,20150104T103000", LocalCalendar.recurrenceSetsToAndroidString(list));
 	}
 
 }

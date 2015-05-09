@@ -122,7 +122,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 	@SuppressLint("InlinedApi")
 	public static void create(Account account, ContentResolver resolver, ServerInfo.ResourceInfo info) throws LocalStorageException {
-		ContentProviderClient client = resolver.acquireContentProviderClient(CalendarContract.AUTHORITY);
+		final ContentProviderClient client = resolver.acquireContentProviderClient(CalendarContract.AUTHORITY);
 		if (client == null)
 			throw new LocalStorageException("No Calendar Provider found (Calendar app disabled?)");
 		
@@ -342,12 +342,12 @@ public class LocalCalendar extends LocalCollection<Event> {
 		e.setLocation(values.getAsString(Events.EVENT_LOCATION));
 		e.setDescription(values.getAsString(Events.DESCRIPTION));
 
-		boolean allDay = values.getAsBoolean(Events.ALL_DAY);
-		long tsStart = values.getAsLong(Events.DTSTART);
-		Long tsEnd = values.getAsLong(Events.DTEND);
-		String duration = values.getAsString(Events.DURATION);
+		final boolean allDay = values.getAsBoolean(Events.ALL_DAY);
+		final long tsStart = values.getAsLong(Events.DTSTART);
+		final String duration = values.getAsString(Events.DURATION);
 
 		String tzId = null;
+		Long tsEnd = values.getAsLong(Events.DTEND);
 		if (allDay) {
 			e.setDtStart(tsStart, null);
 			if (tsEnd == null) {
@@ -529,7 +529,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 	@Override
 	protected Builder buildEntry(Builder builder, Resource resource) {
-		Event event = (Event)resource;
+		final Event event = (Event)resource;
 
 		builder = builder
 				.withValue(Events.CALENDAR_ID, id)
@@ -542,7 +542,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 				.withValue(Events.GUESTS_CAN_MODIFY, 1)
 				.withValue(Events.GUESTS_CAN_SEE_GUESTS, 1);
 
-		RecurrenceId recurrenceId = event.getRecurrenceId();
+		final RecurrenceId recurrenceId = event.getRecurrenceId();
 		if (recurrenceId == null) {
 			// this event is a "master event" (not an exception)
 			builder = builder
@@ -596,7 +596,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 			if (organizer.getScheme() != null && organizer.getScheme().equalsIgnoreCase("mailto"))
 				builder = builder.withValue(Events.ORGANIZER, organizer.getSchemeSpecificPart());
 		}
-		
+
 		Status status = event.getStatus();
 		if (status != null) {
 			int statusCode = Events.STATUS_TENTATIVE;
@@ -618,7 +618,8 @@ public class LocalCalendar extends LocalCollection<Event> {
 	
 	@Override
 	protected void addDataRows(Resource resource, long localID, int backrefIdx) {
-		Event event = (Event)resource;
+		final Event event = (Event)resource;
+
 		// add exceptions
 		for (Event exception : event.getExceptions())
 			pendingOperations.add(buildException(newDataInsertBuilder(Events.CONTENT_URI, Events.ORIGINAL_ID, localID, backrefIdx), event, exception).build());
@@ -632,7 +633,8 @@ public class LocalCalendar extends LocalCollection<Event> {
 	
 	@Override
 	protected void removeDataRows(Resource resource) {
-		Event event = (Event)resource;
+		final Event event = (Event)resource;
+
 		// delete exceptions
 		pendingOperations.add(ContentProviderOperation.newDelete(syncAdapterURI(Events.CONTENT_URI))
 				.withSelection(Events.ORIGINAL_ID + "=?", new String[] { String.valueOf(event.getLocalID())}).build());
@@ -653,10 +655,10 @@ public class LocalCalendar extends LocalCollection<Event> {
 		// the original event is an all-day event. Workaround: determine value of ORIGINAL_ALL_DAY
 		// by original event type (all-day or not) and not by whether RECURRENCE-ID is DATE or DATE-TIME.
 
-		RecurrenceId recurrenceId = exception.getRecurrenceId();
-		Date date = recurrenceId.getDate();
+		final RecurrenceId recurrenceId = exception.getRecurrenceId();
+		final boolean originalAllDay = master.isAllDay();
 
-		boolean originalAllDay = master.isAllDay();
+		Date date = recurrenceId.getDate();
 		if (originalAllDay && date instanceof DateTime) {
 			String value = recurrenceId.getValue();
 			if (value.matches("^\\d{8}T\\d{6}$"))
@@ -676,13 +678,13 @@ public class LocalCalendar extends LocalCollection<Event> {
 	
 	@SuppressLint("InlinedApi")
 	protected Builder buildAttendee(Builder builder, Attendee attendee) {
-		Uri member = Uri.parse(attendee.getValue());
-		String email = member.getSchemeSpecificPart();
-		
-		Cn cn = (Cn)attendee.getParameter(Parameter.CN);
+		final Uri member = Uri.parse(attendee.getValue());
+		final String email = member.getSchemeSpecificPart();
+
+		final Cn cn = (Cn)attendee.getParameter(Parameter.CN);
 		if (cn != null)
 			builder = builder.withValue(Attendees.ATTENDEE_NAME, cn.getValue());
-		
+
 		int type = Attendees.TYPE_NONE;
 		
 		CuType cutype = (CuType)attendee.getParameter(Parameter.CUTYPE);
@@ -760,7 +762,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 	 * @param dates		one more more lists of RDATE or EXDATE
 	 * @return			formatted string for Android calendar provider
 	 */
-	protected static String recurrenceSetsToAndroidString(List<? extends DateListProperty> dates) {
+	static String recurrenceSetsToAndroidString(List<? extends DateListProperty> dates) {
 		String tzID = null;
 		List<String> strDates = new LinkedList<String>();
 
