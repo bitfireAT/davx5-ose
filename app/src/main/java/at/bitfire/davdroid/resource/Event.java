@@ -59,6 +59,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -85,9 +86,9 @@ public class Event extends Resource {
 	@Getter protected DtStart dtStart;
 	@Getter protected DtEnd dtEnd;
 	@Getter @Setter protected Duration duration;
-	@Getter @Setter protected RDate rdate;
+	@Getter protected List<RDate> rdates = new LinkedList<>();
 	@Getter @Setter protected RRule rrule;
-	@Getter @Setter protected ExDate exdate;
+	@Getter protected List<ExDate> exdates = new LinkedList<>();
 	@Getter @Setter protected ExRule exrule;
 	@Getter protected List<Event> exceptions = new LinkedList<>();
 
@@ -152,27 +153,23 @@ public class Event extends Resource {
 
 		// find master VEVENT (the one that is not an exception, i.e. the one without RECURRENCE-ID)
 		VEvent master = null;
-		for (Object objEvent : events) {
-			VEvent event = (VEvent)objEvent;
+		for (VEvent event : (Iterable<VEvent>)events)
 			if (event.getRecurrenceId() == null) {
 				master = event;
 				break;
 			}
-		}
 		if (master == null)
 			throw new InvalidResourceException("No VEVENT without RECURRENCE-ID found");
 		// set event data from master VEVENT
 		fromVEvent(master);
 
 		// find and process exceptions
-		for (Object objEvent : events) {
-			VEvent event = (VEvent)objEvent;
+		for (VEvent event : (Iterable<VEvent>)events)
 			if (event.getRecurrenceId() != null) {
 				Event exception = new Event(name, null);
 				exception.fromVEvent(event);
 				exceptions.add(exception);
 			}
-		}
 	}
 
 	protected void fromVEvent(VEvent event) throws InvalidResourceException {
@@ -204,9 +201,11 @@ public class Event extends Resource {
 		}
 
 		rrule = (RRule)event.getProperty(Property.RRULE);
-		rdate = (RDate)event.getProperty(Property.RDATE);
+		for (RDate rdate : (Iterable<RDate>)event.getProperties(Property.RDATE))
+			rdates.add(rdate);
 		exrule = (ExRule)event.getProperty(Property.EXRULE);
-		exdate = (ExDate)event.getProperty(Property.EXDATE);
+		for (ExDate exdate : (Iterable<ExDate>)event.getProperties(Property.EXDATE))
+			exdates.add(exdate);
 
 		if (event.getSummary() != null)
 			summary = event.getSummary().getValue();
@@ -219,8 +218,8 @@ public class Event extends Resource {
 		opaque = event.getTransparency() != Transp.TRANSPARENT;
 
 		organizer = event.getOrganizer();
-		for (Object o : event.getProperties(Property.ATTENDEE))
-			attendees.add((Attendee)o);
+		for (Attendee attendee : (Iterable<Attendee>)event.getProperties(Property.ATTENDEE))
+			attendees.add(attendee);
 
 		Clazz classification = event.getClassification();
 		if (classification != null) {
@@ -307,11 +306,11 @@ public class Event extends Resource {
 
 		if (rrule != null)
 			props.add(rrule);
-		if (rdate != null)
+		for (RDate rdate : rdates)
 			props.add(rdate);
 		if (exrule != null)
 			props.add(exrule);
-		if (exdate != null)
+		for (ExDate exdate : exdates)
 			props.add(exdate);
 
 		if (summary != null && !summary.isEmpty())
