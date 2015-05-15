@@ -126,7 +126,7 @@ verschillende mensen die worden genoemd in hun respectieve taal versie.</p>
     <string name="settings_sync_summary_manually">Alleen handmatig</string>
     <string name="settings_sync_summary_periodically">Elke %d minuten + meteen na wijziging</string>
     <string name="settings_sync_summary_not_available">Niet beschikbaar</string>
-    <string name="settings_sync_interval_calendars">Agenda's verversen</string>
+    <string name="settings_sync_interval_calendars">Agenda\'s verversen</string>
     <string-array name="settings_sync_interval_seconds">
         <item>-1</item>
         <item>300</item>
@@ -158,9 +158,9 @@ verschillende mensen die worden genoemd in hun respectieve taal versie.</p>
     <string name="setup_querying_server">Gegevens worden aangevraagd. Even geduld…</string>
     <string name="setup_what_to_sync">Welke collecties wilt u synchronizereen ?</string>
     <string name="setup_address_books">Adresboeken</string>
-    <string name="setup_calendars">Agenda's</string>
+    <string name="setup_calendars">Agenda\'s</string>
     <string name="setup_select_address_book">Selecteer maximaal 1 adresboek (tap opnieuw om te deselecteren):</string>
-    <string name="setup_select_calendars">Selecteer uw agend's:</string>
+    <string name="setup_select_calendars">Selecteer uw agend\'s:</string>
     
     <string name="setup_account_details">Account eigenschappen</string>
     <string name="setup_account_name">Account naam:</string>

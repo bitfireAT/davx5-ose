@@ -201,7 +201,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				ContentValues values = e.getEntityValues();
 				c.setUid(values.getAsString(entryColumnUID()));
 				c.setUnknownProperties(values.getAsString(COLUMN_UNKNOWN_PROPERTIES));
-				c.setStarred(values.getAsBoolean(RawContacts.STARRED));
+				c.setStarred(values.getAsInteger(RawContacts.STARRED) != 0);
 
 				List<Entity.NamedContentValues> subValues = e.getSubValues();
 				for (Entity.NamedContentValues subValue : subValues) {
@@ -342,7 +342,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				if (StringUtils.isNotEmpty(customType))
 					number.addType(TelephoneType.get(labelToXName(customType)));
 		}
-		if (row.getAsBoolean(Phone.IS_PRIMARY))
+		if (row.getAsInteger(Phone.IS_PRIMARY) != 0)
 			number.addType(TelephoneType.PREF);
 		c.getPhoneNumbers().add(number);
 	}
@@ -364,7 +364,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				if (StringUtils.isNotEmpty(customType))
 					email.addType(EmailType.get(labelToXName(customType)));
 		}
-		if (row.getAsBoolean(Email.IS_PRIMARY))
+		if (row.getAsInteger(Email.IS_PRIMARY) != 0)
 			email.addType(EmailType.PREF);
 		c.getEmails().add(email);
 	}
