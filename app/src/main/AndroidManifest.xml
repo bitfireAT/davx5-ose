@@ -9,7 +9,7 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="at.bitfire.davdroid"
-    android:versionCode="62" android:versionName="0.7.6"
+    android:versionCode="63" android:versionName="0.7.7"
     android:installLocation="internalOnly">
 
     <uses-sdk
@@ -92,7 +92,8 @@
         </activity>
         <activity
             android:name=".ui.settings.AccountActivity"
-            android:label="@string/settings_title" >
+            android:label="@string/settings_title"
+            android:parentActivityName=".ui.settings.SettingsActivity" >
         </activity>
     </application>
 

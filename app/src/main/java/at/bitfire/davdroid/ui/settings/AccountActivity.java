@@ -24,6 +24,7 @@ public class AccountActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.settings_account_activity);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		final FragmentManager fm = getFragmentManager();
 
