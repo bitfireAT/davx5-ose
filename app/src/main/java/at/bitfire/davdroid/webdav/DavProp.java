@@ -35,7 +35,7 @@ public class DavProp {
 	GetCTag getctag;
 	
 	@Element(required=false)
-	GetETag getetag;
+	@Setter GetETag getetag;
 	
 	@Root(strict=false)
 	public static class ResourceType {

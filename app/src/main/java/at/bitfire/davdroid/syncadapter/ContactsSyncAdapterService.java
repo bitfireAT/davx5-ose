@@ -47,7 +47,7 @@ public class ContactsSyncAdapterService extends Service {
 	
 
 	private static class ContactsSyncAdapter extends DavSyncAdapter {
-		private final static String TAG = "davdroid.ContactsSyncAdapter";
+		private final static String TAG = "davdroid.CardDAVSync";
 
 		
 		private ContactsSyncAdapter(Context context) {
