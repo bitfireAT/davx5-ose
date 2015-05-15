@@ -332,6 +332,18 @@ public class WebDavResource {
 		processMultiStatus(response);
 	}
 
+	public void report(String query) throws IOException, HttpException, DavException {
+		HttpReport report = new HttpReport(location, query);
+		report.setHeader("Depth", "1");
+
+		@Cleanup CloseableHttpResponse response = httpClient.execute(report, context);
+		if (response == null)
+			throw new DavNoContentException();
+
+		checkResponse(response);
+		processMultiStatus(response);
+	}
+
 	
 	/* resource operations */
 	

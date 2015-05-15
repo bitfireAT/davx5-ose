@@ -26,7 +26,9 @@ import java.util.List;
 
 import at.bitfire.davdroid.URIUtils;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
+import at.bitfire.davdroid.webdav.DavCalendarQuery;
 import at.bitfire.davdroid.webdav.DavException;
+import at.bitfire.davdroid.webdav.DavFilter;
 import at.bitfire.davdroid.webdav.DavMultiget;
 import at.bitfire.davdroid.webdav.DavNoContentException;
 import at.bitfire.davdroid.webdav.HttpException;
@@ -36,6 +38,7 @@ import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
 import ezvcard.io.text.VCardParseException;
 import lombok.Cleanup;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Represents a remotely stored synchronizable collection (collection as in
@@ -75,8 +78,28 @@ public abstract class RemoteCollection<T extends Resource> {
 		return collection.getCTag();
 	}
 
+
+	/**
+	 * Returns a body for the REPORT request that queries all members of the collection
+	 * that should be considered. Allows collections to implement remote filters.
+	 * @return  body for REPORT request or null if PROPFIND shall be used
+	 */
+	public String getMemberETagsQuery() {
+		return null;
+	}
+
+	/**
+	 * Gets the ETags of the resources in a collection. If davQuery is set, it's required to be a
+	 * complete addressbook-query or calendar-query XML and will cause getMemberETags() to use REPORT
+	 * instead of PROPFIND.
+	 * @return  array of Resources where only the resource names and ETags are set
+	 */
 	public Resource[] getMemberETags() throws URISyntaxException, IOException, DavException, HttpException {
-		collection.propfind(HttpPropfind.Mode.MEMBERS_ETAG);
+		String query = getMemberETagsQuery();
+		if (query != null)
+			collection.report(query);
+		else
+			collection.propfind(HttpPropfind.Mode.MEMBERS_ETAG);
 
 		List<T> resources = new LinkedList<T>();
 		if (collection.getMembers() != null)
@@ -84,13 +107,15 @@ public abstract class RemoteCollection<T extends Resource> {
 				resources.add(newResourceSkeleton(member.getName(), member.getETag()));
 
 		return resources.toArray(new Resource[0]);
+
 	}
+
 
 	@SuppressWarnings("unchecked")
 	public Resource[] multiGet(Resource[] resources) throws URISyntaxException, IOException, DavException, HttpException {
 		try {
 			if (resources.length == 1)
-				return (T[]) new Resource[]{get(resources[0])};
+				return (T[]) new Resource[] { get(resources[0]) };
 
 			Log.i(TAG, "Multi-getting " + resources.length + " remote resource(s)");
 

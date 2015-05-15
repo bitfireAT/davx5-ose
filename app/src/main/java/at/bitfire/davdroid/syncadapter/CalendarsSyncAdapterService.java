@@ -27,8 +27,8 @@ import at.bitfire.davdroid.resource.RemoteCollection;
 
 public class CalendarsSyncAdapterService extends Service {
 	private static SyncAdapter syncAdapter;
-	
-	
+
+
 	@Override
 	public void onCreate() {
 		if (syncAdapter == null)
@@ -48,7 +48,7 @@ public class CalendarsSyncAdapterService extends Service {
 	
 
 	private static class SyncAdapter extends DavSyncAdapter {
-		private final static String TAG = "davdroid.CalendarsSyncAdapter";
+		private final static String TAG = "davdroid.CalDAVSync";
 
 		
 		private SyncAdapter(Context context) {
