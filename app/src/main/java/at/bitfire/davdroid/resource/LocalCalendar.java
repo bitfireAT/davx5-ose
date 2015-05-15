@@ -121,7 +121,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 	/* class methods, constructor */
 
 	@SuppressLint("InlinedApi")
-	public static void create(Account account, ContentResolver resolver, ServerInfo.ResourceInfo info) throws LocalStorageException {
+	public static Uri create(Account account, ContentResolver resolver, ServerInfo.ResourceInfo info) throws LocalStorageException {
 		final ContentProviderClient client = resolver.acquireContentProviderClient(CalendarContract.AUTHORITY);
 		if (client == null)
 			throw new LocalStorageException("No Calendar Provider found (Calendar app disabled?)");
@@ -166,8 +166,8 @@ public class LocalCalendar extends LocalCollection<Event> {
 		
 		Log.i(TAG, "Inserting calendar: " + values.toString() + " -> " + calendarsURI(account).toString());
 		try {
-			client.insert(calendarsURI(account), values);
-		} catch(RemoteException e) {
+			return client.insert(calendarsURI(account), values);
+		} catch (RemoteException e) {
 			throw new LocalStorageException(e);
 		}
 	}
