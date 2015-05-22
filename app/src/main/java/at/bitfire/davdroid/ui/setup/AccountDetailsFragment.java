@@ -26,12 +26,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.dmfs.provider.tasks.TaskContract;
+
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalCalendar;
+import at.bitfire.davdroid.resource.LocalNotebook;
 import at.bitfire.davdroid.resource.LocalStorageException;
+import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.davdroid.resource.ServerInfo;
+import at.bitfire.davdroid.resource.Task;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
+import at.bitfire.notebooks.provider.NoteContract;
 
 public class AccountDetailsFragment extends Fragment implements TextWatcher {
 	public static final String KEY_SERVER_INFO = "server_info";
@@ -102,22 +108,54 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
 			ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0);
 		
 		if (accountManager.addAccountExplicitly(account, serverInfo.getPassword(), userData)) {
-			// account created, now create calendars
+			// account created, now create calendars ...
 			boolean syncCalendars = false;
 			for (ServerInfo.ResourceInfo calendar : serverInfo.getCalendars())
-				if (calendar.isEnabled())
+				if (calendar.isEnabled() && calendar.isSupportingEvents())
 					try {
 						LocalCalendar.create(account, getActivity().getContentResolver(), calendar);
 						syncCalendars = true;
 					} catch (LocalStorageException e) {
-						Toast.makeText(getActivity(), "Couldn't create calendar(s): " + e.getMessage(), Toast.LENGTH_LONG).show();
+						Toast.makeText(getActivity(), "Couldn't create calendar: " + e.getMessage(), Toast.LENGTH_LONG).show();
 					}
 			if (syncCalendars) {
 				ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1);
 				ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true);
 			} else
 				ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0);
-			
+
+			// ... and notes
+			boolean syncNotes = false;
+			for (ServerInfo.ResourceInfo calendar : serverInfo.getCalendars())
+				if (calendar.isEnabled() && calendar.isSupportingNotes())
+					try {
+						LocalNotebook.create(account, getActivity().getContentResolver(), calendar);
+						syncNotes = true;
+					} catch (LocalStorageException e) {
+						Toast.makeText(getActivity(), "Couldn't create notebook: " + e.getMessage(), Toast.LENGTH_LONG).show();
+					}
+			if (syncNotes) {
+				ContentResolver.setIsSyncable(account, NoteContract.AUTHORITY, 1);
+				ContentResolver.setSyncAutomatically(account, NoteContract.AUTHORITY, true);
+			} else
+				ContentResolver.setIsSyncable(account, NoteContract.AUTHORITY, 0);
+
+			// ... and tasks
+			boolean syncTasks = false;
+			for (ServerInfo.ResourceInfo calendar : serverInfo.getCalendars())
+				if (calendar.isEnabled() && calendar.isSupportingTasks())
+					try {
+						LocalTaskList.create(account, getActivity().getContentResolver(), calendar);
+						syncTasks = true;
+					} catch (LocalStorageException e) {
+						Toast.makeText(getActivity(), "Couldn't create task list: " + e.getMessage(), Toast.LENGTH_LONG).show();
+					}
+			if (syncTasks) {
+				ContentResolver.setIsSyncable(account, TaskContract.AUTHORITY, 1);
+				ContentResolver.setSyncAutomatically(account, TaskContract.AUTHORITY, true);
+			} else
+				ContentResolver.setIsSyncable(account, TaskContract.AUTHORITY, 0);
+
 			getActivity().finish();				
 		} else
 			Toast.makeText(getActivity(), "Couldn't create account (account with this name already existing?)", Toast.LENGTH_LONG).show();

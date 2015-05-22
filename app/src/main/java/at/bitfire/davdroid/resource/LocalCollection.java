@@ -15,14 +15,20 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.util.Log;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import lombok.Cleanup;
+import lombok.Getter;
 
 /**
  * Represents a locally-stored synchronizable collection (for instance, the
@@ -66,6 +72,10 @@ public abstract class LocalCollection<T extends Resource> {
 	
 	/** column name of an entry's UID */
 	abstract protected String entryColumnUID();
+
+
+	/** ID of the collection (for instance, CalendarContract.Calendars._ID) */
+	// protected long id;
 
 	/** SQL filter expression */
 	String sqlFilter;
@@ -114,7 +124,7 @@ public abstract class LocalCollection<T extends Resource> {
 			for (int idx = 0; cursor.moveToNext(); idx++) {
 				long id = cursor.getLong(0);
 				
-				// new record: generate UID + remote file name so that we can upload
+				// new record: we have to generate UID + remote file name for uploading
 				T resource = findById(id, false);
 				resource.initialize();
 				// write generated UID + remote file name into database
@@ -218,9 +228,9 @@ public abstract class LocalCollection<T extends Resource> {
 	
 	/**
 	 * Finds a specific resource by remote file name. Only records matching sqlFilter are taken into account.
-	 * @param localID	remote file name of the resource
-	 * @param populate	true: populates all data fields (for instance, contact or event details);
-	 * 					false: only remote file name and ETag are populated
+	 * @param remoteName	remote file name of the resource
+	 * @param populate	    true: populates all data fields (for instance, contact or event details);
+	 * 					    false: only remote file name and ETag are populated
 	 * @return resource with either ID/remote file/name/ETag or all fields populated
 	 * @throws RecordNotFoundException when the resource couldn't be found
 	 * @throws LocalStorageException when the content provider couldn't be queried
@@ -255,7 +265,7 @@ public abstract class LocalCollection<T extends Resource> {
 	 * Creates a new resource object in memory. No content provider operations involved.
 	 * @param localID the ID of the resource
 	 * @param resourceName the (remote) file name of the resource
-	 * @param ETag of the resource
+	 * @param eTag ETag of the resource
 	 * @return the new resource object */
 	abstract public T newResource(long localID, String resourceName, String eTag);
 	
@@ -263,9 +273,9 @@ public abstract class LocalCollection<T extends Resource> {
 	public void add(Resource resource) {
 		int idx = pendingOperations.size();
 		pendingOperations.add(
-				buildEntry(ContentProviderOperation.newInsert(entriesURI()), resource)
-				.withYieldAllowed(true)
-				.build());
+				buildEntry(ContentProviderOperation.newInsert(entriesURI()), resource, false)
+						.withYieldAllowed(true)
+						.build());
 		
 		addDataRows(resource, -1, idx);
 	}
@@ -275,7 +285,7 @@ public abstract class LocalCollection<T extends Resource> {
 	public void updateByRemoteName(Resource remoteResource) throws LocalStorageException {
 		T localResource = findByRemoteName(remoteResource.getName(), false);
 		pendingOperations.add(
-				buildEntry(ContentProviderOperation.newUpdate(ContentUris.withAppendedId(entriesURI(), localResource.getLocalID())), remoteResource)
+				buildEntry(ContentProviderOperation.newUpdate(ContentUris.withAppendedId(entriesURI(), localResource.getLocalID())), remoteResource, true)
 				.withValue(entryColumnETag(), remoteResource.getETag())
 				.withYieldAllowed(true)
 				.build());
@@ -296,8 +306,28 @@ public abstract class LocalCollection<T extends Resource> {
 	 * Enqueues deleting all resources except the give ones from the local collection. Requires commit().
 	 * @param remoteResources resources with these remote file names will be kept
 	 */
-	public abstract void deleteAllExceptRemoteNames(Resource[] remoteResources);
-	
+	public void deleteAllExceptRemoteNames(Resource[] remoteResources) {
+		final String where;
+
+		if (remoteResources.length != 0) {
+			// delete all except certain entries
+			final List<String> sqlFileNames = new LinkedList<>();
+			for (final Resource res : remoteResources)
+				sqlFileNames.add(DatabaseUtils.sqlEscapeString(res.getName()));
+			where = entryColumnRemoteName() + " NOT IN (" + StringUtils.join(sqlFileNames, ",") + ')';
+		} else
+			// delete all entries
+			where = entryColumnRemoteName() + " IS NOT NULL";
+
+		ContentProviderOperation.Builder builder = ContentProviderOperation.newDelete(entriesURI())
+				.withSelection(     // restrict deletion to parent collection
+						entryColumnParentID() + "=? AND (" + where + ')',
+						new String[] { String.valueOf(getId()) }
+				);
+		pendingOperations.add(builder.withYieldAllowed(true).build());
+	}
+
+
 	/** Updates the locally-known ETag of a resource. */
 	public void updateETag(Resource res, String eTag) throws LocalStorageException {
 		Log.d(TAG, "Setting ETag of local resource " + res.getName() + " to " + eTag);
@@ -365,9 +395,11 @@ public abstract class LocalCollection<T extends Resource> {
 	 * Builds the main entry (for instance, a ContactsContract.RawContacts row) from a resource.
 	 * The entry is built for insertion to the location identified by entriesURI().
 	 * 
-	 * @param builder Builder to be extended by all resource data that can be stored without extra data rows.
+	 * @param builder   Builder to be extended by all resource data that can be stored without extra data rows.
+	 * @param resource  Event, task or note resource whose contents shall be inserted/updated
+	 * @param update    false when the entry is built the first time (when creating the row), true if it's an update
 	 */
-	protected abstract Builder buildEntry(Builder builder, Resource resource);
+	protected abstract Builder buildEntry(Builder builder, Resource resource, boolean update);
 	
 	/** Enqueues adding extra data rows of the resource to the local collection. */
 	protected abstract void addDataRows(Resource resource, long localID, int backrefIdx);

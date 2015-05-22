@@ -8,6 +8,6 @@ import lombok.Setter;
 
 @Namespace(prefix="C",reference="urn:ietf:params:xml:ns:caldav")
 public class DavFilter {
-	@Element(required=false)
+	@Element(required=false,name="comp-filter")
 	@Getter	@Setter	DavCompFilter compFilter;
 }

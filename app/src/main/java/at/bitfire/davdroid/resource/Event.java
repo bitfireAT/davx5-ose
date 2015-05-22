@@ -244,7 +244,7 @@ public class Event extends Resource {
 	public ByteArrayOutputStream toEntity() throws IOException {
 		net.fortuna.ical4j.model.Calendar ical = new net.fortuna.ical4j.model.Calendar();
 		ical.getProperties().add(Version.VERSION_2_0);
-		ical.getProperties().add(new ProdId("-//bitfire web engineering//DAVdroid " + Constants.APP_VERSION + " (ical4j 1.0.x)//EN"));
+		ical.getProperties().add(Constants.ICAL_PRODID);
 
 		// "master event" (without exceptions)
 		ComponentList components = ical.getComponents();

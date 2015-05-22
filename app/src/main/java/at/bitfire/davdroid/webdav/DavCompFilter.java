@@ -19,5 +19,4 @@ public class DavCompFilter {
 
 	@Element(required=false,name="comp-filter")
 	@Getter @Setter	DavCompFilter compFilter;
-
 }

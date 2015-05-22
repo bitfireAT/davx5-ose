@@ -654,12 +654,15 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	/* content builder methods */
 	
 	@Override
-	protected Builder buildEntry(Builder builder, Resource resource) {
+	protected Builder buildEntry(Builder builder, Resource resource, boolean update) {
 		Contact contact = (Contact)resource;
 
+		if (!update)
+			builder = builder
+					.withValue(RawContacts.ACCOUNT_NAME, account.name)
+					.withValue(RawContacts.ACCOUNT_TYPE, account.type);
+
 		return builder
-			.withValue(RawContacts.ACCOUNT_NAME, account.name)
-			.withValue(RawContacts.ACCOUNT_TYPE, account.type)
 			.withValue(entryColumnRemoteName(), contact.getName())
 			.withValue(entryColumnUID(), contact.getUid())
 			.withValue(entryColumnETag(), contact.getETag())

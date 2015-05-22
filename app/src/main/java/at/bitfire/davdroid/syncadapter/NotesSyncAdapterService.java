@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2013 – 2015 Ricki Hirner (bitfire web engineering).
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
- */
 package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
@@ -20,18 +13,18 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import at.bitfire.davdroid.resource.CalDavCalendar;
-import at.bitfire.davdroid.resource.LocalCalendar;
+import at.bitfire.davdroid.resource.CalDavNotebook;
 import at.bitfire.davdroid.resource.LocalCollection;
+import at.bitfire.davdroid.resource.LocalNotebook;
 import at.bitfire.davdroid.resource.RemoteCollection;
 
-public class CalendarsSyncAdapterService extends Service {
-	private static SyncAdapter syncAdapter;
+public class NotesSyncAdapterService extends Service {
+	private static NotesSyncAdapter syncAdapter;
 
 	@Override
 	public void onCreate() {
 		if (syncAdapter == null)
-			syncAdapter = new SyncAdapter(getApplicationContext());
+			syncAdapter = new NotesSyncAdapter(getApplicationContext());
 	}
 
 	@Override
@@ -42,17 +35,17 @@ public class CalendarsSyncAdapterService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		return syncAdapter.getSyncAdapterBinder(); 
+		return syncAdapter.getSyncAdapterBinder();
 	}
-	
 
-	private static class SyncAdapter extends DavSyncAdapter {
-		private final static String TAG = "davdroid.CalendarsSync";
 
-		private SyncAdapter(Context context) {
+	private static class NotesSyncAdapter extends DavSyncAdapter {
+		private final static String TAG = "davdroid.NotesSync";
+
+		private NotesSyncAdapter(Context context) {
 			super(context);
 		}
-		
+
 		@Override
 		protected Map<LocalCollection<?>, RemoteCollection<?>> getSyncPairs(Account account, ContentProviderClient provider) {
 			AccountSettings settings = new AccountSettings(getContext(), account);
@@ -62,18 +55,18 @@ public class CalendarsSyncAdapterService extends Service {
 
 			try {
 				Map<LocalCollection<?>, RemoteCollection<?>> map = new HashMap<LocalCollection<?>, RemoteCollection<?>>();
-				
-				for (LocalCalendar calendar : LocalCalendar.findAll(account, provider)) {
-					RemoteCollection<?> dav = new CalDavCalendar(httpClient, calendar.getUrl(), userName, password, preemptive);
-					map.put(calendar, dav);
+
+				for (LocalNotebook noteList : LocalNotebook.findAll(account, provider)) {
+					RemoteCollection<?> dav = new CalDavNotebook(httpClient, noteList.getUrl(), userName, password, preemptive);
+					map.put(noteList, dav);
 				}
 				return map;
 			} catch (RemoteException ex) {
-				Log.e(TAG, "Couldn't find local calendars", ex);
+				Log.e(TAG, "Couldn't find local notebooks", ex);
 			} catch (URISyntaxException ex) {
 				Log.e(TAG, "Couldn't build calendar URI", ex);
 			}
-			
+
 			return null;
 		}
 	}

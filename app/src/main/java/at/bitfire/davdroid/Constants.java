@@ -7,10 +7,14 @@
  */
 package at.bitfire.davdroid;
 
+import net.fortuna.ical4j.model.property.ProdId;
+
 public class Constants {
 	public static final String
 		APP_VERSION = "0.7.7",
 		ACCOUNT_TYPE = "bitfire.at.davdroid",
 		WEB_URL_HELP = "https://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app",
 		WEB_URL_VIEW_LOGS = "https://github.com/bitfireAT/davdroid/wiki/How-to-view-the-logs";
+
+	public static final ProdId ICAL_PRODID = new ProdId("-//bitfire web engineering//DAVdroid " + Constants.APP_VERSION + " (ical4j 1.0.x)//EN");
 }

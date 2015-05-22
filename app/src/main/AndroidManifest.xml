@@ -26,6 +26,12 @@
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
+    <uses-permission android:name="at.bitfire.notebooks.provider.READ_WRITE_NOTES" />
+
+    <uses-permission android:name="de.azapps.mirakel.provider.READ_WRITE_DATA" />
+    <uses-permission android:name="de.azapps.mirakel.provider.READ_DATA" />
+    <uses-permission android:name="de.azapps.mirakel.provider.WRITE_DATA" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -50,7 +56,6 @@
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
-
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/sync_contacts" />
@@ -64,10 +69,29 @@
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
-
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/sync_calendars" />
+        </service>
+        <service
+            android:name=".syncadapter.NotesSyncAdapterService"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_notes" />
+        </service>
+        <service
+            android:name=".syncadapter.TasksSyncAdapterService"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_tasks" />
         </service>
 
         <activity

@@ -87,30 +87,25 @@ import lombok.Getter;
 public class LocalCalendar extends LocalCollection<Event> {
 	private static final String TAG = "davdroid.LocalCalendar";
 
-	@Getter protected long id;
 	@Getter protected String url;
+	@Getter protected long id;
 	
 	protected static String COLLECTION_COLUMN_CTAG = Calendars.CAL_SYNC1;
 
 	
 	/* database fields */
 	
+	@Override protected Uri entriesURI()                { return syncAdapterURI(Events.CONTENT_URI); }
+	@Override protected String entryColumnAccountType()	{ return Events.ACCOUNT_TYPE; }
+	@Override protected String entryColumnAccountName()	{ return Events.ACCOUNT_NAME; }
+	@Override protected String entryColumnParentID()	{ return Events.CALENDAR_ID; }
+	@Override protected String entryColumnID()			{ return Events._ID; }
+	@Override protected String entryColumnRemoteName()	{ return Events._SYNC_ID; }
+	@Override protected String entryColumnETag()		{ return Events.SYNC_DATA1; }
+	@Override protected String entryColumnDirty()		{ return Events.DIRTY; }
+	@Override protected String entryColumnDeleted()		{ return Events.DELETED; }
+
 	@Override
-	protected Uri entriesURI() {
-		return syncAdapterURI(Events.CONTENT_URI);
-	}
-
-	protected String entryColumnAccountType()	{ return Events.ACCOUNT_TYPE; }
-	protected String entryColumnAccountName()	{ return Events.ACCOUNT_NAME; }
-	
-	protected String entryColumnParentID()		{ return Events.CALENDAR_ID; }
-	protected String entryColumnID()			{ return Events._ID; }
-	protected String entryColumnRemoteName()	{ return Events._SYNC_ID; }
-	protected String entryColumnETag()			{ return Events.SYNC_DATA1; }
-
-	protected String entryColumnDirty()			{ return Events.DIRTY; }
-	protected String entryColumnDeleted()		{ return Events.DELETED; }
-	
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	protected String entryColumnUID() {
 		return (android.os.Build.VERSION.SDK_INT >= 17) ?
@@ -164,7 +159,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		if (info.getTimezone() != null)
 			values.put(Calendars.CALENDAR_TIME_ZONE, info.getTimezone());
 		
-		Log.i(TAG, "Inserting calendar: " + values.toString() + " -> " + calendarsURI(account).toString());
+		Log.i(TAG, "Inserting calendar: " + values.toString());
 		try {
 			return client.insert(calendarsURI(account), values);
 		} catch (RemoteException e) {
@@ -176,8 +171,8 @@ public class LocalCalendar extends LocalCollection<Event> {
 		@Cleanup Cursor cursor = providerClient.query(calendarsURI(account),
 				new String[] { Calendars._ID, Calendars.NAME },
 				Calendars.DELETED + "=0 AND " + Calendars.SYNC_EVENTS + "=1", null, null);
-		
-		LinkedList<LocalCalendar> calendars = new LinkedList<LocalCalendar>();
+
+		LinkedList<LocalCalendar> calendars = new LinkedList<>();
 		while (cursor != null && cursor.moveToNext())
 			calendars.add(new LocalCalendar(account, providerClient, cursor.getInt(0), cursor.getString(1)));
 		return calendars.toArray(new LocalCalendar[0]);
@@ -198,9 +193,9 @@ public class LocalCalendar extends LocalCollection<Event> {
 		try {
 			@Cleanup Cursor c = providerClient.query(ContentUris.withAppendedId(calendarsURI(), id),
 					new String[] { COLLECTION_COLUMN_CTAG }, null, null, null);
-			if (c.moveToFirst()) {
+			if (c != null && c.moveToFirst())
 				return c.getString(0);
-			} else
+			else
 				throw new LocalStorageException("Couldn't query calendar CTag");
 		} catch(RemoteException e) {
 			throw new LocalStorageException(e);
@@ -528,8 +523,13 @@ public class LocalCalendar extends LocalCollection<Event> {
 	/* content builder methods */
 
 	@Override
-	protected Builder buildEntry(Builder builder, Resource resource) {
+	protected Builder buildEntry(Builder builder, Resource resource, boolean update) {
 		final Event event = (Event)resource;
+
+		if (!update)
+			builder = builder
+					.withValue(Events.ACCOUNT_TYPE, account.type)
+					.withValue(Events.ACCOUNT_NAME, account.name);
 
 		builder = builder
 				.withValue(Events.CALENDAR_ID, id)
@@ -648,7 +648,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 
 	protected Builder buildException(Builder builder, Event master, Event exception) {
-		buildEntry(builder, exception);
+		buildEntry(builder, exception, false);
 		builder.withValue(Events.ORIGINAL_SYNC_ID, exception.getName());
 
 		// Some servers (iCloud, for instance) return RECURRENCE-ID with DATE-TIME even if
@@ -747,9 +747,11 @@ public class LocalCalendar extends LocalCollection<Event> {
 	/* private helper methods */
 	
 	protected static Uri calendarsURI(Account account) {
-		return Calendars.CONTENT_URI.buildUpon().appendQueryParameter(Calendars.ACCOUNT_NAME, account.name)
+		return Calendars.CONTENT_URI.buildUpon()
+				.appendQueryParameter(Calendars.ACCOUNT_NAME, account.name)
 				.appendQueryParameter(Calendars.ACCOUNT_TYPE, account.type)
-				.appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").build();
+				.appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+				.build();
 	}
 
 	protected Uri calendarsURI() {

@@ -27,7 +27,6 @@ import at.bitfire.davdroid.resource.RemoteCollection;
 public class ContactsSyncAdapterService extends Service {
 	private static ContactsSyncAdapter syncAdapter;
 
-	
 	@Override
 	public void onCreate() {
 		if (syncAdapter == null)
@@ -47,9 +46,8 @@ public class ContactsSyncAdapterService extends Service {
 	
 
 	private static class ContactsSyncAdapter extends DavSyncAdapter {
-		private final static String TAG = "davdroid.CardDAVSync";
+		private final static String TAG = "davdroid.ContactsSync";
 
-		
 		private ContactsSyncAdapter(Context context) {
 			super(context);
 		}
