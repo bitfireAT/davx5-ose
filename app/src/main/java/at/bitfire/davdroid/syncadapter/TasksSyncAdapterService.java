@@ -21,11 +21,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import at.bitfire.davdroid.resource.CalDavCalendar;
+import at.bitfire.davdroid.resource.CalDavTaskList;
 import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.davdroid.resource.LocalCollection;
+import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.davdroid.resource.RemoteCollection;
 
-public class CalendarsSyncAdapterService extends Service {
+public class TasksSyncAdapterService extends Service {
 	private static SyncAdapter syncAdapter;
 
 	@Override
@@ -47,7 +49,7 @@ public class CalendarsSyncAdapterService extends Service {
 	
 
 	private static class SyncAdapter extends DavSyncAdapter {
-		private final static String TAG = "davdroid.CalendarsSync";
+		private final static String TAG = "davdroid.TasksSync";
 
 		private SyncAdapter(Context context) {
 			super(context);
@@ -62,16 +64,16 @@ public class CalendarsSyncAdapterService extends Service {
 
 			try {
 				Map<LocalCollection<?>, RemoteCollection<?>> map = new HashMap<LocalCollection<?>, RemoteCollection<?>>();
-				
-				for (LocalCalendar calendar : LocalCalendar.findAll(account, provider)) {
-					RemoteCollection<?> dav = new CalDavCalendar(httpClient, calendar.getUrl(), userName, password, preemptive);
+
+				for (LocalTaskList calendar : LocalTaskList.findAll(account, provider)) {
+					RemoteCollection<?> dav = new CalDavTaskList(httpClient, calendar.getUrl(), userName, password, preemptive);
 					map.put(calendar, dav);
 				}
 				return map;
 			} catch (RemoteException ex) {
-				Log.e(TAG, "Couldn't find local calendars", ex);
+				Log.e(TAG, "Couldn't find local task lists", ex);
 			} catch (URISyntaxException ex) {
-				Log.e(TAG, "Couldn't build calendar URI", ex);
+				Log.e(TAG, "Couldn't build task list URI", ex);
 			}
 			
 			return null;

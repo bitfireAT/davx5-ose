@@ -131,25 +131,35 @@ public class DavResourceFinder implements Closeable {
 				for (WebDavResource resource : possibleCalendars)
 					if (resource.isCalendar()) {
 						Log.i(TAG, "Found calendar: " + resource.getLocation().getPath());
-						if (resource.getSupportedComponents() != null) {
+						ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
+								ServerInfo.ResourceInfo.Type.CALENDAR,
+								resource.isReadOnly(),
+								resource.getLocation().toString(),
+								resource.getDisplayName(),
+								resource.getDescription(), resource.getColor()
+						);
+						info.setTimezone(resource.getTimezone());
+
+						if (resource.getSupportedComponents() == null) {
+							// no info about supported components, assuming all components are supported
+							info.setSupportingEvents(true);
+							info.setSupportingNotes(true);
+						} else {
 							// CALDAV:supported-calendar-component-set available
-							boolean supportsEvents = false;
 							for (String supportedComponent : resource.getSupportedComponents())
-								if (supportedComponent.equalsIgnoreCase("VEVENT"))
-									supportsEvents = true;
-							if (!supportsEvents) {	// ignore collections without VEVENT support
-								Log.i(TAG, "Ignoring this calendar because of missing VEVENT support");
+								if ("VEVENT".equalsIgnoreCase(supportedComponent))
+									info.setSupportingEvents(true);
+								else if ("VJOURNAL".equalsIgnoreCase(supportedComponent))
+									info.setSupportingNotes(true);
+								else if ("VTODO".equalsIgnoreCase(supportedComponent))
+									info.setSupportingTasks(true);
+
+							if (!info.isSupportingEvents() && !info.isSupportingNotes() && !info.isSupportingTasks()) {
+								Log.i(TAG, "Ignoring this calendar because it supports neither VEVENT nor VJOURNAL nor VTODO");
 								continue;
 							}
 						}
-						ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
-							ServerInfo.ResourceInfo.Type.CALENDAR,
-							resource.isReadOnly(),
-							resource.getLocation().toString(),
-							resource.getDisplayName(),
-							resource.getDescription(), resource.getColor()
-						);
-						info.setTimezone(resource.getTimezone());
+
 						calendars.add(info);
 					}
 				serverInfo.setCalendars(calendars);

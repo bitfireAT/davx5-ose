@@ -453,7 +453,7 @@ public class WebDavResource {
 		}
 
 		if (multiStatus.response == null)	// empty response
-			throw new DavNoContentException();
+			return;
 		
 		// member list will be built from response
 		List<WebDavResource> members = new LinkedList<WebDavResource>();

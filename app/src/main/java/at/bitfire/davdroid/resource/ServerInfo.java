@@ -69,7 +69,9 @@ public class ServerInfo implements Serializable {
 		VCardVersion vCardVersion;
 
 		String timezone;
-
+		boolean supportingEvents = false,
+				supportingNotes = false,
+				supportingTasks = false;
 
 		public String getTitle() {
 			if (title == null) {
