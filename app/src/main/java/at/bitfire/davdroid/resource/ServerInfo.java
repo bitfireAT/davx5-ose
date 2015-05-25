@@ -19,9 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(suppressConstructorProperties=true)
 @Data
-public class ServerInfo implements Serializable {
-	private static final long serialVersionUID = 6744847358282980437L;
-
+public class ServerInfo {
 	enum Scheme {
 		HTTP, HTTPS, MAILTO
 	}
@@ -34,8 +32,9 @@ public class ServerInfo implements Serializable {
 	
 	private boolean calDAV = false, cardDAV = false;
 	private List<ResourceInfo>
-		addressBooks = new LinkedList<ResourceInfo>(),
-		calendars  = new LinkedList<ResourceInfo>();
+		addressBooks = new LinkedList<>(),
+		calendars  = new LinkedList<>(),
+		todoLists = new LinkedList<>();
 	
 	
 	public boolean hasEnabledCalendars() {
@@ -48,9 +47,7 @@ public class ServerInfo implements Serializable {
 	
 	@RequiredArgsConstructor(suppressConstructorProperties=true)
 	@Data
-	public static class ResourceInfo implements Serializable {
-		private static final long serialVersionUID = -5516934508229552112L;
-		
+	public static class ResourceInfo {
 		public enum Type {
 			ADDRESS_BOOK,
 			CALENDAR
@@ -69,9 +66,25 @@ public class ServerInfo implements Serializable {
 		VCardVersion vCardVersion;
 
 		String timezone;
-		boolean supportingEvents = false,
-				supportingNotes = false,
-				supportingTasks = false;
+
+
+		// copy constructor
+		public ResourceInfo(ResourceInfo src) {
+			enabled = src.enabled;
+			type = src.type;
+			readOnly = src.readOnly;
+
+			URL = src.URL;
+			title = src.title;
+			description = src.description;
+			color = src.color;
+
+			vCardVersion = src.vCardVersion;
+			timezone = src.timezone;
+		}
+
+
+		// some logic
 
 		public String getTitle() {
 			if (title == null) {

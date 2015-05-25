@@ -6,6 +6,7 @@ import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
@@ -13,15 +14,25 @@ import android.util.Log;
 
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.Dur;
+import net.fortuna.ical4j.model.TimeZone;
+import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.property.Clazz;
 import net.fortuna.ical4j.model.property.Completed;
+import net.fortuna.ical4j.model.property.Created;
 import net.fortuna.ical4j.model.property.DtStart;
+import net.fortuna.ical4j.model.property.Due;
+import net.fortuna.ical4j.model.property.Duration;
 import net.fortuna.ical4j.model.property.Status;
+import net.fortuna.ical4j.util.TimeZones;
 
+import org.apache.commons.lang.StringUtils;
 import org.dmfs.provider.tasks.TaskContract;
 
 import java.util.LinkedList;
 
+import at.bitfire.davdroid.DAVUtils;
+import at.bitfire.davdroid.DateUtils;
 import lombok.Cleanup;
 import lombok.Getter;
 
@@ -31,9 +42,11 @@ public class LocalTaskList extends LocalCollection<Task> {
 	@Getter	protected String url;
 	@Getter protected long id;
 
+	public static final String TASKS_AUTHORITY = "org.dmfs.tasks";
+
 	protected static String COLLECTION_COLUMN_CTAG = TaskContract.TaskLists.SYNC1;
 
-	@Override protected Uri entriesURI()                { return syncAdapterURI(TaskContract.Tasks.CONTENT_URI); }
+	@Override protected Uri entriesURI()                { return syncAdapterURI(TaskContract.Tasks.getContentUri(TASKS_AUTHORITY)); }
 	@Override protected String entryColumnAccountType()	{ return TaskContract.Tasks.ACCOUNT_TYPE; }
 	@Override protected String entryColumnAccountName()	{ return TaskContract.Tasks.ACCOUNT_NAME; }
 	@Override protected String entryColumnParentID()	{ return TaskContract.Tasks.LIST_ID; }
@@ -46,15 +59,16 @@ public class LocalTaskList extends LocalCollection<Task> {
 
 
 	public static Uri create(Account account, ContentResolver resolver, ServerInfo.ResourceInfo info) throws LocalStorageException {
-		final ContentProviderClient client = resolver.acquireContentProviderClient(TaskContract.AUTHORITY);
+		final ContentProviderClient client = resolver.acquireContentProviderClient(TASKS_AUTHORITY);
 		if (client == null)
 			throw new LocalStorageException("No tasks provider found");
 
 		ContentValues values = new ContentValues();
 		values.put(TaskContract.TaskLists.ACCOUNT_NAME, account.name);
-		values.put(TaskContract.TaskLists.ACCOUNT_TYPE, /*account.type*/"davdroid.new");
+		values.put(TaskContract.TaskLists.ACCOUNT_TYPE, account.type);
 		values.put(TaskContract.TaskLists._SYNC_ID, info.getURL());
 		values.put(TaskContract.TaskLists.LIST_NAME, info.getTitle());
+		values.put(TaskContract.TaskLists.LIST_COLOR, DAVUtils.CalDAVtoARGBColor(info.getColor()));
 		values.put(TaskContract.TaskLists.OWNER, account.name);
 		values.put(TaskContract.TaskLists.ACCESS_LEVEL, 0);
 		values.put(TaskContract.TaskLists.SYNC_ENABLED, 1);
@@ -122,19 +136,36 @@ public class LocalTaskList extends LocalCollection<Task> {
 		try {
 			@Cleanup final Cursor cursor = providerClient.query(entriesURI(),
 					new String[] {
-							/* 0 */ entryColumnUID(), TaskContract.Tasks.TITLE, TaskContract.Tasks.LOCATION, TaskContract.Tasks.DESCRIPTION, TaskContract.Tasks.URL,
-							/* 5 */ TaskContract.Tasks.CLASSIFICATION, TaskContract.Tasks.STATUS, TaskContract.Tasks.PERCENT_COMPLETE,
-							/* 8 */ TaskContract.Tasks.DTSTART, TaskContract.Tasks.IS_ALLDAY, /*TaskContract.Tasks.COMPLETED, TaskContract.Tasks.COMPLETED_IS_ALLDAY*/
+							/*  0 */ entryColumnUID(), TaskContract.Tasks.TITLE, TaskContract.Tasks.LOCATION, TaskContract.Tasks.DESCRIPTION, TaskContract.Tasks.URL,
+							/*  5 */ TaskContract.Tasks.CLASSIFICATION, TaskContract.Tasks.STATUS, TaskContract.Tasks.PERCENT_COMPLETE,
+							/*  8 */ TaskContract.Tasks.TZ, TaskContract.Tasks.DTSTART, TaskContract.Tasks.IS_ALLDAY,
+							/* 11 */ TaskContract.Tasks.DUE, TaskContract.Tasks.DURATION, TaskContract.Tasks.COMPLETED,
+							/* 14 */ TaskContract.Tasks.CREATED, TaskContract.Tasks.LAST_MODIFIED, TaskContract.Tasks.PRIORITY
 					}, entryColumnID() + "=?", new String[]{ String.valueOf(record.getLocalID()) }, null);
 
 			Task task = (Task)record;
 			if (cursor != null && cursor.moveToFirst()) {
 				task.setUid(cursor.getString(0));
 
-				task.setSummary(cursor.getString(1));
-				task.setLocation(cursor.getString(2));
-				task.setDescription(cursor.getString(3));
-				task.setUrl(cursor.getString(4));
+				if (!cursor.isNull(14))
+					task.setCreatedAt(new DateTime(cursor.getLong(14)));
+				if (!cursor.isNull(15))
+					task.setLastModified(new DateTime(cursor.getLong(15)));
+
+				if (!StringUtils.isEmpty(cursor.getString(1)))
+					task.setSummary(cursor.getString(1));
+
+				if (!StringUtils.isEmpty(cursor.getString(2)))
+					task.setLocation(cursor.getString(2));
+
+				if (!StringUtils.isEmpty(cursor.getString(3)))
+					task.setDescription(cursor.getString(3));
+
+				if (!StringUtils.isEmpty(cursor.getString(4)))
+					task.setUrl(cursor.getString(4));
+
+				if (!cursor.isNull(16))
+					task.setPriority(cursor.getInt(16));
 
 				if (!cursor.isNull(5))
 					switch (cursor.getInt(5)) {
@@ -165,17 +196,37 @@ public class LocalTaskList extends LocalCollection<Task> {
 				if (!cursor.isNull(7))
 					task.setPercentComplete(cursor.getInt(7));
 
-				if (!cursor.isNull(8) && !cursor.isNull(9)) {
-					long ts = cursor.getLong(8);
-					boolean allDay = cursor.getInt(9) != 0;
-					task.setDtStart(new DtStart(allDay ? new Date(ts) : new DateTime(ts)));
+				TimeZone tz = null;
+				if (!cursor.isNull(8))
+					tz = DateUtils.getTimeZone(cursor.getString(8));
+
+				if (!cursor.isNull(9) && !cursor.isNull(10)) {
+					long ts = cursor.getLong(9);
+					boolean allDay = cursor.getInt(10) != 0;
+
+					Date dt;
+					if (allDay)
+						dt = new Date(ts);
+					else {
+						dt = new DateTime(ts);
+						if (tz != null)
+							((DateTime)dt).setTimeZone(tz);
+					}
+					task.setDtStart(new DtStart(dt));
 				}
 
-				/*if (!cursor.isNull(10) && !cursor.isNull(11)) {
-					long ts = cursor.getLong(10);
-					// boolean allDay = cursor.getInt(11) != 0;
-					task.setCompletedAt(new Completed(allDay ? new Date(ts) : new DateTime(ts)));
-				}*/
+				if (!cursor.isNull(11)) {
+					DateTime dt = new DateTime(cursor.getLong(11));
+					if (tz != null)
+						dt.setTimeZone(tz);
+					task.setDue(new Due(dt));
+				}
+
+				if (!cursor.isNull(12))
+					task.setDuration(new Duration(new Dur(cursor.getString(12))));
+
+				if (!cursor.isNull(13))
+					task.setCompletedAt(new Completed(new DateTime(cursor.getLong(13))));
 			}
 
 		} catch (RemoteException e) {
@@ -188,17 +239,21 @@ public class LocalTaskList extends LocalCollection<Task> {
 		final Task task = (Task)resource;
 
 		if (!update)
-			builder = builder
-					.withValue(entryColumnParentID(), id)
+			builder	.withValue(entryColumnParentID(), id)
 					.withValue(entryColumnRemoteName(), task.getName());
 
-		builder = builder
-				.withValue(entryColumnUID(), task.getUid())
+		 builder.withValue(entryColumnUID(), task.getUid())
 				.withValue(entryColumnETag(), task.getETag())
 				.withValue(TaskContract.Tasks.TITLE, task.getSummary())
 				.withValue(TaskContract.Tasks.LOCATION, task.getLocation())
 				.withValue(TaskContract.Tasks.DESCRIPTION, task.getDescription())
-				.withValue(TaskContract.Tasks.URL, task.getUrl());
+				.withValue(TaskContract.Tasks.URL, task.getUrl())
+		        .withValue(TaskContract.Tasks.PRIORITY, task.getPriority());
+
+		if (task.getCreatedAt() != null)
+			builder.withValue(TaskContract.Tasks.CREATED, task.getCreatedAt().getTime());
+		if (task.getLastModified() != null)
+			builder.withValue(TaskContract.Tasks.LAST_MODIFIED, task.getLastModified().getTime());
 
 		if (task.getClassification() != null) {
 			int classCode = TaskContract.Tasks.CLASSIFICATION_PRIVATE;
@@ -220,40 +275,54 @@ public class LocalTaskList extends LocalCollection<Task> {
 			else if (task.getStatus() == Status.VTODO_CANCELLED)
 				statusCode = TaskContract.Tasks.STATUS_CANCELLED;
 		}
-		builder = builder
-				.withValue(TaskContract.Tasks.STATUS, statusCode)
+		builder	.withValue(TaskContract.Tasks.STATUS, statusCode)
 				.withValue(TaskContract.Tasks.PERCENT_COMPLETE, task.getPercentComplete());
 
-		/*if (task.getCreatedAt() != null)
-			builder = builder.withValue(TaskContract.Tasks.CREATED, task.getCreatedAt().getDate().getTime());/*
+		TimeZone tz = null;
 
 		if (task.getDtStart() != null) {
 			Date start = task.getDtStart().getDate();
 			boolean allDay;
-			if (start instanceof DateTime)
+			if (start instanceof DateTime) {
 				allDay = false;
-			else {
-				task.getDtStart().setUtc(true);
+				tz = ((DateTime)start).getTimeZone();
+			} else
 				allDay = true;
-			}
 			long ts = start.getTime();
-			builder = builder.withValue(TaskContract.Tasks.DTSTART, ts);
-			builder = builder.withValue(TaskContract.Tasks.IS_ALLDAY, allDay ? 1 : 0);
+			builder	.withValue(TaskContract.Tasks.DTSTART, ts)
+					.withValue(TaskContract.Tasks.IS_ALLDAY, allDay ? 1 : 0);
 		}
 
-		/*if (task.getCompletedAt() != null) {
+		if (task.getDue() != null) {
+			Due due = task.getDue();
+			builder.withValue(TaskContract.Tasks.DUE, due.getDate().getTime());
+			if (tz == null)
+				tz = due.getTimeZone();
+
+		} else if (task.getDuration() != null)
+			builder.withValue(TaskContract.Tasks.DURATION, task.getDuration().getValue());
+
+		if (task.getCompletedAt() != null) {
 			Date completed = task.getCompletedAt().getDate();
 			boolean allDay;
-			if (completed instanceof DateTime)
+			if (completed instanceof DateTime) {
 				allDay = false;
-			else {
+				if (tz == null)
+					tz = ((DateTime)completed).getTimeZone();
+			} else {
 				task.getCompletedAt().setUtc(true);
 				allDay = true;
 			}
 			long ts = completed.getTime();
-			builder = builder.withValue(TaskContract.Tasks.COMPLETED, ts);
-			builder = builder.withValue(TaskContract.Tasks.COMPLETED_IS_ALLDAY, allDay ? 1 : 0);
-		}*/
+			builder	.withValue(TaskContract.Tasks.COMPLETED, ts)
+					.withValue(TaskContract.Tasks.COMPLETED_IS_ALLDAY, allDay ? 1 : 0);
+		}
+
+		// TZ *must* be provided when DTSTART or DUE is set
+		if ((task.getDtStart() != null || task.getDue() != null) && tz == null)
+			tz = DateUtils.getTimeZone(TimeZones.GMT_ID);
+		if (tz != null)
+			builder.withValue(TaskContract.Tasks.TZ, DateUtils.findAndroidTimezoneID(tz.getID()));
 
 		return builder;
 	}
@@ -269,18 +338,28 @@ public class LocalTaskList extends LocalCollection<Task> {
 
 	// helpers
 
+	public static boolean isAvailable(Context context) {
+		try {
+			@Cleanup("release") ContentProviderClient client = context.getContentResolver().acquireContentProviderClient(TASKS_AUTHORITY);
+			return client != null;
+		} catch (SecurityException e) {
+			Log.e(TAG, "DAVdroid is not allowed to access tasks", e);
+			return false;
+		}
+	}
+
 	@Override
 	protected Uri syncAdapterURI(Uri baseURI) {
 		return baseURI.buildUpon()
-				.appendQueryParameter(entryColumnAccountType(), /*account.type*/"davdroid.new")
+				.appendQueryParameter(entryColumnAccountType(), account.type)
 				.appendQueryParameter(entryColumnAccountName(), account.name)
 				.appendQueryParameter(TaskContract.CALLER_IS_SYNCADAPTER, "true")
 				.build();
 	}
 
 	protected static Uri taskListsURI(Account account) {
-		return TaskContract.TaskLists.CONTENT_URI.buildUpon()
-				.appendQueryParameter(TaskContract.TaskLists.ACCOUNT_TYPE, /*account.type*/"davdroid.new")
+		return TaskContract.TaskLists.getContentUri(TASKS_AUTHORITY).buildUpon()
+				.appendQueryParameter(TaskContract.TaskLists.ACCOUNT_TYPE, account.type)
 				.appendQueryParameter(TaskContract.TaskLists.ACCOUNT_NAME, account.name)
 				.appendQueryParameter(TaskContract.CALLER_IS_SYNCADAPTER, "true")
 				.build();

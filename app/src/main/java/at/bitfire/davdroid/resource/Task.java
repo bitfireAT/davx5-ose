@@ -7,6 +7,8 @@ import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ComponentList;
+import net.fortuna.ical4j.model.Date;
+import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.PropertyList;
 import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.component.VToDo;
@@ -15,6 +17,9 @@ import net.fortuna.ical4j.model.property.Completed;
 import net.fortuna.ical4j.model.property.Created;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.DtStart;
+import net.fortuna.ical4j.model.property.Due;
+import net.fortuna.ical4j.model.property.Duration;
+import net.fortuna.ical4j.model.property.LastModified;
 import net.fortuna.ical4j.model.property.Location;
 import net.fortuna.ical4j.model.property.PercentComplete;
 import net.fortuna.ical4j.model.property.Priority;
@@ -41,13 +46,17 @@ import lombok.Setter;
 public class Task extends Resource {
 	private final static String TAG = "davdroid.Task";
 
+	@Getter @Setter DateTime createdAt;
+	@Getter @Setter DateTime lastModified;
+
 	@Getter @Setter	String summary, location, description, url;
 	@Getter @Setter int priority;
 	@Getter @Setter Clazz classification;
 	@Getter @Setter Status status;
 
-	@Getter @Setter	Created createdAt;
 	@Getter @Setter DtStart dtStart;
+	@Getter @Setter Due due;
+	@Getter @Setter Duration duration;
 	@Getter @Setter Completed completedAt;
 	@Getter @Setter Integer percentComplete;
 
@@ -90,6 +99,11 @@ public class Task extends Resource {
 		if (todo.getUid() != null)
 			uid = todo.getUid().getValue();
 
+		if (todo.getCreated() != null)
+			createdAt = todo.getCreated().getDateTime();
+		if (todo.getLastModified() != null)
+			lastModified = todo.getLastModified().getDateTime();
+
 		if (todo.getSummary() != null)
 			summary = todo.getSummary().getValue();
 		if (todo.getLocation() != null)
@@ -105,8 +119,10 @@ public class Task extends Resource {
 		if (todo.getStatus() != null)
 			status = todo.getStatus();
 
-		if (todo.getCreated() != null)
-			createdAt = todo.getCreated();
+		if (todo.getDue() != null)
+			due = todo.getDue();
+		if (todo.getDuration() != null)
+			duration = todo.getDuration();
 		if (todo.getStartDate() != null)
 			dtStart = todo.getStartDate();
 		if (todo.getDateCompleted() != null)
@@ -134,6 +150,11 @@ public class Task extends Resource {
 		if (uid != null)
 			props.add(new Uid(uid));
 
+		if (createdAt != null)
+			props.add(new Created(createdAt));
+		if (lastModified != null)
+			props.add(new LastModified(lastModified));
+
 		if (summary != null)
 			props.add(new Summary(summary));
 		if (location != null)
@@ -153,8 +174,10 @@ public class Task extends Resource {
 		if (status != null)
 			props.add(status);
 
-		if (createdAt != null)
-			props.add(createdAt);
+		if (due != null)
+			props.add(due);
+		if (duration != null)
+			props.add(duration);
 		if (dtStart != null)
 			props.add(dtStart);
 		if (completedAt != null)

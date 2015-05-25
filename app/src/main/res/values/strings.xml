@@ -12,6 +12,7 @@
     <!-- common strings -->
     <string name="app_name">DAVdroid</string>
     <string name="next">Next</string>
+    <string name="skip">Skip</string>
     <string name="help">Help</string>
 
     <string name="exception_cert_path_validation">Untrusted certificate in certificate path. See FAQ for more info.</string>
@@ -131,6 +132,7 @@
     <string name="settings_sync_summary_periodically">Every %d minutes + immediately on local changes</string>
     <string name="settings_sync_summary_not_available">Not available</string>
     <string name="settings_sync_interval_calendars">Calendars sync. interval</string>
+    <string name="settings_sync_interval_tasks">Tasks sync. interval</string>
     <string-array name="settings_sync_interval_seconds">
         <item>-1</item>
         <item>300</item>
@@ -160,11 +162,16 @@
     <string name="setup_neither_caldav_nor_carddav">No CalDAV-/CardDAV service is available at this location.</string>
     <string name="setup_add_account">Add account</string>
     <string name="setup_querying_server">Querying server. Please wait…</string>
+    <string name="setup_install_apps_info">Plain Android doesn\'t support to-do lists (in contrast to contacts and calendars).</string>
+    <string name="setup_install_tasks_app_info">DAVdroid is able to synchronize tasks with the "Tasks" app (by Marten Gajda). You may install this app if you want tasks to be synchronized or skip the installation.</string>
+    <string name="setup_install_tasks_app">Install Tasks app</string>
     <string name="setup_what_to_sync">Which collections shall be synchronized?</string>
     <string name="setup_address_books">Address books</string>
     <string name="setup_calendars">Calendars</string>
-    <string name="setup_select_address_book">Select up to one address book (tap again to unselect):</string>
-    <string name="setup_select_calendars">Select your calendars:</string>
+    <string name="setup_task_lists">Task lists</string>
+    <string name="setup_select_address_book">Select up to one address book (tap again to unselect) for synchronization:</string>
+    <string name="setup_select_calendars">Select calendars for synchronization:</string>
+    <string name="setup_select_task_lists">Select task lists for synchronization:</string>
     
     <string name="setup_account_details">Account details</string>
     <string name="setup_account_name">Account name:</string>

@@ -24,13 +24,17 @@ import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.ServerInfo;
 
 public class SelectCollectionsFragment extends ListFragment {
-	public static final String KEY_SERVER_INFO = "server_info";
-	
-	
+
+	protected ServerInfo serverInfo;
+
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		serverInfo = ((AddAccountActivity)getActivity()).serverInfo;
+
 		View v = super.onCreateView(inflater, container, savedInstanceState);
 		setHasOptionsMenu(true);
+
 		return v;
 	}
 
@@ -50,7 +54,6 @@ public class SelectCollectionsFragment extends ListFragment {
 		View header = getActivity().getLayoutInflater().inflate(R.layout.setup_select_collections_header, getListView(), false);
 		listView.addHeaderView(header, getListView(), false);
 		
-		final ServerInfo serverInfo = (ServerInfo)getArguments().getSerializable(KEY_SERVER_INFO);
 		final SelectCollectionsAdapter adapter = new SelectCollectionsAdapter(view.getContext(), serverInfo);
 		setListAdapter(adapter);
 		
@@ -80,13 +83,13 @@ public class SelectCollectionsFragment extends ListFragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.next:
-			ServerInfo serverInfo = (ServerInfo)getArguments().getSerializable(KEY_SERVER_INFO);
-			
 			// synchronize only selected collections
 			for (ServerInfo.ResourceInfo addressBook : serverInfo.getAddressBooks())
 				addressBook.setEnabled(false);
 			for (ServerInfo.ResourceInfo calendar : serverInfo.getCalendars())
 				calendar.setEnabled(false);
+			for (ServerInfo.ResourceInfo todoList : serverInfo.getTodoLists())
+				todoList.setEnabled(false);
 			
 			ListAdapter adapter = getListView().getAdapter();
 			for (long id : getListView().getCheckedItemIds()) {
@@ -95,14 +98,8 @@ public class SelectCollectionsFragment extends ListFragment {
 				info.setEnabled(true);
 			}
 			
-			// pass to "account details" fragment
-			AccountDetailsFragment accountDetails = new AccountDetailsFragment();
-			Bundle arguments = new Bundle();
-			arguments.putSerializable(SelectCollectionsFragment.KEY_SERVER_INFO, serverInfo);
-			accountDetails.setArguments(arguments);
-			
 			getFragmentManager().beginTransaction()
-				.replace(R.id.right_pane, accountDetails)
+				.replace(R.id.right_pane, new AccountDetailsFragment())
 				.addToBackStack(null)
 				.commitAllowingStateLoss();
 			break;

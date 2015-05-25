@@ -1,1 +1,0 @@
-../../../../../../../../../notebooks/app/src/main/java/at/bitfire/notebooks/provider/NoteContract.java

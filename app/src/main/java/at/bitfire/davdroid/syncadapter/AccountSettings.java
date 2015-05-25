@@ -102,12 +102,12 @@ public class AccountSettings {
 
 	// sync. settings
 
-	public Long getContactsSyncInterval() {
-		if (ContentResolver.getIsSyncable(account, ContactsContract.AUTHORITY) <= 0)
+	public Long getSyncInterval(String authority) {
+		if (ContentResolver.getIsSyncable(account, authority) <= 0)
 			return null;
 
-		if (ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY)) {
-			List<PeriodicSync> syncs = ContentResolver.getPeriodicSyncs(account, ContactsContract.AUTHORITY);
+		if (ContentResolver.getSyncAutomatically(account, authority)) {
+			List<PeriodicSync> syncs = ContentResolver.getPeriodicSyncs(account, authority);
 			if (syncs.isEmpty())
 				return SYNC_INTERVAL_MANUALLY;
 			else
@@ -116,35 +116,12 @@ public class AccountSettings {
 			return SYNC_INTERVAL_MANUALLY;
 	}
 
-	public void setContactsSyncInterval(long seconds) {
+	public void setSyncInterval(String authority, long seconds) {
 		if (seconds == SYNC_INTERVAL_MANUALLY) {
-			ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, false);
+			ContentResolver.setSyncAutomatically(account, authority, false);
 		} else {
-			ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
-			ContentResolver.addPeriodicSync(account, ContactsContract.AUTHORITY, new Bundle(), seconds);
-		}
-	}
-
-	public Long getCalendarsSyncInterval() {
-		if (ContentResolver.getIsSyncable(account, CalendarContract.AUTHORITY) <= 0)
-			return null;
-
-		if (ContentResolver.getSyncAutomatically(account, CalendarContract.AUTHORITY)) {
-			List<PeriodicSync> syncs = ContentResolver.getPeriodicSyncs(account, CalendarContract.AUTHORITY);
-			if (syncs.isEmpty())
-				return SYNC_INTERVAL_MANUALLY;
-			else
-				return syncs.get(0).period;
-		} else
-			return SYNC_INTERVAL_MANUALLY;
-	}
-
-	public void setCalendarsSyncInterval(long seconds) {
-		if (seconds == SYNC_INTERVAL_MANUALLY) {
-			ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, false);
-		} else {
-			ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true);
-			ContentResolver.addPeriodicSync(account, CalendarContract.AUTHORITY, new Bundle(), seconds);
+			ContentResolver.setSyncAutomatically(account, authority, true);
+			ContentResolver.addPeriodicSync(account, authority, new Bundle(), seconds);
 		}
 	}
 

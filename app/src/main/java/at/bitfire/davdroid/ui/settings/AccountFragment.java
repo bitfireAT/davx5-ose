@@ -17,8 +17,13 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
+import android.provider.CalendarContract;
+import android.provider.ContactsContract;
+
+import org.dmfs.provider.tasks.TaskContract;
 
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
 import ezvcard.VCardVersion;
 import lombok.Setter;
@@ -78,7 +83,7 @@ public class AccountFragment extends PreferenceFragment {
 
 		// category: synchronization
 		final ListPreference prefSyncContacts = (ListPreference)findPreference("sync_interval_contacts");
-		final Long syncIntervalContacts = settings.getContactsSyncInterval();
+		final Long syncIntervalContacts = settings.getSyncInterval(ContactsContract.AUTHORITY);
 		if (syncIntervalContacts != null) {
 			prefSyncContacts.setValue(syncIntervalContacts.toString());
 			if (syncIntervalContacts == AccountSettings.SYNC_INTERVAL_MANUALLY)
@@ -88,7 +93,7 @@ public class AccountFragment extends PreferenceFragment {
 			prefSyncContacts.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 				@Override
 				public boolean onPreferenceChange(Preference preference, Object newValue) {
-					settings.setContactsSyncInterval(Long.parseLong((String)newValue));
+					settings.setSyncInterval(ContactsContract.AUTHORITY, Long.parseLong((String) newValue));
 					readFromAccount();
 					return true;
 				}
@@ -99,7 +104,7 @@ public class AccountFragment extends PreferenceFragment {
 		}
 
 		final ListPreference prefSyncCalendars = (ListPreference)findPreference("sync_interval_calendars");
-		final Long syncIntervalCalendars = settings.getCalendarsSyncInterval();
+		final Long syncIntervalCalendars = settings.getSyncInterval(CalendarContract.AUTHORITY);
 		if (syncIntervalCalendars != null) {
 			prefSyncCalendars.setValue(syncIntervalCalendars.toString());
 			if (syncIntervalCalendars == AccountSettings.SYNC_INTERVAL_MANUALLY)
@@ -109,7 +114,7 @@ public class AccountFragment extends PreferenceFragment {
 			prefSyncCalendars.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 				@Override
 				public boolean onPreferenceChange(Preference preference, Object newValue) {
-					settings.setCalendarsSyncInterval(Long.parseLong((String)newValue));
+					settings.setSyncInterval(CalendarContract.AUTHORITY, Long.parseLong((String) newValue));
 					readFromAccount();
 					return true;
 				}
@@ -117,6 +122,27 @@ public class AccountFragment extends PreferenceFragment {
 		} else {
 			prefSyncCalendars.setEnabled(false);
 			prefSyncCalendars.setSummary(R.string.settings_sync_summary_not_available);
+		}
+
+		final ListPreference prefSyncTasks = (ListPreference)findPreference("sync_interval_tasks");
+		final Long syncIntervalTasks = settings.getSyncInterval(LocalTaskList.TASKS_AUTHORITY);
+		if (syncIntervalTasks != null) {
+			prefSyncTasks.setValue(syncIntervalTasks.toString());
+			if (syncIntervalTasks == AccountSettings.SYNC_INTERVAL_MANUALLY)
+				prefSyncTasks.setSummary(R.string.settings_sync_summary_manually);
+			else
+				prefSyncTasks.setSummary(getString(R.string.settings_sync_summary_periodically, syncIntervalTasks / 60));
+			prefSyncTasks.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+				@Override
+				public boolean onPreferenceChange(Preference preference, Object newValue) {
+					settings.setSyncInterval(LocalTaskList.TASKS_AUTHORITY, Long.parseLong((String) newValue));
+					readFromAccount();
+					return true;
+				}
+			});
+		} else {
+			prefSyncTasks.setEnabled(false);
+			prefSyncTasks.setSummary(R.string.settings_sync_summary_not_available);
 		}
 
 		// category: address book

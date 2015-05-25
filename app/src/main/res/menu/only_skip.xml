@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright (c) 2013 – 2015 Ricki Hirner (bitfire web engineering).
   ~ All rights reserved. This program and the accompanying materials
@@ -6,10 +7,13 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
-    android:accountType="bitfire.at.davdroid"
-    android:contentAuthority="at.bitfire.notebooks.provider"
-    android:allowParallelSyncs="true"
-    android:supportsUploading="true"
-    android:isAlwaysSyncable="true"
-    android:userVisible="true" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/skip"
+        android:icon="@drawable/navigation_skip"
+        android:showAsAction="always|withText"
+        android:title="@string/skip">
+    </item>
+
+</menu>

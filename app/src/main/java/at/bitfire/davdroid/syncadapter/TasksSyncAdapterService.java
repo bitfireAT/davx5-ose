@@ -20,9 +20,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import at.bitfire.davdroid.resource.CalDavCalendar;
 import at.bitfire.davdroid.resource.CalDavTaskList;
-import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.davdroid.resource.RemoteCollection;
