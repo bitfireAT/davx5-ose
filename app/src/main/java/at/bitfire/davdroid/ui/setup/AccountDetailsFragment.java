@@ -16,6 +16,7 @@ import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,22 +27,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.dmfs.provider.tasks.TaskContract;
+import java.util.List;
 
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalCalendar;
-import at.bitfire.davdroid.resource.LocalNotebook;
 import at.bitfire.davdroid.resource.LocalStorageException;
 import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.davdroid.resource.ServerInfo;
-import at.bitfire.davdroid.resource.Task;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
-import at.bitfire.notebooks.provider.NoteContract;
 
 public class AccountDetailsFragment extends Fragment implements TextWatcher {
-	public static final String KEY_SERVER_INFO = "server_info";
-	
+	public static final String TAG = "davdroid.AccountDetails";
+
 	ServerInfo serverInfo;
 	
 	EditText editAccountName;
@@ -51,7 +49,7 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.setup_account_details, container, false);
 		
-		serverInfo = (ServerInfo)getArguments().getSerializable(KEY_SERVER_INFO);
+		serverInfo = ((AddAccountActivity)getActivity()).serverInfo;
 		
 		editAccountName = (EditText)v.findViewById(R.id.account_name);
 		editAccountName.addTextChangedListener(this);
@@ -87,81 +85,59 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
 	// actions
 	
 	void addAccount() {
-		ServerInfo serverInfo = (ServerInfo)getArguments().getSerializable(KEY_SERVER_INFO);
 		String accountName = editAccountName.getText().toString();
 		
 		AccountManager accountManager = AccountManager.get(getActivity());
 		Account account = new Account(accountName, Constants.ACCOUNT_TYPE);
 		Bundle userData = AccountSettings.createBundle(serverInfo);
-		
-		boolean syncContacts = false;
-		for (ServerInfo.ResourceInfo addressBook : serverInfo.getAddressBooks())
-			if (addressBook.isEnabled()) {
-				ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
-				syncContacts = true;
-				continue;
-			}
-		if (syncContacts) {
-			ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
-			ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
-		} else
-			ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0);
-		
+
 		if (accountManager.addAccountExplicitly(account, serverInfo.getPassword(), userData)) {
-			// account created, now create calendars ...
-			boolean syncCalendars = false;
-			for (ServerInfo.ResourceInfo calendar : serverInfo.getCalendars())
-				if (calendar.isEnabled() && calendar.isSupportingEvents())
-					try {
-						LocalCalendar.create(account, getActivity().getContentResolver(), calendar);
-						syncCalendars = true;
-					} catch (LocalStorageException e) {
-						Toast.makeText(getActivity(), "Couldn't create calendar: " + e.getMessage(), Toast.LENGTH_LONG).show();
-					}
-			if (syncCalendars) {
-				ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1);
-				ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true);
-			} else
-				ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0);
+			addSync(account, ContactsContract.AUTHORITY, serverInfo.getAddressBooks(), null);
 
-			// ... and notes
-			boolean syncNotes = false;
-			for (ServerInfo.ResourceInfo calendar : serverInfo.getCalendars())
-				if (calendar.isEnabled() && calendar.isSupportingNotes())
-					try {
-						LocalNotebook.create(account, getActivity().getContentResolver(), calendar);
-						syncNotes = true;
-					} catch (LocalStorageException e) {
-						Toast.makeText(getActivity(), "Couldn't create notebook: " + e.getMessage(), Toast.LENGTH_LONG).show();
-					}
-			if (syncNotes) {
-				ContentResolver.setIsSyncable(account, NoteContract.AUTHORITY, 1);
-				ContentResolver.setSyncAutomatically(account, NoteContract.AUTHORITY, true);
-			} else
-				ContentResolver.setIsSyncable(account, NoteContract.AUTHORITY, 0);
+			addSync(account, CalendarContract.AUTHORITY, serverInfo.getCalendars(), new AddSyncCallback() {
+				@Override
+				public void createLocalCollection(Account account, ServerInfo.ResourceInfo calendar) throws LocalStorageException {
+					LocalCalendar.create(account, getActivity().getContentResolver(), calendar);
+				}
+			});
 
-			// ... and tasks
-			boolean syncTasks = false;
-			for (ServerInfo.ResourceInfo calendar : serverInfo.getCalendars())
-				if (calendar.isEnabled() && calendar.isSupportingTasks())
-					try {
-						LocalTaskList.create(account, getActivity().getContentResolver(), calendar);
-						syncTasks = true;
-					} catch (LocalStorageException e) {
-						Toast.makeText(getActivity(), "Couldn't create task list: " + e.getMessage(), Toast.LENGTH_LONG).show();
-					}
-			if (syncTasks) {
-				ContentResolver.setIsSyncable(account, TaskContract.AUTHORITY, 1);
-				ContentResolver.setSyncAutomatically(account, TaskContract.AUTHORITY, true);
-			} else
-				ContentResolver.setIsSyncable(account, TaskContract.AUTHORITY, 0);
+			addSync(account, LocalTaskList.TASKS_AUTHORITY, serverInfo.getTodoLists(), new AddSyncCallback() {
+				@Override
+				public void createLocalCollection(Account account, ServerInfo.ResourceInfo todoList) throws LocalStorageException {
+					LocalTaskList.create(account, getActivity().getContentResolver(), todoList);
+				}
+			});
 
 			getActivity().finish();				
 		} else
 			Toast.makeText(getActivity(), "Couldn't create account (account with this name already existing?)", Toast.LENGTH_LONG).show();
 	}
 
-	
+	protected interface AddSyncCallback {
+		void createLocalCollection(Account account, ServerInfo.ResourceInfo resource) throws LocalStorageException;
+	}
+
+	protected void addSync(Account account, String authority, List<ServerInfo.ResourceInfo> resourceList, AddSyncCallback callback) {
+		boolean sync = false;
+		for (ServerInfo.ResourceInfo resource : resourceList)
+			if (resource.isEnabled()) {
+				sync = true;
+				if (callback != null)
+					try {
+						callback.createLocalCollection(account, resource);
+					} catch(LocalStorageException e) {
+						Log.e(TAG, "Couldn't add sync collection", e);
+						Toast.makeText(getActivity(), "Couldn't set up synchronization for " + authority, Toast.LENGTH_LONG).show();
+					}
+			}
+		if (sync) {
+			ContentResolver.setIsSyncable(account, authority, 1);
+			ContentResolver.setSyncAutomatically(account, authority, true);
+		} else
+			ContentResolver.setIsSyncable(account, authority, 0);
+	}
+
+
 	// input validation
 	
 	@Override

@@ -50,6 +50,13 @@
             android:entries="@array/settings_sync_interval_names"
             android:entryValues="@array/settings_sync_interval_seconds" />
 
+        <ListPreference
+            android:key="sync_interval_tasks"
+            android:persistent="false"
+            android:title="@string/settings_sync_interval_tasks"
+            android:entries="@array/settings_sync_interval_names"
+            android:entryValues="@array/settings_sync_interval_seconds" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/settings_carddav">

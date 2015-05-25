@@ -11,6 +11,7 @@
     <!-- common strings -->
     <string name="app_name">DAVdroid</string>
     <string name="next">Weiter</string>
+    <string name="skip">Überspringen</string>
     <string name="help">Hilfe</string>
 
     <string name="exception_cert_path_validation">Nicht vertrauenswürdiges Zertifikat in der Zertifikatskette (siehe FAQ)</string>
@@ -127,6 +128,7 @@
     <string name="settings_sync_summary_periodically">Alle %d Minuten + sofort bei lokalen Änderungen</string>
     <string name="settings_sync_summary_not_available">Nicht verfügbar</string>
     <string name="settings_sync_interval_calendars">Häufigkeit der Kalender-Synchronisierung</string>
+    <string name="settings_sync_interval_tasks">Häufigkeit der Aufgaben-Synchronisierung</string>
     <string-array name="settings_sync_interval_names">
         <item>Nur manuell</item>
         <item>Alle 5 Minuten</item>
@@ -146,11 +148,18 @@
     <string name="setup_neither_caldav_nor_carddav">An dieser Adresse konnte kein CalDAV- oder CardDAV-Dienst gefunden werden.</string>
     <string name="setup_add_account">Konto hinzufügen</string>
     <string name="setup_querying_server">Daten werden vom Server abgefragt. Bitte warten…</string>
+    <string name="setup_install_apps_info">Android bietet im Gegensatz zu Kontakten und Terminen keine integrierte Lösung für Aufgaben.</string>
+    <string name="setup_install_tasks_app_info">DAVdroid kann mit der "Aufgaben"-App von Marten Gajda synchronisieren. Sie können diese App installieren, um Aufgaben zu synchronisieren, oder auf Aufgaben verzichten und die Installation überspringen.</string>
+    <string name="setup_install_tasks_app">Aufgaben-App installieren</string>
     <string name="setup_what_to_sync">Welche Ordner sollen synchronisiert werden?</string>
     <string name="setup_address_books">Adressbücher</string>
     <string name="setup_calendars">Kalender</string>
+    <string name="setup_notebooks">Notizbücher</string>
+    <string name="setup_task_lists">Aufgabenlisten</string>
     <string name="setup_select_address_book">Ein oder kein Adressbuch auswählen (nochmal berühren, um abzuwählen):</string>
     <string name="setup_select_calendars">Kalender zur Synchronisation auswählen:</string>
+    <string name="setup_select_notebooks">Notizbücher zur Synchronisation auswählen:</string>
+    <string name="setup_select_task_lists">Aufgabenlisten zur Synchronisation auswählen:</string>
 
     <string name="setup_account_details">Konto-Details</string>
     <string name="setup_account_name">Kontoname:</string>

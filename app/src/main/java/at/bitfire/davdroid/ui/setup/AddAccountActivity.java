@@ -14,11 +14,16 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.resource.ServerInfo;
 
 public class AddAccountActivity extends Activity {
+
+	protected ServerInfo serverInfo;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +43,11 @@ public class AddAccountActivity extends Activity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.setup_add_account, menu);
 		return true;
+	}
+
+	public void installTasksApp(View view) {
+		final Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("market://details?id=org.dmfs.tasks"));
+		startActivity(intent);
 	}
 
 	public void showHelp(MenuItem item) {

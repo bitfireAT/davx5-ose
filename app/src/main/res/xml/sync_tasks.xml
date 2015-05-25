@@ -8,7 +8,7 @@
 
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
     android:accountType="bitfire.at.davdroid"
-    android:contentAuthority="de.azapps.mirakel.provider"
+    android:contentAuthority="org.dmfs.tasks"
     android:allowParallelSyncs="true"
     android:supportsUploading="true"
     android:isAlwaysSyncable="true"

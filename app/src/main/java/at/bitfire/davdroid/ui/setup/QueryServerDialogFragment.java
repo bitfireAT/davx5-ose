@@ -8,6 +8,7 @@
 package at.bitfire.davdroid.ui.setup;
 
 import android.app.DialogFragment;
+import android.app.Fragment;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
@@ -30,12 +31,13 @@ import java.security.cert.CertPathValidatorException;
 
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.DavResourceFinder;
+import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.davdroid.resource.ServerInfo;
 import at.bitfire.davdroid.webdav.DavException;
 import lombok.Cleanup;
 
 public class QueryServerDialogFragment extends DialogFragment implements LoaderCallbacks<ServerInfo> {
-	private static final String TAG = "davdroid.QueryServerDialogFragment";
+	private static final String TAG = "davdroid.QueryServer";
 	public static final String
 		EXTRA_BASE_URI = "base_uri",
 		EXTRA_USER_NAME = "user_name",
@@ -71,13 +73,16 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 		if (serverInfo.getErrorMessage() != null)
 			Toast.makeText(getActivity(), serverInfo.getErrorMessage(), Toast.LENGTH_LONG).show();
 		else {
-			SelectCollectionsFragment selectCollections = new SelectCollectionsFragment();
-			Bundle arguments = new Bundle();
-			arguments.putSerializable(SelectCollectionsFragment.KEY_SERVER_INFO, serverInfo);
-			selectCollections.setArguments(arguments);
-			
+			((AddAccountActivity)getActivity()).serverInfo = serverInfo;
+
+			Fragment nextFragment;
+			if (!serverInfo.getTodoLists().isEmpty() && !LocalTaskList.isAvailable(getActivity()))
+				nextFragment = new InstallAppsFragment();
+			else
+				nextFragment = new SelectCollectionsFragment();
+
 			getFragmentManager().beginTransaction()
-				.replace(R.id.right_pane, selectCollections)
+				.replace(R.id.right_pane, nextFragment)
 				.addToBackStack(null)
 				.commitAllowingStateLoss();
 		}

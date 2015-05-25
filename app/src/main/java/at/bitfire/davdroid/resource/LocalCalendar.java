@@ -75,6 +75,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import at.bitfire.davdroid.DAVUtils;
 import at.bitfire.davdroid.DateUtils;
 import lombok.Cleanup;
 import lombok.Getter;
@@ -120,24 +121,13 @@ public class LocalCalendar extends LocalCollection<Event> {
 		final ContentProviderClient client = resolver.acquireContentProviderClient(CalendarContract.AUTHORITY);
 		if (client == null)
 			throw new LocalStorageException("No Calendar Provider found (Calendar app disabled?)");
-		
-		int color = 0xFFC3EA6E;		// fallback: "DAVdroid green"
-		if (info.getColor() != null) {
-			Pattern p = Pattern.compile("#?(\\p{XDigit}{6})(\\p{XDigit}{2})?");
-			Matcher m = p.matcher(info.getColor());
-			if (m.find()) {
-				int color_rgb = Integer.parseInt(m.group(1), 16);
-				int color_alpha = m.group(2) != null ? (Integer.parseInt(m.group(2), 16) & 0xFF) : 0xFF;
-				color = (color_alpha << 24) | color_rgb;
-			}
-		}
 
 		ContentValues values = new ContentValues();
 		values.put(Calendars.ACCOUNT_NAME, account.name);
 		values.put(Calendars.ACCOUNT_TYPE, account.type);
 		values.put(Calendars.NAME, info.getURL());
 		values.put(Calendars.CALENDAR_DISPLAY_NAME, info.getTitle());
-		values.put(Calendars.CALENDAR_COLOR, color);
+		values.put(Calendars.CALENDAR_COLOR, DAVUtils.CalDAVtoARGBColor(info.getColor()));
 		values.put(Calendars.OWNER_ACCOUNT, account.name);
 		values.put(Calendars.SYNC_EVENTS, 1);
 		values.put(Calendars.VISIBLE, 1);
@@ -527,12 +517,10 @@ public class LocalCalendar extends LocalCollection<Event> {
 		final Event event = (Event)resource;
 
 		if (!update)
-			builder = builder
-					.withValue(Events.ACCOUNT_TYPE, account.type)
+			builder	.withValue(Events.ACCOUNT_TYPE, account.type)
 					.withValue(Events.ACCOUNT_NAME, account.name);
 
-		builder = builder
-				.withValue(Events.CALENDAR_ID, id)
+		builder	.withValue(Events.CALENDAR_ID, id)
 				.withValue(Events.ALL_DAY, event.isAllDay() ? 1 : 0)
 				.withValue(Events.DTSTART, event.getDtStartInMillis())
 				.withValue(Events.EVENT_TIMEZONE, event.getDtStartTzID())
@@ -545,12 +533,11 @@ public class LocalCalendar extends LocalCollection<Event> {
 		final RecurrenceId recurrenceId = event.getRecurrenceId();
 		if (recurrenceId == null) {
 			// this event is a "master event" (not an exception)
-			builder = builder
-					.withValue(entryColumnRemoteName(), event.getName())
+			builder	.withValue(entryColumnRemoteName(), event.getName())
 					.withValue(entryColumnETag(), event.getETag())
 					.withValue(entryColumnUID(), event.getUid());
 		} else {
-			builder = builder.withValue(Events.ORIGINAL_SYNC_ID, event.getName());
+			builder.withValue(Events.ORIGINAL_SYNC_ID, event.getName());
 
 			// ORIGINAL_INSTANCE_TIME and ORIGINAL_ALL_DAY is set in buildExceptions.
 			// It's not possible to use only the RECURRENCE-ID to calculate
@@ -561,40 +548,38 @@ public class LocalCalendar extends LocalCollection<Event> {
 		boolean recurring = false;
 		if (event.getRrule() != null) {
 			recurring = true;
-			builder = builder.withValue(Events.RRULE, event.getRrule().getValue());
+			builder.withValue(Events.RRULE, event.getRrule().getValue());
 		}
 		if (!event.getRdates().isEmpty()) {
 			recurring = true;
-			builder = builder.withValue(Events.RDATE, recurrenceSetsToAndroidString(event.getRdates()));
+			builder.withValue(Events.RDATE, recurrenceSetsToAndroidString(event.getRdates()));
 		}
 		if (event.getExrule() != null)
-			builder = builder.withValue(Events.EXRULE, event.getExrule().getValue());
+			 builder.withValue(Events.EXRULE, event.getExrule().getValue());
 		if (!event.getExdates().isEmpty())
-			builder = builder.withValue(Events.EXDATE, recurrenceSetsToAndroidString(event.getExdates()));
+			builder.withValue(Events.EXDATE, recurrenceSetsToAndroidString(event.getExdates()));
 
 		// set either DTEND for single-time events or DURATION for recurring events
 		// because that's the way Android likes it (see docs)
 		if (recurring) {
 			// calculate DURATION from start and end date
 			Duration duration = new Duration(event.getDtStart().getDate(), event.getDtEnd().getDate());
-			builder = builder.withValue(Events.DURATION, duration.getValue());
-		} else {
-			builder = builder
-					.withValue(Events.DTEND, event.getDtEndInMillis())
+			builder.withValue(Events.DURATION, duration.getValue());
+		} else
+			builder	.withValue(Events.DTEND, event.getDtEndInMillis())
 					.withValue(Events.EVENT_END_TIMEZONE, event.getDtEndTzID());
-		}
-		
+
 		if (event.getSummary() != null)
-			builder = builder.withValue(Events.TITLE, event.getSummary());
+			builder.withValue(Events.TITLE, event.getSummary());
 		if (event.getLocation() != null)
-			builder = builder.withValue(Events.EVENT_LOCATION, event.getLocation());
+			builder.withValue(Events.EVENT_LOCATION, event.getLocation());
 		if (event.getDescription() != null)
-			builder = builder.withValue(Events.DESCRIPTION, event.getDescription());
+			builder.withValue(Events.DESCRIPTION, event.getDescription());
 		
 		if (event.getOrganizer() != null && event.getOrganizer().getCalAddress() != null) {
 			URI organizer = event.getOrganizer().getCalAddress();
 			if (organizer.getScheme() != null && organizer.getScheme().equalsIgnoreCase("mailto"))
-				builder = builder.withValue(Events.ORGANIZER, organizer.getSchemeSpecificPart());
+				builder.withValue(Events.ORGANIZER, organizer.getSchemeSpecificPart());
 		}
 
 		Status status = event.getStatus();
@@ -604,13 +589,13 @@ public class LocalCalendar extends LocalCollection<Event> {
 				statusCode = Events.STATUS_CONFIRMED;
 			else if (status == Status.VEVENT_CANCELLED)
 				statusCode = Events.STATUS_CANCELED;
-			builder = builder.withValue(Events.STATUS, statusCode);
+			builder.withValue(Events.STATUS, statusCode);
 		}
 		
-		builder = builder.withValue(Events.AVAILABILITY, event.isOpaque() ? Events.AVAILABILITY_BUSY : Events.AVAILABILITY_FREE);
+		builder.withValue(Events.AVAILABILITY, event.isOpaque() ? Events.AVAILABILITY_BUSY : Events.AVAILABILITY_FREE);
 		
 		if (event.getForPublic() != null)
-			builder = builder.withValue(Events.ACCESS_LEVEL, event.getForPublic() ? Events.ACCESS_PUBLIC : Events.ACCESS_PRIVATE);
+			builder.withValue(Events.ACCESS_LEVEL, event.getForPublic() ? Events.ACCESS_PUBLIC : Events.ACCESS_PRIVATE);
 
 		return builder;
 	}
@@ -683,7 +668,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 		final Cn cn = (Cn)attendee.getParameter(Parameter.CN);
 		if (cn != null)
-			builder = builder.withValue(Attendees.ATTENDEE_NAME, cn.getValue());
+			builder.withValue(Attendees.ATTENDEE_NAME, cn.getValue());
 
 		int type = Attendees.TYPE_NONE;
 		
@@ -702,7 +687,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 				else if (role == Role.REQ_PARTICIPANT)
 					type = Attendees.TYPE_REQUIRED;
 			}
-			builder = builder.withValue(Attendees.ATTENDEE_RELATIONSHIP, relationship);
+			builder.withValue(Attendees.ATTENDEE_RELATIONSHIP, relationship);
 		}
 		
 		int status = Attendees.ATTENDEE_STATUS_NONE;

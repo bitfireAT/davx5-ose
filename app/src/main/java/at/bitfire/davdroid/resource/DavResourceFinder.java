@@ -9,6 +9,7 @@ package at.bitfire.davdroid.resource;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.apache.http.HttpException;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -127,7 +128,9 @@ public class DavResourceFinder implements Closeable {
 				if (homeSetCalendars.getMembers() != null)
 					possibleCalendars.addAll(homeSetCalendars.getMembers());
 
-				List<ServerInfo.ResourceInfo> calendars = new LinkedList<>();
+				List<ServerInfo.ResourceInfo>
+						calendars = new LinkedList<>(),
+						todoLists = new LinkedList<>();
 				for (WebDavResource resource : possibleCalendars)
 					if (resource.isCalendar()) {
 						Log.i(TAG, "Found calendar: " + resource.getLocation().getPath());
@@ -140,36 +143,41 @@ public class DavResourceFinder implements Closeable {
 						);
 						info.setTimezone(resource.getTimezone());
 
+						boolean isCalendar = false,
+								isTodoList = false;
 						if (resource.getSupportedComponents() == null) {
 							// no info about supported components, assuming all components are supported
-							info.setSupportingEvents(true);
-							info.setSupportingNotes(true);
+							isCalendar = true;
+							isTodoList = true;
 						} else {
 							// CALDAV:supported-calendar-component-set available
 							for (String supportedComponent : resource.getSupportedComponents())
 								if ("VEVENT".equalsIgnoreCase(supportedComponent))
-									info.setSupportingEvents(true);
-								else if ("VJOURNAL".equalsIgnoreCase(supportedComponent))
-									info.setSupportingNotes(true);
+									isCalendar = true;
 								else if ("VTODO".equalsIgnoreCase(supportedComponent))
-									info.setSupportingTasks(true);
+									isTodoList = true;
 
-							if (!info.isSupportingEvents() && !info.isSupportingNotes() && !info.isSupportingTasks()) {
-								Log.i(TAG, "Ignoring this calendar because it supports neither VEVENT nor VJOURNAL nor VTODO");
+							if (!isCalendar && !isTodoList) {
+								Log.i(TAG, "Ignoring this calendar because it supports neither VEVENT nor VTODO");
 								continue;
 							}
 						}
 
-						calendars.add(info);
+						// use a copy constructor to allow different "enabled" status for calendars and todo lists
+						if (isCalendar)
+							calendars.add(new ServerInfo.ResourceInfo(info));
+						if (isTodoList)
+							todoLists.add(new ServerInfo.ResourceInfo(info));
 					}
+
 				serverInfo.setCalendars(calendars);
+				serverInfo.setTodoLists(todoLists);
 			} else
 				Log.w(TAG, "Found calendar home set, but it doesn't advertise CalDAV support");
 		}
 
 		if (!serverInfo.isCalDAV() && !serverInfo.isCardDAV())
 			throw new DavIncapableException(context.getString(R.string.setup_neither_caldav_nor_carddav));
-
 	}
 	
 	

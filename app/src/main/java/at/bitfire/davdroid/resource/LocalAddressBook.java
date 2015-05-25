@@ -658,8 +658,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		Contact contact = (Contact)resource;
 
 		if (!update)
-			builder = builder
-					.withValue(RawContacts.ACCOUNT_NAME, account.name)
+			builder	.withValue(RawContacts.ACCOUNT_NAME, account.name)
 					.withValue(RawContacts.ACCOUNT_TYPE, account.type);
 
 		return builder
@@ -800,14 +799,13 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			typeLabel = xNameToLabel(type.getValue());
 		}
 		
-		builder = builder
-			.withValue(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)
-			.withValue(Phone.NUMBER, number.getText())
-			.withValue(Phone.TYPE, typeCode)
-			.withValue(Phone.IS_PRIMARY, is_primary ? 1 : 0)
-			.withValue(Phone.IS_SUPER_PRIMARY, is_primary ? 1 : 0);
+		builder	.withValue(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)
+				.withValue(Phone.NUMBER, number.getText())
+				.withValue(Phone.TYPE, typeCode)
+				.withValue(Phone.IS_PRIMARY, is_primary ? 1 : 0)
+				.withValue(Phone.IS_SUPER_PRIMARY, is_primary ? 1 : 0);
 		if (typeLabel != null)
-			builder = builder.withValue(Phone.LABEL, typeLabel);
+			builder.withValue(Phone.LABEL, typeLabel);
 		return builder;
 	}
 	
@@ -834,14 +832,13 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			}
 		}
 		
-		builder = builder
-				.withValue(Data.MIMETYPE, Email.CONTENT_ITEM_TYPE)
+		builder	.withValue(Data.MIMETYPE, Email.CONTENT_ITEM_TYPE)
 				.withValue(Email.ADDRESS, email.getValue())
 				.withValue(Email.TYPE, typeCode)
 				.withValue(Email.IS_PRIMARY, is_primary ? 1 : 0)
 				.withValue(Phone.IS_SUPER_PRIMARY, is_primary ? 1 : 0);
 		if (typeLabel != null)
-			builder = builder.withValue(Email.LABEL, typeLabel);
+			builder.withValue(Email.LABEL, typeLabel);
 		return builder;
 	}
 	
@@ -928,22 +925,20 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		
 		if (sipAddress)
 			// save as SIP address
-			builder = builder
-				.withValue(Data.MIMETYPE, SipAddress.CONTENT_ITEM_TYPE)
-				.withValue(Im.DATA, impp.getHandle())
-				.withValue(Im.TYPE, typeCode);
+			builder	.withValue(Data.MIMETYPE, SipAddress.CONTENT_ITEM_TYPE)
+					.withValue(Im.DATA, impp.getHandle())
+					.withValue(Im.TYPE, typeCode);
 		else {
 			// save as IM address
-			builder = builder
-				.withValue(Data.MIMETYPE, Im.CONTENT_ITEM_TYPE)
-				.withValue(Im.DATA, impp.getHandle())
-				.withValue(Im.TYPE, typeCode)
-				.withValue(Im.PROTOCOL, protocolCode);
+			builder	.withValue(Data.MIMETYPE, Im.CONTENT_ITEM_TYPE)
+					.withValue(Im.DATA, impp.getHandle())
+					.withValue(Im.TYPE, typeCode)
+					.withValue(Im.PROTOCOL, protocolCode);
 			if (protocolLabel != null)
-				builder = builder.withValue(Im.CUSTOM_PROTOCOL, protocolLabel);
+				builder.withValue(Im.CUSTOM_PROTOCOL, protocolLabel);
 		}
 		if (typeLabel != null)
-			builder = builder.withValue(Im.LABEL, typeLabel);
+			builder.withValue(Im.LABEL, typeLabel);
 		return builder;
 	}
 
@@ -996,19 +991,18 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				typeLabel = xNameToLabel(address.getTypes().iterator().next().getValue());
 			}
 		
-		builder = builder
-			.withValue(Data.MIMETYPE, StructuredPostal.CONTENT_ITEM_TYPE)
-			.withValue(StructuredPostal.FORMATTED_ADDRESS, formattedAddress)
-			.withValue(StructuredPostal.TYPE, typeCode)
-			.withValue(StructuredPostal.STREET, address.getStreetAddress())
-			.withValue(StructuredPostal.POBOX, address.getPoBox())
-			.withValue(StructuredPostal.NEIGHBORHOOD, address.getExtendedAddress())
-			.withValue(StructuredPostal.CITY, address.getLocality())
-			.withValue(StructuredPostal.REGION, address.getRegion())
-			.withValue(StructuredPostal.POSTCODE, address.getPostalCode())
-			.withValue(StructuredPostal.COUNTRY, address.getCountry());
+		builder	.withValue(Data.MIMETYPE, StructuredPostal.CONTENT_ITEM_TYPE)
+				.withValue(StructuredPostal.FORMATTED_ADDRESS, formattedAddress)
+				.withValue(StructuredPostal.TYPE, typeCode)
+				.withValue(StructuredPostal.STREET, address.getStreetAddress())
+				.withValue(StructuredPostal.POBOX, address.getPoBox())
+				.withValue(StructuredPostal.NEIGHBORHOOD, address.getExtendedAddress())
+				.withValue(StructuredPostal.CITY, address.getLocality())
+				.withValue(StructuredPostal.REGION, address.getRegion())
+				.withValue(StructuredPostal.POSTCODE, address.getPostalCode())
+				.withValue(StructuredPostal.COUNTRY, address.getCountry());
 		if (typeLabel != null)
-			builder = builder.withValue(StructuredPostal.LABEL, typeLabel);
+			builder.withValue(StructuredPostal.LABEL, typeLabel);
 		return builder;
 	}
 	
