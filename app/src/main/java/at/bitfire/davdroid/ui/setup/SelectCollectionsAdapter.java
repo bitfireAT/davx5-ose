@@ -56,11 +56,11 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 		this.context = context;
 		
 		this.serverInfo = serverInfo;
-		nAddressBooks = serverInfo.getAddressBooks() == null ? 0 : serverInfo.getAddressBooks().size();
+		nAddressBooks = serverInfo.getAddressBooks().size();
 		nAddressBookHeadings = nAddressBooks == 0 ? 0 : 1;
-		nCalendars = serverInfo.getCalendars() == null ? 0 : serverInfo.getCalendars().size();
+		nCalendars = serverInfo.getCalendars().size();
 		nCalendarHeadings = nCalendars == 0 ? 0 : 1;
-		nTaskLists = serverInfo.getTodoLists() == null ? 0 : serverInfo.getTodoLists().size();
+		nTaskLists = serverInfo.getTodoLists().size();
 		nTaskListHeadings = nTaskLists == 0 ? 0 : 1;
 	}
 	
@@ -83,7 +83,7 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 			return serverInfo.getCalendars().get(position - (nAddressBookHeadings + nAddressBooks + nCalendarHeadings));
 
 		else if (position >= (nAddressBookHeadings + nAddressBooks + nCalendarHeadings + nCalendars + nTaskListHeadings) &&
-				(position < (nAddressBookHeadings + nAddressBooks + nCalendarHeadings + nCalendars + + nTaskListHeadings + nTaskLists)))
+				(position < (nAddressBookHeadings + nAddressBooks + nCalendarHeadings + nCalendars + nTaskListHeadings + nTaskLists)))
 			return serverInfo.getTodoLists().get(position - (nAddressBookHeadings + nAddressBooks + nCalendarHeadings + nCalendars + nTaskListHeadings));
 
 		return null;

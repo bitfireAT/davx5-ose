@@ -163,8 +163,16 @@
     <string name="setup_add_account">Add account</string>
     <string name="setup_querying_server">Querying server. Please wait…</string>
     <string name="setup_install_apps_info">Plain Android doesn\'t support to-do lists (in contrast to contacts and calendars).</string>
-    <string name="setup_install_tasks_app_info">DAVdroid is able to synchronize tasks with the "Tasks" app (by Marten Gajda). You may install this app if you want tasks to be synchronized or skip the installation.</string>
-    <string name="setup_install_tasks_app">Install Tasks app</string>
+    <string name="setup_install_tasks_app_html"><![CDATA[
+        <p>DAVdroid is able to synchronize tasks with the <a href="market://details?id=org.dmfs.tasks">Tasks app</a> (by Marten Gajda).</p>
+        <p>Because of an <a href="https://code.google.com/p/android/issues/detail?id=25906">Android bug</a>, the <b>Tasks app must be installed
+        before installing DAVdroid</b> (otherwise, DAVdroid can\'t get the permission to access the tasks provider).</p>
+        <p>If you want tasks to be synchronized:</p>
+        <p>1. Install the Tasks app.<br/>
+        2. Re-install DAVdroid (to gain tasks access permission).<br/>
+        3. Add your DAVdroid account again.</p>
+        <p>Otherwise, you may skip this step.</p>
+    ]]></string>
     <string name="setup_what_to_sync">Which collections shall be synchronized?</string>
     <string name="setup_address_books">Address books</string>
     <string name="setup_calendars">Calendars</string>

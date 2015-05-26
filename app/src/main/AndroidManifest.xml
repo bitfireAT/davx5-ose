@@ -9,7 +9,7 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="at.bitfire.davdroid"
-    android:versionCode="64" android:versionName="0.8.0-beta1"
+    android:versionCode="66" android:versionName="0.8.0-beta3"
     android:installLocation="internalOnly">
 
     <uses-sdk

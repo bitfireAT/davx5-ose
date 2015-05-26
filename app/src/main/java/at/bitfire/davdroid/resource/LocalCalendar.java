@@ -516,10 +516,6 @@ public class LocalCalendar extends LocalCollection<Event> {
 	protected Builder buildEntry(Builder builder, Resource resource, boolean update) {
 		final Event event = (Event)resource;
 
-		if (!update)
-			builder	.withValue(Events.ACCOUNT_TYPE, account.type)
-					.withValue(Events.ACCOUNT_NAME, account.name);
-
 		builder	.withValue(Events.CALENDAR_ID, id)
 				.withValue(Events.ALL_DAY, event.isAllDay() ? 1 : 0)
 				.withValue(Events.DTSTART, event.getDtStartInMillis())

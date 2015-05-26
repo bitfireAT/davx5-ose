@@ -19,6 +19,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,18 +30,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalTaskList;
 
-public class InstallAppsFragment extends Fragment implements Runnable {
+public class InstallAppsFragment extends Fragment {
 	private static final String TAG = "davdroid.setup";
 
-	final protected Handler timerHandler = new Handler();
-
+	// https://code.google.com/p/android/issues/detail?id=25906
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.setup_install_apps, container, false);
 		setHasOptionsMenu(true);
+
+		TextView tvInfo = (TextView)v.findViewById(R.id.setup_install_tasks_app);
+		tvInfo.setText(Html.fromHtml(getString(R.string.setup_install_tasks_app_html)));
+		tvInfo.setMovementMethod(LinkMovementMethod.getInstance());
 
 		return v;
 	}
@@ -50,22 +56,10 @@ public class InstallAppsFragment extends Fragment implements Runnable {
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
-		timerHandler.postDelayed(this, 1000);
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		timerHandler.removeCallbacks(this);
-	}
-
-	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.skip:
-				skip(true);
+				skip();
 				break;
 			default:
 				return false;
@@ -73,19 +67,8 @@ public class InstallAppsFragment extends Fragment implements Runnable {
 		return true;
 	}
 
-	@Override
-	public void run() {
-		if (LocalTaskList.isAvailable(getActivity()))
-			skip(false);
-		else
-			timerHandler.postDelayed(this, 1000);
-	}
-
-	protected void skip(boolean addToBackStack) {
+	protected void skip() {
 		FragmentManager fm = getFragmentManager();
-
-		if (!addToBackStack)
-			fm.popBackStack();
 
 		getFragmentManager().beginTransaction()
 				.replace(R.id.right_pane, new SelectCollectionsFragment())

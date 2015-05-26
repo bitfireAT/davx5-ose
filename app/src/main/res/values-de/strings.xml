@@ -149,8 +149,16 @@
     <string name="setup_add_account">Konto hinzufügen</string>
     <string name="setup_querying_server">Daten werden vom Server abgefragt. Bitte warten…</string>
     <string name="setup_install_apps_info">Android bietet im Gegensatz zu Kontakten und Terminen keine integrierte Lösung für Aufgaben.</string>
-    <string name="setup_install_tasks_app_info">DAVdroid kann mit der "Aufgaben"-App von Marten Gajda synchronisieren. Sie können diese App installieren, um Aufgaben zu synchronisieren, oder auf Aufgaben verzichten und die Installation überspringen.</string>
-    <string name="setup_install_tasks_app">Aufgaben-App installieren</string>
+    <string name="setup_install_tasks_app_html"><![CDATA[
+        <p>DAVdroid kann Aufgaben mit der <a href="market://details?id=org.dmfs.tasks">Aufgaben-App</a> von Marten Gajda synchronisieren.</p>
+        <p>Wegen eines <a href="https://code.google.com/p/android/issues/detail?id=25906">Android-Fehlers</a> <b>muss die Aufgaben-App
+        vor DAVdroid installiert werden</b> (ansonsten bekommt DAVdroid nicht die Berechtigungen, um auf die Aufgaben zuzugreifen).</p>
+        <p>Wenn Sie Aufgaben synchronisiert haben wollen:</p>
+        <p>1. Installieren Sie bitte zuerst die Aufgaben-App.<br/>
+        2. Installieren Sie DAVdroid neu (um die Zugriffsberechtigung zu erlangen).<br/>
+        3. Richten Sie Ihr DAVdroid-Konto neu ein.</p>
+        <p>Andernfalls können Sie diesen Schritt überspringen.</p>
+    ]]></string>
     <string name="setup_what_to_sync">Welche Ordner sollen synchronisiert werden?</string>
     <string name="setup_address_books">Adressbücher</string>
     <string name="setup_calendars">Kalender</string>
