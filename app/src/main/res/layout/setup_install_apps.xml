@@ -30,15 +30,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:text="@string/setup_install_tasks_app_info"
+            android:id="@+id/setup_install_tasks_app"
+            android:text="@string/setup_install_tasks_app_html"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/setup_install_tasks_app"
-            android:onClick="installTasksApp"
-            android:layout_gravity="center_horizontal"/>
 
     </LinearLayout>
 
