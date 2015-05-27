@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 – 2015 Ricki Hirner (bitfire web engineering).
+ * Copyright © 2013 – 2015 Ricki Hirner (bitfire web engineering).
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
@@ -7,24 +7,23 @@
  */
 package at.bitfire.davdroid.webdav;
 
+import android.content.res.AssetManager;
+import android.test.InstrumentationTestCase;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.http.impl.client.CloseableHttpClient;
+
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 
-import ezvcard.VCardVersion;
-import lombok.Cleanup;
-
-import org.apache.commons.io.IOUtils;
-
-import android.content.res.AssetManager;
-import android.test.InstrumentationTestCase;
 import at.bitfire.davdroid.TestConstants;
 import at.bitfire.davdroid.webdav.HttpPropfind.Mode;
 import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
-import org.apache.http.impl.client.CloseableHttpClient;
+import ezvcard.VCardVersion;
+import lombok.Cleanup;
 
 // tests require running robohydra!
 
