@@ -12,6 +12,7 @@
     <!-- common strings -->
     <string name="app_name">ДАВдроид</string>
     <string name="next">Следеће</string>
+    <string name="skip">Прескочи</string>
     <string name="help">Помоћ</string>
 
     <string name="exception_cert_path_validation">Непоуздан сертификат у путањи сертификата: Погледајте ЧПП за више информација.</string>
@@ -60,9 +61,9 @@
        Ако вам се деси грешка која је сигурно везана за ДАВдроид, поднесите пријаву на
        <a href="https://github.com/rfc2822/davdroid">Гитхабовом пратиоцу</a> уместо да нас контактирате директно или да апликацији дате лошу оцену.</b></p>
               
-	   <h1>Отворени код</h1>
-	   <p>ДАВдроид је испочетка дизајниран као пројекат отвореног кода. Увек је могуће да сами компајлирате
-	   апликацију и да је слободно користите без икаквих обавеза. Изворни код је
+	   <h1>Отворени кôд</h1>
+	   <p>ДАВдроид је испочетка дизајниран као пројекат отвореног кôда. Увек је могуће да сами компајлирате
+	   апликацију и да је слободно користите без икаквих обавеза. Изворни кôд је
 	   <a href="https://github.com/rfc2822/davdroid">доступан на Гитхабу</a>, а можете и
 	   <a href="https://f-droid.org/app/at.bitfire.davdroid">преузети апликацију са Ф-дроида</a>.</p>
 	   
@@ -127,6 +128,7 @@
     <string name="settings_sync_summary_periodically">Сваких %d минута + одмах по локалним изменама</string>
     <string name="settings_sync_summary_not_available">Није доступно</string>
     <string name="settings_sync_interval_calendars">Интервал синх. календара</string>
+    <string name="settings_sync_interval_tasks">Интервал синх. задатака</string>
 
     <string-array name="settings_sync_interval_names">
         <item>Само ручно</item>
@@ -138,16 +140,32 @@
         <item>Свака 4 сата</item>
         <item>Једном дневно</item>
     </string-array>
+    <string name="settings_carddav">Адресар</string>
+    <string name="settings_carddav_vcard4_support">Подршка за VCard 4.0</string>
+    <string name="settings_carddav_vcard4_supported">Контакти се шаљу у VCard 4.0 формату</string>
+    <string name="settings_carddav_vcard4_not_supported">Контакти се шаљу у VCard 3.0 формату</string>
 
     <string name="setup_select_collections">ДАВдроид: Изаберите збирке</string>
     <string name="setup_neither_caldav_nor_carddav">Нема доступног КалДАВ/КардДАВ сервиса на овој локацији.</string>
     <string name="setup_add_account">Додај налог</string>
     <string name="setup_querying_server">Шаљем упит серверу. Сачекајте…</string>
+    <string name="setup_install_apps_info">Фабрички Андроид не подржава листе задатака (за разлику од контаката и календара).</string>
+    <string name="setup_install_tasks_app_html"><![CDATA[
+        <p>ДАВдроид може да синхронизује задатке са <a href="market://details?id=org.dmfs.tasks">апликације Задаци</a> (од Мартена Гајде).</p>
+        <p>Због <a href="https://code.google.com/p/android/issues/detail?id=25906">грешке у Андроиду</a>, <b>апликација Задаци мора бити инсталирана пре ДАВдроида</b> (иначе, ДАВдроид неће добити дозволу за приступ снабдевачу задатака).</p>
+        <p>Ако желите да синхронизујете задатке:</p>
+        <p>1. Инсталирајте апликацију Задаци.<br/>
+        2. Поново инсталирајте ДАВдроид (да би добио дозволу за приступ задацима).<br/>
+        3. Поново додајте ваш ДАВдроид налог.</p>
+        <p>У супротном, можете да прескочите овај корак.</p>
+    ]]></string>
     <string name="setup_what_to_sync">Које збирке да синхронизујем?</string>
     <string name="setup_address_books">Адресари</string>
     <string name="setup_calendars">Календари</string>
-    <string name="setup_select_address_book">Изаберите један адресар (тапните поново за поништење):</string>
-    <string name="setup_select_calendars">Изаберите ваше календаре:</string>
+    <string name="setup_task_lists">Листе задатака</string>
+    <string name="setup_select_address_book">Изаберите један адресар (тапните поново за поништење) за синхронизовање:</string>
+    <string name="setup_select_calendars">Изаберите календаре за синхронизовање:</string>
+    <string name="setup_select_task_lists">Изаберите листе задатака за синхронизовање:</string>
     
     <string name="setup_account_details">Детаљи налога</string>
     <string name="setup_account_name">Назив налога:</string>
