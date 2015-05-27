@@ -46,7 +46,7 @@ dependencies {
     compile 'commons-lang:commons-lang:2.6'
     compile 'commons-io:commons-io:2.4'
     // Lombok for useful @helpers
-    provided 'org.projectlombok:lombok:1.14.8'
+    provided 'org.projectlombok:lombok:1.16.4'
     // ical4j for parsing/generating iCalendars
     compile 'org.mnode.ical4j:ical4j:1.0.6'
     // ez-vcard for parsing/generating VCards
@@ -58,7 +58,7 @@ dependencies {
         exclude group: 'com.fasterxml.jackson.core', module: 'jackson-core'
     }
     // dnsjava for querying SRV/TXT records
-    compile 'dnsjava:dnsjava:2.1.6'
+    compile 'dnsjava:dnsjava:2.1.7'
     // HttpClient 4.3, Android flavour for WebDAV operations
     //compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
     compile project(':lib:httpclient-android')

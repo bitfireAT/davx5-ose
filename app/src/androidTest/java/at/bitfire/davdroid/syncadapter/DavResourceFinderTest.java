@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 – 2015 Ricki Hirner (bitfire web engineering).
+ * Copyright © 2013 – 2015 Ricki Hirner (bitfire web engineering).
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
@@ -8,15 +8,16 @@
 
 package at.bitfire.davdroid.syncadapter;
 
+import android.test.InstrumentationTestCase;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
-import android.test.InstrumentationTestCase;
+import at.bitfire.davdroid.TestConstants;
 import at.bitfire.davdroid.resource.DavResourceFinder;
 import at.bitfire.davdroid.resource.ServerInfo;
 import at.bitfire.davdroid.resource.ServerInfo.ResourceInfo;
-import at.bitfire.davdroid.TestConstants;
 import ezvcard.VCardVersion;
 
 public class DavResourceFinderTest extends InstrumentationTestCase {

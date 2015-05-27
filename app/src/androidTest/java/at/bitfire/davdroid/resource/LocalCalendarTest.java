@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 – 2015 Ricki Hirner (bitfire web engineering).
+ * Copyright © 2013 – 2015 Ricki Hirner (bitfire web engineering).
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,6 @@ import android.Manifest;
 import android.accounts.Account;
 import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
-import android.content.ContentProviderOperation;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -20,10 +19,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
-import android.provider.CalendarContract.Attendees;
 import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
-import android.provider.CalendarContract.Reminders;
 import android.test.InstrumentationTestCase;
 import android.util.Log;
 
@@ -43,10 +40,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.SimpleTimeZone;
 
-import at.bitfire.davdroid.Constants;
-import at.bitfire.davdroid.webdav.DavProp;
 import lombok.Cleanup;
 
 public class LocalCalendarTest extends InstrumentationTestCase {

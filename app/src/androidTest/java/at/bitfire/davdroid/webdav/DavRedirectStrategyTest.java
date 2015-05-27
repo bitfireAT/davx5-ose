@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 – 2015 Ricki Hirner (bitfire web engineering).
+ * Copyright © 2013 – 2015 Ricki Hirner (bitfire web engineering).
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
@@ -8,10 +8,8 @@
 
 package at.bitfire.davdroid.webdav;
 
-import java.io.IOException;
-
 import junit.framework.TestCase;
-import at.bitfire.davdroid.TestConstants;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -19,6 +17,10 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
+
+import java.io.IOException;
+
+import at.bitfire.davdroid.TestConstants;
 
 public class DavRedirectStrategyTest extends TestCase {
 	

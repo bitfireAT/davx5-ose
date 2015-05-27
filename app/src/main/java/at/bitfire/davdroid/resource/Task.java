@@ -1,3 +1,11 @@
+/*
+ * Copyright © 2013 – 2015 Ricki Hirner (bitfire web engineering).
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ */
+
 package at.bitfire.davdroid.resource;
 
 import android.util.Log;
@@ -7,7 +15,6 @@ import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ComponentList;
-import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.PropertyList;
 import net.fortuna.ical4j.model.ValidationException;
@@ -36,7 +43,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.syncadapter.DavSyncAdapter;

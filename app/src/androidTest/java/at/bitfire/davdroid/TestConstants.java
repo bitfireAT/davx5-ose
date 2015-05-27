@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 – 2015 Ricki Hirner (bitfire web engineering).
+ * Copyright © 2013 – 2015 Ricki Hirner (bitfire web engineering).
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
@@ -8,10 +8,10 @@
 
 package at.bitfire.davdroid;
 
+import android.util.Log;
+
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import android.util.Log;
 
 public class TestConstants {
 	public static final String ROBOHYDRA_BASE = "http://192.168.0.11:3000/";
