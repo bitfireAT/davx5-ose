@@ -7,6 +7,7 @@
  */
 package at.bitfire.davdroid.webdav;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import org.apache.http.client.config.RequestConfig;
@@ -43,7 +44,8 @@ public class DavHttpClient {
 	}
 
 
-	public static CloseableHttpClient create() {
+	@SuppressLint("LogTagMismatch")
+    public static CloseableHttpClient create() {
 		PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 		// limits per DavHttpClient (= per DavSyncAdapter extends AbstractThreadedSyncAdapter)
 		connectionManager.setMaxTotal(3);				// max.  3 connections in total
@@ -55,8 +57,7 @@ public class DavHttpClient {
 				.setDefaultRequestConfig(defaultRqConfig)
 				.setRetryHandler(DavHttpRequestRetryHandler.INSTANCE)
 				.setRedirectStrategy(DavRedirectStrategy.INSTANCE)
-				.setUserAgent("DAVdroid/" + Constants.APP_VERSION)
-				.disableCookieManagement();
+				.setUserAgent("DAVdroid/" + Constants.APP_VERSION);
 		
 		if (Log.isLoggable("Wire", Log.DEBUG)) {
 			Log.i(TAG, "Wire logging active, disabling HTTP compression");

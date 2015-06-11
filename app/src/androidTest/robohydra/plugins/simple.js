@@ -1,3 +1,5 @@
+// vim: ts=4:sw=4
+
 var roboHydra = require("robohydra"),
 	roboHydraHeads = roboHydra.heads,
 	roboHydraHead = roboHydraHeads.RoboHydraHead;
