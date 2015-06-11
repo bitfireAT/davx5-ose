@@ -1,3 +1,5 @@
+// vim: ts=4:sw=4
+
 var roboHydraHeadDAV = require("../headdav");
 
 exports.getBodyParts = function(conf) {
@@ -5,6 +7,26 @@ exports.getBodyParts = function(conf) {
         heads: [
 			/* base URL, provide default DAV here */
 			new RoboHydraHeadDAV({ path: "/dav/" }),
+
+			/* test cookie:
+			 * POST /dav/testCookieStore   will cause the mock server to set a cookie
+			 * GET  /dav/testCookieStore   will cause the mock server to check the request cookie
+			 *                             and return 412 Precondition failed when it's not set correctly
+			 */
+			new RoboHydraHeadDAV({
+				path: "/dav/testCookieStore",
+				handler: function(req,res,next) {
+					var cookie = 'sess=MY_SESSION_12345';
+					if (req.method == "POST") {
+						res.statusCode = 200;
+						res.headers['Set-Cookie'] = cookie;
+						res.send("Setting cookie");
+					} else {
+						res.statusCode = (req.headers['cookie'] == cookie) ? 200 : 412;
+						res.send("Checking cookie");
+					}
+				}
+			}),
 
             /* multistatus parsing */
             new RoboHydraHeadDAV({
