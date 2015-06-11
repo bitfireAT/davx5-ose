@@ -98,7 +98,7 @@ public class LocalTaskList extends LocalCollection<Task> {
 		LinkedList<LocalTaskList> taskList = new LinkedList<>();
 		while (cursor != null && cursor.moveToNext())
 			taskList.add(new LocalTaskList(account, providerClient, cursor.getInt(0), cursor.getString(1)));
-		return taskList.toArray(new LocalTaskList[0]);
+		return taskList.toArray(new LocalTaskList[taskList.size()]);
 	}
 
 	public LocalTaskList(Account account, ContentProviderClient providerClient, long id, String url) throws RemoteException {
@@ -248,7 +248,8 @@ public class LocalTaskList extends LocalCollection<Task> {
 
 		if (!update)
 			builder	.withValue(entryColumnParentID(), id)
-					.withValue(entryColumnRemoteName(), task.getName());
+					.withValue(entryColumnRemoteName(), task.getName())
+                    .withValue(entryColumnDirty(), 0);      // _DIRTY is INTEGER DEFAULT 1 in org.dmfs.provider.tasks
 
 		 builder.withValue(entryColumnUID(), task.getUid())
 				.withValue(entryColumnETag(), task.getETag())
