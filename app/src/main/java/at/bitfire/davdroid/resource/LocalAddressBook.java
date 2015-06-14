@@ -142,7 +142,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		String where;
 		
 		if (remoteResources.length != 0) {
-			List<String> sqlFileNames = new LinkedList<String>();
+			List<String> sqlFileNames = new LinkedList<>();
 			for (Resource res : remoteResources)
 				sqlFileNames.add(DatabaseUtils.sqlEscapeString(res.getName()));
 			where = entryColumnRemoteName() + " NOT IN (" + StringUtils.join(sqlFileNames, ",") + ")";
@@ -472,19 +472,20 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	protected void populatePostalAddress(Contact c, ContentValues row) {
 		Address address = new Address();
 		address.setLabel(row.getAsString(StructuredPostal.FORMATTED_ADDRESS));
-		switch (row.getAsInteger(StructuredPostal.TYPE)) {
-			case StructuredPostal.TYPE_HOME:
-				address.addType(AddressType.HOME);
-				break;
-			case StructuredPostal.TYPE_WORK:
-				address.addType(AddressType.WORK);
-				break;
-			case StructuredPostal.TYPE_CUSTOM:
-				String customType = row.getAsString(StructuredPostal.LABEL);
-				if (StringUtils.isNotEmpty(customType))
-					address.addType(AddressType.get(labelToXName(customType)));
-				break;
-		}
+		if (row.containsKey(StructuredPostal.TYPE))
+            switch (row.getAsInteger(StructuredPostal.TYPE)) {
+                case StructuredPostal.TYPE_HOME:
+                    address.addType(AddressType.HOME);
+                    break;
+                case StructuredPostal.TYPE_WORK:
+                    address.addType(AddressType.WORK);
+                    break;
+                case StructuredPostal.TYPE_CUSTOM:
+                    String customType = row.getAsString(StructuredPostal.LABEL);
+                    if (StringUtils.isNotEmpty(customType))
+                        address.addType(AddressType.get(labelToXName(customType)));
+                    break;
+            }
 		address.setStreetAddress(row.getAsString(StructuredPostal.STREET));
 		address.setPoBox(row.getAsString(StructuredPostal.POBOX));
 		address.setExtendedAddress(row.getAsString(StructuredPostal.NEIGHBORHOOD));
@@ -965,7 +966,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			String	lineStreet = StringUtils.join(new String[] { address.getStreetAddress(), address.getPoBox(), address.getExtendedAddress() }, " "),
 					lineLocality = StringUtils.join(new String[] { address.getPostalCode(), address.getLocality() }, " ");
 			
-			List<String> lines = new LinkedList<String>();
+			List<String> lines = new LinkedList<>();
 			if (lineStreet != null)
 				lines.add(lineStreet);
 			if (address.getRegion() != null && !address.getRegion().isEmpty())
@@ -1031,7 +1032,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 
 	protected Builder buildRelated(Builder builder, RelatedType type, String name) {
-		int typeCode = 0;
+		int typeCode;
 		String typeLabel = null;
 		if (type == RelatedType.CHILD)
 			typeCode = Relation.TYPE_CHILD;
