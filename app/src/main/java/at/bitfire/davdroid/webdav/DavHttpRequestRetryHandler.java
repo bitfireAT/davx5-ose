@@ -7,7 +7,7 @@
  */
 package at.bitfire.davdroid.webdav;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpRequest;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandlerHC4;
 

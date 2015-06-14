@@ -38,7 +38,7 @@ public class AccountAuthenticatorService extends Service {
 	
 	
 	private static class AccountAuthenticator extends AbstractAccountAuthenticator {
-		Context context;
+		final Context context;
 		
 		public AccountAuthenticator(Context context) {
 			super(context);

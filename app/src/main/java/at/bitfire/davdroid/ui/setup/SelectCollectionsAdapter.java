@@ -44,8 +44,8 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 			TYPE_TASK_LISTS_HEADING = 4,
 			TYPE_TASK_LISTS_ROW = 5;
 	
-	protected Context context;
-	protected ServerInfo serverInfo;
+	final protected Context context;
+	final protected ServerInfo serverInfo;
 	@Getter protected int
 			nAddressBooks, nAddressBookHeadings,
 			nCalendars, nCalendarHeadings,
@@ -160,7 +160,6 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 		}
 		
 		// step 2: fill view with content
-		int collectionIcon;
 		switch (viewType) {
 		case TYPE_ADDRESS_BOOKS_ROW:
 			setContent((CheckedTextView)v, R.drawable.addressbook, (ServerInfo.ResourceInfo)getItem(position));

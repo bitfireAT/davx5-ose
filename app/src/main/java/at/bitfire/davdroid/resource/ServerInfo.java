@@ -7,7 +7,6 @@
  */
 package at.bitfire.davdroid.resource;
 
-import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.LinkedList;
@@ -20,10 +19,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(suppressConstructorProperties=true)
 @Data
 public class ServerInfo {
-	enum Scheme {
-		HTTP, HTTPS, MAILTO
-	}
-	
 	final private URI baseURI;
 	final private String userName, password;
 	final boolean authPreemptive;

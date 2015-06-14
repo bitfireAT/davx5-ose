@@ -11,10 +11,8 @@ package at.bitfire.davdroid.ui.settings;
 import android.accounts.Account;
 import android.app.Activity;
 import android.app.FragmentTransaction;
-import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ListView;
 
 import at.bitfire.davdroid.R;
 

@@ -67,7 +67,7 @@ public class ContactsSyncAdapterService extends Service {
 				LocalCollection<?> database = new LocalAddressBook(account, provider, settings);
 				RemoteCollection<?> dav = new CardDavAddressBook(settings, httpClient, addressBookURL, userName, password, preemptive);
 				
-				Map<LocalCollection<?>, RemoteCollection<?>> map = new HashMap<LocalCollection<?>, RemoteCollection<?>>();
+				Map<LocalCollection<?>, RemoteCollection<?>> map = new HashMap<>();
 				map.put(database, dav);
 				
 				return map;

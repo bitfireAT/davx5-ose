@@ -25,7 +25,7 @@ import at.bitfire.davdroid.TestConstants;
 public class DavRedirectStrategyTest extends TestCase {
 	
 	CloseableHttpClient httpClient;
-	DavRedirectStrategy strategy = DavRedirectStrategy.INSTANCE;
+	final DavRedirectStrategy strategy = DavRedirectStrategy.INSTANCE;
 	
 	@Override
 	protected void setUp() {

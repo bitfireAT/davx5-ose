@@ -32,7 +32,7 @@ public class SettingsScopeFragment extends ListFragment {
 		final String[] accountNames = new String[accounts.length];
 		for (int i = 0; i < accounts.length; i++)
 			accountNames[i] = accounts[i].name;
-		setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_activated_1, accountNames));
+		setListAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_activated_1, accountNames));
 
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}

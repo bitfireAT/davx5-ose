@@ -10,8 +10,6 @@ package at.bitfire.davdroid.syncadapter;
 import android.content.SyncResult;
 import android.util.Log;
 
-import net.fortuna.ical4j.model.ValidationException;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashSet;
@@ -33,8 +31,8 @@ public class SyncManager {
 	
 	private static final int MAX_MULTIGET_RESOURCES = 35;
 	
-	protected LocalCollection<? extends Resource> local;
-	protected RemoteCollection<? extends Resource> remote;
+	final protected LocalCollection<? extends Resource> local;
+	final protected RemoteCollection<? extends Resource> remote;
 	
 	
 	public SyncManager(LocalCollection<? extends Resource> local, RemoteCollection<? extends Resource> remote) {
@@ -49,10 +47,8 @@ public class SyncManager {
 			addedRemotely = pushNew(),
 			updatedRemotely = pushDirty();
 		
-		syncResult.stats.numEntries = deletedRemotely + addedRemotely + updatedRemotely;
-		
 		// PHASE 2A: check if there's a reason to do a sync with remote (= forced sync or remote CTag changed)
-		boolean fetchCollection = syncResult.stats.numEntries > 0;
+		boolean fetchCollection = (deletedRemotely + addedRemotely + updatedRemotely) > 0;
 		if (manualSync) {
 			Log.i(TAG, "Synchronization forced");
 			fetchCollection = true;
@@ -72,8 +68,8 @@ public class SyncManager {
 		
 		// PHASE 2B: detect details of remote changes
 		Log.i(TAG, "Fetching remote resource list");
-		Set<Resource>	remotelyAdded = new HashSet<Resource>(),
-						remotelyUpdated = new HashSet<Resource>();
+		Set<Resource>	remotelyAdded = new HashSet<>(),
+						remotelyUpdated = new HashSet<>();
 		
 		Resource[] remoteResources = remote.getMemberETags();
 		for (Resource remoteResource : remoteResources) {
@@ -87,13 +83,13 @@ public class SyncManager {
 		}
 
 		// PHASE 3: pull remote changes from server
-		syncResult.stats.numInserts = pullNew(remotelyAdded.toArray(new Resource[0]));
-		syncResult.stats.numUpdates = pullChanged(remotelyUpdated.toArray(new Resource[0]));
-		syncResult.stats.numEntries += syncResult.stats.numInserts + syncResult.stats.numUpdates;
-		
+		syncResult.stats.numInserts = pullNew(remotelyAdded.toArray(new Resource[remotelyAdded.size()]));
+		syncResult.stats.numUpdates = pullChanged(remotelyUpdated.toArray(new Resource[remotelyUpdated.size()]));
+
 		Log.i(TAG, "Removing non-dirty resources that are not present remotely anymore");
-		local.deleteAllExceptRemoteNames(remoteResources);
-		local.commit();
+		syncResult.stats.numDeletes = local.deleteAllExceptRemoteNames(remoteResources);
+
+        syncResult.stats.numEntries = syncResult.stats.numInserts + syncResult.stats.numUpdates + syncResult.stats.numDeletes;
 
 		// update collection CTag
 		Log.i(TAG, "Sync complete, fetching new CTag");
@@ -145,10 +141,8 @@ public class SyncManager {
 						local.updateETag(res, eTag);
 					local.clearDirty(res);
 					count++;
-				} catch(PreconditionFailedException e) {
-					Log.i(TAG, "Didn't overwrite existing resource with other content");
-				} catch (ValidationException e) {
-					Log.e(TAG, "Couldn't create entity for adding: " + e.toString());
+				} catch (PreconditionFailedException e) {
+                    Log.i(TAG, "Didn't overwrite existing resource with other content");
 				} catch (RecordNotFoundException e) {
 					Log.wtf(TAG, "Couldn't read new record", e);
 				}
@@ -171,10 +165,8 @@ public class SyncManager {
 						local.updateETag(res, eTag);
 					local.clearDirty(res);
 					count++;
-				} catch(PreconditionFailedException e) {
-					Log.i(TAG, "Locally changed resource has been changed on the server in the meanwhile");
-				} catch (ValidationException e) {
-					Log.e(TAG, "Couldn't create entity for updating: " + e.toString());
+				} catch (PreconditionFailedException e) {
+                    Log.i(TAG, "Locally changed resource has been changed on the server in the meanwhile");
 				} catch (RecordNotFoundException e) {
 					Log.e(TAG, "Couldn't read dirty record", e);
 				}
@@ -193,7 +185,6 @@ public class SyncManager {
 			for (Resource res : remote.multiGet(resources)) {
 				Log.d(TAG, "Adding " + res.getName());
 				local.add(res);
-				local.commit();
 				count++;
 			}
 		return count;
@@ -207,7 +198,6 @@ public class SyncManager {
 			for (Resource res : remote.multiGet(resources)) {
 				Log.i(TAG, "Updating " + res.getName());
 				local.updateByRemoteName(res);
-				local.commit();
 				count++;
 			}
 		return count;

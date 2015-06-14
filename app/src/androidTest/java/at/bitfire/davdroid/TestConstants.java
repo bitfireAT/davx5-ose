@@ -15,7 +15,7 @@ import java.net.URISyntaxException;
 
 public class TestConstants {
 	public static final String ROBOHYDRA_BASE = "http://192.168.0.11:3000/";
-	
+
 	public static URI roboHydra;
 	static {
 		try {

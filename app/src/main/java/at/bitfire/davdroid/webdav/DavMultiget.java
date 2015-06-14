@@ -49,7 +49,7 @@ public class DavMultiget {
 				multiget.prop.calendarData = new DavProp.CalendarData();
 		}
 
-		multiget.hrefs = new ArrayList<DavHref>(names.length);
+		multiget.hrefs = new ArrayList<>(names.length);
 		for (String name : names)
 			multiget.hrefs.add(new DavHref(name));
 		

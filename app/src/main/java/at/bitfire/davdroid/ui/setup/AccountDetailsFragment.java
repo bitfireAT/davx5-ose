@@ -142,8 +142,7 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
 	
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
-		boolean ok = false;
-		ok = editAccountName.getText().length() > 0;
+		boolean ok = editAccountName.getText().length() > 0;
 		MenuItem item = menu.findItem(R.id.add_account);
 		item.setEnabled(ok);
 	}

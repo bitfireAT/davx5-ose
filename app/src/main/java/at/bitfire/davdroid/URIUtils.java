@@ -9,11 +9,6 @@ package at.bitfire.davdroid;
 
 import android.util.Log;
 
-import org.apache.commons.codec.EncoderException;
-import org.apache.commons.codec.net.URLCodec;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 

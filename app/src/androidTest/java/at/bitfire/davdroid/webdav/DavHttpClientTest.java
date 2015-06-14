@@ -13,14 +13,12 @@ import android.test.InstrumentationTestCase;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGetHC4;
 import org.apache.http.client.methods.HttpPostHC4;
-import org.apache.http.client.methods.HttpRequestBaseHC4;
 import org.apache.http.impl.client.CloseableHttpClient;
 
 import java.io.IOException;
 import java.net.URI;
 
 import at.bitfire.davdroid.TestConstants;
-import lombok.Cleanup;
 
 public class DavHttpClientTest extends InstrumentationTestCase {
     final static URI testCookieURI = TestConstants.roboHydra.resolve("/dav/testCookieStore");

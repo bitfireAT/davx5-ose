@@ -53,7 +53,7 @@ public class LocalCalendarTest extends InstrumentationTestCase {
     Context targetContext;
 
     ContentProviderClient providerClient;
-    Account testAccount = new Account(calendarName, accountType);
+    final Account testAccount = new Account(calendarName, accountType);
 
 	Uri calendarURI;
     LocalCalendar testCalendar;
@@ -69,7 +69,7 @@ public class LocalCalendarTest extends InstrumentationTestCase {
                         build();
     }
 
-    private long insertNewEvent() throws LocalStorageException, RemoteException {
+    private long insertNewEvent() throws RemoteException {
         ContentValues values = new ContentValues();
         values.put(Events.CALENDAR_ID, testCalendar.getId());
         values.put(Events.TITLE, "Test Event");

@@ -16,11 +16,7 @@ public class RecordNotFoundException extends LocalStorageException {
 	
 	private static final String detailMessage = "Record not found in local content provider"; 
 	
-	
-	RecordNotFoundException(Throwable ex) {
-		super(detailMessage, ex);
-	}
-	
+
 	RecordNotFoundException() {
 		super(detailMessage);
 	}

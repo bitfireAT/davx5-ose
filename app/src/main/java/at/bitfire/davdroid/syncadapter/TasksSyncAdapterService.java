@@ -61,7 +61,7 @@ public class TasksSyncAdapterService extends Service {
 			boolean preemptive = settings.getPreemptiveAuth();
 
 			try {
-				Map<LocalCollection<?>, RemoteCollection<?>> map = new HashMap<LocalCollection<?>, RemoteCollection<?>>();
+				Map<LocalCollection<?>, RemoteCollection<?>> map = new HashMap<>();
 
 				for (LocalTaskList calendar : LocalTaskList.findAll(account, provider)) {
 					RemoteCollection<?> dav = new CalDavTaskList(httpClient, calendar.getUrl(), userName, password, preemptive);

@@ -24,17 +24,15 @@ import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.TimeZone;
-import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.property.Clazz;
 import net.fortuna.ical4j.model.property.Completed;
-import net.fortuna.ical4j.model.property.Created;
 import net.fortuna.ical4j.model.property.DtStart;
 import net.fortuna.ical4j.model.property.Due;
 import net.fortuna.ical4j.model.property.Duration;
 import net.fortuna.ical4j.model.property.Status;
 import net.fortuna.ical4j.util.TimeZones;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dmfs.provider.tasks.TaskContract;
 
 import java.util.LinkedList;
@@ -52,7 +50,7 @@ public class LocalTaskList extends LocalCollection<Task> {
 
 	public static final String TASKS_AUTHORITY = "org.dmfs.tasks";
 
-	protected static String COLLECTION_COLUMN_CTAG = TaskContract.TaskLists.SYNC1;
+	protected static final String COLLECTION_COLUMN_CTAG = TaskContract.TaskLists.SYNC1;
 
 	@Override protected Uri entriesURI()                { return syncAdapterURI(TaskContract.Tasks.getContentUri(TASKS_AUTHORITY)); }
 	@Override protected String entryColumnAccountType()	{ return TaskContract.Tasks.ACCOUNT_TYPE; }
@@ -67,7 +65,7 @@ public class LocalTaskList extends LocalCollection<Task> {
 
 
 	public static Uri create(Account account, ContentResolver resolver, ServerInfo.ResourceInfo info) throws LocalStorageException {
-		final ContentProviderClient client = resolver.acquireContentProviderClient(TASKS_AUTHORITY);
+		@Cleanup("release") final ContentProviderClient client = resolver.acquireContentProviderClient(TASKS_AUTHORITY);
 		if (client == null)
 			throw new LocalStorageException("No tasks provider found");
 
@@ -101,7 +99,7 @@ public class LocalTaskList extends LocalCollection<Task> {
 		return taskList.toArray(new LocalTaskList[taskList.size()]);
 	}
 
-	public LocalTaskList(Account account, ContentProviderClient providerClient, long id, String url) throws RemoteException {
+	public LocalTaskList(Account account, ContentProviderClient providerClient, long id, String url) {
 		super(account, providerClient);
 		this.id = id;
 		this.url = url;

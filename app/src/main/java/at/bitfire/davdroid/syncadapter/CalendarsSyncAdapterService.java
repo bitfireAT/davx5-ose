@@ -61,7 +61,7 @@ public class CalendarsSyncAdapterService extends Service {
 			boolean preemptive = settings.getPreemptiveAuth();
 
 			try {
-				Map<LocalCollection<?>, RemoteCollection<?>> map = new HashMap<LocalCollection<?>, RemoteCollection<?>>();
+				Map<LocalCollection<?>, RemoteCollection<?>> map = new HashMap<>();
 				
 				for (LocalCalendar calendar : LocalCalendar.findAll(account, provider)) {
 					RemoteCollection<?> dav = new CalDavCalendar(httpClient, calendar.getUrl(), userName, password, preemptive);

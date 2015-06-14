@@ -9,7 +9,6 @@
 package at.bitfire.davdroid.ui.settings;
 
 import android.accounts.Account;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -20,13 +19,10 @@ import android.preference.SwitchPreference;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 
-import org.dmfs.provider.tasks.TaskContract;
-
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
 import ezvcard.VCardVersion;
-import lombok.Setter;
 
 public class AccountFragment extends PreferenceFragment {
 	final static String ARG_ACCOUNT = "account";
