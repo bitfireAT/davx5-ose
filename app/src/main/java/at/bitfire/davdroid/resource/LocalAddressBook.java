@@ -566,10 +566,14 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	protected void populateRelation(Contact c, ContentValues row) throws RemoteException {
 		String name = row.getAsString(Relation.NAME);
 
+        // don't process empty relations
+        if (StringUtils.isEmpty(name))
+            return;
+
 		// find relation by name or create new one
 		Related related = null;
 		for (Related rel : c.getRelations()) {
-			if (rel.getText().equals(name)) {
+			if (name.equals(rel.getText())) {
 				related = rel;
 				break;
 			}
