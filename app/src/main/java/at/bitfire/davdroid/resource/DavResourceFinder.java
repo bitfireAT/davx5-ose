@@ -9,7 +9,6 @@ package at.bitfire.davdroid.resource;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.apache.http.HttpException;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -22,7 +21,6 @@ import org.xbill.DNS.Type;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
@@ -40,8 +38,8 @@ import ezvcard.VCardVersion;
 public class DavResourceFinder implements Closeable {
 	private final static String TAG = "davdroid.ResourceFinder";
 	
-	protected Context context;
-	protected CloseableHttpClient httpClient;
+	final protected Context context;
+	final protected CloseableHttpClient httpClient;
 	
 	
 	public DavResourceFinder(Context context) {
@@ -187,10 +185,9 @@ public class DavResourceFinder implements Closeable {
 	 * @param serviceName	Service name ("carddav" or "caldav")
 	 * @return				Initial service URL (HTTP/HTTPS), without user credentials
 	 * @throws URISyntaxException when the user-given URI is invalid
-	 * @throws MalformedURLException when the user-given URI is invalid
 	 */
-	public URI getInitialContextURL(ServerInfo serverInfo, String serviceName) throws URISyntaxException, MalformedURLException {
-		String	scheme = null,
+	public URI getInitialContextURL(ServerInfo serverInfo, String serviceName) throws URISyntaxException {
+		String	scheme,
 				domain;
 		int		port = -1;
 		String	path = "/";

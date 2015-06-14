@@ -18,10 +18,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpException;
 
 import java.io.IOException;
@@ -43,9 +42,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 		EXTRA_USER_NAME = "user_name",
 		EXTRA_PASSWORD = "password",
 		EXTRA_AUTH_PREEMPTIVE = "auth_preemptive";
-	
-	ProgressBar progressBar;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

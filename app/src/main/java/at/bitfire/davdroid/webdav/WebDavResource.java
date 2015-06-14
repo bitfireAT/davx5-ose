@@ -9,7 +9,7 @@ package at.bitfire.davdroid.webdav;
 
 import android.util.Log;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -25,7 +25,6 @@ import org.apache.http.client.methods.HttpGetHC4;
 import org.apache.http.client.methods.HttpOptionsHC4;
 import org.apache.http.client.methods.HttpPutHC4;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.client.utils.URIUtilsHC4;
 import org.apache.http.entity.ByteArrayEntityHC4;
 import org.apache.http.impl.auth.BasicSchemeHC4;
 import org.apache.http.impl.client.BasicAuthCache;
@@ -83,11 +82,11 @@ public class WebDavResource {
 	@Getter protected URI location;
 	
 	// DAV capabilities (DAV: header) and allowed DAV methods (set for OPTIONS request)
-	protected Set<String>	capabilities = new HashSet<String>(),
-							methods = new HashSet<String>();
+	protected Set<String>	capabilities = new HashSet<>(),
+							methods = new HashSet<>();
 	
 	// DAV properties
-	protected HashMap<Property, String> properties = new HashMap<Property, String>();
+	protected HashMap<Property, String> properties = new HashMap<>();
 	@Getter protected List<String> supportedComponents;
 	
 	// list of members (only for collections)
@@ -294,13 +293,13 @@ public class WebDavResource {
 		// so we have to handle redirections manually and create a new request for the new location
 		for (int i = context.getRequestConfig().getMaxRedirects(); i > 0; i--) {
 			// build multi-get XML request 
-			List<String> hrefs = new LinkedList<String>();
+			List<String> hrefs = new LinkedList<>();
 			for (String name : names)
 				// name may contain "%" which have to be encoded → use non-quoting URI constructor and getRawPath()
 				// name may also contain ":", so prepend "./" because even the non-quoting URI constructor parses after constructing
 				// DAVdroid ensures that collections always have a trailing slash, so "./" won't go down in directory hierarchy
 				hrefs.add(location.resolve(new URI(null, null, "./" + name, null)).getRawPath());
-			DavMultiget multiget = DavMultiget.newRequest(type, hrefs.toArray(new String[0]));
+			DavMultiget multiget = DavMultiget.newRequest(type, hrefs.toArray(new String[hrefs.size()]));
 			
 			StringWriter writer = new StringWriter();
 			try {
@@ -456,7 +455,7 @@ public class WebDavResource {
 			return;
 		
 		// member list will be built from response
-		List<WebDavResource> members = new LinkedList<WebDavResource>();
+		List<WebDavResource> members = new LinkedList<>();
 		
 		// iterate through all resources (either ourselves or member)
 		for (DavResponse singleResponse : multiStatus.response) {
@@ -470,7 +469,7 @@ public class WebDavResource {
 			Log.d(TAG, "Processing multi-status element: " + href);
 
 			// process known properties
-			HashMap<Property, String> properties = new HashMap<Property, String>();
+			HashMap<Property, String> properties = new HashMap<>();
 			List<String> supportedComponents = null;
 			byte[] data = null;
 
@@ -551,7 +550,7 @@ public class WebDavResource {
 							}
 						
 						if (prop.supportedCalendarComponentSet != null) {
-							supportedComponents = new LinkedList<String>();
+							supportedComponents = new LinkedList<>();
 							for (Comp component : prop.supportedCalendarComponentSet)
 								supportedComponents.add(component.getName());
 						}

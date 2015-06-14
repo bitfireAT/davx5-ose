@@ -7,7 +7,6 @@
  */
 package at.bitfire.davdroid.resource;
 
-import android.accounts.Account;
 import android.util.Log;
 
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -17,7 +16,6 @@ import org.simpleframework.xml.core.Persister;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 
-import at.bitfire.davdroid.syncadapter.AccountSettings;
 import at.bitfire.davdroid.webdav.DavCalendarQuery;
 import at.bitfire.davdroid.webdav.DavCompFilter;
 import at.bitfire.davdroid.webdav.DavFilter;

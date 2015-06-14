@@ -21,7 +21,7 @@ import at.bitfire.davdroid.R;
 
 public class LoginTypeFragment extends Fragment {
 	
-	protected RadioButton btnTypeEmail, btnTypeURL;
+	protected RadioButton btnTypeEmail;
 	
 
 	@Override
@@ -29,8 +29,7 @@ public class LoginTypeFragment extends Fragment {
 		View v = inflater.inflate(R.layout.setup_login_type, container, false);
 		
 		btnTypeEmail = (RadioButton)v.findViewById(R.id.login_type_email);
-		btnTypeURL = (RadioButton)v.findViewById(R.id.login_type_url);
-		
+
 		setHasOptionsMenu(true);
 		
 		return v;

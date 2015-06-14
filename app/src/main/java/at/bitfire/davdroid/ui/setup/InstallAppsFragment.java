@@ -8,20 +8,11 @@
 
 package at.bitfire.davdroid.ui.setup;
 
-import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,13 +21,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.resource.LocalTaskList;
 
 public class InstallAppsFragment extends Fragment {
-	private static final String TAG = "davdroid.setup";
-
 	// https://code.google.com/p/android/issues/detail?id=25906
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,8 +55,6 @@ public class InstallAppsFragment extends Fragment {
 	}
 
 	protected void skip() {
-		FragmentManager fm = getFragmentManager();
-
 		getFragmentManager().beginTransaction()
 				.replace(R.id.right_pane, new SelectCollectionsFragment())
 				.addToBackStack(null)

@@ -73,22 +73,22 @@ public class ContactTest extends InstrumentationTestCase {
 		assertTrue(Arrays.equals(c.getPhoto(), expectedPhoto));
 	}
 
-	public void testParseInvalidUnknownProperties() throws IOException, InvalidResourceException {
+	public void testParseInvalidUnknownProperties() throws IOException {
 		Contact c = parseVCF("invalid-unknown-properties.vcf");
 		assertEquals("VCard with invalid unknown properties", c.getDisplayName());
 		assertNull(c.getUnknownProperties());
 	}
 	
 	
-	protected Contact parseVCF(String fname) throws IOException, InvalidResourceException {
+	protected Contact parseVCF(String fname) throws IOException {
 		@Cleanup InputStream in = assetMgr.open(fname, AssetManager.ACCESS_STREAMING);
 		Contact c = new Contact(fname, null);
 		c.parseEntity(in, new Resource.AssetDownloader() {
-			@Override
-			public byte[] download(URI uri) throws URISyntaxException, IOException, HttpException, DavException {
-				return IOUtils.toByteArray(uri);
-			}
-		});
+            @Override
+            public byte[] download(URI uri) throws URISyntaxException, IOException, HttpException, DavException {
+                return IOUtils.toByteArray(uri);
+            }
+        });
 		return c;
 	}
 }

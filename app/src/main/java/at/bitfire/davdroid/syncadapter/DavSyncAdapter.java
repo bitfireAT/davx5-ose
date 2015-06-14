@@ -8,8 +8,6 @@
 package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -19,17 +17,15 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.impl.client.CloseableHttpClient;
 
@@ -57,7 +53,7 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 	
 	@Getter private static String androidID;
 
-	protected Context context;
+	final protected Context context;
 
 	/* We use one static httpClient for
 	 *   - all sync adapters  (CalendarsSyncAdapter, ContactsSyncAdapter)
@@ -120,7 +116,6 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 		httpClientLock.writeLock().lock();
 		if (httpClient == null) {
 			Log.d(TAG, "Creating new DavHttpClient");
-			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
 			httpClient = DavHttpClient.create();
 		}
 		
@@ -128,10 +123,6 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 		// acquiring read lock before releasing write lock will downgrade the write lock to a read lock
 		httpClientLock.readLock().lock();
 		httpClientLock.writeLock().unlock();
-
-		// TODO use VCard 4.0 if possible
-		AccountSettings accountSettings = new AccountSettings(getContext(), account);
-		Log.d(TAG, "Server supports VCard version " + accountSettings.getAddressBookVCardVersion());
 
 		Exception exceptionToShow = null;     // exception to show notification for
 		Intent exceptionIntent = null;        // what shall happen when clicking on the exception notification
@@ -199,7 +190,7 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 					.setContentTitle(context.getString(R.string.sync_error_title))
 					.setContentText(exceptionToShow.getLocalizedMessage())
 					.setContentInfo(account.name)
-					.setStyle(new Notification.BigTextStyle().bigText(account.name + ":\n" + ExceptionUtils.getFullStackTrace(exceptionToShow)))
+					.setStyle(new Notification.BigTextStyle().bigText(account.name + ":\n" + ExceptionUtils.getStackTrace(exceptionToShow)))
 					.setContentIntent(contentIntent);
 
 			NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);

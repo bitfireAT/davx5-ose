@@ -56,19 +56,19 @@ public class HttpPropfind extends HttpEntityEnclosingRequestBaseHC4 {
 			depth = 1;
 			propfind.prop.displayname = new DavProp.DisplayName();
 			propfind.prop.resourcetype = new DavProp.ResourceType();
-			propfind.prop.currentUserPrivilegeSet = new LinkedList<DavProp.Privilege>();
+			propfind.prop.currentUserPrivilegeSet = new LinkedList<>();
 			propfind.prop.addressbookDescription = new DavProp.AddressbookDescription();
-			propfind.prop.supportedAddressData = new LinkedList<DavProp.AddressDataType>();
+			propfind.prop.supportedAddressData = new LinkedList<>();
 			break;
 		case CALDAV_COLLECTIONS:
 			depth = 1;
 			propfind.prop.displayname = new DavProp.DisplayName();
 			propfind.prop.resourcetype = new DavProp.ResourceType();
-			propfind.prop.currentUserPrivilegeSet = new LinkedList<DavProp.Privilege>();
+			propfind.prop.currentUserPrivilegeSet = new LinkedList<>();
 			propfind.prop.calendarDescription = new DavProp.CalendarDescription();
 			propfind.prop.calendarColor = new DavProp.CalendarColor();
 			propfind.prop.calendarTimezone = new DavProp.CalendarTimezone();
-			propfind.prop.supportedCalendarComponentSet = new LinkedList<DavProp.Comp>();
+			propfind.prop.supportedCalendarComponentSet = new LinkedList<>();
 			break;
 		case COLLECTION_CTAG:
 			propfind.prop.getctag = new DavProp.GetCTag(); 

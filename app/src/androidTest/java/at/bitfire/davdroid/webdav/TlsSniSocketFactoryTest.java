@@ -12,8 +12,8 @@ import android.util.Log;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpHost;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ import lombok.Cleanup;
 public class TlsSniSocketFactoryTest extends TestCase {
 	private static final String TAG = "davdroid.TlsSniSocketFactoryTest";
 
-	TlsSniSocketFactory factory = TlsSniSocketFactory.getSocketFactory();
+	final TlsSniSocketFactory factory = TlsSniSocketFactory.getSocketFactory();
 
 	private InetSocketAddress sampleTlsEndpoint;
 
@@ -75,7 +75,7 @@ public class TlsSniSocketFactoryTest extends TestCase {
 	}
 
 	public void testProtocolVersions() throws IOException {
-		String enabledProtocols[] = factory.protocols;
+		String enabledProtocols[] = TlsSniSocketFactory.protocols;
 		// SSL (all versions) should be disabled
 		for (String protocol : enabledProtocols)
 			assertFalse(protocol.contains("SSL"));

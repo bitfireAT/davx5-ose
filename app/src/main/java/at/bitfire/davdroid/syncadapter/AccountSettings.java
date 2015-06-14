@@ -19,7 +19,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import java.net.URI;
@@ -46,9 +45,9 @@ public class AccountSettings {
 
 	public final static long SYNC_INTERVAL_MANUALLY = -1;
 
-	Context context;
-	AccountManager accountManager;
-	Account account;
+	final Context context;
+	final AccountManager accountManager;
+	final Account account;
 	
 	
 	public AccountSettings(Context context, Account account) {
@@ -78,7 +77,7 @@ public class AccountSettings {
 			if (addressBook.isEnabled()) {
 				bundle.putString(KEY_ADDRESSBOOK_URL, addressBook.getURL());
 				bundle.putString(KEY_ADDRESSBOOK_VCARD_VERSION, addressBook.getVCardVersion().getVersion());
-				continue;
+				break;
 			}
 		return bundle;
 	}

@@ -13,8 +13,6 @@ import org.simpleframework.xml.Root;
 
 import java.util.List;
 
-import lombok.Getter;
-
 @Root(strict=false)
 public class DavResponse {
 	@Element

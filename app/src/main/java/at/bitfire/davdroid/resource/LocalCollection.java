@@ -11,6 +11,7 @@ import android.accounts.Account;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderOperation.Builder;
+import android.content.ContentProviderResult;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.OperationApplicationException;
@@ -21,14 +22,13 @@ import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.util.Log;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import lombok.Cleanup;
-import lombok.Getter;
 
 /**
  * Represents a locally-stored synchronizable collection (for instance, the
@@ -40,9 +40,9 @@ import lombok.Getter;
 public abstract class LocalCollection<T extends Resource> {
 	private static final String TAG = "davdroid.Collection";
 	
-	protected Account account;
-	protected ContentProviderClient providerClient;
-	protected ArrayList<ContentProviderOperation> pendingOperations = new ArrayList<ContentProviderOperation>();
+	final protected Account account;
+	final protected ContentProviderClient providerClient;
+	final protected ArrayList<ContentProviderOperation> pendingOperations = new ArrayList<>();
 
 	
 	// database fields
@@ -269,8 +269,8 @@ public abstract class LocalCollection<T extends Resource> {
 	 * @return the new resource object */
 	abstract public T newResource(long localID, String resourceName, String eTag);
 	
-	/** Enqueues adding the resource (including all data) to the local collection. Requires commit(). */
-	public void add(Resource resource) {
+	/** Enqueues adding the resource (including all data) to the local collection. */
+	public void add(Resource resource) throws LocalStorageException {
 		int idx = pendingOperations.size();
 		pendingOperations.add(
 				buildEntry(ContentProviderOperation.newInsert(entriesURI()), resource, false)
@@ -278,6 +278,7 @@ public abstract class LocalCollection<T extends Resource> {
 						.build());
 		
 		addDataRows(resource, -1, idx);
+        commit();
 	}
 	
 	/** Enqueues updating an existing resource in the local collection. The resource will be found by 
@@ -292,6 +293,7 @@ public abstract class LocalCollection<T extends Resource> {
 		
 		removeDataRows(localResource);
 		addDataRows(remoteResource, localResource.getLocalID(), -1);
+        commit();
 	}
 
 	/** Enqueues deleting a resource from the local collection. Requires commit(). */
@@ -303,10 +305,11 @@ public abstract class LocalCollection<T extends Resource> {
 	}
 
 	/**
-	 * Enqueues deleting all resources except the give ones from the local collection. Requires commit().
+	 * Deletes all resources except the give ones from the local collection.
 	 * @param remoteResources resources with these remote file names will be kept
+     * @return number of deleted resources
 	 */
-	public void deleteAllExceptRemoteNames(Resource[] remoteResources) {
+	public int deleteAllExceptRemoteNames(Resource[] remoteResources) throws LocalStorageException {
 		final String where;
 
 		if (remoteResources.length != 0) {
@@ -319,13 +322,17 @@ public abstract class LocalCollection<T extends Resource> {
 			// delete all entries
 			where = entryColumnRemoteName() + " IS NOT NULL";
 
-		ContentProviderOperation.Builder builder = ContentProviderOperation.newDelete(entriesURI())
-				.withSelection(     // restrict deletion to parent collection
-						entryColumnParentID() + "=? AND (" + where + ')',
-						new String[] { String.valueOf(getId()) }
-				);
-		pendingOperations.add(builder.withYieldAllowed(true).build());
-	}
+        try {
+            return providerClient.delete(
+                    entriesURI(),
+                    // restrict deletion to parent collection
+                    entryColumnParentID() + "=? AND (" + where + ')',
+                    new String[] { String.valueOf(getId()) }
+            );
+        } catch (RemoteException e) {
+            throw new LocalStorageException("Couldn't delete local resources", e);
+        }
+    }
 
 
 	/** Updates the locally-known ETag of a resource. */
@@ -350,17 +357,21 @@ public abstract class LocalCollection<T extends Resource> {
 	}
 
 	/** Commits enqueued operations to the content provider (for batch operations). */
-	public void commit() throws LocalStorageException {
+	public int commit() throws LocalStorageException {
+        int affected = 0;
 		if (!pendingOperations.isEmpty())
 			try {
-				Log.d(TAG, "Committing " + pendingOperations.size() + " operations");
-				providerClient.applyBatch(pendingOperations);
+				Log.d(TAG, "Committing " + pendingOperations.size() + " operations ...");
+                ContentProviderResult[] results = providerClient.applyBatch(pendingOperations);
+                for (ContentProviderResult result : results)
+                    if (result != null && result.count != null)
+                        affected += result.count;
+                Log.d(TAG, "... " + affected + " row(s) affected");
 				pendingOperations.clear();
-			} catch (RemoteException ex) {
-				throw new LocalStorageException(ex);
-			} catch(OperationApplicationException ex) {
+			} catch(OperationApplicationException | RemoteException ex) {
 				throw new LocalStorageException(ex);
 			}
+        return affected;
 	}
 
 	

@@ -28,21 +28,14 @@ import android.provider.CalendarContract.Attendees;
 import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
 import android.provider.CalendarContract.Reminders;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import net.fortuna.ical4j.model.Date;
-import net.fortuna.ical4j.model.DateList;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Parameter;
 import net.fortuna.ical4j.model.ParameterList;
-import net.fortuna.ical4j.model.Period;
-import net.fortuna.ical4j.model.PeriodList;
 import net.fortuna.ical4j.model.PropertyList;
-import net.fortuna.ical4j.model.TimeZone;
-import net.fortuna.ical4j.model.TimeZoneRegistry;
-import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VAlarm;
 import net.fortuna.ical4j.model.parameter.Cn;
 import net.fortuna.ical4j.model.parameter.CuType;
@@ -51,7 +44,6 @@ import net.fortuna.ical4j.model.parameter.Role;
 import net.fortuna.ical4j.model.property.Action;
 import net.fortuna.ical4j.model.property.Attendee;
 import net.fortuna.ical4j.model.property.DateListProperty;
-import net.fortuna.ical4j.model.property.DateProperty;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.Duration;
 import net.fortuna.ical4j.model.property.ExDate;
@@ -61,19 +53,14 @@ import net.fortuna.ical4j.model.property.RDate;
 import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.RecurrenceId;
 import net.fortuna.ical4j.model.property.Status;
-import net.fortuna.ical4j.util.TimeZones;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import at.bitfire.davdroid.DAVUtils;
 import at.bitfire.davdroid.DateUtils;
@@ -91,7 +78,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 	@Getter protected String url;
 	@Getter protected long id;
 	
-	protected static String COLLECTION_COLUMN_CTAG = Calendars.CAL_SYNC1;
+	protected static final String COLLECTION_COLUMN_CTAG = Calendars.CAL_SYNC1;
 
 	
 	/* database fields */
@@ -118,7 +105,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 	@SuppressLint("InlinedApi")
 	public static Uri create(Account account, ContentResolver resolver, ServerInfo.ResourceInfo info) throws LocalStorageException {
-		final ContentProviderClient client = resolver.acquireContentProviderClient(CalendarContract.AUTHORITY);
+		@Cleanup("release") final ContentProviderClient client = resolver.acquireContentProviderClient(CalendarContract.AUTHORITY);
 		if (client == null)
 			throw new LocalStorageException("No Calendar Provider found (Calendar app disabled?)");
 
@@ -168,7 +155,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		return calendars.toArray(new LocalCalendar[calendars.size()]);
 	}
 
-	public LocalCalendar(Account account, ContentProviderClient providerClient, long id, String url) throws RemoteException {
+	public LocalCalendar(Account account, ContentProviderClient providerClient, long id, String url) {
 		super(account, providerClient);
 		this.id = id;
 		this.url = url;
@@ -229,7 +216,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		return new Event(localID, resourceName, eTag);
 	}
 	
-	public void deleteAllExceptRemoteNames(Resource[] remoteResources) {
+	public int deleteAllExceptRemoteNames(Resource[] remoteResources) throws LocalStorageException {
 		List<String> sqlFileNames = new LinkedList<>();
 		for (Resource res : remoteResources)
 			sqlFileNames.add(DatabaseUtils.sqlEscapeString(res.getName()));
@@ -256,6 +243,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 				.withYieldAllowed(true)
 				.build()
 		);
+        return commit();
 	}
 
 	@Override
@@ -454,7 +442,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		}
 	}
 
-	void populateAttendee(Event event, ContentValues values) throws RemoteException {
+	void populateAttendee(Event event, ContentValues values) {
 		try {
 			Attendee attendee = new Attendee(new URI("mailto", values.getAsString(Attendees.ATTENDEE_EMAIL), null));
 			ParameterList params = attendee.getParameters();
@@ -504,7 +492,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		}
 	}
 
-	void populateReminder(Event event, ContentValues row) throws RemoteException {
+	void populateReminder(Event event, ContentValues row) {
 		VAlarm alarm = new VAlarm(new Dur(0, 0, -row.getAsInteger(Reminders.MINUTES), 0));
 
 		PropertyList props = alarm.getProperties();

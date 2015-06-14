@@ -7,8 +7,6 @@
  */
 package at.bitfire.davdroid.resource;
 
-import android.accounts.Account;
-
 import org.apache.http.impl.client.CloseableHttpClient;
 
 import java.net.URISyntaxException;

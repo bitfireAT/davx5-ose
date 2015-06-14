@@ -38,7 +38,6 @@ import net.fortuna.ical4j.model.property.ExRule;
 import net.fortuna.ical4j.model.property.LastModified;
 import net.fortuna.ical4j.model.property.Location;
 import net.fortuna.ical4j.model.property.Organizer;
-import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.RDate;
 import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.RecurrenceId;
@@ -51,19 +50,15 @@ import net.fortuna.ical4j.util.CompatibilityHints;
 import net.fortuna.ical4j.util.SimpleHostInfo;
 import net.fortuna.ical4j.util.UidGenerator;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.Calendar;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
 import at.bitfire.davdroid.Constants;
@@ -98,9 +93,9 @@ public class Event extends Resource {
 	@Getter @Setter protected boolean opaque;
 	
 	@Getter @Setter protected Organizer organizer;
-	@Getter protected List<Attendee> attendees = new LinkedList<Attendee>();
+	@Getter protected List<Attendee> attendees = new LinkedList<>();
 
-	@Getter protected List<VAlarm> alarms = new LinkedList<VAlarm>();
+	@Getter protected List<VAlarm> alarms = new LinkedList<>();
 
 	static {
 		CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_UNFOLDING, true);
@@ -201,10 +196,10 @@ public class Event extends Resource {
 		}
 
 		rrule = (RRule)event.getProperty(Property.RRULE);
-		for (RDate rdate : (Iterable<RDate>)event.getProperties(Property.RDATE))
+		for (RDate rdate : (List<RDate>)(List<?>)event.getProperties(Property.RDATE))
 			rdates.add(rdate);
 		exrule = (ExRule)event.getProperty(Property.EXRULE);
-		for (ExDate exdate : (Iterable<ExDate>)event.getProperties(Property.EXDATE))
+		for (ExDate exdate : (List<ExDate>)(List<?>)event.getProperties(Property.EXDATE))
 			exdates.add(exdate);
 
 		if (event.getSummary() != null)
@@ -218,7 +213,7 @@ public class Event extends Resource {
 		opaque = event.getTransparency() != Transp.TRANSPARENT;
 
 		organizer = event.getOrganizer();
-		for (Attendee attendee : (Iterable<Attendee>)event.getProperties(Property.ATTENDEE))
+		for (Attendee attendee : (List<Attendee>)(List<?>)event.getProperties(Property.ATTENDEE))
 			attendees.add(attendee);
 
 		Clazz classification = event.getClassification();

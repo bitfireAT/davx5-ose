@@ -28,9 +28,7 @@ import lombok.Cleanup;
 // tests require running robohydra!
 
 public class WebDavResourceTest extends InstrumentationTestCase {
-	static byte[] SAMPLE_CONTENT = new byte[] { 1, 2, 3, 4, 5 };
-	
-	final static String PATH_SIMPLE_FILE = "collection/new.file";
+	final static byte[] SAMPLE_CONTENT = new byte[] { 1, 2, 3, 4, 5 };
 	
 	AssetManager assetMgr;
 	CloseableHttpClient httpClient;

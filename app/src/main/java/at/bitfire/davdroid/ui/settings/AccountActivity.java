@@ -12,7 +12,6 @@ import android.accounts.Account;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.os.Bundle;
-import android.util.Log;
 
 import at.bitfire.davdroid.R;
 

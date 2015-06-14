@@ -7,10 +7,7 @@
  */
 package at.bitfire.davdroid.resource;
 
-import android.accounts.Account;
 import android.util.Log;
-
-import net.fortuna.ical4j.model.ValidationException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -25,10 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import at.bitfire.davdroid.URIUtils;
-import at.bitfire.davdroid.syncadapter.AccountSettings;
-import at.bitfire.davdroid.webdav.DavCalendarQuery;
 import at.bitfire.davdroid.webdav.DavException;
-import at.bitfire.davdroid.webdav.DavFilter;
 import at.bitfire.davdroid.webdav.DavMultiget;
 import at.bitfire.davdroid.webdav.DavNoContentException;
 import at.bitfire.davdroid.webdav.HttpException;
@@ -38,7 +32,6 @@ import at.bitfire.davdroid.webdav.WebDavResource.PutMode;
 import ezvcard.io.text.VCardParseException;
 import lombok.Cleanup;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Represents a remotely stored synchronizable collection (collection as in
@@ -49,7 +42,6 @@ import lombok.Setter;
 public abstract class RemoteCollection<T extends Resource> {
 	private static final String TAG = "davdroid.resource";
 
-	CloseableHttpClient httpClient;
 	URI baseURI;
 	@Getter	WebDavResource collection;
 
@@ -59,8 +51,6 @@ public abstract class RemoteCollection<T extends Resource> {
 	abstract protected T newResourceSkeleton(String name, String ETag);
 
 	public RemoteCollection(CloseableHttpClient httpClient, String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {
-		this.httpClient = httpClient;
-
 		baseURI = URIUtils.parseURI(baseURL, false);
 		collection = new WebDavResource(httpClient, baseURI, user, password, preemptiveAuth);
 	}
@@ -101,12 +91,12 @@ public abstract class RemoteCollection<T extends Resource> {
 		else
 			collection.propfind(HttpPropfind.Mode.MEMBERS_ETAG);
 
-		List<T> resources = new LinkedList<T>();
+		List<T> resources = new LinkedList<>();
 		if (collection.getMembers() != null)
 			for (WebDavResource member : collection.getMembers())
 				resources.add(newResourceSkeleton(member.getName(), member.getETag()));
 
-		return resources.toArray(new Resource[0]);
+		return resources.toArray(new Resource[resources.size()]);
 
 	}
 
@@ -115,16 +105,16 @@ public abstract class RemoteCollection<T extends Resource> {
 	public Resource[] multiGet(Resource[] resources) throws URISyntaxException, IOException, DavException, HttpException {
 		try {
 			if (resources.length == 1)
-				return (T[]) new Resource[] { get(resources[0]) };
+				return new Resource[] { get(resources[0]) };
 
 			Log.i(TAG, "Multi-getting " + resources.length + " remote resource(s)");
 
-			LinkedList<String> names = new LinkedList<String>();
+			LinkedList<String> names = new LinkedList<>();
 			for (Resource resource : resources)
 				names.add(resource.getName());
 
-			LinkedList<T> foundResources = new LinkedList<T>();
-			collection.multiGet(multiGetType(), names.toArray(new String[0]));
+			LinkedList<T> foundResources = new LinkedList<>();
+			collection.multiGet(multiGetType(), names.toArray(new String[names.size()]));
 			if (collection.getMembers() == null)
 				throw new DavNoContentException();
 
@@ -142,7 +132,7 @@ public abstract class RemoteCollection<T extends Resource> {
 				}
 			}
 
-			return foundResources.toArray(new Resource[0]);
+			return foundResources.toArray(new Resource[foundResources.size()]);
 		} catch (InvalidResourceException e) {
 			Log.e(TAG, "Couldn't parse entity from GET", e);
 		}
@@ -172,7 +162,7 @@ public abstract class RemoteCollection<T extends Resource> {
 	}
 
 	// returns ETag of the created resource, if returned by server
-	public String add(Resource res) throws URISyntaxException, IOException, HttpException, ValidationException {
+	public String add(Resource res) throws URISyntaxException, IOException, HttpException {
 		WebDavResource member = new WebDavResource(collection, res.getName(), res.getETag());
 		member.setContentType(res.getMimeType());
 
@@ -193,7 +183,7 @@ public abstract class RemoteCollection<T extends Resource> {
 	}
 
 	// returns ETag of the updated resource, if returned by server
-	public String update(Resource res) throws URISyntaxException, IOException, HttpException, ValidationException {
+	public String update(Resource res) throws URISyntaxException, IOException, HttpException {
 		WebDavResource member = new WebDavResource(collection, res.getName(), res.getETag());
 		member.setContentType(res.getMimeType());
 
@@ -211,22 +201,22 @@ public abstract class RemoteCollection<T extends Resource> {
 
 	Resource.AssetDownloader getDownloader() {
 		return new Resource.AssetDownloader() {
-			@Override
-			public byte[] download(URI uri) throws URISyntaxException, IOException, HttpException, DavException {
-				if (!uri.isAbsolute())
-					throw new URISyntaxException(uri.toString(), "URI referenced from entity must be absolute");
+            @Override
+            public byte[] download(URI uri) throws URISyntaxException, IOException, HttpException, DavException {
+                if (!uri.isAbsolute())
+                    throw new URISyntaxException(uri.toString(), "URI referenced from entity must be absolute");
 
-				if (uri.getScheme().equalsIgnoreCase(baseURI.getScheme()) &&
-					uri.getAuthority().equalsIgnoreCase(baseURI.getAuthority())) {
-					// resource is on same server, send Authorization
-					WebDavResource file = new WebDavResource(collection, uri);
-					file.get("image/*");
-					return file.getContent();
-				} else {
-					// resource is on an external server, don't send Authorization
-					return IOUtils.toByteArray(uri);
-				}
-			}
-		};
+                if (uri.getScheme().equalsIgnoreCase(baseURI.getScheme()) &&
+                        uri.getAuthority().equalsIgnoreCase(baseURI.getAuthority())) {
+                    // resource is on same server, send Authorization
+                    WebDavResource file = new WebDavResource(collection, uri);
+                    file.get("image/*");
+                    return file.getContent();
+                } else {
+                    // resource is on an external server, don't send Authorization
+                    return IOUtils.toByteArray(uri);
+                }
+            }
+        };
 	}
 }
