@@ -473,19 +473,19 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		Address address = new Address();
 		address.setLabel(row.getAsString(StructuredPostal.FORMATTED_ADDRESS));
 		if (row.containsKey(StructuredPostal.TYPE))
-            switch (row.getAsInteger(StructuredPostal.TYPE)) {
-                case StructuredPostal.TYPE_HOME:
-                    address.addType(AddressType.HOME);
-                    break;
-                case StructuredPostal.TYPE_WORK:
-                    address.addType(AddressType.WORK);
-                    break;
-                case StructuredPostal.TYPE_CUSTOM:
-                    String customType = row.getAsString(StructuredPostal.LABEL);
-                    if (StringUtils.isNotEmpty(customType))
-                        address.addType(AddressType.get(labelToXName(customType)));
-                    break;
-            }
+			switch (row.getAsInteger(StructuredPostal.TYPE)) {
+				case StructuredPostal.TYPE_HOME:
+					address.addType(AddressType.HOME);
+					break;
+				case StructuredPostal.TYPE_WORK:
+					address.addType(AddressType.WORK);
+					break;
+				case StructuredPostal.TYPE_CUSTOM:
+					String customType = row.getAsString(StructuredPostal.LABEL);
+					if (StringUtils.isNotEmpty(customType))
+						address.addType(AddressType.get(labelToXName(customType)));
+					break;
+			}
 		address.setStreetAddress(row.getAsString(StructuredPostal.STREET));
 		address.setPoBox(row.getAsString(StructuredPostal.POBOX));
 		address.setExtendedAddress(row.getAsString(StructuredPostal.NEIGHBORHOOD));
@@ -566,9 +566,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	protected void populateRelation(Contact c, ContentValues row) throws RemoteException {
 		String name = row.getAsString(Relation.NAME);
 
-        // don't process empty relations
-        if (StringUtils.isEmpty(name))
-            return;
+		// don't process empty relations
+		if (StringUtils.isEmpty(name))
+			return;
 
 		// find relation by name or create new one
 		Related related = null;
