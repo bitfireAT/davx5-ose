@@ -165,7 +165,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		LinkedList<LocalCalendar> calendars = new LinkedList<>();
 		while (cursor != null && cursor.moveToNext())
 			calendars.add(new LocalCalendar(account, providerClient, cursor.getInt(0), cursor.getString(1)));
-		return calendars.toArray(new LocalCalendar[0]);
+		return calendars.toArray(new LocalCalendar[calendars.size()]);
 	}
 
 	public LocalCalendar(Account account, ContentProviderClient providerClient, long id, String url) throws RemoteException {
@@ -331,7 +331,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		final long tsStart = values.getAsLong(Events.DTSTART);
 		final String duration = values.getAsString(Events.DURATION);
 
-		String tzId = null;
+		String tzId;
 		Long tsEnd = values.getAsLong(Events.DTEND);
 		if (allDay) {
 			e.setDtStart(tsStart, null);
@@ -389,7 +389,11 @@ public class LocalCalendar extends LocalCollection<Event> {
 		if (values.containsKey(Events.ORIGINAL_INSTANCE_TIME)) {
 			// this event is an exception of a recurring event
 			long originalInstanceTime = values.getAsLong(Events.ORIGINAL_INSTANCE_TIME);
-			boolean originalAllDay = values.getAsInteger(Events.ORIGINAL_ALL_DAY) != 0;
+
+			boolean originalAllDay = false;
+			if (values.containsKey(Events.ORIGINAL_ALL_DAY))
+				originalAllDay = values.getAsInteger(Events.ORIGINAL_ALL_DAY) != 0;
+
 			Date originalDate = originalAllDay ?
 					new Date(originalInstanceTime) :
 					new DateTime(originalInstanceTime);
@@ -747,7 +751,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 	 */
 	static String recurrenceSetsToAndroidString(List<? extends DateListProperty> dates) {
 		String tzID = null;
-		List<String> strDates = new LinkedList<String>();
+		List<String> strDates = new LinkedList<>();
 
 		for (DateListProperty dateList : dates) {
 			if (dateList.getTimeZone() != null) {
