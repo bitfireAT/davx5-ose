@@ -221,7 +221,7 @@ exports.getBodyParts = function(conf) {
 				}
             }),
 
-			/* non-existing file */
+			/* non-existing member */
             new RoboHydraHeadDAV({
 				path: "/dav/collection/new.file",
 				handler: function(req,res,next) {
@@ -238,7 +238,7 @@ exports.getBodyParts = function(conf) {
 				}
             }),
 
-			/* existing file */
+			/* existing member */
             new RoboHydraHeadDAV({
 				path: "/dav/collection/existing.file",
 				handler: function(req,res,next) {
@@ -252,6 +252,15 @@ exports.getBodyParts = function(conf) {
 
 					} else if (req.method == "DELETE")
 						res.statusCode = 204;
+				}
+            }),
+
+			/* existing member with encoded URL as file name */
+            new RoboHydraHeadDAV({
+				path: "/dav/http%253A%252F%252Fwww.invalid.example%252Fm8%252Ffeeds%252Fcontacts%252Fmaria.mueller%252540gmail.com%252Fbase%252F5528abc5720cecc.vcf",
+				handler: function(req,res,next) {
+					if (req.method == "GET")
+						res.statusCode = 200;
 				}
             }),
 

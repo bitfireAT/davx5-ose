@@ -63,7 +63,7 @@ import lombok.ToString;
 @ToString
 public class WebDavResource {
 	private static final String TAG = "davdroid.WebDavResource";
-	
+
 	public enum Property {
 		CURRENT_USER_PRINCIPAL,							// resource detection
 		ADDRESSBOOK_HOMESET, CALENDAR_HOMESET,
@@ -80,15 +80,15 @@ public class WebDavResource {
 
 	// location of this resource
 	@Getter protected URI location;
-	
+
 	// DAV capabilities (DAV: header) and allowed DAV methods (set for OPTIONS request)
 	protected Set<String>	capabilities = new HashSet<>(),
 							methods = new HashSet<>();
-	
+
 	// DAV properties
 	protected HashMap<Property, String> properties = new HashMap<>();
 	@Getter protected List<String> supportedComponents;
-	
+
 	// list of members (only for collections)
 	@Getter protected List<WebDavResource> members;
 
@@ -97,16 +97,16 @@ public class WebDavResource {
 
 	protected CloseableHttpClient httpClient;
 	protected HttpClientContext context;
-	
-	
+
+
 	public WebDavResource(CloseableHttpClient httpClient, URI baseURI) {
 		this.httpClient = httpClient;
 		location = baseURI;
-		
+
 		context = HttpClientContext.create();
 		context.setCredentialsProvider(new BasicCredentialsProviderHC4());
 	}
-	
+
 	public WebDavResource(CloseableHttpClient httpClient, URI baseURI, String username, String password, boolean preemptive) {
 		this(httpClient, baseURI);
 
@@ -125,7 +125,7 @@ public class WebDavResource {
 			context.setAuthCache(authCache);
 		}
 	}
-	
+
 	public WebDavResource(WebDavResource parent) {		// copy constructor: based on existing WebDavResource, reuse settings
 		// reuse httpClient, context and location (no deep copy)
 		httpClient = parent.httpClient;
@@ -141,14 +141,16 @@ public class WebDavResource {
     /**
      * Creates a WebDavResource representing a member of the parent collection.
      * @param parent Parent collection
-     * @param member File name of the member. This may contain ":" without leading "./"!
+     * @param member File name of the member, unescaped. This may contain ":" without leading "./"!
+     *               To create a new collection with a relative path that may not be a member, use the
+     *               WebDavResource(WebDavResource parent, URI url) constructor.
      * @throws URISyntaxException
      */
 	public WebDavResource(WebDavResource parent, String member) throws URISyntaxException {
 		this(parent);
-		location = parent.location.resolve(URIUtils.parseURI(member, true));
+		location = parent.location.resolve(new URI(null, null, "./" + member, null));
 	}
-	
+
 	public WebDavResource(WebDavResource parent, String member, String ETag) throws URISyntaxException {
 		this(parent, member);
 		properties.put(Property.ETAG, ETag);
@@ -179,37 +181,37 @@ public class WebDavResource {
 	public boolean supportsMethod(String method) {
 		return methods.contains(method);
 	}
-	
-	
+
+
 	/* file hierarchy methods */
-	
+
 	public String getName() {
 		String[] names = StringUtils.split(location.getPath(), "/");
 		return names[names.length - 1];
 	}
-	
-	
+
+
 	/* property methods */
-	
+
 	public URI getCurrentUserPrincipal() throws URISyntaxException {
 		String principal = properties.get(Property.CURRENT_USER_PRINCIPAL);
 		return principal != null ? URIUtils.parseURI(principal, false) : null;
 	}
-	
+
 	public URI getAddressbookHomeSet() throws URISyntaxException {
 		String homeset = properties.get(Property.ADDRESSBOOK_HOMESET);
 		return homeset != null ? URIUtils.parseURI(homeset, false) : null;
 	}
-	
+
 	public URI getCalendarHomeSet() throws URISyntaxException {
 		String homeset = properties.get(Property.CALENDAR_HOMESET);
 		return homeset != null ? URIUtils.parseURI(homeset, false) : null;
 	}
-	
+
 	public String getContentType() {
 		return properties.get(Property.CONTENT_TYPE);
 	}
-	
+
 	public void setContentType(String mimeType) {
 		properties.put(Property.CONTENT_TYPE, mimeType);
 	}
@@ -217,22 +219,22 @@ public class WebDavResource {
 	public boolean isReadOnly() {
 		return properties.containsKey(Property.READ_ONLY);
 	}
-	
+
 	public String getDisplayName() {
 		return properties.get(Property.DISPLAY_NAME);
 	}
-	
+
 	public String getDescription() {
 		return properties.get(Property.DESCRIPTION);
 	}
-	
+
 	public String getCTag() {
 		return properties.get(Property.CTAG);
 	}
 	public void invalidateCTag() {
 		properties.remove(Property.CTAG);
 	}
-	
+
 	public String getETag() {
 		return properties.get(Property.ETAG);
 	}
@@ -240,36 +242,36 @@ public class WebDavResource {
 	public boolean isCalendar() {
 		return properties.containsKey(Property.IS_CALENDAR);
 	}
-	
+
 	public String getColor() {
 		return properties.get(Property.COLOR);
 	}
-	
+
 	public String getTimezone() {
 		return properties.get(Property.TIMEZONE);
 	}
-	
+
 	public boolean isAddressBook() {
 		return properties.containsKey(Property.IS_ADDRESSBOOK);
 	}
-	
+
 	public VCardVersion getVCardVersion() {
 		String versionStr = properties.get(Property.VCARD_VERSION);
 		return (versionStr != null) ? VCardVersion.valueOfByStr(versionStr) : null;
 	}
-	
-	
+
+
 	/* collection operations */
-	
+
 	public void propfind(HttpPropfind.Mode mode) throws URISyntaxException, IOException, DavException, HttpException {
 		@Cleanup CloseableHttpResponse response = null;
-		
+
 		// processMultiStatus() requires knowledge of the actual content location,
 		// so we have to handle redirections manually and create a new request for the new location
 		for (int i = context.getRequestConfig().getMaxRedirects(); i > 0; i--) {
 			HttpPropfind propfind = new HttpPropfind(location, mode);
 			response = httpClient.execute(propfind, context);
-			
+
 			if (response.getStatusLine().getStatusCode()/100 == 3) {
 				location = DavRedirectStrategy.getLocation(propfind, response, context);
 				Log.i(TAG, "Redirection on PROPFIND; trying again at new content URL: " + location);
@@ -281,18 +283,18 @@ public class WebDavResource {
 		}
 		if (response == null)
 			throw new DavNoContentException();
-		
+
 		checkResponse(response);		// will also handle Content-Location
 		processMultiStatus(response);
 	}
 
 	public void multiGet(DavMultiget.Type type, String[] names) throws URISyntaxException, IOException, DavException, HttpException {
 		@Cleanup CloseableHttpResponse response = null;
-		
+
 		// processMultiStatus() requires knowledge of the actual content location,
 		// so we have to handle redirections manually and create a new request for the new location
 		for (int i = context.getRequestConfig().getMaxRedirects(); i > 0; i--) {
-			// build multi-get XML request 
+			// build multi-get XML request
 			List<String> hrefs = new LinkedList<>();
 			for (String name : names)
 				// name may contain "%" which have to be encoded → use non-quoting URI constructor and getRawPath()
@@ -300,7 +302,7 @@ public class WebDavResource {
 				// DAVdroid ensures that collections always have a trailing slash, so "./" won't go down in directory hierarchy
 				hrefs.add(location.resolve(new URI(null, null, "./" + name, null)).getRawPath());
 			DavMultiget multiget = DavMultiget.newRequest(type, hrefs.toArray(new String[hrefs.size()]));
-			
+
 			StringWriter writer = new StringWriter();
 			try {
 				Serializer serializer = new Persister();
@@ -309,15 +311,15 @@ public class WebDavResource {
 				Log.e(TAG, "Couldn't create XML multi-get request", ex);
 				throw new DavException("Couldn't create multi-get request");
 			}
-	
+
 			// submit REPORT request
 			HttpReport report = new HttpReport(location, writer.toString());
 			response = httpClient.execute(report, context);
-			
+
 			if (response.getStatusLine().getStatusCode()/100 == 3) {
 				location = DavRedirectStrategy.getLocation(report, response, context);
 				Log.i(TAG, "Redirection on REPORT multi-get; trying again at new content URL: " + location);
-				
+
 				// don't forget to throw away the unneeded response content
 				HttpEntity entity = response.getEntity();
 				if (entity != null) { @Cleanup InputStream content = entity.getContent(); }
@@ -326,7 +328,7 @@ public class WebDavResource {
 		}
 		if (response == null)
 			throw new DavNoContentException();
-		
+
 		checkResponse(response);		// will also handle Content-Location
 		processMultiStatus(response);
 	}
@@ -343,13 +345,13 @@ public class WebDavResource {
 		processMultiStatus(response);
 	}
 
-	
+
 	/* resource operations */
-	
+
 	public void get(String acceptedMimeTypes) throws URISyntaxException, IOException, HttpException, DavException {
 		HttpGetHC4 get = new HttpGetHC4(location);
 		get.addHeader("Accept", acceptedMimeTypes);
-		
+
 		@Cleanup CloseableHttpResponse response = httpClient.execute(get, context);
 		checkResponse(response);
 
@@ -359,7 +361,7 @@ public class WebDavResource {
 
 		content = EntityUtilsHC4.toByteArray(entity);
 	}
-	
+
 	// returns the ETag of the created/updated resource, if available (null otherwise)
 	public String put(byte[] data, PutMode mode) throws URISyntaxException, IOException, HttpException {
 		HttpPutHC4 put = new HttpPutHC4(location);
@@ -373,7 +375,7 @@ public class WebDavResource {
 			put.addHeader("If-Match", (getETag() != null) ? getETag() : "*");
 			break;
 		}
-		
+
 		if (getContentType() != null)
 			put.addHeader("Content-Type", getContentType());
 
@@ -386,23 +388,23 @@ public class WebDavResource {
 
 		return null;
 	}
-	
+
 	public void delete() throws URISyntaxException, IOException, HttpException {
 		HttpDeleteHC4 delete = new HttpDeleteHC4(location);
-		
+
 		if (getETag() != null)
 			delete.addHeader("If-Match", getETag());
-		
+
 		@Cleanup CloseableHttpResponse response = httpClient.execute(delete, context);
 		checkResponse(response);
 	}
-	
+
 
 	/* helpers */
-	
+
 	protected void checkResponse(HttpResponse response) throws HttpException {
 		checkResponse(response.getStatusLine());
-		
+
 		// handle Content-Location header (see RFC 4918 5.2 Collection Resources)
 		Header contentLocationHdr = response.getFirstHeader("Content-Location");
 		if (contentLocationHdr != null) {
@@ -411,13 +413,13 @@ public class WebDavResource {
 			Log.d(TAG, "Set Content-Location to " + location);
 		}
 	}
-	
+
 	protected static void checkResponse(StatusLine statusLine) throws HttpException {
 		int code = statusLine.getStatusCode();
-		
+
 		if (code/100 == 1 || code/100 == 2)		// everything OK
 			return;
-		
+
 		String reason = code + " " + statusLine.getReasonPhrase();
 		switch (code) {
 		case HttpStatus.SC_UNAUTHORIZED:
@@ -437,12 +439,12 @@ public class WebDavResource {
 	protected void processMultiStatus(HttpResponse response) throws IOException, HttpException, DavException {
 		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_MULTI_STATUS)
 			throw new DavNoMultiStatusException();
-		
+
 		HttpEntity entity = response.getEntity();
 		if (entity == null)
 			throw new DavNoContentException();
 		@Cleanup InputStream content = entity.getContent();
-		
+
 		DavMultistatus multiStatus;
 		try {
 			Serializer serializer = new Persister();
@@ -453,10 +455,10 @@ public class WebDavResource {
 
 		if (multiStatus.response == null)	// empty response
 			return;
-		
+
 		// member list will be built from response
 		List<WebDavResource> members = new LinkedList<>();
-		
+
 		// iterate through all resources (either ourselves or member)
 		for (DavResponse singleResponse : multiStatus.response) {
 			URI href;
@@ -480,7 +482,7 @@ public class WebDavResource {
 
 			} else for (DavPropstat singlePropstat : singleResponse.propstat) {      // method 2 (propstat)
 				StatusLine status = BasicLineParserHC4.parseStatusLine(singlePropstat.status, new BasicLineParserHC4());
-				
+
 				// ignore information about missing properties etc.
 				if (status.getStatusCode()/100 != 1 && status.getStatusCode()/100 != 2)
 					continue;
@@ -488,7 +490,7 @@ public class WebDavResource {
 
 				if (prop.currentUserPrincipal != null && prop.currentUserPrincipal.getHref() != null)
 					properties.put(Property.CURRENT_USER_PRINCIPAL, prop.currentUserPrincipal.getHref().href);
-				
+
 				if (prop.currentUserPrivilegeSet != null) {
 					// privilege info available
 					boolean mayAll = false,
@@ -506,16 +508,16 @@ public class WebDavResource {
 					if (!mayAll && !mayWrite && !(mayWriteContent && mayBind && mayUnbind))
 						properties.put(Property.READ_ONLY, "1");
 				}
-				
+
 				if (prop.addressbookHomeSet != null && prop.addressbookHomeSet.getHref() != null)
 					properties.put(Property.ADDRESSBOOK_HOMESET, URIUtils.ensureTrailingSlash(prop.addressbookHomeSet.getHref().href));
-				
+
 				if (prop.calendarHomeSet != null && prop.calendarHomeSet.getHref() != null)
 					properties.put(Property.CALENDAR_HOMESET, URIUtils.ensureTrailingSlash(prop.calendarHomeSet.getHref().href));
-				
+
 				if (prop.displayname != null)
 					properties.put(Property.DISPLAY_NAME, prop.displayname.getDisplayName());
-				
+
 				if (prop.resourcetype != null) {
 					if (prop.resourcetype.getCollection() != null) {
 						properties.put(Property.IS_COLLECTION, "1");
@@ -524,7 +526,7 @@ public class WebDavResource {
 					}
 					if (prop.resourcetype.getAddressbook() != null) {	// CardDAV collection properties
 						properties.put(Property.IS_ADDRESSBOOK, "1");
-						
+
 						if (prop.addressbookDescription != null)
 							properties.put(Property.DESCRIPTION, prop.addressbookDescription.getDescription());
 						if (prop.supportedAddressData != null)
@@ -536,19 +538,19 @@ public class WebDavResource {
 					}
 					if (prop.resourcetype.getCalendar() != null) {		// CalDAV collection propertioes
 						properties.put(Property.IS_CALENDAR, "1");
-						
+
 						if (prop.calendarDescription != null)
 							properties.put(Property.DESCRIPTION, prop.calendarDescription.getDescription());
-						
+
 						if (prop.calendarColor != null)
 							properties.put(Property.COLOR, prop.calendarColor.getColor());
-						
+
 						if (prop.calendarTimezone != null)
 							try {
 								properties.put(Property.TIMEZONE, Event.TimezoneDefToTzId(prop.calendarTimezone.getTimezone()));
 							} catch(IllegalArgumentException e) {
 							}
-						
+
 						if (prop.supportedCalendarComponentSet != null) {
 							supportedComponents = new LinkedList<>();
 							for (Comp component : prop.supportedCalendarComponentSet)
@@ -556,36 +558,36 @@ public class WebDavResource {
 						}
 					}
 				}
-				
+
 				if (prop.getctag != null)
 					properties.put(Property.CTAG, prop.getctag.getCTag());
 
 				if (prop.getetag != null)
 					properties.put(Property.ETAG, prop.getetag.getETag());
-				
+
 				if (prop.calendarData != null && prop.calendarData.ical != null)
 					data = prop.calendarData.ical.getBytes();
 				else if (prop.addressData != null && prop.addressData.vcard != null)
 					data = prop.addressData.vcard.getBytes();
 			}
-			
+
 			// about which resource is this response?
 			if (location.equals(href) || URIUtils.ensureTrailingSlash(location).equals(href)) {	// about ourselves
 				this.properties.putAll(properties);
 				if (supportedComponents != null)
 					this.supportedComponents = supportedComponents;
 				this.content = data;
-				
+
 			} else {						// about a member
 				WebDavResource member = new WebDavResource(this, href);
 				member.properties = properties;
 				member.supportedComponents = supportedComponents;
 				member.content = data;
-				
+
 				members.add(member);
 			}
 		}
-		
+
 		this.members = members;
 	}
 

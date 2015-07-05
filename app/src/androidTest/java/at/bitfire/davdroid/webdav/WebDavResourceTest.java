@@ -145,18 +145,24 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		};
 		
 		for (String path : requestPaths) {
-			WebDavResource davSlash = new WebDavResource(davCollection, path);
+			WebDavResource davSlash = new WebDavResource(davCollection, new URI(path));
 			davSlash.propfind(Mode.CARDDAV_COLLECTIONS);
 			assertEquals(new URI(principalOK), davSlash.getCurrentUserPrincipal());
 		}
 	}
+
+    public void testStrangeMemberNames() throws Exception {
+        // construct a WebDavResource from a base collection and a member which is an encoded URL (see https://github.com/bitfireAT/davdroid/issues/482)
+        WebDavResource dav = new WebDavResource(davCollection, "http%3A%2F%2Fwww.invalid.example%2Fm8%2Ffeeds%2Fcontacts%2Fmaria.mueller%2540gmail.com%2Fbase%2F5528abc5720cecc.vcf");
+        dav.get("text/vcard");
+    }
 	
 	
 	/* test normal HTTP/WebDAV */
 	
 	public void testPropfindRedirection() throws Exception {
 		// PROPFIND redirection
-		WebDavResource redirected = new WebDavResource(baseDAV, "/redirect/301?to=/dav/");
+		WebDavResource redirected = new WebDavResource(baseDAV, new URI("/redirect/301?to=/dav/"));
 		redirected.propfind(Mode.CURRENT_USER_PRINCIPAL);
 		assertEquals("/dav/", redirected.getLocation().getPath());
 	}
