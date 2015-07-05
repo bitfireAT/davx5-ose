@@ -39,7 +39,7 @@ public class URIUtils {
 
 	/**
 	 * Parse a received absolute/relative URL and generate a normalized URI that can be compared.
-	 * @param original	    URI to be parsed, may be absolute or relative
+	 * @param original	    URI to be parsed, may be absolute or relative. Encoded characters will be decoded!
      * @param mustBePath    true if it's known that original is a path (may contain ":") and not an URI, i.e. ":" is not the scheme separator
 	 * @return			    normalized URI
 	 * @throws URISyntaxException
@@ -72,7 +72,8 @@ public class URIUtils {
 
 		URI uri = new URI(repaired);
 		URI normalized = new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), uri.getQuery(), uri.getFragment());
-		Log.v(TAG, "Normalized URL " + original + " -> " + normalized.toASCIIString());
+		Log.v(TAG, "Normalized URI " + original + " -> " + normalized.toASCIIString() + " assuming that it was " +
+                (mustBePath ? "a path name" : "an URI or path name"));
 		return normalized;
 	}
 
