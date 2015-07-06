@@ -426,6 +426,8 @@ public class WebDavResource {
 			throw new NotAuthorizedException(reason);
 		case HttpStatus.SC_NOT_FOUND:
 			throw new NotFoundException(reason);
+		case HttpStatus.SC_CONFLICT:
+			throw new ConflictException(reason);
 		case HttpStatus.SC_PRECONDITION_FAILED:
 			throw new PreconditionFailedException(reason);
 		default:

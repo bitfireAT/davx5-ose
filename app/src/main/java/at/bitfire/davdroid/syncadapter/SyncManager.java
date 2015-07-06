@@ -21,6 +21,7 @@ import at.bitfire.davdroid.resource.LocalStorageException;
 import at.bitfire.davdroid.resource.RecordNotFoundException;
 import at.bitfire.davdroid.resource.RemoteCollection;
 import at.bitfire.davdroid.resource.Resource;
+import at.bitfire.davdroid.webdav.ConflictException;
 import at.bitfire.davdroid.webdav.DavException;
 import at.bitfire.davdroid.webdav.HttpException;
 import at.bitfire.davdroid.webdav.NotFoundException;
@@ -141,7 +142,7 @@ public class SyncManager {
 						local.updateETag(res, eTag);
 					local.clearDirty(res);
 					count++;
-				} catch (PreconditionFailedException e) {
+				} catch (PreconditionFailedException|ConflictException e) {
                     Log.i(TAG, "Didn't overwrite existing resource with other content");
 				} catch (RecordNotFoundException e) {
 					Log.wtf(TAG, "Couldn't read new record", e);
@@ -165,7 +166,7 @@ public class SyncManager {
 						local.updateETag(res, eTag);
 					local.clearDirty(res);
 					count++;
-				} catch (PreconditionFailedException e) {
+				} catch (PreconditionFailedException|ConflictException e) {
                     Log.i(TAG, "Locally changed resource has been changed on the server in the meanwhile");
 				} catch (RecordNotFoundException e) {
 					Log.e(TAG, "Couldn't read dirty record", e);

@@ -7,9 +7,6 @@
  */
 package at.bitfire.davdroid.resource;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URI;

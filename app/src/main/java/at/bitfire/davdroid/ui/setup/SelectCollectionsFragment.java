@@ -9,7 +9,6 @@ package at.bitfire.davdroid.ui.setup;
 
 import android.app.ListFragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;

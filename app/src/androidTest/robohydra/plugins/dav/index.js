@@ -245,6 +245,9 @@ exports.getBodyParts = function(conf) {
 					if (req.method == "PUT") {
 						if (req.headers['if-none-match'])	/* requested "don't overwrite", but this file exists */
 							res.statusCode = 412;
+						else if (req.headers['if-match'] && req.queryParams && req.queryParams.conflict)
+							/* requested "don't overwrite", but this file exists with newer content */
+							res.statusCode = 409;
 						else {
 							res.statusCode = 204;
                             res.headers["ETag"] = "has-just-been-updated";
