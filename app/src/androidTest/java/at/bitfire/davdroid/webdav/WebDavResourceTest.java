@@ -13,8 +13,10 @@ import android.test.InstrumentationTestCase;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
@@ -226,15 +228,23 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		}
 	}
 	
-	public void testPutUpdateDontOverwrite() throws Exception  {
+	public void testPutUpdateDontOverwrite() throws Exception {
 		// should succeed on an existing file
 		assertEquals("has-just-been-updated", davExistingFile.put(SAMPLE_CONTENT, PutMode.UPDATE_DONT_OVERWRITE));
 		
-		// should fail on a non-existing file
+		// should fail on a non-existing file (resource has been deleted on server, thus server returns 412)
 		try {
 			davNonExistingFile.put(SAMPLE_CONTENT, PutMode.UPDATE_DONT_OVERWRITE);
 			fail();
 		} catch(PreconditionFailedException ex) {
+		}
+
+		// should fail on existing file with wrong ETag (resource has changed on server, thus server returns 409)
+		try {
+			WebDavResource dav = new WebDavResource(davCollection, new URI("collection/existing.file?conflict=1"));
+			dav.put(SAMPLE_CONTENT, PutMode.UPDATE_DONT_OVERWRITE);
+			fail();
+		} catch(ConflictException ex) {
 		}
 	}
 	
