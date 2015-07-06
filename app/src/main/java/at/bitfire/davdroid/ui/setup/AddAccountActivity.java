@@ -20,14 +20,17 @@ import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.ServerInfo;
 
 public class AddAccountActivity extends Activity {
+	final private static String KEY_SERVER_INFO = "serverInfo";
 
 	protected ServerInfo serverInfo;
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
+		if (savedInstanceState != null)
+			serverInfo = (ServerInfo)savedInstanceState.getSerializable(KEY_SERVER_INFO);
+
 		setContentView(R.layout.setup_add_account);
 		
 		if (savedInstanceState == null) {	// first call
@@ -35,6 +38,12 @@ public class AddAccountActivity extends Activity {
 				.add(R.id.right_pane, new LoginTypeFragment())
 				.commit();
 		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putSerializable(KEY_SERVER_INFO, serverInfo);
 	}
 
 	@Override
