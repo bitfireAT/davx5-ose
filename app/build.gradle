@@ -29,6 +29,7 @@ android {
     }
     lintOptions {
     	abortOnError false
+        disable 'ExtraTranslation'
     }
 
     packagingOptions {
@@ -53,6 +54,7 @@ dependencies {
         // we don't need content builders, see https://github.com/ical4j/ical4j/wiki/Groovy
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
+    compile('org.slf4j:slf4j-android:1.7.12')       // slf4j is used by ical4j
     // ez-vcard for parsing/generating VCards
     compile('com.googlecode.ez-vcard:ez-vcard:0.9.6') {
         // hCard functionality not needed

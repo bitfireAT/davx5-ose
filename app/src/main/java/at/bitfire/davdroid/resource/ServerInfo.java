@@ -7,6 +7,10 @@
  */
 package at.bitfire.davdroid.resource;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.LinkedList;
@@ -18,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(suppressConstructorProperties=true)
 @Data
-public class ServerInfo {
+public class ServerInfo implements Serializable {
 	final private URI baseURI;
 	final private String userName, password;
 	final boolean authPreemptive;
@@ -38,8 +42,8 @@ public class ServerInfo {
 				return true;
 		return false;
 	}
-	
-	
+
+
 	@RequiredArgsConstructor(suppressConstructorProperties=true)
 	@Data
 	public static class ResourceInfo {
