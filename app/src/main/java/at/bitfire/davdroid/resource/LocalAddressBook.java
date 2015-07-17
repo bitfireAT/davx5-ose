@@ -635,18 +635,19 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	protected void populateSipAddress(Contact c, ContentValues row) {
 		try {
 			Impp impp = new Impp("sip:" + row.getAsString(SipAddress.SIP_ADDRESS));
-			switch (row.getAsInteger(SipAddress.TYPE)) {
-				case SipAddress.TYPE_HOME:
-					impp.addType(ImppType.HOME);
-					break;
-				case SipAddress.TYPE_WORK:
-					impp.addType(ImppType.WORK);
-					break;
-				case SipAddress.TYPE_CUSTOM:
-					String customType = row.getAsString(SipAddress.LABEL);
-					if (StringUtils.isNotEmpty(customType))
-						impp.addType(ImppType.get(labelToXName(customType)));
-			}
+			if (row.containsKey(SipAddress.TYPE))
+				switch (row.getAsInteger(SipAddress.TYPE)) {
+					case SipAddress.TYPE_HOME:
+						impp.addType(ImppType.HOME);
+						break;
+					case SipAddress.TYPE_WORK:
+						impp.addType(ImppType.WORK);
+						break;
+					case SipAddress.TYPE_CUSTOM:
+						String customType = row.getAsString(SipAddress.LABEL);
+						if (StringUtils.isNotEmpty(customType))
+							impp.addType(ImppType.get(labelToXName(customType)));
+				}
 			c.getImpps().add(impp);
 		} catch(IllegalArgumentException e) {
 			Log.e(TAG, "Illegal SIP URI", e);
