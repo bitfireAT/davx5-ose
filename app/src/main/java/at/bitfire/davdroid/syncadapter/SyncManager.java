@@ -87,7 +87,7 @@ public class SyncManager {
 		syncResult.stats.numInserts = pullNew(remotelyAdded.toArray(new Resource[remotelyAdded.size()]));
 		syncResult.stats.numUpdates = pullChanged(remotelyUpdated.toArray(new Resource[remotelyUpdated.size()]));
 
-		Log.i(TAG, "Removing non-dirty resources that are not present remotely anymore");
+		Log.i(TAG, "Removing entries that are not present remotely anymore (retaining " + remoteResources.length + " entries)");
 		syncResult.stats.numDeletes = local.deleteAllExceptRemoteNames(remoteResources);
 
         syncResult.stats.numEntries = syncResult.stats.numInserts + syncResult.stats.numUpdates + syncResult.stats.numDeletes;
