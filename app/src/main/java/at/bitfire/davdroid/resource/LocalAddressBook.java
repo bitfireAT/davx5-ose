@@ -132,25 +132,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		c.setVCardVersion(accountSettings.getAddressBookVCardVersion());
 		return c;
 	}
-	
-	public int deleteAllExceptRemoteNames(Resource[] remoteResources) throws LocalStorageException {
-		String where;
-		
-		if (remoteResources.length != 0) {
-			List<String> sqlFileNames = new LinkedList<>();
-			for (Resource res : remoteResources)
-				sqlFileNames.add(DatabaseUtils.sqlEscapeString(res.getName()));
-			where = entryColumnRemoteName() + " NOT IN (" + StringUtils.join(sqlFileNames, ",") + ")";
-		} else
-			where = entryColumnRemoteName() + " IS NOT NULL";
 
-        try {
-            return providerClient.delete(entriesURI(), where, null);
-        } catch (RemoteException e) {
-            throw new LocalStorageException("Couldn't delete contacts locally", e);
-        }
-    }
-	
 	@Override
 	public int commit() throws LocalStorageException {
         int affected = super.commit();

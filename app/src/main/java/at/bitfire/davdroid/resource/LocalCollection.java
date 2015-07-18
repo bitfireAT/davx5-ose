@@ -269,7 +269,9 @@ public abstract class LocalCollection<T extends Resource> {
 	 * @return the new resource object */
 	abstract public T newResource(long localID, String resourceName, String eTag);
 	
-	/** Enqueues adding the resource (including all data) to the local collection. */
+	/** Adds the resource (including all data) to the local collection.
+	 * @param resource   Resource to be added
+	 */
 	public void add(Resource resource) throws LocalStorageException {
 		int idx = pendingOperations.size();
 		pendingOperations.add(
@@ -281,8 +283,8 @@ public abstract class LocalCollection<T extends Resource> {
         commit();
 	}
 	
-	/** Enqueues updating an existing resource in the local collection. The resource will be found by 
-	 * the remote file name and all data will be updated. Requires commit(). */
+	/** Updates an existing resource in the local collection. The resource will be found by
+	 * the remote file name and all data will be updated. */
 	public void updateByRemoteName(Resource remoteResource) throws LocalStorageException {
 		T localResource = findByRemoteName(remoteResource.getName(), false);
 		pendingOperations.add(
@@ -296,7 +298,7 @@ public abstract class LocalCollection<T extends Resource> {
         commit();
 	}
 
-	/** Enqueues deleting a resource from the local collection. Requires commit(). */
+	/** Enqueues deleting a resource from the local collection. Requires commit() to be effective! */
 	public void delete(Resource resource) {
 		pendingOperations.add(ContentProviderOperation
 				.newDelete(ContentUris.withAppendedId(entriesURI(), resource.getLocalID()))
@@ -309,7 +311,8 @@ public abstract class LocalCollection<T extends Resource> {
 	 * @param remoteResources resources with these remote file names will be kept
      * @return number of deleted resources
 	 */
-	public int deleteAllExceptRemoteNames(Resource[] remoteResources) throws LocalStorageException {
+	public int deleteAllExceptRemoteNames(Resource[] remoteResources) throws LocalStorageException
+	{
 		final String where;
 
 		if (remoteResources.length != 0) {
@@ -322,13 +325,19 @@ public abstract class LocalCollection<T extends Resource> {
 			// delete all entries
 			where = entryColumnRemoteName() + " IS NOT NULL";
 
+		Log.d(TAG, "deleteAllExceptRemoteNames: " + where);
+
         try {
-            return providerClient.delete(
-                    entriesURI(),
-                    // restrict deletion to parent collection
-                    entryColumnParentID() + "=? AND (" + where + ')',
-                    new String[] { String.valueOf(getId()) }
-            );
+	        if (entryColumnParentID() != null)
+		        // entries have a parent collection (for instance, events which have a calendar)
+	            return providerClient.delete(
+	                    entriesURI(),
+	                    entryColumnParentID() + "=? AND (" + where + ')',   // restrict deletion to parent collection
+	                    new String[] { String.valueOf(getId()) }
+	            );
+	        else
+	            // entries don't have a parent collection (contacts are stored directly and not within an address book)
+		        return providerClient.delete(entriesURI(), null, null);
         } catch (RemoteException e) {
             throw new LocalStorageException("Couldn't delete local resources", e);
         }
@@ -348,7 +357,7 @@ public abstract class LocalCollection<T extends Resource> {
 		}
 	}
 	
-	/** Enqueues removing the dirty flag from a locally-stored resource. Requires commit(). */
+	/** Enqueues removing the dirty flag from a locally-stored resource. Requires commit() to be effective! */
 	public void clearDirty(Resource resource) {
 		pendingOperations.add(ContentProviderOperation
 				.newUpdate(ContentUris.withAppendedId(entriesURI(), resource.getLocalID()))
@@ -364,8 +373,11 @@ public abstract class LocalCollection<T extends Resource> {
 				Log.d(TAG, "Committing " + pendingOperations.size() + " operations ...");
                 ContentProviderResult[] results = providerClient.applyBatch(pendingOperations);
                 for (ContentProviderResult result : results)
-                    if (result != null && result.count != null)
-                        affected += result.count;
+                    if (result != null)                 // will have either .uri or .count set
+						if (result.count != null)
+                            affected += result.count;
+						else if (result.uri != null)
+							affected = 1;
                 Log.d(TAG, "... " + affected + " row(s) affected");
 				pendingOperations.clear();
 			} catch(OperationApplicationException | RemoteException ex) {
