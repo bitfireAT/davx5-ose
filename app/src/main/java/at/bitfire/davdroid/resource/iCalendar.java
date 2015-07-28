@@ -40,12 +40,7 @@ public abstract class iCalendar extends Resource {
 		CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_UNFOLDING, true);
 		CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_PARSING, true);
 		CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_OUTLOOK_COMPATIBILITY, true);
-
-		// disable automatic time-zone updates (causes unwanted network traffic)
-		System.setProperty("net.fortuna.ical4j.timezone.update.enabled", "false");
 	}
-
-	static protected final TimeZoneRegistry tzRegistry = new DefaultTimeZoneRegistryFactory().createRegistry();
 
 
 	public iCalendar(long localID, String name, String ETag) {
@@ -103,7 +98,7 @@ public abstract class iCalendar extends Resource {
 			return;
 
 		String localTZ = DateUtils.findAndroidTimezoneID(tzID);
-		date.setTimeZone(tzRegistry.getTimeZone(localTZ));
+		date.setTimeZone(DateUtils.tzRegistry.getTimeZone(localTZ));
 	}
 
 	public static String TimezoneDefToTzId(String timezoneDef) throws IllegalArgumentException {

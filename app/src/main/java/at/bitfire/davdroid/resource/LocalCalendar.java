@@ -41,6 +41,7 @@ import net.fortuna.ical4j.model.parameter.Cn;
 import net.fortuna.ical4j.model.parameter.CuType;
 import net.fortuna.ical4j.model.parameter.PartStat;
 import net.fortuna.ical4j.model.parameter.Role;
+import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.Action;
 import net.fortuna.ical4j.model.property.Attendee;
 import net.fortuna.ical4j.model.property.DateListProperty;
@@ -61,6 +62,7 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import at.bitfire.davdroid.DAVUtils;
 import at.bitfire.davdroid.DateUtils;
@@ -239,7 +241,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 				" AND " + Events.ORIGINAL_SYNC_ID + " NOT IN (" + StringUtils.join(sqlFileNames, ",") + ")";    // retain by remote file name
 		pendingOperations.add(ContentProviderOperation
 				.newDelete(entriesURI())
-				.withSelection(where, new String[]{ String.valueOf(id) })
+				.withSelection(where, new String[]{String.valueOf(id)})
 				.withYieldAllowed(true)
 				.build()
 		);
@@ -349,8 +351,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 			String strRDate = values.getAsString(Events.RDATE);
 			if (!StringUtils.isEmpty(strRDate)) {
-				RDate rDate = new RDate();
-				rDate.setValue(strRDate);
+				RDate rDate = (RDate)DateUtils.androidStringToRecurrenceSet(strRDate, RDate.class, allDay);
 				e.getRdates().add(rDate);
 			}
 
@@ -363,9 +364,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 			String strExDate = values.getAsString(Events.EXDATE);
 			if (!StringUtils.isEmpty(strExDate)) {
-				// always empty, see https://code.google.com/p/android/issues/detail?id=172411
-				ExDate exDate = new ExDate();
-				exDate.setValue(strExDate);
+				ExDate exDate = (ExDate)DateUtils.androidStringToRecurrenceSet(strExDate, ExDate.class, allDay);
 				e.getExdates().add(exDate);
 			}
 		} catch (ParseException ex) {
@@ -540,12 +539,20 @@ public class LocalCalendar extends LocalCollection<Event> {
 		}
 		if (!event.getRdates().isEmpty()) {
 			recurring = true;
-			builder.withValue(Events.RDATE, recurrenceSetsToAndroidString(event.getRdates()));
+			try {
+				builder.withValue(Events.RDATE, DateUtils.recurrenceSetsToAndroidString(event.getRdates(), event.isAllDay()));
+			} catch (ParseException e) {
+				Log.e(TAG, "Couldn't parse RDate(s)", e);
+			}
 		}
 		if (event.getExrule() != null)
 			 builder.withValue(Events.EXRULE, event.getExrule().getValue());
 		if (!event.getExdates().isEmpty())
-			builder.withValue(Events.EXDATE, recurrenceSetsToAndroidString(event.getExdates()));
+			try {
+				builder.withValue(Events.EXDATE, DateUtils.recurrenceSetsToAndroidString(event.getExdates(), event.isAllDay()));
+			} catch (ParseException e) {
+				Log.e(TAG, "Couldn't parse ExDate(s)", e);
+			}
 
 		// set either DTEND for single-time events or DURATION for recurring events
 		// because that's the way Android likes it (see docs)
@@ -613,10 +620,10 @@ public class LocalCalendar extends LocalCollection<Event> {
 				.withSelection(Events.ORIGINAL_ID + "=?", new String[] { String.valueOf(event.getLocalID())}).build());
 		// delete attendees
 		pendingOperations.add(ContentProviderOperation.newDelete(syncAdapterURI(Attendees.CONTENT_URI))
-				.withSelection(Attendees.EVENT_ID + "=?", new String[] { String.valueOf(event.getLocalID()) }).build());
+				.withSelection(Attendees.EVENT_ID + "=?", new String[]{String.valueOf(event.getLocalID())}).build());
 		// delete reminders
 		pendingOperations.add(ContentProviderOperation.newDelete(syncAdapterURI(Reminders.CONTENT_URI))
-				.withSelection(Reminders.EVENT_ID + "=?", new String[] { String.valueOf(event.getLocalID()) }).build());
+				.withSelection(Reminders.EVENT_ID + "=?", new String[]{String.valueOf(event.getLocalID())}).build());
 	}
 
 
@@ -729,36 +736,6 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 	protected Uri calendarsURI() {
 		return calendarsURI(account);
-	}
-
-	/**
-	 * Concatenates, if necessary, multiple RDATE/EXDATE lists and prepares
-	 * a formatted string as expected by Android calendar provider
-	 * @param dates		one more more lists of RDATE or EXDATE
-	 * @return			formatted string for Android calendar provider
-	 */
-	static String recurrenceSetsToAndroidString(List<? extends DateListProperty> dates) {
-		String tzID = null;
-		List<String> strDates = new LinkedList<>();
-
-		for (DateListProperty dateList : dates) {
-			if (dateList.getTimeZone() != null) {
-				String thisTzID = DateUtils.findAndroidTimezoneID(dateList.getTimeZone().getID());
-				if (tzID == null)
-					tzID = thisTzID;
-				else if (!tzID.equals(thisTzID))
-					Log.w(TAG, "Multiple EXDATEs/RDATEs with different time zones not supported by Android, using " + tzID + " for all dates");
-			}
-			strDates.add(dateList.getValue());
-		}
-
-		// Android expects this format: "[TZID;]date1,date2,date3"
-		String dateStr = "";
-		if (tzID != null)
-			dateStr += tzID + ";";
-		dateStr += StringUtils.join(strDates, ",");
-
-		return dateStr;
 	}
 
 }

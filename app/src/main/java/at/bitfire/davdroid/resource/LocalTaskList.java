@@ -204,7 +204,7 @@ public class LocalTaskList extends LocalCollection<Task> {
 
 				TimeZone tz = null;
 				if (!cursor.isNull(8))
-					tz = DateUtils.getTimeZone(cursor.getString(8));
+					tz = DateUtils.tzRegistry.getTimeZone(cursor.getString(8));
 
 				if (!cursor.isNull(9) && !cursor.isNull(10)) {
 					long ts = cursor.getLong(9);
@@ -327,7 +327,7 @@ public class LocalTaskList extends LocalCollection<Task> {
 
 		// TZ *must* be provided when DTSTART or DUE is set
 		if ((task.getDtStart() != null || task.getDue() != null) && tz == null)
-			tz = DateUtils.getTimeZone(TimeZones.GMT_ID);
+			tz = DateUtils.tzRegistry.getTimeZone(TimeZones.GMT_ID);
 		if (tz != null)
 			builder.withValue(TaskContract.Tasks.TZ, DateUtils.findAndroidTimezoneID(tz.getID()));
 
