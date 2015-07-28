@@ -13,10 +13,8 @@ import android.test.InstrumentationTestCase;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
