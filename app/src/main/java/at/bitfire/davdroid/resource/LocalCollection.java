@@ -325,8 +325,6 @@ public abstract class LocalCollection<T extends Resource> {
 			// delete all entries
 			where = entryColumnRemoteName() + " IS NOT NULL";
 
-		Log.d(TAG, "deleteAllExceptRemoteNames: " + where);
-
         try {
 	        if (entryColumnParentID() != null)
 		        // entries have a parent collection (for instance, events which have a calendar)
@@ -337,7 +335,7 @@ public abstract class LocalCollection<T extends Resource> {
 	            );
 	        else
 	            // entries don't have a parent collection (contacts are stored directly and not within an address book)
-		        return providerClient.delete(entriesURI(), null, null);
+		        return providerClient.delete(entriesURI(), where, null);
         } catch (RemoteException e) {
             throw new LocalStorageException("Couldn't delete local resources", e);
         }
@@ -378,7 +376,7 @@ public abstract class LocalCollection<T extends Resource> {
                             affected += result.count;
 						else if (result.uri != null)
 							affected = 1;
-                Log.d(TAG, "... " + affected + " row(s) affected");
+                Log.d(TAG, "... " + affected + " record(s) affected");
 				pendingOperations.clear();
 			} catch(OperationApplicationException | RemoteException ex) {
 				throw new LocalStorageException(ex);
