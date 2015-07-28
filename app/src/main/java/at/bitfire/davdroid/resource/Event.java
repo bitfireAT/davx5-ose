@@ -321,7 +321,7 @@ public class Event extends iCalendar {
 			dtStart = new DtStart(new Date(tsStart));
 		} else {
 			DateTime start = new DateTime(tsStart);
-			start.setTimeZone(tzRegistry.getTimeZone(tzID));
+			start.setTimeZone(DateUtils.tzRegistry.getTimeZone(tzID));
 			dtStart = new DtStart(start);
 		}
 	}
@@ -340,7 +340,7 @@ public class Event extends iCalendar {
 			dtEnd = new DtEnd(new Date(tsEnd));
 		} else {
 			DateTime end = new DateTime(tsEnd);
-			end.setTimeZone(tzRegistry.getTimeZone(tzID));
+			end.setTimeZone(DateUtils.tzRegistry.getTimeZone(tzID));
 			dtEnd = new DtEnd(end);
 		}
 	}
