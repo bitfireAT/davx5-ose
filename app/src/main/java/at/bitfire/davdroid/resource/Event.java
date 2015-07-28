@@ -214,7 +214,7 @@ public class Event extends iCalendar {
 
 		// "master event" (without exceptions)
 		ComponentList components = ical.getComponents();
-		VEvent master = toVEvent();
+		VEvent master = toVEvent(new Uid(uid));
 		components.add(master);
 
 		// remember used time zones
@@ -227,10 +227,7 @@ public class Event extends iCalendar {
 		// recurrence exceptions
 		for (Event exception : exceptions) {
 			// create VEVENT for exception
-			VEvent vException = exception.toVEvent();
-
-			// set UID to UID of master event
-			vException.getProperties().add(master.getProperty(Property.UID));
+			VEvent vException = exception.toVEvent(master.getUid());
 
 			components.add(vException);
 
@@ -255,12 +252,12 @@ public class Event extends iCalendar {
 		return os;
 	}
 
-	protected VEvent toVEvent() {
+	protected VEvent toVEvent(Uid uid) {
 		VEvent event = new VEvent();
 		PropertyList props = event.getProperties();
 
 		if (uid != null)
-			props.add(new Uid(uid));
+			props.add(uid);
 		if (recurrenceId != null)
 			props.add(recurrenceId);
 
