@@ -206,16 +206,21 @@ public abstract class RemoteCollection<T extends Resource> {
                 if (!uri.isAbsolute())
                     throw new URISyntaxException(uri.toString(), "URI referenced from entity must be absolute");
 
-                if (uri.getScheme().equalsIgnoreCase(baseURI.getScheme()) &&
-                        uri.getAuthority().equalsIgnoreCase(baseURI.getAuthority())) {
-                    // resource is on same server, send Authorization
+	            // send credentials when asset has same URI authority as baseURI
+	            // we have to construct these helper URIs because
+	            // "https://server:443" is NOT equal to "https://server" otherwise
+	            URI     baseUriAuthority = new URI(baseURI.getScheme(), null, baseURI.getHost(), baseURI.getPort(), null, null, null),
+			            assetUriAuthority = new URI(uri.getScheme(), null, uri.getHost(), baseURI.getPort(), null, null, null);
+
+                if (baseUriAuthority.equals(assetUriAuthority)) {
+	                Log.d(TAG, "Asset is on same server, sending credentials");
                     WebDavResource file = new WebDavResource(collection, uri);
                     file.get("image/*");
                     return file.getContent();
-                } else {
-                    // resource is on an external server, don't send Authorization
+
+                } else
+	                // resource is on an external server, don't send credentials
                     return IOUtils.toByteArray(uri);
-                }
             }
         };
 	}
