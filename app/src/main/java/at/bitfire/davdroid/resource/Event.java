@@ -69,11 +69,9 @@ import lombok.NonNull;
 import lombok.Setter;
 
 
-public class Event extends Resource {
+public class Event extends iCalendar {
 	private final static String TAG = "davdroid.Event";
 	
-	private final static TimeZoneRegistry tzRegistry = new DefaultTimeZoneRegistryFactory().createRegistry();
-
 	@Getter @Setter protected RecurrenceId recurrenceId;
 
 	@Getter @Setter protected String summary, location, description;
@@ -97,15 +95,6 @@ public class Event extends Resource {
 
 	@Getter protected List<VAlarm> alarms = new LinkedList<>();
 
-	static {
-		CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_UNFOLDING, true);
-		CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_PARSING, true);
-		CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_OUTLOOK_COMPATIBILITY, true);
-
-		// disable automatic time-zone updates (causes unnecessary network traffic for most people)
-		System.setProperty("net.fortuna.ical4j.timezone.update.enabled", "false");
-	}
-	
 
 	public Event(String name, String ETag) {
 		super(name, ETag);
@@ -113,18 +102,6 @@ public class Event extends Resource {
 	
 	public Event(long localID, String name, String ETag) {
 		super(localID, name, ETag);
-	}
-
-	
-	@Override
-	public void initialize() {
-		generateUID();
-		name = uid.replace("@", "_") + ".ics";
-	}
-	
-	protected void generateUID() {
-		UidGenerator generator = new UidGenerator(new SimpleHostInfo(DavSyncAdapter.getAndroidID()), String.valueOf(android.os.Process.myPid()));
-		uid = generator.generateUid().getValue();
 	}
 
 
@@ -228,12 +205,6 @@ public class Event extends Resource {
 
 	}
 
-
-	@Override
-	public String getMimeType() {
-		return "text/calendar";
-	}
-
 	@Override
 	@SuppressWarnings("unchecked")
 	public ByteArrayOutputStream toEntity() throws IOException {
@@ -333,7 +304,13 @@ public class Event extends Resource {
 		return event;
 	}
 
-	
+
+	// time helpers
+
+	public boolean isAllDay() {
+		return !hasTime(dtStart);
+	}
+
 	public long getDtStartInMillis() {
 		return dtStart.getDate().getTime();
 	}
@@ -370,54 +347,6 @@ public class Event extends Resource {
 			dtEnd = new DtEnd(end);
 		}
 	}
-	
-	
-	// helpers
-	
-	public boolean isAllDay() {
-		return !hasTime(dtStart);
-	}
 
-	protected static boolean hasTime(DateProperty date) {
-		return date.getDate() instanceof DateTime;
-	}
 
-	protected static String getTzId(DateProperty date) {
-		if (date.isUtc() || !hasTime(date))
-			return Time.TIMEZONE_UTC;
-		else if (date.getTimeZone() != null)
-			return date.getTimeZone().getID();
-		else if (date.getParameter(Value.TZID) != null)
-			return date.getParameter(Value.TZID).getValue();
-		
-		// fallback
-		return Time.TIMEZONE_UTC;
-	}
-
-	/* guess matching Android timezone ID */
-	protected static void validateTimeZone(DateProperty date) {
-        if (date.isUtc() || !hasTime(date))
-            return;
-
-        String tzID = getTzId(date);
-        if (tzID == null)
-            return;
-
-        String localTZ = DateUtils.findAndroidTimezoneID(tzID);
-        date.setTimeZone(tzRegistry.getTimeZone(localTZ));
-    }
-
-	public static String TimezoneDefToTzId(String timezoneDef) throws IllegalArgumentException {
-		try {
-			if (timezoneDef != null) {
-				CalendarBuilder builder = new CalendarBuilder();
-				net.fortuna.ical4j.model.Calendar cal = builder.build(new StringReader(timezoneDef));
-				VTimeZone timezone = (VTimeZone)cal.getComponent(VTimeZone.VTIMEZONE);
-				return timezone.getTimeZoneId().getValue();
-			}
-		} catch (Exception ex) {
-			Log.w(TAG, "Can't understand time zone definition, ignoring", ex);
-		}
-		throw new IllegalArgumentException();
-	}
 }
