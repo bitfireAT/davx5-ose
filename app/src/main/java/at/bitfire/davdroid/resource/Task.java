@@ -49,7 +49,7 @@ import at.bitfire.davdroid.syncadapter.DavSyncAdapter;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Task extends Resource {
+public class Task extends iCalendar {
 	private final static String TAG = "davdroid.Task";
 
 	@Getter @Setter DateTime createdAt;
@@ -76,13 +76,6 @@ public class Task extends Resource {
 		super(localId, name, ETag);
 	}
 
-	@Override
-	public void initialize() {
-		UidGenerator generator = new UidGenerator(new SimpleHostInfo(DavSyncAdapter.getAndroidID()), String.valueOf(android.os.Process.myPid()));
-		uid = generator.generateUid().getValue();
-		name = uid + ".ics";
-	}
-
 
 	@Override
 	public void parseEntity(InputStream entity, AssetDownloader downloader) throws IOException, InvalidResourceException {
@@ -104,6 +97,10 @@ public class Task extends Resource {
 
 		if (todo.getUid() != null)
 			uid = todo.getUid().getValue();
+		else {
+			Log.w(TAG, "Received VTODO without UID, generating new one");
+			generateUID();
+		}
 
 		if (todo.getCreated() != null)
 			createdAt = todo.getCreated().getDateTime();
@@ -129,19 +126,18 @@ public class Task extends Resource {
 			due = todo.getDue();
 		if (todo.getDuration() != null)
 			duration = todo.getDuration();
-		if (todo.getStartDate() != null)
+		if (todo.getStartDate() != null) {
 			dtStart = todo.getStartDate();
-		if (todo.getDateCompleted() != null)
+			validateTimeZone(dtStart);
+		}
+		if (todo.getDateCompleted() != null) {
 			completedAt = todo.getDateCompleted();
+			validateTimeZone(completedAt);
+		}
 		if (todo.getPercentComplete() != null)
 			percentComplete = todo.getPercentComplete().getPercentage();
 	}
 
-
-	@Override
-	public String getMimeType() {
-		return "text/calendar";
-	}
 
 	@Override
 	public ByteArrayOutputStream toEntity() throws IOException {
