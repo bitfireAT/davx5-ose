@@ -155,7 +155,7 @@
         vor DAVdroid installiert werden</b> (ansonsten bekommt DAVdroid nicht die Berechtigungen, um auf die Aufgaben zuzugreifen).</p>
         <p>Wenn Sie Aufgaben synchronisiert haben wollen:</p>
         <p>1. Installieren Sie bitte zuerst die Aufgaben-App.<br/>
-        2. Installieren Sie DAVdroid neu (um die Zugriffsberechtigung zu erlangen).<br/>
+        2. Installieren Sie DAVdroid neu (um die Zugriffsberechtigung zu erlangen). Beim Deinstallieren von DAVdroid gehen die DAVdroid-Konten und unsynchronisierte Änderungen verloren.<br/>
         3. Richten Sie Ihr DAVdroid-Konto neu ein.</p>
         <p>Andernfalls können Sie diesen Schritt überspringen.</p>
     ]]></string>

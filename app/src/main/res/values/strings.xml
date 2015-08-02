@@ -169,7 +169,7 @@
         before installing DAVdroid</b> (otherwise, DAVdroid can\'t get the permission to access the tasks provider).</p>
         <p>If you want tasks to be synchronized:</p>
         <p>1. Install the Tasks app.<br/>
-        2. Re-install DAVdroid (to gain tasks access permission).<br/>
+        2. Re-install DAVdroid (to gain tasks access permission). Uninstalling DAVdroid will discard your DAVdroid accounts and unsynchronized data.<br/>
         3. Add your DAVdroid account again.</p>
         <p>Otherwise, you may skip this step.</p>
     ]]></string>
