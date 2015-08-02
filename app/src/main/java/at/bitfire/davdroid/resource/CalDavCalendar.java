@@ -22,7 +22,7 @@ import at.bitfire.davdroid.webdav.DavFilter;
 import at.bitfire.davdroid.webdav.DavMultiget;
 import at.bitfire.davdroid.webdav.DavProp;
 
-public class CalDavCalendar extends RemoteCollection<Event> {
+public class CalDavCalendar extends WebDavCollection<Event> {
 	private final static String TAG = "davdroid.CalDAVCalendar";
 
 	public CalDavCalendar(CloseableHttpClient httpClient, String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {

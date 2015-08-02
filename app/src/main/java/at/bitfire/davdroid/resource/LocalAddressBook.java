@@ -124,6 +124,12 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		accountSettings.setAddressBookCTag(cTag);
 	}
 
+	@Override
+	public void updateMetaData(String displayName, String color)
+	{
+		// address books don't have a display name or color in Android
+	}
+
 	
 	/* create/update/delete */
 	

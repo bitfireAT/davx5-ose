@@ -91,10 +91,12 @@ public abstract class LocalCollection<T extends Resource> {
 	
 	/** gets the ID if the collection (for instance, ID of the Android calendar) */
 	abstract public long getId();
+	/** sets local stored CTag */
+	abstract public void setCTag(String cTag) throws LocalStorageException;
 	/** gets the CTag of the collection */
 	abstract public String getCTag() throws LocalStorageException;
-	/** sets the CTag of the collection */
-	abstract public void setCTag(String cTag) throws LocalStorageException;
+	/** update locally stored collection properties */
+	abstract public void updateMetaData(String displayName, String color) throws LocalStorageException;
 
 	
 	// content provider (= database) querying

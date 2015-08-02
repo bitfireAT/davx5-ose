@@ -41,7 +41,7 @@ import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.LocalStorageException;
-import at.bitfire.davdroid.resource.RemoteCollection;
+import at.bitfire.davdroid.resource.WebDavCollection;
 import at.bitfire.davdroid.ui.settings.AccountActivity;
 import at.bitfire.davdroid.webdav.DavException;
 import at.bitfire.davdroid.webdav.DavHttpClient;
@@ -102,7 +102,7 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 		}.execute();
 	}
 	
-	protected abstract Map<LocalCollection<?>, RemoteCollection<?>> getSyncPairs(Account account, ContentProviderClient provider);
+	protected abstract Map<LocalCollection<?>, WebDavCollection<?>> getSyncPairs(Account account, ContentProviderClient provider);
 
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	@Override
@@ -128,12 +128,12 @@ public abstract class DavSyncAdapter extends AbstractThreadedSyncAdapter impleme
 		Intent exceptionIntent = null;        // what shall happen when clicking on the exception notification
 		try {
 			// get local <-> remote collection pairs
-			Map<LocalCollection<?>, RemoteCollection<?>> syncCollections = getSyncPairs(account, provider);
+			Map<LocalCollection<?>, WebDavCollection<?>> syncCollections = getSyncPairs(account, provider);
 			if (syncCollections == null)
 				Log.i(TAG, "Nothing to synchronize");
 			else
 				try {
-					for (Map.Entry<LocalCollection<?>, RemoteCollection<?>> entry : syncCollections.entrySet())
+					for (Map.Entry<LocalCollection<?>, WebDavCollection<?>> entry : syncCollections.entrySet())
 						new SyncManager(entry.getKey(), entry.getValue()).synchronize(extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL), syncResult);
 
 				} catch (DavException ex) {

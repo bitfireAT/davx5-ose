@@ -90,7 +90,7 @@ public class LocalTaskList extends LocalCollection<Task> {
 
 	public static LocalTaskList[] findAll(Account account, ContentProviderClient providerClient) throws RemoteException {
 		@Cleanup Cursor cursor = providerClient.query(taskListsURI(account),
-				new String[] { TaskContract.TaskLists._ID, TaskContract.TaskLists._SYNC_ID },
+				new String[]{TaskContract.TaskLists._ID, TaskContract.TaskLists._SYNC_ID},
 				null, null, null);
 
 		LinkedList<LocalTaskList> taskList = new LinkedList<>();
@@ -126,6 +126,21 @@ public class LocalTaskList extends LocalCollection<Task> {
 		values.put(COLLECTION_COLUMN_CTAG, cTag);
 		try {
 			providerClient.update(ContentUris.withAppendedId(taskListsURI(account), id), values, null, null);
+		} catch(RemoteException e) {
+			throw new LocalStorageException(e);
+		}
+	}
+
+	@Override
+	public void updateMetaData(String displayName, String color) throws LocalStorageException {
+		ContentValues values = new ContentValues();
+		if (displayName != null)
+			values.put(TaskContract.TaskLists.LIST_NAME, displayName);
+		if (color != null)
+			values.put(TaskContract.TaskLists.LIST_COLOR, DAVUtils.CalDAVtoARGBColor(color));
+		try {
+			if (values.size() > 0)
+				providerClient.update(ContentUris.withAppendedId(taskListsURI(account), id), values, null, null);
 		} catch(RemoteException e) {
 			throw new LocalStorageException(e);
 		}

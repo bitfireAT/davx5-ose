@@ -15,7 +15,7 @@ import at.bitfire.davdroid.syncadapter.AccountSettings;
 import at.bitfire.davdroid.webdav.DavMultiget;
 import ezvcard.VCardVersion;
 
-public class CardDavAddressBook extends RemoteCollection<Contact> {
+public class CardDavAddressBook extends WebDavCollection<Contact> {
 	AccountSettings accountSettings;
 
 	@Override

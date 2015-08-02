@@ -193,6 +193,21 @@ public class LocalCalendar extends LocalCollection<Event> {
 	}
 
 	@Override
+	public void updateMetaData(String displayName, String color) throws LocalStorageException {
+		ContentValues values = new ContentValues();
+		if (displayName != null)
+			values.put(Calendars.CALENDAR_DISPLAY_NAME, displayName);
+		if (color != null)
+			values.put(Calendars.CALENDAR_COLOR, DAVUtils.CalDAVtoARGBColor(color));
+		try {
+			if (values.size() > 0)
+				providerClient.update(ContentUris.withAppendedId(calendarsURI(), id), values, null, null);
+		} catch(RemoteException e) {
+			throw new LocalStorageException(e);
+		}
+	}
+
+	@Override
 	public long[] findUpdated() throws LocalStorageException {
 		// mark (recurring) events with changed/deleted exceptions as dirty
 		String where = entryColumnID() + " IN (SELECT DISTINCT " + Events.ORIGINAL_ID + " FROM events WHERE " +
