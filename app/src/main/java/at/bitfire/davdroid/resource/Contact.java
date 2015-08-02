@@ -322,7 +322,7 @@ public class Contact extends Resource {
 		if (vCardVersion == VCardVersion.V4_0)
 			return "text/vcard;version=4.0";
 		else
-			return "text/vcard";
+			return "text/vcard;charset=UTF-8";
 	}
 	
 	@Override
