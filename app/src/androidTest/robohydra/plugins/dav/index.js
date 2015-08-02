@@ -132,7 +132,7 @@ exports.getBodyParts = function(conf) {
 									</propstat>\
 								</response>\
 								<response>\
-									<href>/dav/addressbooks/test/default-v4.vcf</href>\
+									<href>/dav/addressbooks/test/default.vcf</href>\
 									<propstat>\
 										<prop xmlns:CARD="urn:ietf:params:xml:ns:carddav">\
 											<resourcetype>\
@@ -140,10 +140,6 @@ exports.getBodyParts = function(conf) {
 												<CARD:addressbook/>\
 											</resourcetype>\
 											<CARD:addressbook-description>Default Address Book</CARD:addressbook-description>\
-											<CARD:supported-address-data>\
-                                                <CARD:address-data-type content-type="text/vcard" version="3.0" />\
-                                                <CARD:address-data-type content-type="text/vcard" version="4.0" />\
-                                            </CARD:supported-address-data>\
 										</prop>\
 										<status>HTTP/1.1 200 OK</status>\
 									</propstat>\
@@ -156,7 +152,7 @@ exports.getBodyParts = function(conf) {
 												<collection/>\
 												<CARD:addressbook/>\
 											</resourcetype>\
-											<CARD:addressbook-description>Absolute URI VCard3 Book</CARD:addressbook-description>\
+											<CARD:addressbook-description>Absolute URI VCard Book</CARD:addressbook-description>\
 										</prop>\
 										<status>HTTP/1.1 200 OK</status>\
 									</propstat>\

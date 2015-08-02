@@ -18,6 +18,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
+import android.provider.CalendarContract;
 import android.util.Log;
 
 import net.fortuna.ical4j.model.Date;
@@ -35,10 +36,12 @@ import net.fortuna.ical4j.util.TimeZones;
 import org.apache.commons.lang3.StringUtils;
 import org.dmfs.provider.tasks.TaskContract;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import at.bitfire.davdroid.DAVUtils;
 import at.bitfire.davdroid.DateUtils;
+import at.bitfire.davdroid.webdav.WebDavResource;
 import lombok.Cleanup;
 import lombok.Getter;
 
@@ -132,12 +135,17 @@ public class LocalTaskList extends LocalCollection<Task> {
 	}
 
 	@Override
-	public void updateMetaData(String displayName, String color) throws LocalStorageException {
+	public void updateMetaData(WebDavResource resource) throws LocalStorageException {
 		ContentValues values = new ContentValues();
+
+		final String displayName = resource.getDisplayName();
 		if (displayName != null)
 			values.put(TaskContract.TaskLists.LIST_NAME, displayName);
+
+		final String color = resource.getColor();
 		if (color != null)
 			values.put(TaskContract.TaskLists.LIST_COLOR, DAVUtils.CalDAVtoARGBColor(color));
+
 		try {
 			if (values.size() > 0)
 				providerClient.update(ContentUris.withAppendedId(taskListsURI(account), id), values, null, null);

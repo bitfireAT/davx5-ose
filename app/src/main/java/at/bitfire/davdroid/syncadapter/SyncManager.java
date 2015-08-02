@@ -47,7 +47,7 @@ public class SyncManager {
 		// PHASE 1: fetch collection properties
 		remote.getProperties();
 		final WebDavResource collectionResource = remote.getCollection();
-		local.updateMetaData(collectionResource.getDisplayName(), collectionResource.getColor());
+		local.updateMetaData(collectionResource);
 
 		// PHASE 2: push local changes to server
 		int	deletedRemotely = pushDeleted(),

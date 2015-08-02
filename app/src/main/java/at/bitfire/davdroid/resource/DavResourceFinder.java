@@ -91,11 +91,6 @@ public class DavResourceFinder implements Closeable {
 							resource.getDescription(), resource.getColor()
 						);
 
-						VCardVersion version = resource.getVCardVersion();
-						if (version == null)
-							version = VCardVersion.V3_0;	// VCard 3.0 MUST be supported
-						info.setVCardVersion(version);
-
 						addressBooks.add(info);
 					}
 				serverInfo.setAddressBooks(addressBooks);

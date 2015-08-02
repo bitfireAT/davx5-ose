@@ -44,17 +44,14 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
 		List<ResourceInfo> collections = info.getAddressBooks();
 		// two address books
 		assertEquals(2, collections.size());
-		// first one
 		ResourceInfo collection = collections.get(0);
-		assertEquals(TestConstants.roboHydra.resolve("/dav/addressbooks/test/default-v4.vcf/").toString(), collection.getURL());
+		assertEquals(TestConstants.roboHydra.resolve("/dav/addressbooks/test/default.vcf/").toString(), collection.getURL());
 		assertEquals("Default Address Book", collection.getDescription());
-		assertEquals(VCardVersion.V4_0, collection.getVCardVersion());
 		// second one
 		collection = collections.get(1);
 		assertEquals("https://my.server/absolute:uri/my-address-book/", collection.getURL());
-		assertEquals("Absolute URI VCard3 Book", collection.getDescription());
-		assertEquals(VCardVersion.V3_0, collection.getVCardVersion());
-		
+		assertEquals("Absolute URI VCard Book", collection.getDescription());
+
 		/*** CalDAV ***/
 		assertTrue(info.isCalDAV());
 		collections = info.getCalendars();
