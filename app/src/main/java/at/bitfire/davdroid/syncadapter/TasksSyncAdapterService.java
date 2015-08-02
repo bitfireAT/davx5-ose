@@ -23,7 +23,7 @@ import java.util.Map;
 import at.bitfire.davdroid.resource.CalDavTaskList;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.LocalTaskList;
-import at.bitfire.davdroid.resource.RemoteCollection;
+import at.bitfire.davdroid.resource.WebDavCollection;
 
 public class TasksSyncAdapterService extends Service {
 	private static SyncAdapter syncAdapter;
@@ -54,17 +54,17 @@ public class TasksSyncAdapterService extends Service {
 		}
 		
 		@Override
-		protected Map<LocalCollection<?>, RemoteCollection<?>> getSyncPairs(Account account, ContentProviderClient provider) {
+		protected Map<LocalCollection<?>, WebDavCollection<?>> getSyncPairs(Account account, ContentProviderClient provider) {
 			AccountSettings settings = new AccountSettings(getContext(), account);
 			String	userName = settings.getUserName(),
 					password = settings.getPassword();
 			boolean preemptive = settings.getPreemptiveAuth();
 
 			try {
-				Map<LocalCollection<?>, RemoteCollection<?>> map = new HashMap<>();
+				Map<LocalCollection<?>, WebDavCollection<?>> map = new HashMap<>();
 
 				for (LocalTaskList calendar : LocalTaskList.findAll(account, provider)) {
-					RemoteCollection<?> dav = new CalDavTaskList(httpClient, calendar.getUrl(), userName, password, preemptive);
+					WebDavCollection<?> dav = new CalDavTaskList(httpClient, calendar.getUrl(), userName, password, preemptive);
 					map.put(calendar, dav);
 				}
 				return map;

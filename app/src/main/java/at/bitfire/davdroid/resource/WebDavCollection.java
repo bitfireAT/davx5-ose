@@ -39,7 +39,7 @@ import lombok.Getter;
  *
  * @param <T> Subtype of Resource that can be stored in the collection
  */
-public abstract class RemoteCollection<T extends Resource> {
+public abstract class WebDavCollection<T extends Resource> {
 	private static final String TAG = "davdroid.resource";
 
 	URI baseURI;
@@ -50,7 +50,7 @@ public abstract class RemoteCollection<T extends Resource> {
 
 	abstract protected T newResourceSkeleton(String name, String ETag);
 
-	public RemoteCollection(CloseableHttpClient httpClient, String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {
+	public WebDavCollection(CloseableHttpClient httpClient, String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {
 		baseURI = URIUtils.parseURI(baseURL, false);
 		collection = new WebDavResource(httpClient, baseURI, user, password, preemptiveAuth);
 	}
@@ -58,14 +58,8 @@ public abstract class RemoteCollection<T extends Resource> {
 	
 	/* collection operations */
 
-	public String getCTag() throws URISyntaxException, IOException, HttpException {
-		try {
-			if (collection.getCTag() == null && collection.getMembers() == null)    // not already fetched
-				collection.propfind(HttpPropfind.Mode.COLLECTION_CTAG);
-		} catch (DavException e) {
-			return null;
-		}
-		return collection.getCTag();
+	public void getProperties() throws URISyntaxException, IOException, HttpException, DavException {
+		collection.propfind(HttpPropfind.Mode.COLLECTION_PROPERTIES);
 	}
 
 

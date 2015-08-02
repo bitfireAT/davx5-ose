@@ -23,7 +23,7 @@ import at.bitfire.davdroid.webdav.DavFilter;
 import at.bitfire.davdroid.webdav.DavMultiget;
 import at.bitfire.davdroid.webdav.DavProp;
 
-public class CalDavTaskList extends RemoteCollection<Task> {
+public class CalDavTaskList extends WebDavCollection<Task> {
 	private final static String TAG = "davdroid.CalDAVTaskList";
 
 	public CalDavTaskList(CloseableHttpClient httpClient, String baseURL, String user, String password, boolean preemptiveAuth) throws URISyntaxException {

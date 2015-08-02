@@ -22,7 +22,7 @@ import java.util.Map;
 import at.bitfire.davdroid.resource.CardDavAddressBook;
 import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.davdroid.resource.LocalCollection;
-import at.bitfire.davdroid.resource.RemoteCollection;
+import at.bitfire.davdroid.resource.WebDavCollection;
 
 public class ContactsSyncAdapterService extends Service {
 	private static ContactsSyncAdapter syncAdapter;
@@ -53,7 +53,7 @@ public class ContactsSyncAdapterService extends Service {
 		}
 
 		@Override
-		protected Map<LocalCollection<?>, RemoteCollection<?>> getSyncPairs(Account account, ContentProviderClient provider) {
+		protected Map<LocalCollection<?>, WebDavCollection<?>> getSyncPairs(Account account, ContentProviderClient provider) {
 			AccountSettings settings = new AccountSettings(getContext(), account);
 			String	userName = settings.getUserName(),
 					password = settings.getPassword();
@@ -65,9 +65,9 @@ public class ContactsSyncAdapterService extends Service {
 			
 			try {
 				LocalCollection<?> database = new LocalAddressBook(account, provider, settings);
-				RemoteCollection<?> dav = new CardDavAddressBook(settings, httpClient, addressBookURL, userName, password, preemptive);
+				WebDavCollection<?> dav = new CardDavAddressBook(settings, httpClient, addressBookURL, userName, password, preemptive);
 				
-				Map<LocalCollection<?>, RemoteCollection<?>> map = new HashMap<>();
+				Map<LocalCollection<?>, WebDavCollection<?>> map = new HashMap<>();
 				map.put(database, dav);
 				
 				return map;
