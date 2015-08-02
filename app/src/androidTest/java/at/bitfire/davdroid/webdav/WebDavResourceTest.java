@@ -105,19 +105,17 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		assertEquals("useless-member", ab.getName());
 		assertFalse(ab.isAddressBook());
 
-		// the second one is a VCard4-capable address book (referenced by relative URI)
+		// the second one is an address book (referenced by relative URI)
 		ab = dav.getMembers().get(1);
-		assertEquals(TestConstants.roboHydra.resolve("/dav/addressbooks/test/default-v4.vcf/"), ab.getLocation());
-		assertEquals("default-v4.vcf", ab.getName());
+		assertEquals(TestConstants.roboHydra.resolve("/dav/addressbooks/test/default.vcf/"), ab.getLocation());
+		assertEquals("default.vcf", ab.getName());
 		assertTrue(ab.isAddressBook());
-		assertEquals(VCardVersion.V4_0, ab.getVCardVersion());
 
-		// the third one is a (non-VCard4-capable) address book (referenced by an absolute URI)
+		// the third one is an address book (referenced by an absolute URI)
 		ab = dav.getMembers().get(2);
 		assertEquals(new URI("https://my.server/absolute:uri/my-address-book/"), ab.getLocation());
 		assertEquals("my-address-book", ab.getName());
 		assertTrue(ab.isAddressBook());
-		assertNull(ab.getVCardVersion());
 	}
 	
 	public void testPropfindCalendars() throws Exception {

@@ -76,7 +76,6 @@ public class AccountSettings {
 		for (ServerInfo.ResourceInfo addressBook : serverInfo.getAddressBooks())
 			if (addressBook.isEnabled()) {
 				bundle.putString(KEY_ADDRESSBOOK_URL, addressBook.getURL());
-				bundle.putString(KEY_ADDRESSBOOK_VCARD_VERSION, addressBook.getVCardVersion().getVersion());
 				break;
 			}
 		return bundle;
@@ -145,6 +144,10 @@ public class AccountSettings {
 		if (versionStr != null)
 			version = VCardVersion.valueOfByStr(versionStr);
 		return version;
+	}
+
+	public void setAddressBookVCardVersion(VCardVersion version) {
+		accountManager.setUserData(account, KEY_ADDRESSBOOK_VCARD_VERSION, version.getVersion());
 	}
 	
 	

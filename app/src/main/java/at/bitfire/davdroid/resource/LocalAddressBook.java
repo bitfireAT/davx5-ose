@@ -48,6 +48,7 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,6 +56,8 @@ import java.util.Locale;
 import java.util.Set;
 
 import at.bitfire.davdroid.syncadapter.AccountSettings;
+import at.bitfire.davdroid.webdav.WebDavResource;
+import ezvcard.VCardVersion;
 import ezvcard.parameter.AddressType;
 import ezvcard.parameter.EmailType;
 import ezvcard.parameter.ImppType;
@@ -75,9 +78,8 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	
 	protected final static String COLUMN_UNKNOWN_PROPERTIES = RawContacts.SYNC3;
 
-	
 	final protected AccountSettings accountSettings;
-	
+
 	
 	/* database fields */
 	
@@ -125,9 +127,10 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 
 	@Override
-	public void updateMetaData(String displayName, String color)
+	public void updateMetaData(WebDavResource resource)
 	{
-		// address books don't have a display name or color in Android
+		final VCardVersion vCardVersion = resource.getVCardVersion();
+		accountSettings.setAddressBookVCardVersion(vCardVersion != null ? vCardVersion : VCardVersion.V3_0);
 	}
 
 	

@@ -59,8 +59,6 @@ public class ServerInfo implements Serializable {
 			  description,
 			  color;
 
-		VCardVersion vCardVersion;
-
 		String timezone;
 
 
@@ -75,7 +73,6 @@ public class ServerInfo implements Serializable {
 			description = src.description;
 			color = src.color;
 
-			vCardVersion = src.vCardVersion;
 			timezone = src.timezone;
 		}
 

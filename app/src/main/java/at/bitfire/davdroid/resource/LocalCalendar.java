@@ -22,6 +22,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Attendees;
@@ -60,12 +61,14 @@ import org.apache.commons.lang3.StringUtils;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import at.bitfire.davdroid.DAVUtils;
 import at.bitfire.davdroid.DateUtils;
+import at.bitfire.davdroid.webdav.WebDavResource;
 import lombok.Cleanup;
 import lombok.Getter;
 
@@ -193,12 +196,17 @@ public class LocalCalendar extends LocalCollection<Event> {
 	}
 
 	@Override
-	public void updateMetaData(String displayName, String color) throws LocalStorageException {
+	public void updateMetaData(WebDavResource resource) throws LocalStorageException {
 		ContentValues values = new ContentValues();
+
+		final String displayName = resource.getDisplayName();
 		if (displayName != null)
 			values.put(Calendars.CALENDAR_DISPLAY_NAME, displayName);
+
+		final String color = resource.getColor();
 		if (color != null)
 			values.put(Calendars.CALENDAR_COLOR, DAVUtils.CalDAVtoARGBColor(color));
+
 		try {
 			if (values.size() > 0)
 				providerClient.update(ContentUris.withAppendedId(calendarsURI(), id), values, null, null);
