@@ -12,6 +12,7 @@
     <!-- common strings -->
     <string name="app_name">DAVdroid</string>
     <string name="next">Další</string>
+    <string name="skip">Přeskočit</string>
     <string name="help">Pomoc</string>
 
     <string name="exception_cert_path_validation">Nedůvěryhodný certifikát ve vybrané cestě. Pro více informací přečtěte FAQ.</string>
@@ -44,22 +45,23 @@
         <p><strong>If you\'re affected by one of these bugs, please <a href="market://details?id=at.bitfire.davdroid.jbworkaround">install the
         DAVdroid JB Workaround</a>.</strong></p>
     ]]></string>
-        <string name="html_main_info"><![CDATA[<h1>Vítejte do aplikace DAVdroid/%s!</h1>
-      
-      <p>DAVdroid je aplikace pro Android 4+ na synchronizaci CalDAV/CardDAV účtů. Stačí přidat účet DAVdroid
-      pro CalDAV/CardDAV server a vaše kontakty/události budou synchronizovány oběma směry.</p>
-      
-      <p>Pro více informací se podívejte na domovskou stránku <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">aplikace DAVdroid</a>.
-      Najdete tam i <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">návod pro nastavení</a>. DAVdroid respektuje
-      vaše soukromí, přečtěte si naši <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Privacy Policy</a>.</p>
-      
-      <p>Pokud používáte CyanogenMod, "Privacy Guard" musí být pro DAVdroid vypnut. Jinak nebude DAVdroid moci přistupovat ke kontaktům
-      a událostem a synchronizovat je.</p>
-      
-      <p><b>V případě jakýchkoliv problémů si prosím nejdříve přečtěte <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a>.
-      Pokud narazíte na chybu v aplikaci DAVdroid, nahlaste ji na portálu
-      <a href="https://github.com/rfc2822/davdroid">Github</a> místo přímého kontaktování vývojářů nebo vyplnění špatného hodnocení.</b></p>
-      
+    <string name="html_main_info"><![CDATA[
+       <h1>Vítejte do aplikace DAVdroid/%s!</h1>
+       
+       <p>DAVdroid je aplikace pro Android 4+ na synchronizaci CalDAV/CardDAV účtů. Stačí přidat účet DAVdroid
+       pro CalDAV/CardDAV server a vaše kontakty/události budou synchronizovány oběma směry.</p>
+       
+       <p>Pro více informací se podívejte na domovskou stránku <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">aplikace DAVdroid</a>.
+       Najdete tam i <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">návod pro nastavení</a>. DAVdroid respektuje
+       vaše soukromí, přečtěte si naši <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Privacy Policy</a>.</p>
+       
+       <p>Pokud používáte CyanogenMod, "Privacy Guard" musí být pro DAVdroid vypnut. Jinak nebude DAVdroid moci přistupovat ke kontaktům
+       a událostem a synchronizovat je.</p>
+       
+       <p><b>V případě jakýchkoliv problémů si prosím nejdříve přečtěte <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a>.
+       Pokud narazíte na chybu v aplikaci DAVdroid, nahlaste ji na portálu
+       <a href="https://github.com/rfc2822/davdroid">Github</a> místo přímého kontaktování vývojářů nebo vyplnění špatného hodnocení.</b></p>
+       
 	   <h1>Open-source</h1>
 	   <p>DAVdroid is designed to be an open-source project from the very first beginning. It is always possible to compile the
 	   app yourself and use it for free without any obligations. The source code is
@@ -75,7 +77,7 @@
 	   This program and the accompanying materials are made available under the terms of the GNU Public License v3.0 which
 	   accompanies this distribution, and is available at <a
 	   href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. As far as Google Play, Samsung
-	   Store, AndroidPit App Center or Amazon Appstore require other terms, the respective terms apply for versions
+	   Store or Amazon Appstore require other terms, the respective terms apply for versions
 	   that are downloaded via these services.</p>
 	   
 	   <p>Čeština: <a href="https://github.com/svetlemodry">Jaroslav Lichtblau</a></p>
@@ -128,6 +130,7 @@
     <string name="settings_sync_summary_periodically">Každých %d minut a ihned při lokálních změnách</string>
     <string name="settings_sync_summary_not_available">Nedostupný</string>
     <string name="settings_sync_interval_calendars">Interval synchronizace kalendáře</string>
+    <string name="settings_sync_interval_tasks">Interval synchronizace úkolů</string>
     <string-array name="settings_sync_interval_seconds">
         <item>-1</item>
         <item>300</item>
@@ -157,11 +160,24 @@
     <string name="setup_neither_caldav_nor_carddav">V tomto umístění není služba Cal-/CardDAV dostupná.</string>
     <string name="setup_add_account">Přidat účet</string>
     <string name="setup_querying_server">Dotazování serveru. Chvíli strpení…</string>
+    <string name="setup_install_apps_info">Android ve výchozím nastavení nepodporuje seznamy úkolů (narozdíl od konktů a kalendářů).</string>
+    <string name="setup_install_tasks_app_html"><![CDATA[
+        <p>DAVdroid umožňuje synchronizaci úkolů s aplikací <a href="market://details?id=org.dmfs.tasks">Tasks app</a> (by Marten Gajda).</p>
+        <p>Kvůli chybě v <a href="https://code.google.com/p/android/issues/detail?id=25906">Androidu</a>, aplikace <b>Tasks app musí být nainstalována
+        před aplikací DAVdroid</b> (jinak DAVdroid neobdrží práva pro přístup k aplikaci pro úkoly).</p>
+        <p>Pokud chcete synchronizovat úkoly:</p>
+        <p>1. nainstalujte aplikaci Tasks app.<br/>
+        2. přeinstalujte DAVdroid (aby obdržel přístup k úkolům). Odinstalování aplikace DAVdroid smaže vaše DAVdroid účty a nesesynchronizovaná data.<br/>
+        3. znovu přidejte své DAVdroid účty.</p>
+        <p>Nebo můžete tyto kroky přeskočit.</p>
+    ]]></string>
     <string name="setup_what_to_sync">Které sbírky mají být synchronizovány?</string>
     <string name="setup_address_books">Adresáře</string>
     <string name="setup_calendars">Kalendáře</string>
+    <string name="setup_task_lists">Seznamy úkolů</string>
     <string name="setup_select_address_book">Vybrat nejvýše jeden adresář (opakovaně tapnout pro odebrání):</string>
-    <string name="setup_select_calendars">Vyberte své kalendáře:</string>
+    <string name="setup_select_calendars">Vybrat kalendáře pro synchronizování:</string>
+    <string name="setup_select_task_lists">Vybrat seznamy úkolů pro synchronizování:</string>
     
     <string name="setup_account_details">Detaily účtu</string>
     <string name="setup_account_name">Jméno účtu:</string>
