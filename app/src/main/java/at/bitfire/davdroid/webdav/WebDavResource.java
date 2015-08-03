@@ -41,18 +41,19 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import at.bitfire.davdroid.DAVUtils;
 import at.bitfire.davdroid.URIUtils;
-import at.bitfire.davdroid.resource.Event;
+import at.bitfire.davdroid.resource.iCalendar;
 import at.bitfire.davdroid.webdav.DavProp.Comp;
 import ezvcard.VCardVersion;
 import lombok.Cleanup;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 
@@ -64,15 +65,6 @@ import lombok.ToString;
 public class WebDavResource {
 	private static final String TAG = "davdroid.WebDavResource";
 
-	public enum Property {
-		CURRENT_USER_PRINCIPAL,							// resource detection
-		ADDRESSBOOK_HOMESET, CALENDAR_HOMESET,
-		CONTENT_TYPE, READ_ONLY,						// WebDAV (common)
-		DISPLAY_NAME, DESCRIPTION, ETAG,
-		IS_COLLECTION, CTAG,							// collections
-		IS_CALENDAR, COLOR, TIMEZONE, 					// CalDAV
-		IS_ADDRESSBOOK, VCARD_VERSION					// CardDAV
-	}
 	public enum PutMode {
 		ADD_DONT_OVERWRITE,
 		UPDATE_DONT_OVERWRITE
@@ -85,11 +77,8 @@ public class WebDavResource {
 	protected Set<String>	capabilities = new HashSet<>(),
 							methods = new HashSet<>();
 
-	// DAV properties
-	protected HashMap<Property, String> properties = new HashMap<>();
-	@Getter protected List<String> supportedComponents;
-
 	// list of members (only for collections)
+	@Getter Properties properties = new Properties();
 	@Getter protected List<WebDavResource> members;
 
 	// content (available after GET)
@@ -151,9 +140,9 @@ public class WebDavResource {
 		location = parent.location.resolve(new URI(null, null, "./" + member, null));
 	}
 
-	public WebDavResource(WebDavResource parent, String member, String ETag) throws URISyntaxException {
+	public WebDavResource(WebDavResource parent, String member, String eTag) throws URISyntaxException {
 		this(parent, member);
-		properties.put(Property.ETAG, ETag);
+		properties.eTag = eTag;
 	}
 
 
@@ -188,76 +177,6 @@ public class WebDavResource {
 	public String getName() {
 		String[] names = StringUtils.split(location.getPath(), "/");
 		return names[names.length - 1];
-	}
-
-
-	/* property methods */
-
-	public URI getCurrentUserPrincipal() throws URISyntaxException {
-		String principal = properties.get(Property.CURRENT_USER_PRINCIPAL);
-		return principal != null ? URIUtils.parseURI(principal, false) : null;
-	}
-
-	public URI getAddressbookHomeSet() throws URISyntaxException {
-		String homeset = properties.get(Property.ADDRESSBOOK_HOMESET);
-		return homeset != null ? URIUtils.parseURI(homeset, false) : null;
-	}
-
-	public URI getCalendarHomeSet() throws URISyntaxException {
-		String homeset = properties.get(Property.CALENDAR_HOMESET);
-		return homeset != null ? URIUtils.parseURI(homeset, false) : null;
-	}
-
-	public String getContentType() {
-		return properties.get(Property.CONTENT_TYPE);
-	}
-
-	public void setContentType(String mimeType) {
-		properties.put(Property.CONTENT_TYPE, mimeType);
-	}
-
-	public boolean isReadOnly() {
-		return properties.containsKey(Property.READ_ONLY);
-	}
-
-	public String getDisplayName() {
-		return properties.get(Property.DISPLAY_NAME);
-	}
-
-	public String getDescription() {
-		return properties.get(Property.DESCRIPTION);
-	}
-
-	public String getCTag() {
-		return properties.get(Property.CTAG);
-	}
-	public void invalidateCTag() {
-		properties.remove(Property.CTAG);
-	}
-
-	public String getETag() {
-		return properties.get(Property.ETAG);
-	}
-
-	public boolean isCalendar() {
-		return properties.containsKey(Property.IS_CALENDAR);
-	}
-
-	public String getColor() {
-		return properties.get(Property.COLOR);
-	}
-
-	public String getTimezone() {
-		return properties.get(Property.TIMEZONE);
-	}
-
-	public boolean isAddressBook() {
-		return properties.containsKey(Property.IS_ADDRESSBOOK);
-	}
-
-	public VCardVersion getVCardVersion() {
-		String versionStr = properties.get(Property.VCARD_VERSION);
-		return (versionStr != null) ? VCardVersion.valueOfByStr(versionStr) : null;
 	}
 
 
@@ -372,12 +291,12 @@ public class WebDavResource {
 			put.addHeader("If-None-Match", "*");
 			break;
 		case UPDATE_DONT_OVERWRITE:
-			put.addHeader("If-Match", (getETag() != null) ? getETag() : "*");
+			put.addHeader("If-Match", (properties.eTag != null) ? properties.eTag : "*");
 			break;
 		}
 
-		if (getContentType() != null)
-			put.addHeader("Content-Type", getContentType());
+		if (properties.contentType != null)
+			put.addHeader("Content-Type", properties.contentType);
 
 		@Cleanup CloseableHttpResponse response = httpClient.execute(put, context);
 		checkResponse(response);
@@ -392,8 +311,8 @@ public class WebDavResource {
 	public void delete() throws URISyntaxException, IOException, HttpException {
 		HttpDeleteHC4 delete = new HttpDeleteHC4(location);
 
-		if (getETag() != null)
-			delete.addHeader("If-Match", getETag());
+		if (properties.eTag != null)
+			delete.addHeader("If-Match", properties.eTag);
 
 		@Cleanup CloseableHttpResponse response = httpClient.execute(delete, context);
 		checkResponse(response);
@@ -473,8 +392,7 @@ public class WebDavResource {
 			Log.d(TAG, "Processing multi-status element: " + href);
 
 			// process known properties
-			HashMap<Property, String> properties = new HashMap<>();
-			List<String> supportedComponents = null;
+			Properties properties = new Properties();
 			byte[] data = null;
 
 			// in <response>, either <status> or <propstat> must be present
@@ -488,84 +406,9 @@ public class WebDavResource {
 				// ignore information about missing properties etc.
 				if (status.getStatusCode()/100 != 1 && status.getStatusCode()/100 != 2)
 					continue;
+
 				DavProp prop = singlePropstat.prop;
-
-				if (prop.currentUserPrincipal != null && prop.currentUserPrincipal.getHref() != null)
-					properties.put(Property.CURRENT_USER_PRINCIPAL, prop.currentUserPrincipal.getHref().href);
-
-				if (prop.currentUserPrivilegeSet != null) {
-					// privilege info available
-					boolean mayAll = false,
-							mayBind = false,
-							mayUnbind = false,
-							mayWrite = false,
-							mayWriteContent = false;
-					for (DavProp.Privilege privilege : prop.currentUserPrivilegeSet) {
-						if (privilege.getAll() != null) mayAll = true;
-						if (privilege.getBind() != null) mayBind = true;
-						if (privilege.getUnbind() != null) mayUnbind = true;
-						if (privilege.getWrite() != null) mayWrite = true;
-						if (privilege.getWriteContent() != null) mayWriteContent = true;
-					}
-					if (!mayAll && !mayWrite && !(mayWriteContent && mayBind && mayUnbind))
-						properties.put(Property.READ_ONLY, "1");
-				}
-
-				if (prop.addressbookHomeSet != null && prop.addressbookHomeSet.getHref() != null)
-					properties.put(Property.ADDRESSBOOK_HOMESET, URIUtils.ensureTrailingSlash(prop.addressbookHomeSet.getHref().href));
-
-				if (prop.calendarHomeSet != null && prop.calendarHomeSet.getHref() != null)
-					properties.put(Property.CALENDAR_HOMESET, URIUtils.ensureTrailingSlash(prop.calendarHomeSet.getHref().href));
-
-				if (prop.displayname != null)
-					properties.put(Property.DISPLAY_NAME, prop.displayname.getDisplayName());
-
-				if (prop.resourcetype != null) {
-					if (prop.resourcetype.getCollection() != null) {
-						properties.put(Property.IS_COLLECTION, "1");
-						// is a collection, ensure trailing slash
-						href = URIUtils.ensureTrailingSlash(href);
-					}
-					if (prop.resourcetype.getAddressbook() != null) {	// CardDAV collection properties
-						properties.put(Property.IS_ADDRESSBOOK, "1");
-
-						if (prop.addressbookDescription != null)
-							properties.put(Property.DESCRIPTION, prop.addressbookDescription.getDescription());
-						if (prop.supportedAddressData != null)
-							for (DavProp.AddressDataType dataType : prop.supportedAddressData)
-								if ("text/vcard".equalsIgnoreCase(dataType.getContentType()))
-									// ignore "3.0" as it MUST be supported anyway
-									if ("4.0".equals(dataType.getVersion()))
-										properties.put(Property.VCARD_VERSION, VCardVersion.V4_0.getVersion());
-					}
-					if (prop.resourcetype.getCalendar() != null) {		// CalDAV collection propertioes
-						properties.put(Property.IS_CALENDAR, "1");
-
-						if (prop.calendarDescription != null)
-							properties.put(Property.DESCRIPTION, prop.calendarDescription.getDescription());
-
-						if (prop.calendarColor != null)
-							properties.put(Property.COLOR, prop.calendarColor.getColor());
-
-						if (prop.calendarTimezone != null)
-							try {
-								properties.put(Property.TIMEZONE, Event.TimezoneDefToTzId(prop.calendarTimezone.getTimezone()));
-							} catch(IllegalArgumentException e) {
-							}
-
-						if (prop.supportedCalendarComponentSet != null) {
-							supportedComponents = new LinkedList<>();
-							for (Comp component : prop.supportedCalendarComponentSet)
-								supportedComponents.add(component.getName());
-						}
-					}
-				}
-
-				if (prop.getctag != null)
-					properties.put(Property.CTAG, prop.getctag.getCTag());
-
-				if (prop.getetag != null)
-					properties.put(Property.ETAG, prop.getetag.getETag());
+				properties.process(prop);
 
 				if (prop.calendarData != null && prop.calendarData.ical != null)
 					data = prop.calendarData.ical.getBytes();
@@ -574,16 +417,16 @@ public class WebDavResource {
 			}
 
 			// about which resource is this response?
+			if (properties.isCollection)    // ensure trailing slashs for collections
+				href = URIUtils.ensureTrailingSlash(href);
+
 			if (location.equals(href) || URIUtils.ensureTrailingSlash(location).equals(href)) {	// about ourselves
-				this.properties.putAll(properties);
-				if (supportedComponents != null)
-					this.supportedComponents = supportedComponents;
+				this.properties = properties;
 				this.content = data;
 
 			} else {						// about a member
 				WebDavResource member = new WebDavResource(this, href);
 				member.properties = properties;
-				member.supportedComponents = supportedComponents;
 				member.content = data;
 
 				members.add(member);
@@ -593,4 +436,133 @@ public class WebDavResource {
 		this.members = members;
 	}
 
+
+	public static class Properties {
+		// DAV properties
+		protected String
+				currentUserPrincipal,
+				addressBookHomeset,
+				calendarHomeset,
+				color;
+
+		@Getter protected String
+				displayName,
+				description,
+				timeZone,
+				eTag,
+				cTag;
+
+		@Getter @Setter	protected String contentType;
+
+		@Getter protected boolean
+				readOnly,
+				isCollection,
+				isCalendar,
+				isAddressBook;
+
+		@Getter protected List<String> supportedComponents;
+		@Getter protected VCardVersion supportedVCardVersion;
+
+		// fill from DavProp
+
+		protected void process(DavProp prop) {
+			if (prop.currentUserPrincipal != null && prop.currentUserPrincipal.getHref() != null)
+				currentUserPrincipal = prop.currentUserPrincipal.getHref().href;
+
+			if (prop.currentUserPrivilegeSet != null) {
+				// privilege info available
+				boolean mayAll = false,
+						mayBind = false,
+						mayUnbind = false,
+						mayWrite = false,
+						mayWriteContent = false;
+				for (DavProp.Privilege privilege : prop.currentUserPrivilegeSet) {
+					if (privilege.getAll() != null) mayAll = true;
+					if (privilege.getBind() != null) mayBind = true;
+					if (privilege.getUnbind() != null) mayUnbind = true;
+					if (privilege.getWrite() != null) mayWrite = true;
+					if (privilege.getWriteContent() != null) mayWriteContent = true;
+				}
+				if (!mayAll && !mayWrite && !(mayWriteContent && mayBind && mayUnbind))
+					readOnly = true;
+			}
+
+			if (prop.addressbookHomeSet != null && prop.addressbookHomeSet.getHref() != null)
+				addressBookHomeset = URIUtils.ensureTrailingSlash(prop.addressbookHomeSet.getHref().href);
+
+			if (prop.calendarHomeSet != null && prop.calendarHomeSet.getHref() != null)
+				calendarHomeset = URIUtils.ensureTrailingSlash(prop.calendarHomeSet.getHref().href);
+
+			if (prop.displayname != null)
+				displayName = prop.displayname.getDisplayName();
+
+			if (prop.resourcetype != null) {
+				if (prop.resourcetype.getCollection() != null)
+					isCollection = true;
+				if (prop.resourcetype.getAddressbook() != null) {	// CardDAV collection properties
+					isAddressBook = true;
+
+					if (prop.addressbookDescription != null)
+						description = prop.addressbookDescription.getDescription();
+					if (prop.supportedAddressData != null)
+						for (DavProp.AddressDataType dataType : prop.supportedAddressData)
+							if ("text/vcard".equalsIgnoreCase(dataType.getContentType()))
+								// ignore "3.0" as it MUST be supported anyway
+								if ("4.0".equals(dataType.getVersion()))
+									supportedVCardVersion = VCardVersion.V4_0;
+				}
+				if (prop.resourcetype.getCalendar() != null) {		// CalDAV collection propertioes
+					isCalendar = true;
+
+					if (prop.calendarDescription != null)
+						description = prop.calendarDescription.getDescription();
+
+					if (prop.calendarColor != null)
+						color = prop.calendarColor.getColor();
+
+					if (prop.calendarTimezone != null)
+						timeZone = prop.calendarTimezone.getTimezone();
+
+					if (prop.supportedCalendarComponentSet != null) {
+						supportedComponents = new LinkedList<>();
+						for (Comp component : prop.supportedCalendarComponentSet)
+							supportedComponents.add(component.getName());
+					}
+				}
+			}
+
+			if (prop.getctag != null)
+				cTag = prop.getctag.getCTag();
+
+			if (prop.getetag != null)
+				eTag = prop.getetag.getETag();
+		}
+
+		// getters / setters
+
+		public Integer getColor() {
+			return color != null ? DAVUtils.CalDAVtoARGBColor(color) : null;
+		}
+
+		public URI getCurrentUserPrincipal() throws URISyntaxException {
+			return currentUserPrincipal != null ? URIUtils.parseURI(currentUserPrincipal, false) : null;
+		}
+
+		public URI getAddressbookHomeSet() throws URISyntaxException {
+			return addressBookHomeset != null ? URIUtils.parseURI(addressBookHomeset, false) : null;
+		}
+
+		public URI getCalendarHomeSet() throws URISyntaxException {
+			return calendarHomeset != null ? URIUtils.parseURI(calendarHomeset, false) : null;
+		}
+
+		public String getTimeZone() {
+			return timeZone != null ? iCalendar.TimezoneDefToTzId(timeZone) : null;
+		}
+
+		public void invalidateCTag() {
+			cTag = null;
+		}
+
+	}
 }

@@ -19,8 +19,8 @@ import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.LocalStorageException;
 import at.bitfire.davdroid.resource.RecordNotFoundException;
-import at.bitfire.davdroid.resource.WebDavCollection;
 import at.bitfire.davdroid.resource.Resource;
+import at.bitfire.davdroid.resource.WebDavCollection;
 import at.bitfire.davdroid.webdav.ConflictException;
 import at.bitfire.davdroid.webdav.DavException;
 import at.bitfire.davdroid.webdav.HttpException;
@@ -46,8 +46,8 @@ public class SyncManager {
 	public void synchronize(boolean manualSync, SyncResult syncResult) throws URISyntaxException, LocalStorageException, IOException, HttpException, DavException {
 		// PHASE 1: fetch collection properties
 		remote.getProperties();
-		final WebDavResource collectionResource = remote.getCollection();
-		local.updateMetaData(collectionResource);
+		final WebDavResource.Properties collectionProperties = remote.getCollection().getProperties();
+		local.updateMetaData(collectionProperties);
 
 		// PHASE 2: push local changes to server
 		int	deletedRemotely = pushDeleted(),
@@ -62,7 +62,7 @@ public class SyncManager {
 		}
 		if (!syncMembers) {
 			final String
-					currentCTag = collectionResource.getCTag(),
+					currentCTag = collectionProperties.getCTag(),
 					lastCTag = local.getCTag();
 			Log.d(TAG, "Last local CTag = " + lastCTag + "; current remote CTag = " + currentCTag);
 			if (currentCTag == null || !currentCTag.equals(lastCTag))
@@ -101,7 +101,7 @@ public class SyncManager {
 
 		// update collection CTag
 		Log.i(TAG, "Sync complete, fetching new CTag");
-		local.setCTag(collectionResource.getCTag());
+		local.setCTag(collectionProperties.getCTag());
 	}
 	
 	

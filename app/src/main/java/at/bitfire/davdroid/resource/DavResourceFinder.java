@@ -33,7 +33,6 @@ import at.bitfire.davdroid.webdav.DavIncapableException;
 import at.bitfire.davdroid.webdav.HttpPropfind.Mode;
 import at.bitfire.davdroid.webdav.NotAuthorizedException;
 import at.bitfire.davdroid.webdav.WebDavResource;
-import ezvcard.VCardVersion;
 
 public class DavResourceFinder implements Closeable {
 	private final static String TAG = "davdroid.ResourceFinder";
@@ -62,7 +61,7 @@ public class DavResourceFinder implements Closeable {
 		URI uriAddressBookHomeSet = null;
 		try {
 			principal.propfind(Mode.HOME_SETS);
-			uriAddressBookHomeSet = principal.getAddressbookHomeSet();
+			uriAddressBookHomeSet = principal.getProperties().getAddressbookHomeSet();
 		} catch (Exception e) {
 			Log.i(TAG, "Couldn't find address-book home set", e);
 		}
@@ -80,19 +79,21 @@ public class DavResourceFinder implements Closeable {
 					possibleAddressBooks.addAll(homeSetAddressBooks.getMembers());
 
 				List<ServerInfo.ResourceInfo> addressBooks = new LinkedList<>();
-				for (WebDavResource resource : possibleAddressBooks)
-					if (resource.isAddressBook()) {
+				for (WebDavResource resource : possibleAddressBooks) {
+					final WebDavResource.Properties properties = resource.getProperties();
+					if (properties.isAddressBook()) {
 						Log.i(TAG, "Found address book: " + resource.getLocation().getPath());
 						ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
-							ServerInfo.ResourceInfo.Type.ADDRESS_BOOK,
-							resource.isReadOnly(),
-							resource.getLocation().toString(),
-							resource.getDisplayName(),
-							resource.getDescription(), resource.getColor()
+								ServerInfo.ResourceInfo.Type.ADDRESS_BOOK,
+								properties.isReadOnly(),
+								resource.getLocation().toString(),
+								properties.getDisplayName(),
+								properties.getDescription(), properties.getColor()
 						);
 
 						addressBooks.add(info);
 					}
+				}
 				serverInfo.setAddressBooks(addressBooks);
 			} else
 				Log.w(TAG, "Found address-book home set, but it doesn't advertise CardDAV support");
@@ -104,7 +105,7 @@ public class DavResourceFinder implements Closeable {
 		URI uriCalendarHomeSet = null;
 		try {
 			principal.propfind(Mode.HOME_SETS);
-			uriCalendarHomeSet = principal.getCalendarHomeSet();
+			uriCalendarHomeSet = principal.getProperties().getCalendarHomeSet();
 		} catch(Exception e) {
 			Log.i(TAG, "Couldn't find calendar home set", e);
 		}
@@ -124,27 +125,28 @@ public class DavResourceFinder implements Closeable {
 				List<ServerInfo.ResourceInfo>
 						calendars = new LinkedList<>(),
 						todoLists = new LinkedList<>();
-				for (WebDavResource resource : possibleCalendars)
-					if (resource.isCalendar()) {
+				for (WebDavResource resource : possibleCalendars) {
+					final WebDavResource.Properties properties = resource.getProperties();
+					if (properties.isCalendar()) {
 						Log.i(TAG, "Found calendar: " + resource.getLocation().getPath());
 						ServerInfo.ResourceInfo info = new ServerInfo.ResourceInfo(
 								ServerInfo.ResourceInfo.Type.CALENDAR,
-								resource.isReadOnly(),
+								properties.isReadOnly(),
 								resource.getLocation().toString(),
-								resource.getDisplayName(),
-								resource.getDescription(), resource.getColor()
+								properties.getDisplayName(),
+								properties.getDescription(), properties.getColor()
 						);
-						info.setTimezone(resource.getTimezone());
+						info.setTimezone(properties.getTimeZone());
 
 						boolean isCalendar = false,
 								isTodoList = false;
-						if (resource.getSupportedComponents() == null) {
+						if (properties.getSupportedComponents() == null) {
 							// no info about supported components, assuming all components are supported
 							isCalendar = true;
 							isTodoList = true;
 						} else {
 							// CALDAV:supported-calendar-component-set available
-							for (String supportedComponent : resource.getSupportedComponents())
+							for (String supportedComponent : properties.getSupportedComponents())
 								if ("VEVENT".equalsIgnoreCase(supportedComponent))
 									isCalendar = true;
 								else if ("VTODO".equalsIgnoreCase(supportedComponent))
@@ -162,6 +164,7 @@ public class DavResourceFinder implements Closeable {
 						if (isTodoList)
 							todoLists.add(new ServerInfo.ResourceInfo(info));
 					}
+				}
 
 				serverInfo.setCalendars(calendars);
 				serverInfo.setTodoLists(todoLists);
@@ -271,8 +274,8 @@ public class DavResourceFinder implements Closeable {
 			try {
 				WebDavResource wellKnown = new WebDavResource(base, "/.well-known/" + serviceName);
 				wellKnown.propfind(Mode.CURRENT_USER_PRINCIPAL);
-				if (wellKnown.getCurrentUserPrincipal() != null) {
-					URI principal = wellKnown.getCurrentUserPrincipal();
+				if (wellKnown.getProperties().getCurrentUserPrincipal() != null) {
+					URI principal = wellKnown.getProperties().getCurrentUserPrincipal();
 					Log.i(TAG, "Principal URL found from Well-Known URI: " + principal);
 					return new WebDavResource(wellKnown, principal);
 				}
@@ -293,8 +296,8 @@ public class DavResourceFinder implements Closeable {
 			Log.d(TAG, "Well-known service detection failed, trying initial context path " + initialURL);
 			try {
 				base.propfind(Mode.CURRENT_USER_PRINCIPAL);
-				if (base.getCurrentUserPrincipal() != null) {
-					URI principal = base.getCurrentUserPrincipal();
+				if (base.getProperties().getCurrentUserPrincipal() != null) {
+					URI principal = base.getProperties().getCurrentUserPrincipal();
 					Log.i(TAG, "Principal URL found from initial context path: " + principal);
 					return new WebDavResource(base, principal);
 				}

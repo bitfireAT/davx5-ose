@@ -8,33 +8,25 @@
 
 package at.bitfire.davdroid;
 
-import android.text.format.Time;
 import android.util.Log;
 
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateList;
 import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.DefaultTimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.DateListProperty;
-import net.fortuna.ical4j.model.property.ExDate;
-import net.fortuna.ical4j.model.property.RDate;
-import net.fortuna.ical4j.util.TimeZones;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SimpleTimeZone;
-import java.util.StringTokenizer;
 
 public class DateUtils {
     private final static String TAG = "davdroid.DateUtils";
@@ -49,35 +41,35 @@ public class DateUtils {
 
 	// time zones
 
-    public static String findAndroidTimezoneID(String tzID) {
-        String localTZ = null;
+    public static String findAndroidTimezoneID(String tz) {
+        String deviceTZ = null;
         String availableTZs[] = SimpleTimeZone.getAvailableIDs();
 
         // first, try to find an exact match (case insensitive)
         for (String availableTZ : availableTZs)
-            if (availableTZ.equalsIgnoreCase(tzID)) {
-                localTZ = availableTZ;
+            if (availableTZ.equalsIgnoreCase(tz)) {
+                deviceTZ = availableTZ;
                 break;
             }
 
         // if that doesn't work, try to find something else that matches
-        if (localTZ == null) {
+        if (deviceTZ == null) {
             Log.w(TAG, "Coulnd't find time zone with matching identifiers, trying to guess");
             for (String availableTZ : availableTZs)
-                if (StringUtils.indexOfIgnoreCase(tzID, availableTZ) != -1) {
-                    localTZ = availableTZ;
+                if (StringUtils.indexOfIgnoreCase(tz, availableTZ) != -1) {
+                    deviceTZ = availableTZ;
                     break;
                 }
         }
 
         // if that doesn't work, use UTC as fallback
-        if (localTZ == null) {
-            Log.e(TAG, "Couldn't identify time zone, using UTC as fallback");
-            localTZ = Time.TIMEZONE_UTC;
+        if (deviceTZ == null) {
+	        final String defaultTZ = TimeZone.getDefault().getID();
+            Log.e(TAG, "Couldn't identify time zone, using system default (" + defaultTZ + ") as fallback");
+            deviceTZ = defaultTZ;
         }
 
-        Log.d(TAG, "Assuming time zone " + localTZ + " for " + tzID);
-        return localTZ;
+        return deviceTZ;
     }
 
 

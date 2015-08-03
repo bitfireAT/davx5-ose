@@ -9,16 +9,23 @@ package at.bitfire.davdroid.resource;
 
 import android.content.res.AssetManager;
 import android.test.InstrumentationTestCase;
-import android.text.format.Time;
 
 import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.Date;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.TimeZone;
+import net.fortuna.ical4j.model.property.DtStart;
+import net.fortuna.ical4j.util.TimeZones;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+import at.bitfire.davdroid.DateUtils;
 import lombok.Cleanup;
 
 public class EventTest extends InstrumentationTestCase {
+	protected final TimeZone tzVienna = DateUtils.tzRegistry.getTimeZone("Europe/Vienna");
+
 	AssetManager assetMgr;
 	
 	Event eOnThatDay, eAllDay1Day, eAllDay10Days, eAllDay0Sec;
@@ -30,6 +37,21 @@ public class EventTest extends InstrumentationTestCase {
 		eAllDay1Day = parseCalendar("all-day-1day.ics");
 		eAllDay10Days = parseCalendar("all-day-10days.ics");
 		eAllDay0Sec = parseCalendar("all-day-0sec.ics");
+	}
+
+
+	public void testGetTzID() throws Exception {
+		// DATE (without time)
+		assertEquals(TimeZones.UTC_ID, Event.getTzId(new DtStart(new Date("20150101"))));
+
+		// DATE-TIME without time zone (floating time): should be UTC (because net.fortuna.ical4j.timezone.date.floating=false)
+		assertEquals(TimeZones.UTC_ID, Event.getTzId(new DtStart(new DateTime("20150101T000000"))));
+
+		// DATE-TIME without time zone (UTC)
+		assertEquals(TimeZones.UTC_ID, Event.getTzId(new DtStart(new DateTime(1438607288000L))));
+
+		// DATE-TIME with time zone
+		assertEquals(tzVienna.getID(), Event.getTzId(new DtStart(new DateTime("20150101T000000", tzVienna))));
 	}
 
 
@@ -55,75 +77,31 @@ public class EventTest extends InstrumentationTestCase {
 	public void testStartEndTimesAllDay() throws IOException, ParserException {
 		// event with start date only
 		assertEquals(868838400000L, eOnThatDay.getDtStartInMillis());
-		assertEquals(Time.TIMEZONE_UTC, eOnThatDay.getDtStartTzID());
+		assertEquals(TimeZones.UTC_ID, eOnThatDay.getDtStartTzID());
 		// DTEND missing in VEVENT, must have been set to DTSTART+1 day
 		assertEquals(868838400000L + 86400000, eOnThatDay.getDtEndInMillis());
-		assertEquals(Time.TIMEZONE_UTC, eOnThatDay.getDtEndTzID());
+		assertEquals(TimeZones.UTC_ID, eOnThatDay.getDtEndTzID());
 		
 		// event with start+end date for all-day event (one day)
 		assertEquals(868838400000L, eAllDay1Day.getDtStartInMillis());
-		assertEquals(Time.TIMEZONE_UTC, eAllDay1Day.getDtStartTzID());
+		assertEquals(TimeZones.UTC_ID, eAllDay1Day.getDtStartTzID());
 		assertEquals(868838400000L + 86400000, eAllDay1Day.getDtEndInMillis());
-		assertEquals(Time.TIMEZONE_UTC, eAllDay1Day.getDtEndTzID());
+		assertEquals(TimeZones.UTC_ID, eAllDay1Day.getDtEndTzID());
 		
 		// event with start+end date for all-day event (ten days)
 		assertEquals(868838400000L, eAllDay10Days.getDtStartInMillis());
-		assertEquals(Time.TIMEZONE_UTC, eAllDay10Days.getDtStartTzID());
+		assertEquals(TimeZones.UTC_ID, eAllDay10Days.getDtStartTzID());
 		assertEquals(868838400000L + 10*86400000, eAllDay10Days.getDtEndInMillis());
-		assertEquals(Time.TIMEZONE_UTC, eAllDay10Days.getDtEndTzID());
+		assertEquals(TimeZones.UTC_ID, eAllDay10Days.getDtEndTzID());
 		
 		// event with start+end date on some day (invalid 0 sec-event)
 		assertEquals(868838400000L, eAllDay0Sec.getDtStartInMillis());
-		assertEquals(Time.TIMEZONE_UTC, eAllDay0Sec.getDtStartTzID());
+		assertEquals(TimeZones.UTC_ID, eAllDay0Sec.getDtStartTzID());
 		// DTEND invalid in VEVENT, must have been set to DTSTART+1 day
 		assertEquals(868838400000L + 86400000, eAllDay0Sec.getDtEndInMillis());
-		assertEquals(Time.TIMEZONE_UTC, eAllDay0Sec.getDtEndTzID());
+		assertEquals(TimeZones.UTC_ID, eAllDay0Sec.getDtEndTzID());
 	}
 	
-	public void testTimezoneDefToTzId() {
-		// test valid definition
-		final String VTIMEZONE_SAMPLE =		// taken from RFC 4791, 5.2.2. CALDAV:calendar-timezone Property 
-				"BEGIN:VCALENDAR\n" + 
-				"PRODID:-//Example Corp.//CalDAV Client//EN\n" + 
-				"VERSION:2.0\n" + 
-				"BEGIN:VTIMEZONE\n" + 
-				"TZID:US-Eastern\n" + 
-				"LAST-MODIFIED:19870101T000000Z\n" + 
-				"BEGIN:STANDARD\n" + 
-				"DTSTART:19671029T020000\n" + 
-				"RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10\n" + 
-				"TZOFFSETFROM:-0400\n" + 
-				"TZOFFSETTO:-0500\n" + 
-				"TZNAME:Eastern Standard Time (US &amp; Canada)\n" + 
-				"END:STANDARD\n" + 
-				"BEGIN:DAYLIGHT\n" + 
-				"DTSTART:19870405T020000\n" + 
-				"RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4\n" + 
-				"TZOFFSETFROM:-0500\n" + 
-				"TZOFFSETTO:-0400\n" + 
-				"TZNAME:Eastern Daylight Time (US &amp; Canada)\n" + 
-				"END:DAYLIGHT\n" + 
-				"END:VTIMEZONE\n" + 
-				"END:VCALENDAR";
-		assertEquals("US-Eastern", Event.TimezoneDefToTzId(VTIMEZONE_SAMPLE));
-
-		// test null value
-		try {
-			Event.TimezoneDefToTzId(null);
-			fail();
-		} catch(IllegalArgumentException e) {
-			assert(true);
-		}
-		
-		// test invalid time zone
-		try {
-			Event.TimezoneDefToTzId("/* invalid content */");
-			fail();
-		} catch(IllegalArgumentException e) {
-			assert(true);
-		}
-	}
-
 	public void testUnfolding() throws IOException, InvalidResourceException {
 		Event e = parseCalendar("two-line-description-without-crlf.ics");
 		assertEquals("http://www.tgbornheim.de/index.php?sessionid=&page=&id=&sportcentergroup=&day=6", e.getDescription());

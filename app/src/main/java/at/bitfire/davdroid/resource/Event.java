@@ -17,15 +17,11 @@ import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.DefaultTimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.PropertyList;
-import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.component.VAlarm;
 import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.component.VTimeZone;
-import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.Attendee;
 import net.fortuna.ical4j.model.property.Clazz;
 import net.fortuna.ical4j.model.property.DateProperty;
@@ -46,14 +42,11 @@ import net.fortuna.ical4j.model.property.Summary;
 import net.fortuna.ical4j.model.property.Transp;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Version;
-import net.fortuna.ical4j.util.CompatibilityHints;
-import net.fortuna.ical4j.util.SimpleHostInfo;
-import net.fortuna.ical4j.util.UidGenerator;
+import net.fortuna.ical4j.util.TimeZones;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -63,7 +56,6 @@ import java.util.TimeZone;
 
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.DateUtils;
-import at.bitfire.davdroid.syncadapter.DavSyncAdapter;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -156,15 +148,13 @@ public class Event extends iCalendar {
 		if ((dtStart = event.getStartDate()) == null || (dtEnd = event.getEndDate()) == null)
 			throw new InvalidResourceException("Invalid start time/end time/duration");
 
-		if (hasTime(dtStart)) {
-			validateTimeZone(dtStart);
-			validateTimeZone(dtEnd);
-		}
+		validateTimeZone(dtStart);
+		validateTimeZone(dtEnd);
 
 		// all-day events and "events on that day":
 		// * related UNIX times must be in UTC
 		// * must have a duration (set to one day if missing)
-		if (!hasTime(dtStart) && !dtEnd.getDate().after(dtStart.getDate())) {
+		if (!isDateTime(dtStart) && !dtEnd.getDate().after(dtStart.getDate())) {
 			Log.i(TAG, "Repairing iCal: DTEND := DTSTART+1");
 			Calendar c = Calendar.getInstance(TimeZone.getTimeZone(Time.TIMEZONE_UTC));
 			c.setTime(dtStart.getDate());
@@ -304,8 +294,20 @@ public class Event extends iCalendar {
 
 	// time helpers
 
+	/**
+	 * Returns the time-zone ID for a given date-time, or TIMEZONE_UTC for dates (without time).
+	 * TIMEZONE_UTC is also returned for DATE-TIMEs in UTC representation.
+	 * @param date  DateProperty (DATE or DATE-TIME) whose time-zone information is used
+	 */
+	protected static String getTzId(DateProperty date) {
+		if (isDateTime(date) && !date.isUtc() && date.getTimeZone() != null)
+			return date.getTimeZone().getID();
+		else
+			return TimeZones.UTC_ID;
+	}
+
 	public boolean isAllDay() {
-		return !hasTime(dtStart);
+		return !isDateTime(dtStart);
 	}
 
 	public long getDtStartInMillis() {

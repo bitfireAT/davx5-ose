@@ -22,7 +22,6 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Attendees;
@@ -42,10 +41,8 @@ import net.fortuna.ical4j.model.parameter.Cn;
 import net.fortuna.ical4j.model.parameter.CuType;
 import net.fortuna.ical4j.model.parameter.PartStat;
 import net.fortuna.ical4j.model.parameter.Role;
-import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.Action;
 import net.fortuna.ical4j.model.property.Attendee;
-import net.fortuna.ical4j.model.property.DateListProperty;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.Duration;
 import net.fortuna.ical4j.model.property.ExDate;
@@ -61,10 +58,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import at.bitfire.davdroid.DAVUtils;
 import at.bitfire.davdroid.DateUtils;
@@ -119,7 +114,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		values.put(Calendars.ACCOUNT_TYPE, account.type);
 		values.put(Calendars.NAME, info.getURL());
 		values.put(Calendars.CALENDAR_DISPLAY_NAME, info.getTitle());
-		values.put(Calendars.CALENDAR_COLOR, DAVUtils.CalDAVtoARGBColor(info.getColor()));
+		values.put(Calendars.CALENDAR_COLOR, info.getColor() != null ? info.getColor() : DAVUtils.calendarGreen);
 		values.put(Calendars.OWNER_ACCOUNT, account.name);
 		values.put(Calendars.SYNC_EVENTS, 1);
 		values.put(Calendars.VISIBLE, 1);
@@ -139,7 +134,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		}
 		
 		if (info.getTimezone() != null)
-			values.put(Calendars.CALENDAR_TIME_ZONE, info.getTimezone());
+			values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(info.getTimezone()));
 		
 		Log.i(TAG, "Inserting calendar: " + values.toString());
 		try {
@@ -196,16 +191,16 @@ public class LocalCalendar extends LocalCollection<Event> {
 	}
 
 	@Override
-	public void updateMetaData(WebDavResource resource) throws LocalStorageException {
+	public void updateMetaData(WebDavResource.Properties properties) throws LocalStorageException {
 		ContentValues values = new ContentValues();
 
-		final String displayName = resource.getDisplayName();
+		final String displayName = properties.getDisplayName();
 		if (displayName != null)
 			values.put(Calendars.CALENDAR_DISPLAY_NAME, displayName);
 
-		final String color = resource.getColor();
+		final Integer color = properties.getColor();
 		if (color != null)
-			values.put(Calendars.CALENDAR_COLOR, DAVUtils.CalDAVtoARGBColor(color));
+			values.put(Calendars.CALENDAR_COLOR, color);
 
 		try {
 			if (values.size() > 0)

@@ -35,8 +35,6 @@ import net.fortuna.ical4j.model.property.Summary;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Url;
 import net.fortuna.ical4j.model.property.Version;
-import net.fortuna.ical4j.util.SimpleHostInfo;
-import net.fortuna.ical4j.util.UidGenerator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,7 +43,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import at.bitfire.davdroid.Constants;
-import at.bitfire.davdroid.syncadapter.DavSyncAdapter;
 import lombok.Getter;
 import lombok.Setter;
 

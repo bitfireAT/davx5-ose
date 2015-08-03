@@ -8,29 +8,24 @@
 
 package at.bitfire.davdroid.resource;
 
-import android.text.format.Time;
 import android.util.Log;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.DefaultTimeZoneRegistryFactory;
-import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.component.VTimeZone;
-import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.DateProperty;
-import net.fortuna.ical4j.model.property.DtStart;
 import net.fortuna.ical4j.util.CompatibilityHints;
 import net.fortuna.ical4j.util.SimpleHostInfo;
 import net.fortuna.ical4j.util.UidGenerator;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
+import java.util.TimeZone;
 
 import at.bitfire.davdroid.DateUtils;
 import at.bitfire.davdroid.syncadapter.DavSyncAdapter;
-import lombok.Getter;
+import lombok.NonNull;
 
 public abstract class iCalendar extends Resource {
 	static private final String TAG = "DAVdroid.iCal";
@@ -72,47 +67,46 @@ public abstract class iCalendar extends Resource {
 
 	// time zone helpers
 
-	protected static boolean hasTime(DateProperty date) {
+	protected static boolean isDateTime(DateProperty date) {
 		return date.getDate() instanceof DateTime;
 	}
 
-	protected static String getTzId(DateProperty date) {
-		if (date.isUtc() || !hasTime(date))
-			return Time.TIMEZONE_UTC;
-		else if (date.getTimeZone() != null)
-			return date.getTimeZone().getID();
-		else if (date.getParameter(Value.TZID) != null)
-			return date.getParameter(Value.TZID).getValue();
-
-		// fallback
-		return Time.TIMEZONE_UTC;
-	}
-
-	/* guess matching Android timezone ID */
+	/**
+	 * Ensures that a given DateProperty has a time zone with an ID that is available in Android.
+	 * @param date   DateProperty to validate. Values which are not DATE-TIME will be ignored.
+	 */
 	protected static void validateTimeZone(DateProperty date) {
-		if (date.isUtc() || !hasTime(date))
-			return;
+		if (isDateTime(date)) {
+			final TimeZone tz = date.getTimeZone();
+			if (tz == null)
+				return;
+			final String tzID = tz.getID();
+			if (tzID == null)
+				return;
 
-		String tzID = getTzId(date);
-		if (tzID == null)
-			return;
-
-		String localTZ = DateUtils.findAndroidTimezoneID(tzID);
-		date.setTimeZone(DateUtils.tzRegistry.getTimeZone(localTZ));
+			String deviceTzID = DateUtils.findAndroidTimezoneID(tzID);
+			if (!tzID.equals(deviceTzID))
+				date.setTimeZone(DateUtils.tzRegistry.getTimeZone(deviceTzID));
+		}
 	}
 
-	public static String TimezoneDefToTzId(String timezoneDef) throws IllegalArgumentException {
+	/**
+	 * Takes a string with a timezone definition and returns the time zone ID.
+	 * @param timezoneDef   time zone definition (VCALENDAR with VTIMEZONE component)
+	 * @return              time zone id (TZID)  if VTIMEZONE contains a TZID,
+	 *                      null                 otherwise
+	 */
+	public static String TimezoneDefToTzId(@NonNull String timezoneDef) {
 		try {
-			if (timezoneDef != null) {
-				CalendarBuilder builder = new CalendarBuilder();
-				net.fortuna.ical4j.model.Calendar cal = builder.build(new StringReader(timezoneDef));
-				VTimeZone timezone = (VTimeZone)cal.getComponent(VTimeZone.VTIMEZONE);
+			CalendarBuilder builder = new CalendarBuilder();
+			net.fortuna.ical4j.model.Calendar cal = builder.build(new StringReader(timezoneDef));
+			VTimeZone timezone = (VTimeZone)cal.getComponent(VTimeZone.VTIMEZONE);
+			if (timezone != null && timezone.getTimeZoneId() != null)
 				return timezone.getTimeZoneId().getValue();
-			}
-		} catch (Exception ex) {
-			Log.w(TAG, "Can't understand time zone definition, ignoring", ex);
+		} catch (IOException|ParserException e) {
+			Log.e(TAG, "Can't understand time zone definition", e);
 		}
-		throw new IllegalArgumentException();
+		return null;
 	}
 
 }

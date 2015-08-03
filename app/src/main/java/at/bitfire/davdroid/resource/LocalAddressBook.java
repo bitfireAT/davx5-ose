@@ -17,7 +17,6 @@ import android.content.Entity;
 import android.content.EntityIterator;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
@@ -48,7 +47,6 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -127,9 +125,9 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 
 	@Override
-	public void updateMetaData(WebDavResource resource)
+	public void updateMetaData(WebDavResource.Properties properties)
 	{
-		final VCardVersion vCardVersion = resource.getVCardVersion();
+		final VCardVersion vCardVersion = properties.getSupportedVCardVersion();
 		accountSettings.setAddressBookVCardVersion(vCardVersion != null ? vCardVersion : VCardVersion.V3_0);
 	}
 

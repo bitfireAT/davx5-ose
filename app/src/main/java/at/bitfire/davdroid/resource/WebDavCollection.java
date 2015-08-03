@@ -88,7 +88,7 @@ public abstract class WebDavCollection<T extends Resource> {
 		List<T> resources = new LinkedList<>();
 		if (collection.getMembers() != null)
 			for (WebDavResource member : collection.getMembers())
-				resources.add(newResourceSkeleton(member.getName(), member.getETag()));
+				resources.add(newResourceSkeleton(member.getName(), member.getProperties().getETag()));
 
 		return resources.toArray(new Resource[resources.size()]);
 
@@ -113,7 +113,7 @@ public abstract class WebDavCollection<T extends Resource> {
 				throw new DavNoContentException();
 
 			for (WebDavResource member : collection.getMembers()) {
-				T resource = newResourceSkeleton(member.getName(), member.getETag());
+				T resource = newResourceSkeleton(member.getName(), member.getProperties().getETag());
 				try {
 					if (member.getContent() != null) {
 						@Cleanup InputStream is = new ByteArrayInputStream(member.getContent());
@@ -158,13 +158,13 @@ public abstract class WebDavCollection<T extends Resource> {
 	// returns ETag of the created resource, if returned by server
 	public String add(Resource res) throws URISyntaxException, IOException, HttpException {
 		WebDavResource member = new WebDavResource(collection, res.getName(), res.getETag());
-		member.setContentType(res.getMimeType());
+		member.getProperties().setContentType(res.getMimeType());
 
 		@Cleanup ByteArrayOutputStream os = res.toEntity();
 		String eTag = member.put(os.toByteArray(), PutMode.ADD_DONT_OVERWRITE);
 
 		// after a successful upload, the collection has implicitely changed, too
-		collection.invalidateCTag();
+		collection.getProperties().invalidateCTag();
 
 		return eTag;
 	}
@@ -173,19 +173,19 @@ public abstract class WebDavCollection<T extends Resource> {
 		WebDavResource member = new WebDavResource(collection, res.getName(), res.getETag());
 		member.delete();
 
-		collection.invalidateCTag();
+		collection.getProperties().invalidateCTag();
 	}
 
 	// returns ETag of the updated resource, if returned by server
 	public String update(Resource res) throws URISyntaxException, IOException, HttpException {
 		WebDavResource member = new WebDavResource(collection, res.getName(), res.getETag());
-		member.setContentType(res.getMimeType());
+		member.getProperties().setContentType(res.getMimeType());
 
 		@Cleanup ByteArrayOutputStream os = res.toEntity();
 		String eTag = member.put(os.toByteArray(), PutMode.UPDATE_DONT_OVERWRITE);
 
 		// after a successful upload, the collection has implicitely changed, too
-		collection.invalidateCTag();
+		collection.getProperties().invalidateCTag();
 
 		return eTag;
 	}

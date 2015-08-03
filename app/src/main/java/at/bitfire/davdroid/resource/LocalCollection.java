@@ -18,7 +18,6 @@ import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.util.Log;
@@ -26,7 +25,6 @@ import android.util.Log;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -96,7 +94,7 @@ public abstract class LocalCollection<T extends Resource> {
 	/** gets the CTag of the collection */
 	abstract public String getCTag() throws LocalStorageException;
 	/** update locally stored collection properties (e.g. display name and color) from a WebDavResource */
-	abstract public void updateMetaData(WebDavResource resource) throws LocalStorageException;
+	abstract public void updateMetaData(WebDavResource.Properties properties) throws LocalStorageException;
 
 	
 	// content provider (= database) querying

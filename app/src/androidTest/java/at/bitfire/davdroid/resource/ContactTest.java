@@ -36,7 +36,7 @@ public class ContactTest extends InstrumentationTestCase {
 		Contact c = new Contact("test.vcf", null);
 
 		// should generate VCard 3.0 by default
-		assertEquals("text/vcard", c.getMimeType());
+		assertEquals("text/vcard;charset=UTF-8", c.getMimeType());
 		assertTrue(new String(c.toEntity().toByteArray()).contains("VERSION:3.0"));
 
 		// now let's generate VCard 4.0
