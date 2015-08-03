@@ -17,6 +17,7 @@ import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.PropertyList;
+import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.component.VToDo;
 import net.fortuna.ical4j.model.property.Clazz;
@@ -41,6 +42,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashSet;
+import java.util.Set;
 
 import at.bitfire.davdroid.Constants;
 import lombok.Getter;
@@ -119,8 +122,10 @@ public class Task extends iCalendar {
 		if (todo.getStatus() != null)
 			status = todo.getStatus();
 
-		if (todo.getDue() != null)
+		if (todo.getDue() != null) {
 			due = todo.getDue();
+			validateTimeZone(due);
+		}
 		if (todo.getDuration() != null)
 			duration = todo.getDuration();
 		if (todo.getStartDate() != null) {
@@ -173,16 +178,32 @@ public class Task extends iCalendar {
 		if (status != null)
 			props.add(status);
 
-		if (due != null)
+		// remember used time zones
+		Set<TimeZone> usedTimeZones = new HashSet<>();
+
+		if (due != null) {
 			props.add(due);
+			if (due.getTimeZone() != null)
+				usedTimeZones.add(due.getTimeZone());
+		}
 		if (duration != null)
 			props.add(duration);
-		if (dtStart != null)
+		if (dtStart != null) {
 			props.add(dtStart);
-		if (completedAt != null)
+			if (dtStart.getTimeZone() != null)
+				usedTimeZones.add(dtStart.getTimeZone());
+		}
+		if (completedAt != null) {
 			props.add(completedAt);
+			if (completedAt.getTimeZone() != null)
+				usedTimeZones.add(completedAt.getTimeZone());
+		}
 		if (percentComplete != null)
 			props.add(new PercentComplete(percentComplete));
+
+		// add VTIMEZONE components
+		for (TimeZone timeZone : usedTimeZones)
+			ical.getComponents().add(timeZone.getVTimeZone());
 
 		CalendarOutputter output = new CalendarOutputter(false);
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
