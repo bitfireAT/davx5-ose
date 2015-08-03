@@ -25,25 +25,14 @@ import android.test.InstrumentationTestCase;
 import android.util.Log;
 
 import net.fortuna.ical4j.model.Date;
-import net.fortuna.ical4j.model.DateList;
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.TimeZone;
-import net.fortuna.ical4j.model.TimeZoneRegistry;
-import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
-import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.component.VAlarm;
-import net.fortuna.ical4j.model.parameter.Value;
-import net.fortuna.ical4j.model.property.DateListProperty;
 import net.fortuna.ical4j.model.property.DtEnd;
 import net.fortuna.ical4j.model.property.DtStart;
-import net.fortuna.ical4j.model.property.ExDate;
-import net.fortuna.ical4j.model.property.RDate;
-import net.fortuna.ical4j.util.Dates;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import at.bitfire.davdroid.DateUtils;
 import lombok.Cleanup;

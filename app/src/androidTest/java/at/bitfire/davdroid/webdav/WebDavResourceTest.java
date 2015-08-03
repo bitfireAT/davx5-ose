@@ -73,7 +73,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 
 	public void testPropfindCurrentUserPrincipal() throws Exception {
 		davCollection.propfind(HttpPropfind.Mode.CURRENT_USER_PRINCIPAL);
-		assertEquals(new URI("/dav/principals/users/test"), davCollection.getCurrentUserPrincipal());
+		assertEquals(new URI("/dav/principals/users/test"), davCollection.getProperties().getCurrentUserPrincipal());
 
         WebDavResource simpleFile = new WebDavResource(davAssets, "test.random");
 		try {
@@ -82,14 +82,14 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 			
 		} catch(DavException ex) {
 		}
-		assertNull(simpleFile.getCurrentUserPrincipal());
+		assertNull(simpleFile.getProperties().getCurrentUserPrincipal());
 	}
 		
 	public void testPropfindHomeSets() throws Exception {
 		WebDavResource dav = new WebDavResource(davCollection, "principals/users/test");
 		dav.propfind(HttpPropfind.Mode.HOME_SETS);
-		assertEquals(new URI("/dav/addressbooks/test/"), dav.getAddressbookHomeSet());
-		assertEquals(new URI("/dav/calendars/test/"), dav.getCalendarHomeSet());
+		assertEquals(new URI("/dav/addressbooks/test/"), dav.getProperties().getAddressbookHomeSet());
+		assertEquals(new URI("/dav/calendars/test/"), dav.getProperties().getCalendarHomeSet());
 	}
 	
 	public void testPropfindAddressBooks() throws Exception {
@@ -103,33 +103,44 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		WebDavResource ab = dav.getMembers().get(0);
 		assertEquals(TestConstants.roboHydra.resolve("/dav/addressbooks/test/useless-member"), ab.getLocation());
 		assertEquals("useless-member", ab.getName());
-		assertFalse(ab.isAddressBook());
+		assertFalse(ab.getProperties().isAddressBook());
 
 		// the second one is an address book (referenced by relative URI)
 		ab = dav.getMembers().get(1);
 		assertEquals(TestConstants.roboHydra.resolve("/dav/addressbooks/test/default.vcf/"), ab.getLocation());
 		assertEquals("default.vcf", ab.getName());
-		assertTrue(ab.isAddressBook());
+		assertTrue(ab.getProperties().isAddressBook());
 
 		// the third one is an address book (referenced by an absolute URI)
 		ab = dav.getMembers().get(2);
 		assertEquals(new URI("https://my.server/absolute:uri/my-address-book/"), ab.getLocation());
 		assertEquals("my-address-book", ab.getName());
-		assertTrue(ab.isAddressBook());
+		assertTrue(ab.getProperties().isAddressBook());
 	}
 	
 	public void testPropfindCalendars() throws Exception {
 		WebDavResource dav = new WebDavResource(davCollection, "calendars/test");
 		dav.propfind(Mode.CALDAV_COLLECTIONS);
 		assertEquals(3, dav.getMembers().size());
-		assertEquals("0xFF00FF", dav.getMembers().get(2).getColor());
+		assertEquals(new Integer(0xFFFF00FF), dav.getMembers().get(2).getProperties().getColor());
 		for (WebDavResource member : dav.getMembers()) {
 			if (member.getName().contains(".ics"))
-				assertTrue(member.isCalendar());
+				assertTrue(member.getProperties().isCalendar());
 			else
-				assertFalse(member.isCalendar());
-			assertFalse(member.isAddressBook());
+				assertFalse(member.getProperties().isCalendar());
+			assertFalse(member.getProperties().isAddressBook());
 		}
+	}
+
+	public void testPropfindCollectionProperties() throws Exception {
+		WebDavResource dav = new WebDavResource(davCollection, "propfind-collection-properties");
+		dav.propfind(Mode.COLLECTION_PROPERTIES);
+		assertTrue(dav.members.isEmpty());
+		assertTrue(dav.properties.isCollection);
+		assertTrue(dav.properties.isAddressBook);
+		assertNull(dav.properties.displayName);
+		assertNull(dav.properties.color);
+		assertEquals(VCardVersion.V4_0, dav.properties.supportedVCardVersion);
 	}
 	
 	public void testPropfindTrailingSlashes() throws Exception {
@@ -145,7 +156,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		for (String path : requestPaths) {
 			WebDavResource davSlash = new WebDavResource(davCollection, new URI(path));
 			davSlash.propfind(Mode.CARDDAV_COLLECTIONS);
-			assertEquals(new URI(principalOK), davSlash.getCurrentUserPrincipal());
+			assertEquals(new URI(principalOK), davSlash.getProperties().getCurrentUserPrincipal());
 		}
 	}
 
@@ -190,7 +201,7 @@ public class WebDavResourceTest extends InstrumentationTestCase {
 		WebDavResource davAddressBook = new WebDavResource(davCollection, "addressbooks/default.vcf/");
 		davAddressBook.multiGet(DavMultiget.Type.ADDRESS_BOOK, new String[] { "1.vcf", "2:3@my%40pc.vcf" });
 		// queried address book has a name
-		assertEquals("My Book", davAddressBook.getDisplayName());
+		assertEquals("My Book", davAddressBook.getProperties().getDisplayName());
 		// there are two contacts
 		assertEquals(2, davAddressBook.getMembers().size());
 		// contact file names should be unescaped (yes, it's really named ...%40pc... to check double-encoding)

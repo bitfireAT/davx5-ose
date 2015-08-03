@@ -16,8 +16,11 @@ import java.util.regex.Pattern;
 public class DAVUtils {
 	private static final String TAG = "davdroid.DAVutils";
 
+	public static final int calendarGreen = 0xFFC3EA6E;
+
+
 	public static int CalDAVtoARGBColor(String davColor) {
-		int color = 0xFFC3EA6E;		// fallback: "DAVdroid green"
+		int color = calendarGreen;		// fallback: "DAVdroid green"
 		if (davColor != null) {
 			Pattern p = Pattern.compile("#?(\\p{XDigit}{6})(\\p{XDigit}{2})?");
 			Matcher m = p.matcher(davColor);

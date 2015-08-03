@@ -18,7 +18,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
-import android.provider.CalendarContract;
 import android.util.Log;
 
 import net.fortuna.ical4j.model.Date;
@@ -36,7 +35,6 @@ import net.fortuna.ical4j.util.TimeZones;
 import org.apache.commons.lang3.StringUtils;
 import org.dmfs.provider.tasks.TaskContract;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 
 import at.bitfire.davdroid.DAVUtils;
@@ -77,7 +75,7 @@ public class LocalTaskList extends LocalCollection<Task> {
 		values.put(TaskContract.TaskLists.ACCOUNT_TYPE, account.type);
 		values.put(TaskContract.TaskLists._SYNC_ID, info.getURL());
 		values.put(TaskContract.TaskLists.LIST_NAME, info.getTitle());
-		values.put(TaskContract.TaskLists.LIST_COLOR, DAVUtils.CalDAVtoARGBColor(info.getColor()));
+		values.put(TaskContract.TaskLists.LIST_COLOR, info.getColor() != null ? info.getColor() : DAVUtils.calendarGreen);
 		values.put(TaskContract.TaskLists.OWNER, account.name);
 		values.put(TaskContract.TaskLists.ACCESS_LEVEL, 0);
 		values.put(TaskContract.TaskLists.SYNC_ENABLED, 1);
@@ -135,16 +133,16 @@ public class LocalTaskList extends LocalCollection<Task> {
 	}
 
 	@Override
-	public void updateMetaData(WebDavResource resource) throws LocalStorageException {
+	public void updateMetaData(WebDavResource.Properties properties) throws LocalStorageException {
 		ContentValues values = new ContentValues();
 
-		final String displayName = resource.getDisplayName();
+		final String displayName = properties.getDisplayName();
 		if (displayName != null)
 			values.put(TaskContract.TaskLists.LIST_NAME, displayName);
 
-		final String color = resource.getColor();
+		final Integer color = properties.getColor();
 		if (color != null)
-			values.put(TaskContract.TaskLists.LIST_COLOR, DAVUtils.CalDAVtoARGBColor(color));
+			values.put(TaskContract.TaskLists.LIST_COLOR, color);
 
 		try {
 			if (values.size() > 0)

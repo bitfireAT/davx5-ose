@@ -81,6 +81,40 @@ exports.getBodyParts = function(conf) {
                     }
                 }
             }),
+            new RoboHydraHeadDAV({
+				path: "/dav/propfind-collection-properties",
+				handler: function(req,res,next) {
+					if (req.method == "PROPFIND") {
+                        res.statusCode = 207;
+						res.write('\<?xml version="1.0" encoding="utf-8" ?>\
+							<multistatus xmlns="DAV:" xmlns:CARD="urn:ietf:params:xml:ns:carddav">\
+								<response>\
+									<href>/dav/propfind-collection-properties</href> \
+									<propstat>\
+										<prop>\
+											<resourcetype>\
+												<collection/>\
+												<CARD:addressbook/>\
+											</resourcetype>\
+											<CARD:supported-address-data>\
+												<address-data-type content-type="text/vcard" version="4.0"/>\
+											</CARD:supported-address-data>\
+										</prop>\
+										<status>HTTP/1.1 200 OK</status>\
+									</propstat>\
+									<propstat>\
+										<prop>\
+                                            <displayname/>\
+											<A:calendar-color xmlns:A="http://apple.com/ns/ical/">0xFF00FF</A:calendar-color>\
+										</prop>\
+										<status>HTTP/1.1 404 Not Found</status>\
+									</propstat>\
+								</response>\
+							</multistatus>\
+						');
+                    }
+                }
+            }),
 
 			/* principal URL */
             new RoboHydraHeadDAV({

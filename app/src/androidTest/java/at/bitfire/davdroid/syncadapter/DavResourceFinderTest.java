@@ -18,7 +18,6 @@ import at.bitfire.davdroid.TestConstants;
 import at.bitfire.davdroid.resource.DavResourceFinder;
 import at.bitfire.davdroid.resource.ServerInfo;
 import at.bitfire.davdroid.resource.ServerInfo.ResourceInfo;
-import ezvcard.VCardVersion;
 
 public class DavResourceFinderTest extends InstrumentationTestCase {
 	
