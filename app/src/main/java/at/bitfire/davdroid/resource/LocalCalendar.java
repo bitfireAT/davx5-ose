@@ -57,7 +57,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -649,24 +651,18 @@ public class LocalCalendar extends LocalCollection<Event> {
 		buildEntry(builder, exception, false);
 		builder.withValue(Events.ORIGINAL_SYNC_ID, exception.getName());
 
-		// Some servers (iCloud, for instance) return RECURRENCE-ID with DATE-TIME even if
-		// the original event is an all-day event. Workaround: determine value of ORIGINAL_ALL_DAY
-		// by original event type (all-day or not) and not by whether RECURRENCE-ID is DATE or DATE-TIME.
-
 		final RecurrenceId recurrenceId = exception.getRecurrenceId();
 		final boolean originalAllDay = master.isAllDay();
 
 		Date date = recurrenceId.getDate();
-		if (originalAllDay && date instanceof DateTime) {
-			String value = recurrenceId.getValue();
-			if (value.matches("^\\d{8}T\\d{6}$"))
-				try {
-					// no "Z" at the end indicates "local" time
-					// so this is a "local" time, but it should be a ical4j Date without time
-					date = new Date(value.substring(0, 8));
-				} catch (ParseException e) {
-					Log.e(TAG, "Couldn't parse DATE part of DATE-TIME RECURRENCE-ID", e);
-				}
+		if (originalAllDay && date instanceof DateTime) {       // correct VALUE=DATE-TIME RECURRENCE-IDs to VALUE=DATE
+			final DateFormat dateFormatDate = new SimpleDateFormat("yyyyMMdd");
+			final String dateString = dateFormatDate.format(recurrenceId.getDate());
+			try {
+				date = new Date(dateString);
+			} catch (ParseException e) {
+				Log.e(TAG, "Couldn't parse DATE part of DATE-TIME RECURRENCE-ID", e);
+			}
 		}
 
 		builder.withValue(Events.ORIGINAL_INSTANCE_TIME, date.getTime());
