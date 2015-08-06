@@ -19,6 +19,9 @@ import net.fortuna.ical4j.util.CompatibilityHints;
 import net.fortuna.ical4j.util.SimpleHostInfo;
 import net.fortuna.ical4j.util.UidGenerator;
 
+import org.apache.commons.codec.CharEncoding;
+import org.apache.http.entity.ContentType;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.TimeZone;
@@ -28,7 +31,7 @@ import at.bitfire.davdroid.syncadapter.DavSyncAdapter;
 import lombok.NonNull;
 
 public abstract class iCalendar extends Resource {
-	static private final String TAG = "DAVdroid.iCal";
+	private static final String TAG = "DAVdroid.iCal";
 
 	// static ical4j initialization
 	static {
@@ -36,6 +39,8 @@ public abstract class iCalendar extends Resource {
 		CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_PARSING, true);
 		CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_OUTLOOK_COMPATIBILITY, true);
 	}
+
+	public static final ContentType MIME_ICALENDAR = ContentType.create("text/calendar", CharEncoding.UTF_8);
 
 
 	public iCalendar(long localID, String name, String ETag) {
@@ -60,8 +65,8 @@ public abstract class iCalendar extends Resource {
 
 
 	@Override
-	public String getMimeType() {
-		return "text/calendar";
+	public ContentType getContentType() {
+		return MIME_ICALENDAR;
 	}
 
 

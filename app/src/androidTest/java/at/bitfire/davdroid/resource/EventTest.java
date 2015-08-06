@@ -111,7 +111,7 @@ public class EventTest extends InstrumentationTestCase {
 	protected Event parseCalendar(String fname) throws IOException, InvalidResourceException {
 		@Cleanup InputStream in = assetMgr.open(fname, AssetManager.ACCESS_STREAMING);
 		Event e = new Event(fname, null);
-		e.parseEntity(in, null);
+		e.parseEntity(in, null, null);
 		return e;
 	}
 }

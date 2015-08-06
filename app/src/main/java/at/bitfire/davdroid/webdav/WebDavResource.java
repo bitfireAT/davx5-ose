@@ -26,6 +26,7 @@ import org.apache.http.client.methods.HttpOptionsHC4;
 import org.apache.http.client.methods.HttpPutHC4;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ByteArrayEntityHC4;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.auth.BasicSchemeHC4;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProviderHC4;
@@ -278,6 +279,7 @@ public class WebDavResource {
 		if (entity == null)
 			throw new DavNoContentException();
 
+		properties.contentType = ContentType.get(entity);
 		content = EntityUtilsHC4.toByteArray(entity);
 	}
 
@@ -296,7 +298,7 @@ public class WebDavResource {
 		}
 
 		if (properties.contentType != null)
-			put.addHeader("Content-Type", properties.contentType);
+			put.addHeader("Content-Type", properties.contentType.toString());
 
 		@Cleanup CloseableHttpResponse response = httpClient.execute(put, context);
 		checkResponse(response);
@@ -364,6 +366,8 @@ public class WebDavResource {
 		HttpEntity entity = response.getEntity();
 		if (entity == null)
 			throw new DavNoContentException();
+
+		properties.contentType = ContentType.get(entity);
 		@Cleanup InputStream content = entity.getContent();
 
 		DavMultistatus multiStatus;
@@ -452,7 +456,7 @@ public class WebDavResource {
 				eTag,
 				cTag;
 
-		@Getter @Setter	protected String contentType;
+		@Getter @Setter	protected ContentType contentType;
 
 		@Getter protected boolean
 				readOnly,

@@ -40,12 +40,15 @@ import net.fortuna.ical4j.model.property.Version;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Set;
 
 import at.bitfire.davdroid.Constants;
+import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -78,11 +81,15 @@ public class Task extends iCalendar {
 
 
 	@Override
-	public void parseEntity(InputStream entity, AssetDownloader downloader) throws IOException, InvalidResourceException {
-		net.fortuna.ical4j.model.Calendar ical;
+	public void parseEntity(InputStream entity, Charset charset, AssetDownloader downloader) throws IOException, InvalidResourceException {
+		final net.fortuna.ical4j.model.Calendar ical;
 		try {
 			CalendarBuilder builder = new CalendarBuilder();
-			ical = builder.build(entity);
+			if (charset != null) {
+				@Cleanup InputStreamReader reader = new InputStreamReader(entity, charset);
+				ical = builder.build(reader);
+			} else
+				ical = builder.build(entity);
 
 			if (ical == null)
 				throw new InvalidResourceException("No iCalendar found");

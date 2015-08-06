@@ -47,6 +47,8 @@ import net.fortuna.ical4j.util.TimeZones;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -56,6 +58,7 @@ import java.util.TimeZone;
 
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.DateUtils;
+import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -99,11 +102,15 @@ public class Event extends iCalendar {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void parseEntity(@NonNull InputStream entity, AssetDownloader downloader) throws IOException, InvalidResourceException {
-		net.fortuna.ical4j.model.Calendar ical;
+	public void parseEntity(@NonNull InputStream entity, Charset charset, AssetDownloader downloader) throws IOException, InvalidResourceException {
+		final net.fortuna.ical4j.model.Calendar ical;
 		try {
 			CalendarBuilder builder = new CalendarBuilder();
-			ical = builder.build(entity);
+			if (charset != null) {
+				@Cleanup InputStreamReader reader = new InputStreamReader(entity, charset);
+				ical = builder.build(reader);
+			} else
+				ical = builder.build(entity);
 
 			if (ical == null)
 				throw new InvalidResourceException("No iCalendar found");
