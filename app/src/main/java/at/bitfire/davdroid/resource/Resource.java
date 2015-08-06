@@ -7,11 +7,14 @@
  */
 package at.bitfire.davdroid.resource;
 
+import org.apache.http.entity.ContentType;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 
 import at.bitfire.davdroid.webdav.DavException;
 import at.bitfire.davdroid.webdav.HttpException;
@@ -46,11 +49,11 @@ public abstract class Resource {
 	 * @param entity        entity to parse
 	 * @param downloader    will be used to fetch additional resources like contact images
 	 **/
-	public abstract void parseEntity(InputStream entity, AssetDownloader downloader) throws IOException, InvalidResourceException;
+	public abstract void parseEntity(InputStream entity, Charset charset, AssetDownloader downloader) throws IOException, InvalidResourceException;
 
 
 	/* returns the MIME type that toEntity() will produce */
-	public abstract String getMimeType();
+	public abstract ContentType getContentType();
 
 	/** writes the resource data to an output stream (for instance, .vcf file for Contact) */
 	public abstract ByteArrayOutputStream toEntity() throws IOException;

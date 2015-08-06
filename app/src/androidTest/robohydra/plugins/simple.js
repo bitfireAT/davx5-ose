@@ -4,12 +4,12 @@ var roboHydra = require("robohydra"),
 	roboHydraHeads = roboHydra.heads,
 	roboHydraHead = roboHydraHeads.RoboHydraHead;
 
-SimpleResponseHead = roboHydraHeads.roboHydraHeadType({
+SimpleResponseHead = roboHydraHeads.robohydraHeadType({
 	name: 'Simple HTTP Response',
 	mandatoryProperties: [ 'path', 'status' ],
 	optionalProperties: [ 'headers', 'body' ],
 
-	parentPropBuilder: function() {
+	parentPropertyBuilder: function() {
         var head = this;
 		return {
 			path: this.path,

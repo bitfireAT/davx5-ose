@@ -4,12 +4,12 @@ var roboHydra = require("robohydra"),
 	roboHydraHeads = roboHydra.heads,
 	roboHydraHead = roboHydraHeads.RoboHydraHead;
 
-RoboHydraHeadDAV = roboHydraHeads.roboHydraHeadType({
+RoboHydraHeadDAV = roboHydraHeads.robohydraHeadType({
 	name: 'WebDAV Server',
 	mandatoryProperties: [ 'path' ],
     optionalProperties: [ 'handler' ],
 
-	parentPropBuilder: function() {
+	parentPropertyBuilder: function() {
 		var myHandler = this.handler;
 		return {
 			path: this.path,

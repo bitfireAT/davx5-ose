@@ -10,6 +10,7 @@ package at.bitfire.davdroid.resource;
 import android.util.Log;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 
 import java.io.ByteArrayInputStream;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -91,7 +93,6 @@ public abstract class WebDavCollection<T extends Resource> {
 				resources.add(newResourceSkeleton(member.getName(), member.getProperties().getETag()));
 
 		return resources.toArray(new Resource[resources.size()]);
-
 	}
 
 
@@ -117,7 +118,7 @@ public abstract class WebDavCollection<T extends Resource> {
 				try {
 					if (member.getContent() != null) {
 						@Cleanup InputStream is = new ByteArrayInputStream(member.getContent());
-						resource.parseEntity(is, getDownloader());
+						resource.parseEntity(is, null, getDownloader());
 						foundResources.add(resource);
 					} else
 						Log.e(TAG, "Ignoring entity without content");
@@ -142,13 +143,17 @@ public abstract class WebDavCollection<T extends Resource> {
 
 		member.get(memberAcceptedMimeTypes());
 
-		byte[] data = member.getContent();
+		final byte[] data = member.getContent();
 		if (data == null)
 			throw new DavNoContentException();
 
 		@Cleanup InputStream is = new ByteArrayInputStream(data);
 		try {
-			resource.parseEntity(is, getDownloader());
+			Charset charset = null;
+			ContentType mime = member.getProperties().getContentType();
+			if (mime != null)
+				charset = mime.getCharset();
+			resource.parseEntity(is, charset, getDownloader());
 		} catch (VCardParseException e) {
 			throw new InvalidResourceException(e);
 		}
@@ -158,12 +163,12 @@ public abstract class WebDavCollection<T extends Resource> {
 	// returns ETag of the created resource, if returned by server
 	public String add(Resource res) throws URISyntaxException, IOException, HttpException {
 		WebDavResource member = new WebDavResource(collection, res.getName(), res.getETag());
-		member.getProperties().setContentType(res.getMimeType());
+		member.getProperties().setContentType(res.getContentType());
 
 		@Cleanup ByteArrayOutputStream os = res.toEntity();
 		String eTag = member.put(os.toByteArray(), PutMode.ADD_DONT_OVERWRITE);
 
-		// after a successful upload, the collection has implicitely changed, too
+		// after a successful upload, the collection has implicitly changed, too
 		collection.getProperties().invalidateCTag();
 
 		return eTag;
@@ -179,7 +184,7 @@ public abstract class WebDavCollection<T extends Resource> {
 	// returns ETag of the updated resource, if returned by server
 	public String update(Resource res) throws URISyntaxException, IOException, HttpException {
 		WebDavResource member = new WebDavResource(collection, res.getName(), res.getETag());
-		member.getProperties().setContentType(res.getMimeType());
+		member.getProperties().setContentType(res.getContentType());
 
 		@Cleanup ByteArrayOutputStream os = res.toEntity();
 		String eTag = member.put(os.toByteArray(), PutMode.UPDATE_DONT_OVERWRITE);

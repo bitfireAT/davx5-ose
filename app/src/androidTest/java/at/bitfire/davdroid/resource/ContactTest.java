@@ -9,15 +9,20 @@ package at.bitfire.davdroid.resource;
 
 import android.content.res.AssetManager;
 import android.test.InstrumentationTestCase;
+import android.util.Log;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.webdav.DavException;
 import at.bitfire.davdroid.webdav.HttpException;
 import ezvcard.VCardVersion;
@@ -36,21 +41,22 @@ public class ContactTest extends InstrumentationTestCase {
 		Contact c = new Contact("test.vcf", null);
 
 		// should generate VCard 3.0 by default
-		assertEquals("text/vcard;charset=UTF-8", c.getMimeType());
+		assertEquals("text/vcard; charset=utf-8", c.getContentType().toString().toLowerCase());
 		assertTrue(new String(c.toEntity().toByteArray()).contains("VERSION:3.0"));
 
 		// now let's generate VCard 4.0
 		c.setVCardVersion(VCardVersion.V4_0);
-		assertEquals("text/vcard;version=4.0", c.getMimeType());
+		assertEquals("text/vcard; version=4.0", c.getContentType().toString());
 		assertTrue(new String(c.toEntity().toByteArray()).contains("VERSION:4.0"));
 	}
 	
-	public void testReferenceVCard() throws IOException, InvalidResourceException {
-		Contact c = parseVCF("reference.vcf");
-		assertEquals("Gump", c.getFamilyName());
-		assertEquals("Forrest", c.getGivenName());
-		assertEquals("Forrest Gump", c.getDisplayName());
-		assertEquals("Bubba Gump Shrimp Co.", c.getOrganization().getValues().get(0));
+	public void testReferenceVCard3() throws IOException, InvalidResourceException {
+		Contact c = parseVCF("reference-vcard3.vcf", Charset.forName(CharEncoding.UTF_8));
+
+		assertEquals("Gümp", c.getFamilyName());
+		assertEquals("Förrest", c.getGivenName());
+		assertEquals("Förrest Gümp", c.getDisplayName());
+		assertEquals("Bubba Gump Shrimpß Co.", c.getOrganization().getValues().get(0));
 		assertEquals("Shrimp Man", c.getJobTitle());
 		
 		Telephone phone1 = c.getPhoneNumbers().get(0);
@@ -78,17 +84,29 @@ public class ContactTest extends InstrumentationTestCase {
 		assertEquals("VCard with invalid unknown properties", c.getDisplayName());
 		assertNull(c.getUnknownProperties());
 	}
+
+	public void testParseLatin1() throws IOException {
+		Contact c = parseVCF("latin1.vcf", Charset.forName(CharEncoding.ISO_8859_1));
+		assertEquals("Özkan Äuçek", c.getDisplayName());
+		assertEquals("Özkan", c.getGivenName());
+		assertEquals("Äuçek", c.getFamilyName());
+		assertNull(c.getUnknownProperties());
+	}
 	
 	
-	protected Contact parseVCF(String fname) throws IOException {
+	protected Contact parseVCF(String fname, Charset charset) throws IOException {
 		@Cleanup InputStream in = assetMgr.open(fname, AssetManager.ACCESS_STREAMING);
 		Contact c = new Contact(fname, null);
-		c.parseEntity(in, new Resource.AssetDownloader() {
+		c.parseEntity(in, charset, new Resource.AssetDownloader() {
             @Override
             public byte[] download(URI uri) throws URISyntaxException, IOException, HttpException, DavException {
                 return IOUtils.toByteArray(uri);
             }
         });
 		return c;
+	}
+
+	protected Contact parseVCF(String fname) throws IOException {
+		return parseVCF(fname, null);
 	}
 }

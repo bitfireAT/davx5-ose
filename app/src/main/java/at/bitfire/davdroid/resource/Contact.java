@@ -9,12 +9,16 @@ package at.bitfire.davdroid.resource;
 
 import android.util.Log;
 
+import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.entity.ContentType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -52,6 +56,7 @@ import ezvcard.property.Telephone;
 import ezvcard.property.Title;
 import ezvcard.property.Uid;
 import ezvcard.property.Url;
+import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -66,6 +71,10 @@ public class Contact extends Resource {
 	private final static String TAG = "davdroid.Contact";
 
 	@Getter @Setter protected VCardVersion vCardVersion = VCardVersion.V3_0;
+
+	public static final ContentType
+			MIME_VCARD3 = ContentType.create("text/vcard", CharEncoding.UTF_8),
+			MIME_VCARD4 = ContentType.parse("text/vcard; version=4.0");
 
 	public final static String
 		PROPERTY_STARRED = "X-DAVDROID-STARRED",
@@ -89,7 +98,7 @@ public class Contact extends Resource {
 		RELATED_TYPE_MOTHER = RelatedType.get("mother"),
 		RELATED_TYPE_REFERRED_BY = RelatedType.get("referred-by"),
 		RELATED_TYPE_SISTER = RelatedType.get("sister");
-	
+
 	@Getter @Setter private String unknownProperties;
 	
 	@Getter @Setter private boolean starred;
@@ -140,8 +149,13 @@ public class Contact extends Resource {
 
 	@SuppressWarnings("LoopStatementThatDoesntLoop")
     @Override
-	public void parseEntity(InputStream is, AssetDownloader downloader) throws IOException {
-		VCard vcard = Ezvcard.parse(is).first();
+	public void parseEntity(InputStream is, Charset charset, AssetDownloader downloader) throws IOException {
+		final VCard vcard;
+		if (charset != null) {
+			@Cleanup InputStreamReader reader = new InputStreamReader(is, charset);
+			vcard = Ezvcard.parse(reader).first();
+		} else
+			vcard = Ezvcard.parse(is).first();
 		if (vcard == null)
 			return;
 		
@@ -318,11 +332,8 @@ public class Contact extends Resource {
 
 
 	@Override
-	public String getMimeType() {
-		if (vCardVersion == VCardVersion.V4_0)
-			return "text/vcard;version=4.0";
-		else
-			return "text/vcard;charset=UTF-8";
+	public ContentType getContentType() {
+		return (vCardVersion == VCardVersion.V4_0) ? MIME_VCARD4 : MIME_VCARD3;
 	}
 	
 	@Override

@@ -24,7 +24,7 @@ import lombok.Setter;
 public class DavProp {
 	
 	/* RFC 4918 WebDAV */
-	
+
 	@Element(required=false)
 	ResourceType resourcetype;
 	
@@ -36,7 +36,7 @@ public class DavProp {
 	
 	@Element(required=false)
 	@Setter GetETag getetag;
-	
+
 	@Root(strict=false)
 	public static class ResourceType {
 		@Element(required=false)
