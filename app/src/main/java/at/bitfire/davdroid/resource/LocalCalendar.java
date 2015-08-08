@@ -41,6 +41,7 @@ import net.fortuna.ical4j.model.parameter.Cn;
 import net.fortuna.ical4j.model.parameter.CuType;
 import net.fortuna.ical4j.model.parameter.PartStat;
 import net.fortuna.ical4j.model.parameter.Role;
+import net.fortuna.ical4j.model.parameter.Rsvp;
 import net.fortuna.ical4j.model.property.Action;
 import net.fortuna.ical4j.model.property.Attendee;
 import net.fortuna.ical4j.model.property.Description;
@@ -77,12 +78,11 @@ import lombok.Getter;
 public class LocalCalendar extends LocalCollection<Event> {
 	private static final String TAG = "davdroid.LocalCalendar";
 
-	@Getter protected String url;
-	@Getter protected long id;
+	@Getter private String url;
+	@Getter private long id;
 	
 	protected static final String COLLECTION_COLUMN_CTAG = Calendars.CAL_SYNC1;
 
-	
 	/* database fields */
 	
 	@Override protected Uri entriesURI()                { return syncAdapterURI(Events.CONTENT_URI); }
@@ -425,13 +425,12 @@ public class LocalCalendar extends LocalCollection<Event> {
 		// availability
 		e.setOpaque(values.getAsInteger(Events.AVAILABILITY) != Events.AVAILABILITY_FREE);
 
-		// set ORGANIZER only when there are attendees
-		if (values.getAsInteger(Events.HAS_ATTENDEE_DATA) != 0 && values.containsKey(Events.ORGANIZER))
-			try {
-				e.setOrganizer(new Organizer(new URI("mailto", values.getAsString(Events.ORGANIZER), null)));
-			} catch (URISyntaxException ex) {
-				Log.e(TAG, "Error when creating ORGANIZER URI, ignoring", ex);
-			}
+		// set ORGANIZER
+		try {
+			e.setOrganizer(new Organizer(new URI("mailto", values.getAsString(Events.ORGANIZER), null)));
+		} catch (URISyntaxException ex) {
+			Log.e(TAG, "Error when creating ORGANIZER mailto URI, ignoring", ex);
+		}
 
 		// classification
 		switch (values.getAsInteger(Events.ACCESS_LEVEL)) {
@@ -463,8 +462,20 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 	void populateAttendee(Event event, ContentValues values) {
 		try {
-			Attendee attendee = new Attendee(new URI("mailto", values.getAsString(Attendees.ATTENDEE_EMAIL), null));
-			ParameterList params = attendee.getParameters();
+			final Attendee attendee;
+			final String
+					email = values.getAsString(Attendees.ATTENDEE_EMAIL),
+					idNS = values.getAsString(Attendees.ATTENDEE_ID_NAMESPACE),
+					id = values.getAsString(Attendees.ATTENDEE_IDENTITY);
+			if (idNS != null || id != null) {
+				// attendee identified by namespace and ID
+				attendee = new Attendee(new URI(idNS, id, null));
+				if (email != null)
+					attendee.getParameters().add(new iCalendar.Email(email));
+			} else
+				// attendee identified by email address
+				attendee = new Attendee(new URI("mailto", email, null));
+			final ParameterList params = attendee.getParameters();
 
 			String cn = values.getAsString(Attendees.ATTENDEE_NAME);
 			if (cn != null)
@@ -478,12 +489,11 @@ public class LocalCalendar extends LocalCollection<Event> {
 			int relationship = values.getAsInteger(Attendees.ATTENDEE_RELATIONSHIP);
 			switch (relationship) {
 				case Attendees.RELATIONSHIP_ORGANIZER:
-					params.add(Role.CHAIR);
-					break;
 				case Attendees.RELATIONSHIP_ATTENDEE:
 				case Attendees.RELATIONSHIP_PERFORMER:
 				case Attendees.RELATIONSHIP_SPEAKER:
 					params.add((type == Attendees.TYPE_REQUIRED) ? Role.REQ_PARTICIPANT : Role.OPT_PARTICIPANT);
+					params.add(new Rsvp(true));
 					break;
 				case Attendees.RELATIONSHIP_NONE:
 					params.add(Role.NON_PARTICIPANT);
@@ -590,11 +600,22 @@ public class LocalCalendar extends LocalCollection<Event> {
 			builder.withValue(Events.EVENT_LOCATION, event.getLocation());
 		if (event.getDescription() != null)
 			builder.withValue(Events.DESCRIPTION, event.getDescription());
-		
-		if (event.getOrganizer() != null && event.getOrganizer().getCalAddress() != null) {
-			URI organizer = event.getOrganizer().getCalAddress();
-			if (organizer.getScheme() != null && organizer.getScheme().equalsIgnoreCase("mailto"))
-				builder.withValue(Events.ORGANIZER, organizer.getSchemeSpecificPart());
+
+		Organizer organizer = event.getOrganizer();
+		if (organizer != null) {
+			final URI uri = organizer.getCalAddress();
+
+			String email = null;
+			if (uri != null && "mailto".equalsIgnoreCase(uri.getScheme()))
+				email = uri.getSchemeSpecificPart();
+			else {
+				iCalendar.Email emailParam = (iCalendar.Email)organizer.getParameter(iCalendar.Email.PARAMETER_NAME);
+				if (emailParam != null)
+					email = emailParam.getValue();
+				else
+					Log.w(TAG, "Got ORGANIZER without email address, using given URI instead (may cause Android to behave unexpectedly)");
+			}
+			builder.withValue(Events.ORGANIZER, email != null ? email : uri.toString());
 		}
 
 		Status status = event.getStatus();
@@ -673,7 +694,18 @@ public class LocalCalendar extends LocalCollection<Event> {
 	@SuppressLint("InlinedApi")
 	protected Builder buildAttendee(Builder builder, Attendee attendee) {
 		final Uri member = Uri.parse(attendee.getValue());
-		final String email = member.getSchemeSpecificPart();
+		if ("mailto".equalsIgnoreCase(member.getScheme()))
+			// attendee identified by email
+			builder = builder.withValue(Attendees.ATTENDEE_EMAIL, member.getSchemeSpecificPart());
+		else {
+			// attendee identified by other URI
+			builder = builder
+					.withValue(Attendees.ATTENDEE_ID_NAMESPACE, member.getScheme())
+					.withValue(Attendees.ATTENDEE_IDENTITY, member.getSchemeSpecificPart());
+			iCalendar.Email email = (iCalendar.Email)attendee.getParameter(iCalendar.Email.PARAMETER_NAME);
+			if (email != null)
+				builder = builder.withValue(Attendees.ATTENDEE_EMAIL, email.getValue());
+		}
 
 		final Cn cn = (Cn)attendee.getParameter(Parameter.CN);
 		if (cn != null)
@@ -682,9 +714,11 @@ public class LocalCalendar extends LocalCollection<Event> {
 		int type = Attendees.TYPE_NONE;
 		
 		CuType cutype = (CuType)attendee.getParameter(Parameter.CUTYPE);
-		if (cutype == CuType.RESOURCE)
+		if (cutype == CuType.RESOURCE || cutype == CuType.ROOM)
+			// "attendee" is a (physical) resource
 			type = Attendees.TYPE_RESOURCE;
 		else {
+			// attendee is not a (physical) resource
 			Role role = (Role)attendee.getParameter(Parameter.ROLE);
 			int relationship;
 			if (role == Role.CHAIR)
@@ -711,7 +745,6 @@ public class LocalCalendar extends LocalCollection<Event> {
 			status = Attendees.ATTENDEE_STATUS_TENTATIVE;
 		
 		return builder
-			.withValue(Attendees.ATTENDEE_EMAIL, email)
 			.withValue(Attendees.ATTENDEE_TYPE, type)
 			.withValue(Attendees.ATTENDEE_STATUS, status);
 	}

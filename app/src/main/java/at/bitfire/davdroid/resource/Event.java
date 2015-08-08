@@ -10,7 +10,6 @@ package at.bitfire.davdroid.resource;
 import android.text.format.Time;
 import android.util.Log;
 
-import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Component;
@@ -105,12 +104,11 @@ public class Event extends iCalendar {
 	public void parseEntity(@NonNull InputStream entity, Charset charset, AssetDownloader downloader) throws IOException, InvalidResourceException {
 		final net.fortuna.ical4j.model.Calendar ical;
 		try {
-			CalendarBuilder builder = new CalendarBuilder();
 			if (charset != null) {
 				@Cleanup InputStreamReader reader = new InputStreamReader(entity, charset);
-				ical = builder.build(reader);
+				ical = calendarBuilder.build(reader);
 			} else
-				ical = builder.build(entity);
+				ical = calendarBuilder.build(entity);
 
 			if (ical == null)
 				throw new InvalidResourceException("No iCalendar found");
@@ -353,6 +351,5 @@ public class Event extends iCalendar {
 			dtEnd = new DtEnd(end);
 		}
 	}
-
 
 }
