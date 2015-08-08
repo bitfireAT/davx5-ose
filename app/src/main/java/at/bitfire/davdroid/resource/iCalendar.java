@@ -11,12 +11,19 @@ package at.bitfire.davdroid.resource;
 import android.util.Log;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.CalendarParserFactory;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.Parameter;
+import net.fortuna.ical4j.model.ParameterFactory;
+import net.fortuna.ical4j.model.ParameterFactoryImpl;
+import net.fortuna.ical4j.model.ParameterFactoryRegistry;
+import net.fortuna.ical4j.model.PropertyFactoryRegistry;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.DateProperty;
 import net.fortuna.ical4j.util.CompatibilityHints;
 import net.fortuna.ical4j.util.SimpleHostInfo;
+import net.fortuna.ical4j.util.Strings;
 import net.fortuna.ical4j.util.UidGenerator;
 
 import org.apache.commons.codec.CharEncoding;
@@ -24,10 +31,12 @@ import org.apache.http.entity.ContentType;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URISyntaxException;
 import java.util.TimeZone;
 
 import at.bitfire.davdroid.DateUtils;
 import at.bitfire.davdroid.syncadapter.DavSyncAdapter;
+import lombok.Getter;
 import lombok.NonNull;
 
 public abstract class iCalendar extends Resource {
@@ -113,5 +122,43 @@ public abstract class iCalendar extends Resource {
 		}
 		return null;
 	}
+
+
+	// ical4j helpers and extensions
+
+	private static final ParameterFactoryRegistry parameterFactoryRegistry = new ParameterFactoryRegistry();
+	static {
+		parameterFactoryRegistry.register(Email.PARAMETER_NAME, Email.FACTORY);
+	}
+	protected static final CalendarBuilder calendarBuilder = new CalendarBuilder(
+			CalendarParserFactory.getInstance().createParser(),
+			new PropertyFactoryRegistry(), parameterFactoryRegistry, DateUtils.tzRegistry);
+
+	public static class Email extends Parameter {
+		/* EMAIL property for ATTENDEE properties, as used by iCloud:
+		   ATTENDEE;EMAIL=bla@domain.tld;/path/to/principal
+		*/
+		public static final ParameterFactory FACTORY = new Factory();
+
+		public static final String PARAMETER_NAME = "EMAIL";
+		@Getter	private String value;
+
+		protected Email() {
+			super(PARAMETER_NAME, ParameterFactoryImpl.getInstance());
+		}
+
+		public Email(String aValue) {
+			super(PARAMETER_NAME, ParameterFactoryImpl.getInstance());
+			value = Strings.unquote(aValue);
+		}
+
+		public static class Factory implements ParameterFactory {
+			@Override
+			public Parameter createParameter(String name, String value) throws URISyntaxException {
+				return new Email(value);
+			}
+		}
+	}
+
 
 }
