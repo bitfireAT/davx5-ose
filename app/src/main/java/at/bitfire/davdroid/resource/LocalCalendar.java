@@ -425,12 +425,13 @@ public class LocalCalendar extends LocalCollection<Event> {
 		// availability
 		e.opaque = values.getAsInteger(Events.AVAILABILITY) != Events.AVAILABILITY_FREE;
 
-		// set ORGANIZER
-		try {
-			e.organizer = new Organizer(new URI("mailto", values.getAsString(Events.ORGANIZER), null));
-		} catch (URISyntaxException ex) {
-			Log.e(TAG, "Error when creating ORGANIZER mailto URI, ignoring", ex);
-		}
+		// set ORGANIZER if there's attendee data
+		if (values.getAsInteger(Events.HAS_ATTENDEE_DATA) != 0)
+			try {
+				e.organizer = new Organizer(new URI("mailto", values.getAsString(Events.ORGANIZER), null));
+			} catch (URISyntaxException ex) {
+				Log.e(TAG, "Error when creating ORGANIZER mailto URI, ignoring", ex);
+			}
 
 		// classification
 		switch (values.getAsInteger(Events.ACCESS_LEVEL)) {
@@ -553,8 +554,8 @@ public class LocalCalendar extends LocalCollection<Event> {
 					.withValue(entryColumnETag(), event.getETag())
 					.withValue(entryColumnUID(), event.getUid());
 		} else {
+			// event is an exception
 			builder.withValue(Events.ORIGINAL_SYNC_ID, event.getName());
-
 			// ORIGINAL_INSTANCE_TIME and ORIGINAL_ALL_DAY is set in buildExceptions.
 			// It's not possible to use only the RECURRENCE-ID to calculate
 			// ORIGINAL_INSTANCE_TIME and ORIGINAL_ALL_DAY because iCloud sends DATE-TIME
@@ -616,7 +617,6 @@ public class LocalCalendar extends LocalCollection<Event> {
 			builder.withValue(Events.ORGANIZER, email != null ? email : uri.toString());
 		}
 
-		//Status status = event.getStatus();
 		if (event.status!= null) {
 			int statusCode = Events.STATUS_TENTATIVE;
 			if (event.status == Status.VEVENT_CONFIRMED)
@@ -639,15 +639,15 @@ public class LocalCalendar extends LocalCollection<Event> {
 	protected void addDataRows(Resource resource, long localID, int backrefIdx) {
 		final Event event = (Event)resource;
 
-		// add exceptions
-		for (Event exception : event.getExceptions())
-			pendingOperations.add(buildException(newDataInsertBuilder(Events.CONTENT_URI, Events.ORIGINAL_ID, localID, backrefIdx), event, exception).build());
 		// add attendees
 		for (Attendee attendee : event.getAttendees())
 			pendingOperations.add(buildAttendee(newDataInsertBuilder(Attendees.CONTENT_URI, Attendees.EVENT_ID, localID, backrefIdx), attendee).build());
 		// add reminders
 		for (VAlarm alarm : event.getAlarms())
 			pendingOperations.add(buildReminder(newDataInsertBuilder(Reminders.CONTENT_URI, Reminders.EVENT_ID, localID, backrefIdx), alarm).build());
+		// add exceptions
+		for (Event exception : event.getExceptions())
+			pendingOperations.add(buildException(newDataInsertBuilder(Events.CONTENT_URI, Events.ORIGINAL_ID, localID, backrefIdx), event, exception).build());
 	}
 	
 	@Override
@@ -668,7 +668,6 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 	protected Builder buildException(Builder builder, Event master, Event exception) {
 		buildEntry(builder, exception, false);
-		builder.withValue(Events.ORIGINAL_SYNC_ID, exception.getName());
 
 		final boolean originalAllDay = master.isAllDay();
 
@@ -685,12 +684,16 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 		builder.withValue(Events.ORIGINAL_INSTANCE_TIME, date.getTime());
 		builder.withValue(Events.ORIGINAL_ALL_DAY, originalAllDay ? 1 : 0);
+
+		/* TODO reminders and attendees for exceptions are currently not built because
+		 * there's no backref index available */
+
 		return builder;
 	}
 	
 	@SuppressLint("InlinedApi")
 	protected Builder buildAttendee(Builder builder, Attendee attendee) {
-		final Uri member = Uri.parse(attendee.getValue());
+		final URI member = attendee.getCalAddress();
 		if ("mailto".equalsIgnoreCase(member.getScheme()))
 			// attendee identified by email
 			builder = builder.withValue(Attendees.ATTENDEE_EMAIL, member.getSchemeSpecificPart());
@@ -760,7 +763,6 @@ public class LocalCalendar extends LocalCollection<Event> {
 		}
 
 		Log.d(TAG, "Adding alarm " + minutes + " minutes before");
-
 		return builder
 				.withValue(Reminders.METHOD, Reminders.METHOD_ALERT)
 				.withValue(Reminders.MINUTES, minutes);

@@ -293,8 +293,6 @@ public class Event extends iCalendar {
 			event.getProperties().add(forPublic ? Clazz.PUBLIC : Clazz.PRIVATE);
 
 		event.getAlarms().addAll(alarms);
-
-		props.add(new LastModified());
 		return event;
 	}
 
