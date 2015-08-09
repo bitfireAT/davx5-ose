@@ -136,7 +136,7 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	
 	public Contact newResource(long localID, String resourceName, String eTag) {
 		Contact c = new Contact(localID, resourceName, eTag);
-		c.setVCardVersion(accountSettings.getAddressBookVCardVersion());
+		c.vCardVersion = accountSettings.getAddressBookVCardVersion();
 		return c;
 	}
 
@@ -187,8 +187,8 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 
 				ContentValues values = e.getEntityValues();
 				c.setUid(values.getAsString(entryColumnUID()));
-				c.setUnknownProperties(values.getAsString(COLUMN_UNKNOWN_PROPERTIES));
-				c.setStarred(values.getAsInteger(RawContacts.STARRED) != 0);
+				c.unknownProperties = values.getAsString(COLUMN_UNKNOWN_PROPERTIES);
+				c.starred = values.getAsInteger(RawContacts.STARRED) != 0;
 
 				List<Entity.NamedContentValues> subValues = e.getSubValues();
 				for (Entity.NamedContentValues subValue : subValues) {
@@ -247,17 +247,17 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 
 	private void populateStructuredName(Contact c, ContentValues row) {
-		c.setDisplayName(row.getAsString(StructuredName.DISPLAY_NAME));
+		c.displayName = row.getAsString(StructuredName.DISPLAY_NAME);
 
-		c.setPrefix(row.getAsString(StructuredName.PREFIX));
-		c.setGivenName(row.getAsString(StructuredName.GIVEN_NAME));
-		c.setMiddleName(row.getAsString(StructuredName.MIDDLE_NAME));
-		c.setFamilyName(row.getAsString(StructuredName.FAMILY_NAME));
-		c.setSuffix(row.getAsString(StructuredName.SUFFIX));
+		c.prefix = row.getAsString(StructuredName.PREFIX);
+		c.givenName = row.getAsString(StructuredName.GIVEN_NAME);
+		c.middleName = row.getAsString(StructuredName.MIDDLE_NAME);
+		c.familyName = row.getAsString(StructuredName.FAMILY_NAME);
+		c.suffix = row.getAsString(StructuredName.SUFFIX);
 
-		c.setPhoneticGivenName(row.getAsString(StructuredName.PHONETIC_GIVEN_NAME));
-		c.setPhoneticMiddleName(row.getAsString(StructuredName.PHONETIC_MIDDLE_NAME));
-		c.setPhoneticFamilyName(row.getAsString(StructuredName.PHONETIC_FAMILY_NAME));
+		c.phoneticGivenName = row.getAsString(StructuredName.PHONETIC_GIVEN_NAME);
+		c.phoneticMiddleName = row.getAsString(StructuredName.PHONETIC_MIDDLE_NAME);
+		c.phoneticFamilyName = row.getAsString(StructuredName.PHONETIC_FAMILY_NAME);
 	}
 	
 	protected void populatePhoneNumber(Contact c, ContentValues row) {
@@ -364,12 +364,12 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			try {
 				@Cleanup AssetFileDescriptor fd = providerClient.openAssetFile(photoUri, "r");
 				@Cleanup InputStream is = fd.createInputStream();
-				c.setPhoto(IOUtils.toByteArray(is));
+				c.photo = IOUtils.toByteArray(is);
 			} catch(IOException ex) {
 				Log.w(TAG, "Couldn't read high-res contact photo", ex);
 			}
 		} else
-			c.setPhoto(row.getAsByteArray(Photo.PHOTO));
+			c.photo = row.getAsByteArray(Photo.PHOTO);
 	}
 	
 	protected void populateOrganization(Contact c, ContentValues row) {
@@ -384,13 +384,13 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				org.addValue(company);
 			if (StringUtils.isNotEmpty(department))
 				org.addValue(department);
-			c.setOrganization(org);
+			c.organization = org;
 		}
 
 		if (StringUtils.isNotEmpty(title))
-			c.setJobTitle(title);
+			c.jobTitle = title;
 		if (StringUtils.isNotEmpty(role))
-			c.setJobDescription(role);
+			c.jobDescription = role;
 	}
 	
 	protected void populateIMPP(Contact c, ContentValues row) {
@@ -449,11 +449,11 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 
 	protected void populateNickname(Contact c, ContentValues row) {
 		// TYPE (maiden name, short name, …) and LABEL are not processed here because Contacts app doesn't support it
-		c.setNickName(row.getAsString(Nickname.NAME));
+		c.nickName = row.getAsString(Nickname.NAME);
 	}
 	
 	protected void populateNote(Contact c, ContentValues row) {
-		c.setNote(row.getAsString(Note.NOTE));
+		c.note = row.getAsString(Note.NOTE);
 	}
 	
 	protected void populatePostalAddress(Contact c, ContentValues row) {
@@ -539,10 +539,10 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			Date date = formatter.parse(row.getAsString(CommonDataKinds.Event.START_DATE));
 			switch (row.getAsInteger(CommonDataKinds.Event.TYPE)) {
 				case CommonDataKinds.Event.TYPE_ANNIVERSARY:
-					c.setAnniversary(new Anniversary(date));
+					c.anniversary = new Anniversary(date);
 					break;
 				case CommonDataKinds.Event.TYPE_BIRTHDAY:
-					c.setBirthDay(new Birthday(date));
+					c.birthDay = new Birthday(date);
 					break;
 			}
 		} catch (ParseException e) {
@@ -658,8 +658,8 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 			.withValue(entryColumnRemoteName(), contact.getName())
 			.withValue(entryColumnUID(), contact.getUid())
 			.withValue(entryColumnETag(), contact.getETag())
-			.withValue(COLUMN_UNKNOWN_PROPERTIES, contact.getUnknownProperties())
-			.withValue(RawContacts.STARRED, contact.isStarred() ? 1 : 0);
+			.withValue(COLUMN_UNKNOWN_PROPERTIES, contact.unknownProperties)
+			.withValue(RawContacts.STARRED, contact.starred ? 1 : 0);
 	}
 	
 	
@@ -675,19 +675,19 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		for (ezvcard.property.Email email : contact.getEmails())
 			queueOperation(buildEmail(newDataInsertBuilder(localID, backrefIdx), email));
 
-		if (contact.getPhoto() != null)
-			queueOperation(buildPhoto(newDataInsertBuilder(localID, backrefIdx), contact.getPhoto()));
+		if (contact.photo != null)
+			queueOperation(buildPhoto(newDataInsertBuilder(localID, backrefIdx), contact.photo));
 		
 		queueOperation(buildOrganization(newDataInsertBuilder(localID, backrefIdx), contact));
 			
 		for (Impp impp : contact.getImpps())
 			queueOperation(buildIMPP(newDataInsertBuilder(localID, backrefIdx), impp));
 		
-		if (contact.getNickName() != null)
-			queueOperation(buildNickName(newDataInsertBuilder(localID, backrefIdx), contact.getNickName()));
+		if (contact.nickName != null)
+			queueOperation(buildNickName(newDataInsertBuilder(localID, backrefIdx), contact.nickName));
 		
-		if (contact.getNote() != null)
-			queueOperation(buildNote(newDataInsertBuilder(localID, backrefIdx), contact.getNote()));
+		if (contact.note != null)
+			queueOperation(buildNote(newDataInsertBuilder(localID, backrefIdx), contact.note));
 		
 		for (Address address : contact.getAddresses())
 			queueOperation(buildAddress(newDataInsertBuilder(localID, backrefIdx), address));
@@ -698,10 +698,10 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		for (String url : contact.getURLs())
 			queueOperation(buildURL(newDataInsertBuilder(localID, backrefIdx), url));
 		
-		if (contact.getAnniversary() != null)
-			queueOperation(buildEvent(newDataInsertBuilder(localID, backrefIdx), contact.getAnniversary(), CommonDataKinds.Event.TYPE_ANNIVERSARY));
-		if (contact.getBirthDay() != null)
-			queueOperation(buildEvent(newDataInsertBuilder(localID, backrefIdx), contact.getBirthDay(), CommonDataKinds.Event.TYPE_BIRTHDAY));
+		if (contact.anniversary != null)
+			queueOperation(buildEvent(newDataInsertBuilder(localID, backrefIdx), contact.anniversary, CommonDataKinds.Event.TYPE_ANNIVERSARY));
+		if (contact.birthDay != null)
+			queueOperation(buildEvent(newDataInsertBuilder(localID, backrefIdx), contact.birthDay, CommonDataKinds.Event.TYPE_BIRTHDAY));
 
 		for (Related related : contact.getRelations())
 			for (RelatedType type : related.getTypes())
@@ -721,15 +721,15 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	protected Builder buildStructuredName(Builder builder, Contact contact) {
 		return builder
 			.withValue(Data.MIMETYPE, StructuredName.CONTENT_ITEM_TYPE)
-			.withValue(StructuredName.PREFIX, contact.getPrefix())
-			.withValue(StructuredName.DISPLAY_NAME, contact.getDisplayName())
-			.withValue(StructuredName.GIVEN_NAME, contact.getGivenName())
-			.withValue(StructuredName.MIDDLE_NAME, contact.getMiddleName())
-			.withValue(StructuredName.FAMILY_NAME, contact.getFamilyName())
-			.withValue(StructuredName.SUFFIX, contact.getSuffix())
-			.withValue(StructuredName.PHONETIC_GIVEN_NAME, contact.getPhoneticGivenName())
-			.withValue(StructuredName.PHONETIC_MIDDLE_NAME, contact.getPhoneticMiddleName())
-			.withValue(StructuredName.PHONETIC_FAMILY_NAME, contact.getPhoneticFamilyName());
+			.withValue(StructuredName.PREFIX, contact.prefix)
+			.withValue(StructuredName.DISPLAY_NAME, contact.displayName)
+			.withValue(StructuredName.GIVEN_NAME, contact.givenName)
+			.withValue(StructuredName.MIDDLE_NAME, contact.middleName)
+			.withValue(StructuredName.FAMILY_NAME, contact.familyName)
+			.withValue(StructuredName.SUFFIX, contact.suffix)
+			.withValue(StructuredName.PHONETIC_GIVEN_NAME, contact.phoneticGivenName)
+			.withValue(StructuredName.PHONETIC_MIDDLE_NAME, contact.phoneticMiddleName)
+			.withValue(StructuredName.PHONETIC_FAMILY_NAME, contact.phoneticFamilyName);
 	}
 	
 	protected Builder buildPhoneNumber(Builder builder, Telephone number) {
@@ -842,10 +842,10 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	}
 	
 	protected Builder buildOrganization(Builder builder, Contact contact) {
-		if (contact.getOrganization() == null && contact.getJobTitle() == null && contact.getJobDescription() == null)
+		if (contact.organization == null && contact.jobTitle == null && contact.jobDescription == null)
 			return null;
 
-		ezvcard.property.Organization organization = contact.getOrganization();
+		ezvcard.property.Organization organization = contact.organization;
 		String company = null, department = null;
 		if (organization != null) {
 			Iterator<String> org = organization.getValues().iterator();
@@ -859,8 +859,8 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 				.withValue(Data.MIMETYPE, Organization.CONTENT_ITEM_TYPE)
 				.withValue(Organization.COMPANY, company)
 				.withValue(Organization.DEPARTMENT, department)
-				.withValue(Organization.TITLE, contact.getJobTitle())
-				.withValue(Organization.JOB_DESCRIPTION, contact.getJobDescription());
+				.withValue(Organization.TITLE, contact.jobTitle)
+				.withValue(Organization.JOB_DESCRIPTION, contact.jobDescription);
 	}
 
 	protected Builder buildIMPP(Builder builder, Impp impp) {
