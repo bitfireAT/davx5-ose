@@ -150,15 +150,15 @@ public class LocalCalendarTest extends InstrumentationTestCase {
 		assertNotNull("Couldn't build and insert event", event);
 		// compare with original event
 		try {
-			assertEquals(event.getSummary(), event2.getSummary());
-			assertEquals(event.getDescription(), event2.getDescription());
-			assertEquals(event.getLocation(), event2.getLocation());
-			assertEquals(event.getDtStart(), event2.getDtStart());
+			assertEquals(event.summary, event2.summary);
+			assertEquals(event.description, event2.description);
+			assertEquals(event.location, event2.location);
+			assertEquals(event.dtStart, event2.dtStart);
 			assertFalse(event2.isAllDay());
 
 			assertEquals(1, event2.getAlarms().size());
 			VAlarm alarm = event2.getAlarms().get(0);
-			assertEquals(event.getSummary(), alarm.getDescription().getValue());  // should be built from event name
+			assertEquals(event.summary, alarm.getDescription().getValue());  // should be built from event name
 			assertEquals(new Dur(0, 0, -(24*60 + 60*2 + 3), 0), alarm.getTrigger().getDuration());   // calendar provider stores trigger in minutes
 		} finally {
 			testCalendar.delete(event);
@@ -184,10 +184,10 @@ public class LocalCalendarTest extends InstrumentationTestCase {
 		assertNotNull("Couldn't build and insert event", event);
 		// compare with original event
 		try {
-			assertEquals(event.getSummary(), event2.getSummary());
-			assertEquals(event.getDescription(), event2.getDescription());
-			assertEquals(event.getLocation(), event2.getLocation());
-			assertEquals(event.getDtStart(), event2.getDtStart());
+			assertEquals(event.summary, event2.summary);
+			assertEquals(event.description, event2.description);
+			assertEquals(event.location, event2.location);
+			assertEquals(event.dtStart, event2.dtStart);
 			assertTrue(event2.isAllDay());
 		} finally {
 			testCalendar.delete(event);

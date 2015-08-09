@@ -66,28 +66,30 @@ import lombok.Setter;
 public class Event extends iCalendar {
 	private final static String TAG = "davdroid.Event";
 	
-	@Getter @Setter protected RecurrenceId recurrenceId;
+	protected RecurrenceId recurrenceId;
 
-	@Getter @Setter protected String summary, location, description;
-	
-	@Getter protected DtStart dtStart;
-	@Getter protected DtEnd dtEnd;
-	@Getter @Setter protected Duration duration;
-	@Getter protected List<RDate> rdates = new LinkedList<>();
-	@Getter @Setter protected RRule rrule;
-	@Getter protected List<ExDate> exdates = new LinkedList<>();
-	@Getter @Setter protected ExRule exrule;
-	@Getter protected List<Event> exceptions = new LinkedList<>();
+	protected String summary, location, description;
 
-	@Getter @Setter protected Boolean forPublic;
-	@Getter @Setter protected Status status;
-	
-	@Getter @Setter protected boolean opaque;
-	
-	@Getter @Setter protected Organizer organizer;
-	@Getter protected List<Attendee> attendees = new LinkedList<>();
+	protected DtStart dtStart;
+	protected DtEnd dtEnd;
 
-	@Getter protected List<VAlarm> alarms = new LinkedList<>();
+	// lists must not be set to null (because they're iterated using "for"), so only getters are exposed
+	protected Duration duration;
+	@Getter private List<RDate> rdates = new LinkedList<>();
+	protected RRule rrule;
+	@Getter private List<ExDate> exdates = new LinkedList<>();
+	protected ExRule exrule;
+	@Getter private List<Event> exceptions = new LinkedList<>();
+
+	protected Boolean forPublic;
+	protected Status status;
+	
+	protected boolean opaque;
+	
+	protected Organizer organizer;
+	@Getter private List<Attendee> attendees = new LinkedList<>();
+
+	@Getter private List<VAlarm> alarms = new LinkedList<>();
 
 
 	public Event(String name, String ETag) {

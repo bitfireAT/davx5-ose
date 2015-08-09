@@ -61,8 +61,8 @@ public class EventTest extends InstrumentationTestCase {
 
 		assertEquals(1, event.getExceptions().size());
 		Event exception = event.getExceptions().get(0);
-		assertEquals("20150503", exception.getRecurrenceId().getValue());
-		assertEquals("Another summary for the third day", exception.getSummary());
+		assertEquals("20150503", exception.recurrenceId.getValue());
+		assertEquals("Another summary for the third day", exception.summary);
 	}
 	
 	public void testStartEndTimes() throws IOException, ParserException, InvalidResourceException {
@@ -104,7 +104,7 @@ public class EventTest extends InstrumentationTestCase {
 	
 	public void testUnfolding() throws IOException, InvalidResourceException {
 		Event e = parseCalendar("two-line-description-without-crlf.ics");
-		assertEquals("http://www.tgbornheim.de/index.php?sessionid=&page=&id=&sportcentergroup=&day=6", e.getDescription());
+		assertEquals("http://www.tgbornheim.de/index.php?sessionid=&page=&id=&sportcentergroup=&day=6", e.description);
 	}
 	
 	

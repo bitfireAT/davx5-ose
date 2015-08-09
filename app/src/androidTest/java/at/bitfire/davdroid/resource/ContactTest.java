@@ -45,7 +45,7 @@ public class ContactTest extends InstrumentationTestCase {
 		assertTrue(new String(c.toEntity().toByteArray()).contains("VERSION:3.0"));
 
 		// now let's generate VCard 4.0
-		c.setVCardVersion(VCardVersion.V4_0);
+		c.vCardVersion = VCardVersion.V4_0;
 		assertEquals("text/vcard; version=4.0", c.getContentType().toString());
 		assertTrue(new String(c.toEntity().toByteArray()).contains("VERSION:4.0"));
 	}
@@ -53,11 +53,11 @@ public class ContactTest extends InstrumentationTestCase {
 	public void testReferenceVCard3() throws IOException, InvalidResourceException {
 		Contact c = parseVCF("reference-vcard3.vcf", Charset.forName(CharEncoding.UTF_8));
 
-		assertEquals("Gümp", c.getFamilyName());
-		assertEquals("Förrest", c.getGivenName());
-		assertEquals("Förrest Gümp", c.getDisplayName());
-		assertEquals("Bubba Gump Shrimpß Co.", c.getOrganization().getValues().get(0));
-		assertEquals("Shrimp Man", c.getJobTitle());
+		assertEquals("Gümp", c.familyName);
+		assertEquals("Förrest", c.givenName);
+		assertEquals("Förrest Gümp", c.displayName);
+		assertEquals("Bubba Gump Shrimpß Co.", c.organization.getValues().get(0));
+		assertEquals("Shrimp Man", c.jobTitle);
 		
 		Telephone phone1 = c.getPhoneNumbers().get(0);
 		assertEquals("(111) 555-1212", phone1.getText());
@@ -76,21 +76,21 @@ public class ContactTest extends InstrumentationTestCase {
 
 		@Cleanup InputStream photoStream = assetMgr.open("davdroid-logo-192.png", AssetManager.ACCESS_STREAMING);
 		byte[] expectedPhoto = IOUtils.toByteArray(photoStream);
-		assertTrue(Arrays.equals(c.getPhoto(), expectedPhoto));
+		assertTrue(Arrays.equals(c.photo, expectedPhoto));
 	}
 
 	public void testParseInvalidUnknownProperties() throws IOException {
 		Contact c = parseVCF("invalid-unknown-properties.vcf");
-		assertEquals("VCard with invalid unknown properties", c.getDisplayName());
-		assertNull(c.getUnknownProperties());
+		assertEquals("VCard with invalid unknown properties", c.displayName);
+		assertNull(c.unknownProperties);
 	}
 
 	public void testParseLatin1() throws IOException {
 		Contact c = parseVCF("latin1.vcf", Charset.forName(CharEncoding.ISO_8859_1));
-		assertEquals("Özkan Äuçek", c.getDisplayName());
-		assertEquals("Özkan", c.getGivenName());
-		assertEquals("Äuçek", c.getFamilyName());
-		assertNull(c.getUnknownProperties());
+		assertEquals("Özkan Äuçek", c.displayName);
+		assertEquals("Özkan", c.givenName);
+		assertEquals("Äuçek", c.familyName);
+		assertNull(c.unknownProperties);
 	}
 	
 	
