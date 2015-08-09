@@ -345,6 +345,8 @@ public class WebDavResource {
 		switch (code) {
 		case HttpStatus.SC_UNAUTHORIZED:
 			throw new NotAuthorizedException(reason);
+		case HttpStatus.SC_FORBIDDEN:
+			throw new ForbiddenException(reason);
 		case HttpStatus.SC_NOT_FOUND:
 			throw new NotFoundException(reason);
 		case HttpStatus.SC_CONFLICT:

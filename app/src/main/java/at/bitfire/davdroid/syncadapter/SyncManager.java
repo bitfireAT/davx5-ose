@@ -23,6 +23,7 @@ import at.bitfire.davdroid.resource.Resource;
 import at.bitfire.davdroid.resource.WebDavCollection;
 import at.bitfire.davdroid.webdav.ConflictException;
 import at.bitfire.davdroid.webdav.DavException;
+import at.bitfire.davdroid.webdav.ForbiddenException;
 import at.bitfire.davdroid.webdav.HttpException;
 import at.bitfire.davdroid.webdav.NotFoundException;
 import at.bitfire.davdroid.webdav.PreconditionFailedException;
@@ -119,11 +120,10 @@ public class SyncManager {
 							remote.delete(res);
 						} catch(NotFoundException e) {
 							Log.i(TAG, "Locally-deleted resource has already been removed from server");
-						} catch(PreconditionFailedException e) {
+						} catch(PreconditionFailedException|ConflictException e) {
 							Log.i(TAG, "Locally-deleted resource has been changed on the server in the meanwhile");
 						}
-					
-					// always delete locally so that the record with the DELETED flag doesn't cause another deletion attempt
+
 					local.delete(res);
 					
 					count++;
@@ -149,7 +149,7 @@ public class SyncManager {
 						local.updateETag(res, eTag);
 					local.clearDirty(res);
 					count++;
-				} catch (PreconditionFailedException|ConflictException e) {
+				} catch (ConflictException|PreconditionFailedException e) {
                     Log.i(TAG, "Didn't overwrite existing resource with other content");
 				} catch (RecordNotFoundException e) {
 					Log.wtf(TAG, "Couldn't read new record", e);
@@ -173,8 +173,10 @@ public class SyncManager {
 						local.updateETag(res, eTag);
 					local.clearDirty(res);
 					count++;
-				} catch (PreconditionFailedException|ConflictException e) {
-                    Log.i(TAG, "Locally changed resource has been changed on the server in the meanwhile");
+				} catch (ForbiddenException e) {
+					Log.w(TAG, "Server has rejected local changes, server wins", e);
+				} catch (ConflictException|PreconditionFailedException e) {
+                    Log.i(TAG, "Locally changed resource has been changed on the server in the meanwhile", e);
 				} catch (RecordNotFoundException e) {
 					Log.e(TAG, "Couldn't read dirty record", e);
 				}
