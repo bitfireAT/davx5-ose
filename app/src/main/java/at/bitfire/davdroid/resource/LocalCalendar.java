@@ -603,7 +603,6 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 		if (event.organizer != null) {
 			final URI uri = event.organizer.getCalAddress();
-
 			String email = null;
 			if (uri != null && "mailto".equalsIgnoreCase(uri.getScheme()))
 				email = uri.getSchemeSpecificPart();
@@ -611,10 +610,11 @@ public class LocalCalendar extends LocalCollection<Event> {
 				iCalendar.Email emailParam = (iCalendar.Email)event.organizer.getParameter(iCalendar.Email.PARAMETER_NAME);
 				if (emailParam != null)
 					email = emailParam.getValue();
-				else
-					Log.w(TAG, "Got ORGANIZER without email address, using given URI instead (may cause Android to behave unexpectedly)");
 			}
-			builder.withValue(Events.ORGANIZER, email != null ? email : uri.toString());
+			if (email != null)
+				builder.withValue(Events.ORGANIZER, email);
+			else
+				Log.w(TAG, "Got ORGANIZER without email address which is not supported by Android, ignoring");
 		}
 
 		if (event.status!= null) {
@@ -646,8 +646,11 @@ public class LocalCalendar extends LocalCollection<Event> {
 		for (VAlarm alarm : event.getAlarms())
 			pendingOperations.add(buildReminder(newDataInsertBuilder(Reminders.CONTENT_URI, Reminders.EVENT_ID, localID, backrefIdx), alarm).build());
 		// add exceptions
-		for (Event exception : event.getExceptions())
+		for (Event exception : event.getExceptions()) {
+			final int backrefIdxEx = pendingOperations.size();      // save exception ID as backref value
 			pendingOperations.add(buildException(newDataInsertBuilder(Events.CONTENT_URI, Events.ORIGINAL_ID, localID, backrefIdx), event, exception).build());
+			addDataRows(exception, -1, backrefIdxEx);               // build attendees and reminders for exception
+		}
 	}
 	
 	@Override
@@ -684,10 +687,6 @@ public class LocalCalendar extends LocalCollection<Event> {
 
 		builder.withValue(Events.ORIGINAL_INSTANCE_TIME, date.getTime());
 		builder.withValue(Events.ORIGINAL_ALL_DAY, originalAllDay ? 1 : 0);
-
-		/* TODO reminders and attendees for exceptions are currently not built because
-		 * there's no backref index available */
-
 		return builder;
 	}
 	

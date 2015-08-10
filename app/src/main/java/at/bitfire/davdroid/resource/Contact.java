@@ -58,7 +58,6 @@ import ezvcard.property.Uid;
 import ezvcard.property.Url;
 import lombok.Cleanup;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 
