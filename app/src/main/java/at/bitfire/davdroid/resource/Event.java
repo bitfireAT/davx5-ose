@@ -30,7 +30,6 @@ import net.fortuna.ical4j.model.property.DtStart;
 import net.fortuna.ical4j.model.property.Duration;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.ExRule;
-import net.fortuna.ical4j.model.property.LastModified;
 import net.fortuna.ical4j.model.property.Location;
 import net.fortuna.ical4j.model.property.Organizer;
 import net.fortuna.ical4j.model.property.RDate;
@@ -60,7 +59,6 @@ import at.bitfire.davdroid.DateUtils;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 
 
 public class Event extends iCalendar {
