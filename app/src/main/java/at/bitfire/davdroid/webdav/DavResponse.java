@@ -11,7 +11,7 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
-import java.util.List;
+import java.util.ArrayList;
 
 @Root(strict=false)
 public class DavResponse {
@@ -22,5 +22,5 @@ public class DavResponse {
 	String status;
 
 	@ElementList(inline=true,required=false)
-	List<DavPropstat> propstat;
+	ArrayList<DavPropstat> propstat;
 }

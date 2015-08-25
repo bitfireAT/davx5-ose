@@ -33,12 +33,11 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:process=":sync">
+        android:theme="@style/AppTheme">
 
         <service
             android:name=".syncadapter.AccountAuthenticatorService"
-            android:exported="false" >
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
@@ -49,7 +48,8 @@
         </service>
         <service
             android:name=".syncadapter.ContactsSyncAdapterService"
-            android:exported="true" >
+            android:exported="true"
+            android:process=":sync">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
@@ -62,7 +62,8 @@
         </service>
         <service
             android:name=".syncadapter.CalendarsSyncAdapterService"
-            android:exported="true" >
+            android:exported="true"
+            android:process=":sync">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
@@ -72,7 +73,8 @@
         </service>
         <service
             android:name=".syncadapter.TasksSyncAdapterService"
-            android:exported="true" >
+            android:exported="true"
+            android:process=":sync">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>

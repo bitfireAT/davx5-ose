@@ -31,7 +31,7 @@ import java.util.SimpleTimeZone;
 public class DateUtils {
     private final static String TAG = "davdroid.DateUtils";
 
-	public final static TimeZoneRegistry tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry();
+	public static final TimeZoneRegistry tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry();
 
 	static {
 		// disable automatic time-zone updates (causes unwanted network traffic)

@@ -11,11 +11,12 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Namespace(reference="DAV:")
 @Root(strict=false)
 public class DavMultistatus {
 	@ElementList(inline=true,entry="response",required=false)
-	List<DavResponse> response;
+	ArrayList<DavResponse> response;
 }
