@@ -12,7 +12,6 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Order;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Order(elements={"prop","href"})
 public class DavMultiget {
@@ -21,17 +20,17 @@ public class DavMultiget {
 		ADDRESS_BOOK_V4,
 		CALENDAR
 	}
-	
+
 	@Element
 	DavProp prop;
-	
+
 	@ElementList(inline=true)
-	List<DavHref> hrefs;
-	
-	
+	ArrayList<DavHref> hrefs;
+
+
 	public static DavMultiget newRequest(Type type, String names[]) {
 		DavMultiget multiget = (type == Type.CALENDAR) ? new DavCalendarMultiget() : new DavAddressbookMultiget();
-		
+
 		multiget.prop = new DavProp();
 		multiget.prop.getetag = new DavProp.GetETag();
 
@@ -52,7 +51,7 @@ public class DavMultiget {
 		multiget.hrefs = new ArrayList<>(names.length);
 		for (String name : names)
 			multiget.hrefs.add(new DavHref(name));
-		
+
 		return multiget;
 	}
 }

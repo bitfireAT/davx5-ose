@@ -9,7 +9,6 @@ package at.bitfire.davdroid.resource;
 
 import android.content.res.AssetManager;
 import android.test.InstrumentationTestCase;
-import android.util.Log;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
@@ -19,10 +18,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.webdav.DavException;
 import at.bitfire.davdroid.webdav.HttpException;
 import ezvcard.VCardVersion;

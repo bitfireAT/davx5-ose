@@ -14,7 +14,7 @@ import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Text;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -85,7 +85,7 @@ public class DavProp {
 	/* RFC 3744 WebDAV Access Control Protocol */
 	
 	@ElementList(required=false,name="current-user-privilege-set",entry="privilege")
-	List<Privilege> currentUserPrivilegeSet;
+	ArrayList<Privilege> currentUserPrivilegeSet;
 	
 	public static class Privilege {
 		@Element(required=false)
@@ -125,7 +125,7 @@ public class DavProp {
 
 	@Namespace(prefix="CD",reference="urn:ietf:params:xml:ns:carddav")
 	@ElementList(required=false,name="supported-address-data",entry="address-data-type")
-	List<AddressDataType> supportedAddressData;
+	ArrayList<AddressDataType> supportedAddressData;
 	
 	@Element(required=false,name="calendar-description")
 	CalendarDescription calendarDescription;
@@ -138,7 +138,7 @@ public class DavProp {
 	
 	@Namespace(prefix="C",reference="urn:ietf:params:xml:ns:caldav")
 	@ElementList(required=false,name="supported-calendar-component-set",entry="comp")
-	List<Comp> supportedCalendarComponentSet;
+	ArrayList<Comp> supportedCalendarComponentSet;
 	
 	@Element(name="address-data",required=false)
 	AddressData addressData;
