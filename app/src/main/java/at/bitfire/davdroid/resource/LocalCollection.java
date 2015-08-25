@@ -378,7 +378,7 @@ public abstract class LocalCollection<T extends Resource> {
 							affected = 1;
                 Log.d(TAG, "... " + affected + " record(s) affected");
 				pendingOperations.clear();
-			} catch(OperationApplicationException | RemoteException ex) {
+			} catch(IllegalArgumentException|OperationApplicationException|RemoteException ex) {
 				throw new LocalStorageException(ex);
 			}
         return affected;
