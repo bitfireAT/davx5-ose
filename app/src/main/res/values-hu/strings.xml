@@ -47,56 +47,6 @@
         <p><strong>A probléma a <a href="market://details?id=at.bitfire.davdroid.jbworkaround">JB DAVdroid gyorsjavítás</a> 
         telepítésével kiküszöbölhető.</strong></p>
     ]]></string>
-    <string name="html_main_info"><![CDATA[
-        <h1>Üdvözöljük a DAVdroid/%s felhasználók között!</h1>
-        <p>DAVdroid egy Android 4+ CalDAV/CardDAV szinkronizációs adapter. Használatához hozzon létre egy DAVdroid fiókot a használni
-        kívánt CalDAV/CardDav szerverhez.  Ezt követően a névjegyek és események szinkronizálva lesznek, mindkét irányban.</p>
-        <p>További információkat a <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid
-        honlap</a> tartalmaz.  A beállításokkal kapcsolatban a 
-        <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">beállítások</a> oldalon
-        találhat információkat. A DAVdroid tiszteletben tartja adatait bizalmasságát, részleteket az 
-        <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">adatkezelési nyilatkozat</a>
-        tartalmaz.</p>
-        <p>Ha Ön CyanogenMod felhasználó, vonja ki a DAVdroidot a "Privacy Guard" hatálya alól, különben a DAVdroid nem fog tudni
-        hozzáférni a névjegyekhez és eseményekhez.</p>
-        <p><b>Probléma esetén olvassa el a 
-        <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">GYIK</a>-et.  Ha 
-        egyértelműen a DAVdroidhoz köthető hibába ütközik, ahelyett, hogy közvetlenül keresne minket, vagy lepontozná az alkalmazást,
-        inkább a <a href="https://github.com/rfc2822/davdroid">Problémák</a> oldalon jelentse be.</b></p>
-        <h1>Nyílt forráskód</h1>
-        <p>A DAVdroid kezdettől fogva nyílt forráskódú projekt.  Bármikor lehetősége van az alkalmazást lefordítani és használni, 
-        mindenféle kötelezettség nélkül.  A forráskód elérhető a <a href="https://github.com/rfc2822/davdroid">Github</a>on, a 
-        lefordított alkalmazás pedig az
-        <a href="https://f-droid.org/app/at.bitfire.davdroid">F-droid</a>on.</p>
-        <p>Mindemellett, az alkalmazás kifejlesztése sok munkát igényelt, ezért úgy döntöttünk, hogy az alkalmazást más áruházakban 
-        is elérhetővé tesszük, egy szerény díj ellenében.  Ha szeretné támogatni ezt a projektet, kérjük, fontolja meg az alkalmazás 
-        megvásárlását vagy <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">közvetlen
-        támogatását</a>.</p>
-        <h1>Licenc</h1>
-        <p>Copyright © 2013 – 2014 Ricki Hirner (<a href="http://www.bitfire.at">bitfire web engineering</a>). Minden jog fenntartva.
-        Ez a program és a kapcsolódó anyagok a GNU Public License v3.0 hatálya alatt állnak, amely részét képezi a jelen csomagnak, és 
-        amely elérhető 
-        <a href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a> oldalon. Amennyiben a Google Play, Samsung
-        Store, AndroidPit App Center vagy Amazon Appstore áruház eltérő feltételeket szab, akkor annak az áruháznak a szabályai
-        irányadóak, ahonnan az alkalmazást letöltötte.</p>
-        <p>Fordítások.
-        cseh: <a href="https://github.com/svetlemodry">Jaroslav Lichtblau</a>,
-        katalán: <a href="https://github.com/pokoli">@pokoli</a>,
-        kínai (egyszerűsített): <a href="https://github.com/phy25">@phy25</a>,
-        magyar: <a href="https://github.com/gjtoth">Gábor J.Tóth</a>,
-        szerb: <a href="https://github.com/pejakm">@pejakm</a>,
-        spanyol: <a href="https://github.com/xphnx">@xphnx</a>.
-        </p>
-        <h2>Harmadik felek által fejlesztett programcsomagok</h2>
-        <p>
-        * <a href="http://hc.apache.org">Apache HttpClient</a> (Android port) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>        * <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">
-        New BSD License</a><br/>
-        * <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">
-        New BSD License</a><br/>
-        * <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">
-        Apache License, Version 2.0</a><br/>
-        * <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a></p>
-    ]]></string>
 
     <!-- AddAccountActivity -->
     <string name="login_type_email">Bejelentkezés email cím segítségével</string>

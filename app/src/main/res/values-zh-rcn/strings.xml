@@ -40,45 +40,6 @@
         <p><strong>如果您遇到了这些问题，请<a href="market://details?id=at.bitfire.davdroid.jbworkaround">安装 
         DAVdroid JB 修复程序</a>。</strong></p>
     ]]></string>
-    <string name="html_main_info"><![CDATA[
-       <h1>欢迎使用 DAVdroid/%s！</h1>
-       
-       <p>DAVdroid 是一个 Android 4+ 的 CalDAV/CardDAV 同步程序。<strong>开始使用本程序，只需增加一个 DAVdroid 账户，在其中设置 CalDAV/CardDAV 服务器，您的通讯录和日程就可以被双向同步了。</strong></p>
-       
-       <p>更多信息请查阅 <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid 英文主页</a>，其中包括<a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">首次使用的配置指南</a>。DAVdroid 尊重您的隐私，请查阅我们的<a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">隐私政策</a>。</p>
-       
-       <p>如果您使用 CyanogenMod 等修改版系统，请停用针对 DAVdroid 的“隐私防护”功能，否则 DAVdroid 无法访问、同步您的通讯录和日程。</p>
-       
-       <p><b>如果您在使用中遇到问题，请先阅读 <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a>。如果您遇到了明显与 DAVdroid 有关的 BUG，请在 <a href="https://github.com/rfc2822/davdroid">Github issues</a> 上提交，不要直接联系我们，甚至给应用差评。</b></p>
-              
-       <h1>开源</h1>
-       <p>DAVdroid 从一开始就是开源项目。您可以自己编译应用，并可以没有限制地免费使用。源代码
-       <a href="https://github.com/rfc2822/davdroid">存放在 Github 上</a>，您也可以
-       <a href="https://f-droid.org/app/at.bitfire.davdroid">在 F-droid 上下载应用</a>。</p>
-       
-       <p>然而，编写这个应用是一个大工程，所以我们已经决定把它作为付费应用放在应用商店上，收一笔小费。
-       如果您想支持这个项目，请考虑 <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">给 DAVdroid 捐款</a> 或购买其付费版。</p>
-       
-       <h1>许可</h1>
-       <p>Copyright © 2013 – 2015 Ricki Hirner, Bernhard Stockmann (<a href="http://www.bitfire.at">bitfire web engineering</a>). All rights reserved.
-       This program and the accompanying materials are made available under the terms of the GNU Public License v3.0 which
-       accompanies this distribution, and is available at <a
-       href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. As far as Google Play, Samsung
-       Store or Amazon Appstore require other terms, the respective terms apply for versions
-       that are downloaded via these services.</p>
-       
-       <p>Translation for German is provided by the authors. Translation for Chinese Simplified is by <a href="https://github.com/phy25">@phy25</a>. Translations to other languages have been contributed by
-       various people which are mentioned in their respective language version.</p>
-       
-       <h2>使用的第三方程序库</h2>
-       <p>
-        * <a href="http://hc.apache.org">Apache HttpClient</a> (Android port) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>
-        * <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
-        * <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a><br/>
-        * <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a><br/>
-        * <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a><br/>
-        * <a href="http://www.xbill.org/dnsjava/">dnsjava</a> – <a href="http://www.xbill.org/dnsjava/dnsjava-current/LICENSE">BSD License</a></p>
-    ]]></string>
 
     <!-- AddAccountActivity -->
     <string name="login_type_email">使用邮箱地址登录</string>

@@ -35,46 +35,6 @@
         para instalar a sulução DAVdroid</a>.</strong></p>
     ]]></string>
 
-    <string name="html_main_info"><![CDATA[
-           <h1>Bem vindo ao DAVDroid</h1>
-
-           <p>DAVDroid é uma aplicativo de sincronização entre Android 4+ e CalDAV/CardDAV baseado no aplicativo DAVdroid. Para usar o aplicativo basta adicionar uma conta
-            DAVDroid para seu servidor de CalDAV/CardDAV e seus contatos e eventos serão sincronizados.</p>
-
-           <p>Se você usa o CyanogenMod, deve desativar o "Privacy Guard" para DAVDroid, caso contrário o DAVDroid não terá autorização para
-           acessar e sincronizar seus contatos e eventos.</p>
-
-        <p><b>Em caso de problemas, por favor leia o <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a> (em inglês).
-        Se você encontrar algum problema claramente relacionado ao DAVDroid, informe-o em
-        <a href="https://github.com/rfc2822/davdroid">Github issues</a> ao invés de dar uma avaliação negativa ao aplicativo</b></p>
-
-
-           <h1>Software Livre</h1>
-           <p>O DAVDroid foi criado como um projeto de código aberto desde o início, permitindo que você mesmo compile a aplicação e use de forma gratuíta
-           sem nenhuma obrigação. O código fonte está disponível em <a href="https://github.com/rfc2822/ExpressoDav">Github</a>, e você pode
-           <a href="https://f-droid.org/app/at.bitfire.DAVDroid">também baixar o app em F-droid</a>.</p>
-
-            <p>Foi muito trabalhoso criar este aplicativo por isso decidimos coloca-lo nas lojas comerciais por uma pequena taxa.
-            Se você quiser apoiar este projeto considere uma <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">doação</a> ou compre-o</p>
-
-           <h1>Licença do DAVdroid</h1>
-           <p>Copyright © 2013 – 2014 Ricki Hirner (<a href="http://www.bitfire.at">bitfire web engineering</a>). Todos os direitos reservados.
-           Este programa e os materias que o acompanham estão de acordo com a GNU Public License v3.0 e está disponível em <a
-           href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. Em relação ao Google Play, Samsung Store ou Amazon Appstore são requeridas outras condições, realize o download destas nestes serviços.</p>
-
-           <p>Traduções.
-                
-           </p>
-
-           <h2>Bibliotecas de terceiros utilizadas</h2>
-           <p>
-            * <a href="http://hc.apache.org">Apache HttpClient</a> (Android port) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>
-            * <a href="http://ical4j.sourceforge.net/">iCal4j<a> (<a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">Licencia New BSD</a>)<br/>
-            * <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> (<a href="http://opensource.org/licenses/BSD-3-Clause">Licencia New BSD</a>)<br/>
-            * <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> (<a href="http://www.apache.org/licenses/LICENSE-2.0">Licencia Apache Version 2.0</a>)<br/>
-            * <a href="http://projectlombok.org/">Project Lombok</a> (<a href="http://opensource.org/licenses/mit-license.php">Licencia MIT</a>)</p>
-        ]]></string>
-
      <!-- AddAccountActivity -->
     <string name="login_type_email">Login com seu enderço de email</string>
     <string name="login_type_email_description">Detalhes do serviço poderão ser detectados automaticamente pelo nome do

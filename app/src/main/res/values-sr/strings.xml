@@ -44,51 +44,6 @@
         
         <p><strong>Ако имате један од наведених проблема, <a href="market://details?id=at.bitfire.davdroid.jbworkaround">инсталирајте „DAVdroid JB Workaround“</a>.</strong></p>
     ]]></string>
-    <string name="html_main_info"><![CDATA[
-       <h1>Добро дошли у ДАВдроид/%s!</h1>
-       
-       <p>ДАВдроид (DAVdroid) је Андроид 4+ адаптер синхронизације за КалДАВ/КардДАВ (CalDAV/CardDAV). Да бисте га користили,
-       само додајте ДАВдроид налог за ваш КалДАВ/КардДАВ сервер и ваши контакти/догађаји ће бити синхронизовани у оба смера.</p>
-       
-       <p>За више информација погледајте <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">ДАВдроид вебсајт</a>.
-       Постоји и <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">водич за поставку</a>. ДАВдроид поштује
-       вашу приватност, погледајте нашу <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">политику приватности</a>.</p>
-       
-       <p>Ако користите Цијаноген Мод, „Privacy Guard“ мора бити онемогућен за ДАВдроид. У супротном, ДАВдроиду неће бити дозвољени
-       приступ и синхронизација ваших контаката и догађаја.</p>
-       
-       <p><b>У случају проблема, најпре прочитајте <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">често постављана питања</a>.
-       Ако вам се деси грешка која је сигурно везана за ДАВдроид, поднесите пријаву на
-       <a href="https://github.com/rfc2822/davdroid">Гитхабовом пратиоцу</a> уместо да нас контактирате директно или да апликацији дате лошу оцену.</b></p>
-              
-	   <h1>Отворени кôд</h1>
-	   <p>ДАВдроид је испочетка дизајниран као пројекат отвореног кôда. Увек је могуће да сами компајлирате
-	   апликацију и да је слободно користите без икаквих обавеза. Изворни кôд је
-	   <a href="https://github.com/rfc2822/davdroid">доступан на Гитхабу</a>, а можете и
-	   <a href="https://f-droid.org/app/at.bitfire.davdroid">преузети апликацију са Ф-дроида</a>.</p>
-	   
-	   <p>Међутим, уложено је много рада у ову апликацију па смо одлучили да је ставимо у комерцијалне продавнице за малу накнаду.
-	   Ако желите да подржите овај пројекат, <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">донирајте ДАВдроиду</a>
-	   или га купите.</p>
-	   
-	   <h1>Лиценца</h1>
-	   <p>Ауторско право © 2013 – 2014 Рики Хирнер (Ricki Hirner), Бернхарт Стокман (Bernhard Stockmann) (<a href="http://www.bitfire.at">Битфајер веб инжињеринг</a>). Сва права задржана.
-	   Овај програм и пратећи материјали су доступни под условима ГНУ-ове Јавне Лиценце в3.0 која је приложена,
-	   и доступна на <a href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. Ако сервиси „Google Play“,
-	   „Samsung Store“, „AndroidPit App Center“ или „Amazon Appstore“ захтевају друге услове, исти важе за издања преузета са ових сервиса.</p>
-	   
-	   <p>Превод на српски: <a href="https://github.com/pejakm">@pejakm</a>. Превод на немачки: аутори. Остале преводе 
-	   допринели су људи поменути у преводима одговарајућих језика.</p>
-	   
-	   <h2>Коришћене друге библиотеке</h2>
-	   <p>
-	    * <a href="http://hc.apache.org">Апачи ХТТП клијент</a> (Android port) – <a href="http://www.apache.org/licenses/">Апачи лиценца, издање 2.0</a><br/>
-	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">Нова БСД лиценца</a>)<br/>
-	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">Нова БСД лиценца</a><br/>
-	   	* <a href="http://simple.sourceforge.net/">Симпле ИксМЛ серијализација</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Апачи лиценца, издање 2.0</a><br/>
-	   	* <a href="http://projectlombok.org/">Пројекат Ломбок</a> – <a href="http://opensource.org/licenses/mit-license.php">МИТ лиценца</a><br/>
-		* <a href="http://www.xbill.org/dnsjava/">dnsjava</a> – <a href="http://www.xbill.org/dnsjava/dnsjava-current/LICENSE">БСД лиценца</a></p>
-    ]]></string>
 
     <!-- AddAccountActivity -->
     <string name="login_type_email">Пријавите се адресом е-поште</string>

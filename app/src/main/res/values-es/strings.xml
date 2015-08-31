@@ -36,51 +36,6 @@ que ocasiona que las cuentas de las aplicaciones de pago se eliminen cuando se a
 <p><strong>Si estás afectado por uno de estos bugs, por favor <a href="market://details?id=at.bitfire.davdroid.jbworkaround">instala
 DAVdroid JB Workaround</a>.</strong></p>
 ]]></string>
-<string name="html_main_info"><![CDATA[
-<h1>Bienvenido a DAVdroid/%s!</h1>
-<p>DAVdroid es un adaptador de sincronización entre Android 4+ y CalDAV/CardDAV. Para usarlo, simplemente añade una cuenta DAVdroid
-para tu servidor de CalDAV/CardDAV, así tus contactos y eventos serán sincronizados en ambas direcciones.</p>
-<p>Para más información, por favor, visita la <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">web de DAVdroid</a>.
-Hay una <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Guía de configuración</a>, también. DAVdroid respeta
-tu privacidad, lee nuestra <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Política de Privacidad</a>.</p>
-<p>Si usas CyanogenMod, debes desactivar "Privacy Guard" para DAVdroid. De otro modo, DAVdroid no tendrá autorización para acceder y sincronizar tus contactos y eventos.</p>
-<p><b>Si tienes problemas, por favor lee primero las <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a>.
-Si te encuentras un bug que esté claramente relacionado con DAVdroid, entra en
-<a href="https://github.com/rfc2822/davdroid">Github issues</a> en lugar de contactar con nosotros directamente o de darle una mala
-votación a la aplicación.</b></p>
-<h1>Código abierto</h1>
-<p>DAVdroid ha sido diseñado como un proyecto de código abierto desde sus inicios. Siempre es posible compilar la
-app por ti mismo y usarla de forma gratuita sin ninguna obligación. El código fuente está
-<a href="https://github.com/rfc2822/davdroid">disponible en Github</a>, y puedes
-<a href="https://f-droid.org/app/at.bitfire.davdroid">descargar la app desde F-droid</a>.</p>
-<p>Sin embargo, hay mucho trabajo detrás de la creación de esta aplicación, así que hemos decidido ponerla en las tiendas a cambio de un pequeño pago.
-Si quieres apoyar este proyecto, por favor piensa en <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">hacer una donación a DAVdroid</a>
-o en comprar la app.</p>
-<h1>Licencia</h1>
-<p>Copyright © 2013 – 2014 Ricki Hirner (<a href="http://www.bitfire.at">bitfire web engineering</a>). Todos los derechos reservados.
-Este programa y los materiales que la acompañan está disponible bajo las condiciones de la GNU Public License v3.0 
-que acompaña a esta distribución, y está a tu disposición en <a
-href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. En lo relativo a Google Play, Samsung
-Store y Amazon Appstore requiren de otras condiciones, las condiciones respectivas se aplican para las versiones
-que se descarguen a través de estos servicios.</p>
-
-<p>Translations.
-	     Catalanian: <a href="https://github.com/pokoli">@pokoli</a>,
-	     Chinese (simplified): <a href="https://github.com/phy25">@phy25</a>,
-	     Czech: <a href="https://github.com/svetlemodry">Jaroslav Lichtblau</a>,
-	     Serbian: <a href="https://github.com/pejakm">@pejakm</a>,
-	     Spanish: <a href="https://github.com/xphnx">@xphnx</a>
-	   </p>
-	   
-<h2>Librerías de terceros usadas</h2>
-<p>
-* <a href="http://hc.apache.org">Apache HttpClient</a> (Android port) – <a href="http://www.apache.org/licenses/">Licencia Apache Versión 2.0</a><br/>
-* <a href="http://ical4j.sourceforge.net/">iCal4j<a> - <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">Licencia New BSD</a><br/>
-* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> - <a href="http://opensource.org/licenses/BSD-3-Clause">Licencia New BSD</a><br/>
-* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> - <a href="http://www.apache.org/licenses/LICENSE-2.0">Licencia Apache Versión 2.0</a><br/>
-* <a href="http://projectlombok.org/">Project Lombok</a> - <a href="http://opensource.org/licenses/mit-license.php">Licencia MIT</a></p>
-* <a href="http://www.xbill.org/dnsjava/">dnsjava</a> - <a href="http://www.xbill.org/dnsjava/dnsjava-current/LICENSE">Licencia BSD</a></p>
-]]></string>
 <!-- AddAccountActivity -->
 <string name="login_type_email">Acceder con cuenta de correo</string>
 <string name="login_type_email_description">Los detalles del servicio serán detectados automáticamente por el nombre de dominio. Ejemplo: myaccount@icloud.com</string>

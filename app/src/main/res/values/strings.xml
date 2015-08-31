@@ -27,16 +27,17 @@
     <string name="html_main_workaround"><![CDATA[
 		<p>Thank you for buying DAVdroid via Google Play and thus supporting the project. Unfortunately, there are two issues with Google Play:</p>
 		
-		<h2>1. Accounts may be gone after a reboot</h2>
+		<h2><a href="https://davdroid.bitfire.at/faq/entry/account-gone-after-reboot">1. Accounts may be gone after a reboot</a></h2>
 		<p>You may encounter the problem that all your <strong>DAVdroid accounts (including contacts and events) are gone
         after rebooting your device</strong>. The reason is a <a href="https://code.google.com/p/android/issues/detail?id=34880">bug in Android</a>
         that causes accounts of paid apps to be removed on start-up because the (encrypted) APK files are
         loaded <i>after</i> checking for orphaned accounts.</p>
         <p>Affected users:<br/>
         * all Android 4.1 users who have got DAVdroid from Play Store;<br/>
-        * Android 4.2 users who have got DAVdroid from Play Store only with certain devices (for instance, most Samsung devices)</p>
+        * Android 4.2 users who have got DAVdroid from Play Store only with certain devices (for instance, most Samsung devices)
+        * maybe other users (LG G3 Android 4.4.2 for instance)</p>
         
-        <h2>2. Accounts may be gone after upgrading DAVdroid</h2>
+        <h2><a href="https://davdroid.bitfire.at/faq/entry/account-gone-after-updating">2. Accounts may be gone after upgrading DAVdroid</a></h2>
         <p>You may encounter the problem that all your <strong>DAVdroid accounts (including contacts and events) when Play Store
         updates DAVdroid</strong>. The reason is <a href="https://code.google.com/p/android/issues/detail?id=66905">another bug in Android</a>
         that causes accounts of paid apps to be removed when upgrading for a similar reason.</p>
@@ -49,48 +50,46 @@
        <h1>Welcome to DAVdroid/%s!</h1>
        
        <p>DAVdroid is an Android 4+ sync adapter for CalDAV/CardDAV. To use it, just add a DAVdroid account
-       for your CalDAV/CardDAV server and your contacts/events will be synchronized in both directions.</p>
-       
-       <p>For more information, please see the <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid homepage</a>.
-       There\'s a <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Setup guide</a>, too. DAVdroid respects
-       your privacy, see our <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Privacy Policy</a>.</p>
-       
-       <p>If you use CyanogenMod, "Privacy Guard" must be disabled for DAVdroid. Otherwise, DAVdroid is not allowed to access
-       and synchronize your contacts and events.</p>
-       
-       <p><b>In case of problems, please read the <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a> first.
-       If you encounter a bug that is clearly related to DAVdroid, enter it on
-       <a href="https://github.com/rfc2822/davdroid">Github issues</a> instead of contacting us directly or giving a poor
-       rating for the app.</b></p>
-              
+       for your CalDAV/CardDAV server and your contacts/events/tasks will be synchronized in both directions.
+       For more information, please see the <a href="https://davdroid.bitfire.at/?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid homepage</a>.
+       There\'s a <a href="https://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">setup guide</a>, too. DAVdroid respects
+       your privacy, see our <a href="https://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">privacy policy</a>.</p>
+
+       <p><b>In case of problems, check the <a href="https://davdroid.bitfire.at/faq?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">frequently
+       asked questions</a> first. To get assistance or discuss about DAVdroid-related topics, have a look in our
+       <a href="https://davdroid.bitfire.at/forums?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid forums</a>.</b>
+       Please do not blackmail us with bad ratings in the stores (it\'s futile and discouraging for both sides).</p>
+
+       <p>If you use a privacy guard (default in CyanogenMod), please remember you have to allow contact and calendar access for DAVdroid.</p>
+
 	   <h1>Open-source</h1>
 	   <p>DAVdroid is designed to be an open-source project from the very first beginning. It is always possible to compile the
-	   app yourself and use it for free without any obligations. The source code is
-	   <a href="https://github.com/rfc2822/davdroid">available on Github</a>, and you can
-	   <a href="https://f-droid.org/app/at.bitfire.davdroid">download the app on F-droid</a>.</p>
+	   app yourself and use it for free without any obligations. The
+	   <a href="https://davdroid.bitfire.at/source?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">source code is
+	   available</a>, and you can <a href="https://f-droid.org/app/at.bitfire.davdroid">download the app on F-Droid</a>.</p>
 	   
 	   <p>However, it was much work to create this app, so we have decided to put it into the commercial stores for a small fee.
-	   If you want to support this project, please consider <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">donating to DAVdroid</a>
-	   or purchasing it.</p>
+	   If you have downloaded the app on F-Droid, please consider
+	   <a href="https://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">donating to DAVdroid</a>.</p>
 	   
 	   <h1>License</h1>
-	   <p>Copyright © 2013 – 2015 Ricki Hirner, Bernhard Stockmann (<a href="http://www.bitfire.at">bitfire web engineering</a>). All rights reserved.
-	   This program and the accompanying materials are made available under the terms of the GNU Public License v3.0 which
-	   accompanies this distribution, and is available at <a
+	   <p>Copyright © 2013 – 2015 Ricki Hirner, Bernhard Stockmann (<a href="https://www.bitfire.at">bitfire web engineering</a>).
+	   All rights reserved. This program and the accompanying materials are made available under the terms of the GNU Public License
+	   v3.0 which accompanies this distribution, and is available at <a
 	   href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. As far as Google Play, Samsung
-	   Store or Amazon Appstore require other terms, the respective terms apply for versions
-	   that are downloaded via these services.</p>
+	   Store or Amazon Appstore require other terms, the respective terms apply only to versions
+	   that are downloaded using these services.</p>
 	   
-	   <p>Translation for German is provided by the authors. Translations to other languages have been contributed by
+	   <p>Translations to other languages than English and German have been contributed by
 	   various people which are mentioned in their respective language version.</p>
 	   
 	   <h2>Used third-party libraries</h2>
 	   <p>
 	    * <a href="http://hc.apache.org">Apache HttpClient</a> (Android port) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>
-	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
-	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a><br/>
+	   	* <a href="https://github.com/ical4j/ical4j">iCal4j</a> – <a href="https://github.com/ical4j/ical4j/blob/master/LICENSE">New BSD License</a><br/>
+	   	* <a href="https://github.com/mangstadt/ez-vcard">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a><br/>
 	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a><br/>
-	   	* <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a><br/>
+	   	* <a href="https://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a><br/>
 		* <a href="http://www.xbill.org/dnsjava/">dnsjava</a> – <a href="http://www.xbill.org/dnsjava/dnsjava-current/LICENSE">BSD License</a></p>
     ]]></string>
 
