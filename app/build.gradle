@@ -50,7 +50,7 @@ dependencies {
     // Lombok for useful @helpers
     provided 'org.projectlombok:lombok:1.16.6'
     // ical4j for parsing/generating iCalendars
-    compile('org.mnode.ical4j:ical4j:2.0-beta1') {
+    compile('org.mnode.ical4j:ical4j:2.0-beta1') {      // update ICAL_PRODID in Constants too!
         // we don't need content builders, see https://github.com/ical4j/ical4j/wiki/Groovy
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }

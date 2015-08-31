@@ -44,57 +44,6 @@
         <p><strong>Если вы столкнулись с этими ошибками, пожалуйста установите дополнительное приложение <a href="market://details?id=at.bitfire.davdroid.jbworkaround">
         DAVdroid JB Workaround</a> для их устранения.</strong></p>
     ]]></string>
-    <string name="html_main_info"><![CDATA[
-       <h1>Добро пожаловать в DAVdroid/%s!</h1>
-       
-       <p>DAVdroid это адаптер синхронизации CalDAV/CardDAV для Android 4+. Для его использования просто добавьте аккаунт DAVdroid
-        для вашего сервера CalDAV/CardDAV после чего ваши контакты и события календаря будут синхронизироваться в оба направления.</p>
-       
-       <p>Для более подробной информации, просмотрите веб-сайт <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid</a>,
-       Руководство <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">по установке</a>. Также прочитайте
-       <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Политику Конфиденциальности</a> DAVdroid.</p>
-       
-       <p>Если вы пользователь CyanogenMod, "Privacy Guard" должно быть отключено для DAVdroid. Если этого не сделать,
-       DAVdroid не получит необходимый доступ для синхронизации ваших контактов и календарей.</p>
-       
-       <p><b>В случае каких либо проблем, прожалуйста сначала прочитайте <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a>.
-       Если вы столкнулись с ошибкой, которая явно связана с DAVdroid, опишите её в соответствующем разделе
-       <a href="https://github.com/rfc2822/davdroid">Issues at Github</a> вместо связи с нами напрямую или
-       плохой оценки приложения.</b></p>
-              
-	   <h1>ПО с открытым исходным кодом</h1>
-	   <p>С самого начала DAVdroid был задуман как проект с отрытым исходным кодом. Всегда можно скомпилировать
-        это приложение для себя и использовать его бесплатно без каких-либо обязательств. Исходный код
-	   <a href="https://github.com/rfc2822/davdroid">доступен на Github</a>, и вы всегда сможете
-	   <a href="https://f-droid.org/app/at.bitfire.davdroid">скачать</a> программу через сайт F-droid.</p>
-	   
-	   <p>Тем не менее, командой разработчиков была проделана большая работа чтобы создать это приложение, поэтому мы решили сделать программу доступной через коммерческие сервисы приложений.
-	   Если вы хотите поддержать этот проект, рассмотрите возможность <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">пожертования на DAVdroid</a>
-	   или его приобретения.</p>
-	   
-	   <h1>Лицензия</h1>
-	   <p>Авторское право © 2013 – 2015 Ricki Hirner, Bernhard Stockmann (<a href="http://www.bitfire.at">bitfire web engineering</a>). Все права защищены.
-	   Эта программа и сопутствующие материалы предоставлены на условиях лицензии GNU Public License v3.0 доступной
-	   по адресу <a
-	   href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>.
-	   Ввиду того, что Google Play, Samsung
-	   Store или Amazon Appstore требуют иные условия лицензирования,
-	   их требования распространяются на версии, которые загружены через соответствующие сервисы.</p>
-	   
-	   <p>Перевод на Немецкий язык выполнен авторами программы. Переводы на остальные языки предоставлены разными людьми, которые
-	   перечислены в соответствующей языковой версии программы.</p>
-
-	   <p>Перевод на русский язык Василий Поломарь (vasp@zabmail.ru).</p>
-
-	   <h2>Использованные библиотеки</h2>
-	   <p>
-	    * <a href="http://hc.apache.org">Apache HttpClient</a> (Android port) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>
-	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
-	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a><br/>
-	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a><br/>
-	   	* <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a><br/>
-		* <a href="http://www.xbill.org/dnsjava/">dnsjava</a> – <a href="http://www.xbill.org/dnsjava/dnsjava-current/LICENSE">BSD License</a></p>
-    ]]></string>
 
     <!-- AddAccountActivity -->
     <string name="login_type_email">Вход по адресу email</string>

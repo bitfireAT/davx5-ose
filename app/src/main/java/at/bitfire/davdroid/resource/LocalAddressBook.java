@@ -336,21 +336,22 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 	
 	protected void populateEmailAddress(Contact c, ContentValues row) {
 		ezvcard.property.Email email = new ezvcard.property.Email(row.getAsString(Email.ADDRESS));
-		switch (row.getAsInteger(Email.TYPE)) {
-			case Email.TYPE_HOME:
-				email.addType(EmailType.HOME);
-				break;
-			case Email.TYPE_WORK:
-				email.addType(EmailType.WORK);
-				break;
-			case Email.TYPE_MOBILE:
-				email.addType(Contact.EMAIL_TYPE_MOBILE);
-				break;
-			case Email.TYPE_CUSTOM:
-				String customType = row.getAsString(Email.LABEL);
-				if (StringUtils.isNotEmpty(customType))
-					email.addType(EmailType.get(labelToXName(customType)));
-		}
+		if (row.containsKey(Email.TYPE))
+			switch (row.getAsInteger(Email.TYPE)) {
+				case Email.TYPE_HOME:
+					email.addType(EmailType.HOME);
+					break;
+				case Email.TYPE_WORK:
+					email.addType(EmailType.WORK);
+					break;
+				case Email.TYPE_MOBILE:
+					email.addType(Contact.EMAIL_TYPE_MOBILE);
+					break;
+				case Email.TYPE_CUSTOM:
+					String customType = row.getAsString(Email.LABEL);
+					if (StringUtils.isNotEmpty(customType))
+						email.addType(EmailType.get(labelToXName(customType)));
+			}
 		if (row.getAsInteger(Email.IS_PRIMARY) != 0)
 			email.addType(EmailType.PREF);
 		c.getEmails().add(email);
@@ -430,18 +431,19 @@ public class LocalAddressBook extends LocalCollection<Contact> {
 		}
 
 		if (impp != null) {
-			switch (row.getAsInteger(Im.TYPE)) {
-				case Im.TYPE_HOME:
-					impp.addType(ImppType.HOME);
-					break;
-				case Im.TYPE_WORK:
-					impp.addType(ImppType.WORK);
-					break;
-				case Im.TYPE_CUSTOM:
-					String customType = row.getAsString(Im.LABEL);
-					if (StringUtils.isNotEmpty(customType))
-						impp.addType(ImppType.get(labelToXName(customType)));
-			}
+			if (row.containsKey(Im.TYPE))
+				switch (row.getAsInteger(Im.TYPE)) {
+					case Im.TYPE_HOME:
+						impp.addType(ImppType.HOME);
+						break;
+					case Im.TYPE_WORK:
+						impp.addType(ImppType.WORK);
+						break;
+					case Im.TYPE_CUSTOM:
+						String customType = row.getAsString(Im.LABEL);
+						if (StringUtils.isNotEmpty(customType))
+							impp.addType(ImppType.get(labelToXName(customType)));
+				}
 
 			c.getImpps().add(impp);
 		}

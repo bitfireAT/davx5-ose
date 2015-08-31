@@ -43,51 +43,6 @@
         <p><strong>Als je getroffen ben door een van deze bugs, <a href="market://details?id=at.bitfire.davdroid.jbworkaround">instaleer de
         DAVdroid JB Workaround</a>.</strong></p>
     ]]></string>
-    <string name="html_main_info"><![CDATA[
-       <h1>Welkome bij DAVdroid/%s!</h1>
-       
-       <p>DAVdroid is een Android 4+ sync adapter voor CalDAV/CardDAV. Om het te gebruiken, voegt u eerst een DAVdroid account toe
-       voor uw CalDAV/CardDAV server en uw contacten/afspraken zullen worden synchronizeerd in beide directies.</p>
-       
-       <p>Voor meer informatie, Bekijk de <a href="http://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid homepage</a>.
-       Er is een ook een <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Setup handleiding</a>. DAVdroid respecteerd
-       uw privacy, Zie onze <a href="http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Privacybeleid</a>.</p>
-       
-       <p>Als u CyanogenMod gebruikt, moet "Privacy Guard" worden uitgeschakeld voor DAVdroid. Anders krijgt DAVdroid geen toegang voor het
-        synchroniseren van je contacten en afspraken.</p>
-       
-       <p><b>In geval van problemen, lees dan de <a href="http://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">FAQ</a> eerst.
-       Als je een bug tegenkomt die duidelijk gerelateerd is aan DAVdroid, meld het bij
-       <a href="https://github.com/rfc2822/davdroid">Github issues</a> in plaats van ons direct to contacteren of ons een slechte rating voor de app te geven.</b></p>
-              
-	   <h1>Open-source</h1>
-	   <p>DAVdroid is vanaf het begin ontworpen om een open-source project te zijn. Het is altijd mogelijk om het zelf the compileren vanaf bron code en het gratis en vrijblijvend te gebruiken. De broncode is
-	   <a href="https://github.com/rfc2822/davdroid">beschikbaar op Github</a>, en j kunt
-	   <a href="https://f-droid.org/app/at.bitfire.davdroid">de app op F-droid downloaden</a>.</p>
-	   
-	   <p>HHet was echter veel werk om deze app te maken, dus hebben we besloten om het in de commerciële winkels te plaatsen voor een kleine vergoeding.
-	   Wilt u dit project steunen, kunt u overwegen <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">een donatie aan DAVdroid</a> te plaatsen of om het te kopen.</p>
-	   
-	   <h1>Licentie</h1>
-	   <p>Copyright © 2013 – 2015 Ricki Hirner, Bernhard Stockmann (<a href="http://www.bitfire.at">bitfire web engineering</a>). All rights reserved.
-	   This program and the accompanying materials are made available under the terms of the GNU Public License v3.0 which
-	   accompanies this distribution, and is available at <a
-	   href="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</a>. As far as Google Play, Samsung
-	   Store or Amazon Appstore require other terms, the respective terms apply for versions
-	   that are downloaded via these services.</p>
-	   
-	   <p>Vertalen in het Duits wordt door de auteurs verzorgd. Vertalingen naar andere talen zijn bijgedragen door
-verschillende mensen die worden genoemd in hun respectieve taal versie.</p>
-	   
-	   <h2>Gebruik van third-party bibliotheken</h2>
-	   <p>
-	    * <a href="http://hc.apache.org">Apache HttpClient</a> (Android port) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>
-	   	* <a href="http://ical4j.sourceforge.net/">iCal4j<a> – <a href="http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE">New BSD License</a>)<br/>
-	   	* <a href="https://code.google.com/p/ez-vcard/">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a><br/>
-	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a><br/>
-	   	* <a href="http://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a><br/>
-		* <a href="http://www.xbill.org/dnsjava/">dnsjava</a> – <a href="http://www.xbill.org/dnsjava/dnsjava-current/LICENSE">BSD License</a></p>
-    ]]></string>
 
     <!-- AddAccountActivity -->
     <string name="login_type_email">Inloggen met e-mailadres</string>
