@@ -7,7 +7,9 @@ detailled information about DAVdroid.
 
 DAVdroid is licensed under the [GPLv3 License](COPYING).
 
-Twitter: [@davdroidapp](https://twitter.com/davdroidapp)
+News and updates: [@davdroidapp](https://twitter.com/davdroidapp)
+
+Help and discussion: [DAVdroid forums](https://davdroid.bitfire.at/forums)
 
 
 USED THIRD-PARTY LIBRARIES
