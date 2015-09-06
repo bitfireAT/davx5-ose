@@ -14,6 +14,7 @@
     
     <string name="davdroid_website">DAVdroid web oldal</string>
     <string name="next">Tovább</string>
+    <string name="skip">Kihagy</string>
     <string name="help">Súgó</string>
     
     <string name="exception_http">HTTP hiba: %s</string>
@@ -78,7 +79,7 @@
     <string name="settings_password">Jelszó</string>
     <string name="settings_password_summary">Adja meg a szerveren érvényes új jelszót.</string>
     <string name="settings_enter_password">Adja meg a jelszót:</string>
-    <string name="settings_preemptive">>Preemptív authentikáció</string>
+    <string name="settings_preemptive">Preemptív authentikáció</string>
     <string name="settings_preemptive_on">A hitelesítő adatok elküldése minden kérésnél (ajánlott)</string>
     <string name="settings_preemptive_off">A hitelesítő adatok elküldése, csak ha a szerver azt igényli</string>
     <string name="settings_sync">Szinkronizálás</string>
@@ -87,6 +88,7 @@
     <string name="settings_sync_summary_periodically">Minden %d percben + az eszközön történt módosítás után</string>
     <string name="settings_sync_summary_not_available">Nem elérhető</string>
     <string name="settings_sync_interval_calendars">Naptárszinkronizálás sűrűsége</string>
+    <string name="settings_sync_interval_tasks">Feladatlisták szinkronizálásának sűrűsége</string>
     <string-array name="settings_sync_interval_seconds">
         <item>-1</item>
         <item>300</item>
@@ -107,17 +109,37 @@
         <item>4 óránként</item>
         <item>Naponta</item>
     </string-array>
+    <string name="settings_carddav">Címjegyzék</string>
+    <string name="settings_carddav_vcard4_support">VCard 4.0 támogatás</string>
+    <string name="settings_carddav_vcard4_supported">Névjegyek küldése VCard 4.0 formátumban</string>
+    <string name="settings_carddav_vcard4_not_supported">Névjegyek küldése VCard 3.0 formátumban</string>
    
     <string name="setup_select_collections">DAVdroid: Gyűjtemény kiválasztása</string>
     <string name="setup_neither_caldav_nor_carddav">Nincs CalDAV-/CardDAV szolgáltatás a megadott helyen.</string>
     <string name="setup_add_account">Fiók hozzáadása</string>
     <string name="setup_querying_server">Kapcsolódás a szerverhez. Egy pillanat…</string>
+    <string name="setup_install_apps_info">Az Android rendszer önmagában nem támogatja a feladatlistákat (ellentétben a naptárakkal és címjegyzékekkel).</string>
+    <string name="setup_install_tasks_app_html"><![CDATA[
+        <p>A DAVdroid képes feladatlistákat szinkronizálni a Martin Gajda által fejlesztett
+        <a href="market://details?id=org.dmfs.tasks">Tasks</a> alkalmazással.</p>
+        <p>Egy <a href="https://code.google.com/p/android/issues/detail?id=25906">Android hiba</a> miatt a <b>Tasks alkalmazást
+        a DAVdroid alkalmazás előtt kell installálni</b> (különben a DAVdroid nem kap engedélyt a feladatokhoz való hozzáféréshez).</p>
+        <p>Ha tervezi feladatlisták szinkronizálását:</p>
+        <p>1. Installálja a Tasks alkalmazást.<br/>
+        2. Törölje és installálja újra a DAVdroid alkalmazást (hogy megkapja a szükséges engedélyeket). A törlés következtében
+        a meglévő DAVdroid fiókok törlődnek és a még nem szinkronizált változások elvesznek!<br/>
+        3. Hozza létre újra a DAVdroid fiókokat.</p>
+        <p>Ha nem, a fenti lépések kihagyhatók.</p>
+    ]]></string>
+
     <string name="setup_what_to_sync">Melyik gyűjtemények legyenek szinkronizálva?</string>
     <string name="setup_address_books">Címjegyzékek</string>
     <string name="setup_calendars">Naptárak</string>
+    <string name="setup_task_lists">Feladatlisták</string>
     <string name="setup_select_address_book">Egy címjegyzék választható (a kijelölés visszavonása újbóli érintéssel vagy másik tétel kiválasztásával):</string>
     <string name="setup_select_calendars">Naptárak kiválasztása:</string>
-    
+    <string name="setup_select_task_lists">Feladatlisták kiválasztása:</string>
+
     <string name="setup_account_details">További beállítások</string>
     <string name="setup_account_name">A fiók neve:</string>
     <string name="setup_account_name_hint">CalDAV/CardDAV fiók</string>
