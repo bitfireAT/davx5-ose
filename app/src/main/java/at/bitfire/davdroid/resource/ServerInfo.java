@@ -42,7 +42,7 @@ public class ServerInfo implements Serializable {
 
 	@RequiredArgsConstructor(suppressConstructorProperties=true)
 	@Data
-	public static class ResourceInfo {
+	public static class ResourceInfo implements Serializable {
 		public enum Type {
 			ADDRESS_BOOK,
 			CALENDAR
