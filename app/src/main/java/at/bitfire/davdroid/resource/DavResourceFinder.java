@@ -272,7 +272,7 @@ public class DavResourceFinder implements Closeable {
 			
 			// look for well-known service (RFC 5785)
 			try {
-				WebDavResource wellKnown = new WebDavResource(base, "/.well-known/" + serviceName);
+				WebDavResource wellKnown = new WebDavResource(base, new URI("/.well-known/" + serviceName));
 				wellKnown.propfind(Mode.CURRENT_USER_PRINCIPAL);
 				if (wellKnown.getProperties().getCurrentUserPrincipal() != null) {
 					URI principal = wellKnown.getProperties().getCurrentUserPrincipal();
