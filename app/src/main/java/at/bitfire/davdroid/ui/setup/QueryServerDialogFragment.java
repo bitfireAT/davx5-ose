@@ -72,7 +72,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 			((AddAccountActivity)getActivity()).serverInfo = serverInfo;
 
 			Fragment nextFragment;
-			if (!serverInfo.getTodoLists().isEmpty() && !LocalTaskList.isAvailable(getActivity()))
+			if (!serverInfo.getTaskLists().isEmpty() && !LocalTaskList.isAvailable(getActivity()))
 				nextFragment = new InstallAppsFragment();
 			else
 				nextFragment = new SelectCollectionsFragment();

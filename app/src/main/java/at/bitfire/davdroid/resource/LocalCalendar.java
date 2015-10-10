@@ -64,7 +64,7 @@ import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 
-import at.bitfire.davdroid.DAVUtils;
+import at.bitfire.davdroid.DavUtils;
 import at.bitfire.davdroid.DateUtils;
 import at.bitfire.davdroid.webdav.WebDavResource;
 import lombok.Cleanup;
@@ -116,7 +116,7 @@ public class LocalCalendar extends LocalCollection<Event> {
 		values.put(Calendars.ACCOUNT_TYPE, account.type);
 		values.put(Calendars.NAME, info.getURL());
 		values.put(Calendars.CALENDAR_DISPLAY_NAME, info.getTitle());
-		values.put(Calendars.CALENDAR_COLOR, info.getColor() != null ? info.getColor() : DAVUtils.calendarGreen);
+		values.put(Calendars.CALENDAR_COLOR, info.getColor() != null ? info.getColor() : DavUtils.calendarGreen);
 		values.put(Calendars.OWNER_ACCOUNT, account.name);
 		values.put(Calendars.SYNC_EVENTS, 1);
 		values.put(Calendars.VISIBLE, 1);

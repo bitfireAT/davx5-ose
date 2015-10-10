@@ -25,11 +25,10 @@ public class ServerInfo implements Serializable {
 	
 	private String errorMessage;
 	
-	private boolean calDAV = false, cardDAV = false;
 	private List<ResourceInfo>
 		addressBooks = new LinkedList<>(),
 		calendars  = new LinkedList<>(),
-		todoLists = new LinkedList<>();
+		taskLists = new LinkedList<>();
 	
 	
 	public boolean hasEnabledCalendars() {
