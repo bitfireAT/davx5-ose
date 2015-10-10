@@ -9,13 +9,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion '22.0.1'
+    compileSdkVersion 23
+    buildToolsVersion '23.0.1'
+    useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
         minSdkVersion 14
-        targetSdkVersion 22
+        targetSdkVersion 23
     }
 
     buildTypes {
@@ -66,11 +67,13 @@ dependencies {
     // dnsjava for querying SRV/TXT records
     compile 'dnsjava:dnsjava:2.1.7'
     // HttpClient 4.3, Android flavour for WebDAV operations
-    //compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
-    compile project(':lib:httpclient-android')
+    compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
+    //compile project(':lib:httpclient-android')
     // SimpleXML for parsing and generating WebDAV messages
     compile('org.simpleframework:simple-xml:2.7.1') {
         exclude group: 'stax', module: 'stax-api'
         exclude group: 'xpp3', module: 'xpp3'
     }
+
+    compile project(':dav4android')
 }
