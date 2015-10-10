@@ -101,7 +101,7 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
 				}
 			});
 
-			addSync(account, LocalTaskList.TASKS_AUTHORITY, serverInfo.getTodoLists(), new AddSyncCallback() {
+			addSync(account, LocalTaskList.TASKS_AUTHORITY, serverInfo.getTaskLists(), new AddSyncCallback() {
 				@Override
 				public void createLocalCollection(Account account, ServerInfo.ResourceInfo todoList) throws LocalStorageException {
 					LocalTaskList.create(account, getActivity().getContentResolver(), todoList);

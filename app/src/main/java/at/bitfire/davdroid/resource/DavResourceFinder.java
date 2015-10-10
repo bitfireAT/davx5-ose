@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import at.bitfire.dav4android.DavResource;
-import at.bitfire.dav4android.HttpClient;
 import at.bitfire.dav4android.exception.DavException;
 import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.dav4android.property.AddressbookDescription;
@@ -35,11 +34,15 @@ import at.bitfire.dav4android.property.AddressbookHomeSet;
 import at.bitfire.dav4android.property.CalendarColor;
 import at.bitfire.dav4android.property.CalendarDescription;
 import at.bitfire.dav4android.property.CalendarHomeSet;
+import at.bitfire.dav4android.property.CalendarTimezone;
 import at.bitfire.dav4android.property.CurrentUserPrincipal;
+import at.bitfire.dav4android.property.CurrentUserPrivilegeSet;
 import at.bitfire.dav4android.property.DisplayName;
 import at.bitfire.dav4android.property.ResourceType;
+import at.bitfire.dav4android.property.SupportedCalendarComponentSet;
 import at.bitfire.davdroid.Constants;
-import at.bitfire.davdroid.DAVUtils;
+import at.bitfire.davdroid.DavUtils;
+import at.bitfire.davdroid.HttpClient;
 
 public class DavResourceFinder {
 	private final static String TAG = "davdroid.ResourceFinder";
@@ -52,21 +55,7 @@ public class DavResourceFinder {
 	}
 
 	public void findResources(final ServerInfo serverInfo) throws URISyntaxException, IOException, HttpException, DavException {
-        final HttpClient httpClient = new HttpClient();
-        /*httpClient.setAuthenticator(new Authenticator() {
-            @Override
-            public Request authenticate(Proxy proxy, Response response) throws IOException {
-                String credential = Credentials.basic(serverInfo.getUserName(), serverInfo.getPassword());
-                return response.request().newBuilder()
-                        .header("Authorization", credential)
-                        .build();
-            }
-
-            @Override
-            public Request authenticateProxy(Proxy proxy, Response response) throws IOException {
-                return null;
-            }
-        });*/
+        final HttpClient httpClient = new HttpClient(serverInfo.getUserName(), serverInfo.getPassword(), serverInfo.authPreemptive);
 
         // CardDAV
         Constants.log.info("*** CardDAV resource detection ***");
@@ -77,22 +66,25 @@ public class DavResourceFinder {
         AddressbookHomeSet addrHomeSet = (AddressbookHomeSet)principal.properties.get(AddressbookHomeSet.NAME);
         if (addrHomeSet != null && !addrHomeSet.hrefs.isEmpty()) {
             Constants.log.info("Found addressbook home set(s): " + addrHomeSet);
-            serverInfo.setCardDAV(true);
 
             // enumerate address books
             List<ServerInfo.ResourceInfo> addressBooks = new LinkedList<>();
             for (String href : addrHomeSet.hrefs) {
                 DavResource homeSet = new DavResource(httpClient, principalUrl.resolve(href));
-                homeSet.propfind(1, ResourceType.NAME, DisplayName.NAME, AddressbookDescription.NAME);
+                homeSet.propfind(1, ResourceType.NAME, CurrentUserPrivilegeSet.NAME, DisplayName.NAME, AddressbookDescription.NAME);
                 for (DavResource member : homeSet.members) {
                     ResourceType type = (ResourceType)member.properties.get(ResourceType.NAME);
                     if (type != null && type.types.contains(ResourceType.ADDRESSBOOK)) {
                         Constants.log.info("Found address book: " + member.location);
 
+                        CurrentUserPrivilegeSet privs = (CurrentUserPrivilegeSet)member.properties.get(CurrentUserPrivilegeSet.NAME);
+                        if (privs != null && (!privs.mayRead || !privs.mayWriteContent)) {
+                            Constants.log.info("Only read/write address books are supported, ignoring this one");
+                            continue;
+                        }
+
                         DisplayName displayName = (DisplayName)member.properties.get(DisplayName.NAME);
                         AddressbookDescription description = (AddressbookDescription)member.properties.get(AddressbookDescription.NAME);
-
-                        // TODO read-only
 
                         addressBooks.add(new ServerInfo.ResourceInfo(
                                 ServerInfo.ResourceInfo.Type.ADDRESS_BOOK,
@@ -117,13 +109,16 @@ public class DavResourceFinder {
         CalendarHomeSet calHomeSet = (CalendarHomeSet)principal.properties.get(CalendarHomeSet.NAME);
         if (calHomeSet != null && !calHomeSet.hrefs.isEmpty()) {
             Constants.log.info("Found calendar home set(s): " + calHomeSet);
-            serverInfo.setCalDAV(true);
 
             // enumerate address books
-            List<ServerInfo.ResourceInfo> calendars = new LinkedList<>();
+            List<ServerInfo.ResourceInfo>
+                    calendars = new LinkedList<>(),
+                    taskLists = new LinkedList<>();
+
             for (String href : calHomeSet.hrefs) {
                 DavResource homeSet = new DavResource(httpClient, principalUrl.resolve(href));
-                homeSet.propfind(1, ResourceType.NAME, DisplayName.NAME, CalendarDescription.NAME, CalendarColor.NAME);
+                homeSet.propfind(1, ResourceType.NAME, CurrentUserPrivilegeSet.NAME, DisplayName.NAME,
+                        CalendarDescription.NAME, CalendarColor.NAME, CalendarTimezone.NAME, SupportedCalendarComponentSet.NAME);
                 for (DavResource member : homeSet.members) {
                     ResourceType type = (ResourceType)member.properties.get(ResourceType.NAME);
                     if (type != null && type.types.contains(ResourceType.CALENDAR)) {
@@ -133,20 +128,45 @@ public class DavResourceFinder {
                         CalendarDescription description = (CalendarDescription)member.properties.get(CalendarDescription.NAME);
                         CalendarColor color = (CalendarColor)member.properties.get(CalendarColor.NAME);
 
-                        // TODO read-only, time-zone, supported components
+                        CurrentUserPrivilegeSet privs = (CurrentUserPrivilegeSet)member.properties.get(CurrentUserPrivilegeSet.NAME);
+                        boolean readOnly = false;
+                        if (privs != null) {
+                            if (!privs.mayRead) {
+                                Constants.log.info("Calendar not readable, ignoring this one");
+                                continue;
+                            }
+                            readOnly = !privs.mayWriteContent;
+                        }
 
-                        calendars.add(new ServerInfo.ResourceInfo(
+                        ServerInfo.ResourceInfo collection = new ServerInfo.ResourceInfo(
                                 ServerInfo.ResourceInfo.Type.ADDRESS_BOOK,
-                                false,
+                                readOnly,
                                 member.location.toString(),
                                 displayName != null ? displayName.displayName : null,
                                 description != null ? description.description : null,
-                                color != null ? DAVUtils.CalDAVtoARGBColor(color.color) : null
-                        ));
+                                color != null ? DavUtils.CalDAVtoARGBColor(color.color) : null
+                        );
+
+                        CalendarTimezone tz = (CalendarTimezone)member.properties.get(CalendarTimezone.NAME);
+                        if (tz != null)
+                            collection.timezone = tz.vTimeZone;
+
+                        boolean isCalendar = true, isTaskList = true;
+                        SupportedCalendarComponentSet comp = (SupportedCalendarComponentSet)member.properties.get(SupportedCalendarComponentSet.NAME);
+                        if (comp != null) {
+                            isCalendar = comp.supportsEvents;
+                            isTaskList = comp.supportsTasks;
+                        }
+
+                        if (isCalendar)
+                            calendars.add(collection);
+                        if (isTaskList)
+                            taskLists.add(collection);
                     }
                 }
             }
             serverInfo.setCalendars(calendars);
+            serverInfo.setTaskLists(taskLists);
         }
 
 		/*if (!serverInfo.isCalDAV() && !serverInfo.isCardDAV())

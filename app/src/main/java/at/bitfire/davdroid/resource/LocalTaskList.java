@@ -37,7 +37,7 @@ import org.dmfs.provider.tasks.TaskContract;
 
 import java.util.LinkedList;
 
-import at.bitfire.davdroid.DAVUtils;
+import at.bitfire.davdroid.DavUtils;
 import at.bitfire.davdroid.DateUtils;
 import at.bitfire.davdroid.webdav.WebDavResource;
 import lombok.Cleanup;
@@ -75,7 +75,7 @@ public class LocalTaskList extends LocalCollection<Task> {
 		values.put(TaskContract.TaskLists.ACCOUNT_TYPE, account.type);
 		values.put(TaskContract.TaskLists._SYNC_ID, info.getURL());
 		values.put(TaskContract.TaskLists.LIST_NAME, info.getTitle());
-		values.put(TaskContract.TaskLists.LIST_COLOR, info.getColor() != null ? info.getColor() : DAVUtils.calendarGreen);
+		values.put(TaskContract.TaskLists.LIST_COLOR, info.getColor() != null ? info.getColor() : DavUtils.calendarGreen);
 		values.put(TaskContract.TaskLists.OWNER, account.name);
 		values.put(TaskContract.TaskLists.ACCESS_LEVEL, 0);
 		values.put(TaskContract.TaskLists.SYNC_ENABLED, 1);

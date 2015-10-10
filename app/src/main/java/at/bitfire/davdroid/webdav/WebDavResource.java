@@ -47,7 +47,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import at.bitfire.davdroid.DAVUtils;
+import at.bitfire.davdroid.DavUtils;
 import at.bitfire.davdroid.URIUtils;
 import at.bitfire.davdroid.resource.iCalendar;
 import at.bitfire.davdroid.webdav.DavProp.Comp;
@@ -547,7 +547,7 @@ public class WebDavResource {
 		// getters / setters
 
 		public Integer getColor() {
-			return color != null ? DAVUtils.CalDAVtoARGBColor(color) : null;
+			return color != null ? DavUtils.CalDAVtoARGBColor(color) : null;
 		}
 
 		public URI getCurrentUserPrincipal() throws URISyntaxException {
