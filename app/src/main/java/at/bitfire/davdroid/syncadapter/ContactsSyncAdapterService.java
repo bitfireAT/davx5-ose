@@ -9,20 +9,29 @@ package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
 import android.app.Service;
+import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SyncResult;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
+import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.ResponseBody;
 
-import at.bitfire.davdroid.resource.CardDavAddressBook;
+import org.apache.commons.io.Charsets;
+
+import at.bitfire.dav4android.DavAddressBook;
+import at.bitfire.dav4android.DavResource;
+import at.bitfire.dav4android.property.SupportedAddressData;
+import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.resource.LocalAddressBook;
-import at.bitfire.davdroid.resource.LocalCollection;
-import at.bitfire.davdroid.resource.WebDavCollection;
+import at.bitfire.davdroid.resource.LocalContact;
+import at.bitfire.vcard4android.Contact;
 
 public class ContactsSyncAdapterService extends Service {
 	private static ContactsSyncAdapter syncAdapter;
@@ -35,7 +44,6 @@ public class ContactsSyncAdapterService extends Service {
 
 	@Override
 	public void onDestroy() {
-		syncAdapter.close();
 		syncAdapter = null;
 	}
 
@@ -45,37 +53,53 @@ public class ContactsSyncAdapterService extends Service {
 	}
 	
 
-	private static class ContactsSyncAdapter extends DavSyncAdapter {
-		private final static String TAG = "davdroid.ContactsSync";
+	private static class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
 
-		private ContactsSyncAdapter(Context context) {
-			super(context);
-		}
+        public ContactsSyncAdapter(Context context) {
+            super(context, false);
+        }
 
-		@Override
-		protected Map<LocalCollection<?>, WebDavCollection<?>> getSyncPairs(Account account, ContentProviderClient provider) {
-			AccountSettings settings = new AccountSettings(getContext(), account);
-			String	userName = settings.getUserName(),
-					password = settings.getPassword();
-			boolean preemptive = settings.getPreemptiveAuth();
+        @Override
+        public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
+            Constants.log.info("Starting sync for authority " + authority);
 
-			String addressBookURL = settings.getAddressBookURL();
-			if (addressBookURL == null)
-				return null;
-			
-			try {
-				LocalCollection<?> database = new LocalAddressBook(account, provider, settings);
-				WebDavCollection<?> dav = new CardDavAddressBook(settings, httpClient, addressBookURL, userName, password, preemptive);
-				
-				Map<LocalCollection<?>, WebDavCollection<?>> map = new HashMap<>();
-				map.put(database, dav);
-				
-				return map;
-			} catch (URISyntaxException ex) {
-				Log.e(TAG, "Couldn't build address book URI", ex);
-			}
-			
-			return null;
-		}
-	}
+            AccountSettings settings = new AccountSettings(getContext(), account);
+            HttpClient httpClient = new HttpClient(settings.getUserName(), settings.getPassword(), settings.getPreemptiveAuth());
+
+            DavAddressBook dav = new DavAddressBook(httpClient, HttpUrl.parse(settings.getAddressBookURL()));
+            try {
+                boolean hasVCard4 = false;
+                dav.propfind(0, SupportedAddressData.NAME);
+                SupportedAddressData supportedAddressData = (SupportedAddressData)dav.properties.get(SupportedAddressData.NAME);
+                if (supportedAddressData != null)
+                    for (MediaType type : supportedAddressData.types)
+                        if ("text/vcard; version=4.0".equalsIgnoreCase(type.toString()))
+                            hasVCard4 = true;
+                Constants.log.info("Server advertises VCard/4 support: " + hasVCard4);
+
+                LocalAddressBook addressBook = new LocalAddressBook(account, provider);
+
+                dav.queryMemberETags();
+                for (DavResource vCard : dav.members) {
+                    Constants.log.info("Found remote VCard: " + vCard.location);
+                    ResponseBody body = vCard.get("text/vcard;q=0.8, text/vcard;version=4.0");
+
+                    Contact contacts[] = Contact.fromStream(body.byteStream(), body.contentType().charset(Charsets.UTF_8));
+                    if (contacts.length == 1) {
+                        Contact contact = contacts[0];
+                        Constants.log.info(contact.toString());
+
+                        LocalContact localContact = new LocalContact(addressBook, contact);
+                        localContact.add();
+                    } else
+                        Constants.log.error("Received VCard with not exactly one VCARD");
+                }
+
+            } catch (Exception e) {
+                Log.e("davdroid", "querying member etags", e);
+            }
+
+            Constants.log.info("Sync complete for authority " + authority);
+        }
+    }
 }

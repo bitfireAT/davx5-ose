@@ -56,14 +56,6 @@ dependencies {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
     compile('org.slf4j:slf4j-android:1.7.12')       // slf4j is used by ical4j
-    // ez-vcard for parsing/generating VCards
-    compile('com.googlecode.ez-vcard:ez-vcard:0.9.6') {
-        // hCard functionality not needed
-        exclude group: 'org.jsoup', module: 'jsoup'
-        exclude group: 'org.freemarker', module: 'freemarker'
-        // jCard functionality not needed
-        exclude group: 'com.fasterxml.jackson.core', module: 'jackson-core'
-    }
     // dnsjava for querying SRV/TXT records
     compile 'dnsjava:dnsjava:2.1.7'
     // HttpClient 4.3, Android flavour for WebDAV operations
@@ -76,4 +68,5 @@ dependencies {
     }
 
     compile project(':dav4android')
+    compile project(':vcard4android')
 }
