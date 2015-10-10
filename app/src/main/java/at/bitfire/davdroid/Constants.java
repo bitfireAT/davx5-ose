@@ -9,6 +9,9 @@ package at.bitfire.davdroid;
 
 import net.fortuna.ical4j.model.property.ProdId;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Constants {
 	public static final String
 		APP_VERSION = "0.8.4.1",
@@ -18,4 +21,6 @@ public class Constants {
 		WEB_URL_VIEW_LOGS = "https://github.com/bitfireAT/davdroid/wiki/How-to-view-the-logs";
 
 	public static final ProdId ICAL_PRODID = new ProdId("-//bitfire web engineering//DAVdroid " + Constants.APP_VERSION + " (ical4j 2.0-beta1)//EN");
+
+    public static final Logger log = LoggerFactory.getLogger("DAVdroid");
 }
