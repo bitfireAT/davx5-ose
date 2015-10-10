@@ -1,3 +1,6 @@
 [submodule "dav4android"]
 	path = dav4android
 	url = git@gitlab.com:bitfireAT/dav4android.git
+[submodule "vcard4android"]
+	path = vcard4android
+	url = git@gitlab.com:bitfireAT/vcard4android.git

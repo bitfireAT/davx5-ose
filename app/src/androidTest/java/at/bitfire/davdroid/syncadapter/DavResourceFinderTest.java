@@ -30,7 +30,6 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
 	
 	@Override
 	protected void tearDown() throws IOException {
-		finder.close();
 	}
 	
 
@@ -39,7 +38,6 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
 		finder.findResources(info);
 		
 		/*** CardDAV ***/
-		assertTrue(info.isCardDAV());
 		List<ResourceInfo> collections = info.getAddressBooks();
 		// two address books
 		assertEquals(2, collections.size());
@@ -52,7 +50,6 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
 		assertEquals("Absolute URI VCard Book", collection.getDescription());
 
 		/*** CalDAV ***/
-		assertTrue(info.isCalDAV());
 		collections = info.getCalendars();
 		assertEquals(2, collections.size());
 		
