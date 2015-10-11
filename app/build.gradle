@@ -17,6 +17,11 @@ android {
         applicationId "at.bitfire.davdroid"
         minSdkVersion 14
         targetSdkVersion 23
+
+        versionCode 73
+        versionName "0.9-alpha1"
+
+        buildConfigField "java.util.Date", "buildTime", "new java.util.Date()"
     }
 
     buildTypes {

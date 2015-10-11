@@ -11,6 +11,7 @@ import android.accounts.Account;
 import android.app.Service;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
@@ -26,29 +27,42 @@ import com.squareup.okhttp.ResponseBody;
 
 import org.apache.commons.io.Charsets;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import at.bitfire.dav4android.DavAddressBook;
 import at.bitfire.dav4android.DavResource;
 import at.bitfire.dav4android.exception.DavException;
 import at.bitfire.dav4android.exception.HttpException;
+import at.bitfire.dav4android.property.AddressData;
+import at.bitfire.dav4android.property.GetCTag;
+import at.bitfire.dav4android.property.GetContentType;
 import at.bitfire.dav4android.property.GetETag;
 import at.bitfire.dav4android.property.SupportedAddressData;
+import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.davdroid.resource.LocalContact;
 import at.bitfire.vcard4android.Contact;
+import at.bitfire.vcard4android.ContactsStorageException;
 import ezvcard.VCardVersion;
 import ezvcard.property.Uid;
+import lombok.Cleanup;
 
 public class ContactsSyncAdapterService extends Service {
 	private static ContactsSyncAdapter syncAdapter;
+
+    protected static final int MAX_MULTIGET = 10;
+
 
 	@Override
 	public void onCreate() {
@@ -68,7 +82,6 @@ public class ContactsSyncAdapterService extends Service {
 	
 
 	private static class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
-
         public ContactsSyncAdapter(Context context) {
             super(context, false);
         }
@@ -88,7 +101,7 @@ public class ContactsSyncAdapterService extends Service {
 
                 // prepare remote address book
                 boolean hasVCard4 = false;
-                dav.propfind(0, SupportedAddressData.NAME);
+                dav.propfind(0, SupportedAddressData.NAME, GetCTag.NAME);
                 SupportedAddressData supportedAddressData = (SupportedAddressData)dav.properties.get(SupportedAddressData.NAME);
                 if (supportedAddressData != null)
                     for (MediaType type : supportedAddressData.types)
@@ -142,11 +155,24 @@ public class ContactsSyncAdapterService extends Service {
                         remote.put(vCard, local.eTag, null);
                     }
 
-                    // reset DIRTY
+                    GetETag newETag = (GetETag) remote.properties.get(GetETag.NAME);
+                    local.clearDirty(newETag != null ? newETag.eTag : null);
                 }
 
-                // check CTag (ignore on forced sync)
-                if (true) {
+                // check CTag (ignore on manual sync)
+                String currentCTag = null;
+                if (extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL))
+                    Constants.log.info("Manual sync, ignoring CTag");
+                else {
+                    GetCTag getCTag = (GetCTag) dav.properties.get(GetCTag.NAME);
+                    if (getCTag != null)
+                        currentCTag = getCTag.cTag;
+                }
+
+                if (currentCTag != null && !(currentCTag.equals(addressBook.getCTag()))) {
+                    Constants.log.info("Remote address book didn't change (CTag=" + currentCTag + "), no need to list VCards");
+
+                } else {
                     // fetch list of local contacts and build hash table to index file name
                     localList = addressBook.getAll();
                     Map<String, LocalContact> localContacts = new HashMap<>(localList.length);
@@ -199,41 +225,92 @@ public class ContactsSyncAdapterService extends Service {
                         toDownload.addAll(remoteContacts.values());
                     }
 
+                    Constants.log.info("Downloading " + toDownload.size() + " contacts (" + MAX_MULTIGET + " at once)");
+
                     // download new/updated VCards from server
-                    for (DavResource remoteContact : toDownload) {
-                        Constants.log.info("Downloading " + remoteContact.location);
-                        String fileName = remoteContact.fileName();
+                    for (DavResource[] bunch : ArrayUtils.partition(toDownload.toArray(new DavResource[toDownload.size()]), MAX_MULTIGET)) {
+                        Constants.log.info("Downloading " + TextUtils.join(" + ", bunch));
+                        if (bunch.length == 1) {
+                            // only one contact, use GET
+                            DavResource remote = bunch[0];
+                            String fileName = remote.fileName();
 
-                        ResponseBody body = remoteContact.get("text/vcard;q=0.5, text/vcard;charset=utf-8;q=0.8, text/vcard;version=4.0");
-                        String remoteETag = ((GetETag)remoteContact.properties.get(GetETag.NAME)).eTag;
+                            ResponseBody body = remote.get("text/vcard;q=0.5, text/vcard;charset=utf-8;q=0.8, text/vcard;version=4.0");
+                            String eTag = ((GetETag)remote.properties.get(GetETag.NAME)).eTag;
 
-                        Contact contacts[] = Contact.fromStream(body.byteStream(), body.contentType().charset(Charsets.UTF_8));
-                        if (contacts.length == 1) {
-                            Contact newData = contacts[0];
+                            @Cleanup InputStream stream = body.byteStream();
+                            processVCard(addressBook, localContacts, remote.fileName(), eTag, stream, body.contentType().charset(Charsets.UTF_8));
 
-                            // delete local contact, if it exists
-                            LocalContact localContact = localContacts.get(fileName);
-                            if (localContact != null) {
-                                Constants.log.info("Updating " + fileName + " in local address book");
-                                localContact.eTag = remoteETag;
-                                localContact.update(newData);
-                            } else {
-                                Constants.log.info("Adding " + fileName + " to local address book");
-                                localContact = new LocalContact(addressBook, newData, fileName, remoteETag);
-                                localContact.add();
+                        } else {
+                            // multiple contacts, use multi-get
+                            List<HttpUrl> urls = new LinkedList<>();
+                            for (DavResource remote : bunch)
+                                urls.add(remote.location);
+                            dav.multiget(urls.toArray(new HttpUrl[urls.size()]), hasVCard4);
+
+                            // process multiget results
+                            for (DavResource remote : dav.members) {
+                                String eTag = null;
+                                GetETag getETag = (GetETag)remote.properties.get(GetETag.NAME);
+                                if (getETag != null)
+                                    eTag = getETag.eTag;
+                                else
+                                    throw new DavException("Received multi-get response without ETag");
+
+                                Charset charset = Charsets.UTF_8;
+                                GetContentType getContentType = (GetContentType)remote.properties.get(GetContentType.NAME);
+                                if (getContentType != null && getContentType.type != null) {
+                                    MediaType type = MediaType.parse(getContentType.type);
+                                    if (type != null)
+                                        charset = type.charset(Charsets.UTF_8);
+                                }
+
+                                AddressData addressData = (AddressData)remote.properties.get(AddressData.NAME);
+                                if (addressData == null || addressData.vCard == null)
+                                    throw new DavException("Received multi-get response without address data");
+
+                                @Cleanup InputStream stream = new ByteArrayInputStream(addressData.vCard.getBytes());
+                                processVCard(addressBook, localContacts, remote.fileName(), eTag, stream, charset);
                             }
-
-                            // add the new contact
-                        } else
-                            Constants.log.error("Received VCard with not exactly one VCARD, ignoring " + fileName);
+                        }
                     }
+
+                    /* Save sync state (CTag). It doesn't matter if it has changed during the sync process
+                       (for instance, because another client has uploaded changes), because this will simply
+                       cause all remote entries to be listed at the next sync. */
+                    Constants.log.info("Saving sync state: CTag=" + currentCTag);
+                    addressBook.setCTag(currentCTag);
                 }
 
             } catch (Exception e) {
-                Log.e("davdroid", "querying member etags", e);
+                Log.e("davdroid", "XXX", e);
             }
 
             Constants.log.info("Sync complete for authority " + authority);
         }
+
+
+        private void processVCard(LocalAddressBook addressBook, Map<String, LocalContact>localContacts, String fileName, String eTag, InputStream stream, Charset charset) throws IOException, ContactsStorageException {
+            Contact contacts[] = Contact.fromStream(stream, charset);
+            if (contacts.length == 1) {
+                Contact newData = contacts[0];
+
+                // delete local contact, if it exists
+                LocalContact localContact = localContacts.get(fileName);
+                if (localContact != null) {
+                    Constants.log.info("Updating " + fileName + " in local address book");
+                    localContact.eTag = eTag;
+                    localContact.update(newData);
+                } else {
+                    Constants.log.info("Adding " + fileName + " to local address book");
+                    localContact = new LocalContact(addressBook, newData, fileName, eTag);
+                    localContact.add();
+                }
+            } else
+                Constants.log.error("Received VCard with not exactly one VCARD, ignoring " + fileName);
+        }
+
+
     }
+
 }

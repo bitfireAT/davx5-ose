@@ -8,6 +8,8 @@
 
 package at.bitfire.davdroid;
 
+import android.os.Build;
+
 import com.squareup.okhttp.Authenticator;
 import com.squareup.okhttp.Credentials;
 import com.squareup.okhttp.Interceptor;
@@ -18,6 +20,7 @@ import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
 import java.io.IOException;
 import java.net.Proxy;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -26,8 +29,24 @@ import lombok.RequiredArgsConstructor;
 
 public class HttpClient extends OkHttpClient {
 
-    protected static final String
-            HEADER_AUTHORIZATION = "Authorization";
+    protected static final String HEADER_AUTHORIZATION = "Authorization";
+
+    final static UserAgentInterceptor userAgentInterceptor = new UserAgentInterceptor();
+    final static HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+        @Override
+        public void log(String message) {
+            Constants.log.trace(message);
+        }
+    });
+    static {
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+    }
+
+    static final String userAgent;
+    static {
+        String date = new SimpleDateFormat("yyyy/MM/dd").format(BuildConfig.buildTime);
+        userAgent = "DAVdroid/" + BuildConfig.VERSION_NAME + " (" + date + "; dav4android) Android/" + Build.VERSION.RELEASE;
+    }
 
 
     public HttpClient() {
@@ -40,13 +59,13 @@ public class HttpClient extends OkHttpClient {
         super();
         initialize();
 
-        // authentication and User-Agent
+        enableLogs();
+
+        // authentication
         if (preemptive)
             networkInterceptors().add(new PreemptiveAuthenticationInterceptor(username, password));
         else
             setAuthenticator(new DavAuthenticator(username, password));
-
-        enableLogs();
     }
 
 
@@ -54,21 +73,27 @@ public class HttpClient extends OkHttpClient {
         // don't follow redirects automatically because this may rewrite DAV methods to GET
         setFollowRedirects(false);
 
-        // timeouts
         setConnectTimeout(20, TimeUnit.SECONDS);
         setWriteTimeout(15, TimeUnit.SECONDS);
         setReadTimeout(45, TimeUnit.SECONDS);
+
+        // add User-Agent to every request
+        networkInterceptors().add(userAgentInterceptor);
     }
 
     protected void enableLogs() {
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
-            @Override
-            public void log(String message) {
-                at.bitfire.dav4android.Constants.log.trace(message);
-            }
-        });
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-        interceptors().add(logging);
+        interceptors().add(loggingInterceptor);
+    }
+
+
+    static class UserAgentInterceptor implements Interceptor {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request().newBuilder()
+                    .header("User-Agent", userAgent)
+                    .build();
+            return chain.proceed(request);
+        }
     }
 
 
@@ -78,8 +103,7 @@ public class HttpClient extends OkHttpClient {
 
         @Override
         public Response intercept(Chain chain) throws IOException {
-            Request request = chain.request();
-            request = request.newBuilder()
+            Request request = chain.request().newBuilder()
                     .header("Authorization", Credentials.basic(username, password))
                     .build();
             return chain.proceed(request);

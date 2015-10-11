@@ -20,6 +20,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
+import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 
 
@@ -57,7 +58,7 @@ public class DavHttpClient {
 				.setDefaultRequestConfig(defaultRqConfig)
 				.setRetryHandler(DavHttpRequestRetryHandler.INSTANCE)
 				.setRedirectStrategy(DavRedirectStrategy.INSTANCE)
-				.setUserAgent("DAVdroid/" + Constants.APP_VERSION);
+				.setUserAgent("DAVdroid/" + BuildConfig.VERSION_NAME);
 		
 		if (Log.isLoggable("Wire", Log.DEBUG)) {
 			Log.i(TAG, "Wire logging active, disabling HTTP compression");
