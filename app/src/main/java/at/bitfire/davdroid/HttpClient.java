@@ -40,7 +40,7 @@ public class HttpClient extends OkHttpClient {
         super();
         initialize();
 
-        // authentication
+        // authentication and User-Agent
         if (preemptive)
             networkInterceptors().add(new PreemptiveAuthenticationInterceptor(username, password));
         else
@@ -68,7 +68,7 @@ public class HttpClient extends OkHttpClient {
             }
         });
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-        networkInterceptors().add(logging);
+        interceptors().add(logging);
     }
 
 

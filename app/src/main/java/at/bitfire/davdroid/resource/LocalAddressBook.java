@@ -11,6 +11,7 @@ import android.accounts.Account;
 import android.content.ContentProviderClient;
 import android.provider.ContactsContract;
 
+import at.bitfire.davdroid.Constants;
 import at.bitfire.vcard4android.AndroidAddressBook;
 import at.bitfire.vcard4android.AndroidContact;
 import at.bitfire.vcard4android.AndroidContactFactory;
@@ -25,9 +26,30 @@ public class LocalAddressBook extends AndroidAddressBook {
         super(account, provider, AndroidGroupFactory.INSTANCE, LocalContact.Factory.INSTANCE);
     }
 
-    /*LocalContact[] queryAll() throws ContactsStorageException {
-        LocalContact contacts[] = (LocalContact[])queryContacts(ContactsContract.RawContacts.DELETED + "=0", null);
+    public LocalContact[] getAll() throws ContactsStorageException {
+        LocalContact contacts[] = (LocalContact[])queryContacts(null, null);
         return contacts;
-    }*/
+    }
+
+    /**
+     * Returns an array of local contacts which have been deleted locally. (DELETED != 0).
+     */
+    public LocalContact[] getDeleted() throws ContactsStorageException {
+        return (LocalContact[])queryContacts(ContactsContract.RawContacts.DELETED + " != 0", null);
+    }
+
+    /**
+     * Returns an array of local contacts which have been changed locally (DIRTY != 0).
+     */
+    public LocalContact[] getDirty() throws ContactsStorageException {
+        return (LocalContact[])queryContacts(ContactsContract.RawContacts.DIRTY + " != 0", null);
+    }
+
+    /**
+     * Returns an array of local contacts which don't have a file name yet.
+     */
+    public LocalContact[] getWithoutFileName() throws ContactsStorageException {
+        return (LocalContact[])queryContacts(AndroidContact.COLUMN_FILENAME + " IS NULL", null);
+    }
 
 }

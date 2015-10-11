@@ -8,19 +8,34 @@
 
 package at.bitfire.davdroid.resource;
 
+import android.content.ContentValues;
+import android.os.RemoteException;
+import android.provider.ContactsContract;
+
 import at.bitfire.vcard4android.AndroidAddressBook;
 import at.bitfire.vcard4android.AndroidContact;
 import at.bitfire.vcard4android.AndroidContactFactory;
 import at.bitfire.vcard4android.Contact;
+import at.bitfire.vcard4android.ContactsStorageException;
 
 public class LocalContact extends AndroidContact {
 
-    protected LocalContact(AndroidAddressBook addressBook, long id) {
-        super(addressBook, id);
+    protected LocalContact(AndroidAddressBook addressBook, long id, String fileName, String eTag) {
+        super(addressBook, id, fileName, eTag);
     }
 
-    public LocalContact(AndroidAddressBook addressBook, Contact contact) {
-        super(addressBook, contact);
+    public LocalContact(AndroidAddressBook addressBook, Contact contact, String fileName, String eTag) {
+        super(addressBook, contact, fileName, eTag);
+    }
+
+    public void updateUID(String uid) throws ContactsStorageException {
+        try {
+            ContentValues values = new ContentValues(1);
+            values.put(COLUMN_UID, uid);
+            addressBook.provider.update(rawContactSyncURI(), values, null, null);
+        } catch (RemoteException e) {
+            throw new ContactsStorageException("Couldn't update UID", e);
+        }
     }
 
 
@@ -28,13 +43,13 @@ public class LocalContact extends AndroidContact {
         static final Factory INSTANCE = new Factory();
 
         @Override
-        public LocalContact newInstance(AndroidAddressBook addressBook, long id) {
-            return new LocalContact(addressBook, id);
+        public LocalContact newInstance(AndroidAddressBook addressBook, long id, String fileName, String eTag) {
+            return new LocalContact(addressBook, id, fileName, eTag);
         }
 
         @Override
-        public LocalContact newInstance(AndroidAddressBook addressBook, Contact contact) {
-            return new LocalContact(addressBook, contact);
+        public LocalContact newInstance(AndroidAddressBook addressBook, Contact contact, String fileName, String eTag) {
+            return new LocalContact(addressBook, contact, fileName, eTag);
         }
 
         public LocalContact[] newArray(int size) {
