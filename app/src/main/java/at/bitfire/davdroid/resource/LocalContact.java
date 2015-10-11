@@ -12,13 +12,18 @@ import android.content.ContentValues;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 
+import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.vcard4android.AndroidAddressBook;
 import at.bitfire.vcard4android.AndroidContact;
 import at.bitfire.vcard4android.AndroidContactFactory;
 import at.bitfire.vcard4android.Contact;
 import at.bitfire.vcard4android.ContactsStorageException;
+import ezvcard.Ezvcard;
 
 public class LocalContact extends AndroidContact {
+    static {
+        Contact.productID = "+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " ez-vcard/" + Ezvcard.VERSION;
+    }
 
     protected LocalContact(AndroidAddressBook addressBook, long id, String fileName, String eTag) {
         super(addressBook, id, fileName, eTag);
@@ -26,6 +31,17 @@ public class LocalContact extends AndroidContact {
 
     public LocalContact(AndroidAddressBook addressBook, Contact contact, String fileName, String eTag) {
         super(addressBook, contact, fileName, eTag);
+    }
+
+    public void clearDirty(String eTag) throws ContactsStorageException {
+        try {
+            ContentValues values = new ContentValues(1);
+            values.put(COLUMN_ETAG, eTag);
+            values.put(ContactsContract.RawContacts.DIRTY, 0);
+            addressBook.provider.update(rawContactSyncURI(), values, null, null);
+        } catch (RemoteException e) {
+            throw new ContactsStorageException("Couldn't clear dirty flag", e);
+        }
     }
 
     public void updateUID(String uid) throws ContactsStorageException {

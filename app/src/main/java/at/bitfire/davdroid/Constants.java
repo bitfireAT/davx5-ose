@@ -14,13 +14,12 @@ import org.slf4j.LoggerFactory;
 
 public class Constants {
 	public static final String
-		APP_VERSION = "0.8.4.1",
 		ACCOUNT_TYPE = "bitfire.at.davdroid",
 		WEB_URL_MAIN = "https://davdroid.bitfire.at/?pk_campaign=davdroid-app",
 		WEB_URL_HELP = "https://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app",
 		WEB_URL_VIEW_LOGS = "https://github.com/bitfireAT/davdroid/wiki/How-to-view-the-logs";
 
-	public static final ProdId ICAL_PRODID = new ProdId("-//bitfire web engineering//DAVdroid " + Constants.APP_VERSION + " (ical4j 2.0-beta1)//EN");
+	public static final ProdId ICAL_PRODID = new ProdId("-//bitfire web engineering//DAVdroid " + BuildConfig.VERSION_CODE + " (ical4j 2.0-beta1)//EN");
 
     public static final Logger log = LoggerFactory.getLogger("DAVdroid");
 }

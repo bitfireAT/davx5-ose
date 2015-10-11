@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.ui.settings.SettingsActivity;
@@ -41,7 +42,7 @@ public class MainActivity extends Activity {
 		}
 		
 		TextView tvInfo = (TextView)findViewById(R.id.text_info);
-		tvInfo.setText(Html.fromHtml(getString(R.string.html_main_info, Constants.APP_VERSION)));
+		tvInfo.setText(Html.fromHtml(getString(R.string.html_main_info, BuildConfig.VERSION_NAME)));
 		tvInfo.setMovementMethod(LinkMovementMethod.getInstance());
 	}
 
