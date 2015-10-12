@@ -36,17 +36,18 @@ public class LocalContact extends AndroidContact {
     public void clearDirty(String eTag) throws ContactsStorageException {
         try {
             ContentValues values = new ContentValues(1);
-            values.put(COLUMN_ETAG, eTag);
             values.put(ContactsContract.RawContacts.DIRTY, 0);
+            values.put(COLUMN_ETAG, eTag);
             addressBook.provider.update(rawContactSyncURI(), values, null, null);
         } catch (RemoteException e) {
             throw new ContactsStorageException("Couldn't clear dirty flag", e);
         }
     }
 
-    public void updateUID(String uid) throws ContactsStorageException {
+    public void updateFileNameAndUID(String uid) throws ContactsStorageException {
         try {
             ContentValues values = new ContentValues(1);
+            values.put(COLUMN_FILENAME, uid + ".vcf");
             values.put(COLUMN_UID, uid);
             addressBook.provider.update(rawContactSyncURI(), values, null, null);
         } catch (RemoteException e) {

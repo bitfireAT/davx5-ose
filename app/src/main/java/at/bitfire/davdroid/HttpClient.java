@@ -48,24 +48,41 @@ public class HttpClient extends OkHttpClient {
         userAgent = "DAVdroid/" + BuildConfig.VERSION_NAME + " (" + date + "; dav4android) Android/" + Build.VERSION.RELEASE;
     }
 
+    protected String username, password;
+
 
     public HttpClient() {
         super();
         initialize();
-        enableLogs();
     }
 
     public HttpClient(String username, String password, boolean preemptive) {
         super();
         initialize();
 
-        enableLogs();
-
         // authentication
+        this.username = username;
+        this.password = password;
         if (preemptive)
             networkInterceptors().add(new PreemptiveAuthenticationInterceptor(username, password));
         else
-            setAuthenticator(new DavAuthenticator(username, password));
+            setAuthenticator(new DavAuthenticator(null, username, password));
+    }
+
+    /**
+     * Creates a new HttpClient (based on another one) which can be used to download external resources:
+     * 1. it does not use preemptive authentiation
+     * 2. it only authenticates against a given host
+     * @param client  user name and password from this client will be used
+     * @param host    authentication will be restricted to this host
+     */
+    public HttpClient(HttpClient client, String host) {
+        super();
+        initialize();
+
+        username = client.username;
+        password = client.password;
+        setAuthenticator(new DavAuthenticator(host, username, password));
     }
 
 
@@ -73,12 +90,16 @@ public class HttpClient extends OkHttpClient {
         // don't follow redirects automatically because this may rewrite DAV methods to GET
         setFollowRedirects(false);
 
-        setConnectTimeout(20, TimeUnit.SECONDS);
+        // set timeouts
+        setConnectTimeout(30, TimeUnit.SECONDS);
         setWriteTimeout(15, TimeUnit.SECONDS);
         setReadTimeout(45, TimeUnit.SECONDS);
 
         // add User-Agent to every request
         networkInterceptors().add(userAgentInterceptor);
+
+        // enable logs
+        enableLogs();
     }
 
     protected void enableLogs() {
@@ -111,11 +132,18 @@ public class HttpClient extends OkHttpClient {
     }
 
     @RequiredArgsConstructor
-    static class DavAuthenticator implements Authenticator {
-        final String username, password;
+    public static class DavAuthenticator implements Authenticator {
+        final String host, username, password;
 
         @Override
         public Request authenticate(Proxy proxy, Response response) throws IOException {
+            Request request = response.request();
+
+            if (host != null && !request.httpUrl().host().equalsIgnoreCase(host)) {
+                Constants.log.warn("Not authenticating against " +  host + " for security reasons!");
+                return null;
+            }
+
             // check whether this is the first authentication try with our credentials
             Response priorResponse = response.priorResponse();
             boolean triedBefore = priorResponse != null ? priorResponse.request().header(HEADER_AUTHORIZATION) != null : false;
@@ -126,7 +154,7 @@ public class HttpClient extends OkHttpClient {
             //List<HttpUtils.AuthScheme> schemes = HttpUtils.parseWwwAuthenticate(response.headers("WWW-Authenticate"));
             // TODO Digest auth
 
-            return response.request().newBuilder()
+            return request.newBuilder()
                     .header(HEADER_AUTHORIZATION, Credentials.basic(username, password))
                     .build();
         }

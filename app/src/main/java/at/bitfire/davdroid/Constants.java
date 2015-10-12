@@ -21,5 +21,5 @@ public class Constants {
 
 	public static final ProdId ICAL_PRODID = new ProdId("-//bitfire web engineering//DAVdroid " + BuildConfig.VERSION_CODE + " (ical4j 2.0-beta1)//EN");
 
-    public static final Logger log = LoggerFactory.getLogger("DAVdroid");
+    public static final Logger log = LoggerFactory.getLogger("davdroid");
 }
