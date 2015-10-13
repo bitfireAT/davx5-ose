@@ -74,4 +74,6 @@ dependencies {
 
     compile project(':dav4android')
     compile project(':vcard4android')
+
+    compile project(':MemorizingTrustManager')
 }

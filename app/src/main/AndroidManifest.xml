@@ -103,6 +103,10 @@
             android:label="@string/settings_title"
             android:parentActivityName=".ui.settings.SettingsActivity" >
         </activity>
+
+        <!-- MemorizingTrustManager -->
+        <activity android:name="de.duenndns.ssl.MemorizingActivity"
+                  android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar"/>
     </application>
 
 </manifest>

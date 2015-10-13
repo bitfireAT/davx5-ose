@@ -8,23 +8,33 @@
 
 package at.bitfire.davdroid;
 
+import android.content.Context;
 import android.os.Build;
 
 import com.squareup.okhttp.Authenticator;
+import com.squareup.okhttp.CertificatePinner;
 import com.squareup.okhttp.Credentials;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.squareup.okhttp.internal.tls.OkHostnameVerifier;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
 import java.io.IOException;
 import java.net.Proxy;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.X509TrustManager;
+
 import at.bitfire.dav4android.HttpUtils;
+import de.duenndns.ssl.MemorizingTrustManager;
 import lombok.RequiredArgsConstructor;
 
 public class HttpClient extends OkHttpClient {
@@ -48,16 +58,20 @@ public class HttpClient extends OkHttpClient {
         userAgent = "DAVdroid/" + BuildConfig.VERSION_NAME + " (" + date + "; dav4android) Android/" + Build.VERSION.RELEASE;
     }
 
+    final Context context;
     protected String username, password;
 
 
     public HttpClient() {
         super();
+        context = null;
         initialize();
     }
 
-    public HttpClient(String username, String password, boolean preemptive) {
+    public HttpClient(Context context, String username, String password, boolean preemptive) {
         super();
+        this.context = context;
+
         initialize();
 
         // authentication
@@ -78,6 +92,8 @@ public class HttpClient extends OkHttpClient {
      */
     public HttpClient(HttpClient client, String host) {
         super();
+        context = client.context;
+
         initialize();
 
         username = client.username;
@@ -87,6 +103,21 @@ public class HttpClient extends OkHttpClient {
 
 
     protected void initialize() {
+        if (context != null) {
+            // use MemorizingTrustManager to manage self-signed certificates
+            MemorizingTrustManager mtm = new MemorizingTrustManager(context);
+            try {
+                SSLContext sc = SSLContext.getInstance("TLS");
+                sc.init(null, new X509TrustManager[] { mtm }, null);
+                setSslSocketFactory(sc.getSocketFactory());
+                setHostnameVerifier(mtm.wrapHostnameVerifier(OkHostnameVerifier.INSTANCE));
+            } catch (NoSuchAlgorithmException e) {
+                Constants.log.error("Couldn't get SSL Context for MemorizingTrustManager", e);
+            } catch (KeyManagementException e) {
+                Constants.log.error("Key management error while initializing MemorizingTrustManager", e);
+            }
+        }
+
         // don't follow redirects automatically because this may rewrite DAV methods to GET
         setFollowRedirects(false);
 
