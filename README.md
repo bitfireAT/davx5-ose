@@ -11,13 +11,22 @@ News and updates: [@davdroidapp](https://twitter.com/davdroidapp)
 
 Help and discussion: [DAVdroid forums](https://davdroid.bitfire.at/forums)
 
+Parts of DAVdroid have been outsourced into these libraries:
+
+* [dav4android](https://gitlab.com/bitfireAT/dav4android) – WebDAV/CalDav/CardDAV framework
+* [ical4android](https://gitlab.com/bitfireAT/ical4android) – iCalendar processing and Calendar Provider access
+* [vcard4android](https://gitlab.com/bitfireAT/vcard4android) – VCard processing and Contacts Provider access
+
 
 USED THIRD-PARTY LIBRARIES
 ==========================
 
-* [Apache HttpClient](http://hc.apache.org) (Android port) – [Apache License](http://www.apache.org/licenses/)
-* [iCal4j](http://ical4j.sourceforge.net/) – [New BSD License](http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE)
+Those libraries are used by DAVdroid (alphabetically):
+
+* [dnsjava](http://www.xbill.org/dnsjava/) – [BSD License](http://www.xbill.org/dnsjava/dnsjava-current/LICENSE)
 * [ez-vcard](https://code.google.com/p/ez-vcard/) – [New BSD License](http://opensource.org/licenses/BSD-3-Clause)
-* [Simple XML Serialization](http://simple.sourceforge.net/) – [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+* [iCal4j](http://ical4j.sourceforge.net/) – [New BSD License](http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE)
+* [MemorizingTrustManager](https://github.com/ge0rg/MemorizingTrustManager) – [MIT License](https://raw.githubusercontent.com/ge0rg/MemorizingTrustManager/master/LICENSE.txt)
+* [okhttp](https://square.github.io/okhttp/) – [Apache License, Version 2.0](https://square.github.io/okhttp/#license)
 * [Project Lombok](http://projectlombok.org/) – [MIT License](http://opensource.org/licenses/mit-license.php)
-* [dnsjava](http://www.xbill.org/dnsjava/) – [BSD license](http://www.xbill.org/dnsjava/dnsjava-current/LICENSE)
+* [SLF4J](http://www.slf4j.org/) – [MIT License](http://www.slf4j.org/license.html)

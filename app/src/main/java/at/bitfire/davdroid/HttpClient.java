@@ -85,7 +85,7 @@ public class HttpClient extends OkHttpClient {
 
     /**
      * Creates a new HttpClient (based on another one) which can be used to download external resources:
-     * 1. it does not use preemptive authentiation
+     * 1. it does not use preemptive authentication
      * 2. it only authenticates against a given host
      * @param client  user name and password from this client will be used
      * @param host    authentication will be restricted to this host
