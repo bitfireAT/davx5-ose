@@ -9,3 +9,4 @@
 include ':app'
 include ':dav4android'
 include ':vcard4android'
+include ':MemorizingTrustManager'

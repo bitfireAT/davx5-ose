@@ -99,7 +99,7 @@ public class ContactsSyncAdapterService extends Service {
             Constants.log.info("Starting sync for authority " + authority);
 
             AccountSettings settings = new AccountSettings(getContext(), account);
-            HttpClient httpClient = new HttpClient(settings.getUserName(), settings.getPassword(), settings.getPreemptiveAuth());
+            HttpClient httpClient = new HttpClient(getContext(), settings.getUserName(), settings.getPassword(), settings.getPreemptiveAuth());
 
             HttpUrl addressBookURL = HttpUrl.parse(settings.getAddressBookURL());
             DavAddressBook dav = new DavAddressBook(httpClient, addressBookURL);

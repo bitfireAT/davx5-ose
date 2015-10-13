@@ -4,3 +4,6 @@
 [submodule "vcard4android"]
 	path = vcard4android
 	url = git@gitlab.com:bitfireAT/vcard4android.git
+[submodule "MemorizingTrustManager"]
+	path = MemorizingTrustManager
+	url = https://github.com/ge0rg/MemorizingTrustManager

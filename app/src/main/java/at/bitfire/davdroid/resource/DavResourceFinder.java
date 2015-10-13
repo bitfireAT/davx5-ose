@@ -55,7 +55,7 @@ public class DavResourceFinder {
 	}
 
 	public void findResources(final ServerInfo serverInfo) throws URISyntaxException, IOException, HttpException, DavException {
-        final HttpClient httpClient = new HttpClient(serverInfo.getUserName(), serverInfo.getPassword(), serverInfo.authPreemptive);
+        final HttpClient httpClient = new HttpClient(context, serverInfo.getUserName(), serverInfo.getPassword(), serverInfo.authPreemptive);
 
         // CardDAV
         Constants.log.info("*** CardDAV resource detection ***");
