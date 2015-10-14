@@ -180,15 +180,16 @@
     <string name="sync_error_title">Synchronisierung von %s fehlgeschlagen</string>
     <string name="sync_error_http">HTTP-Fehler beim %1$s</string>
     <string-array name="sync_error_phases">
+        <item>Vorbereiten der Synchronisierung</item>
         <item>Abfragen der Server-Fähigkeiten</item>
         <item>Verarbeiten lokal gelöschter Einträge</item>
         <item>Vorbereiten neuer lokaler Einträge</item>
         <item>Hochladen neuer/geänderter lokaler Einträge</item>
-        <item>Abfragen des Sync.-Zustands</item>
+        <item>Abfragen des Synchronisierungs-Zustands</item>
         <item>Auflisten lokaler Einträge</item>
         <item>Auflisten der Server-Einträge</item>
         <item>Herunterladen von Server-Einträgen</item>
-        <item>Speichern des Sync.-Zustands</item>
+        <item>Speichern des Synchronisierungs-Zustands</item>
     </string-array>
 
 </resources>

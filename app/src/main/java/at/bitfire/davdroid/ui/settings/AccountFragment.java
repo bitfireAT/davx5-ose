@@ -20,7 +20,6 @@ import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
 import ezvcard.VCardVersion;
 
@@ -120,7 +119,7 @@ public class AccountFragment extends PreferenceFragment {
 			prefSyncCalendars.setSummary(R.string.settings_sync_summary_not_available);
 		}
 
-		final ListPreference prefSyncTasks = (ListPreference)findPreference("sync_interval_tasks");
+		/*final ListPreference prefSyncTasks = (ListPreference)findPreference("sync_interval_tasks");
 		final Long syncIntervalTasks = settings.getSyncInterval(LocalTaskList.TASKS_AUTHORITY);
 		if (syncIntervalTasks != null) {
 			prefSyncTasks.setValue(syncIntervalTasks.toString());
@@ -139,7 +138,7 @@ public class AccountFragment extends PreferenceFragment {
 		} else {
 			prefSyncTasks.setEnabled(false);
 			prefSyncTasks.setSummary(R.string.settings_sync_summary_not_available);
-		}
+		}*/
 
 		// category: address book
 		final CheckBoxPreference prefVCard4 = (CheckBoxPreference) findPreference("vcard4_support");

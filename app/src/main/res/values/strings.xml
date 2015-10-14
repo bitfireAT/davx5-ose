@@ -195,6 +195,7 @@
     <string name="sync_error_title">Synchronization of %s failed</string>
     <string name="sync_error_http">HTTP error while %1$s</string>
     <string-array name="sync_error_phases">
+        <item>preparing synchronization</item>
         <item>querying capabilities</item>
         <item>processing locally deleted entries</item>
         <item>preparing locally created entries</item>

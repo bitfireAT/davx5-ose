@@ -12,6 +12,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,8 +26,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -128,7 +127,7 @@ public class LoginURLFragment extends Fragment implements TextWatcher {
 				
 		// check host name
 		try {
-			if (!StringUtils.isBlank(getBaseURI().getHost()))
+			if (!TextUtils.isEmpty(getBaseURI().getHost()))
 				urlOk = true;
 		} catch (Exception e) {
 		}

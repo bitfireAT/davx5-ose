@@ -18,7 +18,6 @@ import android.widget.CheckedTextView;
 import android.widget.ListAdapter;
 
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.davdroid.resource.ServerInfo;
 import lombok.Getter;
 
@@ -172,7 +171,7 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 		}
 
 		// disable task list selection if there's no local task provider
-		if (viewType == TYPE_TASK_LISTS_ROW && !LocalTaskList.isAvailable(context)) {
+		if (viewType == TYPE_TASK_LISTS_ROW /*&& !LocalTaskList.isAvailable(context)*/) {
 			final CheckedTextView check = (CheckedTextView)v;
 			check.setEnabled(false);
 			check.setOnClickListener(new View.OnClickListener() {
