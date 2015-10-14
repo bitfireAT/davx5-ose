@@ -21,6 +21,7 @@ import android.provider.ContactsContract;
 
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
+import at.bitfire.ical4android.TaskProvider;
 import ezvcard.VCardVersion;
 
 public class AccountFragment extends PreferenceFragment {
@@ -119,8 +120,8 @@ public class AccountFragment extends PreferenceFragment {
 			prefSyncCalendars.setSummary(R.string.settings_sync_summary_not_available);
 		}
 
-		/*final ListPreference prefSyncTasks = (ListPreference)findPreference("sync_interval_tasks");
-		final Long syncIntervalTasks = settings.getSyncInterval(LocalTaskList.TASKS_AUTHORITY);
+		final ListPreference prefSyncTasks = (ListPreference)findPreference("sync_interval_tasks");
+		final Long syncIntervalTasks = settings.getSyncInterval(TaskProvider.ProviderName.OpenTasks.authority);
 		if (syncIntervalTasks != null) {
 			prefSyncTasks.setValue(syncIntervalTasks.toString());
 			if (syncIntervalTasks == AccountSettings.SYNC_INTERVAL_MANUALLY)
@@ -130,7 +131,7 @@ public class AccountFragment extends PreferenceFragment {
 			prefSyncTasks.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 				@Override
 				public boolean onPreferenceChange(Preference preference, Object newValue) {
-					settings.setSyncInterval(LocalTaskList.TASKS_AUTHORITY, Long.parseLong((String) newValue));
+					settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Long.parseLong((String) newValue));
 					readFromAccount();
 					return true;
 				}
@@ -138,7 +139,7 @@ public class AccountFragment extends PreferenceFragment {
 		} else {
 			prefSyncTasks.setEnabled(false);
 			prefSyncTasks.setSummary(R.string.settings_sync_summary_not_available);
-		}*/
+		}
 
 		// category: address book
 		final CheckBoxPreference prefVCard4 = (CheckBoxPreference) findPreference("vcard4_support");

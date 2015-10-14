@@ -60,11 +60,13 @@ public class ContactsSyncManager extends SyncManager {
             MAX_MULTIGET = 10,
             NOTIFICATION_ID = 1;
 
+    final protected ContentProviderClient provider;
     protected boolean hasVCard4;
 
 
     public ContactsSyncManager(Context context, Account account, Bundle extras, ContentProviderClient provider, SyncResult result) {
-        super(NOTIFICATION_ID, context, account, extras, provider, result);
+        super(NOTIFICATION_ID, context, account, extras, result);
+        this.provider = provider;
     }
 
 
@@ -175,10 +177,10 @@ public class ContactsSyncManager extends SyncManager {
 
     private void processVCard(String fileName, String eTag, InputStream stream, Charset charset, Contact.Downloader downloader) throws IOException, ContactsStorageException {
         Contact contacts[] = Contact.fromStream(stream, charset, downloader);
-        if (contacts.length == 1) {
+        if (contacts != null && contacts.length == 1) {
             Contact newData = contacts[0];
 
-            // delete local contact, if it exists
+            // update local contact, if it exists
             LocalContact localContact = (LocalContact)localResources.get(fileName);
             if (localContact != null) {
                 Constants.log.info("Updating " + fileName + " in local address book");

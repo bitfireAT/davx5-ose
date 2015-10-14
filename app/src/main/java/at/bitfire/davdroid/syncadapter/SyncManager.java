@@ -11,7 +11,6 @@ import android.accounts.Account;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -67,7 +66,6 @@ abstract public class SyncManager {
     protected final Context context;
     protected final Account account;
     protected final Bundle extras;
-    protected final ContentProviderClient provider;
     protected final SyncResult syncResult;
 
     protected final AccountSettings settings;
@@ -92,11 +90,10 @@ abstract public class SyncManager {
 
 
 
-    public SyncManager(int notificationId, Context context, Account account, Bundle extras, ContentProviderClient provider, SyncResult syncResult) {
+    public SyncManager(int notificationId, Context context, Account account, Bundle extras, SyncResult syncResult) {
         this.context = context;
         this.account = account;
         this.extras = extras;
-        this.provider = provider;
         this.syncResult = syncResult;
 
         // get account settings and generate httpClient
@@ -167,9 +164,14 @@ abstract public class SyncManager {
                 }
             }
 
-        } catch(HttpException|DavException e) {
-            Constants.log.error("HTTP/DAV Exception during sync", e);
-            syncResult.stats.numParseExceptions++;
+        } catch(Exception e) {
+            if (e instanceof HttpException || e instanceof DavException) {
+                Constants.log.error("HTTP/DAV Exception during sync", e);
+                syncResult.stats.numParseExceptions++;
+            } else if (e instanceof CalendarStorageException || e instanceof ContactsStorageException) {
+                Constants.log.error("Couldn't access local storage", e);
+                syncResult.databaseError = true;
+            }
 
             Intent detailsIntent = new Intent(context, DebugInfoActivity.class);
             detailsIntent.putExtra(DebugInfoActivity.KEY_EXCEPTION, e);
@@ -195,9 +197,6 @@ abstract public class SyncManager {
             }
             notificationManager.notify(account.name, notificationId, notification);
 
-        } catch(CalendarStorageException|ContactsStorageException e) {
-            Constants.log.error("Couldn't access local storage", e);
-            syncResult.databaseError = true;
         }
     }
 

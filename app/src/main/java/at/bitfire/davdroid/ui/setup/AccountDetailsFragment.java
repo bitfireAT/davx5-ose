@@ -36,9 +36,11 @@ import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.davdroid.resource.LocalCalendar;
+import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.davdroid.resource.ServerInfo;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
 import at.bitfire.ical4android.CalendarStorageException;
+import at.bitfire.ical4android.TaskProvider;
 import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
 
@@ -120,12 +122,16 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
 				}
 			});
 
-			/*addSync(account, LocalTaskList.TASKS_AUTHORITY, serverInfo.getTaskLists(), new AddSyncCallback() {
+			addSync(account, TaskProvider.ProviderName.OpenTasks.authority, serverInfo.getTaskLists(), new AddSyncCallback() {
 				@Override
-				public void createLocalCollection(Account account, ServerInfo.ResourceInfo todoList) throws LocalStorageException {
-					LocalTaskList.create(account, getActivity().getContentResolver(), todoList);
-				}
-			});*/
+				public void createLocalCollection(Account account, ServerInfo.ResourceInfo todoList) {
+                    try {
+                        LocalTaskList.create(account, getActivity().getContentResolver(), todoList);
+                    } catch (CalendarStorageException e) {
+                        Constants.log.error("Couldn't create local task list", e);
+                    }
+                }
+			});
 
 			getActivity().finish();				
 		} else
