@@ -177,6 +177,18 @@
     <string name="setup_account_name_info">&quot;Verwenden Sie Ihre Email-Adresse als Kontoname, da Android den Kontonamen als ORGANIZER-Feld in Terminen benutzt. Sie können keine zwei Konten mit dem gleichen Namen anlegen.</string>
     <string name="setup_read_only">schreibgeschützt</string>
 
-    <string name="sync_error_title">Synchronisierung fehlgeschlagen</string>
+    <string name="sync_error_title">Synchronisierung von %s fehlgeschlagen</string>
+    <string name="sync_error_http">HTTP-Fehler beim %1$s</string>
+    <string-array name="sync_error_phases">
+        <item>Abfragen der Server-Fähigkeiten</item>
+        <item>Verarbeiten lokal gelöschter Einträge</item>
+        <item>Vorbereiten neuer lokaler Einträge</item>
+        <item>Hochladen neuer/geänderter lokaler Einträge</item>
+        <item>Abfragen des Sync.-Zustands</item>
+        <item>Auflisten lokaler Einträge</item>
+        <item>Auflisten der Server-Einträge</item>
+        <item>Herunterladen von Server-Einträgen</item>
+        <item>Speichern des Sync.-Zustands</item>
+    </string-array>
 
 </resources>

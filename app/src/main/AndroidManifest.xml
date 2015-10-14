@@ -87,6 +87,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.DebugInfoActivity"
+            android:label="@string/debug_info_title">
+        </activity>
+        <activity
             android:name=".ui.setup.AddAccountActivity"
             android:excludeFromRecents="true" >
         </activity>

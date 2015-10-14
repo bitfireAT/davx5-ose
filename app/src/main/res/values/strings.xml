@@ -11,9 +11,10 @@
 
     <!-- common strings -->
     <string name="app_name">DAVdroid</string>
-    <string name="next">Next</string>
-    <string name="skip">Skip</string>
     <string name="help">Help</string>
+    <string name="next">Next</string>
+    <string name="share">Share</string>
+    <string name="skip">Skip</string>
 
     <string name="exception_cert_path_validation">Untrusted certificate in certificate path. See FAQ for more info.</string>
     <string name="exception_http">HTTP error: %s</string>
@@ -23,6 +24,7 @@
     
     <!-- MainActivity -->
     <string name="main_manage_accounts">Manage sync accounts</string>
+    <string name="main_show_debug_info">Show debug info</string>
 
     <string name="html_main_workaround"><![CDATA[
 		<p>Thank you for buying DAVdroid via Google Play and thus supporting the project. Unfortunately, there are two issues with Google Play:</p>
@@ -188,6 +190,20 @@
     <string name="setup_account_name_info">"Use your email address as account name because Android will use the account name as ORGANIZER field for events you create. You can't have two accounts with the same name.</string>
     <string name="setup_read_only">read-only</string>
 
-    <string name="sync_error_title">Synchronization failed</string>
+    <!-- sync errors and DebugInfoActivity -->
+    <string name="debug_info_title">Debug info</string>
+    <string name="sync_error_title">Synchronization of %s failed</string>
+    <string name="sync_error_http">HTTP error while %1$s</string>
+    <string-array name="sync_error_phases">
+        <item>querying capabilities</item>
+        <item>processing locally deleted entries</item>
+        <item>preparing locally created entries</item>
+        <item>uploading created/modified entries</item>
+        <item>checking sync state</item>
+        <item>listing local entries</item>
+        <item>listing remote entries</item>
+        <item>downloading remote entries</item>
+        <item>saving sync state</item>
+    </string-array>
 
 </resources>
