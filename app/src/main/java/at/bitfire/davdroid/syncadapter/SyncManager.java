@@ -7,210 +7,171 @@
  */
 package at.bitfire.davdroid.syncadapter;
 
+import android.accounts.Account;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.ContentProviderClient;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SyncResult;
-import android.util.Log;
+import android.os.Build;
+import android.os.Bundle;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.HashSet;
-import java.util.Set;
 
-import at.bitfire.davdroid.ArrayUtils;
-import at.bitfire.davdroid.resource.LocalCollection;
-import at.bitfire.davdroid.resource.LocalStorageException;
-import at.bitfire.davdroid.resource.RecordNotFoundException;
-import at.bitfire.davdroid.resource.Resource;
-import at.bitfire.davdroid.resource.WebDavCollection;
-import at.bitfire.davdroid.webdav.ConflictException;
-import at.bitfire.davdroid.webdav.DavException;
-import at.bitfire.davdroid.webdav.ForbiddenException;
-import at.bitfire.davdroid.webdav.HttpException;
-import at.bitfire.davdroid.webdav.NotFoundException;
-import at.bitfire.davdroid.webdav.PreconditionFailedException;
-import at.bitfire.davdroid.webdav.WebDavResource;
+import at.bitfire.dav4android.exception.DavException;
+import at.bitfire.dav4android.exception.HttpException;
+import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.HttpClient;
+import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.ui.DebugInfoActivity;
+import at.bitfire.vcard4android.ContactsStorageException;
 
-public class SyncManager {
-	private static final String TAG = "davdroid.SyncManager";
-	
-	private static final int MAX_MULTIGET_RESOURCES = 35;
-	
-	final protected LocalCollection<? extends Resource> local;
-	final protected WebDavCollection<? extends Resource> remote;
-	
-	
-	public SyncManager(LocalCollection<? extends Resource> local, WebDavCollection<? extends Resource> remote) {
-		this.local = local;
-		this.remote = remote;
-	}
+abstract public class SyncManager {
 
-	
-	public void synchronize(boolean manualSync, SyncResult syncResult) throws URISyntaxException, LocalStorageException, IOException, HttpException, DavException {
-		// PHASE 1: fetch collection properties
-		remote.getProperties();
-		final WebDavResource.Properties collectionProperties = remote.getCollection().getProperties();
-		local.updateMetaData(collectionProperties);
+    protected final int SYNC_PHASE_PREPARE = 0,
+                        SYNC_PHASE_QUERY_CAPABILITIES = 1,
+                        SYNC_PHASE_PROCESS_LOCALLY_DELETED = 2,
+                        SYNC_PHASE_PREPARE_LOCALLY_CREATED = 3,
+                        SYNC_PHASE_UPLOAD_DIRTY = 4,
+                        SYNC_PHASE_CHECK_SYNC_STATE = 5,
+                        SYNC_PHASE_LIST_LOCAL = 6,
+                        SYNC_PHASE_LIST_REMOTE = 7,
+                        SYNC_PHASE_COMPARE_ENTRIES = 8,
+                        SYNC_PHASE_DOWNLOAD_REMOTE = 9,
+                        SYNC_PHASE_SAVE_SYNC_STATE = 10;
 
-		// PHASE 2: push local changes to server
-		int	deletedRemotely = pushDeleted(),
-			addedRemotely = pushNew(),
-			updatedRemotely = pushDirty();
+    final NotificationManager notificationManager;
+    final int notificationId;
 
-		// PHASE 3A: check if there's a reason to do a sync with remote (= forced sync or remote CTag changed)
-		boolean syncMembers = (deletedRemotely + addedRemotely + updatedRemotely) > 0;
-		if (manualSync) {
-			Log.i(TAG, "Full synchronization forced");
-			syncMembers = true;
-		}
-		if (!syncMembers) {
-			final String
-					currentCTag = collectionProperties.getCTag(),
-					lastCTag = local.getCTag();
-			Log.d(TAG, "Last local CTag = " + lastCTag + "; current remote CTag = " + currentCTag);
-			if (currentCTag == null || !currentCTag.equals(lastCTag))
-				syncMembers = true;
-		}
-		
-		if (!syncMembers) {
-			Log.i(TAG, "No local changes and CTags match, no need to sync");
-			return;
-		}
-		
-		// PHASE 3B: detect details of remote changes
-		Log.i(TAG, "Fetching remote resource list");
-		Set<Resource>	remotelyAdded = new HashSet<>(),
-						remotelyUpdated = new HashSet<>();
-		
-		Resource[] remoteResources = remote.getMemberETags();
-		for (Resource remoteResource : remoteResources) {
-			try {
-				Resource localResource = local.findByRemoteName(remoteResource.getName(), false);
-				if (localResource.getETag() == null || !localResource.getETag().equals(remoteResource.getETag()))
-					remotelyUpdated.add(remoteResource);
-			} catch(RecordNotFoundException e) {
-				remotelyAdded.add(remoteResource);
-			}
-		}
+    final Context context;
+    final Account account;
+    final Bundle extras;
+    final ContentProviderClient provider;
+    final SyncResult syncResult;
 
-		// PHASE 4: pull remote changes from server
-		syncResult.stats.numInserts = pullNew(remotelyAdded.toArray(new Resource[remotelyAdded.size()]));
-		syncResult.stats.numUpdates = pullChanged(remotelyUpdated.toArray(new Resource[remotelyUpdated.size()]));
+    final AccountSettings settings;
+    final HttpClient httpClient;
 
-		Log.i(TAG, "Removing entries that are not present remotely anymore (retaining " + remoteResources.length + " entries)");
-		syncResult.stats.numDeletes = local.deleteAllExceptRemoteNames(remoteResources);
+    public SyncManager(int notificationId, Context context, Account account, Bundle extras, ContentProviderClient provider, SyncResult syncResult) {
+        this.context = context;
+        this.account = account;
+        this.extras = extras;
+        this.provider = provider;
+        this.syncResult = syncResult;
 
-        syncResult.stats.numEntries = syncResult.stats.numInserts + syncResult.stats.numUpdates + syncResult.stats.numDeletes;
+        // get account settings and generate httpClient
+        settings = new AccountSettings(context, account);
+        httpClient = new HttpClient(context, settings.getUserName(), settings.getPassword(), settings.getPreemptiveAuth());
 
-		// update collection CTag
-		Log.i(TAG, "Sync complete, fetching new CTag");
-		local.setCTag(collectionProperties.getCTag());
-	}
-	
-	
-	private int pushDeleted() throws URISyntaxException, LocalStorageException, IOException, HttpException {
-		int count = 0;
-		long[] deletedIDs = local.findDeleted();
-		
-		try {
-			Log.i(TAG, "Remotely removing " + deletedIDs.length + " deleted resource(s) (if not changed)");
-			for (long id : deletedIDs)
-				try {
-					Resource res = local.findById(id, false);
-					if (res.getName() != null)	// is this resource even present remotely?
-						try {
-							remote.delete(res);
-						} catch(NotFoundException e) {
-							Log.i(TAG, "Locally-deleted resource has already been removed from server");
-						} catch(PreconditionFailedException|ConflictException e) {
-							Log.i(TAG, "Locally-deleted resource has been changed on the server in the meanwhile");
-						}
+        // dismiss previous error notifications
+        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(account.name, this.notificationId = notificationId);
+    }
 
-					local.delete(res);
-					
-					count++;
-				} catch (RecordNotFoundException e) {
-					Log.wtf(TAG, "Couldn't read locally-deleted record", e);
-				}
-		} finally {
-			local.commit();
-		}
-		return count;
-	}
-	
-	private int pushNew() throws URISyntaxException, LocalStorageException, IOException, HttpException {
-		int count = 0;
-		long[] newIDs = local.findNew();
-		Log.i(TAG, "Uploading " + newIDs.length + " new resource(s) (if not existing)");
-		try {
-			for (long id : newIDs)
-				try {
-					Resource res = local.findById(id, true);
-					String eTag = remote.add(res);
-					if (eTag != null)
-						local.updateETag(res, eTag);
-					local.clearDirty(res);
-					count++;
-				} catch (ConflictException|PreconditionFailedException e) {
-                    Log.i(TAG, "Didn't overwrite existing resource with other content");
-				} catch (RecordNotFoundException e) {
-					Log.wtf(TAG, "Couldn't read new record", e);
-				}
-		} finally {
-			local.commit();
-		}
-		return count;
-	}
-	
-	private int pushDirty() throws URISyntaxException, LocalStorageException, IOException, HttpException {
-		int count = 0;
-		long[] dirtyIDs = local.findUpdated();
-		Log.i(TAG, "Uploading " + dirtyIDs.length + " modified resource(s) (if not changed)");
-		try {
-			for (long id : dirtyIDs) {
-				try {
-					Resource res = local.findById(id, true);
-					String eTag = remote.update(res);
-					if (eTag != null)
-						local.updateETag(res, eTag);
-					local.clearDirty(res);
-					count++;
-				} catch (ForbiddenException e) {
-					Log.w(TAG, "Server has rejected local changes, server wins", e);
-				} catch (ConflictException|PreconditionFailedException e) {
-                    Log.i(TAG, "Locally changed resource has been changed on the server in the meanwhile", e);
-				} catch (RecordNotFoundException e) {
-					Log.e(TAG, "Couldn't read dirty record", e);
-				}
-			}
-		} finally {
-			local.commit();
-		}
-		return count;
-	}
-	
-	private int pullNew(Resource[] resourcesToAdd) throws URISyntaxException, LocalStorageException, IOException, HttpException, DavException {
-		int count = 0;
-		Log.i(TAG, "Fetching " + resourcesToAdd.length + " new remote resource(s)");
-		
-		for (Resource[] resources : ArrayUtils.partition(resourcesToAdd, MAX_MULTIGET_RESOURCES))
-			for (Resource res : remote.multiGet(resources)) {
-				Log.d(TAG, "Adding " + res.getName());
-				local.add(res);
-				count++;
-			}
-		return count;
-	}
-	
-	private int pullChanged(Resource[] resourcesToUpdate) throws URISyntaxException, LocalStorageException, IOException, HttpException, DavException {
-		int count = 0;
-		Log.i(TAG, "Fetching " + resourcesToUpdate.length + " updated remote resource(s)");
-		
-		for (Resource[] resources : ArrayUtils.partition(resourcesToUpdate, MAX_MULTIGET_RESOURCES))
-			for (Resource res : remote.multiGet(resources)) {
-				Log.i(TAG, "Updating " + res.getName());
-				local.updateByRemoteName(res);
-				count++;
-			}
-		return count;
-	}
+    public void performSync() {
+        int syncPhase = SYNC_PHASE_PREPARE;
+        try {
+            prepare();
+
+            syncPhase = SYNC_PHASE_QUERY_CAPABILITIES;
+            queryCapabilities();
+
+            syncPhase = SYNC_PHASE_PROCESS_LOCALLY_DELETED;
+            processLocallyDeleted();
+
+            syncPhase = SYNC_PHASE_PREPARE_LOCALLY_CREATED;
+            processLocallyCreated();
+
+            syncPhase = SYNC_PHASE_UPLOAD_DIRTY;
+            uploadDirty();
+
+            syncPhase = SYNC_PHASE_CHECK_SYNC_STATE;
+            if (checkSyncState()) {
+                syncPhase = SYNC_PHASE_LIST_LOCAL;
+                listLocal();
+
+                syncPhase = SYNC_PHASE_LIST_REMOTE;
+                listRemote();
+
+                syncPhase = SYNC_PHASE_COMPARE_ENTRIES;
+                compareEntries();
+
+                syncPhase = SYNC_PHASE_DOWNLOAD_REMOTE;
+                downloadRemote();
+
+                syncPhase = SYNC_PHASE_SAVE_SYNC_STATE;
+                saveSyncState();
+            } else
+                Constants.log.info("Remote collection didn't change, skipping remote sync");
+
+        } catch (IOException e) {
+            Constants.log.error("I/O exception during sync, trying again later", e);
+            syncResult.stats.numIoExceptions++;
+
+        } catch(HttpException e) {
+            Constants.log.error("HTTP Exception during sync", e);
+            syncResult.stats.numParseExceptions++;
+
+            Intent detailsIntent = new Intent(context, DebugInfoActivity.class);
+            detailsIntent.putExtra(DebugInfoActivity.KEY_EXCEPTION, e);
+            detailsIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account);
+            detailsIntent.putExtra(DebugInfoActivity.KEY_PHASE, syncPhase);
+
+            Notification.Builder builder = new Notification.Builder(context);
+            Notification notification;
+            builder .setSmallIcon(R.drawable.ic_launcher)
+                    .setContentTitle(context.getString(R.string.sync_error_title, account.name))
+                    .setContentIntent(PendingIntent.getActivity(context, 0, detailsIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+
+            String[] phases = context.getResources().getStringArray(R.array.sync_error_phases);
+            if (phases.length > syncPhase)
+                builder.setContentText(context.getString(R.string.sync_error_http, phases[syncPhase]));
+
+            if (Build.VERSION.SDK_INT >= 16) {
+                if (Build.VERSION.SDK_INT >= 21)
+                    builder.setCategory(Notification.CATEGORY_ERROR);
+                notification = builder.build();
+            } else {
+                notification = builder.getNotification();
+            }
+            notificationManager.notify(account.name, notificationId, notification);
+
+        } catch(DavException e) {
+            // TODO
+        } catch(ContactsStorageException e) {
+            syncResult.databaseError = true;
+        }
+
+    }
+
+
+    abstract protected void prepare();
+
+    abstract protected void queryCapabilities() throws IOException, HttpException, DavException, ContactsStorageException;
+
+    abstract protected void processLocallyDeleted() throws IOException, HttpException, DavException, ContactsStorageException;
+
+    abstract protected void processLocallyCreated() throws IOException, HttpException, DavException, ContactsStorageException;
+
+    abstract protected void uploadDirty() throws IOException, HttpException, DavException, ContactsStorageException;
+
+    /**
+     * Checks the current sync state (e.g. CTag) and whether synchronization from remote is required.
+     * @return  true    if the remote collection has changed, i.e. synchronization from remote is required
+     *          false   if the remote collection hasn't changed
+     */
+    abstract protected boolean checkSyncState() throws IOException, HttpException, DavException, ContactsStorageException;
+
+    abstract protected void listLocal() throws IOException, HttpException, DavException, ContactsStorageException;
+
+    abstract protected void listRemote() throws IOException, HttpException, DavException, ContactsStorageException;
+
+    abstract protected void compareEntries() throws IOException, HttpException, DavException, ContactsStorageException;
+
+    abstract protected void downloadRemote() throws IOException, HttpException, DavException, ContactsStorageException;
+
+    abstract protected void saveSyncState() throws IOException, HttpException, DavException, ContactsStorageException;
 
 }

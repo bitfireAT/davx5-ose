@@ -20,18 +20,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.cert.CertPathValidatorException;
 
 import at.bitfire.dav4android.exception.DavException;
 import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.DavResourceFinder;
-import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.davdroid.resource.ServerInfo;
 
 public class QueryServerDialogFragment extends DialogFragment implements LoaderCallbacks<ServerInfo> {
@@ -72,7 +68,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 			((AddAccountActivity)getActivity()).serverInfo = serverInfo;
 
 			Fragment nextFragment;
-			if (!serverInfo.getTaskLists().isEmpty() && !LocalTaskList.isAvailable(getActivity()))
+			if (!serverInfo.getTaskLists().isEmpty() /*&& !LocalTaskList.isAvailable(getActivity())*/)
 				nextFragment = new InstallAppsFragment();
 			else
 				nextFragment = new SelectCollectionsFragment();
@@ -120,8 +116,8 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 				// general message
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_io, e.getLocalizedMessage()));
 				// overwrite by more specific message, if possible
-				if (ExceptionUtils.indexOfType(e, CertPathValidatorException.class) != -1)
-					serverInfo.setErrorMessage(getContext().getString(R.string.exception_cert_path_validation, e.getMessage()));
+				/*if (ExceptionUtils.indexOfType(e, CertPathValidatorException.class) != -1)
+					serverInfo.setErrorMessage(getContext().getString(R.string.exception_cert_path_validation, e.getMessage()));*/
 			} catch (HttpException e) {
 				Log.e(TAG, "HTTP error while querying server info", e);
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_http, e.getLocalizedMessage()));

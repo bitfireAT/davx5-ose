@@ -14,7 +14,6 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.os.Bundle;
-import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -34,9 +33,6 @@ import java.util.List;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalAddressBook;
-import at.bitfire.davdroid.resource.LocalCalendar;
-import at.bitfire.davdroid.resource.LocalStorageException;
-import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.davdroid.resource.ServerInfo;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
 import at.bitfire.vcard4android.ContactsStorageException;
@@ -99,7 +95,7 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
 		if (accountManager.addAccountExplicitly(account, serverInfo.getPassword(), userData)) {
 			addSync(account, ContactsContract.AUTHORITY, serverInfo.getAddressBooks(), new AddSyncCallback() {
                 @Override
-                public void createLocalCollection(Account account, ServerInfo.ResourceInfo resource) throws LocalStorageException, ContactsStorageException {
+                public void createLocalCollection(Account account, ServerInfo.ResourceInfo resource) throws ContactsStorageException {
                     @Cleanup("release") ContentProviderClient provider = getActivity().getContentResolver().acquireContentProviderClient(ContactsContract.AUTHORITY);
                     LocalAddressBook addressBook = new LocalAddressBook(account, provider);
                     ContentValues settings = new ContentValues(2);
@@ -109,10 +105,10 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
                 }
             });
 
-			addSync(account, CalendarContract.AUTHORITY, serverInfo.getCalendars(), new AddSyncCallback() {
+			/*addSync(account, CalendarContract.AUTHORITY, serverInfo.getCalendars(), new AddSyncCallback() {
 				@Override
 				public void createLocalCollection(Account account, ServerInfo.ResourceInfo calendar) throws LocalStorageException {
-					LocalCalendar.create(account, getActivity().getContentResolver(), calendar);
+                    LocalCalendar.create(account, getActivity().getContentResolver(), calendar);
 				}
 			});
 
@@ -121,7 +117,7 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
 				public void createLocalCollection(Account account, ServerInfo.ResourceInfo todoList) throws LocalStorageException {
 					LocalTaskList.create(account, getActivity().getContentResolver(), todoList);
 				}
-			});
+			});*/
 
 			getActivity().finish();				
 		} else
@@ -129,7 +125,7 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
 	}
 
 	protected interface AddSyncCallback {
-		void createLocalCollection(Account account, ServerInfo.ResourceInfo resource) throws LocalStorageException, ContactsStorageException;
+		void createLocalCollection(Account account, ServerInfo.ResourceInfo resource) throws ContactsStorageException;
 	}
 
 	protected void addSync(Account account, String authority, List<ServerInfo.ResourceInfo> resourceList, AddSyncCallback callback) {
@@ -140,7 +136,7 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
 				if (callback != null)
 					try {
 						callback.createLocalCollection(account, resource);
-					} catch(LocalStorageException|ContactsStorageException e) {
+					} catch(ContactsStorageException e) {
 						Log.e(TAG, "Couldn't add sync collection", e);
 						Toast.makeText(getActivity(), "Couldn't set up synchronization for " + authority, Toast.LENGTH_LONG).show();
 					}

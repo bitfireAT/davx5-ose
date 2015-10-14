@@ -9,21 +9,13 @@ package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
 import android.app.Service;
+import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SyncResult;
+import android.os.Bundle;
 import android.os.IBinder;
-import android.os.RemoteException;
-import android.util.Log;
-
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-
-import at.bitfire.davdroid.resource.CalDavTaskList;
-import at.bitfire.davdroid.resource.LocalCollection;
-import at.bitfire.davdroid.resource.LocalTaskList;
-import at.bitfire.davdroid.resource.WebDavCollection;
 
 public class TasksSyncAdapterService extends Service {
 	private static SyncAdapter syncAdapter;
@@ -36,7 +28,6 @@ public class TasksSyncAdapterService extends Service {
 
 	@Override
 	public void onDestroy() {
-		syncAdapter.close();
 		syncAdapter = null;
 	}
 
@@ -46,35 +37,15 @@ public class TasksSyncAdapterService extends Service {
 	}
 	
 
-	private static class SyncAdapter extends DavSyncAdapter {
-		private final static String TAG = "davdroid.TasksSync";
+	private static class SyncAdapter extends AbstractThreadedSyncAdapter {
+        public SyncAdapter(Context context) {
+            super(context, false);
+        }
 
-		private SyncAdapter(Context context) {
-			super(context);
-		}
-		
-		@Override
-		protected Map<LocalCollection<?>, WebDavCollection<?>> getSyncPairs(Account account, ContentProviderClient provider) {
-			AccountSettings settings = new AccountSettings(getContext(), account);
-			String	userName = settings.getUserName(),
-					password = settings.getPassword();
-			boolean preemptive = settings.getPreemptiveAuth();
+        @Override
+        public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
 
-			try {
-				Map<LocalCollection<?>, WebDavCollection<?>> map = new HashMap<>();
+        }
+    }
 
-				for (LocalTaskList calendar : LocalTaskList.findAll(account, provider)) {
-					WebDavCollection<?> dav = new CalDavTaskList(httpClient, calendar.getUrl(), userName, password, preemptive);
-					map.put(calendar, dav);
-				}
-				return map;
-			} catch (RemoteException ex) {
-				Log.e(TAG, "Couldn't find local task lists", ex);
-			} catch (URISyntaxException ex) {
-				Log.e(TAG, "Couldn't build task list URI", ex);
-			}
-			
-			return null;
-		}
-	}
 }

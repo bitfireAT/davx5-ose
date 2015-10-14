@@ -50,27 +50,9 @@ configurations.all {
 }
 
 dependencies {
-    // Apache Commons
-    compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'commons-io:commons-io:2.4'
-    // Lombok for useful @helpers
-    provided 'org.projectlombok:lombok:1.16.6'
-    // ical4j for parsing/generating iCalendars
-    compile('org.mnode.ical4j:ical4j:2.0-beta1') {      // update ICAL_PRODID in Constants too!
-        // we don't need content builders, see https://github.com/ical4j/ical4j/wiki/Groovy
-        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
-    }
-    compile('org.slf4j:slf4j-android:1.7.12')       // slf4j is used by ical4j
-    // dnsjava for querying SRV/TXT records
     compile 'dnsjava:dnsjava:2.1.7'
-    // HttpClient 4.3, Android flavour for WebDAV operations
-    compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
-    //compile project(':lib:httpclient-android')
-    // SimpleXML for parsing and generating WebDAV messages
-    compile('org.simpleframework:simple-xml:2.7.1') {
-        exclude group: 'stax', module: 'stax-api'
-        exclude group: 'xpp3', module: 'xpp3'
-    }
+    provided 'org.projectlombok:lombok:1.16.6'
+    compile('org.slf4j:slf4j-android:1.7.12')
 
     compile project(':dav4android')
     compile project(':vcard4android')
