@@ -22,8 +22,12 @@ import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
 import android.provider.CalendarContract.Reminders;
+import android.text.TextUtils;
 
 import com.google.common.base.Joiner;
+
+import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.model.component.VTimeZone;
 
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
@@ -34,6 +38,7 @@ import at.bitfire.ical4android.AndroidCalendar;
 import at.bitfire.ical4android.AndroidCalendarFactory;
 import at.bitfire.ical4android.BatchOperation;
 import at.bitfire.ical4android.CalendarStorageException;
+import at.bitfire.ical4android.DateUtils;
 import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
 
@@ -84,9 +89,10 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         values.put(Calendars.OWNER_ACCOUNT, account.name);
         values.put(Calendars.SYNC_EVENTS, 1);
         values.put(Calendars.VISIBLE, 1);
-        if (info.timezone != null) {
-            // TODO parse VTIMEZONE
-            // values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(info.timezone));
+        if (!TextUtils.isEmpty(info.timezone)) {
+            VTimeZone timeZone = DateUtils.parseVTimeZone(info.timezone);
+            if (timeZone != null && timeZone.getTimeZoneId() != null)
+                values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(timeZone.getTimeZoneId().getValue()));
         }
         values.put(Calendars.ALLOWED_REMINDERS, Reminders.METHOD_ALERT);
         if (Build.VERSION.SDK_INT >= 15) {

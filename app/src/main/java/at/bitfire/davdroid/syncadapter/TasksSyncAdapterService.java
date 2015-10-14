@@ -16,6 +16,14 @@ import android.content.Intent;
 import android.content.SyncResult;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.CalendarContract;
+
+import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.resource.LocalCalendar;
+import at.bitfire.davdroid.resource.LocalTaskList;
+import at.bitfire.ical4android.CalendarStorageException;
+import at.bitfire.ical4android.TaskProvider;
+import lombok.Cleanup;
 
 public class TasksSyncAdapterService extends Service {
 	private static SyncAdapter syncAdapter;
@@ -43,8 +51,24 @@ public class TasksSyncAdapterService extends Service {
         }
 
         @Override
-        public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
+        public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient providerClient, SyncResult syncResult) {
+            Constants.log.info("Starting task sync (" + authority + ")");
 
+            try {
+                @Cleanup TaskProvider provider = TaskProvider.acquire(getContext().getContentResolver(), TaskProvider.ProviderName.OpenTasks);
+                if (provider == null)
+                    throw new CalendarStorageException("Couldn't access OpenTasks provider");
+
+                for (LocalTaskList taskList : (LocalTaskList[])LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, null, null)) {
+                    Constants.log.info("Synchronizing task list #"  + taskList.getId() + ", URL: " + taskList.getName());
+                    TasksSyncManager syncManager = new TasksSyncManager(getContext(), account, extras, provider, syncResult, taskList);
+                    syncManager.performSync();
+                }
+            } catch (CalendarStorageException e) {
+                Constants.log.error("Couldn't enumerate local task lists", e);
+            }
+
+            Constants.log.info("Calendar sync complete");
         }
     }
 

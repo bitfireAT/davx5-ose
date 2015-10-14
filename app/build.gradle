@@ -11,15 +11,14 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion '23.0.1'
-    useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
         minSdkVersion 14
         targetSdkVersion 23
 
-        versionCode 74
-        versionName "0.9-alpha2"
+        versionCode 75
+        versionName "0.9-alpha3"
 
         buildConfigField "java.util.Date", "buildTime", "new java.util.Date()"
     }

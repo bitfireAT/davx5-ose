@@ -13,7 +13,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
-import android.provider.CalendarContract.Calendars;
 import android.text.TextUtils;
 
 import com.google.common.base.Charsets;
@@ -22,6 +21,8 @@ import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.ResponseBody;
+
+import org.dmfs.provider.tasks.TaskContract.TaskLists;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -44,24 +45,28 @@ import at.bitfire.dav4android.property.GetETag;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.resource.LocalCalendar;
-import at.bitfire.davdroid.resource.LocalEvent;
 import at.bitfire.davdroid.resource.LocalResource;
+import at.bitfire.davdroid.resource.LocalTask;
+import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.ical4android.CalendarStorageException;
-import at.bitfire.ical4android.Event;
 import at.bitfire.ical4android.InvalidCalendarException;
-import at.bitfire.vcard4android.ContactsStorageException;
+import at.bitfire.ical4android.Task;
+import at.bitfire.ical4android.TaskProvider;
 import lombok.Cleanup;
 
-public class CalendarSyncManager extends SyncManager {
+public class TasksSyncManager extends SyncManager {
 
     protected static final int
             MAX_MULTIGET = 30,
-            NOTIFICATION_ID = 2;
+            NOTIFICATION_ID = 3;
+
+    final protected TaskProvider provider;
 
 
-    public CalendarSyncManager(Context context, Account account, Bundle extras, SyncResult result, LocalCalendar calendar) {
+    public TasksSyncManager(Context context, Account account, Bundle extras, TaskProvider provider, SyncResult result, LocalTaskList taskList) {
         super(NOTIFICATION_ID, context, account, extras, result);
-        localCollection = calendar;
+        this.provider = provider;
+        localCollection = taskList;
     }
 
 
@@ -69,7 +74,7 @@ public class CalendarSyncManager extends SyncManager {
     protected void prepare() {
         Thread.currentThread().setContextClassLoader(context.getClassLoader());     // required for ical4j
 
-        collectionURL = HttpUrl.parse(localCalendar().getName());
+        collectionURL = HttpUrl.parse(localTaskList().getSyncId());
         davCollection = new DavCalendar(httpClient, collectionURL);
     }
 
@@ -87,42 +92,35 @@ public class CalendarSyncManager extends SyncManager {
 
         ContentValues values = new ContentValues(2);
         Constants.log.info("Setting new calendar name \"" + displayName + "\" and color 0x" + Integer.toHexString(color));
-        values.put(Calendars.CALENDAR_DISPLAY_NAME, displayName);
-        values.put(Calendars.CALENDAR_COLOR, color);
-        localCalendar().update(values);
-    }
-
-    @Override
-    protected void prepareDirty() throws CalendarStorageException, ContactsStorageException {
-        super.prepareDirty();
-
-        localCalendar().processDirtyExceptions();
+        values.put(TaskLists.LIST_NAME, displayName);
+        values.put(TaskLists.LIST_COLOR, color);
+        localTaskList().update(values);
     }
 
     @Override
     protected RequestBody prepareUpload(LocalResource resource) throws IOException, CalendarStorageException {
-        LocalEvent local = (LocalEvent)resource;
+        LocalTask local = (LocalTask)resource;
         return RequestBody.create(
                 DavCalendar.MIME_ICALENDAR,
-                local.getEvent().toStream().toByteArray()
+                local.getTask().toStream().toByteArray()
         );
     }
 
     @Override
     protected void listRemote() throws IOException, HttpException, DavException {
-        // fetch list of remote VEVENTs and build hash table to index file name
-        davCalendar().calendarQuery("VEVENT");
+        // fetch list of remote VTODOs and build hash table to index file name
+        davCalendar().calendarQuery("VTODO");
         remoteResources = new HashMap<>(davCollection.members.size());
         for (DavResource vCard : davCollection.members) {
             String fileName = vCard.fileName();
-            Constants.log.debug("Found remote VEVENT: " + fileName);
+            Constants.log.debug("Found remote VTODO: " + fileName);
             remoteResources.put(fileName, vCard);
         }
     }
 
     @Override
     protected void downloadRemote() throws IOException, HttpException, DavException, CalendarStorageException {
-        Constants.log.info("Downloading " + toDownload.size() + " events (" + MAX_MULTIGET + " at once)");
+        Constants.log.info("Downloading " + toDownload.size() + " tasks (" + MAX_MULTIGET + " at once)");
 
         // download new/updated iCalendars from server
         for (DavResource[] bunch : ArrayUtils.partition(toDownload.toArray(new DavResource[toDownload.size()]), MAX_MULTIGET)) {
@@ -136,7 +134,7 @@ public class CalendarSyncManager extends SyncManager {
                 String eTag = ((GetETag)remote.properties.get(GetETag.NAME)).eTag;
 
                 @Cleanup InputStream stream = body.byteStream();
-                processVEvent(remote.fileName(), eTag, stream, body.contentType().charset(Charsets.UTF_8));
+                processVTodo(remote.fileName(), eTag, stream, body.contentType().charset(Charsets.UTF_8));
 
             } else {
                 // multiple contacts, use multi-get
@@ -167,7 +165,7 @@ public class CalendarSyncManager extends SyncManager {
                         throw new DavException("Received multi-get response without address data");
 
                     @Cleanup InputStream stream = new ByteArrayInputStream(calendarData.iCalendar.getBytes());
-                    processVEvent(remote.fileName(), eTag, stream, charset);
+                    processVTodo(remote.fileName(), eTag, stream, charset);
                 }
             }
         }
@@ -176,32 +174,32 @@ public class CalendarSyncManager extends SyncManager {
 
     // helpers
 
-    private LocalCalendar localCalendar() { return ((LocalCalendar)localCollection); }
+    private LocalTaskList localTaskList() { return ((LocalTaskList)localCollection); }
     private DavCalendar davCalendar() { return (DavCalendar)davCollection; }
 
-    private void processVEvent(String fileName, String eTag, InputStream stream, Charset charset) throws IOException, CalendarStorageException {
-        Event[] events;
+    private void processVTodo(String fileName, String eTag, InputStream stream, Charset charset) throws IOException, CalendarStorageException {
+        Task[] tasks = null;
         try {
-            events = Event.fromStream(stream, charset);
+            tasks = Task.fromStream(stream, charset);
         } catch (InvalidCalendarException e) {
             Constants.log.error("Received invalid iCalendar, ignoring");
             return;
         }
 
-        if (events != null && events.length == 1) {
-            Event newData = events[0];
+        if (tasks != null && tasks.length == 1) {
+            Task newData = tasks[0];
 
-            // delete local event, if it exists
-            LocalEvent localEvent = (LocalEvent)localResources.get(fileName);
-            if (localEvent != null) {
-                Constants.log.info("Updating " + fileName + " in local calendar");
-                localEvent.setETag(eTag);
-                localEvent.update(newData);
+            // update local task, if it exists
+            LocalTask localTask = (LocalTask)localResources.get(fileName);
+            if (localTask != null) {
+                Constants.log.info("Updating " + fileName + " in local tasklist");
+                localTask.setETag(eTag);
+                localTask.update(newData);
                 syncResult.stats.numUpdates++;
             } else {
-                Constants.log.info("Adding " + fileName + " to local calendar");
-                localEvent = new LocalEvent(localCalendar(), newData, fileName, eTag);
-                localEvent.add();
+                Constants.log.info("Adding " + fileName + " to local task list");
+                localTask = new LocalTask(localTaskList(), newData, fileName, eTag);
+                localTask.add();
                 syncResult.stats.numInserts++;
             }
         } else

@@ -26,8 +26,10 @@ import java.net.URISyntaxException;
 
 import at.bitfire.dav4android.exception.DavException;
 import at.bitfire.dav4android.exception.HttpException;
+import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.DavResourceFinder;
+import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.davdroid.resource.ServerInfo;
 
 public class QueryServerDialogFragment extends DialogFragment implements LoaderCallbacks<ServerInfo> {
@@ -68,7 +70,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 			((AddAccountActivity)getActivity()).serverInfo = serverInfo;
 
 			Fragment nextFragment;
-			if (!serverInfo.getTaskLists().isEmpty() /*&& !LocalTaskList.isAvailable(getActivity())*/)
+			if (!serverInfo.getTaskLists().isEmpty() && !LocalTaskList.tasksProviderAvailable(getActivity().getContentResolver()))
 				nextFragment = new InstallAppsFragment();
 			else
 				nextFragment = new SelectCollectionsFragment();
@@ -119,10 +121,10 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 				/*if (ExceptionUtils.indexOfType(e, CertPathValidatorException.class) != -1)
 					serverInfo.setErrorMessage(getContext().getString(R.string.exception_cert_path_validation, e.getMessage()));*/
 			} catch (HttpException e) {
-				Log.e(TAG, "HTTP error while querying server info", e);
+				Constants.log.error("HTTP error while querying server info", e);
 				serverInfo.setErrorMessage(getContext().getString(R.string.exception_http, e.getLocalizedMessage()));
 			} catch (DavException e) {
-                Log.e(TAG, "DAV error while querying server info", e);
+                Constants.log.error("DAV error while querying server info", e);
                 serverInfo.setErrorMessage(getContext().getString(R.string.exception_incapable_resource, e.getLocalizedMessage()));
             }
 			
