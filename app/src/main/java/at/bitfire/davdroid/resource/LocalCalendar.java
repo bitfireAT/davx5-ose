@@ -10,10 +10,13 @@ package at.bitfire.davdroid.resource;
 
 import android.accounts.Account;
 import android.content.ContentProviderClient;
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
@@ -22,8 +25,14 @@ import android.provider.CalendarContract.Reminders;
 
 import com.google.common.base.Joiner;
 
+import java.io.FileNotFoundException;
+import java.util.LinkedList;
+import java.util.List;
+
+import at.bitfire.davdroid.Constants;
 import at.bitfire.ical4android.AndroidCalendar;
 import at.bitfire.ical4android.AndroidCalendarFactory;
+import at.bitfire.ical4android.BatchOperation;
 import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
@@ -34,9 +43,13 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
 
     public static final String COLUMN_CTAG = Calendars.CAL_SYNC1;
 
+    protected static final int
+            DIRTY_INCREASE_SEQUENCE = 1,
+            DIRTY_DONT_INCREASE_SEQUENCE = 2;
+
     static String[] BASE_INFO_COLUMNS = new String[] {
             Events._ID,
-            LocalEvent.COLUMN_FILENAME,
+            Events._SYNC_ID,
             LocalEvent.COLUMN_ETAG
     };
 
@@ -59,38 +72,61 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         values.put(Calendars.NAME, info.getURL());
         values.put(Calendars.CALENDAR_DISPLAY_NAME, info.getTitle());
         values.put(Calendars.CALENDAR_COLOR, info.color != null ? info.color : defaultColor);
-        values.put(Calendars.CALENDAR_ACCESS_LEVEL, info.readOnly ? Calendars.CAL_ACCESS_READ : Calendars.CAL_ACCESS_OWNER);
+
+        if (info.isReadOnly())
+            values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ);
+        else {
+            values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER);
+            values.put(Calendars.CAN_MODIFY_TIME_ZONE, 1);
+            values.put(Calendars.CAN_ORGANIZER_RESPOND, 1);
+        }
+
         values.put(Calendars.OWNER_ACCOUNT, account.name);
         values.put(Calendars.SYNC_EVENTS, 1);
+        values.put(Calendars.VISIBLE, 1);
         if (info.timezone != null) {
             // TODO parse VTIMEZONE
             // values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(info.timezone));
         }
         values.put(Calendars.ALLOWED_REMINDERS, Reminders.METHOD_ALERT);
-        values.put(Calendars.ALLOWED_AVAILABILITY, Joiner.on(",").join(Reminders.AVAILABILITY_TENTATIVE, Reminders.AVAILABILITY_FREE, Reminders.AVAILABILITY_BUSY));
-        values.put(Calendars.ALLOWED_ATTENDEE_TYPES, Joiner.on(",").join(CalendarContract.Attendees.TYPE_OPTIONAL, CalendarContract.Attendees.TYPE_REQUIRED, CalendarContract.Attendees.TYPE_RESOURCE));
+        if (Build.VERSION.SDK_INT >= 15) {
+            values.put(Calendars.ALLOWED_AVAILABILITY, Joiner.on(",").join(Reminders.AVAILABILITY_TENTATIVE, Reminders.AVAILABILITY_FREE, Reminders.AVAILABILITY_BUSY));
+            values.put(Calendars.ALLOWED_ATTENDEE_TYPES, Joiner.on(",").join(CalendarContract.Attendees.TYPE_OPTIONAL, CalendarContract.Attendees.TYPE_REQUIRED, CalendarContract.Attendees.TYPE_RESOURCE));
+        }
         return create(account, provider, values);
     }
 
 
     @Override
     public LocalResource[] getAll() throws CalendarStorageException, ContactsStorageException {
-        return (LocalEvent[])queryEvents(null, null);
+        return (LocalEvent[])queryEvents(Events.ORIGINAL_ID + " IS NULL", null);
     }
 
     @Override
     public LocalEvent[] getDeleted() throws CalendarStorageException {
-        return (LocalEvent[])queryEvents(Events.DELETED + "!=0", null);
+        return (LocalEvent[])queryEvents(Events.DELETED + "!=0 AND " + Events.ORIGINAL_ID + " IS NULL", null);
     }
 
     @Override
     public LocalEvent[] getWithoutFileName() throws CalendarStorageException {
-        return (LocalEvent[])queryEvents(LocalEvent.COLUMN_FILENAME + " IS NULL", null);
+        return (LocalEvent[])queryEvents(Events._SYNC_ID + " IS NULL AND " + Events.ORIGINAL_ID + " IS NULL", null);
     }
 
     @Override
-    public LocalResource[] getDirty() throws CalendarStorageException {
-        return (LocalEvent[])queryEvents(Events.DIRTY + "!=0", null);
+    public LocalResource[] getDirty() throws CalendarStorageException, FileNotFoundException {
+        List<LocalResource> dirty = new LinkedList<>();
+
+        // get dirty events which are not required to have an increased SEQUENCE value
+        for (LocalEvent event : (LocalEvent[])queryEvents(Events.DIRTY + "=" + DIRTY_DONT_INCREASE_SEQUENCE + " AND " + Events.ORIGINAL_ID + " IS NULL", null))
+            dirty.add(event);
+
+        // get dirty events which are required to have an increased SEQUENCE value
+        for (LocalEvent event : (LocalEvent[])queryEvents(Events.DIRTY + "=" + DIRTY_INCREASE_SEQUENCE + " AND " + Events.ORIGINAL_ID + " IS NULL", null)) {
+            event.getEvent().sequence++;
+            dirty.add(event);
+        }
+
+        return dirty.toArray(new LocalResource[dirty.size()]);
     }
 
 
@@ -114,6 +150,75 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
             provider.update(calendarSyncURI(), values, null, null);
         } catch (RemoteException e) {
             throw new CalendarStorageException("Couldn't write local (last known) CTag", e);
+        }
+    }
+
+    public void processDirtyExceptions() throws CalendarStorageException {
+        // process deleted exceptions
+        Constants.log.info("Processing deleted exceptions");
+        try {
+            @Cleanup Cursor cursor = provider.query(
+                    syncAdapterURI(Events.CONTENT_URI),
+                    new String[] { Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE },
+                    Events.DELETED + "!=0 AND " + Events.ORIGINAL_ID + " IS NOT NULL", null, null);
+            while (cursor != null && cursor.moveToNext()) {
+                Constants.log.debug("Found deleted exception, removing; then re-schuling original event");
+                long    id = cursor.getLong(0),             // can't be null (by definition)
+                        originalID = cursor.getLong(1);     // can't be null (by query)
+                int sequence = cursor.isNull(2) ? 0 : cursor.getInt(2);
+
+                // get original event's SEQUENCE
+                @Cleanup Cursor cursor2 = provider.query(
+                        syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)),
+                        new String[] { LocalEvent.COLUMN_SEQUENCE },
+                        null, null, null);
+                int originalSequence = cursor.isNull(0) ? 0 : cursor.getInt(0);
+
+                BatchOperation batch = new BatchOperation(provider);
+                // re-schedule original event and set it to DIRTY
+                batch.enqueue(ContentProviderOperation.newUpdate(
+                        syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
+                        .withValue(LocalEvent.COLUMN_SEQUENCE, originalSequence)
+                        .withValue(Events.DIRTY, DIRTY_INCREASE_SEQUENCE)
+                        .build());
+                // remove exception
+                batch.enqueue(ContentProviderOperation.newDelete(
+                        syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id))).build());
+                batch.commit();
+            }
+        } catch (RemoteException e) {
+            throw new CalendarStorageException("Couldn't process locally modified exception", e);
+        }
+
+        // process dirty exceptions
+        Constants.log.info("Processing dirty exceptions");
+        try {
+            @Cleanup Cursor cursor = provider.query(
+                    syncAdapterURI(Events.CONTENT_URI),
+                    new String[] { Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE },
+                    Events.DIRTY + "!=0 AND " + Events.ORIGINAL_ID + " IS NOT NULL", null, null);
+            while (cursor != null && cursor.moveToNext()) {
+                Constants.log.debug("Found dirty exception, increasing SEQUENCE to re-schedule");
+                long    id = cursor.getLong(0),             // can't be null (by definition)
+                        originalID = cursor.getLong(1);     // can't be null (by query)
+                int sequence = cursor.isNull(2) ? 0 : cursor.getInt(2);
+
+                BatchOperation batch = new BatchOperation(provider);
+                // original event to DIRTY
+                batch.enqueue(ContentProviderOperation.newUpdate(
+                        syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
+                        .withValue(Events.DIRTY, DIRTY_DONT_INCREASE_SEQUENCE)
+                        .build());
+                // increase SEQUENCE and set DIRTY to 0
+                batch.enqueue(ContentProviderOperation.newUpdate(
+                                syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id)))
+                                .withValue(LocalEvent.COLUMN_SEQUENCE, sequence + 1)
+                                .withValue(Events.DIRTY, 0)
+                                .build());
+                batch.commit();
+            }
+        } catch (RemoteException e) {
+            throw new CalendarStorageException("Couldn't process locally modified exception", e);
         }
     }
 

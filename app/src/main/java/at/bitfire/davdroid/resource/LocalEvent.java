@@ -10,37 +10,46 @@ package at.bitfire.davdroid.resource;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
-import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
+import android.provider.CalendarContract.Events;
 
+import net.fortuna.ical4j.model.property.ProdId;
+
+import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.ical4android.AndroidCalendar;
 import at.bitfire.ical4android.AndroidEvent;
 import at.bitfire.ical4android.AndroidEventFactory;
 import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.Event;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 public class LocalEvent extends AndroidEvent implements LocalResource {
+    static {
+        Event.prodId = new ProdId("+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " ical4android ical4j/2.x");
+    }
 
-    static final String COLUMN_FILENAME = CalendarContract.Events.SYNC_DATA1,
-                        COLUMN_ETAG = CalendarContract.Events.SYNC_DATA2,
-                        COLUMN_UID = CalendarContract.Events.UID_2445;
+    static final String COLUMN_ETAG = CalendarContract.Events.SYNC_DATA1,
+                        COLUMN_UID = CalendarContract.Events.UID_2445,
+                        COLUMN_SEQUENCE = CalendarContract.Events.SYNC_DATA2;
 
     @Getter protected String fileName;
     @Getter @Setter protected String eTag;
 
-    public LocalEvent(AndroidCalendar calendar, Event event, String fileName, String eTag) {
+    public LocalEvent(@NonNull AndroidCalendar calendar, Event event, String fileName, String eTag) {
         super(calendar, event);
         this.fileName = fileName;
         this.eTag = eTag;
     }
 
-    protected LocalEvent(AndroidCalendar calendar, long id, ContentValues baseInfo) {
+    protected LocalEvent(@NonNull AndroidCalendar calendar, long id, ContentValues baseInfo) {
         super(calendar, id, baseInfo);
-        fileName = baseInfo.getAsString(COLUMN_FILENAME);
-        eTag = baseInfo.getAsString(COLUMN_ETAG);
+        if (baseInfo != null) {
+            fileName = baseInfo.getAsString(Events._SYNC_ID);
+            eTag = baseInfo.getAsString(COLUMN_ETAG);
+        }
     }
 
 
@@ -49,17 +58,31 @@ public class LocalEvent extends AndroidEvent implements LocalResource {
     @Override
     protected void populateEvent(ContentValues values) {
         super.populateEvent(values);
-        fileName = values.getAsString(COLUMN_FILENAME);
+        fileName = values.getAsString(Events._SYNC_ID);
         eTag = values.getAsString(COLUMN_ETAG);
         event.uid = values.getAsString(COLUMN_UID);
+
+        if (values.containsKey(COLUMN_SEQUENCE))
+            event.sequence = values.getAsInteger(COLUMN_SEQUENCE);
     }
 
     @Override
     protected void buildEvent(Event recurrence, ContentProviderOperation.Builder builder) {
         super.buildEvent(recurrence, builder);
-        builder .withValue(COLUMN_FILENAME, fileName)
-                .withValue(COLUMN_ETAG, eTag)
-                .withValue(COLUMN_UID, event.uid);
+
+        boolean buildException = recurrence != null;
+        Event eventToBuild = buildException ? recurrence : event;
+
+        builder .withValue(COLUMN_UID, event.uid)
+                .withValue(COLUMN_SEQUENCE, eventToBuild.sequence)
+                .withValue(CalendarContract.Events.DIRTY, 0)
+                .withValue(CalendarContract.Events.DELETED, 0);
+
+        if (buildException)
+            builder.withValue(Events.ORIGINAL_SYNC_ID, fileName);
+        else
+            builder .withValue(Events._SYNC_ID, fileName)
+                    .withValue(COLUMN_ETAG, eTag);
     }
 
 
@@ -70,7 +93,7 @@ public class LocalEvent extends AndroidEvent implements LocalResource {
             String newFileName = uid + ".ics";
 
             ContentValues values = new ContentValues(2);
-            values.put(COLUMN_FILENAME, newFileName);
+            values.put(Events._SYNC_ID, newFileName);
             values.put(COLUMN_UID, uid);
             calendar.provider.update(eventSyncURI(), values, null, null);
 
@@ -89,6 +112,8 @@ public class LocalEvent extends AndroidEvent implements LocalResource {
             ContentValues values = new ContentValues(2);
             values.put(CalendarContract.Events.DIRTY, 0);
             values.put(COLUMN_ETAG, eTag);
+            if (event != null)
+                values.put(COLUMN_SEQUENCE, event.sequence);
             calendar.provider.update(eventSyncURI(), values, null, null);
 
             this.eTag = eTag;

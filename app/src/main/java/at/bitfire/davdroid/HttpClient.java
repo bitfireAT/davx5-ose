@@ -118,9 +118,6 @@ public class HttpClient extends OkHttpClient {
             }
         }
 
-        // don't follow redirects automatically because this may rewrite DAV methods to GET
-        setFollowRedirects(false);
-
         // set timeouts
         setConnectTimeout(30, TimeUnit.SECONDS);
         setWriteTimeout(15, TimeUnit.SECONDS);

@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.SyncResult;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.CalendarContract;
 
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.resource.LocalCalendar;
@@ -52,7 +53,7 @@ public class CalendarsSyncAdapterService extends Service {
             Constants.log.info("Starting calendar sync (" + authority + ")");
 
             try {
-                for (LocalCalendar calendar : (LocalCalendar[])LocalCalendar.findAll(account, provider, LocalCalendar.Factory.INSTANCE)) {
+                for (LocalCalendar calendar : (LocalCalendar[])LocalCalendar.find(account, provider, LocalCalendar.Factory.INSTANCE, CalendarContract.Calendars.SYNC_EVENTS + "!=0", null)) {
                     Constants.log.info("Synchronizing calendar #"  + calendar.getId() + ", URL: " + calendar.getName());
                     CalendarSyncManager syncManager = new CalendarSyncManager(getContext(), account, extras, provider, syncResult, calendar);
                     syncManager.performSync();

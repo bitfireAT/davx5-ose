@@ -10,6 +10,8 @@ package at.bitfire.davdroid.resource;
 
 import android.provider.ContactsContract;
 
+import java.io.FileNotFoundException;
+
 import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.vcard4android.ContactsStorageException;
 
@@ -17,7 +19,7 @@ public interface LocalCollection {
 
     LocalResource[] getDeleted() throws CalendarStorageException, ContactsStorageException;
     LocalResource[] getWithoutFileName()  throws CalendarStorageException, ContactsStorageException;
-    LocalResource[] getDirty() throws CalendarStorageException, ContactsStorageException;
+    LocalResource[] getDirty() throws CalendarStorageException, ContactsStorageException, FileNotFoundException;
 
     LocalResource[] getAll() throws CalendarStorageException, ContactsStorageException;
 

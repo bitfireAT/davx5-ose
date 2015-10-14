@@ -38,8 +38,6 @@ public class DebugInfoActivity extends Activity {
             KEY_ACCOUNT = "account",
             KEY_PHASE = "phase";
 
-    private static final String APP_ID = "at.bitfire.davdroid";
-
     String report;
 
     @Override
@@ -49,7 +47,7 @@ public class DebugInfoActivity extends Activity {
         setContentView(R.layout.debug_info_activity);
 
         TextView tvReport = (TextView)findViewById(R.id.text_report);
-        tvReport.setText(generateReport(getIntent().getExtras()));
+        tvReport.setText(report = generateReport(getIntent().getExtras()));
     }
 
     @Override
@@ -96,7 +94,7 @@ public class DebugInfoActivity extends Activity {
 
         try {
             PackageManager pm = getPackageManager();
-            String installedFrom = pm.getInstallerPackageName("at.bitfire.davdroid");
+            String installedFrom = pm.getInstallerPackageName(BuildConfig.APPLICATION_ID);
             if (TextUtils.isEmpty(installedFrom))
                 installedFrom = "APK (directly)";
             else {
