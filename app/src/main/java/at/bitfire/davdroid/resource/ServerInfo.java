@@ -7,6 +7,8 @@
  */
 package at.bitfire.davdroid.resource;
 
+import com.squareup.okhttp.HttpUrl;
+
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -57,6 +59,7 @@ public class ServerInfo implements Serializable {
 			  description;
 		final Integer color;
 
+        /** full VTIMEZONE definition (not the TZ ID) */
 		String timezone;
 
 
@@ -79,13 +82,9 @@ public class ServerInfo implements Serializable {
 
 		public String getTitle() {
 			if (title == null) {
-				try {
-					java.net.URL url = new java.net.URL(URL);
-					return url.getPath();
-				} catch (MalformedURLException e) {
-					return URL;
-				}
-			} else
+                HttpUrl url = HttpUrl.parse(URL);
+                return url != null ? url.toString() : "–";
+            } else
 				return title;
 		}
 	}

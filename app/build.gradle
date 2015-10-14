@@ -50,11 +50,13 @@ configurations.all {
 }
 
 dependencies {
+    compile 'com.google.guava:guava:18.0'
     compile 'dnsjava:dnsjava:2.1.7'
     provided 'org.projectlombok:lombok:1.16.6'
     compile('org.slf4j:slf4j-android:1.7.12')
 
     compile project(':dav4android')
+    compile project(':ical4android')
     compile project(':vcard4android')
 
     compile project(':MemorizingTrustManager')

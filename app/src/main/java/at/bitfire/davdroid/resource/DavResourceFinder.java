@@ -144,7 +144,7 @@ public class DavResourceFinder {
                                 member.location.toString(),
                                 displayName != null ? displayName.displayName : null,
                                 description != null ? description.description : null,
-                                color != null ? DavUtils.CalDAVtoARGBColor(color.color) : null
+                                color != null ? color.color : null
                         );
 
                         CalendarTimezone tz = (CalendarTimezone)member.properties.get(CalendarTimezone.NAME);

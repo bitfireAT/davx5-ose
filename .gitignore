@@ -85,6 +85,8 @@ build/
 # Ignore Gradle GUI config
 gradle-app.setting
 
-
 ### external libs ###
 .svn
+
+# Javadoc
+javadoc/
