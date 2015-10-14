@@ -22,8 +22,6 @@ import at.bitfire.davdroid.Constants;
 public class ContactsSyncAdapterService extends Service {
 	private static ContactsSyncAdapter syncAdapter;
 
-
-
 	@Override
 	public void onCreate() {
 		if (syncAdapter == null)
@@ -48,12 +46,12 @@ public class ContactsSyncAdapterService extends Service {
 
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-            Constants.log.info("Starting contacts sync (" + authority + ")");
+            Constants.log.info("Starting address book sync (" + authority + ")");
 
             ContactsSyncManager syncManager = new ContactsSyncManager(getContext(), account, extras, provider, syncResult);
             syncManager.performSync();
 
-            Constants.log.info("Sync complete for authority " + authority);
+            Constants.log.info("Address book sync complete");
         }
 
     }

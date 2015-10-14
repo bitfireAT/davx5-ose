@@ -14,6 +14,7 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,13 +29,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Calendar;
 import java.util.List;
 
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalAddressBook;
+import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.davdroid.resource.ServerInfo;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
+import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
 
@@ -105,14 +109,18 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
                 }
             });
 
-			/*addSync(account, CalendarContract.AUTHORITY, serverInfo.getCalendars(), new AddSyncCallback() {
+			addSync(account, CalendarContract.AUTHORITY, serverInfo.getCalendars(), new AddSyncCallback() {
 				@Override
-				public void createLocalCollection(Account account, ServerInfo.ResourceInfo calendar) throws LocalStorageException {
-                    LocalCalendar.create(account, getActivity().getContentResolver(), calendar);
+				public void createLocalCollection(Account account, ServerInfo.ResourceInfo calendar) {
+                    try {
+                        LocalCalendar.create(account, getActivity().getContentResolver(), calendar);
+                    } catch(CalendarStorageException e) {
+                        Constants.log.error("Couldn't create local calendar", e);
+                    }
 				}
 			});
 
-			addSync(account, LocalTaskList.TASKS_AUTHORITY, serverInfo.getTaskLists(), new AddSyncCallback() {
+			/*addSync(account, LocalTaskList.TASKS_AUTHORITY, serverInfo.getTaskLists(), new AddSyncCallback() {
 				@Override
 				public void createLocalCollection(Account account, ServerInfo.ResourceInfo todoList) throws LocalStorageException {
 					LocalTaskList.create(account, getActivity().getContentResolver(), todoList);

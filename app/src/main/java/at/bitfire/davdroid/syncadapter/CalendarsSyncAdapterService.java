@@ -17,6 +17,11 @@ import android.content.SyncResult;
 import android.os.Bundle;
 import android.os.IBinder;
 
+import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.resource.LocalCalendar;
+import at.bitfire.davdroid.resource.LocalContact;
+import at.bitfire.ical4android.CalendarStorageException;
+
 public class CalendarsSyncAdapterService extends Service {
 	private static SyncAdapter syncAdapter;
 
@@ -38,14 +43,25 @@ public class CalendarsSyncAdapterService extends Service {
 	
 
 	private static class SyncAdapter extends AbstractThreadedSyncAdapter {
-
         public SyncAdapter(Context context) {
             super(context, false);
         }
 
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
+            Constants.log.info("Starting calendar sync (" + authority + ")");
 
+            try {
+                for (LocalCalendar calendar : (LocalCalendar[])LocalCalendar.findAll(account, provider, LocalCalendar.Factory.INSTANCE)) {
+                    Constants.log.info("Synchronizing calendar #"  + calendar.getId() + ", URL: " + calendar.getName());
+                    CalendarSyncManager syncManager = new CalendarSyncManager(getContext(), account, extras, provider, syncResult, calendar);
+                    syncManager.performSync();
+                }
+            } catch (CalendarStorageException e) {
+                Constants.log.error("Couldn't get list of local calendars", e);
+            }
+
+            Constants.log.info("Calendar sync complete");
         }
     }
 

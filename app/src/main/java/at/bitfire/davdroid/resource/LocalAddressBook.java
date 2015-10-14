@@ -24,7 +24,7 @@ import lombok.Cleanup;
 import lombok.Synchronized;
 
 
-public class LocalAddressBook extends AndroidAddressBook {
+public class LocalAddressBook extends AndroidAddressBook implements LocalCollection {
 
     protected static final String SYNC_STATE_CTAG = "ctag";
 
@@ -39,14 +39,15 @@ public class LocalAddressBook extends AndroidAddressBook {
     /**
      * Returns an array of local contacts, excluding those which have been modified locally (and not uploaded yet).
      */
+    @Override
     public LocalContact[] getAll() throws ContactsStorageException {
-        LocalContact contacts[] = (LocalContact[])queryContacts(null, null);
-        return contacts;
+        return (LocalContact[])queryContacts(null, null);
     }
 
     /**
      * Returns an array of local contacts which have been deleted locally. (DELETED != 0).
      */
+    @Override
     public LocalContact[] getDeleted() throws ContactsStorageException {
         return (LocalContact[])queryContacts(ContactsContract.RawContacts.DELETED + "!=0", null);
     }
@@ -54,6 +55,7 @@ public class LocalAddressBook extends AndroidAddressBook {
     /**
      * Returns an array of local contacts which have been changed locally (DIRTY != 0).
      */
+    @Override
     public LocalContact[] getDirty() throws ContactsStorageException {
         return (LocalContact[])queryContacts(ContactsContract.RawContacts.DIRTY + "!=0", null);
     }
@@ -61,6 +63,7 @@ public class LocalAddressBook extends AndroidAddressBook {
     /**
      * Returns an array of local contacts which don't have a file name yet.
      */
+    @Override
     public LocalContact[] getWithoutFileName() throws ContactsStorageException {
         return (LocalContact[])queryContacts(AndroidContact.COLUMN_FILENAME + " IS NULL", null);
     }
@@ -77,6 +80,7 @@ public class LocalAddressBook extends AndroidAddressBook {
             syncState.clear();
     }
 
+    @Override
     public String getCTag() throws ContactsStorageException {
         synchronized (syncState) {
             readSyncState();
@@ -84,6 +88,7 @@ public class LocalAddressBook extends AndroidAddressBook {
         }
     }
 
+    @Override
     public void setCTag(String cTag) throws ContactsStorageException {
         synchronized (syncState) {
             readSyncState();
