@@ -102,6 +102,13 @@ public class CalendarSyncManager extends SyncManager {
     }
 
     @Override
+    protected void prepareDirty() throws CalendarStorageException, ContactsStorageException {
+        super.prepareDirty();
+
+        localCalendar().processDirtyExceptions();
+    }
+
+    @Override
     protected RequestBody prepareUpload(LocalResource resource) throws IOException, CalendarStorageException {
         LocalEvent local = (LocalEvent)resource;
         return RequestBody.create(

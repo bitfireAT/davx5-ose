@@ -183,8 +183,8 @@
         <item>Vorbereiten der Synchronisierung</item>
         <item>Abfragen der Server-Fähigkeiten</item>
         <item>Verarbeiten lokal gelöschter Einträge</item>
-        <item>Vorbereiten neuer lokaler Einträge</item>
-        <item>Hochladen neuer/geänderter lokaler Einträge</item>
+        <item>Vorbereiten neuer/geänderter Einträge</item>
+        <item>Hochladen neuer/geänderter Einträge</item>
         <item>Abfragen des Synchronisierungs-Zustands</item>
         <item>Auflisten lokaler Einträge</item>
         <item>Auflisten der Server-Einträge</item>

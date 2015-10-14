@@ -24,6 +24,7 @@ import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.RequestBody;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,6 +35,7 @@ import at.bitfire.dav4android.DavResource;
 import at.bitfire.dav4android.exception.DavException;
 import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.dav4android.exception.PreconditionFailedException;
+import at.bitfire.dav4android.exception.ServiceUnavailableException;
 import at.bitfire.dav4android.property.GetCTag;
 import at.bitfire.dav4android.property.GetETag;
 import at.bitfire.davdroid.Constants;
@@ -50,7 +52,7 @@ abstract public class SyncManager {
     protected final int SYNC_PHASE_PREPARE = 0,
                         SYNC_PHASE_QUERY_CAPABILITIES = 1,
                         SYNC_PHASE_PROCESS_LOCALLY_DELETED = 2,
-                        SYNC_PHASE_PREPARE_LOCALLY_CREATED = 3,
+                        SYNC_PHASE_PREPARE_DIRTY = 3,
                         SYNC_PHASE_UPLOAD_DIRTY = 4,
                         SYNC_PHASE_CHECK_SYNC_STATE = 5,
                         SYNC_PHASE_LIST_LOCAL = 6,
@@ -120,9 +122,9 @@ abstract public class SyncManager {
             Constants.log.info("Processing locally deleted entries");
             processLocallyDeleted();
 
-            syncPhase = SYNC_PHASE_PREPARE_LOCALLY_CREATED;
-            Constants.log.info("Processing locally created entries");
-            processLocallyCreated();
+            syncPhase = SYNC_PHASE_PREPARE_DIRTY;
+            Constants.log.info("Locally preparing dirty entries");
+            prepareDirty();
 
             syncPhase = SYNC_PHASE_UPLOAD_DIRTY;
             Constants.log.info("Uploading dirty entries");
@@ -153,9 +155,17 @@ abstract public class SyncManager {
             } else
                 Constants.log.info("Remote collection didn't change, skipping remote sync");
 
-        } catch (IOException e) {
+        } catch (IOException|ServiceUnavailableException e) {
             Constants.log.error("I/O exception during sync, trying again later", e);
             syncResult.stats.numIoExceptions++;
+
+            if (e instanceof ServiceUnavailableException) {
+                Date retryAfter = ((ServiceUnavailableException) e).retryAfter;
+                if (retryAfter != null) {
+                    // how many seconds to wait? getTime() returns ms, so divide by 1000
+                    syncResult.delayUntil = (retryAfter.getTime() - new Date().getTime()) / 1000;
+                }
+            }
 
         } catch(HttpException|DavException e) {
             Constants.log.error("HTTP/DAV Exception during sync", e);
@@ -207,7 +217,7 @@ abstract public class SyncManager {
                 try {
                     new DavResource(httpClient, collectionURL.newBuilder().addPathSegment(fileName).build())
                             .delete(local.getETag());
-                } catch (IOException | HttpException e) {
+                } catch (IOException|HttpException e) {
                     Constants.log.warn("Couldn't delete " + fileName + " from server");
                 }
             } else
@@ -217,7 +227,7 @@ abstract public class SyncManager {
         }
     }
 
-    protected void processLocallyCreated() throws CalendarStorageException, ContactsStorageException {
+    protected void prepareDirty() throws CalendarStorageException, ContactsStorageException {
         // assign file names and UIDs to new contacts so that we can use the file name as an index
         for (LocalResource local : localCollection.getWithoutFileName()) {
             String uuid = UUID.randomUUID().toString();
