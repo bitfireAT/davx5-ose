@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Debug;
 import android.provider.Settings;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -57,6 +58,10 @@ public class MainActivity extends Activity {
 	public void addAccount(MenuItem item) {
 		startActivity(new Intent(this, AddAccountActivity.class));
 	}
+
+    public void showDebugInfo(MenuItem item) {
+        startActivity(new Intent(this, DebugInfoActivity.class));
+    }
 
 	public void showSettings(MenuItem item) {
 		startActivity(new Intent(this, SettingsActivity.class));
