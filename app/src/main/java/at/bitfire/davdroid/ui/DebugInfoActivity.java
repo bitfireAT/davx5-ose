@@ -23,18 +23,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.google.common.base.Throwables;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
-import lombok.Cleanup;
 
 public class DebugInfoActivity extends Activity {
     public static final String
@@ -141,7 +135,8 @@ public class DebugInfoActivity extends Activity {
 
         if (exception != null) {
             report.append("STACK TRACE\n");
-            report.append(Throwables.getStackTraceAsString(exception));
+            for (String stackTrace : ExceptionUtils.getRootCauseStackTrace(exception))
+                report.append(stackTrace + "\n");
         }
 
         return report.toString();

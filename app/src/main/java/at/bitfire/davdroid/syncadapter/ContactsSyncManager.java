@@ -13,15 +13,16 @@ import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
-import android.text.TextUtils;
 
-import com.google.common.base.Charsets;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
+
+import org.apache.commons.codec.Charsets;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -30,8 +31,6 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import at.bitfire.dav4android.DavAddressBook;
 import at.bitfire.dav4android.DavResource;
@@ -56,27 +55,25 @@ import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
 
 public class ContactsSyncManager extends SyncManager {
-    protected static final int
-            MAX_MULTIGET = 10,
-            NOTIFICATION_ID = 1;
+    protected static final int MAX_MULTIGET = 10;
 
     final protected ContentProviderClient provider;
     protected boolean hasVCard4;
 
 
     public ContactsSyncManager(Context context, Account account, Bundle extras, ContentProviderClient provider, SyncResult result) {
-        super(NOTIFICATION_ID, context, account, extras, result);
+        super(Constants.NOTIFICATION_CONTACTS_SYNC, context, account, extras, result);
         this.provider = provider;
     }
 
 
     @Override
-    protected void prepare() {
-        collectionURL = HttpUrl.parse(settings.getAddressBookURL());
-        davCollection = new DavAddressBook(httpClient, collectionURL);
-
+    protected void prepare() throws ContactsStorageException {
         // prepare local address book
         localCollection = new LocalAddressBook(account, provider);
+
+        collectionURL = HttpUrl.parse(localAddressBook().getURL());
+        davCollection = new DavAddressBook(httpClient, collectionURL);
     }
 
     @Override
@@ -122,7 +119,7 @@ public class ContactsSyncManager extends SyncManager {
 
         // download new/updated VCards from server
         for (DavResource[] bunch : ArrayUtils.partition(toDownload.toArray(new DavResource[toDownload.size()]), MAX_MULTIGET)) {
-            Constants.log.info("Downloading " + TextUtils.join(" + ", bunch));
+            Constants.log.info("Downloading " + StringUtils.join(bunch, ", "));
 
             if (bunch.length == 1) {
                 // only one contact, use GET

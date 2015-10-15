@@ -143,7 +143,12 @@
     <string name="settings_carddav_vcard4_support">VCard 4.0-Unterstützung</string>
     <string name="settings_carddav_vcard4_supported">Kontakte werden als VCard 4.0 gesendet</string>
     <string name="settings_carddav_vcard4_not_supported">Kontakte werden als VCard 3.0 gesendet</string>
-    
+
+    <string name="settings_android_update_title">Neue Android-Version</string>
+    <string name="settings_android_update_description">Die Änderung der Android-Version kann einen Einfluss auf DAVdroid haben. Falls etwas nicht funktioniert, löschen Sie bitte Ihre DAVdroid-Accounts und fügen Sie sie neu hinzu.</string>
+    <string name="settings_version_update_title">Einstellungen aktualisiert</string>
+    <string name="settings_version_update_description">Interne Einstellungen wurden aktualisiert. Falls etwas nicht funktioniert, löschen Sie bitte Ihre DAVdroid-Accounts und fügen Sie sie neu hinzu.</string>
+
     <string name="setup_select_collections">DAVdroid: Ordner auswählen</string>
     <string name="setup_neither_caldav_nor_carddav">An dieser Adresse konnte kein CalDAV- oder CardDAV-Dienst gefunden werden.</string>
     <string name="setup_add_account">Konto hinzufügen</string>
@@ -178,9 +183,9 @@
     <string name="setup_read_only">schreibgeschützt</string>
 
     <string name="sync_error_title">Synchronisierung von %s fehlgeschlagen</string>
-    <string name="sync_error">Fehler beim %1$s</string>
-    <string name="sync_error_http_dav">Serverfehler</string>
-    <string name="sync_error_local_storage">Datenbank-Fehler</string>
+    <string name="sync_error">Fehler beim %s</string>
+    <string name="sync_error_http_dav">Serverfehler beim %s</string>
+    <string name="sync_error_local_storage">Datenbank-Fehler beim %s</string>
     <string-array name="sync_error_phases">
         <item>Vorbereiten der Synchronisierung</item>
         <item>Abfragen der Server-Fähigkeiten</item>

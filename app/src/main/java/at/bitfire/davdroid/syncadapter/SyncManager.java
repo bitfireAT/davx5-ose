@@ -204,6 +204,9 @@ abstract public class SyncManager {
                     .setContentTitle(context.getString(R.string.sync_error_title, account.name))
                     .setContentIntent(PendingIntent.getActivity(context, 0, detailsIntent, PendingIntent.FLAG_UPDATE_CURRENT));
 
+            if (Build.VERSION.SDK_INT >= 20)
+                builder.setLocalOnly(true);
+
             try {
                 String[] phases = context.getResources().getStringArray(R.array.sync_error_phases);
                 String message = context.getString(messageString, phases[syncPhase]);
@@ -225,7 +228,7 @@ abstract public class SyncManager {
     }
 
 
-    abstract protected void prepare();
+    abstract protected void prepare() throws ContactsStorageException;
 
     abstract protected void queryCapabilities() throws IOException, HttpException, DavException, CalendarStorageException, ContactsStorageException;
 

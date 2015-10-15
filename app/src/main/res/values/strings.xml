@@ -159,6 +159,11 @@
     <string name="settings_carddav_vcard4_supported">Contacts are sent in VCard 4.0 format</string>
     <string name="settings_carddav_vcard4_not_supported">Contacts are sent in VCard 3.0 format</string>
 
+    <string name="settings_android_update_title">Android version update</string>
+    <string name="settings_android_update_description">Android version updates may have an impact on how DAVdroid works. If there are problems, please delete your DAVdroid accounts and add them again.</string>
+    <string name="settings_version_update_title">Settings have been updated</string>
+    <string name="settings_version_update_description">Internal settings have been updated. If there are problems, please delete your DAVdroid accounts and add them again.</string>
+
     <string name="setup_select_collections">DAVdroid: Select collections</string>
     <string name="setup_neither_caldav_nor_carddav">No CalDAV-/CardDAV service is available at this location.</string>
     <string name="setup_add_account">Add account</string>
@@ -193,9 +198,9 @@
     <!-- sync errors and DebugInfoActivity -->
     <string name="debug_info_title">Debug info</string>
     <string name="sync_error_title">Synchronization of %s failed</string>
-    <string name="sync_error">Error while %1$s</string>
-    <string name="sync_error_http_dav">Server error</string>
-    <string name="sync_error_local_storage">Database error</string>
+    <string name="sync_error">Error while %s</string>
+    <string name="sync_error_http_dav">Server error while %s</string>
+    <string name="sync_error_local_storage">Database error while %s</string>
     <string-array name="sync_error_phases">
         <item>preparing synchronization</item>
         <item>querying capabilities</item>

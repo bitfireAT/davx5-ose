@@ -17,8 +17,8 @@ android {
         minSdkVersion 14
         targetSdkVersion 23
 
-        versionCode 75
-        versionName "0.9-alpha3"
+        versionCode 76
+        versionName "0.9-alpha4"
 
         buildConfigField "java.util.Date", "buildTime", "new java.util.Date()"
     }
@@ -49,8 +49,8 @@ configurations.all {
 }
 
 dependencies {
-    compile 'com.google.guava:guava:18.0'
     compile 'dnsjava:dnsjava:2.1.7'
+    compile 'org.apache.commons:commons-lang3:3.4'
     provided 'org.projectlombok:lombok:1.16.6'
     compile('org.slf4j:slf4j-android:1.7.12')
 
