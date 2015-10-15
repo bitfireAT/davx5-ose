@@ -182,7 +182,7 @@ public class TasksSyncManager extends SyncManager {
         try {
             tasks = Task.fromStream(stream, charset);
         } catch (InvalidCalendarException e) {
-            Constants.log.error("Received invalid iCalendar, ignoring");
+            Constants.log.error("Received invalid iCalendar, ignoring", e);
             return;
         }
 
@@ -203,7 +203,7 @@ public class TasksSyncManager extends SyncManager {
                 syncResult.stats.numInserts++;
             }
         } else
-            Constants.log.error("Received VCALENDAR with not exactly one VEVENT with UID, but without RECURRENCE-ID; ignoring " + fileName);
+            Constants.log.error("Received VCALENDAR with not exactly one VTODO; ignoring " + fileName);
     }
 
 }

@@ -193,7 +193,9 @@
     <!-- sync errors and DebugInfoActivity -->
     <string name="debug_info_title">Debug info</string>
     <string name="sync_error_title">Synchronization of %s failed</string>
-    <string name="sync_error_http">HTTP error while %1$s</string>
+    <string name="sync_error">Error while %1$s</string>
+    <string name="sync_error_http_dav">Server error</string>
+    <string name="sync_error_local_storage">Database error</string>
     <string-array name="sync_error_phases">
         <item>preparing synchronization</item>
         <item>querying capabilities</item>
@@ -203,8 +205,10 @@
         <item>checking sync state</item>
         <item>listing local entries</item>
         <item>listing remote entries</item>
+        <item>comparing local/remote entries</item>
         <item>downloading remote entries</item>
         <item>saving sync state</item>
     </string-array>
+    <string name="sync_error_unauthorized">User name/password wrong</string>
 
 </resources>
