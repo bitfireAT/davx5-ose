@@ -24,10 +24,9 @@ import android.provider.CalendarContract.Events;
 import android.provider.CalendarContract.Reminders;
 import android.text.TextUtils;
 
-import com.google.common.base.Joiner;
-
-import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.model.component.VTimeZone;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
@@ -96,8 +95,8 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         }
         values.put(Calendars.ALLOWED_REMINDERS, Reminders.METHOD_ALERT);
         if (Build.VERSION.SDK_INT >= 15) {
-            values.put(Calendars.ALLOWED_AVAILABILITY, Joiner.on(",").join(Reminders.AVAILABILITY_TENTATIVE, Reminders.AVAILABILITY_FREE, Reminders.AVAILABILITY_BUSY));
-            values.put(Calendars.ALLOWED_ATTENDEE_TYPES, Joiner.on(",").join(CalendarContract.Attendees.TYPE_OPTIONAL, CalendarContract.Attendees.TYPE_REQUIRED, CalendarContract.Attendees.TYPE_RESOURCE));
+            values.put(Calendars.ALLOWED_AVAILABILITY, StringUtils.join(new int[] { Reminders.AVAILABILITY_TENTATIVE, Reminders.AVAILABILITY_FREE, Reminders.AVAILABILITY_BUSY }, ","));
+            values.put(Calendars.ALLOWED_ATTENDEE_TYPES, StringUtils.join(new int[] { CalendarContract.Attendees.TYPE_OPTIONAL, CalendarContract.Attendees.TYPE_REQUIRED, CalendarContract.Attendees.TYPE_RESOURCE }, ", "));
         }
         return create(account, provider, values);
     }

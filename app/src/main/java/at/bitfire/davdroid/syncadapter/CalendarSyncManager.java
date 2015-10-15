@@ -16,12 +16,13 @@ import android.os.Bundle;
 import android.provider.CalendarContract.Calendars;
 import android.text.TextUtils;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.ResponseBody;
+
+import org.apache.commons.codec.Charsets;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -54,13 +55,11 @@ import lombok.Cleanup;
 
 public class CalendarSyncManager extends SyncManager {
 
-    protected static final int
-            MAX_MULTIGET = 30,
-            NOTIFICATION_ID = 2;
+    protected static final int MAX_MULTIGET = 20;
 
 
     public CalendarSyncManager(Context context, Account account, Bundle extras, SyncResult result, LocalCalendar calendar) {
-        super(NOTIFICATION_ID, context, account, extras, result);
+        super(Constants.NOTIFICATION_CALENDAR_SYNC, context, account, extras, result);
         localCollection = calendar;
     }
 
@@ -126,7 +125,7 @@ public class CalendarSyncManager extends SyncManager {
 
         // download new/updated iCalendars from server
         for (DavResource[] bunch : ArrayUtils.partition(toDownload.toArray(new DavResource[toDownload.size()]), MAX_MULTIGET)) {
-            Constants.log.info("Downloading " + Joiner.on(" + ").join(bunch));
+            Constants.log.info("Downloading " + StringUtils.join(bunch, ", "));
 
             if (bunch.length == 1) {
                 // only one contact, use GET

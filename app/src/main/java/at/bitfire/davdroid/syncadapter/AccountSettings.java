@@ -9,6 +9,9 @@ package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -16,32 +19,34 @@ import android.content.Context;
 import android.content.PeriodicSync;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
-import android.util.Log;
+import android.provider.ContactsContract;
+import android.text.TextUtils;
+
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.davdroid.resource.ServerInfo;
-import ezvcard.VCardVersion;
+import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
 
 public class AccountSettings {
-	private final static String TAG = "davdroid.AccountSettings";
-	
-	private final static int CURRENT_VERSION = 1;
+	private final static int CURRENT_VERSION = 2;
 	private final static String
 		KEY_SETTINGS_VERSION = "version",
-		
+
 		KEY_USERNAME = "user_name",
 		KEY_AUTH_PREEMPTIVE = "auth_preemptive",
-		
-		KEY_ADDRESSBOOK_URL = "addressbook_url",
-		KEY_ADDRESSBOOK_CTAG = "addressbook_ctag",
-		KEY_ADDRESSBOOK_VCARD_VERSION = "addressbook_vcard_version";
+        KEY_LAST_ANDROID_VERSION = "last_android_version";
 
 	public final static long SYNC_INTERVAL_MANUALLY = -1;
 
@@ -50,7 +55,7 @@ public class AccountSettings {
 	final Account account;
 	
 	
-	public AccountSettings(Context context, Account account) {
+    public AccountSettings(Context context, Account account) {
 		this.context = context;
 		this.account = account;
 		
@@ -62,10 +67,43 @@ public class AccountSettings {
 				version = Integer.parseInt(accountManager.getUserData(account, KEY_SETTINGS_VERSION));
 			} catch(NumberFormatException e) {
 			}
-			if (version < CURRENT_VERSION)
-				update(version);
+            Constants.log.info("AccountSettings version: v" + version + ", should be: " + version);
+
+			if (version < CURRENT_VERSION) {
+                showNotification(Constants.NOTIFICATION_ACCOUNT_SETTINGS_UPDATED,
+                        context.getString(R.string.settings_version_update_title),
+                        context.getString(R.string.settings_version_update_description));
+                update(version);
+            }
+
+            // check whether Android version has changed
+            int lastAndroidVersion = NumberUtils.toInt(accountManager.getUserData(account, KEY_LAST_ANDROID_VERSION));
+            if (lastAndroidVersion < Build.VERSION.SDK_INT) {
+                // notify user
+                showNotification(Constants.NOTIFICATION_ANDROID_VERSION_UPDATED,
+                        context.getString(R.string.settings_android_update_title),
+                        context.getString(R.string.settings_android_update_description));
+
+                accountManager.setUserData(account, KEY_LAST_ANDROID_VERSION, String.valueOf(Build.VERSION.SDK_INT));
+            }
 		}
 	}
+
+    protected void showNotification(int id, String title, String message) {
+        NotificationManager nm = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification.Builder n = new Notification.Builder(context);
+        if (Build.VERSION.SDK_INT >= 16) {
+            n.setPriority(Notification.PRIORITY_HIGH);
+            n.setStyle(new Notification.BigTextStyle().bigText(message));
+        } if (Build.VERSION.SDK_INT >= 20)
+            n.setLocalOnly(true);
+        if (Build.VERSION.SDK_INT >= 21)
+            n.setCategory(Notification.CATEGORY_SYSTEM);
+        n.setSmallIcon(R.drawable.ic_launcher);
+        n.setContentTitle(title);
+        n.setContentText(message);
+        nm.notify(id, Build.VERSION.SDK_INT >= 16 ? n.build() : n.getNotification());
+    }
 	
 	
 	public static Bundle createBundle(ServerInfo serverInfo) {
@@ -73,11 +111,6 @@ public class AccountSettings {
 		bundle.putString(KEY_SETTINGS_VERSION, String.valueOf(CURRENT_VERSION));
 		bundle.putString(KEY_USERNAME, serverInfo.getUserName());
 		bundle.putString(KEY_AUTH_PREEMPTIVE, Boolean.toString(serverInfo.isAuthPreemptive()));
-		for (ServerInfo.ResourceInfo addressBook : serverInfo.getAddressBooks())
-			if (addressBook.isEnabled()) {
-				bundle.putString(KEY_ADDRESSBOOK_URL, addressBook.getURL());
-				break;
-			}
 		return bundle;
 	}
 	
@@ -123,66 +156,45 @@ public class AccountSettings {
 		}
 	}
 
-
-	// address book (CardDAV) settings
-	
-	public String getAddressBookURL() {
-		return accountManager.getUserData(account, KEY_ADDRESSBOOK_URL);
-	}
-	
-	public String getAddressBookCTag() {
-		return accountManager.getUserData(account, KEY_ADDRESSBOOK_CTAG);
-	}
-	
-	public void setAddressBookCTag(String cTag) {
-		accountManager.setUserData(account, KEY_ADDRESSBOOK_CTAG, cTag);
-	}
-	
-	public VCardVersion getAddressBookVCardVersion() {
-		VCardVersion version = VCardVersion.V3_0;
-		String versionStr = accountManager.getUserData(account, KEY_ADDRESSBOOK_VCARD_VERSION);
-		if (versionStr != null)
-			version = VCardVersion.valueOfByStr(versionStr);
-		return version;
-	}
-
-	public void setAddressBookVCardVersion(VCardVersion version) {
-		accountManager.setUserData(account, KEY_ADDRESSBOOK_VCARD_VERSION, version.getVersion());
-	}
-	
 	
 	// update from previous account settings
 	
 	private void update(int fromVersion) {
-		Log.i(TAG, "Account settings must be updated from v" + fromVersion + " to v" + CURRENT_VERSION);
-		for (int toVersion = CURRENT_VERSION; toVersion > fromVersion; toVersion--)
-			update(fromVersion, toVersion);
+		for (int toVersion = fromVersion + 1; toVersion <= CURRENT_VERSION; toVersion++)
+            updateTo(toVersion);
 	}
 	
-	private void update(int fromVersion, int toVersion) {
-		Log.i(TAG, "Updating account settings from v" + fromVersion + " to " + toVersion);
+	private void updateTo(int toVersion) {
+        final int fromVersion = toVersion - 1;
+        Constants.log.info("Updating account settings from v" + fromVersion + " to " + toVersion);
 		try {
-			if (fromVersion == 0 && toVersion == 1)
-				update_0_1();
-			else
-				Log.wtf(TAG, "Don't know how to update settings from v" + fromVersion + " to v" + toVersion);
+			switch (toVersion) {
+                case 1:
+                    update_0_1();
+                    break;
+                case 2:
+                    update_1_2();
+                    break;
+                default:
+                    Constants.log.error("Don't know how to update settings from v" + fromVersion + " to v" + toVersion);
+            }
 		} catch(Exception e) {
-			Log.e(TAG, "Couldn't update account settings (DAVdroid will probably crash)!", e);
+            Constants.log.error("Couldn't update account settings (DAVdroid will probably crash)!", e);
 		}
 	}
 	
 	private void update_0_1() throws URISyntaxException {
 		String	v0_principalURL = accountManager.getUserData(account, "principal_url"),
 				v0_addressBookPath = accountManager.getUserData(account, "addressbook_path");
-		Log.d(TAG, "Old principal URL = " + v0_principalURL);
-		Log.d(TAG, "Old address book path = " + v0_addressBookPath);
+        Constants.log.debug("Old principal URL = " + v0_principalURL);
+        Constants.log.debug("Old address book path = " + v0_addressBookPath);
 		
 		URI principalURI = new URI(v0_principalURL);
 
 		// update address book
 		if (v0_addressBookPath != null) {
 			String addressBookURL = principalURI.resolve(v0_addressBookPath).toASCIIString();
-			Log.d(TAG, "New address book URL = " + addressBookURL);
+            Constants.log.debug("New address book URL = " + addressBookURL);
 			accountManager.setUserData(account, "addressbook_url", addressBookURL);
 		}
 		
@@ -197,7 +209,7 @@ public class AccountSettings {
 			int id = cursor.getInt(0);
 			String	v0_path = cursor.getString(1),
 					v1_url = principalURI.resolve(v0_path).toASCIIString();
-			Log.d(TAG, "Updating calendar #" + id + " name: " + v0_path + " -> " + v1_url);
+            Constants.log.debug("Updating calendar #" + id + " name: " + v0_path + " -> " + v1_url);
 			Uri calendar = ContentUris.appendId(Calendars.CONTENT_URI.buildUpon()
 					.appendQueryParameter(Calendars.ACCOUNT_NAME, account.name)
 					.appendQueryParameter(Calendars.ACCOUNT_TYPE, account.type)
@@ -205,14 +217,42 @@ public class AccountSettings {
 			ContentValues newValues = new ContentValues(1);
 			newValues.put(Calendars.NAME, v1_url);
 			if (resolver.update(calendar, newValues, null, null) != 1)
-				Log.e(TAG, "Number of modified calendars != 1");
+                Constants.log.debug("Number of modified calendars != 1");
 		}
-		
-		Log.d(TAG, "Cleaning old principal URL and address book path");
+
 		accountManager.setUserData(account, "principal_url", null);
 		accountManager.setUserData(account, "addressbook_path", null);
-		
-		Log.d(TAG, "Updated settings successfully!");
+
 		accountManager.setUserData(account, KEY_SETTINGS_VERSION, "1");
 	}
+
+    private void update_1_2() throws ContactsStorageException {
+        /* - KEY_ADDRESSBOOK_URL ("addressbook_url"),,
+           - KEY_ADDRESSBOOK_CTAG ("addressbook_ctag"),
+           - KEY_ADDRESSBOOK_VCARD_VERSION ("addressbook_vcard_version") are not used anymore (now stored in ContactsContract.SyncState)
+           - KEY_LAST_ANDROID_VERSION ("last_android_version") has been added
+        */
+
+        // move previous address book info to ContactsContract.SyncState
+        @Cleanup("release") ContentProviderClient provider = context.getContentResolver().acquireContentProviderClient(ContactsContract.AUTHORITY);
+        if (provider != null) {
+            LocalAddressBook addr = new LocalAddressBook(account, provider);
+
+            String url = accountManager.getUserData(account, "addressbook_url");
+            if (!TextUtils.isEmpty(url))
+                addr.setURL(url);
+            accountManager.setUserData(account, "addressbook_url", null);
+
+            String cTag = accountManager.getUserData(account, "addressbook_ctag");
+            if (!TextUtils.isEmpty(cTag))
+                addr.setCTag(cTag);
+            accountManager.setUserData(account, "addressbook_ctag", null);
+        }
+
+        // store current Android version
+        accountManager.setUserData(account, KEY_LAST_ANDROID_VERSION, String.valueOf(Build.VERSION.SDK_INT));
+
+        accountManager.setUserData(account, KEY_SETTINGS_VERSION, "2");
+    }
+
 }

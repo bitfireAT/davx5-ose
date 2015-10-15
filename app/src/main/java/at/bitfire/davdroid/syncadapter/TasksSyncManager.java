@@ -15,13 +15,13 @@ import android.content.SyncResult;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.ResponseBody;
 
+import org.apache.commons.codec.Charsets;
+import org.apache.commons.lang3.StringUtils;
 import org.dmfs.provider.tasks.TaskContract.TaskLists;
 
 import java.io.ByteArrayInputStream;
@@ -56,15 +56,13 @@ import lombok.Cleanup;
 
 public class TasksSyncManager extends SyncManager {
 
-    protected static final int
-            MAX_MULTIGET = 30,
-            NOTIFICATION_ID = 3;
+    protected static final int MAX_MULTIGET = 30;
 
     final protected TaskProvider provider;
 
 
     public TasksSyncManager(Context context, Account account, Bundle extras, TaskProvider provider, SyncResult result, LocalTaskList taskList) {
-        super(NOTIFICATION_ID, context, account, extras, result);
+        super(Constants.NOTIFICATION_TASK_SYNC, context, account, extras, result);
         this.provider = provider;
         localCollection = taskList;
     }
@@ -124,7 +122,7 @@ public class TasksSyncManager extends SyncManager {
 
         // download new/updated iCalendars from server
         for (DavResource[] bunch : ArrayUtils.partition(toDownload.toArray(new DavResource[toDownload.size()]), MAX_MULTIGET)) {
-            Constants.log.info("Downloading " + Joiner.on(" + ").join(bunch));
+            Constants.log.info("Downloading " + StringUtils.join(bunch, ", "));
 
             if (bunch.length == 1) {
                 // only one contact, use GET

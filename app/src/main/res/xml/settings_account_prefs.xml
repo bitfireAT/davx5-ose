@@ -59,15 +59,10 @@
 
     </PreferenceCategory>
 
+    <!--
     <PreferenceCategory android:title="@string/settings_carddav">
 
-        <CheckBoxPreference
-            android:key="vcard4_support"
-            android:title="@string/settings_carddav_vcard4_support"
-            android:persistent="false"
-            android:summaryOn="@string/settings_carddav_vcard4_supported"
-            android:summaryOff="@string/settings_carddav_vcard4_not_supported" />
-
     </PreferenceCategory>
+    -->
 
 </PreferenceScreen>

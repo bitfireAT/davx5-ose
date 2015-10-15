@@ -14,8 +14,16 @@ public class Constants {
 	public static final String
 		ACCOUNT_TYPE = "bitfire.at.davdroid",
 		WEB_URL_MAIN = "https://davdroid.bitfire.at/?pk_campaign=davdroid-app",
-		WEB_URL_HELP = "https://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app",
-		WEB_URL_VIEW_LOGS = "https://github.com/bitfireAT/davdroid/wiki/How-to-view-the-logs";
+		WEB_URL_HELP = "https://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app";
 
     public static final Logger log = LoggerFactory.getLogger("davdroid");
+
+    // notification IDs
+    public final static int
+            NOTIFICATION_ANDROID_VERSION_UPDATED = 0,
+            NOTIFICATION_ACCOUNT_SETTINGS_UPDATED = 1,
+            NOTIFICATION_CONTACTS_SYNC = 10,
+            NOTIFICATION_CALENDAR_SYNC = 11,
+            NOTIFICATION_TASK_SYNC = 12;
+
 }

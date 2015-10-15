@@ -26,7 +26,9 @@ import lombok.Synchronized;
 
 public class LocalAddressBook extends AndroidAddressBook implements LocalCollection {
 
-    protected static final String SYNC_STATE_CTAG = "ctag";
+    protected static final String
+            SYNC_STATE_CTAG = "ctag",
+            SYNC_STATE_URL = "url";
 
     private Bundle syncState = new Bundle();
 
@@ -80,6 +82,27 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
             syncState.clear();
     }
 
+    protected void writeSyncState() throws ContactsStorageException {
+        @Cleanup("recycle") Parcel parcel = Parcel.obtain();
+        parcel.writeBundle(syncState);
+        setSyncState(parcel.marshall());
+    }
+
+    public String getURL() throws ContactsStorageException {
+        synchronized (syncState) {
+            readSyncState();
+            return syncState.getString(SYNC_STATE_URL);
+        }
+    }
+
+    public void setURL(String url) throws ContactsStorageException {
+        synchronized (syncState) {
+            readSyncState();
+            syncState.putString(SYNC_STATE_URL, url);
+            writeSyncState();
+        }
+    }
+
     @Override
     public String getCTag() throws ContactsStorageException {
         synchronized (syncState) {
@@ -93,11 +116,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
         synchronized (syncState) {
             readSyncState();
             syncState.putString(SYNC_STATE_CTAG, cTag);
-
-            // write sync state bundle
-            @Cleanup("recycle") Parcel parcel = Parcel.obtain();
-            parcel.writeBundle(syncState);
-            setSyncState(parcel.marshall());
+            writeSyncState();
         }
     }
 
