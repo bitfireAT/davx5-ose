@@ -36,8 +36,8 @@ public class LocalTask extends AndroidTask implements LocalResource {
     }
 
     static final String COLUMN_ETAG = Tasks.SYNC1,
-                        COLUMN_UID = Tasks._UID,
-                        COLUMN_SEQUENCE = Tasks.SYNC2;
+                        COLUMN_UID = Tasks.SYNC2,
+                        COLUMN_SEQUENCE = Tasks.SYNC3;
 
     @Getter protected String fileName;
     @Getter @Setter protected String eTag;

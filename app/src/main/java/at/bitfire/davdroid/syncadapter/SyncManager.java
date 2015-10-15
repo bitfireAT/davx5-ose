@@ -33,6 +33,7 @@ import java.util.UUID;
 import at.bitfire.dav4android.DavResource;
 import at.bitfire.dav4android.exception.DavException;
 import at.bitfire.dav4android.exception.HttpException;
+import at.bitfire.dav4android.exception.UnauthorizedException;
 import at.bitfire.dav4android.exception.PreconditionFailedException;
 import at.bitfire.dav4android.exception.ServiceUnavailableException;
 import at.bitfire.dav4android.property.GetCTag;
@@ -43,6 +44,7 @@ import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.LocalResource;
 import at.bitfire.davdroid.ui.DebugInfoActivity;
+import at.bitfire.davdroid.ui.settings.AccountActivity;
 import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.vcard4android.ContactsStorageException;
 
@@ -165,18 +167,36 @@ abstract public class SyncManager {
             }
 
         } catch(Exception e) {
-            if (e instanceof HttpException || e instanceof DavException) {
+            final int messageString;
+
+            if (e instanceof UnauthorizedException) {
+                Constants.log.error("Not authorized anymore", e);
+                messageString = R.string.sync_error_unauthorized;
+                syncResult.stats.numAuthExceptions++;
+            } else if (e instanceof HttpException || e instanceof DavException) {
                 Constants.log.error("HTTP/DAV Exception during sync", e);
+                messageString = R.string.sync_error_http_dav;
                 syncResult.stats.numParseExceptions++;
             } else if (e instanceof CalendarStorageException || e instanceof ContactsStorageException) {
                 Constants.log.error("Couldn't access local storage", e);
+                messageString = R.string.sync_error_local_storage;
                 syncResult.databaseError = true;
+            } else {
+                Constants.log.error("Unknown sync error", e);
+                messageString = R.string.sync_error;
+                syncResult.stats.numParseExceptions++;
             }
 
-            Intent detailsIntent = new Intent(context, DebugInfoActivity.class);
-            detailsIntent.putExtra(DebugInfoActivity.KEY_EXCEPTION, e);
-            detailsIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account);
-            detailsIntent.putExtra(DebugInfoActivity.KEY_PHASE, syncPhase);
+            final Intent detailsIntent;
+            if (e instanceof UnauthorizedException) {
+                detailsIntent = new Intent(context, AccountActivity.class);
+                detailsIntent.putExtra(AccountActivity.EXTRA_ACCOUNT, account);
+            } else {
+                detailsIntent = new Intent(context, DebugInfoActivity.class);
+                detailsIntent.putExtra(DebugInfoActivity.KEY_EXCEPTION, e);
+                detailsIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account);
+                detailsIntent.putExtra(DebugInfoActivity.KEY_PHASE, syncPhase);
+            }
 
             Notification.Builder builder = new Notification.Builder(context);
             Notification notification;
@@ -184,9 +204,13 @@ abstract public class SyncManager {
                     .setContentTitle(context.getString(R.string.sync_error_title, account.name))
                     .setContentIntent(PendingIntent.getActivity(context, 0, detailsIntent, PendingIntent.FLAG_UPDATE_CURRENT));
 
-            String[] phases = context.getResources().getStringArray(R.array.sync_error_phases);
-            if (phases.length > syncPhase)
-                builder.setContentText(context.getString(R.string.sync_error_http, phases[syncPhase]));
+            try {
+                String[] phases = context.getResources().getStringArray(R.array.sync_error_phases);
+                String message = context.getString(messageString, phases[syncPhase]);
+                builder.setContentText(message);
+            } catch (IndexOutOfBoundsException ex) {
+                // should never happen
+            }
 
             if (Build.VERSION.SDK_INT >= 16) {
                 if (Build.VERSION.SDK_INT >= 21)

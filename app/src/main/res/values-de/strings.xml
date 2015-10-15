@@ -178,7 +178,9 @@
     <string name="setup_read_only">schreibgeschützt</string>
 
     <string name="sync_error_title">Synchronisierung von %s fehlgeschlagen</string>
-    <string name="sync_error_http">HTTP-Fehler beim %1$s</string>
+    <string name="sync_error">Fehler beim %1$s</string>
+    <string name="sync_error_http_dav">Serverfehler</string>
+    <string name="sync_error_local_storage">Datenbank-Fehler</string>
     <string-array name="sync_error_phases">
         <item>Vorbereiten der Synchronisierung</item>
         <item>Abfragen der Server-Fähigkeiten</item>
@@ -188,8 +190,10 @@
         <item>Abfragen des Synchronisierungs-Zustands</item>
         <item>Auflisten lokaler Einträge</item>
         <item>Auflisten der Server-Einträge</item>
+        <item>Vergleichen tw. Datenbank/Server</item>
         <item>Herunterladen von Server-Einträgen</item>
         <item>Speichern des Synchronisierungs-Zustands</item>
     </string-array>
+    <string name="sync_error_unauthorized">Benutzername/Passwort falsch</string>
 
 </resources>

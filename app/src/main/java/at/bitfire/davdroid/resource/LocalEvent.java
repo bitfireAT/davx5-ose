@@ -10,6 +10,7 @@ package at.bitfire.davdroid.resource;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
+import android.os.Build;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Events;
@@ -32,8 +33,8 @@ public class LocalEvent extends AndroidEvent implements LocalResource {
     }
 
     static final String COLUMN_ETAG = CalendarContract.Events.SYNC_DATA1,
-                        COLUMN_UID = CalendarContract.Events.UID_2445,
-                        COLUMN_SEQUENCE = CalendarContract.Events.SYNC_DATA2;
+                        COLUMN_UID = Build.VERSION.SDK_INT >= 17 ? Events.UID_2445 : Events.SYNC_DATA2,
+                        COLUMN_SEQUENCE = CalendarContract.Events.SYNC_DATA3;
 
     @Getter protected String fileName;
     @Getter @Setter protected String eTag;

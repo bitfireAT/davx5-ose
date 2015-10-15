@@ -126,8 +126,9 @@ public class HttpClient extends OkHttpClient {
         // add User-Agent to every request
         networkInterceptors().add(userAgentInterceptor);
 
-        // enable logs
-        enableLogs();
+        // enable verbose logs, if requested
+        if (Constants.log.isTraceEnabled())
+            enableLogs();
     }
 
     protected void enableLogs() {

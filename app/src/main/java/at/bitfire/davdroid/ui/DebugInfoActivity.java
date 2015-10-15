@@ -23,6 +23,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.google.common.base.Throwables;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -137,10 +141,7 @@ public class DebugInfoActivity extends Activity {
 
         if (exception != null) {
             report.append("STACK TRACE\n");
-            StringWriter writer = new StringWriter();
-            @Cleanup PrintWriter printWriter = new PrintWriter(writer);
-            exception.printStackTrace(printWriter);
-            report.append(writer.toString());
+            report.append(Throwables.getStackTraceAsString(exception));
         }
 
         return report.toString();
