@@ -33,12 +33,12 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
 
+import at.bitfire.dav4android.BasicDigestAuthenticator;
 import at.bitfire.dav4android.HttpUtils;
 import de.duenndns.ssl.MemorizingTrustManager;
 import lombok.RequiredArgsConstructor;
 
 public class HttpClient extends OkHttpClient {
-
     protected static final String HEADER_AUTHORIZATION = "Authorization";
 
     final static UserAgentInterceptor userAgentInterceptor = new UserAgentInterceptor();
@@ -80,7 +80,7 @@ public class HttpClient extends OkHttpClient {
         if (preemptive)
             networkInterceptors().add(new PreemptiveAuthenticationInterceptor(username, password));
         else
-            setAuthenticator(new DavAuthenticator(null, username, password));
+            setAuthenticator(new BasicDigestAuthenticator(null, username, password));
     }
 
     /**
@@ -98,7 +98,7 @@ public class HttpClient extends OkHttpClient {
 
         username = client.username;
         password = client.password;
-        setAuthenticator(new DavAuthenticator(host, username, password));
+        setAuthenticator(new BasicDigestAuthenticator(host, username, password));
     }
 
 
@@ -157,40 +157,6 @@ public class HttpClient extends OkHttpClient {
                     .header("Authorization", Credentials.basic(username, password))
                     .build();
             return chain.proceed(request);
-        }
-    }
-
-    @RequiredArgsConstructor
-    public static class DavAuthenticator implements Authenticator {
-        final String host, username, password;
-
-        @Override
-        public Request authenticate(Proxy proxy, Response response) throws IOException {
-            Request request = response.request();
-
-            if (host != null && !request.httpUrl().host().equalsIgnoreCase(host)) {
-                Constants.log.warn("Not authenticating against " +  host + " for security reasons!");
-                return null;
-            }
-
-            // check whether this is the first authentication try with our credentials
-            Response priorResponse = response.priorResponse();
-            boolean triedBefore = priorResponse != null ? priorResponse.request().header(HEADER_AUTHORIZATION) != null : false;
-            if (triedBefore)
-                // credentials didn't work last time, and they won't work now → stop here
-                return null;
-
-            //List<HttpUtils.AuthScheme> schemes = HttpUtils.parseWwwAuthenticate(response.headers("WWW-Authenticate"));
-            // TODO Digest auth
-
-            return request.newBuilder()
-                    .header(HEADER_AUTHORIZATION, Credentials.basic(username, password))
-                    .build();
-        }
-
-        @Override
-        public Request authenticateProxy(Proxy proxy, Response response) throws IOException {
-            return null;
         }
     }
 
