@@ -106,5 +106,5 @@ DAVdroid JB Workaround</a>.</strong></p>
 <string name="setup_organizer_hint">"ORGANIZADOR de tus eventos; se necesita si se usa información de los asistentes"</string>
 <string name="setup_account_name_info">"Usa tu dirección de correo electrónico como nombre de cuenta porque Android usará el nombre de cuenta como campo de ORGANIZADOR para los eventos que crees. No puedes tener dos cuentas con el mismo nombre.</string>
 <string name="setup_read_only">solo lectura</string>
-<string name="sync_error_title">La sincronización ha fallado</string>
+<string name="sync_error_calendar">La sincronización ha fallado</string>
 </resources>

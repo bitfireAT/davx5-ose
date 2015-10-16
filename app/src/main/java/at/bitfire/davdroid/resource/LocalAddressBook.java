@@ -9,19 +9,28 @@ package at.bitfire.davdroid.resource;
 
 import android.accounts.Account;
 import android.content.ContentProviderClient;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
+import android.os.RemoteException;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.Data;
+import android.provider.ContactsContract.Groups;
+import android.provider.ContactsContract.RawContacts;
+import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
+
+import java.security.acl.Group;
+import java.util.LinkedList;
+import java.util.List;
 
 import at.bitfire.davdroid.Constants;
 import at.bitfire.vcard4android.AndroidAddressBook;
 import at.bitfire.vcard4android.AndroidContact;
-import at.bitfire.vcard4android.AndroidContactFactory;
 import at.bitfire.vcard4android.AndroidGroupFactory;
-import at.bitfire.vcard4android.Contact;
 import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
-import lombok.Synchronized;
 
 
 public class LocalAddressBook extends AndroidAddressBook implements LocalCollection {
@@ -51,7 +60,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
      */
     @Override
     public LocalContact[] getDeleted() throws ContactsStorageException {
-        return (LocalContact[])queryContacts(ContactsContract.RawContacts.DELETED + "!=0", null);
+        return (LocalContact[])queryContacts(RawContacts.DELETED + "!=0", null);
     }
 
     /**
@@ -59,7 +68,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
      */
     @Override
     public LocalContact[] getDirty() throws ContactsStorageException {
-        return (LocalContact[])queryContacts(ContactsContract.RawContacts.DIRTY + "!=0", null);
+        return (LocalContact[])queryContacts(RawContacts.DIRTY + "!=0", null);
     }
 
     /**
@@ -70,6 +79,76 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
         return (LocalContact[])queryContacts(AndroidContact.COLUMN_FILENAME + " IS NULL", null);
     }
 
+
+    // GROUPS
+
+    /**
+     * Finds the first group with the given title.
+     * @param displayName   title of the group to look for
+     * @return              group with given title, or null if none
+     */
+    public LocalGroup findGroupByTitle(String displayName) throws ContactsStorageException {
+        try {
+            @Cleanup Cursor cursor = provider.query(syncAdapterURI(Groups.CONTENT_URI),
+                    new String[] { Groups._ID },
+                    ContactsContract.Groups.TITLE + "=?", new String[] { displayName }, null);
+            if (cursor != null && cursor.moveToNext())
+                return new LocalGroup(this, cursor.getLong(0));
+        } catch (RemoteException e) {
+            throw new ContactsStorageException("Couldn't find local contact group", e);
+        }
+        return null;
+    }
+
+    public LocalGroup[] getDeletedGroups() throws ContactsStorageException {
+        List<LocalGroup> groups = new LinkedList<>();
+        try {
+            @Cleanup Cursor cursor = provider.query(syncAdapterURI(Groups.CONTENT_URI),
+                    new String[] { Groups._ID },
+                    Groups.DELETED + "!=0", null, null);
+            while (cursor != null && cursor.moveToNext())
+                groups.add(new LocalGroup(this, cursor.getLong(0)));
+        } catch (RemoteException e) {
+            throw new ContactsStorageException("Couldn't query deleted groups", e);
+        }
+        return groups.toArray(new LocalGroup[groups.size()]);
+    }
+
+    public LocalGroup[] getDirtyGroups() throws ContactsStorageException {
+        List<LocalGroup> groups = new LinkedList<>();
+        try {
+            @Cleanup Cursor cursor = provider.query(syncAdapterURI(Groups.CONTENT_URI),
+                    new String[] { Groups._ID },
+                    Groups.DIRTY + "!=0", null, null);
+            while (cursor != null && cursor.moveToNext())
+                groups.add(new LocalGroup(this, cursor.getLong(0)));
+        } catch (RemoteException e) {
+            throw new ContactsStorageException("Couldn't query dirty groups", e);
+        }
+        return groups.toArray(new LocalGroup[groups.size()]);
+    }
+
+    public void markMembersDirty(long groupId) throws ContactsStorageException {
+        ContentValues dirty = new ContentValues(1);
+        dirty.put(RawContacts.DIRTY, 1);
+        try {
+            // query all GroupMemberships of this groupId, mark every corresponding raw contact as DIRTY
+            @Cleanup Cursor cursor = provider.query(syncAdapterURI(Data.CONTENT_URI),
+                    new String[] { GroupMembership.RAW_CONTACT_ID },
+                    Data.MIMETYPE + "=? AND " + GroupMembership.GROUP_ROW_ID + "=?",
+                    new String[] { GroupMembership.CONTENT_ITEM_TYPE, String.valueOf(groupId) }, null);
+            while (cursor != null && cursor.moveToNext()) {
+                long id = cursor.getLong(0);
+                Constants.log.debug("Marking raw contact #" + id + " as dirty");
+                provider.update(syncAdapterURI(ContentUris.withAppendedId(RawContacts.CONTENT_URI, id)), dirty, null, null);
+            }
+        } catch (RemoteException e) {
+            throw new ContactsStorageException("Couldn't query dirty groups", e);
+        }
+    }
+
+
+    // SYNC STATE
 
     protected void readSyncState() throws ContactsStorageException {
         @Cleanup("recycle") Parcel parcel = Parcel.obtain();

@@ -113,5 +113,5 @@
     <string name="setup_organizer_hint">"ORGANIZADOR de seus evento; requerido se você usa informações dos participantes"</string>
     <string name="setup_account_name_info">"Use seu endereço de e-mail como nome da conta porque o Android irá usar esta informação com ORGANIZADOR para eventos criados. Você não pode ter duas contas com o mesmo nome.</string>
     <string name="setup_read_only">apenas leitura</string>
-    <string name="sync_error_title">Falha na sincronização</string>
+    <string name="sync_error_calendar">Falha na sincronização</string>
 </resources>

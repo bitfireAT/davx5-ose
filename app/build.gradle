@@ -18,7 +18,7 @@ android {
         targetSdkVersion 23
 
         versionCode 76
-        versionName "0.9-alpha4"
+        versionName "0.9-beta1"
 
         buildConfigField "java.util.Date", "buildTime", "new java.util.Date()"
     }

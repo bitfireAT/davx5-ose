@@ -44,6 +44,7 @@ import at.bitfire.dav4android.property.GetContentType;
 import at.bitfire.dav4android.property.GetETag;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.davdroid.resource.LocalResource;
 import at.bitfire.davdroid.resource.LocalTask;
@@ -65,6 +66,11 @@ public class TasksSyncManager extends SyncManager {
         super(Constants.NOTIFICATION_TASK_SYNC, context, account, extras, result);
         this.provider = provider;
         localCollection = taskList;
+    }
+
+    @Override
+    protected String getSyncErrorTitle() {
+        return context.getString(R.string.sync_error_tasks, account.name);
     }
 
 
