@@ -103,16 +103,19 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
                 @Override
                 public void createLocalCollection(Account account, ServerInfo.ResourceInfo resource) throws ContactsStorageException {
                     @Cleanup("release") ContentProviderClient provider = getActivity().getContentResolver().acquireContentProviderClient(ContactsContract.AUTHORITY);
-                    LocalAddressBook addressBook = new LocalAddressBook(account, provider);
+                    if (provider != null) {
+                        LocalAddressBook addressBook = new LocalAddressBook(account, provider);
 
-                    // set URL
-                    addressBook.setURL(resource.getURL());
+                        // set URL
+                        addressBook.setURL(resource.getURL());
 
-                    // set Settings
-                    ContentValues settings = new ContentValues(2);
-                    settings.put(ContactsContract.Settings.SHOULD_SYNC, 1);
-                    settings.put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1);
-                    addressBook.updateSettings(settings);
+                        // set Settings
+                        ContentValues settings = new ContentValues(2);
+                        settings.put(ContactsContract.Settings.SHOULD_SYNC, 1);
+                        settings.put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1);
+                        addressBook.updateSettings(settings);
+                    } else
+                        Constants.log.error("Couldn't access Contacts Provider");
                 }
             });
 

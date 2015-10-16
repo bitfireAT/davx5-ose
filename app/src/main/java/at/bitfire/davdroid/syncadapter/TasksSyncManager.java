@@ -89,7 +89,7 @@ public class TasksSyncManager extends SyncManager {
         int color = (pColor != null && pColor.color != null) ? pColor.color : LocalCalendar.defaultColor;
 
         ContentValues values = new ContentValues(2);
-        Constants.log.info("Setting new calendar name \"" + displayName + "\" and color 0x" + Integer.toHexString(color));
+        Constants.log.info("Setting new task list name \"" + displayName + "\" and color 0x" + Integer.toHexString(color));
         values.put(TaskLists.LIST_NAME, displayName);
         values.put(TaskLists.LIST_COLOR, color);
         localTaskList().update(values);

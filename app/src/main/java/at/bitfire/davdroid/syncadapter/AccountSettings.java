@@ -9,6 +9,7 @@ package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.ContentProviderClient;
@@ -77,8 +78,8 @@ public class AccountSettings {
             }
 
             // check whether Android version has changed
-            int lastAndroidVersion = NumberUtils.toInt(accountManager.getUserData(account, KEY_LAST_ANDROID_VERSION));
-            if (lastAndroidVersion < Build.VERSION.SDK_INT) {
+            String lastAndroidVersionInt = accountManager.getUserData(account, KEY_LAST_ANDROID_VERSION);
+            if (lastAndroidVersionInt != null && NumberUtils.toInt(lastAndroidVersionInt) < Build.VERSION.SDK_INT) {
                 // notify user
                 showNotification(Constants.NOTIFICATION_ANDROID_VERSION_UPDATED,
                         context.getString(R.string.settings_android_update_title),
@@ -89,6 +90,7 @@ public class AccountSettings {
 		}
 	}
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     protected void showNotification(int id, String title, String message) {
         NotificationManager nm = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         Notification.Builder n = new Notification.Builder(context);
