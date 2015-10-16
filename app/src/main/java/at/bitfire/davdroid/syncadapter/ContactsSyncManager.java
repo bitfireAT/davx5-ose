@@ -23,6 +23,7 @@ import com.squareup.okhttp.ResponseBody;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -72,7 +73,10 @@ public class ContactsSyncManager extends SyncManager {
         // prepare local address book
         localCollection = new LocalAddressBook(account, provider);
 
-        collectionURL = HttpUrl.parse(localAddressBook().getURL());
+        String url = localAddressBook().getURL();
+        if (url == null)
+            throw new ContactsStorageException("Couldn't get address book URL");
+        collectionURL = HttpUrl.parse(url);
         davCollection = new DavAddressBook(httpClient, collectionURL);
     }
 
@@ -101,7 +105,16 @@ public class ContactsSyncManager extends SyncManager {
     @Override
     protected void listRemote() throws IOException, HttpException, DavException {
         // fetch list of remote VCards and build hash table to index file name
-        davAddressBook().addressbookQuery();
+
+        try {
+            davAddressBook().addressbookQuery();
+        } catch(HttpException e) {
+            if (e.status/100 == 4) {
+                Constants.log.warn("Server error on REPORT addressbook query, falling back to PROPFIND", e);
+                davAddressBook().propfind(1, GetETag.NAME);
+            }
+        }
+
         remoteResources = new HashMap<>(davCollection.members.size());
         for (DavResource vCard : davCollection.members) {
             String fileName = vCard.fileName();

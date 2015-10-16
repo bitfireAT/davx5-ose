@@ -60,7 +60,7 @@ public class TasksSyncAdapterService extends Service {
                     throw new CalendarStorageException("Couldn't access OpenTasks provider");
 
                 for (LocalTaskList taskList : (LocalTaskList[])LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, null, null)) {
-                    Constants.log.info("Synchronizing task list #"  + taskList.getId() + ", URL: " + taskList.getName());
+                    Constants.log.info("Synchronizing task list #"  + taskList.getId() + ", URL: " + taskList.getSyncId());
                     TasksSyncManager syncManager = new TasksSyncManager(getContext(), account, extras, provider, syncResult, taskList);
                     syncManager.performSync();
                 }

@@ -202,7 +202,7 @@ abstract public class SyncManager {
             Notification notification;
             builder .setSmallIcon(R.drawable.ic_launcher)
                     .setContentTitle(context.getString(R.string.sync_error_title, account.name))
-                    .setContentIntent(PendingIntent.getActivity(context, 0, detailsIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                    .setContentIntent(PendingIntent.getActivity(context, 0, detailsIntent, PendingIntent.FLAG_CANCEL_CURRENT));
 
             if (Build.VERSION.SDK_INT >= 20)
                 builder.setLocalOnly(true);

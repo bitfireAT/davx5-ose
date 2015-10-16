@@ -43,7 +43,7 @@ public class ServerInfo implements Serializable {
 
 	@RequiredArgsConstructor(suppressConstructorProperties=true)
 	@Data
-	public static class ResourceInfo implements Serializable {
+	public static class ResourceInfo implements Cloneable, Serializable {
 		public enum Type {
 			ADDRESS_BOOK,
 			CALENDAR
@@ -64,19 +64,24 @@ public class ServerInfo implements Serializable {
 
 
 		// copy constructor
-		public ResourceInfo(ResourceInfo src) {
-			enabled = src.enabled;
-			type = src.type;
-			readOnly = src.readOnly;
 
-			URL = src.URL;
-			title = src.title;
-			description = src.description;
-			color = src.color;
+        @Override
+        public ResourceInfo clone() {
+            return new ResourceInfo(this);
+        }
 
-			timezone = src.timezone;
-		}
+        private ResourceInfo(ResourceInfo src) {
+            enabled = src.enabled;
+            type = src.type;
+            readOnly = src.readOnly;
 
+            URL = src.URL;
+            title = src.title;
+            description = src.description;
+            color = src.color;
+
+            timezone = src.timezone;
+        }
 
 		// some logic
 

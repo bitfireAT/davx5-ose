@@ -165,10 +165,10 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 			setContent((CheckedTextView)v, R.drawable.addressbook, (ServerInfo.ResourceInfo)getItem(position));
 			break;
 		case TYPE_CALENDARS_ROW:
-			setContent((CheckedTextView)v, R.drawable.calendar, (ServerInfo.ResourceInfo) getItem(position));
+			setContent((CheckedTextView)v, R.drawable.calendar, (ServerInfo.ResourceInfo)getItem(position));
 			break;
 		case TYPE_TASK_LISTS_ROW:
-			setContent((CheckedTextView)v, R.drawable.tasks, (ServerInfo.ResourceInfo) getItem(position));
+			setContent((CheckedTextView)v, R.drawable.tasks, (ServerInfo.ResourceInfo)getItem(position));
 		}
 
 		// disable task list selection if there's no local task provider
