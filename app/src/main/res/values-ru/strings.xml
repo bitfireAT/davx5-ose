@@ -123,6 +123,6 @@
     <string name="setup_account_name_info">"Используйте свой адрес email как имя аккаунта, так как Android будет использовать это имя как поле ОРГАНИЗАТОР для событий которые вы будете создавать. Вы не можете использовать одинаковое имя для разных аккаунтов.</string>
     <string name="setup_read_only">только чтение</string>
 
-    <string name="sync_error_title">Ошибка синхронизации</string>
+    <string name="sync_error_calendar">Ошибка синхронизации</string>
 
 </resources>

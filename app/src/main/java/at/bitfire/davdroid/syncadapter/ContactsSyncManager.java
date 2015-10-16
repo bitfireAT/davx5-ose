@@ -23,7 +23,6 @@ import com.squareup.okhttp.ResponseBody;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -45,8 +44,10 @@ import at.bitfire.dav4android.property.SupportedAddressData;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.HttpClient;
+import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.davdroid.resource.LocalContact;
+import at.bitfire.davdroid.resource.LocalGroup;
 import at.bitfire.davdroid.resource.LocalResource;
 import at.bitfire.vcard4android.Contact;
 import at.bitfire.vcard4android.ContactsStorageException;
@@ -67,6 +68,11 @@ public class ContactsSyncManager extends SyncManager {
         this.provider = provider;
     }
 
+    @Override
+    protected String getSyncErrorTitle() {
+        return context.getString(R.string.sync_error_contacts, account.name);
+    }
+
 
     @Override
     protected void prepare() throws ContactsStorageException {
@@ -78,6 +84,8 @@ public class ContactsSyncManager extends SyncManager {
             throw new ContactsStorageException("Couldn't get address book URL");
         collectionURL = HttpUrl.parse(url);
         davCollection = new DavAddressBook(httpClient, collectionURL);
+
+        processChangedGroups();
     }
 
     @Override
@@ -184,6 +192,28 @@ public class ContactsSyncManager extends SyncManager {
 
     private DavAddressBook davAddressBook() { return (DavAddressBook)davCollection; }
     private LocalAddressBook localAddressBook() { return (LocalAddressBook)localCollection; }
+
+    private void processChangedGroups() throws ContactsStorageException {
+        LocalAddressBook addressBook = localAddressBook();
+
+        // groups with DELETED=1: remove group finally
+        for (LocalGroup group : addressBook.getDeletedGroups()) {
+            long groupId = group.getId();
+            Constants.log.debug("Finally removing group #" + groupId);
+            // remove group memberships, but not as sync adapter (should marks contacts as DIRTY)
+            // NOTE: doesn't work that way because Contact Provider removes the group memberships even for DELETED groups
+            // addressBook.removeGroupMemberships(groupId, false);
+            group.delete();
+        }
+
+        // groups with DIRTY=1: mark all memberships as dirty, then clean DIRTY flag of group
+        for (LocalGroup group : addressBook.getDirtyGroups()) {
+            long groupId = group.getId();
+            Constants.log.debug("Marking members of modified group #" + groupId + " as dirty");
+            addressBook.markMembersDirty(groupId);
+            group.clearDirty();
+        }
+    }
 
     private void processVCard(String fileName, String eTag, InputStream stream, Charset charset, Contact.Downloader downloader) throws IOException, ContactsStorageException {
         Contact contacts[] = Contact.fromStream(stream, charset, downloader);

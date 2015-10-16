@@ -8,14 +8,20 @@
 
 package at.bitfire.davdroid.resource;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
+
+import java.io.FileNotFoundException;
 
 import at.bitfire.davdroid.BuildConfig;
+import at.bitfire.davdroid.Constants;
 import at.bitfire.vcard4android.AndroidAddressBook;
 import at.bitfire.vcard4android.AndroidContact;
 import at.bitfire.vcard4android.AndroidContactFactory;
+import at.bitfire.vcard4android.BatchOperation;
 import at.bitfire.vcard4android.Contact;
 import at.bitfire.vcard4android.ContactsStorageException;
 import ezvcard.Ezvcard;
@@ -61,6 +67,58 @@ public class LocalContact extends AndroidContact implements LocalResource {
         }
     }
 
+
+    // group support
+
+    @Override
+    protected void populateGroupMembership(ContentValues row) {
+        if (row.containsKey(GroupMembership.GROUP_ROW_ID)) {
+            long groupId = row.getAsLong(GroupMembership.GROUP_ROW_ID);
+
+            // fetch group
+            LocalGroup group = new LocalGroup(addressBook, groupId);
+            try {
+                Contact groupInfo = group.getContact();
+
+                // add to CATEGORIES
+                contact.getCategories().add(groupInfo.displayName);
+            } catch (FileNotFoundException|ContactsStorageException e) {
+                Constants.log.warn("Couldn't find assigned group #" + groupId + ", ignoring membership", e);
+            }
+        }
+    }
+
+    @Override
+    protected void insertGroupMemberships(BatchOperation batch) throws ContactsStorageException {
+        for (String category : contact.getCategories()) {
+            // Is there already a category with this display name?
+            LocalGroup group = ((LocalAddressBook)addressBook).findGroupByTitle(category);
+
+            if (group == null) {
+                // no, we have to create the group before inserting the membership
+
+                Contact groupInfo = new Contact();
+                groupInfo.displayName = category;
+                group = new LocalGroup(addressBook, groupInfo);
+                group.create();
+            }
+
+            Long groupId = group.getId();
+            if (groupId != null) {
+                ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(dataSyncURI());
+                if (id == null)
+                    builder.withValueBackReference(GroupMembership.RAW_CONTACT_ID, 0);
+                else
+                    builder.withValue(GroupMembership.RAW_CONTACT_ID, id);
+                builder .withValue(GroupMembership.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
+                        .withValue(GroupMembership.GROUP_ROW_ID, groupId);
+                batch.enqueue(builder.build());
+            }
+        }
+    }
+
+
+    // factory
 
     static class Factory extends AndroidContactFactory {
         static final Factory INSTANCE = new Factory();

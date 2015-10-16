@@ -151,7 +151,7 @@
     <string name="setup_select_task_lists">Choisir les listes de tâches à synchroniser :</string>
     <string name="setup_task_lists">Listes de tâches</string>
     <string name="skip">Sauter</string>
-    <string name="sync_error_title">La synchronisation a échoué</string>
+    <string name="sync_error_calendar">La synchronisation a échoué</string>
     <string name="exception_cert_path_validation">Un certificate dans le chemin n\'est pas sûr. Lire la FAQ pour plus d\'information.</string>
 
 </resources>

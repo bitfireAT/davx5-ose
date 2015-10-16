@@ -44,6 +44,7 @@ import at.bitfire.dav4android.property.GetContentType;
 import at.bitfire.dav4android.property.GetETag;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.davdroid.resource.LocalEvent;
 import at.bitfire.davdroid.resource.LocalResource;
@@ -63,6 +64,10 @@ public class CalendarSyncManager extends SyncManager {
         localCollection = calendar;
     }
 
+    @Override
+    protected String getSyncErrorTitle() {
+        return context.getString(R.string.sync_error_calendar, account.name);
+    }
 
     @Override
     protected void prepare() {

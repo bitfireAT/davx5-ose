@@ -197,7 +197,9 @@
 
     <!-- sync errors and DebugInfoActivity -->
     <string name="debug_info_title">Debug info</string>
-    <string name="sync_error_title">Synchronization of %s failed</string>
+    <string name="sync_error_calendar">Calendar synchronization failed (%s)</string>
+    <string name="sync_error_contacts">Address book synchronization failed (%s)</string>
+    <string name="sync_error_tasks">Task synchronization failed (%s)</string>
     <string name="sync_error">Error while %s</string>
     <string name="sync_error_http_dav">Server error while %s</string>
     <string name="sync_error_local_storage">Database error while %s</string>

@@ -125,6 +125,6 @@
     <string name="setup_account_name_info">"Gebruik uw e-mailadres als accountnaam omdat Android de accountnaam zal gebruiken als ORGANIZER veld voor afspraken die u maakt. Je kunt geen twee accounts met dezelfde naam gebruiken.</string>
     <string name="setup_read_only">Alleen lezen</string>
 
-    <string name="sync_error_title">Synchronisatie fout</string>
+    <string name="sync_error_calendar">Synchronisatie fout</string>
 
 </resources>
