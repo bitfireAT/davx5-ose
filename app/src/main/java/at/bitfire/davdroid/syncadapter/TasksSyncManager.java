@@ -62,8 +62,8 @@ public class TasksSyncManager extends SyncManager {
     final protected TaskProvider provider;
 
 
-    public TasksSyncManager(Context context, Account account, Bundle extras, TaskProvider provider, SyncResult result, LocalTaskList taskList) {
-        super(Constants.NOTIFICATION_TASK_SYNC, context, account, extras, result);
+    public TasksSyncManager(Context context, Account account, Bundle extras, String authority, TaskProvider provider, SyncResult result, LocalTaskList taskList) {
+        super(Constants.NOTIFICATION_TASK_SYNC, context, account, extras, authority, result);
         this.provider = provider;
         localCollection = taskList;
     }
@@ -128,6 +128,9 @@ public class TasksSyncManager extends SyncManager {
 
         // download new/updated iCalendars from server
         for (DavResource[] bunch : ArrayUtils.partition(toDownload.toArray(new DavResource[toDownload.size()]), MAX_MULTIGET)) {
+            if (Thread.interrupted())
+                return;
+
             Constants.log.info("Downloading " + StringUtils.join(bunch, ", "));
 
             if (bunch.length == 1) {

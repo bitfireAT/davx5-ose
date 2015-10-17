@@ -48,7 +48,7 @@ public class ContactsSyncAdapterService extends Service {
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
             Constants.log.info("Starting address book sync (" + authority + ")");
 
-            ContactsSyncManager syncManager = new ContactsSyncManager(getContext(), account, extras, provider, syncResult);
+            ContactsSyncManager syncManager = new ContactsSyncManager(getContext(), account, extras, authority, provider, syncResult);
             syncManager.performSync();
 
             Constants.log.info("Address book sync complete");

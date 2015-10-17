@@ -55,7 +55,7 @@ public class CalendarsSyncAdapterService extends Service {
             try {
                 for (LocalCalendar calendar : (LocalCalendar[])LocalCalendar.find(account, provider, LocalCalendar.Factory.INSTANCE, CalendarContract.Calendars.SYNC_EVENTS + "!=0", null)) {
                     Constants.log.info("Synchronizing calendar #"  + calendar.getId() + ", URL: " + calendar.getName());
-                    CalendarSyncManager syncManager = new CalendarSyncManager(getContext(), account, extras, syncResult, calendar);
+                    CalendarSyncManager syncManager = new CalendarSyncManager(getContext(), account, extras, authority, syncResult, calendar);
                     syncManager.performSync();
                 }
             } catch (CalendarStorageException e) {

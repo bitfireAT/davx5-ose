@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import at.bitfire.dav4android.DavResource;
+import at.bitfire.dav4android.exception.ConflictException;
 import at.bitfire.dav4android.exception.DavException;
 import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.dav4android.exception.UnauthorizedException;
@@ -68,6 +69,7 @@ abstract public class SyncManager {
     protected final Context context;
     protected final Account account;
     protected final Bundle extras;
+    protected final String authority;
     protected final SyncResult syncResult;
 
     protected final AccountSettings settings;
@@ -92,10 +94,11 @@ abstract public class SyncManager {
 
 
 
-    public SyncManager(int notificationId, Context context, Account account, Bundle extras, SyncResult syncResult) {
+    public SyncManager(int notificationId, Context context, Account account, Bundle extras, String authority, SyncResult syncResult) {
         this.context = context;
         this.account = account;
         this.extras = extras;
+        this.authority = authority;
         this.syncResult = syncResult;
 
         // get account settings and generate httpClient
@@ -115,6 +118,8 @@ abstract public class SyncManager {
             Constants.log.info("Preparing synchronization");
             prepare();
 
+            if (Thread.interrupted())
+                return;
             syncPhase = SYNC_PHASE_QUERY_CAPABILITIES;
             Constants.log.info("Querying capabilities");
             queryCapabilities();
@@ -123,6 +128,8 @@ abstract public class SyncManager {
             Constants.log.info("Processing locally deleted entries");
             processLocallyDeleted();
 
+            if (Thread.interrupted())
+                return;
             syncPhase = SYNC_PHASE_PREPARE_DIRTY;
             Constants.log.info("Locally preparing dirty entries");
             prepareDirty();
@@ -138,10 +145,14 @@ abstract public class SyncManager {
                 Constants.log.info("Listing local entries");
                 listLocal();
 
+                if (Thread.interrupted())
+                    return;
                 syncPhase = SYNC_PHASE_LIST_REMOTE;
                 Constants.log.info("Listing remote entries");
                 listRemote();
 
+                if (Thread.interrupted())
+                    return;
                 syncPhase = SYNC_PHASE_COMPARE_LOCAL_REMOTE;
                 Constants.log.info("Comparing local/remote entries");
                 compareLocalRemote();
@@ -197,6 +208,7 @@ abstract public class SyncManager {
                 detailsIntent = new Intent(context, DebugInfoActivity.class);
                 detailsIntent.putExtra(DebugInfoActivity.KEY_EXCEPTION, e);
                 detailsIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account);
+                detailsIntent.putExtra(DebugInfoActivity.KEY_AUTHORITY, authority);
                 detailsIntent.putExtra(DebugInfoActivity.KEY_PHASE, syncPhase);
             }
 
@@ -225,7 +237,6 @@ abstract public class SyncManager {
                 notification = builder.getNotification();
             }
             notificationManager.notify(account.name, notificationId, notification);
-
         }
     }
 
@@ -234,11 +245,18 @@ abstract public class SyncManager {
 
     abstract protected void queryCapabilities() throws IOException, HttpException, DavException, CalendarStorageException, ContactsStorageException;
 
+    /**
+     * Process locally deleted entries (DELETE them on the server as well).
+     * Checks Thread.interrupted() before each request to allow quick sync cancellation.
+     */
     protected void processLocallyDeleted() throws CalendarStorageException, ContactsStorageException {
         // Remove locally deleted entries from server (if they have a name, i.e. if they were uploaded before),
         // but only if they don't have changed on the server. Then finally remove them from the local address book.
         LocalResource[] localList = localCollection.getDeleted();
         for (LocalResource local : localList) {
+            if (Thread.interrupted())
+                return;
+
             final String fileName = local.getFileName();
             if (!TextUtils.isEmpty(fileName)) {
                 Constants.log.info(fileName + " has been deleted locally -> deleting from server");
@@ -246,7 +264,7 @@ abstract public class SyncManager {
                     new DavResource(httpClient, collectionURL.newBuilder().addPathSegment(fileName).build())
                             .delete(local.getETag());
                 } catch (IOException|HttpException e) {
-                    Constants.log.warn("Couldn't delete " + fileName + " from server");
+                    Constants.log.warn("Couldn't delete " + fileName + " from server; ignoring (may be downloaded again)");
                 }
             } else
                 Constants.log.info("Removing local record #" + local.getId() + " which has been deleted locally and was never uploaded");
@@ -266,9 +284,16 @@ abstract public class SyncManager {
 
     abstract protected RequestBody prepareUpload(LocalResource resource) throws IOException, CalendarStorageException, ContactsStorageException;
 
+    /**
+     * Uploads dirty records to the server, using a PUT request for each record.
+     * Checks Thread.interrupted() before each request to allow quick sync cancellation.
+     */
     protected void uploadDirty() throws IOException, HttpException, CalendarStorageException, ContactsStorageException {
         // upload dirty contacts
         for (LocalResource local : localCollection.getDirty()) {
+            if (Thread.interrupted())
+                return;
+
             final String fileName = local.getFileName();
 
             DavResource remote = new DavResource(httpClient, collectionURL.newBuilder().addPathSegment(fileName).build());
@@ -281,14 +306,13 @@ abstract public class SyncManager {
                 if (local.getETag() == null) {
                     Constants.log.info("Uploading new record " + fileName);
                     remote.put(body, null, true);
-                    // TODO handle 30x
                 } else {
                     Constants.log.info("Uploading locally modified record " + fileName);
                     remote.put(body, local.getETag(), false);
-                    // TODO handle 30x
                 }
 
-            } catch (PreconditionFailedException e) {
+            } catch (ConflictException|PreconditionFailedException e) {
+                // we can't interact with the user to resolve the conflict, so we treat 409 like 412
                 Constants.log.info("Resource has been modified on the server before upload, ignoring", e);
             }
 
@@ -396,6 +420,7 @@ abstract public class SyncManager {
 
     /**
      * Downloads the remote resources in {@link #toDownload} and stores them locally.
+     * Must check Thread.interrupted() periodically to allow quick sync cancellation.
      */
     abstract protected void downloadRemote() throws IOException, HttpException, DavException, ContactsStorageException, CalendarStorageException;
 
