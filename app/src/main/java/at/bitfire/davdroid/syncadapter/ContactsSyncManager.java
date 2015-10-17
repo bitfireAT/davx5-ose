@@ -63,8 +63,8 @@ public class ContactsSyncManager extends SyncManager {
     protected boolean hasVCard4;
 
 
-    public ContactsSyncManager(Context context, Account account, Bundle extras, ContentProviderClient provider, SyncResult result) {
-        super(Constants.NOTIFICATION_CONTACTS_SYNC, context, account, extras, result);
+    public ContactsSyncManager(Context context, Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult result) {
+        super(Constants.NOTIFICATION_CONTACTS_SYNC, context, account, extras, authority, result);
         this.provider = provider;
     }
 
@@ -140,6 +140,9 @@ public class ContactsSyncManager extends SyncManager {
 
         // download new/updated VCards from server
         for (DavResource[] bunch : ArrayUtils.partition(toDownload.toArray(new DavResource[toDownload.size()]), MAX_MULTIGET)) {
+            if (Thread.interrupted())
+                return;
+
             Constants.log.info("Downloading " + StringUtils.join(bunch, ", "));
 
             if (bunch.length == 1) {

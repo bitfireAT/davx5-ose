@@ -62,47 +62,10 @@ public class HttpClient extends OkHttpClient {
     protected String username, password;
 
 
-    public HttpClient() {
-        super();
-        context = null;
-        initialize();
-    }
-
-    public HttpClient(Context context, String username, String password, boolean preemptive) {
+    protected HttpClient(Context context) {
         super();
         this.context = context;
 
-        initialize();
-
-        // authentication
-        this.username = username;
-        this.password = password;
-        if (preemptive)
-            networkInterceptors().add(new PreemptiveAuthenticationInterceptor(username, password));
-        else
-            setAuthenticator(new BasicDigestAuthenticator(null, username, password));
-    }
-
-    /**
-     * Creates a new HttpClient (based on another one) which can be used to download external resources:
-     * 1. it does not use preemptive authentication
-     * 2. it only authenticates against a given host
-     * @param client  user name and password from this client will be used
-     * @param host    authentication will be restricted to this host
-     */
-    public HttpClient(HttpClient client, String host) {
-        super();
-        context = client.context;
-
-        initialize();
-
-        username = client.username;
-        password = client.password;
-        setAuthenticator(new BasicDigestAuthenticator(host, username, password));
-    }
-
-
-    protected void initialize() {
         if (context != null) {
             // use MemorizingTrustManager to manage self-signed certificates
             MemorizingTrustManager mtm = new MemorizingTrustManager(context);
@@ -130,6 +93,39 @@ public class HttpClient extends OkHttpClient {
         if (Constants.log.isTraceEnabled())
             enableLogs();
     }
+
+    public HttpClient(Context context, String username, String password, boolean preemptive) {
+        this(context);
+
+        // authentication
+        this.username = username;
+        this.password = password;
+        if (preemptive)
+            networkInterceptors().add(new PreemptiveAuthenticationInterceptor(username, password));
+        else
+            setAuthenticator(new BasicDigestAuthenticator(null, username, password));
+    }
+
+    /**
+     * Creates a new HttpClient (based on another one) which can be used to download external resources:
+     * 1. it does not use preemptive authentication
+     * 2. it only authenticates against a given host
+     * @param client  user name and password from this client will be used
+     * @param host    authentication will be restricted to this host
+     */
+    public HttpClient(HttpClient client, String host) {
+        this(client.context);
+
+        username = client.username;
+        password = client.password;
+        setAuthenticator(new BasicDigestAuthenticator(host, username, password));
+    }
+
+    // for testing (mock server doesn't need auth)
+    protected HttpClient() {
+        this(null, null, null, false);
+    }
+
 
     protected void enableLogs() {
         interceptors().add(loggingInterceptor);

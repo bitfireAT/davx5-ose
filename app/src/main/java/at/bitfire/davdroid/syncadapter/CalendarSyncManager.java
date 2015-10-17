@@ -59,8 +59,8 @@ public class CalendarSyncManager extends SyncManager {
     protected static final int MAX_MULTIGET = 20;
 
 
-    public CalendarSyncManager(Context context, Account account, Bundle extras, SyncResult result, LocalCalendar calendar) {
-        super(Constants.NOTIFICATION_CALENDAR_SYNC, context, account, extras, result);
+    public CalendarSyncManager(Context context, Account account, Bundle extras, String authority, SyncResult result, LocalCalendar calendar) {
+        super(Constants.NOTIFICATION_CALENDAR_SYNC, context, account, extras, authority, result);
         localCollection = calendar;
     }
 
@@ -130,6 +130,8 @@ public class CalendarSyncManager extends SyncManager {
 
         // download new/updated iCalendars from server
         for (DavResource[] bunch : ArrayUtils.partition(toDownload.toArray(new DavResource[toDownload.size()]), MAX_MULTIGET)) {
+            if (Thread.interrupted())
+                return;
             Constants.log.info("Downloading " + StringUtils.join(bunch, ", "));
 
             if (bunch.length == 1) {
