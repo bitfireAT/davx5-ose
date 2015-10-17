@@ -10,11 +10,11 @@ package at.bitfire.davdroid.resource;
 import com.squareup.okhttp.HttpUrl;
 
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 
+import at.bitfire.dav4android.UrlUtils;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -27,10 +27,10 @@ public class ServerInfo implements Serializable {
 	
 	private String errorMessage;
 	
-	private List<ResourceInfo>
-		addressBooks = new LinkedList<>(),
-		calendars  = new LinkedList<>(),
-		taskLists = new LinkedList<>();
+	private ResourceInfo
+		addressBooks[] = new ResourceInfo[0],
+		calendars[] = new ResourceInfo[0],
+		taskLists[] = new ResourceInfo[0];
 	
 	
 	public boolean hasEnabledCalendars() {
@@ -43,8 +43,9 @@ public class ServerInfo implements Serializable {
 
 	@RequiredArgsConstructor(suppressConstructorProperties=true)
 	@Data
-	public static class ResourceInfo implements Cloneable, Serializable {
-		public enum Type {
+	public static class ResourceInfo implements Serializable {
+
+        public enum Type {
 			ADDRESS_BOOK,
 			CALENDAR
 		}
@@ -54,7 +55,7 @@ public class ServerInfo implements Serializable {
 		final Type type;
 		final boolean readOnly;
 
-		final String URL,       // absolute URL of resource
+		final String url,       // absolute URL of resource
 			  title,
 			  description;
 		final Integer color;
@@ -75,7 +76,7 @@ public class ServerInfo implements Serializable {
             type = src.type;
             readOnly = src.readOnly;
 
-            URL = src.URL;
+            url = src.url;
             title = src.title;
             description = src.description;
             color = src.color;
@@ -83,14 +84,5 @@ public class ServerInfo implements Serializable {
             timezone = src.timezone;
         }
 
-		// some logic
-
-		public String getTitle() {
-			if (title == null) {
-                HttpUrl url = HttpUrl.parse(URL);
-                return url != null ? url.toString() : "–";
-            } else
-				return title;
-		}
 	}
 }

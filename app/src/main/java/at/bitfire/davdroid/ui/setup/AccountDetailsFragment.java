@@ -29,7 +29,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Calendar;
 import java.util.List;
 
 import at.bitfire.davdroid.Constants;
@@ -107,7 +106,7 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
                         LocalAddressBook addressBook = new LocalAddressBook(account, provider);
 
                         // set URL
-                        addressBook.setURL(resource.getURL());
+                        addressBook.setURL(resource.getUrl());
 
                         // set Settings
                         ContentValues settings = new ContentValues(2);
@@ -150,7 +149,7 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
 		void createLocalCollection(Account account, ServerInfo.ResourceInfo resource) throws ContactsStorageException;
 	}
 
-	protected void addSync(Account account, String authority, List<ServerInfo.ResourceInfo> resourceList, AddSyncCallback callback) {
+	protected void addSync(Account account, String authority, ServerInfo.ResourceInfo[] resourceList, AddSyncCallback callback) {
 		boolean sync = false;
 		for (ServerInfo.ResourceInfo resource : resourceList)
 			if (resource.isEnabled()) {

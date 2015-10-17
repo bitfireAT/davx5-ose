@@ -58,7 +58,7 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
             throw new CalendarStorageException("Couldn't access OpenTasks provider");
 
         ContentValues values = new ContentValues();
-        values.put(TaskLists._SYNC_ID, info.getURL());
+        values.put(TaskLists._SYNC_ID, info.getUrl());
         values.put(TaskLists.LIST_NAME, info.getTitle());
         values.put(TaskLists.LIST_COLOR, info.color != null ? info.color : defaultColor);
         values.put(TaskLists.OWNER, account.name);

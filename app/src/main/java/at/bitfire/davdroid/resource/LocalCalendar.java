@@ -73,7 +73,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
             throw new CalendarStorageException("Couldn't acquire ContentProviderClient for " + CalendarContract.AUTHORITY);
 
         ContentValues values = new ContentValues();
-        values.put(Calendars.NAME, info.getURL());
+        values.put(Calendars.NAME, info.getUrl());
         values.put(Calendars.CALENDAR_DISPLAY_NAME, info.getTitle());
         values.put(Calendars.CALENDAR_COLOR, info.color != null ? info.color : defaultColor);
 
