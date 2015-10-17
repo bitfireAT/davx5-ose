@@ -1,34 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (c) 2013 – 2015 Ricki Hirner (bitfire web engineering).
-  ~ All rights reserved. This program and the accompanying materials
-  ~ are made available under the terms of the GNU Public License v3.0
-  ~ which accompanies this distribution, and is available at
-  ~ http://www.gnu.org/licenses/gpl.html
-  -->
-
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
-
-    <!-- common strings -->
-    <string name="app_name">DAVdroid</string>
-    <string name="next">Volgende</string>
-    <string name="help">Help</string>
-
-    <string name="exception_cert_path_validation">Onvertrouwd certificaat in certificaat pad. Bekijk FAQ voor meer info.</string>
-    <string name="exception_http">HTTP fout: %s</string>
-    <string name="exception_incapable_resource">Ontbrekende mogelijkheid: %s</string>
-    <string name="exception_io">I/O fout: %s</string>
-    <string name="exception_uri_syntax">Ongeldige URI: %s</string>
-    
-    <!-- MainActivity -->
-    <string name="main_manage_accounts">Beheer sync accounts</string>
-
-    <string name="html_main_workaround"><![CDATA[
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="help">Help</string>
+  <string name="next">Volgende</string>
+  <string name="exception_cert_path_validation">Onvertrouwd certificaat in certificaat pad. Bekijk FAQ voor meer info.</string>
+  <string name="exception_http">HTTP fout: %s</string>
+  <string name="exception_incapable_resource">Ontbrekende mogelijkheid: %s</string>
+  <string name="exception_io">I/O fout: %s</string>
+  <string name="exception_uri_syntax">Ongeldige URI: %s</string>
+  <!--MainActivity-->
+  <string name="main_manage_accounts">Beheer sync accounts</string>
+  <string name="html_main_workaround"><![CDATA[
 		<p>Dank u voor het kopen van DAVdroid via Google Play en dus ondersteuning van het project. Helaas, er zijn twee problemen met Google Play:</p>
 		
 		<h2>1. Accounts, kunnen na een reboot verdwijnen</h2>
 		<p>Het kan voorkomen dat al uw <strong>DAVdroid accounts (inclusief contacten en afspraken) verdwenen zijn</strong>
-        na het herstarten van uw apparaat</strong>. De reden hiervoor is een <a href="https://code.google.com/p/android/issues/detail?id=34880">bug in Android</a>
+        na het herstarten van uw apparaat</strong>. De reden hiervoor is een <a href=\"https://code.google.com/p/android/issues/detail?id=34880\">bug in Android</a>
         die ervoor zorgt dat accounts van betaalde apps verwijderd worden bij het opstarten omdat de (encrypted) APK bestanden geladen worden <i>na</i> de controlle op orphan accounts.</p>
         <p>Getroffen gebruikers:<br/>
         * Alle Android 4.1-gebruikers die DAVdroid hebben verkregen via de Play Store;<br/>
@@ -36,95 +24,86 @@
         
         <h2>2. Accounts kunnen verdwijnen na het upgraden van DAVdroid</h2>
         <p>Het kan voorkomen dat al uw <strong>DAVdroid accounts (inclusief contacten en afspraken) verdwenen zijn na een Play Store
-        update van DAVdroid</strong>. De reden is <a href="https://code.google.com/p/android/issues/detail?id=66905">nog een bug in Android</a>
+        update van DAVdroid</strong>. De reden is <a href=\"https://code.google.com/p/android/issues/detail?id=66905\">nog een bug in Android</a>
         die ervoor zorgt dat accounts van betaalde apps verwijderd worden door een vergelijkbare reden.</p>
         <p>Getroffen gebruikers: een aantal Android 4.4.2 gebruikers die DAVdroid via de Play Store bekregen hebben (voorkomend bij Nexus apparaten en de Moto G)</p>
         
-        <p><strong>Als je getroffen ben door een van deze bugs, <a href="market://details?id=at.bitfire.davdroid.jbworkaround">instaleer de
+        <p><strong>Als je getroffen ben door een van deze bugs, <a href=\"market://details?id=at.bitfire.davdroid.jbworkaround\">instaleer de
         DAVdroid JB Workaround</a>.</strong></p>
     ]]></string>
-
-    <!-- AddAccountActivity -->
-    <string name="login_type_email">Inloggen met e-mailadres</string>
-    <string name="login_type_email_description">Account details kunnen automatisch gevonden worden via de domeinnaam. Bijvoorbeeld: mijnaccount@icloud.com</string>
-    <string name="login_type_url">Inloggen met URL en gebruikersnaam</string>
-    <string name="login_type_url_description">Account details kunnen automatisch gevonden worden via de URL en gebruikersnaam. bijv. bij zelf-gehoste diensten.</string>
-    
-    <string name="login_email_description">Vul uw e-mailadres in. De domeinnaam zal worden gebruikt om de instellingen automatisch te vinden.</string>
-    <string name="login_email_address">E-mail:</string>
-    
-    <string-array name="login_url_scheme">
-        <item>http://</item>
-        <item>https://</item>
-    </string-array>
-    <string name="login_http_warning">"Als je geen encryptie gebruikt (HTTPS), kunnen andere mogelijk uw login gegevens, contacten en afspraken onderscheppen."</string>
-    <string name="login_user_name">Gebruikersnaam:</string>
-    <string name="login_base_url">Basis URL (verzamelingen worden automatisch gevonden):</string>
-    <string name="login_auth_preemptive">Preëmptieve authenticatie (aanbevolen, maar werkt niet met Digest-auth)</string>
-
-    <string name="login_password">Wachtwoord:</string>
-
-    <!-- Settings activity -->
-    <string name="settings_title">Instellingen</string>
-    <string name="settings_no_accounts">Geen DAVdroid accounts gevonden</string>
-    <string name="settings_authentication">Authenticatie</string>
-    <string name="settings_username">Gebruikersnaam</string>
-    <string name="settings_enter_username">Gebruikersnaam invoeren:</string>
-    <string name="settings_password">Wachtwoord</string>
-    <string name="settings_password_summary">Gebruik het zelfde wachtwoord als op de server.</string>
-    <string name="settings_enter_password">Wachtwoord invoeren:</string>
-    <string name="settings_preemptive">Preëmptieve authenticatie</string>
-    <string name="settings_preemptive_on">Credentials worden met elk verzoek verzonden (aanbevolen)</string>
-    <string name="settings_preemptive_off">Credentials worden alleen op aanvraag verzonden</string>
-    <string name="settings_sync">Synchronisatie</string>
-    <string name="settings_sync_interval_contacts">Contacten verversen</string>
-    <string name="settings_sync_summary_manually">Alleen handmatig</string>
-    <string name="settings_sync_summary_periodically">Elke %d minuten + meteen na wijziging</string>
-    <string name="settings_sync_summary_not_available">Niet beschikbaar</string>
-    <string name="settings_sync_interval_calendars">Agenda\'s verversen</string>
-    <string-array name="settings_sync_interval_seconds">
-        <item>-1</item>
-        <item>300</item>
-        <item>600</item>
-        <item>900</item>
-        <item>3600</item>
-        <item>7200</item>
-        <item>14400</item>
-        <item>86400</item>
-    </string-array>
-    <string-array name="settings_sync_interval_names">
-        <item>Alleen handmatig</item>
-        <item>Elke 5 minuten</item>
-        <item>Elke 10 minuten</item>
-        <item>Elke 15 minuten</item>
-        <item>Elk uur</item>
-        <item>Elke 2 uur</item>
-        <item>Elke 4 uur</item>
-        <item>Dagelijks</item>
-    </string-array>
-    <string name="settings_carddav">Adresboek</string>
-    <string name="settings_carddav_vcard4_support">VCard 4.0 ondersteuning</string>
-    <string name="settings_carddav_vcard4_supported">Contacten worden verzonden in VCard 4.0 formaat</string>
-    <string name="settings_carddav_vcard4_not_supported">Contacten worden verzonden in VCard 3.0 formaat</string>
-
-    <string name="setup_select_collections">DAVdroid: Selecteer collecties</string>
-    <string name="setup_neither_caldav_nor_carddav">Geen CalDAV-/CardDAV beschikbaar op deze lokatie.</string>
-    <string name="setup_add_account">Account toevoegen</string>
-    <string name="setup_querying_server">Gegevens worden aangevraagd. Even geduld…</string>
-    <string name="setup_what_to_sync">Welke collecties wilt u synchronizereen ?</string>
-    <string name="setup_address_books">Adresboeken</string>
-    <string name="setup_calendars">Agenda\'s</string>
-    <string name="setup_select_address_book">Selecteer maximaal 1 adresboek (tap opnieuw om te deselecteren):</string>
-    <string name="setup_select_calendars">Selecteer uw agend\'s:</string>
-    
-    <string name="setup_account_details">Account eigenschappen</string>
-    <string name="setup_account_name">Account naam:</string>
-    <string name="setup_account_name_hint">Mijn CalDAV/CardDAV Account</string>
-    <string name="setup_email_address">E-mailadres:</string>
-    <string name="setup_organizer_hint">"ORGANISATOR van uw afspraken; vereist voor deelnemer informatie"</string>
-    <string name="setup_account_name_info">"Gebruik uw e-mailadres als accountnaam omdat Android de accountnaam zal gebruiken als ORGANIZER veld voor afspraken die u maakt. Je kunt geen twee accounts met dezelfde naam gebruiken.</string>
-    <string name="setup_read_only">Alleen lezen</string>
-
-    <string name="sync_error_calendar">Synchronisatie fout</string>
-
+  <!--AddAccountActivity-->
+  <string name="login_type_email">Inloggen met e-mailadres</string>
+  <string name="login_type_email_description">Account details kunnen automatisch gevonden worden via de domeinnaam. Bijvoorbeeld: mijnaccount@icloud.com</string>
+  <string name="login_type_url">Inloggen met URL en gebruikersnaam</string>
+  <string name="login_type_url_description">Account details kunnen automatisch gevonden worden via de URL en gebruikersnaam. bijv. bij zelf-gehoste diensten.</string>
+  <string name="login_email_description">Vul uw e-mailadres in. De domeinnaam zal worden gebruikt om de instellingen automatisch te vinden.</string>
+  <string name="login_email_address">E-mail:</string>
+  <string-array name="login_url_scheme">
+    <item>http://</item>
+    <item>https://</item>
+  </string-array>
+  <string name="login_http_warning">Als je geen encryptie gebruikt (HTTPS), kunnen andere mogelijk uw login gegevens, contacten en afspraken onderscheppen.</string>
+  <string name="login_user_name">Gebruikersnaam:</string>
+  <string name="login_base_url">Basis URL (verzamelingen worden automatisch gevonden):</string>
+  <string name="login_auth_preemptive">Preëmptieve authenticatie (aanbevolen, maar werkt niet met Digest-auth)</string>
+  <string name="login_password">Wachtwoord:</string>
+  <!--Settings activity-->
+  <string name="settings_title">Instellingen</string>
+  <string name="settings_no_accounts">Geen DAVdroid accounts gevonden</string>
+  <string name="settings_authentication">Authenticatie</string>
+  <string name="settings_username">Gebruikersnaam</string>
+  <string name="settings_enter_username">Gebruikersnaam invoeren:</string>
+  <string name="settings_password">Wachtwoord</string>
+  <string name="settings_password_summary">Gebruik het zelfde wachtwoord als op de server.</string>
+  <string name="settings_enter_password">Wachtwoord invoeren:</string>
+  <string name="settings_preemptive">Preëmptieve authenticatie</string>
+  <string name="settings_preemptive_on">Credentials worden met elk verzoek verzonden (aanbevolen)</string>
+  <string name="settings_preemptive_off">Credentials worden alleen op aanvraag verzonden</string>
+  <string name="settings_sync">Synchronisatie</string>
+  <string name="settings_sync_interval_contacts">Contacten verversen</string>
+  <string name="settings_sync_summary_manually">Alleen handmatig</string>
+  <string name="settings_sync_summary_periodically">Elke %d minuten + meteen na wijziging</string>
+  <string name="settings_sync_summary_not_available">Niet beschikbaar</string>
+  <string name="settings_sync_interval_calendars">Agenda\'s verversen</string>
+  <string-array name="settings_sync_interval_seconds">
+    <item>-1</item>
+    <item>300</item>
+    <item>600</item>
+    <item>900</item>
+    <item>3600</item>
+    <item>7200</item>
+    <item>14400</item>
+    <item>86400</item>
+  </string-array>
+  <string-array name="settings_sync_interval_names">
+    <item>Alleen handmatig</item>
+    <item>Elke 5 minuten</item>
+    <item>Elke 10 minuten</item>
+    <item>Elke 15 minuten</item>
+    <item>Elk uur</item>
+    <item>Elke 2 uur</item>
+    <item>Elke 4 uur</item>
+    <item>Dagelijks</item>
+  </string-array>
+  <string name="settings_carddav">Adresboek</string>
+  <string name="settings_carddav_vcard4_support">VCard 4.0 ondersteuning</string>
+  <string name="settings_carddav_vcard4_supported">Contacten worden verzonden in VCard 4.0 formaat</string>
+  <string name="settings_carddav_vcard4_not_supported">Contacten worden verzonden in VCard 3.0 formaat</string>
+  <string name="setup_select_collections">DAVdroid: Selecteer collecties</string>
+  <string name="setup_neither_caldav_nor_carddav">Geen CalDAV-/CardDAV beschikbaar op deze lokatie.</string>
+  <string name="setup_add_account">Account toevoegen</string>
+  <string name="setup_querying_server">Gegevens worden aangevraagd. Even geduld…</string>
+  <string name="setup_what_to_sync">Welke collecties wilt u synchronizereen ?</string>
+  <string name="setup_address_books">Adresboeken</string>
+  <string name="setup_calendars">Agenda\'s</string>
+  <string name="setup_select_address_book">Selecteer maximaal 1 adresboek (tap opnieuw om te deselecteren):</string>
+  <string name="setup_select_calendars">Selecteer uw agend\'s:</string>
+  <string name="setup_account_details">Account eigenschappen</string>
+  <string name="setup_account_name">Account naam:</string>
+  <string name="setup_account_name_hint">Mijn CalDAV/CardDAV Account</string>
+  <string name="setup_email_address">E-mailadres:</string>
+  <string name="setup_organizer_hint">ORGANISATOR van uw afspraken; vereist voor deelnemer informatie</string>
+  <string name="setup_account_name_info">\"Gebruik uw e-mailadres als accountnaam omdat Android de accountnaam zal gebruiken als ORGANIZER veld voor afspraken die u maakt. Je kunt geen twee accounts met dezelfde naam gebruiken.</string>
+  <string name="setup_read_only">Alleen lezen</string>
+  <!--sync errors and DebugInfoActivity-->
 </resources>

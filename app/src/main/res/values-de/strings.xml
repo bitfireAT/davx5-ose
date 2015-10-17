@@ -1,64 +1,55 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (c) 2013 – 2015 Ricki Hirner (bitfire web engineering).
-  ~ All rights reserved. This program and the accompanying materials
-  ~ are made available under the terms of the GNU Public License v3.0
-  ~ which accompanies this distribution, and is available at
-  ~ http://www.gnu.org/licenses/gpl.html
-  -->
-
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
-    <!-- common strings -->
-    <string name="app_name">DAVdroid</string>
-    <string name="next">Weiter</string>
-    <string name="skip">Überspringen</string>
-    <string name="help">Hilfe</string>
-
-    <string name="exception_cert_path_validation">Nicht vertrauenswürdiges Zertifikat in der Zertifikatskette (siehe FAQ)</string>
-    <string name="exception_http">HTTP-Fehler: %s</string>
-    <string name="exception_incapable_resource">Fehlende Server-Unterstützung: %s</string>
-    <string name="exception_io">E/A-Fehler: %s</string>
-    <string name="exception_uri_syntax">URI ungültig: %s</string>
-    
-    <!-- MainActivity -->    
-	<string name="main_manage_accounts">Sync-Konten anzeigen</string>
-    
-    <string name="html_main_workaround"><![CDATA[
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="help">Hilfe</string>
+  <string name="next">Weiter</string>
+  <string name="share">Senden</string>
+  <string name="skip">Überspringen</string>
+  <string name="exception_cert_path_validation">Nicht vertrauenswürdiges Zertifikat in der Zertifikatskette (siehe FAQ)</string>
+  <string name="exception_http">HTTP-Fehler: %s</string>
+  <string name="exception_incapable_resource">Fehlende Server-Unterstützung: %s</string>
+  <string name="exception_io">E/A-Fehler: %s</string>
+  <string name="exception_uri_syntax">URI ungültig: %s</string>
+  <!--MainActivity-->
+  <string name="main_manage_accounts">Sync-Konten anzeigen</string>
+  <string name="main_show_debug_info">Debug-Info anzeigen</string>
+  <string name="html_main_workaround"><![CDATA[
         <p>Vielen Dank, dass Sie DAVdroid im Play Store erworben haben und das Projekt dadurch unterstützen.       
         Leider gibt es derzeit zwei Probleme, die vom Play Store verursacht werden:</p>
 
-		<h2><a href="https://davdroid.bitfire.at/faq/entry/account-gone-after-reboot">1. DAVdroid-Accounts verschwinden nach einem Neustart</a></h2>
+		<h2><a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-reboot\">1. DAVdroid-Accounts verschwinden nach einem Neustart</a></h2>
 		<p>Möglicherweise <strong>verschwinden alle Ihre DAVdroid-Accounts samt Kontakten und Terminen nach einem Neustart</strong>
-		des Geräts. Die Ursache ist ein <a href="https://code.google.com/p/android/issues/detail?id=34880">Fehler in Android</a>,
+		des Geräts. Die Ursache ist ein <a href=\"https://code.google.com/p/android/issues/detail?id=34880\">Fehler in Android</a>,
 		der zur irrtümlichen Entfernung von Accounts von Bezahlapps bei einem Neustart führt, da die Prüfung auf verwaiste
 		und damit zu löschende Accounts schon *vor* dem Entschlüsseln der App erfolgt.</p>
         <p>Betroffene Benutzer*Innen:<br/>
         * alle mit Android 4.1, die DAVdroid über Play Store bezogen haben;<br/>
         * einige mit Android 4.2, die DAVdroid über Play Store bezogen und bestimmte Geräte haben (zB die meisten Samsung-Geräte)</p>
         
-        <h2><a href="https://davdroid.bitfire.at/faq/entry/account-gone-after-updating">2. DAVdroid-Accounts verschwinden nach einer DAVdroid-Aktualisierung</a></h2>
+        <h2><a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-updating\">2. DAVdroid-Accounts verschwinden nach einer DAVdroid-Aktualisierung</a></h2>
         <p>Möglicherweise <strong>verschwinden alle Ihre DAVdroid-Accounts samt Kontakten und Terminen während eines
         DAVdroid-Updates</strong>, das von Play Store durchgeführt wird. Die Ursache ist ein
-        <a href="https://code.google.com/p/android/issues/detail?id=66905">anderer Fehler in Android</a>,
+        <a href=\"https://code.google.com/p/android/issues/detail?id=66905\">anderer Fehler in Android</a>,
 		der zur irrtümlichen Entfernung von Accounts von Bezahlapps bei der Aktualisierung dieser Apps führt.</p>
         <p>Betroffene Benutzer*Innen:<br/>
         einige mit Android 4.4.2, die DAVdroid über Play Store bezogen haben (bekannt sind Nexus-Geräte und Moto G)</p>
         
-        <p><strong>Sollten Sie von einem dieser Fehler betroffen sein, <a href="market://details?id=at.bitfire.davdroid.jbworkaround">installieren
+        <p><strong>Sollten Sie von einem dieser Fehler betroffen sein, <a href=\"market://details?id=at.bitfire.davdroid.jbworkaround\">installieren
         Sie den DAVdroid JB Workaround</a>.</strong></p>
     ]]></string>
-    <string name="html_main_info"><![CDATA[
+  <string name="html_main_info"><![CDATA[
        <h1>Willkommen bei DAVdroid/%s!</h1>
        
        <p>DAVdroid ist ein Android 4+-CalDAV/CardDAV-Sync-Adapter. Um ihn zu verwenden, müssen Sie ein DAVdroid-Konto
        für Ihren Server hinzufügen. Die Kontakte/Termine/Aufgaben werden dann automatisch in beide Richtungen synchronisiert.
-       Weitere Informationen erhalten Sie auf der <a href="https://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid-Homepage</a>.
-       Dort finden Sie auch eine <a href="https://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Anleitung zum Einrichten</a>.
-       DAVdroid respektiert Ihre Privatsphäre (siehe <a href="https://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Datenschutzrichtlinie</a>).</p>
+       Weitere Informationen erhalten Sie auf der <a href=\"https://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">DAVdroid-Homepage</a>.
+       Dort finden Sie auch eine <a href=\"https://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">Anleitung zum Einrichten</a>.
+       DAVdroid respektiert Ihre Privatsphäre (siehe <a href=\"https://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">Datenschutzrichtlinie</a>).</p>
 
-       <p><b>Bei Problemen lesen Sie bitte die <a href="https://davdroid.bitfire.at/faq?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">häufig gestellten Fragen</a>.
+       <p><b>Bei Problemen lesen Sie bitte die <a href=\"https://davdroid.bitfire.at/faq?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">häufig gestellten Fragen</a>.
        Um Hilfe zu erhalten oder über DAVdroid-bezogene Themen zu diskutieren, gibt es unsere
-       <a href="https://davdroid.bitfire.at/forums?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">DAVdroid-Foren</a>.</b>
+       <a href=\"https://davdroid.bitfire.at/forums?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">DAVdroid-Foren</a>.</b>
        Bitte erpressen Sie uns nicht mit schlechten Bewertungen in den App-Stores (das ist zwecklos und für beide Seiten demotivierend).</p>
 
        <p>Wenn Sie eine Datenschutz-App (\"privacy guard\") benutzen (in CyanogenMod standardmäßig an), müssen Sie einstellen,
@@ -67,17 +58,17 @@
 	   <h1>Open-Source</h1>
 	   <p>DAVdroid ist von Anfang an als Open-Source-Projekt ausgelegt. Der Quellcode kann jederzeit selbst kompiliert und
 	   die App unter den Bedingungen der GPLv3 verwendet werden. Der
-	   <a href="https://davdroid.bitfire.at/source?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">Quellcode ist verfügbar</a>; die App kann auch
-	   <a href="https://f-droid.org/app/at.bitfire.davdroid">über F-Droid bezogen werden</a>.</p>
+	   <a href=\"https://davdroid.bitfire.at/source?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">Quellcode ist verfügbar</a>; die App kann auch
+	   <a href=\"https://f-droid.org/app/at.bitfire.davdroid\">über F-Droid bezogen werden</a>.</p>
 	   
 	   <p>Es bedeutet viel Arbeit, die App zu entwickeln und besser zu machen. Daher haben wir uns entschlossen, sie
 	   auch gegen eine kleine Gebühr in die kommerziellen App-Stores zu stellen. Wenn Sie DAVdroid über F-Droid bezogen haben,
-	   überlegen Sie bitte, ob Sie das Projekt <a href="http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity">mit
+	   überlegen Sie bitte, ob Sie das Projekt <a href=\"http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">mit
 	   einer Spende unterstützen</a> wollen.</p>
 	   
 	   <h1>Lizenz</h1>
-	   <p>Copyright © 2013 – 2015 Ricki Hirner, Bernhard Stockmann (<a href="http://www.bitfire.at">bitfire web engineering</a>), alle Rechte
-	   vorbehalten. Dieses Programm ist freie Software. Sie können es unter den Bedingungen der <a href="http://www.gnu.org/licenses/gpl.html">GNU
+	   <p>Copyright © 2013 – 2015 Ricki Hirner, Bernhard Stockmann (<a href=\"http://www.bitfire.at\">bitfire web engineering</a>), alle Rechte
+	   vorbehalten. Dieses Programm ist freie Software. Sie können es unter den Bedingungen der <a href=\"http://www.gnu.org/licenses/gpl.html\">GNU
 	   General Public License Version 3</a>, wie von der Free Software Foundation veröffentlicht, weitergeben und/oder modifizieren.
 	   Sofern Google Play oder Samsung Store andere Bedingungen benötigen, gelten diese Bedingungen nur für über den jeweiligen
 	   Markt heruntergeladene Apps.</p>
@@ -87,76 +78,84 @@
 	   	   
 	   <h2>Verwendete Bibliotheken</h2>
 	   <p>
-	    * <a href="http://hc.apache.org">Apache HttpClient</a> (Android port) – <a href="http://www.apache.org/licenses/">Apache License, Version 2.0</a><br/>
-	   	* <a href="https://github.com/ical4j/ical4j">iCal4j</a> – <a href="https://github.com/ical4j/ical4j/blob/master/LICENSE">New BSD License</a><br/>
-	   	* <a href="https://github.com/mangstadt/ez-vcard">ez-vcard</a> – <a href="http://opensource.org/licenses/BSD-3-Clause">New BSD License</a><br/>
-	   	* <a href="http://simple.sourceforge.net/">Simple XML Serialization</a> – <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a><br/>
-	   	* <a href="https://projectlombok.org/">Project Lombok</a> – <a href="http://opensource.org/licenses/mit-license.php">MIT License</a><br/>
-		* <a href="http://www.xbill.org/dnsjava/">dnsjava</a> – <a href="http://www.xbill.org/dnsjava/dnsjava-current/LICENSE">BSD License</a></p>
+	    * <a href=\"http://hc.apache.org\">Apache HttpClient</a> (Android port) – <a href=\"http://www.apache.org/licenses/\">Apache License, Version 2.0</a><br/>
+	   	* <a href=\"https://github.com/ical4j/ical4j\">iCal4j</a> – <a href=\"https://github.com/ical4j/ical4j/blob/master/LICENSE\">New BSD License</a><br/>
+	   	* <a href=\"https://github.com/mangstadt/ez-vcard\">ez-vcard</a> – <a href=\"http://opensource.org/licenses/BSD-3-Clause\">New BSD License</a><br/>
+	   	* <a href=\"http://simple.sourceforge.net/\">Simple XML Serialization</a> – <a href=\"http://www.apache.org/licenses/LICENSE-2.0\">Apache License, Version 2.0</a><br/>
+	   	* <a href=\"https://projectlombok.org/\">Project Lombok</a> – <a href=\"http://opensource.org/licenses/mit-license.php\">MIT License</a><br/>
+		* <a href=\"http://www.xbill.org/dnsjava/\">dnsjava</a> – <a href=\"http://www.xbill.org/dnsjava/dnsjava-current/LICENSE\">BSD License</a></p>
     ]]></string>
-
-    <!-- AddAccountActivity -->
-    <string name="login_type_email">Mit Email-Adresse anmelden</string>
-    <string name="login_type_email_description">Domänenname wird verwendet, um die Servereinstellungen herauszufinden. Beispiel: myaccount@icloud.com</string>
-    <string name="login_type_url">Mit URL und Benutzername anmelden</string>
-    <string name="login_type_url_description">Basis-URL und Benutzername werden verwendet, um die Servereinstellungen herauszufinden; z.B. bei einem eigenen Server.</string>
-    
-    <string name="login_email_description">Geben Sie Ihre Email-Adresse ein. Der Domänenname wird verwendet, um die Servereinstellungen herauszufinden.</string>
-    <string name="login_email_address">Email:</string>
-    
-    <string name="login_http_warning">Ohne Verschlüsselung (HTTPS) können Ihre Zugangsdaten, Kontakte und Termine leicht abgefangen werden.</string>
-    <string name="login_user_name">Benutzername:</string>
-    <string name="login_base_url">Basis-URL (Ordner werden automatisch gefunden):</string>
-    <string name="login_auth_preemptive">Präemptive Authentifizierung (empfohlen, aber nicht kompatibel mit Digest-Auth.)</string>
-    
-    <string name="login_password">Passwort:</string>
-
-    <string name="settings_title">Einstellungen</string>
-    <string name="settings_no_accounts">Keine DAVdroid-Konten gefunden</string>
-    <string name="settings_authentication">Anmeldeinformationen</string>
-    <string name="settings_username">Benutzername</string>
-    <string name="settings_enter_username">Benutzername eingeben:</string>
-    <string name="settings_password">Passwort</string>
-    <string name="settings_password_summary">Aktualisieren Sie Ihr Passwort gemäß den Server-Einstellungen.</string>
-    <string name="settings_enter_password">Passwort eingeben:</string>
-    <string name="settings_preemptive">Präemptive Authentifizierung</string>
-    <string name="settings_preemptive_on">Anmeldeinformationen werden bei jeder Anfrage gesendet (empfohlen)</string>
-    <string name="settings_preemptive_off">Anmeldeinformationen werden nur auf Anforderung gesendet</string>
-    <string name="settings_sync">Synchronisierung</string>
-    <string name="settings_sync_interval_contacts">Häufigkeit der Kontakte-Synchronisierung</string>
-    <string name="settings_sync_summary_manually">Nur manuell</string>
-    <string name="settings_sync_summary_periodically">Alle %d Minuten + sofort bei lokalen Änderungen</string>
-    <string name="settings_sync_summary_not_available">Nicht verfügbar</string>
-    <string name="settings_sync_interval_calendars">Häufigkeit der Kalender-Synchronisierung</string>
-    <string name="settings_sync_interval_tasks">Häufigkeit der Aufgaben-Synchronisierung</string>
-    <string-array name="settings_sync_interval_names">
-        <item>Nur manuell</item>
-        <item>Alle 5 Minuten</item>
-        <item>Alle 10 Minuten</item>
-        <item>Alle 15 Minuten</item>
-        <item>Stündlich</item>
-        <item>Alle 2 Stunden</item>
-        <item>Alle 4 Stunden</item>
-        <item>Täglich</item>
-    </string-array>
-    <string name="settings_carddav">Adressbuch</string>
-    <string name="settings_carddav_vcard4_support">VCard 4.0-Unterstützung</string>
-    <string name="settings_carddav_vcard4_supported">Kontakte werden als VCard 4.0 gesendet</string>
-    <string name="settings_carddav_vcard4_not_supported">Kontakte werden als VCard 3.0 gesendet</string>
-
-    <string name="settings_android_update_title">Neue Android-Version</string>
-    <string name="settings_android_update_description">Die Änderung der Android-Version kann einen Einfluss auf DAVdroid haben. Falls etwas nicht funktioniert, löschen Sie bitte Ihre DAVdroid-Accounts und fügen Sie sie neu hinzu.</string>
-    <string name="settings_version_update_title">Einstellungen aktualisiert</string>
-    <string name="settings_version_update_description">Interne Einstellungen wurden aktualisiert. Falls etwas nicht funktioniert, löschen Sie bitte Ihre DAVdroid-Accounts und fügen Sie sie neu hinzu.</string>
-
-    <string name="setup_select_collections">DAVdroid: Ordner auswählen</string>
-    <string name="setup_neither_caldav_nor_carddav">An dieser Adresse konnte kein CalDAV- oder CardDAV-Dienst gefunden werden.</string>
-    <string name="setup_add_account">Konto hinzufügen</string>
-    <string name="setup_querying_server">Daten werden vom Server abgefragt. Bitte warten…</string>
-    <string name="setup_install_apps_info">Android bietet im Gegensatz zu Kontakten und Terminen keine integrierte Lösung für Aufgaben.</string>
-    <string name="setup_install_tasks_app_html"><![CDATA[
-        <p>DAVdroid kann Aufgaben mit der <a href="market://details?id=org.dmfs.tasks">Aufgaben-App</a> von Marten Gajda synchronisieren.</p>
-        <p>Wegen eines <a href="https://code.google.com/p/android/issues/detail?id=25906">Android-Fehlers</a> <b>muss die Aufgaben-App
+  <!--AddAccountActivity-->
+  <string name="login_type_email">Mit Email-Adresse anmelden</string>
+  <string name="login_type_email_description">Domänenname wird verwendet, um die Servereinstellungen herauszufinden. Beispiel: myaccount@icloud.com</string>
+  <string name="login_type_url">Mit URL und Benutzername anmelden</string>
+  <string name="login_type_url_description">Basis-URL und Benutzername werden verwendet, um die Servereinstellungen herauszufinden; z.B. bei einem eigenen Server.</string>
+  <string name="login_email_description">Geben Sie Ihre Email-Adresse ein. Der Domänenname wird verwendet, um die Servereinstellungen herauszufinden.</string>
+  <string name="login_email_address">Email:</string>
+  <string-array name="login_url_scheme">
+    <item>http://</item>
+    <item>https://</item>
+  </string-array>
+  <string name="login_http_warning">Ohne Verschlüsselung (HTTPS) können Ihre Zugangsdaten, Kontakte und Termine leicht abgefangen werden.</string>
+  <string name="login_user_name">Benutzername:</string>
+  <string name="login_base_url">Basis-URL (Ordner werden automatisch gefunden):</string>
+  <string name="login_auth_preemptive">Präemptive Authentifizierung (empfohlen, aber nicht kompatibel mit Digest-Auth.)</string>
+  <string name="login_password">Passwort:</string>
+  <!--Settings activity-->
+  <string name="settings_title">Einstellungen</string>
+  <string name="settings_no_accounts">Keine DAVdroid-Konten gefunden</string>
+  <string name="settings_authentication">Anmeldeinformationen</string>
+  <string name="settings_username">Benutzername</string>
+  <string name="settings_enter_username">Benutzername eingeben:</string>
+  <string name="settings_password">Passwort</string>
+  <string name="settings_password_summary">Aktualisieren Sie Ihr Passwort gemäß den Server-Einstellungen.</string>
+  <string name="settings_enter_password">Passwort eingeben:</string>
+  <string name="settings_preemptive">Präemptive Authentifizierung</string>
+  <string name="settings_preemptive_on">Anmeldeinformationen werden bei jeder Anfrage gesendet (empfohlen)</string>
+  <string name="settings_preemptive_off">Anmeldeinformationen werden nur auf Anforderung gesendet</string>
+  <string name="settings_sync">Synchronisierung</string>
+  <string name="settings_sync_interval_contacts">Häufigkeit der Kontakte-Synchronisierung</string>
+  <string name="settings_sync_summary_manually">Nur manuell</string>
+  <string name="settings_sync_summary_periodically">Alle %d Minuten + sofort bei lokalen Änderungen</string>
+  <string name="settings_sync_summary_not_available">Nicht verfügbar</string>
+  <string name="settings_sync_interval_calendars">Häufigkeit der Kalender-Synchronisierung</string>
+  <string name="settings_sync_interval_tasks">Häufigkeit der Aufgaben-Synchronisierung</string>
+  <string-array name="settings_sync_interval_seconds">
+    <item>-1</item>
+    <item>300</item>
+    <item>600</item>
+    <item>900</item>
+    <item>3600</item>
+    <item>7200</item>
+    <item>14400</item>
+    <item>86400</item>
+  </string-array>
+  <string-array name="settings_sync_interval_names">
+    <item>Nur manuell</item>
+    <item>Alle 5 Minuten</item>
+    <item>Alle 10 Minuten</item>
+    <item>Alle 15 Minuten</item>
+    <item>Stündlich</item>
+    <item>Alle 2 Stunden</item>
+    <item>Alle 4 Stunden</item>
+    <item>Täglich</item>
+  </string-array>
+  <string name="settings_carddav">Adressbuch</string>
+  <string name="settings_carddav_vcard4_support">VCard 4.0-Unterstützung</string>
+  <string name="settings_carddav_vcard4_supported">Kontakte werden als VCard 4.0 gesendet</string>
+  <string name="settings_carddav_vcard4_not_supported">Kontakte werden als VCard 3.0 gesendet</string>
+  <string name="settings_android_update_title">Neue Android-Version</string>
+  <string name="settings_android_update_description">Die Änderung der Android-Version kann einen Einfluss auf DAVdroid haben. Falls etwas nicht funktioniert, löschen Sie bitte Ihre DAVdroid-Accounts und fügen Sie sie neu hinzu.</string>
+  <string name="settings_version_update_title">Einstellungen aktualisiert</string>
+  <string name="settings_version_update_description">Interne Einstellungen wurden aktualisiert. Falls etwas nicht funktioniert, löschen Sie bitte Ihre DAVdroid-Accounts und fügen Sie sie neu hinzu.</string>
+  <string name="setup_select_collections">DAVdroid: Ordner auswählen</string>
+  <string name="setup_neither_caldav_nor_carddav">An dieser Adresse konnte kein CalDAV- oder CardDAV-Dienst gefunden werden.</string>
+  <string name="setup_add_account">Konto hinzufügen</string>
+  <string name="setup_querying_server">Daten werden vom Server abgefragt. Bitte warten…</string>
+  <string name="setup_install_apps_info">Android bietet im Gegensatz zu Kontakten und Terminen keine integrierte Lösung für Aufgaben.</string>
+  <string name="setup_install_tasks_app_html"><![CDATA[
+        <p>DAVdroid kann Aufgaben mit der <a href=\"market://details?id=org.dmfs.tasks\">Aufgaben-App</a> von Marten Gajda synchronisieren.</p>
+        <p>Wegen eines <a href=\"https://code.google.com/p/android/issues/detail?id=25906\">Android-Fehlers</a> <b>muss die Aufgaben-App
         vor DAVdroid installiert werden</b> (ansonsten bekommt DAVdroid nicht die Berechtigungen, um auf die Aufgaben zuzugreifen).</p>
         <p>Wenn Sie Aufgaben synchronisiert haben wollen:</p>
         <p>1. Installieren Sie bitte zuerst die Aufgaben-App.<br/>
@@ -164,43 +163,40 @@
         3. Richten Sie Ihr DAVdroid-Konto neu ein.</p>
         <p>Andernfalls können Sie diesen Schritt überspringen.</p>
     ]]></string>
-    <string name="setup_what_to_sync">Welche Ordner sollen synchronisiert werden?</string>
-    <string name="setup_address_books">Adressbücher</string>
-    <string name="setup_calendars">Kalender</string>
-    <string name="setup_notebooks">Notizbücher</string>
-    <string name="setup_task_lists">Aufgabenlisten</string>
-    <string name="setup_select_address_book">Ein oder kein Adressbuch auswählen (nochmal berühren, um abzuwählen):</string>
-    <string name="setup_select_calendars">Kalender zur Synchronisation auswählen:</string>
-    <string name="setup_select_notebooks">Notizbücher zur Synchronisation auswählen:</string>
-    <string name="setup_select_task_lists">Aufgabenlisten zur Synchronisation auswählen:</string>
-
-    <string name="setup_account_details">Konto-Details</string>
-    <string name="setup_account_name">Kontoname:</string>
-    <string name="setup_account_name_hint">Mein CalDAV/CardDAV-Konto</string>
-    <string name="setup_email_address">Email-Adresse:</string>
-    <string name="setup_organizer_hint">"ORGANIZER der von Ihnen angelegten Termine; notwendig für Teilnehmer-Info"</string>
-    <string name="setup_account_name_info">&quot;Verwenden Sie Ihre Email-Adresse als Kontoname, da Android den Kontonamen als ORGANIZER-Feld in Terminen benutzt. Sie können keine zwei Konten mit dem gleichen Namen anlegen.</string>
-    <string name="setup_read_only">schreibgeschützt</string>
-
-    <string name="sync_error_calendar">Kalender-Synchronisierung fehlgeschlagen (%s)</string>
-    <string name="sync_error_contacts">Adressbuch-Synchronisierung fehlgeschlagen (%s)</string>
-    <string name="sync_error_tasks">Aufgaben-Synchronisierung fehlgeschlagen (%s)</string>
-    <string name="sync_error">Fehler beim %s</string>
-    <string name="sync_error_http_dav">Serverfehler beim %s</string>
-    <string name="sync_error_local_storage">Datenbank-Fehler beim %s</string>
-    <string-array name="sync_error_phases">
-        <item>Vorbereiten der Synchronisierung</item>
-        <item>Abfragen der Server-Fähigkeiten</item>
-        <item>Verarbeiten lokal gelöschter Einträge</item>
-        <item>Vorbereiten neuer/geänderter Einträge</item>
-        <item>Hochladen neuer/geänderter Einträge</item>
-        <item>Abfragen des Synchronisierungs-Zustands</item>
-        <item>Auflisten lokaler Einträge</item>
-        <item>Auflisten der Server-Einträge</item>
-        <item>Vergleichen tw. Datenbank/Server</item>
-        <item>Herunterladen von Server-Einträgen</item>
-        <item>Speichern des Synchronisierungs-Zustands</item>
-    </string-array>
-    <string name="sync_error_unauthorized">Benutzername/Passwort falsch</string>
-
+  <string name="setup_what_to_sync">Welche Ordner sollen synchronisiert werden?</string>
+  <string name="setup_address_books">Adressbücher</string>
+  <string name="setup_calendars">Kalender</string>
+  <string name="setup_task_lists">Aufgabenlisten</string>
+  <string name="setup_select_address_book">Ein oder kein Adressbuch auswählen (nochmal berühren, um abzuwählen):</string>
+  <string name="setup_select_calendars">Kalender zur Synchronisation auswählen:</string>
+  <string name="setup_select_task_lists">Aufgabenlisten zur Synchronisation auswählen:</string>
+  <string name="setup_account_details">Konto-Details</string>
+  <string name="setup_account_name">Kontoname:</string>
+  <string name="setup_account_name_hint">Mein CalDAV/CardDAV-Konto</string>
+  <string name="setup_email_address">Email-Adresse:</string>
+  <string name="setup_organizer_hint">ORGANIZER der von Ihnen angelegten Termine; notwendig für Teilnehmer-Info</string>
+  <string name="setup_account_name_info">\"Verwenden Sie Ihre Email-Adresse als Kontoname, da Android den Kontonamen als ORGANIZER-Feld in Terminen benutzt. Sie können keine zwei Konten mit dem gleichen Namen anlegen.</string>
+  <string name="setup_read_only">schreibgeschützt</string>
+  <!--sync errors and DebugInfoActivity-->
+  <string name="debug_info_title">Debug-Info</string>
+  <string name="sync_error_calendar">Kalender-Synchronisierung fehlgeschlagen (%s)</string>
+  <string name="sync_error_contacts">Adressbuch-Synchronisierung fehlgeschlagen (%s)</string>
+  <string name="sync_error_tasks">Aufgaben-Synchronisierung fehlgeschlagen (%s)</string>
+  <string name="sync_error">Fehler beim %s</string>
+  <string name="sync_error_http_dav">Serverfehler beim %s</string>
+  <string name="sync_error_local_storage">Datenbank-Fehler beim %s</string>
+  <string-array name="sync_error_phases">
+    <item>Vorbereiten der Synchronisierung</item>
+    <item>Abfragen der Server-Fähigkeiten</item>
+    <item>Verarbeiten lokal gelöschter Einträge</item>
+    <item>Vorbereiten neuer/geänderter Einträge</item>
+    <item>Hochladen neuer/geänderter Einträge</item>
+    <item>Abfragen des Synchronisierungs-Zustands</item>
+    <item>Auflisten lokaler Einträge</item>
+    <item>Auflisten der Server-Einträge</item>
+    <item>Vergleichen tw. Datenbank/Server</item>
+    <item>Herunterladen von Server-Einträgen</item>
+    <item>Speichern des Synchronisierungs-Zustands</item>
+  </string-array>
+  <string name="sync_error_unauthorized">Benutzername/Passwort falsch</string>
 </resources>
