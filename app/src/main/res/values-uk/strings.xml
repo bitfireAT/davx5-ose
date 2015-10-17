@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="help">Допомога</string>
+  <string name="next">Далі</string>
+  <string name="skip">Пропустити</string>
+  <string name="exception_cert_path_validation">У ланцюжку сертифікатів недовірений сертифікат. Для детальнішої інформації перегляньте FAQ.</string>
+  <string name="exception_http">Помилка HTTP: %s</string>
+  <string name="exception_incapable_resource">Відсутні залежності: %s</string>
+  <string name="exception_io">Помилка I/O: %s</string>
+  <string name="exception_uri_syntax">Невірний URI: %s</string>
+  <!--MainActivity-->
+  <string name="main_manage_accounts">Керувати синхронізацією облікових записів</string>
+  <string name="html_main_workaround"><![CDATA[
+		<p>Дякуємо за купівлю DAVdroid з використанням Google Play та підтримку цим проекту. На жаль, існують дві проблеми з Google Play:</p>
+		
+		<h2><a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-reboot\">1. Облікові записи можуть зникати після перезавантаження</a></h2>
+		<p>Ви можете зіштовхнутися із тим, що всі Ваші <strong>облікові записи DAVdroid (включно з контактами та подіями) зникають
+        після перезавантаження Вашого пристрою</strong>. Причиною цьому є <a href=\"https://code.google.com/p/android/issues/detail?id=34880\">проблема у Android</a>,
+        яка спричиняє видалення облікових записів платних програм при завантаженні, оскільки (зашифровані) файли APK
+        завантажуються <i>після</i> перевірки на осиротілі облікові записи.</p>
+        <p>Проблема стосується:<br/>
+        * всіх пристроїв із Android 4.1, де встановлено DAVdroid із Play Store;<br/>
+        * окремих пристроїв із Android 4.2, де встановлено DAVdroid із Play Store (наприклад, більшості пристроїв Samsung)
+        * можливо й інших пристроїв (наприклад, LG G3 Android 4.4.2)</p>
+        
+        <h2><a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-updating\">2. Облікові записи можуть зникати після оновлення DAVdroid</a></h2>
+        <p>Ви можете зіштовхнутися із тим, що всі Ваші <strong>облікові записи DAVdroid (включно з контактами та подіями) зникають після оновлення DAVdroid
+        через Play Store</strong>. Причиною цьому є <a href=\"https://code.google.com/p/android/issues/detail?id=66905\">ще одна проблема у Android</a>
+        яка спричиняє видалення облікових записів платних програм при оновленні через схожу причину.</p>
+        <p>Проблема стосується: деяких пристроїв із Android 4.4.2, де встановлено DAVdroid із Play Store (відомо для пристроїв Nexus та Moto G)</p>
+        
+        <p><strong>Якщо ви зіштовхнулися з однією із цих проблем, будь ласка, <a href=\"market://details?id=at.bitfire.davdroid.jbworkaround\">встановіть
+        DAVdroid JB Workaround</a>.</strong></p>
+    ]]></string>
+  <string name="html_main_info"><![CDATA[
+       <h1>Ласкаво просимо до DAVdroid/%s!</h1>
+       
+       <p>DAVdroid це адаптер для CalDAV/CardDAV у Android 4+. Для його використання просто додайте обліковий запис DAVdroid
+       для вашого сервера CalDAV/CardDAV і ваші контакти/події/завдання будуть синхронізовані у обох напрямках.
+       Для детальнішої інформації, будь ласка, перегляньте <a href=\"https://davdroid.bitfire.at/?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">домашню сторінку DAVdroid</a>.
+       Там же знаходиться <a href=\"https://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">інструкція з налаштування</a>. DAVdroid поважає
+       Вашу приватність, перегляньте нашу <a href=\"https://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">політику приватності</a>.</p>
+
+       <p><b>У випадку проблем, спершу ознайомтеся з <a href=\"https://davdroid.bitfire.at/faq?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">найчастішими
+       запитаннями</a>. Для отримання допомоги або обговорення тем, пов\'язаних із DAVdroid, відвідайте наш
+       <a href=\"https://davdroid.bitfire.at/forums?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">форум DAVdroid</a>.</b>
+       Будь ласка, не шантажуйте нас поганими рейтингами у магазинах (це марно і гнітюче для обох сторін).</p>
+
+       <p>Якщо Ви використовуєте захисника приватності (типово у CyanogenMod), будь ласка, пам\'ятайте, що необхідно дозволити доступ до контактів та календаря для DAVdroid.</p>
+
+	   <h1>Відкритий код</h1>
+	   <p>DAVdroid із самого початку розроблявся з метою бути проектом з відкритим кодом. Завжди можна скомпілювати
+	   додаток власноруч і використовувати його безкоштовно та без будь-яких зобов\'язань.
+	   <a href=\"https://davdroid.bitfire.at/source?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">Вихідний код є
+	   доступним</a> і Ви можете <a href=\"https://f-droid.org/app/at.bitfire.davdroid\">завантажити додаток із F-Droid</a>.</p>
+	   
+	   <p>Проте, розробка додатку потребує чимало роботи, тому ми вирішили розмістити його у платних магазинах за невелику ціну.
+	   Якщо Ви завантажили додаток із F-Droid, будь ласка, поміркуйте над
+	   <a href=\"https://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">пожертвою для DAVdroid</a>.</p>
+	   
+	   <h1>Ліцензія</h1>
+	   <p>Авторське право © 2013 – 2015 Ricki Hirner, Bernhard Stockmann (<a href=\"https://www.bitfire.at\">веб-інженери bitfire</a>).
+	   Всі права захищені. Ця програма та супутні матеріали розповсюджуються за умовами ліценізї GNU Public License
+	   v3.0, яка супроводжує цей розділ і доступна за посиланням: <a
+	   href=\"http://www.gnu.org/licenses/gpl.html\">http://www.gnu.org/licenses/gpl.html</a>. Оскільки, Google Play, Samsung
+	   Store чи Amazon Appstore вимагає інших умов, відповідні умови застосовуються лише до версій,
+	   що завантажені з використанням цих сервісів.</p>
+	   
+	   <p>Переклади на інші мови, окрім англійської та німецької, надано
+	   різними особами, зазначеними у відповідних локалізаціях програми.</p>
+	   
+	   <h2>Використані сторонні бібліотеки</h2>
+	   <p>
+	    * <a href=\"http://hc.apache.org\">Apache HttpClient</a> (Android port) – <a href=\"http://www.apache.org/licenses/\">Apache License, Version 2.0</a><br/>
+	   	* <a href=\"https://github.com/ical4j/ical4j\">iCal4j</a> – <a href=\"https://github.com/ical4j/ical4j/blob/master/LICENSE\">New BSD License</a><br/>
+	   	* <a href=\"https://github.com/mangstadt/ez-vcard\">ez-vcard</a> – <a href=\"http://opensource.org/licenses/BSD-3-Clause\">New BSD License</a><br/>
+	   	* <a href=\"http://simple.sourceforge.net/\">Simple XML Serialization</a> – <a href=\"http://www.apache.org/licenses/LICENSE-2.0\">Apache License, Version 2.0</a><br/>
+	   	* <a href=\"https://projectlombok.org/\">Project Lombok</a> – <a href=\"http://opensource.org/licenses/mit-license.php\">MIT License</a><br/>
+		* <a href=\"http://www.xbill.org/dnsjava/\">dnsjava</a> – <a href=\"http://www.xbill.org/dnsjava/dnsjava-current/LICENSE\">BSD License</a></p>
+    ]]></string>
+  <!--AddAccountActivity-->
+  <string name="login_type_email">Увійти за допомогою електронної пошти</string>
+  <string name="login_type_email_description">Налаштування сервісу буде автоматично визначене з доменного імені. Наприклад: myaccount@icloud.com</string>
+  <string name="login_type_url">Увійти за допомогою URL та імені користувача</string>
+  <string name="login_type_url_description">Налаштування сервісу буде автоматично визначене із наданого URL та імені користувача. Здебільшого, використовується для самостійно налаштованих сервісів.</string>
+  <string name="login_email_description">Будь ласка, введіть вашу електронну адресу. Її доменне ім\'я буде використане для автовизначення налаштувань сервісу.</string>
+  <string name="login_email_address">Електронна адреса:</string>
+  <string-array name="login_url_scheme">
+    <item>http://</item>
+    <item>https://</item>
+  </string-array>
+  <string name="login_http_warning">Якщо Ви не використовуєте шифрування (HTTPS), інші люди можуть легко перехопити Ваші дані авторизації, контакти та події.</string>
+  <string name="login_user_name">Ім\'я користувача:</string>
+  <string name="login_base_url">Базовий URL (колекції будуть визначені автоматично):</string>
+  <string name="login_auth_preemptive">Випереджаюча автентифікація (рекомендовано, але несумісно із Digest auth)</string>
+  <string name="login_password">Пароль:</string>
+  <!--Settings activity-->
+  <string name="settings_title">Налаштування</string>
+  <string name="settings_no_accounts">Не знайдено облікових записів DAVdroid</string>
+  <string name="settings_authentication">Автентифікація</string>
+  <string name="settings_username">Ім\'я користувача</string>
+  <string name="settings_enter_username">Введіть ім\'я користувача:</string>
+  <string name="settings_password">Пароль</string>
+  <string name="settings_password_summary">Оновити пароль, згідно налаштувань Вашого сервера.</string>
+  <string name="settings_enter_password">Введіть Ваш пароль:</string>
+  <string name="settings_preemptive">Випереджаюча автентифікація</string>
+  <string name="settings_preemptive_on">Дані автентифікації будуть надсилатися із кожним запитом (рекомендовано)</string>
+  <string name="settings_preemptive_off">Дані автентифікації будуть надіслані після відповідного запиту сервера</string>
+  <string name="settings_sync">Синхронізація</string>
+  <string name="settings_sync_interval_contacts">Інтервал синхронізації контактів</string>
+  <string name="settings_sync_summary_manually">Лише вручну</string>
+  <string name="settings_sync_summary_periodically">Кожних %d хвилин, а також негайно при внесенні локальних змін</string>
+  <string name="settings_sync_summary_not_available">Не доступно</string>
+  <string name="settings_sync_interval_calendars">Інтервал синхронізації календарів</string>
+  <string name="settings_sync_interval_tasks">Інтервал синхронізації завдань</string>
+  <string-array name="settings_sync_interval_seconds">
+    <item>-1</item>
+    <item>300</item>
+    <item>600</item>
+    <item>900</item>
+    <item>3600</item>
+    <item>7200</item>
+    <item>14400</item>
+    <item>86400</item>
+  </string-array>
+  <string-array name="settings_sync_interval_names">
+    <item>Лише вручну</item>
+    <item>Кожних 5 хвилин</item>
+    <item>Кожних 10 хвилин</item>
+    <item>Кожних 15 хвилин</item>
+    <item>Щогодини</item>
+    <item>Кожних 2 години</item>
+    <item>Кожних 4 години</item>
+    <item>Раз на добу</item>
+  </string-array>
+  <string name="settings_carddav">Адресна книга</string>
+  <string name="settings_carddav_vcard4_support">Підтримка VCard 4.0</string>
+  <string name="settings_carddav_vcard4_supported">Контакти надсилатимуться у форматі VCard 4.0</string>
+  <string name="settings_carddav_vcard4_not_supported">Контакти надсилатимуться у форматі VCard 3.0</string>
+  <string name="setup_select_collections">DAVdroid: оберіть колекції</string>
+  <string name="setup_neither_caldav_nor_carddav">Сервіси CalDAV-/CardDAV недоступні за цим розташуванням.</string>
+  <string name="setup_add_account">Додати обліковий запис</string>
+  <string name="setup_querying_server">Опитуємо сервер. Будь ласка, зачекайте…</string>
+  <string name="setup_install_apps_info">Система Android самостійно не підтримує списки завдань (на відміну від контактів та календарів).</string>
+  <string name="setup_install_tasks_app_html"><![CDATA[
+        <p>DAVdroid може синхронізувати завдання із <a href=\"market://details?id=org.dmfs.tasks\">додатком Tasks</a> (від Marten Gajda).</p>
+        <p>Через <a href=\"https://code.google.com/p/android/issues/detail?id=25906\">особливість системи Android</a>, <b>додаток Tasks повинен бути встановлений
+        перед встановленням DAVdroid</b> (інакше, DAVdroid не зможе отримати дозволи на доступ до списків завдань).</p>
+        <p>Якщо Ви бажаєте, щоб завдання синхронізувалися:</p>
+        <p>1. Встановіть додаток Tasks.<br/>
+        2. Перевстановіть DAVdroid (для отримання доступу до завдань). Не видаляйте DAVdroid - це знищить Ваші облікові записи DAVdroid та несинхронізовані дані.<br/>
+        3. Повторно додайте обліковий запис DAVdroid.</p>
+        <p>Якщо синхронізація завдань не потрібна, можете пропустити цей крок.</p>
+    ]]></string>
+  <string name="setup_what_to_sync">Які колекції повинні бути синхронізовані?</string>
+  <string name="setup_address_books">Адресні книги</string>
+  <string name="setup_calendars">Календарі</string>
+  <string name="setup_task_lists">Списки завдань</string>
+  <string name="setup_select_address_book">Оберіть одну адресну книгу (повторне виділення скасовує вибір) для синхронізації:</string>
+  <string name="setup_select_calendars">Оберіть календарі для синхронізації:</string>
+  <string name="setup_select_task_lists">Оберіть списки завдань для синхронізації:</string>
+  <string name="setup_account_details">Подробиці облікового запису</string>
+  <string name="setup_account_name">Ім\'я облікового запису:</string>
+  <string name="setup_account_name_hint">Мій обліковий запис CalDAV/CardDAV</string>
+  <string name="setup_email_address">Електронна пошта:</string>
+  <string name="setup_organizer_hint">ОРГАНІЗАТОР Ваших подій; необхідно у випадку використання даних учасників</string>
+  <string name="setup_account_name_info">\"Використовуйте Вашу електронну адресу як назву облікового запису, оскільки Android використовуватиме назву облікового запису як поле ОРГАНІЗАТОР для подій, які Ви будете створювати. Ви не можете мати два облікові записи із однаковими назвами.</string>
+  <string name="setup_read_only">лише читання</string>
+  <!--sync errors and DebugInfoActivity-->
+</resources>

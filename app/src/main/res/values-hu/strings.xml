@@ -1,39 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (c) 2013 – 2015 Ricki Hirner (bitfire web engineering).
-  ~ All rights reserved. This program and the accompanying materials
-  ~ are made available under the terms of the GNU Public License v3.0
-  ~ which accompanies this distribution, and is available at
-  ~ http://www.gnu.org/licenses/gpl.html
-  -->
-
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
-
-    <!-- common strings -->
-    <string name="app_name">DAVdroid</string>
-    
-    <string name="davdroid_website">DAVdroid web oldal</string>
-    <string name="next">Tovább</string>
-    <string name="skip">Kihagy</string>
-    <string name="help">Súgó</string>
-    
-    <string name="exception_http">HTTP hiba: %s</string>
-    <string name="exception_incapable_resource">Hiányzó szolgáltatás: %s</string>
-    <string name="exception_io">I/O hiba: %s</string>
-    <string name="exception_uri_syntax">Érvénytelen URI: %s</string>
-    
-    <!-- MainActivity -->
-    <string name="main_manage_accounts">Szinkronizációs fiókok kezelése</string>
-    
-    <string name="html_main_workaround"><![CDATA[
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="help">Súgó</string>
+  <string name="next">Tovább</string>
+  <string name="skip">Kihagy</string>
+  <string name="exception_http">HTTP hiba: %s</string>
+  <string name="exception_incapable_resource">Hiányzó szolgáltatás: %s</string>
+  <string name="exception_io">I/O hiba: %s</string>
+  <string name="exception_uri_syntax">Érvénytelen URI: %s</string>
+  <!--MainActivity-->
+  <string name="main_manage_accounts">Szinkronizációs fiókok kezelése</string>
+  <string name="html_main_workaround"><![CDATA[
         <p>Köszönjük, hogy megvásárolta a DAVdroid alkalmazást a Google Play áruházban, támogatva ezzel a projektet.  Sajnos, 
         a Google Play áruházzal két probléma is van:</p>
         <h2>1. A fiókok az eszköz újraindítása után eltűnhetnek</h2>
         <p>Előfordulhat, hogy <strong>az eszköz újraindítása után az összes DAVdroid fiók (beleértve hozzájuk tartozó 
         névjegyeket és eseményeket) eltűnik</strong>. Ezt egy
-        <a href="https://code.google.com/p/android/issues/detail?id=34880">Android szoftverhiba</a> okozza, melynek 
+        <a href=\"https://code.google.com/p/android/issues/detail?id=34880\">Android szoftverhiba</a> okozza, melynek 
         következtében a nem ingyenes alkalmazásokhoz tartozó fiókok az eszköz indításakor törlődnek.  A hiba hátterében az áll, 
-        hogy a (kódolt) APK fájlok a létrehozó nélküli ("megárvult") fiókok törlése <i>után</i> töltődnek be.</p>
+        hogy a (kódolt) APK fájlok a létrehozó nélküli (\"megárvult\") fiókok törlése <i>után</i> töltődnek be.</p>
         <p>Érintett felhasználók:<br/>
         * minden Android 4.1 felhasználó, aki a DAVdroid alkalmazást a Google Play áruházból töltötte le;<br/>
         * egyes Android 4.2 felhasználók, akik a DAVdroid alkalmazást a Google Play áruházból töltötték le, a használt eszköz
@@ -41,88 +27,82 @@
         <h2>2. A fiókok a DAVdroid frissítése után eltűnhetnek</h2>
         <p>Előfordulhat, hogy az összes <strong>DAVdroid fiók (beleértve a hozzájuk tartozó névjegyeket és eseményeket) 
         eltűnik, miután a Google Play áruház frissítette a DAVdroid alkalmazást</strong>.  Ezt szintén egy, az előzőhöz hasonló, 
-        <a href="https://code.google.com/p/android/issues/detail?id=34880">Android szoftverhiba</a> okozza.
+        <a href=\"https://code.google.com/p/android/issues/detail?id=34880\">Android szoftverhiba</a> okozza.
         <p>Érintett felhasználók:<br/>
         * egyes Android 4.4.2 felhasználók, akik a DAVdroid alkalmazást a Google Play áruházból töltötték le, a használt eszköz
         típusától függően (például Nexus és Moto G eszközök felhasználói)</p>
-        <p><strong>A probléma a <a href="market://details?id=at.bitfire.davdroid.jbworkaround">JB DAVdroid gyorsjavítás</a> 
+        <p><strong>A probléma a <a href=\"market://details?id=at.bitfire.davdroid.jbworkaround\">JB DAVdroid gyorsjavítás</a> 
         telepítésével kiküszöbölhető.</strong></p>
     ]]></string>
-
-    <!-- AddAccountActivity -->
-    <string name="login_type_email">Bejelentkezés email cím segítségével</string>
-    <string name="login_type_email_description">A szolgáltatás részleteinek automatikus detektálása a tartománynév alapján történik. Példa: myaccount@icloud.com</string>
-    <string name="login_type_url">Bejelentkezés URL és felhasználónév segítségével</string>
-    <string name="login_type_url_description">A szolgáltatás részleteinek automatikus detektálása a kiinduló URL és a felhasználónév alapján történik.  Elsősorban privát szolgáltatásoknál ajánlott.</string>
-    
-    <string name="login_email_description">Kérjük, adja meg email címét.  A szolgáltatás részleteinek automatikus detektálása ennek 
+  <!--AddAccountActivity-->
+  <string name="login_type_email">Bejelentkezés email cím segítségével</string>
+  <string name="login_type_email_description">A szolgáltatás részleteinek automatikus detektálása a tartománynév alapján történik. Példa: myaccount@icloud.com</string>
+  <string name="login_type_url">Bejelentkezés URL és felhasználónév segítségével</string>
+  <string name="login_type_url_description">A szolgáltatás részleteinek automatikus detektálása a kiinduló URL és a felhasználónév alapján történik.  Elsősorban privát szolgáltatásoknál ajánlott.</string>
+  <string name="login_email_description">Kérjük, adja meg email címét.  A szolgáltatás részleteinek automatikus detektálása ennek 
     tartománynév-része alapján fog történni.</string>
-    <string name="login_email_address">Email:</string>
-    
-    <string-array name="login_url_scheme">
-        <item>http://</item>
-        <item>https://</item>
-    </string-array>
-    <string name="login_http_warning">"Titkosítás (HTTPS) nélkül a bejelentkezési azonosítókat, névjegyeket és eseményeket könnyen megismerhetik mások is."</string>
-    <string name="login_user_name">Felhasználónév:</string>
-    <string name="login_base_url">Fiók URL (a gyűjtemények detektálása automatikus):</string>
-    <string name="login_auth_preemptive">Preemptív authentikáció (ajánlott, de Digest authentikációval nem működik)</string>
-
-    <string name="login_password">Jelszó:</string>
-
-    <!-- Settings activity -->
-    <string name="settings_title">Beállítások</string>
-    <string name="settings_no_accounts">Nem található DAVdroid fiók</string>
-    <string name="settings_authentication">Authentikáció</string>
-    <string name="settings_username">Felhasználónév</string>
-    <string name="settings_enter_username">Adja meg a felhasználónevet:</string>
-    <string name="settings_password">Jelszó</string>
-    <string name="settings_password_summary">Adja meg a szerveren érvényes új jelszót.</string>
-    <string name="settings_enter_password">Adja meg a jelszót:</string>
-    <string name="settings_preemptive">Preemptív authentikáció</string>
-    <string name="settings_preemptive_on">A hitelesítő adatok elküldése minden kérésnél (ajánlott)</string>
-    <string name="settings_preemptive_off">A hitelesítő adatok elküldése, csak ha a szerver azt igényli</string>
-    <string name="settings_sync">Szinkronizálás</string>
-    <string name="settings_sync_interval_contacts">Névjegyszinkronizálás sűrűsége</string>
-    <string name="settings_sync_summary_manually">Manuális</string>
-    <string name="settings_sync_summary_periodically">Minden %d percben + az eszközön történt módosítás után</string>
-    <string name="settings_sync_summary_not_available">Nem elérhető</string>
-    <string name="settings_sync_interval_calendars">Naptárszinkronizálás sűrűsége</string>
-    <string name="settings_sync_interval_tasks">Feladatlisták szinkronizálásának sűrűsége</string>
-    <string-array name="settings_sync_interval_seconds">
-        <item>-1</item>
-        <item>300</item>
-        <item>600</item>
-        <item>900</item>
-        <item>3600</item>
-        <item>7200</item>
-        <item>14400</item>
-        <item>86400</item>
-    </string-array>
-    <string-array name="settings_sync_interval_names">
-        <item>Manuális</item>
-        <item>5 percenként</item>
-        <item>10 percenként</item>
-        <item>15 percenként</item>
-        <item>Óránként</item>
-        <item>2 óránként</item>
-        <item>4 óránként</item>
-        <item>Naponta</item>
-    </string-array>
-    <string name="settings_carddav">Címjegyzék</string>
-    <string name="settings_carddav_vcard4_support">VCard 4.0 támogatás</string>
-    <string name="settings_carddav_vcard4_supported">Névjegyek küldése VCard 4.0 formátumban</string>
-    <string name="settings_carddav_vcard4_not_supported">Névjegyek küldése VCard 3.0 formátumban</string>
-   
-    <string name="setup_select_collections">DAVdroid: Gyűjtemény kiválasztása</string>
-    <string name="setup_neither_caldav_nor_carddav">Nincs CalDAV-/CardDAV szolgáltatás a megadott helyen.</string>
-    <string name="setup_add_account">Fiók hozzáadása</string>
-    <string name="setup_querying_server">Kapcsolódás a szerverhez. Egy pillanat…</string>
-    <string name="setup_install_apps_info">Az Android rendszer önmagában nem támogatja a feladatlistákat (ellentétben a naptárakkal és címjegyzékekkel).</string>
-    <string name="setup_install_tasks_app_html"><![CDATA[
+  <string name="login_email_address">Email:</string>
+  <string-array name="login_url_scheme">
+    <item>http://</item>
+    <item>https://</item>
+  </string-array>
+  <string name="login_http_warning">Titkosítás (HTTPS) nélkül a bejelentkezési azonosítókat, névjegyeket és eseményeket könnyen megismerhetik mások is.</string>
+  <string name="login_user_name">Felhasználónév:</string>
+  <string name="login_base_url">Fiók URL (a gyűjtemények detektálása automatikus):</string>
+  <string name="login_auth_preemptive">Preemptív authentikáció (ajánlott, de Digest authentikációval nem működik)</string>
+  <string name="login_password">Jelszó:</string>
+  <!--Settings activity-->
+  <string name="settings_title">Beállítások</string>
+  <string name="settings_no_accounts">Nem található DAVdroid fiók</string>
+  <string name="settings_authentication">Authentikáció</string>
+  <string name="settings_username">Felhasználónév</string>
+  <string name="settings_enter_username">Adja meg a felhasználónevet:</string>
+  <string name="settings_password">Jelszó</string>
+  <string name="settings_password_summary">Adja meg a szerveren érvényes új jelszót.</string>
+  <string name="settings_enter_password">Adja meg a jelszót:</string>
+  <string name="settings_preemptive">Preemptív authentikáció</string>
+  <string name="settings_preemptive_on">A hitelesítő adatok elküldése minden kérésnél (ajánlott)</string>
+  <string name="settings_preemptive_off">A hitelesítő adatok elküldése, csak ha a szerver azt igényli</string>
+  <string name="settings_sync">Szinkronizálás</string>
+  <string name="settings_sync_interval_contacts">Névjegyszinkronizálás sűrűsége</string>
+  <string name="settings_sync_summary_manually">Manuális</string>
+  <string name="settings_sync_summary_periodically">Minden %d percben + az eszközön történt módosítás után</string>
+  <string name="settings_sync_summary_not_available">Nem elérhető</string>
+  <string name="settings_sync_interval_calendars">Naptárszinkronizálás sűrűsége</string>
+  <string name="settings_sync_interval_tasks">Feladatlisták szinkronizálásának sűrűsége</string>
+  <string-array name="settings_sync_interval_seconds">
+    <item>-1</item>
+    <item>300</item>
+    <item>600</item>
+    <item>900</item>
+    <item>3600</item>
+    <item>7200</item>
+    <item>14400</item>
+    <item>86400</item>
+  </string-array>
+  <string-array name="settings_sync_interval_names">
+    <item>Manuális</item>
+    <item>5 percenként</item>
+    <item>10 percenként</item>
+    <item>15 percenként</item>
+    <item>Óránként</item>
+    <item>2 óránként</item>
+    <item>4 óránként</item>
+    <item>Naponta</item>
+  </string-array>
+  <string name="settings_carddav">Címjegyzék</string>
+  <string name="settings_carddav_vcard4_support">VCard 4.0 támogatás</string>
+  <string name="settings_carddav_vcard4_supported">Névjegyek küldése VCard 4.0 formátumban</string>
+  <string name="settings_carddav_vcard4_not_supported">Névjegyek küldése VCard 3.0 formátumban</string>
+  <string name="setup_select_collections">DAVdroid: Gyűjtemény kiválasztása</string>
+  <string name="setup_neither_caldav_nor_carddav">Nincs CalDAV-/CardDAV szolgáltatás a megadott helyen.</string>
+  <string name="setup_add_account">Fiók hozzáadása</string>
+  <string name="setup_querying_server">Kapcsolódás a szerverhez. Egy pillanat…</string>
+  <string name="setup_install_apps_info">Az Android rendszer önmagában nem támogatja a feladatlistákat (ellentétben a naptárakkal és címjegyzékekkel).</string>
+  <string name="setup_install_tasks_app_html"><![CDATA[
         <p>A DAVdroid képes feladatlistákat szinkronizálni a Martin Gajda által fejlesztett
-        <a href="market://details?id=org.dmfs.tasks">Tasks</a> alkalmazással.</p>
-        <p>Egy <a href="https://code.google.com/p/android/issues/detail?id=25906">Android hiba</a> miatt a <b>Tasks alkalmazást
+        <a href=\"market://details?id=org.dmfs.tasks\">Tasks</a> alkalmazással.</p>
+        <p>Egy <a href=\"https://code.google.com/p/android/issues/detail?id=25906\">Android hiba</a> miatt a <b>Tasks alkalmazást
         a DAVdroid alkalmazás előtt kell installálni</b> (különben a DAVdroid nem kap engedélyt a feladatokhoz való hozzáféréshez).</p>
         <p>Ha tervezi feladatlisták szinkronizálását:</p>
         <p>1. Installálja a Tasks alkalmazást.<br/>
@@ -131,21 +111,19 @@
         3. Hozza létre újra a DAVdroid fiókokat.</p>
         <p>Ha nem, a fenti lépések kihagyhatók.</p>
     ]]></string>
-
-    <string name="setup_what_to_sync">Melyik gyűjtemények legyenek szinkronizálva?</string>
-    <string name="setup_address_books">Címjegyzékek</string>
-    <string name="setup_calendars">Naptárak</string>
-    <string name="setup_task_lists">Feladatlisták</string>
-    <string name="setup_select_address_book">Egy címjegyzék választható (a kijelölés visszavonása újbóli érintéssel vagy másik tétel kiválasztásával):</string>
-    <string name="setup_select_calendars">Naptárak kiválasztása:</string>
-    <string name="setup_select_task_lists">Feladatlisták kiválasztása:</string>
-
-    <string name="setup_account_details">További beállítások</string>
-    <string name="setup_account_name">A fiók neve:</string>
-    <string name="setup_account_name_hint">CalDAV/CardDAV fiók</string>
-    <string name="setup_email_address">Email cím:</string>
-    <string name="setup_organizer_hint">"Szervező (ORGANIZER mező értéke), résztvevők kezelése esetén"</string>
-    <string name="setup_account_name_info">"Használja az email címet fióknévként, mert később a létrehozandó események szervezőjeként (ORGANIZER mező) az Android ezt fogja használni. Két fiókot nem lehet azonos néven létrehozni.</string>
-    <string name="setup_read_only">csak olvasható</string>
-
+  <string name="setup_what_to_sync">Melyik gyűjtemények legyenek szinkronizálva?</string>
+  <string name="setup_address_books">Címjegyzékek</string>
+  <string name="setup_calendars">Naptárak</string>
+  <string name="setup_task_lists">Feladatlisták</string>
+  <string name="setup_select_address_book">Egy címjegyzék választható (a kijelölés visszavonása újbóli érintéssel vagy másik tétel kiválasztásával):</string>
+  <string name="setup_select_calendars">Naptárak kiválasztása:</string>
+  <string name="setup_select_task_lists">Feladatlisták kiválasztása:</string>
+  <string name="setup_account_details">További beállítások</string>
+  <string name="setup_account_name">A fiók neve:</string>
+  <string name="setup_account_name_hint">CalDAV/CardDAV fiók</string>
+  <string name="setup_email_address">Email cím:</string>
+  <string name="setup_organizer_hint">Szervező (ORGANIZER mező értéke), résztvevők kezelése esetén</string>
+  <string name="setup_account_name_info">\"Használja az email címet fióknévként, mert később a létrehozandó események szervezőjeként (ORGANIZER mező) az Android ezt fogja használni. Két fiókot nem lehet azonos néven létrehozni.</string>
+  <string name="setup_read_only">csak olvasható</string>
+  <!--sync errors and DebugInfoActivity-->
 </resources>
