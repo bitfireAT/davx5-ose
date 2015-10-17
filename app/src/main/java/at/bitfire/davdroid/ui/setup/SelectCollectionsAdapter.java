@@ -56,11 +56,11 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 		this.context = context;
 		
 		this.serverInfo = serverInfo;
-		nAddressBooks = serverInfo.getAddressBooks().size();
+		nAddressBooks = serverInfo.getAddressBooks().length;
 		nAddressBookHeadings = nAddressBooks == 0 ? 0 : 1;
-		nCalendars = serverInfo.getCalendars().size();
+		nCalendars = serverInfo.getCalendars().length;
 		nCalendarHeadings = nCalendars == 0 ? 0 : 1;
-		nTaskLists = serverInfo.getTaskLists().size();
+		nTaskLists = serverInfo.getTaskLists().length;
 		nTaskListHeadings = nTaskLists == 0 ? 0 : 1;
 	}
 	
@@ -76,15 +76,15 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 	public Object getItem(int position) {
 		if (position >= nAddressBookHeadings &&
 			position < (nAddressBookHeadings + nAddressBooks))
-			return serverInfo.getAddressBooks().get(position - nAddressBookHeadings);
+			return serverInfo.getAddressBooks()[position - nAddressBookHeadings];
 
 		else if (position >= (nAddressBookHeadings + nAddressBooks + nCalendarHeadings) &&
 				(position < (nAddressBookHeadings + nAddressBooks + nCalendarHeadings + nCalendars)))
-			return serverInfo.getCalendars().get(position - (nAddressBookHeadings + nAddressBooks + nCalendarHeadings));
+			return serverInfo.getCalendars()[position - (nAddressBookHeadings + nAddressBooks + nCalendarHeadings)];
 
 		else if (position >= (nAddressBookHeadings + nAddressBooks + nCalendarHeadings + nCalendars + nTaskListHeadings) &&
 				(position < (nAddressBookHeadings + nAddressBooks + nCalendarHeadings + nCalendars + nTaskListHeadings + nTaskLists)))
-			return serverInfo.getTaskLists().get(position - (nAddressBookHeadings + nAddressBooks + nCalendarHeadings + nCalendars + nTaskListHeadings));
+			return serverInfo.getTaskLists()[position - (nAddressBookHeadings + nAddressBooks + nCalendarHeadings + nCalendars + nTaskListHeadings)];
 
 		return null;
 	}
@@ -198,7 +198,7 @@ public class SelectCollectionsAdapter extends BaseAdapter implements ListAdapter
 		
 		String description = info.getDescription();
 		if (description == null)
-			description = info.getURL();
+			description = info.getUrl();
 		
 		// FIXME escape HTML
 		view.setText(Html.fromHtml(title + "<br/>" + description));
