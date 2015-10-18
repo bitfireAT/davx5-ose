@@ -25,7 +25,7 @@ public class ServerInfo implements Serializable {
 	final private String userName, password;
 	final boolean authPreemptive;
 	
-	private String errorMessage;
+	private String logs;
 	
 	private ResourceInfo
 		addressBooks[] = new ResourceInfo[0],
@@ -40,8 +40,12 @@ public class ServerInfo implements Serializable {
 		return false;
 	}
 
+    public boolean isEmpty() {
+        return addressBooks.length == 0 && calendars.length == 0 && taskLists.length == 0;
+    }
 
-	@RequiredArgsConstructor(suppressConstructorProperties=true)
+
+    @RequiredArgsConstructor(suppressConstructorProperties=true)
 	@Data
 	public static class ResourceInfo implements Serializable {
 

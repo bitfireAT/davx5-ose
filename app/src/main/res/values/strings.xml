@@ -169,8 +169,10 @@
     <string name="settings_version_update_title">Settings have been updated</string>
     <string name="settings_version_update_description">Internal settings have been updated. If there are problems, please delete your DAVdroid accounts and add them again.</string>
 
+    <string name="setup_resource_detection">Resource detection</string>
+    <string name="setup_no_collections_found">No address books or calendars were found.</string>
+    <string name="setup_view_logs">View logs</string>
     <string name="setup_select_collections">DAVdroid: Select collections</string>
-    <string name="setup_neither_caldav_nor_carddav">No CalDAV-/CardDAV service is available at this location.</string>
     <string name="setup_add_account">Add account</string>
     <string name="setup_querying_server">Querying server. Please wait…</string>
     <string name="setup_install_apps_info">Plain Android doesn\'t support to-do lists (in contrast to contacts and calendars).</string>

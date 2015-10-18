@@ -9,7 +9,6 @@ package at.bitfire.davdroid.ui.setup;
 
 import android.app.DialogFragment;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,7 +23,9 @@ import android.widget.EditText;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.resource.ServerInfo;
 
 public class LoginEmailFragment extends Fragment implements TextWatcher {
 	
@@ -53,18 +54,22 @@ public class LoginEmailFragment extends Fragment implements TextWatcher {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.next:
-			FragmentTransaction ft = getFragmentManager().beginTransaction();
-			
-			Bundle args = new Bundle();
-			String email = editEmail.getText().toString();
-			args.putString(QueryServerDialogFragment.EXTRA_BASE_URI, "mailto:" + email);
-			args.putString(QueryServerDialogFragment.EXTRA_USER_NAME, email);
-			args.putString(QueryServerDialogFragment.EXTRA_PASSWORD, editPassword.getText().toString());
-			args.putBoolean(QueryServerDialogFragment.EXTRA_AUTH_PREEMPTIVE, true);
-			
-			DialogFragment dialog = new QueryServerDialogFragment();
-			dialog.setArguments(args);
-		    dialog.show(ft, QueryServerDialogFragment.class.getName());
+            try {
+                String email = editEmail.getText().toString();
+                Bundle args = new Bundle();
+                args.putSerializable(QueryServerDialogFragment.KEY_SERVER_INFO, new ServerInfo(
+                        new URI("mailto:" + email),
+                        email,
+                        editPassword.getText().toString(),
+                        true
+                ));
+
+                DialogFragment dialog = new QueryServerDialogFragment();
+                dialog.setArguments(args);
+                dialog.show(getFragmentManager(), QueryServerDialogFragment.class.getName());
+            } catch(URISyntaxException e) {
+                Constants.log.debug("Invalid email address", e);
+            }
 			break;
 		default:
 			return false;

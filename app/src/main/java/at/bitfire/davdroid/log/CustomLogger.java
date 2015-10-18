@@ -8,8 +8,13 @@
 
 package at.bitfire.davdroid.log;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
+
+import java.io.PrintWriter;
+
+import lombok.Getter;
 
 /**
  * A DAVdroid logger base class that wraps all calls around some standard log() calls.
@@ -25,13 +30,39 @@ public abstract class CustomLogger implements Logger {
             PREFIX_DEBUG = "[debug] ",
             PREFIX_TRACE = "[trace] ";
 
+    @Getter
+    protected String name;
+
+    protected PrintWriter writer;
     protected boolean verbose;
 
-    protected abstract void log(String prefix, String msg);
-    protected abstract void log(String prefix, String format, Object arg);
-    protected abstract void log(String prefix, String format, Object arg1, Object arg2);
-    protected abstract void log(String prefix, String format, Object... args);
-    protected abstract void log(String prefix, String msg, Throwable t);
+
+    // CUSTOM LOGGING METHODS
+
+    protected void log(String prefix, String msg) {
+        writer.write(prefix + msg + "\n");
+    }
+
+    protected void log(String prefix, String format, Object arg) {
+        writer.write(prefix + format.replace("{}", arg.toString()) + "\n");
+    }
+
+    protected void log(String prefix, String format, Object arg1, Object arg2) {
+        writer.write(prefix + format.replaceFirst("\\{\\}", arg1.toString()).replaceFirst("\\{\\}", arg2.toString()) + "\n");
+    }
+
+    protected void log(String prefix, String format, Object... args) {
+        String message = prefix;
+        for (Object arg : args)
+            format.replaceFirst("\\{\\}", arg.toString());
+        writer.write(prefix + format + "\n");
+    }
+
+    protected void log(String prefix, String msg, Throwable t) {
+        writer.write(prefix + msg + " - EXCEPTION:\n");
+        t.printStackTrace(writer);
+        ExceptionUtils.printRootCauseStackTrace(t, writer);
+    }
 
 
     // STANDARD CALLS

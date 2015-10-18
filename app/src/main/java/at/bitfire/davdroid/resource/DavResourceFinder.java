@@ -44,7 +44,6 @@ import at.bitfire.dav4android.property.CurrentUserPrivilegeSet;
 import at.bitfire.dav4android.property.DisplayName;
 import at.bitfire.dav4android.property.ResourceType;
 import at.bitfire.dav4android.property.SupportedCalendarComponentSet;
-import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.HttpClient;
 import lombok.NonNull;
 
@@ -77,12 +76,16 @@ public class DavResourceFinder {
         httpClient = new HttpClient(log, context, serverInfo.getUserName(), serverInfo.getPassword(), serverInfo.authPreemptive);
 	}
 
-	public void findResources() throws URISyntaxException, IOException, HttpException, DavException {
-        findResources(Service.CARDDAV);
-        findResources(Service.CALDAV);
+	public void findResources() {
+        try {
+            findResources(Service.CARDDAV);
+            findResources(Service.CALDAV);
+        } catch(URISyntaxException e) {
+            log.warn("Invalid user-given URI", e);
+        }
     }
 
-    public void findResources(Service service) throws URISyntaxException, IOException, HttpException, DavException {
+    public void findResources(Service service) throws URISyntaxException {
         URI baseURI = serverInfo.getBaseURI();
         String domain = null;
 
@@ -95,7 +98,7 @@ public class DavResourceFinder {
         } else if (service == Service.CARDDAV)
             addressbooks.clear();
 
-        Constants.log.info("*** STARTING COLLECTION DISCOVERY FOR SERVICE " + service.name.toUpperCase() + "***");
+        log.info("*** STARTING COLLECTION DISCOVERY FOR SERVICE " + service.name.toUpperCase() + "***");
         if ("http".equals(baseURI.getScheme()) || "https".equals(baseURI.getScheme())) {
             HttpUrl userURL = HttpUrl.get(baseURI);
 
@@ -103,7 +106,7 @@ public class DavResourceFinder {
                 1. user-given URL is a calendar
                 2. user-given URL has a calendar-home-set property (i.e. is a principal URL)
              */
-            Constants.log.info("Check whether user-given URL is a calendar collection and/or contains <calendar-home-set> and/or has <current-user-principal>");
+            log.info("Check whether user-given URL is a calendar collection and/or contains <calendar-home-set> and/or has <current-user-principal>");
             DavResource davBase = new DavResource(log, httpClient, userURL);
             try {
                 if (service == Service.CALDAV) {
@@ -122,13 +125,13 @@ public class DavResourceFinder {
                     addIfAddressBook(davBase);
                 }
             } catch (IOException|HttpException|DavException e) {
-                Constants.log.debug("PROPFIND on user-given URL failed", e);
+                log.debug("PROPFIND on user-given URL failed", e);
             }
 
             if (service == Service.CALDAV) {
                 CalendarHomeSet calendarHomeSet = (CalendarHomeSet)davBase.properties.get(CalendarHomeSet.NAME);
                 if (calendarHomeSet != null) {
-                    Constants.log.info("Found <calendar-home-set> at user-given URL");
+                    log.info("Found <calendar-home-set> at user-given URL");
                     for (String href : calendarHomeSet.hrefs) {
                         HttpUrl url = userURL.resolve(href);
                         if (url != null)
@@ -138,7 +141,7 @@ public class DavResourceFinder {
             } else if (service == Service.CARDDAV) {
                 AddressbookHomeSet addressbookHomeSet = (AddressbookHomeSet) davBase.properties.get(AddressbookHomeSet.NAME);
                 if (addressbookHomeSet != null) {
-                    Constants.log.info("Found <addressbook-home-set> at user-given URL");
+                    log.info("Found <addressbook-home-set> at user-given URL");
                     for (String href : addressbookHomeSet.hrefs) {
                         HttpUrl url = userURL.resolve(href);
                         if (url != null)
@@ -153,7 +156,7 @@ public class DavResourceFinder {
              * Keep in mind that the CalDAV principal URL must not be the CardDAV principal URL! */
             if (homeSets.isEmpty())
                 try {
-                    Constants.log.info("No home sets found, looking for <current-user-principal>");
+                    log.info("No home sets found, looking for <current-user-principal>");
 
                     davBase.options();
                     if ((service == Service.CALDAV && davBase.capabilities.contains("calendar-access")) ||
@@ -163,15 +166,15 @@ public class DavResourceFinder {
                             principalUrl = davBase.location.resolve(currentUserPrincipal.href);
                     }
                 } catch(IOException|HttpException|DavException e) {
-                    Constants.log.debug("Couldn't find <current-user-principal> at user-given URL", e);
+                    log.debug("Couldn't find <current-user-principal> at user-given URL", e);
                 }
 
             if (principalUrl == null)
                 try {
-                    Constants.log.info("User-given URL doesn't contain <current-user-principal>, trying /.well-known/" + service.name);
+                    log.info("User-given URL doesn't contain <current-user-principal>, trying /.well-known/" + service.name);
                     principalUrl = getCurrentUserPrincipal(userURL.resolve("/.well-known/" + service.name));
-                } catch(IOException|HttpException e) {
-                    Constants.log.debug("Couldn't determine <current-user-principal> from well-known " + service + " path", e);
+                } catch(IOException|HttpException|DavException e) {
+                    log.debug("Couldn't determine <current-user-principal> from well-known " + service + " path", e);
                 }
 
             if (principalUrl == null)
@@ -190,13 +193,17 @@ public class DavResourceFinder {
         }
 
         if (principalUrl == null && domain != null) {
-            Constants.log.info("No principal URL yet, trying SRV/TXT records with domain " + domain);
-            principalUrl = discoverPrincipalUrl(domain, service);
+            log.info("No principal URL yet, trying SRV/TXT records with domain " + domain);
+            try {
+                principalUrl = discoverPrincipalUrl(domain, service);
+            } catch (IOException|HttpException|DavException e) {
+                log.info("Couldn't find principal URL using service discovery");
+            }
         }
 
         // principal URL has been found, get addressbook-home-set/calendar-home-set
         if (principalUrl != null) {
-            Constants.log.info("Principal URL=" + principalUrl + ", getting <calendar-home-set>");
+            log.info("Principal URL=" + principalUrl + ", getting <calendar-home-set>");
             try {
                 DavResource principal = new DavResource(log, httpClient, principalUrl);
 
@@ -204,7 +211,7 @@ public class DavResourceFinder {
                     principal.propfind(0, CalendarHomeSet.NAME);
                     CalendarHomeSet calendarHomeSet = (CalendarHomeSet) principal.properties.get(CalendarHomeSet.NAME);
                     if (calendarHomeSet != null) {
-                        Constants.log.info("Found <calendar-home-set> at principal URL");
+                        log.info("Found <calendar-home-set> at principal URL");
                         for (String href : calendarHomeSet.hrefs) {
                             HttpUrl url = principal.location.resolve(href);
                             if (url != null)
@@ -215,7 +222,7 @@ public class DavResourceFinder {
                     principal.propfind(0, AddressbookHomeSet.NAME);
                     AddressbookHomeSet addressbookHomeSet = (AddressbookHomeSet) principal.properties.get(AddressbookHomeSet.NAME);
                     if (addressbookHomeSet != null) {
-                        Constants.log.info("Found <addressbook-home-set> at principal URL");
+                        log.info("Found <addressbook-home-set> at principal URL");
                         for (String href : addressbookHomeSet.hrefs) {
                             HttpUrl url = principal.location.resolve(href);
                             if (url != null)
@@ -225,7 +232,7 @@ public class DavResourceFinder {
                 }
 
             } catch (IOException|HttpException|DavException e) {
-                Constants.log.debug("PROPFIND on " + principalUrl + " failed", e);
+                log.debug("PROPFIND on " + principalUrl + " failed", e);
             }
         }
 
@@ -233,7 +240,7 @@ public class DavResourceFinder {
         for (HttpUrl url : homeSets)
             if (service == Service.CALDAV)
                 try {
-                    Constants.log.info("Listing calendar collections in home set " + url);
+                    log.info("Listing calendar collections in home set " + url);
                     DavResource homeSet = new DavResource(log, httpClient, url);
                     homeSet.propfind(1, SupportedCalendarComponentSet.NAME, ResourceType.NAME, DisplayName.NAME, CurrentUserPrivilegeSet.NAME,
                             CalendarColor.NAME, CalendarDescription.NAME, CalendarTimezone.NAME);
@@ -245,11 +252,11 @@ public class DavResourceFinder {
                     for (DavResource member : homeSet.members)
                         addIfCalendar(member);
                 } catch (IOException | HttpException | DavException e) {
-                    Constants.log.debug("PROPFIND on " + url + " failed", e);
+                    log.debug("PROPFIND on " + url + " failed", e);
                 }
             else if (service == Service.CARDDAV)
                 try {
-                    Constants.log.info("Listing address books in home set " + url);
+                    log.info("Listing address books in home set " + url);
                     DavResource homeSet = new DavResource(log, httpClient, url);
                     homeSet.propfind(1, ResourceType.NAME, DisplayName.NAME, CurrentUserPrivilegeSet.NAME, AddressbookDescription.NAME);
 
@@ -260,7 +267,7 @@ public class DavResourceFinder {
                     for (DavResource member : homeSet.members)
                         addIfAddressBook(member);
                 } catch (IOException | HttpException | DavException e) {
-                    Constants.log.debug("PROPFIND on " + url + " failed", e);
+                    log.debug("PROPFIND on " + url + " failed", e);
                 }
 
         // TODO notify user on errors?
@@ -280,7 +287,7 @@ public class DavResourceFinder {
         ResourceType resourceType = (ResourceType)dav.properties.get(ResourceType.NAME);
         if (resourceType != null && resourceType.types.contains(ResourceType.ADDRESSBOOK)) {
             dav.location = UrlUtils.withTrailingSlash(dav.location);
-            Constants.log.info("Found address book at " + dav.location);
+            log.info("Found address book at " + dav.location);
 
             addressbooks.put(dav.location, resourceInfo(dav, ServerInfo.ResourceInfo.Type.ADDRESS_BOOK));
         }
@@ -298,7 +305,7 @@ public class DavResourceFinder {
         ResourceType resourceType = (ResourceType)dav.properties.get(ResourceType.NAME);
         if (resourceType != null && resourceType.types.contains(ResourceType.CALENDAR)) {
             dav.location = UrlUtils.withTrailingSlash(dav.location);
-            Constants.log.info("Found calendar collection at " + dav.location);
+            log.info("Found calendar collection at " + dav.location);
 
             boolean supportsEvents = true, supportsTasks = true;
             SupportedCalendarComponentSet supportedCalendarComponentSet = (SupportedCalendarComponentSet)dav.properties.get(SupportedCalendarComponentSet.NAME);
@@ -376,7 +383,7 @@ public class DavResourceFinder {
         List<String> paths = new LinkedList<>();     // there may be multiple paths to try
 
         final String query = "_" + service.name + "s._tcp." + domain;
-        Constants.log.debug("Looking up SRV records for " + query);
+        log.debug("Looking up SRV records for " + query);
         Record[] records = new Lookup(query, Type.SRV).run();
         if (records != null && records.length >= 1) {
             // choose SRV record to use (query may return multiple SRV records)
@@ -385,7 +392,7 @@ public class DavResourceFinder {
             scheme = "https";
             fqdn = srv.getTarget().toString(true);
             port = srv.getPort();
-            Constants.log.info("Found " + service + " service: fqdn=" + fqdn + ", port=" + port);
+            log.info("Found " + service + " service: fqdn=" + fqdn + ", port=" + port);
 
             // look for TXT record too (for initial context path)
             records = new Lookup(domain, Type.TXT).run();
@@ -394,7 +401,7 @@ public class DavResourceFinder {
                 for (String segment : (String[])txt.getStrings().toArray(new String[0]))
                     if (segment.startsWith("path=")) {
                         paths.add(segment.substring(5));
-                        Constants.log.info("Found TXT record; initial context path=" + paths);
+                        log.info("Found TXT record; initial context path=" + paths);
                         break;
                     }
             }
@@ -413,7 +420,7 @@ public class DavResourceFinder {
                         .encodedPath(path)
                         .build();
 
-                Constants.log.info("Trying to determine principal from initial context path=" + initialContextPath);
+                log.info("Trying to determine principal from initial context path=" + initialContextPath);
                 HttpUrl principal = getCurrentUserPrincipal(initialContextPath);
                 if (principal != null)
                     return principal;
@@ -434,7 +441,7 @@ public class DavResourceFinder {
         if (currentUserPrincipal != null && currentUserPrincipal.href != null) {
             HttpUrl principal = url.resolve(currentUserPrincipal.href);
             if (principal != null) {
-                Constants.log.info("Found current-user-principal: " + principal);
+                log.info("Found current-user-principal: " + principal);
                 return principal;
             }
         }
@@ -446,7 +453,7 @@ public class DavResourceFinder {
 
 	private SRVRecord selectSRVRecord(Record[] records) {
 		if (records.length > 1)
-			Constants.log.warn("Multiple SRV records not supported yet; using first one");
+			log.warn("Multiple SRV records not supported yet; using first one");
 		return (SRVRecord)records[0];
 	}
 
