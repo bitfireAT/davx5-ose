@@ -7,87 +7,126 @@
  */
 package at.bitfire.davdroid.ui.setup;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.app.ProgressDialog;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import at.bitfire.dav4android.exception.DavException;
-import at.bitfire.dav4android.exception.HttpException;
-import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.log.StringLogger;
 import at.bitfire.davdroid.resource.DavResourceFinder;
 import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.davdroid.resource.ServerInfo;
+import at.bitfire.davdroid.ui.DebugInfoActivity;
 
 public class QueryServerDialogFragment extends DialogFragment implements LoaderCallbacks<ServerInfo> {
-	private static final String TAG = "davdroid.QueryServer";
-	public static final String
-		EXTRA_BASE_URI = "base_uri",
-		EXTRA_USER_NAME = "user_name",
-		EXTRA_PASSWORD = "password",
-		EXTRA_AUTH_PREEMPTIVE = "auth_preemptive";
+    public static final String KEY_SERVER_INFO = "server_info";
 
-	@Override
+    public static QueryServerDialogFragment newInstance(ServerInfo serverInfo) {
+        Bundle args = new Bundle();
+        args.putSerializable(KEY_SERVER_INFO, serverInfo);
+        QueryServerDialogFragment fragment = new QueryServerDialogFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setCancelable(false);
+        dialog.setTitle(R.string.setup_resource_detection);
+        dialog.setIndeterminate(true);
+        dialog.setMessage(getString(R.string.setup_querying_server));
+        return dialog;
+    }
+
+
+@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Holo_Light_Dialog);
-		setCancelable(false);
 
 		Loader<ServerInfo> loader = getLoaderManager().initLoader(0, getArguments(), this);
-		if (savedInstanceState == null)		// http://code.google.com/p/android/issues/detail?id=14944
-			loader.forceLoad();
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.setup_query_server, container, false);
 	}
 
 	@Override
 	public Loader<ServerInfo> onCreateLoader(int id, Bundle args) {
-		Log.i(TAG, "onCreateLoader");
 		return new ServerInfoLoader(getActivity(), args);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<ServerInfo> loader, ServerInfo serverInfo) {
-		if (serverInfo.getErrorMessage() != null)
-			Toast.makeText(getActivity(), serverInfo.getErrorMessage(), Toast.LENGTH_LONG).show();
-		else {
-			((AddAccountActivity)getActivity()).serverInfo = serverInfo;
+        if (serverInfo.isEmpty()) {
+            // resource detection didn't find anything
+            getFragmentManager().beginTransaction()
+                    .add(NothingDetectedFragment.newInstance(serverInfo.getLogs()), null)
+                    .commitAllowingStateLoss();
 
-			Fragment nextFragment;
-			if (serverInfo.getTaskLists().length > 0 && !LocalTaskList.tasksProviderAvailable(getActivity().getContentResolver()))
-				nextFragment = new InstallAppsFragment();
-			else
-				nextFragment = new SelectCollectionsFragment();
+        } else {
+            ((AddAccountActivity) getActivity()).serverInfo = serverInfo;
 
-			getFragmentManager().beginTransaction()
-				.replace(R.id.right_pane, nextFragment)
-				.addToBackStack(null)
-				.commitAllowingStateLoss();
-		}
-		
+            // resource detection brought some results
+            Fragment nextFragment;
+            if (serverInfo.getTaskLists().length > 0 && !LocalTaskList.tasksProviderAvailable(getActivity().getContentResolver()))
+                nextFragment = new InstallAppsFragment();
+            else
+                nextFragment = new SelectCollectionsFragment();
+
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.right_pane, nextFragment)
+                    .addToBackStack(null)
+                    .commitAllowingStateLoss();
+        }
+
 		getDialog().dismiss();
 	}
 
 	@Override
 	public void onLoaderReset(Loader<ServerInfo> arg0) {
 	}
-	
+
+
+    public static class NothingDetectedFragment extends DialogFragment {
+        private static String KEY_LOGS = "logs";
+
+        public static NothingDetectedFragment newInstance(String logs) {
+            Bundle args = new Bundle();
+            args.putString(KEY_LOGS, logs);
+            NothingDetectedFragment fragment = new NothingDetectedFragment();
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.setup_resource_detection)
+                    .setIcon(android.R.drawable.ic_dialog_info)
+                    .setMessage(R.string.setup_no_collections_found)
+                    .setNeutralButton(R.string.setup_view_logs, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(getActivity(), DebugInfoActivity.class);
+                            intent.putExtra(DebugInfoActivity.KEY_LOGS, getArguments().getString(KEY_LOGS));
+                            startActivity(intent);
+                        }
+                    })
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // dismiss
+                        }
+                    })
+                    .create();
+        }
+    }
 	
 	static class ServerInfoLoader extends AsyncTaskLoader<ServerInfo> {
 		private static final String TAG = "davdroid.ServerInfoLoader";
@@ -100,36 +139,22 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 			this.args = args;
 		}
 
-		@Override
+        @Override
+        protected void onStartLoading() {
+            forceLoad();
+        }
+
+        @Override
 		public ServerInfo loadInBackground() {
-			ServerInfo serverInfo = new ServerInfo(
-				URI.create(args.getString(EXTRA_BASE_URI)),
-				args.getString(EXTRA_USER_NAME),
-				args.getString(EXTRA_PASSWORD),
-				args.getBoolean(EXTRA_AUTH_PREEMPTIVE)
-			);
-			
-			try {
-				DavResourceFinder finder = new DavResourceFinder(null, context, serverInfo);
-				finder.findResources();
-			} catch (URISyntaxException e) {
-				serverInfo.setErrorMessage(getContext().getString(R.string.exception_uri_syntax, e.getMessage()));
-			} catch (IOException e) {
-				// general message
-				serverInfo.setErrorMessage(getContext().getString(R.string.exception_io, e.getLocalizedMessage()));
-				// overwrite by more specific message, if possible
-				/*if (ExceptionUtils.indexOfType(e, CertPathValidatorException.class) != -1)
-					serverInfo.setErrorMessage(getContext().getString(R.string.exception_cert_path_validation, e.getMessage()));*/
-			} catch (HttpException e) {
-				Constants.log.error("HTTP error while querying server info", e);
-				serverInfo.setErrorMessage(getContext().getString(R.string.exception_http, e.getLocalizedMessage()));
-			} catch (DavException e) {
-                Constants.log.error("DAV error while querying server info", e);
-                serverInfo.setErrorMessage(getContext().getString(R.string.exception_incapable_resource, e.getLocalizedMessage()));
-            }
-			
+			ServerInfo serverInfo = (ServerInfo)args.getSerializable(KEY_SERVER_INFO);
+
+            StringLogger logger = new StringLogger("DavResourceFinder", true);
+            DavResourceFinder finder = new DavResourceFinder(logger, context, serverInfo);
+            finder.findResources();
+
+            serverInfo.setLogs(logger.toString());
 			return serverInfo;
 		}
-		
 	}
+
 }

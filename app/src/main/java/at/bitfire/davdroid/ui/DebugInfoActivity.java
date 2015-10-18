@@ -39,6 +39,7 @@ import at.bitfire.davdroid.R;
 public class DebugInfoActivity extends Activity implements LoaderManager.LoaderCallbacks<String> {
     public static final String
             KEY_EXCEPTION = "exception",
+            KEY_LOGS = "logs",
             KEY_ACCOUNT = "account",
             KEY_AUTHORITY = "authority",
             KEY_PHASE = "phase";
@@ -109,22 +110,24 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
         @Override
         public String loadInBackground() {
             Exception exception = null;
-            String authority = null;
+            String  logs = null,
+                    authority = null;
             Account account = null;
-            Integer phase = null;
+            int phase = -1;
 
             if (extras != null) {
                 exception = (Exception)extras.getSerializable(KEY_EXCEPTION);
+                logs = extras.getString(KEY_LOGS);
                 account = extras.getParcelable(KEY_ACCOUNT);
                 authority = extras.getString(KEY_AUTHORITY);
-                phase = extras.getInt(KEY_PHASE);
+                phase = extras.getInt(KEY_PHASE, -1);
             }
 
             StringBuilder report = new StringBuilder();
 
             // begin with most specific information
 
-            if (phase != null)
+            if (phase != -1)
                 report.append("SYNCHRONIZATION INFO\nSynchronization phase: " + phase + "\n");
             if (account != null)
                 report.append("Account name: " + account.name + "\n");
@@ -145,6 +148,9 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
                     report.append(stackTrace + "\n");
                 report.append("\n");
             }
+
+            if (logs != null)
+                report.append("LOGS:\n" + logs + "\n");
 
             try {
                 PackageManager pm = getContext().getPackageManager();

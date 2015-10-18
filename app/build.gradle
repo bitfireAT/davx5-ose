@@ -17,8 +17,8 @@ android {
         minSdkVersion 14
         targetSdkVersion 23
 
-        versionCode 76
-        versionName "0.9-beta1"
+        versionCode 77
+        versionName "0.9-beta2"
 
         buildConfigField "java.util.Date", "buildTime", "new java.util.Date()"
     }
