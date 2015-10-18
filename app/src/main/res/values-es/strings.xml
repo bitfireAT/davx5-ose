@@ -1,34 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
   <string name="help">Ayuda</string>
   <string name="next">Siguiente</string>
-  <string name="exception_cert_path_validation">El certificado de la ruta de certificados no es de confianza. Mira las FAQ para más información.</string>
-  <string name="exception_http">error HTTP: %s</string>
-  <string name="exception_incapable_resource">Se han perdido capacidades: %s</string>
-  <string name="exception_io">error I/O: %s</string>
-  <string name="exception_uri_syntax">URI no válida: %s</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Administrar las cuentas sincronizadas</string>
-  <string name="main_play_workaround_html"><![CDATA[
-<p>Gracias por haber comprado DAVdroid a través de Google Play y de esta manera apoyar este proyecto. Desafortunadamente, hay dos problemas con Google Play:</p>
-<h2>1. Las cuentas pueden desaparecer después de un reinicio</h2>
-<p>Puedes encontrar el problema de que todas tus <strong>cuentas de DAVdroid (incluyendo contactos y eventos) han desaparecido
-después de reiniciar tu dispositivo</strong>. La causa es un <a href=\"https://code.google.com/p/android/issues/detail?id=34880\">bug en Android</a>
-que ocasiona que las cuentas de las aplicaciones de pago se eliminen al inicio porque los ficheros APK (cifrados) son
-cargados <i>después</i> de la comprobación de cuentas huérfanas.</p>
-<p>Usuarios afectados:<br/>
-* todos los usuarios de Android 4.1 que hayan instalado DAVdroid desde Play Store;<br/>
-* los usuarios de Android 4.2 que hayan instalado DAVdroid desde Play Store solo en ciertos dispositivos (por ejemplo, la mayoría de dispositivos Samsung)</p>
-<h2>2. Las cuentas pueden desaparecer despues de actualizar DAVdroid</h2>
-<p>Puedes encontrar el problema de que todos tus <strong>cuentas de DAVdroid (incluyendo contactos y eventos) han desaparecido cuando Play Store
-actualiza DAVdroid</strong>. La causa es <a href=\"https://code.google.com/p/android/issues/detail?id=66905\">otro bug en Android</a>
-que ocasiona que las cuentas de las aplicaciones de pago se eliminen cuando se actualiza por una razón parecida.</p>
-<p>Usuarios afectados: algunos usuarios de Android 4.4.2 que hayan instalado DAVdroid desde Play Store (conocido en dispositivos Nexus y Moto G)</p>
-<p><strong>Si estás afectado por uno de estos bugs, por favor <a href=\"market://details?id=at.bitfire.davdroid.jbworkaround\">instala
-DAVdroid JB Workaround</a>.</strong></p>
-]]></string>
   <!--AddAccountActivity-->
   <string name="login_type_email">Acceder con cuenta de correo</string>
   <string name="login_type_email_description">Los detalles del servicio serán detectados automáticamente por el nombre de dominio. Ejemplo: myaccount@icloud.com</string>
@@ -60,7 +37,7 @@ DAVdroid JB Workaround</a>.</strong></p>
   <string name="settings_sync">Sincronización</string>
   <string name="settings_sync_interval_contacts">Intervalo de sincronización de contactos</string>
   <string name="settings_sync_summary_manually">Solo manualmente</string>
-  <string name="settings_sync_summary_periodically">Cada %d minutos + inmediatamente con cambios locales</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Cada %d minutos + inmediatamente con cambios locales</string>
   <string name="settings_sync_summary_not_available">No disponible</string>
   <string name="settings_sync_interval_calendars">Intervalo de sincronización de calendarios</string>
   <string-array name="settings_sync_interval_seconds">
@@ -83,8 +60,6 @@ DAVdroid JB Workaround</a>.</strong></p>
     <item>Cada 4 hours</item>
     <item>Una vez al día</item>
   </string-array>
-  <string name="setup_select_collections">DAVdroid: Selecciona recopilaciones</string>
-  <string name="setup_neither_caldav_nor_carddav">Ningún servicio CalDAV-/CardDAV está disponible en esta ubicación.</string>
   <string name="setup_add_account">Añadir cuenta</string>
   <string name="setup_querying_server">Consultando el servidor. Por favor, espera…</string>
   <string name="setup_what_to_sync">¿Qué recopilaciones deben ser sincronizadas?</string>
@@ -95,8 +70,6 @@ DAVdroid JB Workaround</a>.</strong></p>
   <string name="setup_account_details">Detalles de la cuenta</string>
   <string name="setup_account_name">Nombre de la cuenta:</string>
   <string name="setup_account_name_hint">Mi cuenta CalDAV/CardDAV</string>
-  <string name="setup_email_address">Dirección de email:</string>
-  <string name="setup_organizer_hint">ORGANIZADOR de tus eventos; se necesita si se usa información de los asistentes</string>
   <string name="setup_account_name_info">\"Usa tu dirección de correo electrónico como nombre de cuenta porque Android usará el nombre de cuenta como campo de ORGANIZADOR para los eventos que crees. No puedes tener dos cuentas con el mismo nombre.</string>
   <string name="setup_read_only">solo lectura</string>
   <!--sync errors and DebugInfoActivity-->

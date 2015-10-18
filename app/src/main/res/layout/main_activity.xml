@@ -75,6 +75,11 @@
             android:layout_marginBottom="20dp"
             android:linksClickable="true" />
         <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_translation_info"
+            android:layout_marginBottom="20dp" />
+        <TextView
             android:id="@+id/text_libraries_heading"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

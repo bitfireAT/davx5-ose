@@ -1,39 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
   <string name="help">Súgó</string>
   <string name="next">Tovább</string>
   <string name="skip">Kihagy</string>
-  <string name="exception_http">HTTP hiba: %s</string>
-  <string name="exception_incapable_resource">Hiányzó szolgáltatás: %s</string>
-  <string name="exception_io">I/O hiba: %s</string>
-  <string name="exception_uri_syntax">Érvénytelen URI: %s</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Szinkronizációs fiókok kezelése</string>
-  <string name="main_play_workaround_html"><![CDATA[
-        <p>Köszönjük, hogy megvásárolta a DAVdroid alkalmazást a Google Play áruházban, támogatva ezzel a projektet.  Sajnos, 
-        a Google Play áruházzal két probléma is van:</p>
-        <h2>1. A fiókok az eszköz újraindítása után eltűnhetnek</h2>
-        <p>Előfordulhat, hogy <strong>az eszköz újraindítása után az összes DAVdroid fiók (beleértve hozzájuk tartozó 
-        névjegyeket és eseményeket) eltűnik</strong>. Ezt egy
-        <a href=\"https://code.google.com/p/android/issues/detail?id=34880\">Android szoftverhiba</a> okozza, melynek 
-        következtében a nem ingyenes alkalmazásokhoz tartozó fiókok az eszköz indításakor törlődnek.  A hiba hátterében az áll, 
-        hogy a (kódolt) APK fájlok a létrehozó nélküli (\"megárvult\") fiókok törlése <i>után</i> töltődnek be.</p>
-        <p>Érintett felhasználók:<br/>
-        * minden Android 4.1 felhasználó, aki a DAVdroid alkalmazást a Google Play áruházból töltötte le;<br/>
-        * egyes Android 4.2 felhasználók, akik a DAVdroid alkalmazást a Google Play áruházból töltötték le, a használt eszköz
-        típusától függően (például egyes Samsung eszközök felhasználói)</p>
-        <h2>2. A fiókok a DAVdroid frissítése után eltűnhetnek</h2>
-        <p>Előfordulhat, hogy az összes <strong>DAVdroid fiók (beleértve a hozzájuk tartozó névjegyeket és eseményeket) 
-        eltűnik, miután a Google Play áruház frissítette a DAVdroid alkalmazást</strong>.  Ezt szintén egy, az előzőhöz hasonló, 
-        <a href=\"https://code.google.com/p/android/issues/detail?id=34880\">Android szoftverhiba</a> okozza.
-        <p>Érintett felhasználók:<br/>
-        * egyes Android 4.4.2 felhasználók, akik a DAVdroid alkalmazást a Google Play áruházból töltötték le, a használt eszköz
-        típusától függően (például Nexus és Moto G eszközök felhasználói)</p>
-        <p><strong>A probléma a <a href=\"market://details?id=at.bitfire.davdroid.jbworkaround\">JB DAVdroid gyorsjavítás</a> 
-        telepítésével kiküszöbölhető.</strong></p>
-    ]]></string>
   <!--AddAccountActivity-->
   <string name="login_type_email">Bejelentkezés email cím segítségével</string>
   <string name="login_type_email_description">A szolgáltatás részleteinek automatikus detektálása a tartománynév alapján történik. Példa: myaccount@icloud.com</string>
@@ -66,7 +39,7 @@
   <string name="settings_sync">Szinkronizálás</string>
   <string name="settings_sync_interval_contacts">Névjegyszinkronizálás sűrűsége</string>
   <string name="settings_sync_summary_manually">Manuális</string>
-  <string name="settings_sync_summary_periodically">Minden %d percben + az eszközön történt módosítás után</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Minden %d percben + az eszközön történt módosítás után</string>
   <string name="settings_sync_summary_not_available">Nem elérhető</string>
   <string name="settings_sync_interval_calendars">Naptárszinkronizálás sűrűsége</string>
   <string name="settings_sync_interval_tasks">Feladatlisták szinkronizálásának sűrűsége</string>
@@ -90,12 +63,6 @@
     <item>4 óránként</item>
     <item>Naponta</item>
   </string-array>
-  <string name="settings_carddav">Címjegyzék</string>
-  <string name="settings_carddav_vcard4_support">VCard 4.0 támogatás</string>
-  <string name="settings_carddav_vcard4_supported">Névjegyek küldése VCard 4.0 formátumban</string>
-  <string name="settings_carddav_vcard4_not_supported">Névjegyek küldése VCard 3.0 formátumban</string>
-  <string name="setup_select_collections">DAVdroid: Gyűjtemény kiválasztása</string>
-  <string name="setup_neither_caldav_nor_carddav">Nincs CalDAV-/CardDAV szolgáltatás a megadott helyen.</string>
   <string name="setup_add_account">Fiók hozzáadása</string>
   <string name="setup_querying_server">Kapcsolódás a szerverhez. Egy pillanat…</string>
   <string name="setup_install_apps_info">Az Android rendszer önmagában nem támogatja a feladatlistákat (ellentétben a naptárakkal és címjegyzékekkel).</string>
@@ -121,8 +88,6 @@
   <string name="setup_account_details">További beállítások</string>
   <string name="setup_account_name">A fiók neve:</string>
   <string name="setup_account_name_hint">CalDAV/CardDAV fiók</string>
-  <string name="setup_email_address">Email cím:</string>
-  <string name="setup_organizer_hint">Szervező (ORGANIZER mező értéke), résztvevők kezelése esetén</string>
   <string name="setup_account_name_info">\"Használja az email címet fióknévként, mert később a létrehozandó események szervezőjeként (ORGANIZER mező) az Android ezt fogja használni. Két fiókot nem lehet azonos néven létrehozni.</string>
   <string name="setup_read_only">csak olvasható</string>
   <!--sync errors and DebugInfoActivity-->

@@ -89,7 +89,8 @@ public class AccountDetailsFragment extends Fragment implements TextWatcher {
 
 
 	// actions
-	
+
+    @SuppressWarnings("Recycle")
 	void addAccount() {
 		String accountName = editAccountName.getText().toString();
 		

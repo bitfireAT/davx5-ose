@@ -8,6 +8,7 @@
 package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -127,6 +128,7 @@ abstract public class SyncManager {
 
     protected abstract String getSyncErrorTitle();
 
+    @TargetApi(21)
     public void performSync() {
         int syncPhase = SYNC_PHASE_PREPARE;
         try {

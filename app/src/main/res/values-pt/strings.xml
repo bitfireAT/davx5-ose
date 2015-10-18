@@ -1,34 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVDroid</string>
   <string name="help">Ajuda</string>
   <string name="next">Próximo</string>
-  <string name="exception_cert_path_validation">Certificado não confiável. Veja o FAQ para maiores informações.</string>
-  <string name="exception_http">Erro HTTP: %s</string>
-  <string name="exception_incapable_resource">Recuros esgotados: %s</string>
-  <string name="exception_io">Erro de E/S: %s</string>
-  <string name="exception_uri_syntax">URI inválida: %s</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Administrar as contas sincronizadas</string>
-  <string name="main_play_workaround_html"><![CDATA[
-        <p>Obrigado por adquirir o DAVdroid pelo Google Play apoiando, assim, o projeto. Infelizmente existem dos problemas com o Google Play:</p>
-        <h2>1. Contas podem desaparecer após reinicial</h2>
-        <p>Você pode encontrar problemas com todas as suas <strong>contas DAVdroid (incluindo contatos e eventos) 
-        após reiniciar o dispositivo</strong>. A rasão disto é <a href=\"https://code.google.com/p/android/issues/detail?id=34880\">defeito no Android</a>
-        que pode fazer com que  aplicativos pagos sejam removidos na inicialização porque os arquivos de APKs (criptografados)  
-        rodam <i>após</i> a verificação se a conta é orfã.</p>
-        <p>Usuários Afeados:<br/>
-        * todos os usuários do Android 4.1 que possuem um DAVdroid obtido no Play Store;<br/>
-        * usuários do Android 4.2 que obtiveram o DAVdroid do Play Store apenas com certos aparelhos (por exemplo, vários Samsung devices)</p>
-        <h2>2. Contas podem ser perdidas após atualização do DAVdroid</h2>
-        <p>Você pode encontrar problemas em todas as suas <strong>contas DAVdroid (incluindo contatos e eventos) quando o Play Store
-        atualiza o DAVdroid</strong>. A razão é <a href=\"https://code.google.com/p/android/issues/detail?id=66905\">outro defeito no Android</a>
-        que causa a remoção da conta quando este é atualizado por outro aplicativo semelhante.</p>
-        <p>Usuários afetados: alguns usuários do Android 4.4.2 que obtiveram o  DAVdroid do Play Store (conhecido para dispositivos Nexus e Moto G)</p>
-        <p><strong>Se você for afetado por algum destes defeitos, por favor acesse <a href=\"market://details?id=at.bitfire.davdroid.jbworkaround\">
-        para instalar a sulução DAVdroid</a>.</strong></p>
-    ]]></string>
   <!--AddAccountActivity-->
   <string name="login_type_email">Login com seu enderço de email</string>
   <string name="login_type_email_description">Detalhes do serviço poderão ser detectados automaticamente pelo nome do
@@ -63,7 +40,7 @@
   <string name="settings_sync">Sincronização</string>
   <string name="settings_sync_interval_contacts">Intervalo de sincronização dos contatos</string>
   <string name="settings_sync_summary_manually">Manualmente apenas</string>
-  <string name="settings_sync_summary_periodically">A cada %d minutos + imediatamente em alterações locais</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">A cada %d minutos + imediatamente em alterações locais</string>
   <string name="settings_sync_summary_not_available">Não avaliado</string>
   <string name="settings_sync_interval_calendars">Intervalo de sincronização do calendário</string>
   <string-array name="settings_sync_interval_seconds">
@@ -86,8 +63,6 @@
     <item>A cada 4 horas</item>
     <item>Diáriamente</item>
   </string-array>
-  <string name="setup_select_collections">DAVdroid: Selecionar Coleções</string>
-  <string name="setup_neither_caldav_nor_carddav">Nenhum CalDAV-/CardDAV serviço disponível neste endereço.</string>
   <string name="setup_add_account">Adicionar conta</string>
   <string name="setup_querying_server">Consultando o servidor. Por favor aguarde…</string>
   <string name="setup_what_to_sync">Quais coleções serão sincronizadas?</string>
@@ -98,8 +73,6 @@
   <string name="setup_account_details">Detalhes da conta</string>
   <string name="setup_account_name">Nome da conta:</string>
   <string name="setup_account_name_hint">Minha conta CalDAV/CardDAV</string>
-  <string name="setup_email_address">Endereço de e-mail:</string>
-  <string name="setup_organizer_hint">ORGANIZADOR de seus evento; requerido se você usa informações dos participantes</string>
   <string name="setup_account_name_info">\"Use seu endereço de e-mail como nome da conta porque o Android irá usar esta informação com ORGANIZADOR para eventos criados. Você não pode ter duas contas com o mesmo nome.</string>
   <string name="setup_read_only">apenas leitura</string>
   <!--sync errors and DebugInfoActivity-->

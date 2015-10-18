@@ -8,6 +8,7 @@
 
 package at.bitfire.davdroid.resource;
 
+import android.annotation.TargetApi;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.os.Build;
@@ -27,6 +28,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+@TargetApi(17)
 public class LocalEvent extends AndroidEvent implements LocalResource {
     static {
         Event.prodId = new ProdId("+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " ical4android ical4j/2.x");

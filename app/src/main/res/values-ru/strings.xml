@@ -1,37 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
   <string name="help">Помощь</string>
   <string name="next">Далее</string>
-  <string name="exception_cert_path_validation">Недоверенный сертификат в цепочке сертификации. Прочитайте FAQ для полной информации.</string>
-  <string name="exception_http">Ошибка HTTP: %s</string>
-  <string name="exception_incapable_resource">Отсутствуют возможности: %s</string>
-  <string name="exception_io">ошибка I/O: %s</string>
-  <string name="exception_uri_syntax">Неверный URI: %s</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Управление аккаунтами синхронизации</string>
-  <string name="main_play_workaround_html"><![CDATA[
-		<p>Благодарим за поддержку проекта через покупку DAVdroid на Google Play. К сожалению есть две небольших проблемы для программ приобретенных в Google Play:</p>
-		
-		<h2>1. Аккаунты могут исчезнуть после перезагрузки</h2>
-		<p>Вы можете столкнуться с проблемой когда все ваши <strong>аккаунты DAVdroid (включая события и контакты) исчезнут после перезагрузки устройства</strong>.
-		Причина - <a href=\"https://code.google.com/p/android/issues/detail?id=34880\">ошибка в Android</a>
-        по причине которой аккаунты платных приложений удаляются при загрузке устройства из за (зашифрованного) APK файла который загружается
-        <i>после</i> проверки аккаунтов.</p>
-        <p>Затронутые пользователи:<br/>
-        * все пользователи Android 4.1 которые установили DAVdroid через Play Store;<br/>
-        * Пользователи Android 4.2 которые установили DAVdroid через Play Store на некоторых устройствах (например на большинстве устройств Samsung)</p>
-        
-        <h2>2. Аккаунты могут исчезнуть после обновления DAVdroid</h2>
-        <p>Вы можете столкнуться с проблемой когда все ваши <strong>аккаунты DAVdroid (включая события и контакты) исчезнут после
-         после обновления DAVdroid через Play Store</strong>. Причина это <a href=\"https://code.google.com/p/android/issues/detail?id=66905\">другая ошибка в Android</a>
-        которая вызывает удаление аккаунтов  платных приложений по аналогичной причине.</p>
-        <p>Затронутые пользователи:<br/> некоторые пользователи Android 4.4.2 которые установили DAVdroid через Play Store (подтверждено для устройств Nexus и Moto G)</p>
-        
-        <p><strong>Если вы столкнулись с этими ошибками, пожалуйста установите дополнительное приложение <a href=\"market://details?id=at.bitfire.davdroid.jbworkaround\">
-        DAVdroid JB Workaround</a> для их устранения.</strong></p>
-    ]]></string>
   <!--AddAccountActivity-->
   <string name="login_type_email">Вход по адресу email</string>
   <string name="login_type_email_description">Данные сервиса будут автоматически определены через имя домена. Пример: myaccount@icloud.com</string>
@@ -64,7 +38,7 @@
   <string name="settings_sync">Синхронизация</string>
   <string name="settings_sync_interval_contacts">Интервал синхронизации контактов</string>
   <string name="settings_sync_summary_manually">Вручную</string>
-  <string name="settings_sync_summary_periodically">Каждые %d минут и немедленно при локальных изменениях</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Каждые %d минут и немедленно при локальных изменениях</string>
   <string name="settings_sync_summary_not_available">Недоступно</string>
   <string name="settings_sync_interval_calendars">Интервал синхронизации календарей</string>
   <string-array name="settings_sync_interval_seconds">
@@ -87,8 +61,6 @@
     <item>Каждые 4 часа</item>
     <item>Раз в сутки</item>
   </string-array>
-  <string name="setup_select_collections">DAVdroid: Выберите коллекции</string>
-  <string name="setup_neither_caldav_nor_carddav">Никакие CalDAV-/CardDAV сервисы недоступны по этому адресу.</string>
   <string name="setup_add_account">Добавить аккаунт</string>
   <string name="setup_querying_server">Опрашиваем сервер. Пожалуйста подождите…</string>
   <string name="setup_what_to_sync">Какие коллекции будут синхронизироваться?</string>
@@ -99,8 +71,6 @@
   <string name="setup_account_details">Данные аккаунта</string>
   <string name="setup_account_name">Имя аккаунта:</string>
   <string name="setup_account_name_hint">Мой аккаунт CalDAV/CardDAV</string>
-  <string name="setup_email_address">Адрес Email:</string>
-  <string name="setup_organizer_hint">ОРГАНИЗАТОР ваших событий; обязательно если вы используете данные участников</string>
   <string name="setup_account_name_info">\"Используйте свой адрес email как имя аккаунта, так как Android будет использовать это имя как поле ОРГАНИЗАТОР для событий которые вы будете создавать. Вы не можете использовать одинаковое имя для разных аккаунтов.</string>
   <string name="setup_read_only">только чтение</string>
   <!--sync errors and DebugInfoActivity-->

@@ -28,7 +28,7 @@ import ezvcard.Ezvcard;
 
 public class LocalContact extends AndroidContact implements LocalResource {
     static {
-        Contact.productID = "+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + "vcard4android ez-vcard/" + Ezvcard.VERSION;
+        Contact.productID = "+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " vcard4android ez-vcard/" + Ezvcard.VERSION;
     }
 
     protected LocalContact(AndroidAddressBook addressBook, long id, String fileName, String eTag) {

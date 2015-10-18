@@ -7,6 +7,7 @@
  */
 package at.bitfire.davdroid.ui.setup;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -62,6 +63,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 	}
 
 	@Override
+    @SuppressLint("CommitTransaction")
 	public void onLoadFinished(Loader<ServerInfo> loader, ServerInfo serverInfo) {
         if (serverInfo.isEmpty()) {
             // resource detection didn't find anything

@@ -7,12 +7,13 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- common strings -->
     <string name="app_name">DAVdroid</string>
     <string name="help">Help</string>
     <string name="next">Next</string>
+    <string name="please_wait">Please wait</string>
     <string name="send">Send</string>
     <string name="skip">Skip</string>
 
@@ -111,7 +112,7 @@
     <string name="settings_sync">Synchronization</string>
     <string name="settings_sync_interval_contacts">Contacts sync. interval</string>
     <string name="settings_sync_summary_manually">Only manually</string>
-    <string name="settings_sync_summary_periodically">Every %d minutes + immediately on local changes</string>
+    <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Every %d minutes + immediately on local changes</string>
     <string name="settings_sync_summary_not_available">Not available</string>
     <string name="settings_sync_interval_calendars">Calendars sync. interval</string>
     <string name="settings_sync_interval_tasks">Tasks sync. interval</string>
@@ -148,12 +149,11 @@
     <string name="settings_android_update_title">Android version update</string>
     <string name="settings_android_update_description">Android version updates may have an impact on how DAVdroid works. If there are problems, please delete your DAVdroid accounts and add them again.</string>
     <string name="settings_version_update_title">Settings have been updated</string>
-    <string name="settings_version_update_description">Internal settings have been updated. If there are problems, please delete your DAVdroid accounts and add them again.</string>
+    <string name="settings_version_update_description">Internal settings have been updated. If there are problems, please uninstall DAVdroid and then install it again.</string>
 
     <string name="setup_resource_detection">Resource detection</string>
     <string name="setup_no_collections_found">No address books or calendars were found.</string>
     <string name="setup_view_logs">View logs</string>
-    <string name="setup_select_collections">DAVdroid: Select collections</string>
     <string name="setup_add_account">Add account</string>
     <string name="setup_querying_server">Querying server. Please wait…</string>
     <string name="setup_install_apps_info">Plain Android doesn\'t support to-do lists (in contrast to contacts and calendars).</string>
@@ -178,8 +178,6 @@
     <string name="setup_account_details">Account details</string>
     <string name="setup_account_name">Account name:</string>
     <string name="setup_account_name_hint">My CalDAV/CardDAV Account</string>
-    <string name="setup_email_address">Email address:</string>
-    <string name="setup_organizer_hint">"ORGANIZER of your events; required if you use attendee info"</string>
     <string name="setup_account_name_info">"Use your email address as account name because Android will use the account name as ORGANIZER field for events you create. You can't have two accounts with the same name.</string>
     <string name="setup_read_only">read-only</string>
 

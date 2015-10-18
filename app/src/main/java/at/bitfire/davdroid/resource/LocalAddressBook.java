@@ -87,6 +87,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
      * @param displayName   title of the group to look for
      * @return              group with given title, or null if none
      */
+    @SuppressWarnings("Recycle")
     public LocalGroup findGroupByTitle(String displayName) throws ContactsStorageException {
         try {
             @Cleanup Cursor cursor = provider.query(syncAdapterURI(Groups.CONTENT_URI),
@@ -100,6 +101,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
         return null;
     }
 
+    @SuppressWarnings("Recycle")
     public LocalGroup[] getDeletedGroups() throws ContactsStorageException {
         List<LocalGroup> groups = new LinkedList<>();
         try {
@@ -114,6 +116,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
         return groups.toArray(new LocalGroup[groups.size()]);
     }
 
+    @SuppressWarnings("Recycle")
     public LocalGroup[] getDirtyGroups() throws ContactsStorageException {
         List<LocalGroup> groups = new LinkedList<>();
         try {
@@ -128,6 +131,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
         return groups.toArray(new LocalGroup[groups.size()]);
     }
 
+    @SuppressWarnings("Recycle")
     public void markMembersDirty(long groupId) throws ContactsStorageException {
         ContentValues dirty = new ContentValues(1);
         dirty.put(RawContacts.DIRTY, 1);
@@ -150,6 +154,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
 
     // SYNC STATE
 
+    @SuppressWarnings("Recycle")
     protected void readSyncState() throws ContactsStorageException {
         @Cleanup("recycle") Parcel parcel = Parcel.obtain();
         byte[] raw = getSyncState();
@@ -161,6 +166,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
             syncState.clear();
     }
 
+    @SuppressWarnings("Recycle")
     protected void writeSyncState() throws ContactsStorageException {
         @Cleanup("recycle") Parcel parcel = Parcel.obtain();
         parcel.writeBundle(syncState);

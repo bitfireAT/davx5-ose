@@ -91,7 +91,7 @@ public class AccountSettings {
 		}
 	}
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @TargetApi(21)
     protected void showNotification(int id, String title, String message) {
         NotificationManager nm = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         Notification.Builder n = new Notification.Builder(context);
@@ -190,7 +190,8 @@ public class AccountSettings {
             Constants.log.error("Couldn't update account settings (DAVdroid will probably crash)!", e);
 		}
 	}
-	
+
+    @SuppressWarnings("Recycle")
 	private void update_0_1() throws URISyntaxException {
 		String	v0_principalURL = accountManager.getUserData(account, "principal_url"),
 				v0_addressBookPath = accountManager.getUserData(account, "addressbook_path");
@@ -234,6 +235,7 @@ public class AccountSettings {
 		accountManager.setUserData(account, KEY_SETTINGS_VERSION, "1");
 	}
 
+    @SuppressWarnings("Recycle")
     private void update_1_2() throws ContactsStorageException {
         /* - KEY_ADDRESSBOOK_URL ("addressbook_url"),
            - KEY_ADDRESSBOOK_CTAG ("addressbook_ctag"),
