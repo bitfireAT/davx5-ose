@@ -178,7 +178,7 @@
     <string name="setup_account_details">Account details</string>
     <string name="setup_account_name">Account name:</string>
     <string name="setup_account_name_hint">My CalDAV/CardDAV Account</string>
-    <string name="setup_account_name_info">"Use your email address as account name because Android will use the account name as ORGANIZER field for events you create. You can't have two accounts with the same name.</string>
+    <string name="setup_account_name_info">Use your email address as account name because Android will use the account name as ORGANIZER field for events you create. You can\'t have two accounts with the same name.</string>
     <string name="setup_read_only">read-only</string>
 
     <!-- sync errors and DebugInfoActivity -->

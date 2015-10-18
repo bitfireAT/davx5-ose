@@ -21,12 +21,19 @@ import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+
+import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.log.StringLogger;
 import at.bitfire.davdroid.resource.DavResourceFinder;
 import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.davdroid.resource.ServerInfo;
 import at.bitfire.davdroid.ui.DebugInfoActivity;
+import lombok.Cleanup;
 
 public class QueryServerDialogFragment extends DialogFragment implements LoaderCallbacks<ServerInfo> {
     public static final String KEY_SERVER_INFO = "server_info";
@@ -154,7 +161,20 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
             DavResourceFinder finder = new DavResourceFinder(logger, context, serverInfo);
             finder.findResources();
 
+            // duplicate logs to ADB
+            String logs = logger.toString();
+            try {
+                @Cleanup BufferedReader logStream = new BufferedReader(new StringReader(logs));
+                Constants.log.info("Successful resource detection:");
+                String line;
+                while ((line = logStream.readLine()) != null)
+                    Constants.log.debug(line);
+            } catch (IOException e) {
+                Constants.log.error("Couldn't read resource detection logs", e);
+            }
+
             serverInfo.setLogs(logger.toString());
+
 			return serverInfo;
 		}
 	}

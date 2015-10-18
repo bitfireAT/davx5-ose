@@ -45,6 +45,7 @@ import at.bitfire.dav4android.property.CurrentUserPrivilegeSet;
 import at.bitfire.dav4android.property.DisplayName;
 import at.bitfire.dav4android.property.ResourceType;
 import at.bitfire.dav4android.property.SupportedCalendarComponentSet;
+import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.HttpClient;
 import lombok.NonNull;
 
@@ -396,18 +397,18 @@ public class DavResourceFinder {
             log.info("Found " + service + " service: fqdn=" + fqdn + ", port=" + port);
 
             // look for TXT record too (for initial context path)
-            records = new Lookup(domain, Type.TXT).run();
-            if (records != null && records.length >= 1) {
-                TXTRecord txt = (TXTRecord)records[0];
-                for (String segment : (String[])txt.getStrings().toArray(new String[0]))
-                    if (segment.startsWith("path=")) {
-                        paths.add(segment.substring(5));
-                        log.info("Found TXT record; initial context path=" + paths);
-                        break;
-                    }
-            }
+            records = new Lookup(query, Type.TXT).run();
+            if (records != null)
+                for (Record record : records)
+                    if (record instanceof TXTRecord)
+                        for (String segment : (List<String>) ((TXTRecord) record).getStrings())
+                            if (segment.startsWith("path=")) {
+                                paths.add(segment.substring(5));
+                                log.info("Found TXT record; initial context path=" + paths);
+                                break;
+                            }
 
-            // if there's TXT record if it it's wrong, try well-known
+            // if there's TXT record and if it it's wrong, try well-known
             paths.add("/.well-known/" + service.name);
             // if this fails, too, try "/"
             paths.add("/");
