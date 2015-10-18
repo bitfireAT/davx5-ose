@@ -47,6 +47,8 @@ public class AccountSettings {
 
 		KEY_USERNAME = "user_name",
 		KEY_AUTH_PREEMPTIVE = "auth_preemptive",
+        KEY_LOG_TO_EXTERNAL_FILE = "log_external_file",
+        KEY_LOG_VERBOSE = "log_verbose",
         KEY_LAST_ANDROID_VERSION = "last_android_version";
 
 	public final static long SYNC_INTERVAL_MANUALLY = -1;
@@ -84,9 +86,8 @@ public class AccountSettings {
                 showNotification(Constants.NOTIFICATION_ANDROID_VERSION_UPDATED,
                         context.getString(R.string.settings_android_update_title),
                         context.getString(R.string.settings_android_update_description));
-
-                accountManager.setUserData(account, KEY_LAST_ANDROID_VERSION, String.valueOf(Build.VERSION.SDK_INT));
             }
+            accountManager.setUserData(account, KEY_LAST_ANDROID_VERSION, String.valueOf(Build.VERSION.SDK_INT));
 		}
 	}
 
@@ -119,18 +120,23 @@ public class AccountSettings {
 	
 	// authentication settings
 
-	public String getUserName() {
-		return accountManager.getUserData(account, KEY_USERNAME);		
-	}
-	public void setUserName(String userName) { accountManager.setUserData(account, KEY_USERNAME, userName); }
+	public String username() { return accountManager.getUserData(account, KEY_USERNAME); }
+	public void username(String userName) { accountManager.setUserData(account, KEY_USERNAME, userName); }
 	
-	public String getPassword() {
-		return accountManager.getPassword(account);
-	}
-	public void setPassword(String password) { accountManager.setPassword(account, password); }
+	public String password() { return accountManager.getPassword(account); }
+	public void password(String password) { accountManager.setPassword(account, password); }
 	
-	public boolean getPreemptiveAuth() { return Boolean.parseBoolean(accountManager.getUserData(account, KEY_AUTH_PREEMPTIVE)); }
-	public void setPreemptiveAuth(boolean preemptive) { accountManager.setUserData(account, KEY_AUTH_PREEMPTIVE, Boolean.toString(preemptive)); }
+	public boolean preemptiveAuth() { return Boolean.parseBoolean(accountManager.getUserData(account, KEY_AUTH_PREEMPTIVE)); }
+	public void preemptiveAuth(boolean preemptive) { accountManager.setUserData(account, KEY_AUTH_PREEMPTIVE, Boolean.toString(preemptive)); }
+
+
+    // logging settings
+
+    public boolean logToExternalFile() { return Boolean.parseBoolean(accountManager.getUserData(account, KEY_LOG_TO_EXTERNAL_FILE)); }
+    public void logToExternalFile(boolean newValue) { accountManager.setUserData(account, KEY_LOG_TO_EXTERNAL_FILE, Boolean.toString(newValue)); }
+
+    public boolean logVerbose() { return Boolean.parseBoolean(accountManager.getUserData(account, KEY_LOG_VERBOSE)); }
+    public void logVerbose(boolean newValue) { accountManager.setUserData(account, KEY_LOG_VERBOSE, Boolean.toString(newValue)); }
 
 
 	// sync. settings
@@ -229,7 +235,7 @@ public class AccountSettings {
 	}
 
     private void update_1_2() throws ContactsStorageException {
-        /* - KEY_ADDRESSBOOK_URL ("addressbook_url"),,
+        /* - KEY_ADDRESSBOOK_URL ("addressbook_url"),
            - KEY_ADDRESSBOOK_CTAG ("addressbook_ctag"),
            - KEY_ADDRESSBOOK_VCARD_VERSION ("addressbook_vcard_version") are not used anymore (now stored in ContactsContract.SyncState)
            - KEY_LAST_ANDROID_VERSION ("last_android_version") has been added
@@ -237,22 +243,25 @@ public class AccountSettings {
 
         // move previous address book info to ContactsContract.SyncState
         @Cleanup("release") ContentProviderClient provider = context.getContentResolver().acquireContentProviderClient(ContactsContract.AUTHORITY);
-        if (provider != null) {
-            LocalAddressBook addr = new LocalAddressBook(account, provider);
+        if (provider == null)
+            throw new ContactsStorageException("Couldn't access Contacts provider");
 
-            String url = accountManager.getUserData(account, "addressbook_url");
-            if (!TextUtils.isEmpty(url))
-                addr.setURL(url);
-            accountManager.setUserData(account, "addressbook_url", null);
+        LocalAddressBook addr = new LocalAddressBook(account, provider);
 
-            String cTag = accountManager.getUserData(account, "addressbook_ctag");
-            if (!TextUtils.isEmpty(cTag))
-                addr.setCTag(cTag);
-            accountManager.setUserData(account, "addressbook_ctag", null);
-        }
+        // until now, ContactsContract.Settings.UNGROUPED_VISIBLE was not set explicitly
+        ContentValues values = new ContentValues();
+        values.put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1);
+        addr.updateSettings(values);
 
-        // store current Android version
-        accountManager.setUserData(account, KEY_LAST_ANDROID_VERSION, String.valueOf(Build.VERSION.SDK_INT));
+        String url = accountManager.getUserData(account, "addressbook_url");
+        if (!TextUtils.isEmpty(url))
+            addr.setURL(url);
+        accountManager.setUserData(account, "addressbook_url", null);
+
+        String cTag = accountManager.getUserData(account, "addressbook_ctag");
+        if (!TextUtils.isEmpty(cTag))
+            addr.setCTag(cTag);
+        accountManager.setUserData(account, "addressbook_ctag", null);
 
         accountManager.setUserData(account, KEY_SETTINGS_VERSION, "2");
     }

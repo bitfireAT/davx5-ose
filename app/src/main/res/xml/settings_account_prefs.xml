@@ -59,10 +59,22 @@
 
     </PreferenceCategory>
 
-    <!--
-    <PreferenceCategory android:title="@string/settings_carddav">
+    <PreferenceCategory android:title="@string/settings_debug">
+
+        <SwitchPreference
+            android:key="log_external_file"
+            android:persistent="false"
+            android:title="@string/settings_log_to_external_file"
+            android:summaryOn="@string/settings_log_to_external_file_on"
+            android:summaryOff="@string/settings_log_to_external_file_off" />
+
+        <SwitchPreference
+            android:key="log_verbose"
+            android:persistent="false"
+            android:title="@string/settings_log_verbose"
+            android:summaryOn="@string/settings_log_verbose_on"
+            android:summaryOff="@string/settings_log_verbose_off" />
 
     </PreferenceCategory>
-    -->
 
 </PreferenceScreen>

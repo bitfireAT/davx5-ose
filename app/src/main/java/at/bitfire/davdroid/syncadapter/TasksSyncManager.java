@@ -79,7 +79,7 @@ public class TasksSyncManager extends SyncManager {
         Thread.currentThread().setContextClassLoader(context.getClassLoader());     // required for ical4j
 
         collectionURL = HttpUrl.parse(localTaskList().getSyncId());
-        davCollection = new DavCalendar(httpClient, collectionURL);
+        davCollection = new DavCalendar(log, httpClient, collectionURL);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class TasksSyncManager extends SyncManager {
         int color = (pColor != null && pColor.color != null) ? pColor.color : LocalCalendar.defaultColor;
 
         ContentValues values = new ContentValues(2);
-        Constants.log.info("Setting new task list name \"" + displayName + "\" and color 0x" + Integer.toHexString(color));
+        log.info("Setting new task list name \"" + displayName + "\" and color 0x" + Integer.toHexString(color));
         values.put(TaskLists.LIST_NAME, displayName);
         values.put(TaskLists.LIST_COLOR, color);
         localTaskList().update(values);
@@ -117,21 +117,21 @@ public class TasksSyncManager extends SyncManager {
         remoteResources = new HashMap<>(davCollection.members.size());
         for (DavResource vCard : davCollection.members) {
             String fileName = vCard.fileName();
-            Constants.log.debug("Found remote VTODO: " + fileName);
+            log.debug("Found remote VTODO: " + fileName);
             remoteResources.put(fileName, vCard);
         }
     }
 
     @Override
     protected void downloadRemote() throws IOException, HttpException, DavException, CalendarStorageException {
-        Constants.log.info("Downloading " + toDownload.size() + " tasks (" + MAX_MULTIGET + " at once)");
+        log.info("Downloading " + toDownload.size() + " tasks (" + MAX_MULTIGET + " at once)");
 
         // download new/updated iCalendars from server
         for (DavResource[] bunch : ArrayUtils.partition(toDownload.toArray(new DavResource[toDownload.size()]), MAX_MULTIGET)) {
             if (Thread.interrupted())
                 return;
 
-            Constants.log.info("Downloading " + StringUtils.join(bunch, ", "));
+            log.info("Downloading " + StringUtils.join(bunch, ", "));
 
             if (bunch.length == 1) {
                 // only one contact, use GET
@@ -189,7 +189,7 @@ public class TasksSyncManager extends SyncManager {
         try {
             tasks = Task.fromStream(stream, charset);
         } catch (InvalidCalendarException e) {
-            Constants.log.error("Received invalid iCalendar, ignoring", e);
+            log.error("Received invalid iCalendar, ignoring", e);
             return;
         }
 
@@ -199,18 +199,18 @@ public class TasksSyncManager extends SyncManager {
             // update local task, if it exists
             LocalTask localTask = (LocalTask)localResources.get(fileName);
             if (localTask != null) {
-                Constants.log.info("Updating " + fileName + " in local tasklist");
+                log.info("Updating " + fileName + " in local tasklist");
                 localTask.setETag(eTag);
                 localTask.update(newData);
                 syncResult.stats.numUpdates++;
             } else {
-                Constants.log.info("Adding " + fileName + " to local task list");
+                log.info("Adding " + fileName + " to local task list");
                 localTask = new LocalTask(localTaskList(), newData, fileName, eTag);
                 localTask.add();
                 syncResult.stats.numInserts++;
             }
         } else
-            Constants.log.error("Received VCALENDAR with not exactly one VTODO; ignoring " + fileName);
+            log.error("Received VCALENDAR with not exactly one VTODO; ignoring " + fileName);
     }
 
 }

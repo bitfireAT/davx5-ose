@@ -83,7 +83,7 @@ public class ContactsSyncManager extends SyncManager {
         if (url == null)
             throw new ContactsStorageException("Couldn't get address book URL");
         collectionURL = HttpUrl.parse(url);
-        davCollection = new DavAddressBook(httpClient, collectionURL);
+        davCollection = new DavAddressBook(log, httpClient, collectionURL);
 
         processChangedGroups();
     }
@@ -98,7 +98,7 @@ public class ContactsSyncManager extends SyncManager {
             for (MediaType type : supportedAddressData.types)
                 if ("text/vcard; version=4.0".equalsIgnoreCase(type.toString()))
                     hasVCard4 = true;
-        Constants.log.info("Server advertises VCard/4 support: " + hasVCard4);
+        log.info("Server advertises VCard/4 support: " + hasVCard4);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class ContactsSyncManager extends SyncManager {
             davAddressBook().addressbookQuery();
         } catch(HttpException e) {
             if (e.status/100 == 4) {
-                Constants.log.warn("Server error on REPORT addressbook query, falling back to PROPFIND", e);
+                log.warn("Server error on REPORT addressbook query, falling back to PROPFIND", e);
                 davAddressBook().propfind(1, GetETag.NAME);
             }
         }
@@ -126,14 +126,14 @@ public class ContactsSyncManager extends SyncManager {
         remoteResources = new HashMap<>(davCollection.members.size());
         for (DavResource vCard : davCollection.members) {
             String fileName = vCard.fileName();
-            Constants.log.debug("Found remote VCard: " + fileName);
+            log.debug("Found remote VCard: " + fileName);
             remoteResources.put(fileName, vCard);
         }
     }
 
     @Override
     protected void downloadRemote() throws IOException, HttpException, DavException, ContactsStorageException {
-        Constants.log.info("Downloading " + toDownload.size() + " contacts (" + MAX_MULTIGET + " at once)");
+        log.info("Downloading " + toDownload.size() + " contacts (" + MAX_MULTIGET + " at once)");
 
         // prepare downloader which may be used to download external resource like contact photos
         Contact.Downloader downloader = new ResourceDownloader(httpClient, collectionURL);
@@ -143,7 +143,7 @@ public class ContactsSyncManager extends SyncManager {
             if (Thread.interrupted())
                 return;
 
-            Constants.log.info("Downloading " + StringUtils.join(bunch, ", "));
+            log.info("Downloading " + StringUtils.join(bunch, ", "));
 
             if (bunch.length == 1) {
                 // only one contact, use GET
@@ -202,7 +202,7 @@ public class ContactsSyncManager extends SyncManager {
         // groups with DELETED=1: remove group finally
         for (LocalGroup group : addressBook.getDeletedGroups()) {
             long groupId = group.getId();
-            Constants.log.debug("Finally removing group #" + groupId);
+            log.debug("Finally removing group #" + groupId);
             // remove group memberships, but not as sync adapter (should marks contacts as DIRTY)
             // NOTE: doesn't work that way because Contact Provider removes the group memberships even for DELETED groups
             // addressBook.removeGroupMemberships(groupId, false);
@@ -212,7 +212,7 @@ public class ContactsSyncManager extends SyncManager {
         // groups with DIRTY=1: mark all memberships as dirty, then clean DIRTY flag of group
         for (LocalGroup group : addressBook.getDirtyGroups()) {
             long groupId = group.getId();
-            Constants.log.debug("Marking members of modified group #" + groupId + " as dirty");
+            log.debug("Marking members of modified group #" + groupId + " as dirty");
             addressBook.markMembersDirty(groupId);
             group.clearDirty();
         }
@@ -226,32 +226,32 @@ public class ContactsSyncManager extends SyncManager {
             // update local contact, if it exists
             LocalContact localContact = (LocalContact)localResources.get(fileName);
             if (localContact != null) {
-                Constants.log.info("Updating " + fileName + " in local address book");
+                log.info("Updating " + fileName + " in local address book");
                 localContact.eTag = eTag;
                 localContact.update(newData);
                 syncResult.stats.numUpdates++;
             } else {
-                Constants.log.info("Adding " + fileName + " to local address book");
+                log.info("Adding " + fileName + " to local address book");
                 localContact = new LocalContact(localAddressBook(), newData, fileName, eTag);
                 localContact.add();
                 syncResult.stats.numInserts++;
             }
         } else
-            Constants.log.error("Received VCard with not exactly one VCARD, ignoring " + fileName);
+            log.error("Received VCard with not exactly one VCARD, ignoring " + fileName);
     }
 
 
     // downloader helper class
 
     @RequiredArgsConstructor
-    private static class ResourceDownloader implements Contact.Downloader {
+    private class ResourceDownloader implements Contact.Downloader {
         final HttpClient httpClient;
         final HttpUrl baseUrl;
 
         @Override
         public byte[] download(String url, String accepts) {
             HttpUrl httpUrl = HttpUrl.parse(url);
-            HttpClient resourceClient = new HttpClient(httpClient, httpUrl.host());
+            HttpClient resourceClient = new HttpClient(log, httpClient, httpUrl.host());
             try {
                 Response response = resourceClient.newCall(new Request.Builder()
                         .get()
@@ -264,10 +264,10 @@ public class ContactsSyncManager extends SyncManager {
                     if (response.isSuccessful() && stream != null) {
                         return IOUtils.toByteArray(stream);
                     } else
-                        Constants.log.error("Couldn't download external resource");
+                        log.error("Couldn't download external resource");
                 }
             } catch(IOException e) {
-                Constants.log.error("Couldn't download external resource", e);
+                log.error("Couldn't download external resource", e);
             }
             return null;
         }

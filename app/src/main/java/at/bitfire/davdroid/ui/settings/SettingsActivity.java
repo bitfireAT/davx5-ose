@@ -17,7 +17,7 @@ import android.os.Bundle;
 import at.bitfire.davdroid.R;
 
 public class SettingsActivity extends Activity {
-	private final static String KEY_SELECTED_ACCOUNT = "selected_account";
+	public final static String TAG_ACCOUNT_SETTINGS = "account_settings";
 
 	boolean tabletLayout;
 
@@ -44,7 +44,7 @@ public class SettingsActivity extends Activity {
 
 			getFragmentManager().beginTransaction()
 					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-					.replace(R.id.right_pane, fragment)
+					.replace(R.id.right_pane, fragment, TAG_ACCOUNT_SETTINGS)
 					.commit();
 		} else {  // phone layout
 			Intent intent = new Intent(getApplicationContext(), AccountActivity.class);

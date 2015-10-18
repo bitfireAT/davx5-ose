@@ -154,10 +154,15 @@
         <item>Every 4 hours</item>
         <item>Once a day</item>
     </string-array>
-    <string name="settings_carddav">Address book</string>
-    <string name="settings_carddav_vcard4_support">VCard 4.0 support</string>
-    <string name="settings_carddav_vcard4_supported">Contacts are sent in VCard 4.0 format</string>
-    <string name="settings_carddav_vcard4_not_supported">Contacts are sent in VCard 3.0 format</string>
+    <string name="settings_debug">Debugging</string>
+    <string name="settings_security_warning">Potential security risk!</string>
+    <string name="settings_log_to_external_file">Log to external file</string>
+    <string name="settings_log_to_external_file_confirmation">External log files will contain private data and be accessible by other apps. Turn off external logging and delete the log files after use.</string>
+    <string name="settings_log_to_external_file_on">Logs are written to external files (if possible)</string>
+    <string name="settings_log_to_external_file_off">Logs are written to ADB</string>
+    <string name="settings_log_verbose">Verbose logging</string>
+    <string name="settings_log_verbose_on">Log synchronization information and network traffic</string>
+    <string name="settings_log_verbose_off">Log only synchronization information</string>
 
     <string name="settings_android_update_title">Android version update</string>
     <string name="settings_android_update_description">Android version updates may have an impact on how DAVdroid works. If there are problems, please delete your DAVdroid accounts and add them again.</string>

@@ -21,6 +21,8 @@ import com.squareup.okhttp.Response;
 import com.squareup.okhttp.internal.tls.OkHostnameVerifier;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
+import org.slf4j.Logger;
+
 import java.io.IOException;
 import java.net.Proxy;
 import java.security.KeyManagementException;
@@ -39,18 +41,7 @@ import de.duenndns.ssl.MemorizingTrustManager;
 import lombok.RequiredArgsConstructor;
 
 public class HttpClient extends OkHttpClient {
-    protected static final String HEADER_AUTHORIZATION = "Authorization";
-
     final static UserAgentInterceptor userAgentInterceptor = new UserAgentInterceptor();
-    final static HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
-        @Override
-        public void log(String message) {
-            Constants.log.trace(message);
-        }
-    });
-    static {
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-    }
 
     static final String userAgent;
     static {
@@ -58,12 +49,14 @@ public class HttpClient extends OkHttpClient {
         userAgent = "DAVdroid/" + BuildConfig.VERSION_NAME + " (" + date + "; dav4android) Android/" + Build.VERSION.RELEASE;
     }
 
+    final Logger log;
     final Context context;
     protected String username, password;
 
 
-    protected HttpClient(Context context) {
+    protected HttpClient(final Logger log, Context context) {
         super();
+        this.log = (log != null) ? log : Constants.log;
         this.context = context;
 
         if (context != null) {
@@ -90,12 +83,20 @@ public class HttpClient extends OkHttpClient {
         networkInterceptors().add(userAgentInterceptor);
 
         // enable verbose logs, if requested
-        if (Constants.log.isTraceEnabled())
-            enableLogs();
+        if (log.isTraceEnabled()) {
+            HttpLoggingInterceptor logger = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+                @Override
+                public void log(String message) {
+                    log.trace(message);
+                }
+            });
+            logger.setLevel(HttpLoggingInterceptor.Level.BODY);
+            interceptors().add(logger);
+        }
     }
 
-    public HttpClient(Context context, String username, String password, boolean preemptive) {
-        this(context);
+    public HttpClient(Logger log, Context context, String username, String password, boolean preemptive) {
+        this(log, context);
 
         // authentication
         this.username = username;
@@ -113,8 +114,8 @@ public class HttpClient extends OkHttpClient {
      * @param client  user name and password from this client will be used
      * @param host    authentication will be restricted to this host
      */
-    public HttpClient(HttpClient client, String host) {
-        this(client.context);
+    public HttpClient(Logger log, HttpClient client, String host) {
+        this(log, client.context);
 
         username = client.username;
         password = client.password;
@@ -123,12 +124,7 @@ public class HttpClient extends OkHttpClient {
 
     // for testing (mock server doesn't need auth)
     protected HttpClient() {
-        this(null, null, null, false);
-    }
-
-
-    protected void enableLogs() {
-        interceptors().add(loggingInterceptor);
+        this(null, null, null, null, false);
     }
 
 
@@ -141,7 +137,6 @@ public class HttpClient extends OkHttpClient {
             return chain.proceed(request);
         }
     }
-
 
     @RequiredArgsConstructor
     static class PreemptiveAuthenticationInterceptor implements Interceptor {
