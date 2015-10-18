@@ -12,6 +12,7 @@ import android.text.TextUtils;
 
 import com.squareup.okhttp.HttpUrl;
 
+import org.slf4j.Logger;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SRVRecord;
@@ -57,7 +58,8 @@ public class DavResourceFinder {
         @Override public String toString() { return name; }
     };
 
-	protected Context context;
+    protected final Logger log;
+	protected final Context context;
     protected final HttpClient httpClient;
     protected final ServerInfo serverInfo;
 
@@ -67,11 +69,12 @@ public class DavResourceFinder {
             taskLists = new HashMap<>();
 
 
-    public DavResourceFinder(Context context, ServerInfo serverInfo) {
+    public DavResourceFinder(Logger log, Context context, ServerInfo serverInfo) {
+        this.log = log;
 		this.context = context;
         this.serverInfo = serverInfo;
 
-        httpClient = new HttpClient(context, serverInfo.getUserName(), serverInfo.getPassword(), serverInfo.authPreemptive);
+        httpClient = new HttpClient(log, context, serverInfo.getUserName(), serverInfo.getPassword(), serverInfo.authPreemptive);
 	}
 
 	public void findResources() throws URISyntaxException, IOException, HttpException, DavException {
@@ -101,7 +104,7 @@ public class DavResourceFinder {
                 2. user-given URL has a calendar-home-set property (i.e. is a principal URL)
              */
             Constants.log.info("Check whether user-given URL is a calendar collection and/or contains <calendar-home-set> and/or has <current-user-principal>");
-            DavResource davBase = new DavResource(httpClient, userURL);
+            DavResource davBase = new DavResource(log, httpClient, userURL);
             try {
                 if (service == Service.CALDAV) {
                     davBase.propfind(0,
@@ -158,18 +161,23 @@ public class DavResourceFinder {
                         CurrentUserPrincipal currentUserPrincipal = (CurrentUserPrincipal)davBase.properties.get(CurrentUserPrincipal.NAME);
                         if (currentUserPrincipal != null && currentUserPrincipal.href != null)
                             principalUrl = davBase.location.resolve(currentUserPrincipal.href);
-
-                        if (principalUrl == null) {
-                            Constants.log.info("User-given URL doesn't contain <current-user-principal>, trying /.well-known/" + service.name);
-                            principalUrl = getCurrentUserPrincipal(userURL.resolve("/.well-known/" + service.name));
-                        }
                     }
                 } catch(IOException|HttpException|DavException e) {
-                    Constants.log.debug("Couldn't find <current-user-principal>", e);
+                    Constants.log.debug("Couldn't find <current-user-principal> at user-given URL", e);
                 }
 
-            // try service discovery with "domain" = user-given host name
-            domain = baseURI.getHost();
+            if (principalUrl == null)
+                try {
+                    Constants.log.info("User-given URL doesn't contain <current-user-principal>, trying /.well-known/" + service.name);
+                    principalUrl = getCurrentUserPrincipal(userURL.resolve("/.well-known/" + service.name));
+                } catch(IOException|HttpException e) {
+                    Constants.log.debug("Couldn't determine <current-user-principal> from well-known " + service + " path", e);
+                }
+
+            if (principalUrl == null)
+                // still no principal URL, try service discovery with "domain" = user-given host name
+                domain = baseURI.getHost();
+
         } else if ("mailto".equals(baseURI.getScheme())) {
             String mailbox = baseURI.getSchemeSpecificPart();
 
@@ -190,7 +198,7 @@ public class DavResourceFinder {
         if (principalUrl != null) {
             Constants.log.info("Principal URL=" + principalUrl + ", getting <calendar-home-set>");
             try {
-                DavResource principal = new DavResource(httpClient, principalUrl);
+                DavResource principal = new DavResource(log, httpClient, principalUrl);
 
                 if (service == Service.CALDAV) {
                     principal.propfind(0, CalendarHomeSet.NAME);
@@ -226,7 +234,7 @@ public class DavResourceFinder {
             if (service == Service.CALDAV)
                 try {
                     Constants.log.info("Listing calendar collections in home set " + url);
-                    DavResource homeSet = new DavResource(httpClient, url);
+                    DavResource homeSet = new DavResource(log, httpClient, url);
                     homeSet.propfind(1, SupportedCalendarComponentSet.NAME, ResourceType.NAME, DisplayName.NAME, CurrentUserPrivilegeSet.NAME,
                             CalendarColor.NAME, CalendarDescription.NAME, CalendarTimezone.NAME);
 
@@ -242,7 +250,7 @@ public class DavResourceFinder {
             else if (service == Service.CARDDAV)
                 try {
                     Constants.log.info("Listing address books in home set " + url);
-                    DavResource homeSet = new DavResource(httpClient, url);
+                    DavResource homeSet = new DavResource(log, httpClient, url);
                     homeSet.propfind(1, ResourceType.NAME, DisplayName.NAME, CurrentUserPrivilegeSet.NAME, AddressbookDescription.NAME);
 
                     // home set should not be an address book, but some servers have only one address book and it's the home set
@@ -361,45 +369,40 @@ public class DavResourceFinder {
      * @param service        service to discover (CALDAV or CARDDAV)
      * @return principal URL, or null if none found
      */
-    protected HttpUrl discoverPrincipalUrl(String domain, Service service) {
+    protected HttpUrl discoverPrincipalUrl(String domain, Service service) throws IOException, HttpException, DavException {
         String scheme = null;
         String fqdn = null;
         Integer port = null;
         List<String> paths = new LinkedList<>();     // there may be multiple paths to try
 
-        try {
-            final String query = "_" + service.name + "s._tcp." + domain;
-            Constants.log.debug("Looking up SRV records for " + query);
-            Record[] records = new Lookup(query, Type.SRV).run();
+        final String query = "_" + service.name + "s._tcp." + domain;
+        Constants.log.debug("Looking up SRV records for " + query);
+        Record[] records = new Lookup(query, Type.SRV).run();
+        if (records != null && records.length >= 1) {
+            // choose SRV record to use (query may return multiple SRV records)
+            SRVRecord srv = selectSRVRecord(records);
+
+            scheme = "https";
+            fqdn = srv.getTarget().toString(true);
+            port = srv.getPort();
+            Constants.log.info("Found " + service + " service: fqdn=" + fqdn + ", port=" + port);
+
+            // look for TXT record too (for initial context path)
+            records = new Lookup(domain, Type.TXT).run();
             if (records != null && records.length >= 1) {
-                // choose SRV record to use (query may return multiple SRV records)
-                SRVRecord srv = selectSRVRecord(records);
-
-                scheme = "https";
-                fqdn = srv.getTarget().toString(true);
-                port = srv.getPort();
-                Constants.log.info("Found " + service + " service: fqdn=" + fqdn + ", port=" + port);
-
-                // look for TXT record too (for initial context path)
-                records = new Lookup(domain, Type.TXT).run();
-                if (records != null && records.length >= 1) {
-                    TXTRecord txt = (TXTRecord)records[0];
-                    for (String segment : (String[])txt.getStrings().toArray(new String[0]))
-                        if (segment.startsWith("path=")) {
-                            paths.add(segment.substring(5));
-                            Constants.log.info("Found TXT record; initial context path=" + paths);
-                            break;
-                        }
-                }
-
-                // if there's TXT record if it it's wrong, try well-known
-                paths.add("/.well-known/" + service.name);
-                // if this fails, too, try "/"
-                paths.add("/");
+                TXTRecord txt = (TXTRecord)records[0];
+                for (String segment : (String[])txt.getStrings().toArray(new String[0]))
+                    if (segment.startsWith("path=")) {
+                        paths.add(segment.substring(5));
+                        Constants.log.info("Found TXT record; initial context path=" + paths);
+                        break;
+                    }
             }
-        } catch (IOException e) {
-            Constants.log.debug("SRV/TXT record discovery failed", e);
-            return null;
+
+            // if there's TXT record if it it's wrong, try well-known
+            paths.add("/.well-known/" + service.name);
+            // if this fails, too, try "/"
+            paths.add("/");
         }
 
         for (String path : paths) {
@@ -424,20 +427,16 @@ public class DavResourceFinder {
      * @param url   URL to query with PROPFIND (Depth: 0)
      * @return      current-user-principal URL, or null if none
      */
-    protected HttpUrl getCurrentUserPrincipal(HttpUrl url) {
-        try {
-            DavResource dav = new DavResource(httpClient, url);
-            dav.propfind(0, CurrentUserPrincipal.NAME);
-            CurrentUserPrincipal currentUserPrincipal = (CurrentUserPrincipal) dav.properties.get(CurrentUserPrincipal.NAME);
-            if (currentUserPrincipal != null && currentUserPrincipal.href != null) {
-                HttpUrl principal = url.resolve(currentUserPrincipal.href);
-                if (principal != null) {
-                    Constants.log.info("Found current-user-principal: " + principal);
-                    return principal;
-                }
+    protected HttpUrl getCurrentUserPrincipal(HttpUrl url) throws IOException, HttpException, DavException {
+        DavResource dav = new DavResource(log, httpClient, url);
+        dav.propfind(0, CurrentUserPrincipal.NAME);
+        CurrentUserPrincipal currentUserPrincipal = (CurrentUserPrincipal) dav.properties.get(CurrentUserPrincipal.NAME);
+        if (currentUserPrincipal != null && currentUserPrincipal.href != null) {
+            HttpUrl principal = url.resolve(currentUserPrincipal.href);
+            if (principal != null) {
+                Constants.log.info("Found current-user-principal: " + principal);
+                return principal;
             }
-        } catch(IOException|HttpException|DavException e) {
-            Constants.log.debug("PROPFIND for current-user-principal on " + url + " failed", e);
         }
         return null;
     }

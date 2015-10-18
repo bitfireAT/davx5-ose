@@ -26,7 +26,6 @@ public class AccountActivity extends Activity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		final FragmentManager fm = getFragmentManager();
-
 		AccountFragment fragment = (AccountFragment)fm.findFragmentById(R.id.account_fragment);
 		if (fragment == null) {
 			fragment = new AccountFragment();
@@ -36,8 +35,9 @@ public class AccountActivity extends Activity {
 			fragment.setArguments(args);
 
 			getFragmentManager().beginTransaction()
-				.add(R.id.account_fragment, fragment)
+				.add(R.id.account_fragment, fragment, SettingsActivity.TAG_ACCOUNT_SETTINGS)
 				.commit();
 		}
 	}
+
 }

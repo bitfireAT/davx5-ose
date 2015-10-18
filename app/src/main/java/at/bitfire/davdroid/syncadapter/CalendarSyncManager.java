@@ -74,7 +74,7 @@ public class CalendarSyncManager extends SyncManager {
         Thread.currentThread().setContextClassLoader(context.getClassLoader());     // required for ical4j
 
         collectionURL = HttpUrl.parse(localCalendar().getName());
-        davCollection = new DavCalendar(httpClient, collectionURL);
+        davCollection = new DavCalendar(log, httpClient, collectionURL);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class CalendarSyncManager extends SyncManager {
         int color = (pColor != null && pColor.color != null) ? pColor.color : LocalCalendar.defaultColor;
 
         ContentValues values = new ContentValues(2);
-        Constants.log.info("Setting new calendar name \"" + displayName + "\" and color 0x" + Integer.toHexString(color));
+        log.info("Setting new calendar name \"" + displayName + "\" and color 0x" + Integer.toHexString(color));
         values.put(Calendars.CALENDAR_DISPLAY_NAME, displayName);
         values.put(Calendars.CALENDAR_COLOR, color);
         localCalendar().update(values);
@@ -119,20 +119,20 @@ public class CalendarSyncManager extends SyncManager {
         remoteResources = new HashMap<>(davCollection.members.size());
         for (DavResource vCard : davCollection.members) {
             String fileName = vCard.fileName();
-            Constants.log.debug("Found remote VEVENT: " + fileName);
+            log.debug("Found remote VEVENT: " + fileName);
             remoteResources.put(fileName, vCard);
         }
     }
 
     @Override
     protected void downloadRemote() throws IOException, HttpException, DavException, CalendarStorageException {
-        Constants.log.info("Downloading " + toDownload.size() + " events (" + MAX_MULTIGET + " at once)");
+        log.info("Downloading " + toDownload.size() + " events (" + MAX_MULTIGET + " at once)");
 
         // download new/updated iCalendars from server
         for (DavResource[] bunch : ArrayUtils.partition(toDownload.toArray(new DavResource[toDownload.size()]), MAX_MULTIGET)) {
             if (Thread.interrupted())
                 return;
-            Constants.log.info("Downloading " + StringUtils.join(bunch, ", "));
+            log.info("Downloading " + StringUtils.join(bunch, ", "));
 
             if (bunch.length == 1) {
                 // only one contact, use GET
@@ -190,7 +190,7 @@ public class CalendarSyncManager extends SyncManager {
         try {
             events = Event.fromStream(stream, charset);
         } catch (InvalidCalendarException e) {
-            Constants.log.error("Received invalid iCalendar, ignoring");
+            log.error("Received invalid iCalendar, ignoring");
             return;
         }
 
@@ -200,18 +200,18 @@ public class CalendarSyncManager extends SyncManager {
             // delete local event, if it exists
             LocalEvent localEvent = (LocalEvent)localResources.get(fileName);
             if (localEvent != null) {
-                Constants.log.info("Updating " + fileName + " in local calendar");
+                log.info("Updating " + fileName + " in local calendar");
                 localEvent.setETag(eTag);
                 localEvent.update(newData);
                 syncResult.stats.numUpdates++;
             } else {
-                Constants.log.info("Adding " + fileName + " to local calendar");
+                log.info("Adding " + fileName + " to local calendar");
                 localEvent = new LocalEvent(localCalendar(), newData, fileName, eTag);
                 localEvent.add();
                 syncResult.stats.numInserts++;
             }
         } else
-            Constants.log.error("Received VCALENDAR with not exactly one VEVENT with UID, but without RECURRENCE-ID; ignoring " + fileName);
+            log.error("Received VCALENDAR with not exactly one VEVENT with UID, but without RECURRENCE-ID; ignoring " + fileName);
     }
 
 }
