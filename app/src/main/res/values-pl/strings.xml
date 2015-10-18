@@ -4,7 +4,7 @@
   <string name="app_name">DAVdroid</string>
   <string name="help">Pomoc</string>
   <string name="next">Dalej</string>
-  <string name="share">Udostępnij</string>
+  <string name="send">Udostępnij</string>
   <string name="skip">Pomiń</string>
   <string name="exception_cert_path_validation">Niezaufany certyfikat w ścieżke certyfikatu. Zobacz FAQ, aby uzyskać więcej informacji.</string>
   <string name="exception_http">Błąd HTTP: %s</string>
@@ -14,7 +14,7 @@
   <!--MainActivity-->
   <string name="main_manage_accounts">Zadządzaj kontami synchronizacji</string>
   <string name="main_show_debug_info">Pokaż informacje do debug\'owania</string>
-  <string name="html_main_workaround"><![CDATA[
+  <string name="main_play_workaround_html"><![CDATA[
         <p>Dziękujemy za zakup DAVdroid poprzez Google Play, a tym samym wsparcie projektu. Niestety, występują dwa problemy z Google Play:</p>
         
         <h2><a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-reboot\">1. Konta mogą zniknąć po restarcie</a></h2>

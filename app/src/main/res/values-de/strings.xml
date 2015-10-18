@@ -4,7 +4,7 @@
   <string name="app_name">DAVdroid</string>
   <string name="help">Hilfe</string>
   <string name="next">Weiter</string>
-  <string name="share">Senden</string>
+  <string name="send">Senden</string>
   <string name="skip">Überspringen</string>
   <string name="exception_cert_path_validation">Nicht vertrauenswürdiges Zertifikat in der Zertifikatskette (siehe FAQ)</string>
   <string name="exception_http">HTTP-Fehler: %s</string>
@@ -14,77 +14,6 @@
   <!--MainActivity-->
   <string name="main_manage_accounts">Sync-Konten anzeigen</string>
   <string name="main_show_debug_info">Debug-Info anzeigen</string>
-  <string name="html_main_workaround"><![CDATA[
-        <p>Vielen Dank, dass Sie DAVdroid im Play Store erworben haben und das Projekt dadurch unterstützen.       
-        Leider gibt es derzeit zwei Probleme, die vom Play Store verursacht werden:</p>
-
-		<h2><a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-reboot\">1. DAVdroid-Accounts verschwinden nach einem Neustart</a></h2>
-		<p>Möglicherweise <strong>verschwinden alle Ihre DAVdroid-Accounts samt Kontakten und Terminen nach einem Neustart</strong>
-		des Geräts. Die Ursache ist ein <a href=\"https://code.google.com/p/android/issues/detail?id=34880\">Fehler in Android</a>,
-		der zur irrtümlichen Entfernung von Accounts von Bezahlapps bei einem Neustart führt, da die Prüfung auf verwaiste
-		und damit zu löschende Accounts schon *vor* dem Entschlüsseln der App erfolgt.</p>
-        <p>Betroffene Benutzer*Innen:<br/>
-        * alle mit Android 4.1, die DAVdroid über Play Store bezogen haben;<br/>
-        * einige mit Android 4.2, die DAVdroid über Play Store bezogen und bestimmte Geräte haben (zB die meisten Samsung-Geräte)</p>
-        
-        <h2><a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-updating\">2. DAVdroid-Accounts verschwinden nach einer DAVdroid-Aktualisierung</a></h2>
-        <p>Möglicherweise <strong>verschwinden alle Ihre DAVdroid-Accounts samt Kontakten und Terminen während eines
-        DAVdroid-Updates</strong>, das von Play Store durchgeführt wird. Die Ursache ist ein
-        <a href=\"https://code.google.com/p/android/issues/detail?id=66905\">anderer Fehler in Android</a>,
-		der zur irrtümlichen Entfernung von Accounts von Bezahlapps bei der Aktualisierung dieser Apps führt.</p>
-        <p>Betroffene Benutzer*Innen:<br/>
-        einige mit Android 4.4.2, die DAVdroid über Play Store bezogen haben (bekannt sind Nexus-Geräte und Moto G)</p>
-        
-        <p><strong>Sollten Sie von einem dieser Fehler betroffen sein, <a href=\"market://details?id=at.bitfire.davdroid.jbworkaround\">installieren
-        Sie den DAVdroid JB Workaround</a>.</strong></p>
-    ]]></string>
-  <string name="html_main_info"><![CDATA[
-       <h1>Willkommen bei DAVdroid/%s!</h1>
-       
-       <p>DAVdroid ist ein Android 4+-CalDAV/CardDAV-Sync-Adapter. Um ihn zu verwenden, müssen Sie ein DAVdroid-Konto
-       für Ihren Server hinzufügen. Die Kontakte/Termine/Aufgaben werden dann automatisch in beide Richtungen synchronisiert.
-       Weitere Informationen erhalten Sie auf der <a href=\"https://davdroid.bitfire.at?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">DAVdroid-Homepage</a>.
-       Dort finden Sie auch eine <a href=\"https://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">Anleitung zum Einrichten</a>.
-       DAVdroid respektiert Ihre Privatsphäre (siehe <a href=\"https://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">Datenschutzrichtlinie</a>).</p>
-
-       <p><b>Bei Problemen lesen Sie bitte die <a href=\"https://davdroid.bitfire.at/faq?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">häufig gestellten Fragen</a>.
-       Um Hilfe zu erhalten oder über DAVdroid-bezogene Themen zu diskutieren, gibt es unsere
-       <a href=\"https://davdroid.bitfire.at/forums?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">DAVdroid-Foren</a>.</b>
-       Bitte erpressen Sie uns nicht mit schlechten Bewertungen in den App-Stores (das ist zwecklos und für beide Seiten demotivierend).</p>
-
-       <p>Wenn Sie eine Datenschutz-App (\"privacy guard\") benutzen (in CyanogenMod standardmäßig an), müssen Sie einstellen,
-       dass DAVdroid auf Kontakte und Kalender zugreifen darf.</p>
-
-	   <h1>Open-Source</h1>
-	   <p>DAVdroid ist von Anfang an als Open-Source-Projekt ausgelegt. Der Quellcode kann jederzeit selbst kompiliert und
-	   die App unter den Bedingungen der GPLv3 verwendet werden. Der
-	   <a href=\"https://davdroid.bitfire.at/source?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">Quellcode ist verfügbar</a>; die App kann auch
-	   <a href=\"https://f-droid.org/app/at.bitfire.davdroid\">über F-Droid bezogen werden</a>.</p>
-	   
-	   <p>Es bedeutet viel Arbeit, die App zu entwickeln und besser zu machen. Daher haben wir uns entschlossen, sie
-	   auch gegen eine kleine Gebühr in die kommerziellen App-Stores zu stellen. Wenn Sie DAVdroid über F-Droid bezogen haben,
-	   überlegen Sie bitte, ob Sie das Projekt <a href=\"http://davdroid.bitfire.at/donate?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">mit
-	   einer Spende unterstützen</a> wollen.</p>
-	   
-	   <h1>Lizenz</h1>
-	   <p>Copyright © 2013 – 2015 Ricki Hirner, Bernhard Stockmann (<a href=\"http://www.bitfire.at\">bitfire web engineering</a>), alle Rechte
-	   vorbehalten. Dieses Programm ist freie Software. Sie können es unter den Bedingungen der <a href=\"http://www.gnu.org/licenses/gpl.html\">GNU
-	   General Public License Version 3</a>, wie von der Free Software Foundation veröffentlicht, weitergeben und/oder modifizieren.
-	   Sofern Google Play oder Samsung Store andere Bedingungen benötigen, gelten diese Bedingungen nur für über den jeweiligen
-	   Markt heruntergeladene Apps.</p>
-	   
-	   <p>Übersetzungen für andere Sprachen als Englisch und Deutsch
-	   wurden von verschiedenen Personen beigetragen, die in der jeweiligen Sprachversion erwähnt sind.</p>
-	   	   
-	   <h2>Verwendete Bibliotheken</h2>
-	   <p>
-	    * <a href=\"http://hc.apache.org\">Apache HttpClient</a> (Android port) – <a href=\"http://www.apache.org/licenses/\">Apache License, Version 2.0</a><br/>
-	   	* <a href=\"https://github.com/ical4j/ical4j\">iCal4j</a> – <a href=\"https://github.com/ical4j/ical4j/blob/master/LICENSE\">New BSD License</a><br/>
-	   	* <a href=\"https://github.com/mangstadt/ez-vcard\">ez-vcard</a> – <a href=\"http://opensource.org/licenses/BSD-3-Clause\">New BSD License</a><br/>
-	   	* <a href=\"http://simple.sourceforge.net/\">Simple XML Serialization</a> – <a href=\"http://www.apache.org/licenses/LICENSE-2.0\">Apache License, Version 2.0</a><br/>
-	   	* <a href=\"https://projectlombok.org/\">Project Lombok</a> – <a href=\"http://opensource.org/licenses/mit-license.php\">MIT License</a><br/>
-		* <a href=\"http://www.xbill.org/dnsjava/\">dnsjava</a> – <a href=\"http://www.xbill.org/dnsjava/dnsjava-current/LICENSE\">BSD License</a></p>
-    ]]></string>
   <!--AddAccountActivity-->
   <string name="login_type_email">Mit Email-Adresse anmelden</string>
   <string name="login_type_email_description">Domänenname wird verwendet, um die Servereinstellungen herauszufinden. Beispiel: myaccount@icloud.com</string>

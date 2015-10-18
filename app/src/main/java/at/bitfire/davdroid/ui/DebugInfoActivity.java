@@ -52,9 +52,7 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.debug_info_activity);
-
         tvReport = (TextView)findViewById(R.id.text_report);
-        //tvReport.setText(report = generateReport(getIntent().getExtras()));
 
         getLoaderManager().initLoader(0, getIntent().getExtras(), this);
     }
@@ -186,9 +184,10 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
                         "  Account: " + acc.name + "\n" +
                                 "    Address book synchronization: " + syncStatus(acc, ContactsContract.AUTHORITY) + "\n" +
                                 "    Calendar     synchronization: " + syncStatus(acc, CalendarContract.AUTHORITY) + "\n" +
-                                "    OpenTasks    synchronization: " + syncStatus(acc, "org.dmfs.tasks") + "\n\n"
+                                "    OpenTasks    synchronization: " + syncStatus(acc, "org.dmfs.tasks") + "\n"
                 );
             }
+            report.append("\n");
 
             try {
                 report.append(

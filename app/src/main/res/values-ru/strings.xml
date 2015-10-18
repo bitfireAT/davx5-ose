@@ -11,7 +11,7 @@
   <string name="exception_uri_syntax">Неверный URI: %s</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Управление аккаунтами синхронизации</string>
-  <string name="html_main_workaround"><![CDATA[
+  <string name="main_play_workaround_html"><![CDATA[
 		<p>Благодарим за поддержку проекта через покупку DAVdroid на Google Play. К сожалению есть две небольших проблемы для программ приобретенных в Google Play:</p>
 		
 		<h2>1. Аккаунты могут исчезнуть после перезагрузки</h2>

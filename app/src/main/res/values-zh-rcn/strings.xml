@@ -12,7 +12,7 @@
   <string name="exception_uri_syntax">URI 无效: %s</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">管理同步账户</string>
-  <string name="html_main_workaround"><![CDATA[
+  <string name="main_play_workaround_html"><![CDATA[
         <p>感谢您在 Google Play 上购买 DAVdroid 支持本项目。然而 Google Play 版应用有两个问题：</p>
         
         <h2>1. 账户可能在重启后消失</h2>

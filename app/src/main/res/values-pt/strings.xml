@@ -11,7 +11,7 @@
   <string name="exception_uri_syntax">URI inválida: %s</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Administrar as contas sincronizadas</string>
-  <string name="html_main_workaround"><![CDATA[
+  <string name="main_play_workaround_html"><![CDATA[
         <p>Obrigado por adquirir o DAVdroid pelo Google Play apoiando, assim, o projeto. Infelizmente existem dos problemas com o Google Play:</p>
         <h2>1. Contas podem desaparecer após reinicial</h2>
         <p>Você pode encontrar problemas com todas as suas <strong>contas DAVdroid (incluindo contatos e eventos) 

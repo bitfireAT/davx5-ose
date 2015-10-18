@@ -11,7 +11,7 @@
   <string name="exception_uri_syntax">Érvénytelen URI: %s</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Szinkronizációs fiókok kezelése</string>
-  <string name="html_main_workaround"><![CDATA[
+  <string name="main_play_workaround_html"><![CDATA[
         <p>Köszönjük, hogy megvásárolta a DAVdroid alkalmazást a Google Play áruházban, támogatva ezzel a projektet.  Sajnos, 
         a Google Play áruházzal két probléma is van:</p>
         <h2>1. A fiókok az eszköz újraindítása után eltűnhetnek</h2>

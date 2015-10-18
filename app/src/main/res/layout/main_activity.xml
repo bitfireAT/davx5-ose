@@ -19,19 +19,73 @@
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/text_workaround"
+            android:id="@+id/text_store_specific"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:linksClickable="true" />
-        
-        <TextView
-            android:id="@+id/text_info"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
             android:linksClickable="true"
             android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/text_welcome"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_welcome"
+            android:layout_marginBottom="20dp"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
         
+        <TextView
+            android:id="@+id/text_what_is_davdroid"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_what_is_davdroid_html"
+            android:layout_marginBottom="20dp"
+            android:linksClickable="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/text_how_to_setup"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_how_to_setup_html"
+            android:layout_marginBottom="20dp"
+            android:linksClickable="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/text_support"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_support_html"
+            android:layout_marginBottom="20dp"
+            android:linksClickable="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/text_open_source_disclaimer"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_open_source_disclaimer_html"
+            android:layout_marginBottom="20dp"
+            android:linksClickable="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/text_license"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_license_html"
+            android:layout_marginBottom="20dp"
+            android:linksClickable="true" />
+        <TextView
+            android:id="@+id/text_libraries_heading"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_used_libraries_heading"
+            android:linksClickable="true" />
+        <TextView
+            android:id="@+id/text_libraries_list"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:linksClickable="true" />
+
     </LinearLayout>
 
 </ScrollView>

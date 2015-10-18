@@ -11,7 +11,7 @@
   <string name="exception_uri_syntax">Ongeldige URI: %s</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Beheer sync accounts</string>
-  <string name="html_main_workaround"><![CDATA[
+  <string name="main_play_workaround_html"><![CDATA[
 		<p>Dank u voor het kopen van DAVdroid via Google Play en dus ondersteuning van het project. Helaas, er zijn twee problemen met Google Play:</p>
 		
 		<h2>1. Accounts, kunnen na een reboot verdwijnen</h2>

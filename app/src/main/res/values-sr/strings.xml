@@ -12,7 +12,7 @@
   <string name="exception_uri_syntax">Неисправан УРИ: %s</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Управљај налозима синхронизације</string>
-  <string name="html_main_workaround"><![CDATA[
+  <string name="main_play_workaround_html"><![CDATA[
 		<p>Хвала вам што сте купили ДАВдроид преко Гугловог Плеј сервиса и тиме подржали овај пројекат. Нажалост, постоје два проблема са Гугловим Плеј сервисом:</p>
 		
 		<h2>1. Налози могу нестати након поновног покретања</h2>

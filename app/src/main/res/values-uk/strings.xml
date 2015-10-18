@@ -12,7 +12,7 @@
   <string name="exception_uri_syntax">Невірний URI: %s</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Керувати синхронізацією облікових записів</string>
-  <string name="html_main_workaround"><![CDATA[
+  <string name="main_play_workaround_html"><![CDATA[
 		<p>Дякуємо за купівлю DAVdroid з використанням Google Play та підтримку цим проекту. На жаль, існують дві проблеми з Google Play:</p>
 		
 		<h2><a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-reboot\">1. Облікові записи можуть зникати після перезавантаження</a></h2>
