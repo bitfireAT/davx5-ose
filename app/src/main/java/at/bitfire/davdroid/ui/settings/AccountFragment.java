@@ -12,6 +12,8 @@ import android.accounts.Account;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -22,6 +24,7 @@ import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.log.ExternalFileLogger;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
 import at.bitfire.ical4android.TaskProvider;
 
@@ -140,10 +143,11 @@ public class AccountFragment extends PreferenceFragment {
 
         final SwitchPreference prefLogExternalFile = (SwitchPreference)findPreference("log_external_file");
         prefLogExternalFile.setChecked(settings.logToExternalFile());
+        prefLogExternalFile.setSummaryOn(getString(R.string.settings_log_to_external_file_on, ExternalFileLogger.getDirectory(getActivity()).getPath()));
         prefLogExternalFile.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Boolean external = (Boolean)newValue;
+                Boolean external = (Boolean) newValue;
                 if (external) {
                     getFragmentManager().beginTransaction()
                             .add(LogExternalFileDialogFragment.newInstance(account), null)
@@ -151,7 +155,8 @@ public class AccountFragment extends PreferenceFragment {
                     return false;
                 } else {
                     settings.logToExternalFile(false);
-                    refresh(); return false;
+                    refresh();
+                    return false;
                 }
             }
         });

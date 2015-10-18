@@ -12,7 +12,7 @@
   <string name="exception_uri_syntax">Neplatné URI: %s</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Spravovat synchronizované účty</string>
-  <string name="html_main_workaround"><![CDATA[
+  <string name="main_play_workaround_html"><![CDATA[
 		<p>Thank you for buying DAVdroid via Google Play and thus supporting the project. Unfortunately, there are two issues with Google Play:</p>
 		
 		<h2>1. Accounts may be gone after a reboot</h2>

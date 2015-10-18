@@ -12,7 +12,7 @@
   <string name="exception_uri_syntax">URI incorrecte : %s</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Gérer les comptes synchronisés</string>
-  <string name="html_main_workaround"><![CDATA[
+  <string name="main_play_workaround_html"><![CDATA[
 <p>Merci d\'avoir acheter DAVDroid dans le Play Store Google. Malheureusement, il y a 2 soucis avec le Play Store:</p>
 <h2>1. Les comptes disparaissent après un redémarrage</h2>
 <p>La raison est un <a href=\"https://code.google.com/p/android/issues/detail?id=34880\">bug dans Android</a> qui supprime les comptes d\'application payantes au démarrage à cause de l\'ordre de chargement des applications chiffrées; elles sont chargées après la tâche de destruction des comptes orphelins.</p>

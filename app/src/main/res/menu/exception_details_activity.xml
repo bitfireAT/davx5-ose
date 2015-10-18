@@ -11,7 +11,7 @@
 
     <item
         android:icon="@android:drawable/ic_menu_share"
-        android:title="@string/share"
+        android:title="@string/send"
         android:showAsAction="always"
         android:onClick="onShare" />
 
