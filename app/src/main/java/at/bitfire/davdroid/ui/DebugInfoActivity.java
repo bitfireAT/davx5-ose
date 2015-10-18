@@ -13,15 +13,19 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
+import android.os.Environment;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
@@ -31,10 +35,16 @@ import android.widget.TextView;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
+import ezvcard.util.IOUtils;
 
 public class DebugInfoActivity extends Activity implements LoaderManager.LoaderCallbacks<String> {
     public static final String
@@ -68,12 +78,34 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
         if (!TextUtils.isEmpty(report)) {
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "DAVdroid Exception Details");
-            sendIntent.putExtra(Intent.EXTRA_TEXT, report);
             sendIntent.setType("text/plain");
-            startActivity(sendIntent);
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "DAVdroid Exception Details");
+
+            try {
+                File reportFile = reportFile();
+                FileWriter writer = new FileWriter(reportFile());
+                writer.write(report);
+                writer.close();
+
+                sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(reportFile));
+            } catch (IOException e) {
+                // let's hope the report is < 1 MB
+                sendIntent.putExtra(Intent.EXTRA_TEXT, report);
+            }
+
+            startActivityForResult(sendIntent, 0);
         }
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        reportFile().delete();
+    }
+
+    File reportFile() {
+        return new File(getExternalCacheDir(), "error-report.txt");
+    }
+
 
     @Override
     public Loader<String> onCreateLoader(int id, Bundle args) {
@@ -137,7 +169,7 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
                 if (http.request != null)
                     report.append("HTTP REQUEST:\n" + http.request + "\n\n");
                 if (http.response != null)
-                    report.append("HTTP RESPONSE:\n" + http.response + "\n");
+                    report.append("HTTP RESPONSE:\n" + http.response + "\n\n");
             }
 
             if (exception != null) {
@@ -176,8 +208,9 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
 
             report.append(
                     "CONFIGURATION\n" +
-                            "System-wide synchronization: " + (ContentResolver.getMasterSyncAutomatically() ? "automatically" : "manually") + "\n"
+                            "System-wide synchronization: " + (ContentResolver.getMasterSyncAutomatically() ? "automatically" : "manually") + "\n\n"
             );
+            /* TODO
             AccountManager accountManager = AccountManager.get(getContext());
             for (Account acc : accountManager.getAccountsByType(Constants.ACCOUNT_TYPE)) {
                 report.append(
@@ -186,7 +219,7 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
                                 "    Calendar     synchronization: " + syncStatus(acc, CalendarContract.AUTHORITY) + "\n" +
                                 "    OpenTasks    synchronization: " + syncStatus(acc, "org.dmfs.tasks") + "\n"
                 );
-            }
+            }*/
             report.append("\n");
 
             try {

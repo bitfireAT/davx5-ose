@@ -9,6 +9,7 @@
 package at.bitfire.davdroid.resource;
 
 import android.accounts.Account;
+import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
@@ -67,6 +68,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         super(account, provider, LocalEvent.Factory.INSTANCE, id);
     }
 
+    @TargetApi(15)
     public static Uri create(Account account, ContentResolver resolver, ServerInfo.ResourceInfo info) throws CalendarStorageException {
         @Cleanup("release") ContentProviderClient provider = resolver.acquireContentProviderClient(CalendarContract.AUTHORITY);
         if (provider == null)
@@ -136,6 +138,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
 
 
     @Override
+    @SuppressWarnings("Recycle")
     public String getCTag() throws CalendarStorageException {
         try {
             @Cleanup Cursor cursor = provider.query(calendarSyncURI(), new String[] { COLUMN_CTAG }, null, null, null);
@@ -158,6 +161,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         }
     }
 
+    @SuppressWarnings("Recycle")
     public void processDirtyExceptions() throws CalendarStorageException {
         // process deleted exceptions
         Constants.log.info("Processing deleted exceptions");

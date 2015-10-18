@@ -1,36 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
   <string name="help">Help</string>
   <string name="next">Volgende</string>
-  <string name="exception_cert_path_validation">Onvertrouwd certificaat in certificaat pad. Bekijk FAQ voor meer info.</string>
-  <string name="exception_http">HTTP fout: %s</string>
-  <string name="exception_incapable_resource">Ontbrekende mogelijkheid: %s</string>
-  <string name="exception_io">I/O fout: %s</string>
-  <string name="exception_uri_syntax">Ongeldige URI: %s</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Beheer sync accounts</string>
-  <string name="main_play_workaround_html"><![CDATA[
-		<p>Dank u voor het kopen van DAVdroid via Google Play en dus ondersteuning van het project. Helaas, er zijn twee problemen met Google Play:</p>
-		
-		<h2>1. Accounts, kunnen na een reboot verdwijnen</h2>
-		<p>Het kan voorkomen dat al uw <strong>DAVdroid accounts (inclusief contacten en afspraken) verdwenen zijn</strong>
-        na het herstarten van uw apparaat</strong>. De reden hiervoor is een <a href=\"https://code.google.com/p/android/issues/detail?id=34880\">bug in Android</a>
-        die ervoor zorgt dat accounts van betaalde apps verwijderd worden bij het opstarten omdat de (encrypted) APK bestanden geladen worden <i>na</i> de controlle op orphan accounts.</p>
-        <p>Getroffen gebruikers:<br/>
-        * Alle Android 4.1-gebruikers die DAVdroid hebben verkregen via de Play Store;<br/>
-        * Android 4.2-gebruikers die DAVdroid hebben verkregen via de Play Store alleen met bepaalde apparatuur (bijvoorbeeld, de meeste Samsung apparaten)</p>
-        
-        <h2>2. Accounts kunnen verdwijnen na het upgraden van DAVdroid</h2>
-        <p>Het kan voorkomen dat al uw <strong>DAVdroid accounts (inclusief contacten en afspraken) verdwenen zijn na een Play Store
-        update van DAVdroid</strong>. De reden is <a href=\"https://code.google.com/p/android/issues/detail?id=66905\">nog een bug in Android</a>
-        die ervoor zorgt dat accounts van betaalde apps verwijderd worden door een vergelijkbare reden.</p>
-        <p>Getroffen gebruikers: een aantal Android 4.4.2 gebruikers die DAVdroid via de Play Store bekregen hebben (voorkomend bij Nexus apparaten en de Moto G)</p>
-        
-        <p><strong>Als je getroffen ben door een van deze bugs, <a href=\"market://details?id=at.bitfire.davdroid.jbworkaround\">instaleer de
-        DAVdroid JB Workaround</a>.</strong></p>
-    ]]></string>
   <!--AddAccountActivity-->
   <string name="login_type_email">Inloggen met e-mailadres</string>
   <string name="login_type_email_description">Account details kunnen automatisch gevonden worden via de domeinnaam. Bijvoorbeeld: mijnaccount@icloud.com</string>
@@ -62,7 +37,7 @@
   <string name="settings_sync">Synchronisatie</string>
   <string name="settings_sync_interval_contacts">Contacten verversen</string>
   <string name="settings_sync_summary_manually">Alleen handmatig</string>
-  <string name="settings_sync_summary_periodically">Elke %d minuten + meteen na wijziging</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Elke %d minuten + meteen na wijziging</string>
   <string name="settings_sync_summary_not_available">Niet beschikbaar</string>
   <string name="settings_sync_interval_calendars">Agenda\'s verversen</string>
   <string-array name="settings_sync_interval_seconds">
@@ -85,12 +60,6 @@
     <item>Elke 4 uur</item>
     <item>Dagelijks</item>
   </string-array>
-  <string name="settings_carddav">Adresboek</string>
-  <string name="settings_carddav_vcard4_support">VCard 4.0 ondersteuning</string>
-  <string name="settings_carddav_vcard4_supported">Contacten worden verzonden in VCard 4.0 formaat</string>
-  <string name="settings_carddav_vcard4_not_supported">Contacten worden verzonden in VCard 3.0 formaat</string>
-  <string name="setup_select_collections">DAVdroid: Selecteer collecties</string>
-  <string name="setup_neither_caldav_nor_carddav">Geen CalDAV-/CardDAV beschikbaar op deze lokatie.</string>
   <string name="setup_add_account">Account toevoegen</string>
   <string name="setup_querying_server">Gegevens worden aangevraagd. Even geduld…</string>
   <string name="setup_what_to_sync">Welke collecties wilt u synchronizereen ?</string>
@@ -101,8 +70,6 @@
   <string name="setup_account_details">Account eigenschappen</string>
   <string name="setup_account_name">Account naam:</string>
   <string name="setup_account_name_hint">Mijn CalDAV/CardDAV Account</string>
-  <string name="setup_email_address">E-mailadres:</string>
-  <string name="setup_organizer_hint">ORGANISATOR van uw afspraken; vereist voor deelnemer informatie</string>
   <string name="setup_account_name_info">\"Gebruik uw e-mailadres als accountnaam omdat Android de accountnaam zal gebruiken als ORGANIZER veld voor afspraken die u maakt. Je kunt geen twee accounts met dezelfde naam gebruiken.</string>
   <string name="setup_read_only">Alleen lezen</string>
   <!--sync errors and DebugInfoActivity-->

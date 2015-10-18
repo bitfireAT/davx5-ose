@@ -10,6 +10,7 @@ package at.bitfire.davdroid;
 
 import android.content.Context;
 import android.os.Build;
+import android.text.TextUtils;
 
 import com.squareup.okhttp.Authenticator;
 import com.squareup.okhttp.CertificatePinner;
@@ -23,12 +24,15 @@ import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
 import org.slf4j.Logger;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.Proxy;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -41,11 +45,13 @@ import de.duenndns.ssl.MemorizingTrustManager;
 import lombok.RequiredArgsConstructor;
 
 public class HttpClient extends OkHttpClient {
+    private final int MAX_LOG_LINE_LENGTH = 71;
+
     final static UserAgentInterceptor userAgentInterceptor = new UserAgentInterceptor();
 
     static final String userAgent;
     static {
-        String date = new SimpleDateFormat("yyyy/MM/dd").format(BuildConfig.buildTime);
+        String date = new SimpleDateFormat("yyyy/MM/dd", Locale.US).format(BuildConfig.buildTime);
         userAgent = "DAVdroid/" + BuildConfig.VERSION_NAME + " (" + date + "; dav4android) Android/" + Build.VERSION.RELEASE;
     }
 
@@ -87,7 +93,21 @@ public class HttpClient extends OkHttpClient {
             HttpLoggingInterceptor logger = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
                 @Override
                 public void log(String message) {
-                    log.trace(message);
+                    BufferedReader reader = new BufferedReader(new StringReader(message));
+                    String line;
+                    try {
+                        while ((line = reader.readLine()) != null) {
+                            int len = line.length();
+                            for (int pos = 0; pos < len; pos += MAX_LOG_LINE_LENGTH)
+                                if (pos < len - MAX_LOG_LINE_LENGTH)
+                                    log.trace(line.substring(pos, pos + MAX_LOG_LINE_LENGTH) + "\\");
+                                else
+                                    log.trace(line.substring(pos));
+                        }
+                    } catch(IOException e) {
+                        // for some reason, we couldn't split our message
+                        log.trace(message);
+                    }
                 }
             });
             logger.setLevel(HttpLoggingInterceptor.Level.BODY);

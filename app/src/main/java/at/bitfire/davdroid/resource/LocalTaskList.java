@@ -39,6 +39,7 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
             LocalTask.COLUMN_ETAG
     };
 
+    // can be cached, because after installing OpenTasks, you have to re-install DAVdroid anyway
     private static Boolean tasksProviderAvailable;
 
 
