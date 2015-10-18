@@ -145,7 +145,7 @@ Dieses Programm ist freie Software. Sie können es unter den Bedingungen der GNU
   <string name="setup_account_details">Konto-Details</string>
   <string name="setup_account_name">Kontoname:</string>
   <string name="setup_account_name_hint">Mein CalDAV/CardDAV-Konto</string>
-  <string name="setup_account_name_info">\"Verwenden Sie Ihre Email-Adresse als Kontoname, da Android den Kontonamen als ORGANIZER-Feld in Terminen benutzt. Sie können keine zwei Konten mit dem gleichen Namen anlegen.</string>
+  <string name="setup_account_name_info">Verwenden Sie Ihre Email-Adresse als Kontoname, da Android den Kontonamen als ORGANIZER-Feld in Terminen benutzt. Sie können keine zwei Konten mit dem gleichen Namen anlegen.</string>
   <string name="setup_read_only">schreibgeschützt</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Debug-Info</string>
