@@ -41,7 +41,6 @@ android {
         disable 'MissingTranslation'
         disable 'RtlEnabled'
         disable 'Typos'
-        disable 'UnusedAttribute'
     }
     packagingOptions {
         exclude 'LICENSE'
