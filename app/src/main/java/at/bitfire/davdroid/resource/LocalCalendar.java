@@ -129,7 +129,10 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
 
         // get dirty events which are required to have an increased SEQUENCE value
         for (LocalEvent event : (LocalEvent[])queryEvents(Events.DIRTY + "=" + DIRTY_INCREASE_SEQUENCE + " AND " + Events.ORIGINAL_ID + " IS NULL", null)) {
-            event.getEvent().sequence++;
+            if (event.getEvent().sequence == null)      // sequence has not been assigned yet (i.e. this event was just locally created)
+                event.getEvent().sequence = 0;
+            else
+                event.getEvent().sequence++;
             dirty.add(event);
         }
 

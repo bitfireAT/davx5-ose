@@ -15,6 +15,7 @@ import android.provider.CalendarContract.Events;
 
 import net.fortuna.ical4j.model.property.ProdId;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.dmfs.provider.tasks.TaskContract.Tasks;
 
 import java.io.FileNotFoundException;
@@ -67,8 +68,7 @@ public class LocalTask extends AndroidTask implements LocalResource {
         eTag = values.getAsString(COLUMN_ETAG);
         task.uid = values.getAsString(COLUMN_UID);
 
-        if (values.containsKey(COLUMN_SEQUENCE))
-            task.sequence = values.getAsInteger(COLUMN_SEQUENCE);
+        task.sequence = values.getAsInteger(COLUMN_SEQUENCE);
     }
 
     @Override
