@@ -18,6 +18,8 @@ import android.provider.CalendarContract.Events;
 
 import net.fortuna.ical4j.model.property.ProdId;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.ical4android.AndroidCalendar;
 import at.bitfire.ical4android.AndroidEvent;
@@ -65,8 +67,7 @@ public class LocalEvent extends AndroidEvent implements LocalResource {
         eTag = values.getAsString(COLUMN_ETAG);
         event.uid = values.getAsString(COLUMN_UID);
 
-        if (values.containsKey(COLUMN_SEQUENCE))
-            event.sequence = values.getAsInteger(COLUMN_SEQUENCE);
+        event.sequence = values.getAsInteger(COLUMN_SEQUENCE);
     }
 
     @Override

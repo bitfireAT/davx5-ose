@@ -89,8 +89,12 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
     public LocalResource[] getDirty() throws CalendarStorageException, FileNotFoundException {
         LocalTask[] tasks = (LocalTask[])queryTasks(Tasks._DIRTY + "!=0", null);
         if (tasks != null)
-        for (LocalTask task : tasks)
-            task.getTask().sequence++;
+        for (LocalTask task : tasks) {
+            if (task.getTask().sequence == null)    // sequence has not been assigned yet (i.e. this task was just locally created)
+                task.getTask().sequence = 0;
+            else
+                task.getTask().sequence++;
+        }
         return tasks;
     }
 

@@ -71,6 +71,7 @@
         <SwitchPreference
             android:key="log_verbose"
             android:persistent="false"
+            android:dependency="log_external_file"
             android:title="@string/settings_log_verbose"
             android:summaryOn="@string/settings_log_verbose_on"
             android:summaryOff="@string/settings_log_verbose_off" />
