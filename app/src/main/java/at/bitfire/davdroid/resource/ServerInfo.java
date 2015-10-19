@@ -7,14 +7,9 @@
  */
 package at.bitfire.davdroid.resource;
 
-import com.squareup.okhttp.HttpUrl;
-
 import java.io.Serializable;
 import java.net.URI;
-import java.util.LinkedList;
-import java.util.List;
 
-import at.bitfire.dav4android.UrlUtils;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 

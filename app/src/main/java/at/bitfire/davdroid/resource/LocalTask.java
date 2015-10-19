@@ -15,7 +15,6 @@ import android.provider.CalendarContract.Events;
 
 import net.fortuna.ical4j.model.property.ProdId;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.dmfs.provider.tasks.TaskContract.Tasks;
 
 import java.io.FileNotFoundException;

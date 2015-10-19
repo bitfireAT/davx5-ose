@@ -20,7 +20,6 @@ import android.provider.CalendarContract;
 
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.resource.LocalCalendar;
-import at.bitfire.davdroid.resource.LocalContact;
 import at.bitfire.ical4android.CalendarStorageException;
 
 public class CalendarsSyncAdapterService extends Service {

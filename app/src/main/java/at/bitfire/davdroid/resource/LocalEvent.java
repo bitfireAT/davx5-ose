@@ -18,8 +18,6 @@ import android.provider.CalendarContract.Events;
 
 import net.fortuna.ical4j.model.property.ProdId;
 
-import org.apache.commons.lang3.math.NumberUtils;
-
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.ical4android.AndroidCalendar;
 import at.bitfire.ical4android.AndroidEvent;

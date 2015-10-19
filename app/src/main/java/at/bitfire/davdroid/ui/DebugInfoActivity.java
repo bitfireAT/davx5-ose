@@ -9,12 +9,9 @@
 package at.bitfire.davdroid.ui;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,9 +21,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Debug;
-import android.os.Environment;
-import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -36,7 +30,6 @@ import android.widget.TextView;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -44,7 +37,6 @@ import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
-import ezvcard.util.IOUtils;
 
 public class DebugInfoActivity extends Activity implements LoaderManager.LoaderCallbacks<String> {
     public static final String

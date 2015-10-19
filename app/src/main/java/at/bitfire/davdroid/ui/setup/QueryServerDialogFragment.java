@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;

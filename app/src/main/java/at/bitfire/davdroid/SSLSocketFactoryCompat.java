@@ -35,7 +35,7 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
 
     // Android 5.0+ (API level21) provides reasonable default settings
     // but it still allows SSLv3
-    // https://developer.android.com/about/versions/android-5.0-changes.html#ssl
+    // https://developer.android.com/reference/javax/net/ssl/SSLSocket.html
     static String protocols[] = null, cipherSuites[] = null;
     static {
         try {
@@ -109,17 +109,13 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
     }
 
     private void upgradeTLS(SSLSocket ssl) {
-        // Android 5.0+ (API level21) provides reasonable default settings
-        // but it still allows SSLv3
-        // https://developer.android.com/about/versions/android-5.0-changes.html#ssl
-
         if (protocols != null) {
             Constants.log.debug("Setting allowed TLS protocols: " + TextUtils.join(", ", protocols));
             ssl.setEnabledProtocols(protocols);
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && cipherSuites != null) {
-            Constants.log.debug("Setting allowed TLS ciphers for Android <5: " + TextUtils.join(", ", protocols));
+        if (Build.VERSION.SDK_INT < 20 && cipherSuites != null) {
+            Constants.log.debug("Setting allowed TLS ciphers: " + TextUtils.join(", ", protocols));
             ssl.setEnabledCipherSuites(cipherSuites);
         }
     }
