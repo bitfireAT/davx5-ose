@@ -96,6 +96,7 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
 
 
     @Override
+    @SuppressWarnings("Recycle")
     public String getCTag() throws CalendarStorageException {
         try {
             @Cleanup Cursor cursor = provider.client.query(taskListSyncUri(), new String[] { COLUMN_CTAG }, null, null, null);
