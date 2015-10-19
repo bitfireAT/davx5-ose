@@ -115,7 +115,7 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
         }
 
         if (Build.VERSION.SDK_INT < 20 && cipherSuites != null) {
-            Constants.log.debug("Setting allowed TLS ciphers: " + TextUtils.join(", ", protocols));
+            Constants.log.debug("Setting allowed TLS ciphers: " + TextUtils.join(", ", cipherSuites));
             ssl.setEnabledCipherSuites(cipherSuites);
         }
     }
