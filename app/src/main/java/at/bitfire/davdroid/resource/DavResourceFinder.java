@@ -272,8 +272,6 @@ public class DavResourceFinder {
                     log.debug("PROPFIND on " + url + " failed", e);
                 }
 
-        // TODO notify user on errors?
-
         if (service == Service.CALDAV) {
             serverInfo.setCalendars(calendars.values().toArray(new ServerInfo.ResourceInfo[calendars.size()]));
             serverInfo.setTaskLists(taskLists.values().toArray(new ServerInfo.ResourceInfo[taskLists.size()]));
