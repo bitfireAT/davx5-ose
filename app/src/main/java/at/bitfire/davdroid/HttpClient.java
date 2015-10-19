@@ -10,10 +10,7 @@ package at.bitfire.davdroid;
 
 import android.content.Context;
 import android.os.Build;
-import android.text.TextUtils;
 
-import com.squareup.okhttp.Authenticator;
-import com.squareup.okhttp.CertificatePinner;
 import com.squareup.okhttp.Credentials;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
@@ -27,20 +24,11 @@ import org.slf4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.Proxy;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.X509TrustManager;
-
 import at.bitfire.dav4android.BasicDigestAuthenticator;
-import at.bitfire.dav4android.HttpUtils;
 import de.duenndns.ssl.MemorizingTrustManager;
 import lombok.RequiredArgsConstructor;
 
@@ -60,7 +48,7 @@ public class HttpClient extends OkHttpClient {
     protected String username, password;
 
 
-    protected HttpClient(final Logger log, Context context) {
+    protected HttpClient(Logger log, Context context) {
         super();
         this.log = (log != null) ? log : Constants.log;
         this.context = context;
@@ -68,16 +56,8 @@ public class HttpClient extends OkHttpClient {
         if (context != null) {
             // use MemorizingTrustManager to manage self-signed certificates
             MemorizingTrustManager mtm = new MemorizingTrustManager(context);
-            try {
-                SSLContext sc = SSLContext.getInstance("TLS");
-                sc.init(null, new X509TrustManager[] { mtm }, null);
-                setSslSocketFactory(sc.getSocketFactory());
-                setHostnameVerifier(mtm.wrapHostnameVerifier(OkHostnameVerifier.INSTANCE));
-            } catch (NoSuchAlgorithmException e) {
-                Constants.log.error("Couldn't get SSL Context for MemorizingTrustManager", e);
-            } catch (KeyManagementException e) {
-                Constants.log.error("Key management error while initializing MemorizingTrustManager", e);
-            }
+            setSslSocketFactory(new SSLSocketFactoryCompat(mtm));
+            setHostnameVerifier(mtm.wrapHostnameVerifier(OkHostnameVerifier.INSTANCE));
         }
 
         // set timeouts
@@ -89,7 +69,7 @@ public class HttpClient extends OkHttpClient {
         networkInterceptors().add(userAgentInterceptor);
 
         // enable verbose logs, if requested
-        if (log.isTraceEnabled()) {
+        if (this.log.isTraceEnabled()) {
             HttpLoggingInterceptor logger = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
                 @Override
                 public void log(String message) {
@@ -100,13 +80,13 @@ public class HttpClient extends OkHttpClient {
                             int len = line.length();
                             for (int pos = 0; pos < len; pos += MAX_LOG_LINE_LENGTH)
                                 if (pos < len - MAX_LOG_LINE_LENGTH)
-                                    log.trace(line.substring(pos, pos + MAX_LOG_LINE_LENGTH) + "\\");
+                                    HttpClient.this.log.trace(line.substring(pos, pos + MAX_LOG_LINE_LENGTH) + "\\");
                                 else
-                                    log.trace(line.substring(pos));
+                                    HttpClient.this.log.trace(line.substring(pos));
                         }
                     } catch(IOException e) {
                         // for some reason, we couldn't split our message
-                        log.trace(message);
+                        HttpClient.this.log.trace(message);
                     }
                 }
             });

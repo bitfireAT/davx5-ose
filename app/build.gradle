@@ -64,4 +64,6 @@ dependencies {
     compile project(':vcard4android')
 
     compile project(':MemorizingTrustManager')
+
+    androidTestCompile 'com.squareup.okhttp:mockwebserver:2.6.0-SNAPSHOT'
 }
