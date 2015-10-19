@@ -9,7 +9,6 @@ package at.bitfire.davdroid.ui.setup;
 
 import android.app.DialogFragment;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;

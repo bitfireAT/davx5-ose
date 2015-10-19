@@ -8,10 +8,7 @@
 
 package at.bitfire.davdroid.resource;
 
-import android.content.ContentUris;
 import android.content.ContentValues;
-import android.net.Uri;
-import android.os.RemoteException;
 import android.provider.ContactsContract;
 
 import at.bitfire.vcard4android.AndroidAddressBook;

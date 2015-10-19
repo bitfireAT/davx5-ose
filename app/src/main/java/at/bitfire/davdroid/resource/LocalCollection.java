@@ -8,8 +8,6 @@
 
 package at.bitfire.davdroid.resource;
 
-import android.provider.ContactsContract;
-
 import java.io.FileNotFoundException;
 
 import at.bitfire.ical4android.CalendarStorageException;

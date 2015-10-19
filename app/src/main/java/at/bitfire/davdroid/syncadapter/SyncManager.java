@@ -7,51 +7,51 @@
  */
 package at.bitfire.davdroid.syncadapter;
 
-import android.accounts.Account;
-import android.annotation.TargetApi;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SyncResult;
-import android.os.Build;
-import android.os.Bundle;
-import android.text.TextUtils;
+    import android.accounts.Account;
+    import android.annotation.TargetApi;
+    import android.app.Notification;
+    import android.app.NotificationManager;
+    import android.app.PendingIntent;
+    import android.content.ContentResolver;
+    import android.content.Context;
+    import android.content.Intent;
+    import android.content.SyncResult;
+    import android.os.Build;
+    import android.os.Bundle;
+    import android.text.TextUtils;
 
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.RequestBody;
+    import com.squareup.okhttp.HttpUrl;
+    import com.squareup.okhttp.RequestBody;
 
-import org.slf4j.Logger;
+    import org.slf4j.Logger;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+    import java.io.IOException;
+    import java.util.Date;
+    import java.util.HashMap;
+    import java.util.HashSet;
+    import java.util.Map;
+    import java.util.Set;
+    import java.util.UUID;
 
-import at.bitfire.dav4android.DavResource;
-import at.bitfire.dav4android.exception.ConflictException;
-import at.bitfire.dav4android.exception.DavException;
-import at.bitfire.dav4android.exception.HttpException;
-import at.bitfire.dav4android.exception.UnauthorizedException;
-import at.bitfire.dav4android.exception.PreconditionFailedException;
-import at.bitfire.dav4android.exception.ServiceUnavailableException;
-import at.bitfire.dav4android.property.GetCTag;
-import at.bitfire.dav4android.property.GetETag;
-import at.bitfire.davdroid.Constants;
-import at.bitfire.davdroid.HttpClient;
-import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.log.ExternalFileLogger;
-import at.bitfire.davdroid.resource.LocalCollection;
-import at.bitfire.davdroid.resource.LocalResource;
-import at.bitfire.davdroid.ui.DebugInfoActivity;
-import at.bitfire.davdroid.ui.settings.AccountActivity;
-import at.bitfire.ical4android.CalendarStorageException;
-import at.bitfire.vcard4android.ContactsStorageException;
+    import at.bitfire.dav4android.DavResource;
+    import at.bitfire.dav4android.exception.ConflictException;
+    import at.bitfire.dav4android.exception.DavException;
+    import at.bitfire.dav4android.exception.HttpException;
+    import at.bitfire.dav4android.exception.PreconditionFailedException;
+    import at.bitfire.dav4android.exception.ServiceUnavailableException;
+    import at.bitfire.dav4android.exception.UnauthorizedException;
+    import at.bitfire.dav4android.property.GetCTag;
+    import at.bitfire.dav4android.property.GetETag;
+    import at.bitfire.davdroid.Constants;
+    import at.bitfire.davdroid.HttpClient;
+    import at.bitfire.davdroid.R;
+    import at.bitfire.davdroid.log.ExternalFileLogger;
+    import at.bitfire.davdroid.resource.LocalCollection;
+    import at.bitfire.davdroid.resource.LocalResource;
+    import at.bitfire.davdroid.ui.DebugInfoActivity;
+    import at.bitfire.davdroid.ui.settings.AccountActivity;
+    import at.bitfire.ical4android.CalendarStorageException;
+    import at.bitfire.vcard4android.ContactsStorageException;
 
 abstract public class SyncManager {
 

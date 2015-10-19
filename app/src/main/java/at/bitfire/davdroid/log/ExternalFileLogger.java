@@ -8,7 +8,6 @@
 
 package at.bitfire.davdroid.log;
 
-import android.app.Activity;
 import android.content.Context;
 
 import java.io.Closeable;

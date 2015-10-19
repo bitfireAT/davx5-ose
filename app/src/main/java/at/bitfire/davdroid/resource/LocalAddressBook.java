@@ -16,12 +16,11 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.Groups;
 import android.provider.ContactsContract.RawContacts;
-import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
 
-import java.security.acl.Group;
 import java.util.LinkedList;
 import java.util.List;
 
