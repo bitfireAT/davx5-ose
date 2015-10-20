@@ -11,23 +11,26 @@
     package="at.bitfire.davdroid"
     android:installLocation="internalOnly">
 
+    <!-- normal permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
-    <uses-permission android:name="android.permission.READ_CALENDAR" />
-    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
+    <!-- legacy permissions -->
     <!-- for writing external log files; permission only required for SDK <= 18 because since then,
-    writing to app-private directory doesn't require extra permissions -->
+         writing to app-private directory doesn't require extra permissions -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="18" tools:ignore="UnusedAttribute"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18" tools:ignore="UnusedAttribute"/>
 
-    <uses-permission android:name="org.dmfs.permission.READ_TASKS" />
-    <uses-permission android:name="org.dmfs.permission.WRITE_TASKS" />
+    <!-- other permissions -->
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />             <!-- android.permission-group.CONTACTS -->
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />             <!-- android.permission-group.CALENDAR -->
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+
+    <!-- ical4android declares task access permissions -->
 
     <application
         android:allowBackup="true" android:fullBackupContent="false"  tools:ignore="UnusedAttribute"

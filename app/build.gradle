@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId "at.bitfire.davdroid"
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 22
 
         versionCode 79
         versionName "0.9.0.1"
@@ -39,6 +39,7 @@ android {
         disable 'InconsistentLayout'
         disable 'MergeRootFrame'
         disable 'MissingTranslation'
+        disable 'OldTargetApi'
         disable 'RtlEnabled'
         disable 'Typos'
     }

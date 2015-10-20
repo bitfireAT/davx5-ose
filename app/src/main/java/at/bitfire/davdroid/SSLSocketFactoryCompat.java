@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -46,7 +47,7 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
                 // - remove all SSL versions (especially SSLv3) because they're insecure now
                 List<String> protocols = new LinkedList<>();
                 for (String protocol : socket.getSupportedProtocols())
-                    if (!protocol.toUpperCase().contains("SSL"))
+                    if (!protocol.toUpperCase(Locale.US).contains("SSL"))
                         protocols.add(protocol);
                 Constants.log.debug("Setting allowed TLS protocols: " + TextUtils.join(", ", protocols));
                 SSLSocketFactoryCompat.protocols = protocols.toArray(new String[protocols.size()]);
