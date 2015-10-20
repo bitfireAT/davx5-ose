@@ -66,7 +66,7 @@ public class TasksSyncAdapterService extends Service {
                 Constants.log.error("Couldn't enumerate local task lists", e);
             }
 
-            Constants.log.info("Calendar sync complete");
+            Constants.log.info("Task sync complete");
         }
     }
 

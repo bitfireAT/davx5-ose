@@ -21,6 +21,8 @@ import android.preference.SwitchPreference;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 
+import java.io.File;
+
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.log.ExternalFileLogger;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
@@ -141,7 +143,11 @@ public class AccountFragment extends PreferenceFragment {
 
         final SwitchPreference prefLogExternalFile = (SwitchPreference)findPreference("log_external_file");
         prefLogExternalFile.setChecked(settings.logToExternalFile());
-        prefLogExternalFile.setSummaryOn(getString(R.string.settings_log_to_external_file_on, ExternalFileLogger.getDirectory(getActivity()).getPath()));
+        File logDirectory = ExternalFileLogger.getDirectory(getActivity());
+        prefLogExternalFile.setSummaryOn(logDirectory != null ?
+                getString(R.string.settings_log_to_external_file_on, logDirectory.getPath()) :
+                getString(R.string.settings_log_to_external_file_no_external_storage)
+        );
         prefLogExternalFile.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
