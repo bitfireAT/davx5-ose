@@ -141,6 +141,7 @@
     <string name="settings_log_to_external_file">Log to external file</string>
     <string name="settings_log_to_external_file_confirmation">External log files will contain private data and be accessible by other apps. Turn off external logging and delete the log files after use.</string>
     <string name="settings_log_to_external_file_on">Logs are written to %s (if possible)</string>
+    <string name="settings_log_to_external_file_no_external_storage">External storage is not available</string>
     <string name="settings_log_to_external_file_off">Logs are written to ADB</string>
     <string name="settings_log_verbose">Verbose logging</string>
     <string name="settings_log_verbose_on">Log synchronization information and network traffic</string>
