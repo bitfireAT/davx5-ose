@@ -437,7 +437,7 @@ abstract public class SyncManager {
 
         // add all unseen (= remotely added) remote contacts
         if (!remoteResources.isEmpty()) {
-            log.info("New VCards have been found on the server: " + TextUtils.join(", ", remoteResources.keySet()));
+            log.info("New resources have been found on the server: " + TextUtils.join(", ", remoteResources.keySet()));
             toDownload.addAll(remoteResources.values());
         }
     }
