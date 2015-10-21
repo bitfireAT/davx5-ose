@@ -33,7 +33,7 @@ import de.duenndns.ssl.MemorizingTrustManager;
 import lombok.RequiredArgsConstructor;
 
 public class HttpClient extends OkHttpClient {
-    private final int MAX_LOG_LINE_LENGTH = 71;
+    private final int MAX_LOG_LINE_LENGTH = 80;
 
     final static UserAgentInterceptor userAgentInterceptor = new UserAgentInterceptor();
 
