@@ -74,7 +74,6 @@
   <string name="setup_account_details">Детаљи налога</string>
   <string name="setup_account_name">Назив налога:</string>
   <string name="setup_account_name_hint">Мој КалДАВ/КардДАВ налог</string>
-  <string name="setup_account_name_info">\"Користите вашу е-адресу за назив налога јер Андроид користи назив налога за поље ОРГАНИЗАТОР за догађаје које направите. Не можете имати два налога истог назива.</string>
   <string name="setup_read_only">само-за-читање</string>
   <!--sync errors and DebugInfoActivity-->
 </resources>

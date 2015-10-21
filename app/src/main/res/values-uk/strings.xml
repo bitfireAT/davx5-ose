@@ -85,7 +85,6 @@
   <string name="setup_account_details">Подробиці облікового запису</string>
   <string name="setup_account_name">Ім\'я облікового запису:</string>
   <string name="setup_account_name_hint">Мій обліковий запис CalDAV/CardDAV</string>
-  <string name="setup_account_name_info">\"Використовуйте Вашу електронну адресу як назву облікового запису, оскільки Android використовуватиме назву облікового запису як поле ОРГАНІЗАТОР для подій, які Ви будете створювати. Ви не можете мати два облікові записи із однаковими назвами.</string>
   <string name="setup_read_only">лише читання</string>
   <!--sync errors and DebugInfoActivity-->
 </resources>

@@ -4,29 +4,56 @@
   <string name="app_name">DAVdroid</string>
   <string name="help">Aide</string>
   <string name="next">Suivant</string>
+  <string name="please_wait">Veuillez patienter</string>
   <string name="send">Envoyer</string>
-  <string name="skip">Sauter</string>
+  <string name="skip">Passer</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Gérer les comptes synchronisés</string>
   <string name="main_show_debug_info">Afficher les infos de débogage</string>
   <string name="main_fdroid_donation_html"><![CDATA[
-        <p>Nous sommes heureux que vous ayez téléchargé DAVdroid à partir de F-Droid. Développer DAVdroid est un travail difficile et demande des centaines d\'heures de travail. <strong>Si vous aimez DAVdroid, merci de penser <a href=\"https://davdroid.bitfire.at/donate\">à faire un un don</a>.</strong></p>
+        <p>Nous sommes heureux que vous ayez téléchargé DAVdroid à partir de F-Droid. Développer DAVdroid est un travail intense et a demandé plusieurs centaines d\'heures de travail. <strong>Si vous aimez DAVdroid, merci de penser <a href=\"https://davdroid.bitfire.at/donate\">à faire un don</a>.</strong></p>
+    ]]></string>
+  <string name="main_play_workaround_html"><![CDATA[
+		<p>Merci d\'avoir acheté DAVdroid sur Google Play, de cette manière vous aidez le projet. Malheureusement, il y a deux bugs sur Google Play qui vous concernent peut-être. Cliquez sur le lien pour avoir plus de détails.</p>
+		
+		<p><a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-reboot\">1. Les comptes peuvent disparaitre après un redémarrage</a> : affecte Android 4.1, 4.2 avec certains appareils (la plupart des Samsung par exemple), et peut être plus. Les versions plus récentes d\'Android fonctionnent bien.<br/>
+
+        <a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-updating\">2. Les comptes peuvent disparaitre après une mise à jour de DAVdroid</a> : affecte quelques appareils sous Android 4.4.2 (constaté sur Nexus et Moto G), et peut être plus. Les versions plus récentes d\'Android fonctionnent bien.</p>
+        
+        <p><strong>Si vous avez ce genre de problèmes, merci <a href=\"market://details?id=at.bitfire.davdroid.jbworkaround\">d\'installer l\'application DAVdroid JB Workaround</a>.</strong></p>
     ]]></string>
   <string name="main_welcome">Bienvenue sur DAVdroid/%s!</string>
+  <string name="main_what_is_davdroid_html"><![CDATA[
+        <p>DAVdroid est un adaptateur de synchronisation CalDAV/CardDAV pour Android 4+. Pour l\'utiliser, il suffit d\'ajouter un compte DAVdroid pour votre serveur CalDAV/CardDAV et ainsi vos contacts, événements et taches seront synchronisés dans les deux sens.</p>
+
+        <p>Pour avoir plus d\'informations, merci de consulter <a href=\"https://davdroid.bitfire.at/?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">le site de DAVdroid</a>. DAVdroid respecte votre vie privée, vous pouvez consulter <a href=\"https://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">la charte du respect de la vie privée</a>.</p>
+    ]]></string>
+  <string name="main_how_to_setup_html"><![CDATA[
+        <p><b>Comment configurer ?</b></p>
+
+        <p>L\'objectif de DAVdroid est de supporter tous les services CalDAV/CardDAV respectant les standards. Pour consulter la liste des services testés et l\'information relative à leur paramétrage, accompagnées de quelques informations à propos de TLS et des certificats, vous pouvez consulter notre <a href=\"https://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">page de configuration</a>.</p>
+    ]]></string>
+  <string name="main_support_html"><![CDATA[<p><b>Support</b></p>
+       <p><b>En cas de problème, consultez en premier lieu la <a href=\"https://davdroid.bitfire.at/faq?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">FAQ (foire aux questions)</a>. Pour demander une assistance ou discuter à propos d\'un sujet relatif à DAVdroid, jetez un œil aux 
+       <a href=\"https://davdroid.bitfire.at/forums?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">forums DAVdroid</a>.</b>
+       Merci de ne pas faire de chantage à la mauvaise évaluation sur les magasins (c\'est futile et décourageant).</p>
+    ]]></string>
   <string name="main_open_source_disclaimer_html"><![CDATA[<p><b>Open source</b></p>
-	   <p>Dès le commencement, DAVdroid a été conçu comme un projet open source. Il est toujours possible de compiler
-	   l\'application par vous même et de l\'utiliser librement et sans aucune obligation. Le
-	   <a href=\"https://davdroid.bitfire.at/source?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">code source est
-	   disponible</a>, et vous pouvez <a href=\"https://f-droid.org/app/at.bitfire.davdroid\">télécharger l\'application sur F-Droid</a>.</p></p>
+	   <p>Dès le commencement, DAVdroid a été conçu comme un projet open source. Il est toujours possible de compiler l\'application par vous même et de l\'utiliser librement et sans aucune obligation. Le <a href=\"https://davdroid.bitfire.at/source?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">code source est disponible</a>, et vous pouvez <a href=\"https://f-droid.org/app/at.bitfire.davdroid\">télécharger l\'application sur F-Droid</a>.</p></p>
 ]]></string>
-  <string name="main_translation_info">Les traductions dans les langues autres que Anglais et Allemand ont été effectué par de nombreuses personnes dont les noms sont mentionnés dans la version de leur langue respective.</string>
+  <string name="main_license_html"><![CDATA[<p><b>License</b></p>
+	   <p>Copyright © 2013 – 2015 Ricki Hirner, Bernhard Stockmann (<a href=\"https://www.bitfire.at\">bitfire web engineering</a>).
+	   Tous droits réservés. Ceci programme et tout ce qui l\'accompagne sont distribués sous la licence GNU Public v3.0 qui est incluse dans la distribution, et est disponible sur <a
+	   href=\"http://www.gnu.org/licenses/gpl.html\">http://www.gnu.org/licenses/gpl.html</a>. Google Play, Samsung Store ou Amazon Appstore peuvent imposer d\'autres conditions d\'utilisation, ces conditions respectives s\'appliquant uniquement aux versions téléchargées par le biais de leurs services.</p>
+	]]></string>
+  <string name="main_translation_info">Les traductions dans les langues autres que Anglais et Allemand ont été effectuées par de nombreuses personnes dont les noms sont mentionnés dans la version de leur langue respective.</string>
   <string name="main_used_libraries_heading">DAVdroid utilise ces librairies (classées par ordre alphabétique) :</string>
   <!--AddAccountActivity-->
   <string name="login_type_email">Connexion avec une adresse email</string>
   <string name="login_type_email_description">La configuration sera déduite automatiquement à partir du domaine: Exemple : mon_compte@icloud.com</string>
   <string name="login_type_url">Connexion avec une URL et un nom d\'utilisateur</string>
   <string name="login_type_url_description">La configuration du service sera déduite automatique en utilisant l\'URL et le nom de l\'utilisateur fournis. (Utilisé le plus souvent pour les serveurs personnels.)</string>
-  <string name="login_email_description">Entrez votre adresse email, le domaine sera utiliser pour l\'auto-détection des services.</string>
+  <string name="login_email_description">Entrez votre adresse email. Le domaine sera utilisé pour l\'auto-détection des services.</string>
   <string name="login_email_address">E-mail :</string>
   <string-array name="login_url_scheme">
     <item>http://</item>
@@ -38,22 +65,22 @@
   <string name="login_auth_preemptive">Authentification préventive (recommandé, mais incompatible avec l\'authentification Digest)</string>
   <string name="login_password">Mot de passe :</string>
   <!--Settings activity-->
-  <string name="settings_title">Configuration</string>
+  <string name="settings_title">Paramètres</string>
   <string name="settings_no_accounts">Aucun compte DAVDroid trouvé</string>
   <string name="settings_authentication">Authentification</string>
-  <string name="settings_username">identifiant</string>
-  <string name="settings_enter_username">Saisir votre nom d\'utilisateur :</string>
+  <string name="settings_username">Nom d\'utilisateur</string>
+  <string name="settings_enter_username">Saisissez votre nom d\'utilisateur :</string>
   <string name="settings_password">Mot de passe</string>
   <string name="settings_password_summary">Mettre à jour le mot de passe </string>
-  <string name="settings_enter_password">Saisir votre mot de passe :</string>
+  <string name="settings_enter_password">Saisissez votre mot de passe :</string>
   <string name="settings_preemptive">Authentification préventive</string>
-  <string name="settings_preemptive_on">L\'identifiant et le mot de passe sont envoyés avec chaque requête (recommandé)</string>
-  <string name="settings_preemptive_off">L\'identifant et le mot de passe sont envoyés lorsque le serveur les demande</string>
+  <string name="settings_preemptive_on">Le nom d\'utilisateur et le mot de passe sont envoyés avec chaque requête (recommandé)</string>
+  <string name="settings_preemptive_off">Le nom d\'utilisateur et le mot de passe sont envoyés à la demande du serveur.</string>
   <string name="settings_sync">Synchronisation</string>
   <string name="settings_sync_interval_contacts">Interval de synchronisation des carnets d\'adresses</string>
   <string name="settings_sync_summary_manually">A la demande</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Toutes les %d minutes et immédiatement après un changement local</string>
-  <string name="settings_sync_summary_not_available">Pas disponible</string>
+  <string name="settings_sync_summary_not_available">Indisponible</string>
   <string name="settings_sync_interval_calendars">Interval de synchronisation des agendas</string>
   <string name="settings_sync_interval_tasks">Interval de synchronisation des tâches</string>
   <string-array name="settings_sync_interval_seconds">
@@ -67,7 +94,7 @@
     <item>86400</item>
   </string-array>
   <string-array name="settings_sync_interval_names">
-    <item>Seulement manuellement</item>
+    <item>Manuellement</item>
     <item>Toutes les 5 minutes</item>
     <item>Toutes les 10 minutes</item>
     <item>Toutes les 15 minutes</item>
@@ -79,17 +106,17 @@
   <string name="settings_debug">Débogage</string>
   <string name="settings_security_warning">Risque de sécurité potentiel !</string>
   <string name="settings_log_to_external_file">Journaliser dans un fichier extérieur</string>
-  <string name="settings_log_to_external_file_confirmation">Les journaux enregistrés dans des fichiers extérieurs contiennent des données privées et peuvent être accessibles par d\'autres applications. Arrêtez le stockage extérieur des journaux et supprimez les fichiers après utilisation.</string>
+  <string name="settings_log_to_external_file_confirmation">Les journaux enregistrés dans des fichiers extérieurs contiennent des données privées et sont potentiellement accessibles par d\'autres applications. Arrêtez le stockage extérieur des journaux et supprimez les fichiers après utilisation.</string>
   <string name="settings_log_to_external_file_on">Les journaux sont écrits sur %s (si possible)</string>
   <string name="settings_log_to_external_file_off">Les journaux sont écrits sur ADB</string>
-  <string name="settings_log_verbose">Connexion bavarde</string>
-  <string name="settings_log_verbose_on">Enregistrer les informations de synchronisation et du trafic réseau</string>
+  <string name="settings_log_verbose">Journalisation détaillée</string>
+  <string name="settings_log_verbose_on">Enregistrer les informations de synchronisation et le trafic réseau</string>
   <string name="settings_log_verbose_off">Enregistrer les informations de synchronisation uniquement</string>
   <string name="settings_android_update_title">Mise à jour de la version d\'Android</string>
-  <string name="settings_android_update_description">Les mises à jour d\'Android peuvent avoir un impact sur le fonctionnement de DAVdroid. Si vous avez des problèmes, merci de supprimer vos comptes DAVdroid et de les ajouter à nouveau.</string>
+  <string name="settings_android_update_description">Les mises à jour d\'Android peuvent avoir un impact sur le fonctionnement de DAVdroid. Si vous rencontrez des problèmes, veuillez supprimer vos comptes DAVdroid et les ajouter à nouveau.</string>
   <string name="settings_version_update_title">Les paramètres ont été mis à jour</string>
-  <string name="settings_version_update_description">Les paramètres internes ont été mis à jours. Si vous avez des problèmes, merci de supprimer vos comptes DAVdroid et de les ajouter à nouveau.</string>
-  <string name="setup_resource_detection">Détection de la ressource</string>
+  <string name="settings_version_update_description">Les paramètres des l\'applications ont été mis à jour. Si vous rencontrez des problèmes, veuillez désinstaller DAVdroid et l\'installer à nouveau.</string>
+  <string name="setup_resource_detection">Détection des ressources</string>
   <string name="setup_no_collections_found">Aucun carnet d\'adresse ou calendrier trouvé.</string>
   <string name="setup_view_logs">Voir les journaux</string>
   <string name="setup_add_account">Ajouter un compte</string>
@@ -97,7 +124,7 @@
   <string name="setup_install_apps_info">Android ne supporte pas les listes de tâches (par opposition aux carnets d\'adresses et les agendas).</string>
   <string name="setup_install_tasks_app_html"><![CDATA[
 <p>DAVDroid est capable de synchroniser des tâches avec <a href=\"market://details?id=org.dmfs.tasks\">l\'application Tasks</a> de Marten Gajda.</p>
-<p>A cause d\'un <a href=\"https://code.google.com/p/android/issues/detail?id=25906\">bug Android</a>, <b>l\'application Tasks doit être installé avant DAVDroid</b>, sinon DAVDroid ne peut obtenire les permissions nécessaires à la synchronisations.</p>
+<p>À cause d\'un <a href=\"https://code.google.com/p/android/issues/detail?id=25906\">bug Android</a>, <b>l\'application Tasks doit être installé avant DAVDroid</b>, sinon DAVDroid ne peut obtenir les permissions nécessaires à la synchronisation.</p>
 <p>Si vous désirez synchroniser vos tâches :</p>
 <p>1. Installez l\'application Tasks<br />
 2. Installez à nouveau DAVDroid. (Attention: la désinstallation supprime les comptes configurés ainsi que les modifications non synchronisées).<br />
@@ -108,12 +135,12 @@
   <string name="setup_calendars">Agendas</string>
   <string name="setup_task_lists">Listes de tâches</string>
   <string name="setup_select_address_book">Choisissez un carnet d\'adresses à synchronizer (toucher à nouveau pour désélectionner) :</string>
-  <string name="setup_select_calendars">Choisissez vos agendas :</string>
+  <string name="setup_select_calendars">Choisissez vos agendas à synchroniser :</string>
   <string name="setup_select_task_lists">Choisir les listes de tâches à synchroniser :</string>
   <string name="setup_account_details">Détails du compte</string>
   <string name="setup_account_name">Nom du compte :</string>
   <string name="setup_account_name_hint">Mon compte CalDAV/CardDAV</string>
-  <string name="setup_account_name_info">\"Utilisez votre adresse email en tant que nom de compte car Android utilise ce nom pour le champ ORGANISATEUR des évènements que vous créez.\" Vous ne pouvez pas avoir deux comptes du même nom.</string>
+  <string name="setup_account_name_info">Utilisez votre adresse email comme nom de compte car Android utilisera ce nom en tant que champ  ORGANISATEUR pour les évènements que vous créerez. Vous ne pouvez pas avoir deux comptes avec le même nom.</string>
   <string name="setup_read_only">lecture seule</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Info de débogage</string>

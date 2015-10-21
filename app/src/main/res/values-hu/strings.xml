@@ -88,7 +88,6 @@
   <string name="setup_account_details">További beállítások</string>
   <string name="setup_account_name">A fiók neve:</string>
   <string name="setup_account_name_hint">CalDAV/CardDAV fiók</string>
-  <string name="setup_account_name_info">\"Használja az email címet fióknévként, mert később a létrehozandó események szervezőjeként (ORGANIZER mező) az Android ezt fogja használni. Két fiókot nem lehet azonos néven létrehozni.</string>
   <string name="setup_read_only">csak olvasható</string>
   <!--sync errors and DebugInfoActivity-->
 </resources>

@@ -73,7 +73,6 @@
   <string name="setup_account_details">Detalhes da conta</string>
   <string name="setup_account_name">Nome da conta:</string>
   <string name="setup_account_name_hint">Minha conta CalDAV/CardDAV</string>
-  <string name="setup_account_name_info">\"Use seu endereço de e-mail como nome da conta porque o Android irá usar esta informação com ORGANIZADOR para eventos criados. Você não pode ter duas contas com o mesmo nome.</string>
   <string name="setup_read_only">apenas leitura</string>
   <!--sync errors and DebugInfoActivity-->
 </resources>

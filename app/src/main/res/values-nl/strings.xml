@@ -70,7 +70,6 @@
   <string name="setup_account_details">Account eigenschappen</string>
   <string name="setup_account_name">Account naam:</string>
   <string name="setup_account_name_hint">Mijn CalDAV/CardDAV Account</string>
-  <string name="setup_account_name_info">\"Gebruik uw e-mailadres als accountnaam omdat Android de accountnaam zal gebruiken als ORGANIZER veld voor afspraken die u maakt. Je kunt geen twee accounts met dezelfde naam gebruiken.</string>
   <string name="setup_read_only">Alleen lezen</string>
   <!--sync errors and DebugInfoActivity-->
 </resources>
