@@ -118,9 +118,11 @@ public class ContactsSyncManager extends SyncManager {
             davAddressBook().addressbookQuery();
         } catch(HttpException e) {
             if (e.status/100 == 4) {
-                log.warn("Server error on REPORT addressbook query, falling back to PROPFIND", e);
+                log.warn("Server error on REPORT addressbook-query, falling back to PROPFIND", e);
                 davAddressBook().propfind(1, GetETag.NAME);
-            }
+            } else
+                // no defined fallback, pass through exception
+                throw e;
         }
 
         remoteResources = new HashMap<>(davCollection.members.size());

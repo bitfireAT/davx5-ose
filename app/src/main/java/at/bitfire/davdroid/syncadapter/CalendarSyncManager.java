@@ -117,10 +117,10 @@ public class CalendarSyncManager extends SyncManager {
         // fetch list of remote VEVENTs and build hash table to index file name
         davCalendar().calendarQuery("VEVENT");
         remoteResources = new HashMap<>(davCollection.members.size());
-        for (DavResource vCard : davCollection.members) {
-            String fileName = vCard.fileName();
+        for (DavResource iCal : davCollection.members) {
+            String fileName = iCal.fileName();
             log.debug("Found remote VEVENT: " + fileName);
-            remoteResources.put(fileName, vCard);
+            remoteResources.put(fileName, iCal);
         }
     }
 
