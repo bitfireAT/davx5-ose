@@ -85,7 +85,6 @@
   <string name="setup_account_details">Detaily účtu</string>
   <string name="setup_account_name">Jméno účtu:</string>
   <string name="setup_account_name_hint">Můj CalDAV/CardDAV účet</string>
-  <string name="setup_account_name_info">\"Použijte svou emailovou adresu jako jméno účtu. Android bude používat tuto hodnotu jako jméno ORGANIZÁTORA událostí které vytvoříte. Nelze mít dva účty se stejným jménem.</string>
   <string name="setup_read_only">pouze pro čtení</string>
   <!--sync errors and DebugInfoActivity-->
 </resources>

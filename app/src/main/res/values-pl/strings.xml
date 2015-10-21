@@ -66,7 +66,6 @@
   <string name="settings_android_update_title">Aktualizacja wersji Androida</string>
   <string name="settings_android_update_description">Aktualizacja wersji Androida może mieć wpływ na to, jak DAVdroid działa DAVdroid. W razie problemów prosimy o usunięcie swoich konta DAVdroid i dodanie je ponownie.</string>
   <string name="settings_version_update_title">Ustawienia zostały zaktualizowane</string>
-  <string name="settings_version_update_description">Ustawienia wewnętrzne zostały zaktualizawane. W razie problemów prosimy o usunięcie swoich konta DAVdroid i dodanie je ponownie.</string>
   <string name="setup_add_account">Dodaj konto</string>
   <string name="setup_querying_server">Odpytywanie serwera. Proszę czekać…</string>
   <string name="setup_install_apps_info">Zwykły Android nie obsługuje list zadań (w przeciwieństwie do kontaktów i kalendarzy).</string>
@@ -89,7 +88,6 @@
   <string name="setup_account_details">Szczegóły konta</string>
   <string name="setup_account_name">Nazwa konta:</string>
   <string name="setup_account_name_hint">Moje konto CalDAV/CardDAV</string>
-  <string name="setup_account_name_info">\"Używaj adresu e-mail jako nazwy konta, ponieważ Android będzie używał nazwy konta do pola ORGANIZATORA dla wydarzeń stworzonych przez ciebie. Nie możesz posidać dwóch konta z taką samą nazwą.</string>
   <string name="setup_read_only">tylko do odczytu</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Informacje debugowe</string>

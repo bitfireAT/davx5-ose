@@ -84,7 +84,6 @@
   <string name="setup_account_details">账户信息</string>
   <string name="setup_account_name">账户显示名：</string>
   <string name="setup_account_name_hint">我的 CalDAV/CardDAV 账户</string>
-  <string name="setup_account_name_info">\"请使用您的 E-mail 地址作为账户名，因为 Android 会将帐户名用于您创建的日程的参与者 (ORGANIZER) 项。您不能有两个重名的账户。</string>
   <string name="setup_read_only">只读</string>
   <!--sync errors and DebugInfoActivity-->
 </resources>

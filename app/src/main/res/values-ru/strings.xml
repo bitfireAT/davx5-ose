@@ -71,7 +71,6 @@
   <string name="setup_account_details">Данные аккаунта</string>
   <string name="setup_account_name">Имя аккаунта:</string>
   <string name="setup_account_name_hint">Мой аккаунт CalDAV/CardDAV</string>
-  <string name="setup_account_name_info">\"Используйте свой адрес email как имя аккаунта, так как Android будет использовать это имя как поле ОРГАНИЗАТОР для событий которые вы будете создавать. Вы не можете использовать одинаковое имя для разных аккаунтов.</string>
   <string name="setup_read_only">только чтение</string>
   <!--sync errors and DebugInfoActivity-->
 </resources>

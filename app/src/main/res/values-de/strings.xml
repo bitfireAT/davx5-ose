@@ -4,6 +4,7 @@
   <string name="app_name">DAVdroid</string>
   <string name="help">Hilfe</string>
   <string name="next">Weiter</string>
+  <string name="please_wait">Bitte warten.</string>
   <string name="send">Senden</string>
   <string name="skip">Überspringen</string>
   <!--MainActivity-->
@@ -14,16 +15,9 @@
 <strong>Wenn Ihnen DAVdroid gefällt, freuen wir uns über <a href=\"https://davdroid.bitfire.at/donate\">Spenden!</a>.</strong></p>
 ]]></string>
   <string name="main_play_workaround_html"><![CDATA[
-⇥⇥<p>Vielen Dank für den Kauf von DAVdroid über Google Play und Ihre Unterstützung! Leider gibt es zwei Play-Store-Bugs, die Sie möglicherweise betreffen könnten. Klicken Sie weitere Details auf den jeweiligen Link.</p>
-⇥⇥
-⇥⇥<p><a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-reboot\">1. Accounts verschwinden nach einem Neustart</a>:
-⇥⇥betrifft Android 4.1, einige Geräte mit 4.2 (zum Beispiel viele Samsung-Geräte), möglicherweise aber auch weitere Geräte. Aktuelle
-⇥⇥Android-Versionen (zB 5, 6) sind davon nicht mehr betroffen.<br/>
-
-<a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-updating\">2. Accounts verschwinden nach einem DAVdroid-Update</a>:
-
-betrifft einige Android 4.4.2-Geräte (bekannt sind einige Nexus-Geräte sowie das Moto G), möglicherweise einige wenige weitere. Aktuellen Android-Versionen sind davon nicht mehr betroffen.</p>
-
+<p>Vielen Dank für den Kauf von DAVdroid über Google Play und Ihre Unterstützung! Leider gibt es zwei Play-Store-Bugs, die Sie möglicherweise betreffen könnten. Klicken Sie weitere Details auf den jeweiligen Link.</p>
+<p><a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-reboot\">1. Accounts verschwinden nach einem Neustart</a>: betrifft Android 4.1, einige Geräte mit 4.2 (zum Beispiel viele Samsung-Geräte), möglicherweise aber auch weitere Geräte. Aktuelle Android-Versionen (zB 5, 6) sind davon nicht mehr betroffen.<br/>
+<a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-updating\">2. Accounts verschwinden nach einem DAVdroid-Update</a>: betrifft einige Android 4.4.2-Geräte (bekannt sind einige Nexus-Geräte sowie das Moto G), möglicherweise einige wenige weitere. Aktuellen Android-Versionen sind davon nicht mehr betroffen.</p>
 <p><strong>Wenn einer dieser Fehler bei Ihnen auftritt, installieren Sie bitte den <a href=\"market://details?id=at.bitfire.davdroid.jbworkaround\">DAVdroid JB Workaround</a>.</strong></p>
 ]]></string>
   <string name="main_welcome">Willkommen bei DAVdroid/%s!</string>
@@ -145,7 +139,7 @@ Dieses Programm ist freie Software. Sie können es unter den Bedingungen der GNU
   <string name="setup_account_details">Konto-Details</string>
   <string name="setup_account_name">Kontoname:</string>
   <string name="setup_account_name_hint">Mein CalDAV/CardDAV-Konto</string>
-  <string name="setup_account_name_info">Verwenden Sie Ihre Email-Adresse als Kontoname, da Android den Kontonamen als ORGANIZER-Feld in Terminen benutzt. Sie können keine zwei Konten mit dem gleichen Namen anlegen.</string>
+  <string name="setup_account_name_info">Verwenden Sie Ihre Email-Adresse als Kontonamen, da Android den Kontonamen als ORGANIZER einsetzt. Es kann allerdings keine zwei Konten mit dem gleichen Namen geben.</string>
   <string name="setup_read_only">schreibgeschützt</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Debug-Info</string>
