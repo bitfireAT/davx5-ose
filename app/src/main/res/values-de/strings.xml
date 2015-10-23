@@ -106,6 +106,7 @@ Dieses Programm ist freie Software. Sie können es unter den Bedingungen der GNU
   <string name="settings_log_to_external_file">Auf externen Speicher protokollieren</string>
   <string name="settings_log_to_external_file_confirmation">Externe Protokolle beinhalten private Informationen und sind theoretisch auch von anderen Apps einsehbar. Schalten Sie das externe Loggen nach der Nutzung ab und löschen Sie diese Dateien.</string>
   <string name="settings_log_to_external_file_on">Protokolle werden nach %s gespeichert (wenn möglich)</string>
+  <string name="settings_log_to_external_file_no_external_storage">Externer Speicher nicht verfügbar</string>
   <string name="settings_log_to_external_file_off">Protokolle werden über ADB geschrieben</string>
   <string name="settings_log_verbose">Ausführliche Protokollierung</string>
   <string name="settings_log_verbose_on">Synchronisations-Details und Netzwerk-Verkehr protokollieren</string>

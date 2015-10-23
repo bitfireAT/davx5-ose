@@ -4,9 +4,57 @@
   <string name="app_name">DAVdroid</string>
   <string name="help">帮助</string>
   <string name="next">继续</string>
+  <string name="please_wait">请稍候</string>
+  <string name="send">发送</string>
   <string name="skip">跳过</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">管理同步账户</string>
+  <string name="main_show_debug_info">显示调试信息</string>
+  <string name="main_fdroid_donation_html"><![CDATA[
+        <p>感谢您从 F-Droid 下载 DAVdroid。开发 DAVdroid 是个大工程，花费了上千个小时。<strong>如果您喜欢 DAVdroid，请考虑<a href=\"https://davdroid.bitfire.at/donate\">给我们捐款</a>。</strong></p>
+    ]]></string>
+  <string name="main_play_workaround_html"><![CDATA[
+		<p>感谢您通过 Google Play 购买 DAVdroid 支持我们。不幸的是，两个 Google Play 的问题可能会影响到您。点击链接即可查看详情。</p>
+		
+		<p><a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-reboot\">1. 账户可能在设备重启后消失</a>：
+		影响部分 Android 4.1, 4.2 设备（如大部分三星设备和其他某些设备）。大部分最新的 Android 版本没有此问题。<br/>
+
+        <a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-updating\">2. 账户可能在升级 DAVdroid 后消失</a>：
+        影响部分 Android 4.4.2 设备（如 Nexus 设备、Moto G 和其他某些设备）。大部分最新的 Android 版本没有此问题。</p>
+        
+        <p><strong>如果您遇到了这些问题，请 <a href=\"market://details?id=at.bitfire.davdroid.jbworkaround\">安装 DAVdroid JB Workaround</a>。</strong></p>
+    ]]></string>
+  <string name="main_welcome">欢迎使用 DAVdroid/%s！</string>
+  <string name="main_what_is_davdroid_html"><![CDATA[
+        <p>DAVdroid 是 Android 4+ 的 CalDAV/CardDAV 同步器。只需增加 DAVdroid 账户，配置 CalDAV/CardDAV 服务器信息，联系人、日历事件或任务就会被双向同步。</p>
+
+        <p>更多信息请见 <a href=\"https://davdroid.bitfire.at/?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">DAVdroid 网站</a>。
+        DAVdroid 尊重您的隐私，请参见我们的<a href=\"https://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">隐私政策</a>.</p>
+    ]]></string>
+  <string name="main_how_to_setup_html"><![CDATA[
+        <p><b>如何配置</b></p>
+
+        <p>DAVdroid 会支持所有符合标准的 CalDAV/CardDAV 服务。查看所有已测试的服务列表和相关的配置信息，以及有关 TLS 和证书的信息，请查看
+        <a href=\"https://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">配置说明</a>。</p>
+    ]]></string>
+  <string name="main_support_html"><![CDATA[<p><b>支持</b></p>
+       <p><b>如果出现问题，请先查看<a href=\"https://davdroid.bitfire.at/faq?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">常见问题列表</a>。要获得帮助或讨论 DAVdroid 有关的话题，请到
+       <a href=\"https://davdroid.bitfire.at/forums?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">DAVdroid 论坛</a>。</b>
+       请不要直接在应用商店里给我们留差评（这对双方而言是无用和沮丧的）。</p>
+    ]]></string>
+  <string name="main_open_source_disclaimer_html"><![CDATA[<p><b>开源</b></p>
+	   <p>DAVdroid 一直以来是一个开源项目。你可以自己编译应用，并不受限制地免费使用。你可以
+	   <a href=\"https://davdroid.bitfire.at/source?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">直接获取源码</a>，或者在 <a href=\"https://f-droid.org/app/at.bitfire.davdroid\">F-Droid 下载应用</a>.</p></p>
+]]></string>
+  <string name="main_license_html"><![CDATA[<p><b>授权协议</b></p>
+	   <p>Copyright © 2013 – 2015 Ricki Hirner, Bernhard Stockmann (<a href=\"https://www.bitfire.at\">bitfire web engineering</a>).
+	   All rights reserved. This program and the accompanying materials are made available under the terms of the GNU Public License
+	   v3.0 which accompanies this distribution, and is available at <a
+	   href=\"http://www.gnu.org/licenses/gpl.html\">http://www.gnu.org/licenses/gpl.html</a>. As far as Google Play, Samsung
+	   Store or Amazon Appstore require other terms, the respective terms apply only to versions that are downloaded using these services.</p>
+	]]></string>
+  <string name="main_translation_info">英语和德文外的翻译由其他人提供，在相应语言的版本中会标明。</string>
+  <string name="main_used_libraries_heading">DAVdroid 使用的程序库（字母顺序排列）：</string>
   <!--AddAccountActivity-->
   <string name="login_type_email">使用邮箱地址登录</string>
   <string name="login_type_email_description">服务器连接信息由域名本身提供。例如: myaccount@icloud.com</string>
@@ -62,6 +110,23 @@
     <item>每 4 小时</item>
     <item>每 24 小时</item>
   </string-array>
+  <string name="settings_debug">调试</string>
+  <string name="settings_security_warning">有安全隐患！</string>
+  <string name="settings_log_to_external_file">记录日志到文件</string>
+  <string name="settings_log_to_external_file_confirmation">日志文件将包括隐私信息，可能会被其他应用读取。使用后，请关闭日志记录并删除日志文件。</string>
+  <string name="settings_log_to_external_file_on">日志路径为 %s（当选项打开）</string>
+  <string name="settings_log_to_external_file_no_external_storage">外部存储不可用</string>
+  <string name="settings_log_to_external_file_off">日志将写入到 ADB</string>
+  <string name="settings_log_verbose">记录完整日志</string>
+  <string name="settings_log_verbose_on">记录同步信息和网络交互</string>
+  <string name="settings_log_verbose_off">只记录同步信息</string>
+  <string name="settings_android_update_title">Android 版本升级</string>
+  <string name="settings_android_update_description">Android 系统的版本升级可能会影响 DAVdroid 的运行。如果出现问题，请删除并重新添加 DAVdroid 账户。</string>
+  <string name="settings_version_update_title">设置已保存</string>
+  <string name="settings_version_update_description">程序设置已更新。如果出现问题，请卸载并重新安装 DAVdroid。</string>
+  <string name="setup_resource_detection">资源查找</string>
+  <string name="setup_no_collections_found">找不到通讯录和日历。</string>
+  <string name="setup_view_logs">查看日志</string>
   <string name="setup_add_account">增加账户</string>
   <string name="setup_querying_server">正在尝试，请稍等…</string>
   <string name="setup_install_apps_info">Android 系统不支持原生任务列表（相比于日程和通讯录）。</string>
@@ -84,6 +149,28 @@
   <string name="setup_account_details">账户信息</string>
   <string name="setup_account_name">账户显示名：</string>
   <string name="setup_account_name_hint">我的 CalDAV/CardDAV 账户</string>
+  <string name="setup_account_name_info">请使用你的邮箱地址作为帐户名，因为 Android 会将你创建的日历事件的创建者项设置为帐户名。你不能拥有多个帐户名相同的账户。</string>
   <string name="setup_read_only">只读</string>
   <!--sync errors and DebugInfoActivity-->
+  <string name="debug_info_title">调试信息</string>
+  <string name="sync_error_calendar">日历同步失败（%s）</string>
+  <string name="sync_error_contacts">通讯录同步失败（%s）</string>
+  <string name="sync_error_tasks">任务同步失败（%s）</string>
+  <string name="sync_error">%s时错误</string>
+  <string name="sync_error_http_dav">%s时服务器错误</string>
+  <string name="sync_error_local_storage">%s时数据库错误</string>
+  <string-array name="sync_error_phases">
+    <item>准备同步</item>
+    <item>请求功能列表</item>
+    <item>处理本地删除项目</item>
+    <item>准备创建/修改项目</item>
+    <item>上传创建/修改项目</item>
+    <item>检查同步状态</item>
+    <item>检查本地数据</item>
+    <item>检查远程数据</item>
+    <item>比较本地和远程数据</item>
+    <item>下载远程数据</item>
+    <item>保存同步状态</item>
+  </string-array>
+  <string name="sync_error_unauthorized">用户名或密码错误</string>
 </resources>

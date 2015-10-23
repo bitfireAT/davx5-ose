@@ -4,10 +4,13 @@
   <string name="app_name">DAVdroid</string>
   <string name="help">Pomoc</string>
   <string name="next">Dalej</string>
+  <string name="please_wait">Proszę czekać</string>
+  <string name="send">Wyślij</string>
   <string name="skip">Pomiń</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Zadządzaj kontami synchronizacji</string>
   <string name="main_show_debug_info">Pokaż informacje do debug\'owania</string>
+  <string name="main_translation_info">Tłumaczenia w innych językach niż angielski i niemiecki zostały dodane przez wiele osób, które są wymienione w odpowienich wersjach językowych. Tłumaczenie na język polski przygotował &lt;a href="https://github.com/oskarjakiela"&gt;Oskar Jakieła&lt;/a&gt;.</string>
   <!--AddAccountActivity-->
   <string name="login_type_email">Logowanie za pomocą adresu e-mail</string>
   <string name="login_type_email_description">Szczegóły usługi zostaną wykryte automatycznie na podstwie nazwy domeny. Na przykład mojekonto@icloud.com</string>
@@ -63,9 +66,17 @@
     <item>Co 4 godziny</item>
     <item>Raz dziennie</item>
   </string-array>
+  <string name="settings_debug">Debugowanie</string>
+  <string name="settings_security_warning">Potencjalne zagrożenie bezpieczeństwa!</string>
+  <string name="settings_log_to_external_file">Loguj to zewnętrznego pliku</string>
+  <string name="settings_log_to_external_file_confirmation">Zewnętrzne pliki logów będą zawierać prywtne dane i będą dostępne dla innych aplikacji. Wyłącz logowanie do zewnętrznego pliku i usuń pliki logów zaraz po uzyciu.</string>
+  <string name="settings_log_to_external_file_on">Logi są zapisane do %s (jeśli to możliwe)</string>
+  <string name="settings_log_to_external_file_no_external_storage">Zewnętrzny dysk jest niedostępny</string>
+  <string name="settings_log_to_external_file_off">Logi są zapisane do ADB</string>
   <string name="settings_android_update_title">Aktualizacja wersji Androida</string>
   <string name="settings_android_update_description">Aktualizacja wersji Androida może mieć wpływ na to, jak DAVdroid działa DAVdroid. W razie problemów prosimy o usunięcie swoich konta DAVdroid i dodanie je ponownie.</string>
   <string name="settings_version_update_title">Ustawienia zostały zaktualizowane</string>
+  <string name="setup_view_logs">Pokaż logi</string>
   <string name="setup_add_account">Dodaj konto</string>
   <string name="setup_querying_server">Odpytywanie serwera. Proszę czekać…</string>
   <string name="setup_install_apps_info">Zwykły Android nie obsługuje list zadań (w przeciwieństwie do kontaktów i kalendarzy).</string>
