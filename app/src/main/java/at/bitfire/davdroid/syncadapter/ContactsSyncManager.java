@@ -160,8 +160,13 @@ public class ContactsSyncManager extends SyncManager {
                 ResponseBody body = remote.get("text/vcard;version=4.0, text/vcard;charset=utf-8;q=0.8, text/vcard;q=0.5");
                 String eTag = ((GetETag) remote.properties.get(GetETag.NAME)).eTag;
 
+                Charset charset = Charsets.UTF_8;
+                MediaType contentType = body.contentType();
+                if (contentType != null)
+                    charset = contentType.charset(Charsets.UTF_8);
+
                 @Cleanup InputStream stream = body.byteStream();
-                processVCard(remote.fileName(), eTag, stream, body.contentType().charset(Charsets.UTF_8), downloader);
+                processVCard(remote.fileName(), eTag, stream, charset, downloader);
 
             } else {
                 // multiple contacts, use multi-get

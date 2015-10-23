@@ -108,20 +108,21 @@
   <string name="settings_log_to_external_file">Journaliser dans un fichier extérieur</string>
   <string name="settings_log_to_external_file_confirmation">Les journaux enregistrés dans des fichiers extérieurs contiennent des données privées et sont potentiellement accessibles par d\'autres applications. Arrêtez le stockage extérieur des journaux et supprimez les fichiers après utilisation.</string>
   <string name="settings_log_to_external_file_on">Les journaux sont écrits sur %s (si possible)</string>
+  <string name="settings_log_to_external_file_no_external_storage">Le stockage externe n\'est pas disponible.</string>
   <string name="settings_log_to_external_file_off">Les journaux sont écrits sur ADB</string>
   <string name="settings_log_verbose">Journalisation détaillée</string>
   <string name="settings_log_verbose_on">Enregistrer les informations de synchronisation et le trafic réseau</string>
-  <string name="settings_log_verbose_off">Enregistrer les informations de synchronisation uniquement</string>
+  <string name="settings_log_verbose_off">Enregistrer uniquement les informations de synchronisation</string>
   <string name="settings_android_update_title">Mise à jour de la version d\'Android</string>
   <string name="settings_android_update_description">Les mises à jour d\'Android peuvent avoir un impact sur le fonctionnement de DAVdroid. Si vous rencontrez des problèmes, veuillez supprimer vos comptes DAVdroid et les ajouter à nouveau.</string>
   <string name="settings_version_update_title">Les paramètres ont été mis à jour</string>
-  <string name="settings_version_update_description">Les paramètres des l\'applications ont été mis à jour. Si vous rencontrez des problèmes, veuillez désinstaller DAVdroid et l\'installer à nouveau.</string>
+  <string name="settings_version_update_description">Les paramètres de l\'applications ont été mis à jour. Si vous rencontrez des problèmes, veuillez désinstaller DAVdroid et l\'installer à nouveau.</string>
   <string name="setup_resource_detection">Détection des ressources</string>
   <string name="setup_no_collections_found">Aucun carnet d\'adresse ou calendrier trouvé.</string>
   <string name="setup_view_logs">Voir les journaux</string>
   <string name="setup_add_account">Ajouter un compte</string>
   <string name="setup_querying_server">Interroge le serveur. Patientez svp.</string>
-  <string name="setup_install_apps_info">Android ne supporte pas les listes de tâches (par opposition aux carnets d\'adresses et les agendas).</string>
+  <string name="setup_install_apps_info">Sans application tierce, Android ne supporte pas les listes de tâches (par opposition aux carnets d\'adresses et les agendas).</string>
   <string name="setup_install_tasks_app_html"><![CDATA[
 <p>DAVDroid est capable de synchroniser des tâches avec <a href=\"market://details?id=org.dmfs.tasks\">l\'application Tasks</a> de Marten Gajda.</p>
 <p>À cause d\'un <a href=\"https://code.google.com/p/android/issues/detail?id=25906\">bug Android</a>, <b>l\'application Tasks doit être installé avant DAVDroid</b>, sinon DAVDroid ne peut obtenir les permissions nécessaires à la synchronisation.</p>
@@ -134,7 +135,7 @@
   <string name="setup_address_books">Carnets d\'adresses</string>
   <string name="setup_calendars">Agendas</string>
   <string name="setup_task_lists">Listes de tâches</string>
-  <string name="setup_select_address_book">Choisissez un carnet d\'adresses à synchronizer (toucher à nouveau pour désélectionner) :</string>
+  <string name="setup_select_address_book">Choisissez un carnet d\'adresses à synchroniser (toucher à nouveau pour désélectionner) :</string>
   <string name="setup_select_calendars">Choisissez vos agendas à synchroniser :</string>
   <string name="setup_select_task_lists">Choisir les listes de tâches à synchroniser :</string>
   <string name="setup_account_details">Détails du compte</string>
@@ -143,7 +144,7 @@
   <string name="setup_account_name_info">Utilisez votre adresse email comme nom de compte car Android utilisera ce nom en tant que champ  ORGANISATEUR pour les évènements que vous créerez. Vous ne pouvez pas avoir deux comptes avec le même nom.</string>
   <string name="setup_read_only">lecture seule</string>
   <!--sync errors and DebugInfoActivity-->
-  <string name="debug_info_title">Info de débogage</string>
+  <string name="debug_info_title">Infos de débogage</string>
   <string name="sync_error_calendar">Échec de la synchronisation du calendrier (%s)</string>
   <string name="sync_error_contacts">Échec de la synchronisation du carnet d\'adresse (%s)</string>
   <string name="sync_error_tasks">Échec de la synchronisation (%s)</string>

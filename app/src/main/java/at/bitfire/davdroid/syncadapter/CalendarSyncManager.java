@@ -141,8 +141,13 @@ public class CalendarSyncManager extends SyncManager {
                 ResponseBody body = remote.get("text/calendar");
                 String eTag = ((GetETag)remote.properties.get(GetETag.NAME)).eTag;
 
+                Charset charset = Charsets.UTF_8;
+                MediaType contentType = body.contentType();
+                if (contentType != null)
+                    charset = contentType.charset(Charsets.UTF_8);
+
                 @Cleanup InputStream stream = body.byteStream();
-                processVEvent(remote.fileName(), eTag, stream, body.contentType().charset(Charsets.UTF_8));
+                processVEvent(remote.fileName(), eTag, stream, charset);
 
             } else {
                 // multiple contacts, use multi-get
