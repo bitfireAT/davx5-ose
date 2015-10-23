@@ -157,7 +157,7 @@ public class ContactsSyncManager extends SyncManager {
                 // only one contact, use GET
                 DavResource remote = bunch[0];
 
-                ResponseBody body = remote.get("text/vcard;q=0.5, text/vcard;charset=utf-8;q=0.8, text/vcard;version=4.0");
+                ResponseBody body = remote.get("text/vcard;version=4.0, text/vcard;charset=utf-8;q=0.8, text/vcard;q=0.5");
                 String eTag = ((GetETag) remote.properties.get(GetETag.NAME)).eTag;
 
                 @Cleanup InputStream stream = body.byteStream();
