@@ -29,12 +29,12 @@ import at.bitfire.davdroid.ui.setup.AddAccountActivity;
 public class MainActivity extends Activity {
 
     private static final String libraries =
-            "· <a href=\"https://commons.apache.org/\">Apache Commons</a> – <a href=\"https://www.apache.org/licenses/\">Apache License, Version 2.0</a>" +
-            "· <a href=\"http://www.xbill.org/dnsjava/\">dnsjava</a> – <a href=\"http://www.xbill.org/dnsjava/dnsjava-current/LICENSE\">BSD License</a>" +
+            "· <a href=\"https://commons.apache.org/\">Apache Commons</a> – <a href=\"https://www.apache.org/licenses/\">Apache License, Version 2.0</a><br/>" +
+            "· <a href=\"http://www.xbill.org/dnsjava/\">dnsjava</a> – <a href=\"http://www.xbill.org/dnsjava/dnsjava-current/LICENSE\">BSD License</a><br/>" +
             "· <a href=\"https://github.com/mangstadt/ez-vcard\">ez-vcard</a> – <a href=\"http://opensource.org/licenses/BSD-3-Clause\">New BSD License</a><br/>" +
             "· <a href=\"https://github.com/ical4j/ical4j\">iCal4j</a> – <a href=\"https://github.com/ical4j/ical4j/blob/master/LICENSE\">New BSD License</a><br/>" +
             "· <a href=\"https://github.com/ge0rg/MemorizingTrustManager\">MemorizingTrustManager</a> – <a href=\"https://raw.githubusercontent.com/ge0rg/MemorizingTrustManager/master/LICENSE.txt\">MIT License</a><br/>" +
-            "· <a href=\"https://square.github.io/okhttp/\">okhttp</a> – <a href=\"https://square.github.io/okhttp/#license\">Apache License, Version 2.0</a>" +
+            "· <a href=\"https://square.github.io/okhttp/\">okhttp</a> – <a href=\"https://square.github.io/okhttp/#license\">Apache License, Version 2.0</a><br/>" +
             "· <a href=\"https://projectlombok.org/\">Project Lombok</a> – <a href=\"http://opensource.org/licenses/mit-license.php\">MIT License</a><br/>" +
             "· <a href=\"https://commons.apache.org/\">SLF4j</a> (Simple Logging Facade for Java) – <a href=\"http://www.slf4j.org/license.html\">MIT License</a>";
 
