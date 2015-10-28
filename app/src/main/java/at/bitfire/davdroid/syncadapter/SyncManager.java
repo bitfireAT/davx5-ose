@@ -113,7 +113,7 @@ abstract public class SyncManager {
             if (settings.logToExternalFile())
                 log = new ExternalFileLogger(context, "davdroid-SyncManager-" + account.name + "-" + authority + ".txt", settings.logVerbose());
         } catch(IOException e) {
-            log.error("Couldn't log to external file", e);
+            Constants.log.error("Couldn't log to external file", e);
         }
         if (log == null)
             log = Constants.log;
