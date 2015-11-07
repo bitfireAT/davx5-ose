@@ -11,6 +11,7 @@
   <string name="main_manage_accounts">Управление учётными данными синхронизации</string>
   <string name="main_show_debug_info">Показать информацию отладки</string>
   <string name="main_welcome">Добро пожаловать в DAVdroid/%s!</string>
+  <string name="main_translation_info">Перевод на русский язык vasp@zabmail.ru.</string>
   <string name="main_used_libraries_heading">DAVdroid использует эти библиотеки (в алфавитном порядке)</string>
   <!--AddAccountActivity-->
   <string name="login_type_email">Вход по адресу email</string>
@@ -79,12 +80,15 @@
   <string name="settings_log_verbose_on">Записывать в журнал информацию о синхронизации и сетевом траффике</string>
   <string name="settings_log_verbose_off">Записывать в журнал только информацию о синхронизации</string>
   <string name="settings_android_update_title">Обновление версии Android</string>
+  <string name="settings_android_update_description">Обновление версии Android может повлиять на то как работает DAVdroid. Если возникли какие-либо проблемы, удалите учётные записи DAVdroid, и добавьте их снова.</string>
   <string name="settings_version_update_title">Настройки были обновлены</string>
+  <string name="settings_version_update_description">Внутренние настройки были обновлены. Если существуют какие либо проблемы, пожалуйста удалите DAVdroid и установите его снова.</string>
   <string name="setup_resource_detection">Определение ресурсов</string>
   <string name="setup_no_collections_found">Контакты или календари не найдены</string>
   <string name="setup_view_logs">Просмотр журналов</string>
   <string name="setup_add_account">Добавить аккаунт</string>
   <string name="setup_querying_server">Опрашиваем сервер. Пожалуйста подождите…</string>
+  <string name="setup_install_apps_info">Чистый Android не поддерживает списки to-do (в отличии от календарей и контактов)</string>
   <string name="setup_what_to_sync">Какие коллекции будут синхронизироваться?</string>
   <string name="setup_address_books">Контакты</string>
   <string name="setup_calendars">Календари</string>
@@ -95,6 +99,7 @@
   <string name="setup_account_details">Данные аккаунта</string>
   <string name="setup_account_name">Имя аккаунта:</string>
   <string name="setup_account_name_hint">Мой аккаунт CalDAV/CardDAV</string>
+  <string name="setup_account_name_info">Используйте ваш адрес электронной почты как имя учётной записи. Система Android использует это имя как поле ОРГАНИЗАТОР для событий кторые вы создаёте. Вы не можете иметь две учётных записи с одинаковым именем.</string>
   <string name="setup_read_only">только чтение</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>

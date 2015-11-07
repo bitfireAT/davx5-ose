@@ -18,7 +18,7 @@ android {
         targetSdkVersion 22
 
         versionCode 83
-        versionName "0.9.1"
+        versionName "0.9.1-beta1"
 
         buildConfigField "java.util.Date", "buildTime", "new java.util.Date()"
     }

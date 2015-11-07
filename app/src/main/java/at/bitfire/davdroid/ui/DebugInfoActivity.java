@@ -89,7 +89,7 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
                 sendIntent.putExtra(Intent.EXTRA_TEXT, report);
             }
 
-            startActivityForResult(sendIntent, 0);
+            startActivity(sendIntent);
         }
     }
 

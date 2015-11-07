@@ -11,6 +11,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.OkHttpClient;
 
 import org.slf4j.Logger;
 import org.xbill.DNS.Lookup;
@@ -45,6 +46,7 @@ import at.bitfire.dav4android.property.CurrentUserPrivilegeSet;
 import at.bitfire.dav4android.property.DisplayName;
 import at.bitfire.dav4android.property.ResourceType;
 import at.bitfire.dav4android.property.SupportedCalendarComponentSet;
+import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.HttpClient;
 import lombok.NonNull;
 
@@ -356,7 +358,7 @@ public class DavResourceFinder {
 
             CalendarColor calendarColor = (CalendarColor)dav.properties.get(CalendarColor.NAME);
             if (calendarColor != null)
-            color = calendarColor.color;
+                color = calendarColor.color;
         }
 
         return new ServerInfo.ResourceInfo(
