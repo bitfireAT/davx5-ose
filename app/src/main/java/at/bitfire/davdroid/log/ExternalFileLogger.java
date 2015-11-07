@@ -10,6 +10,8 @@ package at.bitfire.davdroid.log;
 
 import android.content.Context;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +26,9 @@ public class ExternalFileLogger extends CustomLogger implements Closeable {
         if (dir == null)
             throw new IOException("External media not available for log creation");
 
-        File log = new File(dir, name = fileName);
+        name = StringUtils.remove(StringUtils.remove(fileName, File.pathSeparatorChar), File.separatorChar);
+
+        File log = new File(dir, name);
         writer = new PrintWriter(log);
     }
 
