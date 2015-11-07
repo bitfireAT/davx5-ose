@@ -9,6 +9,7 @@
 package at.bitfire.davdroid.ui;
 
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
@@ -16,11 +17,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -28,6 +29,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -37,6 +39,7 @@ import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.syncadapter.AccountSettings;
 
 public class DebugInfoActivity extends Activity implements LoaderManager.LoaderCallbacks<String> {
     public static final String
@@ -74,8 +77,9 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
             sendIntent.putExtra(Intent.EXTRA_SUBJECT, "DAVdroid Exception Details");
 
             try {
-                File reportFile = reportFile();
-                FileWriter writer = new FileWriter(reportFile());
+                File reportFile = File.createTempFile("davdroid-debug", ".txt", getExternalCacheDir());
+                Constants.log.debug("Writing debug info to " + reportFile.getAbsolutePath());
+                FileWriter writer = new FileWriter(reportFile);
                 writer.write(report);
                 writer.close();
 
@@ -87,15 +91,6 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
 
             startActivityForResult(sendIntent, 0);
         }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        reportFile().delete();
-    }
-
-    File reportFile() {
-        return new File(getExternalCacheDir(), "error-report.txt");
     }
 
 
@@ -179,11 +174,6 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
                 String installedFrom = pm.getInstallerPackageName(BuildConfig.APPLICATION_ID);
                 if (TextUtils.isEmpty(installedFrom))
                     installedFrom = "APK (directly)";
-                else {
-                    PackageInfo installer = pm.getPackageInfo(installedFrom, PackageManager.GET_META_DATA);
-                    if (installer != null)
-                        installedFrom = pm.getApplicationLabel(installer.applicationInfo).toString();
-                }
                 boolean workaroundInstalled = false;
                 try {
                     workaroundInstalled = pm.getPackageInfo("at.bitfire.davdroid.jbworkaround", 0) != null;
@@ -200,25 +190,25 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
 
             report.append(
                     "CONFIGURATION\n" +
-                            "System-wide synchronization: " + (ContentResolver.getMasterSyncAutomatically() ? "automatically" : "manually") + "\n\n"
+                            "System-wide synchronization: " + (ContentResolver.getMasterSyncAutomatically() ? "automatically" : "manually") + "\n"
             );
-            /* TODO
             AccountManager accountManager = AccountManager.get(getContext());
-            for (Account acc : accountManager.getAccountsByType(Constants.ACCOUNT_TYPE)) {
+            for (Account acct : accountManager.getAccountsByType(Constants.ACCOUNT_TYPE)) {
+                AccountSettings settings = new AccountSettings(getContext(), acct);
                 report.append(
-                        "  Account: " + acc.name + "\n" +
-                                "    Address book synchronization: " + syncStatus(acc, ContactsContract.AUTHORITY) + "\n" +
-                                "    Calendar     synchronization: " + syncStatus(acc, CalendarContract.AUTHORITY) + "\n" +
-                                "    OpenTasks    synchronization: " + syncStatus(acc, "org.dmfs.tasks") + "\n"
-                );
-            }*/
+                        "Account: " + acct.name + "\n" +
+                                "  Address book sync. interval: " + syncStatus(settings, ContactsContract.AUTHORITY) + "\n" +
+                                "  Calendar     sync. interval: " + syncStatus(settings, CalendarContract.AUTHORITY) + "\n" +
+                                "  OpenTasks    sync. interval: " + syncStatus(settings, "org.dmfs.tasks") + "\n"
+                        );
+            }
             report.append("\n");
 
             try {
                 report.append(
                         "SYSTEM INFORMATION\n" +
                                 "Android version: " + Build.VERSION.RELEASE + " (" + Build.DISPLAY + ")\n" +
-                                "Device: " + Build.MANUFACTURER + " / " + Build.MODEL + " (" + Build.DEVICE + ")\n\n"
+                                "Device: " + WordUtils.capitalize(Build.MANUFACTURER) + " " + Build.MODEL + " (" + Build.DEVICE + ")\n\n"
                 );
             } catch (Exception ex) {
                 Constants.log.error("Couldn't get system details", ex);
@@ -227,9 +217,10 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
             return report.toString();
         }
 
-        protected String syncStatus(Account account, String authority) {
-            return ContentResolver.getIsSyncable(account, authority) > 0 ?
-                    (ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY) ? "automatically" : "manually") :
+        protected String syncStatus(AccountSettings settings, String authority) {
+            Long interval = settings.getSyncInterval(authority);
+            return interval != null ?
+                    (interval == AccountSettings.SYNC_INTERVAL_MANUALLY ? "manually" : interval/60 + " min") :
                     "—";
         }
     }
