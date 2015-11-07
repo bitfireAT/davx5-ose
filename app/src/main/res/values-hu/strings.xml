@@ -4,9 +4,52 @@
   <string name="app_name">DAVdroid</string>
   <string name="help">Súgó</string>
   <string name="next">Tovább</string>
+  <string name="please_wait">Kérjük, várjon!</string>
+  <string name="send">Küldés</string>
   <string name="skip">Kihagy</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Szinkronizációs fiókok kezelése</string>
+  <string name="main_show_debug_info">Hibakeresési információ megtekintése</string>
+  <string name="main_fdroid_donation_html"><![CDATA[
+<p>Örülünk, hogy letöltötte a DAVdroid alkalmazást az F-Droid-ról.  A DAVdroid fejlesztése nem könnyű feladat és már eddig is sok ezer órát emésztett fel.
+<strong>Ha elégedett a DAVdroid-dal, kérjük, fontolja meg <a href=\"https://davdroid.bitfire.at/donate\">a fejlesztés támogatását</a>.</strong></p>
+]]></string>
+  <string name="main_play_workaround_html"><![CDATA[
+<p>Köszönjük, hogy megvásárolta a DAVdroid alkalmazást a Google Play áruházban, támogatva ezzel a projektet.  Sajnos, a Google Play áruházzal két probléma is van, amikről az alábbi linkeken talál további információt.</p>
+<p>
+<a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-reboot\">1.  A fiókok az eszköz újraindítása után eltűnhetnek</a>.  Érintett eszközök: egyes Android 4.1 és 4.2 alapú eszközök (például legtöbb Samsung eszköz), de adott esetben mások is.  A legtöbb újabb eszköz nem érintett.<br/>
+<a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-updating\">2. A fiókok a DAVdroid frissítése után eltűnhetnek</a>.  Érintett eszközök: egyes Android 4.4.2 alapú eszköz (például Nexus eszközök és a Moto G), de adott esetben mások is. A legtöbb újabb eszköz nem érintett.
+</p>
+<p><strong>Ha ilyen problémát tapasztal, kérjük telepítse a <a href=\"market://details?id=at.bitfire.davdroid.jbworkaround\">DAVdroid JB Workaround</a> segédalkalmazást.</strong></p>
+]]></string>
+  <string name="main_welcome">Üdvözöljük a DAVdroid/%s felhasználók között!</string>
+  <string name="main_what_is_davdroid_html"><![CDATA[
+<p>DAVdroid egy Android 4+ CalDAV/CardDAV szinkronizációs adapter. Használatához hozzon létre egy DAVdroid fiókot a használni kívánt CalDAV/CardDav szerverhez.  Ezt követően a névjegyek és események szinkronizálva lesznek, mindkét irányban.</p>
+<p>További információkat a <a href=\"http://davdroid.bitfire.at?pk_campai
+gn=davdroid-app&amp;pk_kwd=main-activity\">DAVdroid honlap</a> tartalmaz.
+A DAVdroid tiszteletben tartja adatait bizalmasságát, részleteket az <a href=\"http://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp
+;pk_kwd=main-activity\">adatkezelési nyilatkozat</a> tartalmaz.</p>
+]]>
+
+
+</string>
+  <string name="main_how_to_setup_html"><![CDATA[
+<p><b>Konfiguráció</b></p>
+<p>DAVdroid minden a szabványokhoz igazodó CalDAV/CardDAV szolgáltatást törekszik támogatni. A tesztelt szolgáltatások listáját és a szükséges konfigurációs beállításokat, valamint TLS és tanúsítványok használatára vonatkozó információkat a <a href=\"https://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">beállítások</a> oldalon találhat.</p>
+]]></string>
+  <string name="main_support_html"><![CDATA[<p><b>Támogatás</b></p>
+<p><b>Probléma esetén először a <a href=\"https://davdroid.bitfire.at/faq?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">gyakori kérdések</a> oldal tanulmányozását javasoljuk.  Ha itt nincs megoldás, a <a href=\"https://davdroid.bitfire.at/forums?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">DAVdroid fórum</a>ot érdemes felkeresni.
+Az áruházak oldalain való lepontozással viszont kérjük ne fenyegetőzzön, fölösleges és hangulatromboló.</p>
+]]></string>
+  <string name="main_open_source_disclaimer_html"><![CDATA[<p><b>Nyílt forráskód</b></p>
+<p>A DAVdroid kezdettől fogva nyílt forráskódú projekt.  Bármikor lehetősége van az alkalmazást lefordítani és használni, mindenféle kötelezettség nélkül.  A <a href=\"https://davdroid.bitfire.at/source?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">forráskód letölthető</a>, a lefordított <a href=\"https://f-droid.org/app/at.bitfire.davdroid\">alkalmazás pedig elérhető az F-Droid-ról</a>.</p></p>
+]]></string>
+  <string name="main_license_html"><![CDATA[<p><b>Licenc</b></p>
+<p>Copyright © 2013 – 2015 Ricki Hirner, Bernhard Stockmann (<a href=\"https://www.bitfire.at\">bitfire web engineering</a>).
+Minden jog fenntartva.  Ez a program és a kapcsolódó anyagok a GNU Public License v3.0 hatálya alatt állnak, amely részét képezi a jelen csomagnak, és amely elérhető a <a href=\"http://www.gnu.org/licenses/gpl.html\">http://www.gnu.org/licenses/gpl.html</a> oldalon. Amennyiben a Google Play, Samsung Store vagy Amazon Appstore áruház eltérő feltételeket szab, akkor annak az áruháznak a szabályai irányadóak, ahonnan az alkalmazást letöltötte.</p>
+]]></string>
+  <string name="main_translation_info">Az angol és német nyelven kívül a fordításokat önkénteseink készítették, akiknek a neve megtalálható az adott nyelvi verzióban.</string>
+  <string name="main_used_libraries_heading">Harmadik felek által fejlesztett programcsomagok (alfabetikus sorrendben)</string>
   <!--AddAccountActivity-->
   <string name="login_type_email">Bejelentkezés email cím segítségével</string>
   <string name="login_type_email_description">A szolgáltatás részleteinek automatikus detektálása a tartománynév alapján történik. Példa: myaccount@icloud.com</string>
@@ -63,6 +106,23 @@
     <item>4 óránként</item>
     <item>Naponta</item>
   </string-array>
+  <string name="settings_debug">Hi+++++ba keresés</string>
+  <string name="settings_security_warning">Potenciális biztonsági kockázat!</string>
+  <string name="settings_log_to_external_file">Naplózás fájlba</string>
+  <string name="settings_log_to_external_file_confirmation">A naplófájl tartalmazni fog bizalmas adatokat és azok elérhetők lesznek más alkalmazások számára.  Kapcsolja ki ezt az opciót és törölje a fájlt, ha nincs már szüksége rá.</string>
+  <string name="settings_log_to_external_file_on">Naplózás ide: %s (ha lehetséges)</string>
+  <string name="settings_log_to_external_file_no_external_storage">Tárhely nem elérhető</string>
+  <string name="settings_log_to_external_file_off">Naplózás ADB-be</string>
+  <string name="settings_log_verbose">Részletes naplózás</string>
+  <string name="settings_log_verbose_on">Szinkronizációs információ és hálózati forgalom naplózása</string>
+  <string name="settings_log_verbose_off">Csak szinkronizációs információ naplózása</string>
+  <string name="settings_android_update_title">Android frissítése</string>
+  <string name="settings_android_update_description">Az Android frissítése befolyásolhatja a DAVdroid működését.  Ha problémát észlel, kérjük törölje a DAVdroid fiókot és hozza létre újra.</string>
+  <string name="settings_version_update_title">A beállítások módosítva lettek</string>
+  <string name="settings_version_update_description">A beállítások módosítva lettek.  Ha esetleg problémát észlel, kérjük próbálkozzon a DAVdroid alkalmazás törlésével és újratelepítésével.</string>
+  <string name="setup_resource_detection">Szolgáltatások felderítése</string>
+  <string name="setup_no_collections_found">Se címjegyzéket, se naptárat nem sikerült azonosítani.</string>
+  <string name="setup_view_logs">Naplóbejegyzések megtekintése</string>
   <string name="setup_add_account">Fiók hozzáadása</string>
   <string name="setup_querying_server">Kapcsolódás a szerverhez. Egy pillanat…</string>
   <string name="setup_install_apps_info">Az Android rendszer önmagában nem támogatja a feladatlistákat (ellentétben a naptárakkal és címjegyzékekkel).</string>
@@ -88,6 +148,28 @@
   <string name="setup_account_details">További beállítások</string>
   <string name="setup_account_name">A fiók neve:</string>
   <string name="setup_account_name_hint">CalDAV/CardDAV fiók</string>
+  <string name="setup_account_name_info">Használja az email címet fióknévként, mert később a létrehozandó események szervezőjeként (ORGANIZER mező) az Android ezt fogja használni. Két fiókot nem lehet azonos néven létrehozni.</string>
   <string name="setup_read_only">csak olvasható</string>
   <!--sync errors and DebugInfoActivity-->
+  <string name="debug_info_title">Hibakeresési információ</string>
+  <string name="sync_error_calendar">A naptár szinkronizálása nem sikerült (%s)</string>
+  <string name="sync_error_contacts">A címjegyzék szinkronizálása nem sikerült (%s)</string>
+  <string name="sync_error_tasks">A feladatok szinkronizálása nem sikerült (%s)</string>
+  <string name="sync_error">Hiba az alábbi művelet közben: %s</string>
+  <string name="sync_error_http_dav">Szerver oldali hiba az alábbi művelet közben: %s</string>
+  <string name="sync_error_local_storage">Adatbázishiba az alábbi művelet közben: %s</string>
+  <string-array name="sync_error_phases">
+    <item>felkészülés a szinkronizálásra</item>
+    <item>szolgáltatások keresése</item>
+    <item>a helyben törölt bejegyzések feldolgozása</item>
+    <item>az új vagy módosított bejegyzések összegyűjtése</item>
+    <item>az új vagy módosított bejegyzések feltöltése</item>
+    <item>a szinkronizációs állapot ellenőrzése</item>
+    <item>helyi bejegyzések listázása</item>
+    <item>távoli bejegyzések listázása</item>
+    <item>helyi és távoli bejegyzések összehasonlítása</item>
+    <item>távoli bejegyzések letöltése</item>
+    <item>szinkronizációs állapot mentése</item>
+  </string-array>
+  <string name="sync_error_unauthorized">A felhasználónév vagy jelszó hibás</string>
 </resources>

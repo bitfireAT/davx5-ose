@@ -76,8 +76,6 @@ public class TasksSyncManager extends SyncManager {
 
     @Override
     protected void prepare() {
-        Thread.currentThread().setContextClassLoader(context.getClassLoader());     // required for ical4j
-
         collectionURL = HttpUrl.parse(localTaskList().getSyncId());
         davCollection = new DavCalendar(log, httpClient, collectionURL);
     }
@@ -87,18 +85,19 @@ public class TasksSyncManager extends SyncManager {
         davCollection.propfind(0, DisplayName.NAME, CalendarColor.NAME, GetCTag.NAME);
 
         // update name and color
+        log.info("Setting task list name and color (if available)");
+        ContentValues values = new ContentValues(2);
+
         DisplayName pDisplayName = (DisplayName)davCollection.properties.get(DisplayName.NAME);
-        String displayName = (pDisplayName != null && !TextUtils.isEmpty(pDisplayName.displayName)) ?
-                pDisplayName.displayName : collectionURL.toString();
+        if (pDisplayName != null && !TextUtils.isEmpty(pDisplayName.displayName))
+            values.put(TaskLists.LIST_NAME, pDisplayName.displayName);
 
         CalendarColor pColor = (CalendarColor)davCollection.properties.get(CalendarColor.NAME);
-        int color = (pColor != null && pColor.color != null) ? pColor.color : LocalCalendar.defaultColor;
+        if (pColor != null && pColor.color != null)
+            values.put(TaskLists.LIST_COLOR, pColor.color);
 
-        ContentValues values = new ContentValues(2);
-        log.info("Setting new task list name \"" + displayName + "\" and color 0x" + Integer.toHexString(color));
-        values.put(TaskLists.LIST_NAME, displayName);
-        values.put(TaskLists.LIST_COLOR, color);
-        localTaskList().update(values);
+        if (values.size() > 0)
+            localTaskList().update(values);
     }
 
     @Override
