@@ -12,7 +12,7 @@
   <string name="main_show_debug_info">Debug-Info anzeigen</string>
   <string name="main_fdroid_donation_html"><![CDATA[
 <p>Es freut uns, dass Sie DAVdroid über F-Droid geladen haben. In der Entwicklung von DAVdroid stecken bereits tausende Stunden harter Arbeit und wir entwickeln die App ständig weiter.
-<strong>Wenn Ihnen DAVdroid gefällt, freuen wir uns über <a href=\"https://davdroid.bitfire.at/donate\">Spenden!</a>.</strong></p>
+<strong>Wenn Ihnen DAVdroid gefällt, freuen wir uns über <a href=\"https://davdroid.bitfire.at/donate\">Spenden!</a></strong></p>
 ]]></string>
   <string name="main_play_workaround_html"><![CDATA[
 <p>Vielen Dank für den Kauf von DAVdroid über Google Play und Ihre Unterstützung! Leider gibt es zwei Play-Store-Bugs, die Sie möglicherweise betreffen könnten. Klicken Sie weitere Details auf den jeweiligen Link.</p>
@@ -22,7 +22,7 @@
 ]]></string>
   <string name="main_welcome">Willkommen bei DAVdroid/%s!</string>
   <string name="main_what_is_davdroid_html"><![CDATA[
-<p>DAVdroid ist ein Android 4+-Synchronisations-Adapter für CalDAV/CardDAV. Um es zu nutzen, müssen Sie ein neues Konto für DAVdroid anlegen, um eine Verbindung zu Ihrem CalDAV/CardDAV-Server herzustellen. Danach werden Kontakte/Kalender/Aufgaben in beide Richtungen synchronisiert.</p>
+<p>DAVdroid ist ein Android 4+-Synchronisations-Adapter für CalDAV/CardDAV. Legen Sie ein neues Konto für DAVdroid an, um eine Verbindung zu Ihrem CalDAV/CardDAV-Server herzustellen. Danach werden Kontakte/Kalender/Aufgaben in beide Richtungen synchronisiert.</p>
 <p>Weitere Informationen finden Sie auf der <a href=\"https://davdroid.bitfire.at/?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">DAVdroid-Homepage</a>.
 DAVdroid respektiert Ihre Privatsphäre, siehe unsere <a href=\"https://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">Datenschutzerklärung</a>.</p>
 ]]></string>
@@ -38,11 +38,11 @@ DAVdroid respektiert Ihre Privatsphäre, siehe unsere <a href=\"https://davdroid
        Bitte versuchen Sie nicht uns mit Negativ-Bewertungen in den Stores zu erpressen, falls etwas nicht funktionieren sollte (es ist zwecklos und demotivierend zugleich). Danke!</p>
     ]]></string>
   <string name="main_open_source_disclaimer_html"><![CDATA[<p><b>Open-Source</b></p>
-	   <p>DAVdroid wurde von der ersten Stunde an als Open-Source-Projekt entwickelt. Es ist – und wird immer möglich sein – die App auch selbst zu kompilieren, zu nutzen und es steht Ihnen frei Änderungen vorzunehmen. Der <a href=\"https://davdroid.bitfire.at/source?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">Quellcode ist verfügbar</a> und Sie können die App <a href=\"https://f-droid.org/app/at.bitfire.davdroid\">über F-Droid beziehen</a>.</p></p>
+	   <p>DAVdroid wurde von der ersten Stunde an als Open-Source-Projekt entwickelt. Es ist möglich – und wird immer möglich sein – die App auch selbst zu kompilieren, frei im Sinne der GPL zu nutzen und Änderungen vorzunehmen. Der <a href=\"https://davdroid.bitfire.at/source?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">Quellcode ist verfügbar</a> und Sie können die App <a href=\"https://f-droid.org/app/at.bitfire.davdroid\">über F-Droid beziehen</a>.</p></p>
 ]]></string>
   <string name="main_license_html"><![CDATA[<p><b>Lizenz</b></p>
 	   <p>Copyright © 2013 – 2015 Ricki Hirner, Bernhard Stockmann (<a href=\"https://www.bitfire.at\">bitfire web engineering</a>).
-Dieses Programm ist freie Software. Sie können es unter den Bedingungen der GNU General Public License v3, wie von der Free Software Foundation veröffentlicht, weitergeben und/oder modifizieren: <a href=\"http://www.gnu.org/licenses/gpl.html\">http://www.gnu.org/licenses/gpl.html</a>. Sofern Google Play, Samsung Store oder der Amazon Appstore andere Auflagen benötigen gelten diese für die Version im jeweiligen Store.</p>
+Dieses Programm ist freie Software. Sie können es unter den Bedingungen der <a href=\"http://www.gnu.org/licenses/gpl.html\">GNU General Public License Version 3</a>, wie von der Free Software Foundation veröffentlicht, weitergeben und/oder modifizieren. Sofern kommerzielle App Stores, in denen DAVdroid erhältlich ist, andere Auflagen benötigen, gelten diese für die Version im jeweiligen App-Store.</p>
 	]]></string>
   <string name="main_translation_info">Alle Übersetzungen (außer Englisch und Deutsch) wurden von engagierten Helfer*innen zur Verfügung gestellt. Informationen dazu finden sich in der jeweiligen Sprachversion.</string>
   <string name="main_used_libraries_heading">DAVdroid verwendet folgende Bibliotheken (in alphabetischer Reihenfolge):</string>

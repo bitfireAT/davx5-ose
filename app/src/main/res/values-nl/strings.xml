@@ -4,8 +4,62 @@
   <string name="app_name">DAVdroid</string>
   <string name="help">Help</string>
   <string name="next">Volgende</string>
+  <string name="please_wait">Even geduld</string>
+  <string name="send">Verzenden</string>
+  <string name="skip">Overslaan</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Beheer sync accounts</string>
+  <string name="main_show_debug_info">Debug info weergeven</string>
+  <string name="main_fdroid_donation_html"><![CDATA[
+<p>We zijn blij dat je DAVdroid van F-Droid gedownload hebt. Het ontwikkelen van DAVdroid is hard werk en neemt
+duizenden uren in beslag. <strong>Als je van DAVdroid leuk vind overweeg dan <a href=\"https://davdroid.bitfire.at/donate\">een donatie</a>.</strong></p>
+]]></string>
+  <string name="main_play_workaround_html"><![CDATA[
+⇥⇥<p>Bedankt voor het kopen van DAVdroid in de Google Play store. Helaas zijn er 2 Google Play Bugs
+⇥⇥die u aan kunnen gaan. Klik op de link hieronder voor de gegevens.</p>
+⇥⇥
+⇥⇥<p><a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-reboot\">1. Accounts kunnen verdwenen zijn na een herstart</a>:
+⇥⇥beïnvloedt Android 4.1, 4.2 bij sommige apparaten (bijvoorbeeld, veel Samsung apparaten ), Mogelijk ook andere apparaten. Meest
+⇥⇥recente Android versies werken goed.<br/>
+
+<a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-updating\">2. Accounts kunnen verdwijnen na het upgraden van DAVdroid</a>:
+beïnvloedt sommige Android 4.4.2 apparaten (bekend bij Nexus toestellen en Moto G), Mogelijk ook andere. Meest recente Android
+versies werken goed.</p>
+
+<p><strong>Als deze problemen zich voor doen, Installeer dan de <a href=\"market://details?id=at.bitfire.davdroid.jbworkaround\">
+DAVdroid JB Workaround</a>.</strong></p>
+]]></string>
+  <string name="main_welcome">Welkom bij DAVdroid/%s!</string>
+  <string name="main_what_is_davdroid_html"><![CDATA[
+<p>DAVdroid is een Android 4+ sync adapter voor CalDAV/CardDAV. Om het te gebruiken, voeg een DAVdroid account toe
+voor uw CalDAV/CardDAV server en uw contacten/afspraken/taken zullen in beide directie gesynchroniseerd worden.</p>
+
+<p>Voor meer informatie: zie de <a href=\"https://davdroid.bitfire.at/?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">DAVdroid homepage</a>.
+DAVdroid respecteerd uw privacy, bekijk ons <a href=\"https://davdroid.bitfire.at/privacy?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">privacy beleid</a>.</p>
+]]></string>
+  <string name="main_how_to_setup_html"><![CDATA[
+<p><b>Hoe te configureren</b></p>
+
+<p>DAVdroid wil alle aan de standaard houdende CalDAV/CardDAV diensten ondersteunen. Om een lijst te bekijken van geteste diensten en 
+setup informatie, samen met informatie over TLS en certificaten, bekijk onze
+<a href=\"https://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">configuratie pagina</a>.</p>
+]]></string>
+  <string name="main_support_html"><![CDATA[<p><b>Support</b></p>
+<p><b>Als er problemn zijn, bezoek de <a href=\"https://davdroid.bitfire.at/faq?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">Veelgestelde vragen</a> eerst. Voor assistentie en DAVdroid-gerelateerde onderwerpen, bezoek dan onze
+<a href=\"https://davdroid.bitfire.at/forums?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">DAVdroid forums</a>.</b>
+Maar alsjeblief chanteer ons niet met slechte ratings in de stores (Het is nietig voor beide partijen).</p>
+]]></string>
+  <string name="main_open_source_disclaimer_html"><![CDATA[<p><b>Open source</b></p>
+⇥ <p>DAVdroid is vanaf het begin ontworpen om een open source project te zijn. Het is altijd mogelijk om de applicatie zelf te compileren en het gratis zonder verplichtingen te gebruiken. De
+⇥ <a href=\"https://davdroid.bitfire.at/source?pk_campaign=davdroid-app&amp;pk_kwd=main-activity\">broncode is
+⇥ beschikbaar</a>, en je kunt <a href=\"https://f-droid.org/app/at.bitfire.davdroid\">de app op F-Droid downloaden</a>.</p></p>
+]]></string>
+  <string name="main_license_html"><![CDATA[<p><b>Licentie</b></p>
+⇥ <p>Copyright © 2013 – 2015 Ricki Hirner, Bernhard Stockmann (<a href=\"https://www.bitfire.at\">bitfire web engineering</a>).
+⇥ Alle rechten voorbehouden. Dit programma en de bijbehorende materialen worden onder de voorwaarden van de GNU Public License 3.0 beschikbaar gesteld. beschikbaar op <a href=\"http://www.gnu.org/licenses/gpl.html\">http://www.gnu.org/licenses/gpl.html</a>. Voor zover Google Play, Samsung Store of Amazon Appstore andere voorwaarden vereisen, zijn de desbetreffende voorwaarde alleen van toepassing op versies die zijn gedownload met behulp van deze dienst.</p>
+⇥]]></string>
+  <string name="main_translation_info">Vertalingen in een andere taal als Engels en Duits zijn bijgedragen door verschillende mensen die benoemt worden hun desbetreffende taal.</string>
+  <string name="main_used_libraries_heading">DAVdroid gebruikt deze libraries (alfabetische volgorde)</string>
   <!--AddAccountActivity-->
   <string name="login_type_email">Inloggen met e-mailadres</string>
   <string name="login_type_email_description">Account details kunnen automatisch gevonden worden via de domeinnaam. Bijvoorbeeld: mijnaccount@icloud.com</string>
@@ -40,6 +94,7 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Elke %d minuten + meteen na wijziging</string>
   <string name="settings_sync_summary_not_available">Niet beschikbaar</string>
   <string name="settings_sync_interval_calendars">Agenda\'s verversen</string>
+  <string name="settings_sync_interval_tasks">Taak sync. tussentijd</string>
   <string-array name="settings_sync_interval_seconds">
     <item>-1</item>
     <item>300</item>
@@ -60,16 +115,68 @@
     <item>Elke 4 uur</item>
     <item>Dagelijks</item>
   </string-array>
+  <string name="settings_debug">Debuggen</string>
+  <string name="settings_security_warning">Mogelijk beveiligingsrisico!</string>
+  <string name="settings_log_to_external_file">Loggen naar extern bestand</string>
+  <string name="settings_log_to_external_file_confirmation">Externe log bestanden zullen privé informatie bevatten en zijn toegankelijk voor andere apps. Zet extern loggen uit en verwijder de logs na het gebruik.</string>
+  <string name="settings_log_to_external_file_on">Logs worden geschreven naar %s (als mogelijk)</string>
+  <string name="settings_log_to_external_file_no_external_storage">Externe opslag is niet beschikbaar</string>
+  <string name="settings_log_to_external_file_off">Logs worden geschreven naar ADB</string>
+  <string name="settings_log_verbose">Uitgebreid loggen</string>
+  <string name="settings_log_verbose_on">Log synchronisatie informatie en netwerk verkeer</string>
+  <string name="settings_log_verbose_off">Log alleen synchronisatie informatie</string>
+  <string name="settings_android_update_title">Android versie update</string>
+  <string name="settings_android_update_description">Versie updates van Android kunnen impact hebben op hoe DAVdroid werkt.Als er problemen zijn, verwijder dan uw DAVdroid accounts en voeg deze opnieuw toe.</string>
+  <string name="settings_version_update_title">Instellingen zijn bijgewerkt</string>
+  <string name="settings_version_update_description">Interne instellingen zijn bijgewerkt. Als er problemen zijn, verwijder dan DAVdroid en installeer deze opnieuw.</string>
+  <string name="setup_resource_detection">Bron herkenning</string>
+  <string name="setup_no_collections_found">Er zijn geen adresboeken of agenda\'s gevonden.</string>
+  <string name="setup_view_logs">Bekijk logs</string>
   <string name="setup_add_account">Account toevoegen</string>
   <string name="setup_querying_server">Gegevens worden aangevraagd. Even geduld…</string>
+  <string name="setup_install_apps_info">Een kale Android ondersteund geen taken lijsten (naast contacten en agenda\'s).</string>
+  <string name="setup_install_tasks_app_html"><![CDATA[
+<p>DAVdroid kan taken synchroniseren met de <a href=\"market://details?id=org.dmfs.tasks\">Taken app</a> (door Marten Gajda).</p>
+<p>Door een <a href=\"https://code.google.com/p/android/issues/detail?id=25906\">Android bug</a>, <b>moet de Taken app geïnstalleerd zijn
+voor het installeren van DAVdroid</b> (anders kan DAVdroid geen rechten krijgen voor de Taken opslag).</p>
+<p>Als je taken wilt synchroniseren:</p>
+<p>1. Installeer de Taken app.<br/>
+2. Her-installeer DAVdroid (Om toegang tot de taken opslag te krijgen). De-installeren van DAVdroid zal al uw DAVdroid accounts en niet-gesynchroniseerde data verwijderen.<br/>
+3. Voeg uw DAVdroid account opnieuw toe.</p>
+<p>Anders, kun je deze stap overslaan.</p>
+]]></string>
   <string name="setup_what_to_sync">Welke collecties wilt u synchronizereen ?</string>
   <string name="setup_address_books">Adresboeken</string>
   <string name="setup_calendars">Agenda\'s</string>
+  <string name="setup_task_lists">Takenlijsten</string>
   <string name="setup_select_address_book">Selecteer maximaal 1 adresboek (tap opnieuw om te deselecteren):</string>
   <string name="setup_select_calendars">Selecteer uw agend\'s:</string>
+  <string name="setup_select_task_lists">Selecteer takenlijsten voor synchronisatie:</string>
   <string name="setup_account_details">Account eigenschappen</string>
   <string name="setup_account_name">Account naam:</string>
   <string name="setup_account_name_hint">Mijn CalDAV/CardDAV Account</string>
+  <string name="setup_account_name_info">Gebruik uw email adres als accountnaam, Android gebruikt uw accountnaam als ORGANIZER veld voor de afspraken die u maakt, Er kunnen niet 2 accounts met dezelfde naam zijn.</string>
   <string name="setup_read_only">Alleen lezen</string>
   <!--sync errors and DebugInfoActivity-->
+  <string name="debug_info_title">Debug informatie</string>
+  <string name="sync_error_calendar">Agenda synchronisatie is mislukt (%s)</string>
+  <string name="sync_error_contacts">Adresboek synchronisatie is mislukt (%s)</string>
+  <string name="sync_error_tasks">Taak synchronisatie is mislukt (%s)</string>
+  <string name="sync_error">Fout tijdens %s</string>
+  <string name="sync_error_http_dav">Serverfout tijdens %s</string>
+  <string name="sync_error_local_storage">Database fout tijdens %s</string>
+  <string-array name="sync_error_phases">
+    <item>synchronisatie voorbereiden</item>
+    <item>mogelijkheden opvragen</item>
+    <item>lokaal verwijderde entries verwrken</item>
+    <item>nieuwe/aangepaste entries verwerken</item>
+    <item>nieuwe/aangepaste entries uploaden</item>
+    <item>controleren van sync staat</item>
+    <item>vermelden lokale entries</item>
+    <item>vermelden server entries</item>
+    <item>vergelijken van lokale/server entries</item>
+    <item>downloaden server entries</item>
+    <item>opslaan van sync staat</item>
+  </string-array>
+  <string name="sync_error_unauthorized">Gebruikersnaam/wachtwoord onjuist</string>
 </resources>

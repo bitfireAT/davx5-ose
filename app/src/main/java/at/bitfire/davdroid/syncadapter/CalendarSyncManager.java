@@ -71,8 +71,6 @@ public class CalendarSyncManager extends SyncManager {
 
     @Override
     protected void prepare() {
-        Thread.currentThread().setContextClassLoader(context.getClassLoader());     // required for ical4j
-
         collectionURL = HttpUrl.parse(localCalendar().getName());
         davCollection = new DavCalendar(log, httpClient, collectionURL);
     }
@@ -82,18 +80,19 @@ public class CalendarSyncManager extends SyncManager {
         davCollection.propfind(0, DisplayName.NAME, CalendarColor.NAME, GetCTag.NAME);
 
         // update name and color
+        log.info("Setting calendar name and color (if available)");
+        ContentValues values = new ContentValues(2);
+
         DisplayName pDisplayName = (DisplayName)davCollection.properties.get(DisplayName.NAME);
-        String displayName = (pDisplayName != null && !TextUtils.isEmpty(pDisplayName.displayName)) ?
-                pDisplayName.displayName : collectionURL.toString();
+        if (pDisplayName != null && !TextUtils.isEmpty(pDisplayName.displayName))
+            values.put(Calendars.CALENDAR_DISPLAY_NAME, pDisplayName.displayName);
 
         CalendarColor pColor = (CalendarColor)davCollection.properties.get(CalendarColor.NAME);
-        int color = (pColor != null && pColor.color != null) ? pColor.color : LocalCalendar.defaultColor;
+        if (pColor != null && pColor.color != null)
+            values.put(Calendars.CALENDAR_COLOR, pColor.color);
 
-        ContentValues values = new ContentValues(2);
-        log.info("Setting new calendar name \"" + displayName + "\" and color 0x" + Integer.toHexString(color));
-        values.put(Calendars.CALENDAR_DISPLAY_NAME, displayName);
-        values.put(Calendars.CALENDAR_COLOR, color);
-        localCalendar().update(values);
+        if (values.size() > 0)
+            localCalendar().update(values);
     }
 
     @Override
