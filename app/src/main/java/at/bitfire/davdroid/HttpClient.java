@@ -123,7 +123,7 @@ public class HttpClient extends OkHttpClient {
     }
 
     // for testing (mock server doesn't need auth)
-    protected HttpClient() {
+    public HttpClient() {
         this(null, null, null, null, false);
     }
 

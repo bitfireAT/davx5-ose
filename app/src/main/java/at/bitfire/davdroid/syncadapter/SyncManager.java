@@ -107,6 +107,9 @@ abstract public class SyncManager {
         this.authority = authority;
         this.syncResult = syncResult;
 
+        // required for ical4j and dav4android (ServiceLoader)
+        Thread.currentThread().setContextClassLoader(context.getClassLoader());
+
         // get account settings and log to file (if requested)
         settings = new AccountSettings(context, account);
         try {
