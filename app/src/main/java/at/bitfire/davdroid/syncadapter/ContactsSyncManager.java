@@ -264,7 +264,14 @@ public class ContactsSyncManager extends SyncManager {
         @Override
         public byte[] download(String url, String accepts) {
             HttpUrl httpUrl = HttpUrl.parse(url);
-            HttpClient resourceClient = new HttpClient(log, httpClient, httpUrl.host());
+
+            String host = httpUrl.host();
+            if (host == null) {
+                log.error("External resource URL doesn't specify a host name");
+                return null;
+            }
+
+            HttpClient resourceClient = new HttpClient(log, httpClient, host);
             try {
                 Response response = resourceClient.newCall(new Request.Builder()
                         .get()

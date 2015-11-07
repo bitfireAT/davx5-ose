@@ -25,6 +25,7 @@ import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.ui.settings.SettingsActivity;
 import at.bitfire.davdroid.ui.setup.AddAccountActivity;
+import lombok.Getter;
 
 public class MainActivity extends Activity {
 
@@ -43,12 +44,18 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.main_activity);
-		
+
 		TextView tv = (TextView)findViewById(R.id.text_store_specific);
-        if (installedFrom("org.fdroid.fdroid"))
-            setHtmlText(R.id.text_store_specific, R.string.main_fdroid_donation_html);
-		else if (installedFrom("com.android.vending"))
-            setHtmlText(R.id.text_store_specific, R.string.main_play_workaround_html);
+        final String installedFrom = installedFrom();
+        if (installedFrom != null)
+            switch (installedFrom) {
+                case "com.android.vending":
+                    setHtmlText(R.id.text_store_specific, R.string.main_play_workaround_html);
+                    break;
+                case "org.fdroid.fdroid":
+                    setHtmlText(R.id.text_store_specific, R.string.main_fdroid_donation_html);
+                    break;
+            }
 
         setPlainText(R.id.text_welcome, R.string.main_welcome, BuildConfig.VERSION_NAME);
         setHtmlText(R.id.text_what_is_davdroid, R.string.main_what_is_davdroid_html);
@@ -120,11 +127,11 @@ public class MainActivity extends Activity {
 	}
 	
 	
-	private boolean installedFrom(String packageName) {
+	private String installedFrom() {
 		try {
-			return packageName.equals(getPackageManager().getInstallerPackageName("at.bitfire.davdroid"));
+			return getPackageManager().getInstallerPackageName("at.bitfire.davdroid");
 		} catch(IllegalArgumentException e) {
-            return false;
+            return null;
 		}
 	}
 }
