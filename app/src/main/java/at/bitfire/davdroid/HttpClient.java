@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.CookieManager;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -67,6 +68,10 @@ public class HttpClient extends OkHttpClient {
 
         // add User-Agent to every request
         networkInterceptors().add(userAgentInterceptor);
+
+        // add cookie store for non-persistent cookies (some services like Horde use cookies for session tracking)
+        CookieManager cookies = new CookieManager();
+        setCookieHandler(cookies);
 
         // enable verbose logs, if requested
         if (this.log.isTraceEnabled()) {

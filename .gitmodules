@@ -10,3 +10,4 @@
 [submodule "MemorizingTrustManager"]
 	path = MemorizingTrustManager
 	url = https://github.com/ge0rg/MemorizingTrustManager
+	ignore = dirty
