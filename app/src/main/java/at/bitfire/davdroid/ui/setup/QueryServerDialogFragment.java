@@ -20,6 +20,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,29 +50,30 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         ProgressDialog dialog = new ProgressDialog(getActivity());
-        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        setCancelable(false);
+
         dialog.setTitle(R.string.setup_resource_detection);
         dialog.setIndeterminate(true);
         dialog.setMessage(getString(R.string.setup_querying_server));
         return dialog;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        Loader<ServerInfo> loader = getLoaderManager().initLoader(0, getArguments(), this);
+    }
 
-		Loader<ServerInfo> loader = getLoaderManager().initLoader(0, getArguments(), this);
-	}
+    @Override
+    public Loader<ServerInfo> onCreateLoader(int id, Bundle args) {
+        return new ServerInfoLoader(getActivity(), args);
+    }
 
-	@Override
-	public Loader<ServerInfo> onCreateLoader(int id, Bundle args) {
-		return new ServerInfoLoader(getActivity(), args);
-	}
-
-	@Override
+    @Override
     @SuppressLint("CommitTransaction")
-	public void onLoadFinished(Loader<ServerInfo> loader, ServerInfo serverInfo) {
+    public void onLoadFinished(Loader<ServerInfo> loader, ServerInfo serverInfo) {
         if (serverInfo.isEmpty()) {
             // resource detection didn't find anything
             getFragmentManager().beginTransaction()
@@ -78,7 +81,7 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
                     .commitAllowingStateLoss();
 
         } else {
-            ((AddAccountActivity) getActivity()).serverInfo = serverInfo;
+            ((AddAccountActivity)getActivity()).serverInfo = serverInfo;
 
             // resource detection brought some results
             Fragment nextFragment;
@@ -93,12 +96,12 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
                     .commitAllowingStateLoss();
         }
 
-		getDialog().dismiss();
-	}
+        getDialog().dismiss();
+    }
 
-	@Override
-	public void onLoaderReset(Loader<ServerInfo> arg0) {
-	}
+    @Override
+    public void onLoaderReset(Loader<ServerInfo> arg0) {
+    }
 
 
     public static class NothingDetectedFragment extends DialogFragment {
@@ -135,17 +138,17 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
                     .create();
         }
     }
-	
-	static class ServerInfoLoader extends AsyncTaskLoader<ServerInfo> {
-		private static final String TAG = "davdroid.ServerInfoLoader";
-		final Bundle args;
-		final Context context;
-		
-		public ServerInfoLoader(Context context, Bundle args) {
-			super(context);
-			this.context = context;
-			this.args = args;
-		}
+
+    static class ServerInfoLoader extends AsyncTaskLoader<ServerInfo> {
+        private static final String TAG = "davdroid.ServerInfoLoader";
+        final Bundle args;
+        final Context context;
+
+        public ServerInfoLoader(Context context, Bundle args) {
+            super(context);
+            this.context = context;
+            this.args = args;
+        }
 
         @Override
         protected void onStartLoading() {
@@ -153,8 +156,8 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
         }
 
         @Override
-		public ServerInfo loadInBackground() {
-			ServerInfo serverInfo = (ServerInfo)args.getSerializable(KEY_SERVER_INFO);
+        public ServerInfo loadInBackground() {
+            ServerInfo serverInfo = (ServerInfo)args.getSerializable(KEY_SERVER_INFO);
 
             StringLogger logger = new StringLogger("DavResourceFinder", true);
             DavResourceFinder finder = new DavResourceFinder(logger, context, serverInfo);
@@ -174,8 +177,8 @@ public class QueryServerDialogFragment extends DialogFragment implements LoaderC
 
             serverInfo.setLogs(logger.toString());
 
-			return serverInfo;
-		}
-	}
+            return serverInfo;
+        }
+    }
 
 }
