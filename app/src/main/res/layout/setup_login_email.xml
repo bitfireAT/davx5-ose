@@ -50,7 +50,6 @@
             android:id="@+id/password"
             android:layout_gravity="fill_horizontal"
             android:inputType="textPassword"
-            android:imeOptions="actionGo"
             android:layout_width="0dp"
             android:scrollHorizontally="true"
             android:scrollbars="horizontal"
