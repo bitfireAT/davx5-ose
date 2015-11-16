@@ -7,6 +7,7 @@
  */
 package at.bitfire.davdroid.ui.setup;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
@@ -156,7 +157,9 @@ public class LoginURLFragment extends Fragment implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        getActivity().invalidateOptionsMenu();
+        Activity activity = getActivity();
+        if (activity != null)
+            activity.invalidateOptionsMenu();
     }
 
     @Override

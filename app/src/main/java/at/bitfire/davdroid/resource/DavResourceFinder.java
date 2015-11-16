@@ -35,6 +35,7 @@ import at.bitfire.dav4android.DavResource;
 import at.bitfire.dav4android.UrlUtils;
 import at.bitfire.dav4android.exception.DavException;
 import at.bitfire.dav4android.exception.HttpException;
+import at.bitfire.dav4android.exception.NotFoundException;
 import at.bitfire.dav4android.property.AddressbookDescription;
 import at.bitfire.dav4android.property.AddressbookHomeSet;
 import at.bitfire.dav4android.property.CalendarColor;
@@ -413,20 +414,23 @@ public class DavResourceFinder {
             paths.add("/");
         }
 
-        for (String path : paths) {
-            if (!TextUtils.isEmpty(scheme) && !TextUtils.isEmpty(fqdn) && port != null && paths != null) {
-                HttpUrl initialContextPath = new HttpUrl.Builder()
-                        .scheme(scheme)
-                        .host(fqdn).port(port)
-                        .encodedPath(path)
-                        .build();
+        for (String path : paths)
+            try {
+                if (!TextUtils.isEmpty(scheme) && !TextUtils.isEmpty(fqdn) && port != null && paths != null) {
+                    HttpUrl initialContextPath = new HttpUrl.Builder()
+                            .scheme(scheme)
+                            .host(fqdn).port(port)
+                            .encodedPath(path)
+                            .build();
 
-                log.info("Trying to determine principal from initial context path=" + initialContextPath);
-                HttpUrl principal = getCurrentUserPrincipal(initialContextPath);
-                if (principal != null)
-                    return principal;
+                    log.info("Trying to determine principal from initial context path=" + initialContextPath);
+                    HttpUrl principal = getCurrentUserPrincipal(initialContextPath);
+                    if (principal != null)
+                        return principal;
+                }
+            } catch(NotFoundException e) {
+                log.warn("No resource found", e);
             }
-        }
         return null;
     }
 
