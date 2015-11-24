@@ -34,6 +34,7 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
         ServerInfo serverInfo = new ServerInfo(url.uri(), "admin", "12345", true);
         DavResourceFinder finder = new DavResourceFinder(Constants.log, getInstrumentation().getTargetContext().getApplicationContext(), serverInfo);
 
+        // positive test case
         server.enqueue(new MockResponse()
                 .setResponseCode(207)
                 .setHeader("Content-Type", "application/xml;charset=utf-8")
@@ -50,6 +51,18 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
                         "</multistatus>"));
         HttpUrl principal = finder.getCurrentUserPrincipal(url);
         assertEquals(url.resolve("/principals/myself"), principal);
+
+        // negative test case
+        server.enqueue(new MockResponse()
+                .setResponseCode(207)
+                .setHeader("Content-Type", "application/xml;charset=utf-8")
+                .setBody("<multistatus xmlns='DAV:'>" +
+                        "  <response>" +
+                        "    <href>/dav</href>" +
+                      "      <status>HTTP/1.0 200 OK</status>" +
+                        "  </response>" +
+                        "</multistatus>"));
+        assertNull(finder.getCurrentUserPrincipal(url));
     }
 
 }

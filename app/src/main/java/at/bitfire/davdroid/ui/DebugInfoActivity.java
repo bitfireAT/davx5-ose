@@ -49,6 +49,8 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
             KEY_AUTHORITY = "authority",
             KEY_PHASE = "phase";
 
+    private static final int MAX_INLINE_REPORT_LENGTH = 8000;
+
     TextView tvReport;
     String report;
 
@@ -74,20 +76,29 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.setType("text/plain");
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "DAVdroid Exception Details");
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "DAVdroid debug info");
 
-            try {
-                File reportFile = File.createTempFile("davdroid-debug", ".txt", getExternalCacheDir());
-                Constants.log.debug("Writing debug info to " + reportFile.getAbsolutePath());
-                FileWriter writer = new FileWriter(reportFile);
-                writer.write(report);
-                writer.close();
+            boolean inline = false;
 
-                sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(reportFile));
-            } catch (IOException e) {
-                // let's hope the report is < 1 MB
+            if (report.length() > MAX_INLINE_REPORT_LENGTH)
+                // report is too long for inline text, send it as an attachment
+                try {
+                    File reportFile = File.createTempFile("davdroid-debug", ".txt", getExternalCacheDir());
+                    Constants.log.debug("Writing debug info to " + reportFile.getAbsolutePath());
+                    FileWriter writer = new FileWriter(reportFile);
+                    writer.write(report);
+                    writer.close();
+
+                    sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(reportFile));
+                } catch (IOException e) {
+                    // let's hope the report is < 1 MB (Android IPC limit)
+                    inline = true;
+                }
+            else
+                inline = true;
+
+            if (inline)
                 sendIntent.putExtra(Intent.EXTRA_TEXT, report);
-            }
 
             startActivity(sendIntent);
         }
