@@ -11,6 +11,7 @@
   <string name="main_manage_accounts">Zadządzaj kontami synchronizacji</string>
   <string name="main_show_debug_info">Pokaż informacje do debug\'owania</string>
   <string name="main_translation_info">Tłumaczenia w innych językach niż angielski i niemiecki zostały dodane przez wiele osób, które są wymienione w odpowienich wersjach językowych. Tłumaczenie na język polski przygotował &lt;a href="https://github.com/oskarjakiela"&gt;Oskar Jakieła&lt;/a&gt;.</string>
+  <!--DonateDialogFragment-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Logowanie za pomocą adresu e-mail</string>
   <string name="login_type_email_description">Szczegóły usługi zostaną wykryte automatycznie na podstwie nazwy domeny. Na przykład mojekonto@icloud.com</string>

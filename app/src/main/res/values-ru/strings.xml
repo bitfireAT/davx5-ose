@@ -13,6 +13,7 @@
   <string name="main_welcome">Добро пожаловать в DAVdroid/%s!</string>
   <string name="main_translation_info">Перевод на русский язык vasp@zabmail.ru.</string>
   <string name="main_used_libraries_heading">DAVdroid использует эти библиотеки (в алфавитном порядке)</string>
+  <!--DonateDialogFragment-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Вход по адресу email</string>
   <string name="login_type_email_description">Данные сервиса будут автоматически определены через имя домена. Пример: myaccount@icloud.com</string>

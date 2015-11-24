@@ -6,6 +6,7 @@
   <string name="next">Próximo</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Administrar as contas sincronizadas</string>
+  <!--DonateDialogFragment-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Login com seu enderço de email</string>
   <string name="login_type_email_description">Detalhes do serviço poderão ser detectados automaticamente pelo nome do

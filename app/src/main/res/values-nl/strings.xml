@@ -10,10 +10,6 @@
   <!--MainActivity-->
   <string name="main_manage_accounts">Beheer sync accounts</string>
   <string name="main_show_debug_info">Debug info weergeven</string>
-  <string name="main_fdroid_donation_html"><![CDATA[
-<p>We zijn blij dat je DAVdroid van F-Droid gedownload hebt. Het ontwikkelen van DAVdroid is hard werk en neemt
-duizenden uren in beslag. <strong>Als je van DAVdroid leuk vind overweeg dan <a href=\"https://davdroid.bitfire.at/donate\">een donatie</a>.</strong></p>
-]]></string>
   <string name="main_play_workaround_html"><![CDATA[
 ⇥⇥<p>Bedankt voor het kopen van DAVdroid in de Google Play store. Helaas zijn er 2 Google Play Bugs
 ⇥⇥die u aan kunnen gaan. Klik op de link hieronder voor de gegevens.</p>
@@ -60,6 +56,7 @@ Maar alsjeblief chanteer ons niet met slechte ratings in de stores (Het is nieti
 ⇥]]></string>
   <string name="main_translation_info">Vertalingen in een andere taal als Engels en Duits zijn bijgedragen door verschillende mensen die benoemt worden hun desbetreffende taal.</string>
   <string name="main_used_libraries_heading">DAVdroid gebruikt deze libraries (alfabetische volgorde)</string>
+  <!--DonateDialogFragment-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Inloggen met e-mailadres</string>
   <string name="login_type_email_description">Account details kunnen automatisch gevonden worden via de domeinnaam. Bijvoorbeeld: mijnaccount@icloud.com</string>

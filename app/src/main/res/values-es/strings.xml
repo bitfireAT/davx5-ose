@@ -10,10 +10,6 @@
   <!--MainActivity-->
   <string name="main_manage_accounts">Administrar las cuentas sincronizadas</string>
   <string name="main_show_debug_info">Mostrar la información de depuración</string>
-  <string name="main_fdroid_donation_html"><![CDATA[
-        <p>Estamos felices de que hayas descargado DAVdroid desde F-Droid. Desarrollar DAVdroid es un trabajo duro y lleva
-        miles de horas de trabajo. <strong>Si te gusta DAVdroid, por favor, piensa en <a href=\"https://davdroid.bitfire.at/donate\">hacer una donación</a>.</strong></p>
-    ]]></string>
   <string name="main_play_workaround_html"><![CDATA[
 		<p>Gracias por comprar DAVdroid en Google Play, apoyando así el proyecto. Por desgracia, hay dos bugs de Google Play
 		que deben interesarte. Pulsa el enlace para ver los detalles</p>
@@ -65,6 +61,7 @@
 	]]></string>
   <string name="main_translation_info">Las traducciones a otros idiomas aparte del inglés y el alemán han sido aportado por varias personas que se mencionan en su respectiva versión.</string>
   <string name="main_used_libraries_heading">DAVdroid usa estas librerías (en orden alfabético):</string>
+  <!--DonateDialogFragment-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Acceder con cuenta de correo</string>
   <string name="login_type_email_description">Los detalles del servicio serán detectados automáticamente por el nombre de dominio. Ejemplo: myaccount@icloud.com</string>

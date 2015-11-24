@@ -10,6 +10,7 @@ package at.bitfire.davdroid.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.Html;
@@ -47,15 +48,11 @@ public class MainActivity extends Activity {
 
 		TextView tv = (TextView)findViewById(R.id.text_store_specific);
         final String installedFrom = installedFrom();
-        if (installedFrom != null)
-            switch (installedFrom) {
-                case "com.android.vending":
-                    setHtmlText(R.id.text_store_specific, R.string.main_play_workaround_html);
-                    break;
-                case "org.fdroid.fdroid":
-                    setHtmlText(R.id.text_store_specific, R.string.main_fdroid_donation_html);
-                    break;
-            }
+        if (installedFrom == null || installedFrom.startsWith("org.fdroid")) {
+            if (savedInstanceState == null)
+                new DonateDialogFragment().show(getFragmentManager(), "donate");
+        } else if ("com.android.vending".equals(installedFrom))
+            setHtmlText(R.id.text_store_specific, R.string.main_play_workaround_html);
 
         setPlainText(R.id.text_welcome, R.string.main_welcome, BuildConfig.VERSION_NAME);
         setHtmlText(R.id.text_what_is_davdroid, R.string.main_what_is_davdroid_html);

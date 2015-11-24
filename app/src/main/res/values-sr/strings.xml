@@ -10,10 +10,6 @@
   <!--MainActivity-->
   <string name="main_manage_accounts">Управљај налозима синхронизације</string>
   <string name="main_show_debug_info">Прикажи податке за исправљање грешака</string>
-  <string name="main_fdroid_donation_html"><![CDATA[
-        <p>Драго нам је што сте инсталирали ДАВдроид са Ф-дроида. Програмирање ДАВдроида је тежак посао који захтева
-        хиљаде радних сати. <strong>Ако вам се допада ДАВдроид, размислите да <a href=\"https://davdroid.bitfire.at/donate\">дате донацију</a>.</strong></p>
-    ]]></string>
   <string name="main_play_workaround_html"><![CDATA[
 		<p>Хвала вам што сте купили ДАВдроид на Гугловом Плеју и тиме подржали пројекат. Нажалост, постоје два проблема са Гугловом Плеј услугом
 		која могу да вас се тичу. Кликните на везу да видите детаље.</p>
@@ -65,6 +61,7 @@
 	]]></string>
   <string name="main_translation_info">Превод на српски: Младен Пејаковић. Превод на немачки: аутори. Остале преводе допринели су људи поменути у преводима одговарајућих језика.</string>
   <string name="main_used_libraries_heading">ДАВдроид користи ове библиотеке (абецедно):</string>
+  <!--DonateDialogFragment-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Пријавите се адресом е-поште</string>
   <string name="login_type_email_description">Детаљи сервиса ће бити аутоматски откривени по имену домена. Пример: mojnalog@icloud.com</string>

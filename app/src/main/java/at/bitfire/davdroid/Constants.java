@@ -7,6 +7,8 @@
  */
 package at.bitfire.davdroid;
 
+import android.net.Uri;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,4 +28,5 @@ public class Constants {
             NOTIFICATION_CALENDAR_SYNC = 11,
             NOTIFICATION_TASK_SYNC = 12;
 
+    public final static Uri donationUri = Uri.parse("https://davdroid.bitfire.at/donate?pk_campaign=davdroid-app");
 }

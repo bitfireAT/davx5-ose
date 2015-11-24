@@ -24,8 +24,7 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:layout_marginBottom="40dp"
-            android:linksClickable="true"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:linksClickable="true" />
 
         <TextView
             android:id="@+id/text_welcome"
