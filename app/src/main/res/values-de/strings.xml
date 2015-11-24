@@ -10,10 +10,6 @@
   <!--MainActivity-->
   <string name="main_manage_accounts">Sync-Konten anzeigen</string>
   <string name="main_show_debug_info">Debug-Info anzeigen</string>
-  <string name="main_fdroid_donation_html"><![CDATA[
-<p>Es freut uns, dass Sie DAVdroid über F-Droid geladen haben. In der Entwicklung von DAVdroid stecken bereits tausende Stunden harter Arbeit und wir entwickeln die App ständig weiter.
-<strong>Wenn Ihnen DAVdroid gefällt, freuen wir uns über <a href=\"https://davdroid.bitfire.at/donate\">Spenden!</a></strong></p>
-]]></string>
   <string name="main_play_workaround_html"><![CDATA[
 <p>Vielen Dank für den Kauf von DAVdroid über Google Play und Ihre Unterstützung! Leider gibt es zwei Play-Store-Bugs, die Sie möglicherweise betreffen könnten. Klicken Sie weitere Details auf den jeweiligen Link.</p>
 <p><a href=\"https://davdroid.bitfire.at/faq/entry/account-gone-after-reboot\">1. Accounts verschwinden nach einem Neustart</a>: betrifft Android 4.1, einige Geräte mit 4.2 (zum Beispiel viele Samsung-Geräte), möglicherweise aber auch weitere Geräte. Aktuelle Android-Versionen (zB 5, 6) sind davon nicht mehr betroffen.<br/>
@@ -46,6 +42,11 @@ Dieses Programm ist freie Software. Sie können es unter den Bedingungen der <a 
 	]]></string>
   <string name="main_translation_info">Alle Übersetzungen (außer Englisch und Deutsch) wurden von engagierten Helfer*innen zur Verfügung gestellt. Informationen dazu finden sich in der jeweiligen Sprachversion.</string>
   <string name="main_used_libraries_heading">DAVdroid verwendet folgende Bibliotheken (in alphabetischer Reihenfolge):</string>
+  <!--DonateDialogFragment-->
+  <string name="donate_title">Open-Source-Information</string>
+  <string name="donate_message">Es freut uns, dass Sie DAVdroid und damit Open-Source-Software (GPLv3) verwenden. Da in DAVdroid tausende Stunden harter Arbeit stecken und es immer noch weiter entwickelt wird, gibt es die Möglichkeit, uns zu spenden.</string>
+  <string name="donate_now">Spendenseite anzeigen</string>
+  <string name="donate_later">Vielleicht später</string>
   <!--AddAccountActivity-->
   <string name="login_type_email">Mit Email-Adresse anmelden</string>
   <string name="login_type_email_description">Domänenname wird verwendet, um die Servereinstellungen herauszufinden. Beispiel: myaccount@icloud.com</string>

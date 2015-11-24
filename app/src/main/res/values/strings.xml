@@ -21,10 +21,6 @@
     <string name="main_manage_accounts">Manage sync accounts</string>
     <string name="main_show_debug_info">Show debug info</string>
 
-    <string name="main_fdroid_donation_html"><![CDATA[
-        <p>We\'re happy that you have downloaded DAVdroid from F-Droid. Developing DAVdroid is hard work and takes
-        thousands of working hours. <strong>If you like DAVdroid, please consider <a href="https://davdroid.bitfire.at/donate">giving a donation</a>.</strong></p>
-    ]]></string>
     <string name="main_play_workaround_html"><![CDATA[
 		<p>Thank you for buying DAVdroid on Google Play, thus supporting the project. Unfortunately, there are two Google Play bugs
 		that may be of concern for you. Click on a link to view details.</p>
@@ -76,6 +72,12 @@
 	]]></string>
     <string name="main_translation_info">Translations to other languages than English and German have been contributed by various people which are mentioned in their respective language version.</string>
     <string name="main_used_libraries_heading">DAVdroid uses these libraries (alphabetical order):</string>
+
+    <!-- DonateDialogFragment -->
+    <string name="donate_title">Open-Source Information</string>
+    <string name="donate_message">We\'re happy that you use DAVdroid, which is open-source software (GPLv3). Because developing DAVdroid is hard work and took us thousands of working hours, please consider a donation.</string>
+    <string name="donate_now">Show donation page</string>
+    <string name="donate_later">Maybe later</string>
 
     <!-- AddAccountActivity -->
     <string name="login_type_email">Login with email address</string>

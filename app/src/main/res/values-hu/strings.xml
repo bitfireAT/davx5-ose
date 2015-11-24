@@ -10,10 +10,6 @@
   <!--MainActivity-->
   <string name="main_manage_accounts">Szinkronizációs fiókok kezelése</string>
   <string name="main_show_debug_info">Hibakeresési információ megtekintése</string>
-  <string name="main_fdroid_donation_html"><![CDATA[
-<p>Örülünk, hogy letöltötte a DAVdroid alkalmazást az F-Droid-ról.  A DAVdroid fejlesztése nem könnyű feladat és már eddig is sok ezer órát emésztett fel.
-<strong>Ha elégedett a DAVdroid-dal, kérjük, fontolja meg <a href=\"https://davdroid.bitfire.at/donate\">a fejlesztés támogatását</a>.</strong></p>
-]]></string>
   <string name="main_play_workaround_html"><![CDATA[
 <p>Köszönjük, hogy megvásárolta a DAVdroid alkalmazást a Google Play áruházban, támogatva ezzel a projektet.  Sajnos, a Google Play áruházzal két probléma is van, amikről az alábbi linkeken talál további információt.</p>
 <p>
@@ -50,6 +46,7 @@ Minden jog fenntartva.  Ez a program és a kapcsolódó anyagok a GNU Public Lic
 ]]></string>
   <string name="main_translation_info">Az angol és német nyelven kívül a fordításokat önkénteseink készítették, akiknek a neve megtalálható az adott nyelvi verzióban.</string>
   <string name="main_used_libraries_heading">Harmadik felek által fejlesztett programcsomagok (alfabetikus sorrendben)</string>
+  <!--DonateDialogFragment-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Bejelentkezés email cím segítségével</string>
   <string name="login_type_email_description">A szolgáltatás részleteinek automatikus detektálása a tartománynév alapján történik. Példa: myaccount@icloud.com</string>
@@ -106,7 +103,7 @@ Minden jog fenntartva.  Ez a program és a kapcsolódó anyagok a GNU Public Lic
     <item>4 óránként</item>
     <item>Naponta</item>
   </string-array>
-  <string name="settings_debug">Hi+++++ba keresés</string>
+  <string name="settings_debug">Hibakeresés</string>
   <string name="settings_security_warning">Potenciális biztonsági kockázat!</string>
   <string name="settings_log_to_external_file">Naplózás fájlba</string>
   <string name="settings_log_to_external_file_confirmation">A naplófájl tartalmazni fog bizalmas adatokat és azok elérhetők lesznek más alkalmazások számára.  Kapcsolja ki ezt az opciót és törölje a fájlt, ha nincs már szüksége rá.</string>

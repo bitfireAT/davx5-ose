@@ -10,9 +10,6 @@
   <!--MainActivity-->
   <string name="main_manage_accounts">管理同步账户</string>
   <string name="main_show_debug_info">显示调试信息</string>
-  <string name="main_fdroid_donation_html"><![CDATA[
-        <p>感谢您从 F-Droid 下载 DAVdroid。开发 DAVdroid 是个大工程，花费了上千个小时。<strong>如果您喜欢 DAVdroid，请考虑<a href=\"https://davdroid.bitfire.at/donate\">给我们捐款</a>。</strong></p>
-    ]]></string>
   <string name="main_play_workaround_html"><![CDATA[
 		<p>感谢您通过 Google Play 购买 DAVdroid 支持我们。不幸的是，两个 Google Play 的问题可能会影响到您。点击链接即可查看详情。</p>
 		
@@ -55,6 +52,7 @@
 	]]></string>
   <string name="main_translation_info">英语和德文外的翻译由其他人提供，在相应语言的版本中会标明。</string>
   <string name="main_used_libraries_heading">DAVdroid 使用的程序库（字母顺序排列）：</string>
+  <!--DonateDialogFragment-->
   <!--AddAccountActivity-->
   <string name="login_type_email">使用邮箱地址登录</string>
   <string name="login_type_email_description">服务器连接信息由域名本身提供。例如: myaccount@icloud.com</string>

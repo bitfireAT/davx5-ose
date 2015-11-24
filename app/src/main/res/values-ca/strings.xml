@@ -6,6 +6,7 @@
   <string name="next">Següent</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Gestioneu els comptes a sincronitzar</string>
+  <!--DonateDialogFragment-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Entra amb una adreça de correu electrònic</string>
   <string name="login_type_email_description">Els detalls del servei es detectaran automàticament amb el nom del servidor. Per exemple: elmeucompte@icloud.com</string>

@@ -7,6 +7,7 @@
   <string name="skip">Пропустити</string>
   <!--MainActivity-->
   <string name="main_manage_accounts">Керувати синхронізацією облікових записів</string>
+  <!--DonateDialogFragment-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Увійти за допомогою електронної пошти</string>
   <string name="login_type_email_description">Налаштування сервісу буде автоматично визначене з доменного імені. Наприклад: myaccount@icloud.com</string>
