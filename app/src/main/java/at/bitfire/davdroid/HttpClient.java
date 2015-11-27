@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.CookieManager;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +41,7 @@ public class HttpClient extends OkHttpClient {
 
     static final String userAgent;
     static {
-        String date = new SimpleDateFormat("yyyy/MM/dd", Locale.US).format(BuildConfig.buildTime);
+        String date = new SimpleDateFormat("yyyy/MM/dd", Locale.US).format(new Date(BuildConfig.buildTime));
         userAgent = "DAVdroid/" + BuildConfig.VERSION_NAME + " (" + date + "; dav4android) Android/" + Build.VERSION.RELEASE;
     }
 

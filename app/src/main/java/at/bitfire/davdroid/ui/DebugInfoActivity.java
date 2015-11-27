@@ -34,6 +34,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
 
 import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.davdroid.BuildConfig;
@@ -191,7 +192,7 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
                 } catch(PackageManager.NameNotFoundException e) {}
                 report.append(
                         "SOFTWARE INFORMATION\n" +
-                                "DAVdroid version: " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ") " + BuildConfig.buildTime.toString() + "\n" +
+                                "DAVdroid version: " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ") " + new Date(BuildConfig.buildTime) + "\n" +
                                 "Installed from: " + installedFrom + "\n" +
                                 "JB Workaround installed: " + (workaroundInstalled ? "yes" : "no") + "\n\n"
                 );
