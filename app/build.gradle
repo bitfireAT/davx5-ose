@@ -20,7 +20,7 @@ android {
         versionCode 86
         versionName "0.9.1.2"
 
-        buildConfigField "java.util.Date", "buildTime", "new java.util.Date()"
+        buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
     }
 
     buildTypes {
