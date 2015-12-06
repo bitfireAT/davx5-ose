@@ -64,8 +64,8 @@ public class HttpClient extends OkHttpClient {
 
         // set timeouts
         setConnectTimeout(30, TimeUnit.SECONDS);
-        setWriteTimeout(15, TimeUnit.SECONDS);
-        setReadTimeout(45, TimeUnit.SECONDS);
+        setWriteTimeout(30, TimeUnit.SECONDS);
+        setReadTimeout(120, TimeUnit.SECONDS);
 
         // add User-Agent to every request
         networkInterceptors().add(userAgentInterceptor);
