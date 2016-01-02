@@ -110,7 +110,7 @@ public class DavResourceFinder {
                 1. user-given URL is a calendar
                 2. user-given URL has a calendar-home-set property (i.e. is a principal URL)
              */
-            log.info("Check whether user-given URL is a calendar collection and/or contains <calendar-home-set> and/or has <current-user-principal>");
+            log.info("Check whether user-given URL is a calendar collection and/or contains home-set and/or has current-user-principal");
             DavResource davBase = new DavResource(log, httpClient, userURL);
             try {
                 if (service == Service.CALDAV) {
