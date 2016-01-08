@@ -14,9 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class Constants {
 	public static final String
-		ACCOUNT_TYPE = "bitfire.at.davdroid",
-		WEB_URL_MAIN = "https://davdroid.bitfire.at/?pk_campaign=davdroid-app",
-		WEB_URL_HELP = "https://davdroid.bitfire.at/configuration?pk_campaign=davdroid-app";
+		ACCOUNT_TYPE = "bitfire.at.davdroid";
 
     public static final Logger log = LoggerFactory.getLogger("davdroid");
 
@@ -28,5 +26,5 @@ public class Constants {
             NOTIFICATION_CALENDAR_SYNC = 11,
             NOTIFICATION_TASK_SYNC = 12;
 
-    public final static Uri donationUri = Uri.parse("https://davdroid.bitfire.at/donate?pk_campaign=davdroid-app");
+    public final static Uri webUri = Uri.parse("https://davdroid.bitfire.at/?pk_campaign=davdroid-app");
 }

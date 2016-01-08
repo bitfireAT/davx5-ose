@@ -66,5 +66,5 @@ dependencies {
 
     compile project(':MemorizingTrustManager')
 
-    androidTestCompile 'com.squareup.okhttp:mockwebserver:2.7.1'
+    androidTestCompile 'com.squareup.okhttp:mockwebserver:2.7.2'
 }

@@ -33,7 +33,7 @@ public class DonateDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.donate_now, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        startActivity(new Intent(Intent.ACTION_VIEW, Constants.donationUri));
+                        startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("donate/").build()));
                     }
                 })
                 .setNegativeButton(R.string.donate_later, new DialogInterface.OnClickListener() {
