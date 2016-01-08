@@ -119,7 +119,7 @@ public class MainActivity extends Activity {
 
 	public void showWebsite(MenuItem item) {
 		Intent intent = new Intent(Intent.ACTION_VIEW);
-		intent.setData(Uri.parse(Constants.WEB_URL_MAIN + "&pk_kwd=main-activity"));
+		intent.setData(Constants.webUri);
 		startActivity(intent);
 	}
 	
