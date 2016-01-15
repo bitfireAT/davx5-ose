@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2013 – 2015 Ricki Hirner (bitfire web engineering).
+  ~ Copyright (c) 2013 – 2016 Ricki Hirner (bitfire web engineering).
   ~ All rights reserved. This program and the accompanying materials
   ~ are made available under the terms of the GNU Public License v3.0
   ~ which accompanies this distribution, and is available at
@@ -8,22 +8,54 @@
 
 <resources>
 
-    <!--
-        Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
-    -->
-    <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
-        <!--
-            Theme customizations available in newer API levels can go in
-            res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
-        -->
+    <!-- colors -->
+
+    <color name="davdroid_green">#58a434</color>
+    <color name="davdroid_green_dark">#407826</color>
+    <color name="davdroid_lightblue">#00a8e6</color>
+
+    <color name="very_light_grey">#ebebeb</color>
+    <color name="white">#ffffff</color>
+
+
+    <!-- app theme -->
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/davdroid_green</item>
+        <item name="colorPrimaryDark">@color/davdroid_green_dark</item>
+        <item name="colorAccent">@color/davdroid_lightblue</item>
     </style>
 
-    <!-- Application theme. -->
-    <style name="AppTheme" parent="AppBaseTheme">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+
+    <!-- stepper (wizard) -->
+
+    <style name="stepper_nav_bar">
+        <item name="android:background">@color/very_light_grey</item>
+    </style>
+
+    <style name="stepper_nav_button">
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textColor">@color/buttontext</item>
+    </style>
+
+
+    <!-- text content -->
 
     <style name="TextView.Heading" parent="AppTheme">
         <item name="android:padding">5dp</item>

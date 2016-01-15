@@ -18,7 +18,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 
-import at.bitfire.davdroid.ui.setup.AddAccountActivity;
+import at.bitfire.davdroid.ui.AddAccountActivity;
 
 public class AccountAuthenticatorService extends Service {
 	private static AccountAuthenticator accountAuthenticator;
