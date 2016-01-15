@@ -32,6 +32,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+
     lintOptions {
         disable 'IconColors'
         disable 'IconLauncherShape'

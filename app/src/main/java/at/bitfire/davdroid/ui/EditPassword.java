@@ -10,6 +10,7 @@ package at.bitfire.davdroid.ui;
 
 import android.content.Context;
 import android.support.v7.widget.AppCompatCheckBox;
+import android.text.Editable;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 import android.widget.CompoundButton;
@@ -19,6 +20,9 @@ import android.widget.LinearLayout;
 import at.bitfire.davdroid.R;
 
 public class EditPassword extends LinearLayout {
+    private static final String NS_ANDROID = "http://schemas.android.com/apk/res/android";
+
+    EditText editPassword;
 
     public EditPassword(Context context) {
         super(context, null);
@@ -29,7 +33,9 @@ public class EditPassword extends LinearLayout {
 
         inflate(context, R.layout.edit_password, this);
 
-        final EditText editPassword = (EditText)findViewById(R.id.password);
+        editPassword = (EditText)findViewById(R.id.password);
+        editPassword.setHint(attrs.getAttributeResourceValue(NS_ANDROID, "hint", 0));
+        editPassword.setText(attrs.getAttributeValue(NS_ANDROID, "text"));
 
         AppCompatCheckBox checkShowPassword = (AppCompatCheckBox)findViewById(R.id.show_password);
         checkShowPassword.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -40,6 +46,18 @@ public class EditPassword extends LinearLayout {
                 editPassword.setInputType(inputType);
             }
         });
+    }
+
+    public Editable getText() {
+        return editPassword.getText();
+    }
+
+    public void setError(CharSequence error) {
+        editPassword.setError(error);
+    }
+
+    public void setText(CharSequence text) {
+        editPassword.setText(text);
     }
 
 }
