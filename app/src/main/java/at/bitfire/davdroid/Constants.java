@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Constants {
+
 	public static final String
 		ACCOUNT_TYPE = "bitfire.at.davdroid";
 
@@ -26,5 +27,6 @@ public class Constants {
             NOTIFICATION_CALENDAR_SYNC = 11,
             NOTIFICATION_TASK_SYNC = 12;
 
-    public final static Uri webUri = Uri.parse("https://davdroid.bitfire.at/?pk_campaign=davdroid-app");
+    public static final Uri webUri = Uri.parse("https://davdroid.bitfire.at/?pk_campaign=davdroid-app");
+
 }

@@ -6,20 +6,26 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid.ui;
+package at.bitfire.davdroid.ui.setup;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import at.bitfire.davdroid.R;
 
-public class AddAccountActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.login_activity);
 
-        setContentView(R.layout.activity_add_account);
+        if (savedInstanceState == null)
+            // first call, add fragment
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment, new LoginCredentialsFragment())
+                    .commit();
+
     }
 
 }

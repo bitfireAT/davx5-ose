@@ -18,7 +18,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 
-import at.bitfire.davdroid.ui.AddAccountActivity;
+import at.bitfire.davdroid.ui.setup.LoginActivity;
 
 public class AccountAuthenticatorService extends Service {
 	private static AccountAuthenticator accountAuthenticator;
@@ -48,7 +48,7 @@ public class AccountAuthenticatorService extends Service {
 		@Override
 		public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType,
 				String[] requiredFeatures, Bundle options) throws NetworkErrorException {
-			Intent intent = new Intent(context, AddAccountActivity.class);
+			Intent intent = new Intent(context, LoginActivity.class);
 			intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 			Bundle bundle = new Bundle();
 			bundle.putParcelable(AccountManager.KEY_INTENT, intent);

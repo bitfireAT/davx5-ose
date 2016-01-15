@@ -93,23 +93,20 @@
     <!-- AddAccountActivity -->
     <string name="login_title">Add account</string>
     <string name="login_type_email">Login with email address</string>
-    <string name="login_type_email_description">Service details will be auto-detected by domain name. Example: myaccount@icloud.com</string>
+    <string name="login_email_address">Email address</string>
+    <string name="login_email_address_error">Valid email address required</string>
+    <string name="login_password">Password</string>
+    <string name="login_password_required">Password required</string>
     <string name="login_type_url">Login with URL and user name</string>
-    <string name="login_type_url_description">Service details will be auto-detected by initial URL and user name. Mostly used for self-hosted services.</string>
-
-    <string name="login_email_description">Please enter your email address. Its domain name will be used to auto-detect service settings.</string>
-    <string name="login_email_address">Email:</string>
-
-    <string-array name="login_url_scheme">
-        <item>http://</item>
-        <item>https://</item>
-    </string-array>
-    <string name="login_http_warning">"If you don't use encryption (HTTPS), other people may easily intercept your login details, contacts and events."</string>
-    <string name="login_user_name">User name:</string>
-    <string name="login_base_url">Base URL (collections will be auto-detected):</string>
+    <string name="login_url_must_be_http_or_https">URL must begin with http(s)://</string>
+    <string name="login_url_host_name_required">Host name required</string>
+    <string name="login_user_name">User name</string>
+    <string name="login_user_name_required">User name required</string>
+    <string name="login_base_url">Base URL</string>
     <string name="login_auth_preemptive">Preemptive authentication (recommended, but incompatible with Digest auth)</string>
 
-    <string name="login_password">Password:</string>
+    <string name="login_configuration_detection">Configuration detection</string>
+    <string name="login_querying_server">Please wait, querying server…</string>
 
     <!-- Settings activity -->
     <string name="settings_title">Settings</string>

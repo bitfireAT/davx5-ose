@@ -22,6 +22,7 @@ import android.view.View;
 
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.ui.setup.LoginActivity;
 
 public class AccountsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -37,7 +38,7 @@ public class AccountsActivity extends AppCompatActivity implements NavigationVie
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(AccountsActivity.this, AddAccountActivity.class));
+                startActivity(new Intent(AccountsActivity.this, LoginActivity.class));
             }
         });
 

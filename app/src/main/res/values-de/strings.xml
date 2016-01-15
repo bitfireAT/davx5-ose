@@ -53,16 +53,16 @@ Dieses Programm ist freie Software. Sie können es unter den Bedingungen der <a 
   <string name="login_type_url">Mit URL und Benutzername anmelden</string>
   <string name="login_type_url_description">Basis-URL und Benutzername werden verwendet, um die Servereinstellungen herauszufinden; z.B. bei einem eigenen Server.</string>
   <string name="login_email_description">Geben Sie Ihre Email-Adresse ein. Der Domänenname wird verwendet, um die Servereinstellungen herauszufinden.</string>
-  <string name="login_email_address">Email:</string>
+  <string name="login_email_address">Email-Adresse</string>
   <string-array name="login_url_scheme">
     <item>http://</item>
     <item>https://</item>
   </string-array>
   <string name="login_http_warning">Ohne Verschlüsselung (HTTPS) können Ihre Zugangsdaten, Kontakte und Termine leicht abgefangen werden.</string>
-  <string name="login_user_name">Benutzername:</string>
-  <string name="login_base_url">Basis-URL (Ordner werden automatisch gefunden):</string>
+  <string name="login_user_name">Benutzername</string>
+  <string name="login_base_url">Basis-URL:</string>
   <string name="login_auth_preemptive">Präemptive Authentifizierung (empfohlen, aber nicht kompatibel mit Digest-Auth.)</string>
-  <string name="login_password">Passwort:</string>
+  <string name="login_password">Passwort</string>
   <!--Settings activity-->
   <string name="settings_title">Einstellungen</string>
   <string name="settings_no_accounts">Keine DAVdroid-Konten gefunden</string>
