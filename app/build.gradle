@@ -55,16 +55,20 @@ configurations.all {
 }
 
 dependencies {
-    compile 'dnsjava:dnsjava:2.1.7'
-    compile 'org.apache.commons:commons-lang3:3.4'
     provided 'org.projectlombok:lombok:1.16.6'
-    compile 'org.slf4j:slf4j-android:1.7.13'
 
     compile project(':dav4android')
     compile project(':ical4android')
     compile project(':vcard4android')
 
+    compile 'com.android.support:appcompat-v7:23.+'
+    compile 'com.android.support:cardview-v7:23.+'
+    compile 'com.android.support:design:23.+'
+
     compile project(':MemorizingTrustManager')
 
     androidTestCompile 'com.squareup.okhttp:mockwebserver:2.7.2'
+    compile 'dnsjava:dnsjava:2.1.7'
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'org.slf4j:slf4j-android:1.7.13'
 }

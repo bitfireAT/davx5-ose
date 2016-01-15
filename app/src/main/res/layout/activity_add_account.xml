@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © 2013 – 2016 Ricki Hirner (bitfire web engineering).
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0
+  ~ which accompanies this distribution, and is available at
+  ~ http://www.gnu.org/licenses/gpl.html
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <ScrollView android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/login_type_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/login_type_email"
+                android:checked="true" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_email_address"/>
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_password"/>
+                <at.bitfire.davdroid.ui.EditPassword
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/login_type_url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/login_type_url" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_base_url"/>
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_user_name"/>
+                <EditText
+                    android:layout_width="match_parent"
+                    android:maxWidth="100dp"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_password"/>
+                <at.bitfire.davdroid.ui.EditPassword
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <android.support.v7.widget.AppCompatCheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_auth_preemptive"/>
+
+            </LinearLayout>
+
+        </RadioGroup>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/stepper_nav_bar">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="Back"
+            android:visibility="invisible"
+            style="@style/stepper_nav_button"/>
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="Login"
+            style="@style/stepper_nav_button"/>
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="Create account"
+            android:visibility="gone"
+            style="@style/stepper_nav_button"/>
+        
+    </LinearLayout>
+    
+</LinearLayout>

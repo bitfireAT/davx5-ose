@@ -5,64 +5,75 @@
   ~ are made available under the terms of the GNU Public License v3.0
   ~ which accompanies this distribution, and is available at
   ~ http://www.gnu.org/licenses/gpl.html
-  -->
-
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
-    package="at.bitfire.davdroid"
-    android:installLocation="internalOnly">
+-->
+<manifest package="at.bitfire.davdroid"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          android:installLocation="internalOnly">
 
     <!-- normal permissions -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
 
     <!-- legacy permissions -->
-    <!-- for writing external log files; permission only required for SDK <= 18 because since then,
-         writing to app-private directory doesn't require extra permissions -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="18" tools:ignore="UnusedAttribute"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18" tools:ignore="UnusedAttribute"/>
+    <!--
+         for writing external log files; permission only required for SDK <= 18 because since then,
+         writing to app-private directory doesn't require extra permissions
+    -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18"
+        tools:ignore="UnusedAttribute"/>
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18"
+        tools:ignore="UnusedAttribute"/>
 
     <!-- other permissions -->
-    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />             <!-- android.permission-group.CONTACTS -->
-    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
-    <uses-permission android:name="android.permission.READ_CALENDAR" />             <!-- android.permission-group.CALENDAR -->
-    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <!-- android.permission-group.CONTACTS -->
+    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_CALENDAR"/>
+    <!-- android.permission-group.CALENDAR -->
+    <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
 
     <!-- ical4android declares task access permissions -->
-
     <application
-        android:allowBackup="true" android:fullBackupContent="false"  tools:ignore="UnusedAttribute"
+        android:allowBackup="true"
+        android:fullBackupContent="false"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
-
+        android:theme="@style/AppTheme"
+        tools:ignore="UnusedAttribute">
         <service
             android:name=".syncadapter.AccountAuthenticatorService"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
+                <action android:name="android.accounts.AccountAuthenticator"/>
             </intent-filter>
+
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/account_authenticator" />
+                android:resource="@xml/account_authenticator"/>
         </service>
-
         <service
             android:name=".syncadapter.ContactsSyncAdapterService"
             android:exported="true"
             android:process=":sync"
             tools:ignore="ExportedService">
             <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
+                <action android:name="android.content.SyncAdapter"/>
             </intent-filter>
+
             <meta-data
                 android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_contacts" />
+                android:resource="@xml/sync_contacts"/>
             <meta-data
                 android:name="android.provider.CONTACTS_STRUCTURE"
-                android:resource="@xml/contacts" />
+                android:resource="@xml/contacts"/>
         </service>
         <service
             android:name=".syncadapter.CalendarsSyncAdapterService"
@@ -70,11 +81,12 @@
             android:process=":sync"
             tools:ignore="ExportedService">
             <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
+                <action android:name="android.content.SyncAdapter"/>
             </intent-filter>
+
             <meta-data
                 android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_calendars" />
+                android:resource="@xml/sync_calendars"/>
         </service>
         <service
             android:name=".syncadapter.TasksSyncAdapterService"
@@ -82,47 +94,57 @@
             android:process=":sync"
             tools:ignore="ExportedService">
             <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
+                <action android:name="android.content.SyncAdapter"/>
             </intent-filter>
+
             <meta-data
                 android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_tasks" />
+                android:resource="@xml/sync_tasks"/>
         </service>
 
         <activity
-            android:name=".ui.MainActivity"
-            android:label="@string/app_name" >
+            android:name=".ui.AccountsActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.AddAccountActivity"
+            android:label="@string/login_title"
+            android:parentActivityName=".ui.AccountsActivity"
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.DebugInfoActivity"
-            android:label="@string/debug_info_title"
-            android:exported="true">
-        </activity>
-        <activity
-            android:name=".ui.setup.AddAccountActivity"
-            android:excludeFromRecents="true">
+            android:exported="true"
+            android:label="@string/debug_info_title">
         </activity>
         <activity
             android:name=".ui.settings.SettingsActivity"
-            android:label="@string/settings_title" >
+            android:label="@string/settings_title">
             <intent-filter>
-                <action android:name="android.intent.action.MANAGE_NETWORK_USAGE" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.MANAGE_NETWORK_USAGE"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.settings.AccountActivity"
             android:label="@string/settings_title"
-            android:parentActivityName=".ui.settings.SettingsActivity" tools:ignore="UnusedAttribute">
+            android:parentActivityName=".ui.settings.SettingsActivity"
+            tools:ignore="UnusedAttribute">
         </activity>
 
         <!-- MemorizingTrustManager -->
-        <activity android:name="de.duenndns.ssl.MemorizingActivity"
-                  android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar"/>
+        <activity
+            android:name="de.duenndns.ssl.MemorizingActivity"
+            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar"/>
     </application>
 
 </manifest>

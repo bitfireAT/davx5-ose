@@ -17,6 +17,17 @@
     <string name="send">Send</string>
     <string name="skip">Skip</string>
 
+    <!-- AccountsActivity -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adapter</string>
+    <string name="navigation_drawer_about">About / License</string>
+    <string name="navigation_drawer_donate">Donate</string>
+    <string name="navigation_drawer_preferences">Preferences</string>
+    <string name="navigation_drawer_website">Web site</string>
+
+    <string name="account_list_empty">Welcome to DAVdroid!\n\nYou can add a CalDAV/CardDAV account now.</string>
+
     <!-- MainActivity -->
     <string name="main_manage_accounts">Manage sync accounts</string>
     <string name="main_show_debug_info">Show debug info</string>
@@ -80,14 +91,15 @@
     <string name="donate_later">Maybe later</string>
 
     <!-- AddAccountActivity -->
+    <string name="login_title">Add account</string>
     <string name="login_type_email">Login with email address</string>
     <string name="login_type_email_description">Service details will be auto-detected by domain name. Example: myaccount@icloud.com</string>
     <string name="login_type_url">Login with URL and user name</string>
     <string name="login_type_url_description">Service details will be auto-detected by initial URL and user name. Mostly used for self-hosted services.</string>
-    
+
     <string name="login_email_description">Please enter your email address. Its domain name will be used to auto-detect service settings.</string>
     <string name="login_email_address">Email:</string>
-    
+
     <string-array name="login_url_scheme">
         <item>http://</item>
         <item>https://</item>
@@ -177,7 +189,7 @@
     <string name="setup_select_address_book">Select up to one address book (tap again to unselect) for synchronization:</string>
     <string name="setup_select_calendars">Select calendars for synchronization:</string>
     <string name="setup_select_task_lists">Select task lists for synchronization:</string>
-    
+
     <string name="setup_account_details">Account details</string>
     <string name="setup_account_name">Account name:</string>
     <string name="setup_account_name_hint">My CalDAV/CardDAV Account</string>

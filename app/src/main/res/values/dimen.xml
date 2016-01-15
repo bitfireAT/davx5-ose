@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2013 – 2015 Ricki Hirner (bitfire web engineering).
+  ~ Copyright (c) 2013 – 2016 Ricki Hirner (bitfire web engineering).
   ~ All rights reserved. This program and the accompanying materials
   ~ are made available under the terms of the GNU Public License v3.0
   ~ which accompanies this distribution, and is available at
@@ -8,5 +8,14 @@
   -->
 
 <resources>
-    <dimen name="titles_width">300dp</dimen>
+    <dimen name="leftcol_width">320dp</dimen>
+
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="nav_header_vertical_spacing">16dp</dimen>
+    <dimen name="nav_header_height">160dp</dimen>
+
 </resources>
