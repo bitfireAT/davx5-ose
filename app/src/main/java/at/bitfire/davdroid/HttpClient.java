@@ -146,8 +146,10 @@ public class HttpClient {
     static class UserAgentInterceptor implements Interceptor {
         @Override
         public Response intercept(Chain chain) throws IOException {
+            Locale locale = Locale.getDefault();
             Request request = chain.request().newBuilder()
                     .header("User-Agent", userAgent)
+                    .header("Accept-Language", locale.getLanguage() + "-" + locale.getCountry() + ", " + locale.getLanguage() + ";q=0.7, *;q=0.5")
                     .build();
             return chain.proceed(request);
         }

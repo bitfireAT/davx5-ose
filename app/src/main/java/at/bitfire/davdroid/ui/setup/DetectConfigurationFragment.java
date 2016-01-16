@@ -24,10 +24,10 @@ import java.io.StringReader;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.DavResourceFinder;
-import at.bitfire.davdroid.resource.DavResourceFinder.ServerConfiguration;
+import at.bitfire.davdroid.resource.DavResourceFinder.Configuration;
 import lombok.Cleanup;
 
-public class DetectConfigurationFragment extends DialogFragment implements LoaderManager.LoaderCallbacks<ServerConfiguration> {
+public class DetectConfigurationFragment extends DialogFragment implements LoaderManager.LoaderCallbacks<Configuration> {
 
     static final String ARG_LOGIN_CREDENTIALS = "credentials";
 
@@ -51,23 +51,23 @@ public class DetectConfigurationFragment extends DialogFragment implements Loade
     }
 
     @Override
-    public Loader<ServerConfiguration> onCreateLoader(int id, Bundle args) {
+    public Loader<Configuration> onCreateLoader(int id, Bundle args) {
         return new ServerConfigurationLoader(getContext(), args);
     }
 
     @Override
-    public void onLoadFinished(Loader<ServerConfiguration> loader, ServerConfiguration data) {
+    public void onLoadFinished(Loader<Configuration> loader, Configuration data) {
         // show error / continue with next fragment
         Constants.log.info("detection results: {}", data);
         dismissAllowingStateLoss();
     }
 
     @Override
-    public void onLoaderReset(Loader<ServerConfiguration> loader) {
+    public void onLoaderReset(Loader<Configuration> loader) {
     }
 
 
-    static class ServerConfigurationLoader extends AsyncTaskLoader<ServerConfiguration> {
+    static class ServerConfigurationLoader extends AsyncTaskLoader<Configuration> {
         final Context context;
         final LoginCredentialsFragment.LoginCredentials credentials;
 
@@ -83,16 +83,16 @@ public class DetectConfigurationFragment extends DialogFragment implements Loade
         }
 
         @Override
-        public ServerConfiguration loadInBackground() {
+        public Configuration loadInBackground() {
             DavResourceFinder finder = new DavResourceFinder(context, credentials);
-            ServerConfiguration configuration = finder.findInitialConfiguration();
+            Configuration configuration = finder.findInitialConfiguration();
 
             try {
-                @Cleanup BufferedReader logStream = new BufferedReader(new StringReader(configuration.getLogs()));
-                Constants.log.info("Successful resource detection:");
+                @Cleanup BufferedReader logStream = new BufferedReader(new StringReader(configuration.logs));
+                Constants.log.info("Resource detection finished:");
                 String line;
                 while ((line = logStream.readLine()) != null)
-                    Constants.log.debug(line);
+                    Constants.log.info(line);
             } catch (IOException e) {
                 Constants.log.error("Couldn't read resource detection logs", e);
             }
