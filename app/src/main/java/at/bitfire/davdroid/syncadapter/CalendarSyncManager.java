@@ -16,10 +16,10 @@ import android.os.Bundle;
 import android.provider.CalendarContract.Calendars;
 import android.text.TextUtils;
 
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.ResponseBody;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;

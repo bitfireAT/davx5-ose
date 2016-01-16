@@ -20,8 +20,9 @@ package at.bitfire.davdroid.syncadapter;
     import android.os.Bundle;
     import android.text.TextUtils;
 
-    import com.squareup.okhttp.HttpUrl;
-    import com.squareup.okhttp.RequestBody;
+    import okhttp3.HttpUrl;
+    import okhttp3.OkHttpClient;
+    import okhttp3.RequestBody;
 
     import org.slf4j.Logger;
 
@@ -81,7 +82,7 @@ abstract public class SyncManager {
 
     protected Logger log;
 
-    protected final HttpClient httpClient;
+    protected OkHttpClient httpClient;
     protected HttpUrl collectionURL;
     protected DavResource davCollection;
 
@@ -122,7 +123,9 @@ abstract public class SyncManager {
             log = Constants.log;
 
         // create HttpClient with given logger
-        httpClient = new HttpClient(log, context, settings.username(), settings.password(), settings.preemptiveAuth());
+        httpClient = HttpClient.create(context);
+        httpClient = HttpClient.addLogger(httpClient, log);
+        httpClient = HttpClient.addAuthentication(httpClient, settings.username(), settings.password(), settings.preemptiveAuth());
 
         // dismiss previous error notifications
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

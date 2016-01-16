@@ -10,7 +10,7 @@ package at.bitfire.davdroid.resource;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.squareup.okhttp.HttpUrl;
+import okhttp3.HttpUrl;
 
 import org.slf4j.Logger;
 import org.xbill.DNS.Lookup;
@@ -48,6 +48,7 @@ import at.bitfire.davdroid.ui.setup.LoginCredentialsFragment;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.ToString;
+import okhttp3.OkHttpClient;
 
 public class DavResourceFinder {
     protected enum Service {
@@ -59,10 +60,11 @@ public class DavResourceFinder {
         @Override public String toString() { return name; }
     };
 
-    protected final Logger log;
-	protected final Context context;
-    protected final HttpClient httpClient;
+    protected final Context context;
     protected final LoginCredentialsFragment.LoginCredentials credentials;
+
+    protected final Logger log = new StringLogger("DavResourceFinder", true);
+    protected OkHttpClient httpClient;
 
     protected HttpUrl carddavPrincipal, caldavPrincipal;
     protected Map<HttpUrl, ServerConfiguration.Collection>
@@ -74,8 +76,9 @@ public class DavResourceFinder {
 		this.context = context;
         this.credentials = credentials;
 
-        log = new StringLogger("DavResourceFinder", true);
-        httpClient = new HttpClient(log, context, credentials.getUserName(), credentials.getPassword(), credentials.isAuthPreemptive());
+        httpClient = HttpClient.create(context);
+        httpClient = HttpClient.addLogger(httpClient, log);
+        httpClient = HttpClient.addAuthentication(httpClient, credentials.getUserName(), credentials.getPassword(), credentials.isAuthPreemptive());
 	}
 
 

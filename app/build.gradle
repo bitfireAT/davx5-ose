@@ -68,7 +68,7 @@ dependencies {
 
     compile project(':MemorizingTrustManager')
 
-    androidTestCompile 'com.squareup.okhttp:mockwebserver:2.7.2'
+    androidTestCompile 'com.squareup.okhttp3:mockwebserver:3.0.1+'
     compile 'dnsjava:dnsjava:2.1.7'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'org.slf4j:slf4j-android:1.7.13'
