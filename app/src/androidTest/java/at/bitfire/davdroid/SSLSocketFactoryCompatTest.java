@@ -10,7 +10,7 @@ package at.bitfire.davdroid;
 
 import android.os.Build;
 
-import com.squareup.okhttp.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.MockWebServer;
 
 import junit.framework.TestCase;
 

@@ -10,13 +10,14 @@ package at.bitfire.davdroid;
 
 import android.test.InstrumentationTestCase;
 
-import com.squareup.okhttp.ConnectionSpec;
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.TlsVersion;
-import com.squareup.okhttp.mockwebserver.MockResponse;
-import com.squareup.okhttp.mockwebserver.MockWebServer;
+import okhttp3.ConnectionSpec;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.TlsVersion;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -25,11 +26,11 @@ import java.util.Collections;
 public class HttpClientTest extends InstrumentationTestCase {
 
     MockWebServer server;
-    HttpClient httpClient;
+    OkHttpClient httpClient;
 
     @Override
     public void setUp() throws IOException {
-        httpClient = new HttpClient(null, getInstrumentation().getTargetContext().getApplicationContext());
+        httpClient = HttpClient.create(getInstrumentation().getTargetContext().getApplicationContext());
 
         server = new MockWebServer();
         server.start();
@@ -62,22 +63,6 @@ public class HttpClientTest extends InstrumentationTestCase {
         //assertEquals("theme=light", server.takeRequest().getHeader("Cookie"));
 
         // doesn't work for URLs with ports, see https://code.google.com/p/android/issues/detail?id=193475
-    }
-
-    public void testTLSVersion() throws IOException {
-        server.useHttps(new SSLSocketFactoryCompat(null), false);
-        assertEquals("https", server.url("/").scheme());
-
-        httpClient.setConnectionSpecs(Collections.singletonList(new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-                .tlsVersions(TlsVersion.TLS_1_2)
-                .build()));
-
-        // FIXME
-        /*server.enqueue(new MockResponse().setResponseCode(204));
-        Response response = httpClient.newCall(new Request.Builder()
-                .get().url(server.url("/"))
-                .build()).execute();
-        assertTrue(response.isSuccessful());*/
     }
 
 }

@@ -14,12 +14,13 @@ import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
 
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;
@@ -144,7 +145,7 @@ public class ContactsSyncManager extends SyncManager {
         log.info("Downloading " + toDownload.size() + " contacts (" + MAX_MULTIGET + " at once)");
 
         // prepare downloader which may be used to download external resource like contact photos
-        Contact.Downloader downloader = new ResourceDownloader(httpClient, collectionURL);
+        Contact.Downloader downloader = new ResourceDownloader(collectionURL);
 
         // download new/updated VCards from server
         for (DavResource[] bunch : ArrayUtils.partition(toDownload.toArray(new DavResource[toDownload.size()]), MAX_MULTIGET)) {
@@ -258,7 +259,6 @@ public class ContactsSyncManager extends SyncManager {
 
     @RequiredArgsConstructor
     private class ResourceDownloader implements Contact.Downloader {
-        final HttpClient httpClient;
         final HttpUrl baseUrl;
 
         @Override
@@ -276,7 +276,16 @@ public class ContactsSyncManager extends SyncManager {
                 return null;
             }
 
-            HttpClient resourceClient = new HttpClient(log, httpClient, host);
+            OkHttpClient resourceClient = HttpClient.create(context);
+
+            // authenticate only against a certain host, and only upon request
+            resourceClient = HttpClient.addAuthentication(resourceClient, baseUrl.host(), settings.username(), settings.password(), false);
+
+            // allow redirects
+            resourceClient = resourceClient.newBuilder()
+                    .followRedirects(true)
+                    .build();
+
             try {
                 Response response = resourceClient.newCall(new Request.Builder()
                         .get()
