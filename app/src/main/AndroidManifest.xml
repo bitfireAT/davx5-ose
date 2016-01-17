@@ -114,8 +114,7 @@
         <activity
             android:name=".ui.setup.LoginActivity"
             android:label="@string/login_title"
-            android:parentActivityName=".ui.AccountsActivity"
-            android:noHistory="true">
+            android:parentActivityName=".ui.AccountsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>

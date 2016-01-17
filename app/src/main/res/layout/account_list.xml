@@ -7,39 +7,34 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:src="@drawable/gletschersee"
+        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true" />
 
     <ListView
         android:id="@id/android:list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="@android:color/transparent" />
+        android:layout_height="wrap_content"
+        android:divider="@android:color/transparent"
+        android:background="@android:color/transparent"
+        android:cacheColorHint="@android:color/transparent"/>
 
-    <RelativeLayout
+    <TextView
+        android:id="@id/android:empty"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="72dp"
+        android:layout_marginRight="64dp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:text="@string/account_list_empty" />
 
-        <ImageView
-            android:src="@drawable/gletschersee"
-            android:scaleType="centerCrop"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true" />
-
-        <TextView
-            android:id="@id/android:empty"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="72dp"
-            android:layout_marginRight="64dp"
-            android:gravity="right|bottom"
-            android:textColor="@color/white"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:text="@string/account_list_empty" />
-
-    </RelativeLayout>
-
-</LinearLayout>
+</RelativeLayout>

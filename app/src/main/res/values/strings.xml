@@ -12,7 +12,6 @@
     <!-- common strings -->
     <string name="app_name">DAVdroid</string>
     <string name="help">Help</string>
-    <string name="next">Next</string>
     <string name="please_wait">Please wait</string>
     <string name="send">Send</string>
     <string name="skip">Skip</string>
@@ -104,9 +103,18 @@
     <string name="login_user_name_required">User name required</string>
     <string name="login_base_url">Base URL</string>
     <string name="login_auth_preemptive">Preemptive authentication (recommended, but incompatible with Digest auth)</string>
+    <string name="login_login">Login</string>
+    <string name="login_back">Back</string>
+    <string name="login_create_account">Create account</string>
+    <string name="login_account_name">Account name</string>
+    <string name="login_account_name_info">Use your email address as account name because Android will use the account name as ORGANIZER field for events you create. You can\'t have two accounts with the same name.</string>
+    <string name="login_account_name_required">Account name required</string>
+    <string name="login_account_not_created">Account could not be created</string>
 
     <string name="login_configuration_detection">Configuration detection</string>
     <string name="login_querying_server">Please wait, querying server…</string>
+    <string name="login_no_caldav_carddav">Couldn\'t find CalDAV or CardDAV service.</string>
+    <string name="login_view_logs">View logs</string>
 
     <!-- Settings activity -->
     <string name="settings_title">Settings</string>
@@ -190,7 +198,6 @@
     <string name="setup_account_details">Account details</string>
     <string name="setup_account_name">Account name:</string>
     <string name="setup_account_name_hint">My CalDAV/CardDAV Account</string>
-    <string name="setup_account_name_info">Use your email address as account name because Android will use the account name as ORGANIZER field for events you create. You can\'t have two accounts with the same name.</string>
     <string name="setup_read_only">read-only</string>
 
     <!-- sync errors and DebugInfoActivity -->

@@ -11,11 +11,14 @@ package at.bitfire.davdroid.ui.setup;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,6 +28,7 @@ import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.DavResourceFinder;
 import at.bitfire.davdroid.resource.DavResourceFinder.Configuration;
+import at.bitfire.davdroid.ui.DebugInfoActivity;
 import lombok.Cleanup;
 
 public class DetectConfigurationFragment extends DialogFragment implements LoaderManager.LoaderCallbacks<Configuration> {
@@ -57,8 +61,18 @@ public class DetectConfigurationFragment extends DialogFragment implements Loade
 
     @Override
     public void onLoadFinished(Loader<Configuration> loader, Configuration data) {
-        // show error / continue with next fragment
-        Constants.log.info("detection results: {}", data);
+        if (data.calDAV == null && data.cardDAV == null)
+            // no service found: show error message
+            getFragmentManager().beginTransaction()
+                    .add(NothingDetectedFragment.newInstance(data.logs), null)
+                    .commitAllowingStateLoss();
+        else
+            // service found: continue
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment, AccountDetailsFragment.newInstance(data))
+                    .addToBackStack(null)
+                    .commitAllowingStateLoss();
+
         dismissAllowingStateLoss();
     }
 
@@ -66,6 +80,41 @@ public class DetectConfigurationFragment extends DialogFragment implements Loade
     public void onLoaderReset(Loader<Configuration> loader) {
     }
 
+
+    public static class NothingDetectedFragment extends DialogFragment {
+        private static String KEY_LOGS = "logs";
+
+        public static NothingDetectedFragment newInstance(String logs) {
+            Bundle args = new Bundle();
+            args.putString(KEY_LOGS, logs);
+            NothingDetectedFragment fragment = new NothingDetectedFragment();
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.login_configuration_detection)
+                    .setIcon(R.drawable.ic_error_dark)
+                    .setMessage(R.string.login_no_caldav_carddav)
+                    .setNeutralButton(R.string.login_view_logs, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(getActivity(), DebugInfoActivity.class);
+                            intent.putExtra(DebugInfoActivity.KEY_LOGS, getArguments().getString(KEY_LOGS));
+                            startActivity(intent);
+                        }
+                    })
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // dismiss
+                        }
+                    })
+                    .create();
+        }
+    }
 
     static class ServerConfigurationLoader extends AsyncTaskLoader<Configuration> {
         final Context context;

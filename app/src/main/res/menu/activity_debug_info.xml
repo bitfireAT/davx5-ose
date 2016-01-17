@@ -7,12 +7,13 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:icon="@android:drawable/ic_menu_share"
+        android:icon="@drawable/ic_share_light"
         android:title="@string/send"
-        android:showAsAction="always"
-        android:onClick="onShare" />
+        app:showAsAction="always"
+        android:onClick="onShare"/>
 
 </menu>

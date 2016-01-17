@@ -10,14 +10,14 @@ package at.bitfire.davdroid;
 
 import android.os.Build;
 
-import okhttp3.mockwebserver.MockWebServer;
-
 import junit.framework.TestCase;
 
 import java.io.IOException;
 import java.net.Socket;
 
 import javax.net.ssl.SSLSocket;
+
+import okhttp3.mockwebserver.MockWebServer;
 
 public class SSLSocketFactoryCompatTest extends TestCase {
 

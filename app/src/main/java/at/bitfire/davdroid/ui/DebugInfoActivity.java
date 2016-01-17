@@ -10,7 +10,6 @@ package at.bitfire.davdroid.ui;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.ContentResolver;
@@ -23,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,7 +42,7 @@ import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
 
-public class DebugInfoActivity extends Activity implements LoaderManager.LoaderCallbacks<String> {
+public class DebugInfoActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
     public static final String
             KEY_EXCEPTION = "exception",
             KEY_LOGS = "logs",
@@ -67,7 +67,7 @@ public class DebugInfoActivity extends Activity implements LoaderManager.LoaderC
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.exception_details_activity, menu);
+        getMenuInflater().inflate(R.menu.activity_debug_info, menu);
         return true;
     }
 

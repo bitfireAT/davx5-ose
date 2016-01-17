@@ -16,6 +16,15 @@
     android:fitsSystemWindows="true"
     tools:context="at.bitfire.davdroid.ui.AccountsActivity">
 
+    <fragment
+        class="at.bitfire.davdroid.ui.AccountListFragment"
+        android:id="@+id/account_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout="@layout/account_list"
+        app:layout_scrollFlags="scroll"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,8 +37,6 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay"/>
     </android.support.design.widget.AppBarLayout>
-
-    <include layout="@layout/content_accounts"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

@@ -10,18 +10,14 @@ package at.bitfire.davdroid;
 
 import android.test.InstrumentationTestCase;
 
-import okhttp3.ConnectionSpec;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.TlsVersion;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Collections;
 
 public class HttpClientTest extends InstrumentationTestCase {
 

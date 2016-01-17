@@ -8,9 +8,13 @@
 
 package at.bitfire.davdroid.ui.setup;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 
+import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 
 public class LoginActivity extends AppCompatActivity {
@@ -28,4 +32,13 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_login, menu);
+        return true;
+    }
+
+    public void showHelp(MenuItem item) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("configuration/").build()));
+    }
 }
