@@ -18,6 +18,7 @@ import org.xbill.DNS.TXTRecord;
 import org.xbill.DNS.Type;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -84,7 +85,11 @@ public class DavResourceFinder {
                 cardDavConfig = findInitialConfiguration(Service.CARDDAV),
                 calDavConfig = findInitialConfiguration(Service.CALDAV);
 
-        return new Configuration(cardDavConfig, calDavConfig, log.toString());
+        return new Configuration(
+                credentials.getUserName(), credentials.getPassword(), credentials.isAuthPreemptive(),
+                cardDavConfig, calDavConfig,
+                log.toString()
+        );
     }
 
     protected Configuration.ServiceInfo findInitialConfiguration(@NonNull Service service) {
@@ -133,7 +138,9 @@ public class DavResourceFinder {
             }
         }
 
-        return config;
+        // return config or null if config doesn't contain useful information
+        boolean serviceAvailable = config.principal != null || !config.homeSets.isEmpty() || !config.collections.isEmpty();
+        return serviceAvailable ? config : null;
     }
 
     protected void checkUserGivenURL(@NonNull HttpUrl baseURL, @NonNull Service service, @NonNull Configuration.ServiceInfo config) {
@@ -405,27 +412,31 @@ public class DavResourceFinder {
 
     @RequiredArgsConstructor
     @ToString(exclude="logs")
-    public static class Configuration {
+    public static class Configuration implements Serializable {
+
+        public final String userName, password;
+        public final boolean preemptive;
 
         public final ServiceInfo cardDAV;
         public final ServiceInfo calDAV;
 
         public final String logs;
 
+
         @ToString
-        public static class ServiceInfo {
+        public static class ServiceInfo implements Serializable {
             @Getter
             HttpUrl principal;
 
             @Getter
-            Set<HttpUrl> homeSets = new HashSet<>();
+            final Set<HttpUrl> homeSets = new HashSet<>();
 
             @Getter
-            Map<HttpUrl, Collection> collections = new HashMap<>();
+            final Map<HttpUrl, Collection> collections = new HashMap<>();
         }
 
         @Data
-        public static class Collection {
+        public static class Collection implements Serializable {
             public enum Type {
                 ADDRESS_BOOK,
                 CALENDAR
@@ -434,7 +445,7 @@ public class DavResourceFinder {
             final Type type;
             final boolean readOnly;
 
-            final String title, description;
+            final String displayName, description;
             final Integer color;
 
             /**

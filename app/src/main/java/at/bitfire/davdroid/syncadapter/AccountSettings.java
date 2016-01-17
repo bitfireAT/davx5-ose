@@ -109,11 +109,11 @@ public class AccountSettings {
     }
 	
 	
-	public static Bundle createBundle(ServerInfo serverInfo) {
+	public static Bundle initialUserData(String userName, boolean preemptive) {
 		Bundle bundle = new Bundle();
 		bundle.putString(KEY_SETTINGS_VERSION, String.valueOf(CURRENT_VERSION));
-		bundle.putString(KEY_USERNAME, serverInfo.getUserName());
-		bundle.putString(KEY_AUTH_PREEMPTIVE, Boolean.toString(serverInfo.isAuthPreemptive()));
+		bundle.putString(KEY_USERNAME, userName);
+		bundle.putString(KEY_AUTH_PREEMPTIVE, Boolean.toString(preemptive));
 		return bundle;
 	}
 	

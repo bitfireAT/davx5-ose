@@ -279,7 +279,7 @@ public class ContactsSyncManager extends SyncManager {
             OkHttpClient resourceClient = HttpClient.create(context);
 
             // authenticate only against a certain host, and only upon request
-            resourceClient = HttpClient.addAuthentication(resourceClient, baseUrl.host(), settings.username(), settings.password(), false);
+            resourceClient = HttpClient.addAuthentication(resourceClient, baseUrl.host(), settings.username(), settings.password());
 
             // allow redirects
             resourceClient = resourceClient.newBuilder()

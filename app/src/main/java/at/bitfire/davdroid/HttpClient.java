@@ -11,22 +11,11 @@ package at.bitfire.davdroid;
 import android.content.Context;
 import android.os.Build;
 
-import lombok.NonNull;
-import okhttp3.CookieJar;
-import okhttp3.Credentials;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.internal.tls.OkHostnameVerifier;
-import okhttp3.logging.HttpLoggingInterceptor;
-
 import org.slf4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.CookieManager;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -34,7 +23,15 @@ import java.util.concurrent.TimeUnit;
 
 import at.bitfire.dav4android.BasicDigestAuthenticator;
 import de.duenndns.ssl.MemorizingTrustManager;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import okhttp3.Credentials;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.internal.tls.OkHostnameVerifier;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 public class HttpClient {
     private static final int MAX_LOG_LINE_LENGTH = 85;
@@ -87,28 +84,11 @@ public class HttpClient {
         return builder.build();
     }
 
-    public static OkHttpClient addAuthentication(@NonNull OkHttpClient httpClient, @NonNull String host, @NonNull String username, @NonNull String password, boolean preemptive) {
+    public static OkHttpClient addAuthentication(@NonNull OkHttpClient httpClient, @NonNull String host, @NonNull String username, @NonNull String password) {
         return httpClient.newBuilder()
                 .authenticator(new BasicDigestAuthenticator(host, username, password))
                 .build();
     }
-
-    //@NonNull final Logger log
-
-    /**
-     * Creates a new HttpClient (based on another one) which can be used to download external resources:
-     * 1. it does not use preemptive authentication
-     * 2. it only authenticates against a given host
-     * @param httpClient  user name and password from this client will be used
-     * @param host    authentication will be restricted to this host
-     */
-    /*public HttpClient(Logger log, HttpClient client, String host) {
-        this(log, client.context);
-
-        username = client.username;
-        password = client.password;
-        setAuthenticator(new BasicDigestAuthenticator(host, username, password));
-    }*/
 
     public static OkHttpClient addLogger(@NonNull OkHttpClient httpClient, @NonNull final Logger logger) {
         // enable verbose logs, if requested

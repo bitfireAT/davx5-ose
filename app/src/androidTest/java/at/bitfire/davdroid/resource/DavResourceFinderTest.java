@@ -2,17 +2,14 @@ package at.bitfire.davdroid.resource;
 
 import android.test.InstrumentationTestCase;
 
-import okhttp3.HttpUrl;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-
-import junit.framework.TestCase;
-
 import java.io.IOException;
 
 import at.bitfire.dav4android.exception.DavException;
 import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.davdroid.Constants;
+import okhttp3.HttpUrl;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 
 public class DavResourceFinderTest extends InstrumentationTestCase {
 
