@@ -59,7 +59,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.debug_info_activity);
+        setContentView(R.layout.activity_debug_info);
         tvReport = (TextView)findViewById(R.id.text_report);
 
         getLoaderManager().initLoader(0, getIntent().getExtras(), this);

@@ -12,6 +12,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -22,7 +23,10 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.LinkedList;
@@ -35,7 +39,7 @@ import at.bitfire.davdroid.syncadapter.ServiceDB.*;
 import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
 
-public class AccountListFragment extends ListFragment implements OnAccountsUpdateListener, LoaderManager.LoaderCallbacks<List<AccountListFragment.AccountInfo>> {
+public class AccountListFragment extends ListFragment implements OnAccountsUpdateListener, LoaderManager.LoaderCallbacks<List<AccountListFragment.AccountInfo>>, AdapterView.OnItemClickListener {
 
     protected AccountManager accountManager;
 
@@ -53,6 +57,10 @@ public class AccountListFragment extends ListFragment implements OnAccountsUpdat
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getLoaderManager().initLoader(0, getArguments(), this);
+
+        ListView list = getListView();
+        list.setOnItemClickListener(this);
+        list.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
     }
 
     @Override
@@ -60,6 +68,17 @@ public class AccountListFragment extends ListFragment implements OnAccountsUpdat
         accountManager.removeOnAccountsUpdatedListener(this);
         super.onDestroyView();
     }
+
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        AccountInfo info = (AccountInfo)getListAdapter().getItem(position);
+
+        Intent intent = new Intent(getContext(), AccountActivity.class);
+        intent.putExtra(AccountActivity.EXTRA_ACCOUNT_NAME, info.account.name);
+        startActivity(intent);
+    }
+
 
     @Override
     public void onAccountsUpdated(Account[] accounts) {
@@ -91,6 +110,7 @@ public class AccountListFragment extends ListFragment implements OnAccountsUpdat
         boolean hasCardDAV, hasCalDAV;
     }
 
+
     static class AccountListAdapter extends ArrayAdapter<AccountInfo> {
 
         public AccountListAdapter(Context context) {
@@ -119,6 +139,7 @@ public class AccountListFragment extends ListFragment implements OnAccountsUpdat
 
             return v;
         }
+
     }
 
     static class AccountLoader extends AsyncTaskLoader<List<AccountInfo>> {

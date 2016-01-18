@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright © 2013 – 2016 Ricki Hirner (bitfire web engineering).
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0
+  ~ which accompanies this distribution, and is available at
+  ~ http://www.gnu.org/licenses/gpl.html
+  -->
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#00ffffff"/>
+
+    <stroke android:width="1dp"
+            android:color="#aa888888"
+        />
+
+    <padding android:left="1dp"
+             android:top="1dp"
+             android:right="1dp"
+             android:bottom="1dp"
+        />
+
+    <corners android:bottomRightRadius="8dp" android:bottomLeftRadius="8dp"
+             android:topLeftRadius="8dp" android:topRightRadius="8dp"/>
+</shape>

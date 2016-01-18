@@ -27,6 +27,14 @@
 
     <string name="account_list_empty">Welcome to DAVdroid!\n\nYou can add a CalDAV/CardDAV account now.</string>
 
+    <!-- AccountActivity -->
+    <string name="account_delete">Delete account</string>
+    <string name="account_delete_confirmation_title">Really delete account?</string>
+    <string name="account_delete_confirmation_text">All local copies of address books, calendars and task lists will be deleted.</string>
+    <string name="account_refresh_address_book_list">Refresh address book list</string>
+    <string name="account_add_existing_address_book">Add existing address book</string>
+    <string name="account_create_new_address_book">Create new address book</string>
+
     <!-- MainActivity -->
     <string name="main_manage_accounts">Manage sync accounts</string>
     <string name="main_show_debug_info">Show debug info</string>
