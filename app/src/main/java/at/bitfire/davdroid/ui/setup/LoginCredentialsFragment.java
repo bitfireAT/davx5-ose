@@ -28,7 +28,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.ui.EditPassword;
+import at.bitfire.davdroid.ui.widget.EditPassword;
 import lombok.Data;
 
 public class LoginCredentialsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {

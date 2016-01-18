@@ -65,6 +65,22 @@
     </style>
 
 
+    <!-- widgets -->
+
+    <style name="chip">
+        <item name="android:padding">4dp</item>
+        <item name="android:background">@drawable/chip_bg</item>
+    </style>
+
+    <style name="toolbar_theme">
+        <item name="android:textColorSecondary">@color/white</item>
+    </style>
+    <style name="toolbar_style" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">@color/davdroid_green</item>
+        <item name="titleTextColor">@color/white</item>
+    </style>
+
+
     <!-- text content -->
 
     <style name="TextView.Heading" parent="AppTheme">
