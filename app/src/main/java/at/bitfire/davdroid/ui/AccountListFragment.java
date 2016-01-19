@@ -11,11 +11,14 @@ package at.bitfire.davdroid.ui;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -23,25 +26,30 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.DavService;
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.syncadapter.ServiceDB;
-import at.bitfire.davdroid.syncadapter.ServiceDB.*;
+import at.bitfire.davdroid.syncadapter.ServiceDB.OpenHelper;
+import at.bitfire.davdroid.syncadapter.ServiceDB.Services;
 import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
 
 public class AccountListFragment extends ListFragment implements OnAccountsUpdateListener, LoaderManager.LoaderCallbacks<List<AccountListFragment.AccountInfo>>, AdapterView.OnItemClickListener {
 
-    protected AccountManager accountManager;
+    private AccountManager accountManager;
+    private DavService.InfoBinder davService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -85,6 +93,7 @@ public class AccountListFragment extends ListFragment implements OnAccountsUpdat
         getLoaderManager().restartLoader(0, null, this);
     }
 
+
     @Override
     public Loader<List<AccountInfo>> onCreateLoader(int id, Bundle args) {
         return new AccountLoader(getContext());
@@ -107,7 +116,8 @@ public class AccountListFragment extends ListFragment implements OnAccountsUpdat
     @RequiredArgsConstructor
     public static class AccountInfo {
         final Account account;
-        boolean hasCardDAV, hasCalDAV;
+        boolean isRefreshing;
+        Long cardDavService, calDavService;
     }
 
 
@@ -131,20 +141,29 @@ public class AccountListFragment extends ListFragment implements OnAccountsUpdat
             TextView tv = (TextView)v.findViewById(R.id.account_name);
             tv.setText(info.account.name);
 
+            ProgressBar progressRefresh = (ProgressBar)v.findViewById(R.id.refreshing);
+            progressRefresh.setVisibility(info.isRefreshing ? View.VISIBLE : View.GONE);
+
+            Animation blink = new AlphaAnimation(0, 1);
+            blink.setDuration(400);
+            blink.setRepeatMode(Animation.REVERSE);
+            blink.setRepeatCount(Animation.INFINITE);
+
             tv = (TextView)v.findViewById(R.id.carddav);
-            tv.setVisibility(info.hasCardDAV ? View.VISIBLE : View.GONE);
+            tv.setVisibility(info.cardDavService != null ? View.VISIBLE : View.GONE);
+            tv.setAnimation(info.isRefreshing ? blink : null);
 
             tv = (TextView)v.findViewById(R.id.caldav);
-            tv.setVisibility(info.hasCalDAV ? View.VISIBLE : View.GONE);
+            tv.setVisibility(info.calDavService != null ? View.VISIBLE : View.GONE);
 
             return v;
         }
 
     }
 
-    static class AccountLoader extends AsyncTaskLoader<List<AccountInfo>> {
-        final AccountManager accountManager;
-        final OpenHelper dbHelper;
+    private static class AccountLoader extends AsyncTaskLoader<List<AccountInfo>> {
+        private final AccountManager accountManager;
+        private final OpenHelper dbHelper;
 
         public AccountLoader(Context context) {
             super(context);
@@ -159,6 +178,7 @@ public class AccountListFragment extends ListFragment implements OnAccountsUpdat
 
         @Override
         public List<AccountInfo> loadInBackground() {
+            Constants.log.info("AccountLoader RUNNING");
             List<AccountInfo> accounts = new LinkedList<>();
             try {
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -169,15 +189,17 @@ public class AccountListFragment extends ListFragment implements OnAccountsUpdat
                     // query services of this account
                     @Cleanup Cursor cursor = db.query(
                             Services._TABLE,
-                            new String[] { Services.SERVICE },
+                            new String[] { Services.ID, Services.SERVICE },
                             Services.ACCOUNT_NAME + "=?", new String[] { account.name },
                             null, null, null);
                     while (cursor.moveToNext()) {
-                        String service = cursor.getString(0);
+                        long id = cursor.getLong(0);
+
+                        String service = cursor.getString(1);
                         if (Services.SERVICE_CARDDAV.equals(service))
-                            info.hasCardDAV = true;
+                            info.cardDavService = id;
                         if (Services.SERVICE_CALDAV.equals(service))
-                            info.hasCalDAV = true;
+                            info.calDavService = id;
                     }
 
                     accounts.add(info);
@@ -187,6 +209,7 @@ public class AccountListFragment extends ListFragment implements OnAccountsUpdat
             }
             return accounts;
         }
+
     }
 
 }

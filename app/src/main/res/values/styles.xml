@@ -76,7 +76,7 @@
         <item name="android:textColorSecondary">@color/white</item>
     </style>
     <style name="toolbar_style" parent="Widget.AppCompat.Toolbar">
-        <item name="android:background">@color/davdroid_green</item>
+        <item name="android:background">@color/davdroid_lightblue</item>
         <item name="titleTextColor">@color/white</item>
     </style>
 
