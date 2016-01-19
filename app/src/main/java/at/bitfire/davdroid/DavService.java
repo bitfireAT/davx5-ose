@@ -8,15 +8,44 @@
 
 package at.bitfire.davdroid;
 
+import android.accounts.Account;
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.os.Binder;
 import android.os.IBinder;
 
+import java.io.IOException;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import at.bitfire.dav4android.DavResource;
+import at.bitfire.dav4android.UrlUtils;
+import at.bitfire.dav4android.exception.DavException;
+import at.bitfire.dav4android.exception.HttpException;
+import at.bitfire.dav4android.exception.NotFoundException;
+import at.bitfire.dav4android.property.AddressbookDescription;
+import at.bitfire.dav4android.property.AddressbookHomeSet;
+import at.bitfire.dav4android.property.CalendarDescription;
+import at.bitfire.dav4android.property.CalendarHomeSet;
+import at.bitfire.dav4android.property.DisplayName;
+import at.bitfire.dav4android.property.ResourceType;
+import at.bitfire.davdroid.model.CollectionInfo;
+import at.bitfire.davdroid.model.ServiceDB.*;
+import at.bitfire.davdroid.syncadapter.AccountSettings;
+import lombok.Cleanup;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
 
 public class DavService extends Service {
 
@@ -85,23 +114,177 @@ public class DavService extends Service {
      */
 
     private class RefreshCollections implements Runnable {
-        final long serviceId;
+        final long service;
+        final OpenHelper dbHelper;
+        SQLiteDatabase db;
 
         RefreshCollections(long davServiceId) {
-            this.serviceId = davServiceId;
+            this.service = davServiceId;
+            dbHelper = new OpenHelper(DavService.this);
         }
 
         @Override
         public void run() {
-            Constants.log.debug("RefreshCollections.Runner STARTING {}", serviceId);
             try {
-                Thread.currentThread().sleep(10000);
-            } catch (InterruptedException e) {
+                db = dbHelper.getWritableDatabase();
+                db.beginTransactionNonExclusive();
+
+                String serviceType = serviceType();
+                Constants.log.info("[DavService {}] Refreshing {} collections", service, serviceType);
+
+                // create authenticating OkHttpClient (credentials taken from account settings)
+                OkHttpClient httpClient = httpClient();
+
+                // refresh home sets
+                Set<HttpUrl> homeSets = readHomeSets();
+                HttpUrl principal = readPrincipal();
+                if (principal != null) {
+                    Constants.log.debug("[DavService {}] Querying principal for home sets", service);
+                    DavResource dav = new DavResource(null, httpClient, principal);
+                    if (Services.SERVICE_CARDDAV.equals(serviceType)) {
+                        dav.propfind(0, AddressbookHomeSet.NAME);
+                        AddressbookHomeSet addressbookHomeSet = (AddressbookHomeSet)dav.properties.get(AddressbookHomeSet.NAME);
+                        if (addressbookHomeSet != null)
+                            for (String href : addressbookHomeSet.hrefs)
+                                homeSets.add(UrlUtils.withTrailingSlash(dav.location.resolve(href)));
+                    } else if (Services.SERVICE_CALDAV.equals(serviceType)) {
+                        dav.propfind(0, CalendarHomeSet.NAME);
+                        CalendarHomeSet calendarHomeSet = (CalendarHomeSet)dav.properties.get(CalendarHomeSet.NAME);
+                        if (calendarHomeSet != null)
+                            for (String href : calendarHomeSet.hrefs)
+                                homeSets.add(UrlUtils.withTrailingSlash(dav.location.resolve(href)));
+                    }
+                }
+                saveHomeSets(homeSets);
+
+                // refresh collections in home sets
+                Map<HttpUrl, CollectionInfo> collections = readCollections();
+                for (Iterator<HttpUrl> iterator = homeSets.iterator(); iterator.hasNext();) {
+                    HttpUrl homeSet = iterator.next();
+                    Constants.log.debug("[DavService {}] Listing home set {}", service, homeSet);
+
+                    DavResource dav = new DavResource(null, httpClient, homeSet);
+                    try {
+                        dav.propfind(1, CollectionInfo.DAV_PROPERTIES);
+                        for (DavResource member : dav.members) {
+                            CollectionInfo info = CollectionInfo.fromDavResource(member);
+                            info.confirmed = true;
+                            Constants.log.debug("[DavService {}] Found collection {}", service, info);
+
+                            if ((serviceType.equals(Services.SERVICE_CARDDAV) && info.type == CollectionInfo.Type.ADDRESS_BOOK) ||
+                                (serviceType.equals(Services.SERVICE_CALDAV) && info.type == CollectionInfo.Type.CALENDAR))
+                                collections.put(member.location, info);
+                        }
+                    } catch(NotFoundException e) {
+                        // 404, remove home set
+                        iterator.remove();
+                    }
+                }
+
+                // check/refresh unconfirmed collections
+                for (Iterator<Map.Entry<HttpUrl, CollectionInfo>> iterator = collections.entrySet().iterator(); iterator.hasNext();) {
+                    Map.Entry<HttpUrl, CollectionInfo> entry = iterator.next();
+                    HttpUrl url = entry.getKey();
+                    CollectionInfo info = entry.getValue();
+
+                    if (!info.confirmed)
+                        try {
+                            DavResource dav = new DavResource(null, httpClient, url);
+                            dav.propfind(0, CollectionInfo.DAV_PROPERTIES);
+                            info = CollectionInfo.fromDavResource(dav);
+                            info.confirmed = true;
+
+                            // remove unusable collections
+                            if ((serviceType.equals(Services.SERVICE_CARDDAV) && info.type != CollectionInfo.Type.ADDRESS_BOOK) ||
+                                (serviceType.equals(Services.SERVICE_CALDAV) && info.type != CollectionInfo.Type.CALENDAR))
+                                iterator.remove();
+                        } catch(NotFoundException e) {
+                            // 404, remove collection
+                            iterator.remove();
+                        }
+                }
+                saveCollections(collections.values());
+
+                db.setTransactionSuccessful();
+            } catch (SQLiteException | IOException|HttpException|DavException e) {
+                Constants.log.error("Couldn't refresh collection list", e);
             } finally {
-                Constants.log.debug("RefreshCollections.Runner FINISHED {}", serviceId);
-                runningRefresh.remove(serviceId);
+                db.endTransaction();
+                dbHelper.close();
+
+                runningRefresh.remove(service);
                 for (RefreshingStatusListener listener : refreshingStatusListeners)
-                    listener.onDavRefreshStatusChanged(serviceId, false);
+                    listener.onDavRefreshStatusChanged(service, false);
+            }
+        }
+
+        private String serviceType() {
+            @Cleanup Cursor cursor = db.query(Services._TABLE, new String[]{Services.SERVICE}, Services.ID + "=?", new String[]{String.valueOf(service)}, null, null, null);
+            if (cursor.moveToNext())
+                return cursor.getString(0);
+            else
+                throw new IllegalArgumentException("Service not found");
+        }
+
+        private OkHttpClient httpClient() {
+            @Cleanup Cursor cursor = db.query(Services._TABLE, new String[]{Services.ACCOUNT_NAME}, Services.ID + "=?", new String[]{String.valueOf(service)}, null, null, null);
+            if (cursor.moveToNext()) {
+                Account account = new Account(cursor.getString(0), Constants.ACCOUNT_TYPE);
+                AccountSettings settings = new AccountSettings(DavService.this, account);
+
+                OkHttpClient httpClient = HttpClient.create(DavService.this);
+                httpClient = HttpClient.addAuthentication(httpClient, settings.username(), settings.password(), settings.preemptiveAuth());
+                return httpClient;
+            } else
+                throw new IllegalArgumentException("Service not found");
+        }
+
+        private HttpUrl readPrincipal() {
+            @Cleanup Cursor cursor = db.query(Services._TABLE, new String[]{Services.PRINCIPAL}, Services.ID + "=?", new String[]{String.valueOf(service)}, null, null, null);
+            if (cursor.moveToNext()) {
+                String principal = cursor.getString(0);
+                if (principal != null)
+                    return HttpUrl.parse(cursor.getString(0));
+            }
+            return null;
+        }
+
+        private Set<HttpUrl> readHomeSets() {
+            Set<HttpUrl> homeSets = new LinkedHashSet<>();
+            @Cleanup Cursor cursor = db.query(HomeSets._TABLE, new String[]{HomeSets.URL}, HomeSets.SERVICE_ID + "=?", new String[]{String.valueOf(service)}, null, null, null);
+            while (cursor.moveToNext())
+                homeSets.add(HttpUrl.parse(cursor.getString(0)));
+            return homeSets;
+        }
+
+        private void saveHomeSets(Set<HttpUrl> homeSets) {
+            db.delete(HomeSets._TABLE, HomeSets.SERVICE_ID + "=?", new String[]{String.valueOf(service)});
+            for (HttpUrl homeSet : homeSets) {
+                ContentValues values = new ContentValues(1);
+                values.put(HomeSets.SERVICE_ID, service);
+                values.put(HomeSets.URL, homeSet.toString());
+                db.insertOrThrow(HomeSets._TABLE, null, values);
+            }
+        }
+
+        private Map<HttpUrl, CollectionInfo> readCollections() {
+            Map<HttpUrl, CollectionInfo> collections = new LinkedHashMap<>();
+            @Cleanup Cursor cursor = db.query(Collections._TABLE, Collections._COLUMNS, Collections.SERVICE_ID + "=?", new String[]{String.valueOf(service)}, null, null, null);
+            while (cursor.moveToNext()) {
+                ContentValues values = new ContentValues();
+                DatabaseUtils.cursorRowToContentValues(cursor, values);
+                collections.put(HttpUrl.parse(values.getAsString(Collections.URL)), CollectionInfo.fromDB(values));
+            }
+            return collections;
+        }
+
+        private void saveCollections(Iterable<CollectionInfo> collections) {
+            db.delete(Collections._TABLE, HomeSets.SERVICE_ID + "=?", new String[]{String.valueOf(service)});
+            for (CollectionInfo collection : collections) {
+                ContentValues values = collection.toDB();
+                Constants.log.debug("Saving collection: {}", values);
+                values.put(Collections.SERVICE_ID, service);
+                db.insertWithOnConflict(Collections._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
             }
         }
     }

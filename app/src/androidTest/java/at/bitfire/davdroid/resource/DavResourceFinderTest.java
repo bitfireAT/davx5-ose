@@ -7,6 +7,7 @@ import java.io.IOException;
 import at.bitfire.dav4android.exception.DavException;
 import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.ui.setup.DavResourceFinder;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;

@@ -6,15 +6,16 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid.syncadapter;
+package at.bitfire.davdroid.model;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 
 import at.bitfire.davdroid.Constants;
-import at.bitfire.davdroid.resource.DavResourceFinder;
+import at.bitfire.davdroid.ui.setup.DavResourceFinder;
 
 public class ServiceDB {
 
@@ -22,10 +23,10 @@ public class ServiceDB {
         public static final String
                 _TABLE = "services",
                 ID = "_id",
-                ACCOUNT_NAME = "account_name",
+                ACCOUNT_NAME = "accountName",
                 SERVICE = "service",
                 PRINCIPAL = "principal",
-                LAST_REFRESH = "last_refresh";
+                LAST_REFRESH = "lastRefresh";
 
         // allowed values for SERVICE column
         public static final String
@@ -37,7 +38,7 @@ public class ServiceDB {
         public static final String
                 _TABLE = "homesets",
                 ID = "_id",
-                SERVICE_ID = "service_id",
+                SERVICE_ID = "serviceID",
                 URL = "url";
     }
 
@@ -45,17 +46,17 @@ public class ServiceDB {
         public static final String
                 _TABLE = "collections",
                 ID = "_id",
-                SERVICE_ID = "service_id",
+                SERVICE_ID = "serviceID",
                 URL = "url",
-                DISPLAY_NAME = "display_name",
-                DESCRIPTION = "description";
+                DISPLAY_NAME = "displayName",
+                DESCRIPTION = "description",
+                COLOR = "color",
+                SUPPORTS_VEVENT = "supportsVEVENT",
+                SUPPORTS_VTODO = "supportsVTODO";
 
-        public static ContentValues fromCollection(DavResourceFinder.Configuration.Collection collection) {
-            ContentValues values = new ContentValues();
-            values.put(DISPLAY_NAME, collection.getDisplayName());
-            values.put(DESCRIPTION, collection.getDescription());
-            return values;
-        }
+        public static String[] _COLUMNS = new String[] {
+                ID, SERVICE_ID, URL, DISPLAY_NAME, DESCRIPTION, COLOR, SUPPORTS_VEVENT, SUPPORTS_VTODO
+        };
     }
 
 
@@ -65,6 +66,14 @@ public class ServiceDB {
 
         public OpenHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        }
+
+        @Override
+        public void onOpen(SQLiteDatabase db) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                db.setForeignKeyConstraintsEnabled(true);
+            else
+                db.execSQL("PRAGMA foreign_keys=ON;");
         }
 
         @Override
@@ -78,20 +87,26 @@ public class ServiceDB {
                     Services.PRINCIPAL + " TEXT NULL, " +
                     Services.LAST_REFRESH + " INTEGER NULL" +
                     ")");
+            db.execSQL("CREATE UNIQUE INDEX services_account ON " + Services._TABLE + " (" + Services.ACCOUNT_NAME + "," + Services.SERVICE + ")");
 
             db.execSQL("CREATE TABLE " + HomeSets._TABLE + "(" +
                     HomeSets.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    HomeSets.SERVICE_ID + " INTEGER NOT NULL," +
+                    HomeSets.SERVICE_ID + " INTEGER NOT NULL REFERENCES " + Services._TABLE +" ON DELETE CASCADE," +
                     HomeSets.URL + " TEXT NOT NULL" +
              ")");
+            db.execSQL("CREATE UNIQUE INDEX homesets_service_url ON " + HomeSets._TABLE + "(" + HomeSets.SERVICE_ID + "," + HomeSets.URL + ")");
 
             db.execSQL("CREATE TABLE " + Collections._TABLE + "(" +
                     Collections.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    Collections.SERVICE_ID + " INTEGER NOT NULL," +
+                    Collections.SERVICE_ID + " INTEGER NOT NULL REFERENCES " + Services._TABLE +" ON DELETE CASCADE," +
                     Collections.URL + " TEXT NOT NULL," +
                     Collections.DISPLAY_NAME + " TEXT NULL," +
-                    Collections.DESCRIPTION + " TEXT NULL" +
+                    Collections.DESCRIPTION + " TEXT NULL," +
+                    Collections.COLOR + " INTEGER NULL," +
+                    Collections.SUPPORTS_VEVENT + " INTEGER NULL," +
+                    Collections.SUPPORTS_VTODO + " INTEGER NULL" +
             ")");
+            db.execSQL("CREATE UNIQUE INDEX collections_service_url ON " + Collections._TABLE + "(" + Collections.SERVICE_ID + "," + Collections.URL + ")");
         }
 
         @Override

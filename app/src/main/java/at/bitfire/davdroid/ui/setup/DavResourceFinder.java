@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  */
-package at.bitfire.davdroid.resource;
+package at.bitfire.davdroid.ui.setup;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -45,7 +45,7 @@ import at.bitfire.dav4android.property.ResourceType;
 import at.bitfire.dav4android.property.SupportedCalendarComponentSet;
 import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.log.StringLogger;
-import at.bitfire.davdroid.ui.setup.LoginCredentialsFragment;
+import at.bitfire.davdroid.model.CollectionInfo;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
@@ -194,14 +194,14 @@ public class DavResourceFinder {
         if (resourceType != null && resourceType.types.contains(ResourceType.ADDRESSBOOK)) {
             dav.location = UrlUtils.withTrailingSlash(dav.location);
             log.info("Found address book at " + dav.location);
-            config.collections.put(dav.location, collectionInfo(dav, Configuration.Collection.Type.ADDRESS_BOOK));
+            config.collections.put(dav.location, CollectionInfo.fromDavResource(dav));
         }
 
         // Does the collection refer to address book homesets?
         AddressbookHomeSet homeSets = (AddressbookHomeSet)dav.properties.get(AddressbookHomeSet.NAME);
         if (homeSets != null)
             for (String href : homeSets.hrefs)
-                config.homeSets.add(dav.location.resolve(href));
+                config.homeSets.add(UrlUtils.withTrailingSlash(dav.location.resolve(href)));
     }
 
     protected void rememberIfCalendarOrHomeset(@NonNull DavResource dav, @NonNull Configuration.ServiceInfo config) {
@@ -210,77 +210,14 @@ public class DavResourceFinder {
         if (resourceType != null && resourceType.types.contains(ResourceType.CALENDAR)) {
             dav.location = UrlUtils.withTrailingSlash(dav.location);
             log.info("Found calendar collection at " + dav.location);
-
-            boolean supportsEvents = true, supportsTasks = true;
-            SupportedCalendarComponentSet supportedCalendarComponentSet = (SupportedCalendarComponentSet)dav.properties.get(SupportedCalendarComponentSet.NAME);
-            if (supportedCalendarComponentSet != null) {
-                supportsEvents = supportedCalendarComponentSet.supportsEvents;
-                supportsTasks = supportedCalendarComponentSet.supportsTasks;
-            }
-            if (supportsEvents || supportsTasks) {
-                Configuration.Collection info = collectionInfo(dav, Configuration.Collection.Type.CALENDAR);
-                info.supportsEvents = supportsEvents;
-                info.supportsTasks = supportsTasks;
-                config.collections.put(dav.location, info);
-            }
+            config.collections.put(dav.location, CollectionInfo.fromDavResource(dav));
         }
 
         // Does the collection refer to calendar homesets?
         CalendarHomeSet homeSets = (CalendarHomeSet)dav.properties.get(CalendarHomeSet.NAME);
         if (homeSets != null)
             for (String href : homeSets.hrefs)
-                config.homeSets.add(dav.location.resolve(href));
-    }
-
-    /**
-     * Builds a #{@link at.bitfire.davdroid.resource.DavResourceFinder.Configuration.Collection} from a given
-     * #{@link DavResource}. Uses these DAV properties:
-     * <ul>
-     *     <li>calendars: current-user-properties, current-user-privilege-set, displayname, calendar-description, calendar-color</li>
-     *     <li>address books: current-user-properties, current-user-privilege-set, displayname, addressbook-description</li>
-     * </ul>. Make sure you have queried these properties from the DavResource.
-     * @param dav   DavResource to take the resource info from
-     * @param type  must be ADDRESS_BOOK or CALENDAR
-     * @return      ResourceInfo which represents the DavResource
-     */
-    protected Configuration.Collection collectionInfo(DavResource dav, Configuration.Collection.Type type) {
-        boolean readOnly = false;
-        CurrentUserPrivilegeSet privilegeSet = (CurrentUserPrivilegeSet)dav.properties.get(CurrentUserPrivilegeSet.NAME);
-        if (privilegeSet != null)
-            readOnly = !privilegeSet.mayWriteContent;
-
-        String title = null;
-        DisplayName displayName = (DisplayName)dav.properties.get(DisplayName.NAME);
-        if (displayName != null)
-            title = displayName.displayName;
-        if (TextUtils.isEmpty(title))
-            title = UrlUtils.lastSegment(dav.location);
-
-        String description = null;
-        Integer color = null;
-        if (type == Configuration.Collection.Type.ADDRESS_BOOK) {
-            AddressbookDescription addressbookDescription = (AddressbookDescription)dav.properties.get(AddressbookDescription.NAME);
-            if (addressbookDescription != null)
-                description = addressbookDescription.description;
-        } else if (type == Configuration.Collection.Type.CALENDAR) {
-            CalendarDescription calendarDescription = (CalendarDescription)dav.properties.get(CalendarDescription.NAME);
-            if (calendarDescription != null)
-                description = calendarDescription.description;
-
-            CalendarColor calendarColor = (CalendarColor)dav.properties.get(CalendarColor.NAME);
-            if (calendarColor != null)
-                color = calendarColor.color;
-        }
-
-        Configuration.Collection collection = new Configuration.Collection(
-                type,
-                readOnly,
-                title,
-                description,
-                color
-        );
-
-        return collection;
+                config.homeSets.add(UrlUtils.withTrailingSlash(dav.location.resolve(href)));
     }
 
 
@@ -432,27 +369,7 @@ public class DavResourceFinder {
             final Set<HttpUrl> homeSets = new HashSet<>();
 
             @Getter
-            final Map<HttpUrl, Collection> collections = new HashMap<>();
-        }
-
-        @Data
-        public static class Collection implements Serializable {
-            public enum Type {
-                ADDRESS_BOOK,
-                CALENDAR
-            }
-
-            final Type type;
-            final boolean readOnly;
-
-            final String displayName, description;
-            final Integer color;
-
-            /**
-             * full VTIMEZONE definition (not the TZ ID)
-             */
-            boolean supportsEvents, supportsTasks;
-            String timezone;
+            final Map<HttpUrl, CollectionInfo> collections = new HashMap<>();
         }
     }
 
