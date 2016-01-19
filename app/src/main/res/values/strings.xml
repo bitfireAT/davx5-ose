@@ -34,6 +34,9 @@
     <string name="account_refresh_address_book_list">Refresh address book list</string>
     <string name="account_add_existing_address_book">Add existing address book</string>
     <string name="account_create_new_address_book">Create new address book</string>
+    <string name="account_refresh_calendar_list">Refresh calendar list</string>
+    <string name="account_add_existing_calendar">Add existing calendar</string>
+    <string name="account_create_new_calendar">Create new calendar</string>
 
     <!-- MainActivity -->
     <string name="main_manage_accounts">Manage sync accounts</string>

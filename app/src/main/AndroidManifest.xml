@@ -49,6 +49,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute">
+
         <service
             android:name=".syncadapter.AccountAuthenticatorService"
             android:exported="false">
@@ -103,12 +104,18 @@
                 android:resource="@xml/sync_tasks"/>
         </service>
 
+        <service
+            android:name=".DavService"
+            android:enabled="true">
+        </service>
+
         <activity
             android:name=".ui.AccountsActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -134,6 +141,7 @@
             android:label="@string/settings_title">
             <intent-filter>
                 <action android:name="android.intent.action.MANAGE_NETWORK_USAGE"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
@@ -148,6 +156,7 @@
         <activity
             android:name="de.duenndns.ssl.MemorizingActivity"
             android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar"/>
+
     </application>
 
 </manifest>

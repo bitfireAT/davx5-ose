@@ -12,8 +12,8 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:src="@drawable/blue_sky_with_birds"
-        android:scaleType="fitCenter"
+        android:src="@drawable/sky_birds"
+        android:scaleType="centerCrop"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true" />

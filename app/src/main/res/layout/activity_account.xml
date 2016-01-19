@@ -18,19 +18,67 @@
               android:layout_marginBottom="@dimen/activity_vertical_margin">
 
     <android.support.v7.widget.CardView
+        android:id="@+id/carddav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardElevation="8dp"
-        >
+        android:layout_marginBottom="16dp"
+        app:cardElevation="8dp">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/carddav_menu"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:theme="@style/toolbar_theme"
-            style="@style/toolbar_style"
-            app:navigationIcon="@drawable/ic_people_light"
-            app:title="CardDAV"/>
+            android:orientation="vertical">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/carddav_menu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/toolbar_theme"
+                style="@style/toolbar_style"
+                app:navigationIcon="@drawable/ic_people_light"
+                app:title="CardDAV"/>
+
+            <ProgressBar
+                android:id="@+id/carddav_refreshing"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:indeterminate="true"/>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/caldav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/caldav_menu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/toolbar_theme"
+                style="@style/toolbar_style"
+                app:navigationIcon="@drawable/ic_people_light"
+                app:title="CalDAV"/>
+
+            <ProgressBar
+                android:id="@+id/caldav_refreshing"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:indeterminate="true"/>
+
+        </LinearLayout>
 
     </android.support.v7.widget.CardView>
 

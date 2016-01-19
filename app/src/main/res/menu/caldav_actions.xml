@@ -9,12 +9,12 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/refresh_address_books"
-          android:title="@string/account_refresh_address_book_list"/>
+    <item android:id="@+id/refresh_calendars"
+          android:title="@string/account_refresh_calendar_list"/>
 
-    <item android:id="@+id/add_address_book"
-          android:title="@string/account_add_existing_address_book"/>
-    <item android:id="@+id/create_address_book"
-          android:title="@string/account_create_new_address_book"/>
+    <item android:id="@+id/add_calendar"
+          android:title="@string/account_add_existing_calendar"/>
+    <item android:id="@+id/create_calendar"
+          android:title="@string/account_create_new_calendar"/>
 
 </menu>
