@@ -10,10 +10,13 @@ package at.bitfire.davdroid.ui.setup;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.provider.CalendarContract;
+import android.provider.ContactsContract;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -30,6 +33,7 @@ import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
 import at.bitfire.davdroid.model.ServiceDB.*;
+import at.bitfire.ical4android.TaskProvider;
 import lombok.Cleanup;
 import okhttp3.HttpUrl;
 
@@ -105,12 +109,22 @@ public class AccountDetailsFragment extends Fragment {
                 long id = insertService(db, accountName, Services.SERVICE_CARDDAV, config.cardDAV);
                 refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id);
                 getActivity().startService(refreshIntent);
+
+                ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
+                ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
             }
 
             if (config.calDAV != null) {
                 long id = insertService(db, accountName, Services.SERVICE_CALDAV, config.calDAV);
                 refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id);
                 getActivity().startService(refreshIntent);
+
+                ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1);
+                ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true);
+
+                // TODO check for tasks availability
+                ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
+                ContentResolver.setSyncAutomatically(account, TaskProvider.ProviderName.OpenTasks.authority, true);
             }
 
             db.setTransactionSuccessful();

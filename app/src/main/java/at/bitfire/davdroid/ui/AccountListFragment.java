@@ -125,34 +125,20 @@ public class AccountListFragment extends ListFragment implements OnAccountsUpdat
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View v = convertView;
-
-            if (v == null) {
-                LayoutInflater inflater = LayoutInflater.from(getContext());
-                v = inflater.inflate(R.layout.account_list_item, parent, false);
-            }
+        public View getView(int position, View v, ViewGroup parent) {
+            if (v == null)
+                v = LayoutInflater.from(getContext()).inflate(R.layout.account_list_item, parent, false);
 
             AccountInfo info = getItem(position);
 
             TextView tv = (TextView)v.findViewById(R.id.account_name);
             tv.setText(info.account.name);
 
-            ProgressBar progressRefresh = (ProgressBar)v.findViewById(R.id.refreshing);
-            progressRefresh.setVisibility(info.isRefreshing ? View.VISIBLE : View.GONE);
-
-            Animation blink = new AlphaAnimation(0, 1);
-            blink.setDuration(400);
-            blink.setRepeatMode(Animation.REVERSE);
-            blink.setRepeatCount(Animation.INFINITE);
-
             tv = (TextView)v.findViewById(R.id.carddav);
             tv.setVisibility(info.cardDavService != null ? View.VISIBLE : View.GONE);
-            tv.setAnimation(info.isRefreshing ? blink : null);
 
             tv = (TextView)v.findViewById(R.id.caldav);
             tv.setVisibility(info.calDavService != null ? View.VISIBLE : View.GONE);
-
             return v;
         }
 

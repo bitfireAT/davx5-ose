@@ -18,10 +18,11 @@ import at.bitfire.dav4android.property.CalendarDescription;
 import at.bitfire.dav4android.property.CurrentUserPrivilegeSet;
 import at.bitfire.dav4android.property.DisplayName;
 import at.bitfire.dav4android.property.ResourceType;
+import at.bitfire.dav4android.property.SupportedAddressData;
 import at.bitfire.dav4android.property.SupportedCalendarComponentSet;
 import lombok.ToString;
-import okhttp3.HttpUrl;
 import at.bitfire.davdroid.model.ServiceDB.*;
+import okhttp3.MediaType;
 
 @ToString
 public class CollectionInfo {
@@ -39,6 +40,8 @@ public class CollectionInfo {
     public String displayName, description;
     public Integer color;
 
+    public Integer vCardVersion;
+
     public Boolean supportsVEVENT;
     public Boolean supportsVTODO;
 
@@ -50,8 +53,8 @@ public class CollectionInfo {
             ResourceType.NAME,
             CurrentUserPrivilegeSet.NAME,
             DisplayName.NAME,
-            AddressbookDescription.NAME, CalendarDescription.NAME,
-            CalendarColor.NAME, SupportedCalendarComponentSet.NAME
+            AddressbookDescription.NAME, SupportedAddressData.NAME,
+            CalendarDescription.NAME, CalendarColor.NAME, SupportedCalendarComponentSet.NAME
     };
 
     public static CollectionInfo fromDavResource(DavResource dav) {
@@ -80,6 +83,15 @@ public class CollectionInfo {
             if (addressbookDescription != null)
                 info.description = addressbookDescription.description;
 
+            SupportedAddressData addressData = (SupportedAddressData)dav.properties.get(SupportedAddressData.NAME);
+            if (addressData != null) {
+                boolean vCard4 = false;
+                for (MediaType contentType : addressData.types)
+                    if ("text/vcard".equals(contentType.type()) && contentType.toString().contains("version=4.0"))
+                        vCard4 = true;
+                info.vCardVersion = vCard4 ? 4 : 3;
+            }
+
         } else if (info.type == Type.CALENDAR) {
             CalendarDescription calendarDescription = (CalendarDescription)dav.properties.get(CalendarDescription.NAME);
             if (calendarDescription != null)
@@ -107,9 +119,13 @@ public class CollectionInfo {
         info.url = values.getAsString(Collections.URL);
         info.displayName = values.getAsString(Collections.DISPLAY_NAME);
         info.description = values.getAsString(Collections.DESCRIPTION);
+
+        info.vCardVersion = values.getAsInteger(Collections.VCARD_VERSION);
+
         info.color = values.getAsInteger(Collections.COLOR);
-        info.supportsVEVENT = values.getAsBoolean(Collections.SUPPORTS_VEVENT);
-        info.supportsVTODO = values.getAsBoolean(Collections.SUPPORTS_VTODO);
+
+        info.supportsVEVENT = booleanField(values, Collections.SUPPORTS_VEVENT);
+        info.supportsVTODO = booleanField(values, Collections.SUPPORTS_VTODO);
         return info;
     }
 
@@ -118,10 +134,23 @@ public class CollectionInfo {
         values.put(Collections.URL, url);
         values.put(Collections.DISPLAY_NAME, displayName);
         values.put(Collections.DESCRIPTION, description);
+
+        values.put(Collections.VCARD_VERSION,  vCardVersion);
+
         values.put(Collections.COLOR, color);
-        values.put(Collections.SUPPORTS_VEVENT, supportsVEVENT);
-        values.put(Collections.SUPPORTS_VTODO, supportsVTODO);
+        if (supportsVEVENT != null)
+            values.put(Collections.SUPPORTS_VEVENT, supportsVEVENT ? 1 : 0);
+        if (supportsVTODO != null)
+            values.put(Collections.SUPPORTS_VTODO, supportsVTODO ? 1 : 0);
         return values;
+    }
+
+
+    private static Boolean booleanField(ContentValues values, String field) {
+        Integer i = values.getAsInteger(field);
+        if (i == null)
+            return null;
+        return i != 0;
     }
 
 }

@@ -9,6 +9,7 @@
 package at.bitfire.davdroid;
 
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.Binder;
 import android.os.IBinder;
+import android.text.TextUtils;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -50,6 +52,7 @@ import okhttp3.OkHttpClient;
 public class DavService extends Service {
 
     public static final String
+            ACTION_ACCOUNTS_UPDATED = "accountsUpdated",
             ACTION_REFRESH_COLLECTIONS = "refreshCollections",
             EXTRA_DAV_SERVICE_ID = "davServiceID";
 
@@ -65,6 +68,9 @@ public class DavService extends Service {
         long id = intent.getLongExtra(EXTRA_DAV_SERVICE_ID, -1);
 
         switch (action) {
+            case ACTION_ACCOUNTS_UPDATED:
+                cleanupAccounts();
+                break;
             case ACTION_REFRESH_COLLECTIONS:
                 if (runningRefresh.add(id)) {
                     new Thread(new RefreshCollections(id)).start();
@@ -113,6 +119,27 @@ public class DavService extends Service {
        which actually do the work
      */
 
+    void cleanupAccounts() {
+        Constants.log.info("[DavService] Cleaning up orphaned accounts");
+
+        final OpenHelper dbHelper = new OpenHelper(this);
+        try {
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+            List<String> sqlAccountNames = new LinkedList<>();
+            AccountManager am = AccountManager.get(this);
+            for (Account account : am.getAccountsByType(Constants.ACCOUNT_TYPE))
+                sqlAccountNames.add(DatabaseUtils.sqlEscapeString(account.name));
+
+            if (sqlAccountNames.isEmpty())
+                db.delete(Services._TABLE, null, null);
+            else
+                db.delete(Services._TABLE, Services.ACCOUNT_NAME + " NOT IN (" + TextUtils.join(",", sqlAccountNames) + ")", null);
+        } finally {
+            dbHelper.close();
+        }
+    }
+
     private class RefreshCollections implements Runnable {
         final long service;
         final OpenHelper dbHelper;
@@ -127,7 +154,6 @@ public class DavService extends Service {
         public void run() {
             try {
                 db = dbHelper.getWritableDatabase();
-                db.beginTransactionNonExclusive();
 
                 String serviceType = serviceType();
                 Constants.log.info("[DavService {}] Refreshing {} collections", service, serviceType);
@@ -155,7 +181,6 @@ public class DavService extends Service {
                                 homeSets.add(UrlUtils.withTrailingSlash(dav.location.resolve(href)));
                     }
                 }
-                saveHomeSets(homeSets);
 
                 // refresh collections in home sets
                 Map<HttpUrl, CollectionInfo> collections = readCollections();
@@ -203,13 +228,19 @@ public class DavService extends Service {
                             iterator.remove();
                         }
                 }
-                saveCollections(collections.values());
 
-                db.setTransactionSuccessful();
-            } catch (SQLiteException | IOException|HttpException|DavException e) {
+                try {
+                    db.beginTransaction();
+                    saveHomeSets(homeSets);
+                    saveCollections(collections.values());
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+
+            } catch (IOException|HttpException|DavException e) {
                 Constants.log.error("Couldn't refresh collection list", e);
             } finally {
-                db.endTransaction();
                 dbHelper.close();
 
                 runningRefresh.remove(service);
