@@ -51,11 +51,12 @@ public class ServiceDB {
                 DISPLAY_NAME = "displayName",
                 DESCRIPTION = "description",
                 COLOR = "color",
+                VCARD_VERSION = "vCardVersion",
                 SUPPORTS_VEVENT = "supportsVEVENT",
                 SUPPORTS_VTODO = "supportsVTODO";
 
         public static String[] _COLUMNS = new String[] {
-                ID, SERVICE_ID, URL, DISPLAY_NAME, DESCRIPTION, COLOR, SUPPORTS_VEVENT, SUPPORTS_VTODO
+                ID, SERVICE_ID, URL, DISPLAY_NAME, DESCRIPTION, COLOR, VCARD_VERSION, SUPPORTS_VEVENT, SUPPORTS_VTODO
         };
     }
 
@@ -70,6 +71,7 @@ public class ServiceDB {
 
         @Override
         public void onOpen(SQLiteDatabase db) {
+            db.enableWriteAheadLogging();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
                 db.setForeignKeyConstraintsEnabled(true);
             else
@@ -103,6 +105,7 @@ public class ServiceDB {
                     Collections.DISPLAY_NAME + " TEXT NULL," +
                     Collections.DESCRIPTION + " TEXT NULL," +
                     Collections.COLOR + " INTEGER NULL," +
+                    Collections.VCARD_VERSION + " INTEGER NULL," +
                     Collections.SUPPORTS_VEVENT + " INTEGER NULL," +
                     Collections.SUPPORTS_VTODO + " INTEGER NULL" +
             ")");

@@ -20,6 +20,7 @@ import org.dmfs.provider.tasks.TaskContract.Tasks;
 
 import java.io.FileNotFoundException;
 
+import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.ical4android.AndroidTaskList;
 import at.bitfire.ical4android.AndroidTaskListFactory;
 import at.bitfire.ical4android.CalendarStorageException;
@@ -53,14 +54,10 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
         super(account, provider, LocalTask.Factory.INSTANCE, id);
     }
 
-    public static Uri create(Account account, ContentResolver resolver, ServerInfo.ResourceInfo info) throws CalendarStorageException {
-        TaskProvider provider = TaskProvider.acquire(resolver, TaskProvider.ProviderName.OpenTasks);
-        if (provider == null)
-            throw new CalendarStorageException("Couldn't access OpenTasks provider");
-
+    public static Uri create(Account account, TaskProvider provider, CollectionInfo info) throws CalendarStorageException {
         ContentValues values = new ContentValues();
-        values.put(TaskLists._SYNC_ID, info.getUrl());
-        values.put(TaskLists.LIST_NAME, info.getTitle());
+        values.put(TaskLists._SYNC_ID, info.url);
+        values.put(TaskLists.LIST_NAME, info.displayName);
         values.put(TaskLists.LIST_COLOR, info.color != null ? info.color : defaultColor);
         values.put(TaskLists.OWNER, account.name);
         values.put(TaskLists.SYNC_ENABLED, 1);

@@ -11,13 +11,24 @@ import android.accounts.Account;
 import android.app.Service;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.IBinder;
 
+import java.util.*;
+
 import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.model.CollectionInfo;
+import at.bitfire.davdroid.model.ServiceDB;
+import at.bitfire.davdroid.model.ServiceDB.*;
+import at.bitfire.davdroid.model.ServiceDB.Collections;
+import at.bitfire.davdroid.resource.LocalTask;
 import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.TaskProvider;
@@ -25,27 +36,34 @@ import lombok.Cleanup;
 
 public class TasksSyncAdapterService extends Service {
 	private static SyncAdapter syncAdapter;
+    OpenHelper dbHelper;
 
 	@Override
 	public void onCreate() {
-		if (syncAdapter == null)
-			syncAdapter = new SyncAdapter(getApplicationContext());
+        dbHelper = new OpenHelper(this);
+        syncAdapter = new SyncAdapter(this, dbHelper);
 	}
 
-	@Override
-	public void onDestroy() {
-		syncAdapter = null;
-	}
+    @Override
+    public void onDestroy() {
+        dbHelper.close();
+    }
 
-	@Override
+    @Override
 	public IBinder onBind(Intent intent) {
-		return syncAdapter.getSyncAdapterBinder(); 
+		return syncAdapter.getSyncAdapterBinder();
 	}
 	
 
 	private static class SyncAdapter extends AbstractThreadedSyncAdapter {
-        public SyncAdapter(Context context) {
+        final OpenHelper dbHelper;
+        final SQLiteDatabase db;
+
+        public SyncAdapter(Context context, OpenHelper dbHelper) {
             super(context, false);
+
+            this.dbHelper = dbHelper;
+            db = dbHelper.getReadableDatabase();
         }
 
         @Override
@@ -57,6 +75,8 @@ public class TasksSyncAdapterService extends Service {
                 if (provider == null)
                     throw new CalendarStorageException("Couldn't access OpenTasks provider");
 
+                syncLocalTaskLists(provider, account);
+
                 for (LocalTaskList taskList : (LocalTaskList[])LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, null, null)) {
                     Constants.log.info("Synchronizing task list #"  + taskList.getId() + ", URL: " + taskList.getSyncId());
                     TasksSyncManager syncManager = new TasksSyncManager(getContext(), account, extras, authority, provider, syncResult, taskList);
@@ -67,6 +87,54 @@ public class TasksSyncAdapterService extends Service {
             }
 
             Constants.log.info("Task sync complete");
+        }
+
+        private void syncLocalTaskLists(TaskProvider provider, Account account) throws CalendarStorageException {
+            long service = getService(account);
+
+            // enumerate remote and local task lists
+            Map<String, CollectionInfo> remote = remoteTaskLists(service);
+            LocalTaskList[] local = (LocalTaskList[])LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, null, null);
+
+            // delete obsolete local task lists
+            for (LocalTaskList list : local) {
+                String url = list.getSyncId();
+                Constants.log.debug("Checking local task list {} {}", list.getId(), url);
+                if (!remote.containsKey(url)) {
+                    Constants.log.debug("Deleting local task list {}", url);
+                    list.delete();
+                } else
+                    // we already have a local task list for this remote collection
+                    remote.remove(url);
+            }
+
+            // create new local task lists
+            for (String url : remote.keySet()) {
+                CollectionInfo info = remote.get(url);
+                Constants.log.info("Adding local task list {}", info);
+                LocalTaskList.create(account, provider, info);
+            }
+        }
+
+        long getService(Account account) {
+            @Cleanup Cursor c = db.query(Services._TABLE, new String[]{ Services.ID },
+                    Services.ACCOUNT_NAME + "=? AND " + Services.SERVICE + "=?", new String[]{ account.name, Services.SERVICE_CALDAV }, null, null, null);
+            c.moveToNext();
+            return c.getLong(0);
+        }
+
+        private Map<String, CollectionInfo> remoteTaskLists(long service) {
+            Map<String, CollectionInfo> collections = new LinkedHashMap<>();
+            @Cleanup Cursor cursor = db.query(Collections._TABLE, Collections._COLUMNS,
+                    Collections.SERVICE_ID + "=? AND " + Collections.SUPPORTS_VTODO + "!=0",
+                    new String[] { String.valueOf(service) }, null, null, null);
+            while (cursor.moveToNext()) {
+                ContentValues values = new ContentValues();
+                DatabaseUtils.cursorRowToContentValues(cursor, values);
+                CollectionInfo info = CollectionInfo.fromDB(values);
+                collections.put(info.url, info);
+            }
+            return collections;
         }
     }
 

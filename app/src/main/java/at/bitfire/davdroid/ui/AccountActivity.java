@@ -33,12 +33,17 @@ import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -134,6 +139,9 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                 intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, accountInfo.carddav.id);
                 startService(intent);
                 break;
+            case R.id.create_address_book:
+                // TODO
+                break;
             case R.id.refresh_calendars:
                 intent = new Intent(this, DavService.class);
                 intent.setAction(DavService.ACTION_REFRESH_COLLECTIONS);
@@ -193,10 +201,9 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             progress.setVisibility(info.carddav.refreshing ? View.VISIBLE : View.GONE);
 
             ListView list = (ListView)findViewById(R.id.address_books);
-            List<String> names = new LinkedList<>();
-            for (CollectionInfo addrBook : info.carddav.collections)
-                names.add(addrBook.displayName != null ? addrBook.displayName : addrBook.url);
-            list.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_checked, android.R.id.text1, names));
+            AddressBookAdapter adapter = new AddressBookAdapter(this);
+            adapter.addAll(info.carddav.collections);
+            list.setAdapter(adapter);
         } else
             card.setVisibility(View.GONE);
 
@@ -206,10 +213,9 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             progress.setVisibility(info.caldav.refreshing ? View.VISIBLE : View.GONE);
 
             ListView list = (ListView)findViewById(R.id.calendars);
-            List<String> names = new LinkedList<>();
-            for (CollectionInfo calendar : info.caldav.collections)
-                names.add(calendar.displayName != null ? calendar.displayName : calendar.url);
-            list.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_checked, android.R.id.text1, names));
+            CalendarAdapter adapter = new CalendarAdapter(this);
+            adapter.addAll(info.caldav.collections);
+            list.setAdapter(adapter);
         } else
             card.setVisibility(View.GONE);
     }
@@ -269,7 +275,6 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                         null, null, null);
                 while (cursor.moveToNext()) {
                     long id = cursor.getLong(0);
-
                     String service = cursor.getString(1);
                     if (Services.SERVICE_CARDDAV.equals(service)) {
                         info.carddav = new AccountInfo.ServiceInfo();
@@ -299,6 +304,69 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                 collections.add(CollectionInfo.fromDB(values));
             }
             return collections;
+        }
+    }
+
+
+    /* LIST ADAPTERS */
+
+    public static class AddressBookAdapter extends ArrayAdapter<CollectionInfo> {
+        public AddressBookAdapter(Context context) {
+            super(context, R.layout.account_address_book_item);
+        }
+
+        @Override
+        public View getView(int position, View v, ViewGroup parent) {
+            if (v == null)
+                v = LayoutInflater.from(getContext()).inflate(R.layout.account_address_book_item, parent, false);
+
+            CollectionInfo info = getItem(position);
+
+            TextView tv = (TextView)v.findViewById(R.id.title);
+            tv.setText(TextUtils.isEmpty(info.displayName) ? info.url : info.displayName);
+
+            tv = (TextView)v.findViewById(R.id.description);
+            if (TextUtils.isEmpty(info.description))
+                tv.setVisibility(View.GONE);
+            else {
+                tv.setVisibility(View.VISIBLE);
+                tv.setText(info.description);
+            }
+
+            return v;
+        }
+    }
+
+    public static class CalendarAdapter extends ArrayAdapter<CollectionInfo> {
+        public CalendarAdapter(Context context) {
+            super(context, R.layout.account_calendar_item);
+        }
+
+        @Override
+        public View getView(int position, View v, ViewGroup parent) {
+            if (v == null)
+                v = LayoutInflater.from(getContext()).inflate(R.layout.account_calendar_item, parent, false);
+
+            CollectionInfo info = getItem(position);
+
+            TextView tv = (TextView)v.findViewById(R.id.title);
+            tv.setText(TextUtils.isEmpty(info.displayName) ? info.url : info.displayName);
+
+            tv = (TextView)v.findViewById(R.id.description);
+            if (TextUtils.isEmpty(info.description))
+                tv.setVisibility(View.GONE);
+            else {
+                tv.setVisibility(View.VISIBLE);
+                tv.setText(info.description);
+            }
+
+            tv = (TextView)v.findViewById(R.id.events);
+            tv.setVisibility(info.supportsVEVENT ? View.VISIBLE : View.GONE);
+
+            tv = (TextView)v.findViewById(R.id.tasks);
+            tv.setVisibility(info.supportsVTODO ? View.VISIBLE : View.GONE);
+
+            return v;
         }
     }
 

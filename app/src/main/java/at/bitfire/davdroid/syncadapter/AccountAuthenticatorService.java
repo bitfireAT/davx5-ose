@@ -65,7 +65,7 @@ public class AccountAuthenticatorService extends Service {
 			return null;
 		}
 
-		@Override
+        @Override
 		public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
 			return null;
 		}
