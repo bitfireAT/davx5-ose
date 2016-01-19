@@ -26,8 +26,7 @@ import java.io.StringReader;
 
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.resource.DavResourceFinder;
-import at.bitfire.davdroid.resource.DavResourceFinder.Configuration;
+import at.bitfire.davdroid.ui.setup.DavResourceFinder.Configuration;
 import at.bitfire.davdroid.ui.DebugInfoActivity;
 import lombok.Cleanup;
 

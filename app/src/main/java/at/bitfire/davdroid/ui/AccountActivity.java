@@ -15,36 +15,42 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 import at.bitfire.davdroid.Constants;
-import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.DavService;
-import at.bitfire.davdroid.syncadapter.ServiceDB.*;
+import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.model.CollectionInfo;
+import at.bitfire.davdroid.model.ServiceDB.Collections;
+import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
+import at.bitfire.davdroid.model.ServiceDB.Services;
 import lombok.Cleanup;
 
 public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, ServiceConnection, DavService.RefreshingStatusListener, LoaderManager.LoaderCallbacks<AccountActivity.AccountInfo> {
@@ -59,7 +65,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final String accountName = getIntent().getStringExtra(EXTRA_ACCOUNT_NAME);
+        accountName = getIntent().getStringExtra(EXTRA_ACCOUNT_NAME);
         if (accountName == null)
             // invalid account name
             finish();
@@ -125,13 +131,13 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             case R.id.refresh_address_books:
                 Intent intent = new Intent(this, DavService.class);
                 intent.setAction(DavService.ACTION_REFRESH_COLLECTIONS);
-                intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, accountInfo.cardDavService);
+                intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, accountInfo.carddav.id);
                 startService(intent);
                 break;
             case R.id.refresh_calendars:
                 intent = new Intent(this, DavService.class);
                 intent.setAction(DavService.ACTION_REFRESH_COLLECTIONS);
-                intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, accountInfo.calDavService);
+                intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, accountInfo.caldav.id);
                 startService(intent);
                 break;
         }
@@ -162,11 +168,14 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     /* LOADERS AND LOADED DATA */
 
     public static class AccountInfo {
-        Long cardDavService;
-        boolean cardDavRefreshing;
+        ServiceInfo carddav, caldav;
 
-        Long calDavService;
-        boolean calDavRefreshing;
+        public static class ServiceInfo {
+            long id;
+            boolean refreshing;
+
+            List<CollectionInfo> collections;
+        }
     }
 
     @Override
@@ -179,16 +188,28 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
         accountInfo = info;
 
         CardView card = (CardView)findViewById(R.id.carddav);
-        if (info.cardDavService != null) {
+        if (info.carddav != null) {
             ProgressBar progress = (ProgressBar)findViewById(R.id.carddav_refreshing);
-            progress.setVisibility(info.cardDavRefreshing ? View.VISIBLE : View.GONE);
+            progress.setVisibility(info.carddav.refreshing ? View.VISIBLE : View.GONE);
+
+            ListView list = (ListView)findViewById(R.id.address_books);
+            List<String> names = new LinkedList<>();
+            for (CollectionInfo addrBook : info.carddav.collections)
+                names.add(addrBook.displayName != null ? addrBook.displayName : addrBook.url);
+            list.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_checked, android.R.id.text1, names));
         } else
             card.setVisibility(View.GONE);
 
         card = (CardView)findViewById(R.id.caldav);
-        if (info.calDavService != null) {
+        if (info.caldav != null) {
             ProgressBar progress = (ProgressBar)findViewById(R.id.caldav_refreshing);
-            progress.setVisibility(info.calDavRefreshing ? View.VISIBLE : View.GONE);
+            progress.setVisibility(info.caldav.refreshing ? View.VISIBLE : View.GONE);
+
+            ListView list = (ListView)findViewById(R.id.calendars);
+            List<String> names = new LinkedList<>();
+            for (CollectionInfo calendar : info.caldav.collections)
+                names.add(calendar.displayName != null ? calendar.displayName : calendar.url);
+            list.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_checked, android.R.id.text1, names));
         } else
             card.setVisibility(View.GONE);
     }
@@ -251,17 +272,33 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
                     String service = cursor.getString(1);
                     if (Services.SERVICE_CARDDAV.equals(service)) {
-                        info.cardDavService = id;
-                        info.cardDavRefreshing = davService.isRefreshing(id);
+                        info.carddav = new AccountInfo.ServiceInfo();
+                        info.carddav.id = id;
+                        info.carddav.refreshing = davService.isRefreshing(id);
+                        info.carddav.collections = readCollections(db, id);
+
                     } else if (Services.SERVICE_CALDAV.equals(service)) {
-                        info.calDavService = id;
-                        info.calDavRefreshing = davService.isRefreshing(id);
+                        info.caldav = new AccountInfo.ServiceInfo();
+                        info.caldav.id = id;
+                        info.caldav.refreshing = davService.isRefreshing(id);
+                        info.caldav.collections = readCollections(db, id);
                     }
                 }
             } finally {
                 dbHelper.close();
             }
             return info;
+        }
+
+        private List<CollectionInfo> readCollections(SQLiteDatabase db, long service) {
+            List<CollectionInfo> collections = new LinkedList<>();
+            @Cleanup Cursor cursor = db.query(Collections._TABLE, Collections._COLUMNS, Collections.SERVICE_ID + "=?", new String[]{String.valueOf(service)}, null, null, null);
+            while (cursor.moveToNext()) {
+                ContentValues values = new ContentValues();
+                DatabaseUtils.cursorRowToContentValues(cursor, values);
+                collections.add(CollectionInfo.fromDB(values));
+            }
+            return collections;
         }
     }
 

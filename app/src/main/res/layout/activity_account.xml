@@ -46,6 +46,11 @@
                 android:visibility="gone"
                 android:indeterminate="true"/>
 
+            <ListView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/address_books"/>
+
         </LinearLayout>
 
     </android.support.v7.widget.CardView>
@@ -77,6 +82,11 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 android:indeterminate="true"/>
+
+            <ListView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/calendars"/>
 
         </LinearLayout>
 

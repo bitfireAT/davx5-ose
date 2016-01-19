@@ -11,6 +11,7 @@ package at.bitfire.davdroid.ui.setup;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -24,10 +25,11 @@ import android.widget.EditText;
 import java.util.Map;
 
 import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.DavService;
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.resource.DavResourceFinder;
+import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
-import at.bitfire.davdroid.syncadapter.ServiceDB.*;
+import at.bitfire.davdroid.model.ServiceDB.*;
 import lombok.Cleanup;
 import okhttp3.HttpUrl;
 
@@ -56,7 +58,11 @@ public class AccountDetailsFragment extends Fragment {
             }
         });
 
+        DavResourceFinder.Configuration config = (DavResourceFinder.Configuration)getArguments().getSerializable(KEY_CONFIG);
+
         final EditText editName = (EditText)v.findViewById(R.id.account_name);
+        editName.setText(config.userName);
+
         Button btnCreate = (Button)v.findViewById(R.id.create_account);
         btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,11 +98,20 @@ public class AccountDetailsFragment extends Fragment {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.beginTransactionNonExclusive();
         try {
-            if (config.cardDAV != null)
-                insertService(db, accountName, Services.SERVICE_CARDDAV, config.cardDAV);
+            Intent refreshIntent = new Intent(getActivity(), DavService.class);
+            refreshIntent.setAction(DavService.ACTION_REFRESH_COLLECTIONS);
 
-            if (config.calDAV != null)
-                insertService(db, accountName, Services.SERVICE_CALDAV, config.calDAV);
+            if (config.cardDAV != null) {
+                long id = insertService(db, accountName, Services.SERVICE_CARDDAV, config.cardDAV);
+                refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id);
+                getActivity().startService(refreshIntent);
+            }
+
+            if (config.calDAV != null) {
+                long id = insertService(db, accountName, Services.SERVICE_CALDAV, config.calDAV);
+                refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id);
+                getActivity().startService(refreshIntent);
+            }
 
             db.setTransactionSuccessful();
         } finally {
@@ -106,7 +121,7 @@ public class AccountDetailsFragment extends Fragment {
         return true;
     }
 
-    protected void insertService(SQLiteDatabase db, String accountName, String service, DavResourceFinder.Configuration.ServiceInfo info) {
+    protected long insertService(SQLiteDatabase db, String accountName, String service, DavResourceFinder.Configuration.ServiceInfo info) {
         ContentValues values = new ContentValues();
 
         // insert service
@@ -125,12 +140,13 @@ public class AccountDetailsFragment extends Fragment {
         }
 
         // insert collections
-        for (Map.Entry<HttpUrl, DavResourceFinder.Configuration.Collection> entry : info.getCollections().entrySet()) {
-            values = Collections.fromCollection(entry.getValue());
+        for (CollectionInfo collection : info.getCollections().values()) {
+            values = collection.toDB();
             values.put(Collections.SERVICE_ID, serviceID);
-            values.put(Collections.URL, entry.getKey().toString());
             db.insertOrThrow(Collections._TABLE, null, values);
         }
+
+        return serviceID;
     }
 
 }
