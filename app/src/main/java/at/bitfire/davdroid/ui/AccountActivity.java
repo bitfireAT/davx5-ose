@@ -323,6 +323,9 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
             CollectionInfo info = getItem(position);
 
+            View vColor = v.findViewById(R.id.color);
+            vColor.setBackgroundColor(info.color);
+
             TextView tv = (TextView)v.findViewById(R.id.title);
             tv.setText(TextUtils.isEmpty(info.displayName) ? info.url : info.displayName);
 

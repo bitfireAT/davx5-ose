@@ -42,6 +42,7 @@ import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.DateUtils;
 import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
+import lombok.NonNull;
 
 public class LocalCalendar extends AndroidCalendar implements LocalCollection {
 
@@ -69,12 +70,17 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         super(account, provider, LocalEvent.Factory.INSTANCE, id);
     }
 
-    @TargetApi(15)
-    public static Uri create(Account account, ContentResolver resolver, CollectionInfo info) throws CalendarStorageException {
-        @Cleanup("release") ContentProviderClient provider = resolver.acquireContentProviderClient(CalendarContract.AUTHORITY);
-        if (provider == null)
-            throw new CalendarStorageException("Couldn't acquire ContentProviderClient for " + CalendarContract.AUTHORITY);
+    public static Uri create(@NonNull Account account, @NonNull ContentProviderClient provider, @NonNull CollectionInfo info) throws CalendarStorageException {
+        ContentValues values = valuesFromCollectionInfo(info);
+        values.put(Calendars.OWNER_ACCOUNT, account.name);
+        return create(account, provider, values);
+    }
 
+    public void update(CollectionInfo info) throws CalendarStorageException {
+        update(valuesFromCollectionInfo(info));
+    }
+
+    private static ContentValues valuesFromCollectionInfo(CollectionInfo info) {
         ContentValues values = new ContentValues();
         values.put(Calendars.NAME, info.url);
         values.put(Calendars.CALENDAR_DISPLAY_NAME, info.displayName);
@@ -88,7 +94,6 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
             values.put(Calendars.CAN_ORGANIZER_RESPOND, 1);
         }
 
-        values.put(Calendars.OWNER_ACCOUNT, account.name);
         values.put(Calendars.SYNC_EVENTS, 1);
         values.put(Calendars.VISIBLE, 1);
         if (!TextUtils.isEmpty(info.timeZone)) {
@@ -101,7 +106,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
             values.put(Calendars.ALLOWED_AVAILABILITY, StringUtils.join(new int[] { Reminders.AVAILABILITY_TENTATIVE, Reminders.AVAILABILITY_FREE, Reminders.AVAILABILITY_BUSY }, ","));
             values.put(Calendars.ALLOWED_ATTENDEE_TYPES, StringUtils.join(new int[] { CalendarContract.Attendees.TYPE_OPTIONAL, CalendarContract.Attendees.TYPE_REQUIRED, CalendarContract.Attendees.TYPE_RESOURCE }, ", "));
         }
-        return create(account, provider, values);
+        return values;
     }
 
 

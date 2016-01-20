@@ -54,8 +54,8 @@ public class TasksSyncAdapterService extends Service {
 	
 
 	private static class SyncAdapter extends AbstractThreadedSyncAdapter {
-        final OpenHelper dbHelper;
-        final SQLiteDatabase db;
+        private final OpenHelper dbHelper;
+        private final SQLiteDatabase db;
 
         public SyncAdapter(Context context, OpenHelper dbHelper) {
             super(context, false);
