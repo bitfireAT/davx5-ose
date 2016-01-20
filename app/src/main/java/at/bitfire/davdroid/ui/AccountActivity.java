@@ -42,6 +42,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -174,6 +176,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             progress.setVisibility(info.carddav.refreshing ? View.VISIBLE : View.GONE);
 
             ListView list = (ListView)findViewById(R.id.address_books);
+            list.setEnabled(!info.carddav.refreshing);
             AddressBookAdapter adapter = new AddressBookAdapter(this);
             adapter.addAll(info.carddav.collections);
             list.setAdapter(adapter);
@@ -186,6 +189,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             progress.setVisibility(info.caldav.refreshing ? View.VISIBLE : View.GONE);
 
             ListView list = (ListView)findViewById(R.id.calendars);
+            list.setEnabled(!info.caldav.refreshing);
             CalendarAdapter adapter = new CalendarAdapter(this);
             adapter.addAll(info.caldav.collections);
             list.setAdapter(adapter);
@@ -271,7 +275,8 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
         private List<CollectionInfo> readCollections(SQLiteDatabase db, long service) {
             List<CollectionInfo> collections = new LinkedList<>();
-            @Cleanup Cursor cursor = db.query(Collections._TABLE, Collections._COLUMNS, Collections.SERVICE_ID + "=?", new String[]{String.valueOf(service)}, null, null, null);
+            @Cleanup Cursor cursor = db.query(Collections._TABLE, Collections._COLUMNS, Collections.SERVICE_ID + "=?", new String[]{String.valueOf(service)},
+                    null, null, Collections.SUPPORTS_VEVENT + " DESC," + Collections.DISPLAY_NAME);
             while (cursor.moveToNext()) {
                 ContentValues values = new ContentValues();
                 DatabaseUtils.cursorRowToContentValues(cursor, values);
@@ -321,10 +326,29 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             if (v == null)
                 v = LayoutInflater.from(getContext()).inflate(R.layout.account_calendar_item, parent, false);
 
-            CollectionInfo info = getItem(position);
+            final CollectionInfo info = getItem(position);
 
-            View vColor = v.findViewById(R.id.color);
-            vColor.setBackgroundColor(info.color);
+            CheckBox select = (CheckBox)v.findViewById(R.id.selected);
+            select.setChecked(info.selected);
+            select.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    OpenHelper dbHelper = new OpenHelper(getContext());
+                    try {
+                        SQLiteDatabase db = dbHelper.getWritableDatabase();
+                        ContentValues values = new ContentValues(1);
+                        values.put(Collections.SELECTED, isChecked ? 1 : 0);
+                        db.update(Collections._TABLE, values, Collections.ID + "=?", new String[]{String.valueOf(info.id)});
+                    } finally {
+                        dbHelper.close();
+                    }
+                }
+            });
+
+            if (info.color != null) {
+                View vColor = v.findViewById(R.id.color);
+                vColor.setBackgroundColor(info.color);
+            }
 
             TextView tv = (TextView)v.findViewById(R.id.title);
             tv.setText(TextUtils.isEmpty(info.displayName) ? info.url : info.displayName);

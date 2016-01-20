@@ -76,7 +76,7 @@ public class DavResourceFinder {
 
         httpClient = HttpClient.create(context);
         httpClient = HttpClient.addLogger(httpClient, log);
-        httpClient = HttpClient.addAuthentication(httpClient, credentials.getUserName(), credentials.getPassword(), credentials.isAuthPreemptive());
+        httpClient = HttpClient.addAuthentication(httpClient, credentials.userName, credentials.password, credentials.authPreemptive);
 	}
 
 
@@ -86,7 +86,7 @@ public class DavResourceFinder {
                 calDavConfig = findInitialConfiguration(Service.CALDAV);
 
         return new Configuration(
-                credentials.getUserName(), credentials.getPassword(), credentials.isAuthPreemptive(),
+                credentials.userName, credentials.password, credentials.authPreemptive,
                 cardDavConfig, calDavConfig,
                 log.toString()
         );
@@ -94,7 +94,7 @@ public class DavResourceFinder {
 
     protected Configuration.ServiceInfo findInitialConfiguration(@NonNull Service service) {
         // user-given base URI (either mailto: URI or http(s):// URL)
-        final URI baseURI = credentials.getUri();
+        final URI baseURI = credentials.uri;
 
         // domain for service discovery
         String discoveryFQDN = null;

@@ -122,7 +122,7 @@ public class DetectConfigurationFragment extends DialogFragment implements Loade
         public ServerConfigurationLoader(Context context, Bundle args) {
             super(context);
             this.context = context;
-            credentials = (LoginCredentialsFragment.LoginCredentials)args.getSerializable(ARG_LOGIN_CREDENTIALS);
+            credentials = (LoginCredentialsFragment.LoginCredentials)args.getParcelable(ARG_LOGIN_CREDENTIALS);
         }
 
         @Override
