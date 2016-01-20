@@ -20,6 +20,13 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="4dp"/>
 
+    <View
+        android:id="@+id/color"
+        android:layout_width="32dp"
+        android:layout_height="match_parent"
+        android:layout_marginRight="4dp"
+        tools:background="@color/davdroid_green_dark"/>
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
