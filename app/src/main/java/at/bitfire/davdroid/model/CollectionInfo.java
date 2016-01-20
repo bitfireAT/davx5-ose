@@ -139,7 +139,7 @@ public class CollectionInfo {
         if (supportsVTODO != null)
             values.put(Collections.SUPPORTS_VTODO, supportsVTODO ? 1 : 0);
 
-        values.put(Collections.SELECTED, selected);
+        values.put(Collections.SELECTED, selected ? 1 : 0);
         return values;
     }
 

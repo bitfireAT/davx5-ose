@@ -127,7 +127,7 @@ public class CalendarsSyncAdapterService extends Service {
         private Map<String, CollectionInfo> remoteCalendars(long service) {
             Map<String, CollectionInfo> collections = new LinkedHashMap<>();
             @Cleanup Cursor cursor = db.query(ServiceDB.Collections._TABLE, ServiceDB.Collections._COLUMNS,
-                    ServiceDB.Collections.SERVICE_ID + "=? AND " + ServiceDB.Collections.SUPPORTS_VEVENT + "!=0",
+                    ServiceDB.Collections.SERVICE_ID + "=? AND " + ServiceDB.Collections.SUPPORTS_VEVENT + "!=0 AND selected",
                     new String[] { String.valueOf(service) }, null, null, null);
             while (cursor.moveToNext()) {
                 ContentValues values = new ContentValues();

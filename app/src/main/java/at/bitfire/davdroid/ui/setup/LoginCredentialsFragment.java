@@ -10,6 +10,8 @@ package at.bitfire.davdroid.ui.setup;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatCheckBox;
@@ -22,14 +24,13 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import java.io.Serializable;
 import java.net.IDN;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.ui.widget.EditPassword;
-import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 public class LoginCredentialsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
 
@@ -75,7 +76,7 @@ public class LoginCredentialsFragment extends Fragment implements CompoundButton
                 if (credentials != null) {
                     // login data OK, continue with DetectConfigurationFragment
                     Bundle args = new Bundle(1);
-                    args.putSerializable(DetectConfigurationFragment.ARG_LOGIN_CREDENTIALS, credentials);
+                    args.putParcelable(DetectConfigurationFragment.ARG_LOGIN_CREDENTIALS, credentials);
 
                     DialogFragment dialog = new DetectConfigurationFragment();
                     dialog.setArguments(args);
@@ -169,11 +170,41 @@ public class LoginCredentialsFragment extends Fragment implements CompoundButton
     }
 
 
-    @Data
-    public class LoginCredentials implements Serializable {
-        final URI uri;
-        final String userName, password;
-        final boolean authPreemptive;
+    @RequiredArgsConstructor
+    public static class LoginCredentials implements Parcelable {
+        public final URI uri;
+        public final String userName, password;
+        public final boolean authPreemptive;
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeSerializable(uri);
+            dest.writeString(userName);
+            dest.writeString(password);
+            dest.writeInt(authPreemptive ? 1 : 0);
+        }
+
+        public static final Parcelable.Creator CREATOR = new Parcelable.Creator<LoginCredentials>() {
+            @Override
+            public LoginCredentials createFromParcel(Parcel source) {
+                LoginCredentials credentials = new LoginCredentials(
+                        (URI)source.readSerializable(),
+                        source.readString(), source.readString(),
+                        source.readInt() != 0 ? true : false
+                );
+                return null;
+            }
+
+            @Override
+            public LoginCredentials[] newArray(int size) {
+                return new LoginCredentials[0];
+            }
+        };
     }
 
 }
