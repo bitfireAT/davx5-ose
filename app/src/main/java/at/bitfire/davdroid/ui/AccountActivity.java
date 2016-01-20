@@ -31,6 +31,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.MenuBuilder;
+import android.support.v7.view.menu.MenuPresenter;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -40,7 +42,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -58,13 +59,14 @@ import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
 import at.bitfire.davdroid.model.ServiceDB.Services;
 import lombok.Cleanup;
 
-public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, ServiceConnection, DavService.RefreshingStatusListener, LoaderManager.LoaderCallbacks<AccountActivity.AccountInfo> {
+public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, LoaderManager.LoaderCallbacks<AccountActivity.AccountInfo> {
 
     public static final String EXTRA_ACCOUNT_NAME = "account_name";
 
     private String accountName;
     private AccountInfo accountInfo;
-    private DavService.InfoBinder davService;
+
+    Toolbar tbCardDAV, tbCalDAV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,27 +80,18 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
         setContentView(R.layout.activity_account);
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.carddav_menu);
-        toolbar.inflateMenu(R.menu.carddav_actions);
-        toolbar.setOnMenuItemClickListener(this);
+        // CardDAV toolbar
+        tbCardDAV = (Toolbar)findViewById(R.id.carddav_menu);
+        tbCardDAV.inflateMenu(R.menu.carddav_actions);
+        tbCardDAV.setOnMenuItemClickListener(this);
 
-        toolbar = (Toolbar)findViewById(R.id.caldav_menu);
-        toolbar.inflateMenu(R.menu.caldav_actions);
-        toolbar.setOnMenuItemClickListener(this);
+        // CalDAV toolbar
+        tbCalDAV = (Toolbar)findViewById(R.id.caldav_menu);
+        tbCalDAV.inflateMenu(R.menu.caldav_actions);
+        tbCalDAV.setOnMenuItemClickListener(this);
 
+        // load CardDAV/CalDAV collections
         getLoaderManager().initLoader(0, getIntent().getExtras(), this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        bindService(new Intent(this, DavService.class), this, Context.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unbindService(this);
     }
 
     @Override
@@ -153,26 +146,6 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     }
 
 
-    /* SERVICE CONNECTION */
-
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-        davService = (DavService.InfoBinder)service;
-        davService.addRefreshingStatusListener(this, true);
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-        davService.removeRefreshingStatusListener(this);
-        davService = null;
-    }
-
-    @Override
-    public void onDavRefreshStatusChanged(long id, boolean refreshing) {
-        getLoaderManager().restartLoader(0, getIntent().getExtras(), this);
-    }
-
-
     /* LOADERS AND LOADED DATA */
 
     public static class AccountInfo {
@@ -192,7 +165,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     }
 
     @Override
-    public void onLoadFinished(Loader<AccountInfo> loader, AccountInfo info) {
+    public void onLoadFinished(Loader<AccountInfo> loader, final AccountInfo info) {
         accountInfo = info;
 
         CardView card = (CardView)findViewById(R.id.carddav);
@@ -249,6 +222,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             davService = (DavService.InfoBinder)service;
+            davService.addRefreshingStatusListener(this, false);
             forceLoad();
         }
 

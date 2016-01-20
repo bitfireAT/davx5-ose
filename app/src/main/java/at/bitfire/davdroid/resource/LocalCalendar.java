@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.ical4android.AndroidCalendar;
 import at.bitfire.ical4android.AndroidCalendarFactory;
 import at.bitfire.ical4android.BatchOperation;
@@ -69,17 +70,17 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
     }
 
     @TargetApi(15)
-    public static Uri create(Account account, ContentResolver resolver, ServerInfo.ResourceInfo info) throws CalendarStorageException {
+    public static Uri create(Account account, ContentResolver resolver, CollectionInfo info) throws CalendarStorageException {
         @Cleanup("release") ContentProviderClient provider = resolver.acquireContentProviderClient(CalendarContract.AUTHORITY);
         if (provider == null)
             throw new CalendarStorageException("Couldn't acquire ContentProviderClient for " + CalendarContract.AUTHORITY);
 
         ContentValues values = new ContentValues();
-        values.put(Calendars.NAME, info.getUrl());
-        values.put(Calendars.CALENDAR_DISPLAY_NAME, info.getTitle());
+        values.put(Calendars.NAME, info.url);
+        values.put(Calendars.CALENDAR_DISPLAY_NAME, info.displayName);
         values.put(Calendars.CALENDAR_COLOR, info.color != null ? info.color : defaultColor);
 
-        if (info.isReadOnly())
+        if (info.readOnly)
             values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ);
         else {
             values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER);
@@ -90,8 +91,8 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         values.put(Calendars.OWNER_ACCOUNT, account.name);
         values.put(Calendars.SYNC_EVENTS, 1);
         values.put(Calendars.VISIBLE, 1);
-        if (!TextUtils.isEmpty(info.timezone)) {
-            VTimeZone timeZone = DateUtils.parseVTimeZone(info.timezone);
+        if (!TextUtils.isEmpty(info.timeZone)) {
+            VTimeZone timeZone = DateUtils.parseVTimeZone(info.timeZone);
             if (timeZone != null && timeZone.getTimeZoneId() != null)
                 values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(timeZone.getTimeZoneId().getValue()));
         }

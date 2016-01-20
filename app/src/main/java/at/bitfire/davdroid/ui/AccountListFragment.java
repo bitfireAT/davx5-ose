@@ -43,17 +43,11 @@ import at.bitfire.davdroid.model.ServiceDB.Services;
 import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
 
-public class AccountListFragment extends ListFragment implements OnAccountsUpdateListener, LoaderManager.LoaderCallbacks<List<AccountListFragment.AccountInfo>>, AdapterView.OnItemClickListener {
-
-    private AccountManager accountManager;
-    private DavService.InfoBinder davService;
+public class AccountListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<AccountListFragment.AccountInfo>>, AdapterView.OnItemClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setListAdapter(new AccountListAdapter(getContext()));
-
-        accountManager = AccountManager.get(getContext());
-        accountManager.addOnAccountsUpdatedListener(this, null, false);
 
         return inflater.inflate(R.layout.account_list, container, false);
     }
@@ -69,25 +63,12 @@ public class AccountListFragment extends ListFragment implements OnAccountsUpdat
     }
 
     @Override
-    public void onDestroyView() {
-        accountManager.removeOnAccountsUpdatedListener(this);
-        super.onDestroyView();
-    }
-
-
-    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         AccountInfo info = (AccountInfo)getListAdapter().getItem(position);
 
         Intent intent = new Intent(getContext(), AccountActivity.class);
         intent.putExtra(AccountActivity.EXTRA_ACCOUNT_NAME, info.account.name);
         startActivity(intent);
-    }
-
-
-    @Override
-    public void onAccountsUpdated(Account[] accounts) {
-        getLoaderManager().restartLoader(0, null, this);
     }
 
 
@@ -99,10 +80,8 @@ public class AccountListFragment extends ListFragment implements OnAccountsUpdat
     @Override
     public void onLoadFinished(Loader<List<AccountInfo>> loader, List<AccountInfo> accounts) {
         AccountListAdapter adapter = (AccountListAdapter)getListAdapter();
-        if (adapter != null) {
-            adapter.clear();
-            adapter.addAll(accounts);
-        }
+        adapter.clear();
+        adapter.addAll(accounts);
     }
 
     @Override
@@ -113,13 +92,10 @@ public class AccountListFragment extends ListFragment implements OnAccountsUpdat
     @RequiredArgsConstructor
     public static class AccountInfo {
         final Account account;
-        boolean isRefreshing;
         Long cardDavService, calDavService;
     }
 
-
     static class AccountListAdapter extends ArrayAdapter<AccountInfo> {
-
         public AccountListAdapter(Context context) {
             super(context, R.layout.account_list_item);
         }
@@ -141,10 +117,9 @@ public class AccountListFragment extends ListFragment implements OnAccountsUpdat
             tv.setVisibility(info.calDavService != null ? View.VISIBLE : View.GONE);
             return v;
         }
-
     }
 
-    private static class AccountLoader extends AsyncTaskLoader<List<AccountInfo>> {
+    private static class AccountLoader extends AsyncTaskLoader<List<AccountInfo>> implements OnAccountsUpdateListener {
         private final AccountManager accountManager;
         private final OpenHelper dbHelper;
 
@@ -156,12 +131,21 @@ public class AccountListFragment extends ListFragment implements OnAccountsUpdat
 
         @Override
         protected void onStartLoading() {
+            accountManager.addOnAccountsUpdatedListener(this, null, true);
+        }
+
+        @Override
+        protected void onStopLoading() {
+            accountManager.removeOnAccountsUpdatedListener(this);
+        }
+
+        @Override
+        public void onAccountsUpdated(Account[] accounts) {
             forceLoad();
         }
 
         @Override
         public List<AccountInfo> loadInBackground() {
-            Constants.log.info("AccountLoader RUNNING");
             List<AccountInfo> accounts = new LinkedList<>();
             try {
                 SQLiteDatabase db = dbHelper.getReadableDatabase();

@@ -111,12 +111,12 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
 
     private void upgradeTLS(SSLSocket ssl) {
         if (protocols != null) {
-            Constants.log.debug("Setting allowed TLS protocols: " + TextUtils.join(", ", protocols));
+            Constants.log.trace("Setting allowed TLS protocols: " + TextUtils.join(", ", protocols));
             ssl.setEnabledProtocols(protocols);
         }
 
         if (Build.VERSION.SDK_INT < 20 && cipherSuites != null) {
-            Constants.log.debug("Setting allowed TLS ciphers: " + TextUtils.join(", ", cipherSuites));
+            Constants.log.trace("Setting allowed TLS ciphers: " + TextUtils.join(", ", cipherSuites));
             ssl.setEnabledCipherSuites(cipherSuites);
         }
     }

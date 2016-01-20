@@ -15,6 +15,7 @@ import at.bitfire.dav4android.Property;
 import at.bitfire.dav4android.property.AddressbookDescription;
 import at.bitfire.dav4android.property.CalendarColor;
 import at.bitfire.dav4android.property.CalendarDescription;
+import at.bitfire.dav4android.property.CalendarTimezone;
 import at.bitfire.dav4android.property.CurrentUserPrivilegeSet;
 import at.bitfire.dav4android.property.DisplayName;
 import at.bitfire.dav4android.property.ResourceType;
@@ -22,7 +23,6 @@ import at.bitfire.dav4android.property.SupportedAddressData;
 import at.bitfire.dav4android.property.SupportedCalendarComponentSet;
 import lombok.ToString;
 import at.bitfire.davdroid.model.ServiceDB.*;
-import okhttp3.MediaType;
 
 @ToString
 public class CollectionInfo {
@@ -40,10 +40,11 @@ public class CollectionInfo {
     public String displayName, description;
     public Integer color;
 
-    public Integer vCardVersion;
-
+    public String timeZone;
     public Boolean supportsVEVENT;
     public Boolean supportsVTODO;
+
+    public boolean selected;
 
     // non-persistent properties
     public boolean confirmed;
@@ -83,15 +84,6 @@ public class CollectionInfo {
             if (addressbookDescription != null)
                 info.description = addressbookDescription.description;
 
-            SupportedAddressData addressData = (SupportedAddressData)dav.properties.get(SupportedAddressData.NAME);
-            if (addressData != null) {
-                boolean vCard4 = false;
-                for (MediaType contentType : addressData.types)
-                    if ("text/vcard".equals(contentType.type()) && contentType.toString().contains("version=4.0"))
-                        vCard4 = true;
-                info.vCardVersion = vCard4 ? 4 : 3;
-            }
-
         } else if (info.type == Type.CALENDAR) {
             CalendarDescription calendarDescription = (CalendarDescription)dav.properties.get(CalendarDescription.NAME);
             if (calendarDescription != null)
@@ -100,6 +92,10 @@ public class CollectionInfo {
             CalendarColor calendarColor = (CalendarColor)dav.properties.get(CalendarColor.NAME);
             if (calendarColor != null)
                 info.color = calendarColor.color;
+
+            CalendarTimezone timeZone = (CalendarTimezone)dav.properties.get(CalendarTimezone.NAME);
+            if (timeZone != null)
+                info.timeZone = timeZone.vTimeZone;
 
             info.supportsVEVENT = info.supportsVTODO = true;
             SupportedCalendarComponentSet supportedCalendarComponentSet = (SupportedCalendarComponentSet)dav.properties.get(SupportedCalendarComponentSet.NAME);
@@ -120,12 +116,13 @@ public class CollectionInfo {
         info.displayName = values.getAsString(Collections.DISPLAY_NAME);
         info.description = values.getAsString(Collections.DESCRIPTION);
 
-        info.vCardVersion = values.getAsInteger(Collections.VCARD_VERSION);
-
         info.color = values.getAsInteger(Collections.COLOR);
 
+        info.timeZone = values.getAsString(Collections.TIME_ZONE);
         info.supportsVEVENT = booleanField(values, Collections.SUPPORTS_VEVENT);
         info.supportsVTODO = booleanField(values, Collections.SUPPORTS_VTODO);
+
+        info.selected = booleanField(values, Collections.SELECTED);
         return info;
     }
 
@@ -134,14 +131,15 @@ public class CollectionInfo {
         values.put(Collections.URL, url);
         values.put(Collections.DISPLAY_NAME, displayName);
         values.put(Collections.DESCRIPTION, description);
-
-        values.put(Collections.VCARD_VERSION,  vCardVersion);
-
         values.put(Collections.COLOR, color);
+
+        values.put(Collections.TIME_ZONE, timeZone);
         if (supportsVEVENT != null)
             values.put(Collections.SUPPORTS_VEVENT, supportsVEVENT ? 1 : 0);
         if (supportsVTODO != null)
             values.put(Collections.SUPPORTS_VTODO, supportsVTODO ? 1 : 0);
+
+        values.put(Collections.SELECTED, selected);
         return values;
     }
 

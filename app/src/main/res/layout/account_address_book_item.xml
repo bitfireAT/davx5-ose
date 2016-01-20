@@ -9,23 +9,36 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
-              android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:padding="8dp">
+              android:layout_height="wrap_content"
+              android:padding="8dp"
+              android:gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
+    <android.support.v7.widget.AppCompatRadioButton
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        tools:text="My Address Book"/>
+        android:layout_marginRight="4dp"
+        android:id="@+id/checkBox"/>
 
-    <TextView
-        android:id="@+id/description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:text="Address Book Description"/>
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_weight="1"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            tools:text="My Address Book"/>
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:text="Address Book Description"/>
+
+    </LinearLayout>
 
 </LinearLayout>

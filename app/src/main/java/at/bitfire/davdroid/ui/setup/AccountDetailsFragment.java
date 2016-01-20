@@ -112,7 +112,8 @@ public class AccountDetailsFragment extends Fragment {
 
                 ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
                 ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
-            }
+            } else
+                ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0);
 
             if (config.calDAV != null) {
                 long id = insertService(db, accountName, Services.SERVICE_CALDAV, config.calDAV);
@@ -125,6 +126,9 @@ public class AccountDetailsFragment extends Fragment {
                 // TODO check for tasks availability
                 ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
                 ContentResolver.setSyncAutomatically(account, TaskProvider.ProviderName.OpenTasks.authority, true);
+            } else {
+                ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0);
+                ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0);
             }
 
             db.setTransactionSuccessful();
