@@ -36,7 +36,6 @@ import java.util.List;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalAddressBook;
-import at.bitfire.davdroid.resource.ServerInfo;
 import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
 

@@ -25,10 +25,8 @@ import java.util.*;
 
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.model.CollectionInfo;
-import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.model.ServiceDB.*;
 import at.bitfire.davdroid.model.ServiceDB.Collections;
-import at.bitfire.davdroid.resource.LocalTask;
 import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.TaskProvider;
@@ -75,7 +73,7 @@ public class TasksSyncAdapterService extends Service {
                 if (provider == null)
                     throw new CalendarStorageException("Couldn't access OpenTasks provider");
 
-                syncLocalTaskLists(provider, account);
+                updateLocalTaskLists(provider, account);
 
                 for (LocalTaskList taskList : (LocalTaskList[])LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, null, null)) {
                     Constants.log.info("Synchronizing task list #"  + taskList.getId() + ", URL: " + taskList.getSyncId());
@@ -84,12 +82,14 @@ public class TasksSyncAdapterService extends Service {
                 }
             } catch (CalendarStorageException e) {
                 Constants.log.error("Couldn't enumerate local task lists", e);
+            } finally {
+                db.close();
             }
 
             Constants.log.info("Task sync complete");
         }
 
-        private void syncLocalTaskLists(TaskProvider provider, Account account) throws CalendarStorageException {
+        private void updateLocalTaskLists(TaskProvider provider, Account account) throws CalendarStorageException {
             long service = getService(account);
 
             // enumerate remote and local task lists
@@ -99,13 +99,17 @@ public class TasksSyncAdapterService extends Service {
             // delete obsolete local task lists
             for (LocalTaskList list : local) {
                 String url = list.getSyncId();
-                Constants.log.debug("Checking local task list {} {}", list.getId(), url);
                 if (!remote.containsKey(url)) {
-                    Constants.log.debug("Deleting local task list {}", url);
+                    Constants.log.debug("Deleting obsolete local task list {}", url);
                     list.delete();
-                } else
-                    // we already have a local task list for this remote collection
+                } else {
+                    // remote CollectionInfo found for this local collection, update data
+                    CollectionInfo info = remote.get(url);
+                    Constants.log.debug("Updating local task list {} with {}", url, info);
+                    list.update(info);
+                    // we already have a local task list for this remote collection, don't take into consideration anymore
                     remote.remove(url);
+                }
             }
 
             // create new local task lists

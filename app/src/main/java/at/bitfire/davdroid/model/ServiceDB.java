@@ -8,14 +8,12 @@
 
 package at.bitfire.davdroid.model;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 
 import at.bitfire.davdroid.Constants;
-import at.bitfire.davdroid.ui.setup.DavResourceFinder;
 
 public class ServiceDB {
 
@@ -51,12 +49,15 @@ public class ServiceDB {
                 DISPLAY_NAME = "displayName",
                 DESCRIPTION = "description",
                 COLOR = "color",
-                VCARD_VERSION = "vCardVersion",
+                TIME_ZONE = "timezone",
                 SUPPORTS_VEVENT = "supportsVEVENT",
-                SUPPORTS_VTODO = "supportsVTODO";
+                SUPPORTS_VTODO = "supportsVTODO",
+                SELECTED = "selected";
 
         public static String[] _COLUMNS = new String[] {
-                ID, SERVICE_ID, URL, DISPLAY_NAME, DESCRIPTION, COLOR, VCARD_VERSION, SUPPORTS_VEVENT, SUPPORTS_VTODO
+                ID, SERVICE_ID, URL, DISPLAY_NAME, DESCRIPTION, COLOR,
+                TIME_ZONE, SUPPORTS_VEVENT, SUPPORTS_VTODO,
+                SELECTED
         };
     }
 
@@ -105,9 +106,10 @@ public class ServiceDB {
                     Collections.DISPLAY_NAME + " TEXT NULL," +
                     Collections.DESCRIPTION + " TEXT NULL," +
                     Collections.COLOR + " INTEGER NULL," +
-                    Collections.VCARD_VERSION + " INTEGER NULL," +
+                    Collections.TIME_ZONE + " TEXt NULL," +
                     Collections.SUPPORTS_VEVENT + " INTEGER NULL," +
-                    Collections.SUPPORTS_VTODO + " INTEGER NULL" +
+                    Collections.SUPPORTS_VTODO + " INTEGER NULL," +
+                    Collections.SELECTED + " INTEGER DEFAULT 0 NOT NULL" +
             ")");
             db.execSQL("CREATE UNIQUE INDEX collections_service_url ON " + Collections._TABLE + "(" + Collections.SERVICE_ID + "," + Collections.URL + ")");
         }
