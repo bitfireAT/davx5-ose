@@ -25,7 +25,7 @@ import at.bitfire.ical4android.AndroidEventFactory;
 import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.Event;
 import lombok.Getter;
-import lombok.NonNull;
+import android.support.annotation.NonNull;
 import lombok.Setter;
 
 @TargetApi(17)

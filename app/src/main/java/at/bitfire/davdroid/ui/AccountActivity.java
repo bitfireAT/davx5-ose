@@ -31,8 +31,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.menu.MenuBuilder;
-import android.support.v7.view.menu.MenuPresenter;
+import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -41,9 +40,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -55,6 +55,7 @@ import java.util.List;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.DavService;
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.log.StringLogger;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB.Collections;
 import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
@@ -105,6 +106,9 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.settings:
+                // TODO
+                break;
             case R.id.delete_account:
                 new AlertDialog.Builder(AccountActivity.this)
                         .setIcon(R.drawable.ic_error_dark)
@@ -161,6 +165,47 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
         }
     }
 
+    private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            final ListView list = (ListView)parent;
+            final ArrayAdapter<CollectionInfo> adapter = (ArrayAdapter)list.getAdapter();
+            final CollectionInfo info = adapter.getItem(position);
+
+            boolean nowChecked = !info.selected;
+
+            if (list.getChoiceMode() == AbsListView.CHOICE_MODE_SINGLE)
+                // clear all other checked items
+                for (int i = adapter.getCount()-1; i >= 0; i--)
+                    adapter.getItem(i).selected = false;
+
+            OpenHelper dbHelper = new OpenHelper(AccountActivity.this);
+            try {
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                db.beginTransaction();
+
+                if (list.getChoiceMode() == AbsListView.CHOICE_MODE_SINGLE) {
+                    // disable all other collections
+                    ContentValues values = new ContentValues(1);
+                    values.put(Collections.SELECTED, 0);
+                    db.update(Collections._TABLE, values, Collections.SERVICE_ID + "=?", new String[] { String.valueOf(info.serviceID) });
+                }
+
+                ContentValues values = new ContentValues(1);
+                values.put(Collections.SELECTED, nowChecked ? 1 : 0);
+                db.update(Collections._TABLE, values, Collections.ID + "=?", new String[] { String.valueOf(info.id) });
+
+                db.setTransactionSuccessful();
+                db.endTransaction();
+
+                info.selected = nowChecked;
+                adapter.notifyDataSetChanged();
+            } finally {
+                dbHelper.close();
+            }
+        }
+    };
+
     @Override
     public Loader<AccountInfo> onCreateLoader(int id, Bundle args) {
         return new AccountLoader(this, args.getString(EXTRA_ACCOUNT_NAME));
@@ -177,9 +222,12 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
             ListView list = (ListView)findViewById(R.id.address_books);
             list.setEnabled(!info.carddav.refreshing);
+            list.setAlpha(info.carddav.refreshing ? 0.5f : 1);
+
             AddressBookAdapter adapter = new AddressBookAdapter(this);
             adapter.addAll(info.carddav.collections);
             list.setAdapter(adapter);
+            list.setOnItemClickListener(onItemClickListener);
         } else
             card.setVisibility(View.GONE);
 
@@ -188,11 +236,14 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             ProgressBar progress = (ProgressBar)findViewById(R.id.caldav_refreshing);
             progress.setVisibility(info.caldav.refreshing ? View.VISIBLE : View.GONE);
 
-            ListView list = (ListView)findViewById(R.id.calendars);
+            final ListView list = (ListView)findViewById(R.id.calendars);
             list.setEnabled(!info.caldav.refreshing);
-            CalendarAdapter adapter = new CalendarAdapter(this);
+            list.setAlpha(info.caldav.refreshing ? 0.5f : 1);
+
+            final CalendarAdapter adapter = new CalendarAdapter(this);
             adapter.addAll(info.caldav.collections);
             list.setAdapter(adapter);
+            list.setOnItemClickListener(onItemClickListener);
         } else
             card.setVisibility(View.GONE);
     }
@@ -291,15 +342,18 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
     public static class AddressBookAdapter extends ArrayAdapter<CollectionInfo> {
         public AddressBookAdapter(Context context) {
-            super(context, R.layout.account_address_book_item);
+            super(context, R.layout.account_carddav_item);
         }
 
         @Override
         public View getView(int position, View v, ViewGroup parent) {
             if (v == null)
-                v = LayoutInflater.from(getContext()).inflate(R.layout.account_address_book_item, parent, false);
+                v = LayoutInflater.from(getContext()).inflate(R.layout.account_carddav_item, parent, false);
 
-            CollectionInfo info = getItem(position);
+            final CollectionInfo info = getItem(position);
+
+            AppCompatRadioButton checked = (AppCompatRadioButton)v.findViewById(R.id.checked);
+            checked.setChecked(info.selected);
 
             TextView tv = (TextView)v.findViewById(R.id.title);
             tv.setText(TextUtils.isEmpty(info.displayName) ? info.url : info.displayName);
@@ -318,32 +372,18 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
     public static class CalendarAdapter extends ArrayAdapter<CollectionInfo> {
         public CalendarAdapter(Context context) {
-            super(context, R.layout.account_calendar_item);
+            super(context, R.layout.account_caldav_item);
         }
 
         @Override
-        public View getView(int position, View v, ViewGroup parent) {
+        public View getView(final int position, View v, ViewGroup parent) {
             if (v == null)
-                v = LayoutInflater.from(getContext()).inflate(R.layout.account_calendar_item, parent, false);
+                v = LayoutInflater.from(getContext()).inflate(R.layout.account_caldav_item, parent, false);
 
             final CollectionInfo info = getItem(position);
 
-            CheckBox select = (CheckBox)v.findViewById(R.id.selected);
-            select.setChecked(info.selected);
-            select.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    OpenHelper dbHelper = new OpenHelper(getContext());
-                    try {
-                        SQLiteDatabase db = dbHelper.getWritableDatabase();
-                        ContentValues values = new ContentValues(1);
-                        values.put(Collections.SELECTED, isChecked ? 1 : 0);
-                        db.update(Collections._TABLE, values, Collections.ID + "=?", new String[]{String.valueOf(info.id)});
-                    } finally {
-                        dbHelper.close();
-                    }
-                }
-            });
+            CheckBox checked = (CheckBox)v.findViewById(R.id.checked);
+            checked.setChecked(info.selected);
 
             if (info.color != null) {
                 View vColor = v.findViewById(R.id.color);

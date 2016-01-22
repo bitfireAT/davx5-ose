@@ -9,10 +9,8 @@
 package at.bitfire.davdroid.resource;
 
 import android.accounts.Account;
-import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -23,6 +21,7 @@ import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
 import android.provider.CalendarContract.Reminders;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import net.fortuna.ical4j.model.component.VTimeZone;
@@ -42,7 +41,6 @@ import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.DateUtils;
 import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
-import lombok.NonNull;
 
 public class LocalCalendar extends AndroidCalendar implements LocalCollection {
 

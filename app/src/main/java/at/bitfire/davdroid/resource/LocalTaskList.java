@@ -26,7 +26,7 @@ import at.bitfire.ical4android.AndroidTaskListFactory;
 import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.TaskProvider;
 import lombok.Cleanup;
-import lombok.NonNull;
+import android.support.annotation.NonNull;
 
 public class LocalTaskList extends AndroidTaskList implements LocalCollection {
 

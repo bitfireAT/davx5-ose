@@ -27,7 +27,7 @@ import at.bitfire.ical4android.AndroidTaskList;
 import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.Task;
 import lombok.Getter;
-import lombok.NonNull;
+import android.support.annotation.NonNull;
 import lombok.Setter;
 
 public class LocalTask extends AndroidTask implements LocalResource {

@@ -48,7 +48,7 @@ import at.bitfire.davdroid.log.StringLogger;
 import at.bitfire.davdroid.model.CollectionInfo;
 import lombok.Data;
 import lombok.Getter;
-import lombok.NonNull;
+import android.support.annotation.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import okhttp3.HttpUrl;

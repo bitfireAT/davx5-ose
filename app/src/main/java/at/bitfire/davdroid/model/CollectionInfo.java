@@ -27,6 +27,7 @@ import at.bitfire.davdroid.model.ServiceDB.*;
 @ToString
 public class CollectionInfo {
     public long id;
+    public Long serviceID;
 
     public enum Type {
         ADDRESS_BOOK,
@@ -112,6 +113,8 @@ public class CollectionInfo {
     public static CollectionInfo fromDB(ContentValues values) {
         CollectionInfo info = new CollectionInfo();
         info.id = values.getAsLong(Collections.ID);
+        info.serviceID = values.getAsLong(Collections.SERVICE_ID);
+
         info.url = values.getAsString(Collections.URL);
         info.displayName = values.getAsString(Collections.DISPLAY_NAME);
         info.description = values.getAsString(Collections.DESCRIPTION);
@@ -128,6 +131,8 @@ public class CollectionInfo {
 
     public ContentValues toDB() {
         ContentValues values = new ContentValues();
+        // Collections.SERVICE_ID is never changed
+
         values.put(Collections.URL, url);
         values.put(Collections.DISPLAY_NAME, displayName);
         values.put(Collections.DESCRIPTION, description);

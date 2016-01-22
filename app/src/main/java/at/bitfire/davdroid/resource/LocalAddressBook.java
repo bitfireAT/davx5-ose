@@ -78,6 +78,14 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
         return (LocalContact[])queryContacts(AndroidContact.COLUMN_FILENAME + " IS NULL", null);
     }
 
+    public void deleteAll()  throws ContactsStorageException {
+        try {
+            provider.delete(syncAdapterURI(RawContacts.CONTENT_URI), null, null);
+        } catch (RemoteException e) {
+            throw new ContactsStorageException("Couldn't delete all local contacts", e);
+        }
+    }
+
 
     // GROUPS
 

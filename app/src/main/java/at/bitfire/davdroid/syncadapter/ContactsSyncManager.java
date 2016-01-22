@@ -14,6 +14,8 @@ import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
 
+import at.bitfire.davdroid.model.CollectionInfo;
+import at.bitfire.ical4android.CalendarStorageException;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -60,13 +62,15 @@ import lombok.RequiredArgsConstructor;
 public class ContactsSyncManager extends SyncManager {
     protected static final int MAX_MULTIGET = 10;
 
-    final protected ContentProviderClient provider;
-    protected boolean hasVCard4;
+    final private ContentProviderClient provider;
+    final private CollectionInfo remote;
+    private boolean hasVCard4;
 
 
-    public ContactsSyncManager(Context context, Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult result) {
+    public ContactsSyncManager(Context context, Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult result, CollectionInfo remote) {
         super(Constants.NOTIFICATION_CONTACTS_SYNC, context, account, extras, authority, result);
         this.provider = provider;
+        this.remote = remote;
     }
 
     @Override
@@ -80,9 +84,13 @@ public class ContactsSyncManager extends SyncManager {
         // prepare local address book
         localCollection = new LocalAddressBook(account, provider);
 
-        String url = localAddressBook().getURL();
-        if (url == null)
-            throw new ContactsStorageException("Couldn't get address book URL");
+        String url = remote.url;
+        String lastUrl = localAddressBook().getURL();
+        if (!url.equals(lastUrl)) {
+            Constants.log.info("Selected address book has changed from {} to {}, deleting all local contacts", lastUrl, url);
+            ((LocalAddressBook)localCollection).deleteAll();
+        }
+
         collectionURL = HttpUrl.parse(url);
         davCollection = new DavAddressBook(log, httpClient, collectionURL);
 
@@ -202,6 +210,12 @@ public class ContactsSyncManager extends SyncManager {
                 }
             }
         }
+    }
+
+    @Override
+    protected void saveSyncState() throws CalendarStorageException, ContactsStorageException {
+        super.saveSyncState();
+        ((LocalAddressBook)localCollection).setURL(remote.url);
     }
 
 

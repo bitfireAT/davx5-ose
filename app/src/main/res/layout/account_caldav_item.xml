@@ -16,9 +16,12 @@
               android:gravity="center_vertical">
 
     <CheckBox
-        android:id="@+id/selected"
+        android:id="@+id/checked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:clickable="false"
         android:layout_marginRight="4dp"/>
 
     <View
@@ -26,7 +29,7 @@
         android:layout_width="32dp"
         android:layout_height="match_parent"
         android:layout_marginRight="4dp"
-        tools:background="@color/davdroid_green_dark"/>
+        tools:background="@color/green700"/>
 
     <LinearLayout
         android:layout_width="0dp"

@@ -11,26 +11,37 @@ import android.accounts.Account;
 import android.app.Service;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 
 import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.model.CollectionInfo;
+import at.bitfire.davdroid.model.ServiceDB;
+import at.bitfire.davdroid.model.ServiceDB.Collections;
+import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
+import lombok.Cleanup;
 
 public class ContactsSyncAdapterService extends Service {
 	private static ContactsSyncAdapter syncAdapter;
+    private OpenHelper dbHelper;
 
 	@Override
 	public void onCreate() {
-		if (syncAdapter == null)
-			syncAdapter = new ContactsSyncAdapter(getApplicationContext());
+        dbHelper = new OpenHelper(this);
+        syncAdapter = new ContactsSyncAdapter(this, dbHelper.getReadableDatabase());
 	}
 
 	@Override
 	public void onDestroy() {
-		syncAdapter = null;
+		dbHelper.close();
 	}
 
 	@Override
@@ -40,21 +51,47 @@ public class ContactsSyncAdapterService extends Service {
 	
 
 	private static class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
-        public ContactsSyncAdapter(Context context) {
+        private final SQLiteDatabase db;
+
+        public ContactsSyncAdapter(Context context, @NonNull SQLiteDatabase db) {
             super(context, false);
+            this.db = db;
         }
 
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
             Constants.log.info("Starting address book sync (" + authority + ")");
 
-            ContactsSyncManager syncManager = new ContactsSyncManager(getContext(), account, extras, authority, provider, syncResult);
-            syncManager.performSync();
+            long service = getService(account);
+            CollectionInfo remote = remoteAddressBook(service);
+
+            if (remote != null) {
+                ContactsSyncManager syncManager = new ContactsSyncManager(getContext(), account, extras, authority, provider, syncResult, remote);
+                syncManager.performSync();
+            } else
+                Constants.log.info("No address book collection selected for synchronization");
 
             Constants.log.info("Address book sync complete");
         }
 
-    }
+        private long getService(@NonNull Account account) {
+            @Cleanup Cursor c = db.query(ServiceDB.Services._TABLE, new String[] { ServiceDB.Services.ID },
+                    ServiceDB.Services.ACCOUNT_NAME + "=? AND " + ServiceDB.Services.SERVICE + "=?", new String[] { account.name, ServiceDB.Services.SERVICE_CARDDAV }, null, null, null);
+            c.moveToNext();
+            return c.getLong(0);
+        }
 
+        private CollectionInfo remoteAddressBook(long service) {
+            @Cleanup Cursor c = db.query(Collections._TABLE, Collections._COLUMNS,
+                    Collections.SERVICE_ID + "=? AND selected", new String[] { String.valueOf(service) }, null, null, null);
+            if (c.moveToNext()) {
+                ContentValues values = new ContentValues();
+                DatabaseUtils.cursorRowToContentValues(c, values);
+                return CollectionInfo.fromDB(values);
+            } else
+                return null;
+        }
+
+    }
 
 }

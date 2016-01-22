@@ -35,12 +35,12 @@ import lombok.Cleanup;
 
 public class CalendarsSyncAdapterService extends Service {
     private static SyncAdapter syncAdapter;
-    OpenHelper dbHelper;
+    private OpenHelper dbHelper;
 
     @Override
     public void onCreate() {
         dbHelper = new OpenHelper(this);
-        syncAdapter = new SyncAdapter(this, dbHelper);
+        syncAdapter = new SyncAdapter(this, dbHelper.getReadableDatabase());
     }
 
     @Override
@@ -55,14 +55,11 @@ public class CalendarsSyncAdapterService extends Service {
 	
 
 	private static class SyncAdapter extends AbstractThreadedSyncAdapter {
-        private final OpenHelper dbHelper;
         private final SQLiteDatabase db;
 
-        public SyncAdapter(Context context, OpenHelper dbHelper) {
+        public SyncAdapter(Context context, SQLiteDatabase db) {
             super(context, false);
-
-            this.dbHelper = dbHelper;
-            db = dbHelper.getReadableDatabase();
+            this.db = db;
         }
 
         @Override
@@ -79,8 +76,6 @@ public class CalendarsSyncAdapterService extends Service {
                 }
             } catch (CalendarStorageException e) {
                 Constants.log.error("Couldn't enumerate local calendars", e);
-            } finally {
-                dbHelper.close();
             }
 
             Constants.log.info("Calendar sync complete");
