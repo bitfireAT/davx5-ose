@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import at.bitfire.dav4android.BasicDigestAuthenticator;
 import de.duenndns.ssl.MemorizingTrustManager;
-import lombok.NonNull;
+import android.support.annotation.NonNull;
 import lombok.RequiredArgsConstructor;
 import okhttp3.Credentials;
 import okhttp3.Interceptor;

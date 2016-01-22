@@ -16,7 +16,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.os.Binder;
 import android.os.IBinder;
 import android.text.TextUtils;
@@ -36,12 +35,9 @@ import at.bitfire.dav4android.UrlUtils;
 import at.bitfire.dav4android.exception.DavException;
 import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.dav4android.exception.NotFoundException;
-import at.bitfire.dav4android.property.AddressbookDescription;
 import at.bitfire.dav4android.property.AddressbookHomeSet;
-import at.bitfire.dav4android.property.CalendarDescription;
 import at.bitfire.dav4android.property.CalendarHomeSet;
-import at.bitfire.dav4android.property.DisplayName;
-import at.bitfire.dav4android.property.ResourceType;
+import at.bitfire.dav4android.property.GroupMembership;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB.*;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
@@ -161,29 +157,32 @@ public class DavService extends Service {
                 // create authenticating OkHttpClient (credentials taken from account settings)
                 OkHttpClient httpClient = httpClient();
 
-                // refresh home sets
+                // refresh home sets: principal
                 Set<HttpUrl> homeSets = readHomeSets();
                 HttpUrl principal = readPrincipal();
                 if (principal != null) {
                     Constants.log.debug("[DavService {}] Querying principal for home sets", service);
                     DavResource dav = new DavResource(null, httpClient, principal);
-                    if (Services.SERVICE_CARDDAV.equals(serviceType)) {
-                        dav.propfind(0, AddressbookHomeSet.NAME);
-                        AddressbookHomeSet addressbookHomeSet = (AddressbookHomeSet)dav.properties.get(AddressbookHomeSet.NAME);
-                        if (addressbookHomeSet != null)
-                            for (String href : addressbookHomeSet.hrefs)
-                                homeSets.add(UrlUtils.withTrailingSlash(dav.location.resolve(href)));
-                    } else if (Services.SERVICE_CALDAV.equals(serviceType)) {
-                        dav.propfind(0, CalendarHomeSet.NAME);
-                        CalendarHomeSet calendarHomeSet = (CalendarHomeSet)dav.properties.get(CalendarHomeSet.NAME);
-                        if (calendarHomeSet != null)
-                            for (String href : calendarHomeSet.hrefs)
-                                homeSets.add(UrlUtils.withTrailingSlash(dav.location.resolve(href)));
-                    }
+                    queryHomeSets(serviceType, httpClient, principal, homeSets);
+
+                    // refresh home sets: direct group memberships
+                    GroupMembership groupMembership = (GroupMembership)dav.properties.get(GroupMembership.NAME);
+                    if (groupMembership != null)
+                        for (String href : groupMembership.hrefs) {
+                            Constants.log.debug("[DavService {}] Querying member group {} for home sets", href);
+                            queryHomeSets(serviceType, httpClient, dav.location.resolve(href), homeSets);
+                        }
                 }
 
-                // refresh collections in home sets
+                // now refresh collections (taken from home sets)
                 Map<HttpUrl, CollectionInfo> collections = readCollections();
+
+                // (remember selections before)
+                Set<HttpUrl> selectedCollections = new HashSet<>();
+                for (CollectionInfo info : collections.values())
+                    if (info.selected)
+                        selectedCollections.add(HttpUrl.parse(info.url));
+
                 for (Iterator<HttpUrl> iterator = homeSets.iterator(); iterator.hasNext();) {
                     HttpUrl homeSet = iterator.next();
                     Constants.log.debug("[DavService {}] Listing home set {}", service, homeSet);
@@ -229,6 +228,13 @@ public class DavService extends Service {
                         }
                 }
 
+                // restore selections
+                for (HttpUrl url : selectedCollections) {
+                    CollectionInfo info = collections.get(url);
+                    if (info != null)
+                        info.selected = true;
+                }
+
                 try {
                     db.beginTransaction();
                     saveHomeSets(homeSets);
@@ -249,16 +255,26 @@ public class DavService extends Service {
             }
         }
 
-        private String serviceType() {
-            @Cleanup Cursor cursor = db.query(Services._TABLE, new String[]{Services.SERVICE}, Services.ID + "=?", new String[]{String.valueOf(service)}, null, null, null);
-            if (cursor.moveToNext())
-                return cursor.getString(0);
-            else
-                throw new IllegalArgumentException("Service not found");
+        private void queryHomeSets(String serviceType, OkHttpClient client, HttpUrl url, Set<HttpUrl> homeSets) throws IOException, HttpException, DavException {
+            DavResource dav = new DavResource(null, client, url);
+            if (Services.SERVICE_CARDDAV.equals(serviceType)) {
+                dav.propfind(0, AddressbookHomeSet.NAME, GroupMembership.NAME);
+                AddressbookHomeSet addressbookHomeSet = (AddressbookHomeSet)dav.properties.get(AddressbookHomeSet.NAME);
+                if (addressbookHomeSet != null)
+                    for (String href : addressbookHomeSet.hrefs)
+                        homeSets.add(UrlUtils.withTrailingSlash(dav.location.resolve(href)));
+            } else if (Services.SERVICE_CALDAV.equals(serviceType)) {
+                dav.propfind(0, CalendarHomeSet.NAME, GroupMembership.NAME);
+                CalendarHomeSet calendarHomeSet = (CalendarHomeSet)dav.properties.get(CalendarHomeSet.NAME);
+                if (calendarHomeSet != null)
+                    for (String href : calendarHomeSet.hrefs)
+                        homeSets.add(UrlUtils.withTrailingSlash(dav.location.resolve(href)));
+            }
         }
 
+
         private OkHttpClient httpClient() {
-            @Cleanup Cursor cursor = db.query(Services._TABLE, new String[]{Services.ACCOUNT_NAME}, Services.ID + "=?", new String[]{String.valueOf(service)}, null, null, null);
+            @Cleanup Cursor cursor = db.query(Services._TABLE, new String[]{Services.ACCOUNT_NAME}, Services.ID + "=?", new String[] { String.valueOf(service) }, null, null, null);
             if (cursor.moveToNext()) {
                 Account account = new Account(cursor.getString(0), Constants.ACCOUNT_TYPE);
                 AccountSettings settings = new AccountSettings(DavService.this, account);
@@ -267,6 +283,14 @@ public class DavService extends Service {
                 httpClient = HttpClient.addAuthentication(httpClient, settings.username(), settings.password(), settings.preemptiveAuth());
                 return httpClient;
             } else
+                throw new IllegalArgumentException("Service not found");
+        }
+
+        private String serviceType() {
+            @Cleanup Cursor cursor = db.query(Services._TABLE, new String[]{Services.SERVICE}, Services.ID + "=?", new String[] { String.valueOf(service) }, null, null, null);
+            if (cursor.moveToNext())
+                return cursor.getString(0);
+            else
                 throw new IllegalArgumentException("Service not found");
         }
 

@@ -10,20 +10,29 @@
 
     <!-- colors -->
 
-    <color name="davdroid_green">#58a434</color>
-    <color name="davdroid_green_dark">#407826</color>
-    <color name="davdroid_lightblue">#00a8e6</color>
+    <color name="light_blue_600">#039be5</color>
+
+    <color name="green500">#4caf50</color>
+    <color name="green700">#388e3c</color>
+
+    <color name="light_green300">#aed581</color>
+    <color name="light_green500">#8bc34a</color>
+    <color name="light_green700">#689f38</color>
+
+    <color name="orangeA700">#ff6d00</color>
 
     <color name="very_light_grey">#ebebeb</color>
+
+    <color name="black">#000000</color>
     <color name="white">#ffffff</color>
 
 
     <!-- app theme -->
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/davdroid_green</item>
-        <item name="colorPrimaryDark">@color/davdroid_green_dark</item>
-        <item name="colorAccent">@color/davdroid_lightblue</item>
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/light_green500</item>
+        <item name="colorPrimaryDark">@color/light_green700</item>
+        <item name="colorAccent">@color/orangeA700</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -31,8 +40,8 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <!-- <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/> -->
 
 
     <!-- AddAccountActivity -->
@@ -76,17 +85,17 @@
         <item name="android:textColorSecondary">@color/white</item>
     </style>
     <style name="toolbar_style" parent="Widget.AppCompat.Toolbar">
-        <item name="android:background">@color/davdroid_lightblue</item>
+        <item name="android:background">@color/light_green700</item>
         <item name="titleTextColor">@color/white</item>
     </style>
 
 
     <!-- text content -->
 
-    <style name="TextView.Heading" parent="AppTheme">
+    <!-- <style name="TextView.Heading" parent="AppTheme">
         <item name="android:padding">5dp</item>
         <item name="android:background">#7ca42b</item>
-        <item name="android:textColor">#ffffff</item>
-    </style>
+        <item name="android:textColor">@color/white</item>
+    </style> -->
 
 </resources>

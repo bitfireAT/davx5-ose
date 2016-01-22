@@ -7,16 +7,10 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <ImageView
-        android:src="@drawable/sky_birds"
-        android:scaleType="centerCrop"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true" />
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <ListView
         android:id="@id/android:list"
@@ -36,4 +30,4 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:text="@string/account_list_empty" />
 
-</RelativeLayout>
+</LinearLayout>
