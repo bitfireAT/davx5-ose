@@ -20,10 +20,6 @@ package at.bitfire.davdroid.syncadapter;
     import android.os.Bundle;
     import android.text.TextUtils;
 
-    import okhttp3.HttpUrl;
-    import okhttp3.OkHttpClient;
-    import okhttp3.RequestBody;
-
     import org.slf4j.Logger;
 
     import java.io.IOException;
@@ -49,10 +45,13 @@ package at.bitfire.davdroid.syncadapter;
     import at.bitfire.davdroid.log.ExternalFileLogger;
     import at.bitfire.davdroid.resource.LocalCollection;
     import at.bitfire.davdroid.resource.LocalResource;
+    import at.bitfire.davdroid.ui.AccountActivity;
     import at.bitfire.davdroid.ui.DebugInfoActivity;
-    import at.bitfire.davdroid.ui.settings.AccountActivity;
     import at.bitfire.ical4android.CalendarStorageException;
     import at.bitfire.vcard4android.ContactsStorageException;
+    import okhttp3.HttpUrl;
+    import okhttp3.OkHttpClient;
+    import okhttp3.RequestBody;
 
 abstract public class SyncManager {
 
@@ -226,7 +225,7 @@ abstract public class SyncManager {
             final Intent detailsIntent;
             if (e instanceof UnauthorizedException) {
                 detailsIntent = new Intent(context, AccountActivity.class);
-                detailsIntent.putExtra(AccountActivity.EXTRA_ACCOUNT, account);
+                detailsIntent.putExtra(AccountActivity.EXTRA_ACCOUNT_NAME, account.name);
             } else {
                 detailsIntent = new Intent(context, DebugInfoActivity.class);
                 detailsIntent.putExtra(DebugInfoActivity.KEY_EXCEPTION, e);

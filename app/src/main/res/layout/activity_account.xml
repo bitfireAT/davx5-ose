@@ -47,10 +47,10 @@
                 android:indeterminate="true"/>
 
             <ListView
-                android:layout_width="wrap_content"
+                android:id="@+id/address_books"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:choiceMode="singleChoice"
-                android:id="@+id/address_books"/>
+                android:choiceMode="singleChoice"/>
 
         </LinearLayout>
 
@@ -86,7 +86,7 @@
 
             <ListView
                 android:id="@+id/calendars"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:choiceMode="multipleChoice"
                 android:descendantFocusability="beforeDescendants"/>

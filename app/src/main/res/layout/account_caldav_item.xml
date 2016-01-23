@@ -53,6 +53,12 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/read_only"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@drawable/ic_remove_circle_dark"/>
+
+    <TextView
         android:id="@+id/events"
         android:layout_width="32dp"
         android:layout_height="32dp"

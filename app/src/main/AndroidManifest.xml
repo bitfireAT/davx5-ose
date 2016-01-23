@@ -129,7 +129,7 @@
             android:name=".ui.AccountActivity"
             android:parentActivityName=".ui.AccountsActivity">
         </activity>
-        <activity android:name=".ui.CreateAddressBookActivity">
+        <activity android:name=".ui.AccountSettingsActivity">
         </activity>
         <activity
             android:name=".ui.DebugInfoActivity"
