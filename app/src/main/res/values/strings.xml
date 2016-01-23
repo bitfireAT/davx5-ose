@@ -12,6 +12,7 @@
     <!-- common strings -->
     <string name="app_name">DAVdroid</string>
     <string name="help">Help</string>
+    <string name="manage_accounts">Manage accounts</string>
     <string name="please_wait">Please wait</string>
     <string name="send">Send</string>
     <string name="skip">Skip</string>
@@ -28,6 +29,8 @@
     <string name="account_list_empty">Welcome to DAVdroid!\n\nYou can add a CalDAV/CardDAV account now.</string>
 
     <!-- AccountActivity -->
+    <string name="account_synchronize_now">Synchronize now</string>
+    <string name="account_synchronization_scheduled">Synchronization has been scheduled</string>
     <string name="account_settings">Account settings</string>
     <string name="account_delete">Delete account</string>
     <string name="account_delete_confirmation_title">Really delete account?</string>
@@ -128,9 +131,8 @@
     <string name="login_no_caldav_carddav">Couldn\'t find CalDAV or CardDAV service.</string>
     <string name="login_view_logs">View logs</string>
 
-    <!-- Settings activity -->
-    <string name="settings_title">Settings</string>
-    <string name="settings_no_accounts">No DAVdroid accounts found</string>
+    <!-- AccountSettingsActivity -->
+    <string name="settings_title">Settings: %s</string>
     <string name="settings_authentication">Authentication</string>
     <string name="settings_username">User name</string>
     <string name="settings_enter_username">Enter user name:</string>
@@ -167,16 +169,6 @@
         <item>Every 4 hours</item>
         <item>Once a day</item>
     </string-array>
-    <string name="settings_debug">Debugging</string>
-    <string name="settings_security_warning">Potential security risk!</string>
-    <string name="settings_log_to_external_file">Log to external file</string>
-    <string name="settings_log_to_external_file_confirmation">External log files will contain private data and be accessible by other apps. Turn off external logging and delete the log files after use.</string>
-    <string name="settings_log_to_external_file_on">Logs are written to %s (if possible)</string>
-    <string name="settings_log_to_external_file_no_external_storage">External storage is not available</string>
-    <string name="settings_log_to_external_file_off">Logs are written to ADB</string>
-    <string name="settings_log_verbose">Verbose logging</string>
-    <string name="settings_log_verbose_on">Log synchronization information and network traffic</string>
-    <string name="settings_log_verbose_off">Log only synchronization information</string>
 
     <string name="settings_android_update_title">Android version update</string>
     <string name="settings_android_update_description">Android version updates may have an impact on how DAVdroid works. If there are problems, please delete your DAVdroid accounts and add them again.</string>

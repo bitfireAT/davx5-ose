@@ -12,4 +12,17 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
+    <EditText
+        android:id="@+id/displayName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Display name"/>
+
+    <EditText
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Description"
+        android:lines="2"/>
+
 </LinearLayout>

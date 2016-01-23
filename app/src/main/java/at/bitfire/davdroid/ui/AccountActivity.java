@@ -18,18 +18,23 @@ import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.ServiceConnection;
+import android.content.SyncRequest;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.CalendarContract;
+import android.provider.ContactsContract;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.CardView;
@@ -55,18 +60,18 @@ import java.util.List;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.DavService;
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.log.StringLogger;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB.Collections;
 import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
 import at.bitfire.davdroid.model.ServiceDB.Services;
+import at.bitfire.ical4android.TaskProvider;
 import lombok.Cleanup;
 
 public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, LoaderManager.LoaderCallbacks<AccountActivity.AccountInfo> {
 
     public static final String EXTRA_ACCOUNT_NAME = "account_name";
 
-    private String accountName;
+    private Account account;
     private AccountInfo accountInfo;
 
     Toolbar tbCardDAV, tbCalDAV;
@@ -75,11 +80,12 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        accountName = getIntent().getStringExtra(EXTRA_ACCOUNT_NAME);
+        String accountName = getIntent().getStringExtra(EXTRA_ACCOUNT_NAME);
         if (accountName == null)
             // invalid account name
             finish();
         setTitle(accountName);
+        account = new Account(accountName, Constants.ACCOUNT_TYPE);
 
         setContentView(R.layout.activity_account);
 
@@ -106,8 +112,14 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.sync_now:
+                requestSync();
+                break;
             case R.id.settings:
-                // TODO
+                Bundle args = new Bundle(1);
+                Intent intent = new Intent(this, AccountSettingsActivity.class);
+                intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account);
+                startActivity(intent);
                 break;
             case R.id.delete_account:
                 new AlertDialog.Builder(AccountActivity.this)
@@ -366,6 +378,9 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                 tv.setText(info.description);
             }
 
+            tv = (TextView)v.findViewById(R.id.read_only);
+            tv.setVisibility(info.readOnly ? View.VISIBLE : View.GONE);
+
             return v;
         }
     }
@@ -401,6 +416,9 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                 tv.setText(info.description);
             }
 
+            tv = (TextView)v.findViewById(R.id.read_only);
+            tv.setVisibility(info.readOnly ? View.VISIBLE : View.GONE);
+
             tv = (TextView)v.findViewById(R.id.events);
             tv.setVisibility(info.supportsVEVENT ? View.VISIBLE : View.GONE);
 
@@ -414,8 +432,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
     /* USER ACTIONS */
 
-    protected void deleteAccount() {
-        Account account = new Account(accountName, Constants.ACCOUNT_TYPE);
+    private void deleteAccount() {
         AccountManager accountManager = AccountManager.get(this);
 
         if (Build.VERSION.SDK_INT >= 22)
@@ -442,6 +459,23 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                     }
                 }
             }, null);
+    }
+
+    private void requestSync() {
+        String authorities[] = {
+                ContactsContract.AUTHORITY,
+                CalendarContract.AUTHORITY,
+                TaskProvider.ProviderName.OpenTasks.authority
+        };
+
+        for (String authority : authorities) {
+            Bundle extras = new Bundle();
+            extras.putInt(ContentResolver.SYNC_EXTRAS_EXPEDITED, 1);
+            extras.putInt(ContentResolver.SYNC_EXTRAS_MANUAL, 1);
+            ContentResolver.requestSync(account, authority, extras);
+        }
+
+        Snackbar.make(getWindow().getDecorView(), R.string.account_synchronization_scheduled, Snackbar.LENGTH_LONG).show();
     }
 
 }

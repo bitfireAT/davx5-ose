@@ -25,7 +25,7 @@
             android:summary="@string/settings_password_summary"
             android:dialogTitle="@string/settings_enter_password" />
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:key="preemptive"
             android:persistent="false"
             android:title="@string/settings_preemptive"
@@ -56,25 +56,6 @@
             android:title="@string/settings_sync_interval_tasks"
             android:entries="@array/settings_sync_interval_names"
             android:entryValues="@array/settings_sync_interval_seconds" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/settings_debug">
-
-        <SwitchPreference
-            android:key="log_external_file"
-            android:persistent="false"
-            android:title="@string/settings_log_to_external_file"
-            android:summaryOn="@string/settings_log_to_external_file_on"
-            android:summaryOff="@string/settings_log_to_external_file_off" />
-
-        <SwitchPreference
-            android:key="log_verbose"
-            android:persistent="false"
-            android:dependency="log_external_file"
-            android:title="@string/settings_log_verbose"
-            android:summaryOn="@string/settings_log_verbose_on"
-            android:summaryOff="@string/settings_log_verbose_off" />
 
     </PreferenceCategory>
 

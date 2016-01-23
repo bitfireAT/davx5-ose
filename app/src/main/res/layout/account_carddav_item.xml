@@ -23,7 +23,7 @@
         android:clickable="false"
         android:id="@+id/checked"/>
 
-    <LinearLayout android:layout_width="match_parent"
+    <LinearLayout android:layout_width="0dp"
                   android:layout_weight="1"
                   android:layout_height="wrap_content"
                   android:orientation="vertical">
@@ -43,5 +43,11 @@
             tools:text="Address Book Description"/>
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/read_only"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@drawable/ic_remove_circle_dark"/>
 
 </LinearLayout>

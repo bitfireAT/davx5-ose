@@ -131,6 +131,7 @@ public class AccountListFragment extends ListFragment implements LoaderManager.L
 
         @Override
         protected void onStartLoading() {
+            Constants.log.debug("AccountListFragment: Start loading");
             accountManager.addOnAccountsUpdatedListener(this, null, true);
         }
 

@@ -21,9 +21,9 @@
 
     <color name="orangeA700">#ff6d00</color>
 
-    <color name="very_light_grey">#ebebeb</color>
-
     <color name="black">#000000</color>
+    <color name="grey">#888888</color>
+    <color name="very_light_grey">#ebebeb</color>
     <color name="white">#ffffff</color>
 
 
@@ -33,15 +33,15 @@
         <item name="colorPrimary">@color/light_green500</item>
         <item name="colorPrimaryDark">@color/light_green700</item>
         <item name="colorAccent">@color/orangeA700</item>
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:textColorSecondary">@color/grey</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
-    <!-- <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/> -->
 
 
     <!-- AddAccountActivity -->
