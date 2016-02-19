@@ -144,21 +144,6 @@
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.settings.SettingsActivity"
-            android:label="@string/settings_title">
-            <intent-filter>
-                <action android:name="android.intent.action.MANAGE_NETWORK_USAGE"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".ui.settings.AccountActivity"
-            android:label="@string/settings_title"
-            android:parentActivityName=".ui.settings.SettingsActivity"
-            tools:ignore="UnusedAttribute">
-        </activity>
 
         <!-- MemorizingTrustManager -->
         <activity
