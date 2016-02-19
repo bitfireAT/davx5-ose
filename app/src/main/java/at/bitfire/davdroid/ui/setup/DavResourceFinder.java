@@ -55,7 +55,7 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 
 public class DavResourceFinder {
-    protected enum Service {
+    public enum Service {
         CALDAV("caldav"),
         CARDDAV("carddav");
 
@@ -314,7 +314,7 @@ public class DavResourceFinder {
      * @param service   required service (may be null, in which case no service check is done)
      * @return          current-user-principal URL that provides required service, or null if none
      */
-    protected HttpUrl getCurrentUserPrincipal(HttpUrl url, Service service) throws IOException, HttpException, DavException {
+    public HttpUrl getCurrentUserPrincipal(HttpUrl url, Service service) throws IOException, HttpException, DavException {
         DavResource dav = new DavResource(log, httpClient, url);
         dav.propfind(0, CurrentUserPrincipal.NAME);
         CurrentUserPrincipal currentUserPrincipal = (CurrentUserPrincipal) dav.properties.get(CurrentUserPrincipal.NAME);
