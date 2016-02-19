@@ -35,6 +35,7 @@ import android.widget.TextView;
 import java.util.LinkedList;
 import java.util.List;
 
+import at.bitfire.davdroid.AccountsChangedReceiver;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.DavService;
 import at.bitfire.davdroid.R;
@@ -131,13 +132,12 @@ public class AccountListFragment extends ListFragment implements LoaderManager.L
 
         @Override
         protected void onStartLoading() {
-            Constants.log.debug("AccountListFragment: Start loading");
-            accountManager.addOnAccountsUpdatedListener(this, null, true);
+            AccountsChangedReceiver.registerListener(this, true);
         }
 
         @Override
         protected void onStopLoading() {
-            accountManager.removeOnAccountsUpdatedListener(this);
+            AccountsChangedReceiver.unregisterListener(this);
         }
 
         @Override
