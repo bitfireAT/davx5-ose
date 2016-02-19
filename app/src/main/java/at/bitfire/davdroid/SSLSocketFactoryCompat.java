@@ -25,14 +25,16 @@ import java.util.Locale;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import de.duenndns.ssl.MemorizingTrustManager;
 import lombok.Cleanup;
+import lombok.NonNull;
 
 public class SSLSocketFactoryCompat extends SSLSocketFactory {
 
-    private SSLSocketFactory defaultFactory;
+    private SSLSocketFactory delegate;
 
     // Android 5.0+ (API level21) provides reasonable default settings
     // but it still allows SSLv3
@@ -99,11 +101,11 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
         }
     }
 
-    public SSLSocketFactoryCompat(MemorizingTrustManager mtm) {
+    public SSLSocketFactoryCompat(@NonNull MemorizingTrustManager mtm) {
         try {
             SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, (mtm != null) ? new X509TrustManager[] { mtm } : null, null);
-            defaultFactory = sslContext.getSocketFactory();
+            sslContext.init(null, new X509TrustManager[] { mtm }, null);
+            delegate = sslContext.getSocketFactory();
         } catch (GeneralSecurityException e) {
             throw new AssertionError(); // The system has no TLS. Just give up.
         }
@@ -134,7 +136,7 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
 
     @Override
     public Socket createSocket(Socket s, String host, int port, boolean autoClose) throws IOException {
-        Socket ssl = defaultFactory.createSocket(s, host, port, autoClose);
+        Socket ssl = delegate.createSocket(s, host, port, autoClose);
         if (ssl instanceof SSLSocket)
             upgradeTLS((SSLSocket)ssl);
         return ssl;
@@ -142,7 +144,7 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
 
     @Override
     public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
-        Socket ssl = defaultFactory.createSocket(host, port);
+        Socket ssl = delegate.createSocket(host, port);
         if (ssl instanceof SSLSocket)
             upgradeTLS((SSLSocket)ssl);
         return ssl;
@@ -150,7 +152,7 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
 
     @Override
     public Socket createSocket(String host, int port, InetAddress localHost, int localPort) throws IOException, UnknownHostException {
-        Socket ssl = defaultFactory.createSocket(host, port, localHost, localPort);
+        Socket ssl = delegate.createSocket(host, port, localHost, localPort);
         if (ssl instanceof SSLSocket)
             upgradeTLS((SSLSocket)ssl);
         return ssl;
@@ -158,7 +160,7 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
 
     @Override
     public Socket createSocket(InetAddress host, int port) throws IOException {
-        Socket ssl = defaultFactory.createSocket(host, port);
+        Socket ssl = delegate.createSocket(host, port);
         if (ssl instanceof SSLSocket)
             upgradeTLS((SSLSocket)ssl);
         return ssl;
@@ -166,7 +168,7 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
 
     @Override
     public Socket createSocket(InetAddress address, int port, InetAddress localAddress, int localPort) throws IOException {
-        Socket ssl = defaultFactory.createSocket(address, port, localAddress, localPort);
+        Socket ssl = delegate.createSocket(address, port, localAddress, localPort);
         if (ssl instanceof SSLSocket)
             upgradeTLS((SSLSocket)ssl);
         return ssl;
