@@ -30,7 +30,7 @@
 
     <!-- AccountActivity -->
     <string name="account_synchronize_now">Synchronize now</string>
-    <string name="account_synchronization_scheduled">Synchronization has been scheduled</string>
+    <string name="account_synchronizing_now">Synchronizing now</string>
     <string name="account_settings">Account settings</string>
     <string name="account_delete">Delete account</string>
     <string name="account_delete_confirmation_title">Really delete account?</string>
