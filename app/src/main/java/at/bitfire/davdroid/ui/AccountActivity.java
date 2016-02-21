@@ -25,7 +25,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.ServiceConnection;
-import android.content.SyncRequest;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
@@ -470,12 +469,11 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
         for (String authority : authorities) {
             Bundle extras = new Bundle();
-            extras.putInt(ContentResolver.SYNC_EXTRAS_EXPEDITED, 1);
-            extras.putInt(ContentResolver.SYNC_EXTRAS_MANUAL, 1);
+            extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
             ContentResolver.requestSync(account, authority, extras);
         }
 
-        Snackbar.make(getWindow().getDecorView(), R.string.account_synchronization_scheduled, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(getWindow().getDecorView(), R.string.account_synchronizing_now, Snackbar.LENGTH_LONG).show();
     }
 
 }
