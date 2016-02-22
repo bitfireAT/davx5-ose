@@ -14,9 +14,9 @@ import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-public class NonScrollingListView extends ListView {
+public class MaximizedListView extends ListView {
 
-    public NonScrollingListView(Context context, AttributeSet attrs) {
+    public MaximizedListView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

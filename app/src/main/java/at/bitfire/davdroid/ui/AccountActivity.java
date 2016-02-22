@@ -34,11 +34,13 @@ import android.os.IBinder;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,8 +51,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -66,13 +70,14 @@ import at.bitfire.davdroid.model.ServiceDB.Services;
 import at.bitfire.ical4android.TaskProvider;
 import lombok.Cleanup;
 
-public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, LoaderManager.LoaderCallbacks<AccountActivity.AccountInfo> {
+public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, PopupMenu.OnMenuItemClickListener, LoaderManager.LoaderCallbacks<AccountActivity.AccountInfo> {
 
     public static final String EXTRA_ACCOUNT_NAME = "account_name";
 
     private Account account;
     private AccountInfo accountInfo;
 
+    ListView listCalDAV, listCardDAV;
     Toolbar tbCardDAV, tbCalDAV;
 
     @Override
@@ -150,7 +155,9 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                 startService(intent);
                 break;
             case R.id.create_address_book:
-                // TODO
+                intent = new Intent(this, CreateAddressBookActivity.class);
+                intent.putExtra(CreateAddressBookActivity.EXTRA_ACCOUNT, account);
+                startActivity(intent);
                 break;
             case R.id.refresh_calendars:
                 intent = new Intent(this, DavService.class);
@@ -165,7 +172,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
     /* LOADERS AND LOADED DATA */
 
-    public static class AccountInfo {
+    protected static class AccountInfo {
         ServiceInfo carddav, caldav;
 
         public static class ServiceInfo {
@@ -217,9 +224,40 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
         }
     };
 
+    private AdapterView.OnItemLongClickListener onItemLongClickListener = new AdapterView.OnItemLongClickListener() {
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            final ListView list = (ListView)parent;
+            final ArrayAdapter<CollectionInfo> adapter = (ArrayAdapter)list.getAdapter();
+            final CollectionInfo info = adapter.getItem(position);
+
+            PopupMenu popup = new PopupMenu(AccountActivity.this, view, Gravity.CENTER);
+            popup.inflate(R.menu.account_collection_operations);
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.delete_collection:
+                            DeleteCollectionFragment.newInstance(account, info).show(getSupportFragmentManager(), null);
+                            break;
+                    }
+                    return true;
+                }
+            });
+            popup.show();
+
+            // long click was handled
+            return true;
+        }
+    };
+
     @Override
     public Loader<AccountInfo> onCreateLoader(int id, Bundle args) {
         return new AccountLoader(this, args.getString(EXTRA_ACCOUNT_NAME));
+    }
+
+    public void reload() {
+        getLoaderManager().restartLoader(0, getIntent().getExtras(), this);
     }
 
     @Override
@@ -231,14 +269,15 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             ProgressBar progress = (ProgressBar)findViewById(R.id.carddav_refreshing);
             progress.setVisibility(info.carddav.refreshing ? View.VISIBLE : View.GONE);
 
-            ListView list = (ListView)findViewById(R.id.address_books);
-            list.setEnabled(!info.carddav.refreshing);
-            list.setAlpha(info.carddav.refreshing ? 0.5f : 1);
+            listCardDAV = (ListView)findViewById(R.id.address_books);
+            listCardDAV.setEnabled(!info.carddav.refreshing);
+            listCardDAV.setAlpha(info.carddav.refreshing ? 0.5f : 1);
 
             AddressBookAdapter adapter = new AddressBookAdapter(this);
             adapter.addAll(info.carddav.collections);
-            list.setAdapter(adapter);
-            list.setOnItemClickListener(onItemClickListener);
+            listCardDAV.setAdapter(adapter);
+            listCardDAV.setOnItemClickListener(onItemClickListener);
+            listCardDAV.setOnItemLongClickListener(onItemLongClickListener);
         } else
             card.setVisibility(View.GONE);
 
@@ -247,14 +286,15 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             ProgressBar progress = (ProgressBar)findViewById(R.id.caldav_refreshing);
             progress.setVisibility(info.caldav.refreshing ? View.VISIBLE : View.GONE);
 
-            final ListView list = (ListView)findViewById(R.id.calendars);
-            list.setEnabled(!info.caldav.refreshing);
-            list.setAlpha(info.caldav.refreshing ? 0.5f : 1);
+            listCalDAV = (ListView)findViewById(R.id.calendars);
+            listCalDAV.setEnabled(!info.caldav.refreshing);
+            listCalDAV.setAlpha(info.caldav.refreshing ? 0.5f : 1);
 
             final CalendarAdapter adapter = new CalendarAdapter(this);
             adapter.addAll(info.caldav.collections);
-            list.setAdapter(adapter);
-            list.setOnItemClickListener(onItemClickListener);
+            listCalDAV.setAdapter(adapter);
+            listCalDAV.setOnItemClickListener(onItemClickListener);
+            listCalDAV.setOnItemLongClickListener(onItemLongClickListener);
         } else
             card.setVisibility(View.GONE);
     }
@@ -262,6 +302,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     @Override
     public void onLoaderReset(Loader<AccountInfo> loader) {
     }
+
 
     private static class AccountLoader extends AsyncTaskLoader<AccountInfo> implements DavService.RefreshingStatusListener, ServiceConnection {
         private final String accountName;
@@ -289,6 +330,8 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
         public void onServiceConnected(ComponentName name, IBinder service) {
             davService = (DavService.InfoBinder)service;
             davService.addRefreshingStatusListener(this, false);
+
+            SQLiteDatabase db;
             forceLoad();
         }
 

@@ -170,6 +170,9 @@
         <item>Once a day</item>
     </string-array>
 
+    <!-- CreateAddressBookActivity -->
+    <string name="create_address_book_title">Create address book</string>
+
     <string name="settings_android_update_title">Android version update</string>
     <string name="settings_android_update_description">Android version updates may have an impact on how DAVdroid works. If there are problems, please delete your DAVdroid accounts and add them again.</string>
     <string name="settings_version_update_title">Settings have been updated</string>

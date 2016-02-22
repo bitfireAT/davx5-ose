@@ -34,6 +34,7 @@ android {
     }
 
     lintOptions {
+        disable 'ExtraTranslation'
         disable 'IconColors'
         disable 'IconLauncherShape'
         disable 'IconMissingDensityFolder'
