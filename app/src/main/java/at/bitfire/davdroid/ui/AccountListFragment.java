@@ -91,7 +91,7 @@ public class AccountListFragment extends ListFragment implements LoaderManager.L
 
 
     @RequiredArgsConstructor
-    public static class AccountInfo {
+    protected static class AccountInfo {
         final Account account;
         Long cardDavService, calDavService;
     }

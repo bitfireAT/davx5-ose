@@ -121,7 +121,6 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -129,8 +128,9 @@
             android:name=".ui.AccountActivity"
             android:parentActivityName=".ui.AccountsActivity">
         </activity>
-        <activity android:name=".ui.AccountSettingsActivity">
-        </activity>
+        <activity android:name=".ui.AccountSettingsActivity"/>
+        <activity android:name=".ui.CreateAddressBookActivity"
+            android:label="@string/create_address_book_title"/>
         <activity
             android:name=".ui.DebugInfoActivity"
             android:exported="true"

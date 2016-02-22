@@ -10,6 +10,8 @@ package at.bitfire.davdroid.model;
 
 import android.content.ContentValues;
 
+import java.io.Serializable;
+
 import at.bitfire.dav4android.DavResource;
 import at.bitfire.dav4android.Property;
 import at.bitfire.dav4android.property.AddressbookDescription;
@@ -25,7 +27,7 @@ import lombok.ToString;
 import at.bitfire.davdroid.model.ServiceDB.*;
 
 @ToString
-public class CollectionInfo {
+public class CollectionInfo implements Serializable {
     public long id;
     public Long serviceID;
 

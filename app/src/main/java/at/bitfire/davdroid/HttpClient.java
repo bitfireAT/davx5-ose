@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import at.bitfire.dav4android.BasicDigestAuthenticator;
+import at.bitfire.davdroid.syncadapter.AccountSettings;
 import de.duenndns.ssl.MemorizingTrustManager;
 import android.support.annotation.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +83,10 @@ public class HttpClient {
         else
             builder.authenticator(new BasicDigestAuthenticator(null, username, password));
         return builder.build();
+    }
+
+    public static OkHttpClient addAuthentication(@NonNull OkHttpClient httpClient, @NonNull AccountSettings accountSettings) {
+        return addAuthentication(httpClient, accountSettings.username(), accountSettings.password(), accountSettings.preemptiveAuth());
     }
 
     public static OkHttpClient addAuthentication(@NonNull OkHttpClient httpClient, @NonNull String host, @NonNull String username, @NonNull String password) {
