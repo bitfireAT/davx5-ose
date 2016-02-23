@@ -9,6 +9,7 @@
 package at.bitfire.davdroid.ui;
 
 import android.accounts.Account;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -22,7 +23,6 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -41,9 +41,13 @@ public class DeleteCollectionFragment extends DialogFragment implements LoaderMa
             ARG_ACCOUNT = "account",
             ARG_COLLECTION_INFO = "collectionInfo";
 
+    protected Account account;
+    protected CollectionInfo collectionInfo;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         getLoaderManager().initLoader(0, getArguments(), this);
     }
 
@@ -61,42 +65,41 @@ public class DeleteCollectionFragment extends DialogFragment implements LoaderMa
 
     @Override
     public Loader<Exception> onCreateLoader(int id, Bundle args) {
-        CollectionInfo collectionInfo = (CollectionInfo)args.getSerializable(ARG_COLLECTION_INFO);
-        return new DeleteCollectionLoader(
-                getContext(),
-                (Account)args.getParcelable(ARG_ACCOUNT),
-                collectionInfo.id,
-                HttpUrl.parse(collectionInfo.url)
-        );
+        account = args.getParcelable(ARG_ACCOUNT);
+        collectionInfo = (CollectionInfo)args.getSerializable(ARG_COLLECTION_INFO);
+        return new DeleteCollectionLoader(getContext(), account, collectionInfo);
     }
 
     @Override
-    public void onLoadFinished(Loader<Exception> loader, Exception exception) {
-        if (exception != null)
-            Toast.makeText(getContext(), exception.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+    public void onLoadFinished(Loader loader, Exception exception) {
         dismissAllowingStateLoss();
 
-        AccountActivity activity = (AccountActivity)getActivity();
-        activity.reload();
+        if (exception != null)
+            getFragmentManager().beginTransaction()
+                    .add(ExceptionInfoFragment.newInstance(exception, account), null)
+                    .commitAllowingStateLoss();
+        else {
+            Activity activity = getActivity();
+            if (activity instanceof AccountActivity)
+                ((AccountActivity)activity).reload();
+        }
     }
 
     @Override
-    public void onLoaderReset(Loader<Exception> loader) {
+    public void onLoaderReset(Loader loader) {
     }
 
-    private static class DeleteCollectionLoader extends AsyncTaskLoader<Exception> {
+
+    protected static class DeleteCollectionLoader extends AsyncTaskLoader<Exception> {
         final Account account;
-        final long collectionId;
-        final HttpUrl url;
+        final CollectionInfo collectionInfo;
         final ServiceDB.OpenHelper dbHelper;
 
-        public DeleteCollectionLoader(Context context, Account account, long collectionId, HttpUrl url) {
+        public DeleteCollectionLoader(Context context, Account account, CollectionInfo collectionInfo) {
             super(context);
             this.account = account;
-            this.collectionId = collectionId;
-            this.url = url;
-
-            dbHelper = new ServiceDB.OpenHelper(context);
+            this.collectionInfo = collectionInfo;
+            dbHelper = new ServiceDB.OpenHelper(getContext());
         }
 
         @Override
@@ -109,14 +112,14 @@ public class DeleteCollectionFragment extends DialogFragment implements LoaderMa
             OkHttpClient httpClient = HttpClient.create(getContext());
             httpClient = HttpClient.addAuthentication(httpClient, new AccountSettings(getContext(), account));
 
-            DavResource collection = new DavResource(null, httpClient, url);
+            DavResource collection = new DavResource(null, httpClient, HttpUrl.parse(collectionInfo.url));
             try {
                 // delete collection from server
                 collection.delete(null);
 
                 // delete collection locally
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
-                db.delete(ServiceDB.Collections._TABLE, ServiceDB.Collections.ID + "=?", new String[] { String.valueOf(collectionId) });
+                db.delete(ServiceDB.Collections._TABLE, ServiceDB.Collections.ID + "=?", new String[] { String.valueOf(collectionInfo.id) });
 
                 return null;
             } catch (IOException|HttpException e) {

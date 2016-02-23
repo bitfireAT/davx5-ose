@@ -13,14 +13,16 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
-import android.widget.Toast;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.xmlpull.v1.XmlSerializer;
@@ -38,15 +40,17 @@ import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
-import at.bitfire.ical4android.DateUtils;
 import lombok.Cleanup;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 
-public class CreateCollectionFragment extends DialogFragment {
+public class CreateCollectionFragment extends DialogFragment implements LoaderManager.LoaderCallbacks<Exception> {
     private static final String
             ARG_ACCOUNT = "account",
             ARG_COLLECTION_INFO = "collectionInfo";
+
+    protected Account account;
+    protected CollectionInfo info;
 
     public static CreateCollectionFragment newInstance(Account account, CollectionInfo info) {
         CreateCollectionFragment frag = new CreateCollectionFragment();
@@ -60,9 +64,11 @@ public class CreateCollectionFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
 
-        new CreateCollectionTask().execute(getArguments());
+        account = getArguments().getParcelable(ARG_ACCOUNT);
+        info = (CollectionInfo)getArguments().getSerializable(ARG_COLLECTION_INFO);
+
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @NonNull
@@ -77,12 +83,50 @@ public class CreateCollectionFragment extends DialogFragment {
     }
 
 
-    protected class CreateCollectionTask extends AsyncTask<Bundle, Void, Exception> {
+    @Override
+    public Loader<Exception> onCreateLoader(int id, Bundle args) {
+        return new CreateCollectionLoader(getContext(), account, info);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Exception> loader, Exception exception) {
+        dismissAllowingStateLoss();
+
+        Activity parent = getActivity();
+        if (parent != null) {
+            if (exception != null)
+                getFragmentManager().beginTransaction()
+                        .add(ExceptionInfoFragment.newInstance(exception, account), null)
+                        .commitAllowingStateLoss();
+            else
+                parent.finish();
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Exception> loader) {
+    }
+
+
+    protected static class CreateCollectionLoader extends AsyncTaskLoader<Exception> {
+        final Account account;
+        final CollectionInfo info;
+
+        public CreateCollectionLoader(Context context, Account account, CollectionInfo info) {
+            super(context);
+            this.account = account;
+            this.info = info;
+        }
+
         @Override
-        protected Exception doInBackground(Bundle... params) {
-            Bundle args = params[0];
-            Account account = args.getParcelable(ARG_ACCOUNT);
-            CollectionInfo info = (CollectionInfo)args.getSerializable(ARG_COLLECTION_INFO);
+        protected void onStartLoading() {
+            forceLoad();
+        }
+
+        @Override
+        public Exception loadInBackground() {
+            Constants.log.info("MKCOl !!!!");
 
             OkHttpClient client = HttpClient.create(getContext());
             client = HttpClient.addAuthentication(client, new AccountSettings(getContext(), account));
@@ -203,19 +247,6 @@ public class CreateCollectionFragment extends DialogFragment {
             }
 
             return null;
-        }
-
-        @Override
-        protected void onPostExecute(Exception e) {
-            dismissAllowingStateLoss();
-
-            Activity parent = getActivity();
-            if (parent != null) {
-                if (e != null)
-                    Toast.makeText(parent, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-                else
-                    parent.finish();
-            }
         }
     }
 
