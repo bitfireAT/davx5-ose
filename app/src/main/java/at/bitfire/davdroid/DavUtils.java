@@ -28,4 +28,11 @@ public class DavUtils {
 		}
 		return color;
 	}
+
+    public static String ARGBtoCalDAVColor(int colorWithAlpha) {
+        byte alpha = (byte)(colorWithAlpha >> 24);
+        int color = colorWithAlpha & 0xFFFFFF;
+        return String.format("#%06X%02X", color, alpha);
+    }
+
 }

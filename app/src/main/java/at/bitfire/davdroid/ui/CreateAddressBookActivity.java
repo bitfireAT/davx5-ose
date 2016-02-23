@@ -9,20 +9,25 @@
 package at.bitfire.davdroid.ui;
 
 import android.accounts.Account;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -78,7 +83,7 @@ public class CreateAddressBookActivity extends AppCompatActivity implements Load
             case android.R.id.home:
                 Intent intent = new Intent(this, AccountActivity.class);
                 intent.putExtra(AccountActivity.EXTRA_ACCOUNT_NAME, account.name);
-                startActivity(intent);
+                NavUtils.navigateUpTo(this, intent);
                 break;
             case R.id.create_address_book:
                 createAddressBook();
@@ -92,71 +97,158 @@ public class CreateAddressBookActivity extends AppCompatActivity implements Load
     protected void createAddressBook() {
         Spinner spnrHomeSets = (Spinner)findViewById(R.id.homeset);
         HashMap<String, String> homeSet = (HashMap<String, String>)spnrHomeSets.getSelectedItem();
-
         HttpUrl urlHomeSet = HttpUrl.parse(homeSet.get(ServiceDB.HomeSets.URL));
 
         CollectionInfo info = new CollectionInfo();
-        info.url = urlHomeSet.resolve("myAddrBook.vcf").toString();
-        info.displayName = "myAddrBook";
+        boolean ok = true;
 
-    new AddressBookCreator().execute(   info);
+        String displayName = ((EditText)findViewById(R.id.title)).getText().toString();
+        if (!TextUtils.isEmpty(displayName))
+            info.displayName = displayName;
+
+        EditText editPathSegment = (EditText)findViewById(R.id.path_segment);
+        String pathSegment = editPathSegment.getText().toString();
+        if (TextUtils.isEmpty(pathSegment)) {   // TODO further validations
+            editPathSegment.setError("MUST NOT BE EMPTY");
+            ok = false;
+        } else
+            info.url = urlHomeSet.resolve(pathSegment).toString();
+
+        String description = ((EditText)findViewById(R.id.description)).getText().toString();
+        if (!TextUtils.isEmpty(description))
+            info.description = description;
+
+        if (ok)
+            CreatingAddressBookFragment.newInstance(account, info).show(getSupportFragmentManager(), null);
     }
 
 
-    // AsyncTask for creating the address book
+    public static class CreatingAddressBookFragment extends DialogFragment implements LoaderManager.LoaderCallbacks<Exception> {
+        protected static final String
+                ARGS_ACCOUNT = "account",
+                ARGS_COLLECTION_INFO = "collectionInfo";
 
-    class AddressBookCreator extends AsyncTask<CollectionInfo, Void, Exception> {
-        @Override
-        protected void onPostExecute(Exception e) {
-            String msg = (e == null) ? "Created!" : e.getLocalizedMessage();
-            Toast.makeText(CreateAddressBookActivity.this, msg, Toast.LENGTH_LONG).show();
+        public static CreatingAddressBookFragment newInstance(Account account, CollectionInfo info) {
+            CreatingAddressBookFragment frag = new CreatingAddressBookFragment();
+            Bundle args = new Bundle(2);
+            args.putParcelable(ARGS_ACCOUNT, account);
+            args.putSerializable(ARGS_COLLECTION_INFO, info);
+            frag.setArguments(args);
+            return frag;
         }
 
         @Override
-        protected Exception doInBackground(CollectionInfo[] infoArray) {
-            AccountSettings accountSettings = new AccountSettings(CreateAddressBookActivity.this, account);
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
 
-            CollectionInfo info = infoArray[0];
-            OkHttpClient client = HttpClient.create(CreateAddressBookActivity.this);
-            client = HttpClient.addAuthentication(client, accountSettings.username(), accountSettings.password(), accountSettings.preemptiveAuth());
+            getLoaderManager().initLoader(0, getArguments(), this);
+        }
 
-            DavResource addressBook = new DavResource(null, client, HttpUrl.parse(info.url));
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            Dialog dialog = new ProgressDialog.Builder(getActivity())
+                    .setTitle(R.string.create_address_book_creating)
+                    .setMessage(R.string.please_wait)
+                    .setCancelable(false)
+                    .create();
+            dialog.setCanceledOnTouchOutside(false);
+            return dialog;
+        }
 
-            StringWriter writer = new StringWriter();
-            try {
-                XmlSerializer serializer = XmlUtils.newSerializer();
-                serializer.setOutput(writer);
-                serializer.startDocument("UTF-8", null);
-                serializer.setPrefix("", XmlUtils.NS_WEBDAV);
-                serializer.setPrefix("CARD", XmlUtils.NS_CARDDAV);
+        @Override
+        public Loader<Exception> onCreateLoader(int id, Bundle args) {
+            Account account = (Account)args.getParcelable(ARGS_ACCOUNT);
+            CollectionInfo info = (CollectionInfo)args.getSerializable(ARGS_COLLECTION_INFO);
+            return new AddressBookCreator(getActivity(), account, info);
+        }
 
-                serializer.startTag(XmlUtils.NS_WEBDAV, "mkcol");
-                    serializer.startTag(XmlUtils.NS_WEBDAV, "set");
-                        serializer.startTag(XmlUtils.NS_WEBDAV, "prop");
-                            serializer.startTag(XmlUtils.NS_WEBDAV, "resourcetype");
-                                serializer.startTag(XmlUtils.NS_WEBDAV, "collection");
-                                serializer.endTag(XmlUtils.NS_WEBDAV, "collection");
-                                serializer.startTag(XmlUtils.NS_CARDDAV, "addressbook");
-                                serializer.endTag(XmlUtils.NS_CARDDAV, "addressbook");
-                            serializer.endTag(XmlUtils.NS_WEBDAV, "resourcetype");
-                            serializer.startTag(XmlUtils.NS_WEBDAV, "displayname");
-                                serializer.text(info.displayName);
-                            serializer.endTag(XmlUtils.NS_WEBDAV, "displayname");
-                        serializer.endTag(XmlUtils.NS_WEBDAV, "prop");
-                    serializer.endTag(XmlUtils.NS_WEBDAV, "set");
-                serializer.endTag(XmlUtils.NS_WEBDAV, "mkcol");
-                serializer.endDocument();
-            } catch (IOException e) {
-                Constants.log.error("Couldn't assemble MKCOL request", e);
+        @Override
+        public void onLoadFinished(Loader<Exception> loader, Exception exception) {
+            dismissAllowingStateLoss();
+
+            if (exception == null)
+                getActivity().finish();
+            else
+                Toast.makeText(getActivity(), exception.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Exception> loader) {
+        }
+
+        protected static class AddressBookCreator extends AsyncTaskLoader<Exception> {
+            final Account account;
+            final CollectionInfo info;
+            final ServiceDB.OpenHelper dbHelper;
+
+            public AddressBookCreator(Context context, Account account, CollectionInfo collectionInfo) {
+                super(context);
+                this.account = account;
+                info = collectionInfo;
+                dbHelper = new ServiceDB.OpenHelper(context);
             }
 
-            String error = null;
-            try {
-                addressBook.mkCol(writer.toString());
-            } catch (IOException|HttpException e) {
-                return e;
+            @Override
+            protected void onStartLoading() {
+                forceLoad();
             }
-            return null;
+
+            @Override
+            public Exception loadInBackground() {
+                OkHttpClient client = HttpClient.create(getContext());
+                client = HttpClient.addAuthentication(client, new AccountSettings(getContext(), account));
+
+                StringWriter writer = new StringWriter();
+                try {
+                    XmlSerializer serializer = XmlUtils.newSerializer();
+                    serializer.setOutput(writer);
+                    serializer.startDocument("UTF-8", null);
+                    serializer.setPrefix("", XmlUtils.NS_WEBDAV);
+                    serializer.setPrefix("CARD", XmlUtils.NS_CARDDAV);
+
+                    serializer.startTag(XmlUtils.NS_WEBDAV, "mkcol");
+                        serializer.startTag(XmlUtils.NS_WEBDAV, "set");
+                            serializer.startTag(XmlUtils.NS_WEBDAV, "prop");
+                                serializer.startTag(XmlUtils.NS_WEBDAV, "resourcetype");
+                                    serializer.startTag(XmlUtils.NS_WEBDAV, "collection");
+                                    serializer.endTag(XmlUtils.NS_WEBDAV, "collection");
+                                    serializer.startTag(XmlUtils.NS_CARDDAV, "addressbook");
+                                    serializer.endTag(XmlUtils.NS_CARDDAV, "addressbook");
+                                serializer.endTag(XmlUtils.NS_WEBDAV, "resourcetype");
+                                if (info.displayName != null) {
+                                    serializer.startTag(XmlUtils.NS_WEBDAV, "displayname");
+                                        serializer.text(info.displayName);
+                                    serializer.endTag(XmlUtils.NS_WEBDAV, "displayname");
+                                }
+                                if (info.description != null) {
+                                    serializer.startTag(XmlUtils.NS_CARDDAV, "addressbook-description");
+                                        serializer.text(info.description);
+                                    serializer.endTag(XmlUtils.NS_CARDDAV, "addressbook-description");
+                                }
+                            serializer.endTag(XmlUtils.NS_WEBDAV, "prop");
+                        serializer.endTag(XmlUtils.NS_WEBDAV, "set");
+                    serializer.endTag(XmlUtils.NS_WEBDAV, "mkcol");
+                    serializer.endDocument();
+                } catch (IOException e) {
+                    Constants.log.error("Couldn't assemble MKCOL request", e);
+                }
+
+                DavResource addressBook = new DavResource(null, client, HttpUrl.parse(info.url));
+                try {
+                    addressBook.mkCol(writer.toString());
+
+                    // TODO
+                    /*SQLiteDatabase db = dbHelper.getWritableDatabase();
+                    db.insert(ServiceDB.Collections._TABLE, null, info.toDB());*/
+
+                    // TODO add to database
+                } catch (IOException|HttpException e) {
+                    return e;
+                } finally {
+                    dbHelper.close();
+                }
+                return null;
+            }
         }
     }
 
@@ -194,12 +286,11 @@ public class CreateAddressBookActivity extends AppCompatActivity implements Load
 
     private static class AccountLoader extends AsyncTaskLoader<AccountInfo> {
         private final Account account;
-        ServiceDB.OpenHelper dbHelper;
+        private final ServiceDB.OpenHelper dbHelper;
 
         public AccountLoader(Context context, Account account) {
             super(context);
             this.account = account;
-
             dbHelper = new ServiceDB.OpenHelper(context);
         }
 

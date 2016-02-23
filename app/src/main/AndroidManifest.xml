@@ -131,6 +131,8 @@
         <activity android:name=".ui.AccountSettingsActivity"/>
         <activity android:name=".ui.CreateAddressBookActivity"
             android:label="@string/create_address_book_title"/>
+        <activity android:name=".ui.CreateCalendarActivity"
+                  android:label="@string/create_calendar_title"/>
         <activity
             android:name=".ui.DebugInfoActivity"
             android:exported="true"

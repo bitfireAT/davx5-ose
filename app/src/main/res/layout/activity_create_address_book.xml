@@ -22,4 +22,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <EditText
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Title"/>
+
+    <EditText
+        android:id="@+id/path_segment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Path segment (collection name)"/>
+
+    <EditText
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Description"/>
+
 </LinearLayout>

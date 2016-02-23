@@ -12,6 +12,7 @@ import android.accounts.Account;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,14 +20,16 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import java.io.IOException;
 
 import at.bitfire.dav4android.DavResource;
 import at.bitfire.dav4android.exception.HttpException;
-import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.HttpClient;
+import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
@@ -38,15 +41,6 @@ public class DeleteCollectionFragment extends DialogFragment implements LoaderMa
             ARG_ACCOUNT = "account",
             ARG_COLLECTION_INFO = "collectionInfo";
 
-    public static DeleteCollectionFragment newInstance(Account account, CollectionInfo collectionInfo) {
-        DeleteCollectionFragment frag = new DeleteCollectionFragment();
-        Bundle args = new Bundle(2);
-        args.putParcelable(ARG_ACCOUNT, account);
-        args.putSerializable(ARG_COLLECTION_INFO, collectionInfo);
-        frag.setArguments(args);
-        return frag;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,11 +51,10 @@ public class DeleteCollectionFragment extends DialogFragment implements LoaderMa
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = new ProgressDialog.Builder(getContext())
-                .setTitle("Deleting collection")
-                .setMessage("Deleting collection from server, please wait.")
-                .setCancelable(false)
+                .setTitle(R.string.delete_collection_deleting_collection)
+                .setMessage(R.string.please_wait)
                 .create();
-        dialog.setCanceledOnTouchOutside(false);
+        setCancelable(false);
         return dialog;
     }
 
@@ -79,8 +72,8 @@ public class DeleteCollectionFragment extends DialogFragment implements LoaderMa
 
     @Override
     public void onLoadFinished(Loader<Exception> loader, Exception exception) {
-        String msg = (exception == null) ? "Collection deleted" : exception.getLocalizedMessage();
-        Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
+        if (exception != null)
+            Toast.makeText(getContext(), exception.getLocalizedMessage(), Toast.LENGTH_LONG).show();
         dismissAllowingStateLoss();
 
         AccountActivity activity = (AccountActivity)getActivity();
@@ -113,23 +106,64 @@ public class DeleteCollectionFragment extends DialogFragment implements LoaderMa
 
         @Override
         public Exception loadInBackground() {
-            SQLiteDatabase db = dbHelper.getReadableDatabase();
-
             OkHttpClient httpClient = HttpClient.create(getContext());
             httpClient = HttpClient.addAuthentication(httpClient, new AccountSettings(getContext(), account));
 
             DavResource collection = new DavResource(null, httpClient, url);
             try {
+                // delete collection from server
                 collection.delete(null);
 
+                // delete collection locally
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
                 db.delete(ServiceDB.Collections._TABLE, ServiceDB.Collections.ID + "=?", new String[] { String.valueOf(collectionId) });
 
                 return null;
             } catch (IOException|HttpException e) {
                 return e;
             } finally {
-                db.close();
+                dbHelper.close();
             }
         }
     }
+
+
+    public static class ConfirmDeleteCollectionFragment extends DialogFragment {
+
+        public static ConfirmDeleteCollectionFragment newInstance(Account account, CollectionInfo collectionInfo) {
+            ConfirmDeleteCollectionFragment frag = new ConfirmDeleteCollectionFragment();
+            Bundle args = new Bundle(2);
+            args.putParcelable(ARG_ACCOUNT, account);
+            args.putSerializable(ARG_COLLECTION_INFO, collectionInfo);
+            frag.setArguments(args);
+            return frag;
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            CollectionInfo collectionInfo = (CollectionInfo)getArguments().getSerializable(ARG_COLLECTION_INFO);
+            String name = TextUtils.isEmpty(collectionInfo.displayName) ? collectionInfo.url : collectionInfo.displayName;
+
+            return new AlertDialog.Builder(getContext())
+                    .setTitle(R.string.delete_collection_confirm_title)
+                    .setMessage(getString(R.string.delete_collection_confirm_warning, name))
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            DialogFragment frag = new DeleteCollectionFragment();
+                            frag.setArguments(getArguments());
+                            frag.show(getFragmentManager(), null);
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dismiss();
+                        }
+                    })
+                    .create();
+        }
+    }
+
 }

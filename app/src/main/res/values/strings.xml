@@ -13,7 +13,7 @@
     <string name="app_name">DAVdroid</string>
     <string name="help">Help</string>
     <string name="manage_accounts">Manage accounts</string>
-    <string name="please_wait">Please wait</string>
+    <string name="please_wait">Please wait …</string>
     <string name="send">Send</string>
     <string name="skip">Skip</string>
 
@@ -170,8 +170,14 @@
         <item>Once a day</item>
     </string-array>
 
-    <!-- CreateAddressBookActivity -->
+    <!-- collection management -->
     <string name="create_address_book_title">Create address book</string>
+    <string name="create_address_book_creating">Creating address book</string>
+    <string name="create_calendar_title">Create calendar</string>
+    <string name="create_collection_creating">Creating collection</string>
+    <string name="delete_collection_confirm_title">Are you sure?</string>
+    <string name="delete_collection_confirm_warning">This collection (%s) and all its entries from the server will be removed from the server.</string>
+    <string name="delete_collection_deleting_collection">Deleting collection</string>
 
     <string name="settings_android_update_title">Android version update</string>
     <string name="settings_android_update_description">Android version updates may have an impact on how DAVdroid works. If there are problems, please delete your DAVdroid accounts and add them again.</string>

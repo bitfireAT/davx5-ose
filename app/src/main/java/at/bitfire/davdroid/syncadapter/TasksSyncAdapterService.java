@@ -65,6 +65,9 @@ public class TasksSyncAdapterService extends Service {
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient providerClient, SyncResult syncResult) {
             Constants.log.info("Starting task sync (" + authority + ")");
 
+            // required for ical4j and dav4android (ServiceLoader)
+            Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
+
             try {
                 @Cleanup TaskProvider provider = TaskProvider.acquire(getContext().getContentResolver(), TaskProvider.ProviderName.OpenTasks);
                 if (provider == null)
