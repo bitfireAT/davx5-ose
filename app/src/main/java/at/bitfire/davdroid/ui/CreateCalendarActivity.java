@@ -10,11 +10,13 @@ package at.bitfire.davdroid.ui;
 
 import android.accounts.Account;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -94,6 +96,17 @@ public class CreateCalendarActivity extends AppCompatActivity implements LoaderM
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_create_calendar, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            Intent intent = new Intent(this, AccountActivity.class);
+            intent.putExtra(AccountActivity.EXTRA_ACCOUNT_NAME, account.name);
+            NavUtils.navigateUpTo(this, intent);
+            return true;
+        }
+        return false;
     }
 
     public void onCreateCalendar(MenuItem item) {

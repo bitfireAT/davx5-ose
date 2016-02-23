@@ -179,6 +179,12 @@
     <string name="delete_collection_confirm_warning">This collection (%s) and all its entries from the server will be removed from the server.</string>
     <string name="delete_collection_deleting_collection">Deleting collection</string>
 
+    <!-- ExceptionInfoFragment -->
+    <string name="exception">An error has occurred.</string>
+    <string name="exception_httpexception">An HTTP error has occurred.</string>
+    <string name="exception_ioexception">An I/O error has occurred.</string>
+    <string name="exception_show_details">Show details</string>
+
     <string name="settings_android_update_title">Android version update</string>
     <string name="settings_android_update_description">Android version updates may have an impact on how DAVdroid works. If there are problems, please delete your DAVdroid accounts and add them again.</string>
     <string name="settings_version_update_title">Settings have been updated</string>

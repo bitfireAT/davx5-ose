@@ -161,25 +161,25 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
             if (account != null)
                 report.append("Account name: " + account.name + "\n");
             if (authority != null)
-                report.append("Authority: " + authority + "\n\n");
+                report.append("Authority: " + authority + "\n");
 
             if (exception instanceof HttpException) {
                 HttpException http = (HttpException)exception;
                 if (http.request != null)
-                    report.append("HTTP REQUEST:\n" + http.request + "\n\n");
+                    report.append("\nHTTP REQUEST:\n" + http.request + "\n\n");
                 if (http.response != null)
-                    report.append("HTTP RESPONSE:\n" + http.response + "\n\n");
+                    report.append("HTTP RESPONSE:\n" + http.response + "\n");
             }
 
             if (exception != null) {
-                report.append("STACK TRACE:\n");
+                report.append("\nSTACK TRACE:\n");
                 for (String stackTrace : ExceptionUtils.getRootCauseStackTrace(exception))
                     report.append(stackTrace + "\n");
                 report.append("\n");
             }
 
             if (logs != null)
-                report.append("LOGS:\n" + logs + "\n");
+                report.append("\nLOGS:\n" + logs + "\n");
 
             try {
                 PackageManager pm = getContext().getPackageManager();
@@ -191,7 +191,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                     workaroundInstalled = pm.getPackageInfo("at.bitfire.davdroid.jbworkaround", 0) != null;
                 } catch(PackageManager.NameNotFoundException e) {}
                 report.append(
-                        "SOFTWARE INFORMATION\n" +
+                        "\nSOFTWARE INFORMATION\n" +
                                 "DAVdroid version: " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ") " + new Date(BuildConfig.buildTime) + "\n" +
                                 "Installed from: " + installedFrom + "\n" +
                                 "JB Workaround installed: " + (workaroundInstalled ? "yes" : "no") + "\n\n"
