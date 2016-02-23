@@ -66,6 +66,9 @@ public class CalendarsSyncAdapterService extends Service {
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
             Constants.log.info("Starting calendar sync (" + authority + ")");
 
+            // required for ical4j and dav4android (ServiceLoader)
+            Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
+
             try {
                 updateLocalCalendars(provider, account);
 

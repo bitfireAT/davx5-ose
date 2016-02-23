@@ -62,6 +62,9 @@ public class ContactsSyncAdapterService extends Service {
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
             Constants.log.info("Starting address book sync (" + authority + ")");
 
+            // required for dav4android (ServiceLoader)
+            Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
+
             long service = getService(account);
             CollectionInfo remote = remoteAddressBook(service);
 

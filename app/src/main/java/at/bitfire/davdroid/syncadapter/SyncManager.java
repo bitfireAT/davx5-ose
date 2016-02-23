@@ -107,9 +107,6 @@ abstract public class SyncManager {
         this.authority = authority;
         this.syncResult = syncResult;
 
-        // required for ical4j and dav4android (ServiceLoader)
-        Thread.currentThread().setContextClassLoader(context.getClassLoader());
-
         // get account settings and log to file (if requested)
         settings = new AccountSettings(context, account);
         try {
@@ -423,7 +420,7 @@ abstract public class SyncManager {
                 syncResult.stats.numDeletes++;
             } else {
                 // contact is still on server, check whether it has been updated remotely
-                GetETag getETag = (GetETag) remote.properties.get(GetETag.NAME);
+                GetETag getETag = (GetETag)remote.properties.get(GetETag.NAME);
                 if (getETag == null || getETag.eTag == null)
                     throw new DavException("Server didn't provide ETag");
                 String localETag = localResources.get(localName).getETag(),

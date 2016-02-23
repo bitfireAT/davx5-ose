@@ -28,6 +28,7 @@ import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -55,6 +56,8 @@ import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -93,13 +96,18 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
         setContentView(R.layout.activity_account);
 
+        Drawable icMenu = Build.VERSION.SDK_INT >= 21 ? getDrawable(R.drawable.ic_menu_light) :
+                getResources().getDrawable(R.drawable.ic_menu_light);
+
         // CardDAV toolbar
         tbCardDAV = (Toolbar)findViewById(R.id.carddav_menu);
+        tbCardDAV.setOverflowIcon(icMenu);
         tbCardDAV.inflateMenu(R.menu.carddav_actions);
         tbCardDAV.setOnMenuItemClickListener(this);
 
         // CalDAV toolbar
         tbCalDAV = (Toolbar)findViewById(R.id.caldav_menu);
+        tbCalDAV.setOverflowIcon(icMenu);
         tbCalDAV.inflateMenu(R.menu.caldav_actions);
         tbCalDAV.setOnMenuItemClickListener(this);
 
@@ -164,6 +172,11 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                 intent.setAction(DavService.ACTION_REFRESH_COLLECTIONS);
                 intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, accountInfo.caldav.id);
                 startService(intent);
+                break;
+            case R.id.create_calendar:
+                intent = new Intent(this, CreateCalendarActivity.class);
+                intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, account);
+                startActivity(intent);
                 break;
         }
         return false;
@@ -231,14 +244,14 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             final ArrayAdapter<CollectionInfo> adapter = (ArrayAdapter)list.getAdapter();
             final CollectionInfo info = adapter.getItem(position);
 
-            PopupMenu popup = new PopupMenu(AccountActivity.this, view, Gravity.CENTER);
+            PopupMenu popup = new PopupMenu(AccountActivity.this, view);
             popup.inflate(R.menu.account_collection_operations);
             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.delete_collection:
-                            DeleteCollectionFragment.newInstance(account, info).show(getSupportFragmentManager(), null);
+                            DeleteCollectionFragment.ConfirmDeleteCollectionFragment.newInstance(account, info).show(getSupportFragmentManager(), null);
                             break;
                     }
                     return true;
@@ -331,7 +344,6 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             davService = (DavService.InfoBinder)service;
             davService.addRefreshingStatusListener(this, false);
 
-            SQLiteDatabase db;
             forceLoad();
         }
 
@@ -442,10 +454,12 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             CheckBox checked = (CheckBox)v.findViewById(R.id.checked);
             checked.setChecked(info.selected);
 
+            View vColor = v.findViewById(R.id.color);
             if (info.color != null) {
-                View vColor = v.findViewById(R.id.color);
+                vColor.setVisibility(View.VISIBLE);
                 vColor.setBackgroundColor(info.color);
-            }
+            } else
+                vColor.setVisibility(View.GONE);
 
             TextView tv = (TextView)v.findViewById(R.id.title);
             tv.setText(TextUtils.isEmpty(info.displayName) ? info.url : info.displayName);
@@ -462,10 +476,10 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             tv.setVisibility(info.readOnly ? View.VISIBLE : View.GONE);
 
             tv = (TextView)v.findViewById(R.id.events);
-            tv.setVisibility(info.supportsVEVENT ? View.VISIBLE : View.GONE);
+            tv.setVisibility(BooleanUtils.isTrue(info.supportsVEVENT) ? View.VISIBLE : View.GONE);
 
             tv = (TextView)v.findViewById(R.id.tasks);
-            tv.setVisibility(info.supportsVTODO ? View.VISIBLE : View.GONE);
+            tv.setVisibility(BooleanUtils.isTrue(info.supportsVTODO) ? View.VISIBLE : View.GONE);
 
             return v;
         }
