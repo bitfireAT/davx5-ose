@@ -138,7 +138,7 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
     }
 
     @Override
-    public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
+    public Socket createSocket(String host, int port) throws IOException {
         Socket ssl = delegate.createSocket(host, port);
         if (ssl instanceof SSLSocket)
             upgradeTLS((SSLSocket)ssl);
@@ -146,7 +146,7 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
     }
 
     @Override
-    public Socket createSocket(String host, int port, InetAddress localHost, int localPort) throws IOException, UnknownHostException {
+    public Socket createSocket(String host, int port, InetAddress localHost, int localPort) throws IOException {
         Socket ssl = delegate.createSocket(host, port, localHost, localPort);
         if (ssl instanceof SSLSocket)
             upgradeTLS((SSLSocket)ssl);

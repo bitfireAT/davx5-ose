@@ -121,7 +121,6 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                 requestSync();
                 break;
             case R.id.settings:
-                Bundle args = new Bundle(1);
                 Intent intent = new Intent(this, AccountSettingsActivity.class);
                 intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account);
                 startActivity(intent);

@@ -217,7 +217,7 @@ public class CreateCollectionFragment extends DialogFragment implements LoaderMa
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
 
                 // 1. find service ID
-                String serviceType = null;
+                String serviceType;
                 if (info.type == CollectionInfo.Type.ADDRESS_BOOK)
                     serviceType = ServiceDB.Services.SERVICE_CARDDAV;
                 else if (info.type == CollectionInfo.Type.CALENDAR)

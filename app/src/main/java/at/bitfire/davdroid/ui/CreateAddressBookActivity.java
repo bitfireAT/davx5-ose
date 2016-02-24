@@ -18,6 +18,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
@@ -142,6 +143,7 @@ public class CreateAddressBookActivity extends AppCompatActivity implements Load
             getLoaderManager().initLoader(0, getArguments(), this);
         }
 
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             Dialog dialog = new ProgressDialog.Builder(getActivity())
@@ -155,7 +157,7 @@ public class CreateAddressBookActivity extends AppCompatActivity implements Load
 
         @Override
         public Loader<Exception> onCreateLoader(int id, Bundle args) {
-            Account account = (Account)args.getParcelable(ARGS_ACCOUNT);
+            Account account = args.getParcelable(ARGS_ACCOUNT);
             CollectionInfo info = (CollectionInfo)args.getSerializable(ARGS_COLLECTION_INFO);
             return new AddressBookCreator(getActivity(), account, info);
         }
@@ -263,7 +265,7 @@ public class CreateAddressBookActivity extends AppCompatActivity implements Load
 
         List<HashMap<String, String>> adapterData = new LinkedList<>();
         for (HomeSet homeSet : data.homeSets) {
-            HashMap<String, String> map = new HashMap();
+            HashMap<String, String> map = new HashMap<>();
             map.put(ServiceDB.HomeSets.ID, String.valueOf(homeSet.id));
             map.put(ServiceDB.HomeSets.URL, homeSet.URL);
             adapterData.add(map);
