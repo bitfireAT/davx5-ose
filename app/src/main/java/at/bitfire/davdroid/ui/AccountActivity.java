@@ -35,13 +35,11 @@ import android.os.IBinder;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -55,7 +53,6 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.apache.commons.lang3.BooleanUtils;
 
@@ -74,8 +71,7 @@ import at.bitfire.ical4android.TaskProvider;
 import lombok.Cleanup;
 
 public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, PopupMenu.OnMenuItemClickListener, LoaderManager.LoaderCallbacks<AccountActivity.AccountInfo> {
-
-    public static final String EXTRA_ACCOUNT_NAME = "account_name";
+    public static final String EXTRA_ACCOUNT = "account";
 
     private Account account;
     private AccountInfo accountInfo;
@@ -87,12 +83,8 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String accountName = getIntent().getStringExtra(EXTRA_ACCOUNT_NAME);
-        if (accountName == null)
-            // invalid account name
-            finish();
-        setTitle(accountName);
-        account = new Account(accountName, Constants.ACCOUNT_TYPE);
+        account = getIntent().getParcelableExtra(EXTRA_ACCOUNT);
+        setTitle(account.name);
 
         setContentView(R.layout.activity_account);
 
@@ -183,19 +175,6 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     }
 
 
-    /* LOADERS AND LOADED DATA */
-
-    protected static class AccountInfo {
-        ServiceInfo carddav, caldav;
-
-        public static class ServiceInfo {
-            long id;
-            boolean refreshing;
-
-            List<CollectionInfo> collections;
-        }
-    }
-
     private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -264,9 +243,23 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
         }
     };
 
+
+    /* LOADERS AND LOADED DATA */
+
+    protected static class AccountInfo {
+        ServiceInfo carddav, caldav;
+
+        public static class ServiceInfo {
+            long id;
+            boolean refreshing;
+
+            List<CollectionInfo> collections;
+        }
+    }
+
     @Override
     public Loader<AccountInfo> onCreateLoader(int id, Bundle args) {
-        return new AccountLoader(this, args.getString(EXTRA_ACCOUNT_NAME));
+        return new AccountLoader(this, account.name);
     }
 
     public void reload() {
@@ -314,6 +307,8 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
     @Override
     public void onLoaderReset(Loader<AccountInfo> loader) {
+        listCardDAV.setAdapter(null);
+        listCalDAV.setAdapter(null);
     }
 
 

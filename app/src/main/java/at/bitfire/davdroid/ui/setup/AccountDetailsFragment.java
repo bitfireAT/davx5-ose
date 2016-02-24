@@ -25,29 +25,30 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import java.util.Map;
+import java.net.URI;
 
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.DavService;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
+import at.bitfire.davdroid.model.ServiceDB.Collections;
+import at.bitfire.davdroid.model.ServiceDB.HomeSets;
+import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
+import at.bitfire.davdroid.model.ServiceDB.Services;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
-import at.bitfire.davdroid.model.ServiceDB.*;
 import at.bitfire.ical4android.TaskProvider;
 import lombok.Cleanup;
-import okhttp3.HttpUrl;
 
 public class AccountDetailsFragment extends Fragment {
 
     private static final String KEY_CONFIG = "config";
 
     public static AccountDetailsFragment newInstance(DavResourceFinder.Configuration config) {
+        AccountDetailsFragment frag = new AccountDetailsFragment();
         Bundle args = new Bundle(1);
         args.putSerializable(KEY_CONFIG, config);
-
-        AccountDetailsFragment fragment = new AccountDetailsFragment();
-        fragment.setArguments(args);
-        return fragment;
+        frag.setArguments(args);
+        return frag;
     }
 
     @Override
@@ -145,12 +146,12 @@ public class AccountDetailsFragment extends Fragment {
         // insert service
         values.put(Services.ACCOUNT_NAME, accountName);
         values.put(Services.SERVICE, service);
-        if (info.getPrincipal() != null)
-            values.put(Services.PRINCIPAL, info.getPrincipal().toString());
+        if (info.principal != null)
+            values.put(Services.PRINCIPAL, info.principal.toString());
         long serviceID = db.insertOrThrow(Services._TABLE, null, values);
 
         // insert home sets
-        for (HttpUrl homeSet : info.getHomeSets()) {
+        for (URI homeSet : info.homeSets) {
             values.clear();
             values.put(HomeSets.SERVICE_ID, serviceID);
             values.put(HomeSets.URL, homeSet.toString());
@@ -158,7 +159,7 @@ public class AccountDetailsFragment extends Fragment {
         }
 
         // insert collections
-        for (CollectionInfo collection : info.getCollections().values()) {
+        for (CollectionInfo collection : info.collections.values()) {
             values = collection.toDB();
             values.put(Collections.SERVICE_ID, serviceID);
             db.insertOrThrow(Collections._TABLE, null, values);

@@ -47,7 +47,7 @@ import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
-import at.bitfire.davdroid.model.DavService;
+import at.bitfire.davdroid.model.Service;
 import at.bitfire.davdroid.model.HomeSet;
 import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.syncadapter.AccountSettings;
@@ -82,7 +82,7 @@ public class CreateAddressBookActivity extends AppCompatActivity implements Load
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent intent = new Intent(this, AccountActivity.class);
-                intent.putExtra(AccountActivity.EXTRA_ACCOUNT_NAME, account.name);
+                intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account);
                 NavUtils.navigateUpTo(this, intent);
                 break;
             case R.id.create_address_book:
@@ -280,7 +280,7 @@ public class CreateAddressBookActivity extends AppCompatActivity implements Load
     }
 
     protected static class AccountInfo {
-        DavService service;
+        Service service;
         List<HomeSet> homeSets = new LinkedList<>();
     }
 
@@ -312,7 +312,7 @@ public class CreateAddressBookActivity extends AppCompatActivity implements Load
 
                 ContentValues values = new ContentValues();
                 DatabaseUtils.cursorRowToContentValues(cursorService, values);
-                info.service = DavService.fromDB(values);
+                info.service = Service.fromDB(values);
 
                 @Cleanup Cursor cursorHomeSets = db.query(ServiceDB.HomeSets._TABLE, null, ServiceDB.HomeSets.SERVICE_ID + "=?",
                         new String[] { String.valueOf(info.service.id) }, null, null, null);

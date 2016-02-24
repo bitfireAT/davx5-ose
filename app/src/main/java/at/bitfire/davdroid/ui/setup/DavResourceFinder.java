@@ -46,9 +46,7 @@ import at.bitfire.dav4android.property.SupportedCalendarComponentSet;
 import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.log.StringLogger;
 import at.bitfire.davdroid.model.CollectionInfo;
-import lombok.Data;
-import lombok.Getter;
-import android.support.annotation.NonNull;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import okhttp3.HttpUrl;
@@ -181,7 +179,7 @@ public class DavResourceFinder {
 
             // If a principal has been detected successfully, ensure that it provides the required service.
             if (principal != null && providesService(principal, service))
-                config.principal = principal;
+                config.principal = principal.uri();
 
         } catch (IOException|HttpException|DavException e) {
             log.debug("PROPFIND/OPTIONS on user-given URL failed", e);
@@ -194,14 +192,14 @@ public class DavResourceFinder {
         if (resourceType != null && resourceType.types.contains(ResourceType.ADDRESSBOOK)) {
             dav.location = UrlUtils.withTrailingSlash(dav.location);
             log.info("Found address book at " + dav.location);
-            config.collections.put(dav.location, CollectionInfo.fromDavResource(dav));
+            config.collections.put(dav.location.uri(), CollectionInfo.fromDavResource(dav));
         }
 
         // Does the collection refer to address book homesets?
         AddressbookHomeSet homeSets = (AddressbookHomeSet)dav.properties.get(AddressbookHomeSet.NAME);
         if (homeSets != null)
             for (String href : homeSets.hrefs)
-                config.homeSets.add(UrlUtils.withTrailingSlash(dav.location.resolve(href)));
+                config.homeSets.add(UrlUtils.withTrailingSlash(dav.location.resolve(href)).uri());
     }
 
     protected void rememberIfCalendarOrHomeset(@NonNull DavResource dav, @NonNull Configuration.ServiceInfo config) {
@@ -210,14 +208,14 @@ public class DavResourceFinder {
         if (resourceType != null && resourceType.types.contains(ResourceType.CALENDAR)) {
             dav.location = UrlUtils.withTrailingSlash(dav.location);
             log.info("Found calendar collection at " + dav.location);
-            config.collections.put(dav.location, CollectionInfo.fromDavResource(dav));
+            config.collections.put(dav.location.uri(), CollectionInfo.fromDavResource(dav));
         }
 
         // Does the collection refer to calendar homesets?
         CalendarHomeSet homeSets = (CalendarHomeSet)dav.properties.get(CalendarHomeSet.NAME);
         if (homeSets != null)
             for (String href : homeSets.hrefs)
-                config.homeSets.add(UrlUtils.withTrailingSlash(dav.location.resolve(href)));
+                config.homeSets.add(UrlUtils.withTrailingSlash(dav.location.resolve(href)).uri());
     }
 
 
@@ -244,9 +242,9 @@ public class DavResourceFinder {
      * @param service        service to discover (CALDAV or CARDDAV)
      * @return principal URL, or null if none found
      */
-    protected HttpUrl discoverPrincipalUrl(String domain, Service service) throws IOException, HttpException, DavException {
-        String scheme = null;
-        String fqdn = null;
+    protected URI discoverPrincipalUrl(@NonNull String domain, @NonNull Service service) throws IOException, HttpException, DavException {
+        String scheme;
+        String fqdn;
         Integer port = 443;
         List<String> paths = new LinkedList<>();     // there may be multiple paths to try
 
@@ -275,7 +273,7 @@ public class DavResourceFinder {
         if (records != null)
             for (Record record : records)
                 if (record instanceof TXTRecord)
-                    for (String segment : (List<String>) ((TXTRecord) record).getStrings())
+                    for (String segment : (List<String>)((TXTRecord)record).getStrings())
                         if (segment.startsWith("path=")) {
                             paths.add(segment.substring(5));
                             log.info("Found TXT record; initial context path=" + paths);
@@ -289,19 +287,17 @@ public class DavResourceFinder {
 
         for (String path : paths)
             try {
-                if (!TextUtils.isEmpty(scheme) && !TextUtils.isEmpty(fqdn) && paths != null) {
-                    HttpUrl initialContextPath = new HttpUrl.Builder()
-                            .scheme(scheme)
-                            .host(fqdn).port(port)
-                            .encodedPath(path)
-                            .build();
+                HttpUrl initialContextPath = new HttpUrl.Builder()
+                        .scheme(scheme)
+                        .host(fqdn).port(port)
+                        .encodedPath(path)
+                        .build();
 
-                    log.info("Trying to determine principal from initial context path=" + initialContextPath);
-                    HttpUrl principal = getCurrentUserPrincipal(initialContextPath, service);
+                log.info("Trying to determine principal from initial context path=" + initialContextPath);
+                URI principal = getCurrentUserPrincipal(initialContextPath, service);
 
-                    if (principal != null)
-                        return principal;
-                }
+                if (principal != null)
+                    return principal;
             } catch(NotFoundException e) {
                 log.warn("No resource found", e);
             }
@@ -314,7 +310,7 @@ public class DavResourceFinder {
      * @param service   required service (may be null, in which case no service check is done)
      * @return          current-user-principal URL that provides required service, or null if none
      */
-    public HttpUrl getCurrentUserPrincipal(HttpUrl url, Service service) throws IOException, HttpException, DavException {
+    public URI getCurrentUserPrincipal(HttpUrl url, Service service) throws IOException, HttpException, DavException {
         DavResource dav = new DavResource(log, httpClient, url);
         dav.propfind(0, CurrentUserPrincipal.NAME);
         CurrentUserPrincipal currentUserPrincipal = (CurrentUserPrincipal) dav.properties.get(CurrentUserPrincipal.NAME);
@@ -329,7 +325,7 @@ public class DavResourceFinder {
                     principal = null;
                 }
 
-                return principal;
+                return principal != null ? principal.uri() : null;
             }
         }
         return null;
@@ -350,6 +346,14 @@ public class DavResourceFinder {
     @RequiredArgsConstructor
     @ToString(exclude="logs")
     public static class Configuration implements Serializable {
+        // We have to use URI here because HttpUrl is not serializable!
+
+        @ToString
+        public static class ServiceInfo implements Serializable {
+            public URI principal;
+            public final Set<URI> homeSets = new HashSet<>();
+            public final Map<URI, CollectionInfo> collections = new HashMap<>();
+        }
 
         public final String userName, password;
         public final boolean preemptive;
@@ -359,18 +363,6 @@ public class DavResourceFinder {
 
         public final String logs;
 
-
-        @ToString
-        public static class ServiceInfo implements Serializable {
-            @Getter
-            HttpUrl principal;
-
-            @Getter
-            final Set<HttpUrl> homeSets = new HashSet<>();
-
-            @Getter
-            final Map<HttpUrl, CollectionInfo> collections = new HashMap<>();
-        }
     }
 
 }

@@ -23,13 +23,10 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.LinkedList;
@@ -37,7 +34,6 @@ import java.util.List;
 
 import at.bitfire.davdroid.AccountsChangedReceiver;
 import at.bitfire.davdroid.Constants;
-import at.bitfire.davdroid.DavService;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
 import at.bitfire.davdroid.model.ServiceDB.Services;
@@ -68,10 +64,18 @@ public class AccountListFragment extends ListFragment implements LoaderManager.L
         AccountInfo info = (AccountInfo)getListAdapter().getItem(position);
 
         Intent intent = new Intent(getContext(), AccountActivity.class);
-        intent.putExtra(AccountActivity.EXTRA_ACCOUNT_NAME, info.account.name);
+        intent.putExtra(AccountActivity.EXTRA_ACCOUNT, info.account);
         startActivity(intent);
     }
 
+
+    // loader
+
+    @RequiredArgsConstructor
+    protected static class AccountInfo {
+        final Account account;
+        Long cardDavService, calDavService;
+    }
 
     @Override
     public Loader<List<AccountInfo>> onCreateLoader(int id, Bundle args) {
@@ -87,37 +91,7 @@ public class AccountListFragment extends ListFragment implements LoaderManager.L
 
     @Override
     public void onLoaderReset(Loader<List<AccountInfo>> loader) {
-    }
-
-
-    @RequiredArgsConstructor
-    protected static class AccountInfo {
-        final Account account;
-        Long cardDavService, calDavService;
-    }
-
-    static class AccountListAdapter extends ArrayAdapter<AccountInfo> {
-        public AccountListAdapter(Context context) {
-            super(context, R.layout.account_list_item);
-        }
-
-        @Override
-        public View getView(int position, View v, ViewGroup parent) {
-            if (v == null)
-                v = LayoutInflater.from(getContext()).inflate(R.layout.account_list_item, parent, false);
-
-            AccountInfo info = getItem(position);
-
-            TextView tv = (TextView)v.findViewById(R.id.account_name);
-            tv.setText(info.account.name);
-
-            tv = (TextView)v.findViewById(R.id.carddav);
-            tv.setVisibility(info.cardDavService != null ? View.VISIBLE : View.GONE);
-
-            tv = (TextView)v.findViewById(R.id.caldav);
-            tv.setVisibility(info.calDavService != null ? View.VISIBLE : View.GONE);
-            return v;
-        }
+        ((AccountListAdapter)getListAdapter()).clear();
     }
 
     private static class AccountLoader extends AsyncTaskLoader<List<AccountInfo>> implements OnAccountsUpdateListener {
@@ -177,7 +151,33 @@ public class AccountListFragment extends ListFragment implements LoaderManager.L
             }
             return accounts;
         }
+    }
 
+
+    // list adapter
+
+    static class AccountListAdapter extends ArrayAdapter<AccountInfo> {
+        public AccountListAdapter(Context context) {
+            super(context, R.layout.account_list_item);
+        }
+
+        @Override
+        public View getView(int position, View v, ViewGroup parent) {
+            if (v == null)
+                v = LayoutInflater.from(getContext()).inflate(R.layout.account_list_item, parent, false);
+
+            AccountInfo info = getItem(position);
+
+            TextView tv = (TextView)v.findViewById(R.id.account_name);
+            tv.setText(info.account.name);
+
+            tv = (TextView)v.findViewById(R.id.carddav);
+            tv.setVisibility(info.cardDavService != null ? View.VISIBLE : View.GONE);
+
+            tv = (TextView)v.findViewById(R.id.caldav);
+            tv.setVisibility(info.calDavService != null ? View.VISIBLE : View.GONE);
+            return v;
+        }
     }
 
 }

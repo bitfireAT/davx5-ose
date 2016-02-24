@@ -10,15 +10,15 @@ package at.bitfire.davdroid.model;
 
 import android.content.ContentValues;
 
-public class DavService {
+public class Service {
 
     public long id;
     public String accountName, service, principal;
     public long lastRefresh;
 
 
-    public static DavService fromDB(ContentValues values) {
-        DavService service = new DavService();
+    public static Service fromDB(ContentValues values) {
+        Service service = new Service();
         service.id = values.getAsLong(ServiceDB.Services.ID);
         service.accountName = values.getAsString(ServiceDB.Services.ACCOUNT_NAME);
         service.service = values.getAsString(ServiceDB.Services.SERVICE);
