@@ -42,11 +42,11 @@ public class AccountSettingsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             Intent intent = new Intent(this, AccountActivity.class);
-            intent.putExtra(AccountActivity.EXTRA_ACCOUNT_NAME, account.name);
+            intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account);
             NavUtils.navigateUpTo(this, intent);
             return true;
         } else
-            return super.onOptionsItemSelected(item);
+            return false;
     }
 
 }

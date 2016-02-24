@@ -222,7 +222,7 @@ abstract public class SyncManager {
             final Intent detailsIntent;
             if (e instanceof UnauthorizedException) {
                 detailsIntent = new Intent(context, AccountActivity.class);
-                detailsIntent.putExtra(AccountActivity.EXTRA_ACCOUNT_NAME, account.name);
+                detailsIntent.putExtra(AccountActivity.EXTRA_ACCOUNT, account);
             } else {
                 detailsIntent = new Intent(context, DebugInfoActivity.class);
                 detailsIntent.putExtra(DebugInfoActivity.KEY_EXCEPTION, e);
