@@ -29,6 +29,7 @@ import net.fortuna.ical4j.model.component.VTimeZone;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -128,8 +129,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         List<LocalResource> dirty = new LinkedList<>();
 
         // get dirty events which are not required to have an increased SEQUENCE value
-        for (LocalEvent event : (LocalEvent[])queryEvents(Events.DIRTY + "=" + DIRTY_DONT_INCREASE_SEQUENCE + " AND " + Events.ORIGINAL_ID + " IS NULL", null))
-            dirty.add(event);
+        Collections.addAll(dirty, (LocalEvent[])queryEvents(Events.DIRTY + "=" + DIRTY_DONT_INCREASE_SEQUENCE + " AND " + Events.ORIGINAL_ID + " IS NULL", null));
 
         // get dirty events which are required to have an increased SEQUENCE value
         for (LocalEvent event : (LocalEvent[])queryEvents(Events.DIRTY + "=" + DIRTY_INCREASE_SEQUENCE + " AND " + Events.ORIGINAL_ID + " IS NULL", null)) {
@@ -182,6 +182,8 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
                 long    id = cursor.getLong(0),             // can't be null (by definition)
                         originalID = cursor.getLong(1);     // can't be null (by query)
                 int sequence = cursor.isNull(2) ? 0 : cursor.getInt(2);
+
+                // FIXME sequence / cursor2 not used
 
                 // get original event's SEQUENCE
                 @Cleanup Cursor cursor2 = provider.query(

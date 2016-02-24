@@ -37,12 +37,11 @@ public class LoginCredentials implements Parcelable {
     public static final Creator CREATOR = new Creator<LoginCredentials>() {
         @Override
         public LoginCredentials createFromParcel(Parcel source) {
-            LoginCredentials credentials = new LoginCredentials(
+            return new LoginCredentials(
                     (URI)source.readSerializable(),
                     source.readString(), source.readString(),
                     (boolean)source.readValue(null)
             );
-            return credentials;
         }
 
         @Override

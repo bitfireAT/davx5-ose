@@ -38,7 +38,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
             SYNC_STATE_CTAG = "ctag",
             SYNC_STATE_URL = "url";
 
-    private Bundle syncState = new Bundle();
+    private final Bundle syncState = new Bundle();
 
 
     public LocalAddressBook(Account account, ContentProviderClient provider) {
@@ -165,12 +165,12 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
     protected void readSyncState() throws ContactsStorageException {
         @Cleanup("recycle") Parcel parcel = Parcel.obtain();
         byte[] raw = getSyncState();
+        syncState.clear();
         if (raw != null) {
             parcel.unmarshall(raw, 0, raw.length);
             parcel.setDataPosition(0);
-            syncState = parcel.readBundle();
-        } else
-            syncState.clear();
+            syncState.putAll(parcel.readBundle());
+        }
     }
 
     @SuppressWarnings("Recycle")
