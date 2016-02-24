@@ -13,7 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 
-import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.App;
 
 public class ServiceDB {
 
@@ -81,7 +81,7 @@ public class ServiceDB {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            Constants.log.info("Creating services database");
+            App.log.info("Creating services database");
 
             db.execSQL("CREATE TABLE " + Services._TABLE + "(" +
                     Services.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +

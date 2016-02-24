@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import at.bitfire.dav4android.DavResource;
 import at.bitfire.dav4android.UrlUtils;
@@ -39,7 +40,10 @@ import at.bitfire.dav4android.property.AddressbookHomeSet;
 import at.bitfire.dav4android.property.CalendarHomeSet;
 import at.bitfire.dav4android.property.GroupMembership;
 import at.bitfire.davdroid.model.CollectionInfo;
-import at.bitfire.davdroid.model.ServiceDB.*;
+import at.bitfire.davdroid.model.ServiceDB.Collections;
+import at.bitfire.davdroid.model.ServiceDB.HomeSets;
+import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
+import at.bitfire.davdroid.model.ServiceDB.Services;
 import lombok.Cleanup;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -115,7 +119,7 @@ public class DavService extends Service {
      */
 
     void cleanupAccounts() {
-        Constants.log.info("[DavService] Cleaning up orphaned accounts");
+        App.log.info("Cleaning up orphaned accounts");
 
         final OpenHelper dbHelper = new OpenHelper(this);
         try {
@@ -151,7 +155,7 @@ public class DavService extends Service {
                 db = dbHelper.getWritableDatabase();
 
                 String serviceType = serviceType();
-                Constants.log.info("[DavService {}] Refreshing {} collections", service, serviceType);
+                App.log.info("Refreshing " + serviceType + " collections of service #" + service);
 
                 // create authenticating OkHttpClient (credentials taken from account settings)
                 OkHttpClient httpClient = httpClient();
@@ -160,15 +164,15 @@ public class DavService extends Service {
                 Set<HttpUrl> homeSets = readHomeSets();
                 HttpUrl principal = readPrincipal();
                 if (principal != null) {
-                    Constants.log.debug("[DavService {}] Querying principal for home sets", service);
-                    DavResource dav = new DavResource(null, httpClient, principal);
+                    App.log.fine("Querying principal for home sets");
+                    DavResource dav = new DavResource(httpClient, principal);
                     queryHomeSets(serviceType, httpClient, principal, homeSets);
 
                     // refresh home sets: direct group memberships
                     GroupMembership groupMembership = (GroupMembership)dav.properties.get(GroupMembership.NAME);
                     if (groupMembership != null)
                         for (String href : groupMembership.hrefs) {
-                            Constants.log.debug("[DavService {}] Querying member group {} for home sets", href);
+                            App.log.fine("Querying member group " + href + " for home sets");
                             queryHomeSets(serviceType, httpClient, dav.location.resolve(href), homeSets);
                         }
                 }
@@ -184,15 +188,15 @@ public class DavService extends Service {
 
                 for (Iterator<HttpUrl> iterator = homeSets.iterator(); iterator.hasNext();) {
                     HttpUrl homeSet = iterator.next();
-                    Constants.log.debug("[DavService {}] Listing home set {}", service, homeSet);
+                    App.log.fine("Listing home set " + homeSet);
 
-                    DavResource dav = new DavResource(null, httpClient, homeSet);
+                    DavResource dav = new DavResource(httpClient, homeSet);
                     try {
                         dav.propfind(1, CollectionInfo.DAV_PROPERTIES);
                         for (DavResource member : dav.members) {
                             CollectionInfo info = CollectionInfo.fromDavResource(member);
                             info.confirmed = true;
-                            Constants.log.debug("[DavService {}] Found collection {}", service, info);
+                            App.log.fine("Found collection" + info);
 
                             if ((serviceType.equals(Services.SERVICE_CARDDAV) && info.type == CollectionInfo.Type.ADDRESS_BOOK) ||
                                 (serviceType.equals(Services.SERVICE_CALDAV) && info.type == CollectionInfo.Type.CALENDAR))
@@ -212,7 +216,7 @@ public class DavService extends Service {
 
                     if (!info.confirmed)
                         try {
-                            DavResource dav = new DavResource(null, httpClient, url);
+                            DavResource dav = new DavResource(httpClient, url);
                             dav.propfind(0, CollectionInfo.DAV_PROPERTIES);
                             info = CollectionInfo.fromDavResource(dav);
                             info.confirmed = true;
@@ -244,7 +248,7 @@ public class DavService extends Service {
                 }
 
             } catch (IOException|HttpException|DavException e) {
-                Constants.log.error("Couldn't refresh collection list", e);
+                App.log.log(Level.SEVERE, "Couldn't refresh collection list", e);
             } finally {
                 dbHelper.close();
 
@@ -255,7 +259,7 @@ public class DavService extends Service {
         }
 
         private void queryHomeSets(String serviceType, OkHttpClient client, HttpUrl url, Set<HttpUrl> homeSets) throws IOException, HttpException, DavException {
-            DavResource dav = new DavResource(null, client, url);
+            DavResource dav = new DavResource(client, url);
             if (Services.SERVICE_CARDDAV.equals(serviceType)) {
                 dav.propfind(0, AddressbookHomeSet.NAME, GroupMembership.NAME);
                 AddressbookHomeSet addressbookHomeSet = (AddressbookHomeSet)dav.properties.get(AddressbookHomeSet.NAME);
@@ -332,7 +336,7 @@ public class DavService extends Service {
             db.delete(Collections._TABLE, HomeSets.SERVICE_ID + "=?", new String[]{String.valueOf(service)});
             for (CollectionInfo collection : collections) {
                 ContentValues values = collection.toDB();
-                Constants.log.debug("Saving collection: {}", values);
+                App.log.log(Level.FINE, "Saving collection", values);
                 values.put(Collections.SERVICE_ID, service);
                 db.insertWithOnConflict(Collections._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
             }

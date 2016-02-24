@@ -59,8 +59,9 @@ import org.apache.commons.lang3.BooleanUtils;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
-import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.DavService;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
@@ -494,7 +495,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                         if (future.getResult().getBoolean(AccountManager.KEY_BOOLEAN_RESULT))
                             finish();
                     } catch(OperationCanceledException|IOException|AuthenticatorException e) {
-                        Constants.log.error("Couldn't remove account", e);
+                        App.log.log(Level.SEVERE, "Couldn't remove account", e);
                     }
                 }
             }, null);
@@ -506,7 +507,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                         if (future.getResult())
                             finish();
                     } catch (OperationCanceledException|IOException|AuthenticatorException e) {
-                        Constants.log.error("Couldn't remove account", e);
+                        App.log.log(Level.SEVERE, "Couldn't remove account", e);
                     }
                 }
             }, null);

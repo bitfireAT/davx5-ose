@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Events;
+import android.support.annotation.NonNull;
 
 import net.fortuna.ical4j.model.property.ProdId;
 
@@ -25,7 +26,6 @@ import at.bitfire.ical4android.AndroidEventFactory;
 import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.Event;
 import lombok.Getter;
-import android.support.annotation.NonNull;
 import lombok.Setter;
 
 @TargetApi(17)

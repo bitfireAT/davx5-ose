@@ -9,15 +9,10 @@ package at.bitfire.davdroid;
 
 import android.net.Uri;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class Constants {
 
 	public static final String
 		ACCOUNT_TYPE = "bitfire.at.davdroid";
-
-    public static final Logger log = LoggerFactory.getLogger("davdroid");
 
     // notification IDs
     public final static int

@@ -23,8 +23,8 @@ import at.bitfire.dav4android.property.DisplayName;
 import at.bitfire.dav4android.property.ResourceType;
 import at.bitfire.dav4android.property.SupportedAddressData;
 import at.bitfire.dav4android.property.SupportedCalendarComponentSet;
+import at.bitfire.davdroid.model.ServiceDB.Collections;
 import lombok.ToString;
-import at.bitfire.davdroid.model.ServiceDB.*;
 
 @ToString
 public class CollectionInfo implements Serializable {

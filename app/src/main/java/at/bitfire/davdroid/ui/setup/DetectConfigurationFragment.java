@@ -21,15 +21,9 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-
-import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.ui.setup.DavResourceFinder.Configuration;
 import at.bitfire.davdroid.ui.DebugInfoActivity;
-import lombok.Cleanup;
+import at.bitfire.davdroid.ui.setup.DavResourceFinder.Configuration;
 
 public class DetectConfigurationFragment extends DialogFragment implements LoaderManager.LoaderCallbacks<Configuration> {
     protected static final String ARG_LOGIN_CREDENTIALS = "credentials";
@@ -142,19 +136,7 @@ public class DetectConfigurationFragment extends DialogFragment implements Loade
         @Override
         public Configuration loadInBackground() {
             DavResourceFinder finder = new DavResourceFinder(context, credentials);
-            Configuration configuration = finder.findInitialConfiguration();
-
-            try {
-                @Cleanup BufferedReader logStream = new BufferedReader(new StringReader(configuration.logs));
-                Constants.log.info("Resource detection finished:");
-                String line;
-                while ((line = logStream.readLine()) != null)
-                    Constants.log.info(line);
-            } catch (IOException e) {
-                Constants.log.error("Couldn't read resource detection logs", e);
-            }
-
-            return configuration;
+            return finder.findInitialConfiguration();
         }
     }
 }

@@ -24,7 +24,7 @@ import android.provider.ContactsContract.RawContacts;
 import java.util.LinkedList;
 import java.util.List;
 
-import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.App;
 import at.bitfire.vcard4android.AndroidAddressBook;
 import at.bitfire.vcard4android.AndroidContact;
 import at.bitfire.vcard4android.AndroidGroupFactory;
@@ -150,7 +150,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
                     new String[] { GroupMembership.CONTENT_ITEM_TYPE, String.valueOf(groupId) }, null);
             while (cursor != null && cursor.moveToNext()) {
                 long id = cursor.getLong(0);
-                Constants.log.debug("Marking raw contact #" + id + " as dirty");
+                App.log.fine("Marking raw contact #" + id + " as dirty");
                 provider.update(syncAdapterURI(ContentUris.withAppendedId(RawContacts.CONTENT_URI, id)), dirty, null, null);
             }
         } catch (RemoteException e) {

@@ -15,9 +15,10 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
 
 import java.io.FileNotFoundException;
+import java.util.logging.Level;
 
+import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
-import at.bitfire.davdroid.Constants;
 import at.bitfire.vcard4android.AndroidAddressBook;
 import at.bitfire.vcard4android.AndroidContact;
 import at.bitfire.vcard4android.AndroidContactFactory;
@@ -83,7 +84,7 @@ public class LocalContact extends AndroidContact implements LocalResource {
                 // add to CATEGORIES
                 contact.getCategories().add(groupInfo.displayName);
             } catch (FileNotFoundException|ContactsStorageException e) {
-                Constants.log.warn("Couldn't find assigned group #" + groupId + ", ignoring membership", e);
+                App.log.log(Level.WARNING, "Couldn't find assigned group #" + groupId + ", ignoring membership", e);
             }
         }
     }

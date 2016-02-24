@@ -43,12 +43,11 @@ import java.util.List;
 import at.bitfire.dav4android.DavResource;
 import at.bitfire.dav4android.XmlUtils;
 import at.bitfire.dav4android.exception.HttpException;
-import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
-import at.bitfire.davdroid.model.Service;
 import at.bitfire.davdroid.model.HomeSet;
+import at.bitfire.davdroid.model.Service;
 import at.bitfire.davdroid.model.ServiceDB;
 import lombok.Cleanup;
 import okhttp3.HttpUrl;
@@ -228,10 +227,10 @@ public class CreateAddressBookActivity extends AppCompatActivity implements Load
                     serializer.endTag(XmlUtils.NS_WEBDAV, "mkcol");
                     serializer.endDocument();
                 } catch (IOException e) {
-                    Constants.log.error("Couldn't assemble MKCOL request", e);
+                    //App.log.severe("Couldn't assemble MKCOL request", e);
                 }
 
-                DavResource addressBook = new DavResource(null, client, HttpUrl.parse(info.url));
+                DavResource addressBook = new DavResource(client, HttpUrl.parse(info.url));
                 try {
                     addressBook.mkCol(writer.toString());
 

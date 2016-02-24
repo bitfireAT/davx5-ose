@@ -20,26 +20,16 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatCheckBox;
-import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.URLUtil;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
-import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.TimeZoneRegistry;
-import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
-import net.fortuna.ical4j.util.TimeZones;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -48,7 +38,6 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 
-import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
@@ -56,7 +45,6 @@ import at.bitfire.ical4android.DateUtils;
 import lombok.Cleanup;
 import okhttp3.HttpUrl;
 import yuku.ambilwarna.AmbilWarnaDialog;
-import yuku.ambilwarna.AmbilWarnaSquare;
 
 public class CreateCalendarActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<CreateCalendarActivity.AccountInfo> {
     public static final String EXTRA_ACCOUNT = "account";

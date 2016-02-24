@@ -21,12 +21,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.IBinder;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.logging.Level;
 
-import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.model.CollectionInfo;
-import at.bitfire.davdroid.model.ServiceDB.*;
 import at.bitfire.davdroid.model.ServiceDB.Collections;
+import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
+import at.bitfire.davdroid.model.ServiceDB.Services;
 import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.TaskProvider;
@@ -63,7 +66,7 @@ public class TasksSyncAdapterService extends Service {
 
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient providerClient, SyncResult syncResult) {
-            Constants.log.info("Starting task sync (" + authority + ")");
+            App.log.info("Starting task sync (" + authority + ")");
 
             // required for ical4j and dav4android (ServiceLoader)
             Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
@@ -76,17 +79,17 @@ public class TasksSyncAdapterService extends Service {
                 updateLocalTaskLists(provider, account);
 
                 for (LocalTaskList taskList : (LocalTaskList[])LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, null, null)) {
-                    Constants.log.info("Synchronizing task list #"  + taskList.getId() + ", URL: " + taskList.getSyncId());
+                    App.log.info("Synchronizing task list #"  + taskList.getId() + ", URL: " + taskList.getSyncId());
                     TasksSyncManager syncManager = new TasksSyncManager(getContext(), account, extras, authority, provider, syncResult, taskList);
                     syncManager.performSync();
                 }
             } catch (CalendarStorageException e) {
-                Constants.log.error("Couldn't enumerate local task lists", e);
+                App.log.log(Level.SEVERE, "Couldn't enumerate local task lists", e);
             } finally {
                 db.close();
             }
 
-            Constants.log.info("Task sync complete");
+            App.log.info("Task sync complete");
         }
 
         private void updateLocalTaskLists(TaskProvider provider, Account account) throws CalendarStorageException {
@@ -100,12 +103,12 @@ public class TasksSyncAdapterService extends Service {
             for (LocalTaskList list : local) {
                 String url = list.getSyncId();
                 if (!remote.containsKey(url)) {
-                    Constants.log.debug("Deleting obsolete local task list {}", url);
+                    App.log.fine("Deleting obsolete local task list" + url);
                     list.delete();
                 } else {
                     // remote CollectionInfo found for this local collection, update data
                     CollectionInfo info = remote.get(url);
-                    Constants.log.debug("Updating local task list {} with {}", url, info);
+                    App.log.fine("Updating local task list " + url + " with " + info);
                     list.update(info);
                     // we already have a local task list for this remote collection, don't take into consideration anymore
                     remote.remove(url);
@@ -115,7 +118,7 @@ public class TasksSyncAdapterService extends Service {
             // create new local task lists
             for (String url : remote.keySet()) {
                 CollectionInfo info = remote.get(url);
-                Constants.log.info("Adding local task list {}", info);
+                App.log.info("Adding local task list " + info);
                 LocalTaskList.create(account, provider, info);
             }
         }

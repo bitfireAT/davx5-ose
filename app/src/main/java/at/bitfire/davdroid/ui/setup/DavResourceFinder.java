@@ -10,7 +10,6 @@ package at.bitfire.davdroid.ui.setup;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import org.slf4j.Logger;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SRVRecord;
@@ -26,6 +25,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import at.bitfire.dav4android.DavResource;
 import at.bitfire.dav4android.UrlUtils;
@@ -44,7 +45,7 @@ import at.bitfire.dav4android.property.DisplayName;
 import at.bitfire.dav4android.property.ResourceType;
 import at.bitfire.dav4android.property.SupportedCalendarComponentSet;
 import at.bitfire.davdroid.HttpClient;
-import at.bitfire.davdroid.log.StringLogger;
+import at.bitfire.davdroid.log.StringHandler;
 import at.bitfire.davdroid.model.CollectionInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -64,16 +65,19 @@ public class DavResourceFinder {
     protected final Context context;
     protected final LoginCredentials credentials;
 
-    protected final Logger log = new StringLogger("DavResourceFinder");
+    protected final Logger log;
+    protected final StringHandler logBuffer = new StringHandler();
     protected OkHttpClient httpClient;
 
     public DavResourceFinder(@NonNull Context context, @NonNull LoginCredentials credentials) {
 		this.context = context;
         this.credentials = credentials;
 
-        httpClient = HttpClient.create(context, null);
+        log = Logger.getLogger("davdroid.DavResourceFinder");
+        log.addHandler(logBuffer);
+
+        httpClient = HttpClient.create(context, null, log);
         httpClient = HttpClient.addAuthentication(httpClient, credentials.userName, credentials.password, credentials.authPreemptive);
-        //httpClient = HttpClient.addLogger(httpClient, log);
 	}
 
 
@@ -85,7 +89,7 @@ public class DavResourceFinder {
         return new Configuration(
                 credentials.userName, credentials.password, credentials.authPreemptive,
                 cardDavConfig, calDavConfig,
-                log.toString()
+                logBuffer.toString()
         );
     }
 
@@ -98,7 +102,7 @@ public class DavResourceFinder {
 
         // put discovered information here
         final Configuration.ServiceInfo config = new Configuration.ServiceInfo();
-        log.info("Finding initial {} service configuration", service.name);
+        log.info("Finding initial " + service.name + " service configuration");
 
         if ("http".equalsIgnoreCase(baseURI.getScheme()) || "https".equalsIgnoreCase(baseURI.getScheme())) {
             final HttpUrl baseURL = HttpUrl.get(baseURI);
@@ -114,7 +118,7 @@ public class DavResourceFinder {
                 try {
                     config.principal = getCurrentUserPrincipal(baseURL.resolve("/.well-known/" + service.name), service);
                 } catch (IOException|HttpException|DavException e) {
-                    log.debug("Well-known URL detection failed", e);
+                    log.log(Level.FINE, "Well-known URL detection failed", e);
                 }
 
         } else if ("mailto".equalsIgnoreCase(baseURI.getScheme())) {
@@ -131,7 +135,7 @@ public class DavResourceFinder {
             try {
                 config.principal = discoverPrincipalUrl(discoveryFQDN, service);
             } catch (IOException|HttpException|DavException e) {
-                log.debug(service.name + " service discovery failed", e);
+                log.log(Level.FINE, service.name + " service discovery failed", e);
             }
         }
 
@@ -145,7 +149,7 @@ public class DavResourceFinder {
 
         HttpUrl principal = null;
         try {
-            DavResource davBase = new DavResource(log, httpClient, baseURL);
+            DavResource davBase = new DavResource(httpClient, baseURL, log);
 
             if (service == Service.CARDDAV) {
                 davBase.propfind(0,
@@ -181,7 +185,7 @@ public class DavResourceFinder {
                 config.principal = principal.uri();
 
         } catch (IOException|HttpException|DavException e) {
-            log.debug("PROPFIND/OPTIONS on user-given URL failed", e);
+            log.log(Level.FINE, "PROPFIND/OPTIONS on user-given URL failed", e);
         }
     }
 
@@ -219,7 +223,7 @@ public class DavResourceFinder {
 
 
     boolean providesService(HttpUrl url, Service service) throws IOException {
-        DavResource davPrincipal = new DavResource(log, httpClient, url);
+        DavResource davPrincipal = new DavResource(httpClient, url, log);
         try {
             davPrincipal.options();
 
@@ -228,7 +232,7 @@ public class DavResourceFinder {
                 return true;
 
         } catch (HttpException|DavException e) {
-            log.error("Couldn't detect services on {}", url);
+            log.log(Level.SEVERE, "Couldn't detect services on " + url, e);
         }
         return false;
     }
@@ -248,7 +252,7 @@ public class DavResourceFinder {
         List<String> paths = new LinkedList<>();     // there may be multiple paths to try
 
         final String query = "_" + service.name + "s._tcp." + domain;
-        log.debug("Looking up SRV records for " + query);
+        log.fine("Looking up SRV records for " + query);
         Record[] records = new Lookup(query, Type.SRV).run();
         if (records != null && records.length >= 1) {
             // choose SRV record to use (query may return multiple SRV records)
@@ -298,7 +302,7 @@ public class DavResourceFinder {
                 if (principal != null)
                     return principal;
             } catch(NotFoundException e) {
-                log.warn("No resource found", e);
+                log.log(Level.WARNING, "No resource found", e);
             }
         return null;
     }
@@ -310,8 +314,9 @@ public class DavResourceFinder {
      * @return          current-user-principal URL that provides required service, or null if none
      */
     public URI getCurrentUserPrincipal(HttpUrl url, Service service) throws IOException, HttpException, DavException {
-        DavResource dav = new DavResource(log, httpClient, url);
+        DavResource dav = new DavResource(httpClient, url, log);
         dav.propfind(0, CurrentUserPrincipal.NAME);
+
         CurrentUserPrincipal currentUserPrincipal = (CurrentUserPrincipal) dav.properties.get(CurrentUserPrincipal.NAME);
         if (currentUserPrincipal != null && currentUserPrincipal.href != null) {
             HttpUrl principal = dav.location.resolve(currentUserPrincipal.href);
@@ -320,7 +325,7 @@ public class DavResourceFinder {
 
                 // service check
                 if (service != null && !providesService(principal, service)) {
-                    log.info("{} doesn't provide required {} service, dismissing", principal, service);
+                    log.info(principal + " doesn't provide required " + service + " service");
                     principal = null;
                 }
 
@@ -335,7 +340,7 @@ public class DavResourceFinder {
 
 	private SRVRecord selectSRVRecord(Record[] records) {
 		if (records.length > 1)
-			log.warn("Multiple SRV records not supported yet; using first one");
+			log.warning("Multiple SRV records not supported yet; using first one");
 		return (SRVRecord)records[0];
 	}
 

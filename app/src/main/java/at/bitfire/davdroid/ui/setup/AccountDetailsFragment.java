@@ -26,7 +26,10 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.net.URI;
+import java.util.logging.Level;
 
+import at.bitfire.davdroid.AccountSettings;
+import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.DavService;
 import at.bitfire.davdroid.R;
@@ -35,7 +38,6 @@ import at.bitfire.davdroid.model.ServiceDB.Collections;
 import at.bitfire.davdroid.model.ServiceDB.HomeSets;
 import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
 import at.bitfire.davdroid.model.ServiceDB.Services;
-import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.ical4android.TaskProvider;
 import lombok.Cleanup;
 
@@ -90,7 +92,7 @@ public class AccountDetailsFragment extends Fragment {
     protected boolean createAccount(String accountName, DavResourceFinder.Configuration config) {
         Account account = new Account(accountName, Constants.ACCOUNT_TYPE);
 
-        Constants.log.info("Creating account {}, initial config: {}", accountName, config);
+        App.log.log(Level.INFO, "Creating account " + accountName + " with initial config", config);
 
         // create Android account
         AccountManager accountManager = AccountManager.get(getContext());
