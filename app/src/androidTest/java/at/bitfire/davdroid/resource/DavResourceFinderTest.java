@@ -3,12 +3,12 @@ package at.bitfire.davdroid.resource;
 import android.test.InstrumentationTestCase;
 
 import java.io.IOException;
+import java.net.URI;
 
 import at.bitfire.dav4android.exception.DavException;
 import at.bitfire.dav4android.exception.HttpException;
-import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.ui.setup.DavResourceFinder;
-import at.bitfire.davdroid.ui.setup.LoginCredentialsFragment;
+import at.bitfire.davdroid.ui.setup.LoginCredentials;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -30,7 +30,7 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
 
     public void testGetCurrentUserPrincipal() throws IOException, HttpException, DavException {
         HttpUrl url = server.url("/dav");
-        LoginCredentialsFragment.LoginCredentials credentials = new LoginCredentialsFragment.LoginCredentials(url.uri(), "admin", "12345", true);
+        LoginCredentials credentials = new LoginCredentials(url.uri(), "admin", "12345", true);
         DavResourceFinder finder = new DavResourceFinder(getInstrumentation().getTargetContext().getApplicationContext(), credentials);
 
         // positive test case
@@ -51,8 +51,8 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
         server.enqueue(new MockResponse()       // OPTIONS response
                 .setResponseCode(200)
                 .setHeader("DAV", "addressbook"));
-        HttpUrl principal = finder.getCurrentUserPrincipal(url, DavResourceFinder.Service.CARDDAV);
-        assertEquals(url.resolve("/principals/myself"), principal);
+        URI principal = finder.getCurrentUserPrincipal(url, DavResourceFinder.Service.CARDDAV);
+        assertEquals(url.resolve("/principals/myself").uri(), principal);
 
         // negative test case: no current-user-principal
         server.enqueue(new MockResponse()

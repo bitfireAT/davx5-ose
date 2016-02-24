@@ -50,7 +50,6 @@ import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.Service;
 import at.bitfire.davdroid.model.HomeSet;
 import at.bitfire.davdroid.model.ServiceDB;
-import at.bitfire.davdroid.syncadapter.AccountSettings;
 import lombok.Cleanup;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -195,8 +194,7 @@ public class CreateAddressBookActivity extends AppCompatActivity implements Load
 
             @Override
             public Exception loadInBackground() {
-                OkHttpClient client = HttpClient.create(getContext());
-                client = HttpClient.addAuthentication(client, new AccountSettings(getContext(), account));
+                OkHttpClient client = HttpClient.create(getContext(), account);
 
                 StringWriter writer = new StringWriter();
                 try {

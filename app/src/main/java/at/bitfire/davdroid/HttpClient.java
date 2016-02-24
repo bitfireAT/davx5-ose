@@ -8,10 +8,9 @@
 
 package at.bitfire.davdroid;
 
+import android.accounts.Account;
 import android.content.Context;
 import android.os.Build;
-
-import org.slf4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,23 +19,24 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import at.bitfire.dav4android.BasicDigestAuthenticator;
-import at.bitfire.davdroid.syncadapter.AccountSettings;
-import de.duenndns.ssl.MemorizingTrustManager;
+import at.bitfire.davdroid.log.ExternalFileLogger;
+
 import android.support.annotation.NonNull;
+import android.text.format.DateFormat;
+
 import lombok.RequiredArgsConstructor;
 import okhttp3.Credentials;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.internal.tls.OkHostnameVerifier;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 public class HttpClient {
-    private static final int MAX_LOG_LINE_LENGTH = 85;
-
     private static final OkHttpClient client = new OkHttpClient();
     private static final UserAgentInterceptor userAgentInterceptor = new UserAgentInterceptor();
 
@@ -49,15 +49,14 @@ public class HttpClient {
     private HttpClient() {
     }
 
-    public static OkHttpClient create(Context context) {
+    public static OkHttpClient create(Context context, Account account) {
         OkHttpClient.Builder builder = client.newBuilder();
 
-        if (context != null) {
-            // use MemorizingTrustManager to manage self-signed certificates
-            MemorizingTrustManager mtm = new MemorizingTrustManager(context);
-            builder.sslSocketFactory(new SSLSocketFactoryCompat(mtm));
-            builder.hostnameVerifier(mtm.wrapHostnameVerifier(OkHostnameVerifier.INSTANCE));
-        }
+        // use MemorizingTrustManager to manage self-signed certificates
+        if (App.getSslSocketFactoryCompat() != null)
+            builder.sslSocketFactory(App.getSslSocketFactoryCompat());
+        if (App.getHostnameVerifier() != null)
+            builder.hostnameVerifier(App.getHostnameVerifier());
 
         // set timeouts
         builder.connectTimeout(30, TimeUnit.SECONDS);
@@ -73,58 +72,57 @@ public class HttpClient {
         // add cookie store for non-persistent cookies (some services like Horde use cookies for session tracking)
         builder.cookieJar(MemoryCookieStore.INSTANCE);
 
+        if (context != null && account != null) {
+            // use account settings for authentication and logging
+            AccountSettings settings = new AccountSettings(context, account);
+
+            if (settings.preemptiveAuth())
+                builder.addNetworkInterceptor(new PreemptiveAuthenticationInterceptor(settings.username(), settings.password()));
+            else
+                builder.authenticator(new BasicDigestAuthenticator(null, settings.username(), settings.password()));
+
+        }
+
+        if (App.log.isLoggable(Level.FINEST))
+            addLogger(builder, App.log);
+
         return builder.build();
     }
 
-    public static OkHttpClient addAuthentication(@NonNull OkHttpClient httpClient, @NonNull String username, @NonNull String password, boolean preemptive) {
-        OkHttpClient.Builder builder = httpClient.newBuilder();
+    private static OkHttpClient.Builder addAuthentication(@NonNull OkHttpClient.Builder builder, @NonNull String username, @NonNull String password, boolean preemptive) {
         if (preemptive)
             builder.addNetworkInterceptor(new PreemptiveAuthenticationInterceptor(username, password));
         else
             builder.authenticator(new BasicDigestAuthenticator(null, username, password));
+        return builder;
+    }
+
+    public static OkHttpClient addAuthentication(@NonNull OkHttpClient client, @NonNull String username, @NonNull String password, boolean preemptive) {
+        OkHttpClient.Builder builder = client.newBuilder();
+        addAuthentication(builder, username, password, preemptive);
         return builder.build();
     }
 
-    public static OkHttpClient addAuthentication(@NonNull OkHttpClient httpClient, @NonNull AccountSettings accountSettings) {
-        return addAuthentication(httpClient, accountSettings.username(), accountSettings.password(), accountSettings.preemptiveAuth());
-    }
-
-    public static OkHttpClient addAuthentication(@NonNull OkHttpClient httpClient, @NonNull String host, @NonNull String username, @NonNull String password) {
-        return httpClient.newBuilder()
+    public static OkHttpClient addAuthentication(@NonNull OkHttpClient client, @NonNull String host, @NonNull String username, @NonNull String password) {
+        return client.newBuilder()
                 .authenticator(new BasicDigestAuthenticator(host, username, password))
                 .build();
     }
 
-    public static OkHttpClient addLogger(@NonNull OkHttpClient httpClient, @NonNull final Logger logger) {
-        // enable verbose logs, if requested
-        if (logger.isTraceEnabled()) {
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
-                @Override
-                public void log(String message) {
-                    BufferedReader reader = new BufferedReader(new StringReader(message));
-                    String line;
-                    try {
-                        while ((line = reader.readLine()) != null) {
-                            int len = line.length();
-                            for (int pos = 0; pos < len; pos += MAX_LOG_LINE_LENGTH)
-                                if (pos < len - MAX_LOG_LINE_LENGTH)
-                                    logger.trace(line.substring(pos, pos + MAX_LOG_LINE_LENGTH) + "\\");
-                                else
-                                    logger.trace(line.substring(pos));
-                        }
-                    } catch(IOException e) {
-                        // for some reason, we couldn't split our message
-                        logger.trace(message);
-                    }
-                }
-            });
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+    private static OkHttpClient.Builder addLogger(@NonNull OkHttpClient.Builder builder, @NonNull final Logger logger) {
+        // trace-level logging → add network traffic interceptor
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+            @Override
+            public void log(String message) {
+                logger.finest(message);
+            }
+        });
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        return builder.addInterceptor(loggingInterceptor);
+    }
 
-            return httpClient.newBuilder()
-                    .addInterceptor(loggingInterceptor)
-                    .build();
-        } else
-            return httpClient;
+    public static OkHttpClient addLogger(@NonNull OkHttpClient client, @NonNull final Logger logger) {
+        return addLogger(client.newBuilder(), logger).build();
     }
 
 

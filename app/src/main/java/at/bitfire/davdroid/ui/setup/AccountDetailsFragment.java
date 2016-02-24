@@ -35,7 +35,7 @@ import at.bitfire.davdroid.model.ServiceDB.Collections;
 import at.bitfire.davdroid.model.ServiceDB.HomeSets;
 import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
 import at.bitfire.davdroid.model.ServiceDB.Services;
-import at.bitfire.davdroid.syncadapter.AccountSettings;
+import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.ical4android.TaskProvider;
 import lombok.Cleanup;
 

@@ -8,7 +8,7 @@
 package at.bitfire.davdroid.ui.setup;
 
 import android.content.Context;
-import android.text.TextUtils;
+import android.support.annotation.NonNull;
 
 import org.slf4j.Logger;
 import org.xbill.DNS.Lookup;
@@ -46,7 +46,6 @@ import at.bitfire.dav4android.property.SupportedCalendarComponentSet;
 import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.log.StringLogger;
 import at.bitfire.davdroid.model.CollectionInfo;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import okhttp3.HttpUrl;
@@ -60,21 +59,21 @@ public class DavResourceFinder {
         final String name;
         Service(String name) { this.name = name;}
         @Override public String toString() { return name; }
-    };
+    }
 
     protected final Context context;
-    protected final LoginCredentialsFragment.LoginCredentials credentials;
+    protected final LoginCredentials credentials;
 
-    protected final Logger log = new StringLogger("DavResourceFinder", true);
+    protected final Logger log = new StringLogger("DavResourceFinder");
     protected OkHttpClient httpClient;
 
-    public DavResourceFinder(@NonNull Context context, @NonNull LoginCredentialsFragment.LoginCredentials credentials) {
+    public DavResourceFinder(@NonNull Context context, @NonNull LoginCredentials credentials) {
 		this.context = context;
         this.credentials = credentials;
 
-        httpClient = HttpClient.create(context);
-        httpClient = HttpClient.addLogger(httpClient, log);
+        httpClient = HttpClient.create(context, null);
         httpClient = HttpClient.addAuthentication(httpClient, credentials.userName, credentials.password, credentials.authPreemptive);
+        //httpClient = HttpClient.addLogger(httpClient, log);
 	}
 
 

@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -31,9 +32,17 @@ import at.bitfire.davdroid.ui.DebugInfoActivity;
 import lombok.Cleanup;
 
 public class DetectConfigurationFragment extends DialogFragment implements LoaderManager.LoaderCallbacks<Configuration> {
+    protected static final String ARG_LOGIN_CREDENTIALS = "credentials";
 
-    static final String ARG_LOGIN_CREDENTIALS = "credentials";
+    public static DetectConfigurationFragment newInstance(LoginCredentials credentials) {
+        DetectConfigurationFragment frag = new DetectConfigurationFragment();
+        Bundle args = new Bundle(1);
+        args.putParcelable(ARG_LOGIN_CREDENTIALS, credentials);
+        frag.setArguments(args);
+        return frag;
+    }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         ProgressDialog dialog = new ProgressDialog(getActivity());
@@ -55,7 +64,7 @@ public class DetectConfigurationFragment extends DialogFragment implements Loade
 
     @Override
     public Loader<Configuration> onCreateLoader(int id, Bundle args) {
-        return new ServerConfigurationLoader(getContext(), args);
+        return new ServerConfigurationLoader(getContext(), (LoginCredentials)args.getParcelable(ARG_LOGIN_CREDENTIALS));
     }
 
     @Override
@@ -117,12 +126,12 @@ public class DetectConfigurationFragment extends DialogFragment implements Loade
 
     static class ServerConfigurationLoader extends AsyncTaskLoader<Configuration> {
         final Context context;
-        final LoginCredentialsFragment.LoginCredentials credentials;
+        final LoginCredentials credentials;
 
-        public ServerConfigurationLoader(Context context, Bundle args) {
+        public ServerConfigurationLoader(Context context, LoginCredentials credentials) {
             super(context);
             this.context = context;
-            credentials = (LoginCredentialsFragment.LoginCredentials)args.getParcelable(ARG_LOGIN_CREDENTIALS);
+            this.credentials = credentials;
         }
 
         @Override

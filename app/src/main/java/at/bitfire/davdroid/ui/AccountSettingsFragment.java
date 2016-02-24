@@ -19,7 +19,7 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.SwitchPreferenceCompat;
 
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.syncadapter.AccountSettings;
+import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.ical4android.TaskProvider;
 
 public class AccountSettingsFragment extends PreferenceFragmentCompat {
