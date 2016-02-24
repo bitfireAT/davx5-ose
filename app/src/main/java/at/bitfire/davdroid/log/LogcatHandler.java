@@ -10,7 +10,6 @@ package at.bitfire.davdroid.log;
 
 import android.util.Log;
 
-import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -22,25 +21,25 @@ public class LogcatHandler extends Handler {
 
     private LogcatHandler() {
         super();
-        setFormatter(AdbFormatter.INSTANCE);
+        setFormatter(PlainTextFormatter.LOGCAT);
         setLevel(Level.ALL);
     }
 
     @Override
-    public void publish(LogRecord record) {
-        String line = getFormatter().format(record);
-        int level = record.getLevel().intValue();
+    public void publish(LogRecord r) {
+        String line = getFormatter().format(r);
+        int level = r.getLevel().intValue();
 
         if (level >= Level.SEVERE.intValue())
-            Log.e(TAG, line);
+            Log.e(r.getLoggerName(), line);
         else if (level >= Level.WARNING.intValue())
-            Log.w(TAG, line);
+            Log.w(r.getLoggerName(), line);
         else if (level >= Level.CONFIG.intValue())
-            Log.i(TAG, line);
+            Log.i(r.getLoggerName(), line);
         else if (level >= Level.FINER.intValue())
-            Log.d(TAG, line);
+            Log.d(r.getLoggerName(), line);
         else
-            Log.v(TAG, line);
+            Log.v(r.getLoggerName(), line);
     }
 
     @Override
@@ -49,19 +48,6 @@ public class LogcatHandler extends Handler {
 
     @Override
     public void close() {
-    }
-
-
-    private static class AdbFormatter extends Formatter {
-        public static AdbFormatter INSTANCE = new AdbFormatter();
-
-        private AdbFormatter() {
-        }
-
-        @Override
-        public String format(LogRecord r) {
-            return String.format("[%s] %s", r.getSourceClassName(), r.getMessage());
-        }
     }
 
 }

@@ -32,7 +32,7 @@ import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
 
-import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.ical4android.AndroidCalendar;
 import at.bitfire.ical4android.AndroidCalendarFactory;
@@ -171,14 +171,14 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
     @SuppressWarnings("Recycle")
     public void processDirtyExceptions() throws CalendarStorageException {
         // process deleted exceptions
-        Constants.log.info("Processing deleted exceptions");
+        App.log.info("Processing deleted exceptions");
         try {
             @Cleanup Cursor cursor = provider.query(
                     syncAdapterURI(Events.CONTENT_URI),
                     new String[] { Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE },
                     Events.DELETED + "!=0 AND " + Events.ORIGINAL_ID + " IS NOT NULL", null, null);
             while (cursor != null && cursor.moveToNext()) {
-                Constants.log.debug("Found deleted exception, removing; then re-schuling original event");
+                App.log.fine("Found deleted exception, removing; then re-schuling original event");
                 long    id = cursor.getLong(0),             // can't be null (by definition)
                         originalID = cursor.getLong(1);     // can't be null (by query)
                 int sequence = cursor.isNull(2) ? 0 : cursor.getInt(2);
@@ -207,14 +207,14 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         }
 
         // process dirty exceptions
-        Constants.log.info("Processing dirty exceptions");
+        App.log.info("Processing dirty exceptions");
         try {
             @Cleanup Cursor cursor = provider.query(
                     syncAdapterURI(Events.CONTENT_URI),
                     new String[] { Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE },
                     Events.DIRTY + "!=0 AND " + Events.ORIGINAL_ID + " IS NOT NULL", null, null);
             while (cursor != null && cursor.moveToNext()) {
-                Constants.log.debug("Found dirty exception, increasing SEQUENCE to re-schedule");
+                App.log.fine("Found dirty exception, increasing SEQUENCE to re-schedule");
                 long    id = cursor.getLong(0),             // can't be null (by definition)
                         originalID = cursor.getLong(1);     // can't be null (by query)
                 int sequence = cursor.isNull(2) ? 0 : cursor.getInt(2);

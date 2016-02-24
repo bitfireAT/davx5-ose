@@ -24,7 +24,7 @@ public class DavUtils {
 				int color_alpha = m.group(2) != null ? (Integer.parseInt(m.group(2), 16) & 0xFF) : 0xFF;
 				color = (color_alpha << 24) | color_rgb;
 			} else
-				Constants.log.warn("Couldn't parse color " + davColor + ", using DAVdroid green");
+				App.log.warning("Couldn't parse color " + davColor + ", using DAVdroid green");
 		}
 		return color;
 	}

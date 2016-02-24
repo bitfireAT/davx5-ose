@@ -28,11 +28,12 @@ import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.logging.Level;
 
 import at.bitfire.dav4android.DavResource;
 import at.bitfire.dav4android.XmlUtils;
 import at.bitfire.dav4android.exception.HttpException;
-import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.DavUtils;
 import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.R;
@@ -201,13 +202,13 @@ public class CreateCollectionFragment extends DialogFragment implements LoaderMa
                 serializer.endTag(XmlUtils.NS_WEBDAV, "mkcol");
                 serializer.endDocument();
             } catch (IOException e) {
-                Constants.log.error("Couldn't assemble Extended MKCOL request", e);
+                App.log.log(Level.SEVERE, "Couldn't assemble Extended MKCOL request", e);
             }
 
             ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
 
             OkHttpClient client = HttpClient.create(getContext(), account);
-            DavResource collection = new DavResource(null, client, HttpUrl.parse(info.url));
+            DavResource collection = new DavResource(client, HttpUrl.parse(info.url));
             try {
                 // create collection on remote server
                 collection.mkCol(writer.toString());

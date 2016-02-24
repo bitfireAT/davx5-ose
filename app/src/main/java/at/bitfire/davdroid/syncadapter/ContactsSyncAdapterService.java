@@ -22,7 +22,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 
-import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.model.ServiceDB.Collections;
@@ -60,7 +60,7 @@ public class ContactsSyncAdapterService extends Service {
 
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-            Constants.log.info("Starting address book sync (" + authority + ")");
+            App.log.info("Starting address book sync (" + authority + ")");
 
             // required for dav4android (ServiceLoader)
             Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
@@ -72,9 +72,9 @@ public class ContactsSyncAdapterService extends Service {
                 ContactsSyncManager syncManager = new ContactsSyncManager(getContext(), account, extras, authority, provider, syncResult, remote);
                 syncManager.performSync();
             } else
-                Constants.log.info("No address book collection selected for synchronization");
+                App.log.info("No address book collection selected for synchronization");
 
-            Constants.log.info("Address book sync complete");
+            App.log.info("Address book sync complete");
         }
 
         private long getService(@NonNull Account account) {

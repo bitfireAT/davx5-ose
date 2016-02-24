@@ -15,11 +15,6 @@ import android.content.SyncResult;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import okhttp3.HttpUrl;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;
 import org.dmfs.provider.tasks.TaskContract.TaskLists;
@@ -31,6 +26,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
 import at.bitfire.dav4android.DavCalendar;
 import at.bitfire.dav4android.DavResource;
@@ -42,10 +38,10 @@ import at.bitfire.dav4android.property.DisplayName;
 import at.bitfire.dav4android.property.GetCTag;
 import at.bitfire.dav4android.property.GetContentType;
 import at.bitfire.dav4android.property.GetETag;
+import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.davdroid.resource.LocalResource;
 import at.bitfire.davdroid.resource.LocalTask;
 import at.bitfire.davdroid.resource.LocalTaskList;
@@ -54,6 +50,10 @@ import at.bitfire.ical4android.InvalidCalendarException;
 import at.bitfire.ical4android.Task;
 import at.bitfire.ical4android.TaskProvider;
 import lombok.Cleanup;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 
 public class TasksSyncManager extends SyncManager {
 
@@ -77,7 +77,7 @@ public class TasksSyncManager extends SyncManager {
     @Override
     protected void prepare() {
         collectionURL = HttpUrl.parse(localTaskList().getSyncId());
-        davCollection = new DavCalendar(log, httpClient, collectionURL);
+        davCollection = new DavCalendar(httpClient, collectionURL);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class TasksSyncManager extends SyncManager {
         davCollection.propfind(0, DisplayName.NAME, CalendarColor.NAME, GetCTag.NAME);
 
         // update name and color
-        log.info("Setting task list name and color (if available)");
+        App.log.info("Setting task list name and color (if available)");
         ContentValues values = new ContentValues(2);
 
         DisplayName pDisplayName = (DisplayName)davCollection.properties.get(DisplayName.NAME);
@@ -116,21 +116,21 @@ public class TasksSyncManager extends SyncManager {
         remoteResources = new HashMap<>(davCollection.members.size());
         for (DavResource vCard : davCollection.members) {
             String fileName = vCard.fileName();
-            log.debug("Found remote VTODO: " + fileName);
+            App.log.fine("Found remote VTODO: " + fileName);
             remoteResources.put(fileName, vCard);
         }
     }
 
     @Override
     protected void downloadRemote() throws IOException, HttpException, DavException, CalendarStorageException {
-        log.info("Downloading " + toDownload.size() + " tasks (" + MAX_MULTIGET + " at once)");
+        App.log.info("Downloading " + toDownload.size() + " tasks (" + MAX_MULTIGET + " at once)");
 
         // download new/updated iCalendars from server
         for (DavResource[] bunch : ArrayUtils.partition(toDownload.toArray(new DavResource[toDownload.size()]), MAX_MULTIGET)) {
             if (Thread.interrupted())
                 return;
 
-            log.info("Downloading " + StringUtils.join(bunch, ", "));
+            App.log.info("Downloading " + StringUtils.join(bunch, ", "));
 
             if (bunch.length == 1) {
                 // only one contact, use GET
@@ -189,32 +189,32 @@ public class TasksSyncManager extends SyncManager {
     private DavCalendar davCalendar() { return (DavCalendar)davCollection; }
 
     private void processVTodo(String fileName, String eTag, InputStream stream, Charset charset) throws IOException, CalendarStorageException {
-        Task[] tasks = null;
+        Task[] tasks;
         try {
             tasks = Task.fromStream(stream, charset);
         } catch (InvalidCalendarException e) {
-            log.error("Received invalid iCalendar, ignoring", e);
+            App.log.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e);
             return;
         }
 
-        if (tasks != null && tasks.length == 1) {
+        if (tasks.length == 1) {
             Task newData = tasks[0];
 
             // update local task, if it exists
             LocalTask localTask = (LocalTask)localResources.get(fileName);
             if (localTask != null) {
-                log.info("Updating " + fileName + " in local tasklist");
+                App.log.info("Updating " + fileName + " in local tasklist");
                 localTask.setETag(eTag);
                 localTask.update(newData);
                 syncResult.stats.numUpdates++;
             } else {
-                log.info("Adding " + fileName + " to local task list");
+                App.log.info("Adding " + fileName + " to local task list");
                 localTask = new LocalTask(localTaskList(), newData, fileName, eTag);
                 localTask.add();
                 syncResult.stats.numInserts++;
             }
         } else
-            log.error("Received VCALENDAR with not exactly one VTODO; ignoring " + fileName);
+            App.log.severe("Received VCALENDAR with not exactly one VTODO; ignoring " + fileName);
     }
 
 }

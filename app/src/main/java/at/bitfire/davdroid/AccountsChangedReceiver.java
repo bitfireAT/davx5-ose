@@ -8,8 +8,6 @@
 
 package at.bitfire.davdroid;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
 import android.content.BroadcastReceiver;
 import android.content.Context;

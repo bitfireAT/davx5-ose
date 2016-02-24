@@ -10,20 +10,21 @@ package at.bitfire.davdroid;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.util.Log;
+
+import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 import javax.net.ssl.HostnameVerifier;
 
-import at.bitfire.dav4android.*;
 import at.bitfire.davdroid.log.LogcatHandler;
+import at.bitfire.davdroid.log.PlainTextFormatter;
 import de.duenndns.ssl.MemorizingTrustManager;
 import lombok.Getter;
 import okhttp3.internal.tls.OkHostnameVerifier;
@@ -31,8 +32,7 @@ import okhttp3.internal.tls.OkHostnameVerifier;
 public class App extends Application implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String
             PREF_FILE = "global",
-            PREF_LOG_TO_FILE = "log_to_file",
-            PREF_VERBOSE_LOGGING = "verbose_logging";
+            PREF_LOG_TO_FILE = "log_to_file";
 
     @Getter
     private static SSLSocketFactoryCompat sslSocketFactoryCompat;
@@ -78,8 +78,11 @@ public class App extends Application implements SharedPreferences.OnSharedPrefer
         // don't use Android default logging, we have our own handlers
         log.setUseParentHandlers(false);
 
+        boolean logToFile = preferences.getBoolean(PREF_LOG_TO_FILE, false),
+                logVerbose = logToFile || Log.isLoggable(log.getName(), Log.DEBUG);
+
         // set logging level according to preferences
-        log.setLevel(preferences.getBoolean(PREF_VERBOSE_LOGGING, false) ? Level.ALL : Level.INFO);
+        log.setLevel(logVerbose ? Level.ALL : Level.INFO);
 
         // remove all handlers
         for (Handler handler : log.getHandlers())
@@ -89,15 +92,15 @@ public class App extends Application implements SharedPreferences.OnSharedPrefer
         log.addHandler(LogcatHandler.INSTANCE);
 
         // log to external file according to preferences
-        if (preferences.getBoolean(PREF_LOG_TO_FILE, false)) {
+        if (logToFile) {
             File dir = getExternalFilesDir(null);
             if (dir != null)
                 try {
-                    String pattern = new File(dir, "davdroid-%u.txt").toString();
+                    String pattern = new File(dir, "davdroid%u-" + DateFormatUtils.format(System.currentTimeMillis(), "yyyyMMdd-HHmmss") + ".txt").toString();
                     log.info("Logging to external file: " + pattern);
 
                     FileHandler fileHandler = new FileHandler(pattern);
-                    fileHandler.setFormatter(new SimpleFormatter());
+                    fileHandler.setFormatter(PlainTextFormatter.DEFAULT);
                     log.addHandler(fileHandler);
                 } catch (IOException e) {
                     log.log(Level.SEVERE, "Can't create external log file", e);

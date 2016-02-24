@@ -32,6 +32,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.logging.Level;
 
 import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.vcard4android.ContactsStorageException;
@@ -63,9 +64,9 @@ public class AccountSettings {
 			int version = 0;
 			try {
 				version = Integer.parseInt(accountManager.getUserData(account, KEY_SETTINGS_VERSION));
-			} catch(NumberFormatException e) {
+			} catch(NumberFormatException ignored) {
 			}
-            Constants.log.info("AccountSettings version: v" + version + ", should be: " + version);
+            App.log.info("AccountSettings version: v" + version + ", should be: " + version);
 
 			if (version < CURRENT_VERSION) {
                 showNotification(Constants.NOTIFICATION_ACCOUNT_SETTINGS_UPDATED,
@@ -89,6 +90,7 @@ public class AccountSettings {
     @TargetApi(21)
     protected void showNotification(int id, String title, String message) {
         NotificationManager nm = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+
         Notification.Builder n = new Notification.Builder(context);
         if (Build.VERSION.SDK_INT >= 16) {
             n.setPriority(Notification.PRIORITY_HIGH);
@@ -160,7 +162,7 @@ public class AccountSettings {
 	
 	private void updateTo(int toVersion) {
         final int fromVersion = toVersion - 1;
-        Constants.log.info("Updating account settings from v" + fromVersion + " to " + toVersion);
+        App.log.info("Updating account settings from v" + fromVersion + " to " + toVersion);
 		try {
 			switch (toVersion) {
                 case 1:
@@ -170,10 +172,10 @@ public class AccountSettings {
                     update_1_2();
                     break;
                 default:
-                    Constants.log.error("Don't know how to update settings from v" + fromVersion + " to v" + toVersion);
+                    App.log.severe("Don't know how to update settings from v" + fromVersion + " to v" + toVersion);
             }
 		} catch(Exception e) {
-            Constants.log.error("Couldn't update account settings (DAVdroid will probably crash)!", e);
+            App.log.log(Level.SEVERE, "Couldn't update account settings (DAVdroid will probably crash)!", e);
 		}
 	}
 
@@ -181,15 +183,15 @@ public class AccountSettings {
 	private void update_0_1() throws URISyntaxException {
 		String	v0_principalURL = accountManager.getUserData(account, "principal_url"),
 				v0_addressBookPath = accountManager.getUserData(account, "addressbook_path");
-        Constants.log.debug("Old principal URL = " + v0_principalURL);
-        Constants.log.debug("Old address book path = " + v0_addressBookPath);
+        App.log.fine("Old principal URL = " + v0_principalURL);
+        App.log.fine("Old address book path = " + v0_addressBookPath);
 		
 		URI principalURI = new URI(v0_principalURL);
 
 		// update address book
 		if (v0_addressBookPath != null) {
 			String addressBookURL = principalURI.resolve(v0_addressBookPath).toASCIIString();
-            Constants.log.debug("New address book URL = " + addressBookURL);
+            App.log.fine("New address book URL = " + addressBookURL);
 			accountManager.setUserData(account, "addressbook_url", addressBookURL);
 		}
 		
@@ -204,7 +206,7 @@ public class AccountSettings {
 			int id = cursor.getInt(0);
 			String	v0_path = cursor.getString(1),
 					v1_url = principalURI.resolve(v0_path).toASCIIString();
-            Constants.log.debug("Updating calendar #" + id + " name: " + v0_path + " -> " + v1_url);
+            App.log.fine("Updating calendar #" + id + " name: " + v0_path + " -> " + v1_url);
 			Uri calendar = ContentUris.appendId(Calendars.CONTENT_URI.buildUpon()
 					.appendQueryParameter(Calendars.ACCOUNT_NAME, account.name)
 					.appendQueryParameter(Calendars.ACCOUNT_TYPE, account.type)
@@ -212,7 +214,7 @@ public class AccountSettings {
 			ContentValues newValues = new ContentValues(1);
 			newValues.put(Calendars.NAME, v1_url);
 			if (resolver.update(calendar, newValues, null, null) != 1)
-                Constants.log.debug("Number of modified calendars != 1");
+                App.log.fine("Number of modified calendars != 1");
 		}
 
 		accountManager.setUserData(account, "principal_url", null);

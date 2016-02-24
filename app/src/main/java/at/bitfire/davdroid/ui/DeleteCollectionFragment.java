@@ -110,7 +110,7 @@ public class DeleteCollectionFragment extends DialogFragment implements LoaderMa
         public Exception loadInBackground() {
             OkHttpClient httpClient = HttpClient.create(getContext(), account);
 
-            DavResource collection = new DavResource(null, httpClient, HttpUrl.parse(collectionInfo.url));
+            DavResource collection = new DavResource(httpClient, HttpUrl.parse(collectionInfo.url));
             try {
                 // delete collection from server
                 collection.delete(null);

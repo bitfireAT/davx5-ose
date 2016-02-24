@@ -52,7 +52,7 @@ public class ExceptionInfoFragment extends DialogFragment {
                 .setIcon(R.drawable.ic_error_dark)
                 .setTitle(title)
                 .setMessage(exception.getClass().getCanonicalName() + "\n" + exception.getLocalizedMessage())
-                .setPositiveButton(R.string.exception_show_details, new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.exception_show_details, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(getContext(), DebugInfoActivity.class);
@@ -62,7 +62,7 @@ public class ExceptionInfoFragment extends DialogFragment {
                         startActivity(intent);
                     }
                 })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                     }

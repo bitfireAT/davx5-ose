@@ -11,10 +11,9 @@ package at.bitfire.davdroid;
 import android.accounts.Account;
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.NonNull;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -23,11 +22,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import at.bitfire.dav4android.BasicDigestAuthenticator;
-import at.bitfire.davdroid.log.ExternalFileLogger;
-
-import android.support.annotation.NonNull;
-import android.text.format.DateFormat;
-
 import lombok.RequiredArgsConstructor;
 import okhttp3.Credentials;
 import okhttp3.Interceptor;
@@ -49,7 +43,7 @@ public class HttpClient {
     private HttpClient() {
     }
 
-    public static OkHttpClient create(Context context, Account account) {
+    public static OkHttpClient create(Context context, Account account, @NonNull final Logger logger) {
         OkHttpClient.Builder builder = client.newBuilder();
 
         // use MemorizingTrustManager to manage self-signed certificates
@@ -80,13 +74,24 @@ public class HttpClient {
                 builder.addNetworkInterceptor(new PreemptiveAuthenticationInterceptor(settings.username(), settings.password()));
             else
                 builder.authenticator(new BasicDigestAuthenticator(null, settings.username(), settings.password()));
-
         }
 
-        if (App.log.isLoggable(Level.FINEST))
-            addLogger(builder, App.log);
+        if (logger.isLoggable(Level.FINEST)) {
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+                @Override
+                public void log(String message) {
+                    logger.finest(message);
+                }
+            });
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            builder.addInterceptor(loggingInterceptor);
+        }
 
         return builder.build();
+    }
+
+    public static OkHttpClient create(Context context, Account account) {
+        return create(context, account, App.log);
     }
 
     private static OkHttpClient.Builder addAuthentication(@NonNull OkHttpClient.Builder builder, @NonNull String username, @NonNull String password, boolean preemptive) {
@@ -107,22 +112,6 @@ public class HttpClient {
         return client.newBuilder()
                 .authenticator(new BasicDigestAuthenticator(host, username, password))
                 .build();
-    }
-
-    private static OkHttpClient.Builder addLogger(@NonNull OkHttpClient.Builder builder, @NonNull final Logger logger) {
-        // trace-level logging → add network traffic interceptor
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
-            @Override
-            public void log(String message) {
-                logger.finest(message);
-            }
-        });
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        return builder.addInterceptor(loggingInterceptor);
-    }
-
-    public static OkHttpClient addLogger(@NonNull OkHttpClient client, @NonNull final Logger logger) {
-        return addLogger(client.newBuilder(), logger).build();
     }
 
 

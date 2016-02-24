@@ -14,16 +14,6 @@ import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
 
-import at.bitfire.davdroid.model.CollectionInfo;
-import at.bitfire.ical4android.CalendarStorageException;
-import okhttp3.HttpUrl;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,6 +24,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
 import at.bitfire.dav4android.DavAddressBook;
 import at.bitfire.dav4android.DavResource;
@@ -44,20 +35,30 @@ import at.bitfire.dav4android.property.GetCTag;
 import at.bitfire.dav4android.property.GetContentType;
 import at.bitfire.dav4android.property.GetETag;
 import at.bitfire.dav4android.property.SupportedAddressData;
+import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.davdroid.resource.LocalContact;
 import at.bitfire.davdroid.resource.LocalGroup;
 import at.bitfire.davdroid.resource.LocalResource;
+import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.vcard4android.Contact;
 import at.bitfire.vcard4android.ContactsStorageException;
 import ezvcard.VCardVersion;
 import ezvcard.util.IOUtils;
 import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class ContactsSyncManager extends SyncManager {
     protected static final int MAX_MULTIGET = 10;
@@ -87,12 +88,12 @@ public class ContactsSyncManager extends SyncManager {
         String url = remote.url;
         String lastUrl = localAddressBook().getURL();
         if (!url.equals(lastUrl)) {
-            Constants.log.info("Selected address book has changed from {} to {}, deleting all local contacts", lastUrl, url);
+            App.log.info("Selected address book has changed from " + lastUrl + " to " + url + ", deleting all local contacts");
             ((LocalAddressBook)localCollection).deleteAll();
         }
 
         collectionURL = HttpUrl.parse(url);
-        davCollection = new DavAddressBook(log, httpClient, collectionURL);
+        davCollection = new DavAddressBook(httpClient, collectionURL);
 
         processChangedGroups();
     }
@@ -107,7 +108,7 @@ public class ContactsSyncManager extends SyncManager {
             for (MediaType type : supportedAddressData.types)
                 if ("text/vcard; version=4.0".equalsIgnoreCase(type.toString()))
                     hasVCard4 = true;
-        log.info("Server advertises VCard/4 support: " + hasVCard4);
+        App.log.info("Server advertises VCard/4 support: " + hasVCard4);
     }
 
     @Override
@@ -133,7 +134,7 @@ public class ContactsSyncManager extends SyncManager {
              *  Zimbra ZCS                   500 Server Error                            https://bugzilla.zimbra.com/show_bug.cgi?id=101902
              */
             if (e.status == 400 || e.status == 403 || e.status == 500 || e.status == 501) {
-                log.warn("Server error on REPORT addressbook-query, falling back to PROPFIND", e);
+                App.log.log(Level.WARNING, "Server error on REPORT addressbook-query, falling back to PROPFIND", e);
                 davAddressBook().propfind(1, GetETag.NAME);
             } else
                 // no defined fallback, pass through exception
@@ -143,14 +144,14 @@ public class ContactsSyncManager extends SyncManager {
         remoteResources = new HashMap<>(davCollection.members.size());
         for (DavResource vCard : davCollection.members) {
             String fileName = vCard.fileName();
-            log.debug("Found remote VCard: " + fileName);
+            App.log.fine("Found remote VCard: " + fileName);
             remoteResources.put(fileName, vCard);
         }
     }
 
     @Override
     protected void downloadRemote() throws IOException, HttpException, DavException, ContactsStorageException {
-        log.info("Downloading " + toDownload.size() + " contacts (" + MAX_MULTIGET + " at once)");
+        App.log.info("Downloading " + toDownload.size() + " contacts (" + MAX_MULTIGET + " at once)");
 
         // prepare downloader which may be used to download external resource like contact photos
         Contact.Downloader downloader = new ResourceDownloader(collectionURL);
@@ -160,7 +161,7 @@ public class ContactsSyncManager extends SyncManager {
             if (Thread.interrupted())
                 return;
 
-            log.info("Downloading " + StringUtils.join(bunch, ", "));
+            App.log.info("Downloading " + StringUtils.join(bunch, ", "));
 
             if (bunch.length == 1) {
                 // only one contact, use GET
@@ -230,7 +231,7 @@ public class ContactsSyncManager extends SyncManager {
         // groups with DELETED=1: remove group finally
         for (LocalGroup group : addressBook.getDeletedGroups()) {
             long groupId = group.getId();
-            log.debug("Finally removing group #" + groupId);
+            App.log.fine("Finally removing group #" + groupId);
             // remove group memberships, but not as sync adapter (should marks contacts as DIRTY)
             // NOTE: doesn't work that way because Contact Provider removes the group memberships even for DELETED groups
             // addressBook.removeGroupMemberships(groupId, false);
@@ -240,32 +241,32 @@ public class ContactsSyncManager extends SyncManager {
         // groups with DIRTY=1: mark all memberships as dirty, then clean DIRTY flag of group
         for (LocalGroup group : addressBook.getDirtyGroups()) {
             long groupId = group.getId();
-            log.debug("Marking members of modified group #" + groupId + " as dirty");
+            App.log.fine("Marking members of modified group #" + groupId + " as dirty");
             addressBook.markMembersDirty(groupId);
             group.clearDirty();
         }
     }
 
     private void processVCard(String fileName, String eTag, InputStream stream, Charset charset, Contact.Downloader downloader) throws IOException, ContactsStorageException {
-        Contact contacts[] = Contact.fromStream(stream, charset, downloader);
-        if (contacts != null && contacts.length == 1) {
+        Contact[] contacts = Contact.fromStream(stream, charset, downloader);
+        if (contacts.length == 1) {
             Contact newData = contacts[0];
 
             // update local contact, if it exists
             LocalContact localContact = (LocalContact)localResources.get(fileName);
             if (localContact != null) {
-                log.info("Updating " + fileName + " in local address book");
+                App.log.info("Updating " + fileName + " in local address book");
                 localContact.eTag = eTag;
                 localContact.update(newData);
                 syncResult.stats.numUpdates++;
             } else {
-                log.info("Adding " + fileName + " to local address book");
+                App.log.info("Adding " + fileName + " to local address book");
                 localContact = new LocalContact(localAddressBook(), newData, fileName, eTag);
                 localContact.add();
                 syncResult.stats.numInserts++;
             }
         } else
-            log.error("Received VCard with not exactly one VCARD, ignoring " + fileName);
+            App.log.severe("Received VCard with not exactly one VCARD, ignoring " + fileName);
     }
 
 
@@ -280,13 +281,13 @@ public class ContactsSyncManager extends SyncManager {
             HttpUrl httpUrl = HttpUrl.parse(url);
 
             if (httpUrl == null) {
-                log.error("Invalid external resource URL");
+                App.log.log(Level.SEVERE, "Invalid external resource URL", url);
                 return null;
             }
 
             String host = httpUrl.host();
             if (host == null) {
-                log.error("External resource URL doesn't specify a host name");
+                App.log.log(Level.SEVERE, "External resource URL doesn't specify a host name", url);
                 return null;
             }
 
@@ -312,10 +313,10 @@ public class ContactsSyncManager extends SyncManager {
                     if (response.isSuccessful() && stream != null) {
                         return IOUtils.toByteArray(stream);
                     } else
-                        log.error("Couldn't download external resource");
+                        App.log.severe("Couldn't download external resource");
                 }
             } catch(IOException e) {
-                log.error("Couldn't download external resource", e);
+                App.log.log(Level.SEVERE, "Couldn't download external resource", e);
             }
             return null;
         }

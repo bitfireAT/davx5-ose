@@ -29,19 +29,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
+import java.util.logging.Level;
 
 import at.bitfire.dav4android.exception.HttpException;
+import at.bitfire.davdroid.AccountSettings;
+import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.AccountSettings;
 
 public class DebugInfoActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
     public static final String
@@ -86,7 +87,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                 // report is too long for inline text, send it as an attachment
                 try {
                     File reportFile = File.createTempFile("davdroid-debug", ".txt", getExternalCacheDir());
-                    Constants.log.debug("Writing debug info to " + reportFile.getAbsolutePath());
+                    App.log.fine("Writing debug info to " + reportFile.getAbsolutePath());
                     FileWriter writer = new FileWriter(reportFile);
                     writer.write(report);
                     writer.close();
@@ -197,7 +198,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                                 "JB Workaround installed: " + (workaroundInstalled ? "yes" : "no") + "\n\n"
                 );
             } catch(Exception ex) {
-                Constants.log.error("Couldn't get software information", ex);
+                App.log.log(Level.SEVERE, "Couldn't get software information", ex);
             }
 
             report.append(
@@ -223,7 +224,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                                 "Device: " + WordUtils.capitalize(Build.MANUFACTURER) + " " + Build.MODEL + " (" + Build.DEVICE + ")\n\n"
                 );
             } catch (Exception ex) {
-                Constants.log.error("Couldn't get system details", ex);
+                App.log.log(Level.SEVERE, "Couldn't get system details", ex);
             }
 
             return report.toString();

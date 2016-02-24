@@ -24,8 +24,9 @@ import android.provider.CalendarContract;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
-import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
@@ -64,7 +65,7 @@ public class CalendarsSyncAdapterService extends Service {
 
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-            Constants.log.info("Starting calendar sync (" + authority + ")");
+            App.log.info("Starting calendar sync (" + authority + ")");
 
             // required for ical4j and dav4android (ServiceLoader)
             Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
@@ -73,15 +74,15 @@ public class CalendarsSyncAdapterService extends Service {
                 updateLocalCalendars(provider, account);
 
                 for (LocalCalendar calendar : (LocalCalendar[])LocalCalendar.find(account, provider, LocalCalendar.Factory.INSTANCE, CalendarContract.Calendars.SYNC_EVENTS + "!=0", null)) {
-                    Constants.log.info("Synchronizing calendar #"  + calendar.getId() + ", URL: " + calendar.getName());
+                    App.log.info("Synchronizing calendar #"  + calendar.getId() + ", URL: " + calendar.getName());
                     CalendarSyncManager syncManager = new CalendarSyncManager(getContext(), account, extras, authority, syncResult, calendar);
                     syncManager.performSync();
                 }
             } catch (CalendarStorageException e) {
-                Constants.log.error("Couldn't enumerate local calendars", e);
+                App.log.log(Level.SEVERE, "Couldn't enumerate local calendars", e);
             }
 
-            Constants.log.info("Calendar sync complete");
+            App.log.info("Calendar sync complete");
         }
 
         private void updateLocalCalendars(ContentProviderClient provider, Account account) throws CalendarStorageException {
@@ -95,12 +96,12 @@ public class CalendarsSyncAdapterService extends Service {
             for (LocalCalendar calendar : local) {
                 String url = calendar.getName();
                 if (!remote.containsKey(url)) {
-                    Constants.log.debug("Deleting obsolete local calendar {}", url);
+                    App.log.fine("Deleting obsolete local calendar " + url);
                     calendar.delete();
                 } else {
                     // remote CollectionInfo found for this local collection, update data
                     CollectionInfo info = remote.get(url);
-                    Constants.log.debug("Updating local calendar {} with {}", url, info);
+                    App.log.fine("Updating local calendar " + url + " with " + info);
                     calendar.update(info);
                     // we already have a local calendar for this remote collection, don't take into consideration anymore
                     remote.remove(url);
@@ -110,7 +111,7 @@ public class CalendarsSyncAdapterService extends Service {
             // create new local calendars
             for (String url : remote.keySet()) {
                 CollectionInfo info = remote.get(url);
-                Constants.log.info("Adding local calendar list {}", info);
+                App.log.info("Adding local calendar list " + info);
                 LocalCalendar.create(account, provider, info);
             }
         }

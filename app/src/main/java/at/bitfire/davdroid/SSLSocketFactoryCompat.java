@@ -50,7 +50,7 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
                 for (String protocol : socket.getSupportedProtocols())
                     if (!protocol.toUpperCase(Locale.US).contains("SSL"))
                         protocols.add(protocol);
-                Constants.log.info("Setting allowed TLS protocols: " + TextUtils.join(", ", protocols));
+                App.log.info("Setting allowed TLS protocols: " + TextUtils.join(", ", protocols));
                 SSLSocketFactoryCompat.protocols = protocols.toArray(new String[protocols.size()]);
 
                 /* set up reasonable cipher suites */
@@ -75,8 +75,8 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
                             "TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
                             "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA");
                     List<String> availableCiphers = Arrays.asList(socket.getSupportedCipherSuites());
-                    Constants.log.debug("Available cipher suites: " + TextUtils.join(", ", availableCiphers));
-                    Constants.log.debug("Cipher suites enabled by default: " + TextUtils.join(", ", socket.getEnabledCipherSuites()));
+                    App.log.fine("Available cipher suites: " + TextUtils.join(", ", availableCiphers));
+                    App.log.fine("Cipher suites enabled by default: " + TextUtils.join(", ", socket.getEnabledCipherSuites()));
 
                     // take all allowed ciphers that are available and put them into preferredCiphers
                     HashSet<String> preferredCiphers = new HashSet<>(allowedCiphers);
@@ -91,12 +91,12 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
                     HashSet<String> enabledCiphers = preferredCiphers;
                     enabledCiphers.addAll(new HashSet<>(Arrays.asList(socket.getEnabledCipherSuites())));
 
-                    Constants.log.info("Enabling (only) those TLS ciphers: " + TextUtils.join(", ", enabledCiphers));
+                    App.log.info("Enabling (only) those TLS ciphers: " + TextUtils.join(", ", enabledCiphers));
                     SSLSocketFactoryCompat.cipherSuites = enabledCiphers.toArray(new String[enabledCiphers.size()]);
                 }
             }
         } catch (IOException e) {
-            Constants.log.error("Couldn't determine default TLS settings");
+            App.log.severe("Couldn't determine default TLS settings");
         }
     }
 
