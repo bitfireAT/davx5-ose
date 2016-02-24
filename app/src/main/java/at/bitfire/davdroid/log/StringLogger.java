@@ -14,22 +14,17 @@ import java.io.StringWriter;
 import lombok.Getter;
 
 public class StringLogger extends CustomLogger {
-
     @Getter protected final String name;
 
     protected final StringWriter stringWriter = new StringWriter();
 
-
-    public StringLogger(String name, boolean verbose) {
+    public StringLogger(String name) {
         this.name = name;
-        this.verbose = verbose;
-
         writer = new PrintWriter(stringWriter);
     }
 
     public String toString() {
         return stringWriter.toString();
     }
-
 
 }

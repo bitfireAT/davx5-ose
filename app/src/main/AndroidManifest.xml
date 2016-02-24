@@ -43,6 +43,7 @@
 
     <!-- ical4android declares task access permissions -->
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:fullBackupContent="false"
         android:icon="@drawable/ic_launcher"

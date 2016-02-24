@@ -19,9 +19,7 @@ import java.io.PrintWriter;
 
 public class ExternalFileLogger extends CustomLogger implements Closeable {
 
-    public ExternalFileLogger(Context context, String fileName, boolean verbose) throws IOException {
-        this.verbose = verbose;
-
+    public ExternalFileLogger(Context context, String fileName) throws IOException {
         File dir = getDirectory(context);
         if (dir == null)
             throw new IOException("External media not available for log creation");

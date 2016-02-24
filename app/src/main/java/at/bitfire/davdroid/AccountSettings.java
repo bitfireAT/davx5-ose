@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  */
-package at.bitfire.davdroid.syncadapter;
+package at.bitfire.davdroid;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -33,8 +33,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import at.bitfire.davdroid.Constants;
-import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
@@ -46,8 +44,6 @@ public class AccountSettings {
 
 		KEY_USERNAME = "user_name",
 		KEY_AUTH_PREEMPTIVE = "auth_preemptive",
-        KEY_LOG_TO_EXTERNAL_FILE = "log_external_file",
-        KEY_LOG_VERBOSE = "log_verbose",
         KEY_LAST_ANDROID_VERSION = "last_android_version";
 
 	public final static long SYNC_INTERVAL_MANUALLY = -1;
@@ -127,15 +123,6 @@ public class AccountSettings {
 	
 	public boolean preemptiveAuth() { return Boolean.parseBoolean(accountManager.getUserData(account, KEY_AUTH_PREEMPTIVE)); }
 	public void preemptiveAuth(boolean preemptive) { accountManager.setUserData(account, KEY_AUTH_PREEMPTIVE, Boolean.toString(preemptive)); }
-
-
-    // logging settings
-
-    public boolean logToExternalFile() { return Boolean.parseBoolean(accountManager.getUserData(account, KEY_LOG_TO_EXTERNAL_FILE)); }
-    public void logToExternalFile(boolean newValue) { accountManager.setUserData(account, KEY_LOG_TO_EXTERNAL_FILE, Boolean.toString(newValue)); }
-
-    public boolean logVerbose() { return Boolean.parseBoolean(accountManager.getUserData(account, KEY_LOG_VERBOSE)); }
-    public void logVerbose(boolean newValue) { accountManager.setUserData(account, KEY_LOG_VERBOSE, Boolean.toString(newValue)); }
 
 
 	// sync. settings

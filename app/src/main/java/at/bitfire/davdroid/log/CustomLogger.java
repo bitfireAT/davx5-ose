@@ -34,7 +34,6 @@ public abstract class CustomLogger implements Logger {
     protected String name;
 
     protected PrintWriter writer;
-    protected boolean verbose;
 
 
     // CUSTOM LOGGING METHODS
@@ -69,36 +68,32 @@ public abstract class CustomLogger implements Logger {
 
     @Override
     public boolean isTraceEnabled() {
-        return verbose;
+        return true;
     }
 
     @Override
     public void trace(String msg) {
-        if (verbose)
-            log(PREFIX_TRACE, msg);
+        log(PREFIX_TRACE, msg);
     }
 
     @Override
     public void trace(String format, Object arg) {
-        if (verbose)
-            log(PREFIX_TRACE, format, arg);
+        log(PREFIX_TRACE, format, arg);
     }
 
     @Override
     public void trace(String format, Object arg1, Object arg2) {
-        if (verbose) log(PREFIX_TRACE, format, arg1, arg2);
+        log(PREFIX_TRACE, format, arg1, arg2);
     }
 
     @Override
     public void trace(String format, Object... arguments) {
-        if (verbose)
-            log(PREFIX_TRACE, format, arguments);
+        log(PREFIX_TRACE, format, arguments);
     }
 
     @Override
     public void trace(String msg, Throwable t) {
-        if (verbose)
-            log(PREFIX_TRACE, msg, t);
+        log(PREFIX_TRACE, msg, t);
     }
 
 

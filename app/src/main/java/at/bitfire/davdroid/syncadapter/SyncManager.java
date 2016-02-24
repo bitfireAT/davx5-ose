@@ -39,6 +39,7 @@ package at.bitfire.davdroid.syncadapter;
     import at.bitfire.dav4android.exception.UnauthorizedException;
     import at.bitfire.dav4android.property.GetCTag;
     import at.bitfire.dav4android.property.GetETag;
+    import at.bitfire.davdroid.AccountSettings;
     import at.bitfire.davdroid.Constants;
     import at.bitfire.davdroid.HttpClient;
     import at.bitfire.davdroid.R;
@@ -107,21 +108,11 @@ abstract public class SyncManager {
         this.authority = authority;
         this.syncResult = syncResult;
 
-        // get account settings and log to file (if requested)
+        // get account settings (for sync interval etc.)
         settings = new AccountSettings(context, account);
-        try {
-            if (settings.logToExternalFile())
-                log = new ExternalFileLogger(context, "davdroid-SyncManager-" + account.name + "-" + authority + ".txt", settings.logVerbose());
-        } catch(IOException e) {
-            Constants.log.error("Couldn't log to external file", e);
-        }
-        if (log == null)
-            log = Constants.log;
 
         // create HttpClient with given logger
-        httpClient = HttpClient.create(context);
-        httpClient = HttpClient.addLogger(httpClient, log);
-        httpClient = HttpClient.addAuthentication(httpClient, settings.username(), settings.password(), settings.preemptiveAuth());
+        httpClient = HttpClient.create(context, account);
 
         // dismiss previous error notifications
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

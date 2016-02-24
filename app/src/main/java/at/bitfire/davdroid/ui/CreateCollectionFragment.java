@@ -16,7 +16,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -39,7 +38,6 @@ import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
-import at.bitfire.davdroid.syncadapter.AccountSettings;
 import lombok.Cleanup;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -126,11 +124,6 @@ public class CreateCollectionFragment extends DialogFragment implements LoaderMa
 
         @Override
         public Exception loadInBackground() {
-            Constants.log.info("MKCOl !!!!");
-
-            OkHttpClient client = HttpClient.create(getContext());
-            client = HttpClient.addAuthentication(client, new AccountSettings(getContext(), account));
-
             StringWriter writer = new StringWriter();
             try {
                 XmlSerializer serializer = XmlUtils.newSerializer();
@@ -212,6 +205,8 @@ public class CreateCollectionFragment extends DialogFragment implements LoaderMa
             }
 
             ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
+
+            OkHttpClient client = HttpClient.create(getContext(), account);
             DavResource collection = new DavResource(null, client, HttpUrl.parse(info.url));
             try {
                 // create collection on remote server

@@ -40,7 +40,6 @@ import at.bitfire.dav4android.property.CalendarHomeSet;
 import at.bitfire.dav4android.property.GroupMembership;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB.*;
-import at.bitfire.davdroid.syncadapter.AccountSettings;
 import lombok.Cleanup;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -277,11 +276,7 @@ public class DavService extends Service {
             @Cleanup Cursor cursor = db.query(Services._TABLE, new String[]{Services.ACCOUNT_NAME}, Services.ID + "=?", new String[] { String.valueOf(service) }, null, null, null);
             if (cursor.moveToNext()) {
                 Account account = new Account(cursor.getString(0), Constants.ACCOUNT_TYPE);
-                AccountSettings settings = new AccountSettings(DavService.this, account);
-
-                OkHttpClient httpClient = HttpClient.create(DavService.this);
-                httpClient = HttpClient.addAuthentication(httpClient, settings.username(), settings.password(), settings.preemptiveAuth());
-                return httpClient;
+                return HttpClient.create(DavService.this, account);
             } else
                 throw new IllegalArgumentException("Service not found");
         }

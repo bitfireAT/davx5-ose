@@ -24,6 +24,7 @@ import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -40,7 +41,7 @@ import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.syncadapter.AccountSettings;
+import at.bitfire.davdroid.AccountSettings;
 
 public class DebugInfoActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
     public static final String
@@ -173,8 +174,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
 
             if (exception != null) {
                 report.append("\nSTACK TRACE:\n");
-                for (String stackTrace : ExceptionUtils.getRootCauseStackTrace(exception))
-                    report.append(stackTrace + "\n");
+                report.append(Log.getStackTraceString(exception));
                 report.append("\n");
             }
 

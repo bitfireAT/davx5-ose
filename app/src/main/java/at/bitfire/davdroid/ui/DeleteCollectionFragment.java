@@ -32,7 +32,6 @@ import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
-import at.bitfire.davdroid.syncadapter.AccountSettings;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 
@@ -109,8 +108,7 @@ public class DeleteCollectionFragment extends DialogFragment implements LoaderMa
 
         @Override
         public Exception loadInBackground() {
-            OkHttpClient httpClient = HttpClient.create(getContext());
-            httpClient = HttpClient.addAuthentication(httpClient, new AccountSettings(getContext(), account));
+            OkHttpClient httpClient = HttpClient.create(getContext(), account);
 
             DavResource collection = new DavResource(null, httpClient, HttpUrl.parse(collectionInfo.url));
             try {

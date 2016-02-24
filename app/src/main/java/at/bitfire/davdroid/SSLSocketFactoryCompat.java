@@ -9,6 +9,7 @@
 package at.bitfire.davdroid;
 
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import java.io.IOException;
@@ -25,12 +26,10 @@ import java.util.Locale;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import de.duenndns.ssl.MemorizingTrustManager;
 import lombok.Cleanup;
-import lombok.NonNull;
 
 public class SSLSocketFactoryCompat extends SSLSocketFactory {
 
@@ -51,7 +50,7 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
                 for (String protocol : socket.getSupportedProtocols())
                     if (!protocol.toUpperCase(Locale.US).contains("SSL"))
                         protocols.add(protocol);
-                Constants.log.debug("Setting allowed TLS protocols: " + TextUtils.join(", ", protocols));
+                Constants.log.info("Setting allowed TLS protocols: " + TextUtils.join(", ", protocols));
                 SSLSocketFactoryCompat.protocols = protocols.toArray(new String[protocols.size()]);
 
                 /* set up reasonable cipher suites */
@@ -92,7 +91,7 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
                     HashSet<String> enabledCiphers = preferredCiphers;
                     enabledCiphers.addAll(new HashSet<>(Arrays.asList(socket.getEnabledCipherSuites())));
 
-                    Constants.log.debug("Enabling (only) those TLS ciphers: " + TextUtils.join(", ", enabledCiphers));
+                    Constants.log.info("Enabling (only) those TLS ciphers: " + TextUtils.join(", ", enabledCiphers));
                     SSLSocketFactoryCompat.cipherSuites = enabledCiphers.toArray(new String[enabledCiphers.size()]);
                 }
             }
@@ -112,15 +111,11 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
     }
 
     private void upgradeTLS(SSLSocket ssl) {
-        if (protocols != null) {
-            Constants.log.trace("Setting allowed TLS protocols: " + TextUtils.join(", ", protocols));
+        if (protocols != null)
             ssl.setEnabledProtocols(protocols);
-        }
 
-        if (Build.VERSION.SDK_INT < 20 && cipherSuites != null) {
-            Constants.log.trace("Setting allowed TLS ciphers: " + TextUtils.join(", ", cipherSuites));
+        if (cipherSuites != null)
             ssl.setEnabledCipherSuites(cipherSuites);
-        }
     }
 
 
