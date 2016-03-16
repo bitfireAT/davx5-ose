@@ -47,6 +47,14 @@ public class AccountSettings {
 		KEY_AUTH_PREEMPTIVE = "auth_preemptive",
         KEY_LAST_ANDROID_VERSION = "last_android_version";
 
+    /*  Time range limitation to the past [days]
+        value = null              default value (DEFAULT_TIME_RANGE_PAST_DAYS)
+                < 0 (-1)          no limit
+                >= 0              entries more than n days in the past won't be synchronized
+     */
+    private final static String KEY_TIME_RANGE_PAST_DAYS = "time_range_past_days";
+    private final static int DEFAULT_TIME_RANGE_PAST_DAYS = 90;
+
 	public final static long SYNC_INTERVAL_MANUALLY = -1;
 
 	final Context context;
@@ -151,6 +159,19 @@ public class AccountSettings {
 			ContentResolver.addPeriodicSync(account, authority, new Bundle(), seconds);
 		}
 	}
+
+    public Integer getTimeRangePastDays() {
+        String strDays = accountManager.getUserData(account, KEY_TIME_RANGE_PAST_DAYS);
+        if (strDays != null) {
+            int days = Integer.valueOf(strDays);
+            return days < 0 ? null : days;
+        } else
+            return DEFAULT_TIME_RANGE_PAST_DAYS;
+    }
+
+    public void setTimeRangePastDays(Integer days) {
+        accountManager.setUserData(account, KEY_TIME_RANGE_PAST_DAYS, String.valueOf(days == null ? -1 : days));
+    }
 
 	
 	// update from previous account settings

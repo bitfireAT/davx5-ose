@@ -17,8 +17,12 @@ import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.SwitchPreferenceCompat;
+import android.util.Log;
+
+import java.util.logging.Level;
 
 import at.bitfire.davdroid.AccountSettings;
+import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.R;
 import at.bitfire.ical4android.TaskProvider;
 
@@ -133,6 +137,29 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
 			prefSyncTasks.setEnabled(false);
 			prefSyncTasks.setSummary(R.string.settings_sync_summary_not_available);
 		}
+
+        final EditTextPreference prefTimeRangePastDays = (EditTextPreference)findPreference("caldav_time_range_past_days");
+        Integer pastDays =  settings.getTimeRangePastDays();
+        if (pastDays != null) {
+            prefTimeRangePastDays.setText(pastDays.toString());
+            prefTimeRangePastDays.setSummary(getResources().getQuantityString(R.plurals.settings_sync_time_range_past_days, pastDays, pastDays));
+        } else {
+            prefTimeRangePastDays.setText(null);
+            prefTimeRangePastDays.setSummary(R.string.settings_sync_time_range_past_none);
+        }
+        prefTimeRangePastDays.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                int days;
+                try {
+                    days = Integer.parseInt((String)newValue);
+                } catch(NumberFormatException ignored) {
+                    days = -1;
+                }
+                settings.setTimeRangePastDays(days < 0 ? null : days);
+                refresh(); return false;
+            }
+        });
 
 	}
 

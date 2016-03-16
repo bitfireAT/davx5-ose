@@ -169,6 +169,13 @@
         <item>Every 4 hours</item>
         <item>Once a day</item>
     </string-array>
+    <string name="settings_sync_time_range_past">Restrict synchronization of past events</string>
+    <string name="settings_sync_time_range_past_none">All events will be synchronized</string>
+    <plurals name="settings_sync_time_range_past_days">
+        <item quantity="one">Events more than one day in the past will be ignored</item>
+        <item quantity="other">Events more than %d days in the past will be ignored</item>
+    </plurals>
+    <string name="settings_sync_time_range_past_message">Events which are more than this number of days in the past (may be 0) will be ignored. Leave blank to synchronize all events.</string>
 
     <!-- collection management -->
     <string name="create_address_book_title">Create address book</string>

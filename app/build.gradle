@@ -18,7 +18,7 @@ android {
         targetSdkVersion 22
 
         versionCode 87
-        versionName "1.0-alpha1"
+        versionName "1.0-alpha2"
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
     }
@@ -71,7 +71,7 @@ dependencies {
     compile 'com.github.yukuku:ambilwarna:2.0.1'
     compile project(':MemorizingTrustManager')
 
-    androidTestCompile 'com.squareup.okhttp3:mockwebserver:3.1.2'
+    androidTestCompile 'com.squareup.okhttp3:mockwebserver:3.2.0'
     compile 'dnsjava:dnsjava:2.1.7'
     compile 'org.apache.commons:commons-lang3:3.4'
 }

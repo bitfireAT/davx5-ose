@@ -23,6 +23,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -112,7 +114,7 @@ public class TasksSyncManager extends SyncManager {
     @Override
     protected void listRemote() throws IOException, HttpException, DavException {
         // fetch list of remote VTODOs and build hash table to index file name
-        davCalendar().calendarQuery("VTODO");
+        davCalendar().calendarQuery("VTODO", null, null);
         remoteResources = new HashMap<>(davCollection.members.size());
         for (DavResource vCard : davCollection.members) {
             String fileName = vCard.fileName();
