@@ -57,6 +57,13 @@
             android:entries="@array/settings_sync_interval_names"
             android:entryValues="@array/settings_sync_interval_seconds" />
 
+        <EditTextPreference
+            android:key="caldav_time_range_past_days"
+            android:persistent="false"
+            android:title="Restrict past time range"
+            android:dialogMessage="@string/settings_sync_time_range_past_message"
+            android:inputType="number"/>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

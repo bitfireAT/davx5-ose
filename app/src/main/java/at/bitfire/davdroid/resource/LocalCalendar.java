@@ -181,22 +181,19 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
                 App.log.fine("Found deleted exception, removing; then re-schuling original event");
                 long    id = cursor.getLong(0),             // can't be null (by definition)
                         originalID = cursor.getLong(1);     // can't be null (by query)
-                int sequence = cursor.isNull(2) ? 0 : cursor.getInt(2);
-
-                // FIXME sequence / cursor2 not used
 
                 // get original event's SEQUENCE
                 @Cleanup Cursor cursor2 = provider.query(
                         syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)),
                         new String[] { LocalEvent.COLUMN_SEQUENCE },
                         null, null, null);
-                int originalSequence = cursor.isNull(0) ? 0 : cursor.getInt(0);
+                int originalSequence = (cursor2 == null || cursor2.isNull(0)) ? 0 : cursor2.getInt(0);
 
                 BatchOperation batch = new BatchOperation(provider);
                 // re-schedule original event and set it to DIRTY
                 batch.enqueue(ContentProviderOperation.newUpdate(
                         syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
-                        .withValue(LocalEvent.COLUMN_SEQUENCE, originalSequence)
+                        .withValue(LocalEvent.COLUMN_SEQUENCE, originalSequence + 1)
                         .withValue(Events.DIRTY, DIRTY_INCREASE_SEQUENCE)
                         .build());
                 // remove exception

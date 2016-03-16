@@ -29,7 +29,7 @@ import de.duenndns.ssl.MemorizingTrustManager;
 import lombok.Getter;
 import okhttp3.internal.tls.OkHostnameVerifier;
 
-public class App extends Application implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class App extends Application {
     public static final String
             PREF_FILE = "global",
             PREF_LOG_TO_FILE = "log_to_file";
@@ -56,20 +56,6 @@ public class App extends Application implements SharedPreferences.OnSharedPrefer
         sslSocketFactoryCompat = new SSLSocketFactoryCompat(mtm);
         hostnameVerifier = mtm.wrapHostnameVerifier(OkHostnameVerifier.INSTANCE);
 
-        reinitLogger();
-        preferences.registerOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void onTerminate() {
-        // will never be called on production devices
-        super.onTerminate();
-
-        preferences.unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         reinitLogger();
     }
 

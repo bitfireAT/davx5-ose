@@ -23,6 +23,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -114,8 +116,18 @@ public class CalendarSyncManager extends SyncManager {
 
     @Override
     protected void listRemote() throws IOException, HttpException, DavException {
+        // calculate time range limits
+        Date limitStart = null;
+        Integer pastDays = settings.getTimeRangePastDays();
+        if (pastDays != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DAY_OF_MONTH, -pastDays);
+            limitStart = calendar.getTime();
+        }
+
         // fetch list of remote VEVENTs and build hash table to index file name
-        davCalendar().calendarQuery("VEVENT");
+        davCalendar().calendarQuery("VEVENT", limitStart, null);
+
         remoteResources = new HashMap<>(davCollection.members.size());
         for (DavResource iCal : davCollection.members) {
             String fileName = iCal.fileName();
