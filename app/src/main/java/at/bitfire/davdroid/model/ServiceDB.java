@@ -9,11 +9,14 @@
 package at.bitfire.davdroid.model;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 
 import at.bitfire.davdroid.App;
+import lombok.Cleanup;
 
 public class ServiceDB {
 
@@ -23,8 +26,7 @@ public class ServiceDB {
                 ID = "_id",
                 ACCOUNT_NAME = "accountName",
                 SERVICE = "service",
-                PRINCIPAL = "principal",
-                LAST_REFRESH = "lastRefresh";
+                PRINCIPAL = "principal";
 
         // allowed values for SERVICE column
         public static final String
@@ -87,9 +89,8 @@ public class ServiceDB {
                     Services.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     Services.ACCOUNT_NAME + " TEXT NOT NULL," +
                     Services.SERVICE + " TEXT NOT NULL," +
-                    Services.PRINCIPAL + " TEXT NULL, " +
-                    Services.LAST_REFRESH + " INTEGER NULL" +
-                    ")");
+                    Services.PRINCIPAL + " TEXT NULL" +
+            ")");
             db.execSQL("CREATE UNIQUE INDEX services_account ON " + Services._TABLE + " (" + Services.ACCOUNT_NAME + "," + Services.SERVICE + ")");
 
             db.execSQL("CREATE TABLE " + HomeSets._TABLE + "(" +
@@ -116,6 +117,53 @@ public class ServiceDB {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        }
+
+
+        public void dump(StringBuilder sb) {
+            SQLiteDatabase db = getReadableDatabase();
+            db.beginTransactionNonExclusive();
+
+            // iterate through all tables
+            @Cleanup Cursor cursorTables = db.query("sqlite_master", new String[] { "name" }, "type='table'", null, null, null, null);
+            while (cursorTables.moveToNext()) {
+                String table = cursorTables.getString(0);
+                sb.append("\t").append(table).append("\n");
+                @Cleanup Cursor cursor = db.query(table, null, null, null, null, null, null);
+
+                // print columns
+                int cols = cursor.getColumnCount();
+                sb.append("\t\t| ");
+                for (int i = 0; i < cols; i++) {
+                    sb.append(" ");
+                    sb.append(cursor.getColumnName(i));
+                    sb.append(" |");
+                }
+                sb.append("\n");
+
+                // print rows
+                while (cursor.moveToNext()) {
+                    sb.append("\t\t| ");
+                    for (int i = 0; i < cols; i++) {
+                        sb.append(" ");
+                        try {
+                            String value = cursor.getString(i);
+                            if (value != null)
+                                sb.append(value
+                                        .replace("\r", "<CR>")
+                                        .replace("\n", "<LF>"));
+                            else
+                                sb.append("<null>");
+
+                        } catch (SQLiteException e) {
+                            sb.append("<unprintable>");
+                        }
+                        sb.append(" |");
+                    }
+                    sb.append("\n");
+                }
+            }
+            db.endTransaction();
         }
     }
 

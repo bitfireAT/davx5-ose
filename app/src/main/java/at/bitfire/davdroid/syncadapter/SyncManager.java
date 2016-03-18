@@ -7,50 +7,51 @@
  */
 package at.bitfire.davdroid.syncadapter;
 
-    import android.accounts.Account;
-    import android.annotation.TargetApi;
-    import android.app.Notification;
-    import android.app.NotificationManager;
-    import android.app.PendingIntent;
-    import android.content.ContentResolver;
-    import android.content.Context;
-    import android.content.Intent;
-    import android.content.SyncResult;
-    import android.os.Build;
-    import android.os.Bundle;
-    import android.text.TextUtils;
+import android.accounts.Account;
+import android.annotation.TargetApi;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SyncResult;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v7.app.NotificationCompat;
+import android.text.TextUtils;
 
-    import java.io.IOException;
-    import java.util.Date;
-    import java.util.HashMap;
-    import java.util.HashSet;
-    import java.util.Map;
-    import java.util.Set;
-    import java.util.UUID;
-    import java.util.logging.Level;
+import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.logging.Level;
 
-    import at.bitfire.dav4android.DavResource;
-    import at.bitfire.dav4android.exception.ConflictException;
-    import at.bitfire.dav4android.exception.DavException;
-    import at.bitfire.dav4android.exception.HttpException;
-    import at.bitfire.dav4android.exception.PreconditionFailedException;
-    import at.bitfire.dav4android.exception.ServiceUnavailableException;
-    import at.bitfire.dav4android.exception.UnauthorizedException;
-    import at.bitfire.dav4android.property.GetCTag;
-    import at.bitfire.dav4android.property.GetETag;
-    import at.bitfire.davdroid.AccountSettings;
-    import at.bitfire.davdroid.App;
-    import at.bitfire.davdroid.HttpClient;
-    import at.bitfire.davdroid.R;
-    import at.bitfire.davdroid.resource.LocalCollection;
-    import at.bitfire.davdroid.resource.LocalResource;
-    import at.bitfire.davdroid.ui.AccountActivity;
-    import at.bitfire.davdroid.ui.DebugInfoActivity;
-    import at.bitfire.ical4android.CalendarStorageException;
-    import at.bitfire.vcard4android.ContactsStorageException;
-    import okhttp3.HttpUrl;
-    import okhttp3.OkHttpClient;
-    import okhttp3.RequestBody;
+import at.bitfire.dav4android.DavResource;
+import at.bitfire.dav4android.exception.ConflictException;
+import at.bitfire.dav4android.exception.DavException;
+import at.bitfire.dav4android.exception.HttpException;
+import at.bitfire.dav4android.exception.PreconditionFailedException;
+import at.bitfire.dav4android.exception.ServiceUnavailableException;
+import at.bitfire.dav4android.exception.UnauthorizedException;
+import at.bitfire.dav4android.property.GetCTag;
+import at.bitfire.dav4android.property.GetETag;
+import at.bitfire.davdroid.AccountSettings;
+import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.HttpClient;
+import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.resource.LocalCollection;
+import at.bitfire.davdroid.resource.LocalResource;
+import at.bitfire.davdroid.ui.AccountActivity;
+import at.bitfire.davdroid.ui.DebugInfoActivity;
+import at.bitfire.ical4android.CalendarStorageException;
+import at.bitfire.vcard4android.ContactsStorageException;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 
 abstract public class SyncManager {
 
@@ -218,14 +219,12 @@ abstract public class SyncManager {
                 detailsIntent.putExtra(DebugInfoActivity.KEY_PHASE, syncPhase);
             }
 
-            Notification.Builder builder = new Notification.Builder(context);
-            Notification notification;
-            builder.setSmallIcon(R.drawable.ic_launcher)
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+            builder .setSmallIcon(R.drawable.ic_launcher)
                     .setContentTitle(getSyncErrorTitle())
-                    .setContentIntent(PendingIntent.getActivity(context, notificationId, detailsIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-
-            if (Build.VERSION.SDK_INT >= 20)
-                builder.setLocalOnly(true);
+                    .setContentIntent(PendingIntent.getActivity(context, notificationId, detailsIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                    .setCategory(NotificationCompat.CATEGORY_ERROR)
+                    .setLocalOnly(true);
 
             try {
                 String[] phases = context.getResources().getStringArray(R.array.sync_error_phases);
@@ -235,14 +234,7 @@ abstract public class SyncManager {
                 // should never happen
             }
 
-            if (Build.VERSION.SDK_INT >= 16) {
-                if (Build.VERSION.SDK_INT >= 21)
-                    builder.setCategory(Notification.CATEGORY_ERROR);
-                notification = builder.build();
-            } else {
-                notification = builder.getNotification();
-            }
-            notificationManager.notify(account.name, notificationId, notification);
+            notificationManager.notify(account.name, notificationId, builder.build());
         }
     }
 
