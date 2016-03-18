@@ -72,7 +72,8 @@ public class AccountsActivity extends AppCompatActivity implements NavigationVie
             case R.id.nav_donate:
                 startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("donate/").build()));
                 break;
-            case R.id.nav_preferences:
+            case R.id.nav_app_settings:
+                startActivity(new Intent(this, AppSettingsActivity.class));
                 break;
         }
 

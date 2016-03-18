@@ -42,6 +42,7 @@
     <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
 
     <!-- ical4android declares task access permissions -->
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -125,6 +126,21 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.AppSettingsActivity"
+            android:label="@string/app_settings"
+            android:parentActivityName=".ui.AccountsActivity"/>
+
+        <activity
+            android:name=".ui.setup.LoginActivity"
+            android:label="@string/login_title"
+            android:parentActivityName=".ui.AccountsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".ui.AccountActivity"
             android:parentActivityName=".ui.AccountsActivity">
@@ -134,18 +150,11 @@
             android:label="@string/create_addressbook"/>
         <activity android:name=".ui.CreateCalendarActivity"
                   android:label="@string/create_calendar"/>
+
         <activity
             android:name=".ui.DebugInfoActivity"
             android:exported="true"
             android:label="@string/debug_info_title">
-        </activity>
-        <activity
-            android:name=".ui.setup.LoginActivity"
-            android:label="@string/login_title"
-            android:parentActivityName=".ui.AccountsActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
         </activity>
 
         <!-- MemorizingTrustManager -->
