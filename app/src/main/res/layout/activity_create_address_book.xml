@@ -7,37 +7,53 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent">
 
-    <TextView
-        android:id="@+id/homeset_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Home set:"/>
-    <Spinner
-        android:id="@+id/homeset"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    <LinearLayout android:orientation="vertical"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:padding="@dimen/activity_margin">
 
-    <EditText
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Title"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_addressbook"
+            android:textAppearance="@style/TextView.Heading"/>
 
-    <EditText
-        android:id="@+id/path_segment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Path segment (collection name)"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_collection_home_set"/>
+        <Spinner
+            android:id="@+id/home_sets"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"/>
 
-    <EditText
-        android:id="@+id/description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Description"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_collection_display_name"/>
+        <EditText
+            android:id="@+id/display_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="@string/create_addressbook_display_name_hint"/>
 
-</LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_collection_description"/>
+        <EditText
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:inputType="textAutoCorrect"/>
+
+
+    </LinearLayout>
+</ScrollView>

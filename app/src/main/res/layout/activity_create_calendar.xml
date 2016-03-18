@@ -13,20 +13,21 @@
 
     <LinearLayout android:orientation="vertical"
                   android:layout_width="match_parent"
-                  android:layout_height="match_parent">
+                  android:layout_height="wrap_content"
+                  android:padding="@dimen/activity_margin">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Create CalDAV collection"
+            android:text="@string/create_calendar"
             android:textAppearance="@style/TextView.Heading"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Home set:"/>
-        <android.support.v7.widget.AppCompatSpinner
-            android:id="@+id/home_set"
+            android:text="@string/create_collection_home_set"/>
+        <Spinner
+            android:id="@+id/home_sets"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"/>
@@ -34,24 +35,24 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Display name (title) of this collection:"/>
+            android:text="@string/create_collection_display_name"/>
         <EditText
             android:id="@+id/display_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="My Calendar"/>
+            android:hint="@string/create_calendar_display_name_hint"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Description (optional):"/>
+            android:text="@string/create_collection_description"/>
         <EditText
             android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="Calendar description"/>
+            android:inputType="textAutoCorrect"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -71,15 +72,15 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Set a collection color"/>
+                android:text="@string/create_collection_color"/>
 
         </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Time zone:"/>
-        <android.support.v7.widget.AppCompatSpinner
+            android:text="@string/create_calendar_time_zone"/>
+        <Spinner
             android:id="@+id/time_zone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
@@ -87,7 +88,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Collection type"
+            android:text="@string/create_calendar_type"
             android:textAppearance="@style/TextView.Heading"/>
 
         <RadioGroup
@@ -95,24 +96,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.v7.widget.AppCompatRadioButton
+            <RadioButton
                 android:id="@+id/type_events"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="Calendar (only events)"/>
+                android:text="@string/create_calendar_type_only_events"/>
 
-            <android.support.v7.widget.AppCompatRadioButton
+            <RadioButton
                 android:id="@+id/type_tasks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Task list (only tasks)"/>
+                android:text="@string/create_calendar_type_only_tasks"/>
 
-            <android.support.v7.widget.AppCompatRadioButton
+            <RadioButton
                 android:id="@+id/type_events_and_tasks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Combined (events and tasks)"/>
+                android:text="@string/create_calendar_type_events_and_tasks"/>
 
         </RadioGroup>
 

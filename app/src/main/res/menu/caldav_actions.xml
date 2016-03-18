@@ -12,8 +12,6 @@
     <item android:id="@+id/refresh_calendars"
           android:title="@string/account_refresh_calendar_list"/>
 
-    <item android:id="@+id/add_calendar"
-          android:title="@string/account_add_existing_calendar"/>
     <item android:id="@+id/create_calendar"
           android:title="@string/account_create_new_calendar"/>
 

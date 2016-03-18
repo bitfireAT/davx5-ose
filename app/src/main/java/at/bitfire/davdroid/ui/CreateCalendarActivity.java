@@ -20,7 +20,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatSpinner;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +27,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 
 import net.fortuna.ical4j.model.Calendar;
 
@@ -82,7 +82,7 @@ public class CreateCalendarActivity extends AppCompatActivity implements LoaderM
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_create_calendar, menu);
+        getMenuInflater().inflate(R.menu.activity_create_collection, menu);
         return true;
     }
 
@@ -97,17 +97,17 @@ public class CreateCalendarActivity extends AppCompatActivity implements LoaderM
         return false;
     }
 
-    public void onCreateCalendar(MenuItem item) {
+    public void onCreateCollection(MenuItem item) {
         boolean ok = true;
         CollectionInfo info = new CollectionInfo();
 
-        AppCompatSpinner spinner = (AppCompatSpinner)findViewById(R.id.home_set);
+        Spinner spinner = (Spinner)findViewById(R.id.home_sets);
         String homeSet = (String)spinner.getSelectedItem();
 
         EditText edit = (EditText)findViewById(R.id.display_name);
         info.displayName = edit.getText().toString();
         if (TextUtils.isEmpty(info.displayName)) {
-            edit.setError("Enter a calendar title.");
+            edit.setError(getString(R.string.create_collection_display_name_required));
             ok = false;
         }
 
@@ -117,7 +117,7 @@ public class CreateCalendarActivity extends AppCompatActivity implements LoaderM
         View view = findViewById(R.id.color);
         info.color = ((ColorDrawable)view.getBackground()).getColor();
 
-        spinner = (AppCompatSpinner)findViewById(R.id.time_zone);
+        spinner = (Spinner)findViewById(R.id.time_zone);
         net.fortuna.ical4j.model.TimeZone tz = DateUtils.tzRegistry.getTimeZone((String)spinner.getSelectedItem());
         if (tz != null) {
             Calendar cal = new Calendar();
@@ -154,7 +154,7 @@ public class CreateCalendarActivity extends AppCompatActivity implements LoaderM
 
     @Override
     public void onLoadFinished(Loader<AccountInfo> loader, AccountInfo info) {
-        AppCompatSpinner spinner = (AppCompatSpinner)findViewById(R.id.time_zone);
+        Spinner spinner = (Spinner)findViewById(R.id.time_zone);
         String[] timeZones = TimeZone.getAvailableIDs();
         spinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, timeZones));
         // select system time zone
@@ -166,7 +166,7 @@ public class CreateCalendarActivity extends AppCompatActivity implements LoaderM
             }
 
         if (info != null) {
-            spinner = (AppCompatSpinner)findViewById(R.id.home_set);
+            spinner = (Spinner)findViewById(R.id.home_sets);
             spinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, info.homeSets));
         }
     }

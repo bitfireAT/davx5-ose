@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRadioButton;
@@ -65,6 +66,7 @@ import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.DavService;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
+import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.model.ServiceDB.Collections;
 import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
 import at.bitfire.davdroid.model.ServiceDB.Services;
@@ -253,6 +255,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             long id;
             boolean refreshing;
 
+            boolean hasHomeSets;
             List<CollectionInfo> collections;
         }
     }
@@ -279,6 +282,8 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             listCardDAV.setEnabled(!info.carddav.refreshing);
             listCardDAV.setAlpha(info.carddav.refreshing ? 0.5f : 1);
 
+            tbCardDAV.getMenu().findItem(R.id.create_address_book).setVisible(info.carddav.hasHomeSets);
+
             AddressBookAdapter adapter = new AddressBookAdapter(this);
             adapter.addAll(info.carddav.collections);
             listCardDAV.setAdapter(adapter);
@@ -295,6 +300,8 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             listCalDAV = (ListView)findViewById(R.id.calendars);
             listCalDAV.setEnabled(!info.caldav.refreshing);
             listCalDAV.setAlpha(info.caldav.refreshing ? 0.5f : 1);
+
+            tbCalDAV.getMenu().findItem(R.id.create_calendar).setVisible(info.caldav.hasHomeSets);
 
             final CalendarAdapter adapter = new CalendarAdapter(this);
             adapter.addAll(info.caldav.collections);
@@ -370,12 +377,14 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                         info.carddav = new AccountInfo.ServiceInfo();
                         info.carddav.id = id;
                         info.carddav.refreshing = davService.isRefreshing(id);
+                        info.carddav.hasHomeSets = hasHomeSets(db, id);
                         info.carddav.collections = readCollections(db, id);
 
                     } else if (Services.SERVICE_CALDAV.equals(service)) {
                         info.caldav = new AccountInfo.ServiceInfo();
                         info.caldav.id = id;
                         info.caldav.refreshing = davService.isRefreshing(id);
+                        info.caldav.hasHomeSets = hasHomeSets(db, id);
                         info.caldav.collections = readCollections(db, id);
                     }
                 }
@@ -385,10 +394,16 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             return info;
         }
 
-        private List<CollectionInfo> readCollections(SQLiteDatabase db, long service) {
+        private boolean hasHomeSets(@NonNull SQLiteDatabase db, long service) {
+            @Cleanup Cursor cursor = db.query(ServiceDB.HomeSets._TABLE, null, ServiceDB.HomeSets.SERVICE_ID + "=?",
+                    new String[] { String.valueOf(service) }, null, null, null);
+            return cursor.getCount() > 0;
+        }
+
+        private List<CollectionInfo> readCollections(@NonNull SQLiteDatabase db, long service) {
             List<CollectionInfo> collections = new LinkedList<>();
-            @Cleanup Cursor cursor = db.query(Collections._TABLE, Collections._COLUMNS, Collections.SERVICE_ID + "=?", new String[]{String.valueOf(service)},
-                    null, null, Collections.SUPPORTS_VEVENT + " DESC," + Collections.DISPLAY_NAME);
+            @Cleanup Cursor cursor = db.query(Collections._TABLE, Collections._COLUMNS, Collections.SERVICE_ID + "=?",
+                    new String[]{ String.valueOf(service )}, null, null, Collections.SUPPORTS_VEVENT + " DESC," + Collections.DISPLAY_NAME);
             while (cursor.moveToNext()) {
                 ContentValues values = new ContentValues();
                 DatabaseUtils.cursorRowToContentValues(cursor, values);
