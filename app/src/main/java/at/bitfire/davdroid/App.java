@@ -29,10 +29,13 @@ import de.duenndns.ssl.MemorizingTrustManager;
 import lombok.Getter;
 import okhttp3.internal.tls.OkHostnameVerifier;
 
-public class App extends Application {
+public class App extends Application implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String
-            PREF_FILE = "global",
+            PREF_FILE = "davdroid_preferences",
             PREF_LOG_TO_FILE = "log_to_file";
+
+    @Getter
+    private static MemorizingTrustManager memorizingTrustManager;
 
     @Getter
     private static SSLSocketFactoryCompat sslSocketFactoryCompat;
@@ -50,17 +53,32 @@ public class App extends Application {
         super.onCreate();
 
         preferences = getSharedPreferences(PREF_FILE, MODE_PRIVATE);
+        preferences.registerOnSharedPreferenceChangeListener(this);
 
         // initialize MemorizingTrustManager
-        MemorizingTrustManager mtm = new MemorizingTrustManager(this);
-        sslSocketFactoryCompat = new SSLSocketFactoryCompat(mtm);
-        hostnameVerifier = mtm.wrapHostnameVerifier(OkHostnameVerifier.INSTANCE);
+        memorizingTrustManager = new MemorizingTrustManager(this);
+        sslSocketFactoryCompat = new SSLSocketFactoryCompat(memorizingTrustManager);
+        hostnameVerifier = memorizingTrustManager.wrapHostnameVerifier(OkHostnameVerifier.INSTANCE);
 
         reinitLogger();
     }
 
+    // won't be called in production
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        preferences.unregisterOnSharedPreferenceChangeListener(this);
+    }
 
-    public void reinitLogger() {
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (PREF_LOG_TO_FILE.equals(key)) {
+            log.info("Logging preferences changed, initializing logger again");
+            reinitLogger();
+        }
+    }
+
+    private void reinitLogger() {
         // don't use Android default logging, we have our own handlers
         log.setUseParentHandlers(false);
 
