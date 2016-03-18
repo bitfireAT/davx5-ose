@@ -23,7 +23,6 @@ public class Service {
         service.accountName = values.getAsString(ServiceDB.Services.ACCOUNT_NAME);
         service.service = values.getAsString(ServiceDB.Services.SERVICE);
         service.principal = values.getAsString(ServiceDB.Services.PRINCIPAL);
-        //FIXME service.lastRefresh = values.getAsLong(ServiceDB.Services.LAST_REFRESH);
         return service;
     }
 

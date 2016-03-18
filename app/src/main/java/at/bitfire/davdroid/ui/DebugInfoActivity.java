@@ -17,11 +17,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
+import android.support.v4.database.DatabaseUtilsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -43,6 +48,8 @@ import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.model.ServiceDB;
+import lombok.Cleanup;
 
 public class DebugInfoActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
     public static final String
@@ -56,6 +63,8 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
 
     TextView tvReport;
     String report;
+
+    File reportFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +95,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
             if (report.length() > MAX_INLINE_REPORT_LENGTH)
                 // report is too long for inline text, send it as an attachment
                 try {
-                    File reportFile = File.createTempFile("davdroid-debug", ".txt", getExternalCacheDir());
+                    reportFile = File.createTempFile("davdroid-debug", ".txt", getExternalCacheDir());
                     App.log.fine("Writing debug info to " + reportFile.getAbsolutePath());
                     FileWriter writer = new FileWriter(reportFile);
                     writer.write(report);
@@ -215,6 +224,11 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                                 "  OpenTasks    sync. interval: " + syncStatus(settings, "org.dmfs.tasks") + "\n"
                         );
             }
+            report.append("\n");
+
+            report.append("SQLITE DUMP\n");
+            @Cleanup ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
+            dbHelper.dump(report);
             report.append("\n");
 
             try {

@@ -50,6 +50,16 @@ public class AccountsActivity extends AppCompatActivity implements NavigationVie
 
         NavigationView navigationView = (NavigationView)findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        if (savedInstanceState == null && !getPackageName().equals(getCallingPackage())) {
+            final String installedFrom = installedFrom();
+            if (installedFrom == null || installedFrom.startsWith("org.fdroid"))
+                getSupportFragmentManager().beginTransaction()
+                        .add(new DonateDialogFragment(), null)
+                        .commit();
+            else if ("com.android.vending".equals(installedFrom))
+                /* TODO Play Store Dialog */;
+        }
     }
 
     @Override
@@ -81,4 +91,13 @@ public class AccountsActivity extends AppCompatActivity implements NavigationVie
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private String installedFrom() {
+        try {
+            return getPackageManager().getInstallerPackageName(getPackageName());
+        } catch(IllegalArgumentException e) {
+            return null;
+        }
+    }
+
 }

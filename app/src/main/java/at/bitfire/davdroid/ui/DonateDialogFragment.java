@@ -8,12 +8,13 @@
 
 package at.bitfire.davdroid.ui;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
@@ -23,6 +24,7 @@ public class DonateDialogFragment extends DialogFragment {
     public DonateDialogFragment() {
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         setCancelable(false);
@@ -36,7 +38,7 @@ public class DonateDialogFragment extends DialogFragment {
                         startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("donate/").build()));
                     }
                 })
-                .setNegativeButton(R.string.donate_later, new DialogInterface.OnClickListener() {
+                .setNeutralButton(R.string.donate_later, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dismiss();
