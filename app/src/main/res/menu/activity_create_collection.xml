@@ -10,8 +10,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:title="Create calendar"
-          android:onClick="onCreateCalendar"
+    <item android:title="Create"
+          android:onClick="onCreateCollection"
           app:showAsAction="always"/>
 
 </menu>

@@ -178,12 +178,24 @@
     <string name="settings_sync_time_range_past_message">Events which are more than this number of days in the past (may be 0) will be ignored. Leave blank to synchronize all events.</string>
 
     <!-- collection management -->
-    <string name="create_address_book_title">Create address book</string>
-    <string name="create_address_book_creating">Creating address book</string>
-    <string name="create_calendar_title">Create calendar</string>
+    <string name="create_addressbook">Create address book</string>
+    <string name="create_addressbook_display_name_hint">My Address Book</string>
+    <string name="create_calendar">Create CalDAV collection</string>
+    <string name="create_calendar_display_name_hint">My Calendar</string>
+    <string name="create_calendar_time_zone">Time zone:</string>
+    <string name="create_calendar_type">Collection type:</string>
+    <string name="create_calendar_type_only_events">Calendar (only events)</string>
+    <string name="create_calendar_type_only_tasks">Task list (only tasks)</string>
+    <string name="create_calendar_type_events_and_tasks">Combined (events and tasks)</string>
+    <string name="create_collection_color">Set a collection color</string>
     <string name="create_collection_creating">Creating collection</string>
+    <string name="create_collection_display_name">Display name (title) of this collection:</string>
+    <string name="create_collection_display_name_required">A title is required</string>
+    <string name="create_collection_description">Description (optional):</string>
+    <string name="create_collection_home_set">Home set:</string>
+    <string name="delete_collection">Delete collection</string>
     <string name="delete_collection_confirm_title">Are you sure?</string>
-    <string name="delete_collection_confirm_warning">This collection (%s) and all its entries from the server will be removed from the server.</string>
+    <string name="delete_collection_confirm_warning">This collection (%s) and all its data will be removed from the server.</string>
     <string name="delete_collection_deleting_collection">Deleting collection</string>
 
     <!-- ExceptionInfoFragment -->

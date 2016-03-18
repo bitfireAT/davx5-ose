@@ -14,7 +14,7 @@
               android:padding="8dp"
               android:gravity="center_vertical">
 
-    <android.support.v7.widget.AppCompatRadioButton
+    <RadioButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="4dp"
