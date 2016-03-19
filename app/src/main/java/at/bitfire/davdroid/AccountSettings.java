@@ -9,7 +9,6 @@ package at.bitfire.davdroid;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.ContentProviderClient;
@@ -19,35 +18,44 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.PeriodicSync;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
-import org.apache.commons.lang3.math.NumberUtils;
-
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
+import at.bitfire.davdroid.model.ServiceDB;
+import at.bitfire.davdroid.model.ServiceDB.*;
 import at.bitfire.davdroid.resource.LocalAddressBook;
+import at.bitfire.davdroid.resource.LocalCalendar;
+import at.bitfire.davdroid.resource.LocalTaskList;
+import at.bitfire.ical4android.CalendarStorageException;
+import at.bitfire.ical4android.TaskProvider;
 import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
+import okhttp3.HttpUrl;
 
 public class AccountSettings {
-	private final static int CURRENT_VERSION = 2;
+	private final static int CURRENT_VERSION = 3;
 	private final static String
 		KEY_SETTINGS_VERSION = "version",
 
-		KEY_USERNAME = "user_name",
-		KEY_AUTH_PREEMPTIVE = "auth_preemptive",
-        KEY_LAST_ANDROID_VERSION = "last_android_version";
+        KEY_USERNAME = "user_name",
+		KEY_AUTH_PREEMPTIVE = "auth_preemptive";
 
-    /*  Time range limitation to the past [days]
+    /** Time range limitation to the past [in days]
         value = null              default value (DEFAULT_TIME_RANGE_PAST_DAYS)
                 < 0 (-1)          no limit
                 >= 0              entries more than n days in the past won't be synchronized
@@ -62,7 +70,7 @@ public class AccountSettings {
 	final Account account;
 	
 	
-    public AccountSettings(Context context, Account account) {
+    public AccountSettings(@NonNull Context context, @NonNull Account account) {
 		this.context = context;
 		this.account = account;
 		
@@ -74,46 +82,25 @@ public class AccountSettings {
 				version = Integer.parseInt(accountManager.getUserData(account, KEY_SETTINGS_VERSION));
 			} catch(NumberFormatException ignored) {
 			}
-            App.log.info("AccountSettings version: v" + version + ", should be: " + version);
+            App.log.info("Account " + account.name + " has version " + version + ", current version: " + CURRENT_VERSION);
 
 			if (version < CURRENT_VERSION) {
-                showNotification(Constants.NOTIFICATION_ACCOUNT_SETTINGS_UPDATED,
-                        context.getString(R.string.settings_version_update_title),
-                        context.getString(R.string.settings_version_update_description));
+                Notification notify = new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setContentTitle(context.getString(R.string.settings_version_update))
+                        .setContentText(context.getString(R.string.settings_version_update_warning))
+                        .setCategory(NotificationCompat.CATEGORY_SYSTEM)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setLocalOnly(true)
+                        .build();
+                NotificationManager nm = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+                nm.notify(Constants.NOTIFICATION_ACCOUNT_SETTINGS_UPDATED, notify);
+
                 update(version);
             }
-
-            // check whether Android version has changed
-            String lastAndroidVersionInt = accountManager.getUserData(account, KEY_LAST_ANDROID_VERSION);
-            if (lastAndroidVersionInt != null && NumberUtils.toInt(lastAndroidVersionInt) < Build.VERSION.SDK_INT) {
-                // notify user
-                showNotification(Constants.NOTIFICATION_ANDROID_VERSION_UPDATED,
-                        context.getString(R.string.settings_android_update_title),
-                        context.getString(R.string.settings_android_update_description));
-            }
-            accountManager.setUserData(account, KEY_LAST_ANDROID_VERSION, String.valueOf(Build.VERSION.SDK_INT));
 		}
 	}
 
-    @TargetApi(21)
-    protected void showNotification(int id, String title, String message) {
-        NotificationManager nm = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        Notification.Builder n = new Notification.Builder(context);
-        if (Build.VERSION.SDK_INT >= 16) {
-            n.setPriority(Notification.PRIORITY_HIGH);
-            n.setStyle(new Notification.BigTextStyle().bigText(message));
-        } if (Build.VERSION.SDK_INT >= 20)
-            n.setLocalOnly(true);
-        if (Build.VERSION.SDK_INT >= 21)
-            n.setCategory(Notification.CATEGORY_SYSTEM);
-        n.setSmallIcon(R.drawable.ic_launcher);
-        n.setContentTitle(title);
-        n.setContentText(message);
-        nm.notify(id, Build.VERSION.SDK_INT >= 16 ? n.build() : n.getNotification());
-    }
-	
-	
 	public static Bundle initialUserData(String userName, boolean preemptive) {
 		Bundle bundle = new Bundle();
 		bundle.putString(KEY_SETTINGS_VERSION, String.valueOf(CURRENT_VERSION));
@@ -126,10 +113,10 @@ public class AccountSettings {
 	// authentication settings
 
 	public String username() { return accountManager.getUserData(account, KEY_USERNAME); }
-	public void username(String userName) { accountManager.setUserData(account, KEY_USERNAME, userName); }
+	public void username(@NonNull String userName) { accountManager.setUserData(account, KEY_USERNAME, userName); }
 	
 	public String password() { return accountManager.getPassword(account); }
-	public void password(String password) { accountManager.setPassword(account, password); }
+	public void password(@NonNull String password) { accountManager.setPassword(account, password); }
 	
 	public boolean preemptiveAuth() { return Boolean.parseBoolean(accountManager.getUserData(account, KEY_AUTH_PREEMPTIVE)); }
 	public void preemptiveAuth(boolean preemptive) { accountManager.setUserData(account, KEY_AUTH_PREEMPTIVE, Boolean.toString(preemptive)); }
@@ -137,7 +124,7 @@ public class AccountSettings {
 
 	// sync. settings
 
-	public Long getSyncInterval(String authority) {
+	public Long getSyncInterval(@NonNull String authority) {
 		if (ContentResolver.getIsSyncable(account, authority) <= 0)
 			return null;
 
@@ -151,7 +138,7 @@ public class AccountSettings {
 			return SYNC_INTERVAL_MANUALLY;
 	}
 
-	public void setSyncInterval(String authority, long seconds) {
+	public void setSyncInterval(@NonNull String authority, long seconds) {
 		if (seconds == SYNC_INTERVAL_MANUALLY) {
 			ContentResolver.setSyncAutomatically(account, authority, false);
 		} else {
@@ -177,30 +164,19 @@ public class AccountSettings {
 	// update from previous account settings
 	
 	private void update(int fromVersion) {
-		for (int toVersion = fromVersion + 1; toVersion <= CURRENT_VERSION; toVersion++)
-            updateTo(toVersion);
-	}
-	
-	private void updateTo(int toVersion) {
-        final int fromVersion = toVersion - 1;
-        App.log.info("Updating account settings from v" + fromVersion + " to " + toVersion);
-		try {
-			switch (toVersion) {
-                case 1:
-                    update_0_1();
-                    break;
-                case 2:
-                    update_1_2();
-                    break;
-                default:
-                    App.log.severe("Don't know how to update settings from v" + fromVersion + " to v" + toVersion);
+		for (int toVersion = fromVersion + 1; toVersion <= CURRENT_VERSION; toVersion++) {
+            App.log.info("Updating account " + account.name + " from version " + fromVersion + " to " + toVersion);
+            try {
+                Method updateProc = getClass().getDeclaredMethod("update_" + fromVersion + "_" + toVersion);
+                updateProc.invoke(this);
+            } catch (Exception e) {
+                App.log.log(Level.SEVERE, "Couldn't update account settings", e);
             }
-		} catch(Exception e) {
-            App.log.log(Level.SEVERE, "Couldn't update account settings (DAVdroid will probably crash)!", e);
-		}
+            fromVersion = toVersion;
+        }
 	}
 
-    @SuppressWarnings("Recycle")
+    @SuppressWarnings({ "Recycle", "unused" })
 	private void update_0_1() throws URISyntaxException {
 		String	v0_principalURL = accountManager.getUserData(account, "principal_url"),
 				v0_addressBookPath = accountManager.getUserData(account, "addressbook_path");
@@ -244,7 +220,7 @@ public class AccountSettings {
 		accountManager.setUserData(account, KEY_SETTINGS_VERSION, "1");
 	}
 
-    @SuppressWarnings("Recycle")
+    @SuppressWarnings({ "Recycle", "unused" })
     private void update_1_2() throws ContactsStorageException {
         /* - KEY_ADDRESSBOOK_URL ("addressbook_url"),
            - KEY_ADDRESSBOOK_CTAG ("addressbook_ctag"),
@@ -275,6 +251,119 @@ public class AccountSettings {
         accountManager.setUserData(account, "addressbook_ctag", null);
 
         accountManager.setUserData(account, KEY_SETTINGS_VERSION, "2");
+    }
+
+    @SuppressWarnings({ "Recycle", "unused" })
+    private void update_2_3() {
+        // Don't show a warning for Android updates anymore
+        accountManager.setUserData(account, "last_android_version", null);
+
+        ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(context);
+        try {
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            // we have to create the WebDAV Service database only from the old address book, calendar and task list URLs
+
+            // CardDAV: migrate address books
+            ContentProviderClient client = context.getContentResolver().acquireContentProviderClient(ContactsContract.AUTHORITY);
+            if (client != null)
+                try {
+                    LocalAddressBook addrBook = new LocalAddressBook(account, client);
+                    String url = addrBook.getURL();
+                    if (url != null) {
+                        App.log.fine("Migrating address book " + url);
+
+                        // insert CardDAV service
+                        ContentValues values = new ContentValues();
+                        values.put(Services.ACCOUNT_NAME, account.name);
+                        values.put(Services.SERVICE, Services.SERVICE_CARDDAV);
+                        long service = db.insert(Services._TABLE, null, values);
+
+                        // insert address book
+                        values.clear();
+                        values.put(Collections.SERVICE_ID, service);
+                        values.put(Collections.URL, url);
+                        values.put(Collections.SYNC, 1);
+                        db.insert(Collections._TABLE, null, values);
+
+                        // insert home set
+                        HttpUrl homeSet = HttpUrl.parse(url).resolve("../");
+                        values.clear();
+                        values.put(HomeSets.SERVICE_ID, service);
+                        values.put(HomeSets.URL, homeSet.toString());
+                        db.insert(HomeSets._TABLE, null, values);
+                    }
+                } catch (ContactsStorageException e) {
+                    App.log.log(Level.SEVERE, "Couldn't migrate address book", e);
+                } finally {
+                    client.release();
+                }
+
+            // CalDAV: migrate calendars + task lists
+            Set<String> collections = new HashSet<>();
+            Set<HttpUrl> homeSets = new HashSet<>();
+
+            client = context.getContentResolver().acquireContentProviderClient(CalendarContract.AUTHORITY);
+            if (client != null)
+                try {
+                    LocalCalendar calendars[] = (LocalCalendar[])LocalCalendar.find(account, client, LocalCalendar.Factory.INSTANCE, null, null);
+                    for (LocalCalendar calendar : calendars) {
+                        String url = calendar.getName();
+                        App.log.fine("Migrating calendar " + url);
+                        collections.add(url);
+                        homeSets.add(HttpUrl.parse(url).resolve("../"));
+                    }
+                } catch (CalendarStorageException e) {
+                    App.log.log(Level.SEVERE, "Couldn't migrate calendars", e);
+                } finally {
+                    client.release();
+                }
+
+            TaskProvider provider = LocalTaskList.acquireTaskProvider(context.getContentResolver());
+            if (provider != null)
+                try {
+                    LocalTaskList[] taskLists = (LocalTaskList[])LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, null, null);
+                    for (LocalTaskList taskList : taskLists) {
+                        String url = taskList.getSyncId();
+                        App.log.fine("Migrating task list " + url);
+                        collections.add(url);
+                        homeSets.add(HttpUrl.parse(url).resolve("../"));
+                    }
+                } catch (CalendarStorageException e) {
+                    App.log.log(Level.SEVERE, "Couldn't migrate task lists", e);
+                } finally {
+                    provider.close();
+                }
+
+            if (!collections.isEmpty()) {
+                // insert CalDAV service
+                ContentValues values = new ContentValues();
+                values.put(Services.ACCOUNT_NAME, account.name);
+                values.put(Services.SERVICE, Services.SERVICE_CALDAV);
+                long service = db.insert(Services._TABLE, null, values);
+
+                // insert collections
+                for (String url : collections) {
+                    values.clear();
+                    values.put(Collections.SERVICE_ID, service);
+                    values.put(Collections.URL, url);
+                    values.put(Collections.SYNC, 1);
+                    db.insert(Collections._TABLE, null, values);
+                }
+
+                // insert home sets
+                for (HttpUrl homeSet : homeSets) {
+                    values.clear();
+                    values.put(HomeSets.SERVICE_ID, service);
+                    values.put(HomeSets.URL, homeSet.toString());
+                    db.insert(HomeSets._TABLE, null, values);
+                }
+            }
+
+        } finally {
+            dbHelper.close();
+        }
+
+        accountManager.setUserData(account, KEY_SETTINGS_VERSION, "3");
     }
 
 }

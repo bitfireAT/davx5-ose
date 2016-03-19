@@ -21,6 +21,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import java.util.List;
 
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.model.CollectionInfo;
@@ -65,25 +68,30 @@ public class ContactsSyncAdapterService extends Service {
             // required for dav4android (ServiceLoader)
             Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
 
-            long service = getService(account);
-            CollectionInfo remote = remoteAddressBook(service);
-
-            if (remote != null) {
-                ContactsSyncManager syncManager = new ContactsSyncManager(getContext(), account, extras, authority, provider, syncResult, remote);
-                syncManager.performSync();
-            } else
-                App.log.info("No address book collection selected for synchronization");
+            Long service = getService(account);
+            if (service != null) {
+                CollectionInfo remote = remoteAddressBook(service);
+                if (remote != null) {
+                    ContactsSyncManager syncManager = new ContactsSyncManager(getContext(), account, extras, authority, provider, syncResult, remote);
+                    syncManager.performSync();
+                } else
+                    App.log.info("No address book collection selected for synchronization");
+            }
 
             App.log.info("Address book sync complete");
         }
 
-        private long getService(@NonNull Account account) {
+        @Nullable
+        private Long getService(@NonNull Account account) {
             @Cleanup Cursor c = db.query(ServiceDB.Services._TABLE, new String[] { ServiceDB.Services.ID },
                     ServiceDB.Services.ACCOUNT_NAME + "=? AND " + ServiceDB.Services.SERVICE + "=?", new String[] { account.name, ServiceDB.Services.SERVICE_CARDDAV }, null, null, null);
-            c.moveToNext();
-            return c.getLong(0);
+            if (c.moveToNext())
+                return c.getLong(0);
+            else
+                return null;
         }
 
+        @Nullable
         private CollectionInfo remoteAddressBook(long service) {
             @Cleanup Cursor c = db.query(Collections._TABLE, Collections._COLUMNS,
                     Collections.SERVICE_ID + "=? AND selected", new String[] { String.valueOf(service) }, null, null, null);

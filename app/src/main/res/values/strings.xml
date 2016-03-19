@@ -19,6 +19,10 @@
 
     <!-- startup dialogs -->
     <string name="startup_dont_show_again">Don\'t show again</string>
+    <string name="startup_development_version">DAVdroid Preview Release</string>
+    <string name="startup_development_version_message">This is a development version of DAVdroid. Be aware that things
+        may not work as expected. Please give us constructive feedback to improve DAVdroid.</string>
+    <string name="startup_development_version_show_forums">Show forums</string>
     <string name="startup_donate">Open-Source Information</string>
     <string name="startup_donate_message">We\'re happy that you use DAVdroid, which is open-source software (GPLv3). Because developing DAVdroid is hard work and took us thousands of working hours, please consider a donation.</string>
     <string name="startup_donate_now">Show donation page</string>
@@ -147,6 +151,8 @@
         <item quantity="other">Events more than %d days in the past will be ignored</item>
     </plurals>
     <string name="settings_sync_time_range_past_message">Events which are more than this number of days in the past (may be 0) will be ignored. Leave blank to synchronize all events.</string>
+    <string name="settings_version_update">DAVdroid version update</string>
+    <string name="settings_version_update_warning">Internal settings have been updated. In case of problems, please uninstall DAVdroid and then install it again.</string>
 
     <!-- collection management -->
     <string name="create_addressbook">Create address book</string>
@@ -174,11 +180,6 @@
     <string name="exception_httpexception">An HTTP error has occurred.</string>
     <string name="exception_ioexception">An I/O error has occurred.</string>
     <string name="exception_show_details">Show details</string>
-
-    <string name="settings_android_update_title">Android version update</string>
-    <string name="settings_android_update_description">Android version updates may have an impact on how DAVdroid works. If there are problems, please delete your DAVdroid accounts and add them again.</string>
-    <string name="settings_version_update_title">Settings have been updated</string>
-    <string name="settings_version_update_description">Internal settings have been updated. If there are problems, please uninstall DAVdroid and then install it again.</string>
 
     <!-- sync errors and DebugInfoActivity -->
     <string name="debug_info_title">Debug info</string>

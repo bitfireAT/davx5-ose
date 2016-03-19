@@ -8,6 +8,7 @@
 
 package at.bitfire.davdroid;
 
+import android.accounts.Account;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -31,8 +33,8 @@ import okhttp3.internal.tls.OkHostnameVerifier;
 
 public class App extends Application implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String
-            PREF_FILE = "davdroid_preferences",
-            PREF_LOG_TO_FILE = "log_to_file";
+            PREF_FILE = "davdroid_preferences",             // preference file name
+            PREF_LOG_TO_FILE = "log_to_file";               // boolean: external logging enabled
 
     @Getter
     private static MemorizingTrustManager memorizingTrustManager;
@@ -60,6 +62,7 @@ public class App extends Application implements SharedPreferences.OnSharedPrefer
         sslSocketFactoryCompat = new SSLSocketFactoryCompat(memorizingTrustManager);
         hostnameVerifier = memorizingTrustManager.wrapHostnameVerifier(OkHostnameVerifier.INSTANCE);
 
+        // initializer logger
         reinitLogger();
     }
 

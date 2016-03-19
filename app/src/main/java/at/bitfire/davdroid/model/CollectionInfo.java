@@ -127,7 +127,7 @@ public class CollectionInfo implements Serializable {
         info.supportsVEVENT = booleanField(values, Collections.SUPPORTS_VEVENT);
         info.supportsVTODO = booleanField(values, Collections.SUPPORTS_VTODO);
 
-        info.selected = booleanField(values, Collections.SELECTED);
+        info.selected = booleanField(values, Collections.SYNC);
         return info;
     }
 
@@ -146,7 +146,7 @@ public class CollectionInfo implements Serializable {
         if (supportsVTODO != null)
             values.put(Collections.SUPPORTS_VTODO, supportsVTODO ? 1 : 0);
 
-        values.put(Collections.SELECTED, selected ? 1 : 0);
+        values.put(Collections.SYNC, selected ? 1 : 0);
         return values;
     }
 

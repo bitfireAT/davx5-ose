@@ -54,12 +54,12 @@ public class ServiceDB {
                 TIME_ZONE = "timezone",
                 SUPPORTS_VEVENT = "supportsVEVENT",
                 SUPPORTS_VTODO = "supportsVTODO",
-                SELECTED = "selected";
+                SYNC = "sync";
 
         public static String[] _COLUMNS = new String[] {
                 ID, SERVICE_ID, URL, DISPLAY_NAME, DESCRIPTION, COLOR,
                 TIME_ZONE, SUPPORTS_VEVENT, SUPPORTS_VTODO,
-                SELECTED
+                SYNC
         };
     }
 
@@ -110,7 +110,7 @@ public class ServiceDB {
                     Collections.TIME_ZONE + " TEXt NULL," +
                     Collections.SUPPORTS_VEVENT + " INTEGER NULL," +
                     Collections.SUPPORTS_VTODO + " INTEGER NULL," +
-                    Collections.SELECTED + " INTEGER DEFAULT 0 NOT NULL" +
+                    Collections.SYNC + " INTEGER DEFAULT 0 NOT NULL" +
             ")");
             db.execSQL("CREATE UNIQUE INDEX collections_service_url ON " + Collections._TABLE + "(" + Collections.SERVICE_ID + "," + Collections.URL + ")");
         }
