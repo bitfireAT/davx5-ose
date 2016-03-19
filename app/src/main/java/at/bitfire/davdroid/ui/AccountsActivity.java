@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -52,13 +53,10 @@ public class AccountsActivity extends AppCompatActivity implements NavigationVie
         navigationView.setNavigationItemSelectedListener(this);
 
         if (savedInstanceState == null && !getPackageName().equals(getCallingPackage())) {
-            final String installedFrom = installedFrom();
-            if (installedFrom == null || installedFrom.startsWith("org.fdroid"))
-                getSupportFragmentManager().beginTransaction()
-                        .add(new DonateDialogFragment(), null)
-                        .commit();
-            else if ("com.android.vending".equals(installedFrom))
-                /* TODO Play Store Dialog */;
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            for (StartupDialogFragment fragment : StartupDialogFragment.getStartupDialogs(this))
+                ft.add(fragment, null);
+            ft.commit();
         }
     }
 
@@ -90,14 +88,6 @@ public class AccountsActivity extends AppCompatActivity implements NavigationVie
         DrawerLayout drawer = (DrawerLayout)findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    private String installedFrom() {
-        try {
-            return getPackageManager().getInstallerPackageName(getPackageName());
-        } catch(IllegalArgumentException e) {
-            return null;
-        }
     }
 
 }

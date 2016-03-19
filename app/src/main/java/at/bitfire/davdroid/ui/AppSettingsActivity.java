@@ -43,11 +43,11 @@ public class AppSettingsActivity extends AppCompatActivity {
 
         @Override
         public void onCreatePreferences(Bundle bundle, String s) {
+            getPreferenceManager().setSharedPreferencesName(App.PREF_FILE);
+
             addPreferencesFromResource(R.xml.settings_app);
             prefResetHints = findPreference("reset_hints");
             prefResetCertificates = findPreference("reset_certificates");
-
-            getPreferenceManager().setSharedPreferencesName(App.PREF_FILE);
         }
 
         @Override
@@ -62,7 +62,11 @@ public class AppSettingsActivity extends AppCompatActivity {
         }
 
         private void resetHints() {
-            // TODO
+            App.getPreferences().edit()
+                    .remove(StartupDialogFragment.PREF_HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED)
+                    .remove(StartupDialogFragment.PREF_HINT_OPENTASKS_NOT_INSTALLED)
+                    .commit();
+            Snackbar.make(getView(), R.string.app_settings_reset_hints_success, Snackbar.LENGTH_LONG).show();
         }
 
         private void resetCertificates() {
@@ -77,7 +81,7 @@ public class AppSettingsActivity extends AppCompatActivity {
                 } catch (KeyStoreException e) {
                     App.log.log(Level.SEVERE, "Couldn't distrust certificate", e);
                 }
-            Snackbar.make(getView(), getString(R.string.app_settings_reset_trusted_certificates_success, deleted), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(getView(), getResources().getQuantityString(R.plurals.app_settings_reset_trusted_certificates_success, deleted, deleted), Snackbar.LENGTH_LONG).show();
         }
     }
 

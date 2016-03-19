@@ -21,7 +21,7 @@
             android:key="password"
             android:title="@string/settings_password"
             android:persistent="false"
-            android:password="true"
+            android:inputType="textPassword"
             android:summary="@string/settings_password_summary"
             android:dialogTitle="@string/settings_enter_password" />
 
@@ -60,7 +60,7 @@
         <EditTextPreference
             android:key="caldav_time_range_past_days"
             android:persistent="false"
-            android:title="Restrict past time range"
+            android:title="@string/settings_sync_time_range_past"
             android:dialogMessage="@string/settings_sync_time_range_past_message"
             android:inputType="number"/>
 

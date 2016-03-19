@@ -46,7 +46,7 @@ public class App extends Application implements SharedPreferences.OnSharedPrefer
     public final static Logger log = Logger.getLogger("davdroid");
 
     @Getter
-    private SharedPreferences preferences;
+    private static SharedPreferences preferences;
 
     @Override
     public void onCreate() {

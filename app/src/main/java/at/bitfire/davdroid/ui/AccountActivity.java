@@ -282,7 +282,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             listCardDAV.setEnabled(!info.carddav.refreshing);
             listCardDAV.setAlpha(info.carddav.refreshing ? 0.5f : 1);
 
-            tbCardDAV.getMenu().findItem(R.id.create_address_book).setVisible(info.carddav.hasHomeSets);
+            tbCardDAV.getMenu().findItem(R.id.create_address_book).setEnabled(info.carddav.hasHomeSets);
 
             AddressBookAdapter adapter = new AddressBookAdapter(this);
             adapter.addAll(info.carddav.collections);
@@ -301,7 +301,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             listCalDAV.setEnabled(!info.caldav.refreshing);
             listCalDAV.setAlpha(info.caldav.refreshing ? 0.5f : 1);
 
-            tbCalDAV.getMenu().findItem(R.id.create_calendar).setVisible(info.caldav.hasHomeSets);
+            tbCalDAV.getMenu().findItem(R.id.create_calendar).setEnabled(info.caldav.hasHomeSets);
 
             final CalendarAdapter adapter = new CalendarAdapter(this);
             adapter.addAll(info.caldav.collections);
