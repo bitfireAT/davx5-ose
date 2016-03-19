@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalTaskList;
@@ -39,24 +40,28 @@ public class StartupDialogFragment extends DialogFragment {
     private static final String ARGS_MODE = "mode";
 
     enum Mode {
+        DEVELOPMENT_VERSION,
         FDROID_DONATE,
         GOOGLE_PLAY_ACCOUNTS_REMOVED,
         OPENTASKS_NOT_INSTALLED
     }
 
-
     public static StartupDialogFragment[] getStartupDialogs(Context context) {
         List<StartupDialogFragment> dialogs = new LinkedList<>();
 
-        // store-specific information
-        final String installedFrom = installedFrom(context);
-        if (installedFrom == null || installedFrom.startsWith("org.fdroid"))
-            dialogs.add(StartupDialogFragment.instantiate(Mode.FDROID_DONATE));
+        if (BuildConfig.VERSION_NAME.contains("-alpha") || BuildConfig.VERSION_NAME.contains("-beta"))
+            dialogs.add(StartupDialogFragment.instantiate(Mode.DEVELOPMENT_VERSION));
+        else {
+            // store-specific information
+            final String installedFrom = installedFrom(context);
+            if (installedFrom == null || installedFrom.startsWith("org.fdroid"))
+                dialogs.add(StartupDialogFragment.instantiate(Mode.FDROID_DONATE));
 
-        else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP &&    // only on Android <5
-                "com.android.vending".equals(installedFrom) &&              // only when installed from Play Store
-                App.getPreferences().getBoolean(PREF_HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, true))      // and only when "Don't show again" hasn't been clicked yet
-            dialogs.add(StartupDialogFragment.instantiate(Mode.GOOGLE_PLAY_ACCOUNTS_REMOVED));
+            else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP &&    // only on Android <5
+                    "com.android.vending".equals(installedFrom) &&              // only when installed from Play Store
+                    App.getPreferences().getBoolean(PREF_HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, true))      // and only when "Don't show again" hasn't been clicked yet
+                dialogs.add(StartupDialogFragment.instantiate(Mode.GOOGLE_PLAY_ACCOUNTS_REMOVED));
+        }
 
         // OpenTasks information
         if (!LocalTaskList.tasksProviderAvailable(context.getContentResolver()) &&
@@ -82,6 +87,24 @@ public class StartupDialogFragment extends DialogFragment {
 
         Mode mode = Mode.valueOf(getArguments().getString(ARGS_MODE));
         switch (mode) {
+            case DEVELOPMENT_VERSION:
+                return new AlertDialog.Builder(getActivity())
+                        .setIcon(R.drawable.ic_launcher)
+                        .setTitle(R.string.startup_development_version)
+                        .setMessage(R.string.startup_development_version_message)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .setNeutralButton(R.string.startup_development_version_show_forums, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("forums/").build()));
+                            }
+                        })
+                        .create();
+
             case FDROID_DONATE:
                 return new AlertDialog.Builder(getActivity())
                         .setIcon(R.drawable.ic_launcher)

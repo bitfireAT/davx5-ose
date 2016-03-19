@@ -62,7 +62,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
+import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.DavService;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
@@ -199,12 +201,12 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                 if (list.getChoiceMode() == AbsListView.CHOICE_MODE_SINGLE) {
                     // disable all other collections
                     ContentValues values = new ContentValues(1);
-                    values.put(Collections.SELECTED, 0);
+                    values.put(Collections.SYNC, 0);
                     db.update(Collections._TABLE, values, Collections.SERVICE_ID + "=?", new String[] { String.valueOf(info.serviceID) });
                 }
 
                 ContentValues values = new ContentValues(1);
-                values.put(Collections.SELECTED, nowChecked ? 1 : 0);
+                values.put(Collections.SYNC, nowChecked ? 1 : 0);
                 db.update(Collections._TABLE, values, Collections.ID + "=?", new String[] { String.valueOf(info.id) });
 
                 db.setTransactionSuccessful();
@@ -314,8 +316,11 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
     @Override
     public void onLoaderReset(Loader<AccountInfo> loader) {
-        listCardDAV.setAdapter(null);
-        listCalDAV.setAdapter(null);
+        if (listCardDAV != null)
+            listCardDAV.setAdapter(null);
+
+        if (listCalDAV != null)
+            listCalDAV.setAdapter(null);
     }
 
 
@@ -361,6 +366,11 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
         @Override
         public AccountInfo loadInBackground() {
+            // peek into AccountSettings to call possible 0.9 -> 1.0 migration
+            // The next line can be removed as soon as migration from 0.9 is not required anymore!
+            new AccountSettings(getContext(), new Account(accountName, Constants.ACCOUNT_TYPE));
+
+            // get account info
             AccountInfo info = new AccountInfo();
             try {
                 SQLiteDatabase db = dbHelper.getReadableDatabase();

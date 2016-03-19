@@ -43,9 +43,11 @@ public class PlainTextFormatter extends Formatter {
             builder.append(Log.getStackTraceString(r.getThrown()));
         }
 
-        if (r.getParameters() != null)
+        if (r.getParameters() != null) {
+            int idx = 1;
             for (Object param : r.getParameters())
-                builder.append("\nPARAMETER " + param);
+                builder.append("\nPARAMETER #").append(idx).append(" = ").append(param);
+        }
 
         if (!logcat)
             builder.append("\n");
