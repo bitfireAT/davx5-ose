@@ -28,8 +28,9 @@ import java.util.logging.Level;
 
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.model.CollectionInfo;
-import at.bitfire.davdroid.model.ServiceDB;
+import at.bitfire.davdroid.model.ServiceDB.Collections;
 import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
+import at.bitfire.davdroid.model.ServiceDB.Services;
 import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.ical4android.CalendarStorageException;
 import lombok.Cleanup;
@@ -117,16 +118,16 @@ public class CalendarsSyncAdapterService extends Service {
         }
 
         long getService(Account account) {
-            @Cleanup Cursor c = db.query(ServiceDB.Services._TABLE, new String[]{ServiceDB.Services.ID},
-                    ServiceDB.Services.ACCOUNT_NAME + "=? AND " + ServiceDB.Services.SERVICE + "=?", new String[]{account.name, ServiceDB.Services.SERVICE_CALDAV}, null, null, null);
+            @Cleanup Cursor c = db.query(Services._TABLE, new String[]{ Services.ID },
+                    Services.ACCOUNT_NAME + "=? AND " + Services.SERVICE + "=?", new String[]{account.name, Services.SERVICE_CALDAV}, null, null, null);
             c.moveToNext();
             return c.getLong(0);
         }
 
         private Map<String, CollectionInfo> remoteCalendars(long service) {
             Map<String, CollectionInfo> collections = new LinkedHashMap<>();
-            @Cleanup Cursor cursor = db.query(ServiceDB.Collections._TABLE, ServiceDB.Collections._COLUMNS,
-                    ServiceDB.Collections.SERVICE_ID + "=? AND " + ServiceDB.Collections.SUPPORTS_VEVENT + "!=0 AND selected",
+            @Cleanup Cursor cursor = db.query(Collections._TABLE, Collections._COLUMNS,
+                    Collections.SERVICE_ID + "=? AND " + Collections.SUPPORTS_VEVENT + "!=0 AND " + Collections.SYNC,
                     new String[] { String.valueOf(service) }, null, null, null);
             while (cursor.moveToNext()) {
                 ContentValues values = new ContentValues();

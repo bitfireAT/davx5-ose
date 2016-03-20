@@ -94,7 +94,7 @@ public class ContactsSyncAdapterService extends Service {
         @Nullable
         private CollectionInfo remoteAddressBook(long service) {
             @Cleanup Cursor c = db.query(Collections._TABLE, Collections._COLUMNS,
-                    Collections.SERVICE_ID + "=? AND selected", new String[] { String.valueOf(service) }, null, null, null);
+                    Collections.SERVICE_ID + "=? AND " + Collections.SYNC, new String[] { String.valueOf(service) }, null, null, null);
             if (c.moveToNext()) {
                 ContentValues values = new ContentValues();
                 DatabaseUtils.cursorRowToContentValues(c, values);

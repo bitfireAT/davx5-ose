@@ -16,8 +16,8 @@ public class Constants {
 
     // notification IDs
     public final static int
-            NOTIFICATION_ANDROID_VERSION_UPDATED = 0,
-            NOTIFICATION_ACCOUNT_SETTINGS_UPDATED = 1,
+            NOTIFICATION_ACCOUNT_SETTINGS_UPDATED = 0,
+            NOTIFICATION_EXTERNAL_FILE_LOGGING = 1,
             NOTIFICATION_CONTACTS_SYNC = 10,
             NOTIFICATION_CALENDAR_SYNC = 11,
             NOTIFICATION_TASK_SYNC = 12;
