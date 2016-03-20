@@ -176,7 +176,7 @@
     <string name="create_collection_display_name_required">Title is required</string>
     <string name="create_collection_description">Description (optional):</string>
     <string name="create_collection_home_set">Home set:</string>
-    <string name="create_collection_create">Erstellen</string>
+    <string name="create_collection_create">Create</string>
     <string name="delete_collection">Delete collection</string>
     <string name="delete_collection_confirm_title">Are you sure?</string>
     <string name="delete_collection_confirm_warning">This collection (%s) and all its data will be removed from the server.</string>
