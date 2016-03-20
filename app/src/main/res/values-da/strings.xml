@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="help">Hjælp</string>
+  <string name="send">Send</string>
+  <string name="skip">Spring over</string>
+  <!--startup dialogs-->
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <!--AppSettingsActivity-->
+  <!--AccountActivity-->
+  <!--AddAccountActivity-->
+  <string name="login_type_email">Log ind med emailadresse</string>
+  <string name="login_type_url">Log ind med URL og brugernavn</string>
+  <string name="login_auth_preemptive">Forhåndsgodkendelse (preemptive authentication - anbefalet, men ikke kompatiblelt med Digest auth)</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_authentication">Adgangsgodkendelse</string>
+  <string name="settings_username">Brugernavn</string>
+  <string name="settings_enter_username">Indtast brugernavn:</string>
+  <string name="settings_password">Adgangskode</string>
+  <string name="settings_password_summary">Opdater adgangskoden, så den svarer til din server.</string>
+  <string name="settings_enter_password">Indtast adgangskode:</string>
+  <string name="settings_preemptive">Forhåndsgodkendelse</string>
+  <string name="settings_preemptive_on">Loginoplysninger sendes ved hver anmodning (anbefalet)</string>
+  <string name="settings_preemptive_off">Loginoplysninger sendes efter server anmoder om dem</string>
+  <string name="settings_sync">Synkronisering</string>
+  <string name="settings_sync_interval_contacts">Synkroniseringsinterval for kontakter</string>
+  <string name="settings_sync_summary_manually">Kun manuelt</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Hver %d minutter + øjeblikkeligt ved lokale ændringer</string>
+  <string name="settings_sync_summary_not_available">Ikke tilgængeligt</string>
+  <string name="settings_sync_interval_calendars">Synkroniseringsinterval for kalender</string>
+  <string name="settings_sync_interval_tasks">Synkroniseringsinterval for opgaver</string>
+  <string-array name="settings_sync_interval_seconds">
+    <item>-1</item>
+    <item>300</item>
+    <item>600</item>
+    <item>900</item>
+    <item>3600</item>
+    <item>7200</item>
+    <item>14400</item>
+    <item>86400</item>
+  </string-array>
+  <string-array name="settings_sync_interval_names">
+    <item>Kun manuelt</item>
+    <item>Hver 5. minut</item>
+    <item>Hver 10. minut</item>
+    <item>Hver 15. minut</item>
+    <item>En gang i timen</item>
+    <item>En gang hver 2. time</item>
+    <item>En gang hver 4. time</item>
+    <item>En gang om dagen</item>
+  </string-array>
+  <!--collection management-->
+  <!--ExceptionInfoFragment-->
+  <!--sync errors and DebugInfoActivity-->
+  <string name="debug_info_title">Debug-info</string>
+  <string name="sync_error_calendar">Synkronisering af kalenderen lykkedes ikke (%s)</string>
+  <string name="sync_error_contacts">Synkronisering af adressebogen lykkedes ikke (%s)</string>
+  <string name="sync_error_tasks">Synkronisering af opgaver lykkedes ikke (%s)</string>
+  <string name="sync_error">Fejl under %s</string>
+  <string name="sync_error_http_dav">Serverfejl under %s</string>
+  <string name="sync_error_local_storage">Databasefejl under %s</string>
+  <string-array name="sync_error_phases">
+    <item>forbereder synkronisering</item>
+    <item>checker funktioner</item>
+    <item>behandler poster, der er slettet lokalt</item>
+    <item>behandler poster, der er oprettet/ændret lokalt</item>
+    <item>uploader poster, der er oprettet/ændret lokalt</item>
+    <item>checker synkroniseringsstatus</item>
+    <item>oplister lokale poster</item>
+    <item>oplister poster på server</item>
+    <item>sammenligner poster lokalt og på server</item>
+    <item>downloader poster på server</item>
+    <item>gemmer synkroniseringsstatus</item>
+  </string-array>
+  <string name="sync_error_unauthorized">Fejl i brugernavn/adgangskode</string>
+</resources>

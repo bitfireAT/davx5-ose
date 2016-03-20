@@ -3,30 +3,18 @@
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
   <string name="help">Pomoc</string>
-  <string name="next">Další</string>
+  <string name="send">Odeslat</string>
   <string name="skip">Přeskočit</string>
-  <!--MainActivity-->
-  <string name="main_manage_accounts">Spravovat synchronizované účty</string>
-  <!--DonateDialogFragment-->
+  <!--startup dialogs-->
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <!--AppSettingsActivity-->
+  <!--AccountActivity-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Přihlášení s emailovou adresou</string>
-  <string name="login_type_email_description">Detaily účtu budou automaticky rozpoznány podle doménového jména. Příklad: mujucet@icloud.com</string>
   <string name="login_type_url">Přihlášení s URL a uživatelským jménem</string>
-  <string name="login_type_url_description">Detaily účtu budou automaticky rozpoznány podle URL a uživatelského jména. Nejčastější volba pro vlastní servery.</string>
-  <string name="login_email_description">Vložte prosím svou emailovou adresu. Její doménová adresa bude použita pro automatické zjištění nastavení služby.</string>
-  <string name="login_email_address">Email:</string>
-  <string-array name="login_url_scheme">
-    <item>http://</item>
-    <item>https://</item>
-  </string-array>
-  <string name="login_http_warning">Pokud nepoužijete šifrované připojení (HTTPS), ostatní budou moci lehce získat vaše přihlašovací údaje, kontakty a události.</string>
-  <string name="login_user_name">Uživatelské jméno:</string>
-  <string name="login_base_url">Kořenová URL (sbírky budou detekovány automaticky):</string>
   <string name="login_auth_preemptive">Preemptivní ověření (doporučeno, ale není kompatibilní s Digest ověřením)</string>
-  <string name="login_password">Heslo:</string>
-  <!--Settings activity-->
-  <string name="settings_title">Nastavení</string>
-  <string name="settings_no_accounts">Nebyl nalezen účet DAVdroid</string>
+  <!--AccountSettingsActivity-->
   <string name="settings_authentication">Ověření</string>
   <string name="settings_username">Uživatelské jméno</string>
   <string name="settings_enter_username">Zadat uživatelské jméno</string>
@@ -63,29 +51,28 @@
     <item>Každé 4 hodiny</item>
     <item>Jednou za den</item>
   </string-array>
-  <string name="setup_add_account">Přidat účet</string>
-  <string name="setup_querying_server">Dotazování serveru. Chvíli strpení…</string>
-  <string name="setup_install_apps_info">Android ve výchozím nastavení nepodporuje seznamy úkolů (narozdíl od konktů a kalendářů).</string>
-  <string name="setup_install_tasks_app_html"><![CDATA[
-        <p>DAVdroid umožňuje synchronizaci úkolů s aplikací <a href=\"market://details?id=org.dmfs.tasks\">Tasks app</a> (by Marten Gajda).</p>
-        <p>Kvůli chybě v <a href=\"https://code.google.com/p/android/issues/detail?id=25906\">Androidu</a>, aplikace <b>Tasks app musí být nainstalována
-        před aplikací DAVdroid</b> (jinak DAVdroid neobdrží práva pro přístup k aplikaci pro úkoly).</p>
-        <p>Pokud chcete synchronizovat úkoly:</p>
-        <p>1. nainstalujte aplikaci Tasks app.<br/>
-        2. přeinstalujte DAVdroid (aby obdržel přístup k úkolům). Odinstalování aplikace DAVdroid smaže vaše DAVdroid účty a nesesynchronizovaná data.<br/>
-        3. znovu přidejte své DAVdroid účty.</p>
-        <p>Nebo můžete tyto kroky přeskočit.</p>
-    ]]></string>
-  <string name="setup_what_to_sync">Které sbírky mají být synchronizovány?</string>
-  <string name="setup_address_books">Adresáře</string>
-  <string name="setup_calendars">Kalendáře</string>
-  <string name="setup_task_lists">Seznamy úkolů</string>
-  <string name="setup_select_address_book">Vybrat nejvýše jeden adresář (opakovaně tapnout pro odebrání):</string>
-  <string name="setup_select_calendars">Vybrat kalendáře pro synchronizování:</string>
-  <string name="setup_select_task_lists">Vybrat seznamy úkolů pro synchronizování:</string>
-  <string name="setup_account_details">Detaily účtu</string>
-  <string name="setup_account_name">Jméno účtu:</string>
-  <string name="setup_account_name_hint">Můj CalDAV/CardDAV účet</string>
-  <string name="setup_read_only">pouze pro čtení</string>
+  <!--collection management-->
+  <!--ExceptionInfoFragment-->
   <!--sync errors and DebugInfoActivity-->
+  <string name="debug_info_title">Ladící informace</string>
+  <string name="sync_error_calendar">Synchronizace kalendáře selhala (%s)</string>
+  <string name="sync_error_contacts">Synchronizace adresáře selhala (%s)</string>
+  <string name="sync_error_tasks">Synchronizace úkolu selhala (%s)</string>
+  <string name="sync_error">Chyba při %s</string>
+  <string name="sync_error_http_dav">Chyba serveru při %s</string>
+  <string name="sync_error_local_storage">Chyba databáze při %s</string>
+  <string-array name="sync_error_phases">
+    <item>příprava synchronizace</item>
+    <item>dotazování možností</item>
+    <item>zpracovávání místních smazaných záznamů</item>
+    <item>příprava vytvořených/upravených záznamů</item>
+    <item>nahrávání vytvořených/upravených záznamů</item>
+    <item>kontrola stavu synchronizace</item>
+    <item>výpis místních záznamů</item>
+    <item>výpis vzdálených záznamů</item>
+    <item>porovnání místních/vzdálených záznamů</item>
+    <item>stahování vzdálených záznamů</item>
+    <item>ukládání stavu synchronizace</item>
+  </string-array>
+  <string name="sync_error_unauthorized">Chybné uživatelské jméno/heslo</string>
 </resources>

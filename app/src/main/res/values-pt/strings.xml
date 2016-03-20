@@ -3,32 +3,16 @@
   <!--common strings-->
   <string name="app_name">DAVDroid</string>
   <string name="help">Ajuda</string>
-  <string name="next">Próximo</string>
-  <!--MainActivity-->
-  <string name="main_manage_accounts">Administrar as contas sincronizadas</string>
-  <!--DonateDialogFragment-->
+  <!--startup dialogs-->
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <!--AppSettingsActivity-->
+  <!--AccountActivity-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Login com seu enderço de email</string>
-  <string name="login_type_email_description">Detalhes do serviço poderão ser detectados automaticamente pelo nome do
-        domínio. Exemplo: myaccount@icloud.com</string>
   <string name="login_type_url">Login com URL e nome do usuário</string>
-  <string name="login_type_url_description">Detalhes do serviço poderão ser detectados automaticamente pela URL inicial e nome do usuário.
-        Usado principalmente para serviços de hospedagem própria.</string>
-  <string name="login_email_description">Por favor entre com seu endereço de email.
-        Seu nome de domínio será usado para detectar automaticamente as configurações de serviço</string>
-  <string name="login_email_address">Email:</string>
-  <string-array name="login_url_scheme">
-    <item>http://</item>
-    <item>https://</item>
-  </string-array>
-  <string name="login_http_warning">Ser não utilizar encriptação (HTTPS), outras pessoas podem facilmente interceptar seus dados pessoais, contatos e eventos.</string>
-  <string name="login_user_name">Usuário:</string>
-  <string name="login_base_url">URL inicial (container de dados detectados automáticamente):</string>
   <string name="login_auth_preemptive">Autenticação preferida (recomendado, mas incompatível com Digest)</string>
-  <string name="login_password">Senha:</string>
-  <!--Settings activity-->
-  <string name="settings_title">Configurações</string>
-  <string name="settings_no_accounts">Conta DAVdroid não encontrada</string>
+  <!--AccountSettingsActivity-->
   <string name="settings_authentication">Autenticação</string>
   <string name="settings_username">Nome de usuário</string>
   <string name="settings_enter_username">Informe o nome de usuário:</string>
@@ -64,16 +48,7 @@
     <item>A cada 4 horas</item>
     <item>Diáriamente</item>
   </string-array>
-  <string name="setup_add_account">Adicionar conta</string>
-  <string name="setup_querying_server">Consultando o servidor. Por favor aguarde…</string>
-  <string name="setup_what_to_sync">Quais coleções serão sincronizadas?</string>
-  <string name="setup_address_books">Catálogo de Endereços</string>
-  <string name="setup_calendars">Calendarios</string>
-  <string name="setup_select_address_book">Selecione pelo menos um endereço (toque novamente para descelecionar):</string>
-  <string name="setup_select_calendars">Selecione seus calendários:</string>
-  <string name="setup_account_details">Detalhes da conta</string>
-  <string name="setup_account_name">Nome da conta:</string>
-  <string name="setup_account_name_hint">Minha conta CalDAV/CardDAV</string>
-  <string name="setup_read_only">apenas leitura</string>
+  <!--collection management-->
+  <!--ExceptionInfoFragment-->
   <!--sync errors and DebugInfoActivity-->
 </resources>

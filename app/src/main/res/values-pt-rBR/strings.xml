@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="help">Ajuda</string>
+  <string name="send">Enviar</string>
+  <string name="skip">Ignorar</string>
+  <!--startup dialogs-->
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <!--AppSettingsActivity-->
+  <!--AccountActivity-->
+  <!--AddAccountActivity-->
+  <string name="login_type_email">Autenticação com endereço de e-mail</string>
+  <string name="login_type_url">Autenticação com usuário e URL</string>
+  <string name="login_auth_preemptive">Autenticação preferencial (recomendado, mas incompatível com autenticação Digest)</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_authentication">Autenticação</string>
+  <string name="settings_username">Nome do usuário</string>
+  <string name="settings_enter_username">Digite o nome do usuário:</string>
+  <string name="settings_password">Senha</string>
+  <string name="settings_password_summary">Atualize a senha de acordo com seu servidor.</string>
+  <string name="settings_enter_password">Digite sua senha:</string>
+  <string name="settings_preemptive">Autenticação preferencial</string>
+  <string name="settings_preemptive_on">Credenciais enviadas em cada requisição (recomendado)</string>
+  <string name="settings_preemptive_off">Credenciais enviadas após a requisição do servidor</string>
+  <string name="settings_sync">Sincronização</string>
+  <string name="settings_sync_interval_contacts">Intervalo de sinc. dos contatos</string>
+  <string name="settings_sync_summary_manually">Apenas manualmente</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">A cada %d minutos + imediatamente nas alterações locais</string>
+  <string name="settings_sync_summary_not_available">Indisponível</string>
+  <string name="settings_sync_interval_calendars">Intervalo de sinc. de calendários</string>
+  <string name="settings_sync_interval_tasks">Intervalo de sinc de tarefas</string>
+  <string-array name="settings_sync_interval_seconds">
+    <item>-1</item>
+    <item>300</item>
+    <item>600</item>
+    <item>900</item>
+    <item>3600</item>
+    <item>7200</item>
+    <item>14400</item>
+    <item>86400</item>
+  </string-array>
+  <string-array name="settings_sync_interval_names">
+    <item>Apenas manualmente</item>
+    <item>A cada 5 minutos</item>
+    <item>A cada 10 minutos</item>
+    <item>A cada 15 minutos</item>
+    <item>A cada hora</item>
+    <item>A cada 2 horas</item>
+    <item>A cada 4 horas</item>
+    <item>Uma vez por dia</item>
+  </string-array>
+  <!--collection management-->
+  <!--ExceptionInfoFragment-->
+  <!--sync errors and DebugInfoActivity-->
+  <string name="debug_info_title">Informações de depuração</string>
+  <string name="sync_error_calendar">Falha na sincronização do calendário (%s)</string>
+  <string name="sync_error_contacts">Falha na sincronização do livro de endereços (%s)</string>
+  <string name="sync_error_tasks">Falha na sincronização das tarefas (%s)</string>
+  <string name="sync_error">Erro ao %s</string>
+  <string name="sync_error_http_dav">Erro do servidor ao %s</string>
+  <string name="sync_error_local_storage">Erro do banco de dados ao %s</string>
+  <string-array name="sync_error_phases">
+    <item>preparando sincronização</item>
+    <item>procurando capacidades</item>
+    <item>processando os itens excluídos localmente</item>
+    <item>preparando os itens criados/modificados</item>
+    <item>enviando os itens criados/modificados</item>
+    <item>verificando o estado da sincronização</item>
+    <item>listando os itens locais</item>
+    <item>listando os itens remotos</item>
+    <item>comparando os itens locais/remotos</item>
+    <item>baixando os itens remotos</item>
+    <item>salvando o estado da sincronização</item>
+  </string-array>
+  <string name="sync_error_unauthorized">Usuário/senha incorreto</string>
+</resources>

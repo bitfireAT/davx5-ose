@@ -37,7 +37,6 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -53,6 +52,7 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -438,7 +438,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
             final CollectionInfo info = getItem(position);
 
-            AppCompatRadioButton checked = (AppCompatRadioButton)v.findViewById(R.id.checked);
+            RadioButton checked = (RadioButton)v.findViewById(R.id.checked);
             checked.setChecked(info.selected);
 
             TextView tv = (TextView)v.findViewById(R.id.title);
