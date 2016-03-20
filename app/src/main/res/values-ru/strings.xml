@@ -3,37 +3,18 @@
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
   <string name="help">Помощь</string>
-  <string name="next">Далее</string>
-  <string name="please_wait">Пожалуйста, подождите</string>
   <string name="send">Отправить</string>
   <string name="skip">Пропустить</string>
-  <!--MainActivity-->
-  <string name="main_manage_accounts">Управление учётными данными синхронизации</string>
-  <string name="main_show_debug_info">Показать информацию отладки</string>
-  <string name="main_welcome">Добро пожаловать в DAVdroid/%s!</string>
-  <string name="main_translation_info">Перевод на русский язык vasp@zabmail.ru.</string>
-  <string name="main_used_libraries_heading">DAVdroid использует эти библиотеки (в алфавитном порядке)</string>
-  <!--DonateDialogFragment-->
+  <!--startup dialogs-->
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <!--AppSettingsActivity-->
+  <!--AccountActivity-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Вход по адресу email</string>
-  <string name="login_type_email_description">Данные сервиса будут автоматически определены через имя домена. Пример: myaccount@icloud.com</string>
   <string name="login_type_url">Вход через URL  и имя пользователя</string>
-  <string name="login_type_url_description">Данные сервиса будут автоматически определены через начальную часть URL и имя пользователя. Обычно
-        используется для частных сервисов поддерживаемых самостоятельно.</string>
-  <string name="login_email_description">Введите свой адрес электронной почты. Имя домена из него будет использовано для автоматического определения настроек сервиса.</string>
-  <string name="login_email_address">Email:</string>
-  <string-array name="login_url_scheme">
-    <item>http://</item>
-    <item>https://</item>
-  </string-array>
-  <string name="login_http_warning">Если вы не используете шифрование (HTTPS), кто-нибудь может легко перехватить ваши имена, пароли, контакты и события календарей.</string>
-  <string name="login_user_name">Имя пользователя:</string>
-  <string name="login_base_url">Базовый URL (коллекции будут определены автоматически):</string>
   <string name="login_auth_preemptive">Упреждающая идентификация (рекомендовано, но несовместимо с Digest идентификацией)</string>
-  <string name="login_password">Пароль:</string>
-  <!--Settings activity-->
-  <string name="settings_title">Настройки</string>
-  <string name="settings_no_accounts">Не найдено учётных записей DAVdroid</string>
+  <!--AccountSettingsActivity-->
   <string name="settings_authentication">Идентификация</string>
   <string name="settings_username">Имя</string>
   <string name="settings_enter_username">Введите имя пользователя:</string>
@@ -70,38 +51,8 @@
     <item>Каждые 4 часа</item>
     <item>Раз в сутки</item>
   </string-array>
-  <string name="settings_debug">Отладка</string>
-  <string name="settings_security_warning">Возможная угроза безопасности!</string>
-  <string name="settings_log_to_external_file">Журналирование во внешний файл</string>
-  <string name="settings_log_to_external_file_confirmation">Внешние файлы журнала будут содержать частные данные и могут быть доступны для других приложений. Отключите внешнее журналирование и удалите файлы журнала после использования.</string>
-  <string name="settings_log_to_external_file_on">Журналы записываются в %s (если возможно)</string>
-  <string name="settings_log_to_external_file_no_external_storage">Внешнее хранилище недоступно</string>
-  <string name="settings_log_to_external_file_off">Журналы записаны в ADB</string>
-  <string name="settings_log_verbose">Детальное журналирование</string>
-  <string name="settings_log_verbose_on">Записывать в журнал информацию о синхронизации и сетевом траффике</string>
-  <string name="settings_log_verbose_off">Записывать в журнал только информацию о синхронизации</string>
-  <string name="settings_android_update_title">Обновление версии Android</string>
-  <string name="settings_android_update_description">Обновление версии Android может повлиять на то как работает DAVdroid. Если возникли какие-либо проблемы, удалите учётные записи DAVdroid, и добавьте их снова.</string>
-  <string name="settings_version_update_title">Настройки были обновлены</string>
-  <string name="settings_version_update_description">Внутренние настройки были обновлены. Если существуют какие либо проблемы, пожалуйста удалите DAVdroid и установите его снова.</string>
-  <string name="setup_resource_detection">Определение ресурсов</string>
-  <string name="setup_no_collections_found">Контакты или календари не найдены</string>
-  <string name="setup_view_logs">Просмотр журналов</string>
-  <string name="setup_add_account">Добавить аккаунт</string>
-  <string name="setup_querying_server">Опрашиваем сервер. Пожалуйста подождите…</string>
-  <string name="setup_install_apps_info">Чистый Android не поддерживает списки to-do (в отличии от календарей и контактов)</string>
-  <string name="setup_what_to_sync">Какие коллекции будут синхронизироваться?</string>
-  <string name="setup_address_books">Контакты</string>
-  <string name="setup_calendars">Календари</string>
-  <string name="setup_task_lists">Список задач</string>
-  <string name="setup_select_address_book">Выберите единственную адресную книгу (нажмите снова для отмены выбора):</string>
-  <string name="setup_select_calendars">Выберите ваши календари:</string>
-  <string name="setup_select_task_lists">Выберите задачу для синхронизации</string>
-  <string name="setup_account_details">Данные аккаунта</string>
-  <string name="setup_account_name">Имя аккаунта:</string>
-  <string name="setup_account_name_hint">Мой аккаунт CalDAV/CardDAV</string>
-  <string name="setup_account_name_info">Используйте ваш адрес электронной почты как имя учётной записи. Система Android использует это имя как поле ОРГАНИЗАТОР для событий кторые вы создаёте. Вы не можете иметь две учётных записи с одинаковым именем.</string>
-  <string name="setup_read_only">только чтение</string>
+  <!--collection management-->
+  <!--ExceptionInfoFragment-->
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>
   <string name="sync_error_calendar">Синхронизация календаря завершена с ошибкой (%s)</string>

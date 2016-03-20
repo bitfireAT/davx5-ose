@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="help">Yardım</string>
+  <string name="send">Gönder</string>
+  <string name="skip">Atla</string>
+  <!--startup dialogs-->
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <!--AppSettingsActivity-->
+  <!--AccountActivity-->
+  <!--AddAccountActivity-->
+  <string name="login_type_email">Eposta adresi ile giriş yap</string>
+  <string name="login_type_url">URL ve kullanıcı adı ile giriş yap</string>
+  <string name="login_auth_preemptive">Önleyici doğrulama (tavsiye edilir, fakat Digest doğrulama ile uyumsuz)</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_authentication">Doğrulama</string>
+  <string name="settings_username">Kullanıcı adı</string>
+  <string name="settings_enter_username">Kullanıcı adı girin:</string>
+  <string name="settings_password">Parola</string>
+  <string name="settings_password_summary">Parolayı sunucunuza göre güncelleyin.</string>
+  <string name="settings_enter_password">Parola girin:</string>
+  <string name="settings_preemptive">Önleyici doğrulama</string>
+  <string name="settings_preemptive_on">Giriş bilgileri her istek ile gönderilir (tavsiye edilir)</string>
+  <string name="settings_preemptive_off">Giriş bilgileri sunucu istedikten sonra gönderilir</string>
+  <string name="settings_sync">Senkronizasyon</string>
+  <string name="settings_sync_interval_contacts">Kişiler senk. aralığı</string>
+  <string name="settings_sync_summary_manually">Sadece elle</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Her %d dakika + yerel değişikliklerde hemen</string>
+  <string name="settings_sync_summary_not_available">Mevcut değil</string>
+  <string name="settings_sync_interval_calendars">Takvimler senk. aralığı</string>
+  <string name="settings_sync_interval_tasks">İşler senk. aralığı</string>
+  <string-array name="settings_sync_interval_seconds">
+    <item>-1</item>
+    <item>300</item>
+    <item>600</item>
+    <item>900</item>
+    <item>3600</item>
+    <item>7200</item>
+    <item>14400</item>
+    <item>86400</item>
+  </string-array>
+  <string-array name="settings_sync_interval_names">
+    <item>Sadece elle</item>
+    <item>Her 5 dakikada bir</item>
+    <item>Her 10 dakikada bir</item>
+    <item>Her 15 dakikada bir</item>
+    <item>Her saatte bir</item>
+    <item>Her 2 saatte bir</item>
+    <item>Her 4 saatte bir</item>
+    <item>Günde bir</item>
+  </string-array>
+  <!--collection management-->
+  <!--ExceptionInfoFragment-->
+  <!--sync errors and DebugInfoActivity-->
+  <string name="debug_info_title">Hata ayıklama bilgisi</string>
+  <string name="sync_error_calendar">Takvim senkronizasyonu başarısız (%s)</string>
+  <string name="sync_error_contacts">Rehber senkronizasyonu başarısız (%s)</string>
+  <string name="sync_error_tasks">İş senkronizasyonu başarısız (%s)</string>
+  <string name="sync_error">%s yaparken hata</string>
+  <string name="sync_error_http_dav">%s yaparken sunucu hatası</string>
+  <string name="sync_error_local_storage">%s yaparken veritabanı hatası</string>
+  <string-array name="sync_error_phases">
+    <item>senkronizasyon hazırlanıyor</item>
+    <item>yetkinlikler sorgulanıyor</item>
+    <item>yerel olarak silinmiş kayıtlar işleniyor</item>
+    <item>yaratılmış/değiştirilmiş kayıtlar hazırlanıyor</item>
+    <item>yaratılmış/değiştirilmiş kayıtlar indiriliyor</item>
+    <item>senkronizasyon durumu kontrol ediliyor</item>
+    <item>yerel kayıtlar listeleniyor</item>
+    <item>uzak kayıtlar listeleniyor</item>
+    <item>yerel/uzak kayıtlar karşılaştırılıyor</item>
+    <item>uzak kayıtlar indiriliyor</item>
+    <item>senkronizasyon durumu kaydediliyor</item>
+  </string-array>
+  <string name="sync_error_unauthorized">Kullanıcı adı/parola yanlış</string>
+</resources>

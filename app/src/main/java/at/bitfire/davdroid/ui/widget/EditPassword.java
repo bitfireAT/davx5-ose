@@ -9,10 +9,10 @@
 package at.bitfire.davdroid.ui.widget;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatCheckBox;
 import android.text.Editable;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -37,7 +37,7 @@ public class EditPassword extends LinearLayout {
         editPassword.setHint(attrs.getAttributeResourceValue(NS_ANDROID, "hint", 0));
         editPassword.setText(attrs.getAttributeValue(NS_ANDROID, "text"));
 
-        AppCompatCheckBox checkShowPassword = (AppCompatCheckBox)findViewById(R.id.show_password);
+        CheckBox checkShowPassword = (CheckBox)findViewById(R.id.show_password);
         checkShowPassword.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

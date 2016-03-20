@@ -3,37 +3,17 @@
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
   <string name="help">Ajuda</string>
-  <string name="next">Següent</string>
-  <!--MainActivity-->
-  <string name="main_manage_accounts">Gestioneu els comptes a sincronitzar</string>
-  <!--DonateDialogFragment-->
+  <!--startup dialogs-->
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <!--AppSettingsActivity-->
+  <!--AccountActivity-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Entra amb una adreça de correu electrònic</string>
-  <string name="login_type_email_description">Els detalls del servei es detectaran automàticament amb el nom del servidor. Per exemple: elmeucompte@icloud.com</string>
   <string name="login_type_url">Entra amb una URL i un nom d\'usuari</string>
-  <string name="login_type_url_description">Els detalls del servei es detectaran de forma automàtica amb al URL inicial i el nom d\'usuari. Normalment utilitzat per servers allotjats en servidors propis.</string>
-  <string name="login_email_description">Si us plau, introduïu la vostra adreça de correu electrònic. El seu nom de domini s\'utiltizara per auto-detectar la configuració dels serveis.</string>
-  <string name="login_email_address">Correu electrònic:</string>
-  <string-array name="login_url_scheme">
-    <item>http://</item>
-    <item>https://</item>
-  </string-array>
-  <string name="login_http_warning">Si no feu servir cap encriptació (HTTPS), altres usuaris poden interceptar fàcilment les vostres credencials, contactes i events.</string>
-  <string name="login_user_name">Nom d\'usuari:</string>
-  <string name="login_base_url">URL Arrel (les coleccions es detecten automàticament):</string>
   <string name="login_auth_preemptive">Autentificació preferent (recomanat però incompatible amb l\'autentificació Digest)</string>
-  <string name="login_password">Contrasenya:</string>
-  <!--Settings activity-->
-  <string name="setup_add_account">Afegir compte</string>
-  <string name="setup_querying_server">Contactant servidor. Espereu sisuplau.</string>
-  <string name="setup_what_to_sync">Quines col·leccions s\'han de sincronitzar?</string>
-  <string name="setup_address_books">Llibretes de contactes</string>
-  <string name="setup_calendars">Calendaris</string>
-  <string name="setup_select_address_book">Seleccioneu com a molt una llibreta de contactes (Polseu de nou per deseleccionar):</string>
-  <string name="setup_select_calendars">Seleccioneu els vostres calendaris:</string>
-  <string name="setup_account_details">Detalls del compte</string>
-  <string name="setup_account_name">Nom del compte:</string>
-  <string name="setup_account_name_hint">El meu compte CalDAV/CardDAV</string>
-  <string name="setup_read_only">només-lectura</string>
+  <!--AccountSettingsActivity-->
+  <!--collection management-->
+  <!--ExceptionInfoFragment-->
   <!--sync errors and DebugInfoActivity-->
 </resources>

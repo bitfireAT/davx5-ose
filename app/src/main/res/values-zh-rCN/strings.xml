@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="help">帮助</string>
+  <string name="send">发送</string>
+  <string name="skip">跳过</string>
+  <!--startup dialogs-->
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <!--AppSettingsActivity-->
+  <!--AccountActivity-->
+  <!--AddAccountActivity-->
+  <string name="login_type_email">使用邮箱地址登录</string>
+  <string name="login_type_url">使用 URL 和用户名登录</string>
+  <string name="login_auth_preemptive">强制认证模式（推荐使用，但不兼容 Digest 认证方式）</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_authentication">认证</string>
+  <string name="settings_username">用户名</string>
+  <string name="settings_enter_username">输入用户名</string>
+  <string name="settings_password">密码</string>
+  <string name="settings_password_summary">点按以修改密码</string>
+  <string name="settings_enter_password">输入密码</string>
+  <string name="settings_preemptive">强制认证模式</string>
+  <string name="settings_preemptive_on">认证信息在每次请求中发送（推荐）</string>
+  <string name="settings_preemptive_off">认证信息在服务器要求后才发送</string>
+  <string name="settings_sync">同步</string>
+  <string name="settings_sync_interval_contacts">通讯录自动同步间隔</string>
+  <string name="settings_sync_summary_manually">手动同步</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">每 %d 分钟或本地修改后</string>
+  <string name="settings_sync_summary_not_available">不可用</string>
+  <string name="settings_sync_interval_calendars">日历自动同步间隔</string>
+  <string name="settings_sync_interval_tasks">任务自动同步间隔</string>
+  <string-array name="settings_sync_interval_seconds">
+    <item>-1</item>
+    <item>300</item>
+    <item>600</item>
+    <item>900</item>
+    <item>3600</item>
+    <item>7200</item>
+    <item>14400</item>
+    <item>86400</item>
+  </string-array>
+  <string-array name="settings_sync_interval_names">
+    <item>手动同步</item>
+    <item>每 5 分钟</item>
+    <item>每 10 分钟</item>
+    <item>每 15 分钟</item>
+    <item>每 1 小时</item>
+    <item>每 2 小时</item>
+    <item>每 4 小时</item>
+    <item>每 24 小时</item>
+  </string-array>
+  <!--collection management-->
+  <!--ExceptionInfoFragment-->
+  <!--sync errors and DebugInfoActivity-->
+  <string name="debug_info_title">调试信息</string>
+  <string name="sync_error_calendar">日历同步失败（%s）</string>
+  <string name="sync_error_contacts">通讯录同步失败（%s）</string>
+  <string name="sync_error_tasks">任务同步失败（%s）</string>
+  <string name="sync_error">%s时错误</string>
+  <string name="sync_error_http_dav">%s时服务器错误</string>
+  <string name="sync_error_local_storage">%s时数据库错误</string>
+  <string-array name="sync_error_phases">
+    <item>准备同步</item>
+    <item>请求功能列表</item>
+    <item>处理本地删除项目</item>
+    <item>准备创建/修改项目</item>
+    <item>上传创建/修改项目</item>
+    <item>检查同步状态</item>
+    <item>检查本地数据</item>
+    <item>检查远程数据</item>
+    <item>比较本地和远程数据</item>
+    <item>下载远程数据</item>
+    <item>保存同步状态</item>
+  </string-array>
+  <string name="sync_error_unauthorized">用户名或密码错误</string>
+</resources>

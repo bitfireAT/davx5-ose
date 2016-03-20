@@ -11,15 +11,15 @@ package at.bitfire.davdroid.ui.setup;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.AppCompatCheckBox;
-import android.support.v7.widget.AppCompatRadioButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 
 import java.net.IDN;
 import java.net.URI;
@@ -30,33 +30,33 @@ import at.bitfire.davdroid.ui.widget.EditPassword;
 
 public class LoginCredentialsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
 
-    AppCompatRadioButton radioUseEmail;
+    RadioButton radioUseEmail;
     LinearLayout emailDetails;
     EditText editEmailAddress;
     EditPassword editEmailPassword;
 
-    AppCompatRadioButton radioUseURL;
+    RadioButton radioUseURL;
     LinearLayout urlDetails;
     EditText editBaseURL, editUserName;
     EditPassword editUrlPassword;
-    AppCompatCheckBox checkPreemptiveAuth;
+    CheckBox checkPreemptiveAuth;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.login_credentials_fragment, container, false);
 
-        radioUseEmail = (AppCompatRadioButton)v.findViewById(R.id.login_type_email);
+        radioUseEmail = (RadioButton)v.findViewById(R.id.login_type_email);
         emailDetails = (LinearLayout)v.findViewById(R.id.login_type_email_details);
         editEmailAddress = (EditText)v.findViewById(R.id.email_address);
         editEmailPassword = (EditPassword)v.findViewById(R.id.email_password);
 
-        radioUseURL = (AppCompatRadioButton)v.findViewById(R.id.login_type_url);
+        radioUseURL = (RadioButton)v.findViewById(R.id.login_type_url);
         urlDetails = (LinearLayout)v.findViewById(R.id.login_type_url_details);
         editBaseURL = (EditText)v.findViewById(R.id.base_url);
         editUserName = (EditText)v.findViewById(R.id.user_name);
         editUrlPassword = (EditPassword)v.findViewById(R.id.url_password);
-        checkPreemptiveAuth = (AppCompatCheckBox)v.findViewById(R.id.preemptive_auth);
+        checkPreemptiveAuth = (CheckBox)v.findViewById(R.id.preemptive_auth);
 
         radioUseEmail.setOnCheckedChangeListener(this);
         radioUseURL.setOnCheckedChangeListener(this);

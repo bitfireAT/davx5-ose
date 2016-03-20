@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="help">ヘルプ</string>
+  <string name="send">送信</string>
+  <string name="skip">スキップ</string>
+  <!--startup dialogs-->
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <!--AppSettingsActivity-->
+  <!--AccountActivity-->
+  <!--AddAccountActivity-->
+  <string name="login_type_email">メールアドレスでログイン</string>
+  <string name="login_type_url">URL とユーザー名でログイン</string>
+  <string name="login_auth_preemptive">プリエンプティブ認証 (推奨ですが、ダイジェスト認証と互換性がありません)</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_authentication">認証</string>
+  <string name="settings_username">ユーザー名</string>
+  <string name="settings_enter_username">ユーザー名を入力:</string>
+  <string name="settings_password">パスワード</string>
+  <string name="settings_password_summary">ご利用のサーバーに従ってパスワードを更新します。</string>
+  <string name="settings_enter_password">パスワードを入力:</string>
+  <string name="settings_preemptive">プリエンプティブ認証</string>
+  <string name="settings_preemptive_on">すべてのリクエストで資格情報を送信します (推奨)</string>
+  <string name="settings_preemptive_off">サーバーが要求した後、資格情報を送信します</string>
+  <string name="settings_sync">同期</string>
+  <string name="settings_sync_interval_contacts">連絡先同期間隔</string>
+  <string name="settings_sync_summary_manually">手動のみ</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">%d 分ごと + ローカルの変更時はすぐに</string>
+  <string name="settings_sync_summary_not_available">利用不可</string>
+  <string name="settings_sync_interval_calendars">カレンダー同期間隔</string>
+  <string name="settings_sync_interval_tasks">タスク同期間隔</string>
+  <string-array name="settings_sync_interval_seconds">
+    <item>-1</item>
+    <item>300</item>
+    <item>600</item>
+    <item>900</item>
+    <item>3600</item>
+    <item>7200</item>
+    <item>14400</item>
+    <item>86400</item>
+  </string-array>
+  <string-array name="settings_sync_interval_names">
+    <item>手動のみ</item>
+    <item>5 分ごと</item>
+    <item>10 分ごと</item>
+    <item>15 分ごと</item>
+    <item>1 時間ごと</item>
+    <item>2 時間ごと</item>
+    <item>4 時間ごと</item>
+    <item>1 日 1 回</item>
+  </string-array>
+  <!--collection management-->
+  <!--ExceptionInfoFragment-->
+  <!--sync errors and DebugInfoActivity-->
+  <string name="debug_info_title">デバッグ情報</string>
+  <string name="sync_error_calendar">カレンダーの同期に失敗しました (%s)</string>
+  <string name="sync_error_contacts">アドレス帳の同期に失敗しました (%s)</string>
+  <string name="sync_error_tasks">タスクの同期に失敗しました (%s)</string>
+  <string name="sync_error">%s 時にエラー</string>
+  <string name="sync_error_http_dav">%s 時にサーバーエラー</string>
+  <string name="sync_error_local_storage">%s 時にデータベースエラー</string>
+  <string-array name="sync_error_phases">
+    <item>同期の準備中</item>
+    <item>機能の問い合わせ中</item>
+    <item>ローカルで削除されたエントリーの処理中</item>
+    <item>作成済/更新済エントリーの準備中</item>
+    <item>作成済/更新済エントリーのアップロード中</item>
+    <item>同期の状態を確認中</item>
+    <item>ローカルのエントリーをリスト中</item>
+    <item>リモートのエントリーをリスト中</item>
+    <item>ローカル/リモートのエントリーを比較中</item>
+    <item>リモートのエントリーをダウンロード中</item>
+    <item>同期の状態を保存中</item>
+  </string-array>
+  <string name="sync_error_unauthorized">ユーザー名/パスワードが間違っています</string>
+</resources>
