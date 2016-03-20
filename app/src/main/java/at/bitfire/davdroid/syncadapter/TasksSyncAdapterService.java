@@ -125,7 +125,7 @@ public class TasksSyncAdapterService extends Service {
 
         long getService(Account account) {
             @Cleanup Cursor c = db.query(Services._TABLE, new String[]{ Services.ID },
-                    Services.ACCOUNT_NAME + "=? AND " + Services.SERVICE + "=?", new String[]{ account.name, Services.SERVICE_CALDAV }, null, null, null);
+                    Services.ACCOUNT_NAME + "=? AND " + Services.SERVICE + "=?", new String[] { account.name, Services.SERVICE_CALDAV }, null, null, null);
             c.moveToNext();
             return c.getLong(0);
         }
@@ -133,7 +133,7 @@ public class TasksSyncAdapterService extends Service {
         private Map<String, CollectionInfo> remoteTaskLists(long service) {
             Map<String, CollectionInfo> collections = new LinkedHashMap<>();
             @Cleanup Cursor cursor = db.query(Collections._TABLE, Collections._COLUMNS,
-                    Collections.SERVICE_ID + "=? AND " + Collections.SUPPORTS_VTODO + "!=0 AND selected",
+                    Collections.SERVICE_ID + "=? AND " + Collections.SUPPORTS_VTODO + "!=0 AND " + Collections.SYNC,
                     new String[] { String.valueOf(service) }, null, null, null);
             while (cursor.moveToNext()) {
                 ContentValues values = new ContentValues();

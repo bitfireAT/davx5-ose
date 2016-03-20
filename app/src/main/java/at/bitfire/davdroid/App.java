@@ -9,8 +9,20 @@
 package at.bitfire.davdroid;
 
 import android.accounts.Account;
+import android.app.ActivityManager;
 import android.app.Application;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.os.*;
+import android.os.Process;
+import android.support.v4.app.ActivityManagerCompat;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -98,23 +110,43 @@ public class App extends Application implements SharedPreferences.OnSharedPrefer
         // add logcat handler
         log.addHandler(LogcatHandler.INSTANCE);
 
+        NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         // log to external file according to preferences
         if (logToFile) {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+            builder .setSmallIcon(R.drawable.ic_sd_storage_light)
+                    .setLargeIcon(((BitmapDrawable)getResources().getDrawable(R.drawable.ic_launcher)).getBitmap())
+                    .setContentTitle(getString(R.string.logging_davdroid_file_logging))
+                    .setLocalOnly(true);
+
             File dir = getExternalFilesDir(null);
             if (dir != null)
                 try {
                     String pattern = new File(dir, "davdroid%u-" + DateFormatUtils.format(System.currentTimeMillis(), "yyyyMMdd-HHmmss") + ".txt").toString();
-                    log.info("Logging to external file: " + pattern);
 
                     FileHandler fileHandler = new FileHandler(pattern);
                     fileHandler.setFormatter(PlainTextFormatter.DEFAULT);
                     log.addHandler(fileHandler);
+                    builder .setContentText(dir.getPath())
+                            .setSubText(getString(R.string.logging_to_external_storage_warning))
+                            .setCategory(NotificationCompat.CATEGORY_STATUS)
+                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                            .setStyle(new NotificationCompat.BigTextStyle()
+                                    .bigText(getString(R.string.logging_to_external_storage, dir.getPath())))
+                            .setOngoing(true);
+
                 } catch (IOException e) {
-                    log.log(Level.SEVERE, "Can't create external log file", e);
+                    log.log(Level.SEVERE, "Couldn't create external log file", e);
+
+                    builder .setContentText(getString(R.string.logging_couldnt_create_file, e.getLocalizedMessage()))
+                            .setCategory(NotificationCompat.CATEGORY_ERROR);
                 }
             else
-                log.severe("No external media found, can't create external log file");
-        }
+                builder.setContentText(getString(R.string.logging_no_external_storage));
+
+            nm.notify(Constants.NOTIFICATION_EXTERNAL_FILE_LOGGING, builder.build());
+        } else
+            nm.cancel(Constants.NOTIFICATION_EXTERNAL_FILE_LOGGING);
     }
 
 }
