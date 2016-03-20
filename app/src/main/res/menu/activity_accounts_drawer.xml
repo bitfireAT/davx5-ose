@@ -10,20 +10,34 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/nav_about"
-        android:icon="@drawable/ic_info_dark"
-        android:title="@string/navigation_drawer_about"/>
-    <item
-        android:id="@+id/nav_website"
-        android:icon="@drawable/ic_home_dark"
-        android:title="@string/navigation_drawer_website"/>
-    <item
-        android:id="@+id/nav_donate"
-        android:icon="@drawable/ic_attach_money_dark"
-        android:title="@string/navigation_drawer_donate"/>
-    <item
         android:id="@+id/nav_app_settings"
         android:icon="@drawable/ic_settings_dark"
-        android:title="@string/navigation_drawer_app_settings"/>
+        android:title="@string/navigation_drawer_settings"/>
+
+    <item android:title="@string/navigation_drawer_external_links">
+        <menu>
+            <item
+                android:id="@+id/nav_website"
+                android:icon="@drawable/ic_home_dark"
+                android:title="@string/navigation_drawer_website"/>
+            <item
+                android:id="@+id/nav_faq"
+                android:icon="@drawable/ic_help_dark"
+                android:title="@string/navigation_drawer_faq"/>
+            <item
+                android:id="@+id/nav_forums"
+                android:icon="@drawable/ic_forum_dark"
+                android:title="@string/navigation_drawer_forums"/>
+            <item
+                android:id="@+id/nav_donate"
+                android:icon="@drawable/ic_attach_money_dark"
+                android:title="@string/navigation_drawer_donate"/>
+
+            <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/ic_info_dark"
+                android:title="@string/navigation_drawer_about"/>
+        </menu>
+    </item>
 
 </menu>

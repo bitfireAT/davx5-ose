@@ -46,6 +46,7 @@ import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.LocalResource;
 import at.bitfire.davdroid.ui.AccountActivity;
+import at.bitfire.davdroid.ui.AccountSettingsActivity;
 import at.bitfire.davdroid.ui.DebugInfoActivity;
 import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.vcard4android.ContactsStorageException;
@@ -112,7 +113,7 @@ abstract public class SyncManager {
         httpClient = HttpClient.create(context, account);
 
         // dismiss previous error notifications
-        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(account.name, this.notificationId = notificationId);
     }
 
@@ -209,8 +210,8 @@ abstract public class SyncManager {
 
             final Intent detailsIntent;
             if (e instanceof UnauthorizedException) {
-                detailsIntent = new Intent(context, AccountActivity.class);
-                detailsIntent.putExtra(AccountActivity.EXTRA_ACCOUNT, account);
+                detailsIntent = new Intent(context, AccountSettingsActivity.class);
+                detailsIntent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account);
             } else {
                 detailsIntent = new Intent(context, DebugInfoActivity.class);
                 detailsIntent.putExtra(DebugInfoActivity.KEY_EXCEPTION, e);

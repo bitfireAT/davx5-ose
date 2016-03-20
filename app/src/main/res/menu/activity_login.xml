@@ -13,7 +13,7 @@
     <item
         android:id="@+id/help"
         android:title="@string/help"
-        android:icon="@drawable/ic_help_light"
+        android:icon="@drawable/ic_help_dark"
         app:showAsAction="always"
         android:onClick="showHelp">
     </item>

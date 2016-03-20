@@ -73,9 +73,16 @@ public class AccountsActivity extends AppCompatActivity implements NavigationVie
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_about:
+                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("source/").build()));
                 break;
             case R.id.nav_website:
                 startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri));
+                break;
+            case R.id.nav_faq:
+                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("faq/").build()));
+                break;
+            case R.id.nav_forums:
+                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("forums/").build()));
                 break;
             case R.id.nav_donate:
                 startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("donate/").build()));

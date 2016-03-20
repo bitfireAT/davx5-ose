@@ -45,7 +45,7 @@ import lombok.Cleanup;
 
 public class LocalCalendar extends AndroidCalendar implements LocalCollection {
 
-    public static final int defaultColor = 0xFFC3EA6E;     // "DAVdroid green"
+    public static final int defaultColor = 0xFF8bc34a;     // light green 500
 
     public static final String COLUMN_CTAG = Calendars.CAL_SYNC1;
 

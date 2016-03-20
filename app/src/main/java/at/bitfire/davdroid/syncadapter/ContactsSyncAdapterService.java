@@ -25,6 +25,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
+import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
@@ -32,41 +33,24 @@ import at.bitfire.davdroid.model.ServiceDB.Collections;
 import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
 import lombok.Cleanup;
 
-public class ContactsSyncAdapterService extends Service {
-	private static ContactsSyncAdapter syncAdapter;
-    private OpenHelper dbHelper;
+public class ContactsSyncAdapterService extends SyncAdapterService {
 
 	@Override
 	public void onCreate() {
-        dbHelper = new OpenHelper(this);
-        syncAdapter = new ContactsSyncAdapter(this, dbHelper.getReadableDatabase());
+        super.onCreate();
+        syncAdapter = new ContactsSyncAdapter(this, dbHelper);
 	}
 
-	@Override
-	public void onDestroy() {
-		dbHelper.close();
-	}
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return syncAdapter.getSyncAdapterBinder();
-	}
-	
+	private static class ContactsSyncAdapter extends SyncAdapter {
 
-	private static class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
-        private final SQLiteDatabase db;
-
-        public ContactsSyncAdapter(Context context, @NonNull SQLiteDatabase db) {
-            super(context, false);
-            this.db = db;
+        public ContactsSyncAdapter(Context context, OpenHelper dbHelper) {
+            super(context, dbHelper);
         }
 
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-            App.log.info("Starting address book sync (" + authority + ")");
-
-            // required for dav4android (ServiceLoader)
-            Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
+            super.onPerformSync(account, extras, authority, provider, syncResult);
 
             Long service = getService(account);
             if (service != null) {

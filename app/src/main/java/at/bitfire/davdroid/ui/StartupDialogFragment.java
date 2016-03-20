@@ -97,10 +97,10 @@ public class StartupDialogFragment extends DialogFragment {
                             public void onClick(DialogInterface dialog, int which) {
                             }
                         })
-                        .setNeutralButton(R.string.startup_development_version_show_forums, new DialogInterface.OnClickListener() {
+                        .setNeutralButton(R.string.startup_development_version_give_feedback, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("forums/").build()));
+                                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("forums/beta/").build()));
                             }
                         })
                         .create();

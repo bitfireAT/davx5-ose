@@ -173,13 +173,13 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 prefSyncTasks.setSummary(R.string.settings_sync_summary_not_available);
             }
 
-            final Preference prefTimeRangePastDays = findPreference("caldav_time_range_past_days");
+            final EditTextPreference prefTimeRangePastDays = (EditTextPreference)findPreference("caldav_time_range_past_days");
             Integer pastDays =  settings.getTimeRangePastDays();
             if (pastDays != null) {
-                //prefTimeRangePastDays.setText(pastDays.toString());
+                prefTimeRangePastDays.setText(pastDays.toString());
                 prefTimeRangePastDays.setSummary(getResources().getQuantityString(R.plurals.settings_sync_time_range_past_days, pastDays, pastDays));
             } else {
-                //prefTimeRangePastDays.setText(null);
+                prefTimeRangePastDays.setText(null);
                 prefTimeRangePastDays.setSummary(R.string.settings_sync_time_range_past_none);
             }
             prefTimeRangePastDays.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
