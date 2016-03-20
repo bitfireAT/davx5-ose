@@ -13,8 +13,6 @@ import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -29,18 +27,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import at.bitfire.davdroid.AccountsChangedReceiver;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
-import at.bitfire.davdroid.model.ServiceDB.Services;
-import lombok.Cleanup;
-import lombok.RequiredArgsConstructor;
 
-public class AccountListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<AccountListFragment.AccountInfo>>, AdapterView.OnItemClickListener {
+public class AccountListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Account[]>, AdapterView.OnItemClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,47 +52,39 @@ public class AccountListFragment extends ListFragment implements LoaderManager.L
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        AccountInfo info = (AccountInfo)getListAdapter().getItem(position);
+        Account account = (Account)getListAdapter().getItem(position);
 
         Intent intent = new Intent(getContext(), AccountActivity.class);
-        intent.putExtra(AccountActivity.EXTRA_ACCOUNT, info.account);
+        intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account);
         startActivity(intent);
     }
 
 
     // loader
 
-    @RequiredArgsConstructor
-    protected static class AccountInfo {
-        final Account account;
-        Long cardDavService, calDavService;
-    }
-
     @Override
-    public Loader<List<AccountInfo>> onCreateLoader(int id, Bundle args) {
+    public Loader<Account[]> onCreateLoader(int id, Bundle args) {
         return new AccountLoader(getContext());
     }
 
     @Override
-    public void onLoadFinished(Loader<List<AccountInfo>> loader, List<AccountInfo> accounts) {
+    public void onLoadFinished(Loader<Account[]> loader, Account[] accounts) {
         AccountListAdapter adapter = (AccountListAdapter)getListAdapter();
         adapter.clear();
         adapter.addAll(accounts);
     }
 
     @Override
-    public void onLoaderReset(Loader<List<AccountInfo>> loader) {
+    public void onLoaderReset(Loader<Account[]> loader) {
         ((AccountListAdapter)getListAdapter()).clear();
     }
 
-    private static class AccountLoader extends AsyncTaskLoader<List<AccountInfo>> implements OnAccountsUpdateListener {
+    private static class AccountLoader extends AsyncTaskLoader<Account[]> implements OnAccountsUpdateListener {
         private final AccountManager accountManager;
-        private final OpenHelper dbHelper;
 
         public AccountLoader(Context context) {
             super(context);
             accountManager = AccountManager.get(context);
-            dbHelper = new OpenHelper(context);
         }
 
         @Override
@@ -120,43 +103,15 @@ public class AccountListFragment extends ListFragment implements LoaderManager.L
         }
 
         @Override
-        public List<AccountInfo> loadInBackground() {
-            List<AccountInfo> accounts = new LinkedList<>();
-            try {
-                SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-                for (Account account : accountManager.getAccountsByType(Constants.ACCOUNT_TYPE)) {
-                    AccountInfo info = new AccountInfo(account);
-
-                    // query services of this account
-                    @Cleanup Cursor cursor = db.query(
-                            Services._TABLE,
-                            new String[] { Services.ID, Services.SERVICE },
-                            Services.ACCOUNT_NAME + "=?", new String[] { account.name },
-                            null, null, null);
-                    while (cursor.moveToNext()) {
-                        long id = cursor.getLong(0);
-
-                        String service = cursor.getString(1);
-                        if (Services.SERVICE_CARDDAV.equals(service))
-                            info.cardDavService = id;
-                        if (Services.SERVICE_CALDAV.equals(service))
-                            info.calDavService = id;
-                    }
-
-                    accounts.add(info);
-                }
-            } finally {
-                dbHelper.close();
-            }
-            return accounts;
+        public Account[] loadInBackground() {
+            return accountManager.getAccountsByType(Constants.ACCOUNT_TYPE);
         }
     }
 
 
     // list adapter
 
-    static class AccountListAdapter extends ArrayAdapter<AccountInfo> {
+    static class AccountListAdapter extends ArrayAdapter<Account> {
         public AccountListAdapter(Context context) {
             super(context, R.layout.account_list_item);
         }
@@ -166,16 +121,11 @@ public class AccountListFragment extends ListFragment implements LoaderManager.L
             if (v == null)
                 v = LayoutInflater.from(getContext()).inflate(R.layout.account_list_item, parent, false);
 
-            AccountInfo info = getItem(position);
+            Account account = getItem(position);
 
             TextView tv = (TextView)v.findViewById(R.id.account_name);
-            tv.setText(info.account.name);
+            tv.setText(account.name);
 
-            tv = (TextView)v.findViewById(R.id.carddav);
-            tv.setVisibility(info.cardDavService != null ? View.VISIBLE : View.GONE);
-
-            tv = (TextView)v.findViewById(R.id.caldav);
-            tv.setVisibility(info.calDavService != null ? View.VISIBLE : View.GONE);
             return v;
         }
     }

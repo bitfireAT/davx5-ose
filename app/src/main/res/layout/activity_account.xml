@@ -37,7 +37,8 @@
                     android:theme="@style/toolbar_theme"
                     style="@style/toolbar_style"
                     app:navigationIcon="@drawable/ic_people_light"
-                    app:title="CardDAV"/>
+                    app:title="CardDAV"
+                    android:elevation="2dp"/>
 
                 <ProgressBar
                     android:id="@+id/carddav_refreshing"
@@ -76,7 +77,8 @@
                     android:theme="@style/toolbar_theme"
                     style="@style/toolbar_style"
                     app:navigationIcon="@drawable/ic_event_light"
-                    app:title="CalDAV"/>
+                    app:title="CalDAV"
+                    android:elevation="2dp"/>
 
                 <ProgressBar
                     android:id="@+id/caldav_refreshing"

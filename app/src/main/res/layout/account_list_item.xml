@@ -14,54 +14,27 @@
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
             card_view:contentPadding="16dp"
-            card_view:cardBackgroundColor="#ececec"
+            card_view:cardBackgroundColor="@color/orange400"
             card_view:cardElevation="2dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="right|center_vertical">
-
-                <ProgressBar
-                    android:id="@+id/synchronizing"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:indeterminate="true"
-                    android:visibility="invisible"
-                    style="@android:style/Widget.ProgressBar.Small"/>
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-
-                <TextView
-                    android:id="@+id/carddav"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/chip"
-                    android:text="CardDAV"/>
-
-                <TextView
-                    android:id="@+id/caldav"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    style="@style/chip"
-                    android:text="CalDAV"/>
-            </LinearLayout>
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/ic_account_circle_white"/>
 
             <TextView
                 android:id="@+id/account_name"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/carddav"
+                android:layout_marginTop="16dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:textColor="@color/white"
                 tools:text="Account Name"/>
 
         </LinearLayout>

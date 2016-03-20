@@ -79,23 +79,8 @@ public class CalendarSyncManager extends SyncManager {
     }
 
     @Override
-    protected void queryCapabilities() throws DavException, IOException, HttpException, CalendarStorageException {
-        davCollection.propfind(0, DisplayName.NAME, CalendarColor.NAME, GetCTag.NAME);
-
-        // update name and color
-        App.log.info("Setting calendar name and color (if available)");
-        ContentValues values = new ContentValues(2);
-
-        DisplayName pDisplayName = (DisplayName)davCollection.properties.get(DisplayName.NAME);
-        if (pDisplayName != null && !TextUtils.isEmpty(pDisplayName.displayName))
-            values.put(Calendars.CALENDAR_DISPLAY_NAME, pDisplayName.displayName);
-
-        CalendarColor pColor = (CalendarColor)davCollection.properties.get(CalendarColor.NAME);
-        if (pColor != null && pColor.color != null)
-            values.put(Calendars.CALENDAR_COLOR, pColor.color);
-
-        if (values.size() > 0)
-            localCalendar().update(values);
+    protected void queryCapabilities() throws DavException, IOException, HttpException {
+        davCollection.propfind(0, GetCTag.NAME);
     }
 
     @Override

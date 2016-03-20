@@ -123,6 +123,7 @@ public class App extends Application implements SharedPreferences.OnSharedPrefer
             if (dir != null)
                 try {
                     String pattern = new File(dir, "davdroid%u-" + DateFormatUtils.format(System.currentTimeMillis(), "yyyyMMdd-HHmmss") + ".txt").toString();
+                    log.info("Logging to " + pattern);
 
                     FileHandler fileHandler = new FileHandler(pattern);
                     fileHandler.setFormatter(PlainTextFormatter.DEFAULT);

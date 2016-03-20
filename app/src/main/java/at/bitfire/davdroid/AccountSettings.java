@@ -16,9 +16,11 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.PeriodicSync;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
@@ -86,9 +88,11 @@ public class AccountSettings {
 
 			if (version < CURRENT_VERSION) {
                 Notification notify = new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setSmallIcon(R.drawable.ic_new_releases_light)
+                        .setLargeIcon(((BitmapDrawable)context.getResources().getDrawable(R.drawable.ic_launcher)).getBitmap())
                         .setContentTitle(context.getString(R.string.settings_version_update))
-                        .setContentText(context.getString(R.string.settings_version_update_warning))
+                        .setContentText(context.getString(R.string.settings_version_update_settings_updated))
+                        .setSubText(context.getString(R.string.settings_version_update_install_hint))
                         .setCategory(NotificationCompat.CATEGORY_SYSTEM)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setLocalOnly(true)
@@ -258,6 +262,8 @@ public class AccountSettings {
         // Don't show a warning for Android updates anymore
         accountManager.setUserData(account, "last_android_version", null);
 
+        Long serviceCardDAV = null, serviceCalDAV = null;
+
         ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(context);
         try {
             SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -276,11 +282,11 @@ public class AccountSettings {
                         ContentValues values = new ContentValues();
                         values.put(Services.ACCOUNT_NAME, account.name);
                         values.put(Services.SERVICE, Services.SERVICE_CARDDAV);
-                        long service = db.insert(Services._TABLE, null, values);
+                        serviceCardDAV = db.insert(Services._TABLE, null, values);
 
                         // insert address book
                         values.clear();
-                        values.put(Collections.SERVICE_ID, service);
+                        values.put(Collections.SERVICE_ID, serviceCardDAV);
                         values.put(Collections.URL, url);
                         values.put(Collections.SYNC, 1);
                         db.insert(Collections._TABLE, null, values);
@@ -288,10 +294,11 @@ public class AccountSettings {
                         // insert home set
                         HttpUrl homeSet = HttpUrl.parse(url).resolve("../");
                         values.clear();
-                        values.put(HomeSets.SERVICE_ID, service);
+                        values.put(HomeSets.SERVICE_ID, serviceCardDAV);
                         values.put(HomeSets.URL, homeSet.toString());
                         db.insert(HomeSets._TABLE, null, values);
                     }
+
                 } catch (ContactsStorageException e) {
                     App.log.log(Level.SEVERE, "Couldn't migrate address book", e);
                 } finally {
@@ -339,12 +346,12 @@ public class AccountSettings {
                 ContentValues values = new ContentValues();
                 values.put(Services.ACCOUNT_NAME, account.name);
                 values.put(Services.SERVICE, Services.SERVICE_CALDAV);
-                long service = db.insert(Services._TABLE, null, values);
+                serviceCalDAV = db.insert(Services._TABLE, null, values);
 
                 // insert collections
                 for (String url : collections) {
                     values.clear();
-                    values.put(Collections.SERVICE_ID, service);
+                    values.put(Collections.SERVICE_ID, serviceCalDAV);
                     values.put(Collections.URL, url);
                     values.put(Collections.SYNC, 1);
                     db.insert(Collections._TABLE, null, values);
@@ -353,14 +360,25 @@ public class AccountSettings {
                 // insert home sets
                 for (HttpUrl homeSet : homeSets) {
                     values.clear();
-                    values.put(HomeSets.SERVICE_ID, service);
+                    values.put(HomeSets.SERVICE_ID, serviceCalDAV);
                     values.put(HomeSets.URL, homeSet.toString());
                     db.insert(HomeSets._TABLE, null, values);
                 }
             }
-
         } finally {
             dbHelper.close();
+        }
+
+        // initiate service detection (refresh) to get display names, colors etc.
+        Intent refresh = new Intent(context, DavService.class);
+        refresh.setAction(DavService.ACTION_REFRESH_COLLECTIONS);
+        if (serviceCardDAV != null) {
+            refresh.putExtra(DavService.EXTRA_DAV_SERVICE_ID, serviceCardDAV);
+            context.startService(refresh);
+        }
+        if (serviceCalDAV != null) {
+            refresh.putExtra(DavService.EXTRA_DAV_SERVICE_ID, serviceCalDAV);
+            context.startService(refresh);
         }
 
         accountManager.setUserData(account, KEY_SETTINGS_VERSION, "3");

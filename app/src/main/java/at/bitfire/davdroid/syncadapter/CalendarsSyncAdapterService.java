@@ -35,41 +35,24 @@ import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.ical4android.CalendarStorageException;
 import lombok.Cleanup;
 
-public class CalendarsSyncAdapterService extends Service {
-    private static SyncAdapter syncAdapter;
-    private OpenHelper dbHelper;
+public class CalendarsSyncAdapterService extends SyncAdapterService {
 
     @Override
     public void onCreate() {
-        dbHelper = new OpenHelper(this);
-        syncAdapter = new SyncAdapter(this, dbHelper.getReadableDatabase());
+        super.onCreate();
+        syncAdapter = new SyncAdapter(this, dbHelper);
     }
 
-    @Override
-    public void onDestroy() {
-        dbHelper.close();
-    }
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return syncAdapter.getSyncAdapterBinder(); 
-	}
-	
+	private static class SyncAdapter extends SyncAdapterService.SyncAdapter {
 
-	private static class SyncAdapter extends AbstractThreadedSyncAdapter {
-        private final SQLiteDatabase db;
-
-        public SyncAdapter(Context context, SQLiteDatabase db) {
-            super(context, false);
-            this.db = db;
+        public SyncAdapter(Context context, OpenHelper dbHelper) {
+            super(context, dbHelper);
         }
 
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-            App.log.info("Starting calendar sync (" + authority + ")");
-
-            // required for ical4j and dav4android (ServiceLoader)
-            Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
+            super.onPerformSync(account, extras, authority, provider, syncResult);
 
             try {
                 updateLocalCalendars(provider, account);

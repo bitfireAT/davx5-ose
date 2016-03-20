@@ -20,20 +20,17 @@
     <!-- startup dialogs -->
     <string name="startup_dont_show_again">Don\'t show again</string>
     <string name="startup_development_version">DAVdroid Preview Release</string>
-    <string name="startup_development_version_message">This is a development version of DAVdroid. Be aware that things
-        may not work as expected. Please give us constructive feedback to improve DAVdroid.</string>
-    <string name="startup_development_version_show_forums">Show forums</string>
+    <string name="startup_development_version_message">This is a development version of DAVdroid. Be aware that things may not work as expected. Please give us constructive feedback to improve DAVdroid.</string>
+    <string name="startup_development_version_give_feedback">Give feedback</string>
     <string name="startup_donate">Open-Source Information</string>
     <string name="startup_donate_message">We\'re happy that you use DAVdroid, which is open-source software (GPLv3). Because developing DAVdroid is hard work and took us thousands of working hours, please consider a donation.</string>
     <string name="startup_donate_now">Show donation page</string>
     <string name="startup_donate_later">Maybe later</string>
     <string name="startup_google_play_accounts_removed">Play Store DRM bug information</string>
-    <string name="startup_google_play_accounts_removed_message">Under certain conditions, Play Store DRM may cause all DAVdroid accounts to be gone
-        after a reboot or after upgrading DAVdroid. If you\'re affected by this problem (and only then), please install \"DAVdroid JB Workaround\" from Play Store.</string>
+    <string name="startup_google_play_accounts_removed_message">Under certain conditions, Play Store DRM may cause all DAVdroid accounts to be gone after a reboot or after upgrading DAVdroid. If you\'re affected by this problem (and only then), please install \"DAVdroid JB Workaround\" from Play Store.</string>
     <string name="startup_google_play_accounts_removed_more_info">More information</string>
     <string name="startup_opentasks_not_installed">OpenTasks not installed</string>
-    <string name="startup_opentasks_not_installed_message">The OpenTasks app is not installed or not accessible, so DAVdroid won\'t be
-        able to synchronize task lists. You may have to re-install DAVdroid and then add your accounts again after installing OpenTasks.</string>
+    <string name="startup_opentasks_not_installed_message">The OpenTasks app is not installed or not accessible, so DAVdroid won\'t be able to synchronize task lists. Re-install DAVdroid and then add your accounts again after installing OpenTasks.</string>
     <string name="startup_opentasks_not_installed_install">Install OpenTasks</string>
 
     <!-- global settings -->
@@ -48,9 +45,12 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adapter</string>
     <string name="navigation_drawer_about">About / License</string>
-    <string name="navigation_drawer_donate">Donate</string>
-    <string name="navigation_drawer_app_settings">Settings</string>
+    <string name="navigation_drawer_settings">Settings</string>
+    <string name="navigation_drawer_external_links">External links</string>
     <string name="navigation_drawer_website">Web site</string>
+    <string name="navigation_drawer_faq">FAQ</string>
+    <string name="navigation_drawer_forums">Community</string>
+    <string name="navigation_drawer_donate">Donate</string>
 
     <string name="account_list_empty">Welcome to DAVdroid!\n\nYou can add a CalDAV/CardDAV account now.</string>
 
@@ -157,9 +157,10 @@
         <item quantity="one">Events more than one day in the past will be ignored</item>
         <item quantity="other">Events more than %d days in the past will be ignored</item>
     </plurals>
-    <string name="settings_sync_time_range_past_message">Events which are more than this number of days in the past (may be 0) will be ignored. Leave blank to synchronize all events.</string>
+    <string name="settings_sync_time_range_past_message">Events which are more than this number of days in the past will be ignored (may be 0). Leave blank to synchronize all events.</string>
     <string name="settings_version_update">DAVdroid version update</string>
-    <string name="settings_version_update_warning">Internal settings have been updated. In case of problems, please uninstall DAVdroid and then install it again.</string>
+    <string name="settings_version_update_settings_updated">Internal settings have been updated.</string>
+    <string name="settings_version_update_install_hint">Problems? Uninstall DAVdroid, then re-install.</string>
 
     <!-- collection management -->
     <string name="create_addressbook">Create address book</string>

@@ -83,23 +83,8 @@ public class TasksSyncManager extends SyncManager {
     }
 
     @Override
-    protected void queryCapabilities() throws DavException, IOException, HttpException, CalendarStorageException {
-        davCollection.propfind(0, DisplayName.NAME, CalendarColor.NAME, GetCTag.NAME);
-
-        // update name and color
-        App.log.info("Setting task list name and color (if available)");
-        ContentValues values = new ContentValues(2);
-
-        DisplayName pDisplayName = (DisplayName)davCollection.properties.get(DisplayName.NAME);
-        if (pDisplayName != null && !TextUtils.isEmpty(pDisplayName.displayName))
-            values.put(TaskLists.LIST_NAME, pDisplayName.displayName);
-
-        CalendarColor pColor = (CalendarColor)davCollection.properties.get(CalendarColor.NAME);
-        if (pColor != null && pColor.color != null)
-            values.put(TaskLists.LIST_COLOR, pColor.color);
-
-        if (values.size() > 0)
-            localTaskList().update(values);
+    protected void queryCapabilities() throws DavException, IOException, HttpException {
+        davCollection.propfind(0, GetCTag.NAME);
     }
 
     @Override
