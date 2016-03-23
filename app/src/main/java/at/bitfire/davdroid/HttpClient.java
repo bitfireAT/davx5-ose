@@ -133,6 +133,7 @@ public class HttpClient {
 
         @Override
         public Response intercept(Chain chain) throws IOException {
+            App.log.fine("Adding basic authorization header for user " + username);
             Request request = chain.request().newBuilder()
                     .header("Authorization", Credentials.basic(username, password))
                     .build();

@@ -10,6 +10,8 @@ package at.bitfire.davdroid.model;
 
 import android.content.ContentValues;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serializable;
 
 import at.bitfire.dav4android.DavResource;
@@ -79,7 +81,7 @@ public class CollectionInfo implements Serializable {
             info.readOnly = !privilegeSet.mayWriteContent;
 
         DisplayName displayName = (DisplayName)dav.properties.get(DisplayName.NAME);
-        if (displayName != null && !displayName.displayName.isEmpty())
+        if (displayName != null && !StringUtils.isEmpty(displayName.displayName))
             info.displayName = displayName.displayName;
 
         if (info.type == Type.ADDRESS_BOOK) {
