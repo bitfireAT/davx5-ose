@@ -412,8 +412,8 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
         private List<CollectionInfo> readCollections(@NonNull SQLiteDatabase db, long service) {
             List<CollectionInfo> collections = new LinkedList<>();
-            @Cleanup Cursor cursor = db.query(Collections._TABLE, Collections._COLUMNS, Collections.SERVICE_ID + "=?",
-                    new String[]{ String.valueOf(service) }, null, null, Collections.SUPPORTS_VEVENT + " DESC," + Collections.DISPLAY_NAME);
+            @Cleanup Cursor cursor = db.query(Collections._TABLE, null, Collections.SERVICE_ID + "=?",
+                    new String[] { String.valueOf(service) }, null, null, Collections.SUPPORTS_VEVENT + " DESC," + Collections.DISPLAY_NAME);
             while (cursor.moveToNext()) {
                 ContentValues values = new ContentValues();
                 DatabaseUtils.cursorRowToContentValues(cursor, values);

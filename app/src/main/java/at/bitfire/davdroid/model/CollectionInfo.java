@@ -34,7 +34,7 @@ public class CollectionInfo implements Serializable {
     public enum Type {
         ADDRESS_BOOK,
         CALENDAR
-    };
+    }
     public Type type;
 
     public String url;
@@ -73,10 +73,10 @@ public class CollectionInfo implements Serializable {
                 info.type = Type.CALENDAR;
         }
 
-        boolean readOnly = false;
+        info.readOnly = false;
         CurrentUserPrivilegeSet privilegeSet = (CurrentUserPrivilegeSet)dav.properties.get(CurrentUserPrivilegeSet.NAME);
         if (privilegeSet != null)
-            readOnly = !privilegeSet.mayWriteContent;
+            info.readOnly = !privilegeSet.mayWriteContent;
 
         DisplayName displayName = (DisplayName)dav.properties.get(DisplayName.NAME);
         if (displayName != null && !displayName.displayName.isEmpty())
@@ -118,16 +118,17 @@ public class CollectionInfo implements Serializable {
         info.serviceID = values.getAsLong(Collections.SERVICE_ID);
 
         info.url = values.getAsString(Collections.URL);
+        info.readOnly = values.getAsInteger(Collections.READ_ONLY) != 0;
         info.displayName = values.getAsString(Collections.DISPLAY_NAME);
         info.description = values.getAsString(Collections.DESCRIPTION);
 
         info.color = values.getAsInteger(Collections.COLOR);
 
         info.timeZone = values.getAsString(Collections.TIME_ZONE);
-        info.supportsVEVENT = booleanField(values, Collections.SUPPORTS_VEVENT);
-        info.supportsVTODO = booleanField(values, Collections.SUPPORTS_VTODO);
+        info.supportsVEVENT = getAsBooleanOrNull(values, Collections.SUPPORTS_VEVENT);
+        info.supportsVTODO = getAsBooleanOrNull(values, Collections.SUPPORTS_VTODO);
 
-        info.selected = booleanField(values, Collections.SYNC);
+        info.selected = values.getAsInteger(Collections.SYNC) != 0;
         return info;
     }
 
@@ -136,6 +137,7 @@ public class CollectionInfo implements Serializable {
         // Collections.SERVICE_ID is never changed
 
         values.put(Collections.URL, url);
+        values.put(Collections.READ_ONLY, readOnly ? 1 : 0);
         values.put(Collections.DISPLAY_NAME, displayName);
         values.put(Collections.DESCRIPTION, description);
         values.put(Collections.COLOR, color);
@@ -151,11 +153,9 @@ public class CollectionInfo implements Serializable {
     }
 
 
-    private static Boolean booleanField(ContentValues values, String field) {
+    private static Boolean getAsBooleanOrNull(ContentValues values, String field) {
         Integer i = values.getAsInteger(field);
-        if (i == null)
-            return null;
-        return i != 0;
+        return (i == null) ? null : (i != 0);
     }
 
 }

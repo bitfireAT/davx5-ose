@@ -196,7 +196,7 @@ public class DavService extends Service {
                         for (DavResource member : dav.members) {
                             CollectionInfo info = CollectionInfo.fromDavResource(member);
                             info.confirmed = true;
-                            App.log.fine("Found collection" + info);
+                            App.log.log(Level.FINE, "Found collection", info);
 
                             if ((serviceType.equals(Services.SERVICE_CARDDAV) && info.type == CollectionInfo.Type.ADDRESS_BOOK) ||
                                 (serviceType.equals(Services.SERVICE_CALDAV) && info.type == CollectionInfo.Type.CALENDAR))
@@ -323,7 +323,7 @@ public class DavService extends Service {
 
         private Map<HttpUrl, CollectionInfo> readCollections() {
             Map<HttpUrl, CollectionInfo> collections = new LinkedHashMap<>();
-            @Cleanup Cursor cursor = db.query(Collections._TABLE, Collections._COLUMNS, Collections.SERVICE_ID + "=?", new String[]{String.valueOf(service)}, null, null, null);
+            @Cleanup Cursor cursor = db.query(Collections._TABLE, null, Collections.SERVICE_ID + "=?", new String[]{String.valueOf(service)}, null, null, null);
             while (cursor.moveToNext()) {
                 ContentValues values = new ContentValues();
                 DatabaseUtils.cursorRowToContentValues(cursor, values);

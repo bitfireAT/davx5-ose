@@ -93,7 +93,6 @@ public class AccountSettingsActivity extends AppCompatActivity {
             });
 
             final EditTextPreference prefPassword = (EditTextPreference)findPreference("password");
-            prefPassword.setText(settings.password());
             prefPassword.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {

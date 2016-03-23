@@ -115,7 +115,7 @@ public class TasksSyncAdapterService extends SyncAdapterService {
 
         private Map<String, CollectionInfo> remoteTaskLists(long service) {
             Map<String, CollectionInfo> collections = new LinkedHashMap<>();
-            @Cleanup Cursor cursor = db.query(Collections._TABLE, Collections._COLUMNS,
+            @Cleanup Cursor cursor = db.query(Collections._TABLE, null,
                     Collections.SERVICE_ID + "=? AND " + Collections.SUPPORTS_VTODO + "!=0 AND " + Collections.SYNC,
                     new String[] { String.valueOf(service) }, null, null, null);
             while (cursor.moveToNext()) {
