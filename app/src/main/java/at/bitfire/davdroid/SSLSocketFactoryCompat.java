@@ -64,7 +64,7 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
                             "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
                             "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
                             "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-                            "TLS_ECHDE_RSA_WITH_AES_128_GCM_SHA256",
+                            "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
                             // maximum interoperability
                             "TLS_RSA_WITH_3DES_EDE_CBC_SHA",
                             "TLS_RSA_WITH_AES_128_CBC_SHA",
