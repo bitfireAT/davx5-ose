@@ -48,6 +48,7 @@ public class ServiceDB {
                 ID = "_id",
                 SERVICE_ID = "serviceID",
                 URL = "url",
+                READ_ONLY = "readOnly",
                 DISPLAY_NAME = "displayName",
                 DESCRIPTION = "description",
                 COLOR = "color",
@@ -55,12 +56,6 @@ public class ServiceDB {
                 SUPPORTS_VEVENT = "supportsVEVENT",
                 SUPPORTS_VTODO = "supportsVTODO",
                 SYNC = "sync";
-
-        public static String[] _COLUMNS = new String[] {
-                ID, SERVICE_ID, URL, DISPLAY_NAME, DESCRIPTION, COLOR,
-                TIME_ZONE, SUPPORTS_VEVENT, SUPPORTS_VTODO,
-                SYNC
-        };
     }
 
 
@@ -104,6 +99,7 @@ public class ServiceDB {
                     Collections.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     Collections.SERVICE_ID + " INTEGER NOT NULL REFERENCES " + Services._TABLE +" ON DELETE CASCADE," +
                     Collections.URL + " TEXT NOT NULL," +
+                    Collections.READ_ONLY + " INTEGER NOT NULL," +
                     Collections.DISPLAY_NAME + " TEXT NULL," +
                     Collections.DESCRIPTION + " TEXT NULL," +
                     Collections.COLOR + " INTEGER NULL," +

@@ -77,7 +77,7 @@ public class ContactsSyncAdapterService extends SyncAdapterService {
 
         @Nullable
         private CollectionInfo remoteAddressBook(long service) {
-            @Cleanup Cursor c = db.query(Collections._TABLE, Collections._COLUMNS,
+            @Cleanup Cursor c = db.query(Collections._TABLE, null,
                     Collections.SERVICE_ID + "=? AND " + Collections.SYNC, new String[] { String.valueOf(service) }, null, null, null);
             if (c.moveToNext()) {
                 ContentValues values = new ContentValues();
