@@ -18,6 +18,7 @@ public class Constants {
     public final static int
             NOTIFICATION_ACCOUNT_SETTINGS_UPDATED = 0,
             NOTIFICATION_EXTERNAL_FILE_LOGGING = 1,
+            NOTIFICATION_REFRESH_COLLECTIONS = 2,
             NOTIFICATION_CONTACTS_SYNC = 10,
             NOTIFICATION_CALENDAR_SYNC = 11,
             NOTIFICATION_TASK_SYNC = 12;
