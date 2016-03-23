@@ -10,14 +10,19 @@ package at.bitfire.davdroid;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
 import java.io.IOException;
@@ -45,6 +50,7 @@ import at.bitfire.davdroid.model.ServiceDB.Collections;
 import at.bitfire.davdroid.model.ServiceDB.HomeSets;
 import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
 import at.bitfire.davdroid.model.ServiceDB.Services;
+import at.bitfire.davdroid.ui.DebugInfoActivity;
 import lombok.Cleanup;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -152,14 +158,19 @@ public class DavService extends Service {
 
         @Override
         public void run() {
+            Account account = null;
+
             try {
                 db = dbHelper.getWritableDatabase();
 
                 String serviceType = serviceType();
                 App.log.info("Refreshing " + serviceType + " collections of service #" + service);
 
+                // get account
+                account = account();
+
                 // create authenticating OkHttpClient (credentials taken from account settings)
-                OkHttpClient httpClient = httpClient();
+                OkHttpClient httpClient = HttpClient.create(DavService.this, account);
 
                 // refresh home sets: principal
                 Set<HttpUrl> homeSets = readHomeSets();
@@ -180,7 +191,7 @@ public class DavService extends Service {
                     if (proxyWrite != null)
                         for (String href : proxyWrite.principals) {
                             App.log.fine("Principal is a read-write proxy for " + href + ", checking for home sets");
-                                    queryHomeSets(serviceType, new DavResource(httpClient, dav.location.resolve(href)), homeSets);
+                            queryHomeSets(serviceType, new DavResource(httpClient, dav.location.resolve(href)), homeSets);
                         }
 
                     // refresh home sets: direct group memberships
@@ -273,6 +284,21 @@ public class DavService extends Service {
 
             } catch (IOException|HttpException|DavException e) {
                 App.log.log(Level.SEVERE, "Couldn't refresh collection list", e);
+
+                Intent debugIntent = new Intent(DavService.this, DebugInfoActivity.class);
+                debugIntent.putExtra(DebugInfoActivity.KEY_EXCEPTION, e);
+                if (account != null)
+                    debugIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account);
+
+                NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+                Notification notify = new NotificationCompat.Builder(DavService.this)
+                        .setSmallIcon(R.drawable.ic_error_light)
+                        .setLargeIcon(((BitmapDrawable)getResources().getDrawable(R.drawable.ic_launcher)).getBitmap())
+                        .setContentTitle(getString(R.string.dav_service_refresh_failed))
+                        .setContentText(getString(R.string.dav_service_refresh_couldnt_refresh))
+                        .setContentIntent(PendingIntent.getActivity(DavService.this, 0, debugIntent, 0))
+                        .build();
+                nm.notify(Constants.NOTIFICATION_REFRESH_COLLECTIONS, notify);
             } finally {
                 dbHelper.close();
 
@@ -305,17 +331,16 @@ public class DavService extends Service {
         }
 
 
-        private OkHttpClient httpClient() {
-            @Cleanup Cursor cursor = db.query(Services._TABLE, new String[]{Services.ACCOUNT_NAME}, Services.ID + "=?", new String[] { String.valueOf(service) }, null, null, null);
+        private Account account() {
+            @Cleanup Cursor cursor = db.query(Services._TABLE, new String[] { Services.ACCOUNT_NAME }, Services.ID + "=?", new String[] { String.valueOf(service) }, null, null, null);
             if (cursor.moveToNext()) {
-                Account account = new Account(cursor.getString(0), Constants.ACCOUNT_TYPE);
-                return HttpClient.create(DavService.this, account);
+                return new Account(cursor.getString(0), Constants.ACCOUNT_TYPE);
             } else
                 throw new IllegalArgumentException("Service not found");
         }
 
         private String serviceType() {
-            @Cleanup Cursor cursor = db.query(Services._TABLE, new String[]{Services.SERVICE}, Services.ID + "=?", new String[] { String.valueOf(service) }, null, null, null);
+            @Cleanup Cursor cursor = db.query(Services._TABLE, new String[] { Services.SERVICE }, Services.ID + "=?", new String[] { String.valueOf(service) }, null, null, null);
             if (cursor.moveToNext())
                 return cursor.getString(0);
             else
@@ -323,7 +348,7 @@ public class DavService extends Service {
         }
 
         private HttpUrl readPrincipal() {
-            @Cleanup Cursor cursor = db.query(Services._TABLE, new String[]{Services.PRINCIPAL}, Services.ID + "=?", new String[]{String.valueOf(service)}, null, null, null);
+            @Cleanup Cursor cursor = db.query(Services._TABLE, new String[] { Services.PRINCIPAL }, Services.ID + "=?", new String[] { String.valueOf(service) }, null, null, null);
             if (cursor.moveToNext()) {
                 String principal = cursor.getString(0);
                 if (principal != null)
@@ -334,14 +359,14 @@ public class DavService extends Service {
 
         private Set<HttpUrl> readHomeSets() {
             Set<HttpUrl> homeSets = new LinkedHashSet<>();
-            @Cleanup Cursor cursor = db.query(HomeSets._TABLE, new String[]{HomeSets.URL}, HomeSets.SERVICE_ID + "=?", new String[]{String.valueOf(service)}, null, null, null);
+            @Cleanup Cursor cursor = db.query(HomeSets._TABLE, new String[] { HomeSets.URL }, HomeSets.SERVICE_ID + "=?", new String[] { String.valueOf(service) }, null, null, null);
             while (cursor.moveToNext())
                 homeSets.add(HttpUrl.parse(cursor.getString(0)));
             return homeSets;
         }
 
         private void saveHomeSets(Set<HttpUrl> homeSets) {
-            db.delete(HomeSets._TABLE, HomeSets.SERVICE_ID + "=?", new String[]{String.valueOf(service)});
+            db.delete(HomeSets._TABLE, HomeSets.SERVICE_ID + "=?", new String[] { String.valueOf(service) });
             for (HttpUrl homeSet : homeSets) {
                 ContentValues values = new ContentValues(1);
                 values.put(HomeSets.SERVICE_ID, service);

@@ -7,12 +7,23 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:tools="http://schemas.android.com/tools"
+      xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/nav_app_settings"
         android:icon="@drawable/ic_settings_dark"
         android:title="@string/navigation_drawer_settings"/>
+
+    <item android:title="@string/navigation_drawer_news_updates">
+        <menu>
+            <item
+                android:id="@+id/nav_twitter"
+                android:icon="@drawable/twitter"
+                android:title="\@davdroidapp"
+                tools:ignore="HardcodedText"/>
+        </menu>
+    </item>
 
     <item android:title="@string/navigation_drawer_external_links">
         <menu>
