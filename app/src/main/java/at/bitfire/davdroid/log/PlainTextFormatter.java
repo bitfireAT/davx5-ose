@@ -11,6 +11,7 @@ package at.bitfire.davdroid.log;
 import android.util.Log;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.util.logging.Formatter;
@@ -28,6 +29,7 @@ public class PlainTextFormatter extends Formatter {
     }
 
     @Override
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     public String format(LogRecord r) {
         StringBuilder builder = new StringBuilder();
 
@@ -39,14 +41,15 @@ public class PlainTextFormatter extends Formatter {
         builder.append(String.format("[%s] %s", shortClassName(r.getSourceClassName()), r.getMessage()));
 
         if (r.getThrown() != null) {
-            builder.append("\nEXCEPTION ");
-            builder.append(Log.getStackTraceString(r.getThrown()));
+            Throwable thrown = r.getThrown();
+            builder.append("\nEXCEPTION ").append(ExceptionUtils.getMessage(thrown));
+            builder.append("\tstrack trace = ").append(ExceptionUtils.getStackTrace(thrown));
         }
 
         if (r.getParameters() != null) {
             int idx = 1;
             for (Object param : r.getParameters())
-                builder.append("\nPARAMETER #").append(idx).append(" = ").append(param);
+                builder.append("\n\tPARAMETER #").append(idx).append(" = ").append(param);
         }
 
         if (!logcat)
