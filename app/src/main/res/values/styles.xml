@@ -90,6 +90,10 @@
         <item name="android:background">@drawable/chip_bg</item>
     </style>
 
+    <style name="tablayout">
+        <item name="colorPrimary">@color/orangeA700</item>
+    </style>
+
     <style name="toolbar_theme">
         <item name="android:textColorSecondary">@color/white</item>
     </style>

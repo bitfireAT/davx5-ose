@@ -14,7 +14,6 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
-import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.ComponentName;
@@ -36,6 +35,7 @@ import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
@@ -550,7 +550,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             ContentResolver.requestSync(account, authority, extras);
         }
 
-        Snackbar.make(getWindow().getDecorView(), R.string.account_synchronizing_now, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(R.id.parent), R.string.account_synchronizing_now, Snackbar.LENGTH_LONG).show();
     }
 
 }

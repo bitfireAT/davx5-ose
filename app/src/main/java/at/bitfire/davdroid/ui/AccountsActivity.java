@@ -74,14 +74,14 @@ public class AccountsActivity extends AppCompatActivity implements NavigationVie
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.nav_about:
+                startActivity(new Intent(this, AboutActivity.class));
+                break;
             case R.id.nav_app_settings:
                 startActivity(new Intent(this, AppSettingsActivity.class));
                 break;
             case R.id.nav_twitter:
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/davdroidapp")));
-                break;
-            case R.id.nav_about:
-                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("source/").build()));
                 break;
             case R.id.nav_website:
                 startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri));
