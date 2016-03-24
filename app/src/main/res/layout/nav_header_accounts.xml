@@ -8,6 +8,7 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="@dimen/nav_header_height"
               android:background="@drawable/side_nav_bar"
@@ -21,7 +22,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:src="@drawable/ic_launcher"/>
+        android:src="@drawable/ic_launcher"
+        tools:ignore="ContentDescription"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -34,6 +36,6 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CalDAV/CardDAV Sync Adapter"/>
+        android:text="@string/navigation_drawer_subtitle"/>
 
 </LinearLayout>

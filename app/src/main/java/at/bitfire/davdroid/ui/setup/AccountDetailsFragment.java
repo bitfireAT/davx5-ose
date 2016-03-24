@@ -126,7 +126,7 @@ public class AccountDetailsFragment extends Fragment {
                 ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1);
                 ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true);
 
-                // TODO check for tasks availability
+                // will only do something if OpenTasks is installed
                 ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
                 ContentResolver.setSyncAutomatically(account, TaskProvider.ProviderName.OpenTasks.authority, true);
             } else {

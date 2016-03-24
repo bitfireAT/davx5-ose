@@ -71,7 +71,7 @@ public class DetectConfigurationFragment extends DialogFragment implements Loade
         else
             // service found: continue
             getFragmentManager().beginTransaction()
-                    .replace(R.id.fragment, AccountDetailsFragment.newInstance(data))
+                    .replace(android.R.id.content, AccountDetailsFragment.newInstance(data))
                     .addToBackStack(null)
                     .commitAllowingStateLoss();
 

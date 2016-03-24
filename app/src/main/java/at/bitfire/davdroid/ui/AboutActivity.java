@@ -174,8 +174,10 @@ public class AboutActivity extends AppCompatActivity {
         public void onLoadFinished(Loader<Spanned> loader, Spanned license) {
             if (getView() != null) {
                 TextView tv = (TextView)getView().findViewById(R.id.license_text);
-                if (tv != null)
+                if (tv != null) {
+                    tv.setAutoLinkMask(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS);
                     tv.setText(license);
+                }
             }
         }
 

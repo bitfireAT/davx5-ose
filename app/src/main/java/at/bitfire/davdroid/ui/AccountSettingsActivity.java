@@ -36,7 +36,6 @@ public class AccountSettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_account_settings);
 
         account = getIntent().getParcelableExtra(EXTRA_ACCOUNT);
         setTitle(getString(R.string.settings_title, account.name));
@@ -45,7 +44,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
         if (savedInstanceState == null)
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment, AccountSettingsFragment.instantiate(this, AccountSettingsFragment.class.getName(), getIntent().getExtras()))
+                    .replace(android.R.id.content, AccountSettingsFragment.instantiate(this, AccountSettingsFragment.class.getName(), getIntent().getExtras()))
                     .commit();
     }
 
