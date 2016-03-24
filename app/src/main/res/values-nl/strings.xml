@@ -4,10 +4,11 @@
   <string name="app_name">DAVdroid</string>
   <string name="help">Help</string>
   <string name="send">Verzenden</string>
-  <string name="skip">Overslaan</string>
   <!--startup dialogs-->
+  <!--AboutActivity-->
   <!--global settings-->
   <!--AccountsActivity-->
+  <!--DavService-->
   <!--AppSettingsActivity-->
   <!--AccountActivity-->
   <!--AddAccountActivity-->

@@ -3,18 +3,96 @@
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
   <string name="help">Hjælp</string>
+  <string name="manage_accounts">Administrer konti</string>
+  <string name="please_wait">Vent venligst -</string>
   <string name="send">Send</string>
-  <string name="skip">Spring over</string>
   <!--startup dialogs-->
+  <string name="startup_dont_show_again">Vis ikke igen</string>
+  <string name="startup_development_version">DAVdroid Preview</string>
+  <string name="startup_development_version_message">Dette er udviklingsversionen af DAVdroid. Bemærk, at nogle ting måske ikke fungerer, som man forventer. Giv os gerne konstruktiv kritik for at forbedre DAVdroid.</string>
+  <string name="startup_development_version_give_feedback">Giv feedback</string>
+  <string name="startup_donate">Open-Source Information</string>
+  <string name="startup_donate_message">Det glæder os, at du bruger DAVdroid, som er open source-software (GPLv3). Det er hårdt arbejde at udvikle DAVdroid og taget tusindvis af arbejdstimer, så overvej at donere til projektet.</string>
+  <string name="startup_donate_now">Vis donationsside</string>
+  <string name="startup_donate_later">Måske senere</string>
+  <string name="startup_google_play_accounts_removed">Play Store DRM-fejl: Information</string>
+  <string name="startup_google_play_accounts_removed_message">Under visse tekniske omstændigheder kan DRM fra Play Store bevirke, at alle DAVdroid-konti er væk efter en genstart eller opgradering af DAVdroid. Hvis du er udsat for dette problem (og ellers ikke), opfordres du til at installere DAVDroid JB Workaround\" fra Play Store.</string>
+  <string name="startup_google_play_accounts_removed_more_info">Yderligere oplysninger</string>
+  <string name="startup_opentasks_not_installed">OpenTasks ikke installeret</string>
+  <string name="startup_opentasks_not_installed_message">OpenTasks-app\'en er ikke installeret eller kan ikke tilgås, så DAVdroid vil ikke være i stand til at opdatere opgavelister. Geninstaller DAVdroid og tilføj dine konti igen efter installation af OpenTasks.</string>
+  <string name="startup_opentasks_not_installed_install">Installer OpenTasks</string>
+  <!--AboutActivity-->
   <!--global settings-->
+  <string name="logging_davdroid_file_logging">DAVdroid fil-logning</string>
+  <string name="logging_to_external_storage">Logger til eksternt datalager: %s</string>
+  <string name="logging_to_external_storage_warning">Slet logfiler hurtigst muligt!</string>
+  <string name="logging_couldnt_create_file">Kunne ikke oprette ekstern logfil: %s</string>
+  <string name="logging_no_external_storage">Eksternt lager ikke funder</string>
   <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Åbn navigationsvindue</string>
+  <string name="navigation_drawer_close">Luk navigationsvindue</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync-adapter</string>
+  <string name="navigation_drawer_about">Om / Licens</string>
+  <string name="navigation_drawer_settings">Indstillinger</string>
+  <string name="navigation_drawer_external_links">Eksterne links</string>
+  <string name="navigation_drawer_website">Hjemmeside</string>
+  <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_forums">Community</string>
+  <string name="navigation_drawer_donate">Donation</string>
+  <string name="account_list_empty">Velkommen til DAVdroid!\n\nDu kan nu tilføje en CaDAV/CardDAV-konto.</string>
+  <!--DavService-->
   <!--AppSettingsActivity-->
+  <string name="app_settings">Indstillinger</string>
+  <string name="app_settings_user_interface">Brugerflade</string>
+  <string name="app_settings_reset_hints">Nulstil vejledende popups</string>
+  <string name="app_settings_reset_hints_summary">Genaktiverer hjælp, som er blevet lukket tidligere</string>
+  <string name="app_settings_reset_hints_success">Al vejledning vil blive vist igen</string>
+  <string name="app_settings_security">Sikkerhed</string>
+  <string name="app_settings_reset_trusted_certificates">Nulstil verificerede certifikater</string>
+  <string name="app_settings_reset_trusted_certificates_summary">Glemmer alle certifikater, der er blevet godkendt tidligere</string>
+  <plurals name="app_settings_reset_trusted_certificates_success">
+    <item quantity="one">Ikke-accepteret certifikat</item>
+    <item quantity="other">%d kke-accepterede certifikater</item>
+  </plurals>
+  <string name="app_settings_debug">Debugging</string>
   <!--AccountActivity-->
+  <string name="account_synchronize_now">Synkroniser nu</string>
+  <string name="account_synchronizing_now">Synkroniserer nu</string>
+  <string name="account_settings">Opsætning af konti</string>
+  <string name="account_delete">Slet konto</string>
+  <string name="account_delete_confirmation_title">Ønsker du at slette konto?</string>
+  <string name="account_delete_confirmation_text">Alle lokale kopier af addessebøger, kalendere og opgavelister vil blive slettet.</string>
+  <string name="account_refresh_address_book_list">Opdater adressebogslister</string>
+  <string name="account_create_new_address_book">Opret ny adressebog</string>
+  <string name="account_refresh_calendar_list">Opdater kalenderliste</string>
+  <string name="account_create_new_calendar">Opret ny kalender</string>
   <!--AddAccountActivity-->
+  <string name="login_title">Tilføj konto</string>
   <string name="login_type_email">Log ind med emailadresse</string>
+  <string name="login_email_address">Emailadresse</string>
+  <string name="login_email_address_error">Gyldig emailadresse påkrævet</string>
+  <string name="login_password">Adgangskode</string>
+  <string name="login_password_required">Adgangskode påkrævet</string>
   <string name="login_type_url">Log ind med URL og brugernavn</string>
+  <string name="login_url_must_be_http_or_https">URL skal begynde med http(s)://</string>
+  <string name="login_url_host_name_required">Værtsnavn påkrævet</string>
+  <string name="login_user_name">Brugernavn</string>
+  <string name="login_user_name_required">Brugernavn påkrævet</string>
+  <string name="login_base_url">Basis-URL</string>
   <string name="login_auth_preemptive">Forhåndsgodkendelse (preemptive authentication - anbefalet, men ikke kompatiblelt med Digest auth)</string>
+  <string name="login_login">Login</string>
+  <string name="login_back">Tilbage</string>
+  <string name="login_create_account">Opret konto</string>
+  <string name="login_account_name">Kontonavn</string>
+  <string name="login_account_name_info">Brug emailadressen som kontonavn, for Android vil bruge kontonavnet til ORGANIZER-feltet for aktiviteter, som du opretter. Du kan ikke have to konti med samme navn.</string>
+  <string name="login_account_name_required">Kontonavn påkrævet</string>
+  <string name="login_account_not_created">Konto kunne ikke oprettes</string>
+  <string name="login_configuration_detection">Check konfiguration</string>
+  <string name="login_querying_server">Vent, forespørger hos serveren...</string>
+  <string name="login_no_caldav_carddav">Kunne ikke finde CalDAV- eller CardDAV-tjeneste.</string>
+  <string name="login_view_logs">Vis logs.</string>
   <!--AccountSettingsActivity-->
+  <string name="settings_title">Indstillinger: %s</string>
   <string name="settings_authentication">Adgangsgodkendelse</string>
   <string name="settings_username">Brugernavn</string>
   <string name="settings_enter_username">Indtast brugernavn:</string>
@@ -51,8 +129,42 @@
     <item>En gang hver 4. time</item>
     <item>En gang om dagen</item>
   </string-array>
+  <string name="settings_sync_time_range_past">Tidsafgrænsning for tidligere begivenheder</string>
+  <string name="settings_sync_time_range_past_none">Alle begivenheder vil blive synkroniseret</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Begivenheder ældre end en dag vil blive ignoreret</item>
+    <item quantity="other">Begivenheder, der er mere end %d dage gamle, vil blive ignoreret</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Begivenheder, som er mere end dette antal dage gamle vil blive ignoreret (kan også være 0). Hvis feltet ikke er udfyldt, vil alle begivenheder blive synkroniseret.</string>
+  <string name="settings_version_update">Versionsopdatering af DAVdroid</string>
+  <string name="settings_version_update_settings_updated">Interne indstillinger er blevet opdateret.</string>
+  <string name="settings_version_update_install_hint">Problemer? Afinstaller DAVdroid og geninstaller.</string>
   <!--collection management-->
+  <string name="create_addressbook">Opret adressebog</string>
+  <string name="create_addressbook_display_name_hint">Min adressebog</string>
+  <string name="create_calendar">Opret CalDAV-sæt</string>
+  <string name="create_calendar_display_name_hint">Min kalender</string>
+  <string name="create_calendar_time_zone">Tidszone:</string>
+  <string name="create_calendar_type">Type af sæt:</string>
+  <string name="create_calendar_type_only_events">Kalender (kun begivenheder)</string>
+  <string name="create_calendar_type_only_tasks">Opgaveliste (kun opgaver)</string>
+  <string name="create_calendar_type_events_and_tasks">Kombineret (begivenheder og opgaver)</string>
+  <string name="create_collection_color">Sæt en farve på sættet</string>
+  <string name="create_collection_creating">Opretter sæt</string>
+  <string name="create_collection_display_name">Navn (titel) på dette sæt:</string>
+  <string name="create_collection_display_name_required">En titel er påkrævet</string>
+  <string name="create_collection_description">Beskrivelse (valgfri):</string>
+  <string name="create_collection_home_set">Home set:</string>
+  <string name="create_collection_create">Opret</string>
+  <string name="delete_collection">Slet sæt</string>
+  <string name="delete_collection_confirm_title">Er du sikker?</string>
+  <string name="delete_collection_confirm_warning">DAV-sættet (%s) og dets data vil blive fjernet fra serveren.</string>
+  <string name="delete_collection_deleting_collection">Sletter CalDAV-sæt</string>
   <!--ExceptionInfoFragment-->
+  <string name="exception">Der er opstået en fejl.</string>
+  <string name="exception_httpexception">Der er opstået en HTTP-fejl.</string>
+  <string name="exception_ioexception">Der er opstået en I/O-fejl.</string>
+  <string name="exception_show_details">Vis detaljer</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Debug-info</string>
   <string name="sync_error_calendar">Synkronisering af kalenderen lykkedes ikke (%s)</string>

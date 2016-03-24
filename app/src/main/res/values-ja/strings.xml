@@ -3,18 +3,98 @@
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
   <string name="help">ヘルプ</string>
+  <string name="manage_accounts">アカウントの管理</string>
+  <string name="please_wait">しばらくお待ちください …</string>
   <string name="send">送信</string>
-  <string name="skip">スキップ</string>
   <!--startup dialogs-->
+  <string name="startup_dont_show_again">次回から表示しない</string>
+  <string name="startup_development_version">DAVdroid プレビュー リリース</string>
+  <string name="startup_development_version_message">これは DAVdroid の開発版です。期待した通りに動作しない可能性があることにご注意ください。私たちが DAVdroid を改善するために、建設的なフィードバックをお願いします。</string>
+  <string name="startup_development_version_give_feedback">フィードバックする</string>
+  <string name="startup_donate">オープンソース情報</string>
+  <string name="startup_donate_message">あなたがオープンソース ソフトウェア (GPLv3) の DAVdroid を使用していただくことに、私たちは満足しています。 DAVdroid の開発はハードワークで、何千もの作業時間がかかりました。寄付をご検討ください。</string>
+  <string name="startup_donate_now">寄付ページを表示</string>
+  <string name="startup_donate_later">たぶん後で</string>
+  <string name="startup_google_play_accounts_removed">Play ストア DRM バグ情報</string>
+  <string name="startup_google_play_accounts_removed_message">特定の条件下で、DAVdroid を再起動後またはアップグレードした後、Play ストア DRM によりすべての DAVdroid アカウントがなくなる可能性があります。この問題の影響を受けている場合 (のみ)、Play ストアから「DAVdroid JB 回避策」をインストールしてください。</string>
+  <string name="startup_google_play_accounts_removed_more_info">追加情報</string>
+  <string name="startup_opentasks_not_installed">OpenTasks がインストールされていません</string>
+  <string name="startup_opentasks_not_installed_message">OpenTasks アプリがインストールされていないか、アクセスできないため、DAVdroid は、タスクリストを同期することができません。 OpenTasks をインストールした後、DAVdroidを再インストールして、再度アカウントを追加してください。</string>
+  <string name="startup_opentasks_not_installed_install">OpenTasks をインストール</string>
+  <!--AboutActivity-->
   <!--global settings-->
+  <string name="logging_davdroid_file_logging">DAVdroid ファイルログ</string>
+  <string name="logging_to_external_storage">外部ストレージにログ: %s</string>
+  <string name="logging_to_external_storage_warning">できる限り早くログを削除してください!</string>
+  <string name="logging_couldnt_create_file">外部ログファイルを作成できませんでした: %s</string>
+  <string name="logging_no_external_storage">外部ストレージが見つかりません</string>
   <!--AccountsActivity-->
+  <string name="navigation_drawer_open">ナビゲーションドロワーを開く</string>
+  <string name="navigation_drawer_close">ナビゲーションドロワーを閉じる</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV 同期アダプター</string>
+  <string name="navigation_drawer_about">アプリについて / ライセンス</string>
+  <string name="navigation_drawer_settings">設定</string>
+  <string name="navigation_drawer_news_updates">ニュース &amp; 更新</string>
+  <string name="navigation_drawer_external_links">外部リンク</string>
+  <string name="navigation_drawer_website">Web サイト</string>
+  <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_forums">コミュニティ</string>
+  <string name="navigation_drawer_donate">寄付</string>
+  <string name="account_list_empty">DAVdroid にようこそ!\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>
+  <!--DavService-->
+  <string name="dav_service_refresh_failed">サービスの検出に失敗しました</string>
+  <string name="dav_service_refresh_couldnt_refresh">コレクション リストを更新できません</string>
   <!--AppSettingsActivity-->
+  <string name="app_settings">設定</string>
+  <string name="app_settings_user_interface">ユーザーインターフェイス</string>
+  <string name="app_settings_reset_hints">ヒントをリセット</string>
+  <string name="app_settings_reset_hints_summary">以前非表示にしたヒントを、再度有効にします</string>
+  <string name="app_settings_reset_hints_success">すべてのヒントが再度表示されます</string>
+  <string name="app_settings_security">セキュリティ</string>
+  <string name="app_settings_reset_trusted_certificates">信頼済証明書をリセット</string>
+  <string name="app_settings_reset_trusted_certificates_summary">以前承認されたすべての証明書を忘れます</string>
+  <plurals name="app_settings_reset_trusted_certificates_success">
+    <item quantity="other">%d 証明書の信頼を解除しました</item>
+  </plurals>
+  <string name="app_settings_debug">デバッグ</string>
   <!--AccountActivity-->
+  <string name="account_synchronize_now">今すぐ同期</string>
+  <string name="account_synchronizing_now">同期中</string>
+  <string name="account_settings">アカウント設定</string>
+  <string name="account_delete">アカウントを削除</string>
+  <string name="account_delete_confirmation_title">アカウントを削除してもよろしいですか?</string>
+  <string name="account_delete_confirmation_text">アドレス帳、カレンダー、タスクリストのローカルコピーがすべて削除されます。</string>
+  <string name="account_refresh_address_book_list">アドレス帳リストを更新</string>
+  <string name="account_create_new_address_book">新しいアドレス帳を作成</string>
+  <string name="account_refresh_calendar_list">カレンダーリストを更新</string>
+  <string name="account_create_new_calendar">新しいカレンダーを作成</string>
   <!--AddAccountActivity-->
+  <string name="login_title">アカウントを追加</string>
   <string name="login_type_email">メールアドレスでログイン</string>
+  <string name="login_email_address">メールアドレス</string>
+  <string name="login_email_address_error">有効なメールアドレスが必要です</string>
+  <string name="login_password">パスワード</string>
+  <string name="login_password_required">パスワードが必要です</string>
   <string name="login_type_url">URL とユーザー名でログイン</string>
+  <string name="login_url_must_be_http_or_https">URL は http(s):// で始まる必要があります</string>
+  <string name="login_url_host_name_required">ホスト名が必要です</string>
+  <string name="login_user_name">ユーザー名</string>
+  <string name="login_user_name_required">ユーザー名が必要です</string>
+  <string name="login_base_url">ベース URL</string>
   <string name="login_auth_preemptive">プリエンプティブ認証 (推奨ですが、ダイジェスト認証と互換性がありません)</string>
+  <string name="login_login">ログイン</string>
+  <string name="login_back">戻る</string>
+  <string name="login_create_account">アカウントを作成</string>
+  <string name="login_account_name">アカウント名</string>
+  <string name="login_account_name_info">Android はあなたが作成した予定の ORGANIZER フィールドとしてアカウント名を使用するので、アカウント名としてメールアドレスを使用してください。同じ名前のアカウントを 2 つ持つことはできません。</string>
+  <string name="login_account_name_required">アカウント名が必要です</string>
+  <string name="login_account_not_created">アカウントを作成できません</string>
+  <string name="login_configuration_detection">設定の検出</string>
+  <string name="login_querying_server">しばらくお待ちください。サーバーに問い合わせ中…</string>
+  <string name="login_no_caldav_carddav">CalDAV または CardDAV サービスが見つかりません。</string>
+  <string name="login_view_logs">ログを表示</string>
   <!--AccountSettingsActivity-->
+  <string name="settings_title">設定: %s</string>
   <string name="settings_authentication">認証</string>
   <string name="settings_username">ユーザー名</string>
   <string name="settings_enter_username">ユーザー名を入力:</string>
@@ -51,8 +131,41 @@
     <item>4 時間ごと</item>
     <item>1 日 1 回</item>
   </string-array>
+  <string name="settings_sync_time_range_past">過去イベントの時間限度</string>
+  <string name="settings_sync_time_range_past_none">すべてのイベントが同期されます</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="other">%d 日より前のイベントは無視されます</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">この日数より過去のイベントは無視されます (0 も可)。すべてのイベントを同期させるには、空白のままにしてください。</string>
+  <string name="settings_version_update">DAVdroid バージョンの更新</string>
+  <string name="settings_version_update_settings_updated">内部設定が更新されました。</string>
+  <string name="settings_version_update_install_hint">問題がありますか? DAVdroid をアンインストールして、再度インストールしてください。</string>
   <!--collection management-->
+  <string name="create_addressbook">アドレス帳を作成</string>
+  <string name="create_addressbook_display_name_hint">マイ アドレス帳</string>
+  <string name="create_calendar">CalDAV コレクションを作成</string>
+  <string name="create_calendar_display_name_hint">マイ カレンダー</string>
+  <string name="create_calendar_time_zone">タイムゾーン:</string>
+  <string name="create_calendar_type">コレクションの種類:</string>
+  <string name="create_calendar_type_only_events">カレンダー (イベントのみ)</string>
+  <string name="create_calendar_type_only_tasks">タスクリスト (タスクのみ)</string>
+  <string name="create_calendar_type_events_and_tasks">組み合わせ (イベントとタスク)</string>
+  <string name="create_collection_color">コレクションの色を設定</string>
+  <string name="create_collection_creating">コレクションの作成中</string>
+  <string name="create_collection_display_name">このコレクションの表示名 (タイトル):</string>
+  <string name="create_collection_display_name_required">タイトルが必要です</string>
+  <string name="create_collection_description">説明 (オプション):</string>
+  <string name="create_collection_home_set">ホーム セット:</string>
+  <string name="create_collection_create">作成</string>
+  <string name="delete_collection">コレクションを削除</string>
+  <string name="delete_collection_confirm_title">よろしいですか?</string>
+  <string name="delete_collection_confirm_warning">このコレクション (%s) とそのすべてのデータがサーバーから削除されます。</string>
+  <string name="delete_collection_deleting_collection">コレクションの削除中</string>
   <!--ExceptionInfoFragment-->
+  <string name="exception">エラーが発生しました。</string>
+  <string name="exception_httpexception">HTTP エラーが発生しました。</string>
+  <string name="exception_ioexception">I/O エラーが発生しました。</string>
+  <string name="exception_show_details">詳細を表示</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">デバッグ情報</string>
   <string name="sync_error_calendar">カレンダーの同期に失敗しました (%s)</string>

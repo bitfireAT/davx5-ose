@@ -6,12 +6,11 @@
   <string name="manage_accounts">Konten verwalten</string>
   <string name="please_wait">Bitte warten …</string>
   <string name="send">Senden</string>
-  <string name="skip">Überspringen</string>
   <!--startup dialogs-->
   <string name="startup_dont_show_again">Nicht mehr anzeigen</string>
   <string name="startup_development_version">DAVdroid Vorab-Version</string>
-  <string name="startup_development_version_message">Dies ist eine Vorschauversion von DAVdroid. Einige Dinge funktionieren möglicherweise nicht wie erwartet. Bitte geben Sie konstruktives Feedback, um DAVdroid zu verbessern.</string>
-  <string name="startup_development_version_give_feedback">Feedback geben</string>
+  <string name="startup_development_version_message">Dies ist eine Vorschauversion von DAVdroid. Mit konstruktiven Rückmeldungen und Vorschlägen können Sie uns helfen, DAVdroid zu verbessern.</string>
+  <string name="startup_development_version_give_feedback">Zum Forum</string>
   <string name="startup_donate">Open-Source-Information</string>
   <string name="startup_donate_message">Es freut uns, dass Sie DAVdroid und damit Open-Source-Software (GPLv3) verwenden. Da in DAVdroid tausende Stunden harter Arbeit stecken und es immer noch weiter entwickelt wird, gibt es die Möglichkeit, uns zu spenden.</string>
   <string name="startup_donate_now">Spendenseite anzeigen</string>
@@ -19,9 +18,12 @@
   <string name="startup_google_play_accounts_removed">Möglicher Play Store DRM-Fehler</string>
   <string name="startup_google_play_accounts_removed_message">Unter bestimmten Umständen verursacht die zwangsweise Play Store-Verschlüsselung, dass Accounts nach einem Neustart oder einem DAVdroid-Update verschwinden. Installieren Sie \"DAVdroid JB Workaround\", falls Sie von dem Problem betroffen sind.</string>
   <string name="startup_google_play_accounts_removed_more_info">Weitere Infos</string>
-  <string name="startup_opentasks_not_installed">OpenTasks not installed</string>
+  <string name="startup_opentasks_not_installed">OpenTasks nicht installiert</string>
   <string name="startup_opentasks_not_installed_message">Die OpenTasks-App ist nicht installiert oder DAVdroid hat keine Rechte, um darauf zuzugreifen. Aufgabenlisten werden also nicht synchronisiert. Falls Sie OpenTasks installieren, müssen Sie DAVdroid danach deinstallieren und noch einmal installieren (Android-Bug).</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks installieren</string>
+  <!--AboutActivity-->
+  <string name="about_license_terms">Lizenzbedingungen</string>
+  <string name="about_license_info_no_warranty">Dieses Programm OHNE JEDE GEWÄHRLEISTUNG bereitgestellt. Es ist freie Software; Sie können es also unter bestimmten Bedingungen weiterverbreiten.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid Datei-Protokollierung</string>
   <string name="logging_to_external_storage">Protokollierung auf externen Speicher: %s</string>
@@ -34,18 +36,22 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV-Sync-Adapter</string>
   <string name="navigation_drawer_about">Über / Lizenz</string>
   <string name="navigation_drawer_settings">Einstellungen</string>
+  <string name="navigation_drawer_news_updates">Aktuelles</string>
   <string name="navigation_drawer_external_links">Externe Links</string>
   <string name="navigation_drawer_website">Homepage</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_forums">Community</string>
   <string name="navigation_drawer_donate">Spenden</string>
   <string name="account_list_empty">Herzlich willkommen!\n\nSie können jetzt ein CalDAV/CardDAV-Konto hinzufügen.</string>
+  <!--DavService-->
+  <string name="dav_service_refresh_failed">Diensterkennung fehlgeschlagen</string>
+  <string name="dav_service_refresh_couldnt_refresh">Ordnerliste konnte nicht aktualisiert werden</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Einstellungen</string>
   <string name="app_settings_user_interface">Oberfläche</string>
   <string name="app_settings_reset_hints">Hinweise zurücksetzen</string>
   <string name="app_settings_reset_hints_summary">Hinweise, die deaktiviert wurden, wieder anzeigen</string>
-  <string name="app_settings_reset_hints_success">Alle Hinweise werden wieder angezeig</string>
+  <string name="app_settings_reset_hints_success">Alle Hinweise werden wieder angezeigt</string>
   <string name="app_settings_security">Sicherheit</string>
   <string name="app_settings_reset_trusted_certificates">Vertrauenswürdige Zertifikate zurücksetzen</string>
   <string name="app_settings_reset_trusted_certificates_summary">Entzieht allen zuvor akzeptierten Zertifikaten die Vertrauenswürdigkeit</string>
@@ -57,6 +63,8 @@
   <string name="app_settings_log_to_external_storage">Protokollierung in externe Datei</string>
   <string name="app_settings_log_to_external_storage_on">Protokolliert auf externen Speicher, falls möglich</string>
   <string name="app_settings_log_to_external_storage_off">Protokollierung auf externen Speicher deaktiviert</string>
+  <string name="app_settings_show_debug_info">Informationen zur Fehlersuche</string>
+  <string name="app_settings_show_debug_info_details">Software- und Konfigurationsdetails anzeigen und teilen</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Jetzt synchronisieren</string>
   <string name="account_synchronizing_now">Synchronisation gestartet</string>
@@ -157,6 +165,7 @@
   <string name="create_collection_display_name_required">Ein Titel wird benötigt</string>
   <string name="create_collection_description">Beschreibung (optional):</string>
   <string name="create_collection_home_set">Übergeordneter Ordner:</string>
+  <string name="create_collection_create">Erstellen</string>
   <string name="delete_collection">Ordner löschen</string>
   <string name="delete_collection_confirm_title">Sind Sie sicher?</string>
   <string name="delete_collection_confirm_warning">Dieser Ordner (%s) wird samt allen Inhalten vom Server gelöscht.</string>
