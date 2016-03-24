@@ -9,6 +9,7 @@
 package at.bitfire.davdroid.resource;
 
 import android.accounts.Account;
+import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
 import android.content.ContentUris;
@@ -79,6 +80,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         update(valuesFromCollectionInfo(info));
     }
 
+    @TargetApi(15)
     private static ContentValues valuesFromCollectionInfo(CollectionInfo info) {
         ContentValues values = new ContentValues();
         values.put(Calendars.NAME, info.url);

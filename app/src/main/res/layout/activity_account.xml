@@ -9,6 +9,8 @@
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/parent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -38,7 +40,7 @@
                     style="@style/toolbar_style"
                     app:navigationIcon="@drawable/ic_people_light"
                     app:title="CardDAV"
-                    android:elevation="2dp"/>
+                    android:elevation="2dp" tools:ignore="UnusedAttribute"/>
 
                 <ProgressBar
                     android:id="@+id/carddav_refreshing"
@@ -78,7 +80,7 @@
                     style="@style/toolbar_style"
                     app:navigationIcon="@drawable/ic_event_light"
                     app:title="CalDAV"
-                    android:elevation="2dp"/>
+                    android:elevation="2dp" tools:ignore="UnusedAttribute"/>
 
                 <ProgressBar
                     android:id="@+id/caldav_refreshing"

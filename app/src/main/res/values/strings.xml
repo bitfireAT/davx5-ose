@@ -33,6 +33,10 @@
     <string name="startup_opentasks_not_installed_message">The OpenTasks app is not installed or not accessible, so DAVdroid won\'t be able to synchronize task lists. Re-install DAVdroid and then add your accounts again after installing OpenTasks.</string>
     <string name="startup_opentasks_not_installed_install">Install OpenTasks</string>
 
+    <!-- AboutActivity -->
+    <string name="about_license_terms">License terms</string>
+    <string name="about_license_info_no_warranty">This program comes with ABSOLUTELY NO WARRANTY. It is free software, and you are welcome to redistribute it under certain conditions.</string>
+
     <!-- global settings -->
     <string name="logging_davdroid_file_logging">DAVdroid file logging</string>
     <string name="logging_to_external_storage">Logging to external storage: %s</string>
