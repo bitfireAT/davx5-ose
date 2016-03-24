@@ -20,6 +20,13 @@ import lombok.Cleanup;
 
 public class ServiceDB {
 
+    public static class Settings {
+        public static final String
+                _TABLE = "settings",
+                NAME = "setting",
+                VALUE = "value";
+    }
+
     public static class Services {
         public static final String
                 _TABLE = "services",
@@ -79,6 +86,12 @@ public class ServiceDB {
         @Override
         public void onCreate(SQLiteDatabase db) {
             App.log.info("Creating services database");
+
+            db.execSQL("CREATE TABLE " + Settings._TABLE + "(" +
+                    Settings.NAME + " TEXT NOT NULL," +
+                    Settings.VALUE + " TEXT NOT NULL" +
+            ")");
+            db.execSQL("CREATE UNIQUE INDEX settings_name ON " + Settings._TABLE + " (" + Settings.NAME + ")");
 
             db.execSQL("CREATE TABLE " + Services._TABLE + "(" +
                     Services.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +

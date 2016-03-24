@@ -54,9 +54,9 @@
     <item quantity="other">%d Zertifikaten wird nicht mehr vertraut</item>
   </plurals>
   <string name="app_settings_debug">Fehlersuche</string>
-  <string name="app_settings_log_to_file">Protokollierung in externe Datei</string>
-  <string name="app_settings_log_to_file_on">Protokolliert auf externen Speicher, falls möglich</string>
-  <string name="app_settings_log_to_file_off">Protokollierung auf externen Speicher deaktiviert</string>
+  <string name="app_settings_log_to_external_storage">Protokollierung in externe Datei</string>
+  <string name="app_settings_log_to_external_storage_on">Protokolliert auf externen Speicher, falls möglich</string>
+  <string name="app_settings_log_to_external_storage_off">Protokollierung auf externen Speicher deaktiviert</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Jetzt synchronisieren</string>
   <string name="account_synchronizing_now">Synchronisation gestartet</string>

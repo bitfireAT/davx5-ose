@@ -25,10 +25,17 @@
 
     <PreferenceCategory android:title="@string/app_settings_debug">
         <SwitchPreferenceCompat
-            android:key="log_to_file"
-            android:title="@string/app_settings_log_to_file"
-            android:summaryOn="@string/app_settings_log_to_file_on"
-            android:summaryOff="@string/app_settings_log_to_file_off"/>
+            android:key="log_to_external_storage"
+            android:title="@string/app_settings_log_to_external_storage"
+            android:summaryOn="@string/app_settings_log_to_external_storage_on"
+            android:summaryOff="@string/app_settings_log_to_external_storage_off"/>
+        <Preference
+            android:title="@string/app_settings_show_debug_info"
+            android:summary="@string/app_settings_show_debug_info_details">
+            <intent
+                android:targetPackage="at.bitfire.davdroid"
+                android:targetClass="at.bitfire.davdroid.ui.DebugInfoActivity"/>
+        </Preference>
     </PreferenceCategory>
 
 </PreferenceScreen>

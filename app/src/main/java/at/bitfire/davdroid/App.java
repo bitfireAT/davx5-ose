@@ -8,20 +8,12 @@
 
 package at.bitfire.davdroid;
 
-import android.accounts.Account;
-import android.app.ActivityManager;
 import android.app.Application;
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.ContentResolver;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
-import android.os.*;
-import android.os.Process;
-import android.support.v4.app.ActivityManagerCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
@@ -29,7 +21,6 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -39,14 +30,15 @@ import javax.net.ssl.HostnameVerifier;
 
 import at.bitfire.davdroid.log.LogcatHandler;
 import at.bitfire.davdroid.log.PlainTextFormatter;
+import at.bitfire.davdroid.model.ServiceDB;
+import at.bitfire.davdroid.model.Settings;
 import de.duenndns.ssl.MemorizingTrustManager;
+import lombok.Cleanup;
 import lombok.Getter;
 import okhttp3.internal.tls.OkHostnameVerifier;
 
-public class App extends Application implements SharedPreferences.OnSharedPreferenceChangeListener {
-    public static final String
-            PREF_FILE = "davdroid_preferences",             // preference file name
-            PREF_LOG_TO_FILE = "log_to_file";               // boolean: external logging enabled
+public class App extends Application {
+    public static final String LOG_TO_EXTERNAL_STORAGE = "logToExternalStorage";
 
     @Getter
     private static MemorizingTrustManager memorizingTrustManager;
@@ -59,15 +51,9 @@ public class App extends Application implements SharedPreferences.OnSharedPrefer
 
     public final static Logger log = Logger.getLogger("davdroid");
 
-    @Getter
-    private static SharedPreferences preferences;
-
     @Override
     public void onCreate() {
         super.onCreate();
-
-        preferences = getSharedPreferences(PREF_FILE, MODE_PRIVATE);
-        preferences.registerOnSharedPreferenceChangeListener(this);
 
         // initialize MemorizingTrustManager
         memorizingTrustManager = new MemorizingTrustManager(this);
@@ -78,26 +64,14 @@ public class App extends Application implements SharedPreferences.OnSharedPrefer
         reinitLogger();
     }
 
-    // won't be called in production
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-        preferences.unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (PREF_LOG_TO_FILE.equals(key)) {
-            log.info("Logging preferences changed, initializing logger again");
-            reinitLogger();
-        }
-    }
-
-    private void reinitLogger() {
+    public void reinitLogger() {
         // don't use Android default logging, we have our own handlers
         log.setUseParentHandlers(false);
 
-        boolean logToFile = preferences.getBoolean(PREF_LOG_TO_FILE, false),
+        @Cleanup ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(this);
+        Settings settings = new Settings(dbHelper.getReadableDatabase());
+
+        boolean logToFile = settings.getBoolean(LOG_TO_EXTERNAL_STORAGE, false),
                 logVerbose = logToFile || Log.isLoggable(log.getName(), Log.DEBUG);
 
         // set logging level according to preferences
@@ -122,10 +96,11 @@ public class App extends Application implements SharedPreferences.OnSharedPrefer
             File dir = getExternalFilesDir(null);
             if (dir != null)
                 try {
-                    String pattern = new File(dir, "davdroid%u-" + DateFormatUtils.format(System.currentTimeMillis(), "yyyyMMdd-HHmmss") + ".txt").toString();
-                    log.info("Logging to " + pattern);
+                    String fileName = new File(dir, "davdroid-" + android.os.Process.myPid() + "-" +
+                            DateFormatUtils.format(System.currentTimeMillis(), "yyyyMMdd-HHmmss") + ".txt").toString();
+                    log.info("Logging to " + fileName);
 
-                    FileHandler fileHandler = new FileHandler(pattern);
+                    FileHandler fileHandler = new FileHandler(fileName);
                     fileHandler.setFormatter(PlainTextFormatter.DEFAULT);
                     log.addHandler(fileHandler);
                     builder .setContentText(dir.getPath())
@@ -150,4 +125,16 @@ public class App extends Application implements SharedPreferences.OnSharedPrefer
             nm.cancel(Constants.NOTIFICATION_EXTERNAL_FILE_LOGGING);
     }
 
+
+    public static class ReinitLoggingReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            log.info("Received broadcast: re-initializing logger");
+
+            App app = (App)context.getApplicationContext();
+            app.reinitLogger();
+        }
+
+    }
 }

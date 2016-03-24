@@ -30,12 +30,15 @@ import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.model.ServiceDB;
+import at.bitfire.davdroid.model.Settings;
 import at.bitfire.davdroid.resource.LocalTaskList;
+import lombok.Cleanup;
 
 public class StartupDialogFragment extends DialogFragment {
     public static final String
-            PREF_HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED = "hint_google_play_accounts_removed",
-            PREF_HINT_OPENTASKS_NOT_INSTALLED = "hint_opentasks_not_installed";
+            HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED = "hint_GooglePlayAccountsRemoved",
+            HINT_OPENTASKS_NOT_INSTALLED = "hint_OpenTasksNotInstalled";
 
     private static final String ARGS_MODE = "mode";
 
@@ -49,6 +52,9 @@ public class StartupDialogFragment extends DialogFragment {
     public static StartupDialogFragment[] getStartupDialogs(Context context) {
         List<StartupDialogFragment> dialogs = new LinkedList<>();
 
+        @Cleanup ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(context);
+        Settings settings  = new Settings(dbHelper.getReadableDatabase());
+
         if (BuildConfig.VERSION_NAME.contains("-alpha") || BuildConfig.VERSION_NAME.contains("-beta"))
             dialogs.add(StartupDialogFragment.instantiate(Mode.DEVELOPMENT_VERSION));
         else {
@@ -59,13 +65,13 @@ public class StartupDialogFragment extends DialogFragment {
 
             else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP &&    // only on Android <5
                     "com.android.vending".equals(installedFrom) &&              // only when installed from Play Store
-                    App.getPreferences().getBoolean(PREF_HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, true))      // and only when "Don't show again" hasn't been clicked yet
+                    settings.getBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, true))      // and only when "Don't show again" hasn't been clicked yet
                 dialogs.add(StartupDialogFragment.instantiate(Mode.GOOGLE_PLAY_ACCOUNTS_REMOVED));
         }
 
         // OpenTasks information
         if (!LocalTaskList.tasksProviderAvailable(context.getContentResolver()) &&
-                App.getPreferences().getBoolean(PREF_HINT_OPENTASKS_NOT_INSTALLED, true))
+                settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED, true))
             dialogs.add(StartupDialogFragment.instantiate(Mode.OPENTASKS_NOT_INSTALLED));
 
         Collections.reverse(dialogs);
@@ -84,6 +90,8 @@ public class StartupDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         setCancelable(false);
+
+        final ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
 
         Mode mode = Mode.valueOf(getArguments().getString(ARGS_MODE));
         switch (mode) {
@@ -149,7 +157,8 @@ public class StartupDialogFragment extends DialogFragment {
                         .setNegativeButton(R.string.startup_dont_show_again, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                App.getPreferences().edit().putBoolean(PREF_HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, false).commit();
+                                Settings settings = new Settings(dbHelper.getWritableDatabase());
+                                settings.putBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, false);
                             }
                         })
                         .create();
@@ -174,7 +183,8 @@ public class StartupDialogFragment extends DialogFragment {
                         .setNegativeButton(R.string.startup_dont_show_again, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                App.getPreferences().edit().putBoolean(PREF_HINT_OPENTASKS_NOT_INSTALLED, false).commit();
+                                Settings settings = new Settings(dbHelper.getWritableDatabase());
+                                settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false);
                             }
                         })
                         .create();
