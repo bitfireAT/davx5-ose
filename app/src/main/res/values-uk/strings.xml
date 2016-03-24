@@ -3,10 +3,11 @@
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
   <string name="help">Допомога</string>
-  <string name="skip">Пропустити</string>
   <!--startup dialogs-->
+  <!--AboutActivity-->
   <!--global settings-->
   <!--AccountsActivity-->
+  <!--DavService-->
   <!--AppSettingsActivity-->
   <!--AccountActivity-->
   <!--AddAccountActivity-->

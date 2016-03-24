@@ -3,18 +3,93 @@
   <!--common strings-->
   <string name="app_name">ДАВдроид</string>
   <string name="help">Помоћ</string>
+  <string name="manage_accounts">Управљај налозима</string>
+  <string name="please_wait">Сачекајте…</string>
   <string name="send">Пошаљи</string>
-  <string name="skip">Прескочи</string>
   <!--startup dialogs-->
+  <string name="startup_dont_show_again">Не приказуј поново</string>
+  <string name="startup_development_version">ДАВдроид прелиминарно издање</string>
+  <string name="startup_development_version_message">Ово је развојно издање ДАВдроида. Имајте на уму да можда неће радити очекивано. Замољавамо вас за конструктивне повратне информације како бисмо га побољшали.</string>
+  <string name="startup_development_version_give_feedback">Повратне информације</string>
+  <string name="startup_donate">Подаци о отвореном кôду</string>
+  <string name="startup_donate_message">Драго нам је да користите ДАВдроид, софтвер отвореног кôда (ГПЛв3). Развој ДАВдроида није баш лак посао и захтева хиљаде радних сати, стога вас молимо да размотрите донацију.</string>
+  <string name="startup_donate_now">Прикажи страницу за донације</string>
+  <string name="startup_donate_later">Можда касније</string>
+  <string name="startup_google_play_accounts_removed">Грешка ДРМ-а Плеј продавнице</string>
+  <string name="startup_google_play_accounts_removed_message">Под одређеним околностима ДРМ Плеј продавнице може да узрокује да сви налози ДАВдроида нестане након рестарта или ажурирања ДАВдроида. Ако и само ако имате овај проблем, инсталирајте „DAVdroid JB Workaround“ са Плеј продавнице.</string>
+  <string name="startup_google_play_accounts_removed_more_info">Још информација</string>
+  <string name="startup_opentasks_not_installed">Отворени задаци нису инсталирани</string>
+  <string name="startup_opentasks_not_installed_message">Отворени задаци нису инсталирани или доступни, па ДАВдроид неће моћи да синхронизује листе задатака. Поново инсталирајте ДАВдроид и поново додајте ваше налоге након инсталације Отворених задатака.</string>
+  <string name="startup_opentasks_not_installed_install">Инсталирај Отворене задатке</string>
+  <!--AboutActivity-->
   <!--global settings-->
+  <string name="logging_davdroid_file_logging">ДАВдроид евиденција</string>
+  <string name="logging_to_external_storage">Уписивање евиденције у спољашње складиште: %s</string>
+  <string name="logging_to_external_storage_warning">Обришите записе што пре!</string>
+  <string name="logging_couldnt_create_file">Не могох да направим спољашњи фајл записа: %s</string>
+  <string name="logging_no_external_storage">Спољашње складиште није нађено</string>
   <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Отвори навигациону фиоку</string>
+  <string name="navigation_drawer_close">Затвори навигациону фиоку</string>
+  <string name="navigation_drawer_subtitle">КалДАВ/КардДАВ адаптер синхронизације</string>
+  <string name="navigation_drawer_about">О програму/лиценца</string>
+  <string name="navigation_drawer_settings">Поставке</string>
+  <string name="navigation_drawer_news_updates">Новости и ажурирања</string>
+  <string name="navigation_drawer_external_links">Вањске везе</string>
+  <string name="navigation_drawer_website">Веб-сајт</string>
+  <string name="navigation_drawer_faq">ЧПП</string>
+  <string name="navigation_drawer_forums">Заједница</string>
+  <string name="navigation_drawer_donate">Донирај</string>
+  <string name="account_list_empty">Добро дошли у ДАВдроид!\n\nМожете сада да додате КалДАВ/КардДАВ налог.</string>
+  <!--DavService-->
+  <string name="dav_service_refresh_failed">Откривање услуге није успело</string>
+  <string name="dav_service_refresh_couldnt_refresh">Не могох да освежим списак збирки</string>
   <!--AppSettingsActivity-->
+  <string name="app_settings">Поставке</string>
+  <string name="app_settings_user_interface">Корисничко сучеље</string>
+  <string name="app_settings_reset_hints">Ресетуј савете</string>
+  <string name="app_settings_reset_hints_success">Сви савети ће поново бити приказани</string>
+  <string name="app_settings_security">Безбедност</string>
+  <string name="app_settings_reset_trusted_certificates">Ресетуј поуздане сертификате</string>
+  <string name="app_settings_debug">Тражење грешака</string>
   <!--AccountActivity-->
+  <string name="account_synchronize_now">Синхронизуј одмах</string>
+  <string name="account_synchronizing_now">Синхронизујем</string>
+  <string name="account_settings">Поставке налога</string>
+  <string name="account_delete">Обриши налог</string>
+  <string name="account_delete_confirmation_title">Заиста обрисати налог?</string>
+  <string name="account_delete_confirmation_text">Све локалне копије адресара, календара и листи задатака ће бити обрисане.</string>
+  <string name="account_refresh_address_book_list">Освежи списак адресара</string>
+  <string name="account_create_new_address_book">Направи нови адресар</string>
+  <string name="account_refresh_calendar_list">Освежи списак календара</string>
+  <string name="account_create_new_calendar">Направи нови календар</string>
   <!--AddAccountActivity-->
+  <string name="login_title">Додај налог</string>
   <string name="login_type_email">Пријавите се адресом е-поште</string>
+  <string name="login_email_address">Е-адреса</string>
+  <string name="login_email_address_error">Исправна е-адреса је обавезна</string>
+  <string name="login_password">Лозинка</string>
+  <string name="login_password_required">Лозинка је обавезна</string>
   <string name="login_type_url">Пријавите се УРЛ-ом и корисничким именом</string>
+  <string name="login_url_must_be_http_or_https">УРЛ мора започињати са http(s)://</string>
+  <string name="login_url_host_name_required">Име домаћина је обавезно</string>
+  <string name="login_user_name">Корисничко име</string>
+  <string name="login_user_name_required">Корисничко име је обавезно</string>
+  <string name="login_base_url">Корени УРЛ</string>
   <string name="login_auth_preemptive">Превентивна аутентификација (препоручено, али некомпатибилно са Дигест аутентификацијом)</string>
+  <string name="login_login">Пријава</string>
+  <string name="login_back">Назад</string>
+  <string name="login_create_account">Направи налог</string>
+  <string name="login_account_name">Назив налога</string>
+  <string name="login_account_name_info">Користите вашу е-адресу за назив налога јер Андроид користи назив налога за поље ОРГАНИЗАТОР за догађаје које направите. Не можете имати два налога истог назива.</string>
+  <string name="login_account_name_required">Назив налога је обавезан</string>
+  <string name="login_account_not_created">Не могох направити налог</string>
+  <string name="login_configuration_detection">Откривање конфигурације</string>
+  <string name="login_querying_server">Сачекајте, шаљем упит серверу…</string>
+  <string name="login_no_caldav_carddav">Не могох да нађем КалДАВ или КардДАВ услугу.</string>
+  <string name="login_view_logs">Прикажи записе</string>
   <!--AccountSettingsActivity-->
+  <string name="settings_title">Поставке: %s</string>
   <string name="settings_authentication">Аутентификација</string>
   <string name="settings_username">Корисничко име</string>
   <string name="settings_enter_username">Унесите корисничко име:</string>
@@ -51,8 +126,34 @@
     <item>Свака 4 сата</item>
     <item>Једном дневно</item>
   </string-array>
+  <string name="settings_version_update">Надоградња ДАВдроид издања</string>
+  <string name="settings_version_update_settings_updated">Унутрашње поставке су ажуриране.</string>
+  <string name="settings_version_update_install_hint">Проблеми? Уклоните ДАВдроид па га поново инсталирајте.</string>
   <!--collection management-->
+  <string name="create_addressbook">Направи адресар</string>
+  <string name="create_addressbook_display_name_hint">Мој адресар</string>
+  <string name="create_calendar">Направи КалДАВ збирку</string>
+  <string name="create_calendar_display_name_hint">Мој календар</string>
+  <string name="create_calendar_time_zone">Временска зона:</string>
+  <string name="create_calendar_type">Тип збирке:</string>
+  <string name="create_calendar_type_only_events">Календар (само догађаји)</string>
+  <string name="create_calendar_type_only_tasks">Листе задатака (само задаци)</string>
+  <string name="create_calendar_type_events_and_tasks">Комбиновано (догађаји и задаци)</string>
+  <string name="create_collection_color">Боја збирке</string>
+  <string name="create_collection_creating">Правим збирку</string>
+  <string name="create_collection_display_name">Назив (наслов) ове збирке:</string>
+  <string name="create_collection_display_name_required">Наслов је обавезан</string>
+  <string name="create_collection_description">Опис (необавезан):</string>
+  <string name="create_collection_create">Направи</string>
+  <string name="delete_collection">Обриши збирку</string>
+  <string name="delete_collection_confirm_title">Да ли сте сигурни?</string>
+  <string name="delete_collection_confirm_warning">Ова збирка (%s) и сви њени подаци ће бити уклоњени са сервера.</string>
+  <string name="delete_collection_deleting_collection">Бришем збирку</string>
   <!--ExceptionInfoFragment-->
+  <string name="exception">Десила се грешка.</string>
+  <string name="exception_httpexception">Десила се ХТТП грешка.</string>
+  <string name="exception_ioexception">Десила се У/И грешка.</string>
+  <string name="exception_show_details">Прикажи детаље</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Подаци за исправљање грешака</string>
   <string name="sync_error_calendar">Синхронизација календара није успела (%s)</string>

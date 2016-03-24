@@ -4,8 +4,10 @@
   <string name="app_name">DAVdroid</string>
   <string name="help">Ajuda</string>
   <!--startup dialogs-->
+  <!--AboutActivity-->
   <!--global settings-->
   <!--AccountsActivity-->
+  <!--DavService-->
   <!--AppSettingsActivity-->
   <!--AccountActivity-->
   <!--AddAccountActivity-->
