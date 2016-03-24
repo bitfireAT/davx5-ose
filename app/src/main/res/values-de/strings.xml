@@ -23,7 +23,7 @@
   <string name="startup_opentasks_not_installed_install">OpenTasks installieren</string>
   <!--AboutActivity-->
   <string name="about_license_terms">Lizenzbedingungen</string>
-  <string name="about_license_info_no_warranty">Dieses Programm OHNE JEDE GEWÄHRLEISTUNG bereitgestellt. Es ist freie Software; Sie können es also unter bestimmten Bedingungen weiterverbreiten.</string>
+  <string name="about_license_info_no_warranty">Dieses Programm wird OHNE JEDE GEWÄHRLEISTUNG bereitgestellt. Es ist freie Software – Sie können es also unter bestimmten Bedingungen weiterverbreiten.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid Datei-Protokollierung</string>
   <string name="logging_to_external_storage">Protokollierung auf externen Speicher: %s</string>

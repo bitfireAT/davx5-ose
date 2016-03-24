@@ -73,12 +73,13 @@ public class CreateCollectionFragment extends DialogFragment implements LoaderMa
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = new ProgressDialog.Builder(getContext())
-                .setTitle(R.string.create_collection_creating)
-                .setMessage(R.string.please_wait)
-                .create();
+        ProgressDialog progress = new ProgressDialog(getContext());
+        progress.setTitle(R.string.create_collection_creating);
+        progress.setMessage(getString(R.string.please_wait));
+        progress.setIndeterminate(true);
+        progress.setCanceledOnTouchOutside(false);
         setCancelable(false);
-        return dialog;
+        return progress;
     }
 
 

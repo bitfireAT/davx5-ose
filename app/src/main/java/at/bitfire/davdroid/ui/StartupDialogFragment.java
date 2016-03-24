@@ -55,7 +55,7 @@ public class StartupDialogFragment extends DialogFragment {
         @Cleanup ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(context);
         Settings settings  = new Settings(dbHelper.getReadableDatabase());
 
-        if (BuildConfig.VERSION_NAME.contains("-alpha") || BuildConfig.VERSION_NAME.contains("-beta"))
+        if (BuildConfig.VERSION_NAME.contains("-alpha") || BuildConfig.VERSION_NAME.contains("-beta") || BuildConfig.VERSION_NAME.contains("-rc"))
             dialogs.add(StartupDialogFragment.instantiate(Mode.DEVELOPMENT_VERSION));
         else {
             // store-specific information

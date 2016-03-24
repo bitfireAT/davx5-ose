@@ -34,6 +34,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.io.File;
@@ -168,28 +169,27 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
             // begin with most specific information
 
             if (phase != -1)
-                report.append("SYNCHRONIZATION INFO\nSynchronization phase: " + phase + "\n");
+                report.append("SYNCHRONIZATION INFO\nSynchronization phase: ").append(phase).append("\n");
             if (account != null)
-                report.append("Account name: " + account.name + "\n");
+                report.append("Account name: ").append(account.name).append("\n");
             if (authority != null)
-                report.append("Authority: " + authority + "\n");
+                report.append("Authority: ").append(authority).append("\n");
 
             if (exception instanceof HttpException) {
                 HttpException http = (HttpException)exception;
                 if (http.request != null)
-                    report.append("\nHTTP REQUEST:\n" + http.request + "\n\n");
+                    report.append("\nHTTP REQUEST:\n").append(http.request).append("\n\n");
                 if (http.response != null)
-                    report.append("HTTP RESPONSE:\n" + http.response + "\n");
+                    report.append("HTTP RESPONSE:\n").append(http.response).append("\n");
             }
 
-            if (exception != null) {
-                report.append("\nSTACK TRACE:\n");
-                report.append(Log.getStackTraceString(exception));
-                report.append("\n");
-            }
+            if (exception != null)
+                report  .append("\nEXCEPTION:\n")
+                        .append(ExceptionUtils.getMessage(exception)).append("\n")
+                        .append(ExceptionUtils.getStackTrace(exception));
 
             if (logs != null)
-                report.append("\nLOGS:\n" + logs + "\n");
+                report.append("\nLOGS:\n").append(logs).append("\n");
 
             try {
                 PackageManager pm = getContext().getPackageManager();
@@ -199,30 +199,26 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                 boolean workaroundInstalled = false;
                 try {
                     workaroundInstalled = pm.getPackageInfo("at.bitfire.davdroid.jbworkaround", 0) != null;
-                } catch(PackageManager.NameNotFoundException e) {}
-                report.append(
-                        "\nSOFTWARE INFORMATION\n" +
-                                "DAVdroid version: " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ") " + new Date(BuildConfig.buildTime) + "\n" +
-                                "Installed from: " + installedFrom + "\n" +
-                                "JB Workaround installed: " + (workaroundInstalled ? "yes" : "no") + "\n\n"
-                );
+                } catch(PackageManager.NameNotFoundException ignored) {}
+                report.append("\nSOFTWARE INFORMATION\n" +
+                                "DAVdroid version: ").append(BuildConfig.VERSION_NAME).append(" (").append(BuildConfig.VERSION_CODE).append(") ").append(new Date(BuildConfig.buildTime)).append("\n")
+                                .append("Installed from: ").append(installedFrom).append("\n")
+                                .append("JB Workaround installed: ").append(workaroundInstalled ? "yes" : "no").append("\n\n");
             } catch(Exception ex) {
                 App.log.log(Level.SEVERE, "Couldn't get software information", ex);
             }
 
             report.append(
                     "CONFIGURATION\n" +
-                            "System-wide synchronization: " + (ContentResolver.getMasterSyncAutomatically() ? "automatically" : "manually") + "\n"
-            );
+                    "System-wide synchronization: ").append(ContentResolver.getMasterSyncAutomatically() ? "automatically" : "manually").append("\n");
             AccountManager accountManager = AccountManager.get(getContext());
             for (Account acct : accountManager.getAccountsByType(Constants.ACCOUNT_TYPE)) {
                 AccountSettings settings = new AccountSettings(getContext(), acct);
                 report.append(
-                        "Account: " + acct.name + "\n" +
-                                "  Address book sync. interval: " + syncStatus(settings, ContactsContract.AUTHORITY) + "\n" +
-                                "  Calendar     sync. interval: " + syncStatus(settings, CalendarContract.AUTHORITY) + "\n" +
-                                "  OpenTasks    sync. interval: " + syncStatus(settings, "org.dmfs.tasks") + "\n"
-                        );
+                        "Account: ").append(acct.name).append("\n" +
+                                "  Address book sync. interval: ").append(syncStatus(settings, ContactsContract.AUTHORITY)).append("\n" +
+                                "  Calendar     sync. interval: ").append(syncStatus(settings, CalendarContract.AUTHORITY)).append("\n" +
+                                "  OpenTasks    sync. interval: ").append(syncStatus(settings, "org.dmfs.tasks")).append("\n");
             }
             report.append("\n");
 
@@ -234,8 +230,8 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
             try {
                 report.append(
                         "SYSTEM INFORMATION\n" +
-                                "Android version: " + Build.VERSION.RELEASE + " (" + Build.DISPLAY + ")\n" +
-                                "Device: " + WordUtils.capitalize(Build.MANUFACTURER) + " " + Build.MODEL + " (" + Build.DEVICE + ")\n\n"
+                                "Android version: ").append(Build.VERSION.RELEASE).append(" (").append(Build.DISPLAY).append(")\n" +
+                                "Device: ").append(WordUtils.capitalize(Build.MANUFACTURER)).append(" ").append(Build.MODEL).append(" (").append(Build.DEVICE).append(")\n\n"
                 );
             } catch (Exception ex) {
                 App.log.log(Level.SEVERE, "Couldn't get system details", ex);
