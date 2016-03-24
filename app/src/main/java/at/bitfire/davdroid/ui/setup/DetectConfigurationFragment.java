@@ -39,14 +39,13 @@ public class DetectConfigurationFragment extends DialogFragment implements Loade
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        ProgressDialog dialog = new ProgressDialog(getActivity());
-        dialog.setCanceledOnTouchOutside(false);
+        ProgressDialog progress = new ProgressDialog(getActivity());
+        progress.setTitle(R.string.login_configuration_detection);
+        progress.setMessage(getString(R.string.login_querying_server));
+        progress.setIndeterminate(true);
+        progress.setCanceledOnTouchOutside(false);
         setCancelable(false);
-
-        dialog.setTitle(R.string.login_configuration_detection);
-        dialog.setIndeterminate(true);
-        dialog.setMessage(getString(R.string.login_querying_server));
-        return dialog;
+        return progress;
     }
 
     @Override

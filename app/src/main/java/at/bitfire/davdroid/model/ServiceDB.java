@@ -112,7 +112,7 @@ public class ServiceDB {
                     Collections.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     Collections.SERVICE_ID + " INTEGER NOT NULL REFERENCES " + Services._TABLE +" ON DELETE CASCADE," +
                     Collections.URL + " TEXT NOT NULL," +
-                    Collections.READ_ONLY + " INTEGER NOT NULL," +
+                    Collections.READ_ONLY + " INTEGER DEFAULT 0 NOT NULL," +
                     Collections.DISPLAY_NAME + " TEXT NULL," +
                     Collections.DESCRIPTION + " TEXT NULL," +
                     Collections.COLOR + " INTEGER NULL," +
@@ -137,12 +137,12 @@ public class ServiceDB {
             @Cleanup Cursor cursorTables = db.query("sqlite_master", new String[] { "name" }, "type='table'", null, null, null, null);
             while (cursorTables.moveToNext()) {
                 String table = cursorTables.getString(0);
-                sb.append("\t").append(table).append("\n");
+                sb.append(table).append("\n");
                 @Cleanup Cursor cursor = db.query(table, null, null, null, null, null, null);
 
                 // print columns
                 int cols = cursor.getColumnCount();
-                sb.append("\t\t| ");
+                sb.append("\t| ");
                 for (int i = 0; i < cols; i++) {
                     sb.append(" ");
                     sb.append(cursor.getColumnName(i));
@@ -152,7 +152,7 @@ public class ServiceDB {
 
                 // print rows
                 while (cursor.moveToNext()) {
-                    sb.append("\t\t| ");
+                    sb.append("\t| ");
                     for (int i = 0; i < cols; i++) {
                         sb.append(" ");
                         try {
@@ -171,6 +171,7 @@ public class ServiceDB {
                     }
                     sb.append("\n");
                 }
+                sb.append("----------\n");
             }
             db.endTransaction();
         }

@@ -93,6 +93,8 @@ public class AccountSettings {
                         .setContentTitle(context.getString(R.string.settings_version_update))
                         .setContentText(context.getString(R.string.settings_version_update_settings_updated))
                         .setSubText(context.getString(R.string.settings_version_update_install_hint))
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText(context.getString(R.string.settings_version_update_settings_updated)))
                         .setCategory(NotificationCompat.CATEGORY_SYSTEM)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setLocalOnly(true)
