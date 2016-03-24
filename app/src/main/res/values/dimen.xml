@@ -8,8 +8,6 @@
   -->
 
 <resources>
-    <dimen name="leftcol_width">320dp</dimen>
-
     <dimen name="activity_margin">16dp</dimen>
 
     <dimen name="fab_margin">16dp</dimen>

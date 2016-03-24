@@ -13,12 +13,12 @@
     <item android:id="@+id/sync_now"
           android:icon="@drawable/ic_sync_dark"
           android:title="@string/account_synchronize_now"
-          app:showAsAction="always"/>
+          app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/settings"
           android:icon="@drawable/ic_settings_dark"
           android:title="@string/account_settings"
-          app:showAsAction="always"/>
+          app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/delete_account"
           android:title="@string/account_delete"/>

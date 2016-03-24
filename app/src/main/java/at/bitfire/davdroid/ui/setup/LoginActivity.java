@@ -22,12 +22,11 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login_activity);
 
         if (savedInstanceState == null)
             // first call, add fragment
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment, new LoginCredentialsFragment())
+                    .replace(android.R.id.content, new LoginCredentialsFragment())
                     .commit();
 
     }

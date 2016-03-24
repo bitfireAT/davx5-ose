@@ -35,14 +35,18 @@ android {
 
     lintOptions {
         disable 'ExtraTranslation'
+        disable 'GoogleAppIndexingWarning'      // we don't need Google indexing, thanks
+        disable 'GradleDependency'
+        disable 'GradleDynamicVersion'
         disable 'IconColors'
         disable 'IconLauncherShape'
         disable 'IconMissingDensityFolder'
-        disable 'InconsistentLayout'
-        disable 'MergeRootFrame'
+        //disable 'InconsistentLayout'
         disable 'MissingTranslation'
-        disable 'OldTargetApi'
+        disable 'OldTargetApi'      // Android 6 permission model not implemented yet
+        disable 'Recycle'           // doesn't understand Lombok's @Cleanup
         disable 'RtlEnabled'
+        disable 'RtlHardcoded'
         disable 'Typos'
     }
     packagingOptions {

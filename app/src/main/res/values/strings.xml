@@ -15,7 +15,6 @@
     <string name="manage_accounts">Manage accounts</string>
     <string name="please_wait">Please wait …</string>
     <string name="send">Send</string>
-    <string name="skip">Skip</string>
 
     <!-- startup dialogs -->
     <string name="startup_dont_show_again">Don\'t show again</string>
