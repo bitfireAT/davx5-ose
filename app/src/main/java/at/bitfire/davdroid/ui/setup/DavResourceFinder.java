@@ -75,6 +75,7 @@ public class DavResourceFinder {
         this.credentials = credentials;
 
         log = Logger.getLogger("davdroid.DavResourceFinder");
+        log.setLevel(Level.FINEST);
         log.addHandler(logBuffer);
 
         httpClient = HttpClient.create(log);
