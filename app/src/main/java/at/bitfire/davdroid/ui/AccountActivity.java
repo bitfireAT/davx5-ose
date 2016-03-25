@@ -66,6 +66,7 @@ import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.DavService;
+import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
@@ -275,6 +276,12 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     public void onLoadFinished(Loader<AccountInfo> loader, final AccountInfo info) {
         accountInfo = info;
 
+        if (accountInfo == null) {
+            // account doesn't exist anymore
+            finish();
+            return;
+        }
+
         CardView card = (CardView)findViewById(R.id.carddav);
         if (info.carddav != null) {
             ProgressBar progress = (ProgressBar)findViewById(R.id.carddav_refreshing);
@@ -368,9 +375,13 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
         public AccountInfo loadInBackground() {
             // peek into AccountSettings to call possible 0.9 -> 1.0 migration
             // The next line can be removed as soon as migration from 0.9 is not required anymore!
-            new AccountSettings(getContext(), new Account(accountName, Constants.ACCOUNT_TYPE));
+            try {
+                new AccountSettings(getContext(), new Account(accountName, Constants.ACCOUNT_TYPE));
+            } catch (InvalidAccountException e) {
+                App.log.log(Level.INFO, "Account doesn't exist (anymore)", e);
+                return null;
+            }
 
-            // get account info
             AccountInfo info = new AccountInfo();
             try {
                 SQLiteDatabase db = dbHelper.getReadableDatabase();

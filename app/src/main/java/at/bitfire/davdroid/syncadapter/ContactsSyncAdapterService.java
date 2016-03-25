@@ -24,9 +24,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.List;
+import java.util.logging.Level;
 
 import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.model.ServiceDB.Collections;
@@ -55,10 +57,14 @@ public class ContactsSyncAdapterService extends SyncAdapterService {
             Long service = getService(account);
             if (service != null) {
                 CollectionInfo remote = remoteAddressBook(service);
-                if (remote != null) {
-                    ContactsSyncManager syncManager = new ContactsSyncManager(getContext(), account, extras, authority, provider, syncResult, remote);
-                    syncManager.performSync();
-                } else
+                if (remote != null)
+                    try {
+                        ContactsSyncManager syncManager = new ContactsSyncManager(getContext(), account, extras, authority, provider, syncResult, remote);
+                        syncManager.performSync();
+                    } catch (InvalidAccountException e) {
+                        App.log.log(Level.SEVERE, "Couldn't get account settings", e);
+                    }
+                else
                     App.log.info("No address book collection selected for synchronization");
             }
 

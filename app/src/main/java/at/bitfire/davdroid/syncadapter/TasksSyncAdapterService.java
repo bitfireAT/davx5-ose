@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB.Collections;
 import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
@@ -68,6 +69,8 @@ public class TasksSyncAdapterService extends SyncAdapterService {
                 }
             } catch (CalendarStorageException e) {
                 App.log.log(Level.SEVERE, "Couldn't enumerate local task lists", e);
+            } catch (InvalidAccountException e) {
+                App.log.log(Level.SEVERE, "Couldn't get account settings", e);
             } finally {
                 db.close();
             }

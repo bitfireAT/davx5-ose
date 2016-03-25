@@ -29,6 +29,7 @@ import java.io.IOException;
 import at.bitfire.dav4android.DavResource;
 import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.davdroid.HttpClient;
+import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
@@ -109,10 +110,10 @@ public class DeleteCollectionFragment extends DialogFragment implements LoaderMa
 
         @Override
         public Exception loadInBackground() {
-            OkHttpClient httpClient = HttpClient.create(getContext(), account);
-
-            DavResource collection = new DavResource(httpClient, HttpUrl.parse(collectionInfo.url));
             try {
+                OkHttpClient httpClient = HttpClient.create(getContext(), account);
+                DavResource collection = new DavResource(httpClient, HttpUrl.parse(collectionInfo.url));
+
                 // delete collection from server
                 collection.delete(null);
 
@@ -121,7 +122,7 @@ public class DeleteCollectionFragment extends DialogFragment implements LoaderMa
                 db.delete(ServiceDB.Collections._TABLE, ServiceDB.Collections.ID + "=?", new String[] { String.valueOf(collectionInfo.id) });
 
                 return null;
-            } catch (IOException|HttpException e) {
+            } catch (InvalidAccountException|IOException|HttpException e) {
                 return e;
             } finally {
                 dbHelper.close();

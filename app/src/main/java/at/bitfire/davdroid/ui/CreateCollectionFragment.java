@@ -36,6 +36,7 @@ import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.DavUtils;
 import at.bitfire.davdroid.HttpClient;
+import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
@@ -208,9 +209,10 @@ public class CreateCollectionFragment extends DialogFragment implements LoaderMa
 
             ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
 
-            OkHttpClient client = HttpClient.create(getContext(), account);
-            DavResource collection = new DavResource(client, HttpUrl.parse(info.url));
             try {
+                OkHttpClient client = HttpClient.create(getContext(), account);
+                DavResource collection = new DavResource(client, HttpUrl.parse(info.url));
+
                 // create collection on remote server
                 collection.mkCol(writer.toString());
 
@@ -237,7 +239,7 @@ public class CreateCollectionFragment extends DialogFragment implements LoaderMa
                 ContentValues values = info.toDB();
                 values.put(ServiceDB.Collections.SERVICE_ID, serviceID);
                 db.insert(ServiceDB.Collections._TABLE, null, values);
-            } catch(IOException|HttpException|IllegalStateException e) {
+            } catch(InvalidAccountException|IOException|HttpException|IllegalStateException e) {
                 return e;
             } finally {
                 dbHelper.close();

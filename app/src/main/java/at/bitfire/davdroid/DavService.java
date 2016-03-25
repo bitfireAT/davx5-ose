@@ -202,7 +202,7 @@ public class DavService extends Service {
                             DavResource group = new DavResource(httpClient, dav.location.resolve(href));
                             try {
                                 queryHomeSets(serviceType, group, homeSets);
-                            } catch (HttpException|DavException e) {
+                            } catch(HttpException|DavException e) {
                                 App.log.log(Level.WARNING, "Couldn't query member group ", e);
                             }
                         }
@@ -217,7 +217,7 @@ public class DavService extends Service {
                     if (info.selected)
                         selectedCollections.add(HttpUrl.parse(info.url));
 
-                for (Iterator<HttpUrl> iterator = homeSets.iterator(); iterator.hasNext();) {
+                for (Iterator<HttpUrl> iterator = homeSets.iterator(); iterator.hasNext(); ) {
                     HttpUrl homeSet = iterator.next();
                     App.log.fine("Listing home set " + homeSet);
 
@@ -241,7 +241,7 @@ public class DavService extends Service {
                 }
 
                 // check/refresh unconfirmed collections
-                for (Iterator<Map.Entry<HttpUrl, CollectionInfo>> iterator = collections.entrySet().iterator(); iterator.hasNext();) {
+                for (Iterator<Map.Entry<HttpUrl, CollectionInfo>> iterator = collections.entrySet().iterator(); iterator.hasNext(); ) {
                     Map.Entry<HttpUrl, CollectionInfo> entry = iterator.next();
                     HttpUrl url = entry.getKey();
                     CollectionInfo info = entry.getValue();
@@ -282,7 +282,9 @@ public class DavService extends Service {
                     db.endTransaction();
                 }
 
-            } catch (IOException|HttpException|DavException e) {
+            } catch(InvalidAccountException e) {
+                App.log.log(Level.SEVERE, "Invalid account", e);
+            } catch(IOException|HttpException|DavException e) {
                 App.log.log(Level.SEVERE, "Couldn't refresh collection list", e);
 
                 Intent debugIntent = new Intent(DavService.this, DebugInfoActivity.class);
@@ -387,7 +389,7 @@ public class DavService extends Service {
         }
 
         private void saveCollections(Iterable<CollectionInfo> collections) {
-            db.delete(Collections._TABLE, HomeSets.SERVICE_ID + "=?", new String[]{String.valueOf(service)});
+            db.delete(Collections._TABLE, HomeSets.SERVICE_ID + "=?", new String[] { String.valueOf(service) });
             for (CollectionInfo collection : collections) {
                 ContentValues values = collection.toDB();
                 App.log.log(Level.FINE, "Saving collection", values);

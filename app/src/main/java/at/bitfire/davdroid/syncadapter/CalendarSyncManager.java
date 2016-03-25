@@ -43,6 +43,7 @@ import at.bitfire.dav4android.property.GetETag;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.davdroid.resource.LocalEvent;
@@ -62,7 +63,7 @@ public class CalendarSyncManager extends SyncManager {
     protected static final int MAX_MULTIGET = 20;
 
 
-    public CalendarSyncManager(Context context, Account account, Bundle extras, String authority, SyncResult result, LocalCalendar calendar) {
+    public CalendarSyncManager(Context context, Account account, Bundle extras, String authority, SyncResult result, LocalCalendar calendar) throws InvalidAccountException {
         super(Constants.NOTIFICATION_CALENDAR_SYNC, context, account, extras, authority, result);
         localCollection = calendar;
     }

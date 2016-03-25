@@ -39,6 +39,7 @@ import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.HttpClient;
+import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.resource.LocalAddressBook;
@@ -68,7 +69,7 @@ public class ContactsSyncManager extends SyncManager {
     private boolean hasVCard4;
 
 
-    public ContactsSyncManager(Context context, Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult result, CollectionInfo remote) {
+    public ContactsSyncManager(Context context, Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult result, CollectionInfo remote) throws InvalidAccountException {
         super(Constants.NOTIFICATION_CONTACTS_SYNC, context, account, extras, authority, result);
         this.provider = provider;
         this.remote = remote;
@@ -291,7 +292,7 @@ public class ContactsSyncManager extends SyncManager {
                 return null;
             }
 
-            OkHttpClient resourceClient = HttpClient.create(context, null);
+            OkHttpClient resourceClient = HttpClient.create();
 
             // authenticate only against a certain host, and only upon request
             resourceClient = HttpClient.addAuthentication(resourceClient, baseUrl.host(), settings.username(), settings.password());

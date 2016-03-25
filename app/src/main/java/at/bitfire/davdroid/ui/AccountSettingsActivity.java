@@ -24,7 +24,11 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.SwitchPreferenceCompat;
 import android.view.MenuItem;
 
+import java.util.logging.Level;
+
 import at.bitfire.davdroid.AccountSettings;
+import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.ical4android.TaskProvider;
 
@@ -77,7 +81,15 @@ public class AccountSettingsActivity extends AppCompatActivity {
         }
 
         public void refresh() {
-            final AccountSettings settings = new AccountSettings(getActivity(), account);
+            final AccountSettings settings;
+
+            try {
+                settings = new AccountSettings(getActivity(), account);
+            }  catch(InvalidAccountException e) {
+                App.log.log(Level.INFO, "Account is invalid or doesn't exist (anymore)", e);
+                getActivity().finish();
+                return;
+            }
 
             // category: authentication
             final EditTextPreference prefUserName = (EditTextPreference)findPreference("username");

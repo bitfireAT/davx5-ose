@@ -45,6 +45,7 @@ import at.bitfire.dav4android.property.DisplayName;
 import at.bitfire.dav4android.property.ResourceType;
 import at.bitfire.dav4android.property.SupportedCalendarComponentSet;
 import at.bitfire.davdroid.HttpClient;
+import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.log.StringHandler;
 import at.bitfire.davdroid.model.CollectionInfo;
 import lombok.RequiredArgsConstructor;
@@ -76,7 +77,7 @@ public class DavResourceFinder {
         log = Logger.getLogger("davdroid.DavResourceFinder");
         log.addHandler(logBuffer);
 
-        httpClient = HttpClient.create(context, null, log);
+        httpClient = HttpClient.create(log);
         httpClient = HttpClient.addAuthentication(httpClient, credentials.userName, credentials.password, credentials.authPreemptive);
 	}
 
