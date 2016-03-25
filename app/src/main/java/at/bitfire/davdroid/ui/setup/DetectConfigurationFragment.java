@@ -21,6 +21,8 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 
+import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.ui.DebugInfoActivity;
 import at.bitfire.davdroid.ui.setup.DavResourceFinder.Configuration;
@@ -62,17 +64,20 @@ public class DetectConfigurationFragment extends DialogFragment implements Loade
 
     @Override
     public void onLoadFinished(Loader<Configuration> loader, Configuration data) {
-        if (data.calDAV == null && data.cardDAV == null)
-            // no service found: show error message
-            getFragmentManager().beginTransaction()
-                    .add(NothingDetectedFragment.newInstance(data.logs), null)
-                    .commitAllowingStateLoss();
-        else
-            // service found: continue
-            getFragmentManager().beginTransaction()
-                    .replace(android.R.id.content, AccountDetailsFragment.newInstance(data))
-                    .addToBackStack(null)
-                    .commitAllowingStateLoss();
+        if (data != null) {
+            if (data.calDAV == null && data.cardDAV == null)
+                // no service found: show error message
+                getFragmentManager().beginTransaction()
+                        .add(NothingDetectedFragment.newInstance(data.logs), null)
+                        .commitAllowingStateLoss();
+            else
+                // service found: continue
+                getFragmentManager().beginTransaction()
+                        .replace(android.R.id.content, AccountDetailsFragment.newInstance(data))
+                        .addToBackStack(null)
+                        .commitAllowingStateLoss();
+        } else
+            App.log.severe("Configuration detection failed");
 
         dismissAllowingStateLoss();
     }
@@ -94,6 +99,7 @@ public class DetectConfigurationFragment extends DialogFragment implements Loade
         }
 
         @Override
+        @NonNull
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             return new AlertDialog.Builder(getActivity())
                     .setTitle(R.string.login_configuration_detection)
@@ -134,8 +140,7 @@ public class DetectConfigurationFragment extends DialogFragment implements Loade
 
         @Override
         public Configuration loadInBackground() {
-            DavResourceFinder finder = new DavResourceFinder(context, credentials);
-            return finder.findInitialConfiguration();
+            return new DavResourceFinder(context, credentials).findInitialConfiguration();
         }
     }
 }

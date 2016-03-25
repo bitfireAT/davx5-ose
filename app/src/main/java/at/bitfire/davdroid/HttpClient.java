@@ -43,7 +43,33 @@ public class HttpClient {
     private HttpClient() {
     }
 
-    public static OkHttpClient create(Context context, Account account, @NonNull final Logger logger) {
+    public static OkHttpClient create(@NonNull Context context, @NonNull Account account, @NonNull final Logger logger) throws InvalidAccountException {
+        OkHttpClient.Builder builder = defaultBuilder(logger);
+
+        // use account settings for authentication and logging
+        AccountSettings settings = new AccountSettings(context, account);
+
+        if (settings.preemptiveAuth())
+            builder.addNetworkInterceptor(new PreemptiveAuthenticationInterceptor(settings.username(), settings.password()));
+        else
+            builder.authenticator(new BasicDigestAuthenticator(null, settings.username(), settings.password()));
+
+        return builder.build();
+    }
+
+    public static OkHttpClient create(@NonNull Logger logger) {
+        return defaultBuilder(logger).build();
+    }
+
+    public static OkHttpClient create(@NonNull Context context, @NonNull Account account) throws InvalidAccountException {
+        return create(context, account, App.log);
+    }
+
+    public static OkHttpClient create() {
+        return create(App.log);
+    }
+
+    private static OkHttpClient.Builder defaultBuilder(@NonNull final Logger logger) {
         OkHttpClient.Builder builder = client.newBuilder();
 
         // use MemorizingTrustManager to manage self-signed certificates
@@ -66,16 +92,7 @@ public class HttpClient {
         // add cookie store for non-persistent cookies (some services like Horde use cookies for session tracking)
         builder.cookieJar(MemoryCookieStore.INSTANCE);
 
-        if (context != null && account != null) {
-            // use account settings for authentication and logging
-            AccountSettings settings = new AccountSettings(context, account);
-
-            if (settings.preemptiveAuth())
-                builder.addNetworkInterceptor(new PreemptiveAuthenticationInterceptor(settings.username(), settings.password()));
-            else
-                builder.authenticator(new BasicDigestAuthenticator(null, settings.username(), settings.password()));
-        }
-
+        // add network logging, if requested
         if (logger.isLoggable(Level.FINEST)) {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
                 @Override
@@ -87,11 +104,7 @@ public class HttpClient {
             builder.addInterceptor(loggingInterceptor);
         }
 
-        return builder.build();
-    }
-
-    public static OkHttpClient create(Context context, Account account) {
-        return create(context, account, App.log);
+        return builder;
     }
 
     private static OkHttpClient.Builder addAuthentication(@NonNull OkHttpClient.Builder builder, @NonNull String username, @NonNull String password, boolean preemptive) {

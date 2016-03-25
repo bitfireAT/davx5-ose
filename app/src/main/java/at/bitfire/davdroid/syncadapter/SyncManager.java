@@ -42,6 +42,7 @@ import at.bitfire.dav4android.property.GetETag;
 import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.HttpClient;
+import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalCollection;
 import at.bitfire.davdroid.resource.LocalResource;
@@ -99,7 +100,7 @@ abstract public class SyncManager {
 
 
 
-    public SyncManager(int notificationId, Context context, Account account, Bundle extras, String authority, SyncResult syncResult) {
+    public SyncManager(int notificationId, Context context, Account account, Bundle extras, String authority, SyncResult syncResult) throws InvalidAccountException {
         this.context = context;
         this.account = account;
         this.extras = extras;

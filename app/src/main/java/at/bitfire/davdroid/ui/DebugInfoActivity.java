@@ -48,6 +48,7 @@ import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.ServiceDB;
 import lombok.Cleanup;
@@ -185,7 +186,6 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
 
             if (exception != null)
                 report  .append("\nEXCEPTION:\n")
-                        .append(ExceptionUtils.getMessage(exception)).append("\n")
                         .append(ExceptionUtils.getStackTrace(exception));
 
             if (logs != null)
@@ -212,14 +212,17 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                     "CONFIGURATION\n" +
                     "System-wide synchronization: ").append(ContentResolver.getMasterSyncAutomatically() ? "automatically" : "manually").append("\n");
             AccountManager accountManager = AccountManager.get(getContext());
-            for (Account acct : accountManager.getAccountsByType(Constants.ACCOUNT_TYPE)) {
-                AccountSettings settings = new AccountSettings(getContext(), acct);
-                report.append(
-                        "Account: ").append(acct.name).append("\n" +
-                                "  Address book sync. interval: ").append(syncStatus(settings, ContactsContract.AUTHORITY)).append("\n" +
-                                "  Calendar     sync. interval: ").append(syncStatus(settings, CalendarContract.AUTHORITY)).append("\n" +
-                                "  OpenTasks    sync. interval: ").append(syncStatus(settings, "org.dmfs.tasks")).append("\n");
-            }
+            for (Account acct : accountManager.getAccountsByType(Constants.ACCOUNT_TYPE))
+                try {
+                    AccountSettings settings = new AccountSettings(getContext(), acct);
+                    report.append(
+                            "Account: ").append(acct.name).append("\n" +
+                                    "  Address book sync. interval: ").append(syncStatus(settings, ContactsContract.AUTHORITY)).append("\n" +
+                                    "  Calendar     sync. interval: ").append(syncStatus(settings, CalendarContract.AUTHORITY)).append("\n" +
+                                    "  OpenTasks    sync. interval: ").append(syncStatus(settings, "org.dmfs.tasks")).append("\n");
+                } catch(InvalidAccountException e) {
+                    report.append(acct).append(" is invalid (unsupported settings version) or does not exist\n");
+                }
             report.append("\n");
 
             report.append("SQLITE DUMP\n");

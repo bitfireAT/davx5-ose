@@ -26,7 +26,7 @@ public class HttpClientTest extends InstrumentationTestCase {
 
     @Override
     public void setUp() throws IOException {
-        httpClient = HttpClient.create(getInstrumentation().getTargetContext().getApplicationContext(), null);
+        httpClient = HttpClient.create();
 
         server = new MockWebServer();
         server.start();

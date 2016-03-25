@@ -92,15 +92,16 @@ public class AccountDetailsFragment extends Fragment {
     protected boolean createAccount(String accountName, DavResourceFinder.Configuration config) {
         Account account = new Account(accountName, Constants.ACCOUNT_TYPE);
 
-        App.log.log(Level.INFO, "Creating account " + accountName + " with initial config", config);
-
         // create Android account
-        AccountManager accountManager = AccountManager.get(getContext());
         Bundle userData = AccountSettings.initialUserData(config.userName, config.preemptive);
+        App.log.log(Level.INFO, "Creating Android account with initial config", new Object[] { account, userData });
+
+        AccountManager accountManager = AccountManager.get(getContext());
         if (!accountManager.addAccountExplicitly(account, config.password, userData))
             return false;
 
         // add entries for account to service DB
+        App.log.log(Level.INFO, "Writing account configuration to database", config);
         @Cleanup OpenHelper dbHelper = new OpenHelper(getContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.beginTransactionNonExclusive();

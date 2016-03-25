@@ -20,8 +20,11 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import java.util.logging.Level;
+
 import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.model.ServiceDB;
 
 public abstract class SyncAdapterService extends Service {
@@ -62,7 +65,11 @@ public abstract class SyncAdapterService extends Service {
             Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
 
             // peek into AccountSettings to cause possible migration (v0.9 -> v1.0)
-            new AccountSettings(getContext(), account);
+            try {
+                new AccountSettings(getContext(), account);
+            } catch (InvalidAccountException e) {
+                App.log.log(Level.SEVERE, "Couldn't check for updated account settings", e);
+            }
         }
     }
 

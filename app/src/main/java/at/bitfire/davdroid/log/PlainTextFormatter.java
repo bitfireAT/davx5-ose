@@ -40,16 +40,14 @@ public class PlainTextFormatter extends Formatter {
 
         builder.append(String.format("[%s] %s", shortClassName(r.getSourceClassName()), r.getMessage()));
 
-        if (r.getThrown() != null) {
-            Throwable thrown = r.getThrown();
-            builder.append("\nEXCEPTION ").append(ExceptionUtils.getMessage(thrown));
-            builder.append("\tstrack trace = ").append(ExceptionUtils.getStackTrace(thrown));
-        }
+        if (r.getThrown() != null)
+            builder .append("\nEXCEPTION ")
+                    .append(ExceptionUtils.getStackTrace(r.getThrown()));
 
         if (r.getParameters() != null) {
             int idx = 1;
             for (Object param : r.getParameters())
-                builder.append("\n\tPARAMETER #").append(idx).append(" = ").append(param);
+                builder.append("\n\tPARAMETER #").append(idx++).append(" = ").append(param);
         }
 
         if (!logcat)

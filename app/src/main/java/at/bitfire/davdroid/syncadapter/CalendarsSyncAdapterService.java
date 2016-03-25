@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB.Collections;
 import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
@@ -64,6 +65,9 @@ public class CalendarsSyncAdapterService extends SyncAdapterService {
                 }
             } catch (CalendarStorageException e) {
                 App.log.log(Level.SEVERE, "Couldn't enumerate local calendars", e);
+                syncResult.databaseError = true;
+            } catch (InvalidAccountException e) {
+                App.log.log(Level.SEVERE, "Couldn't get account settings", e);
             }
 
             App.log.info("Calendar sync complete");
