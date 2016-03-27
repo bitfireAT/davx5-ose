@@ -22,6 +22,8 @@
   <string name="startup_opentasks_not_installed_message">OpenTasks-app\'en er ikke installeret eller kan ikke tilgås, så DAVdroid vil ikke være i stand til at opdatere opgavelister. Geninstaller DAVdroid og tilføj dine konti igen efter installation af OpenTasks.</string>
   <string name="startup_opentasks_not_installed_install">Installer OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_license_terms">Licensforhold</string>
+  <string name="about_license_info_no_warranty">Dette program leveres ABSOLUT UDEN GARANTI. Det er fri software, og du er velkommen til at videredistribuere det under visse betingelse.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid fil-logning</string>
   <string name="logging_to_external_storage">Logger til eksternt datalager: %s</string>
@@ -34,6 +36,7 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync-adapter</string>
   <string name="navigation_drawer_about">Om / Licens</string>
   <string name="navigation_drawer_settings">Indstillinger</string>
+  <string name="navigation_drawer_news_updates">Nyheder &amp; opdateringer</string>
   <string name="navigation_drawer_external_links">Eksterne links</string>
   <string name="navigation_drawer_website">Hjemmeside</string>
   <string name="navigation_drawer_faq">FAQ</string>
@@ -41,6 +44,8 @@
   <string name="navigation_drawer_donate">Donation</string>
   <string name="account_list_empty">Velkommen til DAVdroid!\n\nDu kan nu tilføje en CaDAV/CardDAV-konto.</string>
   <!--DavService-->
+  <string name="dav_service_refresh_failed">Registrering af tjeneste kunne ikke foretages</string>
+  <string name="dav_service_refresh_couldnt_refresh">Kunne opdatere liste over sæt</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Indstillinger</string>
   <string name="app_settings_user_interface">Brugerflade</string>
@@ -55,6 +60,11 @@
     <item quantity="other">%d kke-accepterede certifikater</item>
   </plurals>
   <string name="app_settings_debug">Debugging</string>
+  <string name="app_settings_log_to_external_storage">Log til ekstern fil</string>
+  <string name="app_settings_log_to_external_storage_on">Logger til eksternt lager (hvis muligt)</string>
+  <string name="app_settings_log_to_external_storage_off">Ekstern logning deaktiveret</string>
+  <string name="app_settings_show_debug_info">Vis debug-info</string>
+  <string name="app_settings_show_debug_info_details">Vis/del software og opsætningsoplysninger</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Synkroniser nu</string>
   <string name="account_synchronizing_now">Synkroniserer nu</string>

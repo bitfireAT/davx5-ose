@@ -22,6 +22,8 @@
   <string name="startup_opentasks_not_installed_message">O aplicativo OpenTasks não está instalado ou está inacessível, não sendo possível sincronizar suas listas de tarefas com o DAVdroid. Reinstale o DAVdroid e então adicione suas contas novamente depois da instalação do OpenTasks.</string>
   <string name="startup_opentasks_not_installed_install">Instalar o OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_license_terms">Termos da Licença</string>
+  <string name="about_license_info_no_warranty">Este programa é distribuído SEM NENHUMA GARANTIA. Ele é software livre e pode ser redistribuído sob algumas condições.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">Registro do arquivo do DAVdroid</string>
   <string name="logging_to_external_storage">Registrando no arquivo externo: %s</string>
@@ -34,6 +36,7 @@
   <string name="navigation_drawer_subtitle">Adaptador de sincronização CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Sobre / Licença</string>
   <string name="navigation_drawer_settings">Configurações</string>
+  <string name="navigation_drawer_news_updates">Novidades e atualizações</string>
   <string name="navigation_drawer_external_links">Links externos</string>
   <string name="navigation_drawer_website">Site na Web</string>
   <string name="navigation_drawer_faq">Perguntas fequentes</string>
@@ -41,6 +44,8 @@
   <string name="navigation_drawer_donate">Doações</string>
   <string name="account_list_empty">Bem-vindo ao DAVdroid!\n\nVocê pode adicionar uma conta CalDAV/CardDAV agora.</string>
   <!--DavService-->
+  <string name="dav_service_refresh_failed">Falha na detecção do serviço</string>
+  <string name="dav_service_refresh_couldnt_refresh">Não foi possível atualizar a lista da coleção</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Configurações</string>
   <string name="app_settings_user_interface">Interface de usuário</string>
@@ -55,6 +60,11 @@
     <item quantity="other">Retirada a confiança de %d certificados</item>
   </plurals>
   <string name="app_settings_debug">Depuração</string>
+  <string name="app_settings_log_to_external_storage">Registrar em arquivo externo</string>
+  <string name="app_settings_log_to_external_storage_on">Registrando no armazenamento externo (se disponível)</string>
+  <string name="app_settings_log_to_external_storage_off">O registro em arquivo externo está desativado</string>
+  <string name="app_settings_show_debug_info">Mostrar informações de depuração</string>
+  <string name="app_settings_show_debug_info_details">Exibir/compartilhar o software e os detalhes da configuração</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Sincronizar agora</string>
   <string name="account_synchronizing_now">Sincronizando agora</string>
