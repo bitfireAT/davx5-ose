@@ -22,6 +22,8 @@
   <string name="startup_opentasks_not_installed_message">OpenTasks アプリがインストールされていないか、アクセスできないため、DAVdroid は、タスクリストを同期することができません。 OpenTasks をインストールした後、DAVdroidを再インストールして、再度アカウントを追加してください。</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks をインストール</string>
   <!--AboutActivity-->
+  <string name="about_license_terms">ライセンス規約</string>
+  <string name="about_license_info_no_warranty">このプログラムは完全に無保証で提供されます。これはフリーソフトウェアで、特定の条件下での再頒布を歓迎します。</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid ファイルログ</string>
   <string name="logging_to_external_storage">外部ストレージにログ: %s</string>
@@ -57,6 +59,11 @@
     <item quantity="other">%d 証明書の信頼を解除しました</item>
   </plurals>
   <string name="app_settings_debug">デバッグ</string>
+  <string name="app_settings_log_to_external_storage">外部ファイルにログ出力</string>
+  <string name="app_settings_log_to_external_storage_on">(可能な場合) 外部ストレージにログ出力します</string>
+  <string name="app_settings_log_to_external_storage_off">外部ファイルログ出力は無効です</string>
+  <string name="app_settings_show_debug_info">デバッグ情報を表示</string>
+  <string name="app_settings_show_debug_info_details">ソフトウェアと設定の詳細を表示/共有</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">今すぐ同期</string>
   <string name="account_synchronizing_now">同期中</string>

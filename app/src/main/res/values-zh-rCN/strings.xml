@@ -22,6 +22,8 @@
   <string name="startup_opentasks_not_installed_message">OpenTasks 应用未安装或不可见，因此 DAVdroid 无法同步任务列表。请在安装 OpenTasks 后，重新安装 DAVdroid，再增加账户。</string>
   <string name="startup_opentasks_not_installed_install">安装 OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_license_terms">许可协议</string>
+  <string name="about_license_info_no_warranty">本程序不附带任何担保。这是一款自由软件，你可以有条件地传播它。</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid 文件日志</string>
   <string name="logging_to_external_storage">记录日志到外部存储 %s</string>
@@ -34,6 +36,7 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV 同步器</string>
   <string name="navigation_drawer_about">关于 / 许可</string>
   <string name="navigation_drawer_settings">设置</string>
+  <string name="navigation_drawer_news_updates">最新消息</string>
   <string name="navigation_drawer_external_links">外部网站</string>
   <string name="navigation_drawer_website">应用网站</string>
   <string name="navigation_drawer_faq">常见问题</string>
@@ -41,6 +44,8 @@
   <string name="navigation_drawer_donate">捐助</string>
   <string name="account_list_empty">欢迎使用 DAVdroid！\n\n现在你可以增加 CalDAV/CardDAV 账户。</string>
   <!--DavService-->
+  <string name="dav_service_refresh_failed">服务配置检测失败</string>
+  <string name="dav_service_refresh_couldnt_refresh">无法刷新集合列表</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">设置</string>
   <string name="app_settings_user_interface">用户界面</string>
@@ -54,6 +59,11 @@
     <item quantity="other">已删除 %d 个证书</item>
   </plurals>
   <string name="app_settings_debug">调试</string>
+  <string name="app_settings_log_to_external_storage">外部文件日志</string>
+  <string name="app_settings_log_to_external_storage_on">记录日志到外部存储（如果可用）</string>
+  <string name="app_settings_log_to_external_storage_off">外部文件日志已禁用</string>
+  <string name="app_settings_show_debug_info">显示调试信息</string>
+  <string name="app_settings_show_debug_info_details">查看软件和配置信息</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now"> 立即同步</string>
   <string name="account_synchronizing_now">正在同步</string>
@@ -159,9 +169,9 @@
   <string name="delete_collection_confirm_warning">这个集合 %s 及其所有数据将会从服务器删除。</string>
   <string name="delete_collection_deleting_collection">正在删除集合</string>
   <!--ExceptionInfoFragment-->
-  <string name="exception">出现错误。</string>
-  <string name="exception_httpexception">出现 HTTP 错误。</string>
-  <string name="exception_ioexception">出现 I/O 错误。</string>
+  <string name="exception">出现错误</string>
+  <string name="exception_httpexception">出现 HTTP 错误</string>
+  <string name="exception_ioexception">出现 I/O 错误</string>
   <string name="exception_show_details">显示详情</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">调试信息</string>

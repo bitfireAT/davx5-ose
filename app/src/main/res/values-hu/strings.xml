@@ -22,6 +22,8 @@
   <string name="startup_opentasks_not_installed_message">Az OpenTasks alkalmazás nincs telepítve vagy nem elérhető, ezért a DAVdroid nem lesz képes a feladatlisták szinkronizálására.  Az OpenTasks telepítése után telepítse újra a DAVdroid-ot majd hozza létre a fiókot újra.</string>
   <string name="startup_opentasks_not_installed_install">Az OpenTasks telepítése</string>
   <!--AboutActivity-->
+  <string name="about_license_terms">Licencfeltételek</string>
+  <string name="about_license_info_no_warranty">Ehhez a program SEMMIFÉLE GARANCIA NEM JÁR.   Ez a program szabad szoftver, ami a bizonyos feltételek mellett szabadon terjeszthető.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid fájlalapú naplózás</string>
   <string name="logging_to_external_storage">Naplózás külső tárhelyre: %s</string>
@@ -34,6 +36,7 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV szinkronizációs adapter</string>
   <string name="navigation_drawer_about">Névjegy / Licenc</string>
   <string name="navigation_drawer_settings">Beállítások</string>
+  <string name="navigation_drawer_news_updates">Hírek és frissítések</string>
   <string name="navigation_drawer_external_links">Weblapok</string>
   <string name="navigation_drawer_website">Honlap</string>
   <string name="navigation_drawer_faq">GYIK</string>
@@ -41,6 +44,8 @@
   <string name="navigation_drawer_donate">Támogatás</string>
   <string name="account_list_empty">Üdvözöljük a DAVdroid felhasználók között!\n\nMost már felvehet CalDAV/CardDav fiókokat.</string>
   <!--DavService-->
+  <string name="dav_service_refresh_failed">Szolgáltatások felderítése nem sikerült</string>
+  <string name="dav_service_refresh_couldnt_refresh">Gyűjteménylista frissítése nem sikerült</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Beállítások</string>
   <string name="app_settings_user_interface">Felhasználói felület</string>
@@ -55,6 +60,11 @@
     <item quantity="other">%d tanúsítvány megbízhatósága törölve</item>
   </plurals>
   <string name="app_settings_debug">Hibakeresés</string>
+  <string name="app_settings_log_to_external_storage">Naplózás fájlba</string>
+  <string name="app_settings_log_to_external_storage_on">Naplózás külső tárhelyre (ha elérhető)</string>
+  <string name="app_settings_log_to_external_storage_off">Fájlalapú naplózás kikapcsolva</string>
+  <string name="app_settings_show_debug_info">Hibakeresési információ megtekintése</string>
+  <string name="app_settings_show_debug_info_details">Szoftver- és konfigurációs részletek megtekintése/megosztása</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Szinkronizálás most</string>
   <string name="account_synchronizing_now">Szinkronizálás</string>
