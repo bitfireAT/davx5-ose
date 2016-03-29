@@ -45,7 +45,6 @@ import at.bitfire.dav4android.property.DisplayName;
 import at.bitfire.dav4android.property.ResourceType;
 import at.bitfire.dav4android.property.SupportedCalendarComponentSet;
 import at.bitfire.davdroid.HttpClient;
-import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.log.StringHandler;
 import at.bitfire.davdroid.model.CollectionInfo;
 import lombok.RequiredArgsConstructor;
@@ -178,7 +177,7 @@ public class DavResourceFinder {
             // check for resource type "principal"
             if (principal == null) {
                 ResourceType resourceType = (ResourceType)davBase.properties.get(ResourceType.NAME);
-                if (resourceType.types.contains(ResourceType.PRINCIPAL))
+                if (resourceType != null && resourceType.types.contains(ResourceType.PRINCIPAL))
                     principal = davBase.location;
             }
 
@@ -319,7 +318,7 @@ public class DavResourceFinder {
         DavResource dav = new DavResource(httpClient, url, log);
         dav.propfind(0, CurrentUserPrincipal.NAME);
 
-        CurrentUserPrincipal currentUserPrincipal = (CurrentUserPrincipal) dav.properties.get(CurrentUserPrincipal.NAME);
+        CurrentUserPrincipal currentUserPrincipal = (CurrentUserPrincipal)dav.properties.get(CurrentUserPrincipal.NAME);
         if (currentUserPrincipal != null && currentUserPrincipal.href != null) {
             HttpUrl principal = dav.location.resolve(currentUserPrincipal.href);
             if (principal != null) {
