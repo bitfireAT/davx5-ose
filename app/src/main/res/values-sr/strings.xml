@@ -52,6 +52,10 @@
   <string name="app_settings_security">Безбедност</string>
   <string name="app_settings_reset_trusted_certificates">Ресетуј поуздане сертификате</string>
   <string name="app_settings_debug">Тражење грешака</string>
+  <string name="app_settings_log_to_external_storage">Уписуј у спољашњи фајл</string>
+  <string name="app_settings_log_to_external_storage_on">Уписивање евиденције у спољашње складиште (ако је доступно)</string>
+  <string name="app_settings_log_to_external_storage_off">Уписивање евиденције у спољашње складиште је искључено</string>
+  <string name="app_settings_show_debug_info">Прикажи податке за исправљање грешака</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Синхронизуј одмах</string>
   <string name="account_synchronizing_now">Синхронизујем</string>
