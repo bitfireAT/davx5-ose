@@ -9,10 +9,10 @@
   <!--startup dialogs-->
   <string name="startup_dont_show_again">Não mostrar novamente</string>
   <string name="startup_development_version">Versão prévia do DAVdroid</string>
-  <string name="startup_development_version_message">Esta é uma versão de desenvolvimento do DAVdroid. Esteja ciente de que as coisas podem não funcionar como esperado. Por favor, envie sugestões e comentários construtivos para melhorar o DAVdroid.</string>
+  <string name="startup_development_version_message">Esta é uma versão de desenvolvimento do DAVdroid. Lembre-se de que as coisas podem não funcionar como esperado. Por favor, envie sugestões e comentários construtivos para melhorar o DAVdroid.</string>
   <string name="startup_development_version_give_feedback">Enviar sugestões</string>
-  <string name="startup_donate">Informações sobre Código Aberto</string>
-  <string name="startup_donate_message">Estamos felizes que você usa o DAVdroid, que é um software de código aberto (GPLv3). O desenvolvimento do DAVdroid é trabalhoso e nos consome muitas horas de trabalho. Por esse motivo, considere fazer uma doação.</string>
+  <string name="startup_donate">Informação sobre Código Aberto</string>
+  <string name="startup_donate_message">Estamos felizes que você usa o DAVdroid, que é um software de código aberto (GPLv3). O desenvolvimento do DAVdroid é trabalhoso e consome muitas horas de trabalho. Por esse motivo, considere fazer uma doação.</string>
   <string name="startup_donate_now">Mostrar a página de doações</string>
   <string name="startup_donate_later">Talvez depois</string>
   <string name="startup_google_play_accounts_removed">Informação sobre o erro de DRM da Play Store</string>
@@ -33,7 +33,7 @@
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Abrir a gaveta de navegação</string>
   <string name="navigation_drawer_close">Fechar gaveta de navegação</string>
-  <string name="navigation_drawer_subtitle">Adaptador de sincronização CalDAV/CardDAV</string>
+  <string name="navigation_drawer_subtitle">Sincronização de CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Sobre / Licença</string>
   <string name="navigation_drawer_settings">Configurações</string>
   <string name="navigation_drawer_news_updates">Novidades e atualizações</string>
@@ -51,10 +51,10 @@
   <string name="app_settings_user_interface">Interface de usuário</string>
   <string name="app_settings_reset_hints">Restaurar sugestões</string>
   <string name="app_settings_reset_hints_summary">Restaura as sugestões que foram descartadas anteriormente</string>
-  <string name="app_settings_reset_hints_success">Todas as sugestões serão apresentadas novamente</string>
+  <string name="app_settings_reset_hints_success">Todas as sugestões serão exibidas novamente</string>
   <string name="app_settings_security">Segurança</string>
-  <string name="app_settings_reset_trusted_certificates">Restaurar os certificados confiáveis</string>
-  <string name="app_settings_reset_trusted_certificates_summary">Esquece de todos os certificados que foram aceitos anteirormente</string>
+  <string name="app_settings_reset_trusted_certificates">Restaurar certificados confiáveis</string>
+  <string name="app_settings_reset_trusted_certificates_summary">Esquece de todos os certificados que foram aceitos anteriormente</string>
   <plurals name="app_settings_reset_trusted_certificates_success">
     <item quantity="one">Retirada a confiança de um certificado</item>
     <item quantity="other">Retirada a confiança de %d certificados</item>
@@ -67,10 +67,10 @@
   <string name="app_settings_show_debug_info_details">Exibir/compartilhar o software e os detalhes da configuração</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Sincronizar agora</string>
-  <string name="account_synchronizing_now">Sincronizando agora</string>
+  <string name="account_synchronizing_now">Sincronizando</string>
   <string name="account_settings">Configurações da conta</string>
   <string name="account_delete">Excluir conta</string>
-  <string name="account_delete_confirmation_title">Deseja realmente excluir a conta?</string>
+  <string name="account_delete_confirmation_title">Deseja excluir a conta?</string>
   <string name="account_delete_confirmation_text">Todas as cópias locais dos livros de endereços, calendários e listas de tarefas serão excluídas.</string>
   <string name="account_refresh_address_book_list">Atualizar lista de livros de endereços</string>
   <string name="account_create_new_address_book">Criar novo livro de endereços</string>
@@ -107,18 +107,18 @@
   <string name="settings_username">Nome do usuário</string>
   <string name="settings_enter_username">Digite o nome do usuário:</string>
   <string name="settings_password">Senha</string>
-  <string name="settings_password_summary">Atualize a senha de acordo com seu servidor.</string>
+  <string name="settings_password_summary">Atualize a senha de acordo com seu servidor</string>
   <string name="settings_enter_password">Digite sua senha:</string>
   <string name="settings_preemptive">Autenticação preferencial</string>
-  <string name="settings_preemptive_on">Credenciais enviadas em cada requisição (recomendado)</string>
+  <string name="settings_preemptive_on">Credenciais enviadas a cada requisição (recomendado)</string>
   <string name="settings_preemptive_off">Credenciais enviadas após a requisição do servidor</string>
   <string name="settings_sync">Sincronização</string>
-  <string name="settings_sync_interval_contacts">Intervalo de sinc. de contatos</string>
+  <string name="settings_sync_interval_contacts">Intervalo sinc. de contatos</string>
   <string name="settings_sync_summary_manually">Apenas manualmente</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">A cada %d minutos + imediatamente nas alterações locais</string>
   <string name="settings_sync_summary_not_available">Indisponível</string>
-  <string name="settings_sync_interval_calendars">Intervalo de sinc. de calendários</string>
-  <string name="settings_sync_interval_tasks">Intervalo de sinc. de tarefas</string>
+  <string name="settings_sync_interval_calendars">Intervalo sinc. de calendários</string>
+  <string name="settings_sync_interval_tasks">Intervalo sinc. de tarefas</string>
   <string-array name="settings_sync_interval_seconds">
     <item>-1</item>
     <item>300</item>
@@ -139,13 +139,13 @@
     <item>A cada 4 horas</item>
     <item>Uma vez por dia</item>
   </string-array>
-  <string name="settings_sync_time_range_past">Limite de tempo de eventos passados</string>
+  <string name="settings_sync_time_range_past">Limite para eventos passados</string>
   <string name="settings_sync_time_range_past_none">Todos os eventos serão sincronizados</string>
   <plurals name="settings_sync_time_range_past_days">
     <item quantity="one">Os eventos que ocorreram a mais de um dia serão ignorados</item>
-    <item quantity="other">Os eventos que ocorreram a mais de %d dias serão ignorados</item>
+    <item quantity="other">Eventos que ocorreram a mais de %d dias serão ignorados</item>
   </plurals>
-  <string name="settings_sync_time_range_past_message">Os eventos que já ocorreram a mais tempo que esse número de dias serão ignorados (pode ser 0). Deixe em branco para sincronizar todos os eventos.</string>
+  <string name="settings_sync_time_range_past_message">Os eventos que ocorreram antes desse número de dias serão ignorados (pode ser 0). Deixe em branco para sincronizar todos os eventos.</string>
   <string name="settings_version_update">Atualização da versão do DAVdroid</string>
   <string name="settings_version_update_settings_updated">As configurações internas foram atualizadas.</string>
   <string name="settings_version_update_install_hint">Problemas? Desinstale o DAVdroid e instale novamente.</string>
@@ -164,7 +164,7 @@
   <string name="create_collection_display_name">Mostrar o nome (título) desta coleção:</string>
   <string name="create_collection_display_name_required">É necessário um título</string>
   <string name="create_collection_description">Descrição (opcional):</string>
-  <string name="create_collection_home_set">Defina o endereço:</string>
+  <string name="create_collection_home_set">Indique o endereço:</string>
   <string name="create_collection_create">Criar</string>
   <string name="delete_collection">Excluir coleção</string>
   <string name="delete_collection_confirm_title">Tem certeza?</string>
