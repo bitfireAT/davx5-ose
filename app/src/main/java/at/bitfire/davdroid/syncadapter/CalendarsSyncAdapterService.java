@@ -21,6 +21,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.CalendarContract;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -74,9 +76,8 @@ public class CalendarsSyncAdapterService extends SyncAdapterService {
         }
 
         private void updateLocalCalendars(ContentProviderClient provider, Account account) throws CalendarStorageException {
-            long service = getService(account);
-
             // enumerate remote and local calendars
+            Long service = getService(account);
             Map<String, CollectionInfo> remote = remoteCalendars(service);
             LocalCalendar[] local = (LocalCalendar[])LocalCalendar.find(account, provider, LocalCalendar.Factory.INSTANCE, null, null);
 
@@ -104,23 +105,29 @@ public class CalendarsSyncAdapterService extends SyncAdapterService {
             }
         }
 
-        long getService(Account account) {
-            @Cleanup Cursor c = db.query(Services._TABLE, new String[]{ Services.ID },
-                    Services.ACCOUNT_NAME + "=? AND " + Services.SERVICE + "=?", new String[]{account.name, Services.SERVICE_CALDAV}, null, null, null);
-            c.moveToNext();
-            return c.getLong(0);
+        @Nullable
+        Long getService(Account account) {
+            @Cleanup Cursor c = db.query(Services._TABLE, new String[] { Services.ID },
+                    Services.ACCOUNT_NAME + "=? AND " + Services.SERVICE + "=?", new String[] { account.name, Services.SERVICE_CALDAV }, null, null, null);
+            if (c.moveToNext())
+                return c.getLong(0);
+            else
+                return null;
         }
 
-        private Map<String, CollectionInfo> remoteCalendars(long service) {
+        @NonNull
+        private Map<String, CollectionInfo> remoteCalendars(Long service) {
             Map<String, CollectionInfo> collections = new LinkedHashMap<>();
-            @Cleanup Cursor cursor = db.query(Collections._TABLE, null,
-                    Collections.SERVICE_ID + "=? AND " + Collections.SUPPORTS_VEVENT + "!=0 AND " + Collections.SYNC,
-                    new String[] { String.valueOf(service) }, null, null, null);
-            while (cursor.moveToNext()) {
-                ContentValues values = new ContentValues();
-                DatabaseUtils.cursorRowToContentValues(cursor, values);
-                CollectionInfo info = CollectionInfo.fromDB(values);
-                collections.put(info.url, info);
+            if (service != null) {
+                @Cleanup Cursor cursor = db.query(Collections._TABLE, null,
+                        Collections.SERVICE_ID + "=? AND " + Collections.SUPPORTS_VEVENT + "!=0 AND " + Collections.SYNC,
+                        new String[] { String.valueOf(service) }, null, null, null);
+                while (cursor.moveToNext()) {
+                    ContentValues values = new ContentValues();
+                    DatabaseUtils.cursorRowToContentValues(cursor, values);
+                    CollectionInfo info = CollectionInfo.fromDB(values);
+                    collections.put(info.url, info);
+                }
             }
             return collections;
         }
