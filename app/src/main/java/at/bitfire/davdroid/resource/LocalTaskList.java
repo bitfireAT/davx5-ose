@@ -135,7 +135,7 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
         if (tasksProviderAvailable != null)
             return tasksProviderAvailable;
         else {
-            TaskProvider provider = TaskProvider.acquire(resolver, TaskProvider.ProviderName.OpenTasks);
+            @Cleanup TaskProvider provider = TaskProvider.acquire(resolver, TaskProvider.ProviderName.OpenTasks);
             return tasksProviderAvailable = (provider != null);
         }
     }

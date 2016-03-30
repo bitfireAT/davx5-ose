@@ -38,6 +38,7 @@ import at.bitfire.davdroid.model.ServiceDB.Collections;
 import at.bitfire.davdroid.model.ServiceDB.HomeSets;
 import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
 import at.bitfire.davdroid.model.ServiceDB.Services;
+import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.ical4android.TaskProvider;
 import lombok.Cleanup;
 
@@ -127,9 +128,14 @@ public class AccountDetailsFragment extends Fragment {
                 ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1);
                 ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true);
 
-                // will only do something if OpenTasks is installed
-                ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
-                ContentResolver.setSyncAutomatically(account, TaskProvider.ProviderName.OpenTasks.authority, true);
+                if (LocalTaskList.tasksProviderAvailable(getContext().getContentResolver())) {
+                    // will only do something if OpenTasks is installed and accessible
+                    ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
+                    ContentResolver.setSyncAutomatically(account, TaskProvider.ProviderName.OpenTasks.authority, true);
+                } else
+                    // If OpenTasks is installed after DAVdroid, DAVdroid won't get task permissions and crash at every task sync
+                    // unless we disable task sync here (before OpenTasks is available).
+                    ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0);
             } else {
                 ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0);
                 ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0);
