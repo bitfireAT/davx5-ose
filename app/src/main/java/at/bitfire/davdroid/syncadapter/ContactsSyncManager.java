@@ -10,9 +10,11 @@ package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
 import android.content.ContentProviderClient;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;
@@ -85,13 +87,20 @@ public class ContactsSyncManager extends SyncManager {
     protected void prepare() throws ContactsStorageException {
         // prepare local address book
         localCollection = new LocalAddressBook(account, provider);
+        LocalAddressBook localAddressBook = localAddressBook();
 
         String url = remote.url;
-        String lastUrl = localAddressBook().getURL();
+        String lastUrl = localAddressBook.getURL();
         if (!url.equals(lastUrl)) {
             App.log.info("Selected address book has changed from " + lastUrl + " to " + url + ", deleting all local contacts");
-            ((LocalAddressBook)localCollection).deleteAll();
+            localAddressBook.deleteAll();
         }
+
+        // set up Contacts Provider Settings
+        ContentValues settings = new ContentValues(2);
+        settings.put(ContactsContract.Settings.SHOULD_SYNC, 1);
+        settings.put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1);
+        localAddressBook.updateSettings(settings);
 
         collectionURL = HttpUrl.parse(url);
         davCollection = new DavAddressBook(httpClient, collectionURL);

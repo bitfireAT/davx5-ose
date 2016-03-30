@@ -35,6 +35,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.DavUtils;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.ical4android.AndroidCalendar;
 import at.bitfire.ical4android.AndroidCalendarFactory;
@@ -43,6 +44,7 @@ import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.DateUtils;
 import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
+import okhttp3.HttpUrl;
 
 public class LocalCalendar extends AndroidCalendar implements LocalCollection {
 
@@ -89,7 +91,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
     private static ContentValues valuesFromCollectionInfo(CollectionInfo info) {
         ContentValues values = new ContentValues();
         values.put(Calendars.NAME, info.url);
-        values.put(Calendars.CALENDAR_DISPLAY_NAME, info.displayName);
+        values.put(Calendars.CALENDAR_DISPLAY_NAME, !TextUtils.isEmpty(info.displayName) ? info.displayName : DavUtils.lastSegmentOfUrl(info.url));
         values.put(Calendars.CALENDAR_COLOR, info.color != null ? info.color : defaultColor);
 
         if (info.readOnly)
