@@ -20,6 +20,8 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -79,9 +81,8 @@ public class TasksSyncAdapterService extends SyncAdapterService {
         }
 
         private void updateLocalTaskLists(TaskProvider provider, Account account) throws CalendarStorageException {
-            long service = getService(account);
-
             // enumerate remote and local task lists
+            Long service = getService(account);
             Map<String, CollectionInfo> remote = remoteTaskLists(service);
             LocalTaskList[] local = (LocalTaskList[])LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, null, null);
 
@@ -109,23 +110,29 @@ public class TasksSyncAdapterService extends SyncAdapterService {
             }
         }
 
-        long getService(Account account) {
-            @Cleanup Cursor c = db.query(Services._TABLE, new String[]{ Services.ID },
+        @Nullable
+        Long getService(Account account) {
+            @Cleanup Cursor c = db.query(Services._TABLE, new String[] { Services.ID },
                     Services.ACCOUNT_NAME + "=? AND " + Services.SERVICE + "=?", new String[] { account.name, Services.SERVICE_CALDAV }, null, null, null);
-            c.moveToNext();
-            return c.getLong(0);
+            if (c.moveToNext())
+                return c.getLong(0);
+            else
+                return null;
         }
 
-        private Map<String, CollectionInfo> remoteTaskLists(long service) {
+        @NonNull
+        private Map<String, CollectionInfo> remoteTaskLists(Long service) {
             Map<String, CollectionInfo> collections = new LinkedHashMap<>();
-            @Cleanup Cursor cursor = db.query(Collections._TABLE, null,
-                    Collections.SERVICE_ID + "=? AND " + Collections.SUPPORTS_VTODO + "!=0 AND " + Collections.SYNC,
-                    new String[] { String.valueOf(service) }, null, null, null);
-            while (cursor.moveToNext()) {
-                ContentValues values = new ContentValues();
-                DatabaseUtils.cursorRowToContentValues(cursor, values);
-                CollectionInfo info = CollectionInfo.fromDB(values);
-                collections.put(info.url, info);
+            if (service != null) {
+                @Cleanup Cursor cursor = db.query(Collections._TABLE, null,
+                        Collections.SERVICE_ID + "=? AND " + Collections.SUPPORTS_VTODO + "!=0 AND " + Collections.SYNC,
+                        new String[] { String.valueOf(service) }, null, null, null);
+                while (cursor.moveToNext()) {
+                    ContentValues values = new ContentValues();
+                    DatabaseUtils.cursorRowToContentValues(cursor, values);
+                    CollectionInfo info = CollectionInfo.fromDB(values);
+                    collections.put(info.url, info);
+                }
             }
             return collections;
         }

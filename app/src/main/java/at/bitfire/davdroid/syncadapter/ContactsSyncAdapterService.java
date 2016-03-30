@@ -66,7 +66,8 @@ public class ContactsSyncAdapterService extends SyncAdapterService {
                     }
                 else
                     App.log.info("No address book collection selected for synchronization");
-            }
+            } else
+                App.log.info("No CardDAV service found in DB");
 
             App.log.info("Address book sync complete");
         }
