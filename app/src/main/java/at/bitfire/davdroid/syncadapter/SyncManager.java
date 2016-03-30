@@ -188,7 +188,7 @@ abstract public class SyncManager {
                 }
             }
 
-        } catch(Exception e) {
+        } catch(Exception|OutOfMemoryError e) {
             final int messageString;
 
             if (e instanceof UnauthorizedException) {

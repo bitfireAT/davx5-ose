@@ -17,8 +17,8 @@ android {
         minSdkVersion 14
         targetSdkVersion 22
 
-        versionCode 91
-        versionName "1.0_1"
+        versionCode 92
+        versionName "1.0.2"
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
     }

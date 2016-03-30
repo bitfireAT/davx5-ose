@@ -72,7 +72,12 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
 
     public static Uri create(@NonNull Account account, @NonNull ContentProviderClient provider, @NonNull CollectionInfo info) throws CalendarStorageException {
         ContentValues values = valuesFromCollectionInfo(info);
+
+        // ACCOUNT_NAME and ACCOUNT_TYPE are required (see docs)! If it's missing, other apps will crash.
+        values.put(Calendars.ACCOUNT_NAME, account.name);
+        values.put(Calendars.ACCOUNT_TYPE, account.type);
         values.put(Calendars.OWNER_ACCOUNT, account.name);
+
         return create(account, provider, values);
     }
 
