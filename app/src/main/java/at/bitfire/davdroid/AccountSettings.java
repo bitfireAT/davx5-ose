@@ -60,12 +60,17 @@ public class AccountSettings {
         KEY_AUTH_PREEMPTIVE = "auth_preemptive";
 
     /** Time range limitation to the past [in days]
-        value = null              default value (DEFAULT_TIME_RANGE_PAST_DAYS)
-                < 0 (-1)          no limit
-                >= 0              entries more than n days in the past won't be synchronized
+        value = null            default value (DEFAULT_TIME_RANGE_PAST_DAYS)
+              < 0 (-1)          no limit
+              >= 0              entries more than n days in the past won't be synchronized
      */
     private final static String KEY_TIME_RANGE_PAST_DAYS = "time_range_past_days";
     private final static int DEFAULT_TIME_RANGE_PAST_DAYS = 90;
+
+    /* Whether DAVdroid sets the local calendar color to the value from service DB at every sync
+       value = null (not existing)     true (default)
+               "0"                     false */
+    private final static String KEY_MANAGE_CALENDAR_COLORS = "manage_calendar_colors";
 
     public final static long SYNC_INTERVAL_MANUALLY = -1;
 
@@ -170,6 +175,15 @@ public class AccountSettings {
 
     public void setTimeRangePastDays(Integer days) {
         accountManager.setUserData(account, KEY_TIME_RANGE_PAST_DAYS, String.valueOf(days == null ? -1 : days));
+    }
+
+    public boolean getManageCalendarColors() {
+        String manage = accountManager.getUserData(account, KEY_MANAGE_CALENDAR_COLORS);
+        return manage == null;
+    }
+
+    public void setManageCalendarColors(boolean manage) {
+        accountManager.setUserData(account, KEY_MANAGE_CALENDAR_COLORS, manage ? null : "0");
     }
 
 

@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.model.CollectionInfo;
@@ -70,11 +71,14 @@ public class CalendarsSyncAdapterService extends SyncAdapterService {
             App.log.info("Calendar sync complete");
         }
 
-        private void updateLocalCalendars(ContentProviderClient provider, Account account) throws CalendarStorageException {
+        private void updateLocalCalendars(ContentProviderClient provider, Account account) throws CalendarStorageException, InvalidAccountException {
             // enumerate remote and local calendars
             Long service = getService(account);
             Map<String, CollectionInfo> remote = remoteCalendars(service);
             LocalCalendar[] local = (LocalCalendar[])LocalCalendar.find(account, provider, LocalCalendar.Factory.INSTANCE, null, null);
+
+            AccountSettings settings = new AccountSettings(getContext(), account);
+            boolean updateColors = settings.getManageCalendarColors();
 
             // delete obsolete local calendar
             for (LocalCalendar calendar : local) {
@@ -86,7 +90,7 @@ public class CalendarsSyncAdapterService extends SyncAdapterService {
                     // remote CollectionInfo found for this local collection, update data
                     CollectionInfo info = remote.get(url);
                     App.log.fine("Updating local calendar " + url + " with " + info);
-                    calendar.update(info);
+                    calendar.update(info, updateColors);
                     // we already have a local calendar for this remote collection, don't take into consideration anymore
                     remote.remove(url);
                 }

@@ -146,6 +146,9 @@
     <item quantity="other">Termine, die mehr als %d Tage in der Vergangenheit liegen, werden ignoriert</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Termine, die mehr als diese Anzahl von Tagen in der Vergangenheit liegen, werden ignoriert (kann 0 sein). Feld leer lassen, um alle Termine zu synchronisieren.</string>
+  <string name="settings_manage_calendar_colors">Kalenderfarben verwalten</string>
+  <string name="settings_manage_calendar_colors_on">Kalenderfarben werden von DAVdroid verwaltet</string>
+  <string name="settings_manage_calendar_colors_off">DAVdroid setzt keine Kalenderfarben</string>
   <string name="settings_version_update">Neue DAVdroid-Version</string>
   <string name="settings_version_update_settings_updated">Interne Einstellungen wurden aktualisiert.</string>
   <string name="settings_version_update_install_hint">Probleme? DAVdroid löschen und neu installieren.</string>
