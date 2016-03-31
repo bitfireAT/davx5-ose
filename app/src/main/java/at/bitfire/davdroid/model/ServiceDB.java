@@ -72,15 +72,21 @@ public class ServiceDB {
 
         public OpenHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                setWriteAheadLoggingEnabled(true);
         }
 
         @Override
         public void onOpen(SQLiteDatabase db) {
-            db.enableWriteAheadLogging();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
                 db.setForeignKeyConstraintsEnabled(true);
-            else
+            else {
+                if (!db.enableWriteAheadLogging())
+                    App.log.warning("Couldn't enable write-ahead logging");
+
                 db.execSQL("PRAGMA foreign_keys=ON;");
+            }
         }
 
         @Override
