@@ -73,7 +73,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
     }
 
     public static Uri create(@NonNull Account account, @NonNull ContentProviderClient provider, @NonNull CollectionInfo info) throws CalendarStorageException {
-        ContentValues values = valuesFromCollectionInfo(info);
+        ContentValues values = valuesFromCollectionInfo(info, true);
 
         // ACCOUNT_NAME and ACCOUNT_TYPE are required (see docs)! If it's missing, other apps will crash.
         values.put(Calendars.ACCOUNT_NAME, account.name);
@@ -87,16 +87,18 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         return create(account, provider, values);
     }
 
-    public void update(CollectionInfo info) throws CalendarStorageException {
-        update(valuesFromCollectionInfo(info));
+    public void update(CollectionInfo info, boolean updateColor) throws CalendarStorageException {
+        update(valuesFromCollectionInfo(info, updateColor));
     }
 
     @TargetApi(15)
-    private static ContentValues valuesFromCollectionInfo(CollectionInfo info) {
+    private static ContentValues valuesFromCollectionInfo(CollectionInfo info, boolean withColor) {
         ContentValues values = new ContentValues();
         values.put(Calendars.NAME, info.url);
         values.put(Calendars.CALENDAR_DISPLAY_NAME, !TextUtils.isEmpty(info.displayName) ? info.displayName : DavUtils.lastSegmentOfUrl(info.url));
-        values.put(Calendars.CALENDAR_COLOR, info.color != null ? info.color : defaultColor);
+
+        if (withColor)
+            values.put(Calendars.CALENDAR_COLOR, info.color != null ? info.color : defaultColor);
 
         if (info.readOnly)
             values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ);

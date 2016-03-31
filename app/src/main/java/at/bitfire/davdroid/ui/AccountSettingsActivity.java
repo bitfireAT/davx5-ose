@@ -206,6 +206,16 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 }
             });
 
+            final SwitchPreferenceCompat prefManageColors = (SwitchPreferenceCompat)findPreference("manage_calendar_colors");
+            prefManageColors.setChecked(settings.getManageCalendarColors());
+            prefManageColors.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    settings.setManageCalendarColors((Boolean)newValue);
+                    refresh(); return false;
+                }
+            });
+
         }
 
     }

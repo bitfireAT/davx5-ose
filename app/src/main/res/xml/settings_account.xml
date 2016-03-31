@@ -64,6 +64,13 @@
             android:dialogMessage="@string/settings_sync_time_range_past_message"
             android:inputType="number"/>
 
+        <SwitchPreferenceCompat
+            android:key="manage_calendar_colors"
+            android:persistent="false"
+            android:title="@string/settings_manage_calendar_colors"
+            android:summaryOn="@string/settings_manage_calendar_colors_on"
+            android:summaryOff="@string/settings_manage_calendar_colors_off"/>
+
     </PreferenceCategory>
 
 </PreferenceScreen>
