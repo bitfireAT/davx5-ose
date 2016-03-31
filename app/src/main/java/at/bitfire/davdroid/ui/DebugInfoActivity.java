@@ -17,19 +17,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
-import android.support.v4.database.DatabaseUtilsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -55,7 +49,7 @@ import lombok.Cleanup;
 
 public class DebugInfoActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
     public static final String
-            KEY_EXCEPTION = "exception",
+            KEY_THROWABLE = "throwable",
             KEY_LOGS = "logs",
             KEY_ACCOUNT = "account",
             KEY_AUTHORITY = "authority",
@@ -151,14 +145,14 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
 
         @Override
         public String loadInBackground() {
-            Exception exception = null;
+            Throwable throwable = null;
             String  logs = null,
                     authority = null;
             Account account = null;
             int phase = -1;
 
             if (extras != null) {
-                exception = (Exception)extras.getSerializable(KEY_EXCEPTION);
+                throwable = (Throwable)extras.getSerializable(KEY_THROWABLE);
                 logs = extras.getString(KEY_LOGS);
                 account = extras.getParcelable(KEY_ACCOUNT);
                 authority = extras.getString(KEY_AUTHORITY);
@@ -176,17 +170,17 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
             if (authority != null)
                 report.append("Authority: ").append(authority).append("\n");
 
-            if (exception instanceof HttpException) {
-                HttpException http = (HttpException)exception;
+            if (throwable instanceof HttpException) {
+                HttpException http = (HttpException)throwable;
                 if (http.request != null)
                     report.append("\nHTTP REQUEST:\n").append(http.request).append("\n\n");
                 if (http.response != null)
                     report.append("HTTP RESPONSE:\n").append(http.response).append("\n");
             }
 
-            if (exception != null)
+            if (throwable != null)
                 report  .append("\nEXCEPTION:\n")
-                        .append(ExceptionUtils.getStackTrace(exception));
+                        .append(ExceptionUtils.getStackTrace(throwable));
 
             if (logs != null)
                 report.append("\nLOGS:\n").append(logs).append("\n");

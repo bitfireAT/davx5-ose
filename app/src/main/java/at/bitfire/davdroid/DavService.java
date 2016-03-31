@@ -22,6 +22,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
@@ -274,7 +276,7 @@ public class DavService extends Service {
                 }
 
                 try {
-                    db.beginTransaction();
+                    db.beginTransactionNonExclusive();
                     saveHomeSets(homeSets);
                     saveCollections(collections.values());
                     db.setTransactionSuccessful();
@@ -288,7 +290,7 @@ public class DavService extends Service {
                 App.log.log(Level.SEVERE, "Couldn't refresh collection list", e);
 
                 Intent debugIntent = new Intent(DavService.this, DebugInfoActivity.class);
-                debugIntent.putExtra(DebugInfoActivity.KEY_EXCEPTION, e);
+                debugIntent.putExtra(DebugInfoActivity.KEY_THROWABLE, e);
                 if (account != null)
                     debugIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account);
 
@@ -298,7 +300,7 @@ public class DavService extends Service {
                         .setLargeIcon(((BitmapDrawable)getResources().getDrawable(R.drawable.ic_launcher)).getBitmap())
                         .setContentTitle(getString(R.string.dav_service_refresh_failed))
                         .setContentText(getString(R.string.dav_service_refresh_couldnt_refresh))
-                        .setContentIntent(PendingIntent.getActivity(DavService.this, 0, debugIntent, 0))
+                        .setContentIntent(PendingIntent.getActivity(DavService.this, 0, debugIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                         .build();
                 nm.notify(Constants.NOTIFICATION_REFRESH_COLLECTIONS, notify);
             } finally {
@@ -333,6 +335,7 @@ public class DavService extends Service {
         }
 
 
+        @NonNull
         private Account account() {
             @Cleanup Cursor cursor = db.query(Services._TABLE, new String[] { Services.ACCOUNT_NAME }, Services.ID + "=?", new String[] { String.valueOf(service) }, null, null, null);
             if (cursor.moveToNext()) {
@@ -341,6 +344,7 @@ public class DavService extends Service {
                 throw new IllegalArgumentException("Service not found");
         }
 
+        @NonNull
         private String serviceType() {
             @Cleanup Cursor cursor = db.query(Services._TABLE, new String[] { Services.SERVICE }, Services.ID + "=?", new String[] { String.valueOf(service) }, null, null, null);
             if (cursor.moveToNext())
@@ -349,6 +353,7 @@ public class DavService extends Service {
                 throw new IllegalArgumentException("Service not found");
         }
 
+        @Nullable
         private HttpUrl readPrincipal() {
             @Cleanup Cursor cursor = db.query(Services._TABLE, new String[] { Services.PRINCIPAL }, Services.ID + "=?", new String[] { String.valueOf(service) }, null, null, null);
             if (cursor.moveToNext()) {
@@ -359,6 +364,7 @@ public class DavService extends Service {
             return null;
         }
 
+        @NonNull
         private Set<HttpUrl> readHomeSets() {
             Set<HttpUrl> homeSets = new LinkedHashSet<>();
             @Cleanup Cursor cursor = db.query(HomeSets._TABLE, new String[] { HomeSets.URL }, HomeSets.SERVICE_ID + "=?", new String[] { String.valueOf(service) }, null, null, null);
@@ -377,6 +383,7 @@ public class DavService extends Service {
             }
         }
 
+        @NonNull
         private Map<HttpUrl, CollectionInfo> readCollections() {
             Map<HttpUrl, CollectionInfo> collections = new LinkedHashMap<>();
             @Cleanup Cursor cursor = db.query(Collections._TABLE, null, Collections.SERVICE_ID + "=?", new String[]{String.valueOf(service)}, null, null, null);

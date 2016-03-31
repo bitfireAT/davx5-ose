@@ -80,6 +80,10 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         values.put(Calendars.ACCOUNT_TYPE, account.type);
         values.put(Calendars.OWNER_ACCOUNT, account.name);
 
+        // flag as visible & synchronizable at creation, might be changed by user at any time
+        values.put(Calendars.VISIBLE, 1);
+        values.put(Calendars.SYNC_EVENTS, 1);
+
         return create(account, provider, values);
     }
 
@@ -102,8 +106,6 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
             values.put(Calendars.CAN_ORGANIZER_RESPOND, 1);
         }
 
-        values.put(Calendars.SYNC_EVENTS, 1);
-        values.put(Calendars.VISIBLE, 1);
         if (!TextUtils.isEmpty(info.timeZone)) {
             VTimeZone timeZone = DateUtils.parseVTimeZone(info.timeZone);
             if (timeZone != null && timeZone.getTimeZoneId() != null)
