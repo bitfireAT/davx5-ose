@@ -197,7 +197,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             OpenHelper dbHelper = new OpenHelper(AccountActivity.this);
             try {
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
-                db.beginTransaction();
+                db.beginTransactionNonExclusive();
 
                 if (list.getChoiceMode() == AbsListView.CHOICE_MODE_SINGLE) {
                     // disable all other collections

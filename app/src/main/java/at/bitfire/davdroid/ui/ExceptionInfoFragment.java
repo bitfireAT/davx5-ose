@@ -57,7 +57,7 @@ public class ExceptionInfoFragment extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(getContext(), DebugInfoActivity.class);
-                        intent.putExtra(DebugInfoActivity.KEY_EXCEPTION, exception);
+                        intent.putExtra(DebugInfoActivity.KEY_THROWABLE, exception);
                         if (account != null)
                             intent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account);
                         startActivity(intent);
