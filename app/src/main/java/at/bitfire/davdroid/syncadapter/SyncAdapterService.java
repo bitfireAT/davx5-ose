@@ -50,11 +50,12 @@ public abstract class SyncAdapterService extends Service {
 
 
     public static abstract class SyncAdapter extends AbstractThreadedSyncAdapter {
-        protected final SQLiteDatabase db;
 
-        public SyncAdapter(Context context, ServiceDB.OpenHelper dbHelper) {
+        protected final SQLiteDatabase db;      // will be closed in SyncAdapterService::onDestroy(), don't close manually!
+
+        public SyncAdapter(Context context, SQLiteDatabase db) {
             super(context, false);
-            db = dbHelper.getReadableDatabase();
+            this.db = db;
         }
 
         @Override

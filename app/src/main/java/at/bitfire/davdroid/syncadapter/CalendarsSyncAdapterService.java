@@ -8,18 +8,14 @@
 package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
-import android.app.Service;
-import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SyncResult;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,7 +28,6 @@ import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB.Collections;
-import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
 import at.bitfire.davdroid.model.ServiceDB.Services;
 import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.ical4android.CalendarStorageException;
@@ -43,14 +38,14 @@ public class CalendarsSyncAdapterService extends SyncAdapterService {
     @Override
     public void onCreate() {
         super.onCreate();
-        syncAdapter = new SyncAdapter(this, dbHelper);
+        syncAdapter = new SyncAdapter(this, dbHelper.getReadableDatabase());
     }
 
 
 	private static class SyncAdapter extends SyncAdapterService.SyncAdapter {
 
-        public SyncAdapter(Context context, OpenHelper dbHelper) {
-            super(context, dbHelper);
+        public SyncAdapter(Context context, SQLiteDatabase db) {
+            super(context, db);
         }
 
         @Override
