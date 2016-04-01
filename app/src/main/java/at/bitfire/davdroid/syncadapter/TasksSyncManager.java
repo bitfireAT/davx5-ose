@@ -66,9 +66,14 @@ public class TasksSyncManager extends SyncManager {
 
 
     public TasksSyncManager(Context context, Account account, Bundle extras, String authority, TaskProvider provider, SyncResult result, LocalTaskList taskList) throws InvalidAccountException {
-        super(Constants.NOTIFICATION_TASK_SYNC, context, account, extras, authority, result);
+        super(context, account, extras, authority, result, "taskList/" + taskList.getId());
         this.provider = provider;
         localCollection = taskList;
+    }
+
+    @Override
+    protected int notificationId() {
+        return Constants.NOTIFICATION_TASK_SYNC;
     }
 
     @Override

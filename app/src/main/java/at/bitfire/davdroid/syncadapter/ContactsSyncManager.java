@@ -72,9 +72,14 @@ public class ContactsSyncManager extends SyncManager {
 
 
     public ContactsSyncManager(Context context, Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult result, CollectionInfo remote) throws InvalidAccountException {
-        super(Constants.NOTIFICATION_CONTACTS_SYNC, context, account, extras, authority, result);
+        super(context, account, extras, authority, result, "addressBook");
         this.provider = provider;
         this.remote = remote;
+    }
+
+    @Override
+    protected int notificationId() {
+        return Constants.NOTIFICATION_CONTACTS_SYNC;
     }
 
     @Override

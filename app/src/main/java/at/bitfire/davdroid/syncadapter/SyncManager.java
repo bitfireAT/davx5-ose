@@ -15,6 +15,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
@@ -67,7 +68,7 @@ abstract public class SyncManager {
                         SYNC_PHASE_SAVE_SYNC_STATE = 10;
 
     protected final NotificationManager notificationManager;
-    protected final int notificationId;
+    protected final String uniqueCollectionId;
 
     protected final Context context;
     protected final Account account;
@@ -97,7 +98,7 @@ abstract public class SyncManager {
 
 
 
-    public SyncManager(int notificationId, Context context, Account account, Bundle extras, String authority, SyncResult syncResult) throws InvalidAccountException {
+    public SyncManager(Context context, Account account, Bundle extras, String authority, SyncResult syncResult, String uniqueCollectionId) throws InvalidAccountException {
         this.context = context;
         this.account = account;
         this.extras = extras;
@@ -111,10 +112,12 @@ abstract public class SyncManager {
         httpClient = HttpClient.create(context, account);
 
         // dismiss previous error notifications
+        this.uniqueCollectionId = uniqueCollectionId;
         notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(account.name, this.notificationId = notificationId);
+        notificationManager.cancel(uniqueCollectionId, notificationId());
     }
 
+    protected abstract int notificationId();
     protected abstract String getSyncErrorTitle();
 
     @TargetApi(21)
@@ -218,10 +221,13 @@ abstract public class SyncManager {
                 detailsIntent.putExtra(DebugInfoActivity.KEY_PHASE, syncPhase);
             }
 
+            // to make the PendingIntent unique
+            detailsIntent.setData(Uri.parse("uri://" + getClass().getName() + "/" + uniqueCollectionId));
+
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
             builder .setSmallIcon(R.drawable.ic_launcher)
                     .setContentTitle(getSyncErrorTitle())
-                    .setContentIntent(PendingIntent.getActivity(context, notificationId, detailsIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                    .setContentIntent(PendingIntent.getActivity(context, 0, detailsIntent, PendingIntent.FLAG_CANCEL_CURRENT))
                     .setCategory(NotificationCompat.CATEGORY_ERROR)
                     .setLocalOnly(true);
 
@@ -233,7 +239,7 @@ abstract public class SyncManager {
                 // should never happen
             }
 
-            notificationManager.notify(account.name, notificationId, builder.build());
+            notificationManager.notify(uniqueCollectionId, notificationId(), builder.build());
         }
     }
 
