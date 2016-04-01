@@ -64,14 +64,20 @@ public class CalendarSyncManager extends SyncManager {
 
 
     public CalendarSyncManager(Context context, Account account, Bundle extras, String authority, SyncResult result, LocalCalendar calendar) throws InvalidAccountException {
-        super(Constants.NOTIFICATION_CALENDAR_SYNC, context, account, extras, authority, result);
+        super(context, account, extras, authority, result, "calendar/" + calendar.getId());
         localCollection = calendar;
+    }
+
+    @Override
+    protected int notificationId() {
+        return Constants.NOTIFICATION_CALENDAR_SYNC;
     }
 
     @Override
     protected String getSyncErrorTitle() {
         return context.getString(R.string.sync_error_calendar, account.name);
     }
+
 
     @Override
     protected void prepare() {
