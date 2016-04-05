@@ -29,33 +29,19 @@ import at.bitfire.davdroid.model.ServiceDB;
 
 public abstract class SyncAdapterService extends Service {
 
-    ServiceDB.OpenHelper dbHelper;
-    AbstractThreadedSyncAdapter syncAdapter;
-
-    @Override
-    public void onCreate() {
-        dbHelper = new ServiceDB.OpenHelper(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        dbHelper.close();
-    }
+    abstract protected AbstractThreadedSyncAdapter syncAdapter();
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return syncAdapter.getSyncAdapterBinder();
+        return syncAdapter().getSyncAdapterBinder();
     }
 
 
     public static abstract class SyncAdapter extends AbstractThreadedSyncAdapter {
 
-        protected final SQLiteDatabase db;      // will be closed in SyncAdapterService::onDestroy(), don't close manually!
-
-        public SyncAdapter(Context context, SQLiteDatabase db) {
+        public SyncAdapter(Context context) {
             super(context, false);
-            this.db = db;
         }
 
         @Override
@@ -64,13 +50,6 @@ public abstract class SyncAdapterService extends Service {
 
             // required for dav4android (ServiceLoader)
             Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
-
-            // peek into AccountSettings to cause possible migration (v0.9 -> v1.0)
-            try {
-                new AccountSettings(getContext(), account);
-            } catch (InvalidAccountException e) {
-                App.log.log(Level.SEVERE, "Couldn't check for updated account settings", e);
-            }
         }
     }
 

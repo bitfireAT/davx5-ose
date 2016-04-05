@@ -60,6 +60,14 @@
                 <action android:name="at.bitfire.davdroid.REINIT_LOGGER"/>
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".AccountSettings$AppUpdatedReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <data android:scheme="package" android:path="at.bitfire.davdroid" />
+            </intent-filter>
+        </receiver>
 
         <service
             android:name=".syncadapter.AccountAuthenticatorService"

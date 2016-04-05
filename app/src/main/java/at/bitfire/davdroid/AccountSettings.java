@@ -11,28 +11,23 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.PeriodicSync;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
-import android.provider.CalendarContract.Calendars;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
 import java.lang.reflect.Method;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -360,6 +355,26 @@ public class AccountSettings {
         }
 
         accountManager.setUserData(account, KEY_SETTINGS_VERSION, "3");
+    }
+
+
+    public static class AppUpdatedReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            App.log.info("DAVdroid was updated, checking for AccountSettings version");
+
+            // peek into AccountSettings to initiate a possible migration
+            AccountManager accountManager = AccountManager.get(context);
+            for (Account account : accountManager.getAccountsByType(Constants.ACCOUNT_TYPE))
+                try {
+                    App.log.info("Checking account " + account.name);
+                    new AccountSettings(context, account);
+                } catch (InvalidAccountException e) {
+                    App.log.log(Level.SEVERE, "Couldn't check for updated account settings", e);
+                }
+        }
+
     }
 
 }
