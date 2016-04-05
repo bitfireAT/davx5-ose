@@ -62,11 +62,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
-import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
-import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.DavService;
-import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
@@ -373,15 +370,6 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
         @Override
         public AccountInfo loadInBackground() {
-            // peek into AccountSettings to call possible 0.9 -> 1.0 migration
-            // The next line can be removed as soon as migration from 0.9 is not required anymore!
-            try {
-                new AccountSettings(getContext(), new Account(accountName, Constants.ACCOUNT_TYPE));
-            } catch (InvalidAccountException e) {
-                App.log.log(Level.INFO, "Account doesn't exist (anymore)", e);
-                return null;
-            }
-
             AccountInfo info = new AccountInfo();
             try {
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -391,6 +379,11 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                         new String[] { Services.ID, Services.SERVICE },
                         Services.ACCOUNT_NAME + "=?", new String[] { accountName },
                         null, null, null);
+
+                if (cursor.getCount() == 0)
+                    // no services, account not useable
+                    return null;
+
                 while (cursor.moveToNext()) {
                     long id = cursor.getLong(0);
                     String service = cursor.getString(1);
@@ -557,7 +550,8 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
         for (String authority : authorities) {
             Bundle extras = new Bundle();
-            extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+            extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);        // manual sync
+            extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);     // run immediately (don't queue)
             ContentResolver.requestSync(account, authority, extras);
         }
 
