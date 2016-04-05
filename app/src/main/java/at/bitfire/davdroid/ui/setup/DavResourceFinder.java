@@ -190,6 +190,13 @@ public class DavResourceFinder {
         }
     }
 
+    /**
+     * If #dav is an address book or an address book home set, it will added to
+     * config.collections or config.homesets. Only evaluates already known properties,
+     * does not call dav.propfind()! URLs will be stored with trailing "/".
+     * @param dav       resource whose properties are evaluated
+     * @param config    structure where the address book (collection) and/or home set is stored into (if found)
+     */
     protected void rememberIfAddressBookOrHomeset(@NonNull DavResource dav, @NonNull Configuration.ServiceInfo config) {
         // Is the collection an address book?
         ResourceType resourceType = (ResourceType)dav.properties.get(ResourceType.NAME);
@@ -223,7 +230,7 @@ public class DavResourceFinder {
     }
 
 
-    boolean providesService(HttpUrl url, Service service) throws IOException {
+    protected boolean providesService(HttpUrl url, Service service) throws IOException {
         DavResource davPrincipal = new DavResource(httpClient, url, log);
         try {
             davPrincipal.options();
