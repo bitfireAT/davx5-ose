@@ -11,15 +11,12 @@ package at.bitfire.davdroid;
 import android.os.Build;
 import android.test.InstrumentationTestCase;
 
-import junit.framework.TestCase;
-
 import java.io.IOException;
 import java.net.Socket;
 
 import javax.net.ssl.SSLSocket;
 
 import de.duenndns.ssl.MemorizingTrustManager;
-import okhttp3.OkHttpClient;
 import okhttp3.mockwebserver.MockWebServer;
 
 public class SSLSocketFactoryCompatTest extends InstrumentationTestCase {

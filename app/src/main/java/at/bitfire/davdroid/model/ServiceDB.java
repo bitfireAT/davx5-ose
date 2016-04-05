@@ -122,7 +122,7 @@ public class ServiceDB {
                     Collections.DISPLAY_NAME + " TEXT NULL," +
                     Collections.DESCRIPTION + " TEXT NULL," +
                     Collections.COLOR + " INTEGER NULL," +
-                    Collections.TIME_ZONE + " TEXt NULL," +
+                    Collections.TIME_ZONE + " TEXT NULL," +
                     Collections.SUPPORTS_VEVENT + " INTEGER NULL," +
                     Collections.SUPPORTS_VTODO + " INTEGER NULL," +
                     Collections.SYNC + " INTEGER DEFAULT 0 NOT NULL" +

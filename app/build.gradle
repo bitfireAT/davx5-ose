@@ -73,7 +73,9 @@ dependencies {
     compile 'com.github.yukuku:ambilwarna:2.0.1'
     compile project(':MemorizingTrustManager')
 
-    androidTestCompile 'com.squareup.okhttp3:mockwebserver:3.2.0'
     compile 'dnsjava:dnsjava:2.1.7'
     compile 'org.apache.commons:commons-lang3:3.4'
+
+    // for tests
+    androidTestCompile 'com.squareup.okhttp3:mockwebserver:3.2.0'
 }
