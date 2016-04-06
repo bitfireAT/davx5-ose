@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
@@ -49,10 +50,13 @@ import okhttp3.HttpUrl;
 public class AccountSettings {
     private final static int CURRENT_VERSION = 3;
     private final static String
-        KEY_SETTINGS_VERSION = "version",
+            KEY_SETTINGS_VERSION = "version",
 
-        KEY_USERNAME = "user_name",
-        KEY_AUTH_PREEMPTIVE = "auth_preemptive";
+            KEY_USERNAME = "user_name",
+            KEY_AUTH_PREEMPTIVE = "auth_preemptive",
+
+            KEY_WIFI_ONLY = "wifi_only",            // sync on WiFi only (default: false)
+            KEY_WIFI_ONLY_SSID = "wifi_only_ssid";  // restrict sync to specific WiFi SSID
 
     /** Time range limitation to the past [in days]
         value = null            default value (DEFAULT_TIME_RANGE_PAST_DAYS)
@@ -159,6 +163,26 @@ public class AccountSettings {
         }
     }
 
+    public boolean getSyncWifiOnly() {
+        return accountManager.getUserData(account, KEY_WIFI_ONLY) != null;
+    }
+
+    public void setSyncWiFiOnly(boolean wiFiOnly) {
+        accountManager.setUserData(account, KEY_WIFI_ONLY, wiFiOnly ? "1" : null);
+    }
+
+    @Nullable
+    public String getSyncWifiOnlySSID() {
+        return accountManager.getUserData(account, KEY_WIFI_ONLY_SSID);
+    }
+
+    public void setSyncWifiOnlySSID(String ssid) {
+        accountManager.setUserData(account, KEY_WIFI_ONLY_SSID, ssid);
+    }
+
+
+    // CalDAV settings
+
     public Integer getTimeRangePastDays() {
         String strDays = accountManager.getUserData(account, KEY_TIME_RANGE_PAST_DAYS);
         if (strDays != null) {
@@ -173,8 +197,7 @@ public class AccountSettings {
     }
 
     public boolean getManageCalendarColors() {
-        String manage = accountManager.getUserData(account, KEY_MANAGE_CALENDAR_COLORS);
-        return manage == null;
+        return accountManager.getUserData(account, KEY_MANAGE_CALENDAR_COLORS) == null;
     }
 
     public void setManageCalendarColors(boolean manage) {

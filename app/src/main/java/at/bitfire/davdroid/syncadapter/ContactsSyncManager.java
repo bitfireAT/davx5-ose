@@ -37,6 +37,7 @@ import at.bitfire.dav4android.property.GetCTag;
 import at.bitfire.dav4android.property.GetContentType;
 import at.bitfire.dav4android.property.GetETag;
 import at.bitfire.dav4android.property.SupportedAddressData;
+import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
@@ -71,8 +72,8 @@ public class ContactsSyncManager extends SyncManager {
     private boolean hasVCard4;
 
 
-    public ContactsSyncManager(Context context, Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult result, CollectionInfo remote) throws InvalidAccountException {
-        super(context, account, extras, authority, result, "addressBook");
+    public ContactsSyncManager(Context context, Account account, AccountSettings settings, Bundle extras, String authority, ContentProviderClient provider, SyncResult result, CollectionInfo remote) throws InvalidAccountException {
+        super(context, account, settings, extras, authority, result, "addressBook");
         this.provider = provider;
         this.remote = remote;
     }

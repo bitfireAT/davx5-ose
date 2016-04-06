@@ -11,6 +11,9 @@ package at.bitfire.davdroid.ui;
 import android.accounts.Account;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
@@ -22,8 +25,12 @@ import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.SwitchPreferenceCompat;
+import android.text.TextUtils;
 import android.view.MenuItem;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 
 import at.bitfire.davdroid.AccountSettings;
@@ -183,6 +190,34 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 prefSyncTasks.setSummary(R.string.settings_sync_summary_not_available);
             }
 
+            final SwitchPreferenceCompat prefWifiOnly = (SwitchPreferenceCompat)findPreference("sync_wifi_only");
+            prefWifiOnly.setChecked(settings.getSyncWifiOnly());
+            prefWifiOnly.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object wifiOnly) {
+                    settings.setSyncWiFiOnly((Boolean)wifiOnly);
+                    refresh();
+                    return false;
+                }
+            });
+
+            final EditTextPreference prefWifiOnlySSID = (EditTextPreference)findPreference("sync_wifi_only_ssid");
+            final String onlySSID = settings.getSyncWifiOnlySSID();
+            prefWifiOnlySSID.setText(onlySSID);
+            if (onlySSID != null)
+                prefWifiOnlySSID.setSummary(getString(R.string.settings_sync_wifi_only_ssid_on, onlySSID));
+            else
+                prefWifiOnlySSID.setSummary(R.string.settings_sync_wifi_only_ssid_off);
+            prefWifiOnlySSID.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    String ssid = (String)newValue;
+                    settings.setSyncWifiOnlySSID(!TextUtils.isEmpty(ssid) ? ssid : null);
+                    refresh(); return false;
+                }
+            });
+
+            // category: CalDAV
             final EditTextPreference prefTimeRangePastDays = (EditTextPreference)findPreference("caldav_time_range_past_days");
             Integer pastDays =  settings.getTimeRangePastDays();
             if (pastDays != null) {
@@ -212,7 +247,8 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     settings.setManageCalendarColors((Boolean)newValue);
-                    refresh(); return false;
+                    refresh();
+                    return false;
                 }
             });
 

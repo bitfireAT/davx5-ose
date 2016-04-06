@@ -57,6 +57,25 @@
             android:entries="@array/settings_sync_interval_names"
             android:entryValues="@array/settings_sync_interval_seconds" />
 
+        <SwitchPreferenceCompat
+            android:key="sync_wifi_only"
+            android:persistent="false"
+            android:title="@string/settings_sync_wifi_only"
+            android:summaryOn="@string/settings_sync_wifi_only_on"
+            android:summaryOff="@string/settings_sync_wifi_only_off"
+            />
+
+        <EditTextPreference
+            android:key="sync_wifi_only_ssid"
+            android:dependency="sync_wifi_only"
+            android:persistent="false"
+            android:title="@string/settings_sync_wifi_only_ssid"
+            android:dialogMessage="@string/settings_sync_wifi_only_ssid_message"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="CalDAV">
+
         <EditTextPreference
             android:key="caldav_time_range_past_days"
             android:persistent="false"
@@ -71,6 +90,6 @@
             android:summaryOn="@string/settings_manage_calendar_colors_on"
             android:summaryOff="@string/settings_manage_calendar_colors_off"/>
 
-    </PreferenceCategory>
+</PreferenceCategory>
 
 </PreferenceScreen>

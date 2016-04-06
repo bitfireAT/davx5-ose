@@ -32,6 +32,7 @@ import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.DavService;
+import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB.Collections;
@@ -45,6 +46,7 @@ import lombok.Cleanup;
 public class AccountDetailsFragment extends Fragment {
 
     private static final String KEY_CONFIG = "config";
+    private static final int DEFAULT_SYNC_INTERVAL = 4 * 3600;  // 4 hours
 
     public static AccountDetailsFragment newInstance(DavResourceFinder.Configuration config) {
         AccountDetailsFragment frag = new AccountDetailsFragment();
@@ -107,6 +109,8 @@ public class AccountDetailsFragment extends Fragment {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.beginTransactionNonExclusive();
         try {
+            AccountSettings settings = new AccountSettings(getContext(), account);
+
             Intent refreshIntent = new Intent(getActivity(), DavService.class);
             refreshIntent.setAction(DavService.ACTION_REFRESH_COLLECTIONS);
 
@@ -116,7 +120,7 @@ public class AccountDetailsFragment extends Fragment {
                 getActivity().startService(refreshIntent);
 
                 ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
-                ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
+                settings.setSyncInterval(ContactsContract.AUTHORITY, DEFAULT_SYNC_INTERVAL);
             } else
                 ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0);
 
@@ -126,12 +130,12 @@ public class AccountDetailsFragment extends Fragment {
                 getActivity().startService(refreshIntent);
 
                 ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1);
-                ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true);
+                settings.setSyncInterval(CalendarContract.AUTHORITY, DEFAULT_SYNC_INTERVAL);
 
                 if (LocalTaskList.tasksProviderAvailable(getContext().getContentResolver())) {
                     // will only do something if OpenTasks is installed and accessible
                     ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
-                    ContentResolver.setSyncAutomatically(account, TaskProvider.ProviderName.OpenTasks.authority, true);
+                    settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, DEFAULT_SYNC_INTERVAL);
                 } else
                     // If OpenTasks is installed after DAVdroid, DAVdroid won't get task permissions and crash at every task sync
                     // unless we disable task sync here (before OpenTasks is available).
@@ -142,6 +146,8 @@ public class AccountDetailsFragment extends Fragment {
             }
 
             db.setTransactionSuccessful();
+        } catch(InvalidAccountException e) {
+            App.log.log(Level.SEVERE, "Couldn't access account settings", e);
         } finally {
             db.endTransaction();
         }

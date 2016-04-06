@@ -10,6 +10,7 @@ package at.bitfire.davdroid.syncadapter;
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
@@ -56,11 +57,15 @@ public class CalendarsSyncAdapterService extends SyncAdapterService {
             super.onPerformSync(account, extras, authority, provider, syncResult);
 
             try {
-                updateLocalCalendars(provider, account);
+                AccountSettings settings = new AccountSettings(getContext(), account);
+                if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(settings))
+                    return;
+
+                updateLocalCalendars(provider, account, settings);
 
                 for (LocalCalendar calendar : (LocalCalendar[])LocalCalendar.find(account, provider, LocalCalendar.Factory.INSTANCE, CalendarContract.Calendars.SYNC_EVENTS + "!=0", null)) {
                     App.log.info("Synchronizing calendar #"  + calendar.getId() + ", URL: " + calendar.getName());
-                    CalendarSyncManager syncManager = new CalendarSyncManager(getContext(), account, extras, authority, syncResult, calendar);
+                    CalendarSyncManager syncManager = new CalendarSyncManager(getContext(), account, settings, extras, authority, syncResult, calendar);
                     syncManager.performSync();
                 }
             } catch (CalendarStorageException e) {
@@ -73,7 +78,7 @@ public class CalendarsSyncAdapterService extends SyncAdapterService {
             App.log.info("Calendar sync complete");
         }
 
-        private void updateLocalCalendars(ContentProviderClient provider, Account account) throws CalendarStorageException, InvalidAccountException {
+        private void updateLocalCalendars(ContentProviderClient provider, Account account, AccountSettings settings) throws CalendarStorageException {
             SQLiteOpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
             try {
                 // enumerate remote and local calendars
@@ -83,7 +88,6 @@ public class CalendarsSyncAdapterService extends SyncAdapterService {
 
                 LocalCalendar[] local = (LocalCalendar[])LocalCalendar.find(account, provider, LocalCalendar.Factory.INSTANCE, null, null);
 
-                AccountSettings settings = new AccountSettings(getContext(), account);
                 boolean updateColors = settings.getManageCalendarColors();
 
                 // delete obsolete local calendar

@@ -98,15 +98,13 @@ abstract public class SyncManager {
 
 
 
-    public SyncManager(Context context, Account account, Bundle extras, String authority, SyncResult syncResult, String uniqueCollectionId) throws InvalidAccountException {
+    public SyncManager(Context context, Account account, AccountSettings settings, Bundle extras, String authority, SyncResult syncResult, String uniqueCollectionId) throws InvalidAccountException {
         this.context = context;
         this.account = account;
+        this.settings = settings;
         this.extras = extras;
         this.authority = authority;
         this.syncResult = syncResult;
-
-        // get account settings (for sync interval etc.)
-        settings = new AccountSettings(context, account);
 
         // create HttpClient with given logger
         httpClient = HttpClient.create(context, account);
