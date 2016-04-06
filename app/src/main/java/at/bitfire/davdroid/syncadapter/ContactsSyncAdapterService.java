@@ -10,6 +10,7 @@ package at.bitfire.davdroid.syncadapter;
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
@@ -23,6 +24,7 @@ import android.support.annotation.Nullable;
 
 import java.util.logging.Level;
 
+import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.model.CollectionInfo;
@@ -50,13 +52,17 @@ public class ContactsSyncAdapterService extends SyncAdapterService {
 
             SQLiteOpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
             try {
+                AccountSettings settings = new AccountSettings(getContext(), account);
+                if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(settings))
+                    return;
+
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
                 Long service = getService(db, account);
                 if (service != null) {
                     CollectionInfo remote = remoteAddressBook(db, service);
                     if (remote != null)
                         try {
-                            ContactsSyncManager syncManager = new ContactsSyncManager(getContext(), account, extras, authority, provider, syncResult, remote);
+                            ContactsSyncManager syncManager = new ContactsSyncManager(getContext(), account, settings, extras, authority, provider, syncResult, remote);
                             syncManager.performSync();
                         } catch(InvalidAccountException e) {
                             App.log.log(Level.SEVERE, "Couldn't get account settings", e);
@@ -65,6 +71,8 @@ public class ContactsSyncAdapterService extends SyncAdapterService {
                         App.log.info("No address book collection selected for synchronization");
                 } else
                     App.log.info("No CardDAV service found in DB");
+            } catch (InvalidAccountException e) {
+                App.log.log(Level.SEVERE, "Couldn't get account settings", e);
             } finally {
                 dbHelper.close();
             }

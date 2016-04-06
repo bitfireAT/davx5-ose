@@ -16,9 +16,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.net.ConnectivityManagerCompat;
+import android.text.TextUtils;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.logging.Level;
 
@@ -46,11 +56,39 @@ public abstract class SyncAdapterService extends Service {
 
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-            App.log.info("Starting " + authority + " sync");
+            App.log.info("Sync for " + authority + " has been initiated");
 
             // required for dav4android (ServiceLoader)
             Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
         }
+
+        protected boolean checkSyncConditions(@NonNull AccountSettings settings) {
+            if (settings.getSyncWifiOnly()) {
+                ConnectivityManager cm = (ConnectivityManager)getContext().getSystemService(CONNECTIVITY_SERVICE);
+                NetworkInfo network = cm.getActiveNetworkInfo();
+                if (network == null) {
+                    App.log.info("No network available, stopping");
+                    return false;
+                }
+                if (network.getType() != ConnectivityManager.TYPE_WIFI || !network.isConnected()) {
+                    App.log.info("Not on connected WiFi, stopping");
+                    return false;
+                }
+
+                String onlySSID = settings.getSyncWifiOnlySSID();
+                if (onlySSID != null) {
+                    onlySSID = "\"" + onlySSID + "\"";
+                    WifiManager wifi = (WifiManager)getContext().getSystemService(WIFI_SERVICE);
+                    WifiInfo info = wifi.getConnectionInfo();
+                    if (info == null || !onlySSID.equals(info.getSSID())) {
+                        App.log.info("Connected to wrong WiFi network (" + info.getSSID() + ", required: " + onlySSID + "), ignoring");
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
     }
 
 }

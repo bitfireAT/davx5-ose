@@ -9,22 +9,17 @@
 package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;
-import org.dmfs.provider.tasks.TaskContract.TaskLists;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,12 +29,11 @@ import at.bitfire.dav4android.DavCalendar;
 import at.bitfire.dav4android.DavResource;
 import at.bitfire.dav4android.exception.DavException;
 import at.bitfire.dav4android.exception.HttpException;
-import at.bitfire.dav4android.property.CalendarColor;
 import at.bitfire.dav4android.property.CalendarData;
-import at.bitfire.dav4android.property.DisplayName;
 import at.bitfire.dav4android.property.GetCTag;
 import at.bitfire.dav4android.property.GetContentType;
 import at.bitfire.dav4android.property.GetETag;
+import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
@@ -65,8 +59,8 @@ public class TasksSyncManager extends SyncManager {
     final protected TaskProvider provider;
 
 
-    public TasksSyncManager(Context context, Account account, Bundle extras, String authority, TaskProvider provider, SyncResult result, LocalTaskList taskList) throws InvalidAccountException {
-        super(context, account, extras, authority, result, "taskList/" + taskList.getId());
+    public TasksSyncManager(Context context, Account account, AccountSettings settings, Bundle extras, String authority, TaskProvider provider, SyncResult result, LocalTaskList taskList) throws InvalidAccountException {
+        super(context, account, settings, extras, authority, result, "taskList/" + taskList.getId());
         this.provider = provider;
         localCollection = taskList;
     }

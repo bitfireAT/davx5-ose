@@ -10,6 +10,7 @@ package at.bitfire.davdroid.syncadapter;
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
@@ -25,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.model.CollectionInfo;
@@ -59,11 +61,15 @@ public class TasksSyncAdapterService extends SyncAdapterService {
                 if (provider == null)
                     throw new CalendarStorageException("Couldn't access OpenTasks provider");
 
+                AccountSettings settings = new AccountSettings(getContext(), account);
+                if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(settings))
+                    return;
+
                 updateLocalTaskLists(provider, account);
 
                 for (LocalTaskList taskList : (LocalTaskList[])LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, null, null)) {
                     App.log.info("Synchronizing task list #"  + taskList.getId() + ", URL: " + taskList.getSyncId());
-                    TasksSyncManager syncManager = new TasksSyncManager(getContext(), account, extras, authority, provider, syncResult, taskList);
+                    TasksSyncManager syncManager = new TasksSyncManager(getContext(), account, settings, extras, authority, provider, syncResult, taskList);
                     syncManager.performSync();
                 }
             } catch (CalendarStorageException e) {

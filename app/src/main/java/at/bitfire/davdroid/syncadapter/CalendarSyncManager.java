@@ -9,12 +9,9 @@
 package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
-import android.provider.CalendarContract.Calendars;
-import android.text.TextUtils;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;
@@ -34,12 +31,11 @@ import at.bitfire.dav4android.DavCalendar;
 import at.bitfire.dav4android.DavResource;
 import at.bitfire.dav4android.exception.DavException;
 import at.bitfire.dav4android.exception.HttpException;
-import at.bitfire.dav4android.property.CalendarColor;
 import at.bitfire.dav4android.property.CalendarData;
-import at.bitfire.dav4android.property.DisplayName;
 import at.bitfire.dav4android.property.GetCTag;
 import at.bitfire.dav4android.property.GetContentType;
 import at.bitfire.dav4android.property.GetETag;
+import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
@@ -63,8 +59,8 @@ public class CalendarSyncManager extends SyncManager {
     protected static final int MAX_MULTIGET = 20;
 
 
-    public CalendarSyncManager(Context context, Account account, Bundle extras, String authority, SyncResult result, LocalCalendar calendar) throws InvalidAccountException {
-        super(context, account, extras, authority, result, "calendar/" + calendar.getId());
+    public CalendarSyncManager(Context context, Account account, AccountSettings settings, Bundle extras, String authority, SyncResult result, LocalCalendar calendar) throws InvalidAccountException {
+        super(context, account, settings, extras, authority, result, "calendar/" + calendar.getId());
         localCollection = calendar;
     }
 
