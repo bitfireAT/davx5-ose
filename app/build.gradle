@@ -40,6 +40,7 @@ android {
         disable 'IconColors'
         disable 'IconLauncherShape'
         disable 'IconMissingDensityFolder'
+        disable 'ImpliedQuantity'
         disable 'MissingTranslation'
         disable 'OldTargetApi'      // Android 6 permission model not implemented yet
         disable 'Recycle'           // doesn't understand Lombok's @Cleanup

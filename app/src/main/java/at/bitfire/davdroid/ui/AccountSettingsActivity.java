@@ -196,8 +196,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object wifiOnly) {
                     settings.setSyncWiFiOnly((Boolean)wifiOnly);
-                    refresh();
-                    return false;
+                    refresh(); return false;
                 }
             });
 
@@ -247,8 +246,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     settings.setManageCalendarColors((Boolean)newValue);
-                    refresh();
-                    return false;
+                    refresh(); return false;
                 }
             });
 

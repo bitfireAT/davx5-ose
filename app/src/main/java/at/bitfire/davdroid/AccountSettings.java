@@ -9,6 +9,7 @@ package at.bitfire.davdroid;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -384,6 +385,7 @@ public class AccountSettings {
     public static class AppUpdatedReceiver extends BroadcastReceiver {
 
         @Override
+        @SuppressLint("UnsafeProtectedBroadcastReceiver")
         public void onReceive(Context context, Intent intent) {
             App.log.info("DAVdroid was updated, checking for AccountSettings version");
 

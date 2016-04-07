@@ -146,6 +146,13 @@
     <item quantity="other">Termine, die mehr als %d Tage in der Vergangenheit liegen, werden ignoriert</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Termine, die mehr als diese Anzahl von Tagen in der Vergangenheit liegen, werden ignoriert (kann 0 sein). Feld leer lassen, um alle Termine zu synchronisieren.</string>
+  <string name="settings_sync_wifi_only">Nur über WLAN synchronisieren</string>
+  <string name="settings_sync_wifi_only_on">Synchronisierung nur bei aktiver WLAN-Verbindung</string>
+  <string name="settings_sync_wifi_only_off">Verbindungstyp wird nicht beachtet</string>
+  <string name="settings_sync_wifi_only_ssid">WLAN-SSID-Beschränkung</string>
+  <string name="settings_sync_wifi_only_ssid_on">Synchronisierung nur über %s</string>
+  <string name="settings_sync_wifi_only_ssid_off">Alle WLAN-Verbindungen können verwendet werden</string>
+  <string name="settings_sync_wifi_only_ssid_message">Name eines WLANs (SSID) eingeben, um Synchronisierung auf dieses WLAN zu beschränken. Leer lassen, um alle WLAN-Verbindungen zuzulassen.</string>
   <string name="settings_manage_calendar_colors">Kalenderfarben verwalten</string>
   <string name="settings_manage_calendar_colors_on">Kalenderfarben werden von DAVdroid verwaltet</string>
   <string name="settings_manage_calendar_colors_off">DAVdroid setzt keine Kalenderfarben</string>
