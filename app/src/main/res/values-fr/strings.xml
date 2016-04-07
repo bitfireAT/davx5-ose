@@ -3,19 +3,105 @@
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
   <string name="help">Aide</string>
+  <string name="manage_accounts">Gestion des comptes</string>
+  <string name="please_wait">SVP attendez ...</string>
   <string name="send">Envoyer</string>
   <!--startup dialogs-->
+  <string name="startup_dont_show_again">Ne plus afficher</string>
+  <string name="startup_development_version">Pré-version de DAVdroid</string>
+  <string name="startup_development_version_message">Il s\'agit d\'une version de développement de DAVdroid. Il se peut que les choses ne fonctionnent pas comme prévu. S’il vous plaît faites-nous un retour pour améliorer DAVdroid.</string>
+  <string name="startup_development_version_give_feedback">Faire un commentaire</string>
+  <string name="startup_donate">Open-Source Information</string>
+  <string name="startup_donate_message">Nous sommes heureux que vous utilisez DAVdroid, qui est un logiciel open-source (GPLv3). Parce que développer DAVdroid est un travail difficile et nous a pris de nombreuses heures, s\'il vous plaît envisager de faire un don.</string>
+  <string name="startup_donate_now">Voir la page de don</string>
+  <string name="startup_donate_later">Plus tard</string>
+  <string name="startup_google_play_accounts_removed">Erreur information Play Store DRM</string>
+  <string name="startup_google_play_accounts_removed_message">Dans certaines conditions, Play Store DRM peut provoquer la disparition de tous les comptes DAVdroid après un redémarrage ou après la mise à niveau de DAVdroid. Si vous êtes concerné par ce problème (et seulement alors), s\'il vous plaît installer \"DAVdroid JB Solution\" du Play Store.</string>
+  <string name="startup_google_play_accounts_removed_more_info">Plus d\'information</string>
+  <string name="startup_opentasks_not_installed">OpenTasks n\'est pas installé</string>
+  <string name="startup_opentasks_not_installed_message">L\'application OpenTasks n\'est pas installé ou pas accessible, donc DAVdroid ne pourra pas synchroniser vos tâches. Réinstaller DAVdroid et ajouter à nouveau votre compte après l\'installation d\'OpenTasks.</string>
+  <string name="startup_opentasks_not_installed_install">Installer OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_license_terms">Conditions d\'utilisation</string>
+  <string name="about_license_info_no_warranty">Ce programme est fourni sans AUCUNE GARANTIE. C\'est un logiciel libre, et vous êtes en droit de le redistribuer sous certaines conditions.</string>
   <!--global settings-->
+  <string name="logging_davdroid_file_logging">DAVdroid fichier de journalisation</string>
+  <string name="logging_to_external_storage">Se connecter au stockage externe: %s</string>
+  <string name="logging_to_external_storage_warning">Supprimer les journaux dès que possible!</string>
+  <string name="logging_couldnt_create_file">Impossible de créer le fichier journal externe: %s</string>
+  <string name="logging_no_external_storage">Stockage externe introuvable</string>
   <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Ouvrir le tiroir de navigation</string>
+  <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
+  <string name="navigation_drawer_about">A propos / Licence</string>
+  <string name="navigation_drawer_settings">Paramètres</string>
+  <string name="navigation_drawer_news_updates">Actualité &amp; mise à jour</string>
+  <string name="navigation_drawer_external_links">Liens externes</string>
+  <string name="navigation_drawer_website">Site Web</string>
+  <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_forums">Communauté</string>
+  <string name="navigation_drawer_donate">Faire un don</string>
+  <string name="account_list_empty">Bienvenue sur DAVdroid!\n\nVous pouvez maintenant ajouter un compte CalDAV/CardDAV.</string>
   <!--DavService-->
+  <string name="dav_service_refresh_failed">La détection du service a échoué</string>
+  <string name="dav_service_refresh_couldnt_refresh">Impossible d\'actualiser la liste de collection</string>
   <!--AppSettingsActivity-->
+  <string name="app_settings">Paramètres</string>
+  <string name="app_settings_user_interface">Interface utilisateur</string>
+  <string name="app_settings_reset_hints">Réinitialiser les astuces</string>
+  <string name="app_settings_reset_hints_summary">Réactiver les astuces qui ont été vu précédemment</string>
+  <string name="app_settings_reset_hints_success">Toutes les astuces seront affichés à nouveau</string>
+  <string name="app_settings_security">Sécurité</string>
+  <string name="app_settings_reset_trusted_certificates">Réinitialiser les certificats de confiance</string>
+  <string name="app_settings_reset_trusted_certificates_summary">Oublier tous les certificats qui ont été acceptés précédemment</string>
+  <plurals name="app_settings_reset_trusted_certificates_success">
+    <item quantity="one">Un certificat douteux</item>
+    <item quantity="other">%d certificats douteux</item>
+  </plurals>
+  <string name="app_settings_debug">Débogage</string>
+  <string name="app_settings_log_to_external_storage">Se connecter au fichier externe</string>
+  <string name="app_settings_log_to_external_storage_on">Se connecter au stockage externe (si disponible)</string>
+  <string name="app_settings_log_to_external_storage_off">Le fichier externe n\'est pas disponible.</string>
+  <string name="app_settings_show_debug_info">Afficher les infos de débogage</string>
+  <string name="app_settings_show_debug_info_details">Voir/partager l\'application et les détails de configuration</string>
   <!--AccountActivity-->
+  <string name="account_synchronize_now">Synchroniser maintenant</string>
+  <string name="account_synchronizing_now">Synchronisation en cours</string>
+  <string name="account_settings">Paramètres du compte</string>
+  <string name="account_delete">Supprimer le compte</string>
+  <string name="account_delete_confirmation_title">Voulez-vous vraiment supprimer le compte?</string>
+  <string name="account_delete_confirmation_text">Toutes les copies locales des carnets d\'adresses, des calendriers et des listes de tâches seront supprimées.</string>
+  <string name="account_refresh_address_book_list">Actualiser le carnet d\'adresse</string>
+  <string name="account_create_new_address_book">Créer un nouveau carnet d\'adresse</string>
+  <string name="account_refresh_calendar_list">Actualiser le calendrier</string>
+  <string name="account_create_new_calendar">Créer un nouveau calendrier</string>
   <!--AddAccountActivity-->
+  <string name="login_title">Ajouter un compte</string>
   <string name="login_type_email">Connexion avec une adresse email</string>
+  <string name="login_email_address">Adresse mail</string>
+  <string name="login_email_address_error">Une adresse e-mail valide est requis</string>
+  <string name="login_password">Mot de passe</string>
+  <string name="login_password_required">Mot de passe requis</string>
   <string name="login_type_url">Connexion avec une URL et un nom d\'utilisateur</string>
+  <string name="login_url_must_be_http_or_https">L\'URL doit commencer par http(s)://</string>
+  <string name="login_url_host_name_required">Nom d\'hôte requis</string>
+  <string name="login_user_name">Nom d\'utilisateur</string>
+  <string name="login_user_name_required">Nom d\'utilisateur requis</string>
+  <string name="login_base_url">URL de base</string>
   <string name="login_auth_preemptive">Authentification préventive (recommandé, mais incompatible avec l\'authentification Digest)</string>
+  <string name="login_login">Se connecter</string>
+  <string name="login_back">Retour</string>
+  <string name="login_create_account">Créer un compte</string>
+  <string name="login_account_name">Nom du compte</string>
+  <string name="login_account_name_info">Utilisez votre adresse e-mail comme nom de compte car Android utilisera ce nom en tant que champ ORGANISATEUR pour les événements que vous créerez. Vous ne pouvez pas avoir deux comptes avec le même nom.</string>
+  <string name="login_account_name_required">Nom du compte requis</string>
+  <string name="login_account_not_created">Le compte n\'a pas pu être créé</string>
+  <string name="login_configuration_detection">Détection de la configuration</string>
+  <string name="login_querying_server">S\'il vous plaît patienter, nous interrogeons le serveur ...</string>
+  <string name="login_no_caldav_carddav">Aucun service CalDAV ou CardDAV trouvé.</string>
+  <string name="login_view_logs">Voir infos de débogage</string>
   <!--AccountSettingsActivity-->
+  <string name="settings_title">Paramètres: %s</string>
   <string name="settings_authentication">Authentification</string>
   <string name="settings_username">Nom d\'utilisateur</string>
   <string name="settings_enter_username">Saisissez votre nom d\'utilisateur :</string>
@@ -27,7 +113,7 @@
   <string name="settings_preemptive_off">Le nom d\'utilisateur et le mot de passe sont envoyés à la demande du serveur.</string>
   <string name="settings_sync">Synchronisation</string>
   <string name="settings_sync_interval_contacts">Interval de synchronisation des carnets d\'adresses</string>
-  <string name="settings_sync_summary_manually">A la demande</string>
+  <string name="settings_sync_summary_manually">Manuellement</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Toutes les %d minutes et immédiatement après un changement local</string>
   <string name="settings_sync_summary_not_available">Indisponible</string>
   <string name="settings_sync_interval_calendars">Interval de synchronisation des agendas</string>
@@ -52,8 +138,45 @@
     <item>Toutes les 4 heures</item>
     <item>Une fois par jour</item>
   </string-array>
+  <string name="settings_sync_time_range_past">Limite des événements passés</string>
+  <string name="settings_sync_time_range_past_none">Tous les événements seront synchronisés</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Les événements de plus d’un jour passé seront ignorés</item>
+    <item quantity="other">Les événements de plus de %d jours passés seront ignorés</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Les événements antérieurs à ce nombre de jours seront ignorés (peut être 0). Laissez vide pour synchroniser tous les événements.</string>
+  <string name="settings_manage_calendar_colors">Choisir couleur du calendrier</string>
+  <string name="settings_manage_calendar_colors_on">Les couleurs de calendrier sont gérées par DAVdroid</string>
+  <string name="settings_manage_calendar_colors_off">Les couleurs de calendrier ne sont pas gérées par DAVdroid</string>
+  <string name="settings_version_update">Mise à jour de la version de DAVdroid</string>
+  <string name="settings_version_update_settings_updated">Les paramètres internes ont été mis à jour.</string>
+  <string name="settings_version_update_install_hint">Un problème? Désinstaller DAVdroid, puis réinstaller.</string>
   <!--collection management-->
+  <string name="create_addressbook">Créer un carnet d\'adresses</string>
+  <string name="create_addressbook_display_name_hint">Mon carnet d\'adresses</string>
+  <string name="create_calendar">Créer une collection CalDAV</string>
+  <string name="create_calendar_display_name_hint">Mon calendrier</string>
+  <string name="create_calendar_time_zone">Fuseau horaire:</string>
+  <string name="create_calendar_type">Type de collection:</string>
+  <string name="create_calendar_type_only_events">Calendrier (événements seulement)</string>
+  <string name="create_calendar_type_only_tasks">Liste de tâches (tâches seulement)</string>
+  <string name="create_calendar_type_events_and_tasks">Fusionner (événements et tâches)</string>
+  <string name="create_collection_color">Choisir une couleur pour la collection</string>
+  <string name="create_collection_creating">Création collection</string>
+  <string name="create_collection_display_name">Le nom affiché (titre) pour cette collection:</string>
+  <string name="create_collection_display_name_required">Titre requis</string>
+  <string name="create_collection_description">Description (facultatif)</string>
+  <string name="create_collection_home_set">Accueil:</string>
+  <string name="create_collection_create">Créer</string>
+  <string name="delete_collection">Supprimer la collection</string>
+  <string name="delete_collection_confirm_title">Êtes-vous sur?</string>
+  <string name="delete_collection_confirm_warning">Cette collection (%s) et toutes ses données seront supprimées du serveur.</string>
+  <string name="delete_collection_deleting_collection">Suppression de la collection</string>
   <!--ExceptionInfoFragment-->
+  <string name="exception">Une erreur est survenue.</string>
+  <string name="exception_httpexception">Une erreur HTTP est survenue.</string>
+  <string name="exception_ioexception">Une erreur I/O est survenue.</string>
+  <string name="exception_show_details">Voir détails</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Infos de débogage</string>
   <string name="sync_error_calendar">Échec de la synchronisation du calendrier (%s)</string>

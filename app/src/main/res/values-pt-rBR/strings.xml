@@ -146,6 +146,16 @@
     <item quantity="other">Eventos que ocorreram a mais de %d dias serão ignorados</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Os eventos que ocorreram antes desse número de dias serão ignorados (pode ser 0). Deixe em branco para sincronizar todos os eventos.</string>
+  <string name="settings_sync_wifi_only">Sincronizar apenas por Wi-Fi</string>
+  <string name="settings_sync_wifi_only_on">A sincronização está restrita a conexões Wi-Fi</string>
+  <string name="settings_sync_wifi_only_off">O tipo de conexão não é considerado</string>
+  <string name="settings_sync_wifi_only_ssid">Restrição de SSID Wi-Fi</string>
+  <string name="settings_sync_wifi_only_ssid_on">Sincronizará apenas com %s</string>
+  <string name="settings_sync_wifi_only_ssid_off">Todas as conexões Wi-Fi podem ser utilizada</string>
+  <string name="settings_sync_wifi_only_ssid_message">Informe o nome da rede Wi-Fi (SSID) que será usada para sincronização ou deixe em branco para usar qualquer conexão Wi-Fi.</string>
+  <string name="settings_manage_calendar_colors">Gerenciar as cores do calendário</string>
+  <string name="settings_manage_calendar_colors_on">As cores do calendários são gerenciadas pelo DAVdroid</string>
+  <string name="settings_manage_calendar_colors_off">As cores do calendários não são definidas pelo DAVdroid</string>
   <string name="settings_version_update">Atualização da versão do DAVdroid</string>
   <string name="settings_version_update_settings_updated">As configurações internas foram atualizadas.</string>
   <string name="settings_version_update_install_hint">Problemas? Desinstale o DAVdroid e instale novamente.</string>

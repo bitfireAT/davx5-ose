@@ -22,6 +22,7 @@
   <string name="startup_opentasks_not_installed_message">Отворени задаци нису инсталирани или доступни, па ДАВдроид неће моћи да синхронизује листе задатака. Поново инсталирајте ДАВдроид и поново додајте ваше налоге након инсталације Отворених задатака.</string>
   <string name="startup_opentasks_not_installed_install">Инсталирај Отворене задатке</string>
   <!--AboutActivity-->
+  <string name="about_license_terms">Услови лиценце</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">ДАВдроид евиденција</string>
   <string name="logging_to_external_storage">Уписивање евиденције у спољашње складиште: %s</string>
@@ -48,14 +49,22 @@
   <string name="app_settings">Поставке</string>
   <string name="app_settings_user_interface">Корисничко сучеље</string>
   <string name="app_settings_reset_hints">Ресетуј савете</string>
+  <string name="app_settings_reset_hints_summary">Поновно приказивање претходно одбачених савета</string>
   <string name="app_settings_reset_hints_success">Сви савети ће поново бити приказани</string>
   <string name="app_settings_security">Безбедност</string>
   <string name="app_settings_reset_trusted_certificates">Ресетуј поуздане сертификате</string>
+  <string name="app_settings_reset_trusted_certificates_summary">Заборављање претходно прихваћених сертификата</string>
+  <plurals name="app_settings_reset_trusted_certificates_success">
+    <item quantity="one">Посумњано у један сертификат</item>
+    <item quantity="few">Посумњано у %d сертификата</item>
+    <item quantity="other">Посумњано у %d сертификата</item>
+  </plurals>
   <string name="app_settings_debug">Тражење грешака</string>
   <string name="app_settings_log_to_external_storage">Уписуј у спољашњи фајл</string>
   <string name="app_settings_log_to_external_storage_on">Уписивање евиденције у спољашње складиште (ако је доступно)</string>
   <string name="app_settings_log_to_external_storage_off">Уписивање евиденције у спољашње складиште је искључено</string>
   <string name="app_settings_show_debug_info">Прикажи податке за исправљање грешака</string>
+  <string name="app_settings_show_debug_info_details">Приказ/дељење детаља софтвера и поставки</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Синхронизуј одмах</string>
   <string name="account_synchronizing_now">Синхронизујем</string>
@@ -130,6 +139,17 @@
     <item>Свака 4 сата</item>
     <item>Једном дневно</item>
   </string-array>
+  <string name="settings_sync_time_range_past">Ограничење догађаја у прошлости</string>
+  <string name="settings_sync_time_range_past_none">Сви догађаји се синхронизују</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Догађаји старији од једног дана ће бити занемарени</item>
+    <item quantity="few">Догађаји старији од %d дана ће бити занемарени</item>
+    <item quantity="other">Догађаји старији од %d дана ће бити занемарени</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Догађаји старији од овог броја дана ће бити занемарени (може бити 0). Оставите празно за синхронизацију свих догађаја.</string>
+  <string name="settings_manage_calendar_colors">Управљај бојама календара</string>
+  <string name="settings_manage_calendar_colors_on">Бојама календара управља ДАВдроид</string>
+  <string name="settings_manage_calendar_colors_off">Боје календара није поставио ДАВдроид</string>
   <string name="settings_version_update">Надоградња ДАВдроид издања</string>
   <string name="settings_version_update_settings_updated">Унутрашње поставке су ажуриране.</string>
   <string name="settings_version_update_install_hint">Проблеми? Уклоните ДАВдроид па га поново инсталирајте.</string>
