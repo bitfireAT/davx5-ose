@@ -11,6 +11,7 @@
   <!--DavService-->
   <!--AppSettingsActivity-->
   <!--AccountActivity-->
+  <!--PermissionsActivity-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Eposta adresi ile giriş yap</string>
   <string name="login_type_url">URL ve kullanıcı adı ile giriş yap</string>

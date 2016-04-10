@@ -19,7 +19,6 @@
   <string name="startup_google_play_accounts_removed_message">Sob certas condições, o DRM da Play Store pode fazer com que todas as contas DAVdroid sejam perdidas depois de uma reinicialização ou atualização do DAVdroid. Se você for afetado por esse problema, instale o \"DAVdroid JB Workaround\" a partir da Play Store.</string>
   <string name="startup_google_play_accounts_removed_more_info">Mais informações</string>
   <string name="startup_opentasks_not_installed">O OpenTasks não está instalado</string>
-  <string name="startup_opentasks_not_installed_message">O aplicativo OpenTasks não está instalado ou está inacessível, não sendo possível sincronizar suas listas de tarefas com o DAVdroid. Reinstale o DAVdroid e então adicione suas contas novamente depois da instalação do OpenTasks.</string>
   <string name="startup_opentasks_not_installed_install">Instalar o OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_license_terms">Termos da Licença</string>
@@ -76,6 +75,17 @@
   <string name="account_create_new_address_book">Criar novo livro de endereços</string>
   <string name="account_refresh_calendar_list">Atualizar lista de calendários</string>
   <string name="account_create_new_calendar">Criar novo calendário</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">Permissões do DAVdroid</string>
+  <string name="permissions_calendar">Permissões do calendário</string>
+  <string name="permissions_calendar_details">Para sincronizar os eventos CalDAV com seus calendários locais, o DAVdroid precisa acessar seus calendários.</string>
+  <string name="permissions_calendar_request">Solicitar permissão do calendário</string>
+  <string name="permissions_contacts">Permissões dos contados</string>
+  <string name="permissions_contacts_details">Para sincronizar livros de endereços CardDAV com seus contatos locais, o DAVdroid precisa acessar seus contatos.</string>
+  <string name="permissions_contacts_request">Solicitar permissão dos contatos</string>
+  <string name="permissions_opentasks">Permissões do OpenTasks</string>
+  <string name="permissions_opentasks_details">Para sincronizar tarefas CalDAV com suas listas de tarefas locais, o DAVdroid precisa acessar o OpenTasks.</string>
+  <string name="permissions_opentasks_request">Solicitar permissão do OpenTasks</string>
   <!--AddAccountActivity-->
   <string name="login_title">Adicionar conta</string>
   <string name="login_type_email">Autenticação com endereço de e-mail</string>
@@ -139,6 +149,14 @@
     <item>A cada 4 horas</item>
     <item>Uma vez por dia</item>
   </string-array>
+  <string name="settings_sync_wifi_only">Sincronizar apenas por Wi-Fi</string>
+  <string name="settings_sync_wifi_only_on">A sincronização está restrita a conexões Wi-Fi</string>
+  <string name="settings_sync_wifi_only_off">O tipo de conexão não é considerado</string>
+  <string name="settings_sync_wifi_only_ssid">Restrição de SSID Wi-Fi</string>
+  <string name="settings_sync_wifi_only_ssid_on">Sincronizará apenas com %s</string>
+  <string name="settings_sync_wifi_only_ssid_off">Todas as conexões Wi-Fi podem ser utilizadas</string>
+  <string name="settings_sync_wifi_only_ssid_message">Informe o nome da rede Wi-Fi (SSID) que será usada para sincronização ou deixe em branco para usar qualquer conexão Wi-Fi.</string>
+  <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limite para eventos passados</string>
   <string name="settings_sync_time_range_past_none">Todos os eventos serão sincronizados</string>
   <plurals name="settings_sync_time_range_past_days">
@@ -146,14 +164,7 @@
     <item quantity="other">Eventos que ocorreram a mais de %d dias serão ignorados</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Os eventos que ocorreram antes desse número de dias serão ignorados (pode ser 0). Deixe em branco para sincronizar todos os eventos.</string>
-  <string name="settings_sync_wifi_only">Sincronizar apenas por Wi-Fi</string>
-  <string name="settings_sync_wifi_only_on">A sincronização está restrita a conexões Wi-Fi</string>
-  <string name="settings_sync_wifi_only_off">O tipo de conexão não é considerado</string>
-  <string name="settings_sync_wifi_only_ssid">Restrição de SSID Wi-Fi</string>
-  <string name="settings_sync_wifi_only_ssid_on">Sincronizará apenas com %s</string>
-  <string name="settings_sync_wifi_only_ssid_off">Todas as conexões Wi-Fi podem ser utilizada</string>
-  <string name="settings_sync_wifi_only_ssid_message">Informe o nome da rede Wi-Fi (SSID) que será usada para sincronização ou deixe em branco para usar qualquer conexão Wi-Fi.</string>
-  <string name="settings_manage_calendar_colors">Gerenciar as cores do calendário</string>
+  <string name="settings_manage_calendar_colors">Gerenciar cores dos calendários</string>
   <string name="settings_manage_calendar_colors_on">As cores do calendários são gerenciadas pelo DAVdroid</string>
   <string name="settings_manage_calendar_colors_off">As cores do calendários não são definidas pelo DAVdroid</string>
   <string name="settings_version_update">Atualização da versão do DAVdroid</string>

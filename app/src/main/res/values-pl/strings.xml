@@ -11,6 +11,7 @@
   <!--DavService-->
   <!--AppSettingsActivity-->
   <!--AccountActivity-->
+  <!--PermissionsActivity-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Logowanie za pomocą adresu e-mail</string>
   <string name="login_type_url">Logowanie za pomocą adresu URL i nazwy użytkownika</string>

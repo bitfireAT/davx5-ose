@@ -19,10 +19,10 @@
   <string name="startup_google_play_accounts_removed_message">Под одређеним околностима ДРМ Плеј продавнице може да узрокује да сви налози ДАВдроида нестане након рестарта или ажурирања ДАВдроида. Ако и само ако имате овај проблем, инсталирајте „DAVdroid JB Workaround“ са Плеј продавнице.</string>
   <string name="startup_google_play_accounts_removed_more_info">Још информација</string>
   <string name="startup_opentasks_not_installed">Отворени задаци нису инсталирани</string>
-  <string name="startup_opentasks_not_installed_message">Отворени задаци нису инсталирани или доступни, па ДАВдроид неће моћи да синхронизује листе задатака. Поново инсталирајте ДАВдроид и поново додајте ваше налоге након инсталације Отворених задатака.</string>
   <string name="startup_opentasks_not_installed_install">Инсталирај Отворене задатке</string>
   <!--AboutActivity-->
   <string name="about_license_terms">Услови лиценце</string>
+  <string name="about_license_info_no_warranty">Овај програм НЕМА НИКАКВЕ ГАРАНЦИЈЕ. Бесплатан је софтвер којег можете слободно да делите под одређеним условима.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">ДАВдроид евиденција</string>
   <string name="logging_to_external_storage">Уписивање евиденције у спољашње складиште: %s</string>
@@ -76,6 +76,17 @@
   <string name="account_create_new_address_book">Направи нови адресар</string>
   <string name="account_refresh_calendar_list">Освежи списак календара</string>
   <string name="account_create_new_calendar">Направи нови календар</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">ДАВдроид дозволе</string>
+  <string name="permissions_calendar">Дозволе за календар</string>
+  <string name="permissions_calendar_details">Да би синхронизовао КалДАВ догађаје са вашим локалним календарима, ДАВдроиду треба приступ вашим календарима.</string>
+  <string name="permissions_calendar_request">Захтевај дозволе за календар</string>
+  <string name="permissions_contacts">Дозволе за контакте</string>
+  <string name="permissions_contacts_details">Да би синхронизовао КардДАВ адресаре са вашим локалним контактима, ДАВдроиду треба приступ вашим контактима.</string>
+  <string name="permissions_contacts_request">Захтевај дозволе за контакте</string>
+  <string name="permissions_opentasks">Дозволе за задатке</string>
+  <string name="permissions_opentasks_details">Да би синхронизовао КалДАВ задатке са вашим локалним листама задатака, ДАВдроиду треба приступ Задацима.</string>
+  <string name="permissions_opentasks_request">Захтевај дозволе за задатке</string>
   <!--AddAccountActivity-->
   <string name="login_title">Додај налог</string>
   <string name="login_type_email">Пријавите се адресом е-поште</string>
@@ -139,6 +150,14 @@
     <item>Свака 4 сата</item>
     <item>Једном дневно</item>
   </string-array>
+  <string name="settings_sync_wifi_only">Само преко бежичног</string>
+  <string name="settings_sync_wifi_only_on">Синхронизовање само преко бежичних мрежа</string>
+  <string name="settings_sync_wifi_only_off">Тип везе није узет у обзир</string>
+  <string name="settings_sync_wifi_only_ssid">Ограничења ССИД-а бежичних</string>
+  <string name="settings_sync_wifi_only_ssid_on">Синхронизовање само преко %s</string>
+  <string name="settings_sync_wifi_only_ssid_off">Коришћење свих бежичних мрежа</string>
+  <string name="settings_sync_wifi_only_ssid_message">Унесите назив бежичне мреже (њен ССИД) да бисте ограничили синхронизацију само на ту мрежу, или оставите празно за синхронизовање преко било које бежичне мреже.</string>
+  <string name="settings_caldav">КалДАВ</string>
   <string name="settings_sync_time_range_past">Ограничење догађаја у прошлости</string>
   <string name="settings_sync_time_range_past_none">Сви догађаји се синхронизују</string>
   <plurals name="settings_sync_time_range_past_days">

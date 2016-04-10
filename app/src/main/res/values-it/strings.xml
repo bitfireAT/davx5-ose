@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="help">Aiuto</string>
+  <string name="manage_accounts">Gestione account</string>
+  <string name="please_wait">Attendere prego …</string>
+  <!--startup dialogs-->
+  <string name="startup_google_play_accounts_removed_more_info">Maggiori informazioni</string>
+  <string name="startup_opentasks_not_installed">OpenTasks non installata</string>
+  <string name="startup_opentasks_not_installed_install">Installa OpenTasks</string>
+  <!--AboutActivity-->
+  <string name="about_license_terms">Termini di licenza</string>
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_about">Informazioni / Licenza</string>
+  <string name="navigation_drawer_settings">Impostazioni</string>
+  <string name="navigation_drawer_news_updates">Notizie &amp; aggiornamenti</string>
+  <string name="navigation_drawer_external_links">Link esterni</string>
+  <string name="navigation_drawer_website">Sito web</string>
+  <string name="navigation_drawer_faq">Domande Frequenti</string>
+  <string name="navigation_drawer_forums">Comunità</string>
+  <string name="navigation_drawer_donate">Donazione</string>
+  <!--DavService-->
+  <!--AppSettingsActivity-->
+  <string name="app_settings">Impostazioni</string>
+  <string name="app_settings_user_interface">Interfaccia utente</string>
+  <string name="app_settings_security">Sicurezza</string>
+  <!--AccountActivity-->
+  <string name="account_synchronize_now">Sincronizza adesso</string>
+  <string name="account_synchronizing_now">Sincronizzazione in corso</string>
+  <string name="account_settings">Impostazioni account</string>
+  <string name="account_delete">Elimina account</string>
+  <string name="account_refresh_calendar_list">Aggiorna lista calendari</string>
+  <string name="account_create_new_calendar">Crea nuovo calendario</string>
+  <!--PermissionsActivity-->
+  <!--AddAccountActivity-->
+  <string name="login_title">Aggiungi account</string>
+  <string name="login_email_address">Indirizzo email</string>
+  <string name="login_password">Password</string>
+  <string name="login_user_name">Nome utente</string>
+  <string name="login_back">Indietro</string>
+  <string name="login_create_account">Crea account</string>
+  <string name="login_account_name">Nome account</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">Impostazioni: %s</string>
+  <string name="settings_authentication">Autenticazione</string>
+  <string name="settings_username">Nome utente</string>
+  <string name="settings_enter_username">Inserisci nome utente:</string>
+  <string name="settings_password">Password</string>
+  <string name="settings_sync_summary_manually">Solo manualmente</string>
+  <!--collection management-->
+  <!--ExceptionInfoFragment-->
+  <string name="exception">Si è verificato un errore.</string>
+  <string name="exception_httpexception">Si è verificato un errore HTTP.</string>
+  <string name="exception_ioexception">Si è verificato un errore di I/O.</string>
+  <string name="exception_show_details">Mostra dettagli</string>
+  <!--sync errors and DebugInfoActivity-->
+</resources>

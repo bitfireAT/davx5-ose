@@ -19,7 +19,6 @@
   <string name="startup_google_play_accounts_removed_message">特定の条件下で、DAVdroid を再起動後またはアップグレードした後、Play ストア DRM によりすべての DAVdroid アカウントがなくなる可能性があります。この問題の影響を受けている場合 (のみ)、Play ストアから「DAVdroid JB 回避策」をインストールしてください。</string>
   <string name="startup_google_play_accounts_removed_more_info">追加情報</string>
   <string name="startup_opentasks_not_installed">OpenTasks がインストールされていません</string>
-  <string name="startup_opentasks_not_installed_message">OpenTasks アプリがインストールされていないか、アクセスできないため、DAVdroid は、タスクリストを同期することができません。 OpenTasks をインストールした後、DAVdroidを再インストールして、再度アカウントを追加してください。</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks をインストール</string>
   <!--AboutActivity-->
   <string name="about_license_terms">ライセンス規約</string>
@@ -75,6 +74,7 @@
   <string name="account_create_new_address_book">新しいアドレス帳を作成</string>
   <string name="account_refresh_calendar_list">カレンダーリストを更新</string>
   <string name="account_create_new_calendar">新しいカレンダーを作成</string>
+  <!--PermissionsActivity-->
   <!--AddAccountActivity-->
   <string name="login_title">アカウントを追加</string>
   <string name="login_type_email">メールアドレスでログイン</string>
@@ -138,6 +138,13 @@
     <item>4 時間ごと</item>
     <item>1 日 1 回</item>
   </string-array>
+  <string name="settings_sync_wifi_only">WiFi でのみ同期</string>
+  <string name="settings_sync_wifi_only_on">同期は WiFi 接続に制限されます</string>
+  <string name="settings_sync_wifi_only_off">接続の種類は考慮されません</string>
+  <string name="settings_sync_wifi_only_ssid">WiFi SSID 制限</string>
+  <string name="settings_sync_wifi_only_ssid_on">%s でのみ同期します</string>
+  <string name="settings_sync_wifi_only_ssid_off">すべての WiFi 接続を使用することができます</string>
+  <string name="settings_sync_wifi_only_ssid_message">このネットワークで同期を制限する WiFi ネットワーク (SSID) の名前を入力してください。すべての WiFi 接続は空白のままにします。</string>
   <string name="settings_sync_time_range_past">過去イベントの時間限度</string>
   <string name="settings_sync_time_range_past_none">すべてのイベントが同期されます</string>
   <plurals name="settings_sync_time_range_past_days">

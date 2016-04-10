@@ -11,6 +11,7 @@
   <!--DavService-->
   <!--AppSettingsActivity-->
   <!--AccountActivity-->
+  <!--PermissionsActivity-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Вход по адресу email</string>
   <string name="login_type_url">Вход через URL  и имя пользователя</string>
