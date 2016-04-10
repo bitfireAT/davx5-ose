@@ -70,7 +70,7 @@ public class StartupDialogFragment extends DialogFragment {
         }
 
         // OpenTasks information
-        if (!LocalTaskList.tasksProviderAvailable(context.getContentResolver()) &&
+        if (!LocalTaskList.tasksProviderAvailable(context) &&
                 settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED, true))
             dialogs.add(StartupDialogFragment.instantiate(Mode.OPENTASKS_NOT_INSTALLED));
 
@@ -177,7 +177,8 @@ public class StartupDialogFragment extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.dmfs.tasks"));
-                                getContext().startActivity(intent);
+                                if (intent.resolveActivity(getContext().getPackageManager()) != null)
+                                    getContext().startActivity(intent);
                             }
                         })
                         .setNegativeButton(R.string.startup_dont_show_again, new DialogInterface.OnClickListener() {

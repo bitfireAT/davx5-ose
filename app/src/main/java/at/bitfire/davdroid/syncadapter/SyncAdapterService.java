@@ -9,13 +9,16 @@
 package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
-import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
@@ -24,18 +27,15 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.net.ConnectivityManagerCompat;
-import android.text.TextUtils;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
+import android.support.v4.app.NotificationCompat;
 
 import java.util.logging.Level;
 
 import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
-import at.bitfire.davdroid.InvalidAccountException;
-import at.bitfire.davdroid.model.ServiceDB;
+import at.bitfire.davdroid.Constants;
+import at.bitfire.davdroid.R;
+import at.bitfire.davdroid.ui.PermissionsActivity;
 
 public abstract class SyncAdapterService extends Service {
 
@@ -60,6 +60,27 @@ public abstract class SyncAdapterService extends Service {
 
             // required for dav4android (ServiceLoader)
             Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
+        }
+
+        @Override
+        public void onSecurityException(Account account, Bundle extras, String authority, SyncResult syncResult) {
+            App.log.log(Level.WARNING, "Security exception when opening content provider for " +  authority);
+            syncResult.databaseError = true;
+
+            Intent intent = new Intent(getContext(), PermissionsActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            Notification notify = new NotificationCompat.Builder(getContext())
+                    .setSmallIcon(R.drawable.ic_error_light)
+                    .setLargeIcon(((BitmapDrawable)getContext().getResources().getDrawable(R.drawable.ic_launcher)).getBitmap())
+                    .setContentTitle("DAVdroid permissions")
+                    .setContentText("Additional permissions are required.")
+                    .setContentIntent(PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT))
+                    .setCategory(NotificationCompat.CATEGORY_ERROR)
+                    .setLocalOnly(true)
+                    .build();
+            NotificationManager nm = (NotificationManager)getContext().getSystemService(NOTIFICATION_SERVICE);
+            nm.notify(Constants.NOTIFICATION_PERMISSIONS, notify);
         }
 
         protected boolean checkSyncConditions(@NonNull AccountSettings settings) {

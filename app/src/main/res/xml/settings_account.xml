@@ -74,7 +74,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="CalDAV">
+    <PreferenceCategory android:title="@string/settings_caldav">
 
         <EditTextPreference
             android:key="caldav_time_range_past_days"

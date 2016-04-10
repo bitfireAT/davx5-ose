@@ -21,7 +21,8 @@ public class Constants {
             NOTIFICATION_REFRESH_COLLECTIONS = 2,
             NOTIFICATION_CONTACTS_SYNC = 10,
             NOTIFICATION_CALENDAR_SYNC = 11,
-            NOTIFICATION_TASK_SYNC = 12;
+            NOTIFICATION_TASK_SYNC = 12,
+            NOTIFICATION_PERMISSIONS = 20;
 
     public static final Uri webUri = Uri.parse("https://davdroid.bitfire.at/?pk_campaign=davdroid-app");
 

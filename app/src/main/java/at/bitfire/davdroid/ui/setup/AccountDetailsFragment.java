@@ -14,6 +14,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
@@ -107,13 +108,13 @@ public class AccountDetailsFragment extends Fragment {
         App.log.log(Level.INFO, "Writing account configuration to database", config);
         @Cleanup OpenHelper dbHelper = new OpenHelper(getContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.beginTransactionNonExclusive();
         try {
             AccountSettings settings = new AccountSettings(getContext(), account);
 
             Intent refreshIntent = new Intent(getActivity(), DavService.class);
             refreshIntent.setAction(DavService.ACTION_REFRESH_COLLECTIONS);
 
+            db.beginTransactionNonExclusive();
             if (config.cardDAV != null) {
                 long id = insertService(db, accountName, Services.SERVICE_CARDDAV, config.cardDAV);
                 refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id);
@@ -132,13 +133,12 @@ public class AccountDetailsFragment extends Fragment {
                 ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1);
                 settings.setSyncInterval(CalendarContract.AUTHORITY, DEFAULT_SYNC_INTERVAL);
 
-                if (LocalTaskList.tasksProviderAvailable(getContext().getContentResolver())) {
-                    // will only do something if OpenTasks is installed and accessible
+                if (Build.VERSION.SDK_INT >= 23 || LocalTaskList.tasksProviderAvailable(getContext())) {
                     ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
                     settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, DEFAULT_SYNC_INTERVAL);
                 } else
-                    // If OpenTasks is installed after DAVdroid, DAVdroid won't get task permissions and crash at every task sync
-                    // unless we disable task sync here (before OpenTasks is available).
+                    // Android <6 only: disable OpenTasks sync forever when OpenTasks is not installed
+                    // because otherwise, there will be a non-catchable SecurityException as soon as OpenTasks is installed
                     ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0);
             } else {
                 ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0);

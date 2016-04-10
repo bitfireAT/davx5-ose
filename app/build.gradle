@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId "at.bitfire.davdroid"
         minSdkVersion 14
-        targetSdkVersion 22
+        targetSdkVersion 23
 
         versionCode 96
         versionName "1.0.6"
@@ -60,7 +60,7 @@ configurations.all {
 }
 
 dependencies {
-    provided 'org.projectlombok:lombok:1.16.6'
+    provided 'org.projectlombok:lombok:1.16.8'
 
     compile project(':dav4android')
     compile project(':ical4android')
