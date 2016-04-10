@@ -19,7 +19,6 @@
   <string name="startup_google_play_accounts_removed_message">在部分情况下，Play 商店的 DRM 可能会导致所有 DAVdroid 账户在设备重启或升级 DAVdroid 后消失。如果你遇到了该问题（并且只有这一问题），请从 Play 商店安装“DAVdroid JB Workaround”。</string>
   <string name="startup_google_play_accounts_removed_more_info">更多信息</string>
   <string name="startup_opentasks_not_installed">OpenTasks 未安装</string>
-  <string name="startup_opentasks_not_installed_message">OpenTasks 应用未安装或不可见，因此 DAVdroid 无法同步任务列表。请在安装 OpenTasks 后，重新安装 DAVdroid，再增加账户。</string>
   <string name="startup_opentasks_not_installed_install">安装 OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_license_terms">许可协议</string>
@@ -75,6 +74,7 @@
   <string name="account_create_new_address_book">创建通讯录</string>
   <string name="account_refresh_calendar_list">刷新日历列表</string>
   <string name="account_create_new_calendar">创建日历</string>
+  <!--PermissionsActivity-->
   <!--AddAccountActivity-->
   <string name="login_title">增加账户</string>
   <string name="login_type_email">使用邮箱地址登录</string>

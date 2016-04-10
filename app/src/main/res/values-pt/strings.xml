@@ -10,6 +10,7 @@
   <!--DavService-->
   <!--AppSettingsActivity-->
   <!--AccountActivity-->
+  <!--PermissionsActivity-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Login com seu enderço de email</string>
   <string name="login_type_url">Login com URL e nome do usuário</string>

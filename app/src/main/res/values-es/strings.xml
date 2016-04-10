@@ -18,7 +18,6 @@
   <string name="startup_google_play_accounts_removed_message">Bajo ciertas condiciones, el DRM de Play Store puede causar que todas las cuentas de DAVdroid se desconfiguren tras un reinicio o una actualización de DAVdroid. Si esto le afecta (y sólo en ese caso), por favor, instale \"DAVdroid JB Workaround\" desde Play Store.</string>
   <string name="startup_google_play_accounts_removed_more_info">Más información</string>
   <string name="startup_opentasks_not_installed">OpenTasks no está instalado</string>
-  <string name="startup_opentasks_not_installed_message">La aplicación OpenTasks no está instalada o accesible, por lo que DAVdroid no podrá sincronizar las listas de tareas. Reinstale DAVdroid y añada sus cuentas de nuevo después de instalar OpenTasks.</string>
   <string name="startup_opentasks_not_installed_install">Instalar OpenTasks</string>
   <!--AboutActivity-->
   <!--global settings-->
@@ -56,6 +55,7 @@
   <string name="account_create_new_address_book">Crear nueva lista de contactos</string>
   <string name="account_refresh_calendar_list">Refrescar calendario</string>
   <string name="account_create_new_calendar">Crear nuevo calendario</string>
+  <!--PermissionsActivity-->
   <!--AddAccountActivity-->
   <string name="login_title">Añadir cuenta</string>
   <string name="login_type_email">Acceder con cuenta de correo</string>

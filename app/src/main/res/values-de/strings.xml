@@ -19,7 +19,8 @@
   <string name="startup_google_play_accounts_removed_message">Unter bestimmten Umständen verursacht die zwangsweise Play Store-Verschlüsselung, dass Accounts nach einem Neustart oder einem DAVdroid-Update verschwinden. Installieren Sie \"DAVdroid JB Workaround\", falls Sie von dem Problem betroffen sind.</string>
   <string name="startup_google_play_accounts_removed_more_info">Weitere Infos</string>
   <string name="startup_opentasks_not_installed">OpenTasks nicht installiert</string>
-  <string name="startup_opentasks_not_installed_message">Die OpenTasks-App ist nicht installiert oder DAVdroid hat keine Rechte, um darauf zuzugreifen. Aufgabenlisten werden also nicht synchronisiert. Falls Sie OpenTasks installieren, müssen Sie DAVdroid DANACH NEU INSTALLIEREN und Ihre Konten neu hinzufügen (Android-Bug).</string>
+  <string name="startup_opentasks_not_installed_message">Die OpenTasks-App ist nicht verfügbar; Aufgabenlisten können also nicht synchronisiert werden.</string>
+  <string name="startup_opentasks_reinstall_davdroid">Nach der Installation von OpenTasks muss DAVdroid NEU INSTALLIERT und die Konten neu hinzugefügt werden (Android-Bug).</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks installieren</string>
   <!--AboutActivity-->
   <string name="about_license_terms">Lizenzbedingungen</string>
@@ -76,6 +77,17 @@
   <string name="account_create_new_address_book">Neues Adressbuch erstellen</string>
   <string name="account_refresh_calendar_list">Kalender neu erkennen</string>
   <string name="account_create_new_calendar">Neuen Kalender erstellen</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">DAVdroid-Berechtigungen</string>
+  <string name="permissions_calendar">Kalender-Zugriff</string>
+  <string name="permissions_calendar_details">Um CalDAV-Termine mit lokalen Kalendern abzugleichen, benötigt DAVdroid Kalender-Zugriffsrechte.</string>
+  <string name="permissions_calendar_request">Kalender-Zugriff anfordern</string>
+  <string name="permissions_contacts">Adressbuch-Zugriff</string>
+  <string name="permissions_contacts_details">Um CardDAV-Kontakte mit dem lokalen Adressbuch abzugleichen, benötigt DAVdroid Adressbuch-Zugriffsrechte.</string>
+  <string name="permissions_contacts_request">Adressbuch-Zugriff anfordern</string>
+  <string name="permissions_opentasks">OpenTasks-Zugriff</string>
+  <string name="permissions_opentasks_details">Um CalDAV-Aufgaben mit lokalen Aufgabenlisten abzugleichen, benötigt DAVdroid Zugriffsrechte für OpenTasks.</string>
+  <string name="permissions_opentasks_request">OpenTasks-Zugriff anfordern</string>
   <!--AddAccountActivity-->
   <string name="login_title">Konto hinzufügen</string>
   <string name="login_type_email">Mit Email-Adresse anmelden</string>
@@ -139,13 +151,6 @@
     <item>Alle 4 Stunden</item>
     <item>Täglich</item>
   </string-array>
-  <string name="settings_sync_time_range_past">Abrufbeschränkung vergangener Termine</string>
-  <string name="settings_sync_time_range_past_none">Alle Termine werden synchronisiert</string>
-  <plurals name="settings_sync_time_range_past_days">
-    <item quantity="one">Termine, die mehr als einen Tag in der Vergangenheit liegen, werden ignoriert</item>
-    <item quantity="other">Termine, die mehr als %d Tage in der Vergangenheit liegen, werden ignoriert</item>
-  </plurals>
-  <string name="settings_sync_time_range_past_message">Termine, die mehr als diese Anzahl von Tagen in der Vergangenheit liegen, werden ignoriert (kann 0 sein). Feld leer lassen, um alle Termine zu synchronisieren.</string>
   <string name="settings_sync_wifi_only">Nur über WLAN synchronisieren</string>
   <string name="settings_sync_wifi_only_on">Synchronisierung nur bei aktiver WLAN-Verbindung</string>
   <string name="settings_sync_wifi_only_off">Verbindungstyp wird nicht beachtet</string>
@@ -153,6 +158,14 @@
   <string name="settings_sync_wifi_only_ssid_on">Synchronisierung nur über %s</string>
   <string name="settings_sync_wifi_only_ssid_off">Alle WLAN-Verbindungen können verwendet werden</string>
   <string name="settings_sync_wifi_only_ssid_message">Name eines WLANs (SSID) eingeben, um Synchronisierung auf dieses WLAN zu beschränken. Leer lassen, um alle WLAN-Verbindungen zuzulassen.</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Abrufbeschränkung vergangener Termine</string>
+  <string name="settings_sync_time_range_past_none">Alle Termine werden synchronisiert</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Termine, die mehr als einen Tag in der Vergangenheit liegen, werden ignoriert</item>
+    <item quantity="other">Termine, die mehr als %d Tage in der Vergangenheit liegen, werden ignoriert</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Termine, die mehr als diese Anzahl von Tagen in der Vergangenheit liegen, werden ignoriert (kann 0 sein). Feld leer lassen, um alle Termine zu synchronisieren.</string>
   <string name="settings_manage_calendar_colors">Kalenderfarben verwalten</string>
   <string name="settings_manage_calendar_colors_on">Kalenderfarben werden von DAVdroid verwaltet</string>
   <string name="settings_manage_calendar_colors_off">DAVdroid setzt keine Kalenderfarben</string>
@@ -187,6 +200,8 @@
   <string name="exception_show_details">Details anzeigen</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Informationen zur Fehlersuche</string>
+  <string name="sync_error_permissions">DAVdroid-Berechtigungen</string>
+  <string name="sync_error_permissions_text">Zusätzliche Berechtigungen benötigt</string>
   <string name="sync_error_calendar">Kalender-Synchronisierung fehlgeschlagen (%s)</string>
   <string name="sync_error_contacts">Adressbuch-Synchronisierung fehlgeschlagen (%s)</string>
   <string name="sync_error_tasks">Aufgaben-Synchronisierung fehlgeschlagen (%s)</string>

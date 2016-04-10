@@ -29,7 +29,8 @@
     <string name="startup_google_play_accounts_removed_message">Under certain conditions, Play Store DRM may cause all DAVdroid accounts to be gone after a reboot or after upgrading DAVdroid. If you\'re affected by this problem (and only then), please install \"DAVdroid JB Workaround\" from Play Store.</string>
     <string name="startup_google_play_accounts_removed_more_info">More information</string>
     <string name="startup_opentasks_not_installed">OpenTasks not installed</string>
-    <string name="startup_opentasks_not_installed_message">The OpenTasks app is not installed or not accessible, so DAVdroid won\'t be able to synchronize task lists. Re-install DAVdroid and then add your accounts again after installing OpenTasks.</string>
+    <string name="startup_opentasks_not_installed_message">The OpenTasks app is not available, so DAVdroid won\'t be able to synchronize task lists.</string>
+    <string name="startup_opentasks_reinstall_davdroid">After installing OpenTasks, you have to RE-INSTALL DAVdroid and add your accounts again (Android bug).</string>
     <string name="startup_opentasks_not_installed_install">Install OpenTasks</string>
 
     <!-- AboutActivity -->
@@ -223,6 +224,8 @@
 
     <!-- sync errors and DebugInfoActivity -->
     <string name="debug_info_title">Debug info</string>
+    <string name="sync_error_permissions">DAVdroid permissions</string>
+    <string name="sync_error_permissions_text">Additional permissions required</string>
     <string name="sync_error_calendar">Calendar synchronization failed (%s)</string>
     <string name="sync_error_contacts">Address book synchronization failed (%s)</string>
     <string name="sync_error_tasks">Task synchronization failed (%s)</string>

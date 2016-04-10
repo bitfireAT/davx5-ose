@@ -19,7 +19,6 @@
   <string name="startup_google_play_accounts_removed_message">Bizonyos körülmények között  a Play Áruház DRM okozhatja azt, hogy az eszköz újraindítását vagy a DAVdroid frissítését követően a DAVdroid fiókok eltűnnek.  Amennyiben (és csak amennyiben) érinti Önt ez a probléma, telepítse a \"DAVdroid JB Workaround\" alkalmazást Play Áruházból.</string>
   <string name="startup_google_play_accounts_removed_more_info">További információk</string>
   <string name="startup_opentasks_not_installed">Az OpenTasks nincs telepítve</string>
-  <string name="startup_opentasks_not_installed_message">Az OpenTasks alkalmazás nincs telepítve vagy nem elérhető, ezért a DAVdroid nem lesz képes a feladatlisták szinkronizálására.  Az OpenTasks telepítése után telepítse újra a DAVdroid-ot majd hozza létre a fiókot újra.</string>
   <string name="startup_opentasks_not_installed_install">Az OpenTasks telepítése</string>
   <!--AboutActivity-->
   <string name="about_license_terms">Licencfeltételek</string>
@@ -76,6 +75,7 @@
   <string name="account_create_new_address_book">Új címjegyzék létrehozása</string>
   <string name="account_refresh_calendar_list">Naptárlista frissítése</string>
   <string name="account_create_new_calendar">Új naptár létrehozása</string>
+  <!--PermissionsActivity-->
   <!--AddAccountActivity-->
   <string name="login_title">Fiók hozzáadása</string>
   <string name="login_type_email">Bejelentkezés email cím segítségével</string>
@@ -139,13 +139,6 @@
     <item>4 óránként</item>
     <item>Naponta</item>
   </string-array>
-  <string name="settings_sync_time_range_past">Múltbéli események időkorlátja</string>
-  <string name="settings_sync_time_range_past_none">Minden esemény szinkronizálása</string>
-  <plurals name="settings_sync_time_range_past_days">
-    <item quantity="one">Az egy napnál régebbi események figyelmen kívül hagyása</item>
-    <item quantity="other">A %d napnál régebbi események figyelmen kívül hagyása</item>
-  </plurals>
-  <string name="settings_sync_time_range_past_message">Az ennyi napnál (lehet 0) régebbi események figyelmen kívül lesznek hagyva.  Hagyja üresen, ha minden múltbéli eseményt szinkronizálni akar.</string>
   <string name="settings_sync_wifi_only">Szinkronizálás csak WIFI-n</string>
   <string name="settings_sync_wifi_only_on">Csak WIFI kapcsolat keresztül történjen szinkronizálás</string>
   <string name="settings_sync_wifi_only_off">Szinkronizálás a kapcsolat típusától függetlenül</string>
@@ -153,6 +146,13 @@
   <string name="settings_sync_wifi_only_ssid_on">Szinkronizálás csak a(z) %s hálózatra kapcsolódva</string>
   <string name="settings_sync_wifi_only_ssid_off">Szinkronizálás bármely WIFI hálózaton</string>
   <string name="settings_sync_wifi_only_ssid_message">Adja meg a WIFI hálózat nevét (SSID) a szinkronizálás egy hálózatra való korlátozához, vagy hagyja üresen, ha nem akar ilyen szűkítést.</string>
+  <string name="settings_sync_time_range_past">Múltbéli események időkorlátja</string>
+  <string name="settings_sync_time_range_past_none">Minden esemény szinkronizálása</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Az egy napnál régebbi események figyelmen kívül hagyása</item>
+    <item quantity="other">A %d napnál régebbi események figyelmen kívül hagyása</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Az ennyi napnál (lehet 0) régebbi események figyelmen kívül lesznek hagyva.  Hagyja üresen, ha minden múltbéli eseményt szinkronizálni akar.</string>
   <string name="settings_manage_calendar_colors">Naptárszínek kezelése</string>
   <string name="settings_manage_calendar_colors_on">A naptárszíneket a DAVdroid kezeli</string>
   <string name="settings_manage_calendar_colors_off">A naptárszíneket nem a DAVdroid kezeli</string>

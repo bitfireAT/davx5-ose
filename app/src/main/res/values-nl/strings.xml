@@ -19,7 +19,6 @@
   <string name="startup_google_play_accounts_removed_message">Onder bepaalde omstandigheden, kan Play Store DRM ervoor zorgen dat accounts kwijt zijn na een herstart of na een DAVdroid update. Als dit probleem zich bij je voordoet (en alleen dan), Installeer dan \"DAVdroid JB Workaround\" vanuit de Play Store</string>
   <string name="startup_google_play_accounts_removed_more_info">Meer informatie</string>
   <string name="startup_opentasks_not_installed">OpenTasks niet geinstalleerd</string>
-  <string name="startup_opentasks_not_installed_message">De OpenTasks app is niet geinstalleerd of niet toegankelijk, daarom kan DAVdroid geen takenlijsten synchronizeren. Herinstalleer DAVdroid en voeg je accounts opnieuw toe na het installeren van OpenTasks.</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks installeren</string>
   <!--AboutActivity-->
   <string name="about_license_terms">Licentie voorwaarden</string>
@@ -72,6 +71,7 @@
   <string name="account_create_new_address_book">Maak een nieuw adresboek</string>
   <string name="account_refresh_calendar_list">Agenda\'s vernieuwen</string>
   <string name="account_create_new_calendar">Maak een nieuwe agenda</string>
+  <!--PermissionsActivity-->
   <!--AddAccountActivity-->
   <string name="login_title">Account toevoegen</string>
   <string name="login_type_email">Inloggen met e-mailadres</string>

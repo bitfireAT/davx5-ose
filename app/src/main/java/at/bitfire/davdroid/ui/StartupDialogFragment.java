@@ -164,10 +164,13 @@ public class StartupDialogFragment extends DialogFragment {
                         .create();
 
             case OPENTASKS_NOT_INSTALLED:
+                StringBuilder builder = new StringBuilder(getString(R.string.startup_opentasks_not_installed_message));
+                if (Build.VERSION.SDK_INT < 23)
+                    builder.append("\n\n").append(getString(R.string.startup_opentasks_reinstall_davdroid));
                 return new AlertDialog.Builder(getActivity())
                         .setIcon(R.drawable.ic_alarm_on_dark)
                         .setTitle(R.string.startup_opentasks_not_installed)
-                        .setMessage(R.string.startup_opentasks_not_installed_message)
+                        .setMessage(builder.toString())
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -179,6 +182,8 @@ public class StartupDialogFragment extends DialogFragment {
                                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.dmfs.tasks"));
                                 if (intent.resolveActivity(getContext().getPackageManager()) != null)
                                     getContext().startActivity(intent);
+                                else
+                                    App.log.warning("No market app available, can't install OpenTasks");
                             }
                         })
                         .setNegativeButton(R.string.startup_dont_show_again, new DialogInterface.OnClickListener() {

@@ -19,7 +19,6 @@
   <string name="startup_google_play_accounts_removed_message">Dans certaines conditions, Play Store DRM peut provoquer la disparition de tous les comptes DAVdroid après un redémarrage ou après la mise à niveau de DAVdroid. Si vous êtes concerné par ce problème (et seulement alors), s\'il vous plaît installer \"DAVdroid JB Solution\" du Play Store.</string>
   <string name="startup_google_play_accounts_removed_more_info">Plus d\'information</string>
   <string name="startup_opentasks_not_installed">OpenTasks n\'est pas installé</string>
-  <string name="startup_opentasks_not_installed_message">L\'application OpenTasks n\'est pas installé ou pas accessible, donc DAVdroid ne pourra pas synchroniser vos tâches. Réinstaller DAVdroid et ajouter à nouveau votre compte après l\'installation d\'OpenTasks.</string>
   <string name="startup_opentasks_not_installed_install">Installer OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_license_terms">Conditions d\'utilisation</string>
@@ -75,6 +74,7 @@
   <string name="account_create_new_address_book">Créer un nouveau carnet d\'adresse</string>
   <string name="account_refresh_calendar_list">Actualiser le calendrier</string>
   <string name="account_create_new_calendar">Créer un nouveau calendrier</string>
+  <!--PermissionsActivity-->
   <!--AddAccountActivity-->
   <string name="login_title">Ajouter un compte</string>
   <string name="login_type_email">Connexion avec une adresse email</string>
@@ -138,6 +138,14 @@
     <item>Toutes les 4 heures</item>
     <item>Une fois par jour</item>
   </string-array>
+  <string name="settings_sync_wifi_only">Synchronisation en Wifi seulement</string>
+  <string name="settings_sync_wifi_only_on">La synchronisation est limitée aux connexions WiFi</string>
+  <string name="settings_sync_wifi_only_off">Le type de connexion n\'est pas pris en charge</string>
+  <string name="settings_sync_wifi_only_ssid">Restriction WiFi SSID</string>
+  <string name="settings_sync_wifi_only_ssid_on">Sera seulement synchroniser avec %s</string>
+  <string name="settings_sync_wifi_only_ssid_off">Toutes les connexions WiFi peuvent être utilisées</string>
+  <string name="settings_sync_wifi_only_ssid_message">Entrez le nom d\'un réseau WiFi (SSID) pour restreindre la synchronisation à ce réseau, ou laisser vide pour autoriser toutes les connexions WiFi.</string>
+  <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limite des événements passés</string>
   <string name="settings_sync_time_range_past_none">Tous les événements seront synchronisés</string>
   <plurals name="settings_sync_time_range_past_days">

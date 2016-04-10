@@ -10,6 +10,7 @@
   <!--DavService-->
   <!--AppSettingsActivity-->
   <!--AccountActivity-->
+  <!--PermissionsActivity-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Увійти за допомогою електронної пошти</string>
   <string name="login_type_url">Увійти за допомогою URL та імені користувача</string>
