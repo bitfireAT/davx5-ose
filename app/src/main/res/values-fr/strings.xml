@@ -19,6 +19,8 @@
   <string name="startup_google_play_accounts_removed_message">Dans certaines conditions, Play Store DRM peut provoquer la disparition de tous les comptes DAVdroid après un redémarrage ou après la mise à niveau de DAVdroid. Si vous êtes concerné par ce problème (et seulement alors), s\'il vous plaît installer \"DAVdroid JB Solution\" du Play Store.</string>
   <string name="startup_google_play_accounts_removed_more_info">Plus d\'information</string>
   <string name="startup_opentasks_not_installed">OpenTasks n\'est pas installé</string>
+  <string name="startup_opentasks_not_installed_message">L\'application OpenTasks n\'est pas disponible, donc DAVdroid ne pourra pas synchroniser des listes de tâches.</string>
+  <string name="startup_opentasks_reinstall_davdroid">Après l\'installation OpenTasks, vous devez RE-INSTALLER DAVdroid et ajoutez vos comptes à nouveau (bug Android).</string>
   <string name="startup_opentasks_not_installed_install">Installer OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_license_terms">Conditions d\'utilisation</string>
@@ -58,8 +60,8 @@
     <item quantity="other">%d certificats douteux</item>
   </plurals>
   <string name="app_settings_debug">Débogage</string>
-  <string name="app_settings_log_to_external_storage">Se connecter au fichier externe</string>
-  <string name="app_settings_log_to_external_storage_on">Se connecter au stockage externe (si disponible)</string>
+  <string name="app_settings_log_to_external_storage">Journaliser dans un fichier externe</string>
+  <string name="app_settings_log_to_external_storage_on">Journaliser sur le stockage externe (si disponible)</string>
   <string name="app_settings_log_to_external_storage_off">Le fichier externe n\'est pas disponible.</string>
   <string name="app_settings_show_debug_info">Afficher les infos de débogage</string>
   <string name="app_settings_show_debug_info_details">Voir/partager l\'application et les détails de configuration</string>
@@ -75,6 +77,16 @@
   <string name="account_refresh_calendar_list">Actualiser le calendrier</string>
   <string name="account_create_new_calendar">Créer un nouveau calendrier</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">Autorisations DAVdroid</string>
+  <string name="permissions_calendar">Autorisations calendrier</string>
+  <string name="permissions_calendar_details">Pour synchroniser les événements CalDAV avec vos calendriers locaux, DAVdroid a besoin d\'accéder à vos calendriers.</string>
+  <string name="permissions_calendar_request">Demande d\'autorisations d\'accéder au calendrier</string>
+  <string name="permissions_contacts">Autorisations contacts</string>
+  <string name="permissions_contacts_details">Pour synchroniser les carnets d\'adresses de CardDAV avec votre carnet d\'adresses local, DAVdroid a besoin d\'accéder à vos contacts.</string>
+  <string name="permissions_contacts_request">Demande d\'autorisations d\'accéder aux contacts</string>
+  <string name="permissions_opentasks">Autorisations OpenTasks</string>
+  <string name="permissions_opentasks_details">Pour synchroniser les tâches de CalDAV avec vos listes de tâches locales, DAVdroid a besoin d\'accéder à OpenTasks.</string>
+  <string name="permissions_opentasks_request">Demande d\'autorisations d\'accéder à OpenTasks</string>
   <!--AddAccountActivity-->
   <string name="login_title">Ajouter un compte</string>
   <string name="login_type_email">Connexion avec une adresse email</string>
@@ -187,6 +199,8 @@
   <string name="exception_show_details">Voir détails</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Infos de débogage</string>
+  <string name="sync_error_permissions">Autorisations DAVdroid</string>
+  <string name="sync_error_permissions_text">Autorisations supplémentaires demandées</string>
   <string name="sync_error_calendar">Échec de la synchronisation du calendrier (%s)</string>
   <string name="sync_error_contacts">Échec de la synchronisation du carnet d\'adresse (%s)</string>
   <string name="sync_error_tasks">Échec de la synchronisation (%s)</string>

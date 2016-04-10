@@ -19,6 +19,8 @@
   <string name="startup_google_play_accounts_removed_message">Под одређеним околностима ДРМ Плеј продавнице може да узрокује да сви налози ДАВдроида нестане након рестарта или ажурирања ДАВдроида. Ако и само ако имате овај проблем, инсталирајте „DAVdroid JB Workaround“ са Плеј продавнице.</string>
   <string name="startup_google_play_accounts_removed_more_info">Још информација</string>
   <string name="startup_opentasks_not_installed">Отворени задаци нису инсталирани</string>
+  <string name="startup_opentasks_not_installed_message">Отворени задаци нису доступни па ДАВдроид неће моћи да синхронизује листе задатака. </string>
+  <string name="startup_opentasks_reinstall_davdroid">Након инсталирања Отворених задатака, морате поново да инсталирате ДАВдроид и поново додате ваше налоге (због грешке у Андроиду).</string>
   <string name="startup_opentasks_not_installed_install">Инсталирај Отворене задатке</string>
   <!--AboutActivity-->
   <string name="about_license_terms">Услови лиценце</string>
@@ -199,6 +201,8 @@
   <string name="exception_show_details">Прикажи детаље</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Подаци за исправљање грешака</string>
+  <string name="sync_error_permissions">ДАВдроид дозволе</string>
+  <string name="sync_error_permissions_text">Потребне су додатне доволе</string>
   <string name="sync_error_calendar">Синхронизација календара није успела (%s)</string>
   <string name="sync_error_contacts">Синхронизација адресара није успела (%s)</string>
   <string name="sync_error_tasks">Синхронизација задатака није успела (%s)</string>

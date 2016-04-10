@@ -19,6 +19,8 @@
   <string name="startup_google_play_accounts_removed_message">Sob certas condições, o DRM da Play Store pode fazer com que todas as contas DAVdroid sejam perdidas depois de uma reinicialização ou atualização do DAVdroid. Se você for afetado por esse problema, instale o \"DAVdroid JB Workaround\" a partir da Play Store.</string>
   <string name="startup_google_play_accounts_removed_more_info">Mais informações</string>
   <string name="startup_opentasks_not_installed">O OpenTasks não está instalado</string>
+  <string name="startup_opentasks_not_installed_message">O aplicativo OpenTasks não está disponível, não sendo possível sincronizar as listas de tarefas pelo DAVdroid.</string>
+  <string name="startup_opentasks_reinstall_davdroid">Depois da instalação do OpenTasks, torna-se necessário REINSTALAR o DAVdroid e adicionar suas contas novamente (erro do Android).</string>
   <string name="startup_opentasks_not_installed_install">Instalar o OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_license_terms">Termos da Licença</string>
@@ -198,6 +200,8 @@
   <string name="exception_show_details">Mostrar detalhes</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Informações de depuração</string>
+  <string name="sync_error_permissions">Permissões do DAVdroid</string>
+  <string name="sync_error_permissions_text">É necessário permissões adicionais</string>
   <string name="sync_error_calendar">Falha na sincronização do calendário (%s)</string>
   <string name="sync_error_contacts">Falha na sincronização do livro de endereços (%s)</string>
   <string name="sync_error_tasks">Falha na sincronização das tarefas (%s)</string>
