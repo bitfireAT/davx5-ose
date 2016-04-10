@@ -15,6 +15,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
@@ -223,7 +224,8 @@ abstract public class SyncManager {
             detailsIntent.setData(Uri.parse("uri://" + getClass().getName() + "/" + uniqueCollectionId));
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-            builder .setSmallIcon(R.drawable.ic_launcher)
+            builder .setSmallIcon(R.drawable.ic_error_light)
+                    .setLargeIcon(((BitmapDrawable)context.getResources().getDrawable(R.drawable.ic_launcher)).getBitmap())
                     .setContentTitle(getSyncErrorTitle())
                     .setContentIntent(PendingIntent.getActivity(context, 0, detailsIntent, PendingIntent.FLAG_CANCEL_CURRENT))
                     .setCategory(NotificationCompat.CATEGORY_ERROR)

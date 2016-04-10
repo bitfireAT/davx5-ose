@@ -9,10 +9,11 @@
 package at.bitfire.davdroid.resource;
 
 import android.accounts.Account;
-import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -29,7 +30,6 @@ import at.bitfire.ical4android.AndroidTaskListFactory;
 import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.TaskProvider;
 import lombok.Cleanup;
-import okhttp3.HttpUrl;
 
 public class LocalTaskList extends AndroidTaskList implements LocalCollection {
 
@@ -134,12 +134,16 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
 
     // helpers
 
-    public static boolean tasksProviderAvailable(@NonNull ContentResolver resolver) {
+    public static boolean tasksProviderAvailable(@NonNull Context context) {
         if (tasksProviderAvailable != null)
             return tasksProviderAvailable;
         else {
-            @Cleanup TaskProvider provider = TaskProvider.acquire(resolver, TaskProvider.ProviderName.OpenTasks);
-            return tasksProviderAvailable = (provider != null);
+            if (Build.VERSION.SDK_INT >= 23)
+                return context.getPackageManager().resolveContentProvider(TaskProvider.ProviderName.OpenTasks.authority, 0) != null;
+            else {
+                @Cleanup TaskProvider provider = TaskProvider.acquire(context.getContentResolver(), TaskProvider.ProviderName.OpenTasks);
+                return tasksProviderAvailable = (provider != null);
+            }
         }
     }
 

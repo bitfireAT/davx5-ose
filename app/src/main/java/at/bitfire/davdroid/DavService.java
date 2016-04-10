@@ -72,20 +72,22 @@ public class DavService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String action = intent.getAction();
-        long id = intent.getLongExtra(EXTRA_DAV_SERVICE_ID, -1);
+        if (intent != null) {
+            String action = intent.getAction();
+            long id = intent.getLongExtra(EXTRA_DAV_SERVICE_ID, -1);
 
-        switch (action) {
-            case ACTION_ACCOUNTS_UPDATED:
-                cleanupAccounts();
-                break;
-            case ACTION_REFRESH_COLLECTIONS:
-                if (runningRefresh.add(id)) {
-                    new Thread(new RefreshCollections(id)).start();
-                    for (RefreshingStatusListener listener : refreshingStatusListeners)
-                        listener.onDavRefreshStatusChanged(id, true);
-                }
-                break;
+            switch (action) {
+                case ACTION_ACCOUNTS_UPDATED:
+                    cleanupAccounts();
+                    break;
+                case ACTION_REFRESH_COLLECTIONS:
+                    if (runningRefresh.add(id)) {
+                        new Thread(new RefreshCollections(id)).start();
+                        for (RefreshingStatusListener listener : refreshingStatusListeners)
+                            listener.onDavRefreshStatusChanged(id, true);
+                    }
+                    break;
+            }
         }
 
         return START_NOT_STICKY;

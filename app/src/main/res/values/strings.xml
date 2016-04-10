@@ -94,6 +94,18 @@
     <string name="account_refresh_calendar_list">Refresh calendar list</string>
     <string name="account_create_new_calendar">Create new calendar</string>
 
+    <!-- PermissionsActivity -->
+    <string name="permissions_title">DAVdroid permissions</string>
+    <string name="permissions_calendar">Calendar permissions</string>
+    <string name="permissions_calendar_details">To synchronize CalDAV events with your local calendars, DAVdroid needs to access your calendars.</string>
+    <string name="permissions_calendar_request">Request calendar permissions</string>
+    <string name="permissions_contacts">Contacts permissions</string>
+    <string name="permissions_contacts_details">To synchronize CardDAV address books with your local contacts, DAVdroid needs to access your contacts.</string>
+    <string name="permissions_contacts_request">Request contacts permissions</string>
+    <string name="permissions_opentasks">OpenTasks permissions</string>
+    <string name="permissions_opentasks_details">To synchronize CalDAV tasks with your local task lists, DAVdroid needs to access OpenTasks.</string>
+    <string name="permissions_opentasks_request">Request OpenTasks permissions</string>
+
     <!-- AddAccountActivity -->
     <string name="login_title">Add account</string>
     <string name="login_type_email">Login with email address</string>
@@ -159,13 +171,6 @@
         <item>Every 4 hours</item>
         <item>Once a day</item>
     </string-array>
-    <string name="settings_sync_time_range_past">Past event time limit</string>
-    <string name="settings_sync_time_range_past_none">All events will be synchronized</string>
-    <plurals name="settings_sync_time_range_past_days">
-        <item quantity="one">Events more than one day in the past will be ignored</item>
-        <item quantity="other">Events more than %d days in the past will be ignored</item>
-    </plurals>
-    <string name="settings_sync_time_range_past_message">Events which are more than this number of days in the past will be ignored (may be 0). Leave blank to synchronize all events.</string>
     <string name="settings_sync_wifi_only">Sync over WiFi only</string>
     <string name="settings_sync_wifi_only_on">Synchronization is restricted to WiFi connections</string>
     <string name="settings_sync_wifi_only_off">Connection type is not taken into consideration</string>
@@ -173,6 +178,14 @@
     <string name="settings_sync_wifi_only_ssid_on">Will only synchronize over %s</string>
     <string name="settings_sync_wifi_only_ssid_off">All WiFi connections may be used</string>
     <string name="settings_sync_wifi_only_ssid_message">Enter the name of a WiFi network (SSID) to restrict synchronization to this network, or leave blank for all WiFi connections.</string>
+    <string name="settings_caldav">CalDAV</string>
+    <string name="settings_sync_time_range_past">Past event time limit</string>
+    <string name="settings_sync_time_range_past_none">All events will be synchronized</string>
+    <plurals name="settings_sync_time_range_past_days">
+        <item quantity="one">Events more than one day in the past will be ignored</item>
+        <item quantity="other">Events more than %d days in the past will be ignored</item>
+    </plurals>
+    <string name="settings_sync_time_range_past_message">Events which are more than this number of days in the past will be ignored (may be 0). Leave blank to synchronize all events.</string>
     <string name="settings_manage_calendar_colors">Manage calendar colors</string>
     <string name="settings_manage_calendar_colors_on">Calendar colors are managed by DAVdroid</string>
     <string name="settings_manage_calendar_colors_off">Calendar colors are not set by DAVdroid</string>
