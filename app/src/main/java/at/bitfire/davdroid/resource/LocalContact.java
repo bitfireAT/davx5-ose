@@ -82,7 +82,7 @@ public class LocalContact extends AndroidContact implements LocalResource {
                 Contact groupInfo = group.getContact();
 
                 // add to CATEGORIES
-                contact.getCategories().add(groupInfo.displayName);
+                contact.categories.add(groupInfo.displayName);
             } catch (FileNotFoundException|ContactsStorageException e) {
                 App.log.log(Level.WARNING, "Couldn't find assigned group #" + groupId + ", ignoring membership", e);
             }
@@ -91,7 +91,7 @@ public class LocalContact extends AndroidContact implements LocalResource {
 
     @Override
     protected void insertGroupMemberships(BatchOperation batch) throws ContactsStorageException {
-        for (String category : contact.getCategories()) {
+        for (String category : contact.categories) {
             // Is there already a category with this display name?
             LocalGroup group = ((LocalAddressBook)addressBook).findGroupByTitle(category);
 
