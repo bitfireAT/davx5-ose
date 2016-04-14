@@ -3,20 +3,119 @@
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
   <string name="help">Pomoc</string>
+  <string name="manage_accounts">Spravovat účty</string>
+  <string name="please_wait">Chvíli strpení ...</string>
   <string name="send">Odeslat</string>
   <!--startup dialogs-->
+  <string name="startup_dont_show_again">Již neukazovat</string>
+  <string name="startup_development_version">DAVdroid preview vydání</string>
+  <string name="startup_development_version_message">Toto je vývojová verze aplikace DAVdroid. Mějte na paměti, že vše nemusí správně fungovat. Budeme rádi za konstruktivní zpětnou vazbu, která pomůže vylepšit DAVdroid.</string>
+  <string name="startup_development_version_give_feedback">Dát zpětnou vazbu</string>
+  <string name="startup_donate">Open Source informace</string>
+  <string name="startup_donate_message">Jsme velice rádi že používáte DAVdroid, software s otevřeným zdrojovým kódem (GPLv3). Vývoj této aplikace je náročný a trval již několik tisíc hodin, velice nás potěší přispějete-li na jeho vývoj.</string>
+  <string name="startup_donate_now">Zobrazit stránku pro obdarování</string>
+  <string name="startup_donate_later">Možná později</string>
+  <string name="startup_google_play_accounts_removed">Informace o chybě DRM Obchodu Play</string>
+  <string name="startup_google_play_accounts_removed_message">Za určitých podmínek může dojít po restartu nebo aktualizaci aplikace DAVdroid k vymazání účtů kvůli chybě DRM Obchodu Play. Pokud jste postiženi touto chybou (ale pouze v tomto případě), nainstalujte prosím z Obchodu Play aplikaci \"DAVdroid JB Workaround\".</string>
+  <string name="startup_google_play_accounts_removed_more_info">Více informací</string>
+  <string name="startup_opentasks_not_installed">OpenTasks není nainstalován</string>
+  <string name="startup_opentasks_not_installed_message">Aplikace OpenTasks není dostupná, proto nebude DAVdroid moci synchronizovat seznam úkolů.</string>
+  <string name="startup_opentasks_reinstall_davdroid">Po instalaci OpenTasks musíte PŘEINSTALOVAT DAVdroid a přidat znovu své účty (Android chyba).</string>
+  <string name="startup_opentasks_not_installed_install">Nainstalovat OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_license_terms">Licenční podmínky</string>
+  <string name="about_license_info_no_warranty">Tento program je distribuován BEZ JAKÉKOLIV ZÁRUKY. Je to volně dostupný software a lze jej za určitých podmínek dále distribuovat.</string>
   <!--global settings-->
+  <string name="logging_davdroid_file_logging">DAVdroid logování do souboru</string>
+  <string name="logging_to_external_storage">Logování do externího úložiště: %s</string>
+  <string name="logging_to_external_storage_warning">Smazat logy jak nejdříve možno!</string>
+  <string name="logging_couldnt_create_file">Nelze vytvořit externí soubor logu: %s</string>
+  <string name="logging_no_external_storage">Externí úložiště nenalezeno</string>
   <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Otevřít panel navigace</string>
+  <string name="navigation_drawer_close">Zavřít panel navigace</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV adapter synchronizace</string>
+  <string name="navigation_drawer_about">O aplikaci / Licence</string>
+  <string name="navigation_drawer_settings">Nastavení</string>
+  <string name="navigation_drawer_news_updates">Novinky &amp; aktualizace</string>
+  <string name="navigation_drawer_external_links">Externí odkazy</string>
+  <string name="navigation_drawer_website">Webová stránka</string>
+  <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_forums">Komunita</string>
+  <string name="navigation_drawer_donate">Obdarovat</string>
+  <string name="account_list_empty">Vítejte v aplikaci DAVdroid!\n\nNyní můžete přidat CalDAV/CardDAV účet.</string>
   <!--DavService-->
+  <string name="dav_service_refresh_failed">Vyhledání služby selhalo</string>
+  <string name="dav_service_refresh_couldnt_refresh">Nelze obnovit seznam sbírky</string>
   <!--AppSettingsActivity-->
+  <string name="app_settings">Nastavení</string>
+  <string name="app_settings_user_interface">Uživatelské prostředí</string>
+  <string name="app_settings_reset_hints">Resetovat nápovědu</string>
+  <string name="app_settings_reset_hints_summary">Znovu povolí vypnuté texty nápovědy</string>
+  <string name="app_settings_reset_hints_success">Budou zobrazovány všechny texty nápovědy</string>
+  <string name="app_settings_security">Zabezpečení</string>
+  <string name="app_settings_reset_trusted_certificates">Resetovat důvěryhodné certifikáty</string>
+  <string name="app_settings_reset_trusted_certificates_summary">Zapomene všechny dříve akceptované certifikáty</string>
+  <plurals name="app_settings_reset_trusted_certificates_success">
+    <item quantity="one">Znedůvěryhodněn jeden certifikát</item>
+    <item quantity="few">Znedůvěryhodněny %d certifikáty</item>
+    <item quantity="other">Znedůvěryhodněno %d certifikátů</item>
+  </plurals>
+  <string name="app_settings_debug">Ladění</string>
+  <string name="app_settings_log_to_external_storage">Logovat do externího souboru</string>
+  <string name="app_settings_log_to_external_storage_on">Logování do externího úložiště (pokud dostupné)</string>
+  <string name="app_settings_log_to_external_storage_off">Logování do externího souboru je vypnuto</string>
+  <string name="app_settings_show_debug_info">Zobrazit ladící informace</string>
+  <string name="app_settings_show_debug_info_details">Zobrazit/sdílet software a detaily konfigurace</string>
   <!--AccountActivity-->
+  <string name="account_synchronize_now">Synchronizovat nyní</string>
+  <string name="account_synchronizing_now">Probíhá synchronizace</string>
+  <string name="account_settings">Nastavení účtu</string>
+  <string name="account_delete">Smazat účet</string>
+  <string name="account_delete_confirmation_title">Opravdu smazat účet?</string>
+  <string name="account_delete_confirmation_text">Všechny místní kopie adresáře, kalendářů a úkolů budou smazány.</string>
+  <string name="account_refresh_address_book_list">Obnovit seznam adresářů</string>
+  <string name="account_create_new_address_book">Vytvořit nový adresář</string>
+  <string name="account_refresh_calendar_list">Obnovit seznam kalendářů</string>
+  <string name="account_create_new_calendar">Vytvořit nový kalendář</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">DAVdroid oprávnění</string>
+  <string name="permissions_calendar">Oprávnění pro kalendáře</string>
+  <string name="permissions_calendar_details">Pro synchronizaci CalDAV událostí s místním kalendářem potřebuje DAVdroid oprávnění přistupovat ke kalendářům.</string>
+  <string name="permissions_calendar_request">Vyžádat oprávnění kalendáře</string>
+  <string name="permissions_contacts">Oprávnění pro kontakty</string>
+  <string name="permissions_contacts_details">Pro synchronizaci CardDAV adresářů s místními kontakty potřebuje DAVdroid oprávnění přistupovat ke kontaktům.</string>
+  <string name="permissions_contacts_request">Vyžádat oprávnění kontaktů</string>
+  <string name="permissions_opentasks">Oprávnění pro OpenTasks</string>
+  <string name="permissions_opentasks_details">Pro synchronizaci CalDAV událostí s místním seznamem úkolů potřebuje DAVdroid oprávnění přistupovat k OpenTasks.</string>
+  <string name="permissions_opentasks_request">Vyžádat oprávnění OpenTasks</string>
   <!--AddAccountActivity-->
+  <string name="login_title">Přidat účet</string>
   <string name="login_type_email">Přihlášení s emailovou adresou</string>
+  <string name="login_email_address">Emailová adresa</string>
+  <string name="login_email_address_error">Vyžadován platný email</string>
+  <string name="login_password">Heslo</string>
+  <string name="login_password_required">Vyžadováno heslo</string>
   <string name="login_type_url">Přihlášení s URL a uživatelským jménem</string>
+  <string name="login_url_must_be_http_or_https">URL musí začínat na http(s)://</string>
+  <string name="login_url_host_name_required">Vyžadováno hostname</string>
+  <string name="login_user_name">Uživatelské jméno</string>
+  <string name="login_user_name_required">Vyžadováno uživatelské jméno</string>
+  <string name="login_base_url">Základní URL</string>
   <string name="login_auth_preemptive">Preemptivní ověření (doporučeno, ale není kompatibilní s Digest ověřením)</string>
+  <string name="login_login">Login</string>
+  <string name="login_back">Zpět</string>
+  <string name="login_create_account">Vytvořit účet</string>
+  <string name="login_account_name">Jméno účtu</string>
+  <string name="login_account_name_info">Pro jméno účtu použijte svou emailovou adresu, protože Android bude brát jméno účtu jako údaj pro ORGANIZÁTORA vytvořených událostí. Nelze mít dva účty stejného jména.</string>
+  <string name="login_account_name_required">Vyžadováno jméno účtu</string>
+  <string name="login_account_not_created">Účet nelze vytvořit</string>
+  <string name="login_configuration_detection">Vyhledání konfigurace</string>
+  <string name="login_querying_server">Chvíli strpení, probíhá dotazování serveru...</string>
+  <string name="login_no_caldav_carddav">Nelze nalézt službu CalDAV nebo CardDAV.</string>
+  <string name="login_view_logs">Prohlížet logy</string>
   <!--AccountSettingsActivity-->
+  <string name="settings_title">Nastavení: %s</string>
   <string name="settings_authentication">Ověření</string>
   <string name="settings_username">Uživatelské jméno</string>
   <string name="settings_enter_username">Zadat uživatelské jméno</string>
@@ -53,10 +152,58 @@
     <item>Každé 4 hodiny</item>
     <item>Jednou za den</item>
   </string-array>
+  <string name="settings_sync_wifi_only">Synchronizovat pouze přes WiFi</string>
+  <string name="settings_sync_wifi_only_on">Synchronizace omezena na WiFi připojení</string>
+  <string name="settings_sync_wifi_only_off">Druh připojení není brán v potaz</string>
+  <string name="settings_sync_wifi_only_ssid">Omezení WiFi SSID</string>
+  <string name="settings_sync_wifi_only_ssid_on">Synchronizace pouze přes %s</string>
+  <string name="settings_sync_wifi_only_ssid_off">Použít všechna WiFi připojení</string>
+  <string name="settings_sync_wifi_only_ssid_message">Zadejte jméno WiFi sítě (SSID) pro omezení synchronizace na tutu síť, nebo ponechte prázdné pro použití všech WiFi připojení.</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Časový limit pro staré události</string>
+  <string name="settings_sync_time_range_past_none">Synchronizovat všechny události</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Ignorovat události starší než 1 den</item>
+    <item quantity="few">Ignorovat události starší než %d dny</item>
+    <item quantity="other">Ignorovat události starší než %d dnů</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Události z minulosti starší než vyznačený počet dnů budou ignorovány (lze zadat 0). Ponechte prázdné pro synchronizaci všech událostí.</string>
+  <string name="settings_manage_calendar_colors">Spravovat barvy kalendářů</string>
+  <string name="settings_manage_calendar_colors_on">Barvy kalendářů spravuje DAVdroid</string>
+  <string name="settings_manage_calendar_colors_off">Barvy kalendářů nespravuje DAVdroid</string>
+  <string name="settings_version_update">Aktualizace verze DAVdroid</string>
+  <string name="settings_version_update_settings_updated">Vnitřní nastavení byla aktualizována.</string>
+  <string name="settings_version_update_install_hint">Při problémech odinstalujte a znovu nainstalujte DAVdroid.</string>
   <!--collection management-->
+  <string name="create_addressbook">Vytvořit adresář</string>
+  <string name="create_addressbook_display_name_hint">Můj adresář</string>
+  <string name="create_calendar">Vytvořit CalDAV sbírku</string>
+  <string name="create_calendar_display_name_hint">Můj kalendář</string>
+  <string name="create_calendar_time_zone">Časová zóna:</string>
+  <string name="create_calendar_type">Typ sbírky:</string>
+  <string name="create_calendar_type_only_events">Kalendář (pouze události)</string>
+  <string name="create_calendar_type_only_tasks">Seznam úkolů (pouze úkoly)</string>
+  <string name="create_calendar_type_events_and_tasks">Kombinovaná (události a úkoly)</string>
+  <string name="create_collection_color">Nastavit barvu sbírky</string>
+  <string name="create_collection_creating">Vytváření sbírky</string>
+  <string name="create_collection_display_name">Zobrazit jméno (nadpis) této sbírky:</string>
+  <string name="create_collection_display_name_required">Nadpis je vyžadován</string>
+  <string name="create_collection_description">Popis (volitelný):</string>
+  <string name="create_collection_home_set">Domácí sbírka:</string>
+  <string name="create_collection_create">Vytvořit</string>
+  <string name="delete_collection">Smazat sbírku</string>
+  <string name="delete_collection_confirm_title">Jste si jisti?</string>
+  <string name="delete_collection_confirm_warning">Tato sbírka (%s) a všechna její data budou odstraněna ze serveru.</string>
+  <string name="delete_collection_deleting_collection">Mazání sbírky</string>
   <!--ExceptionInfoFragment-->
+  <string name="exception">Došlo k chybě.</string>
+  <string name="exception_httpexception">Došlo k HTTP chybě.</string>
+  <string name="exception_ioexception">Došlo k I/O chybě.</string>
+  <string name="exception_show_details">Zobrazit detaily</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Ladící informace</string>
+  <string name="sync_error_permissions">DAVdroid oprávnění</string>
+  <string name="sync_error_permissions_text">Vyžadována dodatečná oprávnění</string>
   <string name="sync_error_calendar">Synchronizace kalendáře selhala (%s)</string>
   <string name="sync_error_contacts">Synchronizace adresáře selhala (%s)</string>
   <string name="sync_error_tasks">Synchronizace úkolu selhala (%s)</string>

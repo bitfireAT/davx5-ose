@@ -189,6 +189,7 @@
   <string name="create_collection_display_name">Назив (наслов) ове збирке:</string>
   <string name="create_collection_display_name_required">Наслов је обавезан</string>
   <string name="create_collection_description">Опис (необавезан):</string>
+  <string name="create_collection_home_set">Домаћа фасцикла:</string>
   <string name="create_collection_create">Направи</string>
   <string name="delete_collection">Обриши збирку</string>
   <string name="delete_collection_confirm_title">Да ли сте сигурни?</string>

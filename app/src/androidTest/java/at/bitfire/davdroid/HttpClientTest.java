@@ -8,7 +8,7 @@
 
 package at.bitfire.davdroid;
 
-import android.test.InstrumentationTestCase;
+import junit.framework.TestCase;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -19,7 +19,7 @@ import okhttp3.Request;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
-public class HttpClientTest extends InstrumentationTestCase {
+public class HttpClientTest extends TestCase {
 
     MockWebServer server;
     OkHttpClient httpClient;

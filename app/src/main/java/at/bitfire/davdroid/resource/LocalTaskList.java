@@ -58,22 +58,25 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
     }
 
     public static Uri create(Account account, TaskProvider provider, CollectionInfo info) throws CalendarStorageException {
-        ContentValues values = valuesFromCollectionInfo(info);
+        ContentValues values = valuesFromCollectionInfo(info, true);
         values.put(TaskLists.OWNER, account.name);
+        values.put(TaskLists.SYNC_ENABLED, 1);
+        values.put(TaskLists.VISIBLE, 1);
         return create(account, provider, values);
     }
 
-    public void update(CollectionInfo info) throws CalendarStorageException {
-        update(valuesFromCollectionInfo(info));
+    public void update(CollectionInfo info, boolean updateColor) throws CalendarStorageException {
+        update(valuesFromCollectionInfo(info, updateColor));
     }
 
-    private static ContentValues valuesFromCollectionInfo(CollectionInfo info) {
+    private static ContentValues valuesFromCollectionInfo(CollectionInfo info, boolean withColor) {
         ContentValues values = new ContentValues();
         values.put(TaskLists._SYNC_ID, info.url);
         values.put(TaskLists.LIST_NAME, !TextUtils.isEmpty(info.displayName) ? info.displayName : DavUtils.lastSegmentOfUrl(info.url));
-        values.put(TaskLists.LIST_COLOR, info.color != null ? info.color : defaultColor);
-        values.put(TaskLists.SYNC_ENABLED, 1);
-        values.put(TaskLists.VISIBLE, 1);
+
+        if (withColor)
+            values.put(TaskLists.LIST_COLOR, info.color != null ? info.color : defaultColor);
+
         return values;
     }
 

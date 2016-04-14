@@ -19,6 +19,8 @@
   <string name="startup_google_play_accounts_removed_message">Bizonyos körülmények között  a Play Áruház DRM okozhatja azt, hogy az eszköz újraindítását vagy a DAVdroid frissítését követően a DAVdroid fiókok eltűnnek.  Amennyiben (és csak amennyiben) érinti Önt ez a probléma, telepítse a \"DAVdroid JB Workaround\" alkalmazást Play Áruházból.</string>
   <string name="startup_google_play_accounts_removed_more_info">További információk</string>
   <string name="startup_opentasks_not_installed">Az OpenTasks nincs telepítve</string>
+  <string name="startup_opentasks_not_installed_message">Az OpenTasks alkalmazás nincs telepítve, így a DAVdroid nem lesz képes szinkronizálni feladatlistákat.</string>
+  <string name="startup_opentasks_reinstall_davdroid">Az OpenTasks telepítését követően újra kell telepíteni a DAVdroit alkalmazást és újra fel kell venni a fiókokat (Android hiba).</string>
   <string name="startup_opentasks_not_installed_install">Az OpenTasks telepítése</string>
   <!--AboutActivity-->
   <string name="about_license_terms">Licencfeltételek</string>
@@ -76,6 +78,16 @@
   <string name="account_refresh_calendar_list">Naptárlista frissítése</string>
   <string name="account_create_new_calendar">Új naptár létrehozása</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">DAVdroid engedélyek </string>
+  <string name="permissions_calendar">Naptárengedély</string>
+  <string name="permissions_calendar_details">A CalDAV naptárak és a helyi naptárak szinkronizálásához a DAVdroid naptárhozzáférést igényel.</string>
+  <string name="permissions_calendar_request">Naptárhozzáférés igénylése</string>
+  <string name="permissions_contacts">Névjegyengedélyek</string>
+  <string name="permissions_contacts_details">A CardDAV címlisták és a helyi címlisták szinkronizálásához a névjegyhozzáférést igényel.</string>
+  <string name="permissions_contacts_request">Névjegyengedélyek igénylése</string>
+  <string name="permissions_opentasks">OpenTasks engedélyek</string>
+  <string name="permissions_opentasks_details">A CalDAV feladatlisták és a helyi feladatlisták szinkronizálásához a DAVdroid OpenTasks hozzáférést igényel.</string>
+  <string name="permissions_opentasks_request">OpenTasks engedélyek igénylése</string>
   <!--AddAccountActivity-->
   <string name="login_title">Fiók hozzáadása</string>
   <string name="login_type_email">Bejelentkezés email cím segítségével</string>
@@ -146,6 +158,7 @@
   <string name="settings_sync_wifi_only_ssid_on">Szinkronizálás csak a(z) %s hálózatra kapcsolódva</string>
   <string name="settings_sync_wifi_only_ssid_off">Szinkronizálás bármely WIFI hálózaton</string>
   <string name="settings_sync_wifi_only_ssid_message">Adja meg a WIFI hálózat nevét (SSID) a szinkronizálás egy hálózatra való korlátozához, vagy hagyja üresen, ha nem akar ilyen szűkítést.</string>
+  <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Múltbéli események időkorlátja</string>
   <string name="settings_sync_time_range_past_none">Minden esemény szinkronizálása</string>
   <plurals name="settings_sync_time_range_past_days">
@@ -187,6 +200,8 @@
   <string name="exception_show_details">Részletek megjelenítése</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Hibakeresési információ</string>
+  <string name="sync_error_permissions">DAVdroid engedélyek </string>
+  <string name="sync_error_permissions_text">További engedélyek szükségesek</string>
   <string name="sync_error_calendar">A naptár szinkronizálása nem sikerült (%s)</string>
   <string name="sync_error_contacts">A címjegyzék szinkronizálása nem sikerült (%s)</string>
   <string name="sync_error_tasks">A feladatok szinkronizálása nem sikerült (%s)</string>
