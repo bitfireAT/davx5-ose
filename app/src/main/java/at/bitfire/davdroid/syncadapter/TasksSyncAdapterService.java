@@ -22,6 +22,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import org.dmfs.provider.tasks.TaskContract;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -65,10 +67,10 @@ public class TasksSyncAdapterService extends SyncAdapterService {
                 if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(settings))
                     return;
 
-                updateLocalTaskLists(provider, account);
+                updateLocalTaskLists(provider, account, settings);
 
-                for (LocalTaskList taskList : (LocalTaskList[])LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, null, null)) {
-                    App.log.info("Synchronizing task list #"  + taskList.getId() + ", URL: " + taskList.getSyncId());
+                for (LocalTaskList taskList : (LocalTaskList[])LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, TaskContract.TaskLists.SYNC_ENABLED + "!=0", null)) {
+                    App.log.info("Synchronizing task list #" + taskList.getId() + " [" + taskList.getSyncId() + "]");
                     TasksSyncManager syncManager = new TasksSyncManager(getContext(), account, settings, extras, authority, provider, syncResult, taskList);
                     syncManager.performSync();
                 }
@@ -81,7 +83,7 @@ public class TasksSyncAdapterService extends SyncAdapterService {
             App.log.info("Task sync complete");
         }
 
-        private void updateLocalTaskLists(TaskProvider provider, Account account) throws CalendarStorageException {
+        private void updateLocalTaskLists(TaskProvider provider, Account account, AccountSettings settings) throws CalendarStorageException {
             SQLiteOpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
             try {
                 // enumerate remote and local task lists
@@ -89,6 +91,8 @@ public class TasksSyncAdapterService extends SyncAdapterService {
                 Long service = getService(db, account);
                 Map<String, CollectionInfo> remote = remoteTaskLists(db, service);
                 LocalTaskList[] local = (LocalTaskList[])LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, null, null);
+
+                boolean updateColors = settings.getManageCalendarColors();
 
                 // delete obsolete local task lists
                 for (LocalTaskList list : local) {
@@ -100,7 +104,7 @@ public class TasksSyncAdapterService extends SyncAdapterService {
                         // remote CollectionInfo found for this local collection, update data
                         CollectionInfo info = remote.get(url);
                         App.log.fine("Updating local task list " + url + " with " + info);
-                        list.update(info);
+                        list.update(info, updateColors);
                         // we already have a local task list for this remote collection, don't take into consideration anymore
                         remote.remove(url);
                     }

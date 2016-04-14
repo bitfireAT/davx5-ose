@@ -19,6 +19,8 @@
   <string name="startup_google_play_accounts_removed_message">特定の条件下で、DAVdroid を再起動後またはアップグレードした後、Play ストア DRM によりすべての DAVdroid アカウントがなくなる可能性があります。この問題の影響を受けている場合 (のみ)、Play ストアから「DAVdroid JB 回避策」をインストールしてください。</string>
   <string name="startup_google_play_accounts_removed_more_info">追加情報</string>
   <string name="startup_opentasks_not_installed">OpenTasks がインストールされていません</string>
+  <string name="startup_opentasks_not_installed_message">OpenTasks アプリが利用できないため、DAVdroid はタスクリストを同期することができません。</string>
+  <string name="startup_opentasks_reinstall_davdroid">OpenTasks をインストールした後で、DAVdroidを再インストールして、再度アカウントを追加してください (Android のバグ)。</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks をインストール</string>
   <!--AboutActivity-->
   <string name="about_license_terms">ライセンス規約</string>
@@ -75,6 +77,16 @@
   <string name="account_refresh_calendar_list">カレンダーリストを更新</string>
   <string name="account_create_new_calendar">新しいカレンダーを作成</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">DAVdroid アクセス許可</string>
+  <string name="permissions_calendar">カレンダー アクセス許可</string>
+  <string name="permissions_calendar_details">ローカルのカレンダーと CalDAV イベントを同期するため、DAVdroid がカレンダーにアクセスする必要があります。</string>
+  <string name="permissions_calendar_request">カレンダー アクセス許可の要求</string>
+  <string name="permissions_contacts">連絡先アクセス許可</string>
+  <string name="permissions_contacts_details">ローカルの連絡先と CalDAV アドレス帳を同期するため、DAVdroid が連絡先にアクセスする必要があります。</string>
+  <string name="permissions_contacts_request">連絡先アクセス許可の要求</string>
+  <string name="permissions_opentasks">OpenTasks アクセス許可</string>
+  <string name="permissions_opentasks_details">ローカルのタスクリストと CalDAV タスクを同期するため、DAVdroid が OpenTasks にアクセスする必要があります。</string>
+  <string name="permissions_opentasks_request">OpenTasks アクセス許可の要求</string>
   <!--AddAccountActivity-->
   <string name="login_title">アカウントを追加</string>
   <string name="login_type_email">メールアドレスでログイン</string>
@@ -145,6 +157,7 @@
   <string name="settings_sync_wifi_only_ssid_on">%s でのみ同期します</string>
   <string name="settings_sync_wifi_only_ssid_off">すべての WiFi 接続を使用することができます</string>
   <string name="settings_sync_wifi_only_ssid_message">このネットワークで同期を制限する WiFi ネットワーク (SSID) の名前を入力してください。すべての WiFi 接続は空白のままにします。</string>
+  <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">過去イベントの時間限度</string>
   <string name="settings_sync_time_range_past_none">すべてのイベントが同期されます</string>
   <plurals name="settings_sync_time_range_past_days">
@@ -185,6 +198,8 @@
   <string name="exception_show_details">詳細を表示</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">デバッグ情報</string>
+  <string name="sync_error_permissions">DAVdroid アクセス許可</string>
+  <string name="sync_error_permissions_text">追加のアクセス許可が必要です</string>
   <string name="sync_error_calendar">カレンダーの同期に失敗しました (%s)</string>
   <string name="sync_error_contacts">アドレス帳の同期に失敗しました (%s)</string>
   <string name="sync_error_tasks">タスクの同期に失敗しました (%s)</string>

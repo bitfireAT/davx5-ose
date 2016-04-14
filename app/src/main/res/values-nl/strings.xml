@@ -19,6 +19,8 @@
   <string name="startup_google_play_accounts_removed_message">Onder bepaalde omstandigheden, kan Play Store DRM ervoor zorgen dat accounts kwijt zijn na een herstart of na een DAVdroid update. Als dit probleem zich bij je voordoet (en alleen dan), Installeer dan \"DAVdroid JB Workaround\" vanuit de Play Store</string>
   <string name="startup_google_play_accounts_removed_more_info">Meer informatie</string>
   <string name="startup_opentasks_not_installed">OpenTasks niet geinstalleerd</string>
+  <string name="startup_opentasks_not_installed_message">De OpenTasks app is niet beschikbaar, Hierdoor is het voor DAVdroid niet mogelijk om uw taken te synchroniseren.</string>
+  <string name="startup_opentasks_reinstall_davdroid">Na installatie van OpenTasks dient u DAVdroid opnieuw te installeren en de accounts toe te voegen (Android bug).</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks installeren</string>
   <!--AboutActivity-->
   <string name="about_license_terms">Licentie voorwaarden</string>
@@ -54,17 +56,21 @@
   <string name="app_settings_security">Beveiliging</string>
   <string name="app_settings_reset_trusted_certificates">Vertrouwde certificaten resetten</string>
   <string name="app_settings_reset_trusted_certificates_summary">Vergeet alle eerder geaccepteerde certificaten</string>
+  <plurals name="app_settings_reset_trusted_certificates_success">
+    <item quantity="one">Onbetrouwbaar certificaat</item>
+    <item quantity="other">Onbetrouwbaar %d certificaten</item>
+  </plurals>
   <string name="app_settings_debug">Debuggen</string>
   <string name="app_settings_log_to_external_storage">Log naar extern bestand</string>
   <string name="app_settings_log_to_external_storage_on">Loggen naar externe opslag (wanneer beschikbaar)</string>
   <string name="app_settings_log_to_external_storage_off">Extern bestands loggen uitgeschakeld</string>
-  <string name="app_settings_show_debug_info">Toon debug info</string>
+  <string name="app_settings_show_debug_info">Debug info tonen</string>
   <string name="app_settings_show_debug_info_details">Bekijk/deel software configuratie details</string>
   <!--AccountActivity-->
-  <string name="account_synchronize_now">Nu synchronizeren</string>
+  <string name="account_synchronize_now">Synchroniseer nu</string>
   <string name="account_synchronizing_now">Aan het synchronizeren...</string>
   <string name="account_settings">Account instellingen</string>
-  <string name="account_delete">Verwijder account</string>
+  <string name="account_delete">Account verwijderen</string>
   <string name="account_delete_confirmation_title">Account echt verwijderen?</string>
   <string name="account_delete_confirmation_text">Alle lokale kopieën van adresboeken, agenda\'s en taken worden verwijderd.</string>
   <string name="account_refresh_address_book_list">Adresboeken vernieuwen</string>
@@ -72,6 +78,16 @@
   <string name="account_refresh_calendar_list">Agenda\'s vernieuwen</string>
   <string name="account_create_new_calendar">Maak een nieuwe agenda</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">DAVdroid rechten</string>
+  <string name="permissions_calendar">Agenda rechten</string>
+  <string name="permissions_calendar_details">Om CalDAV afspraken te synchroniseren met u agenda dient DAVdroid toegang te verkrijgen. </string>
+  <string name="permissions_calendar_request">Agenda rechten verkrijgen</string>
+  <string name="permissions_contacts">Contact rechten</string>
+  <string name="permissions_contacts_details">Om CalDAV afspraken te synchroniseren met u contacten dient DAVdroid toegang te verkrijgen. </string>
+  <string name="permissions_contacts_request">Contacten rechten verkrijgen</string>
+  <string name="permissions_opentasks">OpenTasks rechten</string>
+  <string name="permissions_opentasks_details">Om CalDAV taken te synchroniseren met uw local takenlijst dient DAVdroid toegang te hebben tot OpenTasks</string>
+  <string name="permissions_opentasks_request">OpenTasks rechten verkrijgen</string>
   <!--AddAccountActivity-->
   <string name="login_title">Account toevoegen</string>
   <string name="login_type_email">Inloggen met e-mailadres</string>
@@ -135,10 +151,22 @@
     <item>Elke 4 uur</item>
     <item>Dagelijks</item>
   </string-array>
+  <string name="settings_sync_wifi_only">Sync alleen tijdens WiFi</string>
+  <string name="settings_sync_wifi_only_on">Synchronisatie is voorbehouden tijdens WiFi verbindingen</string>
+  <string name="settings_sync_wifi_only_off">Verbinding type is niet overwogen</string>
+  <string name="settings_sync_wifi_only_ssid">WiFi SSID beperking</string>
+  <string name="settings_sync_wifi_only_ssid_on">Zal alleen synchroniseren over %s</string>
+  <string name="settings_sync_wifi_only_ssid_off">Alle WiFI verbindingen mogen worden gebruikt</string>
+  <string name="settings_sync_wifi_only_ssid_message">Type de naam van het WiFi netwerk (SSID) om synchronisatie tot dit netwerk te beperken. Leeg laten voor sync over alle netwerken.</string>
+  <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tijdslimiet verleden afspraken</string>
   <string name="settings_sync_time_range_past_none">Alle afspraken worden gesynchronizeerd</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Afspraken ouder dan een dag worden genegeerd</item>
+    <item quantity="other">Afspraken ouder dan %d dagen worden genegeerd</item>
+  </plurals>
   <string name="settings_sync_time_range_past_message">Afspraken ouder dan dit aantal dagen worden genegeerd (mag 0 zijn). Laat leeg om alle afspraken te synchronizeren.</string>
-  <string name="settings_manage_calendar_colors">Beheer agenda kleuren</string>
+  <string name="settings_manage_calendar_colors">Agenda kleuren beheren</string>
   <string name="settings_manage_calendar_colors_on">Agenda kleuren worden door DAVdroid beheerd.</string>
   <string name="settings_manage_calendar_colors_off">Agenda kleuren worden niet door DAVdroid ingesteld</string>
   <string name="settings_version_update">DAVdroid versie update</string>
@@ -159,6 +187,7 @@
   <string name="create_collection_display_name">Weergave naam (titel) van deze collectie:</string>
   <string name="create_collection_display_name_required">Titel is vereist</string>
   <string name="create_collection_description">Beschrijving (optioneel):</string>
+  <string name="create_collection_home_set">Begin map:</string>
   <string name="create_collection_create">Maak</string>
   <string name="delete_collection">Verwijder collectie</string>
   <string name="delete_collection_confirm_title">Weet je het zeker?</string>
@@ -171,6 +200,8 @@
   <string name="exception_show_details">Toon details</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Debug informatie</string>
+  <string name="sync_error_permissions">DAVdroid rechten</string>
+  <string name="sync_error_permissions_text">Aanvullende rechten vereist</string>
   <string name="sync_error_calendar">Agenda synchronisatie is mislukt (%s)</string>
   <string name="sync_error_contacts">Adresboek synchronisatie is mislukt (%s)</string>
   <string name="sync_error_tasks">Taak synchronisatie is mislukt (%s)</string>

@@ -19,6 +19,8 @@
   <string name="startup_google_play_accounts_removed_message">在部分情况下，Play 商店的 DRM 可能会导致所有 DAVdroid 账户在设备重启或升级 DAVdroid 后消失。如果你遇到了该问题（并且只有这一问题），请从 Play 商店安装“DAVdroid JB Workaround”。</string>
   <string name="startup_google_play_accounts_removed_more_info">更多信息</string>
   <string name="startup_opentasks_not_installed">OpenTasks 未安装</string>
+  <string name="startup_opentasks_not_installed_message">未安装 OpenTasks 应用，故 DAVdroid 无法同步任务列表。</string>
+  <string name="startup_opentasks_reinstall_davdroid">安装 OpenTasks 后，由于 Android 的限制，请重新安装 DAVdroid 并重新创建账户。</string>
   <string name="startup_opentasks_not_installed_install">安装 OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_license_terms">许可协议</string>
@@ -75,6 +77,16 @@
   <string name="account_refresh_calendar_list">刷新日历列表</string>
   <string name="account_create_new_calendar">创建日历</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">DAVdroid 权限</string>
+  <string name="permissions_calendar">日历权限</string>
+  <string name="permissions_calendar_details">要把 CalDAV 事件与本地日历同步，DAVdroid 需要日历权限。</string>
+  <string name="permissions_calendar_request">请求日历权限</string>
+  <string name="permissions_contacts">通讯录权限</string>
+  <string name="permissions_contacts_details">要把 CardDAV 通讯录与本地通讯录同步，DAVdroid 需要通讯录权限。</string>
+  <string name="permissions_contacts_request">请求通讯录权限</string>
+  <string name="permissions_opentasks">OpenTasks 权限</string>
+  <string name="permissions_opentasks_details">要把 CalDAV 任务与本地任务列表同步，DAVdroid 需要访问 OpenTasks。</string>
+  <string name="permissions_opentasks_request">请求 OpenTasks 权限</string>
   <!--AddAccountActivity-->
   <string name="login_title">增加账户</string>
   <string name="login_type_email">使用邮箱地址登录</string>
@@ -138,12 +150,23 @@
     <item>每 4 小时</item>
     <item>每 24 小时</item>
   </string-array>
+  <string name="settings_sync_wifi_only">只在 WiFi 下同步</string>
+  <string name="settings_sync_wifi_only_on">同步只在 WiFi 连接下进行</string>
+  <string name="settings_sync_wifi_only_off">同步不受数据连接类型限制</string>
+  <string name="settings_sync_wifi_only_ssid">WiFi SSID 限制</string>
+  <string name="settings_sync_wifi_only_ssid_on">同步只在 %s 网络下进行</string>
+  <string name="settings_sync_wifi_only_ssid_off">任何 WiFi 网络下均会同步</string>
+  <string name="settings_sync_wifi_only_ssid_message">输入 WiFi 网络的名称 (SSID) ，即可限制同步只在此网络下进行。留空则不限制。</string>
+  <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">旧日程时间限制</string>
   <string name="settings_sync_time_range_past_none">同步所有日程</string>
   <plurals name="settings_sync_time_range_past_days">
     <item quantity="other">%d 天前的日程不会被同步</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">超过这个数字的天数的旧日程将会被忽略（可以为 0）。留空则同步所有日程。</string>
+  <string name="settings_manage_calendar_colors">管理日历颜色</string>
+  <string name="settings_manage_calendar_colors_on">日历颜色由 DAVdroid 设置</string>
+  <string name="settings_manage_calendar_colors_off">日历颜色不由 DAVdroid 设置</string>
   <string name="settings_version_update">DAVdroid 版本升级</string>
   <string name="settings_version_update_settings_updated">应用设置已更新。</string>
   <string name="settings_version_update_install_hint">出现问题了？请卸载 DAVdroid，再重新安装。</string>
@@ -175,6 +198,8 @@
   <string name="exception_show_details">显示详情</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">调试信息</string>
+  <string name="sync_error_permissions">DAVdroid 权限</string>
+  <string name="sync_error_permissions_text">需要额外权限</string>
   <string name="sync_error_calendar">日历同步失败（%s）</string>
   <string name="sync_error_contacts">通讯录同步失败（%s）</string>
   <string name="sync_error_tasks">任务同步失败（%s）</string>

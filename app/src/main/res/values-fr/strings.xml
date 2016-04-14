@@ -13,7 +13,7 @@
   <string name="startup_development_version_give_feedback">Faire un commentaire</string>
   <string name="startup_donate">Open-Source Information</string>
   <string name="startup_donate_message">Nous sommes heureux que vous utilisez DAVdroid, qui est un logiciel open-source (GPLv3). Parce que développer DAVdroid est un travail difficile et nous a pris de nombreuses heures, s\'il vous plaît envisager de faire un don.</string>
-  <string name="startup_donate_now">Voir la page de don</string>
+  <string name="startup_donate_now">Faire un don</string>
   <string name="startup_donate_later">Plus tard</string>
   <string name="startup_google_play_accounts_removed">Erreur information Play Store DRM</string>
   <string name="startup_google_play_accounts_removed_message">Dans certaines conditions, Play Store DRM peut provoquer la disparition de tous les comptes DAVdroid après un redémarrage ou après la mise à niveau de DAVdroid. Si vous êtes concerné par ce problème (et seulement alors), s\'il vous plaît installer \"DAVdroid JB Solution\" du Play Store.</string>
