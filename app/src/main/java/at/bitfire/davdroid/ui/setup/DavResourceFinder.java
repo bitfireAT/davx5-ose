@@ -209,8 +209,11 @@ public class DavResourceFinder {
         // Does the collection refer to address book homesets?
         AddressbookHomeSet homeSets = (AddressbookHomeSet)dav.properties.get(AddressbookHomeSet.NAME);
         if (homeSets != null)
-            for (String href : homeSets.hrefs)
-                config.homeSets.add(UrlUtils.withTrailingSlash(dav.location.resolve(href)).uri());
+            for (String href : homeSets.hrefs) {
+                HttpUrl location = UrlUtils.withTrailingSlash(dav.location.resolve(href));
+                log.info("Found addressbook home-set at " + location);
+                config.homeSets.add(location.uri());
+            }
     }
 
     protected void rememberIfCalendarOrHomeset(@NonNull DavResource dav, @NonNull Configuration.ServiceInfo config) {
