@@ -228,7 +228,9 @@ public class DavService extends Service {
                     DavResource dav = new DavResource(httpClient, homeSet);
                     try {
                         dav.propfind(1, CollectionInfo.DAV_PROPERTIES);
-                        for (DavResource member : dav.members) {
+                        Set<DavResource> selfAndMembers = new HashSet<>(dav.members);
+                        selfAndMembers.add(dav);
+                        for (DavResource member : selfAndMembers) {
                             CollectionInfo info = CollectionInfo.fromDavResource(member);
                             info.confirmed = true;
                             App.log.log(Level.FINE, "Found collection", info);
