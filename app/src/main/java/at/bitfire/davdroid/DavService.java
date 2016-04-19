@@ -27,6 +27,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
+import org.apache.commons.collections4.iterators.IteratorChain;
+import org.apache.commons.collections4.iterators.SingletonIterator;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -221,16 +224,16 @@ public class DavService extends Service {
                     if (info.selected)
                         selectedCollections.add(HttpUrl.parse(info.url));
 
-                for (Iterator<HttpUrl> iterator = homeSets.iterator(); iterator.hasNext(); ) {
-                    HttpUrl homeSet = iterator.next();
+                for (Iterator<HttpUrl> itHomeSets = homeSets.iterator(); itHomeSets.hasNext(); ) {
+                    HttpUrl homeSet = itHomeSets.next();
                     App.log.fine("Listing home set " + homeSet);
 
                     DavResource dav = new DavResource(httpClient, homeSet);
                     try {
                         dav.propfind(1, CollectionInfo.DAV_PROPERTIES);
-                        Set<DavResource> selfAndMembers = new HashSet<>(dav.members);
-                        selfAndMembers.add(dav);
-                        for (DavResource member : selfAndMembers) {
+                        IteratorChain<DavResource> itCollections = new IteratorChain<>(dav.members.iterator(), new SingletonIterator(dav));
+                        while (itCollections.hasNext()) {
+                            DavResource member = itCollections.next();
                             CollectionInfo info = CollectionInfo.fromDavResource(member);
                             info.confirmed = true;
                             App.log.log(Level.FINE, "Found collection", info);
@@ -242,7 +245,7 @@ public class DavService extends Service {
                     } catch(HttpException e) {
                         if (e.status == 403 || e.status == 404 || e.status == 410)
                             // delete home set only if it was not accessible (40x)
-                            iterator.remove();
+                            itHomeSets.remove();
                     }
                 }
 

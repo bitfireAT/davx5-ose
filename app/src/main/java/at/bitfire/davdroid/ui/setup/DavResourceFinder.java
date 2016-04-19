@@ -312,7 +312,7 @@ public class DavResourceFinder {
 
                 if (principal != null)
                     return principal;
-            } catch(NotFoundException e) {
+            } catch(NotFoundException|IllegalArgumentException e) {
                 log.log(Level.WARNING, "No resource found", e);
             }
         return null;
