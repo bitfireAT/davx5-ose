@@ -81,13 +81,8 @@
 
     <!-- widgets -->
 
-    <style name="chip">
-        <item name="android:padding">4dp</item>
-        <item name="android:background">@drawable/chip_bg</item>
-    </style>
-
-    <style name="tablayout">
-        <item name="colorPrimary">@color/orangeA700</item>
+    <style name="tablayout" parent="Base.Widget.Design.TabLayout">
+        <item name="android:background">@color/light_green700</item>
     </style>
 
     <style name="toolbar_theme">

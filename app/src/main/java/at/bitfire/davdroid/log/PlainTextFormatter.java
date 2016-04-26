@@ -33,10 +33,9 @@ public class PlainTextFormatter extends Formatter {
     public String format(LogRecord r) {
         StringBuilder builder = new StringBuilder();
 
-        if (!logcat) {
-            builder.append(DateFormatUtils.format(r.getMillis(), "yyyy-MM-dd HH:mm:ss"));
-            builder.append(String.format(" %d ", r.getThreadID()));
-        }
+        if (!logcat)
+            builder .append(DateFormatUtils.format(r.getMillis(), "yyyy-MM-dd HH:mm:ss"))
+                    .append(" ").append(r.getThreadID()).append(" ");
 
         builder.append(String.format("[%s] %s", shortClassName(r.getSourceClassName()), r.getMessage()));
 

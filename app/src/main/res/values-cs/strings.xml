@@ -7,7 +7,7 @@
   <string name="please_wait">Chvíli strpení ...</string>
   <string name="send">Odeslat</string>
   <!--startup dialogs-->
-  <string name="startup_dont_show_again">Již neukazovat</string>
+  <string name="startup_dont_show_again">Již nezobrazovat</string>
   <string name="startup_development_version">DAVdroid preview vydání</string>
   <string name="startup_development_version_message">Toto je vývojová verze aplikace DAVdroid. Mějte na paměti, že vše nemusí správně fungovat. Budeme rádi za konstruktivní zpětnou vazbu, která pomůže vylepšit DAVdroid.</string>
   <string name="startup_development_version_give_feedback">Dát zpětnou vazbu</string>
