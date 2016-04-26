@@ -17,8 +17,8 @@ android {
         minSdkVersion 14
         targetSdkVersion 23
 
-        versionCode 98
-        versionName "1.0.7"
+        versionCode 99
+        versionName "1.0.8"
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
     }
@@ -42,6 +42,7 @@ android {
         disable 'IconMissingDensityFolder'
         disable 'ImpliedQuantity'
         disable 'MissingTranslation'
+        disable 'MissingQuantity'
         disable 'Recycle'           // doesn't understand Lombok's @Cleanup
         disable 'RtlEnabled'
         disable 'RtlHardcoded'

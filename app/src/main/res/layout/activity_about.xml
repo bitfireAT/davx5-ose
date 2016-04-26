@@ -27,8 +27,7 @@
         <android.support.design.widget.TabLayout
             android:id="@+id/tabs"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            android:background="@color/light_green700"
-            app:tabIndicatorColor="@color/light_green500"
+            style="@style/tablayout"
             app:tabMode="scrollable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

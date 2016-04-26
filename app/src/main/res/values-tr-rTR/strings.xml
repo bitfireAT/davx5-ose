@@ -9,14 +9,18 @@
   <!--startup dialogs-->
   <string name="startup_dont_show_again">Bir daha gösterme</string>
   <string name="startup_development_version">DAVDroid Önizlenim Dağıtımı</string>
+  <string name="startup_development_version_message">Bu DAVdroid\'in bir geliştirme sürümüdür. Bazı şeyler beklendiği gibi çalışmayabilir. DAVdroid\'i iyileştirmek için bize lütfen yapıcı eleştirilerini ilet.</string>
   <string name="startup_development_version_give_feedback">Geribildirim ver</string>
   <string name="startup_donate">Açık-Kaynak Bilgisi</string>
+  <string name="startup_donate_message">Açık kaynaklı yazılım (GPLv3) olan DAVdroid\'i kullandığına çok mutluyuz. DAVdroid\'i geliştirmek zor bir iş ve üzerinde binlerce saat çalıştığımızdan, lütfen bir bağışta bulunmayı düşün.</string>
   <string name="startup_donate_now">Bağış sayfasını göster</string>
   <string name="startup_donate_later">Belki sonra</string>
   <string name="startup_google_play_accounts_removed">Play Store DRM hata bilgisi</string>
+  <string name="startup_google_play_accounts_removed_message">Bazı durumlarda Play Store DRM\'i, cihazı yeniden başlatınca veya DAVdroid\'i yükseltince DAVdroid hesaplarının yokolmasına sebep olabiliyor. Bu sorundan etkileniyorsan (ve sadece bu durumda), lütfen Play Store\'daki \"DAVdroid JB Workaround\" uygulamasını kur.</string>
   <string name="startup_google_play_accounts_removed_more_info">Daha fazla bilgi</string>
   <string name="startup_opentasks_not_installed">OpenTasks kurulu değil</string>
   <string name="startup_opentasks_not_installed_message">OpenTasks uygulaması yok, dolayısıyla DAVdroid iş listelerini senkronize edemeyecektir.</string>
+  <string name="startup_opentasks_reinstall_davdroid">OpenTasks\'i kurduktan sonra, DAVdroid\'i YENİDEN KURMAN ve hesaplarını yeniden eklemen gerek. (Android hatası).</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks kur</string>
   <!--AboutActivity-->
   <string name="about_license_terms">Lisans şartları</string>
@@ -102,6 +106,7 @@
   <string name="login_back">Geri</string>
   <string name="login_create_account">Hesap yarat</string>
   <string name="login_account_name">Hesap adı</string>
+  <string name="login_account_name_info">Hesap ismi olarak e-posta adresini kullan çünkü Android hesap ismini yarattığın olaylarda DÜZENLEYEN alanında kullanacaktır. Aynı isimde iki faklı hesabın olamaz.</string>
   <string name="login_account_name_required">Hesap adı zorunludur</string>
   <string name="login_account_not_created">Hesap yaratılamadı</string>
   <string name="login_configuration_detection">Konfigürasyon keşfi</string>
@@ -152,12 +157,14 @@
   <string name="settings_sync_wifi_only_ssid">WiFi SSID kısıtlaması</string>
   <string name="settings_sync_wifi_only_ssid_on">Sadece %s üzerinden senkronize olur</string>
   <string name="settings_sync_wifi_only_ssid_off">Tüm WiFi bağlantıları kullanılabilir</string>
+  <string name="settings_sync_wifi_only_ssid_message">Senkronizasyonu sadece bir WiFi ağına kısıtlamak için bu ağın adını (SSID) gir, veya tüm WiFi bağlantıları için boş bırak.</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Geçmiş olay zaman sınırı</string>
   <string name="settings_sync_time_range_past_none">Tüm olaylar senkronize edilecek</string>
   <plurals name="settings_sync_time_range_past_days">
     <item quantity="other">%d günden daha eski olaylar göz ardı edilecektir</item>
   </plurals>
+  <string name="settings_sync_time_range_past_message">Bu sayıdan daha eski olan olaylar yok sayılacaktır (0 olabilir). Tüm olayları senkronize etmek için boş bırak.</string>
   <string name="settings_manage_calendar_colors">Takvim renklerini yönet</string>
   <string name="settings_manage_calendar_colors_on">Takvim renkleri DAVdroid tarafından yönetilmekte</string>
   <string name="settings_manage_calendar_colors_off">Takvim renkleri DAVdroid tarafından ayarlanmadı</string>
