@@ -8,17 +8,19 @@
 
 package at.bitfire.davdroid;
 
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class TestDavUtils extends TestCase {
+public class TestDavUtils {
 
     private static final String exampleURL = "http://example.com/";
 
+    @Test
     public void testLastSegmentOfUrl() {
-        assertEquals("/", DavUtils.lastSegmentOfUrl(exampleURL));
-        assertEquals("dir", DavUtils.lastSegmentOfUrl(exampleURL + "dir"));
-        assertEquals("dir", DavUtils.lastSegmentOfUrl(exampleURL + "dir/"));
-        assertEquals("file.html", DavUtils.lastSegmentOfUrl(exampleURL + "dir/file.html"));
+        Assert.assertEquals("/", DavUtils.lastSegmentOfUrl(exampleURL));
+        Assert.assertEquals("dir", DavUtils.lastSegmentOfUrl(exampleURL + "dir"));
+        Assert.assertEquals("dir", DavUtils.lastSegmentOfUrl(exampleURL + "dir/"));
+        Assert.assertEquals("file.html", DavUtils.lastSegmentOfUrl(exampleURL + "dir/file.html"));
     }
 
 }

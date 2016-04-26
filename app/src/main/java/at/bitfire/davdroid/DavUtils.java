@@ -9,17 +9,13 @@
 package at.bitfire.davdroid;
 
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
-import org.w3c.dom.Text;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import ezvcard.util.StringUtils;
 import okhttp3.HttpUrl;
 
 public class DavUtils {
@@ -36,7 +32,7 @@ public class DavUtils {
         Collections.reverse(segments);
 
         for (String segment : segments)
-            if (!TextUtils.isEmpty(segment))
+            if (!StringUtils.isEmpty(segment))
                 return segment;
 
         return "/";
