@@ -118,11 +118,12 @@ public class LoginCredentialsFragment extends Fragment implements CompoundButton
             Uri baseUrl = Uri.parse(editBaseURL.getText().toString());
             String scheme = baseUrl.getScheme();
             if ("https".equalsIgnoreCase(scheme) || "http".equalsIgnoreCase(scheme)) {
-                String host = IDN.toASCII(baseUrl.getHost());
+                String host = baseUrl.getHost();
                 if (host.isEmpty()) {
                     editBaseURL.setError(getString(R.string.login_url_host_name_required));
                     valid = false;
-                }
+                } else
+                    host = IDN.toASCII(host);
 
                 String path = baseUrl.getEncodedPath();
                 int port = baseUrl.getPort();
