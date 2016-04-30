@@ -29,7 +29,7 @@ public class HttpClientTest extends TestCase {
         httpClient = HttpClient.create();
 
         server = new MockWebServer();
-        server.start();
+        server.start(30000);
     }
 
     @Override
