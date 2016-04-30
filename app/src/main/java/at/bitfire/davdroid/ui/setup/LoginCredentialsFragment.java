@@ -24,7 +24,9 @@ import android.widget.RadioButton;
 import java.net.IDN;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
 
+import at.bitfire.dav4android.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.ui.widget.EditPassword;
 
@@ -122,8 +124,11 @@ public class LoginCredentialsFragment extends Fragment implements CompoundButton
                 if (host.isEmpty()) {
                     editBaseURL.setError(getString(R.string.login_url_host_name_required));
                     valid = false;
-                } else
+                } else try {
                     host = IDN.toASCII(host);
+                } catch(IllegalArgumentException e) {
+                    Constants.log.log(Level.WARNING, "Host name not conforming to RFC 3490", e);
+                }
 
                 String path = baseUrl.getEncodedPath();
                 int port = baseUrl.getPort();
