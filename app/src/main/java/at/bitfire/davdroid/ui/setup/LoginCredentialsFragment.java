@@ -21,6 +21,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.net.IDN;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -121,14 +123,15 @@ public class LoginCredentialsFragment extends Fragment implements CompoundButton
             String scheme = baseUrl.getScheme();
             if ("https".equalsIgnoreCase(scheme) || "http".equalsIgnoreCase(scheme)) {
                 String host = baseUrl.getHost();
-                if (host.isEmpty()) {
+                if (StringUtils.isEmpty(host)) {
                     editBaseURL.setError(getString(R.string.login_url_host_name_required));
                     valid = false;
-                } else try {
-                    host = IDN.toASCII(host);
-                } catch(IllegalArgumentException e) {
-                    Constants.log.log(Level.WARNING, "Host name not conforming to RFC 3490", e);
-                }
+                } else
+                    try {
+                        host = IDN.toASCII(host);
+                    } catch(IllegalArgumentException e) {
+                        Constants.log.log(Level.WARNING, "Host name not conforming to RFC 3490", e);
+                    }
 
                 String path = baseUrl.getEncodedPath();
                 int port = baseUrl.getPort();

@@ -31,6 +31,7 @@ import org.apache.commons.collections4.iterators.IteratorChain;
 import org.apache.commons.collections4.iterators.SingletonIterator;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -70,7 +71,7 @@ public class DavService extends Service {
     private final IBinder binder = new InfoBinder();
 
     private final Set<Long> runningRefresh = new HashSet<>();
-    private final List<RefreshingStatusListener> refreshingStatusListeners = new LinkedList<>();
+    private final List<WeakReference<RefreshingStatusListener>> refreshingStatusListeners = new LinkedList<>();
 
 
     @Override
@@ -86,8 +87,11 @@ public class DavService extends Service {
                 case ACTION_REFRESH_COLLECTIONS:
                     if (runningRefresh.add(id)) {
                         new Thread(new RefreshCollections(id)).start();
-                        for (RefreshingStatusListener listener : refreshingStatusListeners)
-                            listener.onDavRefreshStatusChanged(id, true);
+                        for (WeakReference<RefreshingStatusListener> ref : refreshingStatusListeners) {
+                            RefreshingStatusListener listener = ref.get();
+                            if (listener != null)
+                                listener.onDavRefreshStatusChanged(id, true);
+                        }
                     }
                     break;
             }
@@ -115,15 +119,19 @@ public class DavService extends Service {
             return runningRefresh.contains(id);
         }
 
-        public void addRefreshingStatusListener(RefreshingStatusListener listener, boolean callImmediate) {
-            refreshingStatusListeners.add(listener);
+        public void addRefreshingStatusListener(@NonNull RefreshingStatusListener listener, boolean callImmediate) {
+            refreshingStatusListeners.add(new WeakReference<>(listener));
             if (callImmediate)
                 for (long id : runningRefresh)
                     listener.onDavRefreshStatusChanged(id, true);
         }
 
-        public void removeRefreshingStatusListener(RefreshingStatusListener listener) {
-            refreshingStatusListeners.remove(listener);
+        public void removeRefreshingStatusListener(@NonNull RefreshingStatusListener listener) {
+            for (Iterator<WeakReference<RefreshingStatusListener>> iterator = refreshingStatusListeners.iterator(); iterator.hasNext(); ) {
+                RefreshingStatusListener item = iterator.next().get();
+                if (listener.equals(item))
+                    iterator.remove();
+            }
         }
     }
 
@@ -314,8 +322,11 @@ public class DavService extends Service {
                 dbHelper.close();
 
                 runningRefresh.remove(service);
-                for (RefreshingStatusListener listener : refreshingStatusListeners)
-                    listener.onDavRefreshStatusChanged(service, false);
+                for (WeakReference<RefreshingStatusListener> ref : refreshingStatusListeners) {
+                    RefreshingStatusListener listener = ref.get();
+                    if (listener != null)
+                        listener.onDavRefreshStatusChanged(service, false);
+                }
             }
         }
 
