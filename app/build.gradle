@@ -55,13 +55,7 @@ android {
     }
 }
 
-configurations.all {
-    exclude module: 'commons-logging'       // undocumented part of Android
-}
-
 dependencies {
-    provided 'org.projectlombok:lombok:1.16.8'
-
     compile project(':dav4android')
     compile project(':ical4android')
     compile project(':vcard4android')
@@ -77,6 +71,7 @@ dependencies {
     compile 'dnsjava:dnsjava:2.1.7'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'org.apache.commons:commons-collections4:4.1'
+    provided 'org.projectlombok:lombok:1.16.8'
 
     // for tests
     testCompile 'junit:junit:4.12'

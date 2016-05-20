@@ -163,21 +163,21 @@ public class AccountDetailsFragment extends Fragment {
         values.put(Services.SERVICE, service);
         if (info.principal != null)
             values.put(Services.PRINCIPAL, info.principal.toString());
-        long serviceID = db.insertOrThrow(Services._TABLE, null, values);
+        long serviceID = db.insertWithOnConflict(Services._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 
         // insert home sets
         for (URI homeSet : info.homeSets) {
             values.clear();
             values.put(HomeSets.SERVICE_ID, serviceID);
             values.put(HomeSets.URL, homeSet.toString());
-            db.insertOrThrow(HomeSets._TABLE, null, values);
+            db.insertWithOnConflict(HomeSets._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         }
 
         // insert collections
         for (CollectionInfo collection : info.collections.values()) {
             values = collection.toDB();
             values.put(Collections.SERVICE_ID, serviceID);
-            db.insertOrThrow(Collections._TABLE, null, values);
+            db.insertWithOnConflict(Collections._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         }
 
         return serviceID;

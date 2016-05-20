@@ -149,12 +149,15 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
+        Intent intent;
         switch (item.getItemId()) {
             case R.id.refresh_address_books:
-                Intent intent = new Intent(this, DavService.class);
-                intent.setAction(DavService.ACTION_REFRESH_COLLECTIONS);
-                intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, accountInfo.carddav.id);
-                startService(intent);
+                if (accountInfo.carddav != null) {
+                    intent = new Intent(this, DavService.class);
+                    intent.setAction(DavService.ACTION_REFRESH_COLLECTIONS);
+                    intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, accountInfo.carddav.id);
+                    startService(intent);
+                }
                 break;
             case R.id.create_address_book:
                 intent = new Intent(this, CreateAddressBookActivity.class);
@@ -162,10 +165,12 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                 startActivity(intent);
                 break;
             case R.id.refresh_calendars:
-                intent = new Intent(this, DavService.class);
-                intent.setAction(DavService.ACTION_REFRESH_COLLECTIONS);
-                intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, accountInfo.caldav.id);
-                startService(intent);
+                if (accountInfo.caldav != null) {
+                    intent = new Intent(this, DavService.class);
+                    intent.setAction(DavService.ACTION_REFRESH_COLLECTIONS);
+                    intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, accountInfo.caldav.id);
+                    startService(intent);
+                }
                 break;
             case R.id.create_calendar:
                 intent = new Intent(this, CreateCalendarActivity.class);
