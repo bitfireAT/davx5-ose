@@ -75,8 +75,8 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
                             "TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
                             "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA");
                     List<String> availableCiphers = Arrays.asList(socket.getSupportedCipherSuites());
-                    App.log.fine("Available cipher suites: " + TextUtils.join(", ", availableCiphers));
-                    App.log.fine("Cipher suites enabled by default: " + TextUtils.join(", ", socket.getEnabledCipherSuites()));
+                    App.log.info("Available cipher suites: " + TextUtils.join(", ", availableCiphers));
+                    App.log.info("Cipher suites enabled by default: " + TextUtils.join(", ", socket.getEnabledCipherSuites()));
 
                     // take all allowed ciphers that are available and put them into preferredCiphers
                     HashSet<String> preferredCiphers = new HashSet<>(allowedCiphers);

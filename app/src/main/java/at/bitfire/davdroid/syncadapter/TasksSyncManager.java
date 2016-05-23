@@ -90,6 +90,7 @@ public class TasksSyncManager extends SyncManager {
     @Override
     protected RequestBody prepareUpload(LocalResource resource) throws IOException, CalendarStorageException {
         LocalTask local = (LocalTask)resource;
+        App.log.log(Level.FINE, "Preparing upload of task " + local.getFileName(), new Object[] { local.getTask() });
         return RequestBody.create(
                 DavCalendar.MIME_ICALENDAR,
                 local.getTask().toStream().toByteArray()
