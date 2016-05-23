@@ -96,6 +96,7 @@ public class CalendarSyncManager extends SyncManager {
     @Override
     protected RequestBody prepareUpload(LocalResource resource) throws IOException, CalendarStorageException {
         LocalEvent local = (LocalEvent)resource;
+        App.log.log(Level.FINE, "Preparing upload of event " + local.getFileName(), new Object[] { local.getEvent() });
         return RequestBody.create(
                 DavCalendar.MIME_ICALENDAR,
                 local.getEvent().toStream().toByteArray()
