@@ -74,7 +74,7 @@ public class HttpClient {
 
         // use MemorizingTrustManager to manage self-signed certificates
         if (App.getSslSocketFactoryCompat() != null)
-            builder.sslSocketFactory(App.getSslSocketFactoryCompat());
+            builder.sslSocketFactory(App.getSslSocketFactoryCompat(), App.getMemorizingTrustManager());
         if (App.getHostnameVerifier() != null)
             builder.hostnameVerifier(App.getHostnameVerifier());
 

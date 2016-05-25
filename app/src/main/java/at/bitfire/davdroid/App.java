@@ -50,6 +50,9 @@ public class App extends Application {
     private static HostnameVerifier hostnameVerifier;
 
     public final static Logger log = Logger.getLogger("davdroid");
+    static {
+        at.bitfire.dav4android.Constants.log = Logger.getLogger("davdroid.dav4android");
+    }
 
     @Override
     public void onCreate() {

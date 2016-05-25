@@ -17,8 +17,8 @@ android {
         minSdkVersion 14
         targetSdkVersion 23
 
-        versionCode 99
-        versionName "1.0.8"
+        versionCode 100
+        versionName "1.0.9"
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
     }
@@ -75,6 +75,6 @@ dependencies {
 
     // for tests
     testCompile 'junit:junit:4.12'
-    testCompile 'com.squareup.okhttp3:mockwebserver:3.2.0'
-    androidTestCompile 'com.squareup.okhttp3:mockwebserver:3.2.0'
+    testCompile 'com.squareup.okhttp3:mockwebserver:3.3.0'
+    androidTestCompile 'com.squareup.okhttp3:mockwebserver:3.3.0'
 }
