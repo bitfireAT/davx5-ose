@@ -39,7 +39,6 @@ import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
-import at.bitfire.davdroid.DavUtils;
 import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalCalendar;
@@ -98,7 +97,10 @@ public class CalendarSyncManager extends SyncManager {
     protected RequestBody prepareUpload(LocalResource resource) throws IOException, CalendarStorageException {
         LocalEvent local = (LocalEvent)resource;
         App.log.log(Level.FINE, "Preparing upload of event " + local.getFileName(), new Object[] { local.getEvent() });
-        return DavUtils.requestBody(DavCalendar.MIME_ICALENDAR, local.getEvent().toStream());
+        return RequestBody.create(
+                DavCalendar.MIME_ICALENDAR,
+                local.getEvent().toStream().toByteArray()
+        );
     }
 
     @Override

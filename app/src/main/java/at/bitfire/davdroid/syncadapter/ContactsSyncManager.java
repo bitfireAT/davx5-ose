@@ -41,7 +41,6 @@ import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
-import at.bitfire.davdroid.DavUtils;
 import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
@@ -132,9 +131,9 @@ public class ContactsSyncManager extends SyncManager {
     protected RequestBody prepareUpload(LocalResource resource) throws IOException, ContactsStorageException {
         LocalContact local = (LocalContact)resource;
         App.log.log(Level.FINE, "Preparing upload of contact " + local.getFileName(), new Object[] { local.getContact() });
-        return DavUtils.requestBody(
+        return RequestBody.create(
                 hasVCard4 ? DavAddressBook.MIME_VCARD4 : DavAddressBook.MIME_VCARD3_UTF8,
-                local.getContact().toStream(hasVCard4 ? VCardVersion.V4_0 : VCardVersion.V3_0)
+                local.getContact().toStream(hasVCard4 ? VCardVersion.V4_0 : VCardVersion.V3_0).toByteArray()
         );
     }
 
