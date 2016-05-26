@@ -19,7 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PipedInputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -38,7 +37,6 @@ import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
-import at.bitfire.davdroid.DavUtils;
 import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalResource;
@@ -93,7 +91,10 @@ public class TasksSyncManager extends SyncManager {
     protected RequestBody prepareUpload(LocalResource resource) throws IOException, CalendarStorageException {
         LocalTask local = (LocalTask)resource;
         App.log.log(Level.FINE, "Preparing upload of task " + local.getFileName(), new Object[] { local.getTask() });
-        return DavUtils.requestBody(DavCalendar.MIME_ICALENDAR, local.getTask().toStream());
+        return RequestBody.create(
+                DavCalendar.MIME_ICALENDAR,
+                local.getTask().toStream().toByteArray()
+        );
     }
 
     @Override

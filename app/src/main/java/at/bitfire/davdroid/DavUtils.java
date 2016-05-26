@@ -12,18 +12,11 @@ import android.support.annotation.NonNull;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import lombok.Cleanup;
 import okhttp3.HttpUrl;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import okio.BufferedSink;
 
 public class DavUtils {
 
@@ -31,21 +24,6 @@ public class DavUtils {
         byte alpha = (byte)(colorWithAlpha >> 24);
         int color = colorWithAlpha & 0xFFFFFF;
         return String.format("#%06X%02X", color, alpha);
-    }
-
-    public static RequestBody requestBody(final MediaType mediaType, @NonNull final ByteArrayOutputStream dataStream) throws IOException {
-        return new RequestBody() {
-            @Override
-            public MediaType contentType() {
-                return mediaType;
-            }
-
-            @Override
-            public void writeTo(BufferedSink sink) throws IOException {
-                @Cleanup OutputStream os = sink.outputStream();
-                dataStream.writeTo(os);
-            }
-        };
     }
 
     public static String lastSegmentOfUrl(@NonNull String url) {
