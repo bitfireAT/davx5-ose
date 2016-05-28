@@ -9,16 +9,11 @@
 package at.bitfire.davdroid.ui;
 
 import android.accounts.Account;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.ListPreference;
@@ -28,9 +23,6 @@ import android.support.v7.preference.SwitchPreferenceCompat;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.logging.Level;
 
 import at.bitfire.davdroid.AccountSettings;

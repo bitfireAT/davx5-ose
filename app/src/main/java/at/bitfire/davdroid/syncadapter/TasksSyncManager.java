@@ -17,6 +17,7 @@ import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -90,10 +91,14 @@ public class TasksSyncManager extends SyncManager {
     @Override
     protected RequestBody prepareUpload(LocalResource resource) throws IOException, CalendarStorageException {
         LocalTask local = (LocalTask)resource;
-        App.log.log(Level.FINE, "Preparing upload of task " + local.getFileName(), new Object[] { local.getTask() });
+        App.log.log(Level.FINE, "Preparing upload of task " + local.getFileName(), local.getTask() );
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        local.getTask().write(os);
+
         return RequestBody.create(
                 DavCalendar.MIME_ICALENDAR,
-                local.getTask().toStream().toByteArray()
+                os.toByteArray()
         );
     }
 

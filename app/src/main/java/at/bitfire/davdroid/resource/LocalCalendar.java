@@ -44,7 +44,6 @@ import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.DateUtils;
 import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
-import okhttp3.HttpUrl;
 
 public class LocalCalendar extends AndroidCalendar implements LocalCollection {
 
