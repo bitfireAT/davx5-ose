@@ -17,6 +17,7 @@ import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -96,10 +97,14 @@ public class CalendarSyncManager extends SyncManager {
     @Override
     protected RequestBody prepareUpload(LocalResource resource) throws IOException, CalendarStorageException {
         LocalEvent local = (LocalEvent)resource;
-        App.log.log(Level.FINE, "Preparing upload of event " + local.getFileName(), new Object[] { local.getEvent() });
+        App.log.log(Level.FINE, "Preparing upload of event " + local.getFileName(), local.getEvent());
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        local.getEvent().write(os);
+
         return RequestBody.create(
                 DavCalendar.MIME_ICALENDAR,
-                local.getEvent().toStream().toByteArray()
+                os.toByteArray()
         );
     }
 
