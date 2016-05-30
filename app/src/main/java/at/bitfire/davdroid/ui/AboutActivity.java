@@ -64,7 +64,7 @@ public class AboutActivity extends AppCompatActivity {
 
     @RequiredArgsConstructor
     private static class ComponentInfo {
-        final String   title, version, website, copyright;
+        final String title, version, website, copyright;
         final int licenseInfo;
         final String licenseTextFile;
     }
@@ -72,32 +72,32 @@ public class AboutActivity extends AppCompatActivity {
     private final static ComponentInfo components[] = {
             new ComponentInfo(
                     "DAVdroid", BuildConfig.VERSION_NAME, "https://davdroid.bitfire.at",
-                    "© " + DateFormatUtils.format(BuildConfig.buildTime, "yyyy") + " Ricki Hirner, Bernhard Stockmann (bitfire web engineering)",
+                    DateFormatUtils.format(BuildConfig.buildTime, "yyyy") + " Ricki Hirner, Bernhard Stockmann (bitfire web engineering)",
                     R.string.about_license_info_no_warranty, "gpl-3.0-standalone.html"
             ), new ComponentInfo(
                     "AmbilWarna", null, "https://github.com/yukuku/ambilwarna",
-                    "© Yuku", R.string.about_license_info_no_warranty, "apache2.html"
+                    "Yuku", R.string.about_license_info_no_warranty, "apache2.html"
             ), new ComponentInfo(
                     "Apache Commons", null, "http://commons.apache.org/",
                     "Apache Software Foundation", R.string.about_license_info_no_warranty, "apache2.html"
             ), new ComponentInfo(
                     "dnsjava", null, "http://dnsjava.org/",
-                    "© Brian Wellington", R.string.about_license_info_no_warranty, "bsd.html"
+                    "Brian Wellington", R.string.about_license_info_no_warranty, "bsd.html"
             ), new ComponentInfo(
                     "ez-vcard", Ezvcard.VERSION, "https://github.com/mangstadt/ez-vcard",
-                    "© Michael Angstadt", R.string.about_license_info_no_warranty, "bsd.html"
+                    "Michael Angstadt", R.string.about_license_info_no_warranty, "bsd.html"
             ), new ComponentInfo(
-                    "ical4j", "2.x", "http://ical4j.github.io/",
-                    "© Ben Fortuna", R.string.about_license_info_no_warranty, "bsd-3clause.html"
+                    "ical4j", "2.x", "https://ical4j.github.io/",
+                    "Ben Fortuna", R.string.about_license_info_no_warranty, "bsd-3clause.html"
             ), new ComponentInfo(
                     "MemorizingTrustManager", null, "https://github.com/ge0rg/MemorizingTrustManager",
-                    "© Georg Lukas", R.string.about_license_info_no_warranty, "mit.html"
+                    "Georg Lukas", R.string.about_license_info_no_warranty, "mit.html"
             ), new ComponentInfo(
                     "OkHttp", null, "https://square.github.io/okhttp/",
-                    "© Square, Inc.", R.string.about_license_info_no_warranty, "apache2.html"
+                    "Square, Inc.", R.string.about_license_info_no_warranty, "apache2.html"
             ), new ComponentInfo(
                     "Project Lombok", null, "https://projectlombok.org/",
-                    "© The Project Lombok Authors", R.string.about_license_info_no_warranty, "mit.html"
+                    "The Project Lombok Authors", R.string.about_license_info_no_warranty, "mit.html"
             )
     };
 
@@ -152,7 +152,7 @@ public class AboutActivity extends AppCompatActivity {
             tv.setText(info.website);
 
             tv = (TextView)v.findViewById(R.id.copyright);
-            tv.setText(info.copyright);
+            tv.setText("© " + info.copyright);
 
             tv = (TextView)v.findViewById(R.id.license_info);
             tv.setText(info.licenseInfo);
