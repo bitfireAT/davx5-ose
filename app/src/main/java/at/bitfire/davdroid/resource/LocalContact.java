@@ -13,16 +13,20 @@ import android.content.ContentValues;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
+import android.provider.ContactsContract.RawContacts.Data;
+import android.support.annotation.NonNull;
 
 import java.io.FileNotFoundException;
-import java.util.logging.Level;
+import java.util.HashSet;
+import java.util.Set;
 
-import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
+import at.bitfire.davdroid.model.UnknownProperties;
 import at.bitfire.vcard4android.AndroidAddressBook;
 import at.bitfire.vcard4android.AndroidContact;
 import at.bitfire.vcard4android.AndroidContactFactory;
 import at.bitfire.vcard4android.BatchOperation;
+import at.bitfire.vcard4android.CachedGroupMembership;
 import at.bitfire.vcard4android.Contact;
 import at.bitfire.vcard4android.ContactsStorageException;
 import ezvcard.Ezvcard;
@@ -31,6 +35,11 @@ public class LocalContact extends AndroidContact implements LocalResource {
     static {
         Contact.productID = "+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " vcard4android ez-vcard/" + Ezvcard.VERSION;
     }
+
+    protected final Set<Long>
+            cachedGroupMemberships = new HashSet<>(),
+            groupMemberships = new HashSet<>();
+
 
     protected LocalContact(AndroidAddressBook addressBook, long id, String fileName, String eTag) {
         super(addressBook, id, fileName, eTag);
@@ -69,53 +78,94 @@ public class LocalContact extends AndroidContact implements LocalResource {
     }
 
 
-    // group support
-
     @Override
-    protected void populateGroupMembership(ContentValues row) {
-        if (row.containsKey(GroupMembership.GROUP_ROW_ID)) {
-            long groupId = row.getAsLong(GroupMembership.GROUP_ROW_ID);
-
-            // fetch group
-            LocalGroup group = new LocalGroup(addressBook, groupId);
-            try {
-                Contact groupInfo = group.getContact();
-
-                // add to CATEGORIES
-                contact.categories.add(groupInfo.displayName);
-            } catch (FileNotFoundException|ContactsStorageException e) {
-                App.log.log(Level.WARNING, "Couldn't find assigned group #" + groupId + ", ignoring membership", e);
-            }
+    protected void populateData(String mimeType, ContentValues row) {
+        switch (mimeType) {
+            case CachedGroupMembership.CONTENT_ITEM_TYPE:
+                cachedGroupMemberships.add(row.getAsLong(CachedGroupMembership.GROUP_ID));
+                break;
+            case GroupMembership.CONTENT_ITEM_TYPE:
+                groupMemberships.add(row.getAsLong(GroupMembership.GROUP_ROW_ID));
+                break;
+            case UnknownProperties.CONTENT_ITEM_TYPE:
+                contact.unknownProperties = row.getAsString(UnknownProperties.UNKNOWN_PROPERTIES);
+                break;
         }
     }
 
     @Override
-    protected void insertGroupMemberships(BatchOperation batch) throws ContactsStorageException {
-        for (String category : contact.categories) {
-            // Is there already a category with this display name?
-            LocalGroup group = ((LocalAddressBook)addressBook).findGroupByTitle(category);
+    protected void insertDataRows(BatchOperation batch) throws ContactsStorageException {
+        super.insertDataRows(batch);
 
-            if (group == null) {
-                // no, we have to create the group before inserting the membership
-
-                Contact groupInfo = new Contact();
-                groupInfo.displayName = category;
-                group = new LocalGroup(addressBook, groupInfo);
-                group.create();
-            }
-
-            Long groupId = group.getId();
-            if (groupId != null) {
-                ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(dataSyncURI());
-                if (id == null)
-                    builder.withValueBackReference(GroupMembership.RAW_CONTACT_ID, 0);
-                else
-                    builder.withValue(GroupMembership.RAW_CONTACT_ID, id);
-                builder .withValue(GroupMembership.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
-                        .withValue(GroupMembership.GROUP_ROW_ID, groupId);
-                batch.enqueue(builder.build());
-            }
+        if (contact.unknownProperties != null) {
+            ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(dataSyncURI());
+            if (id == null)
+                builder.withValueBackReference(UnknownProperties.RAW_CONTACT_ID, 0);
+            else
+                builder.withValue(UnknownProperties.RAW_CONTACT_ID, id);
+            builder .withValue(UnknownProperties.MIMETYPE, UnknownProperties.CONTENT_ITEM_TYPE)
+                    .withValue(UnknownProperties.UNKNOWN_PROPERTIES, contact.unknownProperties);
+            batch.enqueue(builder.build());
         }
+
+    }
+
+
+    public void addToGroup(BatchOperation batch, long groupID) {
+        assertID();
+        batch.enqueue(ContentProviderOperation
+                .newInsert(dataSyncURI())
+                .withValue(GroupMembership.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
+                .withValue(GroupMembership.RAW_CONTACT_ID, id)
+                .withValue(GroupMembership.GROUP_ROW_ID, groupID)
+                .build()
+        );
+
+        batch.enqueue(ContentProviderOperation
+                .newInsert(dataSyncURI())
+                .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
+                .withValue(CachedGroupMembership.RAW_CONTACT_ID, id)
+                .withValue(CachedGroupMembership.GROUP_ID, groupID)
+                .build()
+        );
+    }
+
+    public void removeGroupMemberships(BatchOperation batch) {
+        assertID();
+        batch.enqueue(ContentProviderOperation
+                .newDelete(dataSyncURI())
+                .withSelection(
+                        Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + " IN (?,?)",
+                        new String[] { String.valueOf(id), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembership.CONTENT_ITEM_TYPE }
+                )
+                .build()
+        );
+    }
+
+    /**
+     * Returns the IDs of all groups the contact was member of (cached memberships).
+     * Cached memberships are kept in sync with memberships by DAVdroid and are used to determine
+     * whether a membership has been deleted/added when a raw contact is dirty.
+     * @return set of {@link GroupMembership#GROUP_ROW_ID} (may be empty)
+     * @throws ContactsStorageException   on contact provider errors
+     * @throws FileNotFoundException      if the current contact can't be found
+     */
+    @NonNull
+    public Set<Long> getCachedGroupMemberships() throws ContactsStorageException, FileNotFoundException {
+        getContact();
+        return cachedGroupMemberships;
+    }
+
+    /**
+     * Returns the IDs of all groups the contact is member of.
+     * @return set of {@link GroupMembership#GROUP_ROW_ID}s (may be empty)
+     * @throws ContactsStorageException   on contact provider errors
+     * @throws FileNotFoundException      if the current contact can't be found
+     */
+    @NonNull
+    public Set<Long> getGroupMemberships() throws ContactsStorageException, FileNotFoundException {
+        getContact();
+        return groupMemberships;
     }
 
 
@@ -134,6 +184,7 @@ public class LocalContact extends AndroidContact implements LocalResource {
             return new LocalContact(addressBook, contact, fileName, eTag);
         }
 
+        @Override
         public LocalContact[] newArray(int size) {
             return new LocalContact[size];
         }

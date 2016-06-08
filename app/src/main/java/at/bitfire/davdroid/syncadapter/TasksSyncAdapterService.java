@@ -40,6 +40,9 @@ import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.TaskProvider;
 import lombok.Cleanup;
 
+/**
+ * Synchronization manager for CalDAV collections; handles tasks ({@code VTODO}).
+ */
 public class TasksSyncAdapterService extends SyncAdapterService {
 
     @Override

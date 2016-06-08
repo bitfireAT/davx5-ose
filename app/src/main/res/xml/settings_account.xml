@@ -74,10 +74,21 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/settings_carddav">
+
+        <ListPreference
+            android:key="contact_group_method"
+            android:persistent="false"
+            android:title="@string/settings_contact_group_method"
+            android:entries="@array/settings_contact_group_method_entries"
+            android:entryValues="@array/settings_contact_group_method_values"/>
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/settings_caldav">
 
         <EditTextPreference
-            android:key="caldav_time_range_past_days"
+            android:key="time_range_past_days"
             android:persistent="false"
             android:title="@string/settings_sync_time_range_past"
             android:dialogMessage="@string/settings_sync_time_range_past_message"
@@ -90,6 +101,6 @@
             android:summaryOn="@string/settings_manage_calendar_colors_on"
             android:summaryOff="@string/settings_manage_calendar_colors_off"/>
 
-</PreferenceCategory>
+    </PreferenceCategory>
 
 </PreferenceScreen>

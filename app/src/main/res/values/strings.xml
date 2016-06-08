@@ -179,6 +179,20 @@
     <string name="settings_sync_wifi_only_ssid_on">Will only synchronize over %s</string>
     <string name="settings_sync_wifi_only_ssid_off">All WiFi connections may be used</string>
     <string name="settings_sync_wifi_only_ssid_message">Enter the name of a WiFi network (SSID) to restrict synchronization to this network, or leave blank for all WiFi connections.</string>
+    <string name="settings_carddav">CardDAV</string>
+    <string name="settings_contact_group_method">Contact group method</string>
+    <string-array name="settings_contact_group_method_values">
+        <item>AUTOMATIC</item>
+        <item>VCARD3_CATEGORIES</item>
+        <item>VCARD4</item>
+        <item>X_ADDRESSBOOK_SERVER</item>
+    </string-array>
+    <string-array name="settings_contact_group_method_entries">
+        <item>Automatic (VCard3/VCard4)</item>
+        <item>VCard3 only (CATEGORIES)</item>
+        <item>VCard4 only (KIND/MEMBER)</item>
+        <item>Apple (X-ADDRESSBOOK-SERVER)</item>
+    </string-array>
     <string name="settings_caldav">CalDAV</string>
     <string name="settings_sync_time_range_past">Past event time limit</string>
     <string name="settings_sync_time_range_past_none">All events will be synchronized</string>
@@ -243,6 +257,7 @@
         <item>listing remote entries</item>
         <item>comparing local/remote entries</item>
         <item>downloading remote entries</item>
+        <item>post-processing</item>
         <item>saving sync state</item>
     </string-array>
     <string name="sync_error_unauthorized">User name/password wrong</string>

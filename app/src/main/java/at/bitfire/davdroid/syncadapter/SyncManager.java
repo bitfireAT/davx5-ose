@@ -66,7 +66,8 @@ abstract public class SyncManager {
                         SYNC_PHASE_LIST_REMOTE = 7,
                         SYNC_PHASE_COMPARE_LOCAL_REMOTE = 8,
                         SYNC_PHASE_DOWNLOAD_REMOTE = 9,
-                        SYNC_PHASE_SAVE_SYNC_STATE = 10;
+                        SYNC_PHASE_POST_PROCESSING = 10,
+                        SYNC_PHASE_SAVE_SYNC_STATE = 11;
 
     protected final NotificationManager notificationManager;
     protected final String uniqueCollectionId;
@@ -168,6 +169,10 @@ abstract public class SyncManager {
                 syncPhase = SYNC_PHASE_DOWNLOAD_REMOTE;
                 App.log.info("Downloading remote entries");
                 downloadRemote();
+
+                syncPhase = SYNC_PHASE_POST_PROCESSING;
+                App.log.info("Post-processing");
+                postProcess();
 
                 syncPhase = SYNC_PHASE_SAVE_SYNC_STATE;
                 App.log.info("Saving sync state");
@@ -278,9 +283,10 @@ abstract public class SyncManager {
 
     protected void prepareDirty() throws CalendarStorageException, ContactsStorageException {
         // assign file names and UIDs to new contacts so that we can use the file name as an index
+        App.log.info("Looking for contacts/groups without file name");
         for (LocalResource local : localCollection.getWithoutFileName()) {
             String uuid = UUID.randomUUID().toString();
-            App.log.info("Found local record #" + local.getId() + " without file name; assigning file name/UID based on " + uuid);
+            App.log.fine("Found local record #" + local.getId() + " without file name; assigning file name/UID based on " + uuid);
             local.updateFileNameAndUID(uuid);
         }
     }
@@ -305,7 +311,6 @@ abstract public class SyncManager {
             RequestBody body = prepareUpload(local);
 
             try {
-
                 if (local.getETag() == null) {
                     App.log.info("Uploading new record " + fileName);
                     remote.put(body, null, true);
@@ -313,7 +318,6 @@ abstract public class SyncManager {
                     App.log.info("Uploading locally modified record " + fileName);
                     remote.put(body, local.getETag(), false);
                 }
-
             } catch (ConflictException|PreconditionFailedException e) {
                 // we can't interact with the user to resolve the conflict, so we treat 409 like 412
                 App.log.log(Level.INFO, "Resource has been modified on the server before upload, ignoring", e);
@@ -426,6 +430,12 @@ abstract public class SyncManager {
      * Must check Thread.interrupted() periodically to allow quick sync cancellation.
      */
     abstract protected void downloadRemote() throws IOException, HttpException, DavException, ContactsStorageException, CalendarStorageException;
+
+    /**
+     * For post-processing of entries, for instance assigning groups.
+     */
+    protected void postProcess() throws CalendarStorageException, ContactsStorageException {
+    }
 
     protected void saveSyncState() throws CalendarStorageException, ContactsStorageException {
         /* Save sync state (CTag). It doesn't matter if it has changed during the sync process

@@ -45,6 +45,7 @@ import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.TaskProvider;
 import at.bitfire.vcard4android.ContactsStorageException;
+import at.bitfire.vcard4android.GroupMethod;
 import lombok.Cleanup;
 import okhttp3.HttpUrl;
 
@@ -71,6 +72,14 @@ public class AccountSettings {
        value = null (not existing)     true (default)
                "0"                     false */
     private final static String KEY_MANAGE_CALENDAR_COLORS = "manage_calendar_colors";
+
+    /** Contact group method:
+        automatic  VCard4 if server supports VCard 4, VCard3 otherwise (default value)
+        VCard3     adds a contact's groups to its CATEGORIES / interprets a contact's CATEGORIES as groups
+        VCard4     uses groups as defined in VCard 4 (KIND/MEMBER properties)
+        Apple      uses Apple-proprietary X-ADDRESSBOOK-KIND/-MEMBER properties
+    */
+    private final static String KEY_CONTACT_GROUP_METHOD = "contact_group_method";
 
     public final static long SYNC_INTERVAL_MANUALLY = -1;
 
@@ -184,6 +193,7 @@ public class AccountSettings {
 
     // CalDAV settings
 
+    @Nullable
     public Integer getTimeRangePastDays() {
         String strDays = accountManager.getUserData(account, KEY_TIME_RANGE_PAST_DAYS);
         if (strDays != null) {
@@ -193,7 +203,7 @@ public class AccountSettings {
             return DEFAULT_TIME_RANGE_PAST_DAYS;
     }
 
-    public void setTimeRangePastDays(Integer days) {
+    public void setTimeRangePastDays(@Nullable Integer days) {
         accountManager.setUserData(account, KEY_TIME_RANGE_PAST_DAYS, String.valueOf(days == null ? -1 : days));
     }
 
@@ -203,6 +213,22 @@ public class AccountSettings {
 
     public void setManageCalendarColors(boolean manage) {
         accountManager.setUserData(account, KEY_MANAGE_CALENDAR_COLORS, manage ? null : "0");
+    }
+
+
+    // CardDAV settings
+
+    @NonNull
+    public GroupMethod getGroupMethod() {
+        final String name = accountManager.getUserData(account, KEY_CONTACT_GROUP_METHOD);
+        return name != null ?
+                GroupMethod.valueOf(name) :
+                GroupMethod.AUTOMATIC;
+    }
+
+    public void setGroupMethod(@NonNull GroupMethod method) {
+        final String name = GroupMethod.AUTOMATIC.equals(method) ? null : method.name();
+        accountManager.setUserData(account, KEY_CONTACT_GROUP_METHOD, name);
     }
 
 

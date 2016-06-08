@@ -10,26 +10,33 @@ package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
 import android.content.ContentProviderClient;
+import android.content.ContentProviderOperation;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Environment;
+import android.os.RemoteException;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.Groups;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import org.apache.commons.codec.Charsets;
+import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import at.bitfire.dav4android.DavAddressBook;
@@ -54,8 +61,10 @@ import at.bitfire.davdroid.resource.LocalContact;
 import at.bitfire.davdroid.resource.LocalGroup;
 import at.bitfire.davdroid.resource.LocalResource;
 import at.bitfire.ical4android.CalendarStorageException;
+import at.bitfire.vcard4android.BatchOperation;
 import at.bitfire.vcard4android.Contact;
 import at.bitfire.vcard4android.ContactsStorageException;
+import at.bitfire.vcard4android.GroupMethod;
 import ezvcard.VCardVersion;
 import ezvcard.util.IOUtils;
 import lombok.Cleanup;
@@ -68,12 +77,49 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
+/**
+ * <p>Synchronization manager for CardDAV collections; handles contacts and groups.</p>
+ *
+ * <p></p>Group handling differs according to the {@link #groupMethod}. There are two basic methods to
+ * handle/manage groups:</p>
+ * <ul>
+ *     <li>VCard3 {@code CATEGORIES}: groups memberships are attached to each contact and represented as
+ *     "category". When a group is dirty or has been deleted, all its members have to be set to
+ *     dirty, too (because they have to be uploaded without the respective category). This
+ *     is done in {@link #prepareDirty()}. Empty groups can be deleted without further processing,
+ *     which is done in {@link #postProcess()} because groups may become empty after downloading
+ *     updated remoted contacts.</li>
+ *     <li>VCard4-style: individual and group contacts (with a list of member UIDs) are
+ *     distinguished. When a local group is dirty, its members don't need to be set to dirty.
+ *     <ol>
+ *         <li>However, when a contact is dirty, it has
+ *         to be checked whether its group memberships have changed. In this case, the respective
+ *         groups have to be set to dirty. For instance, if contact A is in group G and H, and then
+ *         group membership of G is removed, the contact will be set to dirty because of the changed
+ *         {@link android.provider.ContactsContract.CommonDataKinds.GroupMembership}. DAVdroid will
+ *         then have to check whether the group memberships have actually changed, and if so,
+ *         all affected groups have to be set to dirty. To detect changes in group memberships,
+ *         DAVdroid always mirrors all {@link android.provider.ContactsContract.CommonDataKinds.GroupMembership}
+ *         data rows in respective {@link at.bitfire.vcard4android.CachedGroupMembership} rows.
+ *         If the cached group memberships are not the same as the current group member ships, the
+ *         difference set (in our example G, because its in the cached memberships, but not in the
+ *         actual ones) is marked as dirty. This is done in {@link #prepareDirty()}.</li>
+ *         <li>When downloading remote contacts, groups (+ member information) may be received
+ *         by the actual members. Thus, the member lists have to be cached until all VCards
+ *         are received. This is done by caching the member UIDs of each group in
+ *         {@link LocalGroup#COLUMN_PENDING_MEMBERS}. In {@link #postProcess()},
+ *         these "pending memberships" are assigned to the actual contacs and then cleaned up.</li>
+ *     </ol>
+ * </ul>
+ */
 public class ContactsSyncManager extends SyncManager {
     protected static final int MAX_MULTIGET = 10;
 
     final private ContentProviderClient provider;
     final private CollectionInfo remote;
+
     private boolean hasVCard4;
+    private GroupMethod groupMethod;
 
 
     public ContactsSyncManager(Context context, Account account, AccountSettings settings, Bundle extras, String authority, ContentProviderClient provider, SyncResult result, CollectionInfo remote) throws InvalidAccountException {
@@ -107,37 +153,113 @@ public class ContactsSyncManager extends SyncManager {
         }
 
         // set up Contacts Provider Settings
-        ContentValues settings = new ContentValues(2);
-        settings.put(ContactsContract.Settings.SHOULD_SYNC, 1);
-        settings.put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1);
-        localAddressBook.updateSettings(settings);
+        ContentValues values = new ContentValues(2);
+        values.put(ContactsContract.Settings.SHOULD_SYNC, 1);
+        values.put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1);
+        localAddressBook.updateSettings(values);
 
         collectionURL = HttpUrl.parse(url);
         davCollection = new DavAddressBook(httpClient, collectionURL);
-
-        processChangedGroups();
     }
 
     @Override
     protected void queryCapabilities() throws DavException, IOException, HttpException {
         // prepare remote address book
-        hasVCard4 = false;
         davCollection.propfind(0, SupportedAddressData.NAME, GetCTag.NAME);
-        SupportedAddressData supportedAddressData = (SupportedAddressData) davCollection.properties.get(SupportedAddressData.NAME);
-        if (supportedAddressData != null)
-            for (MediaType type : supportedAddressData.types)
-                if ("text/vcard; version=4.0".equalsIgnoreCase(type.toString()))
-                    hasVCard4 = true;
+        SupportedAddressData supportedAddressData = (SupportedAddressData)davCollection.properties.get(SupportedAddressData.NAME);
+        hasVCard4 = supportedAddressData != null && supportedAddressData.hasVCard4();
         App.log.info("Server advertises VCard/4 support: " + hasVCard4);
+
+        groupMethod = settings.getGroupMethod();
+        if (GroupMethod.AUTOMATIC.equals(groupMethod))
+            groupMethod = hasVCard4 ? GroupMethod.VCARD4 : GroupMethod.VCARD3_CATEGORIES;
+        App.log.info("Contact group method: " + groupMethod);
+
+        localAddressBook().includeGroups = !GroupMethod.VCARD3_CATEGORIES.equals(groupMethod);
     }
 
     @Override
-    protected RequestBody prepareUpload(LocalResource resource) throws IOException, ContactsStorageException {
-        LocalContact local = (LocalContact)resource;
-        App.log.log(Level.FINE, "Preparing upload of contact " + local.getFileName(), local.getContact());
+    protected void prepareDirty() throws CalendarStorageException, ContactsStorageException {
+        super.prepareDirty();
+
+        LocalAddressBook addressBook = localAddressBook();
+
+        if (GroupMethod.VCARD3_CATEGORIES.equals(groupMethod)) {
+            /* VCard3 group handling: groups memberships are represented as contact CATEGORIES */
+
+            // groups with DELETED=1: set all members to dirty, then remove group
+            for (LocalGroup group : addressBook.getDeletedGroups()) {
+                App.log.fine("Removing group " + group + " and marking its members as dirty");
+                group.markMembersDirty();
+                group.delete();
+            }
+
+            // groups with DIRTY=1: mark all memberships as dirty, then clean DIRTY flag of group
+            for (LocalGroup group : addressBook.getDirtyGroups()) {
+                App.log.fine("Marking members of modified group " + group + " as dirty");
+                group.markMembersDirty();
+                group.clearDirty(null);
+            }
+        } else {
+            /* VCard4 group handling: there are group contacts and individual contacts */
+
+            // mark groups with changed members as dirty
+            BatchOperation batch = new BatchOperation(addressBook.provider);
+            for (LocalContact contact : addressBook.getDirtyContacts())
+                try {
+                    App.log.fine("Looking for changed group memberships of contact " + contact.getFileName());
+                    Set<Long>   cachedGroups = contact.getCachedGroupMemberships(),
+                                currentGroups = contact.getGroupMemberships();
+                    for (Long groupID : SetUtils.disjunction(cachedGroups, currentGroups)) {
+                        App.log.fine("Marking group as dirty: " + groupID);
+                        batch.enqueue(ContentProviderOperation
+                                .newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, groupID)))
+                                .withValue(Groups.DIRTY, 1)
+                                .build()
+                        );
+                    }
+                } catch(FileNotFoundException ignored) {
+                }
+            batch.commit();
+        }
+    }
+
+    @Override
+    protected RequestBody prepareUpload(@NonNull LocalResource resource) throws IOException, ContactsStorageException {
+        final Contact contact;
+        if (resource instanceof LocalContact) {
+            LocalContact local = ((LocalContact)resource);
+            contact = local.getContact();
+
+            if (groupMethod == GroupMethod.VCARD3_CATEGORIES) {
+                // VCard3: add groups as CATEGORIES
+                for (long groupID : local.getGroupMemberships()) {
+                    try {
+                        @Cleanup Cursor c = provider.query(
+                                localAddressBook().syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, groupID)),
+                                new String[] { Groups.TITLE },
+                                null, null,
+                                null
+                        );
+                        if (c != null && c.moveToNext()) {
+                            String title = c.getString(0);
+                            if (!TextUtils.isEmpty(title))
+                                contact.categories.add(title);
+                        }
+                    } catch(RemoteException e) {
+                        throw new ContactsStorageException("Couldn't find group for adding CATEGORIES", e);
+                    }
+                }
+            }
+        } else if (resource instanceof LocalGroup)
+            contact = ((LocalGroup)resource).getContact();
+        else
+            throw new IllegalArgumentException("Argument must be LocalContact or LocalGroup");
+
+        App.log.log(Level.FINE, "Preparing upload of VCard " + resource.getFileName(), contact);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        local.getContact().write(hasVCard4 ? VCardVersion.V4_0 : VCardVersion.V3_0, os);
+        contact.write(hasVCard4 ? VCardVersion.V4_0 : VCardVersion.V3_0, groupMethod, os);
 
         return RequestBody.create(
                 hasVCard4 ? DavAddressBook.MIME_VCARD4 : DavAddressBook.MIME_VCARD3_UTF8,
@@ -213,21 +335,21 @@ public class ContactsSyncManager extends SyncManager {
                 // process multiget results
                 for (DavResource remote : davCollection.members) {
                     String eTag;
-                    GetETag getETag = (GetETag) remote.properties.get(GetETag.NAME);
+                    GetETag getETag = (GetETag)remote.properties.get(GetETag.NAME);
                     if (getETag != null)
                         eTag = getETag.eTag;
                     else
                         throw new DavException("Received multi-get response without ETag");
 
                     Charset charset = Charsets.UTF_8;
-                    GetContentType getContentType = (GetContentType) remote.properties.get(GetContentType.NAME);
+                    GetContentType getContentType = (GetContentType)remote.properties.get(GetContentType.NAME);
                     if (getContentType != null && getContentType.type != null) {
                         MediaType type = MediaType.parse(getContentType.type);
                         if (type != null)
                             charset = type.charset(Charsets.UTF_8);
                     }
 
-                    AddressData addressData = (AddressData) remote.properties.get(AddressData.NAME);
+                    AddressData addressData = (AddressData)remote.properties.get(AddressData.NAME);
                     if (addressData == null || addressData.vCard == null)
                         throw new DavException("Received multi-get response without address data");
 
@@ -235,6 +357,22 @@ public class ContactsSyncManager extends SyncManager {
                     processVCard(remote.fileName(), eTag, stream, charset, downloader);
                 }
             }
+        }
+    }
+
+    @Override
+    protected void postProcess() throws CalendarStorageException, ContactsStorageException {
+        if (groupMethod == GroupMethod.VCARD3_CATEGORIES) {
+            /* VCard3 group handling: groups memberships are represented as contact CATEGORIES */
+
+            // remove empty groups
+            App.log.info("Removing empty groups");
+            localAddressBook().removeEmptyGroups();
+
+        } else {
+            /* VCard4 group handling: there are group contacts and individual contacts */
+            App.log.info("Assigning memberships of downloaded contact groups");
+            LocalGroup.applyPendingMemberships(localAddressBook());
         }
     }
 
@@ -250,48 +388,78 @@ public class ContactsSyncManager extends SyncManager {
     private DavAddressBook davAddressBook() { return (DavAddressBook)davCollection; }
     private LocalAddressBook localAddressBook() { return (LocalAddressBook)localCollection; }
 
-    private void processChangedGroups() throws ContactsStorageException {
-        LocalAddressBook addressBook = localAddressBook();
-
-        // groups with DELETED=1: remove group finally
-        for (LocalGroup group : addressBook.getDeletedGroups()) {
-            long groupId = group.getId();
-            App.log.fine("Finally removing group #" + groupId);
-            // remove group memberships, but not as sync adapter (should marks contacts as DIRTY)
-            // NOTE: doesn't work that way because Contact Provider removes the group memberships even for DELETED groups
-            // addressBook.removeGroupMemberships(groupId, false);
-            group.delete();
-        }
-
-        // groups with DIRTY=1: mark all memberships as dirty, then clean DIRTY flag of group
-        for (LocalGroup group : addressBook.getDirtyGroups()) {
-            long groupId = group.getId();
-            App.log.fine("Marking members of modified group #" + groupId + " as dirty");
-            addressBook.markMembersDirty(groupId);
-            group.clearDirty();
-        }
-    }
-
     private void processVCard(String fileName, String eTag, InputStream stream, Charset charset, Contact.Downloader downloader) throws IOException, ContactsStorageException {
+        App.log.info("Processing CardDAV resource " + fileName);
         Contact[] contacts = Contact.fromStream(stream, charset, downloader);
-        if (contacts.length == 1) {
-            Contact newData = contacts[0];
+        if (contacts.length == 0) {
+            App.log.warning("Received VCard without data, ignoring");
+            return;
+        } else if (contacts.length > 1)
+            App.log.warning("Received multiple VCards, using first one");
 
-            // update local contact, if it exists
-            LocalContact localContact = (LocalContact)localResources.get(fileName);
-            if (localContact != null) {
-                App.log.info("Updating " + fileName + " in local address book");
-                localContact.eTag = eTag;
-                localContact.update(newData);
+        final Contact newData = contacts[0];
+
+        // update local contact, if it exists
+        LocalResource local = localResources.get(fileName);
+        if (local != null) {
+            App.log.log(Level.INFO, "Updating " + fileName + " in local address book", newData);
+
+            if (local instanceof LocalGroup && newData.group) {
+                // update group
+                LocalGroup group = (LocalGroup)local;
+                group.eTag = eTag;
+                group.updateFromServer(newData);
                 syncResult.stats.numUpdates++;
+
+            } else if (local instanceof LocalContact && !newData.group) {
+                // update contact
+                LocalContact contact = (LocalContact)local;
+                contact.eTag = eTag;
+                contact.update(newData);
+                syncResult.stats.numUpdates++;
+
             } else {
-                App.log.info("Adding " + fileName + " to local address book");
-                localContact = new LocalContact(localAddressBook(), newData, fileName, eTag);
-                localContact.add();
-                syncResult.stats.numInserts++;
+                // group has become an individual contact or vice versa
+                try {
+                    local.delete();
+                    local = null;
+                } catch(CalendarStorageException e) {
+                    // CalendarStorageException is not used by LocalGroup and LocalContact
+                }
             }
-        } else
-            App.log.severe("Received VCard with not exactly one VCARD, ignoring " + fileName);
+        }
+
+        if (local == null) {
+            if (newData.group) {
+                App.log.log(Level.INFO, "Creating local group", newData);
+                LocalGroup group = new LocalGroup(localAddressBook(), newData, fileName, eTag);
+                group.create();
+
+                local = group;
+            } else {
+                App.log.log(Level.INFO, "Creating local contact", newData);
+                LocalContact contact = new LocalContact(localAddressBook(), newData, fileName, eTag);
+                contact.create();
+
+                local = contact;
+            }
+            syncResult.stats.numInserts++;
+        }
+
+        if (groupMethod == GroupMethod.VCARD3_CATEGORIES && local instanceof LocalContact) {
+            // VCard3: update group memberships from CATEGORIES
+            LocalContact contact = (LocalContact)local;
+
+            BatchOperation batch = new BatchOperation(provider);
+            contact.removeGroupMemberships(batch);
+
+            for (String category : contact.getContact().categories) {
+                long groupID = localAddressBook().findOrCreateGroup(category);
+                contact.addToGroup(batch, groupID);
+            }
+
+            batch.commit();
+        }
     }
 
 
