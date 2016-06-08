@@ -55,6 +55,9 @@ import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
+/**
+ * Synchronization manager for CalDAV collections; handles events ({@code VEVENT}).
+ */
 public class CalendarSyncManager extends SyncManager {
 
     protected static final int MAX_MULTIGET = 20;

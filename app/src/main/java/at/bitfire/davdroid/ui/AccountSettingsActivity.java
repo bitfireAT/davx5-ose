@@ -30,6 +30,7 @@ import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.ical4android.TaskProvider;
+import at.bitfire.vcard4android.GroupMethod;
 
 public class AccountSettingsActivity extends AppCompatActivity {
     public final static String EXTRA_ACCOUNT = "account";
@@ -209,7 +210,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
             });
 
             // category: CalDAV
-            final EditTextPreference prefTimeRangePastDays = (EditTextPreference)findPreference("caldav_time_range_past_days");
+            final EditTextPreference prefTimeRangePastDays = (EditTextPreference)findPreference("time_range_past_days");
             Integer pastDays =  settings.getTimeRangePastDays();
             if (pastDays != null) {
                 prefTimeRangePastDays.setText(pastDays.toString());
@@ -242,6 +243,18 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 }
             });
 
+            // category: CardDAV
+            final ListPreference prefGroupMethod = (ListPreference)findPreference("contact_group_method");
+            prefGroupMethod.setValue(settings.getGroupMethod().name());
+            prefGroupMethod.setSummary(prefGroupMethod.getEntry());
+            prefGroupMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    String name = (String)o;
+                    settings.setGroupMethod(GroupMethod.valueOf(name));
+                    refresh(); return false;
+                }
+            });
         }
 
     }
