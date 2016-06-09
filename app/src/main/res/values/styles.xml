@@ -23,6 +23,9 @@
     <color name="very_light_grey">#ebebeb</color>
     <color name="white">#ffffff</color>
 
+    <!-- preference-v14 uses this color for categories text -->
+    <color name="preference_fallback_accent_color">@color/orangeA700</color>
+
 
     <!-- app theme -->
 
@@ -33,7 +36,7 @@
         <item name="colorAccent">@color/orangeA700</item>
         <item name="android:textColorPrimary">@drawable/text_color</item>
         <item name="android:textColorSecondary">@color/grey</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
