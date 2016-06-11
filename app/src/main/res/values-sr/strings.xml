@@ -159,6 +159,7 @@
   <string name="settings_sync_wifi_only_ssid_on">Синхронизовање само преко %s</string>
   <string name="settings_sync_wifi_only_ssid_off">Коришћење свих бежичних мрежа</string>
   <string name="settings_sync_wifi_only_ssid_message">Унесите назив бежичне мреже (њен ССИД) да бисте ограничили синхронизацију само на ту мрежу, или оставите празно за синхронизовање преко било које бежичне мреже.</string>
+  <string name="settings_carddav">КардДАВ</string>
   <string name="settings_caldav">КалДАВ</string>
   <string name="settings_sync_time_range_past">Ограничење догађаја у прошлости</string>
   <string name="settings_sync_time_range_past_none">Сви догађаји се синхронизују</string>
@@ -210,18 +211,5 @@
   <string name="sync_error">Грешка током %s</string>
   <string name="sync_error_http_dav">Грешка сервера током %s</string>
   <string name="sync_error_local_storage">Грешка базе података током %s</string>
-  <string-array name="sync_error_phases">
-    <item>припреме синхронизације</item>
-    <item>упита за могућности</item>
-    <item>обраде локално обрисаних уноса</item>
-    <item>припреме направљених/измењених уноса</item>
-    <item>отпремања направљених/измењених уноса</item>
-    <item>провере стања синхронизације</item>
-    <item>излиставања локалних уноса</item>
-    <item>излиставања удаљених уноса</item>
-    <item>упоређивања локалних/удаљених уноса</item>
-    <item>преузимања удаљених уноса</item>
-    <item>уписа стања синхронизације</item>
-  </string-array>
   <string name="sync_error_unauthorized">Корисничко име или лозинка погрешни</string>
 </resources>

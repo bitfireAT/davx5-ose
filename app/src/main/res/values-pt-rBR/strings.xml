@@ -158,6 +158,7 @@
   <string name="settings_sync_wifi_only_ssid_on">Sincronizará apenas com %s</string>
   <string name="settings_sync_wifi_only_ssid_off">Todas as conexões Wi-Fi podem ser utilizadas</string>
   <string name="settings_sync_wifi_only_ssid_message">Informe o nome da rede Wi-Fi (SSID) que será usada para sincronização ou deixe em branco para usar qualquer conexão Wi-Fi.</string>
+  <string name="settings_carddav">CardDAV</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limite para eventos passados</string>
   <string name="settings_sync_time_range_past_none">Todos os eventos serão sincronizados</string>
@@ -208,18 +209,5 @@
   <string name="sync_error">Erro ao %s</string>
   <string name="sync_error_http_dav">Erro do servidor ao %s</string>
   <string name="sync_error_local_storage">Erro do banco de dados ao %s</string>
-  <string-array name="sync_error_phases">
-    <item>preparando sincronização</item>
-    <item>procurando capacidades</item>
-    <item>processando os itens excluídos localmente</item>
-    <item>preparando os itens criados/modificados</item>
-    <item>enviando os itens criados/modificados</item>
-    <item>verificando o estado da sincronização</item>
-    <item>listando os itens locais</item>
-    <item>listando os itens remotos</item>
-    <item>comparando os itens locais/remotos</item>
-    <item>baixando os itens remotos</item>
-    <item>salvando o estado da sincronização</item>
-  </string-array>
   <string name="sync_error_unauthorized">Usuário/senha incorreto</string>
 </resources>
