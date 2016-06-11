@@ -199,18 +199,5 @@
   <string name="sync_error">Fejl under %s</string>
   <string name="sync_error_http_dav">Serverfejl under %s</string>
   <string name="sync_error_local_storage">Databasefejl under %s</string>
-  <string-array name="sync_error_phases">
-    <item>forbereder synkronisering</item>
-    <item>checker funktioner</item>
-    <item>behandler poster, der er slettet lokalt</item>
-    <item>behandler poster, der er oprettet/ændret lokalt</item>
-    <item>uploader poster, der er oprettet/ændret lokalt</item>
-    <item>checker synkroniseringsstatus</item>
-    <item>oplister lokale poster</item>
-    <item>oplister poster på server</item>
-    <item>sammenligner poster lokalt og på server</item>
-    <item>downloader poster på server</item>
-    <item>gemmer synkroniseringsstatus</item>
-  </string-array>
   <string name="sync_error_unauthorized">Fejl i brugernavn/adgangskode</string>
 </resources>

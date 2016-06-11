@@ -208,18 +208,5 @@
   <string name="sync_error">Fout tijdens %s</string>
   <string name="sync_error_http_dav">Serverfout tijdens %s</string>
   <string name="sync_error_local_storage">Database fout tijdens %s</string>
-  <string-array name="sync_error_phases">
-    <item>synchronisatie voorbereiden</item>
-    <item>mogelijkheden opvragen</item>
-    <item>lokaal verwijderde entries verwrken</item>
-    <item>nieuwe/aangepaste entries verwerken</item>
-    <item>nieuwe/aangepaste entries uploaden</item>
-    <item>controleren van sync staat</item>
-    <item>vermelden lokale entries</item>
-    <item>vermelden server entries</item>
-    <item>vergelijken van lokale/server entries</item>
-    <item>downloaden server entries</item>
-    <item>opslaan van sync staat</item>
-  </string-array>
   <string name="sync_error_unauthorized">Gebruikersnaam/wachtwoord onjuist</string>
 </resources>

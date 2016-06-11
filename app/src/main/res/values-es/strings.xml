@@ -207,18 +207,5 @@
   <string name="sync_error">Error al %s</string>
   <string name="sync_error_http_dav">Error de servidor al %s</string>
   <string name="sync_error_local_storage">Error de base de datos al %s</string>
-  <string-array name="sync_error_phases">
-    <item>preparar sincronización</item>
-    <item>consultar capacidades</item>
-    <item>procesar entradas borradas localmente</item>
-    <item>preparar entradas creadas/modificadas</item>
-    <item>cargar entradas creadas/modificadas</item>
-    <item>comprobar estado de sincronización</item>
-    <item>listar entradas locales</item>
-    <item>listar entradas remotas</item>
-    <item>comparar entradas locaesl/remotas</item>
-    <item>descargar entradas remotas</item>
-    <item>guardar estado de sincronización</item>
-  </string-array>
   <string name="sync_error_unauthorized">Nombre de usuario/contraseña erróneo</string>
 </resources>
