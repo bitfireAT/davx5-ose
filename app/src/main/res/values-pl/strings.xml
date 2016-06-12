@@ -3,20 +3,46 @@
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
   <string name="help">Pomoc</string>
+  <string name="manage_accounts">Zadządzaj kontami</string>
+  <string name="please_wait">Proszę czekać</string>
   <string name="send">Wyślij</string>
   <!--startup dialogs-->
+  <string name="startup_dont_show_again">Nie pokazuj ponownie</string>
+  <string name="startup_development_version">DAVdroid Preview Release</string>
+  <string name="startup_development_version_give_feedback">Przekaż opinię</string>
+  <string name="startup_donate">Informacje Open-Source</string>
+  <string name="startup_donate_now">Pokaż stronę darowizny</string>
+  <string name="startup_donate_later">Może później</string>
+  <string name="startup_google_play_accounts_removed_more_info">Więcej informacji</string>
+  <string name="startup_opentasks_not_installed">OpenTasks nie jest zainstalowany</string>
+  <string name="startup_opentasks_not_installed_install">Zainstaluj OpenTasks</string>
   <!--AboutActivity-->
   <!--global settings-->
+  <string name="logging_davdroid_file_logging">Plik logów DAVdroid</string>
   <!--AccountsActivity-->
+  <string name="navigation_drawer_settings">Ustawienia</string>
+  <string name="navigation_drawer_faq">FQA</string>
   <!--DavService-->
   <!--AppSettingsActivity-->
+  <string name="app_settings">Ustawienia</string>
+  <string name="app_settings_debug">Debugowanie</string>
+  <string name="app_settings_log_to_external_storage">Loguj to zewnętrznego pliku</string>
+  <string name="app_settings_show_debug_info">Pokaż informacje do debug\'owania</string>
   <!--AccountActivity-->
   <!--PermissionsActivity-->
   <!--AddAccountActivity-->
+  <string name="login_title">Dodaj konto</string>
   <string name="login_type_email">Logowanie za pomocą adresu e-mail</string>
+  <string name="login_email_address">Adres e-mail</string>
+  <string name="login_password">Hasło</string>
   <string name="login_type_url">Logowanie za pomocą adresu URL i nazwy użytkownika</string>
+  <string name="login_user_name">Nazwa użytkownika</string>
   <string name="login_auth_preemptive">Autoryzacja prewencyjna (zalecana, ale niezgodna z autoryzacją Digest)</string>
+  <string name="login_account_name">Nazwa konta</string>
+  <string name="login_account_name_info">Użyj swojego adresu e-mail jako nazwy konta, ponieważ Android będzie używał nazwy konta jako pola ORGANIZATOR dla wydarzeń, które stworzysz. Nie możesz posiadać dwóch kont o takiej samej nazwie.</string>
+  <string name="login_view_logs">Pokaż logi</string>
   <!--AccountSettingsActivity-->
+  <string name="settings_title">Ustawienia: %s</string>
   <string name="settings_authentication">Uwierzytelnianie</string>
   <string name="settings_username">Nazwa użytkownika</string>
   <string name="settings_enter_username">Wpisz nazwe użytkownika:</string>
@@ -53,6 +79,8 @@
     <item>Co 4 godziny</item>
     <item>Raz dziennie</item>
   </string-array>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_caldav">CalDAV</string>
   <!--collection management-->
   <!--ExceptionInfoFragment-->
   <!--sync errors and DebugInfoActivity-->
@@ -63,18 +91,5 @@
   <string name="sync_error">Błąd podczas %s</string>
   <string name="sync_error_http_dav">Błąd servera podczas %s</string>
   <string name="sync_error_local_storage">Bład bazy danych podczas %s</string>
-  <string-array name="sync_error_phases">
-    <item>przygotowania synchronizacji</item>
-    <item>odpytywania o funkcje</item>
-    <item>przetwarzania lokalnie usuniętych wpisów</item>
-    <item>przygotowania stworzonych lub zmodyfikowanych wpisów</item>
-    <item>wysyłania stworzonych lub zmodyfikowanych wpisów</item>
-    <item>sprawdzania stanu synchronizacji</item>
-    <item>listowania lokalnych wpisów</item>
-    <item>listowania zdalnych wpisów</item>
-    <item>porównywania lokalnych lub zdalnych wpisów</item>
-    <item>pobierania zdalnych wpisów</item>
-    <item>zapisywania stanu synchronizacji</item>
-  </string-array>
   <string name="sync_error_unauthorized">Błędna nazwa użytkownika lub hasło</string>
 </resources>

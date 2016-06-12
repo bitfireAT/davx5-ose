@@ -158,6 +158,7 @@
   <string name="settings_sync_wifi_only_ssid_on">Szinkronizálás csak a(z) %s hálózatra kapcsolódva</string>
   <string name="settings_sync_wifi_only_ssid_off">Szinkronizálás bármely WIFI hálózaton</string>
   <string name="settings_sync_wifi_only_ssid_message">Adja meg a WIFI hálózat nevét (SSID) a szinkronizálás egy hálózatra való korlátozához, vagy hagyja üresen, ha nem akar ilyen szűkítést.</string>
+  <string name="settings_carddav">CardDAV</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Múltbéli események időkorlátja</string>
   <string name="settings_sync_time_range_past_none">Minden esemény szinkronizálása</string>
@@ -208,18 +209,5 @@
   <string name="sync_error">Hiba az alábbi művelet közben: %s</string>
   <string name="sync_error_http_dav">Szerver oldali hiba az alábbi művelet közben: %s</string>
   <string name="sync_error_local_storage">Adatbázishiba az alábbi művelet közben: %s</string>
-  <string-array name="sync_error_phases">
-    <item>felkészülés a szinkronizálásra</item>
-    <item>szolgáltatások keresése</item>
-    <item>a helyben törölt bejegyzések feldolgozása</item>
-    <item>az új vagy módosított bejegyzések összegyűjtése</item>
-    <item>az új vagy módosított bejegyzések feltöltése</item>
-    <item>a szinkronizációs állapot ellenőrzése</item>
-    <item>helyi bejegyzések listázása</item>
-    <item>távoli bejegyzések listázása</item>
-    <item>helyi és távoli bejegyzések összehasonlítása</item>
-    <item>távoli bejegyzések letöltése</item>
-    <item>szinkronizációs állapot mentése</item>
-  </string-array>
   <string name="sync_error_unauthorized">A felhasználónév vagy jelszó hibás</string>
 </resources>
