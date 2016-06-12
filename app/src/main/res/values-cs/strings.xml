@@ -210,18 +210,5 @@
   <string name="sync_error">Chyba při %s</string>
   <string name="sync_error_http_dav">Chyba serveru při %s</string>
   <string name="sync_error_local_storage">Chyba databáze při %s</string>
-  <string-array name="sync_error_phases">
-    <item>příprava synchronizace</item>
-    <item>dotazování možností</item>
-    <item>zpracovávání místních smazaných záznamů</item>
-    <item>příprava vytvořených/upravených záznamů</item>
-    <item>nahrávání vytvořených/upravených záznamů</item>
-    <item>kontrola stavu synchronizace</item>
-    <item>výpis místních záznamů</item>
-    <item>výpis vzdálených záznamů</item>
-    <item>porovnání místních/vzdálených záznamů</item>
-    <item>stahování vzdálených záznamů</item>
-    <item>ukládání stavu synchronizace</item>
-  </string-array>
   <string name="sync_error_unauthorized">Chybné uživatelské jméno/heslo</string>
 </resources>

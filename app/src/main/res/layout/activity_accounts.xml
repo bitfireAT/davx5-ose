@@ -14,12 +14,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-    <include
-        layout="@layout/accounts_content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <include layout="@layout/accounts_content"/>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"

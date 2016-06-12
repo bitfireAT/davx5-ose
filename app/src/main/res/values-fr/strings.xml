@@ -207,18 +207,5 @@
   <string name="sync_error">Erreur durant %s</string>
   <string name="sync_error_http_dav">Erreur de serveur durant %s</string>
   <string name="sync_error_local_storage">Erreur de base de donnée durant %s</string>
-  <string-array name="sync_error_phases">
-    <item>prépare la synchronisation</item>
-    <item>demande les autorisations</item>
-    <item>prépare la suppression des entrées locales</item>
-    <item>prépare les entrées créées/modifiées</item>
-    <item>envoi les entrées créées/modifiées</item>
-    <item>vérifie l\'état de la synchronisation</item>
-    <item>liste les entrées locales</item>
-    <item>liste les entrées distantes</item>
-    <item>compare les entrées locales/distantes</item>
-    <item>télécharge les entrées distantes</item>
-    <item>enregistre l\'état de la synchronisation</item>
-  </string-array>
   <string name="sync_error_unauthorized">Nom d\'utilisateur ou mot de passe erroné</string>
 </resources>

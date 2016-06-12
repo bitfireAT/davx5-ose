@@ -209,6 +209,17 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 }
             });
 
+            // category: CardDAV
+            final SwitchPreferenceCompat prefRFC6868 = (SwitchPreferenceCompat)findPreference("vcard_rfc6868");
+            prefRFC6868.setChecked(settings.getVCardRFC6868());
+            prefRFC6868.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    settings.setVCardRFC6868((Boolean)o);
+                    refresh(); return false;
+                }
+            });
+
             // category: CalDAV
             final EditTextPreference prefTimeRangePastDays = (EditTextPreference)findPreference("time_range_past_days");
             Integer pastDays =  settings.getTimeRangePastDays();

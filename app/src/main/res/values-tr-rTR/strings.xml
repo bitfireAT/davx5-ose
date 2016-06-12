@@ -208,18 +208,5 @@
   <string name="sync_error">%s yaparken hata</string>
   <string name="sync_error_http_dav">%s yaparken sunucu hatası</string>
   <string name="sync_error_local_storage">%s yaparken veritabanı hatası</string>
-  <string-array name="sync_error_phases">
-    <item>senkronizasyon hazırlanıyor</item>
-    <item>yetkinlikler sorgulanıyor</item>
-    <item>yerel olarak silinmiş kayıtlar işleniyor</item>
-    <item>yaratılmış/değiştirilmiş kayıtlar hazırlanıyor</item>
-    <item>yaratılmış/değiştirilmiş kayıtlar indiriliyor</item>
-    <item>senkronizasyon durumu kontrol ediliyor</item>
-    <item>yerel kayıtlar listeleniyor</item>
-    <item>uzak kayıtlar listeleniyor</item>
-    <item>yerel/uzak kayıtlar karşılaştırılıyor</item>
-    <item>uzak kayıtlar indiriliyor</item>
-    <item>senkronizasyon durumu kaydediliyor</item>
-  </string-array>
   <string name="sync_error_unauthorized">Kullanıcı adı/parola yanlış</string>
 </resources>

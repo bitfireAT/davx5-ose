@@ -259,7 +259,7 @@ public class ContactsSyncManager extends SyncManager {
         App.log.log(Level.FINE, "Preparing upload of VCard " + resource.getFileName(), contact);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        contact.write(hasVCard4 ? VCardVersion.V4_0 : VCardVersion.V3_0, groupMethod, os);
+        contact.write(hasVCard4 ? VCardVersion.V4_0 : VCardVersion.V3_0, groupMethod, settings.getVCardRFC6868(), os);
 
         return RequestBody.create(
                 hasVCard4 ? DavAddressBook.MIME_VCARD4 : DavAddressBook.MIME_VCARD3_UTF8,

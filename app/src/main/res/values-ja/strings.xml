@@ -157,6 +157,7 @@
   <string name="settings_sync_wifi_only_ssid_on">%s でのみ同期します</string>
   <string name="settings_sync_wifi_only_ssid_off">すべての WiFi 接続を使用することができます</string>
   <string name="settings_sync_wifi_only_ssid_message">このネットワークで同期を制限する WiFi ネットワーク (SSID) の名前を入力してください。すべての WiFi 接続は空白のままにします。</string>
+  <string name="settings_carddav">CardDAV</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">過去イベントの時間限度</string>
   <string name="settings_sync_time_range_past_none">すべてのイベントが同期されます</string>
@@ -206,18 +207,5 @@
   <string name="sync_error">%s 時にエラー</string>
   <string name="sync_error_http_dav">%s 時にサーバーエラー</string>
   <string name="sync_error_local_storage">%s 時にデータベースエラー</string>
-  <string-array name="sync_error_phases">
-    <item>同期の準備中</item>
-    <item>機能の問い合わせ中</item>
-    <item>ローカルで削除されたエントリーの処理中</item>
-    <item>作成済/更新済エントリーの準備中</item>
-    <item>作成済/更新済エントリーのアップロード中</item>
-    <item>同期の状態を確認中</item>
-    <item>ローカルのエントリーをリスト中</item>
-    <item>リモートのエントリーをリスト中</item>
-    <item>ローカル/リモートのエントリーを比較中</item>
-    <item>リモートのエントリーをダウンロード中</item>
-    <item>同期の状態を保存中</item>
-  </string-array>
   <string name="sync_error_unauthorized">ユーザー名/パスワードが間違っています</string>
 </resources>
