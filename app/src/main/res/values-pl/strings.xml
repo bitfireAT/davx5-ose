@@ -13,23 +13,54 @@
   <string name="startup_donate">Informacje Open-Source</string>
   <string name="startup_donate_now">Pokaż stronę darowizny</string>
   <string name="startup_donate_later">Może później</string>
+  <string name="startup_google_play_accounts_removed">Informacje o błędzie DRM Sklepu Play</string>
   <string name="startup_google_play_accounts_removed_more_info">Więcej informacji</string>
   <string name="startup_opentasks_not_installed">OpenTasks nie jest zainstalowany</string>
+  <string name="startup_opentasks_not_installed_message">Aplikacja Open Tasks nie jest dostępna, więc DAVdroid nie będzie mógł synchronizować listy zadań. </string>
+  <string name="startup_opentasks_reinstall_davdroid">Po zainstalowaniu OpenTasks konieczne jest PRZEINSTALOWANIE DAVdroid i ponowne dodanie twoich kont (błąd Androida).</string>
   <string name="startup_opentasks_not_installed_install">Zainstaluj OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_license_terms">Warunki licencji</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">Plik logów DAVdroid</string>
+  <string name="logging_to_external_storage">Logowanie do zewnątrznej pamięci: %s</string>
+  <string name="logging_to_external_storage_warning">Usuń logi tak szybko jak to możliwe!</string>
+  <string name="logging_couldnt_create_file">Nie można stworzyć zewnętrznego pliku logów: %s</string>
+  <string name="logging_no_external_storage">Zewnętrzna pamięci nie została naleziona</string>
   <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Otwórz menu nawigacji</string>
+  <string name="navigation_drawer_close">Zamknij menu nawigacji</string>
+  <string name="navigation_drawer_subtitle">Adapter synchronizacji CalDAV/CardDAV</string>
   <string name="navigation_drawer_settings">Ustawienia</string>
+  <string name="navigation_drawer_news_updates">Nowości &amp; aktualizacje
+</string>
+  <string name="navigation_drawer_external_links">Zewnętrzne odnośniki</string>
+  <string name="navigation_drawer_website">Strona WWW</string>
   <string name="navigation_drawer_faq">FQA</string>
+  <string name="navigation_drawer_forums">Społeczność</string>
+  <string name="navigation_drawer_donate">Dotacja</string>
   <!--DavService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Ustawienia</string>
+  <string name="app_settings_user_interface">
+Interfejs użytkownika</string>
+  <string name="app_settings_reset_hints">Zresetuj podpowiedzi</string>
+  <string name="app_settings_security">Bezpieczeństwo</string>
   <string name="app_settings_debug">Debugowanie</string>
   <string name="app_settings_log_to_external_storage">Loguj to zewnętrznego pliku</string>
   <string name="app_settings_show_debug_info">Pokaż informacje do debug\'owania</string>
   <!--AccountActivity-->
+  <string name="account_synchronize_now">Synchronizuj teraz</string>
+  <string name="account_synchronizing_now">Synchronizcja w toku</string>
+  <string name="account_settings">Ustawienia konta</string>
+  <string name="account_delete">Usuń konto</string>
+  <string name="account_delete_confirmation_title">Naprawdę chcesz usunąć konto?</string>
+  <string name="account_create_new_calendar">Stwórz nowy kalendarz</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">Uprawnienia DAVdroid</string>
+  <string name="permissions_calendar">Uprawnienia kalendarza</string>
+  <string name="permissions_contacts">Uprawnienia kontaktów</string>
+  <string name="permissions_opentasks">Uprawnienia OpenTasks</string>
   <!--AddAccountActivity-->
   <string name="login_title">Dodaj konto</string>
   <string name="login_type_email">Logowanie za pomocą adresu e-mail</string>
@@ -38,6 +69,9 @@
   <string name="login_type_url">Logowanie za pomocą adresu URL i nazwy użytkownika</string>
   <string name="login_user_name">Nazwa użytkownika</string>
   <string name="login_auth_preemptive">Autoryzacja prewencyjna (zalecana, ale niezgodna z autoryzacją Digest)</string>
+  <string name="login_login">Zaloguj</string>
+  <string name="login_back">Wróć</string>
+  <string name="login_create_account">Stwórz konto</string>
   <string name="login_account_name">Nazwa konta</string>
   <string name="login_account_name_info">Użyj swojego adresu e-mail jako nazwy konta, ponieważ Android będzie używał nazwy konta jako pola ORGANIZATOR dla wydarzeń, które stworzysz. Nie możesz posiadać dwóch kont o takiej samej nazwie.</string>
   <string name="login_view_logs">Pokaż logi</string>

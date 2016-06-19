@@ -159,6 +159,10 @@
   <string name="settings_sync_wifi_only_ssid_on">Synchronizace pouze přes %s</string>
   <string name="settings_sync_wifi_only_ssid_off">Použít všechna WiFi připojení</string>
   <string name="settings_sync_wifi_only_ssid_message">Zadejte jméno WiFi sítě (SSID) pro omezení synchronizace na tutu síť, nebo ponechte prázdné pro použití všech WiFi připojení.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_rfc6868_for_vcards">Použít RFC6868 pro VCard</string>
+  <string name="settings_rfc6868_for_vcards_on">Uvozovky lze použít v hodnotách parametrů</string>
+  <string name="settings_rfc6868_for_vcards_off">Uvozovky nelze použít v hodnotách parametrů</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Časový limit pro staré události</string>
   <string name="settings_sync_time_range_past_none">Synchronizovat všechny události</string>
