@@ -38,10 +38,31 @@
                 android:inputType="textEmailAddress"/>
 
             <TextView
+                android:id="@+id/account_email_hint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/login_account_name_info"/>
+
+            <LinearLayout
+                android:id="@+id/carddav"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/login_account_contact_group_method"/>
+
+                <Spinner
+                    android:id="@+id/contact_group_method"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/settings_contact_group_method_entries"/>
+
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

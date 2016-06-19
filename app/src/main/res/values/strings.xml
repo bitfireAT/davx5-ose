@@ -126,6 +126,7 @@
     <string name="login_create_account">Create account</string>
     <string name="login_account_name">Account name</string>
     <string name="login_account_name_info">Use your email address as account name because Android will use the account name as ORGANIZER field for events you create. You can\'t have two accounts with the same name.</string>
+    <string name="login_account_contact_group_method">Contact group method:</string>
     <string name="login_account_name_required">Account name required</string>
     <string name="login_account_not_created">Account could not be created</string>
 
@@ -182,16 +183,12 @@
     <string name="settings_carddav">CardDAV</string>
     <string name="settings_contact_group_method">Contact group method</string>
     <string-array name="settings_contact_group_method_values">
-        <item>AUTOMATIC</item>
-        <item>VCARD3_CATEGORIES</item>
-        <item>VCARD4</item>
-        <item>X_ADDRESSBOOK_SERVER</item>
+        <item>GROUP_VCARDS</item>
+        <item>CATEGORIES</item>
     </string-array>
     <string-array name="settings_contact_group_method_entries">
-        <item>Automatic (VCard3/VCard4)</item>
-        <item>VCard3 only (CATEGORIES)</item>
-        <item>VCard4 only (KIND/MEMBER)</item>
-        <item>Apple (X-ADDRESSBOOK-SERVER)</item>
+        <item>Groups are separate VCards</item>
+        <item>Groups are per-contact categories</item>
     </string-array>
     <string name="settings_rfc6868_for_vcards">Use RFC6868 for VCards</string>
     <string name="settings_rfc6868_for_vcards_on">Double quotes can be used in parameter values</string>

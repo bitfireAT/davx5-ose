@@ -87,6 +87,7 @@ public class LoginCredentialsFragment extends Fragment implements CompoundButton
             boolean loginByEmail = buttonView == radioUseEmail;
             emailDetails.setVisibility(loginByEmail ? View.VISIBLE : View.GONE);
             urlDetails.setVisibility(loginByEmail ? View.GONE : View.VISIBLE);
+            (loginByEmail ? editEmailAddress : editBaseURL).requestFocus();
         }
     }
 

@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import java.net.URI;
 import java.util.logging.Level;
@@ -42,12 +43,16 @@ import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
 import at.bitfire.davdroid.model.ServiceDB.Services;
 import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.ical4android.TaskProvider;
+import at.bitfire.vcard4android.GroupMethod;
 import lombok.Cleanup;
 
 public class AccountDetailsFragment extends Fragment {
 
     private static final String KEY_CONFIG = "config";
     private static final int DEFAULT_SYNC_INTERVAL = 4 * 3600;  // 4 hours
+
+    Spinner spnrGroupMethod;
+
 
     public static AccountDetailsFragment newInstance(DavResourceFinder.Configuration config) {
         AccountDetailsFragment frag = new AccountDetailsFragment();
@@ -56,6 +61,7 @@ public class AccountDetailsFragment extends Fragment {
         frag.setArguments(args);
         return frag;
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -73,6 +79,10 @@ public class AccountDetailsFragment extends Fragment {
 
         final EditText editName = (EditText)v.findViewById(R.id.account_name);
         editName.setText(config.userName);
+
+        // CardDAV-specific
+        v.findViewById(R.id.carddav).setVisibility(config.cardDAV != null ? View.VISIBLE : View.GONE);
+        spnrGroupMethod = (Spinner)v.findViewById(R.id.contact_group_method);
 
         Button btnCreate = (Button)v.findViewById(R.id.create_account);
         btnCreate.setOnClickListener(new View.OnClickListener() {
@@ -114,25 +124,39 @@ public class AccountDetailsFragment extends Fragment {
             Intent refreshIntent = new Intent(getActivity(), DavService.class);
             refreshIntent.setAction(DavService.ACTION_REFRESH_COLLECTIONS);
 
-            db.beginTransactionNonExclusive();
             if (config.cardDAV != null) {
+                // insert CardDAV service
                 long id = insertService(db, accountName, Services.SERVICE_CARDDAV, config.cardDAV);
+
+                // start CardDAV service detection (refresh collections)
                 refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id);
                 getActivity().startService(refreshIntent);
 
+                // initial CardDAV account settings
+                int idx = spnrGroupMethod.getSelectedItemPosition();
+                String groupMethodName = getResources().getStringArray(R.array.settings_contact_group_method_values)[idx];
+                settings.setGroupMethod(GroupMethod.valueOf(groupMethodName));
+
+                // enable contact sync
                 ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
                 settings.setSyncInterval(ContactsContract.AUTHORITY, DEFAULT_SYNC_INTERVAL);
             } else
+                // disable contact sync when CardDAV is not available
                 ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0);
 
             if (config.calDAV != null) {
+                // insert CalDAV service
                 long id = insertService(db, accountName, Services.SERVICE_CALDAV, config.calDAV);
+
+                // start CalDAV service detection (refresh collections)
                 refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id);
                 getActivity().startService(refreshIntent);
 
+                // enable calendar sync
                 ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1);
                 settings.setSyncInterval(CalendarContract.AUTHORITY, DEFAULT_SYNC_INTERVAL);
 
+                // enable task sync, if possible
                 if (Build.VERSION.SDK_INT >= 23 || LocalTaskList.tasksProviderAvailable(getContext())) {
                     ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
                     settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, DEFAULT_SYNC_INTERVAL);
@@ -141,15 +165,13 @@ public class AccountDetailsFragment extends Fragment {
                     // because otherwise, there will be a non-catchable SecurityException as soon as OpenTasks is installed
                     ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0);
             } else {
+                // disable calendar and task sync when CalDAV is not available
                 ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0);
                 ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0);
             }
 
-            db.setTransactionSuccessful();
         } catch(InvalidAccountException e) {
             App.log.log(Level.SEVERE, "Couldn't access account settings", e);
-        } finally {
-            db.endTransaction();
         }
 
         return true;

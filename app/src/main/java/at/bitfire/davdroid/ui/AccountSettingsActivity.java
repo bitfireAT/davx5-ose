@@ -85,7 +85,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
             try {
                 settings = new AccountSettings(getActivity(), account);
-            }  catch(InvalidAccountException e) {
+            } catch(InvalidAccountException e) {
                 App.log.log(Level.INFO, "Account is invalid or doesn't exist (anymore)", e);
                 getActivity().finish();
                 return;
@@ -98,8 +98,9 @@ public class AccountSettingsActivity extends AppCompatActivity {
             prefUserName.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    settings.username((String) newValue);
-                    refresh(); return false;
+                    settings.username((String)newValue);
+                    refresh();
+                    return false;
                 }
             });
 
@@ -107,8 +108,9 @@ public class AccountSettingsActivity extends AppCompatActivity {
             prefPassword.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    settings.password((String) newValue);
-                    refresh(); return false;
+                    settings.password((String)newValue);
+                    refresh();
+                    return false;
                 }
             });
 
@@ -117,8 +119,9 @@ public class AccountSettingsActivity extends AppCompatActivity {
             prefPreemptive.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    settings.preemptiveAuth((Boolean) newValue);
-                    refresh(); return false;
+                    settings.preemptiveAuth((Boolean)newValue);
+                    refresh();
+                    return false;
                 }
             });
 
@@ -134,8 +137,9 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 prefSyncContacts.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        settings.setSyncInterval(ContactsContract.AUTHORITY, Long.parseLong((String) newValue));
-                        refresh(); return false;
+                        settings.setSyncInterval(ContactsContract.AUTHORITY, Long.parseLong((String)newValue));
+                        refresh();
+                        return false;
                     }
                 });
             } else {
@@ -154,8 +158,9 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 prefSyncCalendars.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        settings.setSyncInterval(CalendarContract.AUTHORITY, Long.parseLong((String) newValue));
-                        refresh(); return false;
+                        settings.setSyncInterval(CalendarContract.AUTHORITY, Long.parseLong((String)newValue));
+                        refresh();
+                        return false;
                     }
                 });
             } else {
@@ -174,8 +179,9 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 prefSyncTasks.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Long.parseLong((String) newValue));
-                        refresh(); return false;
+                        settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Long.parseLong((String)newValue));
+                        refresh();
+                        return false;
                     }
                 });
             } else {
@@ -189,7 +195,8 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object wifiOnly) {
                     settings.setSyncWiFiOnly((Boolean)wifiOnly);
-                    refresh(); return false;
+                    refresh();
+                    return false;
                 }
             });
 
@@ -205,68 +212,85 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     String ssid = (String)newValue;
                     settings.setSyncWifiOnlySSID(!TextUtils.isEmpty(ssid) ? ssid : null);
-                    refresh(); return false;
+                    refresh();
+                    return false;
                 }
             });
 
             // category: CardDAV
             final SwitchPreferenceCompat prefRFC6868 = (SwitchPreferenceCompat)findPreference("vcard_rfc6868");
-            prefRFC6868.setChecked(settings.getVCardRFC6868());
-            prefRFC6868.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object o) {
-                    settings.setVCardRFC6868((Boolean)o);
-                    refresh(); return false;
-                }
-            });
+            if (syncIntervalContacts != null) {
+                prefRFC6868.setChecked(settings.getVCardRFC6868());
+                prefRFC6868.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object o) {
+                        settings.setVCardRFC6868((Boolean)o);
+                        refresh();
+                        return false;
+                    }
+                });
+            } else
+                prefRFC6868.setEnabled(false);
+
+            final ListPreference prefGroupMethod = (ListPreference)findPreference("contact_group_method");
+            if (syncIntervalContacts != null) {
+                prefGroupMethod.setValue(settings.getGroupMethod().name());
+                prefGroupMethod.setSummary(prefGroupMethod.getEntry());
+                prefGroupMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object o) {
+                        String name = (String)o;
+                        settings.setGroupMethod(GroupMethod.valueOf(name));
+                        refresh();
+                        return false;
+                    }
+                });
+            } else
+                prefGroupMethod.setEnabled(false);
 
             // category: CalDAV
             final EditTextPreference prefTimeRangePastDays = (EditTextPreference)findPreference("time_range_past_days");
-            Integer pastDays =  settings.getTimeRangePastDays();
-            if (pastDays != null) {
-                prefTimeRangePastDays.setText(pastDays.toString());
-                prefTimeRangePastDays.setSummary(getResources().getQuantityString(R.plurals.settings_sync_time_range_past_days, pastDays, pastDays));
-            } else {
-                prefTimeRangePastDays.setText(null);
-                prefTimeRangePastDays.setSummary(R.string.settings_sync_time_range_past_none);
-            }
-            prefTimeRangePastDays.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    int days;
-                    try {
-                        days = Integer.parseInt((String)newValue);
-                    } catch(NumberFormatException ignored) {
-                        days = -1;
-                    }
-                    settings.setTimeRangePastDays(days < 0 ? null : days);
-                    refresh(); return false;
+            if (syncIntervalCalendars != null) {
+                Integer pastDays = settings.getTimeRangePastDays();
+                if (pastDays != null) {
+                    prefTimeRangePastDays.setText(pastDays.toString());
+                    prefTimeRangePastDays.setSummary(getResources().getQuantityString(R.plurals.settings_sync_time_range_past_days, pastDays, pastDays));
+                } else {
+                    prefTimeRangePastDays.setText(null);
+                    prefTimeRangePastDays.setSummary(R.string.settings_sync_time_range_past_none);
                 }
-            });
+                prefTimeRangePastDays.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        int days;
+                        try {
+                            days = Integer.parseInt((String)newValue);
+                        } catch(NumberFormatException ignored) {
+                            days = -1;
+                        }
+                        settings.setTimeRangePastDays(days < 0 ? null : days);
+                        refresh();
+                        return false;
+                    }
+                });
+            } else
+                prefTimeRangePastDays.setEnabled(false);
 
             final SwitchPreferenceCompat prefManageColors = (SwitchPreferenceCompat)findPreference("manage_calendar_colors");
-            prefManageColors.setChecked(settings.getManageCalendarColors());
-            prefManageColors.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    settings.setManageCalendarColors((Boolean)newValue);
-                    refresh(); return false;
-                }
-            });
+            if (syncIntervalCalendars != null || syncIntervalTasks != null) {
+                prefManageColors.setChecked(settings.getManageCalendarColors());
+                prefManageColors.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        settings.setManageCalendarColors((Boolean)newValue);
+                        refresh();
+                        return false;
+                    }
+                });
+            } else
+                prefManageColors.setEnabled(false);
 
-            // category: CardDAV
-            final ListPreference prefGroupMethod = (ListPreference)findPreference("contact_group_method");
-            prefGroupMethod.setValue(settings.getGroupMethod().name());
-            prefGroupMethod.setSummary(prefGroupMethod.getEntry());
-            prefGroupMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object o) {
-                    String name = (String)o;
-                    settings.setGroupMethod(GroupMethod.valueOf(name));
-                    refresh(); return false;
-                }
-            });
         }
-
     }
+
 }
