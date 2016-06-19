@@ -50,7 +50,7 @@ import lombok.Cleanup;
 import okhttp3.HttpUrl;
 
 public class AccountSettings {
-    private final static int CURRENT_VERSION = 3;
+    private final static int CURRENT_VERSION = 4;
     private final static String
             KEY_SETTINGS_VERSION = "version",
 
@@ -80,10 +80,8 @@ public class AccountSettings {
     private final static String KEY_MANAGE_CALENDAR_COLORS = "manage_calendar_colors";
 
     /** Contact group method:
-        automatic  VCard4 if server supports VCard 4, VCard3 otherwise (default value)
-        VCard3     adds a contact's groups to its CATEGORIES / interprets a contact's CATEGORIES as groups
-        VCard4     uses groups as defined in VCard 4 (KIND/MEMBER properties)
-        Apple      uses Apple-proprietary X-ADDRESSBOOK-KIND/-MEMBER properties
+        value = null (not existing)     groups as separate VCards (default)
+                "CATEGORIES"            groups are per-contact CATEGORIES
     */
     private final static String KEY_CONTACT_GROUP_METHOD = "contact_group_method";
 
@@ -240,11 +238,11 @@ public class AccountSettings {
         final String name = accountManager.getUserData(account, KEY_CONTACT_GROUP_METHOD);
         return name != null ?
                 GroupMethod.valueOf(name) :
-                GroupMethod.AUTOMATIC;
+                GroupMethod.GROUP_VCARDS;
     }
 
     public void setGroupMethod(@NonNull GroupMethod method) {
-        final String name = GroupMethod.AUTOMATIC.equals(method) ? null : method.name();
+        final String name = method == GroupMethod.GROUP_VCARDS ? null : method.name();
         accountManager.setUserData(account, KEY_CONTACT_GROUP_METHOD, name);
     }
 
@@ -422,6 +420,11 @@ public class AccountSettings {
         }
 
         accountManager.setUserData(account, KEY_SETTINGS_VERSION, "3");
+    }
+
+    @SuppressWarnings({ "Recycle", "unused" })
+    private void update_3_4() {
+        setGroupMethod(GroupMethod.CATEGORIES);
     }
 
 

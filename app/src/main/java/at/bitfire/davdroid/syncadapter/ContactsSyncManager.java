@@ -83,13 +83,13 @@ import okhttp3.ResponseBody;
  * <p></p>Group handling differs according to the {@link #groupMethod}. There are two basic methods to
  * handle/manage groups:</p>
  * <ul>
- *     <li>VCard3 {@code CATEGORIES}: groups memberships are attached to each contact and represented as
+ *     <li>{@code CATEGORIES}: groups memberships are attached to each contact and represented as
  *     "category". When a group is dirty or has been deleted, all its members have to be set to
  *     dirty, too (because they have to be uploaded without the respective category). This
  *     is done in {@link #prepareDirty()}. Empty groups can be deleted without further processing,
  *     which is done in {@link #postProcess()} because groups may become empty after downloading
  *     updated remoted contacts.</li>
- *     <li>VCard4-style: individual and group contacts (with a list of member UIDs) are
+ *     <li>Groups as separate VCards: individual and group contacts (with a list of member UIDs) are
  *     distinguished. When a local group is dirty, its members don't need to be set to dirty.
  *     <ol>
  *         <li>However, when a contact is dirty, it has
@@ -171,11 +171,9 @@ public class ContactsSyncManager extends SyncManager {
         App.log.info("Server advertises VCard/4 support: " + hasVCard4);
 
         groupMethod = settings.getGroupMethod();
-        if (GroupMethod.AUTOMATIC.equals(groupMethod))
-            groupMethod = hasVCard4 ? GroupMethod.VCARD4 : GroupMethod.VCARD3_CATEGORIES;
         App.log.info("Contact group method: " + groupMethod);
 
-        localAddressBook().includeGroups = !GroupMethod.VCARD3_CATEGORIES.equals(groupMethod);
+        localAddressBook().includeGroups = groupMethod == GroupMethod.GROUP_VCARDS;
     }
 
     @Override
@@ -184,13 +182,14 @@ public class ContactsSyncManager extends SyncManager {
 
         LocalAddressBook addressBook = localAddressBook();
 
-        if (GroupMethod.VCARD3_CATEGORIES.equals(groupMethod)) {
-            /* VCard3 group handling: groups memberships are represented as contact CATEGORIES */
+        if (groupMethod == GroupMethod.CATEGORIES) {
+            /* groups memberships are represented as contact CATEGORIES */
 
             // groups with DELETED=1: set all members to dirty, then remove group
             for (LocalGroup group : addressBook.getDeletedGroups()) {
-                App.log.fine("Removing group " + group + " and marking its members as dirty");
-                group.markMembersDirty();
+                App.log.fine("Finally removing group " + group);
+                // useless because Android deletes group memberships as soon as a group is set to DELETED:
+                // group.markMembersDirty();
                 group.delete();
             }
 
@@ -201,7 +200,7 @@ public class ContactsSyncManager extends SyncManager {
                 group.clearDirty(null);
             }
         } else {
-            /* VCard4 group handling: there are group contacts and individual contacts */
+            /* groups as separate VCards: there are group contacts and individual contacts */
 
             // mark groups with changed members as dirty
             BatchOperation batch = new BatchOperation(addressBook.provider);
@@ -231,8 +230,8 @@ public class ContactsSyncManager extends SyncManager {
             LocalContact local = ((LocalContact)resource);
             contact = local.getContact();
 
-            if (groupMethod == GroupMethod.VCARD3_CATEGORIES) {
-                // VCard3: add groups as CATEGORIES
+            if (groupMethod == GroupMethod.CATEGORIES) {
+                // add groups as CATEGORIES
                 for (long groupID : local.getGroupMemberships()) {
                     try {
                         @Cleanup Cursor c = provider.query(
@@ -362,7 +361,7 @@ public class ContactsSyncManager extends SyncManager {
 
     @Override
     protected void postProcess() throws CalendarStorageException, ContactsStorageException {
-        if (groupMethod == GroupMethod.VCARD3_CATEGORIES) {
+        if (groupMethod == GroupMethod.CATEGORIES) {
             /* VCard3 group handling: groups memberships are represented as contact CATEGORIES */
 
             // remove empty groups
@@ -398,6 +397,13 @@ public class ContactsSyncManager extends SyncManager {
             App.log.warning("Received multiple VCards, using first one");
 
         final Contact newData = contacts[0];
+
+        if (groupMethod == GroupMethod.CATEGORIES && newData.group) {
+            groupMethod = GroupMethod.GROUP_VCARDS;
+            App.log.warning("Received group VCard although group method is CATEGORIES. Deleting all groups; new group method: " + groupMethod);
+            localAddressBook().removeGroups();
+            settings.setGroupMethod(groupMethod);
+        }
 
         // update local contact, if it exists
         LocalResource local = localResources.get(fileName);
@@ -446,7 +452,7 @@ public class ContactsSyncManager extends SyncManager {
             syncResult.stats.numInserts++;
         }
 
-        if (groupMethod == GroupMethod.VCARD3_CATEGORIES && local instanceof LocalContact) {
+        if (groupMethod == GroupMethod.CATEGORIES && local instanceof LocalContact) {
             // VCard3: update group memberships from CATEGORIES
             LocalContact contact = (LocalContact)local;
 

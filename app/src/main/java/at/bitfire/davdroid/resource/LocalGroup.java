@@ -19,6 +19,7 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
 import android.provider.ContactsContract.Groups;
 import android.provider.ContactsContract.RawContacts;
 import android.provider.ContactsContract.RawContacts.Data;
+import android.provider.ContactsContract.RawContactsEntity;
 
 import org.apache.commons.lang3.ArrayUtils;
 

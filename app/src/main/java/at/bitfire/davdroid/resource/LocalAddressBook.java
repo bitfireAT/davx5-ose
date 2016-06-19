@@ -164,6 +164,14 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
                 group.delete();
     }
 
+    public void removeGroups() throws ContactsStorageException {
+        try {
+            provider.delete(syncAdapterURI(Groups.CONTENT_URI), null, null);
+        } catch(RemoteException e) {
+            throw new ContactsStorageException("Couldn't remove all groups", e);
+        }
+    }
+
 
     // SYNC STATE
 
