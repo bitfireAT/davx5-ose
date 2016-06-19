@@ -255,6 +255,7 @@ public class AccountSettings {
             try {
                 Method updateProc = getClass().getDeclaredMethod("update_" + fromVersion + "_" + toVersion);
                 updateProc.invoke(this);
+                accountManager.setUserData(account, KEY_SETTINGS_VERSION, String.valueOf(toVersion));
             } catch (Exception e) {
                 App.log.log(Level.SEVERE, "Couldn't update account settings", e);
             }
@@ -291,8 +292,6 @@ public class AccountSettings {
         if (!TextUtils.isEmpty(cTag))
             addr.setCTag(cTag);
         accountManager.setUserData(account, "addressbook_ctag", null);
-
-        accountManager.setUserData(account, KEY_SETTINGS_VERSION, "2");
     }
 
     @SuppressWarnings({ "Recycle", "unused" })
@@ -418,8 +417,6 @@ public class AccountSettings {
             refresh.putExtra(DavService.EXTRA_DAV_SERVICE_ID, serviceCalDAV);
             context.startService(refresh);
         }
-
-        accountManager.setUserData(account, KEY_SETTINGS_VERSION, "3");
     }
 
     @SuppressWarnings({ "Recycle", "unused" })

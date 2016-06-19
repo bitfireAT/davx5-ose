@@ -160,6 +160,9 @@
   <string name="settings_sync_wifi_only_ssid_off">Коришћење свих бежичних мрежа</string>
   <string name="settings_sync_wifi_only_ssid_message">Унесите назив бежичне мреже (њен ССИД) да бисте ограничили синхронизацију само на ту мрежу, или оставите празно за синхронизовање преко било које бежичне мреже.</string>
   <string name="settings_carddav">КардДАВ</string>
+  <string name="settings_rfc6868_for_vcards">Користи РФЦ6868 за В-карте</string>
+  <string name="settings_rfc6868_for_vcards_on">Двоструки наводници могу да се користе у вредностима параметара</string>
+  <string name="settings_rfc6868_for_vcards_off">Двоструки наводници не могу да се користе у вредностима параметара</string>
   <string name="settings_caldav">КалДАВ</string>
   <string name="settings_sync_time_range_past">Ограничење догађаја у прошлости</string>
   <string name="settings_sync_time_range_past_none">Сви догађаји се синхронизују</string>

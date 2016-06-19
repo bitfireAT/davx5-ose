@@ -159,6 +159,9 @@
   <string name="settings_sync_wifi_only_ssid_off">Szinkronizálás bármely WIFI hálózaton</string>
   <string name="settings_sync_wifi_only_ssid_message">Adja meg a WIFI hálózat nevét (SSID) a szinkronizálás egy hálózatra való korlátozához, vagy hagyja üresen, ha nem akar ilyen szűkítést.</string>
   <string name="settings_carddav">CardDAV</string>
+  <string name="settings_rfc6868_for_vcards">RFC6868 szabványnak megfelelő VCards használata</string>
+  <string name="settings_rfc6868_for_vcards_on">A paraméterértékek tartalmazhatnak idézőjelet</string>
+  <string name="settings_rfc6868_for_vcards_off">A paraméterértékek nem tartalmazhatnak idézőjelet</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Múltbéli események időkorlátja</string>
   <string name="settings_sync_time_range_past_none">Minden esemény szinkronizálása</string>

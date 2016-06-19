@@ -158,6 +158,9 @@
   <string name="settings_sync_wifi_only_ssid_off">すべての WiFi 接続を使用することができます</string>
   <string name="settings_sync_wifi_only_ssid_message">このネットワークで同期を制限する WiFi ネットワーク (SSID) の名前を入力してください。すべての WiFi 接続は空白のままにします。</string>
   <string name="settings_carddav">CardDAV</string>
+  <string name="settings_rfc6868_for_vcards">RFC6868 の VCards を使用する</string>
+  <string name="settings_rfc6868_for_vcards_on">二重引用符を、パラメーター値に使用することができます</string>
+  <string name="settings_rfc6868_for_vcards_off">二重引用符を、パラメーター値に使用することができません</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">過去イベントの時間限度</string>
   <string name="settings_sync_time_range_past_none">すべてのイベントが同期されます</string>

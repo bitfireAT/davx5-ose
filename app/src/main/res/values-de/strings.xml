@@ -107,6 +107,7 @@
   <string name="login_create_account">Konto anlegen</string>
   <string name="login_account_name">Kontoname</string>
   <string name="login_account_name_info">Verwenden Sie Ihre Email-Adresse als Kontonamen, da Android den Kontonamen als ORGANIZER einsetzt. Es kann allerdings keine zwei Konten mit dem gleichen Namen geben.</string>
+  <string name="login_account_contact_group_method">Kontaktgruppen-Methode:</string>
   <string name="login_account_name_required">Kontoname wird benötigt</string>
   <string name="login_account_not_created">Konto konnte nicht angelegt werden</string>
   <string name="login_configuration_detection">Ressourcen-Erkennung</string>
@@ -159,9 +160,18 @@
   <string name="settings_sync_wifi_only_ssid_off">Alle WLAN-Verbindungen können verwendet werden</string>
   <string name="settings_sync_wifi_only_ssid_message">Name eines WLANs (SSID) eingeben, um Synchronisierung auf dieses WLAN zu beschränken. Leer lassen, um alle WLAN-Verbindungen zuzulassen.</string>
   <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Kontaktgruppen-Methode</string>
+  <string-array name="settings_contact_group_method_values">
+    <item>GROUP_VCARDS</item>
+    <item>CATEGORIES</item>
+  </string-array>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Gruppen sind eigene VCards</item>
+    <item>Gruppen sind Kategorien der Kontakte</item>
+  </string-array>
   <string name="settings_rfc6868_for_vcards">RFC6868 für VCards verwenden</string>
   <string name="settings_rfc6868_for_vcards_on">Anführungszeichen können in Parameter-Werten verwendet werden</string>
-  <string name="settings_rfc6868_for_vcards_off">Anführungszeichen können in Parameter-Werten nicht verwendet werden</string>
+  <string name="settings_rfc6868_for_vcards_off">Anführungszeichen können nicht in Parameter-Werten verwendet werden</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Abrufbeschränkung vergangener Termine</string>
   <string name="settings_sync_time_range_past_none">Alle Termine werden synchronisiert</string>
@@ -214,7 +224,7 @@
   <string name="sync_error_local_storage">Datenbank-Fehler beim %s</string>
   <string-array name="sync_error_phases">
     <item>Vorbereiten der Synchronisierung</item>
-    <item>Abfragen der Serverr-Fähigkeiten</item>
+    <item>Abfragen der Server-Fähigkeiten</item>
     <item>Verarbeiten lokal gelöschter Einträge</item>
     <item>Vorbereiten neuer/geänderter Einträge</item>
     <item>Hochladen neuer/geänderter Einträge</item>
@@ -223,6 +233,7 @@
     <item>Auflisten der Server-Einträge</item>
     <item>Vergleich lokaler/Server-Einträge</item>
     <item>Herunterladen von Server-Einträgen</item>
+    <item>Nachverarbeitung</item>
     <item>Speichern des Synchronisierungzustands</item>
   </string-array>
   <string name="sync_error_unauthorized">Benutzername/Passwort falsch</string>

@@ -12,7 +12,7 @@
   <string name="startup_development_version_message">Esta é uma versão de desenvolvimento do DAVdroid. Lembre-se de que as coisas podem não funcionar como esperado. Por favor, envie sugestões e comentários construtivos para melhorar o DAVdroid.</string>
   <string name="startup_development_version_give_feedback">Enviar sugestões</string>
   <string name="startup_donate">Informação sobre Código Aberto</string>
-  <string name="startup_donate_message">Estamos felizes que você usa o DAVdroid, que é um software de código aberto (GPLv3). O desenvolvimento do DAVdroid é trabalhoso e consome muitas horas de trabalho. Por esse motivo, considere fazer uma doação.</string>
+  <string name="startup_donate_message">Estamos felizes que você usa o DAVdroid, um software de código aberto (GPLv3). O desenvolvimento do DAVdroid é trabalhoso e consome muitas horas de trabalho. Por esse motivo, considere fazer uma doação.</string>
   <string name="startup_donate_now">Mostrar a página de doações</string>
   <string name="startup_donate_later">Talvez depois</string>
   <string name="startup_google_play_accounts_removed">Informação sobre o erro de DRM da Play Store</string>
@@ -152,15 +152,18 @@
     <item>Uma vez por dia</item>
   </string-array>
   <string name="settings_sync_wifi_only">Sincronizar apenas por Wi-Fi</string>
-  <string name="settings_sync_wifi_only_on">A sincronização está restrita a conexões Wi-Fi</string>
+  <string name="settings_sync_wifi_only_on">Sincronização restrita a conexões Wi-Fi</string>
   <string name="settings_sync_wifi_only_off">O tipo de conexão não é considerado</string>
   <string name="settings_sync_wifi_only_ssid">Restrição de SSID Wi-Fi</string>
   <string name="settings_sync_wifi_only_ssid_on">Sincronizará apenas com %s</string>
-  <string name="settings_sync_wifi_only_ssid_off">Todas as conexões Wi-Fi podem ser utilizadas</string>
+  <string name="settings_sync_wifi_only_ssid_off">Qualquer conexão Wi-Fi pode ser utilizada</string>
   <string name="settings_sync_wifi_only_ssid_message">Informe o nome da rede Wi-Fi (SSID) que será usada para sincronização ou deixe em branco para usar qualquer conexão Wi-Fi.</string>
   <string name="settings_carddav">CardDAV</string>
+  <string name="settings_rfc6868_for_vcards">Usar RFC6868 para VCards</string>
+  <string name="settings_rfc6868_for_vcards_on">Aspas podem ser utilizadas nos valores dos parâmetros</string>
+  <string name="settings_rfc6868_for_vcards_off">Aspas não podem ser utilizadas nos valores dos parâmetros</string>
   <string name="settings_caldav">CalDAV</string>
-  <string name="settings_sync_time_range_past">Limite para eventos passados</string>
+  <string name="settings_sync_time_range_past">Limite de tempo para eventos passados</string>
   <string name="settings_sync_time_range_past_none">Todos os eventos serão sincronizados</string>
   <plurals name="settings_sync_time_range_past_days">
     <item quantity="one">Os eventos que ocorreram a mais de um dia serão ignorados</item>
@@ -168,8 +171,8 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">Os eventos que ocorreram antes desse número de dias serão ignorados (pode ser 0). Deixe em branco para sincronizar todos os eventos.</string>
   <string name="settings_manage_calendar_colors">Gerenciar cores dos calendários</string>
-  <string name="settings_manage_calendar_colors_on">As cores do calendários são gerenciadas pelo DAVdroid</string>
-  <string name="settings_manage_calendar_colors_off">As cores do calendários não são definidas pelo DAVdroid</string>
+  <string name="settings_manage_calendar_colors_on">Cores dos calendários definidas pelo DAVdroid</string>
+  <string name="settings_manage_calendar_colors_off">Cores dos calendários não definidas pelo DAVdroid</string>
   <string name="settings_version_update">Atualização da versão do DAVdroid</string>
   <string name="settings_version_update_settings_updated">As configurações internas foram atualizadas.</string>
   <string name="settings_version_update_install_hint">Problemas? Desinstale o DAVdroid e instale novamente.</string>
