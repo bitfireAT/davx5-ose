@@ -8,10 +8,13 @@
 
 package at.bitfire.davdroid;
 
-import java.util.Collections;
+import org.apache.commons.collections4.MapIterator;
+import org.apache.commons.collections4.keyvalue.MultiKey;
+import org.apache.commons.collections4.map.HashedMap;
+import org.apache.commons.collections4.map.MultiKeyMap;
+
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
@@ -25,20 +28,42 @@ public class MemoryCookieStore implements CookieJar {
 
     public static final MemoryCookieStore INSTANCE = new MemoryCookieStore();
 
-    protected final Map<HttpUrl, List<Cookie>> store = new ConcurrentHashMap<>();
-
+    /**
+     * Stored cookies. The multi-key consists of three parts: name, domain, and path.
+     * This ensures that cookies can be overwritten. [RFC 6265 5.3 Storage Model]
+     * Not thread-safe!
+     */
+    protected final MultiKeyMap<String, Cookie> storage = MultiKeyMap.multiKeyMap(new HashedMap<MultiKey<? extends String>, Cookie>());
 
     @Override
     public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-        store.put(url, cookies);
+        synchronized(storage) {
+            for (Cookie cookie : cookies)
+                storage.put(cookie.name(), cookie.domain(), cookie.path(), cookie);
+        }
     }
 
     @Override
     public List<Cookie> loadForRequest(HttpUrl url) {
-        List<Cookie> cookies = store.get(url);
+        List<Cookie> cookies = new LinkedList<>();
 
-        if (cookies == null)
-            cookies = Collections.emptyList();
+        synchronized(storage) {
+            MapIterator<MultiKey<? extends String>, Cookie> iter = storage.mapIterator();
+            while (iter.hasNext()) {
+                iter.next();
+                Cookie cookie = iter.getValue();
+
+                // remove expired cookies
+                if (cookie.expiresAt() <= System.currentTimeMillis()) {
+                    iter.remove();
+                    continue;
+                }
+
+                // add applicable cookies
+                if (cookie.matches(url))
+                    cookies.add(cookie);
+            }
+        }
 
         return cookies;
     }
