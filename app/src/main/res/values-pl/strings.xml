@@ -31,6 +31,7 @@
   <string name="navigation_drawer_open">Otwórz menu nawigacji</string>
   <string name="navigation_drawer_close">Zamknij menu nawigacji</string>
   <string name="navigation_drawer_subtitle">Adapter synchronizacji CalDAV/CardDAV</string>
+  <string name="navigation_drawer_about">O DAVdroid / Licencja</string>
   <string name="navigation_drawer_settings">Ustawienia</string>
   <string name="navigation_drawer_news_updates">Nowości &amp; aktualizacje
 </string>
@@ -40,6 +41,8 @@
   <string name="navigation_drawer_forums">Społeczność</string>
   <string name="navigation_drawer_donate">Dotacja</string>
   <!--DavService-->
+  <string name="dav_service_refresh_failed">Wykrycie serwisu nie powiodło się</string>
+  <string name="dav_service_refresh_couldnt_refresh">Nie można odświeżyć listy kolekcji</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Ustawienia</string>
   <string name="app_settings_user_interface">
@@ -55,25 +58,40 @@ Interfejs użytkownika</string>
   <string name="account_settings">Ustawienia konta</string>
   <string name="account_delete">Usuń konto</string>
   <string name="account_delete_confirmation_title">Naprawdę chcesz usunąć konto?</string>
+  <string name="account_refresh_address_book_list">Odśwież list książek adresowych</string>
+  <string name="account_create_new_address_book">Stwórz nową książkę adresową</string>
+  <string name="account_refresh_calendar_list">Odśwież liste kalendarzy</string>
   <string name="account_create_new_calendar">Stwórz nowy kalendarz</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Uprawnienia DAVdroid</string>
   <string name="permissions_calendar">Uprawnienia kalendarza</string>
+  <string name="permissions_calendar_request">Zezwól na uprawnienia kalendarza</string>
   <string name="permissions_contacts">Uprawnienia kontaktów</string>
+  <string name="permissions_contacts_request">Zezwól na uprawnienia kontaktów</string>
   <string name="permissions_opentasks">Uprawnienia OpenTasks</string>
+  <string name="permissions_opentasks_request">Zezwól na uprawnienia OpenTasks</string>
   <!--AddAccountActivity-->
   <string name="login_title">Dodaj konto</string>
   <string name="login_type_email">Logowanie za pomocą adresu e-mail</string>
   <string name="login_email_address">Adres e-mail</string>
+  <string name="login_email_address_error">Wymanagny poprawny adres e-mail</string>
   <string name="login_password">Hasło</string>
+  <string name="login_password_required">Wymagane hasło</string>
   <string name="login_type_url">Logowanie za pomocą adresu URL i nazwy użytkownika</string>
+  <string name="login_url_host_name_required">Wymagana nazwa hosta</string>
   <string name="login_user_name">Nazwa użytkownika</string>
+  <string name="login_user_name_required">Wymagana nazwa użtkonika</string>
+  <string name="login_base_url">Podstawowy URL</string>
   <string name="login_auth_preemptive">Autoryzacja prewencyjna (zalecana, ale niezgodna z autoryzacją Digest)</string>
   <string name="login_login">Zaloguj</string>
   <string name="login_back">Wróć</string>
   <string name="login_create_account">Stwórz konto</string>
   <string name="login_account_name">Nazwa konta</string>
   <string name="login_account_name_info">Użyj swojego adresu e-mail jako nazwy konta, ponieważ Android będzie używał nazwy konta jako pola ORGANIZATOR dla wydarzeń, które stworzysz. Nie możesz posiadać dwóch kont o takiej samej nazwie.</string>
+  <string name="login_account_name_required">Wymagana nazwa konta</string>
+  <string name="login_account_not_created">Konto nie mogło zostać stworzone</string>
+  <string name="login_configuration_detection">Wykrywanie konfiguracji</string>
+  <string name="login_querying_server">Proszę czekać, odpytywanie serwera...</string>
   <string name="login_view_logs">Pokaż logi</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Ustawienia: %s</string>
@@ -114,11 +132,48 @@ Interfejs użytkownika</string>
     <item>Raz dziennie</item>
   </string-array>
   <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Metoda grupowania kontaktów</string>
+  <string-array name="settings_contact_group_method_values">
+    <item>GROUP_VCARDS</item>
+    <item>CATEGORIES</item>
+  </string-array>
+  <string name="settings_rfc6868_for_vcards">Użyj RFC6868 dla VCards</string>
   <string name="settings_caldav">CalDAV</string>
+  <string name="settings_manage_calendar_colors">Zarządzaj kolorami kalendarza</string>
+  <string name="settings_manage_calendar_colors_on">Kolory kalendarza są zarządzane przez DAVdroid</string>
+  <string name="settings_manage_calendar_colors_off">Kolory kalendarze nie są ustawiane przez DAVdroid</string>
+  <string name="settings_version_update">Aktualizacji wersji DAVdroid</string>
+  <string name="settings_version_update_install_hint">Problemy? Odinstaluj DAVdroid i zainstaluj ponownie.</string>
   <!--collection management-->
+  <string name="create_addressbook">Stwórz książkę adresową</string>
+  <string name="create_addressbook_display_name_hint">Moja książka adresowa</string>
+  <string name="create_calendar">Stwórz kolekcje CalDAV</string>
+  <string name="create_calendar_display_name_hint">Mój kalendarz</string>
+  <string name="create_calendar_time_zone">Strefa czasowa:</string>
+  <string name="create_calendar_type">Typ kolekcji:</string>
+  <string name="create_calendar_type_only_events">Kalendarz (tylko wydarzenia)</string>
+  <string name="create_calendar_type_only_tasks">Lista zadań (tylko zadań)</string>
+  <string name="create_calendar_type_events_and_tasks">Połączone (wydarzenia i zadania)</string>
+  <string name="create_collection_color">Ustaw kolor kolekcji</string>
+  <string name="create_collection_creating">Tworzenie kolekcji</string>
+  <string name="create_collection_display_name">Nazwa wyświetlana (tytuł) kolekcji:</string>
+  <string name="create_collection_display_name_required">Tytuł jest wymagany</string>
+  <string name="create_collection_description">Opis (opcjoalnie)</string>
+  <string name="create_collection_home_set">Ustaw początek:</string>
+  <string name="create_collection_create">Stwórz</string>
+  <string name="delete_collection">Usuń kolekcje</string>
+  <string name="delete_collection_confirm_title">Jesteś pewien?</string>
+  <string name="delete_collection_confirm_warning">Kolekcja (%s) i jej wszystkie dane zostaną usunięte z serwera.</string>
+  <string name="delete_collection_deleting_collection">Usuwanie kolekcji</string>
   <!--ExceptionInfoFragment-->
+  <string name="exception">Wystąpił błąd.</string>
+  <string name="exception_httpexception">Wystąpił błąd HTTP.</string>
+  <string name="exception_ioexception">Wystąpił błąd I/O.</string>
+  <string name="exception_show_details">Pokaż szczegóły</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Informacje debugowe</string>
+  <string name="sync_error_permissions">Uprawnienia DAVdroid</string>
+  <string name="sync_error_permissions_text">Wymagane dodatkowe uprawnienia</string>
   <string name="sync_error_calendar">Synchronizacja kalendarza nie powiodała się (%s)</string>
   <string name="sync_error_contacts">Synchronizacja książki adresowej nie powiodała się (%s)</string>
   <string name="sync_error_tasks">Synchronizacja zadań nie powiodała się (%s)</string>

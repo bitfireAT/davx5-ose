@@ -108,6 +108,7 @@
   <string name="login_create_account">Направи налог</string>
   <string name="login_account_name">Назив налога</string>
   <string name="login_account_name_info">Користите вашу е-адресу за назив налога јер Андроид користи назив налога за поље ОРГАНИЗАТОР за догађаје које направите. Не можете имати два налога истог назива.</string>
+  <string name="login_account_contact_group_method">Режим група контаката:</string>
   <string name="login_account_name_required">Назив налога је обавезан</string>
   <string name="login_account_not_created">Не могох направити налог</string>
   <string name="login_configuration_detection">Откривање конфигурације</string>
@@ -160,6 +161,15 @@
   <string name="settings_sync_wifi_only_ssid_off">Коришћење свих бежичних мрежа</string>
   <string name="settings_sync_wifi_only_ssid_message">Унесите назив бежичне мреже (њен ССИД) да бисте ограничили синхронизацију само на ту мрежу, или оставите празно за синхронизовање преко било које бежичне мреже.</string>
   <string name="settings_carddav">КардДАВ</string>
+  <string name="settings_contact_group_method">Режим група контаката</string>
+  <string-array name="settings_contact_group_method_values">
+    <item>GROUP_VCARDS</item>
+    <item>CATEGORIES</item>
+  </string-array>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Групе су одвојене В-карте</item>
+    <item>Групе су категорије по контакту</item>
+  </string-array>
   <string name="settings_rfc6868_for_vcards">Користи РФЦ6868 за В-карте</string>
   <string name="settings_rfc6868_for_vcards_on">Двоструки наводници могу да се користе у вредностима параметара</string>
   <string name="settings_rfc6868_for_vcards_off">Двоструки наводници не могу да се користе у вредностима параметара</string>
@@ -214,5 +224,19 @@
   <string name="sync_error">Грешка током %s</string>
   <string name="sync_error_http_dav">Грешка сервера током %s</string>
   <string name="sync_error_local_storage">Грешка базе података током %s</string>
+  <string-array name="sync_error_phases">
+    <item>припремам синхронизацију</item>
+    <item>проверавам могућности</item>
+    <item>обрађујем локално обрисане уносе</item>
+    <item>припремам направљене/измењене уносе</item>
+    <item>отпремам направљене/измењене уносе</item>
+    <item>проверавам стање синхронизације</item>
+    <item>излиставам локалне уносе</item>
+    <item>излиставам удаљене уносе</item>
+    <item>упоређујем локалне/удаљене уносе</item>
+    <item>преузимам удаљене уносе</item>
+    <item>додатна обрада</item>
+    <item>уписујем стање синхронизације</item>
+  </string-array>
   <string name="sync_error_unauthorized">Корисничко име или лозинка погрешни</string>
 </resources>

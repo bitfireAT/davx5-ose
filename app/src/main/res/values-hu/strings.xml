@@ -107,6 +107,7 @@
   <string name="login_create_account">Fiók létrehozása</string>
   <string name="login_account_name">A fiók neve</string>
   <string name="login_account_name_info">Használja az email címet fióknévként, mert később a létrehozandó események szervezőjeként (ORGANIZER mező) az Android ezt fogja használni. Két fiókot nem lehet azonos néven létrehozni.</string>
+  <string name="login_account_contact_group_method">A csoportok kezelésének módja:</string>
   <string name="login_account_name_required">A fióknév megadása feltétlenül szükséges</string>
   <string name="login_account_not_created">A fiók létrehozása nem sikerült</string>
   <string name="login_configuration_detection">A konfiguráció felderítése</string>
@@ -159,6 +160,11 @@
   <string name="settings_sync_wifi_only_ssid_off">Szinkronizálás bármely WIFI hálózaton</string>
   <string name="settings_sync_wifi_only_ssid_message">Adja meg a WIFI hálózat nevét (SSID) a szinkronizálás egy hálózatra való korlátozához, vagy hagyja üresen, ha nem akar ilyen szűkítést.</string>
   <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">A csoportok kezelésének módja</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Minden csoport egy különálló VCard</item>
+    <item>A csoportok a kapcsolatonkéni kategóriák</item>
+  </string-array>
   <string name="settings_rfc6868_for_vcards">RFC6868 szabványnak megfelelő VCards használata</string>
   <string name="settings_rfc6868_for_vcards_on">A paraméterértékek tartalmazhatnak idézőjelet</string>
   <string name="settings_rfc6868_for_vcards_off">A paraméterértékek nem tartalmazhatnak idézőjelet</string>
@@ -212,5 +218,19 @@
   <string name="sync_error">Hiba az alábbi művelet közben: %s</string>
   <string name="sync_error_http_dav">Szerver oldali hiba az alábbi művelet közben: %s</string>
   <string name="sync_error_local_storage">Adatbázishiba az alábbi művelet közben: %s</string>
+  <string-array name="sync_error_phases">
+    <item>szinkronizáció előkészítése </item>
+    <item>szerver képességeinek lekérdezése</item>
+    <item>a helyben törölt bejegyzések feldolgozása</item>
+    <item>az új vagy módosított bejegyzések gyűjtése </item>
+    <item>az új vagy módosított bejegyzések feltöltése</item>
+    <item>szinkronizációs állapot ellenőrzése</item>
+    <item>helyi bejegyzések listázása</item>
+    <item>távoli bejegyzések listázása</item>
+    <item>helyi és távoli bejegyzések összehasonlítása</item>
+    <item>távoli bejegyzések letöltése</item>
+    <item>utófeldolgozás</item>
+    <item>szinkronizációs állapot mentése</item>
+  </string-array>
   <string name="sync_error_unauthorized">A felhasználónév vagy jelszó hibás</string>
 </resources>

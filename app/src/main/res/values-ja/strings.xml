@@ -106,6 +106,7 @@
   <string name="login_create_account">アカウントを作成</string>
   <string name="login_account_name">アカウント名</string>
   <string name="login_account_name_info">Android はあなたが作成した予定の ORGANIZER フィールドとしてアカウント名を使用するので、アカウント名としてメールアドレスを使用してください。同じ名前のアカウントを 2 つ持つことはできません。</string>
+  <string name="login_account_contact_group_method">連絡先グループ方法:</string>
   <string name="login_account_name_required">アカウント名が必要です</string>
   <string name="login_account_not_created">アカウントを作成できません</string>
   <string name="login_configuration_detection">設定の検出</string>
@@ -158,6 +159,15 @@
   <string name="settings_sync_wifi_only_ssid_off">すべての WiFi 接続を使用することができます</string>
   <string name="settings_sync_wifi_only_ssid_message">このネットワークで同期を制限する WiFi ネットワーク (SSID) の名前を入力してください。すべての WiFi 接続は空白のままにします。</string>
   <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">連絡先グループ方法</string>
+  <string-array name="settings_contact_group_method_values">
+    <item>GROUP_VCARDS</item>
+    <item>CATEGORIES</item>
+  </string-array>
+  <string-array name="settings_contact_group_method_entries">
+    <item>グループは個別の VCards</item>
+    <item>グループは連絡先カテゴリーごと</item>
+  </string-array>
   <string name="settings_rfc6868_for_vcards">RFC6868 の VCards を使用する</string>
   <string name="settings_rfc6868_for_vcards_on">二重引用符を、パラメーター値に使用することができます</string>
   <string name="settings_rfc6868_for_vcards_off">二重引用符を、パラメーター値に使用することができません</string>
@@ -210,5 +220,19 @@
   <string name="sync_error">%s 時にエラー</string>
   <string name="sync_error_http_dav">%s 時にサーバーエラー</string>
   <string name="sync_error_local_storage">%s 時にデータベースエラー</string>
+  <string-array name="sync_error_phases">
+    <item>同期の準備中</item>
+    <item>機能の問い合わせ中</item>
+    <item>ローカルで削除されたエントリーの処理中</item>
+    <item>作成済/更新済エントリーの準備中</item>
+    <item>作成済/更新済エントリーのアップロード中</item>
+    <item>同期の状態を確認中</item>
+    <item>ローカルのエントリーをリスト中</item>
+    <item>リモートのエントリーをリスト中</item>
+    <item>ローカル/リモートのエントリーを比較中</item>
+    <item>リモートのエントリーをダウンロード中</item>
+    <item>後処理中</item>
+    <item>同期の状態を保存中</item>
+  </string-array>
   <string name="sync_error_unauthorized">ユーザー名/パスワードが間違っています</string>
 </resources>

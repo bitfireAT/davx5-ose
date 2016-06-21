@@ -107,6 +107,7 @@
   <string name="login_create_account">Criar conta</string>
   <string name="login_account_name">Nome da conta</string>
   <string name="login_account_name_info">Use seu endereço de e-mail como nome da conta porque o Android irá usar esse nome como campo AGENDA nos eventos que você criar. Não é possível ter duas contas com o mesmo nome.</string>
+  <string name="login_account_contact_group_method">Método do grupo Contato:</string>
   <string name="login_account_name_required">É necessário um nome de conta</string>
   <string name="login_account_not_created">A conta não pôde ser criada</string>
   <string name="login_configuration_detection">Detecção de configuração</string>
@@ -159,6 +160,15 @@
   <string name="settings_sync_wifi_only_ssid_off">Qualquer conexão Wi-Fi pode ser utilizada</string>
   <string name="settings_sync_wifi_only_ssid_message">Informe o nome da rede Wi-Fi (SSID) que será usada para sincronização ou deixe em branco para usar qualquer conexão Wi-Fi.</string>
   <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Método do grupo Contato</string>
+  <string-array name="settings_contact_group_method_values">
+    <item>GROUP_VCARDS</item>
+    <item>CATEGORIES</item>
+  </string-array>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Grupos são VCards separados</item>
+    <item>Grupos são categorias por contato</item>
+  </string-array>
   <string name="settings_rfc6868_for_vcards">Usar RFC6868 para VCards</string>
   <string name="settings_rfc6868_for_vcards_on">Aspas podem ser utilizadas nos valores dos parâmetros</string>
   <string name="settings_rfc6868_for_vcards_off">Aspas não podem ser utilizadas nos valores dos parâmetros</string>
@@ -212,5 +222,19 @@
   <string name="sync_error">Erro ao %s</string>
   <string name="sync_error_http_dav">Erro do servidor ao %s</string>
   <string name="sync_error_local_storage">Erro do banco de dados ao %s</string>
+  <string-array name="sync_error_phases">
+    <item>preparando sincronização</item>
+    <item>procurando habilidades</item>
+    <item>processando os itens excluídos localmente</item>
+    <item>preparando os itens criados/modificados</item>
+    <item>enviando os itens criados/modificados</item>
+    <item>verificando o estado da sincronização</item>
+    <item>listando os itens locais</item>
+    <item>listando os itens remotos</item>
+    <item>comparando os itens locais/remotos</item>
+    <item>baixando os itens remotos</item>
+    <item>pós-processamento</item>
+    <item>salvando o estado da sincronização</item>
+  </string-array>
   <string name="sync_error_unauthorized">Usuário/senha incorreto</string>
 </resources>
