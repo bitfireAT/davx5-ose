@@ -38,12 +38,13 @@ public class HttpClientTest extends TestCase {
     }
 
     public void testCookies() throws IOException, InterruptedException, URISyntaxException {
-        HttpUrl url = server.url("/");
+        HttpUrl url = server.url("/test");
 
-        // set cookie in first response
+        // set cookie for root path (/) and /test path in first response
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
-                .setHeader("Set-Cookie", "theme=light; path=/")
+                .addHeader("Set-Cookie", "cookie1=1; path=/")
+                .addHeader("Set-Cookie", "cookie2=2")
                 .setBody("Cookie set"));
         httpClient.newCall(new Request.Builder()
                 .get().url(url)
@@ -51,14 +52,22 @@ public class HttpClientTest extends TestCase {
         assertNull(server.takeRequest().getHeader("Cookie"));
 
         // cookie should be sent with second request
+        // second response lets first cookie expire and overwrites second cookie
+        server.enqueue(new MockResponse()
+                .addHeader("Set-Cookie", "cookie1=1a; path=/; Max-Age=0")
+                .addHeader("Set-Cookie", "cookie2=2a")
+                .setResponseCode(200));
+        httpClient.newCall(new Request.Builder()
+                .get().url(url)
+                .build()).execute();
+        assertEquals("cookie2=2; cookie1=1", server.takeRequest().getHeader("Cookie"));
+
         server.enqueue(new MockResponse()
                 .setResponseCode(200));
         httpClient.newCall(new Request.Builder()
                 .get().url(url)
                 .build()).execute();
-        //assertEquals("theme=light", server.takeRequest().getHeader("Cookie"));
-
-        // doesn't work for URLs with ports, see https://code.google.com/p/android/issues/detail?id=193475
+        assertEquals("cookie2=2a", server.takeRequest().getHeader("Cookie"));
     }
 
 }
