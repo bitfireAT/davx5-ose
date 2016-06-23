@@ -38,6 +38,8 @@ import lombok.Getter;
 import okhttp3.internal.tls.OkHostnameVerifier;
 
 public class App extends Application {
+    public static final String FLAVOR_GOOGLE_PLAY = "gplay";
+
     public static final String LOG_TO_EXTERNAL_STORAGE = "logToExternalStorage";
 
     @Getter

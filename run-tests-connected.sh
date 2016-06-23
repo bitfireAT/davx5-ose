@@ -1,3 +1,2 @@
 #!/bin/bash
-./gradlew -i testDebug && \
-	./gradlew -i deviceCheck mergeAndroidReports --continue
+./gradlew -i check mergeAndroidReports --continue
