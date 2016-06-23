@@ -81,6 +81,7 @@ public class LocalGroup extends AndroidGroup implements LocalResource {
                     .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
                     .withValue(CachedGroupMembership.RAW_CONTACT_ID, member)
                     .withValue(CachedGroupMembership.GROUP_ID, id)
+                    .withYieldAllowed(true)
                     .build()
             );
 
@@ -122,6 +123,7 @@ public class LocalGroup extends AndroidGroup implements LocalResource {
             batch.enqueue(ContentProviderOperation
                     .newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(RawContacts.CONTENT_URI, member)))
                     .withValue(RawContacts.DIRTY, 1)
+                    .withYieldAllowed(true)
                     .build()
             );
 
@@ -155,6 +157,7 @@ public class LocalGroup extends AndroidGroup implements LocalResource {
                                 "(" + GroupMembership.MIMETYPE + "=? AND " + GroupMembership.GROUP_ROW_ID + "=?) OR (" +
                                       CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?)",
                                 new String[] { GroupMembership.CONTENT_ITEM_TYPE, String.valueOf(id), CachedGroupMembership.CONTENT_ITEM_TYPE, String.valueOf(id) })
+                        .withYieldAllowed(true)
                         .build()
                 );
 
@@ -181,6 +184,7 @@ public class LocalGroup extends AndroidGroup implements LocalResource {
                 batch.enqueue(ContentProviderOperation
                         .newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, id)))
                         .withValue(COLUMN_PENDING_MEMBERS, null)
+                        .withYieldAllowed(true)
                         .build()
                 );
 
