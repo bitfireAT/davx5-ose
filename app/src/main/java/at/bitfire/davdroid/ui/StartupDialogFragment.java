@@ -59,14 +59,17 @@ public class StartupDialogFragment extends DialogFragment {
             dialogs.add(StartupDialogFragment.instantiate(Mode.DEVELOPMENT_VERSION));
         else {
             // store-specific information
-            final String installedFrom = installedFrom(context);
-            if (installedFrom == null || installedFrom.startsWith("org.fdroid"))
-                dialogs.add(StartupDialogFragment.instantiate(Mode.FDROID_DONATE));
-
-            else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP &&    // only on Android <5
-                    "com.android.vending".equals(installedFrom) &&              // only when installed from Play Store
+            if (App.FLAVOR_GOOGLE_PLAY.equals(BuildConfig.FLAVOR)) {
+                // Play store
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP &&    // only on Android <5
                     settings.getBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, true))      // and only when "Don't show again" hasn't been clicked yet
-                dialogs.add(StartupDialogFragment.instantiate(Mode.GOOGLE_PLAY_ACCOUNTS_REMOVED));
+                    dialogs.add(StartupDialogFragment.instantiate(Mode.GOOGLE_PLAY_ACCOUNTS_REMOVED));
+            } else {
+                // other stores
+                final String installedFrom = installedFrom(context);
+                if (installedFrom == null || installedFrom.startsWith("org.fdroid"))
+                    dialogs.add(StartupDialogFragment.instantiate(Mode.FDROID_DONATE));
+            }
         }
 
         // OpenTasks information

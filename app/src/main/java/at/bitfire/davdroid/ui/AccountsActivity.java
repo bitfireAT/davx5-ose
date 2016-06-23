@@ -10,6 +10,7 @@ package at.bitfire.davdroid.ui;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -22,6 +23,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.ui.setup.LoginActivity;
@@ -93,7 +96,8 @@ public class AccountsActivity extends AppCompatActivity implements NavigationVie
                 startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("forums/").build()));
                 break;
             case R.id.nav_donate:
-                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("donate/").build()));
+                if (!App.FLAVOR_GOOGLE_PLAY.equals(BuildConfig.FLAVOR))
+                    startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("donate/").build()));
                 break;
         }
 
