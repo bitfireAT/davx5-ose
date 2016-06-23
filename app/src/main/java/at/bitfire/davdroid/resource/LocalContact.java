@@ -126,6 +126,7 @@ public class LocalContact extends AndroidContact implements LocalResource {
                 .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
                 .withValue(CachedGroupMembership.RAW_CONTACT_ID, id)
                 .withValue(CachedGroupMembership.GROUP_ID, groupID)
+                .withYieldAllowed(true)
                 .build()
         );
     }
@@ -138,6 +139,7 @@ public class LocalContact extends AndroidContact implements LocalResource {
                         Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + " IN (?,?)",
                         new String[] { String.valueOf(id), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembership.CONTENT_ITEM_TYPE }
                 )
+                .withYieldAllowed(true)
                 .build()
         );
     }

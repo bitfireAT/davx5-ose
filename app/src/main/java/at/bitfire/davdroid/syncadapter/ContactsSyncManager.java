@@ -214,6 +214,7 @@ public class ContactsSyncManager extends SyncManager {
                         batch.enqueue(ContentProviderOperation
                                 .newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, groupID)))
                                 .withValue(Groups.DIRTY, 1)
+                                .withYieldAllowed(true)
                                 .build()
                         );
                     }
