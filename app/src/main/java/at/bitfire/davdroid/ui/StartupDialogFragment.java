@@ -59,7 +59,7 @@ public class StartupDialogFragment extends DialogFragment {
             dialogs.add(StartupDialogFragment.instantiate(Mode.DEVELOPMENT_VERSION));
         else {
             // store-specific information
-            if (App.FLAVOR_GOOGLE_PLAY.equals(BuildConfig.FLAVOR)) {
+            if (BuildConfig.FLAVOR == App.FLAVOR_GOOGLE_PLAY) {
                 // Play store
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP &&    // only on Android <5
                     settings.getBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, true))      // and only when "Don't show again" hasn't been clicked yet
