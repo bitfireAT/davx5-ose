@@ -96,7 +96,7 @@ public class AccountsActivity extends AppCompatActivity implements NavigationVie
                 startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("forums/").build()));
                 break;
             case R.id.nav_donate:
-                if (!App.FLAVOR_GOOGLE_PLAY.equals(BuildConfig.FLAVOR))
+                if (BuildConfig.FLAVOR != App.FLAVOR_GOOGLE_PLAY)
                     startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("donate/").build()));
                 break;
         }

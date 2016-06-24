@@ -26,8 +26,6 @@ import okhttp3.HttpUrl;
  */
 public class MemoryCookieStore implements CookieJar {
 
-    public static final MemoryCookieStore INSTANCE = new MemoryCookieStore();
-
     /**
      * Stored cookies. The multi-key consists of three parts: name, domain, and path.
      * This ensures that cookies can be overwritten. [RFC 6265 5.3 Storage Model]

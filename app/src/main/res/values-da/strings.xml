@@ -83,8 +83,11 @@
   <string name="permissions_calendar_details">For at synkronisere CalDAV-begivenheder med dine lokale kalendere, skal DAVdroid have adgang til dine kalendere.</string>
   <string name="permissions_calendar_request">Anmod om kalenderadgang</string>
   <string name="permissions_contacts">Kontakter: Adgangsrettigheder</string>
+  <string name="permissions_contacts_details">DAVdroid er nødt til at have adgang til dine kontakter, hvis CardDAV-adressebøger skal kunne synkronisere med dine kontakter.</string>
   <string name="permissions_contacts_request">Anmod om adgang til kontakter</string>
   <string name="permissions_opentasks">OpenTasks: Adgangsrettigheder</string>
+  <string name="permissions_opentasks_details">DAVdroid er nødt til at have adgang til OpenTasks, hvis CalDAV-opgaver skal kunne synkronisere med dine lokale opgavelister.</string>
+  <string name="permissions_opentasks_request">Anmod om adgang til OpenTasks</string>
   <!--AddAccountActivity-->
   <string name="login_title">Tilføj konto</string>
   <string name="login_type_email">Log ind med emailadresse</string>
@@ -104,6 +107,7 @@
   <string name="login_create_account">Opret konto</string>
   <string name="login_account_name">Kontonavn</string>
   <string name="login_account_name_info">Brug emailadressen som kontonavn, for Android vil bruge kontonavnet til ORGANIZER-feltet for aktiviteter, som du opretter. Du kan ikke have to konti med samme navn.</string>
+  <string name="login_account_contact_group_method">Gruppering af kontakter:</string>
   <string name="login_account_name_required">Kontonavn påkrævet</string>
   <string name="login_account_not_created">Konto kunne ikke oprettes</string>
   <string name="login_configuration_detection">Check konfiguration</string>
@@ -150,9 +154,24 @@
   </string-array>
   <string name="settings_sync_wifi_only">Synkroniser kun over WiFi</string>
   <string name="settings_sync_wifi_only_on">Synkronisering er begrænset til WiFi-forbindelser</string>
+  <string name="settings_sync_wifi_only_off">Forbindelsestypen har ingen betydning</string>
   <string name="settings_sync_wifi_only_ssid">Begræsning til WiFi-SSID</string>
   <string name="settings_sync_wifi_only_ssid_on">Vil kun blive synkroniseret over %s</string>
   <string name="settings_sync_wifi_only_ssid_off">Alle WiFi-forbindelse vil kunne bruges</string>
+  <string name="settings_sync_wifi_only_ssid_message">Indtast navnet på et WiFi-netværk (SSID) for at begrænse synkronisering til dette netværk, eller efterlad feltet blank for at acceptere alle WiFi-forbindelser.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Gruppering af kontakter</string>
+  <string-array name="settings_contact_group_method_values">
+    <item>GROUP_VCARDS</item>
+    <item>CATEGORIES</item>
+  </string-array>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Grupper er særskilte VCards</item>
+    <item>Grupper er kategorier pr. kontakt</item>
+  </string-array>
+  <string name="settings_rfc6868_for_vcards">Anvend RFC6868 for VCards</string>
+  <string name="settings_rfc6868_for_vcards_on">Dobbelte citationstegn kan bruges til at sætte parametre</string>
+  <string name="settings_rfc6868_for_vcards_off">Dobbelte citationstegn kan ikke bruges til at sætte parametre</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tidsafgrænsning for tidligere begivenheder</string>
   <string name="settings_sync_time_range_past_none">Alle begivenheder vil blive synkroniseret</string>
@@ -162,6 +181,8 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">Begivenheder, som er mere end dette antal dage gamle vil blive ignoreret (kan også være 0). Hvis feltet ikke er udfyldt, vil alle begivenheder blive synkroniseret.</string>
   <string name="settings_manage_calendar_colors">Administrer farver for kalender</string>
+  <string name="settings_manage_calendar_colors_on">Kalenderfarver administreres af DAVdroid</string>
+  <string name="settings_manage_calendar_colors_off">Kalenderfarver sættes ikke fra DAVdroid</string>
   <string name="settings_version_update">Versionsopdatering af DAVdroid</string>
   <string name="settings_version_update_settings_updated">Interne indstillinger er blevet opdateret.</string>
   <string name="settings_version_update_install_hint">Problemer? Afinstaller DAVdroid og geninstaller.</string>
@@ -193,11 +214,27 @@
   <string name="exception_show_details">Vis detaljer</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="debug_info_title">Debug-info</string>
+  <string name="sync_error_permissions">DAVdroid-rettigheder</string>
+  <string name="sync_error_permissions_text">Yderligere adgang påkrævet</string>
   <string name="sync_error_calendar">Synkronisering af kalenderen lykkedes ikke (%s)</string>
   <string name="sync_error_contacts">Synkronisering af adressebogen lykkedes ikke (%s)</string>
   <string name="sync_error_tasks">Synkronisering af opgaver lykkedes ikke (%s)</string>
   <string name="sync_error">Fejl under %s</string>
   <string name="sync_error_http_dav">Serverfejl under %s</string>
   <string name="sync_error_local_storage">Databasefejl under %s</string>
+  <string-array name="sync_error_phases">
+    <item>forbereder synkronisering</item>
+    <item>checker understøttelse</item>
+    <item>behandler poster, der er slettet lokalt</item>
+    <item>behandler poster, der er blevet oprettet/redigeret</item>
+    <item>uploader poster, der er blevet oprettet/redigeret</item>
+    <item>checker synkroniseringsstatus</item>
+    <item>laver liste af lokale poster</item>
+    <item>laver lister af poster på server</item>
+    <item>sammenligner poster lokalt og på server</item>
+    <item>downloader poster på server</item>
+    <item>efterbehandler</item>
+    <item>gemmer synkroniseringsstatus</item>
+  </string-array>
   <string name="sync_error_unauthorized">Fejl i brugernavn/adgangskode</string>
 </resources>

@@ -1,11 +1,16 @@
 
 # ProGuard usage for DAVdroid:
-# 	shrinking		yes - main reason for using ProGuard
-# 	optimization		no - too risky
-# 	obfuscation		no - DAVdroid is open-source
-# 	preverification		no (Android default)
+# 	shrinking		yes (main reason for using ProGuard)
+# 	optimization		yes
+# 	obfuscation		no (DAVdroid is open-source)
+# 	preverification		no
 
 -dontobfuscate
+
+-optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
+-optimizationpasses 5
+-allowaccessmodification
+-dontpreverify
 
 # ez-vcard
 -dontwarn ezvcard.io.json.**			# JSON serializer (for jCards) not used

@@ -90,7 +90,7 @@ public class HttpClient {
         builder.addNetworkInterceptor(userAgentInterceptor);
 
         // add cookie store for non-persistent cookies (some services like Horde use cookies for session tracking)
-        builder.cookieJar(MemoryCookieStore.INSTANCE);
+        builder.cookieJar(new MemoryCookieStore());
 
         // add network logging, if requested
         if (logger.isLoggable(Level.FINEST)) {
