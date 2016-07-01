@@ -111,28 +111,31 @@ public class StartupDialogFragment extends DialogFragment {
                         .setNeutralButton(R.string.startup_development_version_give_feedback, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("forums/beta/").build()));
+                                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("forums/").build()));
                             }
                         })
                         .create();
 
             case FDROID_DONATE:
-                return new AlertDialog.Builder(getActivity())
-                        .setIcon(R.drawable.ic_launcher)
-                        .setTitle(R.string.startup_donate)
-                        .setMessage(R.string.startup_donate_message)
-                        .setPositiveButton(R.string.startup_donate_now, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("donate/").build()));
-                            }
-                        })
-                        .setNegativeButton(R.string.startup_donate_later, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        })
-                        .create();
+                if (BuildConfig.FLAVOR != App.FLAVOR_GOOGLE_PLAY)
+                    return new AlertDialog.Builder(getActivity())
+                            .setIcon(R.drawable.ic_launcher)
+                            .setTitle(R.string.startup_donate)
+                            .setMessage(R.string.startup_donate_message)
+                            .setPositiveButton(R.string.startup_donate_now, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("donate/").build()));
+                                }
+                            })
+                            .setNegativeButton(R.string.startup_donate_later, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            })
+                            .create();
+                else
+                    throw new IllegalArgumentException();
 
             case GOOGLE_PLAY_ACCOUNTS_REMOVED:
                 Drawable icon = null;

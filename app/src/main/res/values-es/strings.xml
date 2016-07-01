@@ -8,6 +8,7 @@
   <string name="send">Enviar</string>
   <!--startup dialogs-->
   <string name="startup_dont_show_again">No mostrar de nuevo</string>
+  <string name="startup_development_version">Versión candidata final de DAVdroid</string>
   <string name="startup_development_version_message">Esta es una versión de desarrollo de DAVdroid. Tenga presente que puede que no todo funcione como espera. Por favor, denos una retroalimentación constructiva para mejorar DAVdroid.</string>
   <string name="startup_development_version_give_feedback">Dar retroalimentación</string>
   <string name="startup_donate">Información de código abierto</string>

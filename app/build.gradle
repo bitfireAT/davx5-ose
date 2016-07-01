@@ -17,16 +17,17 @@ android {
         minSdkVersion 14
         targetSdkVersion 23
 
-        versionCode 107
-        versionName "1.1.1.2"
+        versionCode 108
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
     }
 
     productFlavors {
-        standard {}
+        standard {
+            versionName "1.1.1.2"
+        }
         gplay {
-            versionName "1.1.1.1-gplay"
+            versionName "1.1.1.2-gplay"
         }
     }
 
