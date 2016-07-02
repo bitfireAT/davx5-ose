@@ -315,7 +315,11 @@ public class ContactsSyncManager extends SyncManager {
                 DavResource remote = bunch[0];
 
                 ResponseBody body = remote.get("text/vcard;version=4.0, text/vcard;charset=utf-8;q=0.8, text/vcard;q=0.5");
-                String eTag = ((GetETag) remote.properties.get(GetETag.NAME)).eTag;
+
+                // CardDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc6352#section-6.3.2.3]
+                GetETag eTag = (GetETag)remote.properties.get(GetETag.NAME);
+                if (eTag == null || StringUtils.isEmpty(eTag.eTag))
+                    throw new DavException("Received CardDAV GET response without ETag for " + remote.location);
 
                 Charset charset = Charsets.UTF_8;
                 MediaType contentType = body.contentType();
@@ -323,7 +327,7 @@ public class ContactsSyncManager extends SyncManager {
                     charset = contentType.charset(Charsets.UTF_8);
 
                 @Cleanup InputStream stream = body.byteStream();
-                processVCard(remote.fileName(), eTag, stream, charset, downloader);
+                processVCard(remote.fileName(), eTag.eTag, stream, charset, downloader);
 
             } else {
                 // multiple contacts, use multi-get
