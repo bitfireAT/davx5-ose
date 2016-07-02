@@ -209,11 +209,19 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
             for (Account acct : accountManager.getAccountsByType(Constants.ACCOUNT_TYPE))
                 try {
                     AccountSettings settings = new AccountSettings(getContext(), acct);
-                    report.append(
-                            "Account: ").append(acct.name).append("\n" +
-                                    "  Address book sync. interval: ").append(syncStatus(settings, ContactsContract.AUTHORITY)).append("\n" +
-                                    "  Calendar     sync. interval: ").append(syncStatus(settings, CalendarContract.AUTHORITY)).append("\n" +
-                                    "  OpenTasks    sync. interval: ").append(syncStatus(settings, "org.dmfs.tasks")).append("\n");
+                    report.append("Account: ").append(acct.name).append("\n" +
+                                  "  Address book sync. interval: ").append(syncStatus(settings, ContactsContract.AUTHORITY)).append("\n" +
+                                  "  Calendar     sync. interval: ").append(syncStatus(settings, CalendarContract.AUTHORITY)).append("\n" +
+                                  "  OpenTasks    sync. interval: ").append(syncStatus(settings, "org.dmfs.tasks")).append("\n" +
+                                  "  Preemptive auth: ").append(settings.preemptiveAuth()).append("\n" +
+                                  "  WiFi only: ").append(settings.getSyncWifiOnly());
+                    if (settings.getSyncWifiOnlySSID() != null)
+                        report.append(", SSID: ").append(settings.getSyncWifiOnlySSID());
+                    report.append("\n  [CardDAV] Contact group method: ").append(settings.getGroupMethod())
+                          .append("\n            RFC 6868 encoding: ").append(settings.getVCardRFC6868())
+                          .append("\n  [CalDAV] Time range (past days): ").append(settings.getTimeRangePastDays())
+                          .append("\n           Manage calendar colors: ").append(settings.getManageCalendarColors())
+                          .append("\n");
                 } catch(InvalidAccountException e) {
                     report.append(acct).append(" is invalid (unsupported settings version) or does not exist\n");
                 }
@@ -230,7 +238,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                                 "Android version: ").append(Build.VERSION.RELEASE).append(" (").append(Build.DISPLAY).append(")\n" +
                                 "Device: ").append(WordUtils.capitalize(Build.MANUFACTURER)).append(" ").append(Build.MODEL).append(" (").append(Build.DEVICE).append(")\n\n"
                 );
-            } catch (Exception ex) {
+            } catch(Exception ex) {
                 App.log.log(Level.SEVERE, "Couldn't get system details", ex);
             }
 

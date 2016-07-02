@@ -148,7 +148,11 @@ public class CalendarSyncManager extends SyncManager {
                 DavResource remote = bunch[0];
 
                 ResponseBody body = remote.get("text/calendar");
-                String eTag = ((GetETag)remote.properties.get(GetETag.NAME)).eTag;
+
+                // CalDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc4791#section-5.3.4]
+                GetETag eTag = (GetETag)remote.properties.get(GetETag.NAME);
+                if (eTag == null || StringUtils.isEmpty(eTag.eTag))
+                    throw new DavException("Received CalDAV GET response without ETag for " + remote.location);
 
                 Charset charset = Charsets.UTF_8;
                 MediaType contentType = body.contentType();
@@ -156,7 +160,7 @@ public class CalendarSyncManager extends SyncManager {
                     charset = contentType.charset(Charsets.UTF_8);
 
                 @Cleanup InputStream stream = body.byteStream();
-                processVEvent(remote.fileName(), eTag, stream, charset);
+                processVEvent(remote.fileName(), eTag.eTag, stream, charset);
 
             } else {
                 // multiple contacts, use multi-get
