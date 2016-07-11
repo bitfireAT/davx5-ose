@@ -37,7 +37,6 @@ import lombok.Cleanup;
 
 public class StartupDialogFragment extends DialogFragment {
     public static final String
-            HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED = "hint_GooglePlayAccountsRemoved",
             HINT_OPENTASKS_NOT_INSTALLED = "hint_OpenTasksNotInstalled";
 
     private static final String ARGS_MODE = "mode";
@@ -45,7 +44,6 @@ public class StartupDialogFragment extends DialogFragment {
     enum Mode {
         DEVELOPMENT_VERSION,
         FDROID_DONATE,
-        GOOGLE_PLAY_ACCOUNTS_REMOVED,
         OPENTASKS_NOT_INSTALLED
     }
 
@@ -57,20 +55,8 @@ public class StartupDialogFragment extends DialogFragment {
 
         if (BuildConfig.VERSION_NAME.contains("-alpha") || BuildConfig.VERSION_NAME.contains("-beta") || BuildConfig.VERSION_NAME.contains("-rc"))
             dialogs.add(StartupDialogFragment.instantiate(Mode.DEVELOPMENT_VERSION));
-        else {
-            // store-specific information
-            if (BuildConfig.FLAVOR == App.FLAVOR_GOOGLE_PLAY) {
-                // Play store
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP &&    // only on Android <5
-                    settings.getBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, true))      // and only when "Don't show again" hasn't been clicked yet
-                    dialogs.add(StartupDialogFragment.instantiate(Mode.GOOGLE_PLAY_ACCOUNTS_REMOVED));
-            } else {
-                // other stores
-                final String installedFrom = installedFrom(context);
-                if (installedFrom == null || installedFrom.startsWith("org.fdroid"))
-                    dialogs.add(StartupDialogFragment.instantiate(Mode.FDROID_DONATE));
-            }
-        }
+        else
+            dialogs.add(StartupDialogFragment.instantiate(Mode.FDROID_DONATE));
 
         // OpenTasks information
         if (!LocalTaskList.tasksProviderAvailable(context) &&
@@ -117,54 +103,19 @@ public class StartupDialogFragment extends DialogFragment {
                         .create();
 
             case FDROID_DONATE:
-                if (BuildConfig.FLAVOR != App.FLAVOR_GOOGLE_PLAY)
-                    return new AlertDialog.Builder(getActivity())
-                            .setIcon(R.drawable.ic_launcher)
-                            .setTitle(R.string.startup_donate)
-                            .setMessage(R.string.startup_donate_message)
-                            .setPositiveButton(R.string.startup_donate_now, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("donate/").build()));
-                                }
-                            })
-                            .setNegativeButton(R.string.startup_donate_later, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            })
-                            .create();
-                else
-                    throw new IllegalArgumentException();
-
-            case GOOGLE_PLAY_ACCOUNTS_REMOVED:
-                Drawable icon = null;
-                try {
-                    icon = getContext().getPackageManager().getApplicationIcon("com.android.vending").getCurrent();
-                } catch (PackageManager.NameNotFoundException e) {
-                    App.log.log(Level.WARNING, "Can't load Play Store icon", e);
-                }
                 return new AlertDialog.Builder(getActivity())
-                        .setIcon(icon)
-                        .setTitle(R.string.startup_google_play_accounts_removed)
-                        .setMessage(R.string.startup_google_play_accounts_removed_message)
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        .setIcon(R.drawable.ic_launcher)
+                        .setTitle(R.string.startup_donate)
+                        .setMessage(R.string.startup_donate_message)
+                        .setPositiveButton(R.string.startup_donate_now, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("donate/").build()));
                             }
                         })
-                        .setNeutralButton(R.string.startup_google_play_accounts_removed_more_info, new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.startup_donate_later, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("faq/").build());
-                                getContext().startActivity(intent);
-                            }
-                        })
-                        .setNegativeButton(R.string.startup_dont_show_again, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Settings settings = new Settings(dbHelper.getWritableDatabase());
-                                settings.putBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, false);
                             }
                         })
                         .create();

@@ -24,10 +24,7 @@ android {
 
     productFlavors {
         standard {
-            versionName "1.2"
-        }
-        gplay {
-            versionName "1.2-gplay"
+            versionName "1.2-ose"
         }
     }
 
