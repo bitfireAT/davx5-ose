@@ -10,8 +10,10 @@ package at.bitfire.davdroid;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -20,7 +22,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.PeriodicSync;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
@@ -92,6 +97,7 @@ public class AccountSettings {
     final Account account;
 
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public AccountSettings(@NonNull Context context, @NonNull Account account) throws InvalidAccountException {
         this.context = context;
         this.account = account;
@@ -111,9 +117,16 @@ public class AccountSettings {
             App.log.info("Account " + account.name + " has version " + version + ", current version: " + CURRENT_VERSION);
 
             if (version < CURRENT_VERSION) {
+                Bitmap bitmapLogo = null;
+                Drawable drawableLogo = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP ?
+                        context.getDrawable(R.drawable.ic_launcher) :
+                        context.getResources().getDrawable(R.drawable.ic_launcher);
+                if (drawableLogo instanceof BitmapDrawable)
+                    bitmapLogo = ((BitmapDrawable)drawableLogo).getBitmap();
+
                 Notification notify = new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_new_releases_light)
-                        .setLargeIcon(((BitmapDrawable)context.getResources().getDrawable(R.drawable.ic_launcher)).getBitmap())
+                        .setLargeIcon(bitmapLogo)
                         .setContentTitle(context.getString(R.string.settings_version_update))
                         .setContentText(context.getString(R.string.settings_version_update_settings_updated))
                         .setSubText(context.getString(R.string.settings_version_update_install_hint))
@@ -121,6 +134,9 @@ public class AccountSettings {
                                 .bigText(context.getString(R.string.settings_version_update_settings_updated)))
                         .setCategory(NotificationCompat.CATEGORY_SYSTEM)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setContentIntent(PendingIntent.getActivity(context, 0,
+                                new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("faq/entry/davdroid-not-working-after-update/").build()),
+                                PendingIntent.FLAG_CANCEL_CURRENT))
                         .setLocalOnly(true)
                         .build();
                 NotificationManager nm = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
