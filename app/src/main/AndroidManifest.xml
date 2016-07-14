@@ -194,7 +194,8 @@
         <!-- MemorizingTrustManager -->
         <activity
             android:name="de.duenndns.ssl.MemorizingActivity"
-            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar"/>
+            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar"
+            android:multiprocess="true"/>
 
     </application>
 
