@@ -203,14 +203,15 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
 
                 BatchOperation batch = new BatchOperation(provider);
                 // re-schedule original event and set it to DIRTY
-                batch.enqueue(ContentProviderOperation.newUpdate(
-                        syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
-                        .withValue(LocalEvent.COLUMN_SEQUENCE, originalSequence + 1)
-                        .withValue(Events.DIRTY, DIRTY_INCREASE_SEQUENCE)
-                        .build());
+                batch.enqueue(new BatchOperation.Operation(
+                        ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
+                                .withValue(LocalEvent.COLUMN_SEQUENCE, originalSequence + 1)
+                                .withValue(Events.DIRTY, DIRTY_INCREASE_SEQUENCE)
+                ));
                 // remove exception
-                batch.enqueue(ContentProviderOperation.newDelete(
-                        syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id))).build());
+                batch.enqueue(new BatchOperation.Operation(
+                        ContentProviderOperation.newDelete(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id)))
+                ));
                 batch.commit();
             }
         } catch (RemoteException e) {
@@ -232,16 +233,16 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
 
                 BatchOperation batch = new BatchOperation(provider);
                 // original event to DIRTY
-                batch.enqueue(ContentProviderOperation.newUpdate(
-                        syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
-                        .withValue(Events.DIRTY, DIRTY_DONT_INCREASE_SEQUENCE)
-                        .build());
+                batch.enqueue(new BatchOperation.Operation(
+                        ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
+                                .withValue(Events.DIRTY, DIRTY_DONT_INCREASE_SEQUENCE)
+                ));
                 // increase SEQUENCE and set DIRTY to 0
-                batch.enqueue(ContentProviderOperation.newUpdate(
-                                syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id)))
+                batch.enqueue(new BatchOperation.Operation(
+                        ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id)))
                                 .withValue(LocalEvent.COLUMN_SEQUENCE, sequence + 1)
                                 .withValue(Events.DIRTY, 0)
-                                .build());
+                ));
                 batch.commit();
             }
         } catch (RemoteException e) {
