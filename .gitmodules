@@ -1,12 +1,12 @@
 [submodule "dav4android"]
 	path = dav4android
-	url = https://gitlab.com/bitfireAT/dav4android.git
+	url = ../dav4android.git
 [submodule "ical4android"]
 	path = ical4android
-	url = https://gitlab.com/bitfireAT/ical4android.git
+	url = ../ical4android.git
 [submodule "vcard4android"]
 	path = vcard4android
-	url = https://gitlab.com/bitfireAT/vcard4android.git
+	url = ../vcard4android.git
 [submodule "MemorizingTrustManager"]
 	path = MemorizingTrustManager
 	url = https://github.com/ge0rg/MemorizingTrustManager
