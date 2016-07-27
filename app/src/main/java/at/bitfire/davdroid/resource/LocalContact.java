@@ -98,14 +98,17 @@ public class LocalContact extends AndroidContact implements LocalResource {
         super.insertDataRows(batch);
 
         if (contact.unknownProperties != null) {
-            ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(dataSyncURI());
-            if (id == null)
-                builder.withValueBackReference(UnknownProperties.RAW_CONTACT_ID, 0);
-            else
+            final BatchOperation.Operation op;
+            final ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(dataSyncURI());
+            if (id == null) {
+                op = new BatchOperation.Operation(builder, UnknownProperties.RAW_CONTACT_ID, 0);
+            } else {
+                op = new BatchOperation.Operation(builder);
                 builder.withValue(UnknownProperties.RAW_CONTACT_ID, id);
+            }
             builder .withValue(UnknownProperties.MIMETYPE, UnknownProperties.CONTENT_ITEM_TYPE)
                     .withValue(UnknownProperties.UNKNOWN_PROPERTIES, contact.unknownProperties);
-            batch.enqueue(builder.build());
+            batch.enqueue(op);
         }
 
     }
@@ -113,35 +116,32 @@ public class LocalContact extends AndroidContact implements LocalResource {
 
     public void addToGroup(BatchOperation batch, long groupID) {
         assertID();
-        batch.enqueue(ContentProviderOperation
-                .newInsert(dataSyncURI())
-                .withValue(GroupMembership.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
-                .withValue(GroupMembership.RAW_CONTACT_ID, id)
-                .withValue(GroupMembership.GROUP_ROW_ID, groupID)
-                .build()
-        );
+        batch.enqueue(new BatchOperation.Operation(
+                ContentProviderOperation.newInsert(dataSyncURI())
+                        .withValue(GroupMembership.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
+                        .withValue(GroupMembership.RAW_CONTACT_ID, id)
+                        .withValue(GroupMembership.GROUP_ROW_ID, groupID)
+        ));
 
-        batch.enqueue(ContentProviderOperation
-                .newInsert(dataSyncURI())
-                .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
-                .withValue(CachedGroupMembership.RAW_CONTACT_ID, id)
-                .withValue(CachedGroupMembership.GROUP_ID, groupID)
-                .withYieldAllowed(true)
-                .build()
-        );
+        batch.enqueue(new BatchOperation.Operation(
+                ContentProviderOperation.newInsert(dataSyncURI())
+                        .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
+                        .withValue(CachedGroupMembership.RAW_CONTACT_ID, id)
+                        .withValue(CachedGroupMembership.GROUP_ID, groupID)
+                        .withYieldAllowed(true)
+        ));
     }
 
     public void removeGroupMemberships(BatchOperation batch) {
         assertID();
-        batch.enqueue(ContentProviderOperation
-                .newDelete(dataSyncURI())
-                .withSelection(
-                        Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + " IN (?,?)",
-                        new String[] { String.valueOf(id), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembership.CONTENT_ITEM_TYPE }
-                )
-                .withYieldAllowed(true)
-                .build()
-        );
+        batch.enqueue(new BatchOperation.Operation(
+                ContentProviderOperation.newDelete(dataSyncURI())
+                        .withSelection(
+                                Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + " IN (?,?)",
+                                new String[] { String.valueOf(id), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembership.CONTENT_ITEM_TYPE }
+                        )
+                        .withYieldAllowed(true)
+        ));
     }
 
     /**

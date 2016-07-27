@@ -19,7 +19,6 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
 import android.provider.ContactsContract.Groups;
 import android.provider.ContactsContract.RawContacts;
 import android.provider.ContactsContract.RawContacts.Data;
-import android.provider.ContactsContract.RawContactsEntity;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -66,24 +65,23 @@ public class LocalGroup extends AndroidGroup implements LocalResource {
         BatchOperation batch = new BatchOperation(addressBook.provider);
 
         // delete cached group memberships
-        batch.enqueue(ContentProviderOperation
-                .newDelete(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
-                .withSelection(
-                        CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?",
-                        new String[] { CachedGroupMembership.CONTENT_ITEM_TYPE, String.valueOf(id) }
-                ).build()
-        );
+        batch.enqueue(new BatchOperation.Operation(
+                ContentProviderOperation.newDelete(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
+                        .withSelection(
+                                CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?",
+                                new String[] { CachedGroupMembership.CONTENT_ITEM_TYPE, String.valueOf(id) }
+                        )
+        ));
 
         // insert updated cached group memberships
         for (long member : getMembers())
-            batch.enqueue(ContentProviderOperation
-                    .newInsert(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
-                    .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
-                    .withValue(CachedGroupMembership.RAW_CONTACT_ID, member)
-                    .withValue(CachedGroupMembership.GROUP_ID, id)
-                    .withYieldAllowed(true)
-                    .build()
-            );
+            batch.enqueue(new BatchOperation.Operation(
+                    ContentProviderOperation.newInsert(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
+                            .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
+                            .withValue(CachedGroupMembership.RAW_CONTACT_ID, member)
+                            .withValue(CachedGroupMembership.GROUP_ID, id)
+                            .withYieldAllowed(true)
+            ));
 
         batch.commit();
     }
@@ -120,12 +118,11 @@ public class LocalGroup extends AndroidGroup implements LocalResource {
         BatchOperation batch = new BatchOperation(addressBook.provider);
 
         for (long member : getMembers())
-            batch.enqueue(ContentProviderOperation
-                    .newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(RawContacts.CONTENT_URI, member)))
-                    .withValue(RawContacts.DIRTY, 1)
-                    .withYieldAllowed(true)
-                    .build()
-            );
+            batch.enqueue(new BatchOperation.Operation(
+                    ContentProviderOperation.newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(RawContacts.CONTENT_URI, member)))
+                            .withValue(RawContacts.DIRTY, 1)
+                            .withYieldAllowed(true)
+            ));
 
         batch.commit();
     }
@@ -151,15 +148,14 @@ public class LocalGroup extends AndroidGroup implements LocalResource {
                 Constants.log.fine("Assigning members to group " + id);
 
                 // delete all memberships and cached memberships for this group
-                batch.enqueue(ContentProviderOperation
-                        .newDelete(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
-                        .withSelection(
-                                "(" + GroupMembership.MIMETYPE + "=? AND " + GroupMembership.GROUP_ROW_ID + "=?) OR (" +
-                                      CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?)",
-                                new String[] { GroupMembership.CONTENT_ITEM_TYPE, String.valueOf(id), CachedGroupMembership.CONTENT_ITEM_TYPE, String.valueOf(id) })
-                        .withYieldAllowed(true)
-                        .build()
-                );
+                batch.enqueue(new BatchOperation.Operation(
+                        ContentProviderOperation.newDelete(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
+                                .withSelection(
+                                        "(" + GroupMembership.MIMETYPE + "=? AND " + GroupMembership.GROUP_ROW_ID + "=?) OR (" +
+                                              CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?)",
+                                        new String[] { GroupMembership.CONTENT_ITEM_TYPE, String.valueOf(id), CachedGroupMembership.CONTENT_ITEM_TYPE, String.valueOf(id) })
+                                .withYieldAllowed(true)
+                ));
 
                 // extract list of member UIDs
                 List<String> members = new LinkedList<>();
@@ -181,12 +177,11 @@ public class LocalGroup extends AndroidGroup implements LocalResource {
                 }
 
                 // remove pending memberships
-                batch.enqueue(ContentProviderOperation
-                        .newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, id)))
-                        .withValue(COLUMN_PENDING_MEMBERS, null)
-                        .withYieldAllowed(true)
-                        .build()
-                );
+                batch.enqueue(new BatchOperation.Operation(
+                        ContentProviderOperation.newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, id)))
+                                .withValue(COLUMN_PENDING_MEMBERS, null)
+                                .withYieldAllowed(true)
+                ));
 
                 batch.commit();
             }
