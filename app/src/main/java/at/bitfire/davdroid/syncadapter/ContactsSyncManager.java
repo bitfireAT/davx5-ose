@@ -211,12 +211,11 @@ public class ContactsSyncManager extends SyncManager {
                                 currentGroups = contact.getGroupMemberships();
                     for (Long groupID : SetUtils.disjunction(cachedGroups, currentGroups)) {
                         App.log.fine("Marking group as dirty: " + groupID);
-                        batch.enqueue(ContentProviderOperation
-                                .newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, groupID)))
+                        batch.enqueue(new BatchOperation.Operation(
+                                ContentProviderOperation.newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, groupID)))
                                 .withValue(Groups.DIRTY, 1)
                                 .withYieldAllowed(true)
-                                .build()
-                        );
+                        ));
                     }
                 } catch(FileNotFoundException ignored) {
                 }
