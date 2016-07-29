@@ -104,7 +104,7 @@ public class AccountDetailsFragment extends Fragment {
     }
 
     protected boolean createAccount(String accountName, DavResourceFinder.Configuration config) {
-        Account account = new Account(accountName, Constants.ACCOUNT_TYPE);
+        Account account = new Account(accountName, getString(R.string.account_type));
 
         // create Android account
         Bundle userData = AccountSettings.initialUserData(config.userName, config.preemptive);

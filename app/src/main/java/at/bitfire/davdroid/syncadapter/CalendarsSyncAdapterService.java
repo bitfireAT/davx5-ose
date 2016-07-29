@@ -53,9 +53,7 @@ public class CalendarsSyncAdapterService extends SyncAdapterService {
         }
 
         @Override
-        public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-            super.onPerformSync(account, extras, authority, provider, syncResult);
-
+        public void sync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
             try {
                 AccountSettings settings = new AccountSettings(getContext(), account);
                 if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(settings))

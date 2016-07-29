@@ -47,9 +47,7 @@ public class ContactsSyncAdapterService extends SyncAdapterService {
         }
 
         @Override
-        public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-            super.onPerformSync(account, extras, authority, provider, syncResult);
-
+        public void sync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
             SQLiteOpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
             try {
                 AccountSettings settings = new AccountSettings(getContext(), account);

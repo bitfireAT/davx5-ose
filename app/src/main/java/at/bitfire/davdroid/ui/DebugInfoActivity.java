@@ -206,7 +206,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                     "CONFIGURATION\n" +
                     "System-wide synchronization: ").append(ContentResolver.getMasterSyncAutomatically() ? "automatically" : "manually").append("\n");
             AccountManager accountManager = AccountManager.get(getContext());
-            for (Account acct : accountManager.getAccountsByType(Constants.ACCOUNT_TYPE))
+            for (Account acct : accountManager.getAccountsByType(getContext().getString(R.string.account_type)))
                 try {
                     AccountSettings settings = new AccountSettings(getContext(), acct);
                     report.append("Account: ").append(acct.name).append("\n" +

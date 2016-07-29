@@ -230,7 +230,7 @@ abstract public class SyncManager {
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
             builder .setSmallIcon(R.drawable.ic_error_light)
-                    .setLargeIcon(((BitmapDrawable)context.getResources().getDrawable(R.drawable.ic_launcher)).getBitmap())
+                    .setLargeIcon(((BitmapDrawable)context.getResources().getDrawable(R.drawable.ic_logo)).getBitmap())
                     .setContentTitle(getSyncErrorTitle())
                     .setContentIntent(PendingIntent.getActivity(context, 0, detailsIntent, PendingIntent.FLAG_CANCEL_CURRENT))
                     .setCategory(NotificationCompat.CATEGORY_ERROR)

@@ -149,7 +149,7 @@ public class DavService extends Service {
 
             List<String> sqlAccountNames = new LinkedList<>();
             AccountManager am = AccountManager.get(this);
-            for (Account account : am.getAccountsByType(Constants.ACCOUNT_TYPE))
+            for (Account account : am.getAccountsByType(getString(R.string.account_type)))
                 sqlAccountNames.add(DatabaseUtils.sqlEscapeString(account.name));
 
             if (sqlAccountNames.isEmpty())
@@ -312,7 +312,7 @@ public class DavService extends Service {
                 NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
                 Notification notify = new NotificationCompat.Builder(DavService.this)
                         .setSmallIcon(R.drawable.ic_error_light)
-                        .setLargeIcon(((BitmapDrawable)getResources().getDrawable(R.drawable.ic_launcher)).getBitmap())
+                        .setLargeIcon(((BitmapDrawable)getResources().getDrawable(R.drawable.ic_logo)).getBitmap())
                         .setContentTitle(getString(R.string.dav_service_refresh_failed))
                         .setContentText(getString(R.string.dav_service_refresh_couldnt_refresh))
                         .setContentIntent(PendingIntent.getActivity(DavService.this, 0, debugIntent, PendingIntent.FLAG_UPDATE_CURRENT))
@@ -357,7 +357,7 @@ public class DavService extends Service {
         private Account account() {
             @Cleanup Cursor cursor = db.query(Services._TABLE, new String[] { Services.ACCOUNT_NAME }, Services.ID + "=?", new String[] { String.valueOf(service) }, null, null, null);
             if (cursor.moveToNext()) {
-                return new Account(cursor.getString(0), Constants.ACCOUNT_TYPE);
+                return new Account(cursor.getString(0), getString(R.string.account_type));
             } else
                 throw new IllegalArgumentException("Service not found");
         }

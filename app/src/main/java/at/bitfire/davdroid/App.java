@@ -38,7 +38,10 @@ import lombok.Getter;
 import okhttp3.internal.tls.OkHostnameVerifier;
 
 public class App extends Application {
-    public static final String FLAVOR_GOOGLE_PLAY = "gplay";
+    public static final String
+            FLAVOR_GOOGLE_PLAY = "gplay",
+            FLAVOR_ICLOUD = "icloud",
+            FLAVOR_STANDARD = "standard";
 
     public static final String LOG_TO_EXTERNAL_STORAGE = "logToExternalStorage";
 
@@ -61,9 +64,11 @@ public class App extends Application {
         super.onCreate();
 
         // initialize MemorizingTrustManager
-        memorizingTrustManager = new MemorizingTrustManager(this);
-        sslSocketFactoryCompat = new SSLSocketFactoryCompat(memorizingTrustManager);
-        hostnameVerifier = memorizingTrustManager.wrapHostnameVerifier(OkHostnameVerifier.INSTANCE);
+        if (BuildConfig.useMTM) {
+            memorizingTrustManager = new MemorizingTrustManager(this);
+            sslSocketFactoryCompat = new SSLSocketFactoryCompat(memorizingTrustManager);
+            hostnameVerifier = memorizingTrustManager.wrapHostnameVerifier(OkHostnameVerifier.INSTANCE);
+        }
 
         // initializer logger
         reinitLogger();
@@ -94,7 +99,7 @@ public class App extends Application {
         if (logToFile) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
             builder .setSmallIcon(R.drawable.ic_sd_storage_light)
-                    .setLargeIcon(((BitmapDrawable)getResources().getDrawable(R.drawable.ic_launcher)).getBitmap())
+                    .setLargeIcon(((BitmapDrawable)getResources().getDrawable(R.drawable.ic_logo)).getBitmap())
                     .setContentTitle(getString(R.string.logging_davdroid_file_logging))
                     .setLocalOnly(true);
 

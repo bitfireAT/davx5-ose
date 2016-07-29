@@ -11,6 +11,7 @@
 
     <!-- common strings -->
     <string name="app_name">DAVdroid</string>
+    <string name="account_type">bitfire.at.davdroid</string>
     <string name="help">Help</string>
     <string name="manage_accounts">Manage accounts</string>
     <string name="please_wait">Please wait …</string>

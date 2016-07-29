@@ -10,7 +10,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    buildToolsVersion "24.0.1"
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
@@ -20,6 +20,7 @@ android {
         versionCode 110
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
+        buildConfigField "boolean", "useMTM", "false"
     }
 
     productFlavors {
@@ -28,7 +29,21 @@ android {
         }
         gplay {
             versionName "1.2.1-gplay"
+            buildConfigField "boolean", "useMTM", "true"
         }
+        icloud {
+            //applicationId "at.bitfire.multisync.cloud"
+            applicationId "at.bitfire.cloudsync"
+            versionName "1.2.1-cloud"
+        }
+    }
+
+    sourceSets {
+        standard.java.srcDirs = [ "src/davdroid/java" ]
+        standard.res.srcDirs = [ "src/davdroid/res" ]
+
+        gplay.java.srcDirs = [ "src/davdroid/java" ]
+        gplay.res.srcDirs = [ "src/davdroid/res" ]
     }
 
     buildTypes {
