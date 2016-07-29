@@ -1,0 +1,212 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="help">Yardım</string>
+  <string name="manage_accounts">Hesapları yönet</string>
+  <string name="please_wait">Lütfen bekle ...</string>
+  <string name="send">Gönder</string>
+  <!--startup dialogs-->
+  <string name="startup_dont_show_again">Bir daha gösterme</string>
+  <string name="startup_development_version">DAVDroid Önizlenim Dağıtımı</string>
+  <string name="startup_development_version_message">Bu DAVdroid\'in bir geliştirme sürümüdür. Bazı şeyler beklendiği gibi çalışmayabilir. DAVdroid\'i iyileştirmek için bize lütfen yapıcı eleştirilerini ilet.</string>
+  <string name="startup_development_version_give_feedback">Geribildirim ver</string>
+  <string name="startup_donate">Açık-Kaynak Bilgisi</string>
+  <string name="startup_donate_message">Açık kaynaklı yazılım (GPLv3) olan DAVdroid\'i kullandığına çok mutluyuz. DAVdroid\'i geliştirmek zor bir iş ve üzerinde binlerce saat çalıştığımızdan, lütfen bir bağışta bulunmayı düşün.</string>
+  <string name="startup_donate_now">Bağış sayfasını göster</string>
+  <string name="startup_donate_later">Belki sonra</string>
+  <string name="startup_google_play_accounts_removed">Play Store DRM hata bilgisi</string>
+  <string name="startup_google_play_accounts_removed_message">Bazı durumlarda Play Store DRM\'i, cihazı yeniden başlatınca veya DAVdroid\'i yükseltince DAVdroid hesaplarının yokolmasına sebep olabiliyor. Bu sorundan etkileniyorsan (ve sadece bu durumda), lütfen Play Store\'daki \"DAVdroid JB Workaround\" uygulamasını kur.</string>
+  <string name="startup_google_play_accounts_removed_more_info">Daha fazla bilgi</string>
+  <string name="startup_opentasks_not_installed">OpenTasks kurulu değil</string>
+  <string name="startup_opentasks_not_installed_message">OpenTasks uygulaması yok, dolayısıyla DAVdroid iş listelerini senkronize edemeyecektir.</string>
+  <string name="startup_opentasks_reinstall_davdroid">OpenTasks\'i kurduktan sonra, DAVdroid\'i YENİDEN KURMAN ve hesaplarını yeniden eklemen gerek. (Android hatası).</string>
+  <string name="startup_opentasks_not_installed_install">OpenTasks kur</string>
+  <!--AboutActivity-->
+  <string name="about_license_terms">Lisans şartları</string>
+  <string name="about_license_info_no_warranty">Bu uygulama HİÇ BİR GARANTİ ile gelmemektedir. Bedava bir yazılımdır ve belli koşullar altında dağıtabilirsiniz.</string>
+  <!--global settings-->
+  <string name="logging_davdroid_file_logging">DAVdroid dosya jurnallemesi</string>
+  <string name="logging_to_external_storage">Harici depolamaya jurnalleniyor: %s</string>
+  <string name="logging_to_external_storage_warning">Jurnalleri bir an önce silin!</string>
+  <string name="logging_couldnt_create_file">Harici jurnal dosyası yaratılamadı: %s </string>
+  <string name="logging_no_external_storage">Harici depolama alanı bulunamadı</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Navigasyon çekmecesini aç</string>
+  <string name="navigation_drawer_close">Navigasyon çekmecesini kapat</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV Senkronizasyon Adaptörü</string>
+  <string name="navigation_drawer_about">Hakkında / Lisans</string>
+  <string name="navigation_drawer_settings">Ayarlar</string>
+  <string name="navigation_drawer_news_updates">Haberler  &amp; güncellemeler </string>
+  <string name="navigation_drawer_external_links">Harici bağlantılar</string>
+  <string name="navigation_drawer_website">Web sitesi</string>
+  <string name="navigation_drawer_faq">SSS</string>
+  <string name="navigation_drawer_forums">Camia</string>
+  <string name="navigation_drawer_donate">Bağış yap</string>
+  <string name="account_list_empty">DAVdroid\'e hoşgeldin!\n\nŞimdi bir CalDAV/CardDAV hesabı ekleyebilirsin.</string>
+  <!--DavService-->
+  <string name="dav_service_refresh_failed">Servis keşfi başarısız</string>
+  <string name="dav_service_refresh_couldnt_refresh">Kolleksiyon listesi yenilenemedi</string>
+  <!--AppSettingsActivity-->
+  <string name="app_settings">Ayarlar</string>
+  <string name="app_settings_user_interface">Kullanıcı arayüzü</string>
+  <string name="app_settings_reset_hints">İpuçlarını sıfırla</string>
+  <string name="app_settings_reset_hints_summary">Daha önceden azat edilen ipuçlarını yeniden etkinleştirir</string>
+  <string name="app_settings_reset_hints_success">Tüm ipuçları artık gösterilecek</string>
+  <string name="app_settings_security">Güvenlik</string>
+  <string name="app_settings_reset_trusted_certificates">Güvenilen sertifikaları sıfırla</string>
+  <string name="app_settings_reset_trusted_certificates_summary">Daha önceden kabul edilmiş tüm sertifikaları unutur</string>
+  <plurals name="app_settings_reset_trusted_certificates_success">
+    <item quantity="other">Güvenilmeyen %d sertifikaları</item>
+  </plurals>
+  <string name="app_settings_debug">Hata ayıklama</string>
+  <string name="app_settings_log_to_external_storage">Harici dosyaya jurnalle</string>
+  <string name="app_settings_log_to_external_storage_on">Harici depolamaya jurnalleniyor (eğer uygunsa)</string>
+  <string name="app_settings_log_to_external_storage_off">Harici depolama mevcut değil</string>
+  <string name="app_settings_show_debug_info">Hata ayıklama bilgilerini göster</string>
+  <string name="app_settings_show_debug_info_details">Yazılım ve konfigürasyon detaylarına bak/paylaş</string>
+  <!--AccountActivity-->
+  <string name="account_synchronize_now">Şimdi senkronize et</string>
+  <string name="account_synchronizing_now">Senkronize ediyor</string>
+  <string name="account_settings">Hesap ayarları</string>
+  <string name="account_delete">Hesabı sil</string>
+  <string name="account_delete_confirmation_title">Hesap gerçekten silinsin mi?</string>
+  <string name="account_delete_confirmation_text">Rehber, takvim ve iş listelerinin tüm yerel kopyaları silinecektir.</string>
+  <string name="account_refresh_address_book_list">Rehber listesini yenile</string>
+  <string name="account_create_new_address_book">Yeni rehber oluştur</string>
+  <string name="account_refresh_calendar_list">Takvim listesini yenile</string>
+  <string name="account_create_new_calendar">Yeni takvim oluştur</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">DAVdroid izinleri</string>
+  <string name="permissions_calendar">Takvim izinleri</string>
+  <string name="permissions_calendar_details">Takvim (sadece olaylar)
+</string>
+  <string name="permissions_calendar_request">Takvim izinleri iste</string>
+  <string name="permissions_contacts">Kişiler izinleri</string>
+  <string name="permissions_contacts_details">CardDAV rehberlerinin cihazınızdaki kişilerinizle senkronize edebilmek için, DAVdroid cihazınızdaki kişilerinize erişime ihtiyacı vardır.</string>
+  <string name="permissions_contacts_request">Kişiler izinleri iste</string>
+  <string name="permissions_opentasks">OpenTasks izinleri</string>
+  <string name="permissions_opentasks_details">CalDav iş listelerinizi yerel iş listelerinizle senkronize edebilmek için DAVdroid\'in OpenTasks\'e erişime ihtiyacı vardır.</string>
+  <string name="permissions_opentasks_request">OpenTasks izinleri iste</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">Hesap ekle</string>
+  <string name="login_type_email">Eposta adresi ile giriş yap</string>
+  <string name="login_email_address">Eposta adresi</string>
+  <string name="login_email_address_error">Geçerli eposta adresi zorunludur</string>
+  <string name="login_password">Parola</string>
+  <string name="login_password_required">Parola zorunludur</string>
+  <string name="login_type_url">URL ve kullanıcı adı ile giriş yap</string>
+  <string name="login_url_must_be_http_or_https">URL http(s):// ile başlamalıdır</string>
+  <string name="login_url_host_name_required">Sunucu adı zorunludur</string>
+  <string name="login_user_name">Kullanıcı adı</string>
+  <string name="login_user_name_required">Kullanıcı adı zorunludur</string>
+  <string name="login_base_url">Baz URL</string>
+  <string name="login_auth_preemptive">Önleyici doğrulama (tavsiye edilir, fakat Digest doğrulama ile uyumsuz)</string>
+  <string name="login_login">Giriş</string>
+  <string name="login_back">Geri</string>
+  <string name="login_create_account">Hesap yarat</string>
+  <string name="login_account_name">Hesap adı</string>
+  <string name="login_account_name_info">Hesap ismi olarak e-posta adresini kullan çünkü Android hesap ismini yarattığın olaylarda DÜZENLEYEN alanında kullanacaktır. Aynı isimde iki faklı hesabın olamaz.</string>
+  <string name="login_account_name_required">Hesap adı zorunludur</string>
+  <string name="login_account_not_created">Hesap yaratılamadı</string>
+  <string name="login_configuration_detection">Konfigürasyon keşfi</string>
+  <string name="login_querying_server">Lütfen bekle, sunucu sorgulanıyor...</string>
+  <string name="login_no_caldav_carddav">CalDAV veya CardDAV servisi bulunamadı.</string>
+  <string name="login_view_logs">Jurnallere bak</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">Ayarlar: %s</string>
+  <string name="settings_authentication">Doğrulama</string>
+  <string name="settings_username">Kullanıcı adı</string>
+  <string name="settings_enter_username">Kullanıcı adı girin:</string>
+  <string name="settings_password">Parola</string>
+  <string name="settings_password_summary">Parolayı sunucunuza göre güncelleyin.</string>
+  <string name="settings_enter_password">Parola girin:</string>
+  <string name="settings_preemptive">Önleyici doğrulama</string>
+  <string name="settings_preemptive_on">Giriş bilgileri her istek ile gönderilir (tavsiye edilir)</string>
+  <string name="settings_preemptive_off">Giriş bilgileri sunucu istedikten sonra gönderilir</string>
+  <string name="settings_sync">Senkronizasyon</string>
+  <string name="settings_sync_interval_contacts">Kişiler senk. aralığı</string>
+  <string name="settings_sync_summary_manually">Sadece elle</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Her %d dakika + yerel değişikliklerde hemen</string>
+  <string name="settings_sync_summary_not_available">Mevcut değil</string>
+  <string name="settings_sync_interval_calendars">Takvimler senk. aralığı</string>
+  <string name="settings_sync_interval_tasks">İşler senk. aralığı</string>
+  <string-array name="settings_sync_interval_seconds">
+    <item>-1</item>
+    <item>300</item>
+    <item>600</item>
+    <item>900</item>
+    <item>3600</item>
+    <item>7200</item>
+    <item>14400</item>
+    <item>86400</item>
+  </string-array>
+  <string-array name="settings_sync_interval_names">
+    <item>Sadece elle</item>
+    <item>Her 5 dakikada bir</item>
+    <item>Her 10 dakikada bir</item>
+    <item>Her 15 dakikada bir</item>
+    <item>Her saatte bir</item>
+    <item>Her 2 saatte bir</item>
+    <item>Her 4 saatte bir</item>
+    <item>Günde bir</item>
+  </string-array>
+  <string name="settings_sync_wifi_only">Sadece WiFi üzerinden senkronize et</string>
+  <string name="settings_sync_wifi_only_on">Senkronizasyon WiFi bağlantıları ile kısıtlıdır</string>
+  <string name="settings_sync_wifi_only_off">Bağlantı tipi göz önünde bulundurulmaz</string>
+  <string name="settings_sync_wifi_only_ssid">WiFi SSID kısıtlaması</string>
+  <string name="settings_sync_wifi_only_ssid_on">Sadece %s üzerinden senkronize olur</string>
+  <string name="settings_sync_wifi_only_ssid_off">Tüm WiFi bağlantıları kullanılabilir</string>
+  <string name="settings_sync_wifi_only_ssid_message">Senkronizasyonu sadece bir WiFi ağına kısıtlamak için bu ağın adını (SSID) gir, veya tüm WiFi bağlantıları için boş bırak.</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Geçmiş olay zaman sınırı</string>
+  <string name="settings_sync_time_range_past_none">Tüm olaylar senkronize edilecek</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="other">%d günden daha eski olaylar göz ardı edilecektir</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Bu sayıdan daha eski olan olaylar yok sayılacaktır (0 olabilir). Tüm olayları senkronize etmek için boş bırak.</string>
+  <string name="settings_manage_calendar_colors">Takvim renklerini yönet</string>
+  <string name="settings_manage_calendar_colors_on">Takvim renkleri DAVdroid tarafından yönetilmekte</string>
+  <string name="settings_manage_calendar_colors_off">Takvim renkleri DAVdroid tarafından ayarlanmadı</string>
+  <string name="settings_version_update">DAVdroid sürüm güncellemesi</string>
+  <string name="settings_version_update_settings_updated">Dahili ayarlar güncellendi.</string>
+  <string name="settings_version_update_install_hint">Sorunlar mı var? DAVdroid\'i kaldırıp, yeniden kurun.</string>
+  <!--collection management-->
+  <string name="create_addressbook">Rehber yarat</string>
+  <string name="create_addressbook_display_name_hint">Benim Rehberim</string>
+  <string name="create_calendar">CalDav koleksiyonu yarat</string>
+  <string name="create_calendar_display_name_hint">Benim Takvimim</string>
+  <string name="create_calendar_time_zone">Saat dilimi:</string>
+  <string name="create_calendar_type">Koleksiyon Tipi:</string>
+  <string name="create_calendar_type_only_events">Takvim (sadece olaylar)</string>
+  <string name="create_calendar_type_only_tasks">İşler listesi (sadece işler)
+</string>
+  <string name="create_calendar_type_events_and_tasks">Birleşik (olaylar ve işler)</string>
+  <string name="create_collection_color">Bir koleksiyon rengi tanımla</string>
+  <string name="create_collection_creating">Koleksiyon yaratılıyor</string>
+  <string name="create_collection_display_name">Bu koleksiyonun gösterilen adı (başlığı):</string>
+  <string name="create_collection_display_name_required">Başlık zorunlu</string>
+  <string name="create_collection_description">Açıklama (isteğe bağlı):</string>
+  <string name="create_collection_home_set">Ev seti:</string>
+  <string name="create_collection_create">Yarat</string>
+  <string name="delete_collection">Koleksiyonu sil</string>
+  <string name="delete_collection_confirm_title">Emin misin?</string>
+  <string name="delete_collection_confirm_warning">Bu koleksiyon (%s) ve tüm verisi sunucudan silinecek.</string>
+  <string name="delete_collection_deleting_collection">Koleksiyon siliniyor</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">Bir hata oluştu.</string>
+  <string name="exception_httpexception">Bir HTTP hatası oluştu.</string>
+  <string name="exception_ioexception">Bir I/O hatası oluştu.</string>
+  <string name="exception_show_details">Detayları göster</string>
+  <!--sync errors and DebugInfoActivity-->
+  <string name="debug_info_title">Hata ayıklama bilgisi</string>
+  <string name="sync_error_permissions">DAVdroid izinleri</string>
+  <string name="sync_error_permissions_text">Ek izinler zorunludur</string>
+  <string name="sync_error_calendar">Takvim senkronizasyonu başarısız (%s)</string>
+  <string name="sync_error_contacts">Rehber senkronizasyonu başarısız (%s)</string>
+  <string name="sync_error_tasks">İş senkronizasyonu başarısız (%s)</string>
+  <string name="sync_error">%s yaparken hata</string>
+  <string name="sync_error_http_dav">%s yaparken sunucu hatası</string>
+  <string name="sync_error_local_storage">%s yaparken veritabanı hatası</string>
+  <string name="sync_error_unauthorized">Kullanıcı adı/parola yanlış</string>
+</resources>

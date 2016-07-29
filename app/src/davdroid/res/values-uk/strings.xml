@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="help">Допомога</string>
+  <!--startup dialogs-->
+  <!--AboutActivity-->
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <!--DavService-->
+  <!--AppSettingsActivity-->
+  <!--AccountActivity-->
+  <!--PermissionsActivity-->
+  <!--AddAccountActivity-->
+  <string name="login_type_email">Увійти за допомогою електронної пошти</string>
+  <string name="login_type_url">Увійти за допомогою URL та імені користувача</string>
+  <string name="login_auth_preemptive">Випереджаюча автентифікація (рекомендовано, але несумісно із Digest auth)</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_authentication">Автентифікація</string>
+  <string name="settings_username">Ім\'я користувача</string>
+  <string name="settings_enter_username">Введіть ім\'я користувача:</string>
+  <string name="settings_password">Пароль</string>
+  <string name="settings_password_summary">Оновити пароль, згідно налаштувань Вашого сервера.</string>
+  <string name="settings_enter_password">Введіть Ваш пароль:</string>
+  <string name="settings_preemptive">Випереджаюча автентифікація</string>
+  <string name="settings_preemptive_on">Дані автентифікації будуть надсилатися із кожним запитом (рекомендовано)</string>
+  <string name="settings_preemptive_off">Дані автентифікації будуть надіслані після відповідного запиту сервера</string>
+  <string name="settings_sync">Синхронізація</string>
+  <string name="settings_sync_interval_contacts">Інтервал синхронізації контактів</string>
+  <string name="settings_sync_summary_manually">Лише вручну</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Кожних %d хвилин, а також негайно при внесенні локальних змін</string>
+  <string name="settings_sync_summary_not_available">Не доступно</string>
+  <string name="settings_sync_interval_calendars">Інтервал синхронізації календарів</string>
+  <string name="settings_sync_interval_tasks">Інтервал синхронізації завдань</string>
+  <string-array name="settings_sync_interval_seconds">
+    <item>-1</item>
+    <item>300</item>
+    <item>600</item>
+    <item>900</item>
+    <item>3600</item>
+    <item>7200</item>
+    <item>14400</item>
+    <item>86400</item>
+  </string-array>
+  <string-array name="settings_sync_interval_names">
+    <item>Лише вручну</item>
+    <item>Кожних 5 хвилин</item>
+    <item>Кожних 10 хвилин</item>
+    <item>Кожних 15 хвилин</item>
+    <item>Щогодини</item>
+    <item>Кожних 2 години</item>
+    <item>Кожних 4 години</item>
+    <item>Раз на добу</item>
+  </string-array>
+  <!--collection management-->
+  <!--ExceptionInfoFragment-->
+  <!--sync errors and DebugInfoActivity-->
+</resources>

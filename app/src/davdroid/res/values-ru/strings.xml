@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="help">Помощь</string>
+  <string name="send">Отправить</string>
+  <!--startup dialogs-->
+  <!--AboutActivity-->
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <!--DavService-->
+  <!--AppSettingsActivity-->
+  <!--AccountActivity-->
+  <!--PermissionsActivity-->
+  <!--AddAccountActivity-->
+  <string name="login_type_email">Вход по адресу email</string>
+  <string name="login_type_url">Вход через URL  и имя пользователя</string>
+  <string name="login_auth_preemptive">Упреждающая идентификация (рекомендовано, но несовместимо с Digest идентификацией)</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_authentication">Идентификация</string>
+  <string name="settings_username">Имя</string>
+  <string name="settings_enter_username">Введите имя пользователя:</string>
+  <string name="settings_password">Пароль</string>
+  <string name="settings_password_summary">Обновить пароль в соответствии с вашим сервером.</string>
+  <string name="settings_enter_password">Введите свой пароль:</string>
+  <string name="settings_preemptive">Упреждающая идентификация</string>
+  <string name="settings_preemptive_on">Учетные данные посылаются с каждым запросом (рекомендовано)</string>
+  <string name="settings_preemptive_off">Учетные данные посылаются после их запроса сервером</string>
+  <string name="settings_sync">Синхронизация</string>
+  <string name="settings_sync_interval_contacts">Интервал синхронизации контактов</string>
+  <string name="settings_sync_summary_manually">Вручную</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Каждые %d минут и немедленно при локальных изменениях</string>
+  <string name="settings_sync_summary_not_available">Недоступно</string>
+  <string name="settings_sync_interval_calendars">Период синхронизации календарей</string>
+  <string name="settings_sync_interval_tasks">Период синхронизации задач</string>
+  <string-array name="settings_sync_interval_seconds">
+    <item>-1</item>
+    <item>300</item>
+    <item>600</item>
+    <item>900</item>
+    <item>3600</item>
+    <item>7200</item>
+    <item>14400</item>
+    <item>86400</item>
+  </string-array>
+  <string-array name="settings_sync_interval_names">
+    <item>Вручную</item>
+    <item>Каждые 5 минут</item>
+    <item>Каждые 10 минут</item>
+    <item>Каждые 15 минут</item>
+    <item>Каждый час</item>
+    <item>Каждые 2 часа</item>
+    <item>Каждые 4 часа</item>
+    <item>Раз в сутки</item>
+  </string-array>
+  <!--collection management-->
+  <!--ExceptionInfoFragment-->
+  <!--sync errors and DebugInfoActivity-->
+  <string name="debug_info_title">Отладочная информация</string>
+  <string name="sync_error_calendar">Синхронизация календаря завершена с ошибкой (%s)</string>
+  <string name="sync_error_contacts">Синхронизация контактов завершена с ошибкой (%s)</string>
+  <string name="sync_error_tasks">Синхронизация задачи завершена с ошибкой (%s)</string>
+  <string name="sync_error">Ошибка %s</string>
+  <string name="sync_error_http_dav">Ошибка сервера %s</string>
+  <string name="sync_error_local_storage">Ошибка базы данных в процессе %s</string>
+  <string name="sync_error_unauthorized">Имя пользователя/пароль неверные</string>
+</resources>

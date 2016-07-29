@@ -1,0 +1,236 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="help">Súgó</string>
+  <string name="manage_accounts">Fiókok kezelése</string>
+  <string name="please_wait">Kérjük, várjon ...</string>
+  <string name="send">Küldés</string>
+  <!--startup dialogs-->
+  <string name="startup_dont_show_again">Ne jelenjen meg többet</string>
+  <string name="startup_development_version">DAVdroid előzetes kiadás</string>
+  <string name="startup_development_version_message">Ez a DAVdroid egy fejlesztői verziója.  Elképzelhető, hogy nem minden működik úgy, ahogyan kellene.  Ha így lenne, kérjük küldjön a tapasztaltakról visszajelzést.</string>
+  <string name="startup_development_version_give_feedback">Visszajelzés küldése</string>
+  <string name="startup_donate">A forrás nyíltságával kapcsolatos információk</string>
+  <string name="startup_donate_message">Örülünk, hogy használja a DAVdroidot.  A DAVdroid nyílt forráskódú (GPLv3) szoftver, de a fejlesztése kemény munkát jelent, már eddig több ezer munkaórát emésztett fel, ezért kérjük, fontolja meg, hogy támogassa munkánkat.</string>
+  <string name="startup_donate_now">Támogatás küldése</string>
+  <string name="startup_donate_later">Talán később</string>
+  <string name="startup_google_play_accounts_removed">Play Áruház DRM hibával kapcsolatos információ</string>
+  <string name="startup_google_play_accounts_removed_message">Bizonyos körülmények között  a Play Áruház DRM okozhatja azt, hogy az eszköz újraindítását vagy a DAVdroid frissítését követően a DAVdroid fiókok eltűnnek.  Amennyiben (és csak amennyiben) érinti Önt ez a probléma, telepítse a \"DAVdroid JB Workaround\" alkalmazást Play Áruházból.</string>
+  <string name="startup_google_play_accounts_removed_more_info">További információk</string>
+  <string name="startup_opentasks_not_installed">Az OpenTasks nincs telepítve</string>
+  <string name="startup_opentasks_not_installed_message">Az OpenTasks alkalmazás nincs telepítve, így a DAVdroid nem lesz képes szinkronizálni feladatlistákat.</string>
+  <string name="startup_opentasks_reinstall_davdroid">Az OpenTasks telepítését követően újra kell telepíteni a DAVdroit alkalmazást és újra fel kell venni a fiókokat (Android hiba).</string>
+  <string name="startup_opentasks_not_installed_install">Az OpenTasks telepítése</string>
+  <!--AboutActivity-->
+  <string name="about_license_terms">Licencfeltételek</string>
+  <string name="about_license_info_no_warranty">Ehhez a program SEMMIFÉLE GARANCIA NEM JÁR.   Ez a program szabad szoftver, ami a bizonyos feltételek mellett szabadon terjeszthető.</string>
+  <!--global settings-->
+  <string name="logging_davdroid_file_logging">DAVdroid fájlalapú naplózás</string>
+  <string name="logging_to_external_storage">Naplózás külső tárhelyre: %s</string>
+  <string name="logging_to_external_storage_warning">Törölje a naplófájlt, amint lehetséges!</string>
+  <string name="logging_couldnt_create_file">Külső naplófájl létrehozása sikertelen: %s</string>
+  <string name="logging_no_external_storage">A külső tárhely nem érhető el</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Navigációs fiók megnyitása</string>
+  <string name="navigation_drawer_close">Navigációs fiók lezárása</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV szinkronizációs adapter</string>
+  <string name="navigation_drawer_about">Névjegy / Licenc</string>
+  <string name="navigation_drawer_settings">Beállítások</string>
+  <string name="navigation_drawer_news_updates">Hírek és frissítések</string>
+  <string name="navigation_drawer_external_links">Weblapok</string>
+  <string name="navigation_drawer_website">Honlap</string>
+  <string name="navigation_drawer_faq">GYIK</string>
+  <string name="navigation_drawer_forums">Közösség</string>
+  <string name="navigation_drawer_donate">Támogatás</string>
+  <string name="account_list_empty">Üdvözöljük a DAVdroid felhasználók között!\n\nMost már felvehet CalDAV/CardDav fiókokat.</string>
+  <!--DavService-->
+  <string name="dav_service_refresh_failed">Szolgáltatások felderítése nem sikerült</string>
+  <string name="dav_service_refresh_couldnt_refresh">Gyűjteménylista frissítése nem sikerült</string>
+  <!--AppSettingsActivity-->
+  <string name="app_settings">Beállítások</string>
+  <string name="app_settings_user_interface">Felhasználói felület</string>
+  <string name="app_settings_reset_hints">Tippek visszaállítása</string>
+  <string name="app_settings_reset_hints_summary">Újra jelenjen meg az összes tipp</string>
+  <string name="app_settings_reset_hints_success">Az összes tipp újra meg fog jelenni</string>
+  <string name="app_settings_security">Biztonság</string>
+  <string name="app_settings_reset_trusted_certificates">A tanúsítványtár visszaállítása</string>
+  <string name="app_settings_reset_trusted_certificates_summary">Az összes korábban megbízhatónak kiválasztott tanúsítvány törlése</string>
+  <plurals name="app_settings_reset_trusted_certificates_success">
+    <item quantity="one">Egy tanúsítvány megbízhatósága törölve</item>
+    <item quantity="other">%d tanúsítvány megbízhatósága törölve</item>
+  </plurals>
+  <string name="app_settings_debug">Hibakeresés</string>
+  <string name="app_settings_log_to_external_storage">Naplózás fájlba</string>
+  <string name="app_settings_log_to_external_storage_on">Naplózás külső tárhelyre (ha elérhető)</string>
+  <string name="app_settings_log_to_external_storage_off">Fájlalapú naplózás kikapcsolva</string>
+  <string name="app_settings_show_debug_info">Hibakeresési információ megtekintése</string>
+  <string name="app_settings_show_debug_info_details">Szoftver- és konfigurációs részletek megtekintése/megosztása</string>
+  <!--AccountActivity-->
+  <string name="account_synchronize_now">Szinkronizálás most</string>
+  <string name="account_synchronizing_now">Szinkronizálás</string>
+  <string name="account_settings">Fiókbeállítások</string>
+  <string name="account_delete">Fiók törlése</string>
+  <string name="account_delete_confirmation_title">Valóban törölni akarja a fiókot?</string>
+  <string name="account_delete_confirmation_text">Az összes címjegyzék, naptár és feladatlista helyi példányai törölve lesznek.</string>
+  <string name="account_refresh_address_book_list">Címjegyzék-lista frissítése</string>
+  <string name="account_create_new_address_book">Új címjegyzék létrehozása</string>
+  <string name="account_refresh_calendar_list">Naptárlista frissítése</string>
+  <string name="account_create_new_calendar">Új naptár létrehozása</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">DAVdroid engedélyek </string>
+  <string name="permissions_calendar">Naptárengedély</string>
+  <string name="permissions_calendar_details">A CalDAV naptárak és a helyi naptárak szinkronizálásához a DAVdroid naptárhozzáférést igényel.</string>
+  <string name="permissions_calendar_request">Naptárhozzáférés igénylése</string>
+  <string name="permissions_contacts">Névjegyengedélyek</string>
+  <string name="permissions_contacts_details">A CardDAV címlisták és a helyi címlisták szinkronizálásához a névjegyhozzáférést igényel.</string>
+  <string name="permissions_contacts_request">Névjegyengedélyek igénylése</string>
+  <string name="permissions_opentasks">OpenTasks engedélyek</string>
+  <string name="permissions_opentasks_details">A CalDAV feladatlisták és a helyi feladatlisták szinkronizálásához a DAVdroid OpenTasks hozzáférést igényel.</string>
+  <string name="permissions_opentasks_request">OpenTasks engedélyek igénylése</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">Fiók hozzáadása</string>
+  <string name="login_type_email">Bejelentkezés email cím segítségével</string>
+  <string name="login_email_address">Email cím:</string>
+  <string name="login_email_address_error">Érvényes email cím megadása feltétlenül szükséges</string>
+  <string name="login_password">Jelszó</string>
+  <string name="login_password_required">A jelszó megadása szükséges</string>
+  <string name="login_type_url">Bejelentkezés URL és felhasználónév segítségével</string>
+  <string name="login_url_must_be_http_or_https">Az URL elején szerepeljen http(s)://</string>
+  <string name="login_url_host_name_required">A szervernév megadása feltétlenül szükséges</string>
+  <string name="login_user_name">Felhasználónév</string>
+  <string name="login_user_name_required">A felhasználónév megadása feltétlenül szükséges</string>
+  <string name="login_base_url">URL-törzs</string>
+  <string name="login_auth_preemptive">Preemptív authentikáció (ajánlott, de Digest authentikációval nem működik)</string>
+  <string name="login_login">Bejelentkezés</string>
+  <string name="login_back">Vissza</string>
+  <string name="login_create_account">Fiók létrehozása</string>
+  <string name="login_account_name">A fiók neve</string>
+  <string name="login_account_name_info">Használja az email címet fióknévként, mert később a létrehozandó események szervezőjeként (ORGANIZER mező) az Android ezt fogja használni. Két fiókot nem lehet azonos néven létrehozni.</string>
+  <string name="login_account_contact_group_method">A csoportok kezelésének módja:</string>
+  <string name="login_account_name_required">A fióknév megadása feltétlenül szükséges</string>
+  <string name="login_account_not_created">A fiók létrehozása nem sikerült</string>
+  <string name="login_configuration_detection">A konfiguráció felderítése</string>
+  <string name="login_querying_server">Kérjük, várjon, a szerver lekérdezése...</string>
+  <string name="login_no_caldav_carddav">Nem található CalDAV vagy CardDAV szolgáltatás.</string>
+  <string name="login_view_logs">Naplóbejegyzések megtekintése</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">Beállítások: %s</string>
+  <string name="settings_authentication">Authentikáció</string>
+  <string name="settings_username">Felhasználónév</string>
+  <string name="settings_enter_username">Adja meg a felhasználónevet:</string>
+  <string name="settings_password">Jelszó</string>
+  <string name="settings_password_summary">Adja meg a szerveren érvényes új jelszót.</string>
+  <string name="settings_enter_password">Adja meg a jelszót:</string>
+  <string name="settings_preemptive">Preemptív authentikáció</string>
+  <string name="settings_preemptive_on">A hitelesítő adatok elküldése minden kérésnél (ajánlott)</string>
+  <string name="settings_preemptive_off">A hitelesítő adatok elküldése, csak ha a szerver azt igényli</string>
+  <string name="settings_sync">Szinkronizálás</string>
+  <string name="settings_sync_interval_contacts">Névjegyszinkronizálás sűrűsége</string>
+  <string name="settings_sync_summary_manually">Manuális</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Minden %d percben + az eszközön történt módosítás után</string>
+  <string name="settings_sync_summary_not_available">Nem elérhető</string>
+  <string name="settings_sync_interval_calendars">Naptárszinkronizálás sűrűsége</string>
+  <string name="settings_sync_interval_tasks">Feladatlisták szinkronizálásának sűrűsége</string>
+  <string-array name="settings_sync_interval_seconds">
+    <item>-1</item>
+    <item>300</item>
+    <item>600</item>
+    <item>900</item>
+    <item>3600</item>
+    <item>7200</item>
+    <item>14400</item>
+    <item>86400</item>
+  </string-array>
+  <string-array name="settings_sync_interval_names">
+    <item>Manuális</item>
+    <item>5 percenként</item>
+    <item>10 percenként</item>
+    <item>15 percenként</item>
+    <item>Óránként</item>
+    <item>2 óránként</item>
+    <item>4 óránként</item>
+    <item>Naponta</item>
+  </string-array>
+  <string name="settings_sync_wifi_only">Szinkronizálás csak WIFI-n</string>
+  <string name="settings_sync_wifi_only_on">Csak WIFI kapcsolat keresztül történjen szinkronizálás</string>
+  <string name="settings_sync_wifi_only_off">Szinkronizálás a kapcsolat típusától függetlenül</string>
+  <string name="settings_sync_wifi_only_ssid">WIFI SSID szűkítés</string>
+  <string name="settings_sync_wifi_only_ssid_on">Szinkronizálás csak a(z) %s hálózatra kapcsolódva</string>
+  <string name="settings_sync_wifi_only_ssid_off">Szinkronizálás bármely WIFI hálózaton</string>
+  <string name="settings_sync_wifi_only_ssid_message">Adja meg a WIFI hálózat nevét (SSID) a szinkronizálás egy hálózatra való korlátozához, vagy hagyja üresen, ha nem akar ilyen szűkítést.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">A csoportok kezelésének módja</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Minden csoport egy különálló VCard</item>
+    <item>A csoportok a kapcsolatonkéni kategóriák</item>
+  </string-array>
+  <string name="settings_rfc6868_for_vcards">RFC6868 szabványnak megfelelő VCards használata</string>
+  <string name="settings_rfc6868_for_vcards_on">A paraméterértékek tartalmazhatnak idézőjelet</string>
+  <string name="settings_rfc6868_for_vcards_off">A paraméterértékek nem tartalmazhatnak idézőjelet</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Múltbéli események időkorlátja</string>
+  <string name="settings_sync_time_range_past_none">Minden esemény szinkronizálása</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Az egy napnál régebbi események figyelmen kívül hagyása</item>
+    <item quantity="other">A %d napnál régebbi események figyelmen kívül hagyása</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Az ennyi napnál (lehet 0) régebbi események figyelmen kívül lesznek hagyva.  Hagyja üresen, ha minden múltbéli eseményt szinkronizálni akar.</string>
+  <string name="settings_manage_calendar_colors">Naptárszínek kezelése</string>
+  <string name="settings_manage_calendar_colors_on">A naptárszíneket a DAVdroid kezeli</string>
+  <string name="settings_manage_calendar_colors_off">A naptárszíneket nem a DAVdroid kezeli</string>
+  <string name="settings_version_update">DAVdroid frissítése</string>
+  <string name="settings_version_update_settings_updated">A belső beállítások frissítve lettek.</string>
+  <string name="settings_version_update_install_hint">Probléma?  Próbálja meg törölni majd újratelepíteni a DAVdroid-ot.</string>
+  <!--collection management-->
+  <string name="create_addressbook">Címjegyzék létrehozása</string>
+  <string name="create_addressbook_display_name_hint">Új címjegyzék</string>
+  <string name="create_calendar">CalDAV gyűjtemény létrehozása</string>
+  <string name="create_calendar_display_name_hint">Új naptár</string>
+  <string name="create_calendar_time_zone">Időzóna:</string>
+  <string name="create_calendar_type">Gyűjtemény típusa:</string>
+  <string name="create_calendar_type_only_events">Naptár (csak események)</string>
+  <string name="create_calendar_type_only_tasks">Feladatlista (csak feladatok)</string>
+  <string name="create_calendar_type_events_and_tasks">Kombinált (események és feladatok)</string>
+  <string name="create_collection_color">A gyűjtemény színének kiválasztása</string>
+  <string name="create_collection_creating">Gyűjtemény létrehozása</string>
+  <string name="create_collection_display_name">A gyűjtemény megnevezése (címe)</string>
+  <string name="create_collection_display_name_required">A cím megadása feltétlenül szükséges</string>
+  <string name="create_collection_description">Leírás (opcionális):</string>
+  <string name="create_collection_home_set">Gyűjtemények tárolója:</string>
+  <string name="create_collection_create">Létrehozás</string>
+  <string name="delete_collection">Gyűjtemény törlése</string>
+  <string name="delete_collection_confirm_title">Biztos?</string>
+  <string name="delete_collection_confirm_warning">A gyűjtemény (%s) és a hozzá tartozó adatok törölve lesznek a szerverről.</string>
+  <string name="delete_collection_deleting_collection">Gyűjtemény törlése</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">Hiba történt.</string>
+  <string name="exception_httpexception">HTTP hiba történt.</string>
+  <string name="exception_ioexception">I/O hiba történt.</string>
+  <string name="exception_show_details">Részletek megjelenítése</string>
+  <!--sync errors and DebugInfoActivity-->
+  <string name="debug_info_title">Hibakeresési információ</string>
+  <string name="sync_error_permissions">DAVdroid engedélyek </string>
+  <string name="sync_error_permissions_text">További engedélyek szükségesek</string>
+  <string name="sync_error_calendar">A naptár szinkronizálása nem sikerült (%s)</string>
+  <string name="sync_error_contacts">A címjegyzék szinkronizálása nem sikerült (%s)</string>
+  <string name="sync_error_tasks">A feladatok szinkronizálása nem sikerült (%s)</string>
+  <string name="sync_error">Hiba az alábbi művelet közben: %s</string>
+  <string name="sync_error_http_dav">Szerver oldali hiba az alábbi művelet közben: %s</string>
+  <string name="sync_error_local_storage">Adatbázishiba az alábbi művelet közben: %s</string>
+  <string-array name="sync_error_phases">
+    <item>szinkronizáció előkészítése </item>
+    <item>szerver képességeinek lekérdezése</item>
+    <item>a helyben törölt bejegyzések feldolgozása</item>
+    <item>az új vagy módosított bejegyzések gyűjtése </item>
+    <item>az új vagy módosított bejegyzések feltöltése</item>
+    <item>szinkronizációs állapot ellenőrzése</item>
+    <item>helyi bejegyzések listázása</item>
+    <item>távoli bejegyzések listázása</item>
+    <item>helyi és távoli bejegyzések összehasonlítása</item>
+    <item>távoli bejegyzések letöltése</item>
+    <item>utófeldolgozás</item>
+    <item>szinkronizációs állapot mentése</item>
+  </string-array>
+  <string name="sync_error_unauthorized">A felhasználónév vagy jelszó hibás</string>
+</resources>

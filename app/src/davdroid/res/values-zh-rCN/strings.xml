@@ -1,0 +1,238 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="help">帮助</string>
+  <string name="manage_accounts">管理账户</string>
+  <string name="please_wait">请稍等...</string>
+  <string name="send">发送</string>
+  <!--startup dialogs-->
+  <string name="startup_dont_show_again">不再显示</string>
+  <string name="startup_development_version">DAVdroid 预览版</string>
+  <string name="startup_development_version_message">这是 DAVdroid 的开发版本，部分功能可能无法正常工作。请您提出建设性反馈，帮助我们完善 DAVdroid。</string>
+  <string name="startup_development_version_give_feedback">反馈</string>
+  <string name="startup_donate">开源信息</string>
+  <string name="startup_donate_message">欢迎使用 DAVdroid，这是一款开源软件 (GPLv3)。开发 DAVdroid 的工作花费了数千小时，请您考虑捐助我们。</string>
+  <string name="startup_donate_now">显示捐助页面</string>
+  <string name="startup_donate_later">稍后提示</string>
+  <string name="startup_google_play_accounts_removed">Play 商店 DRM 问题提醒</string>
+  <string name="startup_google_play_accounts_removed_message">在部分情况下，Play 商店的 DRM 可能会导致所有 DAVdroid 账户在设备重启或升级 DAVdroid 后消失。如果你遇到了该问题（并且只有这一问题），请从 Play 商店安装“DAVdroid JB Workaround”。</string>
+  <string name="startup_google_play_accounts_removed_more_info">更多信息</string>
+  <string name="startup_opentasks_not_installed">OpenTasks 未安装</string>
+  <string name="startup_opentasks_not_installed_message">未安装 OpenTasks 应用，故 DAVdroid 无法同步任务列表。</string>
+  <string name="startup_opentasks_reinstall_davdroid">安装 OpenTasks 后，由于 Android 的限制，请重新安装 DAVdroid 并重新创建账户。</string>
+  <string name="startup_opentasks_not_installed_install">安装 OpenTasks</string>
+  <!--AboutActivity-->
+  <string name="about_license_terms">许可协议</string>
+  <string name="about_license_info_no_warranty">本程序不附带任何担保。这是一款自由软件，你可以有条件地传播它。</string>
+  <!--global settings-->
+  <string name="logging_davdroid_file_logging">DAVdroid 文件日志</string>
+  <string name="logging_to_external_storage">记录日志到外部存储 %s</string>
+  <string name="logging_to_external_storage_warning">请尽快删除日志！</string>
+  <string name="logging_couldnt_create_file">无法创建外部日志文件 %s</string>
+  <string name="logging_no_external_storage">找不到外部存储</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_open">打开导航抽屉</string>
+  <string name="navigation_drawer_close">关闭导航抽屉</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV 同步器</string>
+  <string name="navigation_drawer_about">关于 / 许可</string>
+  <string name="navigation_drawer_settings">设置</string>
+  <string name="navigation_drawer_news_updates">最新消息</string>
+  <string name="navigation_drawer_external_links">外部网站</string>
+  <string name="navigation_drawer_website">应用网站</string>
+  <string name="navigation_drawer_faq">常见问题</string>
+  <string name="navigation_drawer_forums">社区</string>
+  <string name="navigation_drawer_donate">捐助</string>
+  <string name="account_list_empty">欢迎使用 DAVdroid！\n\n现在你可以增加 CalDAV/CardDAV 账户。</string>
+  <!--DavService-->
+  <string name="dav_service_refresh_failed">服务配置检测失败</string>
+  <string name="dav_service_refresh_couldnt_refresh">无法刷新集合列表</string>
+  <!--AppSettingsActivity-->
+  <string name="app_settings">设置</string>
+  <string name="app_settings_user_interface">用户界面</string>
+  <string name="app_settings_reset_hints">重设提示</string>
+  <string name="app_settings_reset_hints_summary">重新显示之前忽略过的提示</string>
+  <string name="app_settings_reset_hints_success">所有提示将会再次显示</string>
+  <string name="app_settings_security">安全</string>
+  <string name="app_settings_reset_trusted_certificates">重设受信任证书</string>
+  <string name="app_settings_reset_trusted_certificates_summary">取消信任所有之前接受的证书</string>
+  <plurals name="app_settings_reset_trusted_certificates_success">
+    <item quantity="other">已删除 %d 个证书</item>
+  </plurals>
+  <string name="app_settings_debug">调试</string>
+  <string name="app_settings_log_to_external_storage">外部文件日志</string>
+  <string name="app_settings_log_to_external_storage_on">记录日志到外部存储（如果可用）</string>
+  <string name="app_settings_log_to_external_storage_off">外部文件日志已禁用</string>
+  <string name="app_settings_show_debug_info">显示调试信息</string>
+  <string name="app_settings_show_debug_info_details">查看软件和配置信息</string>
+  <!--AccountActivity-->
+  <string name="account_synchronize_now"> 立即同步</string>
+  <string name="account_synchronizing_now">正在同步</string>
+  <string name="account_settings">账户设置</string>
+  <string name="account_delete">删除账户</string>
+  <string name="account_delete_confirmation_title">真的要删除账户吗？</string>
+  <string name="account_delete_confirmation_text">所有通讯录、日历和任务列表的本机存储将被删除。</string>
+  <string name="account_refresh_address_book_list">刷新通讯录列表</string>
+  <string name="account_create_new_address_book">创建通讯录</string>
+  <string name="account_refresh_calendar_list">刷新日历列表</string>
+  <string name="account_create_new_calendar">创建日历</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">DAVdroid 权限</string>
+  <string name="permissions_calendar">日历权限</string>
+  <string name="permissions_calendar_details">要把 CalDAV 事件与本地日历同步，DAVdroid 需要日历权限。</string>
+  <string name="permissions_calendar_request">请求日历权限</string>
+  <string name="permissions_contacts">通讯录权限</string>
+  <string name="permissions_contacts_details">要把 CardDAV 通讯录与本地通讯录同步，DAVdroid 需要通讯录权限。</string>
+  <string name="permissions_contacts_request">请求通讯录权限</string>
+  <string name="permissions_opentasks">OpenTasks 权限</string>
+  <string name="permissions_opentasks_details">要把 CalDAV 任务与本地任务列表同步，DAVdroid 需要访问 OpenTasks。</string>
+  <string name="permissions_opentasks_request">请求 OpenTasks 权限</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">增加账户</string>
+  <string name="login_type_email">使用邮箱地址登录</string>
+  <string name="login_email_address">Email 地址</string>
+  <string name="login_email_address_error">请输入有效 Email 地址</string>
+  <string name="login_password">密码</string>
+  <string name="login_password_required">请输入密码</string>
+  <string name="login_type_url">使用 URL 和用户名登录</string>
+  <string name="login_url_must_be_http_or_https">URL 必须以 http(s):// 为开头</string>
+  <string name="login_url_host_name_required">请输入主机名</string>
+  <string name="login_user_name">用户名</string>
+  <string name="login_user_name_required">请输入用户名</string>
+  <string name="login_base_url">根地址</string>
+  <string name="login_auth_preemptive">强制认证模式（推荐使用，但不兼容 Digest 认证方式）</string>
+  <string name="login_login">登录</string>
+  <string name="login_back">返回</string>
+  <string name="login_create_account">创建账户</string>
+  <string name="login_account_name">账户显示名</string>
+  <string name="login_account_name_info">请使用你的邮箱地址作为帐户名，因为 Android 会将你创建的日历事件的创建者项设置为帐户名。你不能拥有多个帐户名相同的账户。</string>
+  <string name="login_account_contact_group_method">联系人分组方式</string>
+  <string name="login_account_name_required">请输入账户名</string>
+  <string name="login_account_not_created">账户无法创建</string>
+  <string name="login_configuration_detection">正在配置</string>
+  <string name="login_querying_server">正在与服务器通信，请稍等...</string>
+  <string name="login_no_caldav_carddav">找不到 CalDAV 或 CardDAV 服务。</string>
+  <string name="login_view_logs">查看日志</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">设置：%s</string>
+  <string name="settings_authentication">认证</string>
+  <string name="settings_username">用户名</string>
+  <string name="settings_enter_username">输入用户名</string>
+  <string name="settings_password">密码</string>
+  <string name="settings_password_summary">修改服务器密码</string>
+  <string name="settings_enter_password">输入密码</string>
+  <string name="settings_preemptive">强制认证模式</string>
+  <string name="settings_preemptive_on">认证信息在每次请求中发送（推荐）</string>
+  <string name="settings_preemptive_off">认证信息在服务器要求后才发送</string>
+  <string name="settings_sync">同步</string>
+  <string name="settings_sync_interval_contacts">通讯录自动同步间隔</string>
+  <string name="settings_sync_summary_manually">手动同步</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">每 %d 分钟或本地修改后</string>
+  <string name="settings_sync_summary_not_available">不可用</string>
+  <string name="settings_sync_interval_calendars">日历自动同步间隔</string>
+  <string name="settings_sync_interval_tasks">任务自动同步间隔</string>
+  <string-array name="settings_sync_interval_seconds">
+    <item>-1</item>
+    <item>300</item>
+    <item>600</item>
+    <item>900</item>
+    <item>3600</item>
+    <item>7200</item>
+    <item>14400</item>
+    <item>86400</item>
+  </string-array>
+  <string-array name="settings_sync_interval_names">
+    <item>手动同步</item>
+    <item>每 5 分钟</item>
+    <item>每 10 分钟</item>
+    <item>每 15 分钟</item>
+    <item>每 1 小时</item>
+    <item>每 2 小时</item>
+    <item>每 4 小时</item>
+    <item>每 24 小时</item>
+  </string-array>
+  <string name="settings_sync_wifi_only">只在 WiFi 下同步</string>
+  <string name="settings_sync_wifi_only_on">同步只在 WiFi 连接下进行</string>
+  <string name="settings_sync_wifi_only_off">同步不受数据连接类型限制</string>
+  <string name="settings_sync_wifi_only_ssid">WiFi SSID 限制</string>
+  <string name="settings_sync_wifi_only_ssid_on">同步只在 %s 网络下进行</string>
+  <string name="settings_sync_wifi_only_ssid_off">任何 WiFi 网络下均会同步</string>
+  <string name="settings_sync_wifi_only_ssid_message">输入 WiFi 网络的名称 (SSID) ，即可限制同步只在此网络下进行。留空则不限制。</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">联系人分组方式</string>
+  <string-array name="settings_contact_group_method_values">
+    <item>GROUP_VCARDS</item>
+    <item>CATEGORIES</item>
+  </string-array>
+  <string-array name="settings_contact_group_method_entries">
+    <item>分为不同的 VCards</item>
+    <item>每个联系人的分类</item>
+  </string-array>
+  <string name="settings_rfc6868_for_vcards">为 VCards 启用 RFC6868</string>
+  <string name="settings_rfc6868_for_vcards_on">属性值中可使用双引号</string>
+  <string name="settings_rfc6868_for_vcards_off">属性值中不可使用双引号</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">旧日程时间限制</string>
+  <string name="settings_sync_time_range_past_none">同步所有日程</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="other">%d 天前的日程不会被同步</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">超过这个数字的天数的旧日程将会被忽略（可以为 0）。留空则同步所有日程。</string>
+  <string name="settings_manage_calendar_colors">管理日历颜色</string>
+  <string name="settings_manage_calendar_colors_on">日历颜色由 DAVdroid 设置</string>
+  <string name="settings_manage_calendar_colors_off">日历颜色不由 DAVdroid 设置</string>
+  <string name="settings_version_update">DAVdroid 版本升级</string>
+  <string name="settings_version_update_settings_updated">应用设置已更新。</string>
+  <string name="settings_version_update_install_hint">出现问题了？请卸载 DAVdroid，再重新安装。</string>
+  <!--collection management-->
+  <string name="create_addressbook">创建通讯录</string>
+  <string name="create_addressbook_display_name_hint">我的通讯录</string>
+  <string name="create_calendar">创建 CalDAV 集合</string>
+  <string name="create_calendar_display_name_hint">我的日历</string>
+  <string name="create_calendar_time_zone">时区</string>
+  <string name="create_calendar_type">集合类型</string>
+  <string name="create_calendar_type_only_events">日历（只有日程）</string>
+  <string name="create_calendar_type_only_tasks">任务列表（只有任务）</string>
+  <string name="create_calendar_type_events_and_tasks">混合（日程和任务）</string>
+  <string name="create_collection_color">设置集合颜色</string>
+  <string name="create_collection_creating">正在创建集合</string>
+  <string name="create_collection_display_name">集合显示名称（标题）</string>
+  <string name="create_collection_display_name_required">请输入标题</string>
+  <string name="create_collection_description">简介（可选）</string>
+  <string name="create_collection_home_set">主集合</string>
+  <string name="create_collection_create">创建</string>
+  <string name="delete_collection">删除集合</string>
+  <string name="delete_collection_confirm_title">你确定吗？</string>
+  <string name="delete_collection_confirm_warning">这个集合 %s 及其所有数据将会从服务器删除。</string>
+  <string name="delete_collection_deleting_collection">正在删除集合</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">出现错误</string>
+  <string name="exception_httpexception">出现 HTTP 错误</string>
+  <string name="exception_ioexception">出现 I/O 错误</string>
+  <string name="exception_show_details">显示详情</string>
+  <!--sync errors and DebugInfoActivity-->
+  <string name="debug_info_title">调试信息</string>
+  <string name="sync_error_permissions">DAVdroid 权限</string>
+  <string name="sync_error_permissions_text">需要额外权限</string>
+  <string name="sync_error_calendar">日历同步失败（%s）</string>
+  <string name="sync_error_contacts">通讯录同步失败（%s）</string>
+  <string name="sync_error_tasks">任务同步失败（%s）</string>
+  <string name="sync_error">%s时错误</string>
+  <string name="sync_error_http_dav">%s时服务器错误</string>
+  <string name="sync_error_local_storage">%s时数据库错误</string>
+  <string-array name="sync_error_phases">
+    <item>准备同步</item>
+    <item>请求功能列表</item>
+    <item>处理本地删除项目</item>
+    <item>准备创建/修改项目</item>
+    <item>上传创建/修改项目</item>
+    <item>检查同步状态</item>
+    <item>检查本地数据</item>
+    <item>检查远程数据</item>
+    <item>比较本地和远程数据</item>
+    <item>下载远程数据</item>
+    <item>预处理</item>
+    <item>保存同步状态</item>
+  </string-array>
+  <string name="sync_error_unauthorized">用户名或密码错误</string>
+</resources>
