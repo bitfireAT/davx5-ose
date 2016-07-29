@@ -64,7 +64,7 @@ public class StartupDialogFragment extends DialogFragment {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP &&    // only on Android <5
                     settings.getBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, true))      // and only when "Don't show again" hasn't been clicked yet
                     dialogs.add(StartupDialogFragment.instantiate(Mode.GOOGLE_PLAY_ACCOUNTS_REMOVED));
-            } else {
+            } else if (BuildConfig.FLAVOR == App.FLAVOR_STANDARD) {
                 // other stores
                 final String installedFrom = installedFrom(context);
                 if (installedFrom == null || installedFrom.startsWith("org.fdroid"))
@@ -100,7 +100,7 @@ public class StartupDialogFragment extends DialogFragment {
         switch (mode) {
             case DEVELOPMENT_VERSION:
                 return new AlertDialog.Builder(getActivity())
-                        .setIcon(R.drawable.ic_launcher)
+                        .setIcon(R.drawable.ic_logo)
                         .setTitle(R.string.startup_development_version)
                         .setMessage(R.string.startup_development_version_message)
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -119,7 +119,7 @@ public class StartupDialogFragment extends DialogFragment {
             case FDROID_DONATE:
                 if (BuildConfig.FLAVOR != App.FLAVOR_GOOGLE_PLAY)
                     return new AlertDialog.Builder(getActivity())
-                            .setIcon(R.drawable.ic_launcher)
+                            .setIcon(R.drawable.ic_logo)
                             .setTitle(R.string.startup_donate)
                             .setMessage(R.string.startup_donate_message)
                             .setPositiveButton(R.string.startup_donate_now, new DialogInterface.OnClickListener() {

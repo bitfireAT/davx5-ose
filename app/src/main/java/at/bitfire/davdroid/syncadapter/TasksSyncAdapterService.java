@@ -58,9 +58,7 @@ public class TasksSyncAdapterService extends SyncAdapterService {
         }
 
         @Override
-        public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient providerClient, SyncResult syncResult) {
-            super.onPerformSync(account, extras, authority, providerClient, syncResult);
-
+        public void sync(Account account, Bundle extras, String authority, ContentProviderClient providerClient, SyncResult syncResult) {
             try {
                 @Cleanup TaskProvider provider = TaskProvider.acquire(getContext().getContentResolver(), TaskProvider.ProviderName.OpenTasks);
                 if (provider == null)

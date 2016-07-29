@@ -29,6 +29,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
+//import com.android.vending.billing.IInAppBillingService;
+
+import org.apache.commons.collections4.IteratorUtils;
+
+import java.util.List;
+import java.util.ServiceLoader;
 import java.util.logging.Level;
 
 import at.bitfire.davdroid.AccountSettings;
@@ -50,16 +56,39 @@ public abstract class SyncAdapterService extends Service {
 
     public static abstract class SyncAdapter extends AbstractThreadedSyncAdapter {
 
+        private static final ServiceLoader<ISyncPlugin> syncPluginLoader = ServiceLoader.load(ISyncPlugin.class);
+        private static final List<ISyncPlugin> syncPlugins = IteratorUtils.toList(syncPluginLoader.iterator());
+
+
         public SyncAdapter(Context context) {
             super(context, false);
+
+            for (ISyncPlugin plugin : syncPlugins)
+                App.log.info("Registered sync plugin: " + plugin.getClass().getName());
         }
+
+        abstract void sync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult);
 
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
             App.log.info("Sync for " + authority + " has been initiated");
 
             // required for dav4android (ServiceLoader)
-            Thread.currentThread().setContextClassLoader(getContext().getClassLoader());
+            final Context context = getContext();
+            Thread.currentThread().setContextClassLoader(context.getClassLoader());
+
+            boolean runSync = true;
+            for (ISyncPlugin plugin : syncPlugins)
+                if (!plugin.beforeSync(context))
+                    runSync = false;
+
+            if (runSync)
+                sync(account, extras, authority, provider, syncResult);
+
+            for (ISyncPlugin plugin : syncPlugins)
+                plugin.afterSync(context);
+
+            App.log.info("Sync for " + authority + " complete");
         }
 
         @Override
@@ -72,7 +101,7 @@ public abstract class SyncAdapterService extends Service {
 
             Notification notify = new NotificationCompat.Builder(getContext())
                     .setSmallIcon(R.drawable.ic_error_light)
-                    .setLargeIcon(((BitmapDrawable)getContext().getResources().getDrawable(R.drawable.ic_launcher)).getBitmap())
+                    .setLargeIcon(((BitmapDrawable)getContext().getResources().getDrawable(R.drawable.ic_logo)).getBitmap())
                     .setContentTitle(getContext().getString(R.string.sync_error_permissions))
                     .setContentText(getContext().getString(R.string.sync_error_permissions_text))
                     .setContentIntent(PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT))

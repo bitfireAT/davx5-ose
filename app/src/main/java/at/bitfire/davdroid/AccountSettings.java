@@ -119,8 +119,8 @@ public class AccountSettings {
             if (version < CURRENT_VERSION) {
                 Bitmap bitmapLogo = null;
                 Drawable drawableLogo = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP ?
-                        context.getDrawable(R.drawable.ic_launcher) :
-                        context.getResources().getDrawable(R.drawable.ic_launcher);
+                        context.getDrawable(R.drawable.ic_logo) :
+                        context.getResources().getDrawable(R.drawable.ic_logo);
                 if (drawableLogo instanceof BitmapDrawable)
                     bitmapLogo = ((BitmapDrawable)drawableLogo).getBitmap();
 
@@ -450,7 +450,7 @@ public class AccountSettings {
 
             // peek into AccountSettings to initiate a possible migration
             AccountManager accountManager = AccountManager.get(context);
-            for (Account account : accountManager.getAccountsByType(Constants.ACCOUNT_TYPE))
+            for (Account account : accountManager.getAccountsByType(context.getString(R.string.account_type)))
                 try {
                     App.log.info("Checking account " + account.name);
                     new AccountSettings(context, account);

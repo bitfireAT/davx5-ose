@@ -11,9 +11,6 @@ import android.net.Uri;
 
 public class Constants {
 
-	public static final String
-		ACCOUNT_TYPE = "bitfire.at.davdroid";
-
     // notification IDs
     public final static int
             NOTIFICATION_ACCOUNT_SETTINGS_UPDATED = 0,
@@ -22,8 +19,11 @@ public class Constants {
             NOTIFICATION_CONTACTS_SYNC = 10,
             NOTIFICATION_CALENDAR_SYNC = 11,
             NOTIFICATION_TASK_SYNC = 12,
-            NOTIFICATION_PERMISSIONS = 20;
+            NOTIFICATION_PERMISSIONS = 20,
+            NOTIFICATION_SUBSCRIPTION = 21;
 
-    public static final Uri webUri = Uri.parse("https://davdroid.bitfire.at/?pk_campaign=davdroid-app");
+    public static final Uri webUri = BuildConfig.FLAVOR == App.FLAVOR_ICLOUD ?
+            Uri.parse("https://multisync.cloud/?pk_campaign=davdroid-app") :
+            Uri.parse("https://davdroid.bitfire.at/?pk_campaign=davdroid-app");
 
 }

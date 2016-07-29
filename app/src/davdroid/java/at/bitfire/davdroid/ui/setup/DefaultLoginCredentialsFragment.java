@@ -10,6 +10,7 @@ package at.bitfire.davdroid.ui.setup;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +33,7 @@ import at.bitfire.dav4android.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.ui.widget.EditPassword;
 
-public class LoginCredentialsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
+public class DefaultLoginCredentialsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
 
     RadioButton radioUseEmail;
     LinearLayout emailDetails;
@@ -46,6 +47,7 @@ public class LoginCredentialsFragment extends Fragment implements CompoundButton
     CheckBox checkPreemptiveAuth;
 
 
+    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.login_credentials_fragment, container, false);
@@ -163,6 +165,16 @@ public class LoginCredentialsFragment extends Fragment implements CompoundButton
         }
 
         return null;
+    }
+
+
+    public static class Factory implements LoginCredentialsFragment {
+
+        @Override
+        public Fragment getFragment() {
+            return new DefaultLoginCredentialsFragment();
+        }
+
     }
 
 }

@@ -29,7 +29,7 @@
 
     <!-- app theme -->
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="alertDialogTheme">@style/AppTheme.Dialog.Alert</item>
         <item name="colorPrimary">@color/light_green500</item>
         <item name="colorPrimaryDark">@color/light_green700</item>

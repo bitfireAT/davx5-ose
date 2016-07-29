@@ -14,10 +14,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ServiceLoader;
+
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 
 public class LoginActivity extends AppCompatActivity {
+
+    private static final ServiceLoader<ILoginCredentialsFragment> loginFragmentLoader = ServiceLoader.load(ILoginCredentialsFragment.class);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,9 +29,10 @@ public class LoginActivity extends AppCompatActivity {
 
         if (savedInstanceState == null)
             // first call, add fragment
-            getSupportFragmentManager().beginTransaction()
-                    .replace(android.R.id.content, new LoginCredentialsFragment())
-                    .commit();
+            for (ILoginCredentialsFragment fragment : loginFragmentLoader)
+                getSupportFragmentManager().beginTransaction()
+                        .replace(android.R.id.content, fragment.getFragment())
+                        .commit();
 
     }
 

@@ -104,7 +104,7 @@ public class AccountListFragment extends ListFragment implements LoaderManager.L
 
         @Override
         public Account[] loadInBackground() {
-            return accountManager.getAccountsByType(Constants.ACCOUNT_TYPE);
+            return accountManager.getAccountsByType(getContext().getString(R.string.account_type));
         }
     }
 
