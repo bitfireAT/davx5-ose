@@ -9,8 +9,6 @@
 package at.bitfire.davdroid.ui;
 
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -23,13 +21,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
-import at.bitfire.davdroid.App;
-import at.bitfire.davdroid.BuildConfig;
-import at.bitfire.davdroid.Constants;
+import java.util.ServiceLoader;
+
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.ui.setup.LoginActivity;
 
 public class AccountsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final ServiceLoader<IAccountsDrawerHandler> serviceLoader = ServiceLoader.load(IAccountsDrawerHandler.class);
+    private static final IAccountsDrawerHandler accountsDrawerHandler = serviceLoader.iterator().next();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,34 +76,12 @@ public class AccountsActivity extends AppCompatActivity implements NavigationVie
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.nav_about:
-                startActivity(new Intent(this, AboutActivity.class));
-                break;
-            case R.id.nav_app_settings:
-                startActivity(new Intent(this, AppSettingsActivity.class));
-                break;
-            case R.id.nav_twitter:
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/davdroidapp")));
-                break;
-            case R.id.nav_website:
-                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri));
-                break;
-            case R.id.nav_faq:
-                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("faq/").build()));
-                break;
-            case R.id.nav_forums:
-                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("forums/").build()));
-                break;
-            case R.id.nav_donate:
-                if (BuildConfig.FLAVOR != App.FLAVOR_GOOGLE_PLAY)
-                    startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("donate/").build()));
-                break;
-        }
+        boolean processed = accountsDrawerHandler.onNavigationItemSelected(this, item);
 
         DrawerLayout drawer = (DrawerLayout)findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
+
+        return processed;
     }
 
 }

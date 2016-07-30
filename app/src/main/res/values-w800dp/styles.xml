@@ -9,8 +9,6 @@
 
 <resources>
 
-    <!-- AddAccountActivity -->
-
     <style name="account_list_card">
         <item name="android:layout_width">600dp</item>
     </style>
