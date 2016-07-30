@@ -168,7 +168,7 @@ public class DefaultLoginCredentialsFragment extends Fragment implements Compoun
     }
 
 
-    public static class Factory implements LoginCredentialsFragment {
+    public static class Factory implements ILoginCredentialsFragment {
 
         @Override
         public Fragment getFragment() {
