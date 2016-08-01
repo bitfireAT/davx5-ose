@@ -8,12 +8,18 @@
 
 package at.bitfire.davdroid;
 
+import android.annotation.TargetApi;
 import android.app.Application;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
@@ -94,7 +100,7 @@ public class App extends Application {
         if (logToFile) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
             builder .setSmallIcon(R.drawable.ic_sd_storage_light)
-                    .setLargeIcon(((BitmapDrawable)getResources().getDrawable(R.drawable.ic_launcher)).getBitmap())
+                    .setLargeIcon(getLauncherBitmap(this))
                     .setContentTitle(getString(R.string.logging_davdroid_file_logging))
                     .setLocalOnly(true);
 
@@ -128,6 +134,18 @@ public class App extends Application {
             nm.notify(Constants.NOTIFICATION_EXTERNAL_FILE_LOGGING, builder.build());
         } else
             nm.cancel(Constants.NOTIFICATION_EXTERNAL_FILE_LOGGING);
+    }
+
+    @Nullable
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public static Bitmap getLauncherBitmap(@NonNull Context context) {
+        Bitmap bitmapLogo = null;
+        Drawable drawableLogo = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP ?
+                context.getDrawable(R.drawable.ic_launcher) :
+                context.getResources().getDrawable(R.drawable.ic_launcher);
+        if (drawableLogo instanceof BitmapDrawable)
+            bitmapLogo = ((BitmapDrawable)drawableLogo).getBitmap();
+        return bitmapLogo;
     }
 
 

@@ -72,7 +72,7 @@ public abstract class SyncAdapterService extends Service {
 
             Notification notify = new NotificationCompat.Builder(getContext())
                     .setSmallIcon(R.drawable.ic_error_light)
-                    .setLargeIcon(((BitmapDrawable)getContext().getResources().getDrawable(R.drawable.ic_launcher)).getBitmap())
+                    .setLargeIcon(App.getLauncherBitmap(getContext()))
                     .setContentTitle(getContext().getString(R.string.sync_error_permissions))
                     .setContentText(getContext().getString(R.string.sync_error_permissions_text))
                     .setContentIntent(PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT))

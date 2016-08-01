@@ -126,7 +126,7 @@ public class AccountSettings {
 
                 Notification notify = new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_new_releases_light)
-                        .setLargeIcon(bitmapLogo)
+                        .setLargeIcon(App.getLauncherBitmap(context))
                         .setContentTitle(context.getString(R.string.settings_version_update))
                         .setContentText(context.getString(R.string.settings_version_update_settings_updated))
                         .setSubText(context.getString(R.string.settings_version_update_install_hint))
