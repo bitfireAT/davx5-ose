@@ -312,7 +312,7 @@ public class DavService extends Service {
                 NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
                 Notification notify = new NotificationCompat.Builder(DavService.this)
                         .setSmallIcon(R.drawable.ic_error_light)
-                        .setLargeIcon(((BitmapDrawable)getResources().getDrawable(R.drawable.ic_launcher)).getBitmap())
+                        .setLargeIcon(App.getLauncherBitmap(DavService.this))
                         .setContentTitle(getString(R.string.dav_service_refresh_failed))
                         .setContentText(getString(R.string.dav_service_refresh_couldnt_refresh))
                         .setContentIntent(PendingIntent.getActivity(DavService.this, 0, debugIntent, PendingIntent.FLAG_UPDATE_CURRENT))
