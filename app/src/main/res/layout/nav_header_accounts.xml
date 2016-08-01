@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:src="@drawable/ic_logo"
+        android:src="@drawable/ic_launcher"
         tools:ignore="ContentDescription"/>
 
     <TextView
