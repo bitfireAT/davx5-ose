@@ -157,9 +157,13 @@ public class AccountDetailsFragment extends Fragment {
                 settings.setSyncInterval(CalendarContract.AUTHORITY, DEFAULT_SYNC_INTERVAL);
 
                 // enable task sync, if possible
-                if (Build.VERSION.SDK_INT >= 23 || LocalTaskList.tasksProviderAvailable(getContext())) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    /* since Android 23, it's possible to gain OpenTasks permissions dynamically, so
+                     * OpenTasks sync will be enabled by default. Setting the sync interval to "manually"
+                     * if OpenTasks is not installed avoids the "sync error" in Android settings / Accounts. */
                     ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
-                    settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, DEFAULT_SYNC_INTERVAL);
+                    settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority,
+                            LocalTaskList.tasksProviderAvailable(getContext()) ? DEFAULT_SYNC_INTERVAL : AccountSettings.SYNC_INTERVAL_MANUALLY);
                 } else
                     // Android <6 only: disable OpenTasks sync forever when OpenTasks is not installed
                     // because otherwise, there will be a non-catchable SecurityException as soon as OpenTasks is installed
