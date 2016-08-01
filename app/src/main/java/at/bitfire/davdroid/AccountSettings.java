@@ -117,16 +117,9 @@ public class AccountSettings {
             App.log.info("Account " + account.name + " has version " + version + ", current version: " + CURRENT_VERSION);
 
             if (version < CURRENT_VERSION) {
-                Bitmap bitmapLogo = null;
-                Drawable drawableLogo = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP ?
-                        context.getDrawable(R.drawable.ic_logo) :
-                        context.getResources().getDrawable(R.drawable.ic_logo);
-                if (drawableLogo instanceof BitmapDrawable)
-                    bitmapLogo = ((BitmapDrawable)drawableLogo).getBitmap();
-
                 Notification notify = new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_new_releases_light)
-                        .setLargeIcon(bitmapLogo)
+                        .setLargeIcon(App.getLauncherBitmap(context))
                         .setContentTitle(context.getString(R.string.settings_version_update))
                         .setContentText(context.getString(R.string.settings_version_update_settings_updated))
                         .setSubText(context.getString(R.string.settings_version_update_install_hint))
