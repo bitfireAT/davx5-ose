@@ -5,7 +5,7 @@ android=([ca]=ca [cs]=cs [da]=da [de]=de [es]=es [fr]=fr [hu]=hu [it]=it [ja]=ja
 
 for lang in ${!android[@]}
 do
-	target=../app/src/main/res/values-${android[$lang]}
+	target=../app/src/davdroid/res/values-${android[$lang]}
 	mkdir -p $target
 	curl -n "https://www.transifex.com/api/2/project/davdroid/resource/davdroid/translation/$lang?file" >$target/strings.xml
 done
