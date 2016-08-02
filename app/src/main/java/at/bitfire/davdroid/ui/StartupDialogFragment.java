@@ -17,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
@@ -37,13 +38,17 @@ import lombok.Cleanup;
 
 public class StartupDialogFragment extends DialogFragment {
     public static final String
+            HINT_BATTERY_OPTIMIZATIONS = "hint_BatteryOptimizations",
+            HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED = "hint_GooglePlayAccountsRemoved",
             HINT_OPENTASKS_NOT_INSTALLED = "hint_OpenTasksNotInstalled";
 
     private static final String ARGS_MODE = "mode";
 
     enum Mode {
+        BATTERY_OPTIMIZATIONS,
         DEVELOPMENT_VERSION,
         FDROID_DONATE,
+        GOOGLE_PLAY_ACCOUNTS_REMOVED,
         OPENTASKS_NOT_INSTALLED
     }
 
@@ -58,9 +63,15 @@ public class StartupDialogFragment extends DialogFragment {
         else
             dialogs.add(StartupDialogFragment.instantiate(Mode.FDROID_DONATE));
 
+        // battery optimization whitelisting
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && settings.getBoolean(HINT_BATTERY_OPTIMIZATIONS, true)) {
+            PowerManager powerManager = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
+            if (!powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID))
+                dialogs.add(StartupDialogFragment.instantiate(Mode.BATTERY_OPTIMIZATIONS));
+        }
+
         // OpenTasks information
-        if (!LocalTaskList.tasksProviderAvailable(context) &&
-                settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED, true))
+        if (!LocalTaskList.tasksProviderAvailable(context) && settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED, true))
             dialogs.add(StartupDialogFragment.instantiate(Mode.OPENTASKS_NOT_INSTALLED));
 
         Collections.reverse(dialogs);
@@ -84,6 +95,32 @@ public class StartupDialogFragment extends DialogFragment {
 
         Mode mode = Mode.valueOf(getArguments().getString(ARGS_MODE));
         switch (mode) {
+            case BATTERY_OPTIMIZATIONS:
+                return new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.startup_battery_optimization)
+                        .setMessage(R.string.startup_battery_optimization_message)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .setNeutralButton(R.string.startup_battery_optimization_disable, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                                        Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+                                getContext().startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton(R.string.startup_dont_show_again, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Settings settings = new Settings(dbHelper.getWritableDatabase());
+                                settings.putBoolean(HINT_BATTERY_OPTIMIZATIONS, false);
+                            }
+                        })
+                        .create();
+
             case DEVELOPMENT_VERSION:
                 return new AlertDialog.Builder(getActivity())
                         .setIcon(R.drawable.ic_launcher)

@@ -17,6 +17,9 @@
     <string name="send">Send</string>
 
     <!-- startup dialogs -->
+    <string name="startup_battery_optimization">Battery Optimization</string>
+    <string name="startup_battery_optimization_message">Android may disable/reduce DAVdroid synchronization after a few days. To prevent this, turn off battery optimization.</string>
+    <string name="startup_battery_optimization_disable">Turn off for DAVdroid</string>
     <string name="startup_dont_show_again">Don\'t show again</string>
     <string name="startup_development_version">DAVdroid Preview Release</string>
     <string name="startup_development_version_message">This is a development version of DAVdroid. Be aware that things may not work as expected. Please give us constructive feedback to improve DAVdroid.</string>
