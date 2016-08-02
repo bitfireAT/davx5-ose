@@ -107,6 +107,7 @@
   <string name="login_create_account">Maak een account</string>
   <string name="login_account_name">Accountnaam</string>
   <string name="login_account_name_info">Gebruik je email adres als account naam want Android zal je account naam gebruiken als ORGANIZER veld voor gemaakte afspraken. Je kunt geen 2 accounts met dezelfde naam hebben,</string>
+  <string name="login_account_contact_group_method">Contact groep methode:</string>
   <string name="login_account_name_required">Accountnaam vereist</string>
   <string name="login_account_not_created">Account kon niet gemaakt worden.</string>
   <string name="login_configuration_detection">Configuratie detectie</string>
@@ -158,6 +159,19 @@
   <string name="settings_sync_wifi_only_ssid_on">Zal alleen synchroniseren over %s</string>
   <string name="settings_sync_wifi_only_ssid_off">Alle WiFI verbindingen mogen worden gebruikt</string>
   <string name="settings_sync_wifi_only_ssid_message">Type de naam van het WiFi netwerk (SSID) om synchronisatie tot dit netwerk te beperken. Leeg laten voor sync over alle netwerken.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Contact groep methode</string>
+  <string-array name="settings_contact_group_method_values">
+    <item>GROEP_VCARDS</item>
+    <item>CATEGORIES</item>
+  </string-array>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Groepen zijn apparte VCards</item>
+    <item>Groepen zijn per-contact categories</item>
+  </string-array>
+  <string name="settings_rfc6868_for_vcards">Gebruik RFC6868 voor VCards</string>
+  <string name="settings_rfc6868_for_vcards_on">Aanhalingstekens kunnen worden gebruikt voor parameter waardes</string>
+  <string name="settings_rfc6868_for_vcards_off">Aanhalingstekens kunnen niet worden gebruikt voor parameter waardes</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tijdslimiet verleden afspraken</string>
   <string name="settings_sync_time_range_past_none">Alle afspraken worden gesynchronizeerd</string>
@@ -208,5 +222,19 @@
   <string name="sync_error">Fout tijdens %s</string>
   <string name="sync_error_http_dav">Serverfout tijdens %s</string>
   <string name="sync_error_local_storage">Database fout tijdens %s</string>
+  <string-array name="sync_error_phases">
+    <item>synchronisatie voorbereiden</item>
+    <item>querying mogelijkheden</item>
+    <item>verwerken van lokaal verwijderde data</item>
+    <item>voorberteiding maken/wijzigen data</item>
+    <item>uploaden maken/bewerken data</item>
+    <item>controleren syngronisatie voortgang</item>
+    <item>lijst lokale data</item>
+    <item>lijst remote data</item>
+    <item>vergelijken lokale/remote data</item>
+    <item>downloaden remote data</item>
+    <item>nabewerking</item>
+    <item>opslaan sync voortgang</item>
+  </string-array>
   <string name="sync_error_unauthorized">Gebruikersnaam/wachtwoord onjuist</string>
 </resources>

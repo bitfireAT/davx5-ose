@@ -7,6 +7,9 @@
   <string name="please_wait">Сачекајте…</string>
   <string name="send">Пошаљи</string>
   <!--startup dialogs-->
+  <string name="startup_battery_optimization">Оптимизација батерије</string>
+  <string name="startup_battery_optimization_message">Андроид може да искључи/умањи синхронизацију ДАВдроида након неколико дана. Да бисте спречили ово, искључите оптимизацију батерије.</string>
+  <string name="startup_battery_optimization_disable">Искључи за ДАВдроид</string>
   <string name="startup_dont_show_again">Не приказуј поново</string>
   <string name="startup_development_version">ДАВдроид прелиминарно издање</string>
   <string name="startup_development_version_message">Ово је развојно издање ДАВдроида. Имајте на уму да можда неће радити очекивано. Замољавамо вас за конструктивне повратне информације како бисмо га побољшали.</string>
