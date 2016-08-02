@@ -75,6 +75,7 @@ public class AppSettingsActivity extends AppCompatActivity {
         private void resetHints() {
             @Cleanup ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
             Settings settings = new Settings(dbHelper.getWritableDatabase());
+            settings.remove(StartupDialogFragment.HINT_BATTERY_OPTIMIZATIONS);
             settings.remove(StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED);
             settings.remove(StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED);
             Snackbar.make(getView(), R.string.app_settings_reset_hints_success, Snackbar.LENGTH_LONG).show();
