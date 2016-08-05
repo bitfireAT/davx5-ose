@@ -17,7 +17,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 24
 
-        versionCode 111
+        versionCode 112
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "useMTM", "false"
@@ -25,17 +25,17 @@ android {
 
     productFlavors {
         standard {
-            versionName "1.2.2"
+            versionName "1.2.3"
             buildConfigField "boolean", "useMTM", "true"
         }
         gplay {
-            versionName "1.2.2-gplay"
+            versionName "1.2.3-gplay"
             buildConfigField "boolean", "useMTM", "true"
         }
         icloud {
             //applicationId "at.bitfire.multisync.cloud"
             applicationId "at.bitfire.cloudsync"
-            versionName "1.2.2-cloud"
+            versionName "1.2.3-cloud"
         }
     }
 

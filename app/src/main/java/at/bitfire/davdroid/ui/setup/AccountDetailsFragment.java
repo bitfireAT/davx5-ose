@@ -158,16 +158,22 @@ public class AccountDetailsFragment extends Fragment {
 
                 // enable task sync, if possible
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    /* since Android 23, it's possible to gain OpenTasks permissions dynamically, so
+                    /* Android >=6, it's possible to gain OpenTasks permissions dynamically, so
                      * OpenTasks sync will be enabled by default. Setting the sync interval to "manually"
                      * if OpenTasks is not installed avoids the "sync error" in Android settings / Accounts. */
                     ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
                     settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority,
                             LocalTaskList.tasksProviderAvailable(getContext()) ? DEFAULT_SYNC_INTERVAL : AccountSettings.SYNC_INTERVAL_MANUALLY);
-                } else
-                    // Android <6 only: disable OpenTasks sync forever when OpenTasks is not installed
-                    // because otherwise, there will be a non-catchable SecurityException as soon as OpenTasks is installed
-                    ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0);
+                } else {
+                    // Android <6: enable task sync according to whether OpenTasks is accessible
+                    if (LocalTaskList.tasksProviderAvailable(getContext())) {
+                        ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
+                        settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, DEFAULT_SYNC_INTERVAL);
+                    } else
+                        // Android <6 only: disable OpenTasks sync forever when OpenTasks is not installed
+                        // because otherwise, there will be a non-catchable SecurityException as soon as OpenTasks is installed
+                        ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0);
+                }
             } else {
                 // disable calendar and task sync when CalDAV is not available
                 ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0);
