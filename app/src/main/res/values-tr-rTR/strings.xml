@@ -101,7 +101,6 @@
   <string name="login_user_name">Kullanıcı adı</string>
   <string name="login_user_name_required">Kullanıcı adı zorunludur</string>
   <string name="login_base_url">Baz URL</string>
-  <string name="login_auth_preemptive">Önleyici doğrulama (tavsiye edilir, fakat Digest doğrulama ile uyumsuz)</string>
   <string name="login_login">Giriş</string>
   <string name="login_back">Geri</string>
   <string name="login_create_account">Hesap yarat</string>
@@ -121,9 +120,6 @@
   <string name="settings_password">Parola</string>
   <string name="settings_password_summary">Parolayı sunucunuza göre güncelleyin.</string>
   <string name="settings_enter_password">Parola girin:</string>
-  <string name="settings_preemptive">Önleyici doğrulama</string>
-  <string name="settings_preemptive_on">Giriş bilgileri her istek ile gönderilir (tavsiye edilir)</string>
-  <string name="settings_preemptive_off">Giriş bilgileri sunucu istedikten sonra gönderilir</string>
   <string name="settings_sync">Senkronizasyon</string>
   <string name="settings_sync_interval_contacts">Kişiler senk. aralığı</string>
   <string name="settings_sync_summary_manually">Sadece elle</string>

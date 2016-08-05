@@ -7,6 +7,9 @@
   <string name="please_wait">Chvíli strpení ...</string>
   <string name="send">Odeslat</string>
   <!--startup dialogs-->
+  <string name="startup_battery_optimization">Optimalizace využití baterie</string>
+  <string name="startup_battery_optimization_message">Android může po několika dnech vypnout/prodloužit interval synchronizování DAVdroid. Chcete-li tomuto zabránit, vypněte optimalizaci baterie.</string>
+  <string name="startup_battery_optimization_disable">Vypnout pro DAVdroid</string>
   <string name="startup_dont_show_again">Již nezobrazovat</string>
   <string name="startup_development_version">DAVdroid preview vydání</string>
   <string name="startup_development_version_message">Toto je vývojová verze aplikace DAVdroid. Mějte na paměti, že vše nemusí správně fungovat. Budeme rádi za konstruktivní zpětnou vazbu, která pomůže vylepšit DAVdroid.</string>
@@ -102,7 +105,6 @@
   <string name="login_user_name">Uživatelské jméno</string>
   <string name="login_user_name_required">Vyžadováno uživatelské jméno</string>
   <string name="login_base_url">Základní URL</string>
-  <string name="login_auth_preemptive">Preemptivní ověření (doporučeno, ale není kompatibilní s Digest ověřením)</string>
   <string name="login_login">Login</string>
   <string name="login_back">Zpět</string>
   <string name="login_create_account">Vytvořit účet</string>
@@ -123,9 +125,6 @@
   <string name="settings_password">Heslo</string>
   <string name="settings_password_summary">Aktualizovat heslo dle svého serveru.</string>
   <string name="settings_enter_password">Vložit své heslo:</string>
-  <string name="settings_preemptive">Preemptivní ověření</string>
-  <string name="settings_preemptive_on">Přihlašovací údaje jsou zasílány s každým požadavkem (doporučeno)</string>
-  <string name="settings_preemptive_off">Přihlašovací údaje jsou zasílány po vyžádání serverem</string>
   <string name="settings_sync">Synchronizace</string>
   <string name="settings_sync_interval_contacts">Interval synchronizace kontaktů</string>
   <string name="settings_sync_summary_manually">Pouze manuálně</string>
