@@ -44,7 +44,6 @@ public class DefaultLoginCredentialsFragment extends Fragment implements Compoun
     LinearLayout urlDetails;
     EditText editBaseURL, editUserName;
     EditPassword editUrlPassword;
-    CheckBox checkPreemptiveAuth;
 
 
     @Nullable
@@ -62,7 +61,6 @@ public class DefaultLoginCredentialsFragment extends Fragment implements Compoun
         editBaseURL = (EditText)v.findViewById(R.id.base_url);
         editUserName = (EditText)v.findViewById(R.id.user_name);
         editUrlPassword = (EditPassword)v.findViewById(R.id.url_password);
-        checkPreemptiveAuth = (CheckBox)v.findViewById(R.id.preemptive_auth);
 
         radioUseEmail.setOnCheckedChangeListener(this);
         radioUseURL.setOnCheckedChangeListener(this);
@@ -116,7 +114,7 @@ public class DefaultLoginCredentialsFragment extends Fragment implements Compoun
                 valid = false;
             }
 
-            return valid ? new LoginCredentials(uri, email, password, true) : null;
+            return valid ? new LoginCredentials(uri, email, password) : null;
 
         } else if (radioUseURL.isChecked()) {
             URI uri = null;
@@ -161,7 +159,7 @@ public class DefaultLoginCredentialsFragment extends Fragment implements Compoun
                 valid = false;
             }
 
-            return valid ? new LoginCredentials(uri, userName, password, checkPreemptiveAuth.isChecked()) : null;
+            return valid ? new LoginCredentials(uri, userName, password) : null;
         }
 
         return null;

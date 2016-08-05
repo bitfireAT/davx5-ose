@@ -25,13 +25,6 @@
             android:summary="@string/settings_password_summary"
             android:dialogTitle="@string/settings_enter_password" />
 
-        <SwitchPreferenceCompat
-            android:key="preemptive"
-            android:persistent="false"
-            android:title="@string/settings_preemptive"
-            android:summaryOn="@string/settings_preemptive_on"
-            android:summaryOff="@string/settings_preemptive_off" />
-
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/settings_sync">

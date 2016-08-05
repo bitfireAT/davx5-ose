@@ -78,7 +78,7 @@ public class DavResourceFinder {
         log.addHandler(logBuffer);
 
         httpClient = HttpClient.create(log);
-        httpClient = HttpClient.addAuthentication(httpClient, credentials.userName, credentials.password, credentials.authPreemptive);
+        httpClient = HttpClient.addAuthentication(httpClient, credentials.userName, credentials.password);
 	}
 
 
@@ -88,7 +88,7 @@ public class DavResourceFinder {
                 calDavConfig = findInitialConfiguration(Service.CALDAV);
 
         return new Configuration(
-                credentials.userName, credentials.password, credentials.authPreemptive,
+                credentials.userName, credentials.password,
                 cardDavConfig, calDavConfig,
                 logBuffer.toString()
         );
@@ -371,7 +371,6 @@ public class DavResourceFinder {
         }
 
         public final String userName, password;
-        public final boolean preemptive;
 
         public final ServiceInfo cardDAV;
         public final ServiceInfo calDAV;

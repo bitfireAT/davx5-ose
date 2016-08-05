@@ -114,17 +114,6 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 }
             });
 
-            final SwitchPreferenceCompat prefPreemptive = (SwitchPreferenceCompat)findPreference("preemptive");
-            prefPreemptive.setChecked(settings.preemptiveAuth());
-            prefPreemptive.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    settings.preemptiveAuth((Boolean)newValue);
-                    refresh();
-                    return false;
-                }
-            });
-
             // category: synchronization
             final ListPreference prefSyncContacts = (ListPreference)findPreference("sync_interval_contacts");
             final Long syncIntervalContacts = settings.getSyncInterval(ContactsContract.AUTHORITY);
