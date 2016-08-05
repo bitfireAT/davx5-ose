@@ -107,7 +107,7 @@ public class AccountDetailsFragment extends Fragment {
         Account account = new Account(accountName, getString(R.string.account_type));
 
         // create Android account
-        Bundle userData = AccountSettings.initialUserData(config.userName, config.preemptive);
+        Bundle userData = AccountSettings.initialUserData(config.userName);
         App.log.log(Level.INFO, "Creating Android account with initial config", new Object[] { account, userData });
 
         AccountManager accountManager = AccountManager.get(getContext());

@@ -60,7 +60,6 @@ public class AccountSettings {
             KEY_SETTINGS_VERSION = "version",
 
             KEY_USERNAME = "user_name",
-            KEY_AUTH_PREEMPTIVE = "auth_preemptive",
 
             KEY_WIFI_ONLY = "wifi_only",            // sync on WiFi only (default: false)
             KEY_WIFI_ONLY_SSID = "wifi_only_ssid";  // restrict sync to specific WiFi SSID
@@ -140,11 +139,10 @@ public class AccountSettings {
         }
     }
 
-    public static Bundle initialUserData(String userName, boolean preemptive) {
+    public static Bundle initialUserData(String userName) {
         Bundle bundle = new Bundle();
         bundle.putString(KEY_SETTINGS_VERSION, String.valueOf(CURRENT_VERSION));
         bundle.putString(KEY_USERNAME, userName);
-        bundle.putString(KEY_AUTH_PREEMPTIVE, Boolean.toString(preemptive));
         return bundle;
     }
 
@@ -156,9 +154,6 @@ public class AccountSettings {
 
     public String password() { return accountManager.getPassword(account); }
     public void password(@NonNull String password) { accountManager.setPassword(account, password); }
-
-    public boolean preemptiveAuth() { return Boolean.parseBoolean(accountManager.getUserData(account, KEY_AUTH_PREEMPTIVE)); }
-    public void preemptiveAuth(boolean preemptive) { accountManager.setUserData(account, KEY_AUTH_PREEMPTIVE, Boolean.toString(preemptive)); }
 
 
     // sync. settings
