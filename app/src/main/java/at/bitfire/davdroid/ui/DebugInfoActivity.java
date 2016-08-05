@@ -213,7 +213,6 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                                   "  Address book sync. interval: ").append(syncStatus(settings, ContactsContract.AUTHORITY)).append("\n" +
                                   "  Calendar     sync. interval: ").append(syncStatus(settings, CalendarContract.AUTHORITY)).append("\n" +
                                   "  OpenTasks    sync. interval: ").append(syncStatus(settings, "org.dmfs.tasks")).append("\n" +
-                                  "  Preemptive auth: ").append(settings.preemptiveAuth()).append("\n" +
                                   "  WiFi only: ").append(settings.getSyncWifiOnly());
                     if (settings.getSyncWifiOnlySSID() != null)
                         report.append(", SSID: ").append(settings.getSyncWifiOnlySSID());
