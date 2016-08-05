@@ -124,7 +124,6 @@
     <string name="login_user_name">User name</string>
     <string name="login_user_name_required">User name required</string>
     <string name="login_base_url">Base URL</string>
-    <string name="login_auth_preemptive">Preemptive authentication (recommended, but incompatible with Digest auth)</string>
     <string name="login_login">Login</string>
     <string name="login_back">Back</string>
     <string name="login_create_account">Create account</string>
@@ -147,9 +146,6 @@
     <string name="settings_password">Password</string>
     <string name="settings_password_summary">Update the password according to your server.</string>
     <string name="settings_enter_password">Enter your password:</string>
-    <string name="settings_preemptive">Pre-emptive authentication</string>
-    <string name="settings_preemptive_on">Credentials are sent with every request (recommended)</string>
-    <string name="settings_preemptive_off">Credentials are sent after server requests them</string>
     <string name="settings_sync">Synchronization</string>
     <string name="settings_sync_interval_contacts">Contacts sync. interval</string>
     <string name="settings_sync_summary_manually">Only manually</string>

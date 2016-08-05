@@ -14,7 +14,6 @@
   <!--AddAccountActivity-->
   <string name="login_type_email">Увійти за допомогою електронної пошти</string>
   <string name="login_type_url">Увійти за допомогою URL та імені користувача</string>
-  <string name="login_auth_preemptive">Випереджаюча автентифікація (рекомендовано, але несумісно із Digest auth)</string>
   <!--AccountSettingsActivity-->
   <string name="settings_authentication">Автентифікація</string>
   <string name="settings_username">Ім\'я користувача</string>
@@ -22,9 +21,6 @@
   <string name="settings_password">Пароль</string>
   <string name="settings_password_summary">Оновити пароль, згідно налаштувань Вашого сервера.</string>
   <string name="settings_enter_password">Введіть Ваш пароль:</string>
-  <string name="settings_preemptive">Випереджаюча автентифікація</string>
-  <string name="settings_preemptive_on">Дані автентифікації будуть надсилатися із кожним запитом (рекомендовано)</string>
-  <string name="settings_preemptive_off">Дані автентифікації будуть надіслані після відповідного запиту сервера</string>
   <string name="settings_sync">Синхронізація</string>
   <string name="settings_sync_interval_contacts">Інтервал синхронізації контактів</string>
   <string name="settings_sync_summary_manually">Лише вручну</string>
