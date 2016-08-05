@@ -15,7 +15,6 @@
   <!--AddAccountActivity-->
   <string name="login_type_email">Вход по адресу email</string>
   <string name="login_type_url">Вход через URL  и имя пользователя</string>
-  <string name="login_auth_preemptive">Упреждающая идентификация (рекомендовано, но несовместимо с Digest идентификацией)</string>
   <!--AccountSettingsActivity-->
   <string name="settings_authentication">Идентификация</string>
   <string name="settings_username">Имя</string>
@@ -23,9 +22,6 @@
   <string name="settings_password">Пароль</string>
   <string name="settings_password_summary">Обновить пароль в соответствии с вашим сервером.</string>
   <string name="settings_enter_password">Введите свой пароль:</string>
-  <string name="settings_preemptive">Упреждающая идентификация</string>
-  <string name="settings_preemptive_on">Учетные данные посылаются с каждым запросом (рекомендовано)</string>
-  <string name="settings_preemptive_off">Учетные данные посылаются после их запроса сервером</string>
   <string name="settings_sync">Синхронизация</string>
   <string name="settings_sync_interval_contacts">Интервал синхронизации контактов</string>
   <string name="settings_sync_summary_manually">Вручную</string>

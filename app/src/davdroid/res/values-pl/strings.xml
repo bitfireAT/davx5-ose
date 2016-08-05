@@ -82,7 +82,6 @@ Interfejs użytkownika</string>
   <string name="login_user_name">Nazwa użytkownika</string>
   <string name="login_user_name_required">Wymagana nazwa użtkonika</string>
   <string name="login_base_url">Podstawowy URL</string>
-  <string name="login_auth_preemptive">Autoryzacja prewencyjna (zalecana, ale niezgodna z autoryzacją Digest)</string>
   <string name="login_login">Zaloguj</string>
   <string name="login_back">Wróć</string>
   <string name="login_create_account">Stwórz konto</string>
@@ -101,9 +100,6 @@ Interfejs użytkownika</string>
   <string name="settings_password">Hasło</string>
   <string name="settings_password_summary">Zaktualizuj hasło zgodnie z serwerem.</string>
   <string name="settings_enter_password">Wpisz hasło:</string>
-  <string name="settings_preemptive">Autoryzacja prewencyjna</string>
-  <string name="settings_preemptive_on">Listy uwierzytelniające są wysyłane przy każdym zapytaniu (zalecane)</string>
-  <string name="settings_preemptive_off">Listy uwierzytelniające są wysyłane po zapytaniu serwera o nie</string>
   <string name="settings_sync">Synchronizacja</string>
   <string name="settings_sync_interval_contacts">Okres synchronizacji kontktów</string>
   <string name="settings_sync_summary_manually">Tylko ręcznie</string>

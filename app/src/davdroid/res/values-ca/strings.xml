@@ -14,7 +14,6 @@
   <!--AddAccountActivity-->
   <string name="login_type_email">Entra amb una adreça de correu electrònic</string>
   <string name="login_type_url">Entra amb una URL i un nom d\'usuari</string>
-  <string name="login_auth_preemptive">Autentificació preferent (recomanat però incompatible amb l\'autentificació Digest)</string>
   <!--AccountSettingsActivity-->
   <!--collection management-->
   <!--ExceptionInfoFragment-->
