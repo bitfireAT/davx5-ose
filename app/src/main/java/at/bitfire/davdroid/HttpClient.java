@@ -12,6 +12,7 @@ import android.accounts.Account;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -21,9 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import at.bitfire.dav4android.BasicDigestAuthenticator;
-import lombok.RequiredArgsConstructor;
-import okhttp3.Credentials;
+import at.bitfire.dav4android.BasicDigestAuthHandler;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -46,13 +45,9 @@ public class HttpClient {
     public static OkHttpClient create(@NonNull Context context, @NonNull Account account, @NonNull final Logger logger) throws InvalidAccountException {
         OkHttpClient.Builder builder = defaultBuilder(logger);
 
-        // use account settings for authentication and logging
+        // use account settings for authentication
         AccountSettings settings = new AccountSettings(context, account);
-
-        if (settings.preemptiveAuth())
-            builder.addNetworkInterceptor(new PreemptiveAuthenticationInterceptor(settings.username(), settings.password()));
-        else
-            builder.authenticator(new BasicDigestAuthenticator(null, settings.username(), settings.password()));
+        builder = addAuthentication(builder, null, settings.username(), settings.password());
 
         return builder.build();
     }
@@ -68,6 +63,7 @@ public class HttpClient {
     public static OkHttpClient create() {
         return create(App.log);
     }
+
 
     private static OkHttpClient.Builder defaultBuilder(@NonNull final Logger logger) {
         OkHttpClient.Builder builder = client.newBuilder();
@@ -107,24 +103,23 @@ public class HttpClient {
         return builder;
     }
 
-    private static OkHttpClient.Builder addAuthentication(@NonNull OkHttpClient.Builder builder, @NonNull String username, @NonNull String password, boolean preemptive) {
-        if (preemptive)
-            builder.addNetworkInterceptor(new PreemptiveAuthenticationInterceptor(username, password));
-        else
-            builder.authenticator(new BasicDigestAuthenticator(null, username, password));
-        return builder;
+    private static OkHttpClient.Builder addAuthentication(@NonNull OkHttpClient.Builder builder, @Nullable String host, @NonNull String username, @NonNull String password) {
+        BasicDigestAuthHandler authHandler = new BasicDigestAuthHandler(host, username, password);
+        return builder
+                .addNetworkInterceptor(authHandler)
+                .authenticator(authHandler);
     }
 
-    public static OkHttpClient addAuthentication(@NonNull OkHttpClient client, @NonNull String username, @NonNull String password, boolean preemptive) {
+    public static OkHttpClient addAuthentication(@NonNull OkHttpClient client, @NonNull String username, @NonNull String password) {
         OkHttpClient.Builder builder = client.newBuilder();
-        addAuthentication(builder, username, password, preemptive);
+        addAuthentication(builder, null, username, password);
         return builder.build();
     }
 
     public static OkHttpClient addAuthentication(@NonNull OkHttpClient client, @NonNull String host, @NonNull String username, @NonNull String password) {
-        return client.newBuilder()
-                .authenticator(new BasicDigestAuthenticator(host, username, password))
-                .build();
+        OkHttpClient.Builder builder = client.newBuilder();
+        addAuthentication(builder, host, username, password);
+        return builder.build();
     }
 
 
@@ -135,20 +130,6 @@ public class HttpClient {
             Request request = chain.request().newBuilder()
                     .header("User-Agent", userAgent)
                     .header("Accept-Language", locale.getLanguage() + "-" + locale.getCountry() + ", " + locale.getLanguage() + ";q=0.7, *;q=0.5")
-                    .build();
-            return chain.proceed(request);
-        }
-    }
-
-    @RequiredArgsConstructor
-    static class PreemptiveAuthenticationInterceptor implements Interceptor {
-        final String username, password;
-
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            App.log.fine("Adding basic authorization header for user " + username);
-            Request request = chain.request().newBuilder()
-                    .header("Authorization", Credentials.basic(username, password))
                     .build();
             return chain.proceed(request);
         }

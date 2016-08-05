@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 public class LoginCredentials implements Parcelable {
     public final URI uri;
     public final String userName, password;
-    public final boolean authPreemptive;
 
     @Override
     public int describeContents() {
@@ -31,7 +30,6 @@ public class LoginCredentials implements Parcelable {
         dest.writeSerializable(uri);
         dest.writeString(userName);
         dest.writeString(password);
-        dest.writeValue(authPreemptive);
     }
 
     public static final Creator CREATOR = new Creator<LoginCredentials>() {
@@ -39,8 +37,7 @@ public class LoginCredentials implements Parcelable {
         public LoginCredentials createFromParcel(Parcel source) {
             return new LoginCredentials(
                     (URI)source.readSerializable(),
-                    source.readString(), source.readString(),
-                    (boolean)source.readValue(null)
+                    source.readString(), source.readString()
             );
         }
 

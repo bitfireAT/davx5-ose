@@ -53,11 +53,11 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
         server.setDispatcher(new TestDispatcher());
         server.start();
 
-        credentials = new LoginCredentials(URI.create("/"), "mock", "12345", true);
+        credentials = new LoginCredentials(URI.create("/"), "mock", "12345");
         finder = new DavResourceFinder(getInstrumentation().getContext(), credentials);
 
         client = HttpClient.create();
-        client = HttpClient.addAuthentication(client, credentials.userName, credentials.password, credentials.authPreemptive);
+        client = HttpClient.addAuthentication(client, credentials.userName, credentials.password);
     }
 
     @Override
@@ -129,8 +129,11 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
 
         @Override
         public MockResponse dispatch(RecordedRequest rq) throws InterruptedException {
-            if (!checkAuth(rq))
-                return new MockResponse().setResponseCode(401);
+            if (!checkAuth(rq)) {
+                MockResponse authenticate = new MockResponse().setResponseCode(401);
+                authenticate.setHeader("WWW-Authenticate", "Basic realm=\"test\"");
+                return authenticate;
+            }
 
             String path = rq.getPath();
 
