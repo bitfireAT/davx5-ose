@@ -7,6 +7,9 @@
   <string name="please_wait">しばらくお待ちください …</string>
   <string name="send">送信</string>
   <!--startup dialogs-->
+  <string name="startup_battery_optimization">バッテリー最適化</string>
+  <string name="startup_battery_optimization_message">Android は数日後に DAVdroid の同期を無効にする/減らすことがあります。これを防止するには、バッテリー最適化をオフにしてください。</string>
+  <string name="startup_battery_optimization_disable">DAVdroid 用にオフにする</string>
   <string name="startup_dont_show_again">次回から表示しない</string>
   <string name="startup_development_version">DAVdroid プレビュー リリース</string>
   <string name="startup_development_version_message">これは DAVdroid の開発版です。期待した通りに動作しない可能性があることにご注意ください。私たちが DAVdroid を改善するために、建設的なフィードバックをお願いします。</string>
@@ -100,7 +103,6 @@
   <string name="login_user_name">ユーザー名</string>
   <string name="login_user_name_required">ユーザー名が必要です</string>
   <string name="login_base_url">ベース URL</string>
-  <string name="login_auth_preemptive">プリエンプティブ認証 (推奨ですが、ダイジェスト認証と互換性がありません)</string>
   <string name="login_login">ログイン</string>
   <string name="login_back">戻る</string>
   <string name="login_create_account">アカウントを作成</string>
@@ -121,9 +123,6 @@
   <string name="settings_password">パスワード</string>
   <string name="settings_password_summary">ご利用のサーバーに従ってパスワードを更新します。</string>
   <string name="settings_enter_password">パスワードを入力:</string>
-  <string name="settings_preemptive">プリエンプティブ認証</string>
-  <string name="settings_preemptive_on">すべてのリクエストで資格情報を送信します (推奨)</string>
-  <string name="settings_preemptive_off">サーバーが要求した後、資格情報を送信します</string>
   <string name="settings_sync">同期</string>
   <string name="settings_sync_interval_contacts">連絡先同期間隔</string>
   <string name="settings_sync_summary_manually">手動のみ</string>

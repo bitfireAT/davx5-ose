@@ -101,7 +101,6 @@
   <string name="login_user_name">Gebruikersnaam</string>
   <string name="login_user_name_required">Gebruikersnaam vereist</string>
   <string name="login_base_url">Basis URL</string>
-  <string name="login_auth_preemptive">Preëmptieve authenticatie (aanbevolen, maar werkt niet met Digest-auth)</string>
   <string name="login_login">Login</string>
   <string name="login_back">Terug</string>
   <string name="login_create_account">Maak een account</string>
@@ -122,9 +121,6 @@
   <string name="settings_password">Wachtwoord</string>
   <string name="settings_password_summary">Gebruik het zelfde wachtwoord als op de server.</string>
   <string name="settings_enter_password">Wachtwoord invoeren:</string>
-  <string name="settings_preemptive">Preëmptieve authenticatie</string>
-  <string name="settings_preemptive_on">Credentials worden met elk verzoek verzonden (aanbevolen)</string>
-  <string name="settings_preemptive_off">Credentials worden alleen op aanvraag verzonden</string>
   <string name="settings_sync">Synchronisatie</string>
   <string name="settings_sync_interval_contacts">Contacten verversen</string>
   <string name="settings_sync_summary_manually">Alleen handmatig</string>
@@ -162,7 +158,7 @@
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Contact groep methode</string>
   <string-array name="settings_contact_group_method_values">
-    <item>GROEP_VCARDS</item>
+    <item>GROUP_VCARDS</item>
     <item>CATEGORIES</item>
   </string-array>
   <string-array name="settings_contact_group_method_entries">

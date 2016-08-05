@@ -7,6 +7,9 @@
   <string name="please_wait">请稍等...</string>
   <string name="send">发送</string>
   <!--startup dialogs-->
+  <string name="startup_battery_optimization">电池优化</string>
+  <string name="startup_battery_optimization_message">系统可能会在几天后减少或停用 DAVdroid 同步。为了避免这一情况，请对 DAVdroid 忽略电池优化。</string>
+  <string name="startup_battery_optimization_disable">忽略电池优化</string>
   <string name="startup_dont_show_again">不再显示</string>
   <string name="startup_development_version">DAVdroid 预览版</string>
   <string name="startup_development_version_message">这是 DAVdroid 的开发版本，部分功能可能无法正常工作。请您提出建设性反馈，帮助我们完善 DAVdroid。</string>
@@ -100,7 +103,6 @@
   <string name="login_user_name">用户名</string>
   <string name="login_user_name_required">请输入用户名</string>
   <string name="login_base_url">根地址</string>
-  <string name="login_auth_preemptive">强制认证模式（推荐使用，但不兼容 Digest 认证方式）</string>
   <string name="login_login">登录</string>
   <string name="login_back">返回</string>
   <string name="login_create_account">创建账户</string>
@@ -121,9 +123,6 @@
   <string name="settings_password">密码</string>
   <string name="settings_password_summary">修改服务器密码</string>
   <string name="settings_enter_password">输入密码</string>
-  <string name="settings_preemptive">强制认证模式</string>
-  <string name="settings_preemptive_on">认证信息在每次请求中发送（推荐）</string>
-  <string name="settings_preemptive_off">认证信息在服务器要求后才发送</string>
   <string name="settings_sync">同步</string>
   <string name="settings_sync_interval_contacts">通讯录自动同步间隔</string>
   <string name="settings_sync_summary_manually">手动同步</string>
