@@ -17,7 +17,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 24
 
-        versionCode 111
+        versionCode 112
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "useMTM", "true"
@@ -25,7 +25,7 @@ android {
 
     productFlavors {
         standard {
-            versionName "1.2.2-ose"
+            versionName "1.2.3-ose"
         }
     }
 
