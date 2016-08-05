@@ -101,7 +101,6 @@
   <string name="login_user_name">Nombre de usuario</string>
   <string name="login_user_name_required">Nombre de usuario requerido</string>
   <string name="login_base_url">URL base</string>
-  <string name="login_auth_preemptive">Autenticación preferente (recomendado, pero incompatible con Digest auth)</string>
   <string name="login_login">Registrar</string>
   <string name="login_back">Volver</string>
   <string name="login_create_account">Crear cuenta</string>
@@ -121,9 +120,6 @@
   <string name="settings_password">Contraseña</string>
   <string name="settings_password_summary">Actualiza la contraseña de acuerdo a tu servidor.</string>
   <string name="settings_enter_password">Introduce tu contraseña:</string>
-  <string name="settings_preemptive">Autenticación preferente</string>
-  <string name="settings_preemptive_on">Las credenciales se envían en cada petición (recomendado)</string>
-  <string name="settings_preemptive_off">Las credenciales se envían después de que el servidor las pida</string>
   <string name="settings_sync">Sincronización</string>
   <string name="settings_sync_interval_contacts">Intervalo de sincronización de contactos</string>
   <string name="settings_sync_summary_manually">Solo manualmente</string>

@@ -7,6 +7,9 @@
   <string name="please_wait">Kérjük, várjon ...</string>
   <string name="send">Küldés</string>
   <!--startup dialogs-->
+  <string name="startup_battery_optimization">Akkumulátoroptimalizálás </string>
+  <string name="startup_battery_optimization_message">Az operációs rendszer a DAVdroid szinkronizálást pár nap után leállíthatja vagy visszafoghatja.  Ennek elkerülésére kapcsolja ki az akkumulátoroptimalizálást.</string>
+  <string name="startup_battery_optimization_disable">Kikapcsolás a DAVdroid kapcsán</string>
   <string name="startup_dont_show_again">Ne jelenjen meg többet</string>
   <string name="startup_development_version">DAVdroid előzetes kiadás</string>
   <string name="startup_development_version_message">Ez a DAVdroid egy fejlesztői verziója.  Elképzelhető, hogy nem minden működik úgy, ahogyan kellene.  Ha így lenne, kérjük küldjön a tapasztaltakról visszajelzést.</string>
@@ -101,7 +104,6 @@
   <string name="login_user_name">Felhasználónév</string>
   <string name="login_user_name_required">A felhasználónév megadása feltétlenül szükséges</string>
   <string name="login_base_url">URL-törzs</string>
-  <string name="login_auth_preemptive">Preemptív authentikáció (ajánlott, de Digest authentikációval nem működik)</string>
   <string name="login_login">Bejelentkezés</string>
   <string name="login_back">Vissza</string>
   <string name="login_create_account">Fiók létrehozása</string>
@@ -122,9 +124,6 @@
   <string name="settings_password">Jelszó</string>
   <string name="settings_password_summary">Adja meg a szerveren érvényes új jelszót.</string>
   <string name="settings_enter_password">Adja meg a jelszót:</string>
-  <string name="settings_preemptive">Preemptív authentikáció</string>
-  <string name="settings_preemptive_on">A hitelesítő adatok elküldése minden kérésnél (ajánlott)</string>
-  <string name="settings_preemptive_off">A hitelesítő adatok elküldése, csak ha a szerver azt igényli</string>
   <string name="settings_sync">Szinkronizálás</string>
   <string name="settings_sync_interval_contacts">Névjegyszinkronizálás sűrűsége</string>
   <string name="settings_sync_summary_manually">Manuális</string>
@@ -161,6 +160,10 @@
   <string name="settings_sync_wifi_only_ssid_message">Adja meg a WIFI hálózat nevét (SSID) a szinkronizálás egy hálózatra való korlátozához, vagy hagyja üresen, ha nem akar ilyen szűkítést.</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">A csoportok kezelésének módja</string>
+  <string-array name="settings_contact_group_method_values">
+    <item>GROUP_VCARDS</item>
+    <item>CATEGORIES</item>
+  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>Minden csoport egy különálló VCard</item>
     <item>A csoportok a kapcsolatonkéni kategóriák</item>

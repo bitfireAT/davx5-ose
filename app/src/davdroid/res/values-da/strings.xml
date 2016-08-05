@@ -101,7 +101,6 @@
   <string name="login_user_name">Brugernavn</string>
   <string name="login_user_name_required">Brugernavn påkrævet</string>
   <string name="login_base_url">Basis-URL</string>
-  <string name="login_auth_preemptive">Forhåndsgodkendelse (preemptive authentication - anbefalet, men ikke kompatiblelt med Digest auth)</string>
   <string name="login_login">Login</string>
   <string name="login_back">Tilbage</string>
   <string name="login_create_account">Opret konto</string>
@@ -122,9 +121,6 @@
   <string name="settings_password">Adgangskode</string>
   <string name="settings_password_summary">Opdater adgangskoden, så den svarer til din server.</string>
   <string name="settings_enter_password">Indtast adgangskode:</string>
-  <string name="settings_preemptive">Forhåndsgodkendelse</string>
-  <string name="settings_preemptive_on">Loginoplysninger sendes ved hver anmodning (anbefalet)</string>
-  <string name="settings_preemptive_off">Loginoplysninger sendes efter server anmoder om dem</string>
   <string name="settings_sync">Synkronisering</string>
   <string name="settings_sync_interval_contacts">Synkroniseringsinterval for kontakter</string>
   <string name="settings_sync_summary_manually">Kun manuelt</string>

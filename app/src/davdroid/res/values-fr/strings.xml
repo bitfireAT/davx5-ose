@@ -100,7 +100,6 @@
   <string name="login_user_name">Nom d\'utilisateur</string>
   <string name="login_user_name_required">Nom d\'utilisateur requis</string>
   <string name="login_base_url">URL de base</string>
-  <string name="login_auth_preemptive">Authentification préventive (recommandé, mais incompatible avec l\'authentification Digest)</string>
   <string name="login_login">Se connecter</string>
   <string name="login_back">Retour</string>
   <string name="login_create_account">Créer un compte</string>
@@ -120,9 +119,6 @@
   <string name="settings_password">Mot de passe</string>
   <string name="settings_password_summary">Mettre à jour le mot de passe </string>
   <string name="settings_enter_password">Saisissez votre mot de passe :</string>
-  <string name="settings_preemptive">Authentification préventive</string>
-  <string name="settings_preemptive_on">Le nom d\'utilisateur et le mot de passe sont envoyés avec chaque requête (recommandé)</string>
-  <string name="settings_preemptive_off">Le nom d\'utilisateur et le mot de passe sont envoyés à la demande du serveur.</string>
   <string name="settings_sync">Synchronisation</string>
   <string name="settings_sync_interval_contacts">Interval de synchronisation des carnets d\'adresses</string>
   <string name="settings_sync_summary_manually">Manuellement</string>
