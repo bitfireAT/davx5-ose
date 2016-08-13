@@ -8,6 +8,8 @@
 
 package at.bitfire.davdroid.ui.setup;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -63,8 +65,31 @@ public class LoginCredentialsFragment extends Fragment implements CompoundButton
         radioUseEmail.setOnCheckedChangeListener(this);
         radioUseURL.setOnCheckedChangeListener(this);
 
-        if (savedInstanceState == null)
-            radioUseEmail.setChecked(true);
+        if (savedInstanceState == null) {
+            // first call
+
+            Activity activity = getActivity();
+            Intent intent = (activity != null) ? activity.getIntent() : null;
+            if (intent != null) {
+                // we've got initial login data
+                String  url = intent.getStringExtra(LoginActivity.EXTRA_URL),
+                        username = intent.getStringExtra(LoginActivity.EXTRA_USERNAME),
+                        password = intent.getStringExtra(LoginActivity.EXTRA_PASSWORD);
+
+                if (url != null) {
+                    radioUseURL.setChecked(true);
+                    editBaseURL.setText(url);
+                    editUserName.setText(username);
+                    editUrlPassword.setText(password);
+                } else {
+                    radioUseEmail.setChecked(true);
+                    editEmailAddress.setText(username);
+                    editEmailPassword.setText(password);
+                }
+
+            } else
+                radioUseEmail.setChecked(true);
+        }
 
         final Button login = (Button)v.findViewById(R.id.login);
         login.setOnClickListener(new View.OnClickListener() {

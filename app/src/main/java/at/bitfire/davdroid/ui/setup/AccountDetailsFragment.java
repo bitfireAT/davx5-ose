@@ -10,6 +10,7 @@ package at.bitfire.davdroid.ui.setup;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -92,9 +93,10 @@ public class AccountDetailsFragment extends Fragment {
                 if (name.isEmpty())
                     editName.setError(getString(R.string.login_account_name_required));
                 else {
-                    if (createAccount(name, (DavResourceFinder.Configuration)getArguments().getSerializable(KEY_CONFIG)))
+                    if (createAccount(name, (DavResourceFinder.Configuration)getArguments().getSerializable(KEY_CONFIG))) {
+                        getActivity().setResult(Activity.RESULT_OK);
                         getActivity().finish();
-                    else
+                    } else
                         Snackbar.make(v, R.string.login_account_not_created, Snackbar.LENGTH_LONG).show();
                 }
             }
