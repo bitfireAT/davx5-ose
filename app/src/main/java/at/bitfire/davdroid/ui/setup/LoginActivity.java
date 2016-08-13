@@ -19,9 +19,32 @@ import java.util.ServiceLoader;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 
+/**
+ * Activity to initially connect to a server and create an account.
+ * Fields for server/user data can be pre-filled with extras in the Intent.
+ */
 public class LoginActivity extends AppCompatActivity {
 
+    /**
+     * When set, "login by URL" will be activated by default, and the URL field will be set to this value.
+     * When not set, "login by email" will be activated by default.
+     */
+    public static final String EXTRA_URL = "url";
+
+    /**
+     * When set, and {@link #EXTRA_PASSWORD} is set too, the user name field will be set to this value.
+     * When set, and {@link #EXTRA_URL} is not set, the email address field will be set to this value.
+     */
+    public static final String EXTRA_USERNAME = "username";
+
+    /**
+     * When set, the password field will be set to this value.
+     */
+    public static final String EXTRA_PASSWORD = "password";
+
+
     private static final ServiceLoader<ILoginCredentialsFragment> loginFragmentLoader = ServiceLoader.load(ILoginCredentialsFragment.class);
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
