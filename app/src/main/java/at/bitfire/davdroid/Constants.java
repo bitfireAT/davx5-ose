@@ -23,7 +23,7 @@ public class Constants {
             NOTIFICATION_SUBSCRIPTION = 21;
 
     public static final Uri webUri = BuildConfig.FLAVOR == App.FLAVOR_ICLOUD ?
-            Uri.parse("https://multisync.cloud/?pk_campaign=davdroid-app") :
+            Uri.parse("https://multisync.cloud/?pk_campaign=multisync-app") :
             Uri.parse("https://davdroid.bitfire.at/?pk_campaign=davdroid-app");
 
 }
