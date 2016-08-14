@@ -202,11 +202,17 @@ public class AccountSettings {
     // CardDAV settings
 
     public boolean getVCardRFC6868() {
+        if (BuildConfig.settingVCardRFC6868 != null)
+            return BuildConfig.settingVCardRFC6868;
+
         return accountManager.getUserData(account, KEY_VCARD_RFC6868) == null;
     }
 
     public void setVCardRFC6868(boolean use) {
-        accountManager.setUserData(account, KEY_VCARD_RFC6868, use ? null : "0");
+        if (BuildConfig.settingVCardRFC6868 == null)
+            accountManager.setUserData(account, KEY_VCARD_RFC6868, use ? null : "0");
+        else if (BuildConfig.settingVCardRFC6868 != use)
+            throw new UnsupportedOperationException("Setting is read-only");
     }
 
 
@@ -239,6 +245,9 @@ public class AccountSettings {
 
     @NonNull
     public GroupMethod getGroupMethod() {
+        if (BuildConfig.settingContactGroupMethod != null)
+            return BuildConfig.settingContactGroupMethod;
+
         final String name = accountManager.getUserData(account, KEY_CONTACT_GROUP_METHOD);
         return name != null ?
                 GroupMethod.valueOf(name) :
@@ -246,8 +255,11 @@ public class AccountSettings {
     }
 
     public void setGroupMethod(@NonNull GroupMethod method) {
-        final String name = method == GroupMethod.GROUP_VCARDS ? null : method.name();
-        accountManager.setUserData(account, KEY_CONTACT_GROUP_METHOD, name);
+        if (BuildConfig.settingContactGroupMethod == null) {
+            final String name = method == GroupMethod.GROUP_VCARDS ? null : method.name();
+            accountManager.setUserData(account, KEY_CONTACT_GROUP_METHOD, name);
+        } else if (BuildConfig.settingContactGroupMethod != method)
+            throw new UnsupportedOperationException("Setting is read-only");
     }
 
 

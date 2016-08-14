@@ -14,13 +14,17 @@ android {
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
+        resValue "string", "packageID", applicationId
+
+        versionCode 112
+        buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
+
         minSdkVersion 14
         targetSdkVersion 24
 
-        versionCode 112
-
-        buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "useMTM", "false"
+        buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "null"
+        buildConfigField "Boolean", "settingVCardRFC6868", "null"
     }
 
     productFlavors {
@@ -35,7 +39,12 @@ android {
         icloud {
             //applicationId "at.bitfire.multisync.cloud"
             applicationId "at.bitfire.cloudsync"
+            resValue "string", "packageID", applicationId
+
             versionName "1.2.3-cloud"
+
+            buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "at.bitfire.vcard4android.GroupMethod.GROUP_VCARDS"
+            buildConfigField "Boolean", "settingVCardRFC6868", "true"
         }
     }
 

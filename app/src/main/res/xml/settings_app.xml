@@ -33,7 +33,7 @@
             android:title="@string/app_settings_show_debug_info"
             android:summary="@string/app_settings_show_debug_info_details">
             <intent
-                android:targetPackage="at.bitfire.davdroid"
+                android:targetPackage="@string/packageID"
                 android:targetClass="at.bitfire.davdroid.ui.DebugInfoActivity"/>
         </Preference>
     </PreferenceCategory>
