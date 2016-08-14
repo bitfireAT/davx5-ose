@@ -11,7 +11,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:icon="@drawable/ic_share_dark"
+        android:icon="@drawable/ic_share_action"
         android:title="@string/send"
         app:showAsAction="always"
         android:onClick="onShare"/>

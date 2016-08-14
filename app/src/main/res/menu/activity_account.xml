@@ -11,12 +11,12 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/sync_now"
-          android:icon="@drawable/ic_sync_dark"
+          android:icon="@drawable/ic_sync_action"
           android:title="@string/account_synchronize_now"
           app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/settings"
-          android:icon="@drawable/ic_settings_dark"
+          android:icon="@drawable/ic_settings_action"
           android:title="@string/account_settings"
           app:showAsAction="ifRoom"/>
 
