@@ -27,6 +27,7 @@ import java.util.logging.Level;
 
 import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.ical4android.TaskProvider;
@@ -210,14 +211,17 @@ public class AccountSettingsActivity extends AppCompatActivity {
             final SwitchPreferenceCompat prefRFC6868 = (SwitchPreferenceCompat)findPreference("vcard_rfc6868");
             if (syncIntervalContacts != null) {
                 prefRFC6868.setChecked(settings.getVCardRFC6868());
-                prefRFC6868.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object o) {
-                        settings.setVCardRFC6868((Boolean)o);
-                        refresh();
-                        return false;
-                    }
-                });
+                if (BuildConfig.settingVCardRFC6868 == null)
+                    prefRFC6868.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object o) {
+                            settings.setVCardRFC6868((Boolean)o);
+                            refresh();
+                            return false;
+                            }
+                    });
+                else
+                    prefRFC6868.setEnabled(false);
             } else
                 prefRFC6868.setEnabled(false);
 
@@ -225,15 +229,18 @@ public class AccountSettingsActivity extends AppCompatActivity {
             if (syncIntervalContacts != null) {
                 prefGroupMethod.setValue(settings.getGroupMethod().name());
                 prefGroupMethod.setSummary(prefGroupMethod.getEntry());
-                prefGroupMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object o) {
-                        String name = (String)o;
-                        settings.setGroupMethod(GroupMethod.valueOf(name));
-                        refresh();
-                        return false;
-                    }
-                });
+                if (BuildConfig.settingContactGroupMethod == null)
+                    prefGroupMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object o) {
+                            String name = (String)o;
+                            settings.setGroupMethod(GroupMethod.valueOf(name));
+                            refresh();
+                            return false;
+                        }
+                    });
+                else
+                    prefGroupMethod.setEnabled(false);
             } else
                 prefGroupMethod.setEnabled(false);
 

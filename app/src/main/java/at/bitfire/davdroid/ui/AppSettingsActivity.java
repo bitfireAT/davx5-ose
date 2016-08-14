@@ -51,7 +51,10 @@ public class AppSettingsActivity extends AppCompatActivity {
             addPreferencesFromResource(R.xml.settings_app);
 
             prefResetHints = findPreference("reset_hints");
+
             prefResetCertificates = findPreference("reset_certificates");
+            if (App.getMemorizingTrustManager() == null)
+                prefResetCertificates.setVisible(false);
 
             @Cleanup ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
             Settings settings = new Settings(dbHelper.getReadableDatabase());

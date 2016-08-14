@@ -33,6 +33,7 @@ import java.util.logging.Level;
 
 import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.DavService;
 import at.bitfire.davdroid.InvalidAccountException;
@@ -84,6 +85,8 @@ public class AccountDetailsFragment extends Fragment {
         // CardDAV-specific
         v.findViewById(R.id.carddav).setVisibility(config.cardDAV != null ? View.VISIBLE : View.GONE);
         spnrGroupMethod = (Spinner)v.findViewById(R.id.contact_group_method);
+        if (BuildConfig.settingContactGroupMethod != null)
+            spnrGroupMethod.setEnabled(false);
 
         Button btnCreate = (Button)v.findViewById(R.id.create_account);
         btnCreate.setOnClickListener(new View.OnClickListener() {
