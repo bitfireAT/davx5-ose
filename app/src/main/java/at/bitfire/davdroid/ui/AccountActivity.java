@@ -14,6 +14,7 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
+import android.annotation.TargetApi;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.ComponentName;
@@ -83,6 +84,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     Toolbar tbCardDAV, tbCalDAV;
 
     @Override
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
