@@ -37,7 +37,6 @@ android {
             buildConfigField "boolean", "useMTM", "true"
         }
         icloud {
-            //applicationId "at.bitfire.multisync.cloud"
             applicationId "at.bitfire.cloudsync"
             resValue "string", "packageID", applicationId
 
