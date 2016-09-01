@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 
@@ -51,6 +52,20 @@ public class LoginActivity extends AppCompatActivity {
                     .replace(android.R.id.content, new LoginCredentialsFragment())
                     .commit();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (App.getCertManager() != null)
+            App.getCertManager().appInForeground = true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (App.getCertManager() != null)
+            App.getCertManager().appInForeground = false;
     }
 
     @Override

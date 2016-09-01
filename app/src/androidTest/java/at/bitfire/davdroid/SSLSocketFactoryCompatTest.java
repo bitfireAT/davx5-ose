@@ -16,7 +16,7 @@ import java.net.Socket;
 
 import javax.net.ssl.SSLSocket;
 
-import de.duenndns.ssl.MemorizingTrustManager;
+import at.bitfire.cert4android.CustomCertManager;
 import okhttp3.mockwebserver.MockWebServer;
 
 public class SSLSocketFactoryCompatTest extends InstrumentationTestCase {
@@ -26,7 +26,7 @@ public class SSLSocketFactoryCompatTest extends InstrumentationTestCase {
 
     @Override
     protected void setUp() throws Exception {
-        factory = new SSLSocketFactoryCompat(new MemorizingTrustManager(getInstrumentation().getTargetContext().getApplicationContext()));
+        factory = new SSLSocketFactoryCompat(new CustomCertManager(getInstrumentation().getTargetContext().getApplicationContext(), true));
         server.start();
     }
 

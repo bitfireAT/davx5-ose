@@ -17,15 +17,15 @@ android {
         minSdkVersion 14
         targetSdkVersion 24
 
-        versionCode 112
+        versionCode 113
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
-        buildConfigField "boolean", "useMTM", "true"
+        buildConfigField "boolean", "customCerts", "true"
     }
 
     productFlavors {
         standard {
-            versionName "1.2.3-ose"
+            versionName "1.3-ose"
         }
     }
 
@@ -72,7 +72,7 @@ dependencies {
     compile 'com.android.support:preference-v14:24.+'
 
     compile 'com.github.yukuku:ambilwarna:2.0.1'
-    compile project(':MemorizingTrustManager')
+    compile project(':cert4android')
 
     compile 'dnsjava:dnsjava:2.1.7'
     compile 'org.apache.commons:commons-lang3:3.4'

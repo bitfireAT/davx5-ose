@@ -73,12 +73,12 @@
     <string name="app_settings_reset_hints_summary">Re-enables hints which have been dismissed previously</string>
     <string name="app_settings_reset_hints_success">All hints will be shown again</string>
     <string name="app_settings_security">Security</string>
-    <string name="app_settings_reset_trusted_certificates">Reset trusted certificates</string>
-    <string name="app_settings_reset_trusted_certificates_summary">Forgets all certificates which have been accepted previously</string>
-    <plurals name="app_settings_reset_trusted_certificates_success">
-        <item quantity="one">Distrusted one certificate</item>
-        <item quantity="other">Distrusted %d certificates</item>
-    </plurals>
+    <string name="app_settings_distrust_system_certs">Distrust system certificates</string>
+    <string name="app_settings_distrust_system_certs_on">System and user-added CAs won\'t be trusted</string>
+    <string name="app_settings_distrust_system_certs_off">System and user-added CAs will be trusted</string>
+    <string name="app_settings_reset_certificates">Reset (un)trusted certificates</string>
+    <string name="app_settings_reset_certificates_summary">Resets trust of all custom certificates</string>
+    <string name="app_settings_reset_certificates_success">All custom certificates have been cleared</string>
     <string name="app_settings_debug">Debugging</string>
     <string name="app_settings_log_to_external_storage">Log to external file</string>
     <string name="app_settings_log_to_external_storage_on">Logging to external storage (if available)</string>
@@ -260,5 +260,9 @@
         <item>saving sync state</item>
     </string-array>
     <string name="sync_error_unauthorized">User name/password wrong</string>
+
+    <!-- cert4android -->
+    <string name="certificate_notification_connection_security">DAVdroid: Connection security</string>
+    <string name="trust_certificate_unknown_certificate_found">DAVdroid has encountered an unknown certificate. Do you want to trust it?</string>
 
 </resources>

@@ -27,7 +27,6 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
-import de.duenndns.ssl.MemorizingTrustManager;
 import lombok.Cleanup;
 
 public class SSLSocketFactoryCompat extends SSLSocketFactory {
@@ -99,10 +98,10 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
         }
     }
 
-    public SSLSocketFactoryCompat(@NonNull MemorizingTrustManager mtm) {
+    public SSLSocketFactoryCompat(@NonNull X509TrustManager trustManager) {
         try {
             SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, new X509TrustManager[] { mtm }, null);
+            sslContext.init(null, new X509TrustManager[] { trustManager }, null);
             delegate = sslContext.getSocketFactory();
         } catch (GeneralSecurityException e) {
             throw new AssertionError(); // The system has no TLS. Just give up.
