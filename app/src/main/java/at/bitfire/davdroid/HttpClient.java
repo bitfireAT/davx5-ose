@@ -69,8 +69,8 @@ public class HttpClient {
         OkHttpClient.Builder builder = client.newBuilder();
 
         // use MemorizingTrustManager to manage self-signed certificates
-        if (App.getSslSocketFactoryCompat() != null)
-            builder.sslSocketFactory(App.getSslSocketFactoryCompat(), App.getMemorizingTrustManager());
+        if (App.getSslSocketFactoryCompat() != null && App.getCertManager() != null)
+            builder.sslSocketFactory(App.getSslSocketFactoryCompat(), App.getCertManager());
         if (App.getHostnameVerifier() != null)
             builder.hostnameVerifier(App.getHostnameVerifier());
 

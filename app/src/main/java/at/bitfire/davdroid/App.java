@@ -34,11 +34,11 @@ import java.util.logging.Logger;
 
 import javax.net.ssl.HostnameVerifier;
 
+import at.bitfire.cert4android.CustomCertManager;
 import at.bitfire.davdroid.log.LogcatHandler;
 import at.bitfire.davdroid.log.PlainTextFormatter;
 import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.model.Settings;
-import de.duenndns.ssl.MemorizingTrustManager;
 import lombok.Cleanup;
 import lombok.Getter;
 import okhttp3.internal.tls.OkHostnameVerifier;
@@ -49,10 +49,12 @@ public class App extends Application {
             FLAVOR_ICLOUD = "icloud",
             FLAVOR_STANDARD = "standard";
 
-    public static final String LOG_TO_EXTERNAL_STORAGE = "logToExternalStorage";
+    public static final String
+            DISTRUST_SYSTEM_CERTIFICATES = "distrustSystemCerts",
+            LOG_TO_EXTERNAL_STORAGE = "logToExternalStorage";
 
     @Getter
-    private static MemorizingTrustManager memorizingTrustManager;
+    private static CustomCertManager certManager;
 
     @Getter
     private static SSLSocketFactoryCompat sslSocketFactoryCompat;
@@ -63,21 +65,28 @@ public class App extends Application {
     public final static Logger log = Logger.getLogger("davdroid");
     static {
         at.bitfire.dav4android.Constants.log = Logger.getLogger("davdroid.dav4android");
+        at.bitfire.cert4android.Constants.log = Logger.getLogger("davdroid.cert4android");
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        // initialize MemorizingTrustManager
-        if (BuildConfig.useMTM) {
-            memorizingTrustManager = new MemorizingTrustManager(this);
-            sslSocketFactoryCompat = new SSLSocketFactoryCompat(memorizingTrustManager);
-            hostnameVerifier = memorizingTrustManager.wrapHostnameVerifier(OkHostnameVerifier.INSTANCE);
-        }
-
-        // initializer logger
+        reinitCertManager();
         reinitLogger();
+    }
+
+    public void reinitCertManager() {
+        if (BuildConfig.customCerts) {
+            if (certManager != null)
+                certManager.close();
+
+            @Cleanup ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(this);
+            Settings settings = new Settings(dbHelper.getReadableDatabase());
+
+            certManager = new CustomCertManager(this, !settings.getBoolean(DISTRUST_SYSTEM_CERTIFICATES, false));
+            sslSocketFactoryCompat = new SSLSocketFactoryCompat(certManager);
+            hostnameVerifier = certManager.hostnameVerifier(OkHostnameVerifier.INSTANCE);
+        }
     }
 
     public void reinitLogger() {

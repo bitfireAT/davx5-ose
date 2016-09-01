@@ -16,13 +16,13 @@ android {
         applicationId "at.bitfire.davdroid"
         resValue "string", "packageID", applicationId
 
-        versionCode 112
+        versionCode 113
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         minSdkVersion 14
         targetSdkVersion 24
 
-        buildConfigField "boolean", "useMTM", "false"
+        buildConfigField "boolean", "customCerts", "false"
         buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "null"
         buildConfigField "Boolean", "settingVCardRFC6868", "null"
     }
@@ -30,11 +30,11 @@ android {
     productFlavors {
         standard {
             versionName "1.2.3"
-            buildConfigField "boolean", "useMTM", "true"
+            buildConfigField "boolean", "customCerts", "true"
         }
         gplay {
             versionName "1.2.3-gplay"
-            buildConfigField "boolean", "useMTM", "true"
+            buildConfigField "boolean", "customCerts", "true"
         }
         icloud {
             applicationId "at.bitfire.cloudsync"
@@ -98,7 +98,7 @@ dependencies {
     compile 'com.android.support:preference-v14:24.+'
 
     compile 'com.github.yukuku:ambilwarna:2.0.1'
-    compile project(':MemorizingTrustManager')
+    compile project(':cert4android')
 
     compile 'dnsjava:dnsjava:2.1.7'
     compile 'org.apache.commons:commons-lang3:3.4'
