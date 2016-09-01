@@ -155,8 +155,8 @@ public class App extends Application {
     public static Bitmap getLauncherBitmap(@NonNull Context context) {
         Bitmap bitmapLogo = null;
         Drawable drawableLogo = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP ?
-                context.getDrawable(R.drawable.ic_launcher) :
-                context.getResources().getDrawable(R.drawable.ic_launcher);
+                context.getDrawable(R.mipmap.ic_launcher) :
+                context.getResources().getDrawable(R.mipmap.ic_launcher);
         if (drawableLogo instanceof BitmapDrawable)
             bitmapLogo = ((BitmapDrawable)drawableLogo).getBitmap();
         return bitmapLogo;

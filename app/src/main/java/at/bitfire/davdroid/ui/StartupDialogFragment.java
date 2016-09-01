@@ -129,7 +129,7 @@ public class StartupDialogFragment extends DialogFragment {
 
             case DEVELOPMENT_VERSION:
                 return new AlertDialog.Builder(getActivity())
-                        .setIcon(R.drawable.ic_launcher)
+                        .setIcon(R.mipmap.ic_launcher)
                         .setTitle(R.string.startup_development_version)
                         .setMessage(R.string.startup_development_version_message)
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
