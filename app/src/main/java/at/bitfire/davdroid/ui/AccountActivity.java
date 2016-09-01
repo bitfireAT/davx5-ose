@@ -63,6 +63,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
+import at.bitfire.cert4android.CustomCertManager;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.DavService;
 import at.bitfire.davdroid.R;
@@ -110,6 +111,22 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
         // load CardDAV/CalDAV collections
         getLoaderManager().initLoader(0, getIntent().getExtras(), this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        CustomCertManager certManager = App.getCertManager();
+        if (certManager != null)
+            certManager.appInForeground = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        CustomCertManager certManager = App.getCertManager();
+        if (certManager != null)
+            certManager.appInForeground = true;
     }
 
     @Override

@@ -16,15 +16,10 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.SwitchPreferenceCompat;
 
-import java.security.KeyStoreException;
-import java.util.Enumeration;
-import java.util.logging.Level;
-
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.model.Settings;
-import de.duenndns.ssl.MemorizingTrustManager;
 import lombok.Cleanup;
 
 public class AppSettingsActivity extends AppCompatActivity {
@@ -42,9 +37,29 @@ public class AppSettingsActivity extends AppCompatActivity {
 
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
-        Preference prefResetHints,
-                    prefResetCertificates;
-        SwitchPreferenceCompat prefLogToExternalStorage;
+        ServiceDB.OpenHelper dbHelper;
+        Settings settings;
+
+        Preference
+                prefResetHints,
+                prefResetCertificates;
+        SwitchPreferenceCompat
+                prefDistrustSystemCerts,
+                prefLogToExternalStorage;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            dbHelper = new ServiceDB.OpenHelper(getContext());
+            settings = new Settings(dbHelper.getReadableDatabase());
+
+            super.onCreate(savedInstanceState);
+        }
+
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            dbHelper.close();
+        }
 
         @Override
         public void onCreatePreferences(Bundle bundle, String s) {
@@ -52,12 +67,13 @@ public class AppSettingsActivity extends AppCompatActivity {
 
             prefResetHints = findPreference("reset_hints");
 
+            prefDistrustSystemCerts = (SwitchPreferenceCompat)findPreference("distrust_system_certs");
+            prefDistrustSystemCerts.setChecked(settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false));
+
             prefResetCertificates = findPreference("reset_certificates");
-            if (App.getMemorizingTrustManager() == null)
+            if (App.getCertManager() == null)
                 prefResetCertificates.setVisible(false);
 
-            @Cleanup ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
-            Settings settings = new Settings(dbHelper.getReadableDatabase());
             prefLogToExternalStorage = (SwitchPreferenceCompat)findPreference("log_to_external_storage");
             prefLogToExternalStorage.setChecked(settings.getBoolean(App.LOG_TO_EXTERNAL_STORAGE, false));
         }
@@ -66,6 +82,8 @@ public class AppSettingsActivity extends AppCompatActivity {
         public boolean onPreferenceTreeClick(Preference preference) {
             if (preference == prefResetHints)
                 resetHints();
+            else if (preference == prefDistrustSystemCerts)
+                setDistrustSystemCerts(((SwitchPreferenceCompat)preference).isChecked());
             else if (preference == prefResetCertificates)
                 resetCertificates();
             else if (preference == prefLogToExternalStorage)
@@ -76,32 +94,26 @@ public class AppSettingsActivity extends AppCompatActivity {
         }
 
         private void resetHints() {
-            @Cleanup ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
-            Settings settings = new Settings(dbHelper.getWritableDatabase());
             settings.remove(StartupDialogFragment.HINT_BATTERY_OPTIMIZATIONS);
             settings.remove(StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED);
             settings.remove(StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED);
             Snackbar.make(getView(), R.string.app_settings_reset_hints_success, Snackbar.LENGTH_LONG).show();
         }
 
-        private void resetCertificates() {
-            MemorizingTrustManager mtm = App.getMemorizingTrustManager();
+        private void setDistrustSystemCerts(boolean distrust) {
+            settings.putBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, distrust);
 
-            int deleted = 0;
-            Enumeration<String> iterator = mtm.getCertificates();
-            while (iterator.hasMoreElements())
-                try {
-                    mtm.deleteCertificate(iterator.nextElement());
-                    deleted++;
-                } catch (KeyStoreException e) {
-                    App.log.log(Level.SEVERE, "Couldn't distrust certificate", e);
-                }
-            Snackbar.make(getView(), getResources().getQuantityString(R.plurals.app_settings_reset_trusted_certificates_success, deleted, deleted), Snackbar.LENGTH_LONG).show();
+            // re-initialize certificate manager
+            App app = (App)getContext().getApplicationContext();
+            app.reinitCertManager();
+        }
+
+        private void resetCertificates() {
+            App.getCertManager().resetCertificates();
+            Snackbar.make(getView(), getString(R.string.app_settings_reset_certificates_success), Snackbar.LENGTH_LONG).show();
         }
 
         private void setExternalLogging(boolean externalLogging) {
-            @Cleanup ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
-            Settings settings = new Settings(dbHelper.getWritableDatabase());
             settings.putBoolean(App.LOG_TO_EXTERNAL_STORAGE, externalLogging);
 
             // reinitialize logger of default process

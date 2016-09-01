@@ -10,5 +10,4 @@ include ':app'
 include ':dav4android'
 include ':ical4android'
 include ':vcard4android'
-
-include ':MemorizingTrustManager'
+include ':cert4android'

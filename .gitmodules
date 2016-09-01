@@ -7,6 +7,6 @@
 [submodule "vcard4android"]
 	path = vcard4android
 	url = ../vcard4android.git
-[submodule "MemorizingTrustManager"]
-	path = MemorizingTrustManager
- 	url = https://github.com/ge0rg/MemorizingTrustManager
+[submodule "cert4android"]
+	path = cert4android
+	url = ../cert4android.git
