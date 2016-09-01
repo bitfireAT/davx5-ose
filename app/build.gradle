@@ -51,8 +51,8 @@ android {
         standard.java.srcDirs = [ "src/davdroid/java" ]
         standard.res.srcDirs = [ "src/davdroid/res" ]
 
-        gplay.java.srcDirs = [ "src/davdroid/java" ]
-        gplay.res.srcDirs = [ "src/davdroid/res" ]
+        gplay.java.srcDirs = [ "src/gplay/java", "src/davdroid/java" ]
+        gplay.res.srcDirs = [ "src/gplay/res", "src/davdroid/res" ]
     }
 
     buildTypes {
