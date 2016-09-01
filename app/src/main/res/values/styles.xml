@@ -19,9 +19,8 @@
     <color name="orange400">#ffa726</color>
     <color name="orangeA700">#ff6d00</color>
 
-    <color name="grey">#888888</color>
-    <color name="very_light_grey">#ebebeb</color>
-    <color name="white">#ffffff</color>
+    <color name="grey200">#eeeeee</color>
+    <color name="grey700">#616161</color>
 
     <!-- preference-v14 uses this color for categories text -->
     <color name="preference_fallback_accent_color">@color/orangeA700</color>
@@ -35,7 +34,7 @@
         <item name="colorPrimaryDark">@color/light_green700</item>
         <item name="colorAccent">@color/orangeA700</item>
         <item name="android:textColorPrimary">@drawable/text_color</item>
-        <item name="android:textColorSecondary">@color/grey</item>
+        <item name="android:textColorSecondary">@color/grey700</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
@@ -68,7 +67,7 @@
     <!-- stepper (wizard) -->
 
     <style name="stepper_nav_bar">
-        <item name="android:background">@color/very_light_grey</item>
+        <item name="android:background">@color/grey200</item>
     </style>
 
     <style name="stepper_nav_button">
@@ -92,11 +91,11 @@
     </style>
 
     <style name="toolbar_theme">
-        <item name="android:textColorSecondary">@color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
     </style>
     <style name="toolbar_style" parent="Widget.AppCompat.Toolbar">
         <item name="android:background">@color/light_green700</item>
-        <item name="titleTextColor">@color/white</item>
+        <item name="titleTextColor">@android:color/white</item>
     </style>
 
 
