@@ -17,10 +17,15 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/app_settings_security">
+        <SwitchPreferenceCompat
+            android:key="distrust_system_certs"
+            android:title="@string/app_settings_distrust_system_certs"
+            android:summaryOn="@string/app_settings_distrust_system_certs_on"
+            android:summaryOff="@string/app_settings_distrust_system_certs_off"/>
         <Preference
             android:key="reset_certificates"
-            android:title="@string/app_settings_reset_trusted_certificates"
-            android:summary="@string/app_settings_reset_trusted_certificates_summary"/>
+            android:title="@string/app_settings_reset_certificates"
+            android:summary="@string/app_settings_reset_certificates_summary"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/app_settings_debug">
