@@ -16,7 +16,7 @@
         android:title="@string/navigation_drawer_about"/>
     <item
         android:id="@+id/nav_app_settings"
-        android:icon="@drawable/ic_settings_dark"
+        android:icon="@drawable/ic_settings_action"
         android:title="@string/navigation_drawer_settings"/>
 
     <item android:title="@string/navigation_drawer_news_updates">
@@ -37,7 +37,7 @@
                 android:title="@string/navigation_drawer_website"/>
             <item
                 android:id="@+id/nav_faq"
-                android:icon="@drawable/ic_help_dark"
+                android:icon="@drawable/ic_help_action"
                 android:title="@string/navigation_drawer_faq"/>
             <item
                 android:id="@+id/nav_forums"
@@ -46,9 +46,8 @@
             <item
                 android:id="@+id/nav_donate"
                 android:icon="@drawable/ic_attach_money_dark"
-                android:title="(entry disabled)"
-                android:visible="false"
-                tools:ignore="HardcodedText"/>
+                android:title="@string/navigation_drawer_donate"
+                android:visible="false"/>
         </menu>
     </item>
 
