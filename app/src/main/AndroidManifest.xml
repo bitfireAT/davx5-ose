@@ -54,7 +54,7 @@
         android:allowBackup="true"
         android:fullBackupContent="false"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute">
