@@ -10,8 +10,8 @@ package at.bitfire.davdroid;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentValues;
@@ -19,11 +19,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
@@ -140,6 +140,7 @@ public class DavService extends Service {
        which actually do the work
      */
 
+    @SuppressLint("MissingPermission")
     void cleanupAccounts() {
         App.log.info("Cleaning up orphaned accounts");
 
@@ -309,7 +310,7 @@ public class DavService extends Service {
                 if (account != null)
                     debugIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account);
 
-                NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+                NotificationManagerCompat nm = NotificationManagerCompat.from(DavService.this);
                 Notification notify = new NotificationCompat.Builder(DavService.this)
                         .setSmallIcon(R.drawable.ic_error_light)
                         .setLargeIcon(App.getLauncherBitmap(DavService.this))

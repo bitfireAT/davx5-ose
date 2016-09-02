@@ -10,7 +10,6 @@ package at.bitfire.davdroid;
 
 import android.annotation.TargetApi;
 import android.app.Application;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +19,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
@@ -106,7 +106,7 @@ public class App extends Application {
         // add logcat handler
         log.addHandler(LogcatHandler.INSTANCE);
 
-        NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        NotificationManagerCompat nm = NotificationManagerCompat.from(this);
         // log to external file according to preferences
         if (logToFile) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
