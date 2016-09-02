@@ -10,6 +10,7 @@ package at.bitfire.davdroid.ui;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.ContentResolver;
@@ -144,6 +145,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
         }
 
         @Override
+        @SuppressLint("MissingPermission")
         public String loadInBackground() {
             Throwable throwable = null;
             String  logs = null,

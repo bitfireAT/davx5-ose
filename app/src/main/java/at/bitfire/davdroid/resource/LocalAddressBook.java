@@ -175,7 +175,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
 
     // SYNC STATE
 
-    @SuppressWarnings("Recycle")
+    @SuppressWarnings("ParcelClassLoader,Recycle")
     protected void readSyncState() throws ContactsStorageException {
         @Cleanup("recycle") Parcel parcel = Parcel.obtain();
         byte[] raw = getSyncState();
