@@ -76,7 +76,7 @@
     <string name="app_settings_security">Security</string>
     <string name="app_settings_distrust_system_certs">Distrust system certificates</string>
     <string name="app_settings_distrust_system_certs_on">System and user-added CAs won\'t be trusted</string>
-    <string name="app_settings_distrust_system_certs_off">System and user-added CAs will be trusted</string>
+    <string name="app_settings_distrust_system_certs_off">System and user-added CAs will be trusted (recommended)</string>
     <string name="app_settings_reset_certificates">Reset (un)trusted certificates</string>
     <string name="app_settings_reset_certificates_summary">Resets trust of all custom certificates</string>
     <string name="app_settings_reset_certificates_success">All custom certificates have been cleared</string>

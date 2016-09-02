@@ -9,15 +9,14 @@ package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
 import android.annotation.TargetApi;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
@@ -69,7 +68,7 @@ abstract public class SyncManager {
                         SYNC_PHASE_POST_PROCESSING = 10,
                         SYNC_PHASE_SAVE_SYNC_STATE = 11;
 
-    protected final NotificationManager notificationManager;
+    protected final NotificationManagerCompat notificationManager;
     protected final String uniqueCollectionId;
 
     protected final Context context;
@@ -113,7 +112,7 @@ abstract public class SyncManager {
 
         // dismiss previous error notifications
         this.uniqueCollectionId = uniqueCollectionId;
-        notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager = NotificationManagerCompat.from(context);
         notificationManager.cancel(uniqueCollectionId, notificationId());
     }
 
@@ -233,8 +232,7 @@ abstract public class SyncManager {
                     .setLargeIcon(App.getLauncherBitmap(context))
                     .setContentTitle(getSyncErrorTitle())
                     .setContentIntent(PendingIntent.getActivity(context, 0, detailsIntent, PendingIntent.FLAG_CANCEL_CURRENT))
-                    .setCategory(NotificationCompat.CATEGORY_ERROR)
-                    .setLocalOnly(true);
+                    .setCategory(NotificationCompat.CATEGORY_ERROR);
 
             try {
                 String[] phases = context.getResources().getStringArray(R.array.sync_error_phases);

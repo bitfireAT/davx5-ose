@@ -8,6 +8,8 @@
 
 package at.bitfire.davdroid.ui;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -94,6 +96,8 @@ public class StartupDialogFragment extends DialogFragment {
 
     @NonNull
     @Override
+    @TargetApi(Build.VERSION_CODES.M)
+    @SuppressLint("BatteryLife")
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         setCancelable(false);
 
