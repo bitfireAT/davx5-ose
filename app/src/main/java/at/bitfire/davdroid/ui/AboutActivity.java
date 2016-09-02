@@ -90,9 +90,6 @@ public class AboutActivity extends AppCompatActivity {
                     "ical4j", "2.x", "https://ical4j.github.io/",
                     "Ben Fortuna", R.string.about_license_info_no_warranty, "bsd-3clause.html"
             ), new ComponentInfo(
-                    "MemorizingTrustManager", null, "https://github.com/ge0rg/MemorizingTrustManager",
-                    "Georg Lukas", R.string.about_license_info_no_warranty, "mit.html"
-            ), new ComponentInfo(
                     "OkHttp", null, "https://square.github.io/okhttp/",
                     "Square, Inc.", R.string.about_license_info_no_warranty, "apache2.html"
             ), new ComponentInfo(
