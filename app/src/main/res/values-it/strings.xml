@@ -81,4 +81,5 @@
   <string name="exception_show_details">Mostra dettagli</string>
   <!--sync errors and DebugInfoActivity-->
   <string name="sync_error_permissions">Permessi DAVdroid</string>
+  <!--cert4android-->
 </resources>

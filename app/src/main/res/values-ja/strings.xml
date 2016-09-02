@@ -57,11 +57,6 @@
   <string name="app_settings_reset_hints_summary">以前非表示にしたヒントを、再度有効にします</string>
   <string name="app_settings_reset_hints_success">すべてのヒントが再度表示されます</string>
   <string name="app_settings_security">セキュリティ</string>
-  <string name="app_settings_reset_trusted_certificates">信頼済証明書をリセット</string>
-  <string name="app_settings_reset_trusted_certificates_summary">以前承認されたすべての証明書を忘れます</string>
-  <plurals name="app_settings_reset_trusted_certificates_success">
-    <item quantity="other">%d 証明書の信頼を解除しました</item>
-  </plurals>
   <string name="app_settings_debug">デバッグ</string>
   <string name="app_settings_log_to_external_storage">外部ファイルにログ出力</string>
   <string name="app_settings_log_to_external_storage_on">(可能な場合) 外部ストレージにログ出力します</string>
@@ -234,4 +229,5 @@
     <item>同期の状態を保存中</item>
   </string-array>
   <string name="sync_error_unauthorized">ユーザー名/パスワードが間違っています</string>
+  <!--cert4android-->
 </resources>

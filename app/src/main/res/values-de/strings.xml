@@ -57,12 +57,12 @@
   <string name="app_settings_reset_hints_summary">Hinweise, die deaktiviert wurden, wieder anzeigen</string>
   <string name="app_settings_reset_hints_success">Alle Hinweise werden wieder angezeigt</string>
   <string name="app_settings_security">Sicherheit</string>
-  <string name="app_settings_reset_trusted_certificates">Vertrauenswürdige Zertifikate zurücksetzen</string>
-  <string name="app_settings_reset_trusted_certificates_summary">Entzieht allen zuvor akzeptierten Zertifikaten die Vertrauenswürdigkeit</string>
-  <plurals name="app_settings_reset_trusted_certificates_success">
-    <item quantity="one">Dem Zertifikat wird nicht mehr vertraut</item>
-    <item quantity="other">%d Zertifikaten wird nicht mehr vertraut</item>
-  </plurals>
+  <string name="app_settings_distrust_system_certs">Systemzertifikaten nicht vertrauen</string>
+  <string name="app_settings_distrust_system_certs_on">System- und installierten CAs wird nicht vertraut</string>
+  <string name="app_settings_distrust_system_certs_off">System- und installierten CAs wird vertraut (empfohlen)</string>
+  <string name="app_settings_reset_certificates">Zertifikat-Vertrauen zurücksetzen</string>
+  <string name="app_settings_reset_certificates_summary">Setzt angenommene/abgelehnte Zertifikate zurück</string>
+  <string name="app_settings_reset_certificates_success">Alle Informationen über angenommene/abgelehnte Zertifikate wurden zurückgesetzt</string>
   <string name="app_settings_debug">Fehlersuche</string>
   <string name="app_settings_log_to_external_storage">Protokollierung in externe Datei</string>
   <string name="app_settings_log_to_external_storage_on">Protokolliert auf externen Speicher, falls möglich</string>
@@ -236,4 +236,7 @@
     <item>Speichern des Synchronisierungzustands</item>
   </string-array>
   <string name="sync_error_unauthorized">Benutzername/Passwort falsch</string>
+  <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVdroid: Verbindungssicherheit</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVdroid ist auf ein unbekanntes Zertifikat gestoßen. Ist dieses vertrauenswürdig?</string>
 </resources>

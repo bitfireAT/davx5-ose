@@ -57,12 +57,6 @@
   <string name="app_settings_reset_hints_summary">Újra jelenjen meg az összes tipp</string>
   <string name="app_settings_reset_hints_success">Az összes tipp újra meg fog jelenni</string>
   <string name="app_settings_security">Biztonság</string>
-  <string name="app_settings_reset_trusted_certificates">A tanúsítványtár visszaállítása</string>
-  <string name="app_settings_reset_trusted_certificates_summary">Az összes korábban megbízhatónak kiválasztott tanúsítvány törlése</string>
-  <plurals name="app_settings_reset_trusted_certificates_success">
-    <item quantity="one">Egy tanúsítvány megbízhatósága törölve</item>
-    <item quantity="other">%d tanúsítvány megbízhatósága törölve</item>
-  </plurals>
   <string name="app_settings_debug">Hibakeresés</string>
   <string name="app_settings_log_to_external_storage">Naplózás fájlba</string>
   <string name="app_settings_log_to_external_storage_on">Naplózás külső tárhelyre (ha elérhető)</string>
@@ -236,4 +230,5 @@
     <item>szinkronizációs állapot mentése</item>
   </string-array>
   <string name="sync_error_unauthorized">A felhasználónév vagy jelszó hibás</string>
+  <!--cert4android-->
 </resources>
