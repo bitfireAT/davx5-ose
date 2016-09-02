@@ -28,6 +28,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 
 //import com.android.vending.billing.IInAppBillingService;
 
@@ -106,9 +107,8 @@ public abstract class SyncAdapterService extends Service {
                     .setContentText(getContext().getString(R.string.sync_error_permissions_text))
                     .setContentIntent(PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT))
                     .setCategory(NotificationCompat.CATEGORY_ERROR)
-                    .setLocalOnly(true)
                     .build();
-            NotificationManager nm = (NotificationManager)getContext().getSystemService(NOTIFICATION_SERVICE);
+            NotificationManagerCompat nm = NotificationManagerCompat.from(getContext());
             nm.notify(Constants.NOTIFICATION_PERMISSIONS, notify);
         }
 

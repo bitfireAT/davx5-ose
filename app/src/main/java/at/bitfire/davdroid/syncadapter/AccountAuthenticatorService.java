@@ -21,68 +21,69 @@ import android.os.IBinder;
 import at.bitfire.davdroid.ui.setup.LoginActivity;
 
 public class AccountAuthenticatorService extends Service {
-	private static AccountAuthenticator accountAuthenticator;
 
-	private AccountAuthenticator getAuthenticator() {
-		if (accountAuthenticator != null)
-			return accountAuthenticator;
-		return accountAuthenticator = new AccountAuthenticator(this);
-	}
-	
-	@Override
-	public IBinder onBind(Intent intent) {
-		if (intent.getAction().equals(android.accounts.AccountManager.ACTION_AUTHENTICATOR_INTENT))
-			return getAuthenticator().getIBinder(); 
-		return null;
-	}
-	
-	
-	private static class AccountAuthenticator extends AbstractAccountAuthenticator {
-		final Context context;
-		
-		public AccountAuthenticator(Context context) {
-			super(context);
-			this.context = context;
-		}
+    private AccountAuthenticator accountAuthenticator;
 
-		@Override
-		public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType,
-				String[] requiredFeatures, Bundle options) throws NetworkErrorException {
-			Intent intent = new Intent(context, LoginActivity.class);
-			intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
-			Bundle bundle = new Bundle();
-			bundle.putParcelable(AccountManager.KEY_INTENT, intent);
-			return bundle;
-		}
+    @Override
+    public void onCreate() {
+        accountAuthenticator = new AccountAuthenticator(this);
+    }
 
-		@Override
-		public Bundle confirmCredentials(AccountAuthenticatorResponse response, Account account, Bundle options) throws NetworkErrorException {
-			return null;
-		}
+    @Override
+    public IBinder onBind(Intent intent) {
+        if (intent.getAction().equals(android.accounts.AccountManager.ACTION_AUTHENTICATOR_INTENT))
+            return accountAuthenticator.getIBinder();
+        return null;
+    }
 
-		@Override
-		public Bundle editProperties(AccountAuthenticatorResponse response, String accountType) {
-			return null;
-		}
+
+    private static class AccountAuthenticator extends AbstractAccountAuthenticator {
+        final Context context;
+
+        public AccountAuthenticator(Context context) {
+            super(context);
+            this.context = context;
+        }
 
         @Override
-		public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
-			return null;
-		}
+        public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType,
+                String[] requiredFeatures, Bundle options) throws NetworkErrorException {
+            Intent intent = new Intent(context, LoginActivity.class);
+            intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(AccountManager.KEY_INTENT, intent);
+            return bundle;
+        }
 
-		@Override
-		public String getAuthTokenLabel(String authTokenType) {
-			return null;
-		}
+        @Override
+        public Bundle confirmCredentials(AccountAuthenticatorResponse response, Account account, Bundle options) throws NetworkErrorException {
+            return null;
+        }
 
-		@Override
-		public Bundle hasFeatures(AccountAuthenticatorResponse response, Account account, String[] features) throws NetworkErrorException {
-			return null;
-		}
+        @Override
+        public Bundle editProperties(AccountAuthenticatorResponse response, String accountType) {
+            return null;
+        }
 
-		@Override
-		public Bundle updateCredentials(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
-			return null;
-		}
-	}
+        @Override
+        public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
+            return null;
+        }
+
+        @Override
+        public String getAuthTokenLabel(String authTokenType) {
+            return null;
+        }
+
+        @Override
+        public Bundle hasFeatures(AccountAuthenticatorResponse response, Account account, String[] features) throws NetworkErrorException {
+            return null;
+        }
+
+        @Override
+        public Bundle updateCredentials(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
+            return null;
+        }
+
+    }
 }

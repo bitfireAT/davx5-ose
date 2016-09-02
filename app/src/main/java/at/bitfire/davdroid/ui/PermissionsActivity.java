@@ -9,12 +9,12 @@
 package at.bitfire.davdroid.ui;
 
 import android.Manifest;
-import android.app.NotificationManager;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -63,7 +63,7 @@ public class PermissionsActivity extends AppCompatActivity {
         }
 
         if (!noCalendarPermissions && !noContactsPermissions && !noTaskPermissions) {
-            NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+            NotificationManagerCompat nm = NotificationManagerCompat.from(this);
             nm.cancel(Constants.NOTIFICATION_PERMISSIONS);
 
             finish();

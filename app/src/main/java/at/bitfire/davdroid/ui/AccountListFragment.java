@@ -11,6 +11,7 @@ package at.bitfire.davdroid.ui;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -103,6 +104,7 @@ public class AccountListFragment extends ListFragment implements LoaderManager.L
         }
 
         @Override
+        @SuppressLint("MissingPermission")
         public Account[] loadInBackground() {
             return accountManager.getAccountsByType(getContext().getString(R.string.account_type));
         }

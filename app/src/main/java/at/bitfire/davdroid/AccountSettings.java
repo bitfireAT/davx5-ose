@@ -12,7 +12,6 @@ import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentProviderClient;
@@ -22,15 +21,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.PeriodicSync;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
@@ -131,7 +128,7 @@ public class AccountSettings {
                                 PendingIntent.FLAG_CANCEL_CURRENT))
                         .setLocalOnly(true)
                         .build();
-                NotificationManager nm = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+                NotificationManagerCompat nm = NotificationManagerCompat.from(context);
                 nm.notify(Constants.NOTIFICATION_ACCOUNT_SETTINGS_UPDATED, notify);
 
                 update(version);
@@ -444,7 +441,7 @@ public class AccountSettings {
     public static class AppUpdatedReceiver extends BroadcastReceiver {
 
         @Override
-        @SuppressLint("UnsafeProtectedBroadcastReceiver")
+        @SuppressLint("UnsafeProtectedBroadcastReceiver,MissingPermission")
         public void onReceive(Context context, Intent intent) {
             App.log.info("DAVdroid was updated, checking for AccountSettings version");
 

@@ -8,6 +8,7 @@
 
 package at.bitfire.davdroid;
 
+import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -22,12 +23,14 @@ public class AccountsChangedReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Intent serviceIntent = new Intent(context, DavService.class);
-        serviceIntent.setAction(DavService.ACTION_ACCOUNTS_UPDATED);
-        context.startService(serviceIntent);
+        if (AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION.equals(intent.getAction())) {
+            Intent serviceIntent = new Intent(context, DavService.class);
+            serviceIntent.setAction(DavService.ACTION_ACCOUNTS_UPDATED);
+            context.startService(serviceIntent);
 
-        for (OnAccountsUpdateListener listener : listeners)
-            listener.onAccountsUpdated(null);
+            for (OnAccountsUpdateListener listener : listeners)
+                listener.onAccountsUpdated(null);
+        }
     }
 
     public static void registerListener(OnAccountsUpdateListener listener, boolean callImmediately) {
