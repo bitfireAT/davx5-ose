@@ -54,12 +54,6 @@
   <string name="app_settings_reset_hints_summary">Hints die al gezien zijn opnieuw weergeven</string>
   <string name="app_settings_reset_hints_success">Alle hints worden opnieuw weergegeven</string>
   <string name="app_settings_security">Beveiliging</string>
-  <string name="app_settings_reset_trusted_certificates">Vertrouwde certificaten resetten</string>
-  <string name="app_settings_reset_trusted_certificates_summary">Vergeet alle eerder geaccepteerde certificaten</string>
-  <plurals name="app_settings_reset_trusted_certificates_success">
-    <item quantity="one">Onbetrouwbaar certificaat</item>
-    <item quantity="other">Onbetrouwbaar %d certificaten</item>
-  </plurals>
   <string name="app_settings_debug">Debuggen</string>
   <string name="app_settings_log_to_external_storage">Log naar extern bestand</string>
   <string name="app_settings_log_to_external_storage_on">Loggen naar externe opslag (wanneer beschikbaar)</string>
@@ -233,4 +227,5 @@
     <item>opslaan sync voortgang</item>
   </string-array>
   <string name="sync_error_unauthorized">Gebruikersnaam/wachtwoord onjuist</string>
+  <!--cert4android-->
 </resources>

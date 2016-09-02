@@ -57,13 +57,6 @@
   <string name="app_settings_reset_hints_summary">Поновно приказивање претходно одбачених савета</string>
   <string name="app_settings_reset_hints_success">Сви савети ће поново бити приказани</string>
   <string name="app_settings_security">Безбедност</string>
-  <string name="app_settings_reset_trusted_certificates">Ресетуј поуздане сертификате</string>
-  <string name="app_settings_reset_trusted_certificates_summary">Заборављање претходно прихваћених сертификата</string>
-  <plurals name="app_settings_reset_trusted_certificates_success">
-    <item quantity="one">Посумњано у један сертификат</item>
-    <item quantity="few">Посумњано у %d сертификата</item>
-    <item quantity="other">Посумњано у %d сертификата</item>
-  </plurals>
   <string name="app_settings_debug">Тражење грешака</string>
   <string name="app_settings_log_to_external_storage">Уписуј у спољашњи фајл</string>
   <string name="app_settings_log_to_external_storage_on">Уписивање евиденције у спољашње складиште (ако је доступно)</string>
@@ -238,4 +231,5 @@
     <item>уписујем стање синхронизације</item>
   </string-array>
   <string name="sync_error_unauthorized">Корисничко име или лозинка погрешни</string>
+  <!--cert4android-->
 </resources>

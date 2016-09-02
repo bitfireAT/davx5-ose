@@ -57,13 +57,6 @@
   <string name="app_settings_reset_hints_summary">Znovu povolí vypnuté texty nápovědy</string>
   <string name="app_settings_reset_hints_success">Budou zobrazovány všechny texty nápovědy</string>
   <string name="app_settings_security">Zabezpečení</string>
-  <string name="app_settings_reset_trusted_certificates">Resetovat důvěryhodné certifikáty</string>
-  <string name="app_settings_reset_trusted_certificates_summary">Zapomene všechny dříve akceptované certifikáty</string>
-  <plurals name="app_settings_reset_trusted_certificates_success">
-    <item quantity="one">Znedůvěryhodněn jeden certifikát</item>
-    <item quantity="few">Znedůvěryhodněny %d certifikáty</item>
-    <item quantity="other">Znedůvěryhodněno %d certifikátů</item>
-  </plurals>
   <string name="app_settings_debug">Ladění</string>
   <string name="app_settings_log_to_external_storage">Logovat do externího souboru</string>
   <string name="app_settings_log_to_external_storage_on">Logování do externího úložiště (pokud dostupné)</string>
@@ -238,4 +231,5 @@
     <item>ukládání stavu synchronizace</item>
   </string-array>
   <string name="sync_error_unauthorized">Chybné uživatelské jméno/heslo</string>
+  <!--cert4android-->
 </resources>
