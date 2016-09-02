@@ -54,11 +54,6 @@
   <string name="app_settings_reset_hints_summary">Daha önceden azat edilen ipuçlarını yeniden etkinleştirir</string>
   <string name="app_settings_reset_hints_success">Tüm ipuçları artık gösterilecek</string>
   <string name="app_settings_security">Güvenlik</string>
-  <string name="app_settings_reset_trusted_certificates">Güvenilen sertifikaları sıfırla</string>
-  <string name="app_settings_reset_trusted_certificates_summary">Daha önceden kabul edilmiş tüm sertifikaları unutur</string>
-  <plurals name="app_settings_reset_trusted_certificates_success">
-    <item quantity="other">Güvenilmeyen %d sertifikaları</item>
-  </plurals>
   <string name="app_settings_debug">Hata ayıklama</string>
   <string name="app_settings_log_to_external_storage">Harici dosyaya jurnalle</string>
   <string name="app_settings_log_to_external_storage_on">Harici depolamaya jurnalleniyor (eğer uygunsa)</string>
@@ -205,4 +200,5 @@
   <string name="sync_error_http_dav">%s yaparken sunucu hatası</string>
   <string name="sync_error_local_storage">%s yaparken veritabanı hatası</string>
   <string name="sync_error_unauthorized">Kullanıcı adı/parola yanlış</string>
+  <!--cert4android-->
 </resources>

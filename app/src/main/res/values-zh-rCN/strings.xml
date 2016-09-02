@@ -57,11 +57,6 @@
   <string name="app_settings_reset_hints_summary">重新显示之前忽略过的提示</string>
   <string name="app_settings_reset_hints_success">所有提示将会再次显示</string>
   <string name="app_settings_security">安全</string>
-  <string name="app_settings_reset_trusted_certificates">重设受信任证书</string>
-  <string name="app_settings_reset_trusted_certificates_summary">取消信任所有之前接受的证书</string>
-  <plurals name="app_settings_reset_trusted_certificates_success">
-    <item quantity="other">已删除 %d 个证书</item>
-  </plurals>
   <string name="app_settings_debug">调试</string>
   <string name="app_settings_log_to_external_storage">外部文件日志</string>
   <string name="app_settings_log_to_external_storage_on">记录日志到外部存储（如果可用）</string>
@@ -234,4 +229,5 @@
     <item>保存同步状态</item>
   </string-array>
   <string name="sync_error_unauthorized">用户名或密码错误</string>
+  <!--cert4android-->
 </resources>

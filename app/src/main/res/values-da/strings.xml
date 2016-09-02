@@ -54,12 +54,6 @@
   <string name="app_settings_reset_hints_summary">Genaktiverer hjælp, som er blevet lukket tidligere</string>
   <string name="app_settings_reset_hints_success">Al vejledning vil blive vist igen</string>
   <string name="app_settings_security">Sikkerhed</string>
-  <string name="app_settings_reset_trusted_certificates">Nulstil verificerede certifikater</string>
-  <string name="app_settings_reset_trusted_certificates_summary">Glemmer alle certifikater, der er blevet godkendt tidligere</string>
-  <plurals name="app_settings_reset_trusted_certificates_success">
-    <item quantity="one">Ikke-accepteret certifikat</item>
-    <item quantity="other">%d kke-accepterede certifikater</item>
-  </plurals>
   <string name="app_settings_debug">Debugging</string>
   <string name="app_settings_log_to_external_storage">Log til ekstern fil</string>
   <string name="app_settings_log_to_external_storage_on">Logger til eksternt lager (hvis muligt)</string>
@@ -233,4 +227,5 @@
     <item>gemmer synkroniseringsstatus</item>
   </string-array>
   <string name="sync_error_unauthorized">Fejl i brugernavn/adgangskode</string>
+  <!--cert4android-->
 </resources>
