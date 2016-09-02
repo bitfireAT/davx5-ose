@@ -7,6 +7,9 @@
   <string name="please_wait">SVP attendez ...</string>
   <string name="send">Envoyer</string>
   <!--startup dialogs-->
+  <string name="startup_battery_optimization">Optimisation de la batterie</string>
+  <string name="startup_battery_optimization_message">Android peut désactiver/réduire la synchronisation de DAVdroid après quelques jours. Pour éviter cela, désactivez l\'optimisation de la batterie.</string>
+  <string name="startup_battery_optimization_disable">Désactivez pour DAVdroid</string>
   <string name="startup_dont_show_again">Ne plus afficher</string>
   <string name="startup_development_version">Pré-version de DAVdroid</string>
   <string name="startup_development_version_message">Il s\'agit d\'une version de développement de DAVdroid. Il se peut que les choses ne fonctionnent pas comme prévu. S’il vous plaît faites-nous un retour pour améliorer DAVdroid.</string>
@@ -53,12 +56,6 @@
   <string name="app_settings_reset_hints_summary">Réactiver les astuces qui ont été vu précédemment</string>
   <string name="app_settings_reset_hints_success">Toutes les astuces seront affichés à nouveau</string>
   <string name="app_settings_security">Sécurité</string>
-  <string name="app_settings_reset_trusted_certificates">Réinitialiser les certificats de confiance</string>
-  <string name="app_settings_reset_trusted_certificates_summary">Oublier tous les certificats qui ont été acceptés précédemment</string>
-  <plurals name="app_settings_reset_trusted_certificates_success">
-    <item quantity="one">Un certificat douteux</item>
-    <item quantity="other">%d certificats douteux</item>
-  </plurals>
   <string name="app_settings_debug">Débogage</string>
   <string name="app_settings_log_to_external_storage">Journaliser dans un fichier externe</string>
   <string name="app_settings_log_to_external_storage_on">Journaliser sur le stockage externe (si disponible)</string>
@@ -211,5 +208,20 @@
   <string name="sync_error">Erreur durant %s</string>
   <string name="sync_error_http_dav">Erreur de serveur durant %s</string>
   <string name="sync_error_local_storage">Erreur de base de donnée durant %s</string>
+  <string-array name="sync_error_phases">
+    <item>prépare la synchronisation</item>
+    <item>demande les autorisations</item>
+    <item>procède à la suppression des entrées locales</item>
+    <item>prépare les entrées créées/modifiées</item>
+    <item>envoi les entrées créées/modifiées</item>
+    <item>vérifie l\'état de la synchronisation</item>
+    <item>liste les entrées locales</item>
+    <item>liste les entrées distantes</item>
+    <item>compare les entrées locales/distantes</item>
+    <item>télécharge les entrées distantes</item>
+    <item>post-traitement</item>
+    <item>enregistre l\'état de la synchronisation</item>
+  </string-array>
   <string name="sync_error_unauthorized">Nom d\'utilisateur ou mot de passe erroné</string>
+  <!--cert4android-->
 </resources>
