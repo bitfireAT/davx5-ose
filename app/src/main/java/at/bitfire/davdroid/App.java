@@ -163,14 +163,17 @@ public class App extends Application {
     }
 
 
-    public static class ReinitLoggingReceiver extends BroadcastReceiver {
+    public static class ReinitSettingsReceiver extends BroadcastReceiver {
+
+        public static final String ACTION_REINIT_SETTINGS = "at.bitfire.davdroid.REINIT_SETTINGS";
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            log.info("Received broadcast: re-initializing logger");
+            log.info("Received broadcast: re-initializing settings (logger/cert manager)");
 
             App app = (App)context.getApplicationContext();
             app.reinitLogger();
+            app.reinitCertManager();
         }
 
     }

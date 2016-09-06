@@ -52,11 +52,11 @@
         tools:ignore="UnusedAttribute">
 
         <receiver
-            android:name=".App$ReinitLoggingReceiver"
+            android:name=".App$ReinitSettingsReceiver"
             android:exported="false"
             android:process=":sync">
             <intent-filter>
-                <action android:name="at.bitfire.davdroid.REINIT_LOGGER"/>
+                <action android:name="at.bitfire.davdroid.REINIT_SETTINGS"/>
             </intent-filter>
         </receiver>
         <receiver
