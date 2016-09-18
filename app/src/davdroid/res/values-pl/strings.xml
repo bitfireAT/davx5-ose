@@ -57,6 +57,12 @@
   <string name="app_settings_reset_hints_summary">Ponownie włącz wskazówki, które zostały usunięte wcześniej</string>
   <string name="app_settings_reset_hints_success">Wszystkie wskazówki pojawią się ponownie</string>
   <string name="app_settings_security">Bezpieczeństwo</string>
+  <string name="app_settings_distrust_system_certs">Usuń certyfikaty systemowe</string>
+  <string name="app_settings_distrust_system_certs_on">CA systemowe i użytkownika nie zostaną dodane</string>
+  <string name="app_settings_distrust_system_certs_off">CA systemowe i użytkownika zostaną dodane (zalecane)</string>
+  <string name="app_settings_reset_certificates">Zresetuj (nie)zaufane certyfikaty</string>
+  <string name="app_settings_reset_certificates_summary">Zresetuj wszystkie niestandardowe certyfikaty.</string>
+  <string name="app_settings_reset_certificates_success">Wszystkie niestandardowe certyfikaty zostały wyczyszczone</string>
   <string name="app_settings_debug">Debugowanie</string>
   <string name="app_settings_log_to_external_storage">Loguj to zewnętrznego pliku</string>
   <string name="app_settings_log_to_external_storage_on">Logowanie do zewnętrznej pamięci (jeśli jest dostępna)</string>
@@ -228,4 +234,6 @@
   </string-array>
   <string name="sync_error_unauthorized">Błędna nazwa użytkownika lub hasło</string>
   <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVdroid: Bezpieczeństwo połączenia</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVdroid napotkał nieznany certyfikat. Czy chcesz go dodać?</string>
 </resources>

@@ -56,6 +56,8 @@
   <string name="app_settings_reset_hints_summary">Réactiver les astuces qui ont été vu précédemment</string>
   <string name="app_settings_reset_hints_success">Toutes les astuces seront affichés à nouveau</string>
   <string name="app_settings_security">Sécurité</string>
+  <string name="app_settings_reset_certificates_summary">Réinitialiser la confiance de tous les certificats personnalisés</string>
+  <string name="app_settings_reset_certificates_success">Tous les certificats personnalisés ont été effacés</string>
   <string name="app_settings_debug">Débogage</string>
   <string name="app_settings_log_to_external_storage">Journaliser dans un fichier externe</string>
   <string name="app_settings_log_to_external_storage_on">Journaliser sur le stockage externe (si disponible)</string>
@@ -224,4 +226,5 @@
   </string-array>
   <string name="sync_error_unauthorized">Nom d\'utilisateur ou mot de passe erroné</string>
   <!--cert4android-->
+  <string name="trust_certificate_unknown_certificate_found">DAVdroid a rencontré un certificat inconnu. Voulez-vous lui faire confiance?</string>
 </resources>
