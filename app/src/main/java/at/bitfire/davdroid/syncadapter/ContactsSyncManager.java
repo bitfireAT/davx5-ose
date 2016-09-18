@@ -47,6 +47,7 @@ import at.bitfire.dav4android.property.AddressData;
 import at.bitfire.dav4android.property.GetCTag;
 import at.bitfire.dav4android.property.GetContentType;
 import at.bitfire.dav4android.property.GetETag;
+import at.bitfire.dav4android.property.ResourceType;
 import at.bitfire.dav4android.property.SupportedAddressData;
 import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
@@ -269,26 +270,15 @@ public class ContactsSyncManager extends SyncManager {
     @Override
     protected void listRemote() throws IOException, HttpException, DavException {
         // fetch list of remote VCards and build hash table to index file name
-
-        try {
-            davAddressBook().addressbookQuery();
-        } catch(HttpException e) {
-            /*  non-successful responses to CARDDAV:addressbook-query with empty filter, tested on 2015/10/21
-             *  fastmail.com                 403 Forbidden (DAV:error CARDDAV:supported-filter)
-             *  mailbox.org (OpenXchange)    400 Bad Request
-             *  SOGo                         207 Multi-status, but without entries       http://www.sogo.nu/bugs/view.php?id=3370
-             *  Zimbra ZCS                   500 Server Error                            https://bugzilla.zimbra.com/show_bug.cgi?id=101902
-             */
-            if (e.status == 400 || e.status == 403 || e.status == 500 || e.status == 501) {
-                App.log.log(Level.WARNING, "Server error on REPORT addressbook-query, falling back to PROPFIND", e);
-                davAddressBook().propfind(1, GetETag.NAME);
-            } else
-                // no defined fallback, pass through exception
-                throw e;
-        }
+        davAddressBook().propfind(1, ResourceType.NAME, GetETag.NAME);
 
         remoteResources = new HashMap<>(davCollection.members.size());
         for (DavResource vCard : davCollection.members) {
+            // ignore member collections
+            ResourceType type = (ResourceType)vCard.properties.get(ResourceType.NAME);
+            if (type != null && type.types.contains(ResourceType.COLLECTION))
+                continue;
+
             String fileName = vCard.fileName();
             App.log.fine("Found remote VCard: " + fileName);
             remoteResources.put(fileName, vCard);
