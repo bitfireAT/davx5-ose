@@ -51,6 +51,7 @@
             android:layout_marginBottom="32dp"/>
 
         <TextView
+            android:id="@+id/license_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/TextView.Heading"
