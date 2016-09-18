@@ -65,15 +65,15 @@ public class AboutActivity extends AppCompatActivity {
     @RequiredArgsConstructor
     private static class ComponentInfo {
         final String title, version, website, copyright;
-        final int licenseInfo;
+        final Integer licenseInfo;
         final String licenseTextFile;
     }
 
     private final static ComponentInfo components[] = {
             new ComponentInfo(
-                    "DAVdroid", BuildConfig.VERSION_NAME, "https://davdroid.bitfire.at",
+                    null, BuildConfig.VERSION_NAME, "https://davdroid.bitfire.at",
                     DateFormatUtils.format(BuildConfig.buildTime, "yyyy") + " Ricki Hirner, Bernhard Stockmann (bitfire web engineering)",
-                    R.string.about_license_info_no_warranty, "gpl-3.0-standalone.html"
+                    null, null
             ), new ComponentInfo(
                     "AmbilWarna", null, "https://github.com/yukuku/ambilwarna",
                     "Yuku", R.string.about_license_info_no_warranty, "apache2.html"
@@ -99,7 +99,7 @@ public class AboutActivity extends AppCompatActivity {
     };
 
 
-    private static class TabsAdapter extends FragmentPagerAdapter {
+    private class TabsAdapter extends FragmentPagerAdapter {
         public TabsAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -111,7 +111,7 @@ public class AboutActivity extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return components[position].title;
+            return components[position].title != null ? components[position].title : getString(R.string.app_name);
         }
 
         @Override
@@ -142,7 +142,8 @@ public class AboutActivity extends AppCompatActivity {
             View v = inflater.inflate(R.layout.about_component, container, false);
 
             TextView tv = (TextView)v.findViewById(R.id.title);
-            tv.setText(info.title + (info.version != null ? (" " + info.version) : ""));
+            tv.setText((info.title == null ? getString(R.string.app_name) : info.title) +
+                    (info.version != null ? (" " + info.version) : ""));
 
             tv = (TextView)v.findViewById(R.id.website);
             tv.setAutoLinkMask(Linkify.WEB_URLS);
@@ -152,12 +153,20 @@ public class AboutActivity extends AppCompatActivity {
             tv.setText("© " + info.copyright);
 
             tv = (TextView)v.findViewById(R.id.license_info);
-            tv.setText(info.licenseInfo);
+            if (info.licenseInfo == null)
+                tv.setVisibility(View.GONE);
+            else
+                tv.setText(info.licenseInfo);
 
             // load and format license text
-            Bundle args = new Bundle(1);
-            args.putString(KEY_FILE_NAME, info.licenseTextFile);
-            getLoaderManager().initLoader(0, args, this);
+            if (info.licenseTextFile == null) {
+                v.findViewById(R.id.license_header).setVisibility(View.GONE);
+                v.findViewById(R.id.license_text).setVisibility(View.GONE);
+            } else {
+                Bundle args = new Bundle(1);
+                args.putString(KEY_FILE_NAME, info.licenseTextFile);
+                getLoaderManager().initLoader(0, args, this);
+            }
 
             return v;
         }
