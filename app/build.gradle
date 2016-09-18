@@ -10,7 +10,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    buildToolsVersion '24.0.2'
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
@@ -88,6 +88,7 @@ android {
 }
 
 dependencies {
+    compile project(':cert4android')
     compile project(':dav4android')
     compile project(':ical4android')
     compile project(':vcard4android')
@@ -98,13 +99,11 @@ dependencies {
     compile 'com.android.support:preference-v14:24.+'
 
     compile 'com.github.yukuku:ambilwarna:2.0.1'
-    compile project(':cert4android')
 
     compile 'dnsjava:dnsjava:2.1.7'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'org.apache.commons:commons-collections4:4.1'
     provided 'org.projectlombok:lombok:1.16.10'
-
     // for tests
     testCompile 'junit:junit:4.12'
     testCompile 'com.squareup.okhttp3:mockwebserver:3.4.1'
