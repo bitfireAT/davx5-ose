@@ -59,6 +59,7 @@
   <string name="app_settings_security">Segurança</string>
   <string name="app_settings_distrust_system_certs">Desconfiar dos certificados de sistema</string>
   <string name="app_settings_distrust_system_certs_on">ACs adicionadas pelo usuário e pelo sistema não serão confiáveis</string>
+  <string name="app_settings_distrust_system_certs_off">ACs adicionadas pelo usuário e pelo sistema serão confiáveis (recomendado)</string>
   <string name="app_settings_reset_certificates">Restaurar certificados não-confiáveis</string>
   <string name="app_settings_reset_certificates_summary">Restaura a confiança de todos os certificados personalizados</string>
   <string name="app_settings_reset_certificates_success">Todos os certificados personalizados foram restaurados</string>
@@ -67,7 +68,7 @@
   <string name="app_settings_log_to_external_storage_on">Registrando no armazenamento externo (se disponível)</string>
   <string name="app_settings_log_to_external_storage_off">O registro em arquivo externo está desativado</string>
   <string name="app_settings_show_debug_info">Mostrar informações de depuração</string>
-  <string name="app_settings_show_debug_info_details">Exibir/compartilhar o software e os detalhes da configuração</string>
+  <string name="app_settings_show_debug_info_details">Exibe/compartilha o software e os detalhes da configuração</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Sincronizar agora</string>
   <string name="account_synchronizing_now">Sincronizando</string>
