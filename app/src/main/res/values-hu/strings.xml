@@ -57,6 +57,12 @@
   <string name="app_settings_reset_hints_summary">Újra jelenjen meg az összes tipp</string>
   <string name="app_settings_reset_hints_success">Az összes tipp újra meg fog jelenni</string>
   <string name="app_settings_security">Biztonság</string>
+  <string name="app_settings_distrust_system_certs">A rendszertanúsítványok elfogadása</string>
+  <string name="app_settings_distrust_system_certs_on">A rendszer által kezelt, előre vagy felhasználó által telepített tanúsítványok figyelmen kívül lesznek hagyva</string>
+  <string name="app_settings_distrust_system_certs_off">A rendszer által kezelt, előre vagy felhasználó által telepített tanúsítványok megbízhatóak (javasolt)</string>
+  <string name="app_settings_reset_certificates">A tanúsítványok megbízhatóságának törlésére</string>
+  <string name="app_settings_reset_certificates_summary">A tanúsítványok megbízhatóságával kapcsolatos beállítások törlésére</string>
+  <string name="app_settings_reset_certificates_success">A tanúsítványok megbízhatóságával kapcsolatos beállítások törölve</string>
   <string name="app_settings_debug">Hibakeresés</string>
   <string name="app_settings_log_to_external_storage">Naplózás fájlba</string>
   <string name="app_settings_log_to_external_storage_on">Naplózás külső tárhelyre (ha elérhető)</string>
@@ -231,4 +237,6 @@
   </string-array>
   <string name="sync_error_unauthorized">A felhasználónév vagy jelszó hibás</string>
   <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVdroid: kapcsolatbiztonság</string>
+  <string name="trust_certificate_unknown_certificate_found">Egy eddig ismeretlen tanúsítvány érkezett.  Megbízhatónak kívánja elfogadni?</string>
 </resources>

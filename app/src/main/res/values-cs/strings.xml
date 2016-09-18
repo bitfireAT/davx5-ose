@@ -57,6 +57,12 @@
   <string name="app_settings_reset_hints_summary">Znovu povolí vypnuté texty nápovědy</string>
   <string name="app_settings_reset_hints_success">Budou zobrazovány všechny texty nápovědy</string>
   <string name="app_settings_security">Zabezpečení</string>
+  <string name="app_settings_distrust_system_certs">Nedůvěřovat systémovým certifikátům</string>
+  <string name="app_settings_distrust_system_certs_on">Systémovým a uživatelem přidaným CA nebude důvěřováno</string>
+  <string name="app_settings_distrust_system_certs_off">Systémovým a uživatelem přidaným CA bude důvěřováno (doporučeno)</string>
+  <string name="app_settings_reset_certificates">Resetovat (ne)důvěryhodné certifikáty</string>
+  <string name="app_settings_reset_certificates_summary">Resetovat důvěryhodnost všech vlastních certifikátů</string>
+  <string name="app_settings_reset_certificates_success">Všechny vlastní certifikáty byly resetovány</string>
   <string name="app_settings_debug">Ladění</string>
   <string name="app_settings_log_to_external_storage">Logovat do externího souboru</string>
   <string name="app_settings_log_to_external_storage_on">Logování do externího úložiště (pokud dostupné)</string>
@@ -232,4 +238,6 @@
   </string-array>
   <string name="sync_error_unauthorized">Chybné uživatelské jméno/heslo</string>
   <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVdroid: Zabezpečení připojení</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVdroid nalezl neznámý certifikát. Chcete mu důvěřovat?</string>
 </resources>

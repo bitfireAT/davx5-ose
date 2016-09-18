@@ -57,6 +57,12 @@
   <string name="app_settings_reset_hints_summary">以前非表示にしたヒントを、再度有効にします</string>
   <string name="app_settings_reset_hints_success">すべてのヒントが再度表示されます</string>
   <string name="app_settings_security">セキュリティ</string>
+  <string name="app_settings_distrust_system_certs">システム証明書の信頼を解除</string>
+  <string name="app_settings_distrust_system_certs_on">システムとユーザーが追加したCAを信頼しない</string>
+  <string name="app_settings_distrust_system_certs_off">システムとユーザーが追加したCAを信頼する (推奨)</string>
+  <string name="app_settings_reset_certificates">(未)信頼済証明書をリセット</string>
+  <string name="app_settings_reset_certificates_summary">すべてのカスタム証明書の信頼をリセット</string>
+  <string name="app_settings_reset_certificates_success">すべてのカスタム証明書をクリアしました</string>
   <string name="app_settings_debug">デバッグ</string>
   <string name="app_settings_log_to_external_storage">外部ファイルにログ出力</string>
   <string name="app_settings_log_to_external_storage_on">(可能な場合) 外部ストレージにログ出力します</string>
@@ -230,4 +236,6 @@
   </string-array>
   <string name="sync_error_unauthorized">ユーザー名/パスワードが間違っています</string>
   <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVdroid: 接続セキュリティ</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVdroidは、未知の証明書を検出しました。それを信頼しますか?</string>
 </resources>
