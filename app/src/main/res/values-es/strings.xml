@@ -7,6 +7,9 @@
   <string name="please_wait">Por favor, espere...</string>
   <string name="send">Enviar</string>
   <!--startup dialogs-->
+  <string name="startup_battery_optimization">Optimización de batería</string>
+  <string name="startup_battery_optimization_message">Android puede desactivar/reducir la sincronización de DAVdroid después de unos días. Para prevenir esto, desactiva la optimización.</string>
+  <string name="startup_battery_optimization_disable">Apagar para DAVdroid</string>
   <string name="startup_dont_show_again">No mostrar de nuevo</string>
   <string name="startup_development_version">Versión candidata final de DAVdroid</string>
   <string name="startup_development_version_message">Esta es una versión de desarrollo de DAVdroid. Tenga presente que puede que no todo funcione como espera. Por favor, denos una retroalimentación constructiva para mejorar DAVdroid.</string>
@@ -43,7 +46,7 @@
   <string name="navigation_drawer_faq">Preguntas frequentes</string>
   <string name="navigation_drawer_forums">Comunidad</string>
   <string name="navigation_drawer_donate">Donar</string>
-  <string name="account_list_empty">Bienvenido a DAVdroid!\n\nAhora puede añadir una cuenta CalDAV/CardDAV.</string>
+  <string name="account_list_empty">Bienvenido a DAVdroid!\n\nAhora puedes añadir una cuenta CalDAV/CardDAV.</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Falló la detección del servicio</string>
   <string name="dav_service_refresh_couldnt_refresh">No se pudo refrescar lista de colección</string>
@@ -51,9 +54,15 @@
   <string name="app_settings">Ajustes</string>
   <string name="app_settings_user_interface">Interfaz de usuario</string>
   <string name="app_settings_reset_hints">Restablecer advertencias</string>
-  <string name="app_settings_reset_hints_summary">Habilita las advertencias que han sido cesadas con anterioridad</string>
-  <string name="app_settings_reset_hints_success">Todas las advertencias serán mostradas de nuevo</string>
+  <string name="app_settings_reset_hints_summary">Habilita las advertencias que han sido rechazadas con anterioridad</string>
+  <string name="app_settings_reset_hints_success">Todas las advertencias se mostrarán nuevamente</string>
   <string name="app_settings_security">Seguridad</string>
+  <string name="app_settings_distrust_system_certs">Invalidar los certificados del sistema</string>
+  <string name="app_settings_distrust_system_certs_on">Los CA del sistema y los añadidos por el usuario no serán válidos</string>
+  <string name="app_settings_distrust_system_certs_off">Los CA del sistema y los añadidos por el usuario serán usados y de confianza (recomendado)</string>
+  <string name="app_settings_reset_certificates">Reiniciar certificados (in)validados</string>
+  <string name="app_settings_reset_certificates_summary">Reinicia la validez de todos los certificados particulares</string>
+  <string name="app_settings_reset_certificates_success">Todos los certificados particulares han sido limpiados</string>
   <string name="app_settings_debug">Depuración</string>
   <string name="app_settings_log_to_external_storage">Registrar en fichero externo</string>
   <string name="app_settings_log_to_external_storage_on">Registro en almacenamiento externo (si está disponible)</string>
@@ -65,8 +74,8 @@
   <string name="account_synchronizing_now">Sincronizando...</string>
   <string name="account_settings">Ajustes de cuenta</string>
   <string name="account_delete">Eliminar cuenta</string>
-  <string name="account_delete_confirmation_title">¿Seguro que desea eliminar la cuenta?</string>
-  <string name="account_delete_confirmation_text">Todas las copias locales de sus contactos, calendarios y tareas serán eliminadas.</string>
+  <string name="account_delete_confirmation_title">¿Seguro que deseas eliminar la cuenta?</string>
+  <string name="account_delete_confirmation_text">Todas las copias locales de tus contactos, calendarios y tareas serán eliminadas.</string>
   <string name="account_refresh_address_book_list">Refrescar contactos</string>
   <string name="account_create_new_address_book">Crear nueva lista de contactos</string>
   <string name="account_refresh_calendar_list">Refrescar calendario</string>
@@ -74,13 +83,13 @@
   <!--PermissionsActivity-->
   <string name="permissions_title">Permisos de DAVdroid</string>
   <string name="permissions_calendar">Permisos de calendario</string>
-  <string name="permissions_calendar_details">Para sincronizar eventos CalDAV con sus calendarios locales, DAVdroid necesita acceder a los mismos.</string>
+  <string name="permissions_calendar_details">Para sincronizar eventos CalDAV con tus calendarios locales, DAVdroid necesita acceder a los mismos.</string>
   <string name="permissions_calendar_request">Solicitar permisos sobre calendario</string>
   <string name="permissions_contacts">Permisos de contactos</string>
-  <string name="permissions_contacts_details">Para sincronizar libretas de contactos CadDAV con sus contactos locales, DAVdroid necesita acceder a los mismos.</string>
+  <string name="permissions_contacts_details">Para sincronizar libretas de contactos CadDAV con tus contactos locales, DAVdroid necesita acceder a los mismos.</string>
   <string name="permissions_contacts_request">Solicitar permisos sobre contactos</string>
   <string name="permissions_opentasks">Permisos de OpenTasks</string>
-  <string name="permissions_opentasks_details">Para sincronizar listas de tareas CalDAV con sus listas de tareas locales, DAVdroid necesita acceder a OpenTasks.</string>
+  <string name="permissions_opentasks_details">Para sincronizar listas de tareas CalDAV con tus listas de tareas locales, DAVdroid necesita acceder a OpenTasks.</string>
   <string name="permissions_opentasks_request">Solicitar permisos sobre OpenTasks</string>
   <!--AddAccountActivity-->
   <string name="login_title">Añadir cuenta</string>
@@ -99,12 +108,13 @@
   <string name="login_back">Volver</string>
   <string name="login_create_account">Crear cuenta</string>
   <string name="login_account_name">Nombre de cuenta</string>
-  <string name="login_account_name_info">Use su dirección de correo como nombre de su cuenta puesto que Android usará el nombre de la cuenta como campo de \"organizador\" en los eventos que cree. No puede tener dos cuentas con el mismo nombre.</string>
+  <string name="login_account_name_info">Usa tu dirección de correo como nombre de cuenta puesto que Android usará el nombre de la cuenta como campo de \"organizador\" en los eventos que cree. No puedes tener dos cuentas con el mismo nombre.</string>
+  <string name="login_account_contact_group_method">Método de contacto de grupo:</string>
   <string name="login_account_name_required">Nombre de cuenta requerido</string>
   <string name="login_account_not_created">La cuenta no pudo ser creada</string>
   <string name="login_configuration_detection">Detectar configuración</string>
-  <string name="login_querying_server">Por favor espere, consultando al servidor...</string>
-  <string name="login_no_caldav_carddav">No se pudo encontrar servicio CalDAV o CardDAV.</string>
+  <string name="login_querying_server">Por favor espera, consultando al servidor...</string>
+  <string name="login_no_caldav_carddav">No se pudo encontrar el servicio CalDAV o CardDAV.</string>
   <string name="login_view_logs">Ver registros</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Ajustes: %s</string>
@@ -143,11 +153,24 @@
   </string-array>
   <string name="settings_sync_wifi_only">Sincronizar sólo sobre WiFi</string>
   <string name="settings_sync_wifi_only_on">La sincronización está restringida a conexiones WiFi</string>
-  <string name="settings_sync_wifi_only_off">Tipo de conexión no tomada en consideración</string>
+  <string name="settings_sync_wifi_only_off">Tipo de conexión no tenido en cuenta</string>
   <string name="settings_sync_wifi_only_ssid">Restricción WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssid_on">Sólo se sincronizará sobre %s</string>
   <string name="settings_sync_wifi_only_ssid_off">Todas las conexiones WiFi pueden ser usadas</string>
-  <string name="settings_sync_wifi_only_ssid_message">Introduzca el nombre de una red WiFi (SSID) para restringir la sincronización a esta red, o deje el campo en blanco para usar todas las conexiones WiFi.</string>
+  <string name="settings_sync_wifi_only_ssid_message">Introduce el nombre de una red WiFi (SSID) para restringir la sincronización a esta red, o deja el campo en blanco para usar todas las conexiones WiFi.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Método de contacto de grupo</string>
+  <string-array name="settings_contact_group_method_values">
+    <item>GROUP_VCARDS</item>
+    <item>CATEGORIAS</item>
+  </string-array>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Los groups tienen VCards separadas</item>
+    <item>Los groups tienen una categoría por contacto</item>
+  </string-array>
+  <string name="settings_rfc6868_for_vcards">Usar RFC6868 para VCards</string>
+  <string name="settings_rfc6868_for_vcards_on">Las comillas dobles se pueden usar en los valores de los parámetros</string>
+  <string name="settings_rfc6868_for_vcards_off">Las comillas dobles no se pueden usar en los valores de los parámetros</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Límite de tiempo de eventos pasados</string>
   <string name="settings_sync_time_range_past_none">Todos los eventos serán sincronizados</string>
@@ -155,7 +178,7 @@
     <item quantity="one">Los eventos anteriores a un día serán ignorados</item>
     <item quantity="other">Los eventos anteriores a %d días serán ignorados</item>
   </plurals>
-  <string name="settings_sync_time_range_past_message">Los eventos anteriores a este número de días serán ignorados (puede ser 0). Deje en blanco el campo para sincronizar todos los eventos.</string>
+  <string name="settings_sync_time_range_past_message">Los eventos anteriores a este número de días serán ignorados (puede ser 0). Deja en blanco el campo para sincronizar todos los eventos.</string>
   <string name="settings_manage_calendar_colors">Colores de calendario</string>
   <string name="settings_manage_calendar_colors_on">Los colores de los calendarios son administrados por DAVdroid</string>
   <string name="settings_manage_calendar_colors_off">Los colores de los calendarios no son establecidos por DAVdroid</string>
@@ -180,7 +203,7 @@
   <string name="create_collection_home_set">Establecer localización:</string>
   <string name="create_collection_create">Crear</string>
   <string name="delete_collection">Eliminar colección</string>
-  <string name="delete_collection_confirm_title">¿Está seguro/a?</string>
+  <string name="delete_collection_confirm_title">¿Estás seguro/a?</string>
   <string name="delete_collection_confirm_warning">Esta colección (%s) y toda su información será eliminada del servidor.</string>
   <string name="delete_collection_deleting_collection">Eliminando colección</string>
   <!--ExceptionInfoFragment-->
@@ -198,6 +221,22 @@
   <string name="sync_error">Error al %s</string>
   <string name="sync_error_http_dav">Error de servidor al %s</string>
   <string name="sync_error_local_storage">Error de base de datos al %s</string>
+  <string-array name="sync_error_phases">
+    <item>preparando sincronización</item>
+    <item>buscando capacidades</item>
+    <item>procesando entradas borradas localmente</item>
+    <item>preparando entradas creadas/modificadas</item>
+    <item>cargando entradas creadas/modificadas</item>
+    <item>comprobando estado de sincronización</item>
+    <item>enumerando entradas locales</item>
+    <item>enumerando entradas remotas</item>
+    <item>comparando entradas locales/remotas</item>
+    <item>descargando entradas remotas</item>
+    <item>post-procesando</item>
+    <item>guardando estado de sincronización</item>
+  </string-array>
   <string name="sync_error_unauthorized">Nombre de usuario/contraseña erróneo</string>
   <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVdroid: Seguridad de conexión</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVdroid ha encontrado un certificado desconocido. ¿Quieres que sea válido?</string>
 </resources>
