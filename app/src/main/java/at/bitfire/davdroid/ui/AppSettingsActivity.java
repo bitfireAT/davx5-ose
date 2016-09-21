@@ -68,13 +68,14 @@ public class AppSettingsActivity extends AppCompatActivity {
             prefResetHints = findPreference("reset_hints");
 
             prefDistrustSystemCerts = (SwitchPreferenceCompat)findPreference("distrust_system_certs");
-            if (App.getCertManager() == null)
+            App app = (App)getContext().getApplicationContext();
+            if (app.getCertManager() == null)
                 prefDistrustSystemCerts.setVisible(false);
             else
                 prefDistrustSystemCerts.setChecked(settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false));
 
             prefResetCertificates = findPreference("reset_certificates");
-            if (App.getCertManager() == null)
+            if (app.getCertManager() == null)
                 prefResetCertificates.setVisible(false);
 
             prefLogToExternalStorage = (SwitchPreferenceCompat)findPreference("log_to_external_storage");
@@ -115,7 +116,7 @@ public class AppSettingsActivity extends AppCompatActivity {
         }
 
         private void resetCertificates() {
-            App.getCertManager().resetCertificates();
+            ((App)getContext().getApplicationContext()).getCertManager().resetCertificates();
             Snackbar.make(getView(), getString(R.string.app_settings_reset_certificates_success), Snackbar.LENGTH_LONG).show();
         }
 

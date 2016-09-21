@@ -42,8 +42,8 @@ public class HttpClient {
     private HttpClient() {
     }
 
-    public static OkHttpClient create(@NonNull Context context, @NonNull Account account, @NonNull final Logger logger) throws InvalidAccountException {
-        OkHttpClient.Builder builder = defaultBuilder(logger);
+    public static OkHttpClient create(@Nullable Context context, @NonNull Account account, @NonNull final Logger logger) throws InvalidAccountException {
+        OkHttpClient.Builder builder = defaultBuilder(context, logger);
 
         // use account settings for authentication
         AccountSettings settings = new AccountSettings(context, account);
@@ -52,27 +52,30 @@ public class HttpClient {
         return builder.build();
     }
 
-    public static OkHttpClient create(@NonNull Logger logger) {
-        return defaultBuilder(logger).build();
+    public static OkHttpClient create(@NonNull Context context, @NonNull Logger logger) {
+        return defaultBuilder(context, logger).build();
     }
 
     public static OkHttpClient create(@NonNull Context context, @NonNull Account account) throws InvalidAccountException {
         return create(context, account, App.log);
     }
 
-    public static OkHttpClient create() {
-        return create(App.log);
+    public static OkHttpClient create(@Nullable Context context) {
+        return create(context, App.log);
     }
 
 
-    private static OkHttpClient.Builder defaultBuilder(@NonNull final Logger logger) {
+    private static OkHttpClient.Builder defaultBuilder(@Nullable Context context, @NonNull final Logger logger) {
         OkHttpClient.Builder builder = client.newBuilder();
 
         // use MemorizingTrustManager to manage self-signed certificates
-        if (App.getSslSocketFactoryCompat() != null && App.getCertManager() != null)
-            builder.sslSocketFactory(App.getSslSocketFactoryCompat(), App.getCertManager());
-        if (App.getHostnameVerifier() != null)
-            builder.hostnameVerifier(App.getHostnameVerifier());
+        if (context != null) {
+            App app = (App)context.getApplicationContext();
+            if (App.getSslSocketFactoryCompat() != null && app.getCertManager() != null)
+                builder.sslSocketFactory(App.getSslSocketFactoryCompat(), app.getCertManager());
+            if (App.getHostnameVerifier() != null)
+                builder.hostnameVerifier(App.getHostnameVerifier());
+        }
 
         // set timeouts
         builder.connectTimeout(30, TimeUnit.SECONDS);

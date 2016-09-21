@@ -26,7 +26,7 @@ public class HttpClientTest extends TestCase {
 
     @Override
     public void setUp() throws IOException {
-        httpClient = HttpClient.create();
+        httpClient = HttpClient.create(null);
 
         server = new MockWebServer();
         server.start(30000);
