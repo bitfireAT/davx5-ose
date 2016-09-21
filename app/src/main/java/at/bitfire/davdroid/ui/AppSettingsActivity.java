@@ -71,8 +71,6 @@ public class AppSettingsActivity extends AppCompatActivity {
             prefDistrustSystemCerts.setChecked(settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false));
 
             prefResetCertificates = findPreference("reset_certificates");
-            if (App.getCertManager() == null)
-                prefResetCertificates.setVisible(false);
 
             prefLogToExternalStorage = (SwitchPreferenceCompat)findPreference("log_to_external_storage");
             prefLogToExternalStorage.setChecked(settings.getBoolean(App.LOG_TO_EXTERNAL_STORAGE, false));
@@ -108,7 +106,7 @@ public class AppSettingsActivity extends AppCompatActivity {
         }
 
         private void resetCertificates() {
-            App.getCertManager().resetCertificates();
+            ((App)getContext().getApplicationContext()).getCertManager().resetCertificates();
             Snackbar.make(getView(), getString(R.string.app_settings_reset_certificates_success), Snackbar.LENGTH_LONG).show();
         }
 
