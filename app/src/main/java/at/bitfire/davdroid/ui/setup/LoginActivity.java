@@ -63,15 +63,19 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (App.getCertManager() != null)
-            App.getCertManager().appInForeground = true;
+
+        App app = (App)getApplicationContext();
+        if (app.getCertManager() != null)
+            app.getCertManager().appInForeground = true;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (App.getCertManager() != null)
-            App.getCertManager().appInForeground = false;
+
+        App app = (App)getApplicationContext();
+        if (app.getCertManager() != null)
+            app.getCertManager().appInForeground = false;
     }
 
     @Override
