@@ -54,9 +54,9 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
         server.start();
 
         credentials = new LoginCredentials(URI.create("/"), "mock", "12345");
-        finder = new DavResourceFinder(getInstrumentation().getContext(), credentials);
+        finder = new DavResourceFinder(getInstrumentation().getTargetContext(), credentials);
 
-        client = HttpClient.create();
+        client = HttpClient.create(null);
         client = HttpClient.addAuthentication(client, credentials.userName, credentials.password);
     }
 

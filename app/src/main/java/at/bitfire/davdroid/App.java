@@ -51,7 +51,7 @@ public class App extends Application {
             LOG_TO_EXTERNAL_STORAGE = "logToExternalStorage";
 
     @Getter
-    private static CustomCertManager certManager;
+    private CustomCertManager certManager;
 
     @Getter
     private static SSLSocketFactoryCompat sslSocketFactoryCompat;

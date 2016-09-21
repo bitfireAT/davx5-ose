@@ -114,7 +114,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     @Override
     protected void onPause() {
         super.onPause();
-        CustomCertManager certManager = App.getCertManager();
+        CustomCertManager certManager = ((App)getApplicationContext()).getCertManager();
         if (certManager != null)
             certManager.appInForeground = false;
     }
@@ -122,7 +122,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     @Override
     protected void onResume() {
         super.onResume();
-        CustomCertManager certManager = App.getCertManager();
+        CustomCertManager certManager = ((App)getApplicationContext()).getCertManager();
         if (certManager != null)
             certManager.appInForeground = true;
     }

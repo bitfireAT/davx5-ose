@@ -42,7 +42,7 @@ public class CollectionInfoTest extends TestCase {
                         "</response>" +
                         "</multistatus>"));
 
-        DavResource dav = new DavResource(HttpClient.create(), server.url("/"));
+        DavResource dav = new DavResource(HttpClient.create(null), server.url("/"));
         dav.propfind(0, ResourceType.NAME);
         CollectionInfo info = CollectionInfo.fromDavResource(dav);
         assertEquals(CollectionInfo.Type.ADDRESS_BOOK, info.type);
@@ -66,7 +66,7 @@ public class CollectionInfoTest extends TestCase {
                         "</response>" +
                         "</multistatus>"));
 
-        dav = new DavResource(HttpClient.create(), server.url("/"));
+        dav = new DavResource(HttpClient.create(null), server.url("/"));
         dav.propfind(0, ResourceType.NAME);
         info = CollectionInfo.fromDavResource(dav);
         assertEquals(CollectionInfo.Type.CALENDAR, info.type);
