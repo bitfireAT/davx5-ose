@@ -30,7 +30,6 @@ import net.fortuna.ical4j.model.component.VTimeZone;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.FileNotFoundException;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -50,10 +49,6 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
     public static final int defaultColor = 0xFF8bc34a;     // light green 500
 
     public static final String COLUMN_CTAG = Calendars.CAL_SYNC1;
-
-    protected static final int
-            DIRTY_INCREASE_SEQUENCE = 1,
-            DIRTY_DONT_INCREASE_SEQUENCE = 2;
 
     static String[] BASE_INFO_COLUMNS = new String[] {
             Events._ID,
@@ -140,11 +135,8 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
     public LocalResource[] getDirty() throws CalendarStorageException, FileNotFoundException {
         List<LocalResource> dirty = new LinkedList<>();
 
-        // get dirty events which are not required to have an increased SEQUENCE value
-        Collections.addAll(dirty, (LocalEvent[])queryEvents(Events.DIRTY + "=" + DIRTY_DONT_INCREASE_SEQUENCE + " AND " + Events.ORIGINAL_ID + " IS NULL", null));
-
         // get dirty events which are required to have an increased SEQUENCE value
-        for (LocalEvent event : (LocalEvent[])queryEvents(Events.DIRTY + "=" + DIRTY_INCREASE_SEQUENCE + " AND " + Events.ORIGINAL_ID + " IS NULL", null)) {
+        for (LocalEvent event : (LocalEvent[])queryEvents(Events.DIRTY + "!=0 AND " + Events.ORIGINAL_ID + " IS NULL", null)) {
             if (event.getEvent().sequence == null)      // sequence has not been assigned yet (i.e. this event was just locally created)
                 event.getEvent().sequence = 0;
             else
@@ -206,7 +198,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
                 batch.enqueue(new BatchOperation.Operation(
                         ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
                                 .withValue(LocalEvent.COLUMN_SEQUENCE, originalSequence + 1)
-                                .withValue(Events.DIRTY, DIRTY_INCREASE_SEQUENCE)
+                                .withValue(Events.DIRTY, 1)
                 ));
                 // remove exception
                 batch.enqueue(new BatchOperation.Operation(
@@ -235,7 +227,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
                 // original event to DIRTY
                 batch.enqueue(new BatchOperation.Operation(
                         ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
-                                .withValue(Events.DIRTY, DIRTY_DONT_INCREASE_SEQUENCE)
+                                .withValue(Events.DIRTY, 1)
                 ));
                 // increase SEQUENCE and set DIRTY to 0
                 batch.enqueue(new BatchOperation.Operation(
