@@ -80,7 +80,7 @@ public class AccountDetailsFragment extends Fragment {
         DavResourceFinder.Configuration config = (DavResourceFinder.Configuration)getArguments().getSerializable(KEY_CONFIG);
 
         final EditText editName = (EditText)v.findViewById(R.id.account_name);
-        editName.setText(config.userName);
+        editName.setText((config.calDAV != null && config.calDAV.email != null) ? config.calDAV.email : config.userName);
 
         // CardDAV-specific
         v.findViewById(R.id.carddav).setVisibility(config.cardDAV != null ? View.VISIBLE : View.GONE);
