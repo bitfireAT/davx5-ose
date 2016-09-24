@@ -19,6 +19,7 @@ import org.xbill.DNS.Type;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -28,6 +29,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import at.bitfire.dav4android.Constants;
 import at.bitfire.dav4android.DavResource;
 import at.bitfire.dav4android.UrlUtils;
 import at.bitfire.dav4android.exception.DavException;
@@ -39,6 +41,7 @@ import at.bitfire.dav4android.property.CalendarColor;
 import at.bitfire.dav4android.property.CalendarDescription;
 import at.bitfire.dav4android.property.CalendarHomeSet;
 import at.bitfire.dav4android.property.CalendarTimezone;
+import at.bitfire.dav4android.property.CalendarUserAddressSet;
 import at.bitfire.dav4android.property.CurrentUserPrincipal;
 import at.bitfire.dav4android.property.CurrentUserPrivilegeSet;
 import at.bitfire.dav4android.property.DisplayName;
@@ -137,6 +140,26 @@ public class DavResourceFinder {
                 config.principal = discoverPrincipalUrl(discoveryFQDN, service);
             } catch (IOException|HttpException|DavException e) {
                 log.log(Level.FINE, service.name + " service discovery failed", e);
+            }
+        }
+
+        if (config.principal != null && service == Service.CALDAV) {
+            // query email address (CalDAV scheduling: calendar-user-address-set)
+            DavResource davPrincipal = new DavResource(httpClient, HttpUrl.get(config.principal), log);
+            try {
+                davPrincipal.propfind(0, CalendarUserAddressSet.NAME);
+                CalendarUserAddressSet addressSet = (CalendarUserAddressSet)davPrincipal.properties.get(CalendarUserAddressSet.NAME);
+                if (addressSet != null)
+                    for (String href : addressSet.hrefs)
+                        try {
+                            URI uri = new URI(href);
+                            if ("mailto".equals(uri.getScheme()))
+                                config.email = uri.getSchemeSpecificPart();
+                        } catch(URISyntaxException e) {
+                            Constants.log.log(Level.WARNING, "Unparseable user address", e);
+                        }
+            } catch(IOException | HttpException | DavException e) {
+                Constants.log.log(Level.WARNING, "Couldn't query user email address", e);
             }
         }
 
@@ -368,6 +391,8 @@ public class DavResourceFinder {
             public URI principal;
             public final Set<URI> homeSets = new HashSet<>();
             public final Map<URI, CollectionInfo> collections = new HashMap<>();
+
+            public String email;
         }
 
         public final String userName, password;
