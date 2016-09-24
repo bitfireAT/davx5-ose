@@ -41,6 +41,8 @@ public class LocalEvent extends AndroidEvent implements LocalResource {
     @Getter protected String fileName;
     @Getter @Setter protected String eTag;
 
+    public boolean weAreOrganizer = true;
+
     public LocalEvent(@NonNull AndroidCalendar calendar, Event event, String fileName, String eTag) {
         super(calendar, event);
         this.fileName = fileName;
@@ -66,6 +68,8 @@ public class LocalEvent extends AndroidEvent implements LocalResource {
         event.uid = values.getAsString(COLUMN_UID);
 
         event.sequence = values.getAsInteger(COLUMN_SEQUENCE);
+        if (values.getAsInteger(Events.IS_ORGANIZER) == 0)
+            weAreOrganizer = false;
     }
 
     @Override
