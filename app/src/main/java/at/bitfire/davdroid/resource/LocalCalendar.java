@@ -139,7 +139,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         for (LocalEvent event : (LocalEvent[])queryEvents(Events.DIRTY + "!=0 AND " + Events.ORIGINAL_ID + " IS NULL", null)) {
             if (event.getEvent().sequence == null)      // sequence has not been assigned yet (i.e. this event was just locally created)
                 event.getEvent().sequence = 0;
-            else
+            else if (event.weAreOrganizer)
                 event.getEvent().sequence++;
             dirty.add(event);
         }
