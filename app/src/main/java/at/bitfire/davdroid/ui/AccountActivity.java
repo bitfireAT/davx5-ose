@@ -25,6 +25,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.ServiceConnection;
+import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
@@ -74,6 +75,8 @@ import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
 import at.bitfire.davdroid.model.ServiceDB.Services;
 import at.bitfire.ical4android.TaskProvider;
 import lombok.Cleanup;
+
+import static android.content.ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
 
 public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, PopupMenu.OnMenuItemClickListener, LoaderManager.LoaderCallbacks<AccountActivity.AccountInfo> {
     public static final String EXTRA_ACCOUNT = "account";
@@ -286,7 +289,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
     @Override
     public Loader<AccountInfo> onCreateLoader(int id, Bundle args) {
-        return new AccountLoader(this, account.name);
+        return new AccountLoader(this, account);
     }
 
     public void reload() {
@@ -352,19 +355,22 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     }
 
 
-    private static class AccountLoader extends AsyncTaskLoader<AccountInfo> implements DavService.RefreshingStatusListener, ServiceConnection {
-        private final String accountName;
+    private static class AccountLoader extends AsyncTaskLoader<AccountInfo> implements DavService.RefreshingStatusListener, ServiceConnection, SyncStatusObserver {
+        private final Account account;
         private final OpenHelper dbHelper;
         private DavService.InfoBinder davService;
+        private Object syncStatusListener;
 
-        public AccountLoader(Context context, String accountName) {
+        public AccountLoader(Context context, Account account) {
             super(context);
-            this.accountName = accountName;
+            this.account = account;
             dbHelper = new OpenHelper(context);
         }
 
         @Override
         protected void onStartLoading() {
+            syncStatusListener = ContentResolver.addStatusChangeListener(SYNC_OBSERVER_TYPE_ACTIVE, this);
+
             getContext().bindService(new Intent(getContext(), DavService.class), this, Context.BIND_AUTO_CREATE);
         }
 
@@ -372,6 +378,9 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
         protected void onStopLoading() {
             davService.removeRefreshingStatusListener(this);
             getContext().unbindService(this);
+
+            if (syncStatusListener != null)
+                ContentResolver.removeStatusChangeListener(syncStatusListener);
         }
 
         @Override
@@ -393,6 +402,11 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
         }
 
         @Override
+        public void onStatusChanged(int which) {
+            forceLoad();
+        }
+
+        @Override
         public AccountInfo loadInBackground() {
             AccountInfo info = new AccountInfo();
             try {
@@ -401,7 +415,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                 @Cleanup Cursor cursor = db.query(
                         Services._TABLE,
                         new String[] { Services.ID, Services.SERVICE },
-                        Services.ACCOUNT_NAME + "=?", new String[] { accountName },
+                        Services.ACCOUNT_NAME + "=?", new String[] { account.name },
                         null, null, null);
 
                 if (cursor.getCount() == 0)
@@ -414,14 +428,16 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                     if (Services.SERVICE_CARDDAV.equals(service)) {
                         info.carddav = new AccountInfo.ServiceInfo();
                         info.carddav.id = id;
-                        info.carddav.refreshing = davService.isRefreshing(id);
+                        info.carddav.refreshing = davService.isRefreshing(id) || ContentResolver.isSyncActive(account, ContactsContract.AUTHORITY);
                         info.carddav.hasHomeSets = hasHomeSets(db, id);
                         info.carddav.collections = readCollections(db, id);
 
                     } else if (Services.SERVICE_CALDAV.equals(service)) {
                         info.caldav = new AccountInfo.ServiceInfo();
                         info.caldav.id = id;
-                        info.caldav.refreshing = davService.isRefreshing(id);
+                        info.caldav.refreshing = davService.isRefreshing(id) ||
+                                ContentResolver.isSyncActive(account, CalendarContract.AUTHORITY) ||
+                                ContentResolver.isSyncActive(account, TaskProvider.ProviderName.OpenTasks.authority);
                         info.caldav.hasHomeSets = hasHomeSets(db, id);
                         info.caldav.collections = readCollections(db, id);
                     }
@@ -449,6 +465,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             }
             return collections;
         }
+
     }
 
 
