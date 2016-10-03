@@ -58,7 +58,7 @@ public abstract class SyncAdapterService extends Service {
     public static abstract class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         private static final ServiceLoader<ISyncPlugin> syncPluginLoader = ServiceLoader.load(ISyncPlugin.class);
-        private static final List<ISyncPlugin> syncPlugins = IteratorUtils.toList(syncPluginLoader.iterator());
+        private final List<ISyncPlugin> syncPlugins = IteratorUtils.toList(syncPluginLoader.iterator());
 
 
         public SyncAdapter(Context context) {
