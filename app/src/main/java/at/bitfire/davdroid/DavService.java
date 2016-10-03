@@ -291,8 +291,8 @@ public class DavService extends Service {
                         info.selected = true;
                 }
 
+                db.beginTransactionNonExclusive();
                 try {
-                    db.beginTransactionNonExclusive();
                     saveHomeSets(homeSets);
                     saveCollections(collections.values());
                     db.setTransactionSuccessful();
