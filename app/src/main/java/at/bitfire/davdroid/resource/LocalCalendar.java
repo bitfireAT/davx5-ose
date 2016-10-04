@@ -9,14 +9,12 @@
 package at.bitfire.davdroid.resource;
 
 import android.accounts.Account;
-import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
@@ -85,7 +83,6 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         update(valuesFromCollectionInfo(info, updateColor));
     }
 
-    @TargetApi(15)
     private static ContentValues valuesFromCollectionInfo(CollectionInfo info, boolean withColor) {
         ContentValues values = new ContentValues();
         values.put(Calendars.NAME, info.url);
@@ -108,10 +105,8 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
                 values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(timeZone.getTimeZoneId().getValue()));
         }
         values.put(Calendars.ALLOWED_REMINDERS, Reminders.METHOD_ALERT);
-        if (Build.VERSION.SDK_INT >= 15) {
-            values.put(Calendars.ALLOWED_AVAILABILITY, StringUtils.join(new int[] { Reminders.AVAILABILITY_TENTATIVE, Reminders.AVAILABILITY_FREE, Reminders.AVAILABILITY_BUSY }, ","));
-            values.put(Calendars.ALLOWED_ATTENDEE_TYPES, StringUtils.join(new int[] { CalendarContract.Attendees.TYPE_OPTIONAL, CalendarContract.Attendees.TYPE_REQUIRED, CalendarContract.Attendees.TYPE_RESOURCE }, ", "));
-        }
+        values.put(Calendars.ALLOWED_AVAILABILITY, StringUtils.join(new int[] { Reminders.AVAILABILITY_TENTATIVE, Reminders.AVAILABILITY_FREE, Reminders.AVAILABILITY_BUSY }, ","));
+        values.put(Calendars.ALLOWED_ATTENDEE_TYPES, StringUtils.join(new int[] { CalendarContract.Attendees.TYPE_OPTIONAL, CalendarContract.Attendees.TYPE_REQUIRED, CalendarContract.Attendees.TYPE_RESOURCE }, ", "));
         return values;
     }
 
