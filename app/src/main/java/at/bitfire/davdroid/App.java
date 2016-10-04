@@ -17,6 +17,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Process;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
@@ -90,9 +91,6 @@ public class App extends Application {
     }
 
     public void reinitLogger() {
-        // don't use Android default logging, we have our own handlers
-        log.setUseParentHandlers(false);
-
         @Cleanup ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(this);
         Settings settings = new Settings(dbHelper.getReadableDatabase());
 
@@ -100,14 +98,14 @@ public class App extends Application {
                 logVerbose = logToFile || Log.isLoggable(log.getName(), Log.DEBUG);
 
         // set logging level according to preferences
-        log.setLevel(logVerbose ? Level.ALL : Level.INFO);
+        final Logger rootLogger = Logger.getLogger("");
+        rootLogger.setLevel(logVerbose ? Level.ALL : Level.INFO);
 
-        // remove all handlers
-        for (Handler handler : log.getHandlers())
-            log.removeHandler(handler);
-
-        // add logcat handler
-        log.addHandler(LogcatHandler.INSTANCE);
+        // remove all handlers and add our own logcat handler
+        rootLogger.setUseParentHandlers(false);
+        for (Handler handler : rootLogger.getHandlers())
+            rootLogger.removeHandler(handler);
+        rootLogger.addHandler(LogcatHandler.INSTANCE);
 
         NotificationManagerCompat nm = NotificationManagerCompat.from(this);
         // log to external file according to preferences
@@ -121,7 +119,7 @@ public class App extends Application {
             File dir = getExternalFilesDir(null);
             if (dir != null)
                 try {
-                    String fileName = new File(dir, "davdroid-" + android.os.Process.myPid() + "-" +
+                    String fileName = new File(dir, "davdroid-" + Process.myPid() + "-" +
                             DateFormatUtils.format(System.currentTimeMillis(), "yyyyMMdd-HHmmss") + ".txt").toString();
                     log.info("Logging to " + fileName);
 
