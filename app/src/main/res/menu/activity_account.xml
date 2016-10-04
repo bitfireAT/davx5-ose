@@ -13,7 +13,7 @@
     <item android:id="@+id/sync_now"
           android:icon="@drawable/ic_sync_dark"
           android:title="@string/account_synchronize_now"
-          app:showAsAction="ifRoom"/>
+          app:showAsAction="always"/>
 
     <item android:id="@+id/settings"
           android:icon="@drawable/ic_settings_dark"
@@ -21,6 +21,7 @@
           app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/delete_account"
-          android:title="@string/account_delete"/>
+          android:title="@string/account_delete"
+          app:showAsAction="never"/>
 
 </menu>

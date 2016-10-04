@@ -68,8 +68,12 @@ public class LocalEvent extends AndroidEvent implements LocalResource {
         event.uid = values.getAsString(COLUMN_UID);
 
         event.sequence = values.getAsInteger(COLUMN_SEQUENCE);
-        if (values.getAsInteger(Events.IS_ORGANIZER) == 0)
-            weAreOrganizer = false;
+        if (Build.VERSION.SDK_INT >= 17)
+            weAreOrganizer = values.getAsInteger(Events.IS_ORGANIZER) != 0;
+        else {
+            String organizer = values.getAsString(Events.ORGANIZER);
+            weAreOrganizer = organizer == null || organizer.equals(calendar.account.name);
+        }
     }
 
     @Override

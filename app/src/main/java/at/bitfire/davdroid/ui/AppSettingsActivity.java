@@ -20,7 +20,6 @@ import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.model.Settings;
-import lombok.Cleanup;
 
 public class AppSettingsActivity extends AppCompatActivity {
 
