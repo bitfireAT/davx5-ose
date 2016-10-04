@@ -357,14 +357,12 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
     private static class AccountLoader extends AsyncTaskLoader<AccountInfo> implements DavService.RefreshingStatusListener, ServiceConnection, SyncStatusObserver {
         private final Account account;
-        private final OpenHelper dbHelper;
         private DavService.InfoBinder davService;
         private Object syncStatusListener;
 
         public AccountLoader(Context context, Account account) {
             super(context);
             this.account = account;
-            dbHelper = new OpenHelper(context);
         }
 
         @Override
@@ -409,41 +407,39 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
         @Override
         public AccountInfo loadInBackground() {
             AccountInfo info = new AccountInfo();
-            try {
-                SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-                @Cleanup Cursor cursor = db.query(
-                        Services._TABLE,
-                        new String[] { Services.ID, Services.SERVICE },
-                        Services.ACCOUNT_NAME + "=?", new String[] { account.name },
-                        null, null, null);
+            @Cleanup OpenHelper dbHelper = new OpenHelper(getContext());
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-                if (cursor.getCount() == 0)
-                    // no services, account not useable
-                    return null;
+            @Cleanup Cursor cursor = db.query(
+                    Services._TABLE,
+                    new String[] { Services.ID, Services.SERVICE },
+                    Services.ACCOUNT_NAME + "=?", new String[] { account.name },
+                    null, null, null);
 
-                while (cursor.moveToNext()) {
-                    long id = cursor.getLong(0);
-                    String service = cursor.getString(1);
-                    if (Services.SERVICE_CARDDAV.equals(service)) {
-                        info.carddav = new AccountInfo.ServiceInfo();
-                        info.carddav.id = id;
-                        info.carddav.refreshing = davService.isRefreshing(id) || ContentResolver.isSyncActive(account, ContactsContract.AUTHORITY);
-                        info.carddav.hasHomeSets = hasHomeSets(db, id);
-                        info.carddav.collections = readCollections(db, id);
+            if (cursor.getCount() == 0)
+                // no services, account not useable
+                return null;
 
-                    } else if (Services.SERVICE_CALDAV.equals(service)) {
-                        info.caldav = new AccountInfo.ServiceInfo();
-                        info.caldav.id = id;
-                        info.caldav.refreshing = davService.isRefreshing(id) ||
-                                ContentResolver.isSyncActive(account, CalendarContract.AUTHORITY) ||
-                                ContentResolver.isSyncActive(account, TaskProvider.ProviderName.OpenTasks.authority);
-                        info.caldav.hasHomeSets = hasHomeSets(db, id);
-                        info.caldav.collections = readCollections(db, id);
-                    }
+            while (cursor.moveToNext()) {
+                long id = cursor.getLong(0);
+                String service = cursor.getString(1);
+                if (Services.SERVICE_CARDDAV.equals(service)) {
+                    info.carddav = new AccountInfo.ServiceInfo();
+                    info.carddav.id = id;
+                    info.carddav.refreshing = davService.isRefreshing(id) || ContentResolver.isSyncActive(account, ContactsContract.AUTHORITY);
+                    info.carddav.hasHomeSets = hasHomeSets(db, id);
+                    info.carddav.collections = readCollections(db, id);
+
+                } else if (Services.SERVICE_CALDAV.equals(service)) {
+                    info.caldav = new AccountInfo.ServiceInfo();
+                    info.caldav.id = id;
+                    info.caldav.refreshing = davService.isRefreshing(id) ||
+                            ContentResolver.isSyncActive(account, CalendarContract.AUTHORITY) ||
+                            ContentResolver.isSyncActive(account, TaskProvider.ProviderName.OpenTasks.authority);
+                    info.caldav.hasHomeSets = hasHomeSets(db, id);
+                    info.caldav.collections = readCollections(db, id);
                 }
-            } finally {
-                dbHelper.close();
             }
             return info;
         }

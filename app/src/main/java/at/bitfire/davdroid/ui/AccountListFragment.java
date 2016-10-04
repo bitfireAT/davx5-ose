@@ -29,7 +29,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import at.bitfire.davdroid.AccountsChangedReceiver;
-import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 
 public class AccountListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Account[]>, AdapterView.OnItemClickListener {

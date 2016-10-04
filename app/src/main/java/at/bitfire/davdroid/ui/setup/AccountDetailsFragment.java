@@ -34,7 +34,6 @@ import java.util.logging.Level;
 import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
-import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.DavService;
 import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;

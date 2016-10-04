@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -101,8 +102,6 @@ public class StartupDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         setCancelable(false);
 
-        final ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
-
         Mode mode = Mode.valueOf(getArguments().getString(ARGS_MODE));
         switch (mode) {
             case BATTERY_OPTIMIZATIONS:
@@ -125,6 +124,7 @@ public class StartupDialogFragment extends DialogFragment {
                         .setNegativeButton(R.string.startup_dont_show_again, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                @Cleanup ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
                                 Settings settings = new Settings(dbHelper.getWritableDatabase());
                                 settings.putBoolean(HINT_BATTERY_OPTIMIZATIONS, false);
                             }
@@ -175,6 +175,7 @@ public class StartupDialogFragment extends DialogFragment {
                         .setNegativeButton(R.string.startup_dont_show_again, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                @Cleanup ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
                                 Settings settings = new Settings(dbHelper.getWritableDatabase());
                                 settings.putBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, false);
                             }
@@ -207,6 +208,7 @@ public class StartupDialogFragment extends DialogFragment {
                         .setNegativeButton(R.string.startup_dont_show_again, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                @Cleanup ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
                                 Settings settings = new Settings(dbHelper.getWritableDatabase());
                                 settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false);
                             }
