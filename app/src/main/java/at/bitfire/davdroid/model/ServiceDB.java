@@ -14,7 +14,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 
+import java.util.logging.Level;
+
+import aQute.service.reporter.Messages;
 import at.bitfire.davdroid.App;
 import lombok.Cleanup;
 
@@ -72,21 +76,19 @@ public class ServiceDB {
 
         public OpenHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                setWriteAheadLoggingEnabled(true);
         }
 
         @Override
         public void onOpen(SQLiteDatabase db) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                db.setForeignKeyConstraintsEnabled(true);
-            else {
-                if (!db.enableWriteAheadLogging())
-                    App.log.warning("Couldn't enable write-ahead logging");
-
+            if (Build.VERSION.SDK_INT < 16)
                 db.execSQL("PRAGMA foreign_keys=ON;");
-            }
+        }
+
+        @Override
+        @RequiresApi(16)
+        public void onConfigure(SQLiteDatabase db) {
+            setWriteAheadLoggingEnabled(true);
+            db.setForeignKeyConstraintsEnabled(true);
         }
 
         @Override
@@ -132,6 +134,7 @@ public class ServiceDB {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            // no different versions yet
         }
 
 
