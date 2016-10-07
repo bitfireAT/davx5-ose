@@ -7,10 +7,11 @@
  */
 package at.bitfire.davdroid;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+
+import static org.junit.Assert.assertTrue;
 
 
 public class ArrayUtilsTest {
@@ -18,22 +19,22 @@ public class ArrayUtilsTest {
     @Test
 	public void testPartition() {
 		// n == 0
-		Assert.assertTrue(Arrays.deepEquals(
+		assertTrue(Arrays.deepEquals(
                 new Long[0][0],
                 ArrayUtils.partition(new Long[] {}, 5)));
 				
 		// n < max
-		Assert.assertTrue(Arrays.deepEquals(
+		assertTrue(Arrays.deepEquals(
                 new Long[][] { { 1l, 2l } },
                 ArrayUtils.partition(new Long[] { 1l, 2l }, 5)));
 		
 		// n == max
-		Assert.assertTrue(Arrays.deepEquals(
+		assertTrue(Arrays.deepEquals(
                 new Long[][] { { 1l, 2l }, { 3l, 4l } },
                 ArrayUtils.partition(new Long[] { 1l, 2l, 3l, 4l }, 2)));
 		
 		// n > max
-		Assert.assertTrue(Arrays.deepEquals(
+		assertTrue(Arrays.deepEquals(
                 new Long[][] { { 1l, 2l, 3l, 4l, 5l }, { 6l, 7l, 8l, 9l, 10l }, { 11l } },
                 ArrayUtils.partition(new Long[] { 1l, 2l, 3l, 4l, 5l, 6l, 7l, 8l, 9l, 10l, 11l }, 5)));
 	}
