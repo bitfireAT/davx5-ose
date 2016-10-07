@@ -427,14 +427,14 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                 if (Services.SERVICE_CARDDAV.equals(service)) {
                     info.carddav = new AccountInfo.ServiceInfo();
                     info.carddav.id = id;
-                    info.carddav.refreshing = davService.isRefreshing(id) || ContentResolver.isSyncActive(account, ContactsContract.AUTHORITY);
+                    info.carddav.refreshing = (davService != null && davService.isRefreshing(id)) || ContentResolver.isSyncActive(account, ContactsContract.AUTHORITY);
                     info.carddav.hasHomeSets = hasHomeSets(db, id);
                     info.carddav.collections = readCollections(db, id);
 
                 } else if (Services.SERVICE_CALDAV.equals(service)) {
                     info.caldav = new AccountInfo.ServiceInfo();
                     info.caldav.id = id;
-                    info.caldav.refreshing = davService.isRefreshing(id) ||
+                    info.caldav.refreshing = (davService != null && davService.isRefreshing(id)) ||
                             ContentResolver.isSyncActive(account, CalendarContract.AUTHORITY) ||
                             ContentResolver.isSyncActive(account, TaskProvider.ProviderName.OpenTasks.authority);
                     info.caldav.hasHomeSets = hasHomeSets(db, id);
