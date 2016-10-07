@@ -8,7 +8,9 @@
 
 package at.bitfire.davdroid;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -19,12 +21,15 @@ import okhttp3.Request;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
-public class HttpClientTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+public class HttpClientTest {
 
     MockWebServer server;
     OkHttpClient httpClient;
 
-    @Override
+    @Before
     public void setUp() throws IOException {
         httpClient = HttpClient.create(null);
 
@@ -32,11 +37,13 @@ public class HttpClientTest extends TestCase {
         server.start(30000);
     }
 
-    @Override
+    @After
     public void tearDown() throws IOException {
         server.shutdown();
     }
 
+
+    @Test
     public void testCookies() throws IOException, InterruptedException, URISyntaxException {
         HttpUrl url = server.url("/test");
 
