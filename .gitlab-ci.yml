@@ -13,7 +13,7 @@ cache:
 
 test:
   script:
-    - ./gradlew -i check mergeAndroidReports
+    - ./gradlew check mergeAndroidReports
   artifacts:
     paths:
       - app/build/outputs/lint-results-debug.html
