@@ -9,8 +9,10 @@
 package at.bitfire.davdroid.model;
 
 import android.content.ContentValues;
+import android.support.test.runner.AndroidJUnit4;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
@@ -23,10 +25,16 @@ import at.bitfire.davdroid.model.ServiceDB.Collections;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
-public class CollectionInfoTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+public class CollectionInfoTest {
 
     MockWebServer server = new MockWebServer();
 
+    @Test
     public void testFromDavResource() throws IOException, HttpException, DavException {
         // r/w address book
         server.enqueue(new MockResponse()
@@ -79,6 +87,7 @@ public class CollectionInfoTest extends TestCase {
         assertTrue(info.supportsVTODO);
     }
 
+    @Test
     public void testFromDB() {
         ContentValues values = new ContentValues();
         values.put(Collections.ID, 1);
