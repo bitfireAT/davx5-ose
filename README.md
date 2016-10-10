@@ -1,4 +1,7 @@
 
+[![build status](https://gitlab.com/bitfireAT/davdroid/badges/master/build.svg)](https://gitlab.com/bitfireAT/davdroid/commits/master)
+
+
 DAVdroid
 ========
 
@@ -31,4 +34,3 @@ Those libraries are used by DAVdroid (alphabetically):
 * [iCal4j](http://ical4j.sourceforge.net/) – [New BSD License](http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE)
 * [okhttp](https://square.github.io/okhttp/) – [Apache License, Version 2.0](https://square.github.io/okhttp/#license)
 * [Project Lombok](http://projectlombok.org/) – [MIT License](http://opensource.org/licenses/mit-license.php)
-* [SLF4J](http://www.slf4j.org/) – [MIT License](http://www.slf4j.org/license.html)
