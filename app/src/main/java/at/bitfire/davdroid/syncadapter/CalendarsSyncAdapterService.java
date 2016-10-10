@@ -17,6 +17,7 @@ import android.content.SyncResult;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.provider.CalendarContract;
@@ -66,10 +67,10 @@ public class CalendarsSyncAdapterService extends SyncAdapterService {
                     CalendarSyncManager syncManager = new CalendarSyncManager(getContext(), account, settings, extras, authority, syncResult, calendar);
                     syncManager.performSync();
                 }
-            } catch (CalendarStorageException e) {
-                App.log.log(Level.SEVERE, "Couldn't enumerate local calendars", e);
+            } catch(CalendarStorageException|SQLiteException e) {
+                App.log.log(Level.SEVERE, "Couldn't prepare local calendars", e);
                 syncResult.databaseError = true;
-            } catch (InvalidAccountException e) {
+            } catch(InvalidAccountException e) {
                 App.log.log(Level.SEVERE, "Couldn't get account settings", e);
             }
 
