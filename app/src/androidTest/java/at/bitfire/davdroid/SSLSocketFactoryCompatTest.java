@@ -9,7 +9,12 @@
 package at.bitfire.davdroid;
 
 import android.os.Build;
-import android.test.InstrumentationTestCase;
+import android.support.test.runner.AndroidJUnit4;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -19,23 +24,28 @@ import javax.net.ssl.SSLSocket;
 import at.bitfire.cert4android.CustomCertManager;
 import okhttp3.mockwebserver.MockWebServer;
 
-public class SSLSocketFactoryCompatTest extends InstrumentationTestCase {
+import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public class SSLSocketFactoryCompatTest {
 
     SSLSocketFactoryCompat factory;
     MockWebServer server = new MockWebServer();
 
-    @Override
-    protected void setUp() throws Exception {
-        factory = new SSLSocketFactoryCompat(new CustomCertManager(getInstrumentation().getTargetContext().getApplicationContext(), true));
+    @Before
+    public void startServer() throws Exception {
+        factory = new SSLSocketFactoryCompat(new CustomCertManager(getTargetContext().getApplicationContext(), true));
         server.start();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void stopServer() throws Exception {
         server.shutdown();
     }
 
 
+    @Test
     public void testUpgradeTLS() throws IOException {
         Socket s = factory.createSocket(server.getHostName(), server.getPort());
         assertTrue(s instanceof SSLSocket);
