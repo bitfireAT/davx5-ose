@@ -8,7 +8,13 @@
 
 package at.bitfire.davdroid.ui.setup;
 
+import android.support.test.runner.AndroidJUnit4;
 import android.test.InstrumentationTestCase;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.net.URI;
@@ -29,7 +35,13 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 
-public class DavResourceFinderTest extends InstrumentationTestCase {
+import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+public class DavResourceFinderTest {
 
     MockWebServer server = new MockWebServer();
 
@@ -48,24 +60,24 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
             SUBPATH_ADDRESSBOOK_HOMESET = "/addressbooks",
             SUBPATH_ADDRESSBOOK = "/addressbooks/private-contacts";
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void initServerAndClient() throws Exception {
         server.setDispatcher(new TestDispatcher());
         server.start();
 
         credentials = new LoginCredentials(URI.create("/"), "mock", "12345");
-        finder = new DavResourceFinder(getInstrumentation().getTargetContext(), credentials);
+        finder = new DavResourceFinder(getTargetContext(), credentials);
 
         client = HttpClient.create(null);
         client = HttpClient.addAuthentication(client, credentials.userName, credentials.password);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void stopServer() throws Exception {
         server.shutdown();
     }
 
-
+    @Test
     public void testRememberIfAddressBookOrHomeset() throws IOException, HttpException, DavException {
         ServiceInfo info;
 
@@ -91,6 +103,7 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
         assertEquals(0, info.homeSets.size());
     }
 
+    @Test
     public void testProvidesService() throws IOException {
         assertFalse(finder.providesService(server.url(PATH_NO_DAV), DavResourceFinder.Service.CALDAV));
         assertFalse(finder.providesService(server.url(PATH_NO_DAV), DavResourceFinder.Service.CARDDAV));
@@ -105,6 +118,7 @@ public class DavResourceFinderTest extends InstrumentationTestCase {
         assertTrue(finder.providesService(server.url(PATH_CALDAV_AND_CARDDAV), DavResourceFinder.Service.CARDDAV));
     }
 
+    @Test
     public void testGetCurrentUserPrincipal() throws IOException, HttpException, DavException {
         assertNull(finder.getCurrentUserPrincipal(server.url(PATH_NO_DAV), DavResourceFinder.Service.CALDAV));
         assertNull(finder.getCurrentUserPrincipal(server.url(PATH_NO_DAV), DavResourceFinder.Service.CARDDAV));
