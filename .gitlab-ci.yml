@@ -2,9 +2,9 @@ image: registry.gitlab.com/bitfireat/davdroid:latest
 
 before_script:
   - git submodule update --init --recursive
-  - export GRADLE_USER_HOME=`pwd`/.gradle
-  - chmod +x gradlew
+  - export GRADLE_USER_HOME=`pwd`/.gradle; chmod +x gradlew
   - emulator64-arm -avd test -no-skin -no-audio -no-window & wait-for-emulator.sh
+  - wget https://f-droid.org/repo/org.dmfs.tasks_103.apk && adb install org.dmfs.tasks_103.apk
 
 cache:
   paths:
