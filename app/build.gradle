@@ -46,9 +46,8 @@ android {
         disable 'IconColors'
         disable 'IconLauncherShape'
         disable 'IconMissingDensityFolder'
-        disable 'ImpliedQuantity'
-        disable 'MissingTranslation'
-        disable 'MissingQuantity'
+        disable 'ImpliedQuantity', 'MissingQuantity'
+        disable 'MissingTranslation', 'ExtraTranslation'	// translations from Transifex are not always up to date
         disable 'Recycle'           // doesn't understand Lombok's @Cleanup
         disable 'RtlEnabled'
         disable 'RtlHardcoded'
