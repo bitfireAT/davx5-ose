@@ -76,13 +76,6 @@
             android:entries="@array/settings_contact_group_method_entries"
             android:entryValues="@array/settings_contact_group_method_values"/>
 
-        <SwitchPreferenceCompat
-            android:key="vcard_rfc6868"
-            android:persistent="false"
-            android:title="@string/settings_rfc6868_for_vcards"
-            android:summaryOn="@string/settings_rfc6868_for_vcards_on"
-            android:summaryOff="@string/settings_rfc6868_for_vcards_off"/>
-
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/settings_caldav">

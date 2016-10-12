@@ -207,20 +207,6 @@ public class AccountSettingsActivity extends AppCompatActivity {
             });
 
             // category: CardDAV
-            final SwitchPreferenceCompat prefRFC6868 = (SwitchPreferenceCompat)findPreference("vcard_rfc6868");
-            if (syncIntervalContacts != null) {
-                prefRFC6868.setChecked(settings.getVCardRFC6868());
-                prefRFC6868.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object o) {
-                        settings.setVCardRFC6868((Boolean)o);
-                        refresh();
-                        return false;
-                    }
-                });
-            } else
-                prefRFC6868.setEnabled(false);
-
             final ListPreference prefGroupMethod = (ListPreference)findPreference("contact_group_method");
             if (syncIntervalContacts != null) {
                 prefGroupMethod.setValue(settings.getGroupMethod().name());

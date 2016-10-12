@@ -219,7 +219,6 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                     if (settings.getSyncWifiOnlySSID() != null)
                         report.append(", SSID: ").append(settings.getSyncWifiOnlySSID());
                     report.append("\n  [CardDAV] Contact group method: ").append(settings.getGroupMethod())
-                          .append("\n            RFC 6868 encoding: ").append(settings.getVCardRFC6868())
                           .append("\n  [CalDAV] Time range (past days): ").append(settings.getTimeRangePastDays())
                           .append("\n           Manage calendar colors: ").append(settings.getManageCalendarColors())
                           .append("\n");
