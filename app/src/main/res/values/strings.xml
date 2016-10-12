@@ -192,9 +192,6 @@
         <item>Groups are separate VCards</item>
         <item>Groups are per-contact categories</item>
     </string-array>
-    <string name="settings_rfc6868_for_vcards">Use RFC6868 for VCards</string>
-    <string name="settings_rfc6868_for_vcards_on">Double quotes can be used in parameter values</string>
-    <string name="settings_rfc6868_for_vcards_off">Double quotes can\'t be used in parameter values</string>
     <string name="settings_caldav">CalDAV</string>
     <string name="settings_sync_time_range_past">Past event time limit</string>
     <string name="settings_sync_time_range_past_none">All events will be synchronized</string>

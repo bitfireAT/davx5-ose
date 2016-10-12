@@ -24,7 +24,6 @@ android {
 
         buildConfigField "boolean", "customCerts", "false"
         buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "null"
-        buildConfigField "Boolean", "settingVCardRFC6868", "null"
     }
 
     productFlavors {
@@ -43,7 +42,6 @@ android {
             versionName "1.3.2.2-cloud"
 
             buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "at.bitfire.vcard4android.GroupMethod.GROUP_VCARDS"
-            buildConfigField "Boolean", "settingVCardRFC6868", "true"
         }
     }
 
