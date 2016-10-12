@@ -24,6 +24,7 @@
 -dontwarn groovy.**				# Groovy-based ContentBuilder not used
 -dontwarn org.codehaus.groovy.**
 -dontwarn org.apache.commons.logging.**		# Commons logging is not available
+-dontwarn org.slf4j.**				# logging
 -dontwarn net.fortuna.ical4j.model.**		# ignore warnings from Groovy dependency
 -keep class net.fortuna.ical4j.model.** { *; }	# keep all model classes (properties/factories, created at runtime)
 
