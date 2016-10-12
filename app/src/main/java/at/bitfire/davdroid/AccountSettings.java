@@ -61,12 +61,6 @@ public class AccountSettings {
             KEY_WIFI_ONLY = "wifi_only",            // sync on WiFi only (default: false)
             KEY_WIFI_ONLY_SSID = "wifi_only_ssid";  // restrict sync to specific WiFi SSID
 
-    /** Whether to use RFC 6868 for VCards
-     *  value = null (not existing)      use RFC6868-style encoding (default value)
-     *          "0"                      don't use RFC 6868-style encoding
-     */
-    private final static String KEY_VCARD_RFC6868 = "vcard_rfc6868";
-
     /** Time range limitation to the past [in days]
         value = null            default value (DEFAULT_TIME_RANGE_PAST_DAYS)
               < 0 (-1)          no limit
@@ -193,23 +187,6 @@ public class AccountSettings {
 
     public void setSyncWifiOnlySSID(String ssid) {
         accountManager.setUserData(account, KEY_WIFI_ONLY_SSID, ssid);
-    }
-
-
-    // CardDAV settings
-
-    public boolean getVCardRFC6868() {
-        if (BuildConfig.settingVCardRFC6868 != null)
-            return BuildConfig.settingVCardRFC6868;
-
-        return accountManager.getUserData(account, KEY_VCARD_RFC6868) == null;
-    }
-
-    public void setVCardRFC6868(boolean use) {
-        if (BuildConfig.settingVCardRFC6868 == null)
-            accountManager.setUserData(account, KEY_VCARD_RFC6868, use ? null : "0");
-        else if (BuildConfig.settingVCardRFC6868 != use)
-            throw new UnsupportedOperationException("Setting is read-only");
     }
 
 
