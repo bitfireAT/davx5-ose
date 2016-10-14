@@ -168,9 +168,6 @@
     <item>分为不同的 VCards</item>
     <item>每个联系人的分类</item>
   </string-array>
-  <string name="settings_rfc6868_for_vcards">为 VCards 启用 RFC6868</string>
-  <string name="settings_rfc6868_for_vcards_on">属性值中可使用双引号</string>
-  <string name="settings_rfc6868_for_vcards_off">属性值中不可使用双引号</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">旧日程时间限制</string>
   <string name="settings_sync_time_range_past_none">同步所有日程</string>
