@@ -164,9 +164,6 @@
     <item>GROUP_VCARDS</item>
     <item>CATEGORIES</item>
   </string-array>
-  <string name="settings_rfc6868_for_vcards">Użyj RFC6868 dla VCards</string>
-  <string name="settings_rfc6868_for_vcards_on">Podwójne apostrofy można stosować w wartościach parametrów</string>
-  <string name="settings_rfc6868_for_vcards_off">Podwójne apostrofy nie można stosować w wartościach parametrów</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limit czasowy przeszłych wydarzeń</string>
   <string name="settings_sync_time_range_past_none">Wszystkie wydarzenia zostaną synchronizowane</string>

@@ -7,6 +7,9 @@
   <string name="please_wait">Een moment geduld...</string>
   <string name="send">Verzenden</string>
   <!--startup dialogs-->
+  <string name="startup_battery_optimization">Batterij optimalisatie</string>
+  <string name="startup_battery_optimization_message">Android kan mogelijk de DAVdroid synchronisatie stoppen na een paar dagen. Om dit te voorkomen zet u de batterij optimalisatie uit.</string>
+  <string name="startup_battery_optimization_disable">DAVdroid afsluiten</string>
   <string name="startup_dont_show_again">Niet opnieuw weergeven</string>
   <string name="startup_development_version">DAVdroid voorlopige versie</string>
   <string name="startup_development_version_message">Dit is een ontwikkelversie van DAVdroid. Het kan zijn dat dingen niet werken zoals verwacht. Geef ons constructieve feedback om DAVdroid te verbeteren.</string>
@@ -54,6 +57,12 @@
   <string name="app_settings_reset_hints_summary">Hints die al gezien zijn opnieuw weergeven</string>
   <string name="app_settings_reset_hints_success">Alle hints worden opnieuw weergegeven</string>
   <string name="app_settings_security">Beveiliging</string>
+  <string name="app_settings_distrust_system_certs">Systeem certificaten niet vertrouwen</string>
+  <string name="app_settings_distrust_system_certs_on">Systeem en CAs van toegevoegde gebruiker wordt niet vertrouwd</string>
+  <string name="app_settings_distrust_system_certs_off">Systeem en CAs van toegevoegde gebruiker wordt vertrouwd (aanbevolen)</string>
+  <string name="app_settings_reset_certificates">Resetten (niet) vertrouwde certificaten</string>
+  <string name="app_settings_reset_certificates_summary">Resetten alle bewerkte certificaten</string>
+  <string name="app_settings_reset_certificates_success">Alle bewerkte certificaten zijn vrijgemaakt</string>
   <string name="app_settings_debug">Debuggen</string>
   <string name="app_settings_log_to_external_storage">Log naar extern bestand</string>
   <string name="app_settings_log_to_external_storage_on">Loggen naar externe opslag (wanneer beschikbaar)</string>
@@ -159,9 +168,6 @@
     <item>Groepen zijn apparte VCards</item>
     <item>Groepen zijn per-contact categories</item>
   </string-array>
-  <string name="settings_rfc6868_for_vcards">Gebruik RFC6868 voor VCards</string>
-  <string name="settings_rfc6868_for_vcards_on">Aanhalingstekens kunnen worden gebruikt voor parameter waardes</string>
-  <string name="settings_rfc6868_for_vcards_off">Aanhalingstekens kunnen niet worden gebruikt voor parameter waardes</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tijdslimiet verleden afspraken</string>
   <string name="settings_sync_time_range_past_none">Alle afspraken worden gesynchronizeerd</string>
@@ -228,4 +234,6 @@
   </string-array>
   <string name="sync_error_unauthorized">Gebruikersnaam/wachtwoord onjuist</string>
   <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVdroid: Verbinding beveiliging</string>
+  <string name="trust_certificate_unknown_certificate_found">Davdroid is benaderd door een onbekend certificaat. Vertrouwd u dit?</string>
 </resources>
