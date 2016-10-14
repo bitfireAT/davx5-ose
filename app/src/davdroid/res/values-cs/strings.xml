@@ -168,9 +168,6 @@
     <item>Skupiny jsou oddělené soubory VCard</item>
     <item>Skupiny jsou kategorie na kontakt</item>
   </string-array>
-  <string name="settings_rfc6868_for_vcards">Použít RFC6868 pro VCard</string>
-  <string name="settings_rfc6868_for_vcards_on">Uvozovky lze použít v hodnotách parametrů</string>
-  <string name="settings_rfc6868_for_vcards_off">Uvozovky nelze použít v hodnotách parametrů</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Časový limit pro staré události</string>
   <string name="settings_sync_time_range_past_none">Synchronizovat všechny události</string>

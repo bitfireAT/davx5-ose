@@ -168,9 +168,6 @@
     <item>Minden csoport egy különálló VCard</item>
     <item>A csoportok a kapcsolatonkéni kategóriák</item>
   </string-array>
-  <string name="settings_rfc6868_for_vcards">RFC6868 szabványnak megfelelő VCards használata</string>
-  <string name="settings_rfc6868_for_vcards_on">A paraméterértékek tartalmazhatnak idézőjelet</string>
-  <string name="settings_rfc6868_for_vcards_off">A paraméterértékek nem tartalmazhatnak idézőjelet</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Múltbéli események időkorlátja</string>
   <string name="settings_sync_time_range_past_none">Minden esemény szinkronizálása</string>

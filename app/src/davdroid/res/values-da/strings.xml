@@ -159,9 +159,6 @@
     <item>Grupper er særskilte VCards</item>
     <item>Grupper er kategorier pr. kontakt</item>
   </string-array>
-  <string name="settings_rfc6868_for_vcards">Anvend RFC6868 for VCards</string>
-  <string name="settings_rfc6868_for_vcards_on">Dobbelte citationstegn kan bruges til at sætte parametre</string>
-  <string name="settings_rfc6868_for_vcards_off">Dobbelte citationstegn kan ikke bruges til at sætte parametre</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tidsafgrænsning for tidligere begivenheder</string>
   <string name="settings_sync_time_range_past_none">Alle begivenheder vil blive synkroniseret</string>
