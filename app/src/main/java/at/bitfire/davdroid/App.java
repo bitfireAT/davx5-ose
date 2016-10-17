@@ -94,6 +94,8 @@ public class App extends Application {
         boolean logToFile = settings.getBoolean(LOG_TO_EXTERNAL_STORAGE, false),
                 logVerbose = logToFile || Log.isLoggable(log.getName(), Log.DEBUG);
 
+        App.log.info("Verbose logging: " + logVerbose);
+
         // set logging level according to preferences
         final Logger rootLogger = Logger.getLogger("");
         rootLogger.setLevel(logVerbose ? Level.ALL : Level.INFO);
