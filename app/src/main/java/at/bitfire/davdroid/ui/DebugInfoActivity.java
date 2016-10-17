@@ -18,16 +18,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -56,8 +57,6 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
             KEY_AUTHORITY = "authority",
             KEY_PHASE = "phase";
 
-    private static final int MAX_INLINE_REPORT_LENGTH = 8000;
-
     TextView tvReport;
     String report;
 
@@ -85,31 +84,25 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.setType("text/plain");
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "DAVdroid debug info");
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "DAVdroid " + BuildConfig.VERSION_NAME + " debug info");
 
-            boolean inline = false;
+            try {
+                File debugInfoDir = new File(getCacheDir(), "debug-info");
+                debugInfoDir.mkdir();
 
-            if (report.length() > MAX_INLINE_REPORT_LENGTH)
-                // report is too long for inline text, send it as an attachment
-                try {
-                    reportFile = File.createTempFile("davdroid-debug", ".txt", getExternalCacheDir());
-                    App.log.fine("Writing debug info to " + reportFile.getAbsolutePath());
-                    FileWriter writer = new FileWriter(reportFile);
-                    writer.write(report);
-                    writer.close();
+                reportFile = new File(debugInfoDir, "davdroid-debug.txt");
+                App.log.fine("Writing debug info to " + reportFile.getAbsolutePath());
+                FileWriter writer = new FileWriter(reportFile);
+                writer.write(report);
+                writer.close();
 
-                    sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(reportFile));
-                } catch (IOException e) {
-                    // let's hope the report is < 1 MB (Android IPC limit)
-                    inline = true;
-                }
-            else
-                inline = true;
+                sendIntent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, "at.bitfire.davdroid.log", reportFile));
 
-            if (inline)
-                sendIntent.putExtra(Intent.EXTRA_TEXT, report);
-
-            startActivity(sendIntent);
+                startActivity(Intent.createChooser(sendIntent, null));
+            } catch (IOException e) {
+                App.log.log(Level.SEVERE, "Couldn't write debug info file", e);
+                Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+            }
         }
     }
 
