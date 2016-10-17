@@ -236,6 +236,7 @@
     <string name="exception_show_details">Show details</string>
 
     <!-- sync errors and DebugInfoActivity -->
+    <string name="authority_log_provider">at.bitfire.davdroid.log</string>
     <string name="debug_info_title">Debug info</string>
     <string name="sync_error_permissions">DAVdroid permissions</string>
     <string name="sync_error_permissions_text">Additional permissions required</string>
