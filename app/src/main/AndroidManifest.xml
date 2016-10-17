@@ -185,6 +185,16 @@
             android:exported="true"
             android:label="@string/debug_info_title">
         </activity>
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="at.bitfire.davdroid.log"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/log_paths" />
+        </provider>
+
 
     </application>
 
