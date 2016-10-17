@@ -1,9 +1,9 @@
 
 # ProGuard usage for DAVdroid:
-# 	shrinking		yes (main reason for using ProGuard)
-# 	optimization		yes
-# 	obfuscation		no (DAVdroid is open-source)
-# 	preverification		no
+#       shrinking        yes (main reason for using ProGuard)
+#       optimization     yes
+#       obfuscation      no (DAVdroid is open-source)
+#       preverification  no
 
 -dontobfuscate
 
@@ -13,30 +13,25 @@
 -dontpreverify
 
 # ez-vcard
--dontwarn ezvcard.io.json.**			# JSON serializer (for jCards) not used
--dontwarn freemarker.**				# freemarker templating library (for creating hCards) not used
--dontwarn org.jsoup.**				# jsoup library (for hCard parsing) not used
+-dontwarn ezvcard.io.json.**            # JSON serializer (for jCards) not used
+-dontwarn freemarker.**                 # freemarker templating library (for creating hCards) not used
+-dontwarn org.jsoup.**                  # jsoup library (for hCard parsing) not used
 -dontwarn sun.misc.Perf
--keep class ezvcard.property.** { *; }		# keep all VCard properties (created at runtime)
+-keep class ezvcard.property.** { *; }  # keep all VCard properties (created at runtime)
 
 # ical4j: ignore unused dynamic libraries
 -dontwarn aQute.**
--dontwarn groovy.**				# Groovy-based ContentBuilder not used
+-dontwarn groovy.**                       # Groovy-based ContentBuilder not used
 -dontwarn org.codehaus.groovy.**
--dontwarn org.apache.commons.logging.**		# Commons logging is not available
--dontwarn org.slf4j.**                          # logging
--dontwarn net.fortuna.ical4j.model.**		# ignore warnings from Groovy dependency
--keep class net.fortuna.ical4j.model.** { *; }	# keep all model classes (properties/factories, created at runtime)
+-dontwarn net.fortuna.ical4j.model.**     # ignore warnings from Groovy dependency
+-keep class net.fortuna.ical4j.** { *; }  # keep all model classes (properties/factories, created at runtime)
 
 # okhttp
--dontwarn java.nio.file.**		# not available on Android
+-dontwarn java.nio.file.**   # not available on Android
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 
-# MemorizingTrustManager
--dontwarn de.duenndns.ssl.MemorizingTrustManager
-
 # dnsjava
--dontwarn sun.net.spi.nameservice.**		# not available on Android
+-dontwarn sun.net.spi.nameservice.**   # not available on Android
 
 # DAVdroid + libs
--keep class at.bitfire.** { *; }	# all DAVdroid code is required
+-keep class at.bitfire.** { *; }       # all DAVdroid code is required
