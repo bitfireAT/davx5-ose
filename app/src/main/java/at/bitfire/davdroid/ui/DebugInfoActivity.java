@@ -84,19 +84,19 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.setType("text/plain");
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "DAVdroid " + BuildConfig.VERSION_NAME + " debug info");
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME + " debug info");
 
             try {
                 File debugInfoDir = new File(getCacheDir(), "debug-info");
                 debugInfoDir.mkdir();
 
-                reportFile = new File(debugInfoDir, "davdroid-debug.txt");
+                reportFile = new File(debugInfoDir, "debug.txt");
                 App.log.fine("Writing debug info to " + reportFile.getAbsolutePath());
                 FileWriter writer = new FileWriter(reportFile);
                 writer.write(report);
                 writer.close();
 
-                sendIntent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, "at.bitfire.davdroid.log", reportFile));
+                sendIntent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, getString(R.string.authority_log_provider), reportFile));
 
                 startActivity(Intent.createChooser(sendIntent, null));
             } catch (IOException e) {
