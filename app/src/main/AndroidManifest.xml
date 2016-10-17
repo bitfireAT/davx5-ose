@@ -187,7 +187,7 @@
         </activity>
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="at.bitfire.davdroid.log"
+            android:authorities="@string/authority_log_provider"
             android:grantUriPermissions="true"
             android:exported="false">
             <meta-data
