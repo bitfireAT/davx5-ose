@@ -5,7 +5,7 @@ android=([ca]=ca [cs]=cs [da]=da [de]=de [es]=es [fr]=fr [hu]=hu [it]=it [ja]=ja
 
 for lang in ${!android[@]}
 do
-	target_app=../app/src/main/res/values-${android[$lang]}
+	target_app=../app/src/davdroid/res/values-${android[$lang]}
 	target_cert4android=../cert4android/src/main/res/values-${android[$lang]}
 
 	mkdir -p $target_app
