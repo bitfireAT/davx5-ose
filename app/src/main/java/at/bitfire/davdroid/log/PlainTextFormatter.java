@@ -35,7 +35,10 @@ public class PlainTextFormatter extends Formatter {
             builder .append(DateFormatUtils.format(r.getMillis(), "yyyy-MM-dd HH:mm:ss"))
                     .append(" ").append(r.getThreadID()).append(" ");
 
-        builder.append(String.format("[%s] %s", shortClassName(r.getSourceClassName()), r.getMessage()));
+        if (!r.getSourceClassName().replaceFirst("\\$.*", "").equals(r.getLoggerName()))
+            builder.append("[").append(shortClassName(r.getSourceClassName())).append("] ");
+
+        builder.append(r.getMessage());
 
         if (r.getThrown() != null)
             builder .append("\nEXCEPTION ")
