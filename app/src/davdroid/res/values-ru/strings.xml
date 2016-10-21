@@ -14,7 +14,7 @@
   <!--PermissionsActivity-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Вход по адресу email</string>
-  <string name="login_type_url">Вход через URL  и имя пользователя</string>
+  <string name="login_type_url">Вход через URL и имя пользователя</string>
   <!--AccountSettingsActivity-->
   <string name="settings_authentication">Идентификация</string>
   <string name="settings_username">Имя</string>

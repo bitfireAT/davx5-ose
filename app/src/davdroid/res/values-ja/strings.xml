@@ -131,16 +131,6 @@
   <string name="settings_sync_summary_not_available">利用不可</string>
   <string name="settings_sync_interval_calendars">カレンダー同期間隔</string>
   <string name="settings_sync_interval_tasks">タスク同期間隔</string>
-  <string-array name="settings_sync_interval_seconds">
-    <item>-1</item>
-    <item>300</item>
-    <item>600</item>
-    <item>900</item>
-    <item>3600</item>
-    <item>7200</item>
-    <item>14400</item>
-    <item>86400</item>
-  </string-array>
   <string-array name="settings_sync_interval_names">
     <item>手動のみ</item>
     <item>5 分ごと</item>
@@ -160,10 +150,6 @@
   <string name="settings_sync_wifi_only_ssid_message">このネットワークで同期を制限する WiFi ネットワーク (SSID) の名前を入力してください。すべての WiFi 接続は空白のままにします。</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">連絡先グループ方法</string>
-  <string-array name="settings_contact_group_method_values">
-    <item>GROUP_VCARDS</item>
-    <item>CATEGORIES</item>
-  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>グループは個別の VCards</item>
     <item>グループは連絡先カテゴリーごと</item>
