@@ -10,30 +10,59 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="@string/app_settings_user_interface">
+
         <Preference
             android:key="reset_hints"
             android:title="@string/app_settings_reset_hints"
             android:summary="@string/app_settings_reset_hints_summary"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/app_settings_connection">
+
+        <SwitchPreferenceCompat
+            android:key="override_proxy"
+            android:title="@string/app_settings_override_proxy"
+            android:summaryOn="@string/app_settings_override_proxy_on"
+            android:summaryOff="@string/app_settings_override_proxy_off"/>
+
+        <EditTextPreference
+            android:key="proxy_host"
+            android:dependency="override_proxy"
+            android:title="@string/app_settings_override_proxy_host"
+            android:inputType="textUri"/>
+
+        <EditTextPreference
+            android:key="proxy_port"
+            android:dependency="override_proxy"
+            android:title="@string/app_settings_override_proxy_port"
+            android:inputType="number"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/app_settings_security">
+
         <SwitchPreferenceCompat
             android:key="distrust_system_certs"
             android:title="@string/app_settings_distrust_system_certs"
             android:summaryOn="@string/app_settings_distrust_system_certs_on"
             android:summaryOff="@string/app_settings_distrust_system_certs_off"/>
+
         <Preference
             android:key="reset_certificates"
             android:title="@string/app_settings_reset_certificates"
             android:summary="@string/app_settings_reset_certificates_summary"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/app_settings_debug">
+
         <SwitchPreferenceCompat
             android:key="log_to_external_storage"
             android:title="@string/app_settings_log_to_external_storage"
             android:summaryOn="@string/app_settings_log_to_external_storage_on"
             android:summaryOff="@string/app_settings_log_to_external_storage_off"/>
+
         <Preference
             android:title="@string/app_settings_show_debug_info"
             android:summary="@string/app_settings_show_debug_info_details">
@@ -41,6 +70,7 @@
                 android:targetPackage="@string/packageID"
                 android:targetClass="at.bitfire.davdroid.ui.DebugInfoActivity"/>
         </Preference>
+
     </PreferenceCategory>
 
 </PreferenceScreen>
