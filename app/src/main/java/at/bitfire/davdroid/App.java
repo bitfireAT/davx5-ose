@@ -49,7 +49,13 @@ public class App extends Application {
 
     public static final String
             DISTRUST_SYSTEM_CERTIFICATES = "distrustSystemCerts",
-            LOG_TO_EXTERNAL_STORAGE = "logToExternalStorage";
+            LOG_TO_EXTERNAL_STORAGE = "logToExternalStorage",
+            OVERRIDE_PROXY = "overrideProxy",
+            OVERRIDE_PROXY_HOST = "overrideProxyHost",
+            OVERRIDE_PROXY_PORT = "overrideProxyPort";
+
+    public static final String OVERRIDE_PROXY_HOST_DEFAULT = "localhost";
+    public static final int OVERRIDE_PROXY_PORT_DEFAULT = 8118;
 
     @Getter
     private CustomCertManager certManager;

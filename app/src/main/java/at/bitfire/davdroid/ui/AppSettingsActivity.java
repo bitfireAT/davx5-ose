@@ -12,9 +12,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.SwitchPreferenceCompat;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.R;
@@ -43,8 +47,13 @@ public class AppSettingsActivity extends AppCompatActivity {
                 prefResetHints,
                 prefResetCertificates;
         SwitchPreferenceCompat
+                prefOverrideProxy,
                 prefDistrustSystemCerts,
                 prefLogToExternalStorage;
+
+        EditTextPreference
+                prefProxyHost,
+                prefProxyPort;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +74,56 @@ public class AppSettingsActivity extends AppCompatActivity {
             addPreferencesFromResource(R.xml.settings_app);
 
             prefResetHints = findPreference("reset_hints");
+
+            prefOverrideProxy = (SwitchPreferenceCompat)findPreference("override_proxy");
+            prefOverrideProxy.setChecked(settings.getBoolean(App.OVERRIDE_PROXY, false));
+            prefOverrideProxy.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    settings.putBoolean(App.OVERRIDE_PROXY, (boolean)newValue);
+                    return true;
+                }
+            });
+
+            prefProxyHost = (EditTextPreference)findPreference("proxy_host");
+            String proxyHost = settings.getString(App.OVERRIDE_PROXY_HOST, App.OVERRIDE_PROXY_HOST_DEFAULT);
+            prefProxyHost.setText(proxyHost);
+            prefProxyHost.setSummary(proxyHost);
+            prefProxyHost.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    String host = (String)newValue;
+                    try {
+                        URI uri = new URI(null, host, null, null);
+                    } catch(URISyntaxException e) {
+                        Snackbar.make(getView(), e.getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
+                        return false;
+                    }
+                    settings.putString(App.OVERRIDE_PROXY_HOST, host);
+                    prefProxyHost.setSummary(host);
+                    return true;
+                }
+            });
+
+            prefProxyPort = (EditTextPreference)findPreference("proxy_port");
+            String proxyPort = settings.getString(App.OVERRIDE_PROXY_PORT, String.valueOf(App.OVERRIDE_PROXY_PORT_DEFAULT));
+            prefProxyPort.setText(proxyPort);
+            prefProxyPort.setSummary(proxyPort);
+            prefProxyPort.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    int port;
+                    try {
+                        port = Integer.parseInt((String)newValue);
+                    } catch(NumberFormatException e) {
+                        port = App.OVERRIDE_PROXY_PORT_DEFAULT;
+                    }
+                    settings.putInt(App.OVERRIDE_PROXY_PORT, port);
+                    prefProxyPort.setText(String.valueOf(port));
+                    prefProxyPort.setSummary(String.valueOf(port));
+                    return true;
+                }
+            });
 
             prefDistrustSystemCerts = (SwitchPreferenceCompat)findPreference("distrust_system_certs");
             prefDistrustSystemCerts.setChecked(settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false));

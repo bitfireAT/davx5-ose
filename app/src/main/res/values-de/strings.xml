@@ -56,6 +56,12 @@
   <string name="app_settings_reset_hints">Hinweise zurücksetzen</string>
   <string name="app_settings_reset_hints_summary">Hinweise, die deaktiviert wurden, wieder anzeigen</string>
   <string name="app_settings_reset_hints_success">Alle Hinweise werden wieder angezeigt</string>
+  <string name="app_settings_connection">Verbindung</string>
+  <string name="app_settings_override_proxy">Proxy-Einstellungen überschreiben</string>
+  <string name="app_settings_override_proxy_on">Eigene Proxy-Einstellungen werden verwendet</string>
+  <string name="app_settings_override_proxy_off">System-Proxy-Einstellungen werden verwendet</string>
+  <string name="app_settings_override_proxy_host">HTTP-Proxy-Rechnername</string>
+  <string name="app_settings_override_proxy_port">HTTP-Proxy-Port</string>
   <string name="app_settings_security">Sicherheit</string>
   <string name="app_settings_distrust_system_certs">Systemzertifikaten nicht vertrauen</string>
   <string name="app_settings_distrust_system_certs_on">System- und installierten CAs wird nicht vertraut</string>
