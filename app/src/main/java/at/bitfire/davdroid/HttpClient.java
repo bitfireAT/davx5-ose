@@ -10,11 +10,14 @@ package at.bitfire.davdroid;
 
 import android.accounts.Account;
 import android.content.Context;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -23,6 +26,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import at.bitfire.dav4android.BasicDigestAuthHandler;
+import at.bitfire.davdroid.model.ServiceDB;
+import at.bitfire.davdroid.model.Settings;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -84,6 +89,28 @@ public class HttpClient {
 
         // don't allow redirects, because it would break PROPFIND handling
         builder.followRedirects(false);
+
+        // custom proxy support
+        if (context != null) {
+            SQLiteOpenHelper dbHelper = new ServiceDB.OpenHelper(context);
+            try {
+                Settings settings = new Settings(dbHelper.getReadableDatabase());
+                if (settings.getBoolean(App.OVERRIDE_PROXY, false)) {
+                    InetSocketAddress address = new InetSocketAddress(
+                            settings.getString(App.OVERRIDE_PROXY_HOST, App.OVERRIDE_PROXY_HOST_DEFAULT),
+                            settings.getInt(App.OVERRIDE_PROXY_PORT, App.OVERRIDE_PROXY_PORT_DEFAULT)
+                    );
+
+                    Proxy proxy = new Proxy(Proxy.Type.HTTP, address);
+                    builder.proxy(proxy);
+                    App.log.log(Level.INFO, "Using proxy", proxy);
+                }
+            } catch(IllegalArgumentException|NullPointerException e) {
+                App.log.log(Level.SEVERE, "Can't set proxy, ignoring", e);
+            } finally {
+                dbHelper.close();
+            }
+        }
 
         // add User-Agent to every request
         builder.addNetworkInterceptor(userAgentInterceptor);
