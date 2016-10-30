@@ -73,6 +73,12 @@
     <string name="app_settings_reset_hints">Reset hints</string>
     <string name="app_settings_reset_hints_summary">Re-enables hints which have been dismissed previously</string>
     <string name="app_settings_reset_hints_success">All hints will be shown again</string>
+    <string name="app_settings_connection">Connection</string>
+    <string name="app_settings_override_proxy">Override proxy settings</string>
+    <string name="app_settings_override_proxy_on">Use custom proxy settings</string>
+    <string name="app_settings_override_proxy_off">Use system default proxy settings</string>
+    <string name="app_settings_override_proxy_host">HTTP proxy host name</string>
+    <string name="app_settings_override_proxy_port">HTTP proxy port</string>
     <string name="app_settings_security">Security</string>
     <string name="app_settings_distrust_system_certs">Distrust system certificates</string>
     <string name="app_settings_distrust_system_certs_on">System and user-added CAs won\'t be trusted</string>
