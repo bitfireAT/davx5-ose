@@ -56,6 +56,12 @@
   <string name="app_settings_reset_hints">Tippek visszaállítása</string>
   <string name="app_settings_reset_hints_summary">Újra jelenjen meg az összes tipp</string>
   <string name="app_settings_reset_hints_success">Az összes tipp újra meg fog jelenni</string>
+  <string name="app_settings_connection">Kapcsolat</string>
+  <string name="app_settings_override_proxy">Proxybeállítások felülírása</string>
+  <string name="app_settings_override_proxy_on">Egyedi proxybeállítások</string>
+  <string name="app_settings_override_proxy_off">Az alapértelmezett proxybeállítás használata</string>
+  <string name="app_settings_override_proxy_host">HTTP proxyállomás neve</string>
+  <string name="app_settings_override_proxy_port">HTTP proxy port</string>
   <string name="app_settings_security">Biztonság</string>
   <string name="app_settings_distrust_system_certs">A rendszertanúsítványok elfogadása</string>
   <string name="app_settings_distrust_system_certs_on">A rendszer által kezelt, előre vagy felhasználó által telepített tanúsítványok figyelmen kívül lesznek hagyva</string>

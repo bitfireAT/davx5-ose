@@ -56,6 +56,12 @@
   <string name="app_settings_reset_hints">Restaurar sugestões</string>
   <string name="app_settings_reset_hints_summary">Restaura as sugestões que foram descartadas anteriormente</string>
   <string name="app_settings_reset_hints_success">Todas as sugestões serão exibidas novamente</string>
+  <string name="app_settings_connection">Conexão</string>
+  <string name="app_settings_override_proxy">Substituir as configurações de proxy</string>
+  <string name="app_settings_override_proxy_on">Usar configurações de proxy personalizadas</string>
+  <string name="app_settings_override_proxy_off">Usar configurações de proxy padrão do sistema</string>
+  <string name="app_settings_override_proxy_host">Nome do servidor proxy HTTP</string>
+  <string name="app_settings_override_proxy_port">Porta do proxy HTTP</string>
   <string name="app_settings_security">Segurança</string>
   <string name="app_settings_distrust_system_certs">Desconfiar dos certificados de sistema</string>
   <string name="app_settings_distrust_system_certs_on">ACs adicionadas pelo usuário e pelo sistema não serão confiáveis</string>

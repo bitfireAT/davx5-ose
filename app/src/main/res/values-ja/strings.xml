@@ -56,6 +56,12 @@
   <string name="app_settings_reset_hints">ヒントをリセット</string>
   <string name="app_settings_reset_hints_summary">以前非表示にしたヒントを、再度有効にします</string>
   <string name="app_settings_reset_hints_success">すべてのヒントが再度表示されます</string>
+  <string name="app_settings_connection">接続</string>
+  <string name="app_settings_override_proxy">プロキシ設定を上書き</string>
+  <string name="app_settings_override_proxy_on">カスタムのプロキシ設定を使用する</string>
+  <string name="app_settings_override_proxy_off">システムデフォルトのプロキシ設定を使用する</string>
+  <string name="app_settings_override_proxy_host">HTTP プロキシのホスト名</string>
+  <string name="app_settings_override_proxy_port">HTTP プロキシのポート</string>
   <string name="app_settings_security">セキュリティ</string>
   <string name="app_settings_distrust_system_certs">システム証明書の信頼を解除</string>
   <string name="app_settings_distrust_system_certs_on">システムとユーザーが追加したCAを信頼しない</string>
