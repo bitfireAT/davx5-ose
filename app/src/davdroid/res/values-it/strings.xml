@@ -12,6 +12,7 @@
   <string name="startup_battery_optimization_disable">Disabilita per DAVdroid</string>
   <string name="startup_dont_show_again">Non mostrare più</string>
   <string name="startup_development_version">Versione di sviluppo di DAVdroid</string>
+  <string name="startup_development_version_message">Questa è una versione di sviluppo di DAVdroid. Attenzione perché potrebbe avere malfunzionamenti. Inviateci consigli utili per migliorarlo.</string>
   <string name="startup_development_version_give_feedback">Invia un rapporto</string>
   <string name="startup_donate">Informazioni sull\'Open-Source</string>
   <string name="startup_donate_message">Siamo soddisfatti del tuo uso di DAVdroid, programma Open-Source (GPLv3). Poiché lo sviluppo è un\'iniziativa complessa che comporta molte ore di lavoro ti invitiamo a fare una donazione.</string>
@@ -34,6 +35,7 @@
   <string name="logging_couldnt_create_file">Non riesco a creare il file di log esterno: %s</string>
   <string name="logging_no_external_storage">Dispositivo esterno non disponibile</string>
   <!--AccountsActivity-->
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV adattatore di sincronizzazione</string>
   <string name="navigation_drawer_about">Informazioni / Licenza</string>
   <string name="navigation_drawer_settings">Impostazioni</string>
   <string name="navigation_drawer_news_updates">Notizie &amp; aggiornamenti</string>
@@ -49,6 +51,15 @@
   <!--AppSettingsActivity-->
   <string name="app_settings">Impostazioni</string>
   <string name="app_settings_user_interface">Interfaccia utente</string>
+  <string name="app_settings_reset_hints">Reimposta i suggerimenti</string>
+  <string name="app_settings_reset_hints_summary">Riabilita i suggerimenti precedentemente disabilitati</string>
+  <string name="app_settings_reset_hints_success">I suggerimenti verranno mostrati</string>
+  <string name="app_settings_connection">Connessione</string>
+  <string name="app_settings_override_proxy">Non rispettare la impostazioni del proxy</string>
+  <string name="app_settings_override_proxy_on">Impostazioni personalizzate del proxy</string>
+  <string name="app_settings_override_proxy_off">Usa le impostazioni di sistema del proxy</string>
+  <string name="app_settings_override_proxy_host">Nome host del proxy HTTP</string>
+  <string name="app_settings_override_proxy_port">Porta del proxy HTTP</string>
   <string name="app_settings_security">Sicurezza</string>
   <string name="app_settings_distrust_system_certs">Non ti fidare dei certificati di sistema</string>
   <string name="app_settings_distrust_system_certs_on">Le CA di sistema e quelle aggiunte dall\'utente non sono affidabili</string>
@@ -162,6 +173,10 @@
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limite di tempo per gli eventi trascorsi</string>
   <string name="settings_sync_time_range_past_none">Verranno sincronizzati tutti gli eventi</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Eventi più vecchi di un giorno saranno ignorati</item>
+    <item quantity="other">Eventi più vecchi di %d giorni saranno ignorati</item>
+  </plurals>
   <string name="settings_sync_time_range_past_message">Eventi più vecchi di questo numero di giorni verranno ignorati(può anche essere 0). Lasciare in bianco per sincronizzare tutti gli eventi.</string>
   <string name="settings_manage_calendar_colors">Cambia il colore del calendario</string>
   <string name="settings_manage_calendar_colors_on">I colori dei calendari sono gestiti da DAVdroid</string>
@@ -196,6 +211,20 @@
   <string name="sync_error">Errore nel %s</string>
   <string name="sync_error_http_dav">Errore del server nel %s</string>
   <string name="sync_error_local_storage">Errore del database nel %s</string>
+  <string-array name="sync_error_phases">
+    <item>inizio sincronizzazione</item>
+    <item>controllo caratteristiche del server</item>
+    <item>elaborazione voci cancellate in locale</item>
+    <item>elaborazione voci create o modificate</item>
+    <item>invio voci create o modificate</item>
+    <item>controllo stato della sincronizzazione</item>
+    <item>elenco voci locali</item>
+    <item>elenco voci remote</item>
+    <item>confronto voci locali e remote</item>
+    <item>download voci remote</item>
+    <item>post-processing</item>
+    <item>salvataggio stato della sincronizzazione</item>
+  </string-array>
   <string name="sync_error_unauthorized">Nome utente o password errati</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid: sicurezza della connessione</string>
