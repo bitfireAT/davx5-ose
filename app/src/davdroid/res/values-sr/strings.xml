@@ -56,6 +56,12 @@
   <string name="app_settings_reset_hints">Ресетуј савете</string>
   <string name="app_settings_reset_hints_summary">Поновно приказивање претходно одбачених савета</string>
   <string name="app_settings_reset_hints_success">Сви савети ће поново бити приказани</string>
+  <string name="app_settings_connection">Повезивање</string>
+  <string name="app_settings_override_proxy">Надјачај поставке проксија</string>
+  <string name="app_settings_override_proxy_on">Користи прилагођене поставке проксија</string>
+  <string name="app_settings_override_proxy_off">Користи системски подразумеване поставке проксија</string>
+  <string name="app_settings_override_proxy_host">ХТТП прокси домаћин</string>
+  <string name="app_settings_override_proxy_port">ХТТП прокси порт</string>
   <string name="app_settings_security">Безбедност</string>
   <string name="app_settings_distrust_system_certs">Посумњај у системске сертификате</string>
   <string name="app_settings_distrust_system_certs_on">Системски и кориснички додати сертификати неће бити поуздани</string>
