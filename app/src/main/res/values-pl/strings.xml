@@ -56,6 +56,12 @@
   <string name="app_settings_reset_hints">Zresetuj podpowiedzi</string>
   <string name="app_settings_reset_hints_summary">Ponownie włącz wskazówki, które zostały usunięte wcześniej</string>
   <string name="app_settings_reset_hints_success">Wszystkie wskazówki pojawią się ponownie</string>
+  <string name="app_settings_connection">Łączność</string>
+  <string name="app_settings_override_proxy">Nadpisz ustawienia proxy</string>
+  <string name="app_settings_override_proxy_on">Użyj niestandardowych ustawień proxy </string>
+  <string name="app_settings_override_proxy_off">Użyj systemowych ustawień proxy</string>
+  <string name="app_settings_override_proxy_host">Nazwa hosta HTTP proxy</string>
+  <string name="app_settings_override_proxy_port">Port HTTP proxy</string>
   <string name="app_settings_security">Bezpieczeństwo</string>
   <string name="app_settings_distrust_system_certs">Usuń certyfikaty systemowe</string>
   <string name="app_settings_distrust_system_certs_on">CA systemowe i użytkownika nie zostaną dodane</string>
