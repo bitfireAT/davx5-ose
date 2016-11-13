@@ -11,6 +11,6 @@ do
 	mkdir -p $target_app
 	curl -n "https://www.transifex.com/api/2/project/davdroid/resource/app/translation/$lang?file" >$target_app/strings.xml
 
-	mkdir -p $target_cert4android
-	curl -n "https://www.transifex.com/api/2/project/davdroid/resource/cert4android/translation/$lang?file" >$target_cert4android/strings.xml
+	#mkdir -p $target_cert4android
+	#curl -n "https://www.transifex.com/api/2/project/davdroid/resource/cert4android/translation/$lang?file" >$target_cert4android/strings.xml
 done
