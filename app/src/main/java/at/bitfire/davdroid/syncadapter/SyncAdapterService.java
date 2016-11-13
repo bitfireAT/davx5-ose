@@ -99,7 +99,7 @@ public abstract class SyncAdapterService extends Service {
                 String onlySSID = settings.getSyncWifiOnlySSID();
                 if (onlySSID != null) {
                     onlySSID = "\"" + onlySSID + "\"";
-                    WifiManager wifi = (WifiManager)getContext().getSystemService(WIFI_SERVICE);
+                    WifiManager wifi = (WifiManager)getContext().getApplicationContext().getSystemService(WIFI_SERVICE);
                     WifiInfo info = wifi.getConnectionInfo();
                     if (info == null || !onlySSID.equals(info.getSSID())) {
                         App.log.info("Connected to wrong WiFi network (" + info.getSSID() + ", required: " + onlySSID + "), ignoring");
