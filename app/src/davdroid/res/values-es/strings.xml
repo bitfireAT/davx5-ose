@@ -56,6 +56,12 @@
   <string name="app_settings_reset_hints">Restablecer advertencias</string>
   <string name="app_settings_reset_hints_summary">Habilita las advertencias que han sido rechazadas con anterioridad</string>
   <string name="app_settings_reset_hints_success">Todas las advertencias se mostrarán nuevamente</string>
+  <string name="app_settings_connection">Conexión</string>
+  <string name="app_settings_override_proxy">Anular ajustes del proxy</string>
+  <string name="app_settings_override_proxy_on">Usar ajustes personalizados del proxy</string>
+  <string name="app_settings_override_proxy_off">Usar ajustes del proxy predefinidos por el sistema</string>
+  <string name="app_settings_override_proxy_host">Nombre del host del proxy HTTP</string>
+  <string name="app_settings_override_proxy_port">Puerto del proxy HTTP</string>
   <string name="app_settings_security">Seguridad</string>
   <string name="app_settings_distrust_system_certs">Invalidar los certificados del sistema</string>
   <string name="app_settings_distrust_system_certs_on">Los CA del sistema y los añadidos por el usuario no serán válidos</string>
