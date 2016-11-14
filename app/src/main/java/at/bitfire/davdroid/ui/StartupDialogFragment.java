@@ -118,7 +118,8 @@ public class StartupDialogFragment extends DialogFragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 Intent intent = new Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
                                         Uri.parse("package:" + BuildConfig.APPLICATION_ID));
-                                getContext().startActivity(intent);
+                                if (intent.resolveActivity(getContext().getPackageManager()) != null)
+                                    getContext().startActivity(intent);
                             }
                         })
                         .setNegativeButton(R.string.startup_dont_show_again, new DialogInterface.OnClickListener() {
