@@ -79,6 +79,9 @@
   <string name="account_synchronize_now">Синхронизуј одмах</string>
   <string name="account_synchronizing_now">Синхронизујем</string>
   <string name="account_settings">Поставке налога</string>
+  <string name="account_rename">Преименуј налог</string>
+  <string name="account_rename_new_name">Несачувани локални подаци могу бити изгубљни. Потребна је ресинхронизација након преименовања. Нови назив налога:</string>
+  <string name="account_rename_rename">Преименуј</string>
   <string name="account_delete">Обриши налог</string>
   <string name="account_delete_confirmation_title">Заиста обрисати налог?</string>
   <string name="account_delete_confirmation_text">Све локалне копије адресара, календара и листи задатака ће бити обрисане.</string>

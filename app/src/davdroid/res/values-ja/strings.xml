@@ -79,6 +79,9 @@
   <string name="account_synchronize_now">今すぐ同期</string>
   <string name="account_synchronizing_now">同期中</string>
   <string name="account_settings">アカウント設定</string>
+  <string name="account_rename">アカウントの名前を変更</string>
+  <string name="account_rename_new_name">未保存のローカルデータが破棄されることがあります。 名前の変更後に再同期が必要です。 新しいアカウント名:</string>
+  <string name="account_rename_rename">名前を変更</string>
   <string name="account_delete">アカウントを削除</string>
   <string name="account_delete_confirmation_title">アカウントを削除してもよろしいですか?</string>
   <string name="account_delete_confirmation_text">アドレス帳、カレンダー、タスクリストのローカルコピーがすべて削除されます。</string>
