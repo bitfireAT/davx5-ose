@@ -97,6 +97,9 @@
     <string name="account_synchronize_now">Synchronize now</string>
     <string name="account_synchronizing_now">Synchronizing now</string>
     <string name="account_settings">Account settings</string>
+    <string name="account_rename">Rename account</string>
+    <string name="account_rename_new_name">Unsaved local data may be dismissed. Re-synchronization is required after renaming. New account name:</string>
+    <string name="account_rename_rename">Rename</string>
     <string name="account_delete">Delete account</string>
     <string name="account_delete_confirmation_title">Really delete account?</string>
     <string name="account_delete_confirmation_text">All local copies of address books, calendars and task lists will be deleted.</string>

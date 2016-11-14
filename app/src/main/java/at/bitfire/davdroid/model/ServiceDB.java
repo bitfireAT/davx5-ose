@@ -8,17 +8,16 @@
 
 package at.bitfire.davdroid.model;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 
-import java.util.logging.Level;
-
-import aQute.service.reporter.Messages;
 import at.bitfire.davdroid.App;
 import lombok.Cleanup;
 
@@ -184,6 +183,13 @@ public class ServiceDB {
             }
             db.endTransaction();
         }
+    }
+
+
+    public static void onRenameAccount(@NonNull SQLiteDatabase db, @NonNull String oldName, @NonNull String newName) {
+        ContentValues values = new ContentValues(1);
+        values.put(Services.ACCOUNT_NAME, newName);
+        db.update(Services._TABLE, values, Services.ACCOUNT_NAME + "=?", new String[] { oldName });
     }
 
 }
