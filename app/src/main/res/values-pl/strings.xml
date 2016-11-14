@@ -79,6 +79,9 @@
   <string name="account_synchronize_now">Synchronizuj teraz</string>
   <string name="account_synchronizing_now">Synchronizcja w toku</string>
   <string name="account_settings">Ustawienia konta</string>
+  <string name="account_rename">Zmień nazwę konta</string>
+  <string name="account_rename_new_name">Niezapisane dane lokalne mogą zostać usunięte. Ponowna synchronizacja jest wymagana po zmianie nazwy. Nowa nazwa konta:</string>
+  <string name="account_rename_rename">Zmień nazwę</string>
   <string name="account_delete">Usuń konto</string>
   <string name="account_delete_confirmation_title">Naprawdę chcesz usunąć konto?</string>
   <string name="account_delete_confirmation_text">Wszystkie lokalne kopie książek adresowych, kalendarzy i list zadań zostaną usunięte.</string>
