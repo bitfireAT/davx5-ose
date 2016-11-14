@@ -9,6 +9,7 @@ package at.bitfire.davdroid.resource;
 
 import android.accounts.Account;
 import android.content.ContentProviderClient;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -16,6 +17,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.RemoteException;
+import android.provider.ContactsContract;
 import android.provider.ContactsContract.Groups;
 import android.provider.ContactsContract.RawContacts;
 import android.support.annotation.NonNull;
@@ -224,6 +226,16 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
             syncState.putString(SYNC_STATE_CTAG, cTag);
             writeSyncState();
         }
+    }
+
+
+    // HELPERS
+
+    public static void onRenameAccount(@NonNull ContentResolver resolver, @NonNull String oldName, @NonNull String newName) throws RemoteException {
+        @Cleanup("release") ContentProviderClient client = resolver.acquireContentProviderClient(ContactsContract.AUTHORITY);
+        ContentValues values = new ContentValues(1);
+        values.put(RawContacts.ACCOUNT_NAME, newName);
+        client.update(RawContacts.CONTENT_URI, values, RawContacts.ACCOUNT_NAME + "=?", new String[] { oldName });
     }
 
 }
