@@ -79,6 +79,9 @@
   <string name="account_synchronize_now">Sincronizar agora</string>
   <string name="account_synchronizing_now">Sincronizando</string>
   <string name="account_settings">Configurações da conta</string>
+  <string name="account_rename">Renomear conta</string>
+  <string name="account_rename_new_name">Dados locais que não foram salvos podem ser descartados. É necessário efetuar uma nova sincronização após renomear. Novo nome da conta:</string>
+  <string name="account_rename_rename">Renomear</string>
   <string name="account_delete">Excluir conta</string>
   <string name="account_delete_confirmation_title">Deseja excluir a conta?</string>
   <string name="account_delete_confirmation_text">Todas as cópias locais dos livros de endereços, calendários e listas de tarefas serão excluídas.</string>
