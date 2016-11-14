@@ -251,4 +251,5 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
             return new LocalCalendar[size];
         }
     }
+
 }

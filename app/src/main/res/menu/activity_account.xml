@@ -20,6 +20,10 @@
           android:title="@string/account_settings"
           app:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/rename_account"
+          android:title="@string/account_rename"
+          app:showAsAction="never"/>
+
     <item android:id="@+id/delete_account"
           android:title="@string/account_delete"
           app:showAsAction="never"/>
