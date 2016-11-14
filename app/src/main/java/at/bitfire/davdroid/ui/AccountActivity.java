@@ -14,6 +14,7 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
+import android.app.Dialog;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.ComponentName;
@@ -32,10 +33,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -50,6 +53,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
@@ -72,6 +76,8 @@ import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.model.ServiceDB.Collections;
 import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
 import at.bitfire.davdroid.model.ServiceDB.Services;
+import at.bitfire.davdroid.resource.LocalAddressBook;
+import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.ical4android.TaskProvider;
 import lombok.Cleanup;
 
@@ -137,6 +143,14 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem itemRename = menu.findItem(R.id.rename_account);
+        // renameAccount is available for API level 21+
+        itemRename.setVisible(Build.VERSION.SDK_INT >= 21);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.sync_now:
@@ -146,6 +160,9 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                 Intent intent = new Intent(this, AccountSettingsActivity.class);
                 intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account);
                 startActivity(intent);
+                break;
+            case R.id.rename_account:
+                RenameAccountFragment.newInstance(account).show(getSupportFragmentManager(), null);
                 break;
             case R.id.delete_account:
                 new AlertDialog.Builder(AccountActivity.this)
@@ -172,7 +189,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
         Intent intent;
         switch (item.getItemId()) {
             case R.id.refresh_address_books:
-                if (accountInfo.carddav != null) {
+                if (accountInfo != null && accountInfo.carddav != null) {
                     intent = new Intent(this, DavService.class);
                     intent.setAction(DavService.ACTION_REFRESH_COLLECTIONS);
                     intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, accountInfo.carddav.id);
@@ -185,7 +202,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                 startActivity(intent);
                 break;
             case R.id.refresh_calendars:
-                if (accountInfo.caldav != null) {
+                if (accountInfo != null && accountInfo.caldav != null) {
                     intent = new Intent(this, DavService.class);
                     intent.setAction(DavService.ACTION_REFRESH_COLLECTIONS);
                     intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, accountInfo.caldav.id);
@@ -298,12 +315,6 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     public void onLoadFinished(Loader<AccountInfo> loader, final AccountInfo info) {
         accountInfo = info;
 
-        if (accountInfo == null) {
-            // account doesn't exist anymore
-            finish();
-            return;
-        }
-
         CardView card = (CardView)findViewById(R.id.carddav);
         if (info.carddav != null) {
             ProgressBar progress = (ProgressBar)findViewById(R.id.carddav_refreshing);
@@ -414,10 +425,6 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                     new String[] { Services.ID, Services.SERVICE },
                     Services.ACCOUNT_NAME + "=?", new String[] { account.name },
                     null, null, null);
-
-            if (cursor.getCount() == 0)
-                // no services, account not useable
-                return null;
 
             while (cursor.moveToNext()) {
                 long id = cursor.getLong(0);
@@ -545,6 +552,88 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     }
 
 
+    /* DIALOG FRAGMENTS */
+
+    public static class RenameAccountFragment extends DialogFragment {
+
+        private final static String ARG_ACCOUNT = "account";
+
+        static RenameAccountFragment newInstance(@NonNull Account account) {
+            RenameAccountFragment fragment = new RenameAccountFragment();
+            Bundle args = new Bundle(1);
+            args.putParcelable(ARG_ACCOUNT, account);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Account oldAccount = getArguments().getParcelable(ARG_ACCOUNT);
+
+            final EditText editText = new EditText(getContext());
+            editText.setText(oldAccount.name);
+
+            return new AlertDialog.Builder(getContext())
+                    .setTitle(R.string.account_rename)
+                    .setMessage(R.string.account_rename_new_name)
+                    .setView(editText)
+                    .setPositiveButton(R.string.account_rename_rename, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            final String newName = editText.getText().toString();
+
+                            if (newName.equals(oldAccount.name))
+                                return;
+
+                            final AccountManager accountManager = AccountManager.get(getContext());
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                                accountManager.renameAccount(oldAccount, newName,
+                                        new AccountManagerCallback<Account>() {
+                                            @Override
+                                            public void run(AccountManagerFuture<Account> future) {
+                                                App.log.info("Updating account name references");
+
+                                                // cancel running synchronization
+                                                ContentResolver.cancelSync(oldAccount, null);
+
+                                                // update account name references in database
+                                                @Cleanup OpenHelper dbHelper = new OpenHelper(getContext());
+                                                ServiceDB.onRenameAccount(dbHelper.getWritableDatabase(), oldAccount.name, newName);
+
+                                                // update account_name of local contacts
+                                                try {
+                                                    LocalAddressBook.onRenameAccount(getContext().getContentResolver(), oldAccount.name, newName);
+                                                } catch(RemoteException e) {
+                                                    App.log.log(Level.SEVERE, "Couldn't propagate new account name to contacts provider");
+                                                }
+
+                                                // calendar provider doesn't allow changing account_name of Events
+
+                                                // update account_name of local tasks
+                                                try {
+                                                    LocalTaskList.onRenameAccount(getContext().getContentResolver(), oldAccount.name, newName);
+                                                } catch(RemoteException e) {
+                                                    App.log.log(Level.SEVERE, "Couldn't propagate new account name to tasks provider");
+                                                }
+
+                                                // synchronize again
+                                                requestSync(new Account(newName, oldAccount.type));
+                                            }
+                                        }, null
+                                );
+                            getActivity().finish();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    })
+                    .create();
+        }
+    }
+
+
     /* USER ACTIONS */
 
     private void deleteAccount() {
@@ -576,7 +665,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             }, null);
     }
 
-    private void requestSync() {
+    protected static void requestSync(Account account) {
         String authorities[] = {
                 ContactsContract.AUTHORITY,
                 CalendarContract.AUTHORITY,
@@ -589,7 +678,10 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);     // run immediately (don't queue)
             ContentResolver.requestSync(account, authority, extras);
         }
+    }
 
+    private void requestSync() {
+        requestSync(account);
         Snackbar.make(findViewById(R.id.parent), R.string.account_synchronizing_now, Snackbar.LENGTH_LONG).show();
     }
 
