@@ -79,6 +79,9 @@
   <string name="account_synchronize_now">Szinkronizálás most</string>
   <string name="account_synchronizing_now">Szinkronizálás</string>
   <string name="account_settings">Fiókbeállítások</string>
+  <string name="account_rename">Fiók átnevezése</string>
+  <string name="account_rename_new_name">Az elmentetlen helyben tárolt adatok elvesznek.  Az átnevezés után szinkronizálásra lesz szükség.  Új fióknév:</string>
+  <string name="account_rename_rename">Átnevez</string>
   <string name="account_delete">Fiók törlése</string>
   <string name="account_delete_confirmation_title">Valóban törölni akarja a fiókot?</string>
   <string name="account_delete_confirmation_text">Az összes címjegyzék, naptár és feladatlista helyi példányai törölve lesznek.</string>
