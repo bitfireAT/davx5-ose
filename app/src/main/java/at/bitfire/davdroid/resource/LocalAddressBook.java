@@ -233,9 +233,11 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
 
     public static void onRenameAccount(@NonNull ContentResolver resolver, @NonNull String oldName, @NonNull String newName) throws RemoteException {
         @Cleanup("release") ContentProviderClient client = resolver.acquireContentProviderClient(ContactsContract.AUTHORITY);
-        ContentValues values = new ContentValues(1);
-        values.put(RawContacts.ACCOUNT_NAME, newName);
-        client.update(RawContacts.CONTENT_URI, values, RawContacts.ACCOUNT_NAME + "=?", new String[] { oldName });
+        if (client != null) {
+            ContentValues values = new ContentValues(1);
+            values.put(RawContacts.ACCOUNT_NAME, newName);
+            client.update(RawContacts.CONTENT_URI, values, RawContacts.ACCOUNT_NAME + "=?", new String[]{oldName});
+        }
     }
 
 }

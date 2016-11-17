@@ -172,9 +172,11 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
 
     public static void onRenameAccount(@NonNull ContentResolver resolver, @NonNull String oldName, @NonNull String newName) throws RemoteException {
         @Cleanup("release") ContentProviderClient client = resolver.acquireContentProviderClient(TaskProvider.ProviderName.OpenTasks.authority);
-        ContentValues values = new ContentValues(1);
-        values.put(Tasks.ACCOUNT_NAME, newName);
-        client.update(Tasks.getContentUri(TaskProvider.ProviderName.OpenTasks.authority), values, Tasks.ACCOUNT_NAME + "=?", new String[] { oldName });
+        if (client != null) {
+            ContentValues values = new ContentValues(1);
+            values.put(Tasks.ACCOUNT_NAME, newName);
+            client.update(Tasks.getContentUri(TaskProvider.ProviderName.OpenTasks.authority), values, Tasks.ACCOUNT_NAME + "=?", new String[]{oldName});
+        }
     }
 
 }
