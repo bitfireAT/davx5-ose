@@ -17,7 +17,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 24
 
-        versionCode 128
+        versionCode 129
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "customCerts", "true"
