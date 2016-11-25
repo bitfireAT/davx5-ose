@@ -451,10 +451,12 @@ public class ContactsSyncManager extends SyncManager {
             LocalContact contact = (LocalContact)local;
 
             BatchOperation batch = new BatchOperation(provider);
+            App.log.log(Level.FINE, "Removing contact group memberships");
             contact.removeGroupMemberships(batch);
 
             for (String category : contact.getContact().categories) {
                 long groupID = localAddressBook().findOrCreateGroup(category);
+                App.log.log(Level.FINE, "Adding membership in group " + category + " (" + groupID + ")");
                 contact.addToGroup(batch, groupID);
             }
 
