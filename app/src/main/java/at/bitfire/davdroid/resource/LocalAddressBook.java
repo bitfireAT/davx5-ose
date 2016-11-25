@@ -26,7 +26,9 @@ import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
+import at.bitfire.davdroid.App;
 import at.bitfire.vcard4android.AndroidAddressBook;
 import at.bitfire.vcard4android.AndroidContact;
 import at.bitfire.vcard4android.AndroidGroup;
@@ -162,8 +164,10 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
         // find groups without members
         /** should be done using {@link Groups.SUMMARY_COUNT}, but it's not implemented in Android yet */
         for (LocalGroup group : (LocalGroup[])queryGroups(null, null))
-            if (group.getMembers().length == 0)
+            if (group.getMembers().length == 0) {
+                App.log.log(Level.FINE, "Deleting group", group);
                 group.delete();
+            }
     }
 
     public void removeGroups() throws ContactsStorageException {
