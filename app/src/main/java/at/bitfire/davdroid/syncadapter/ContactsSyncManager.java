@@ -151,6 +151,7 @@ public class ContactsSyncManager extends SyncManager {
         if (!url.equals(lastUrl)) {
             App.log.info("Selected address book has changed from " + lastUrl + " to " + url + ", deleting all local contacts");
             localAddressBook.deleteAll();
+            localAddressBook.setURL(remote.url);
         }
 
         // set up Contacts Provider Settings
@@ -372,7 +373,6 @@ public class ContactsSyncManager extends SyncManager {
     @Override
     protected void saveSyncState() throws CalendarStorageException, ContactsStorageException {
         super.saveSyncState();
-        ((LocalAddressBook)localCollection).setURL(remote.url);
     }
 
 
