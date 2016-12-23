@@ -370,11 +370,6 @@ public class ContactsSyncManager extends SyncManager {
         }
     }
 
-    @Override
-    protected void saveSyncState() throws CalendarStorageException, ContactsStorageException {
-        super.saveSyncState();
-    }
-
 
     // helpers
 

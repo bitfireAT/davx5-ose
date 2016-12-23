@@ -14,10 +14,11 @@ android {
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
+
         minSdkVersion 15
         targetSdkVersion 24
 
-        versionCode 129
+        versionCode 130
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "customCerts", "true"
@@ -25,7 +26,7 @@ android {
 
     productFlavors {
         standard {
-            versionName "1.3.4.1-ose"
+            versionName "1.3.5-ose"
         }
     }
 
