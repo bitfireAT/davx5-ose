@@ -56,7 +56,7 @@ android {
         bitfire {
             keyAlias 'bitfire'
             keyPassword '***REMOVED***'
-            storeFile file('/home/rfc2822/Entwicklung/GooglePlay/bitfire.jks')
+            storeFile file("${System.env.HOME}/Entwicklung/GooglePlay/bitfire.jks")
             storePassword '***REMOVED***'
         }
     }
