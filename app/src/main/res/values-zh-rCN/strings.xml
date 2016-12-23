@@ -8,8 +8,8 @@
   <string name="send">发送</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">电池优化</string>
-  <string name="startup_battery_optimization_message">系统可能会在几天后减少或停用 DAVdroid 同步。为了避免这一情况，请对 DAVdroid 忽略电池优化。</string>
-  <string name="startup_battery_optimization_disable">忽略电池优化</string>
+  <string name="startup_battery_optimization_message">系统可能会在几天后减少或停用 DAVdroid 同步。为了避免这一情况，请禁用对 DAVdroid 的电池优化。</string>
+  <string name="startup_battery_optimization_disable">禁用电池优化</string>
   <string name="startup_dont_show_again">不再显示</string>
   <string name="startup_development_version">DAVdroid 预览版</string>
   <string name="startup_development_version_message">这是 DAVdroid 的开发版本，部分功能可能无法正常工作。请您提出建设性反馈，帮助我们完善 DAVdroid。</string>
@@ -19,7 +19,7 @@
   <string name="startup_donate_now">显示捐助页面</string>
   <string name="startup_donate_later">稍后提示</string>
   <string name="startup_google_play_accounts_removed">Play 商店 DRM 问题提醒</string>
-  <string name="startup_google_play_accounts_removed_message">在部分情况下，Play 商店的 DRM 可能会导致所有 DAVdroid 账户在设备重启或升级 DAVdroid 后消失。如果你遇到了该问题（并且只有这一问题），请从 Play 商店安装“DAVdroid JB Workaround”。</string>
+  <string name="startup_google_play_accounts_removed_message">在某些情况下，Play 商店的 DRM 可能会导致所有 DAVdroid 账户在设备重启或升级 DAVdroid 后消失。如果你遇到了该问题，请从 Play 商店安装“DAVdroid JB Workaround”，否则请不要安装修复程序。</string>
   <string name="startup_google_play_accounts_removed_more_info">更多信息</string>
   <string name="startup_opentasks_not_installed">OpenTasks 未安装</string>
   <string name="startup_opentasks_not_installed_message">未安装 OpenTasks 应用，故 DAVdroid 无法同步任务列表。</string>
@@ -41,7 +41,7 @@
   <string name="navigation_drawer_about">关于 / 许可</string>
   <string name="navigation_drawer_settings">设置</string>
   <string name="navigation_drawer_news_updates">最新消息</string>
-  <string name="navigation_drawer_external_links">外部网站</string>
+  <string name="navigation_drawer_external_links">外部链接</string>
   <string name="navigation_drawer_website">应用网站</string>
   <string name="navigation_drawer_faq">常见问题</string>
   <string name="navigation_drawer_forums">社区</string>
@@ -56,6 +56,12 @@
   <string name="app_settings_reset_hints">重设提示</string>
   <string name="app_settings_reset_hints_summary">重新显示之前忽略过的提示</string>
   <string name="app_settings_reset_hints_success">所有提示将会再次显示</string>
+  <string name="app_settings_connection">连接</string>
+  <string name="app_settings_override_proxy">覆盖代理设置</string>
+  <string name="app_settings_override_proxy_on">使用自定义代理设置</string>
+  <string name="app_settings_override_proxy_off">使用系统默认代理设置</string>
+  <string name="app_settings_override_proxy_host">HTTP 代理主机名</string>
+  <string name="app_settings_override_proxy_port">HTTP 代理端口</string>
   <string name="app_settings_security">安全</string>
   <string name="app_settings_distrust_system_certs">不信任系统证书</string>
   <string name="app_settings_distrust_system_certs_on">系统和用户增加的发布者不会被信任</string>
@@ -73,6 +79,9 @@
   <string name="account_synchronize_now"> 立即同步</string>
   <string name="account_synchronizing_now">正在同步</string>
   <string name="account_settings">账户设置</string>
+  <string name="account_rename">重命名账户</string>
+  <string name="account_rename_new_name">重命名后，未上传的本地修改会被撤销，您需要重新执行同步。新账户名：</string>
+  <string name="account_rename_rename">重命名</string>
   <string name="account_delete">删除账户</string>
   <string name="account_delete_confirmation_title">真的要删除账户吗？</string>
   <string name="account_delete_confirmation_text">所有通讯录、日历和任务列表的本机存储将被删除。</string>
