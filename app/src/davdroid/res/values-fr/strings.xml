@@ -37,6 +37,7 @@
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Ouvrir le tiroir de navigation</string>
   <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
+  <string name="navigation_drawer_subtitle">Adaptateur de synchronisation CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">A propos / Licence</string>
   <string name="navigation_drawer_settings">Paramètres</string>
   <string name="navigation_drawer_news_updates">Actualité &amp; mise à jour</string>
@@ -55,7 +56,17 @@
   <string name="app_settings_reset_hints">Réinitialiser les astuces</string>
   <string name="app_settings_reset_hints_summary">Réactiver les astuces qui ont été vu précédemment</string>
   <string name="app_settings_reset_hints_success">Toutes les astuces seront affichés à nouveau</string>
+  <string name="app_settings_connection">Connexion</string>
+  <string name="app_settings_override_proxy">Ignorer les paramètres proxy</string>
+  <string name="app_settings_override_proxy_on">Utiliser des paramètres proxy personnalisés</string>
+  <string name="app_settings_override_proxy_off">Utiliser les paramètres proxy du système</string>
+  <string name="app_settings_override_proxy_host">Nom de l\'hôte du proxy HTTP</string>
+  <string name="app_settings_override_proxy_port">Port du proxy HTTP</string>
   <string name="app_settings_security">Sécurité</string>
+  <string name="app_settings_distrust_system_certs">Révoquer les certificats du système</string>
+  <string name="app_settings_distrust_system_certs_on">Les certificats du système et ceux ajoutés par l\'utilisateur ne seront pas  dignes de confiance</string>
+  <string name="app_settings_distrust_system_certs_off">Les certificats du système et ceux ajoutés par l\'utilisateur seront dignes de confiance (recommandé)</string>
+  <string name="app_settings_reset_certificates">Réinitialiser les certificats de (non)confiance</string>
   <string name="app_settings_reset_certificates_summary">Réinitialiser la confiance de tous les certificats personnalisés</string>
   <string name="app_settings_reset_certificates_success">Tous les certificats personnalisés ont été effacés</string>
   <string name="app_settings_debug">Débogage</string>
@@ -68,6 +79,9 @@
   <string name="account_synchronize_now">Synchroniser maintenant</string>
   <string name="account_synchronizing_now">Synchronisation en cours</string>
   <string name="account_settings">Paramètres du compte</string>
+  <string name="account_rename">Renommer le compte</string>
+  <string name="account_rename_new_name">Les données locales non enregistrées pourraient être perdues. Une re-synchronisation est nécessaire après avoir renommé le compte. Nouveau nom du compte : </string>
+  <string name="account_rename_rename">Renommer</string>
   <string name="account_delete">Supprimer le compte</string>
   <string name="account_delete_confirmation_title">Voulez-vous vraiment supprimer le compte?</string>
   <string name="account_delete_confirmation_text">Toutes les copies locales des carnets d\'adresses, des calendriers et des listes de tâches seront supprimées.</string>
@@ -104,6 +118,7 @@
   <string name="login_create_account">Créer un compte</string>
   <string name="login_account_name">Nom du compte</string>
   <string name="login_account_name_info">Utilisez votre adresse e-mail comme nom de compte car Android utilisera ce nom en tant que champ ORGANISATEUR pour les événements que vous créerez. Vous ne pouvez pas avoir deux comptes avec le même nom.</string>
+  <string name="login_account_contact_group_method">Méthode pour les contacts de type groupe :</string>
   <string name="login_account_name_required">Nom du compte requis</string>
   <string name="login_account_not_created">Le compte n\'a pas pu être créé</string>
   <string name="login_configuration_detection">Détection de la configuration</string>
@@ -153,9 +168,14 @@
   <string name="settings_sync_wifi_only_ssid_off">Toutes les connexions WiFi peuvent être utilisées</string>
   <string name="settings_sync_wifi_only_ssid_message">Entrez le nom d\'un réseau WiFi (SSID) pour restreindre la synchronisation à ce réseau, ou laisser vide pour autoriser toutes les connexions WiFi.</string>
   <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Méthode pour les contacts de type groupe</string>
   <string-array name="settings_contact_group_method_values">
     <item>GROUP_VCARDS</item>
     <item>CATEGORIES</item>
+  </string-array>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Les groupes sont des VCards indépendantes</item>
+    <item>Les groupes sont des catégories pour chacun des contacts</item>
   </string-array>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limite des événements passés</string>
@@ -223,5 +243,6 @@
   </string-array>
   <string name="sync_error_unauthorized">Nom d\'utilisateur ou mot de passe erroné</string>
   <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVdroid : Sécurité de la connexion</string>
   <string name="trust_certificate_unknown_certificate_found">DAVdroid a rencontré un certificat inconnu. Voulez-vous lui faire confiance?</string>
 </resources>
