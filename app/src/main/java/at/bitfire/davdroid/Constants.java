@@ -26,4 +26,6 @@ public class Constants {
             Uri.parse("https://multisync.cloud/?pk_campaign=multisync-app") :
             Uri.parse("https://davdroid.bitfire.at/?pk_campaign=davdroid-app");
 
+    public static final int DEFAULT_SYNC_INTERVAL = 4 * 3600;  // 4 hours
+
 }
