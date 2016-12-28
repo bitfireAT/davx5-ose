@@ -15,7 +15,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
@@ -34,6 +33,7 @@ import java.util.logging.Level;
 import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
+import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.DavService;
 import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
@@ -50,7 +50,6 @@ import lombok.Cleanup;
 public class AccountDetailsFragment extends Fragment {
 
     private static final String KEY_CONFIG = "config";
-    private static final int DEFAULT_SYNC_INTERVAL = 4 * 3600;  // 4 hours
 
     Spinner spnrGroupMethod;
 
@@ -143,7 +142,7 @@ public class AccountDetailsFragment extends Fragment {
 
                 // enable contact sync
                 ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
-                settings.setSyncInterval(ContactsContract.AUTHORITY, DEFAULT_SYNC_INTERVAL);
+                settings.setSyncInterval(ContactsContract.AUTHORITY, Constants.DEFAULT_SYNC_INTERVAL);
             } else
                 // disable contact sync when CardDAV is not available
                 ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0);
@@ -158,26 +157,16 @@ public class AccountDetailsFragment extends Fragment {
 
                 // enable calendar sync
                 ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1);
-                settings.setSyncInterval(CalendarContract.AUTHORITY, DEFAULT_SYNC_INTERVAL);
+                settings.setSyncInterval(CalendarContract.AUTHORITY, Constants.DEFAULT_SYNC_INTERVAL);
 
-                // enable task sync, if possible
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    /* Android >=6, it's possible to gain OpenTasks permissions dynamically, so
-                     * OpenTasks sync will be enabled by default. Setting the sync interval to "manually"
-                     * if OpenTasks is not installed avoids the "sync error" in Android settings / Accounts. */
+                // enable task sync if OpenTasks is installed
+                // further changes will be handled by PackageChangedReceiver
+                if (LocalTaskList.tasksProviderAvailable(getContext())) {
                     ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
-                    settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority,
-                            LocalTaskList.tasksProviderAvailable(getContext()) ? DEFAULT_SYNC_INTERVAL : AccountSettings.SYNC_INTERVAL_MANUALLY);
-                } else {
-                    // Android <6: enable task sync according to whether OpenTasks is accessible
-                    if (LocalTaskList.tasksProviderAvailable(getContext())) {
-                        ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
-                        settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, DEFAULT_SYNC_INTERVAL);
-                    } else
-                        // Android <6 only: disable OpenTasks sync forever when OpenTasks is not installed
-                        // because otherwise, there will be a non-catchable SecurityException as soon as OpenTasks is installed
-                        ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0);
-                }
+                    settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL);
+                } else
+                    ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0);
+
             } else {
                 // disable calendar and task sync when CalDAV is not available
                 ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0);

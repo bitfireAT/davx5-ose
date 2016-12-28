@@ -11,5 +11,4 @@
     android:contentAuthority="com.android.contacts"
     android:allowParallelSyncs="true"
     android:supportsUploading="true"
-    android:isAlwaysSyncable="true"
     android:userVisible="true" />

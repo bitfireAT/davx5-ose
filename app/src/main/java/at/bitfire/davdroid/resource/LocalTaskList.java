@@ -45,9 +45,6 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
             LocalTask.COLUMN_ETAG
     };
 
-    // can be cached, because after installing OpenTasks, you have to re-install DAVdroid anyway
-    private static Boolean tasksProviderAvailable;
-
 
     @Override
     protected String[] taskBaseInfoColumns() {
@@ -140,15 +137,11 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
     // helpers
 
     public static boolean tasksProviderAvailable(@NonNull Context context) {
-        if (tasksProviderAvailable != null)
-            return tasksProviderAvailable;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            return context.getPackageManager().resolveContentProvider(TaskProvider.ProviderName.OpenTasks.authority, 0) != null;
         else {
-            if (Build.VERSION.SDK_INT >= 23)
-                return context.getPackageManager().resolveContentProvider(TaskProvider.ProviderName.OpenTasks.authority, 0) != null;
-            else {
-                @Cleanup TaskProvider provider = TaskProvider.acquire(context.getContentResolver(), TaskProvider.ProviderName.OpenTasks);
-                return tasksProviderAvailable = (provider != null);
-            }
+            @Cleanup TaskProvider provider = TaskProvider.acquire(context.getContentResolver(), TaskProvider.ProviderName.OpenTasks);
+            return provider != null;
         }
     }
 
