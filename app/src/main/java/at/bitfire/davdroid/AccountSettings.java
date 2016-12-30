@@ -104,29 +104,10 @@ public class AccountSettings {
                 version = Integer.parseInt(versionStr);
             } catch (NumberFormatException ignored) {
             }
-            App.log.info("Account " + account.name + " has version " + version + ", current version: " + CURRENT_VERSION);
+            App.log.fine("Account " + account.name + " has version " + version + ", current version: " + CURRENT_VERSION);
 
-            if (version < CURRENT_VERSION) {
-                Notification notify = new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_new_releases_light)
-                        .setLargeIcon(App.getLauncherBitmap(context))
-                        .setContentTitle(context.getString(R.string.settings_version_update))
-                        .setContentText(context.getString(R.string.settings_version_update_settings_updated))
-                        .setSubText(context.getString(R.string.settings_version_update_install_hint))
-                        .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(context.getString(R.string.settings_version_update_settings_updated)))
-                        .setCategory(NotificationCompat.CATEGORY_SYSTEM)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setContentIntent(PendingIntent.getActivity(context, 0,
-                                new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("faq/entry/davdroid-not-working-after-update/").build()),
-                                PendingIntent.FLAG_CANCEL_CURRENT))
-                        .setLocalOnly(true)
-                        .build();
-                NotificationManagerCompat nm = NotificationManagerCompat.from(context);
-                nm.notify(Constants.NOTIFICATION_ACCOUNT_SETTINGS_UPDATED, notify);
-
+            if (version < CURRENT_VERSION)
                 update(version);
-            }
         }
     }
 
