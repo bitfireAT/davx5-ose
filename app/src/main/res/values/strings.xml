@@ -212,9 +212,6 @@
     <string name="settings_manage_calendar_colors">Manage calendar colors</string>
     <string name="settings_manage_calendar_colors_on">Calendar colors are managed by DAVdroid</string>
     <string name="settings_manage_calendar_colors_off">Calendar colors are not set by DAVdroid</string>
-    <string name="settings_version_update">DAVdroid version update</string>
-    <string name="settings_version_update_settings_updated">Internal settings have been updated.</string>
-    <string name="settings_version_update_install_hint">Problems? Uninstall DAVdroid, then re-install.</string>
 
     <!-- collection management -->
     <string name="create_addressbook">Create address book</string>
