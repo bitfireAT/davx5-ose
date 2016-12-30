@@ -11,8 +11,6 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -27,8 +25,6 @@ import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
 import java.lang.reflect.Method;
@@ -52,7 +48,7 @@ import lombok.Cleanup;
 import okhttp3.HttpUrl;
 
 public class AccountSettings {
-    private final static int CURRENT_VERSION = 4;
+    private final static int CURRENT_VERSION = 5;
     private final static String
             KEY_SETTINGS_VERSION = "version",
 
@@ -387,6 +383,13 @@ public class AccountSettings {
     @SuppressWarnings({ "Recycle", "unused" })
     private void update_3_4() {
         setGroupMethod(GroupMethod.CATEGORIES);
+    }
+
+    /* Android 7.1.1 OpenTasks fix */
+    @SuppressWarnings({ "Recycle", "unused" })
+    private void update_4_5() {
+        // call PackageChangedReceiver which then enables/disables OpenTasks sync when it's (not) available
+        PackageChangedReceiver.updateTaskSync(context);
     }
 
 

@@ -140,9 +140,7 @@ public class AccountDetailsFragment extends Fragment {
                 // enable contact sync
                 ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
                 settings.setSyncInterval(ContactsContract.AUTHORITY, Constants.DEFAULT_SYNC_INTERVAL);
-            } else
-                // disable contact sync when CardDAV is not available
-                ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0);
+            }
 
             if (config.calDAV != null) {
                 // insert CalDAV service
@@ -161,13 +159,7 @@ public class AccountDetailsFragment extends Fragment {
                 if (LocalTaskList.tasksProviderAvailable(getContext())) {
                     ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
                     settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL);
-                } else
-                    ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0);
-
-            } else {
-                // disable calendar and task sync when CalDAV is not available
-                ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0);
-                ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0);
+                }
             }
 
         } catch(InvalidAccountException e) {
