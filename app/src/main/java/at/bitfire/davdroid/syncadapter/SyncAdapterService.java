@@ -103,7 +103,7 @@ public abstract class SyncAdapterService extends Service {
                     .setLargeIcon(App.getLauncherBitmap(getContext()))
                     .setContentTitle(getContext().getString(R.string.sync_error_permissions))
                     .setContentText(getContext().getString(R.string.sync_error_permissions_text))
-                    .setContentIntent(PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT))
+                    .setContentIntent(PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
                     .setCategory(NotificationCompat.CATEGORY_ERROR)
                     .build();
             NotificationManagerCompat nm = NotificationManagerCompat.from(getContext());
