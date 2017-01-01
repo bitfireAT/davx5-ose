@@ -25,6 +25,7 @@ import android.text.TextUtils;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.collections4.SetUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
@@ -67,7 +68,6 @@ import at.bitfire.vcard4android.Contact;
 import at.bitfire.vcard4android.ContactsStorageException;
 import at.bitfire.vcard4android.GroupMethod;
 import ezvcard.VCardVersion;
-import ezvcard.util.IOUtils;
 import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
 import okhttp3.HttpUrl;
