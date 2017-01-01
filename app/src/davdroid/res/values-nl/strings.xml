@@ -179,9 +179,6 @@
   <string name="settings_manage_calendar_colors">Agenda kleuren beheren</string>
   <string name="settings_manage_calendar_colors_on">Agenda kleuren worden door DAVdroid beheerd.</string>
   <string name="settings_manage_calendar_colors_off">Agenda kleuren worden niet door DAVdroid ingesteld</string>
-  <string name="settings_version_update">DAVdroid versie update</string>
-  <string name="settings_version_update_settings_updated">Interne instellingen zijn bijgewerkt.</string>
-  <string name="settings_version_update_install_hint">Problemen? Deïnstalleer DAVdroid, daarna herinstalleren.</string>
   <!--collection management-->
   <string name="create_addressbook">Maak adresboek</string>
   <string name="create_addressbook_display_name_hint">Mijn adresboek</string>

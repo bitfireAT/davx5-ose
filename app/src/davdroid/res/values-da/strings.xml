@@ -170,9 +170,6 @@
   <string name="settings_manage_calendar_colors">Administrer farver for kalender</string>
   <string name="settings_manage_calendar_colors_on">Kalenderfarver administreres af DAVdroid</string>
   <string name="settings_manage_calendar_colors_off">Kalenderfarver sættes ikke fra DAVdroid</string>
-  <string name="settings_version_update">Versionsopdatering af DAVdroid</string>
-  <string name="settings_version_update_settings_updated">Interne indstillinger er blevet opdateret.</string>
-  <string name="settings_version_update_install_hint">Problemer? Afinstaller DAVdroid og geninstaller.</string>
   <!--collection management-->
   <string name="create_addressbook">Opret adressebog</string>
   <string name="create_addressbook_display_name_hint">Min adressebog</string>

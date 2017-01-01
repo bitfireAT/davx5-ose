@@ -159,9 +159,6 @@
   <string name="settings_manage_calendar_colors">Takvim renklerini yönet</string>
   <string name="settings_manage_calendar_colors_on">Takvim renkleri DAVdroid tarafından yönetilmekte</string>
   <string name="settings_manage_calendar_colors_off">Takvim renkleri DAVdroid tarafından ayarlanmadı</string>
-  <string name="settings_version_update">DAVdroid sürüm güncellemesi</string>
-  <string name="settings_version_update_settings_updated">Dahili ayarlar güncellendi.</string>
-  <string name="settings_version_update_install_hint">Sorunlar mı var? DAVdroid\'i kaldırıp, yeniden kurun.</string>
   <!--collection management-->
   <string name="create_addressbook">Rehber yarat</string>
   <string name="create_addressbook_display_name_hint">Benim Rehberim</string>
