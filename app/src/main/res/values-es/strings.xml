@@ -79,6 +79,9 @@
   <string name="account_synchronize_now">Sincronizar ahora</string>
   <string name="account_synchronizing_now">Sincronizando...</string>
   <string name="account_settings">Ajustes de cuenta</string>
+  <string name="account_rename">Renombrar cuenta</string>
+  <string name="account_rename_new_name">Información local no guardada puede ser desechada. Se requiere resincronizar después de renombrar. Nuevo nombre de cuenta:</string>
+  <string name="account_rename_rename">Renombrar</string>
   <string name="account_delete">Eliminar cuenta</string>
   <string name="account_delete_confirmation_title">¿Seguro que deseas eliminar la cuenta?</string>
   <string name="account_delete_confirmation_text">Todas las copias locales de tus contactos, calendarios y tareas serán eliminadas.</string>
@@ -185,9 +188,6 @@
   <string name="settings_manage_calendar_colors">Colores de calendario</string>
   <string name="settings_manage_calendar_colors_on">Los colores de los calendarios son administrados por DAVdroid</string>
   <string name="settings_manage_calendar_colors_off">Los colores de los calendarios no son establecidos por DAVdroid</string>
-  <string name="settings_version_update">Actualización de la versión de Android</string>
-  <string name="settings_version_update_settings_updated">Los ajustes internos han sido actualizados.</string>
-  <string name="settings_version_update_install_hint">¿Problemas? Desinstala y vuelve a instalar DAVdroid.</string>
   <!--collection management-->
   <string name="create_addressbook">Crear nueva lista de contactos</string>
   <string name="create_addressbook_display_name_hint">Agendas</string>
