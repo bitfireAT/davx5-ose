@@ -80,6 +80,7 @@ dependencies {
     compile 'com.github.yukuku:ambilwarna:2.0.1'
 
     compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
+    compile 'commons-io:commons-io:2.5'
     compile 'dnsjava:dnsjava:2.1.7'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'org.apache.commons:commons-collections4:4.1'
