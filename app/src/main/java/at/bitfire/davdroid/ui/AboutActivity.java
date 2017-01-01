@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.io.IOException;
@@ -40,7 +41,6 @@ import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.R;
 import ezvcard.Ezvcard;
-import ezvcard.util.IOUtils;
 import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
 
