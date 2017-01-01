@@ -189,9 +189,6 @@
   <string name="settings_manage_calendar_colors">Управљај бојама календара</string>
   <string name="settings_manage_calendar_colors_on">Бојама календара управља ДАВдроид</string>
   <string name="settings_manage_calendar_colors_off">Боје календара није поставио ДАВдроид</string>
-  <string name="settings_version_update">Надоградња ДАВдроид издања</string>
-  <string name="settings_version_update_settings_updated">Унутрашње поставке су ажуриране.</string>
-  <string name="settings_version_update_install_hint">Проблеми? Уклоните ДАВдроид па га поново инсталирајте.</string>
   <!--collection management-->
   <string name="create_addressbook">Направи адресар</string>
   <string name="create_addressbook_display_name_hint">Мој адресар</string>

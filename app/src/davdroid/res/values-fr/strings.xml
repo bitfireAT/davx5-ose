@@ -188,9 +188,6 @@
   <string name="settings_manage_calendar_colors">Choisir couleur du calendrier</string>
   <string name="settings_manage_calendar_colors_on">Les couleurs de calendrier sont gérées par DAVdroid</string>
   <string name="settings_manage_calendar_colors_off">Les couleurs de calendrier ne sont pas gérées par DAVdroid</string>
-  <string name="settings_version_update">Mise à jour de la version de DAVdroid</string>
-  <string name="settings_version_update_settings_updated">Les paramètres internes ont été mis à jour.</string>
-  <string name="settings_version_update_install_hint">Un problème? Désinstaller DAVdroid, puis réinstaller.</string>
   <!--collection management-->
   <string name="create_addressbook">Créer un carnet d\'adresses</string>
   <string name="create_addressbook_display_name_hint">Mon carnet d\'adresses</string>

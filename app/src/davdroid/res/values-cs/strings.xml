@@ -189,9 +189,6 @@
   <string name="settings_manage_calendar_colors">Spravovat barvy kalendářů</string>
   <string name="settings_manage_calendar_colors_on">Barvy kalendářů spravuje DAVdroid</string>
   <string name="settings_manage_calendar_colors_off">Barvy kalendářů nespravuje DAVdroid</string>
-  <string name="settings_version_update">Aktualizace verze DAVdroid</string>
-  <string name="settings_version_update_settings_updated">Vnitřní nastavení byla aktualizována.</string>
-  <string name="settings_version_update_install_hint">Při problémech odinstalujte a znovu nainstalujte DAVdroid.</string>
   <!--collection management-->
   <string name="create_addressbook">Vytvořit adresář</string>
   <string name="create_addressbook_display_name_hint">Můj adresář</string>
