@@ -19,7 +19,8 @@ public class Constants {
             NOTIFICATION_CONTACTS_SYNC = 10,
             NOTIFICATION_CALENDAR_SYNC = 11,
             NOTIFICATION_TASK_SYNC = 12,
-            NOTIFICATION_PERMISSIONS = 20;
+            NOTIFICATION_PERMISSIONS = 20,
+            NOTIFICATION_SUBSCRIPTION = 21;
 
     public static final Uri webUri = BuildConfig.FLAVOR == App.FLAVOR_ICLOUD ?
             Uri.parse("https://multisync.cloud/?pk_campaign=multisync-app") :
