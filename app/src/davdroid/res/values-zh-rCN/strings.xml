@@ -187,9 +187,6 @@
   <string name="settings_manage_calendar_colors">管理日历颜色</string>
   <string name="settings_manage_calendar_colors_on">日历颜色由 DAVdroid 设置</string>
   <string name="settings_manage_calendar_colors_off">日历颜色不由 DAVdroid 设置</string>
-  <string name="settings_version_update">DAVdroid 版本升级</string>
-  <string name="settings_version_update_settings_updated">应用设置已更新。</string>
-  <string name="settings_version_update_install_hint">出现问题了？请卸载 DAVdroid，再重新安装。</string>
   <!--collection management-->
   <string name="create_addressbook">创建通讯录</string>
   <string name="create_addressbook_display_name_hint">我的通讯录</string>

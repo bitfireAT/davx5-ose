@@ -188,9 +188,6 @@
   <string name="settings_manage_calendar_colors">Naptárszínek kezelése</string>
   <string name="settings_manage_calendar_colors_on">A naptárszíneket a DAVdroid kezeli</string>
   <string name="settings_manage_calendar_colors_off">A naptárszíneket nem a DAVdroid kezeli</string>
-  <string name="settings_version_update">DAVdroid frissítése</string>
-  <string name="settings_version_update_settings_updated">A belső beállítások frissítve lettek.</string>
-  <string name="settings_version_update_install_hint">Probléma?  Próbálja meg törölni majd újratelepíteni a DAVdroid-ot.</string>
   <!--collection management-->
   <string name="create_addressbook">Címjegyzék létrehozása</string>
   <string name="create_addressbook_display_name_hint">Új címjegyzék</string>
