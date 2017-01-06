@@ -13,7 +13,6 @@ public class Constants {
 
     // notification IDs
     public final static int
-            NOTIFICATION_ACCOUNT_SETTINGS_UPDATED = 0,
             NOTIFICATION_EXTERNAL_FILE_LOGGING = 1,
             NOTIFICATION_REFRESH_COLLECTIONS = 2,
             NOTIFICATION_CONTACTS_SYNC = 10,
