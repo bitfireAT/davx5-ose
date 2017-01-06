@@ -30,6 +30,8 @@ import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.model.ServiceDB.Collections;
+import at.bitfire.davdroid.resource.LocalAddressBook;
+import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
 
 public class ContactsSyncAdapterService extends SyncAdapterService {
@@ -67,8 +69,14 @@ public class ContactsSyncAdapterService extends SyncAdapterService {
                         } catch(InvalidAccountException e) {
                             App.log.log(Level.SEVERE, "Couldn't get account settings", e);
                         }
-                    else
-                        App.log.info("No address book collection selected for synchronization");
+                    else {
+                        App.log.info("No address book collection selected for synchronization, deleting local contacts");
+                        LocalAddressBook localAddressBook = new LocalAddressBook(account, provider);
+                        try {
+                            localAddressBook.deleteAll();
+                        } catch(ContactsStorageException ignored) {
+                        }
+                    }
                 } else
                     App.log.info("No CardDAV service found in DB");
             } catch (InvalidAccountException e) {
