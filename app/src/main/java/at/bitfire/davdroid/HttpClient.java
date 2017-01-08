@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import at.bitfire.dav4android.BasicDigestAuthHandler;
+import at.bitfire.dav4android.UrlUtils;
 import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.model.Settings;
 import okhttp3.Interceptor;
@@ -134,7 +135,7 @@ public class HttpClient {
     }
 
     private static OkHttpClient.Builder addAuthentication(@NonNull OkHttpClient.Builder builder, @Nullable String host, @NonNull String username, @NonNull String password) {
-        BasicDigestAuthHandler authHandler = new BasicDigestAuthHandler(host, username, password);
+        BasicDigestAuthHandler authHandler = new BasicDigestAuthHandler(UrlUtils.hostToDomain(host), username, password);
         return builder
                 .addNetworkInterceptor(authHandler)
                 .authenticator(authHandler);
