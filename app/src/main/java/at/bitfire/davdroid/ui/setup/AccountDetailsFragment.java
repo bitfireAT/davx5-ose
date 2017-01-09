@@ -137,10 +137,10 @@ public class AccountDetailsFragment extends Fragment {
                 String groupMethodName = getResources().getStringArray(R.array.settings_contact_group_method_values)[idx];
                 settings.setGroupMethod(GroupMethod.valueOf(groupMethodName));
 
-                // enable contact sync
-                ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
+                // contact sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_contacts.xml
                 settings.setSyncInterval(ContactsContract.AUTHORITY, Constants.DEFAULT_SYNC_INTERVAL);
-            }
+            } else
+                ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0);
 
             if (config.calDAV != null) {
                 // insert CalDAV service
@@ -150,8 +150,7 @@ public class AccountDetailsFragment extends Fragment {
                 refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id);
                 getActivity().startService(refreshIntent);
 
-                // enable calendar sync
-                ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1);
+                // calendar sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_contacts.xml
                 settings.setSyncInterval(CalendarContract.AUTHORITY, Constants.DEFAULT_SYNC_INTERVAL);
 
                 // enable task sync if OpenTasks is installed
@@ -160,7 +159,8 @@ public class AccountDetailsFragment extends Fragment {
                     ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
                     settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL);
                 }
-            }
+            } else
+                ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0);
 
         } catch(InvalidAccountException e) {
             App.log.log(Level.SEVERE, "Couldn't access account settings", e);
