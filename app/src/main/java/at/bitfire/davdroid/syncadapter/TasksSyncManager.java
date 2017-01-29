@@ -105,13 +105,18 @@ public class TasksSyncManager extends SyncManager {
     @Override
     protected void listRemote() throws IOException, HttpException, DavException {
         // fetch list of remote VTODOs and build hash table to index file name
-        davCalendar().calendarQuery("VTODO", null, null);
+        final DavCalendar calendar = davCalendar();
+        currentDavResource = calendar;
+        calendar.calendarQuery("VTODO", null, null);
+
         remoteResources = new HashMap<>(davCollection.members.size());
         for (DavResource vCard : davCollection.members) {
             String fileName = vCard.fileName();
             App.log.fine("Found remote VTODO: " + fileName);
             remoteResources.put(fileName, vCard);
         }
+
+        currentDavResource = null;
     }
 
     @Override
@@ -127,7 +132,8 @@ public class TasksSyncManager extends SyncManager {
 
             if (bunch.length == 1) {
                 // only one contact, use GET
-                DavResource remote = bunch[0];
+                final DavResource remote = bunch[0];
+                currentDavResource = remote;
 
                 ResponseBody body = remote.get("text/calendar");
 
@@ -149,10 +155,15 @@ public class TasksSyncManager extends SyncManager {
                 List<HttpUrl> urls = new LinkedList<>();
                 for (DavResource remote : bunch)
                     urls.add(remote.location);
-                davCalendar().multiget(urls.toArray(new HttpUrl[urls.size()]));
+
+                final DavCalendar calendar = davCalendar();
+                currentDavResource = calendar;
+                calendar.multiget(urls.toArray(new HttpUrl[urls.size()]));
 
                 // process multiget results
-                for (DavResource remote : davCollection.members) {
+                for (final DavResource remote : davCollection.members) {
+                    currentDavResource = remote;
+
                     String eTag;
                     GetETag getETag = (GetETag)remote.properties.get(GetETag.NAME);
                     if (getETag != null)
@@ -176,6 +187,8 @@ public class TasksSyncManager extends SyncManager {
                     processVTodo(remote.fileName(), eTag, stream, charset);
                 }
             }
+
+            currentDavResource = null;
         }
     }
 
@@ -199,6 +212,7 @@ public class TasksSyncManager extends SyncManager {
 
             // update local task, if it exists
             LocalTask localTask = (LocalTask)localResources.get(fileName);
+            currentLocalResource = localTask;
             if (localTask != null) {
                 App.log.info("Updating " + fileName + " in local tasklist");
                 localTask.setETag(eTag);
@@ -207,6 +221,7 @@ public class TasksSyncManager extends SyncManager {
             } else {
                 App.log.info("Adding " + fileName + " to local task list");
                 localTask = new LocalTask(localTaskList(), newData, fileName, eTag);
+                currentLocalResource = localTask;
                 localTask.add();
                 syncResult.stats.numInserts++;
             }

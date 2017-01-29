@@ -27,8 +27,10 @@ import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.Event;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @TargetApi(17)
+@ToString(of={ "fileName","eTag" }, callSuper=true)
 public class LocalEvent extends AndroidEvent implements LocalResource {
     static {
         Event.prodId = new ProdId("+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " ical4android ical4j/2.x");

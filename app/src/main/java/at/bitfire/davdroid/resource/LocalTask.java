@@ -29,7 +29,9 @@ import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.Task;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+@ToString(of={ "fileName","eTag" }, callSuper=true)
 public class LocalTask extends AndroidTask implements LocalResource {
     static {
         Task.prodId = new ProdId("+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " ical4android ical4j/2.x");
