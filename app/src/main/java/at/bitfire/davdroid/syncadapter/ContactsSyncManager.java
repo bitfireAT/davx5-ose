@@ -270,8 +270,11 @@ public class ContactsSyncManager extends SyncManager {
 
     @Override
     protected void listRemote() throws IOException, HttpException, DavException {
+        final DavAddressBook addressBook = davAddressBook();
+        currentDavResource = addressBook;
+
         // fetch list of remote VCards and build hash table to index file name
-        davAddressBook().propfind(1, ResourceType.NAME, GetETag.NAME);
+        addressBook.propfind(1, ResourceType.NAME, GetETag.NAME);
 
         remoteResources = new HashMap<>(davCollection.members.size());
         for (DavResource vCard : davCollection.members) {
@@ -284,6 +287,8 @@ public class ContactsSyncManager extends SyncManager {
             App.log.fine("Found remote VCard: " + fileName);
             remoteResources.put(fileName, vCard);
         }
+
+        currentDavResource = null;
     }
 
     @Override
@@ -302,7 +307,8 @@ public class ContactsSyncManager extends SyncManager {
 
             if (bunch.length == 1) {
                 // only one contact, use GET
-                DavResource remote = bunch[0];
+                final DavResource remote = bunch[0];
+                currentDavResource = remote;
 
                 ResponseBody body = remote.get("text/vcard;version=4.0, text/vcard;charset=utf-8;q=0.8, text/vcard;q=0.5");
 
@@ -324,10 +330,15 @@ public class ContactsSyncManager extends SyncManager {
                 List<HttpUrl> urls = new LinkedList<>();
                 for (DavResource remote : bunch)
                     urls.add(remote.location);
-                davAddressBook().multiget(urls.toArray(new HttpUrl[urls.size()]), hasVCard4);
 
-                // process multiget results
-                for (DavResource remote : davCollection.members) {
+                final DavAddressBook addressBook = davAddressBook();
+                currentDavResource = addressBook;
+                addressBook.multiget(urls.toArray(new HttpUrl[urls.size()]), hasVCard4);
+
+                // process multi-get results
+                for (final DavResource remote : davCollection.members) {
+                    currentDavResource = remote;
+
                     String eTag;
                     GetETag getETag = (GetETag)remote.properties.get(GetETag.NAME);
                     if (getETag != null)
@@ -351,6 +362,8 @@ public class ContactsSyncManager extends SyncManager {
                     processVCard(remote.fileName(), eTag, stream, charset, downloader);
                 }
             }
+
+            currentDavResource = null;
         }
     }
 
@@ -396,6 +409,7 @@ public class ContactsSyncManager extends SyncManager {
 
         // update local contact, if it exists
         LocalResource local = localResources.get(fileName);
+        currentLocalResource = local;
         if (local != null) {
             App.log.log(Level.INFO, "Updating " + fileName + " in local address book", newData);
 
@@ -428,12 +442,14 @@ public class ContactsSyncManager extends SyncManager {
             if (newData.group) {
                 App.log.log(Level.INFO, "Creating local group", newData);
                 LocalGroup group = new LocalGroup(localAddressBook(), newData, fileName, eTag);
+                currentLocalResource = group;
                 group.create();
 
                 local = group;
             } else {
                 App.log.log(Level.INFO, "Creating local contact", newData);
                 LocalContact contact = new LocalContact(localAddressBook(), newData, fileName, eTag);
+                currentLocalResource = contact;
                 contact.create();
 
                 local = contact;
@@ -444,6 +460,7 @@ public class ContactsSyncManager extends SyncManager {
         if (groupMethod == GroupMethod.CATEGORIES && local instanceof LocalContact) {
             // VCard3: update group memberships from CATEGORIES
             LocalContact contact = (LocalContact)local;
+            currentLocalResource = contact;
 
             BatchOperation batch = new BatchOperation(provider);
             App.log.log(Level.FINE, "Removing contact group memberships");
@@ -457,6 +474,8 @@ public class ContactsSyncManager extends SyncManager {
 
             batch.commit();
         }
+
+        currentLocalResource = null;
     }
 
 
