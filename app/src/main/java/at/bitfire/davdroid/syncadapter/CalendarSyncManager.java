@@ -123,7 +123,9 @@ public class CalendarSyncManager extends SyncManager {
         }
 
         // fetch list of remote VEVENTs and build hash table to index file name
-        davCalendar().calendarQuery("VEVENT", limitStart, null);
+        final DavCalendar calendar = davCalendar();
+        currentDavResource = calendar;
+        calendar.calendarQuery("VEVENT", limitStart, null);
 
         remoteResources = new HashMap<>(davCollection.members.size());
         for (DavResource iCal : davCollection.members) {
@@ -131,6 +133,8 @@ public class CalendarSyncManager extends SyncManager {
             App.log.fine("Found remote VEVENT: " + fileName);
             remoteResources.put(fileName, iCal);
         }
+
+        currentDavResource = null;
     }
 
     @Override
@@ -145,7 +149,8 @@ public class CalendarSyncManager extends SyncManager {
 
             if (bunch.length == 1) {
                 // only one contact, use GET
-                DavResource remote = bunch[0];
+                final DavResource remote = bunch[0];
+                currentDavResource = remote;
 
                 ResponseBody body = remote.get("text/calendar");
 
@@ -167,10 +172,15 @@ public class CalendarSyncManager extends SyncManager {
                 List<HttpUrl> urls = new LinkedList<>();
                 for (DavResource remote : bunch)
                     urls.add(remote.location);
-                davCalendar().multiget(urls.toArray(new HttpUrl[urls.size()]));
+
+                final DavCalendar calendar = davCalendar();
+                currentDavResource = calendar;
+                calendar.multiget(urls.toArray(new HttpUrl[urls.size()]));
 
                 // process multiget results
-                for (DavResource remote : davCollection.members) {
+                for (final DavResource remote : davCollection.members) {
+                    currentDavResource = remote;
+
                     String eTag;
                     GetETag getETag = (GetETag)remote.properties.get(GetETag.NAME);
                     if (getETag != null)
@@ -194,6 +204,8 @@ public class CalendarSyncManager extends SyncManager {
                     processVEvent(remote.fileName(), eTag, stream, charset);
                 }
             }
+
+            currentDavResource = null;
         }
     }
 
@@ -217,6 +229,7 @@ public class CalendarSyncManager extends SyncManager {
 
             // delete local event, if it exists
             LocalEvent localEvent = (LocalEvent)localResources.get(fileName);
+            currentLocalResource = localEvent;
             if (localEvent != null) {
                 App.log.info("Updating " + fileName + " in local calendar");
                 localEvent.setETag(eTag);
@@ -225,11 +238,14 @@ public class CalendarSyncManager extends SyncManager {
             } else {
                 App.log.info("Adding " + fileName + " to local calendar");
                 localEvent = new LocalEvent(localCalendar(), newData, fileName, eTag);
+                currentLocalResource = localEvent;
                 localEvent.add();
                 syncResult.stats.numInserts++;
             }
         } else
             App.log.severe("Received VCALENDAR with not exactly one VEVENT with UID, but without RECURRENCE-ID; ignoring " + fileName);
+
+        currentLocalResource = null;
     }
 
 }

@@ -53,7 +53,9 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
             KEY_LOGS = "logs",
             KEY_ACCOUNT = "account",
             KEY_AUTHORITY = "authority",
-            KEY_PHASE = "phase";
+            KEY_PHASE = "phase",
+            KEY_LOCAL_RESOURCE = "localResource",
+            KEY_REMOTE_RESOURCE = "remoteResource";
 
     TextView tvReport;
     String report;
@@ -159,6 +161,8 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                     authority = null;
             Account account = null;
             int phase = -1;
+            String localResource = null,
+                   remoteResource = null;
 
             if (extras != null) {
                 throwable = (Throwable)extras.getSerializable(KEY_THROWABLE);
@@ -166,6 +170,8 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                 account = extras.getParcelable(KEY_ACCOUNT);
                 authority = extras.getString(KEY_AUTHORITY);
                 phase = extras.getInt(KEY_PHASE, -1);
+                localResource = extras.getString(KEY_LOCAL_RESOURCE);
+                remoteResource = extras.getString(KEY_REMOTE_RESOURCE);
             }
 
             StringBuilder report = new StringBuilder();
@@ -186,6 +192,16 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                 if (http.response != null)
                     report.append("HTTP RESPONSE:\n").append(http.response).append("\n");
             }
+
+            if (localResource != null)
+                report.append("\nCURRENT LOCAL RESOURCE:\n")
+                      .append(localResource)
+                      .append("\n");
+
+            if (remoteResource != null)
+                report.append("\nCURRENT REMOTE RESOURCE:\n")
+                        .append(remoteResource)
+                        .append("\n");
 
             if (throwable != null)
                 report  .append("\nEXCEPTION:\n")

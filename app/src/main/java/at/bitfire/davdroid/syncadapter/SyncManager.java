@@ -85,6 +85,13 @@ abstract public class SyncManager {
     protected DavResource davCollection;
 
 
+    /** state information for debug info (local resource) */
+    protected LocalResource currentLocalResource;
+
+    /** state information for debug info (remote resource) */
+    protected DavResource currentDavResource;
+
+
     /** remote CTag at the time of {@link #listRemote()} */
     protected String remoteCTag = null;
 
@@ -179,7 +186,7 @@ abstract public class SyncManager {
             } else
                 App.log.info("Remote collection didn't change, skipping remote sync");
 
-        } catch (IOException|ServiceUnavailableException e) {
+        } catch(IOException|ServiceUnavailableException e) {
             App.log.log(Level.WARNING, "I/O exception during sync, trying again later", e);
             syncResult.stats.numIoExceptions++;
 
@@ -222,6 +229,10 @@ abstract public class SyncManager {
                 detailsIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account);
                 detailsIntent.putExtra(DebugInfoActivity.KEY_AUTHORITY, authority);
                 detailsIntent.putExtra(DebugInfoActivity.KEY_PHASE, syncPhase);
+                if (currentLocalResource != null)
+                    detailsIntent.putExtra(DebugInfoActivity.KEY_LOCAL_RESOURCE, currentLocalResource.toString());
+                if (currentDavResource != null)
+                    detailsIntent.putExtra(DebugInfoActivity.KEY_REMOTE_RESOURCE, currentDavResource.toString());
             }
 
             // to make the PendingIntent unique
@@ -259,16 +270,20 @@ abstract public class SyncManager {
         // Remove locally deleted entries from server (if they have a name, i.e. if they were uploaded before),
         // but only if they don't have changed on the server. Then finally remove them from the local address book.
         LocalResource[] localList = localCollection.getDeleted();
-        for (LocalResource local : localList) {
+        for (final LocalResource local : localList) {
             if (Thread.interrupted())
                 return;
+
+            currentLocalResource = local;
 
             final String fileName = local.getFileName();
             if (!TextUtils.isEmpty(fileName)) {
                 App.log.info(fileName + " has been deleted locally -> deleting from server");
+
+                final DavResource remote = new DavResource(httpClient, collectionURL.newBuilder().addPathSegment(fileName).build());
+                currentDavResource = remote;
                 try {
-                    new DavResource(httpClient, collectionURL.newBuilder().addPathSegment(fileName).build())
-                            .delete(local.getETag());
+                    remote.delete(local.getETag());
                 } catch (IOException|HttpException e) {
                     App.log.warning("Couldn't delete " + fileName + " from server; ignoring (may be downloaded again)");
                 }
@@ -276,16 +291,23 @@ abstract public class SyncManager {
                 App.log.info("Removing local record #" + local.getId() + " which has been deleted locally and was never uploaded");
             local.delete();
             syncResult.stats.numDeletes++;
+
+            currentLocalResource = null;
+            currentDavResource = null;
         }
     }
 
     protected void prepareDirty() throws CalendarStorageException, ContactsStorageException {
         // assign file names and UIDs to new contacts so that we can use the file name as an index
         App.log.info("Looking for contacts/groups without file name");
-        for (LocalResource local : localCollection.getWithoutFileName()) {
+        for (final LocalResource local : localCollection.getWithoutFileName()) {
+            currentLocalResource = local;
+
             String uuid = UUID.randomUUID().toString();
             App.log.fine("Found local record #" + local.getId() + " without file name; assigning file name/UID based on " + uuid);
             local.updateFileNameAndUID(uuid);
+
+            currentLocalResource = null;
         }
     }
 
@@ -297,13 +319,15 @@ abstract public class SyncManager {
      */
     protected void uploadDirty() throws IOException, HttpException, CalendarStorageException, ContactsStorageException {
         // upload dirty contacts
-        for (LocalResource local : localCollection.getDirty()) {
+        for (final LocalResource local : localCollection.getDirty()) {
             if (Thread.interrupted())
                 return;
 
+            currentLocalResource = local;
             final String fileName = local.getFileName();
 
-            DavResource remote = new DavResource(httpClient, collectionURL.newBuilder().addPathSegment(fileName).build());
+            final DavResource remote = new DavResource(httpClient, collectionURL.newBuilder().addPathSegment(fileName).build());
+            currentDavResource = remote;
 
             // generate entity to upload (VCard, iCal, whatever)
             RequestBody body = prepareUpload(local);
@@ -330,6 +354,9 @@ abstract public class SyncManager {
                 App.log.fine("Didn't receive new ETag after uploading, setting to null");
 
             local.clearDirty(eTag);
+
+            currentLocalResource = null;
+            currentDavResource = null;
         }
     }
 
@@ -392,10 +419,14 @@ abstract public class SyncManager {
          */
         toDownload = new HashSet<>();
         for (String localName : localResources.keySet()) {
-            DavResource remote = remoteResources.get(localName);
+            final DavResource remote = remoteResources.get(localName);
+            currentDavResource = remote;
+
             if (remote == null) {
                 App.log.info(localName + " is not on server anymore, deleting");
-                localResources.get(localName).delete();
+                final LocalResource local = localResources.get(localName);
+                currentLocalResource = local;
+                local.delete();
                 syncResult.stats.numDeletes++;
             } else {
                 // contact is still on server, check whether it has been updated remotely
@@ -413,6 +444,9 @@ abstract public class SyncManager {
 
                 // remote entry has been seen, remove from list
                 remoteResources.remove(localName);
+
+                currentDavResource = null;
+                currentLocalResource = null;
             }
         }
 
