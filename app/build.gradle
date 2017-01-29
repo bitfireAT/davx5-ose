@@ -18,7 +18,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 25
 
-        versionCode 132
+        versionCode 134
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "customCerts", "true"
@@ -26,7 +26,7 @@ android {
 
     productFlavors {
         standard {
-            versionName "1.3.7-ose"
+            versionName "1.3.8-ose"
         }
     }
 
