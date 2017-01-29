@@ -171,7 +171,7 @@
   <string name="settings_contact_group_method">Método de contacto de grupo</string>
   <string-array name="settings_contact_group_method_values">
     <item>GROUP_VCARDS</item>
-    <item>CATEGORIAS</item>
+    <item>CATEGORIES</item>
   </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>Los groups tienen VCards separadas</item>
