@@ -56,6 +56,12 @@
   <string name="app_settings_reset_hints">Hints resetten </string>
   <string name="app_settings_reset_hints_summary">Hints die al gezien zijn opnieuw weergeven</string>
   <string name="app_settings_reset_hints_success">Alle hints worden opnieuw weergegeven</string>
+  <string name="app_settings_connection">Verbinding</string>
+  <string name="app_settings_override_proxy">Proxy instellingen overschrijven</string>
+  <string name="app_settings_override_proxy_on">Eigen proxy instellingen gebruiken</string>
+  <string name="app_settings_override_proxy_off">Systeem proxy instellingen gebruiken</string>
+  <string name="app_settings_override_proxy_host">HTTP proxy beheerder naam</string>
+  <string name="app_settings_override_proxy_port">HTTP proxy poort</string>
   <string name="app_settings_security">Beveiliging</string>
   <string name="app_settings_distrust_system_certs">Systeem certificaten niet vertrouwen</string>
   <string name="app_settings_distrust_system_certs_on">Systeem en CAs van toegevoegde gebruiker wordt niet vertrouwd</string>
@@ -73,6 +79,9 @@
   <string name="account_synchronize_now">Synchroniseer nu</string>
   <string name="account_synchronizing_now">Aan het synchronizeren...</string>
   <string name="account_settings">Account instellingen</string>
+  <string name="account_rename">Account hernoemen</string>
+  <string name="account_rename_new_name">Niet opgeslagen lokale informatie mag verloren gaan. Synchronisatie is noodzakelijk na hernoemen. Nieuw account naam:</string>
+  <string name="account_rename_rename">Hernoemen</string>
   <string name="account_delete">Account verwijderen</string>
   <string name="account_delete_confirmation_title">Account echt verwijderen?</string>
   <string name="account_delete_confirmation_text">Alle lokale kopieën van adresboeken, agenda\'s en taken worden verwijderd.</string>
