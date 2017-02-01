@@ -10,6 +10,8 @@ package at.bitfire.davdroid.resource;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
@@ -20,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
 
+import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.model.UnknownProperties;
 import at.bitfire.vcard4android.AndroidAddressBook;
@@ -30,11 +33,13 @@ import at.bitfire.vcard4android.CachedGroupMembership;
 import at.bitfire.vcard4android.Contact;
 import at.bitfire.vcard4android.ContactsStorageException;
 import ezvcard.Ezvcard;
+import lombok.Cleanup;
 
 public class LocalContact extends AndroidContact implements LocalResource {
     static {
         Contact.productID = "+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " vcard4android ez-vcard/" + Ezvcard.VERSION;
     }
+    public static final String COLUMN_HASHCODE = ContactsContract.RawContacts.SYNC3;
 
     protected final Set<Long>
             cachedGroupMemberships = new HashSet<>(),
@@ -49,15 +54,30 @@ public class LocalContact extends AndroidContact implements LocalResource {
         super(addressBook, contact, fileName, eTag);
     }
 
+    public void resetDirty() throws ContactsStorageException {
+        ContentValues values = new ContentValues(1);
+        values.put(ContactsContract.RawContacts.DIRTY, 0);
+        try {
+            addressBook.provider.update(rawContactSyncURI(), values, null, null);
+        } catch(RemoteException e) {
+            throw new ContactsStorageException("Couldn't clear dirty flag", e);
+        }
+    }
+
     public void clearDirty(String eTag) throws ContactsStorageException {
         try {
-            ContentValues values = new ContentValues(1);
-            values.put(ContactsContract.RawContacts.DIRTY, 0);
+            ContentValues values = new ContentValues(3);
             values.put(COLUMN_ETAG, eTag);
+            values.put(ContactsContract.RawContacts.DIRTY, 0);
+
+            int hashCode = dataHashCode();
+            values.put(COLUMN_HASHCODE, hashCode);
+            App.log.finer("Clearing dirty flag with eTag = " + eTag + ", contact hash = " + hashCode);
+
             addressBook.provider.update(rawContactSyncURI(), values, null, null);
 
             this.eTag = eTag;
-        } catch (RemoteException e) {
+        } catch (FileNotFoundException|RemoteException e) {
             throw new ContactsStorageException("Couldn't clear dirty flag", e);
         }
     }
@@ -111,6 +131,53 @@ public class LocalContact extends AndroidContact implements LocalResource {
             batch.enqueue(op);
         }
 
+    }
+
+
+    @Override
+    public int update(Contact contact) throws ContactsStorageException {
+        int result = super.update(contact);
+        updateHashCode();
+        return result;
+    }
+
+    @Override
+    public Uri create() throws ContactsStorageException {
+        Uri uri = super.create();
+        updateHashCode();
+        return uri;
+    }
+
+    /**
+     * Calculates a hash code from the contact's data (VCard) and group memberships.
+     * @return hash code of contact data (including group memberships)
+     */
+    public int dataHashCode() throws FileNotFoundException, ContactsStorageException {
+        // groupMemberships is filled by getContact()
+        return getContact().hashCode() ^ groupMemberships.hashCode();
+    }
+
+    protected void updateHashCode() throws ContactsStorageException {
+        ContentValues values = new ContentValues(1);
+        try {
+            int hashCode = dataHashCode();
+            App.log.fine("Storing contact hash = " + hashCode);
+            values.put(COLUMN_HASHCODE, hashCode);
+            addressBook.provider.update(rawContactSyncURI(), values, null, null);
+        } catch(FileNotFoundException|RemoteException e) {
+            throw new ContactsStorageException("Couldn't store contact checksum", e);
+        }
+    }
+
+    int getLastHashCode() throws ContactsStorageException {
+        try {
+            @Cleanup Cursor c = addressBook.provider.query(rawContactSyncURI(), new String[] { COLUMN_HASHCODE }, null, null, null);
+            if (c == null || !c.moveToNext() || c.isNull(0))
+                return 0;
+            return c.getInt(0);
+        } catch(RemoteException e) {
+            throw new ContactsStorageException("Could't read last hash code", e);
+        }
     }
 
 
