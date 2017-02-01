@@ -131,7 +131,10 @@ abstract public class SyncManager {
         int syncPhase = SYNC_PHASE_PREPARE;
         try {
             App.log.info("Preparing synchronization");
-            prepare();
+            if (!prepare()) {
+                App.log.info("No reason to synchronize, aborting");
+                return;
+            }
 
             if (Thread.interrupted())
                 return;
@@ -258,7 +261,10 @@ abstract public class SyncManager {
     }
 
 
-    abstract protected void prepare() throws ContactsStorageException;
+    /** Prepares synchronization (for instance, allocates necessary resources).
+     * @return whether actual synchronization is required / can be made. true = synchronization
+     *         shall be continued, false = synchronization can be skipped */
+    abstract protected boolean prepare() throws ContactsStorageException;
 
     abstract protected void queryCapabilities() throws IOException, HttpException, DavException, CalendarStorageException, ContactsStorageException;
 
