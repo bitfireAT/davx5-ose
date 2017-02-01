@@ -9,11 +9,17 @@
 package at.bitfire.davdroid.ui;
 
 import android.accounts.Account;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SyncStatusObserver;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.ListPreference;
@@ -23,10 +29,7 @@ import android.support.v7.preference.SwitchPreferenceCompat;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
-import java.util.logging.Level;
-
 import at.bitfire.davdroid.AccountSettings;
-import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
@@ -65,7 +68,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
     }
 
 
-    public static class AccountSettingsFragment extends PreferenceFragmentCompat {
+    public static class AccountSettingsFragment extends PreferenceFragmentCompat implements LoaderManager.LoaderCallbacks<AccountSettings> {
         Account account;
 
         @Override
@@ -73,7 +76,8 @@ public class AccountSettingsActivity extends AppCompatActivity {
             super.onCreate(savedInstanceState);
 
             account = getArguments().getParcelable(EXTRA_ACCOUNT);
-            refresh();
+
+            getLoaderManager().initLoader(0, getArguments(), this);
         }
 
         @Override
@@ -81,13 +85,14 @@ public class AccountSettingsActivity extends AppCompatActivity {
             addPreferencesFromResource(R.xml.settings_account);
         }
 
-        public void refresh() {
-            final AccountSettings settings;
+        @Override
+        public Loader<AccountSettings> onCreateLoader(int id, Bundle args) {
+            return new AccountSettingsLoader(getContext(), (Account)args.getParcelable(EXTRA_ACCOUNT));
+        }
 
-            try {
-                settings = new AccountSettings(getActivity(), account);
-            } catch(InvalidAccountException e) {
-                App.log.log(Level.INFO, "Account is invalid or doesn't exist (anymore)", e);
+        @Override
+        public void onLoadFinished(Loader<AccountSettings> loader, final AccountSettings settings) {
+            if (settings == null) {
                 getActivity().finish();
                 return;
             }
@@ -100,7 +105,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     settings.username((String)newValue);
-                    refresh();
+                    getLoaderManager().restartLoader(0, getArguments(), AccountSettingsFragment.this);
                     return false;
                 }
             });
@@ -110,7 +115,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     settings.password((String)newValue);
-                    refresh();
+                    getLoaderManager().restartLoader(0, getArguments(), AccountSettingsFragment.this);
                     return false;
                 }
             });
@@ -128,7 +133,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         settings.setSyncInterval(ContactsContract.AUTHORITY, Long.parseLong((String)newValue));
-                        refresh();
+                        getLoaderManager().restartLoader(0, getArguments(), AccountSettingsFragment.this);
                         return false;
                     }
                 });
@@ -149,7 +154,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         settings.setSyncInterval(CalendarContract.AUTHORITY, Long.parseLong((String)newValue));
-                        refresh();
+                        getLoaderManager().restartLoader(0, getArguments(), AccountSettingsFragment.this);
                         return false;
                     }
                 });
@@ -170,7 +175,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Long.parseLong((String)newValue));
-                        refresh();
+                        getLoaderManager().restartLoader(0, getArguments(), AccountSettingsFragment.this);
                         return false;
                     }
                 });
@@ -185,7 +190,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object wifiOnly) {
                     settings.setSyncWiFiOnly((Boolean)wifiOnly);
-                    refresh();
+                    getLoaderManager().restartLoader(0, getArguments(), AccountSettingsFragment.this);
                     return false;
                 }
             });
@@ -202,7 +207,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     String ssid = (String)newValue;
                     settings.setSyncWifiOnlySSID(!TextUtils.isEmpty(ssid) ? ssid : null);
-                    refresh();
+                    getLoaderManager().restartLoader(0, getArguments(), AccountSettingsFragment.this);
                     return false;
                 }
             });
@@ -218,7 +223,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                         public boolean onPreferenceChange(Preference preference, Object o) {
                             String name = (String)o;
                             settings.setGroupMethod(GroupMethod.valueOf(name));
-                            refresh();
+                            getLoaderManager().restartLoader(0, getArguments(), AccountSettingsFragment.this);
                             return false;
                         }
                     });
@@ -248,7 +253,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                             days = -1;
                         }
                         settings.setTimeRangePastDays(days < 0 ? null : days);
-                        refresh();
+                        getLoaderManager().restartLoader(0, getArguments(), AccountSettingsFragment.this);
                         return false;
                     }
                 });
@@ -262,7 +267,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         settings.setManageCalendarColors((Boolean)newValue);
-                        refresh();
+                        getLoaderManager().restartLoader(0, getArguments(), AccountSettingsFragment.this);
                         return false;
                     }
                 });
@@ -270,6 +275,52 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 prefManageColors.setEnabled(false);
 
         }
+
+        @Override
+        public void onLoaderReset(Loader<AccountSettings> loader) {
+        }
+
+    }
+
+
+    private static class AccountSettingsLoader extends AsyncTaskLoader<AccountSettings> implements SyncStatusObserver {
+
+        final Account account;
+        Object listenerHandle;
+
+        public AccountSettingsLoader(Context context, Account account) {
+            super(context);
+            this.account = account;
+        }
+
+        @Override
+        protected void onStartLoading() {
+            forceLoad();
+
+            listenerHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this);
+        }
+
+        @Override
+        protected void onStopLoading() {
+            ContentResolver.removeStatusChangeListener(listenerHandle);
+        }
+
+        @Override
+        public AccountSettings loadInBackground() {
+            AccountSettings settings;
+            try {
+                settings = new AccountSettings(getContext(), account);
+            } catch(InvalidAccountException e) {
+                return null;
+            }
+            return settings;
+        }
+
+        @Override
+        public void onStatusChanged(int which) {
+            forceLoad();
+        }
+
     }
 
 }

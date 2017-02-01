@@ -11,6 +11,7 @@ package at.bitfire.davdroid.syncadapter;
 import android.accounts.Account;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -141,7 +142,7 @@ public class ContactsSyncManager extends SyncManager {
 
 
     @Override
-    protected void prepare() throws ContactsStorageException {
+    protected boolean prepare() throws ContactsStorageException {
         // prepare local address book
         localCollection = new LocalAddressBook(account, provider);
         LocalAddressBook localAddressBook = localAddressBook();
@@ -162,6 +163,8 @@ public class ContactsSyncManager extends SyncManager {
 
         collectionURL = HttpUrl.parse(url);
         davCollection = new DavAddressBook(httpClient, collectionURL);
+
+        return true;
     }
 
     @Override

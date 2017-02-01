@@ -80,9 +80,10 @@ public class CalendarSyncManager extends SyncManager {
 
 
     @Override
-    protected void prepare() {
+    protected boolean prepare() {
         collectionURL = HttpUrl.parse(localCalendar().getName());
         davCollection = new DavCalendar(httpClient, collectionURL);
+        return true;
     }
 
     @Override
