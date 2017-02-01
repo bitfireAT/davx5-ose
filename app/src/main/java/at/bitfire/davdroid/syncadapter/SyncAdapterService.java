@@ -70,7 +70,7 @@ public abstract class SyncAdapterService extends Service {
 
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-            App.log.info("Sync for " + authority + " has been initiated");
+            App.log.log(Level.INFO, "Sync for " + authority + " has been initiated.", extras.keySet().toArray());
 
             // required for dav4android (ServiceLoader)
             final Context context = getContext();

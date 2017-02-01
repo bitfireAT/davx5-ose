@@ -133,7 +133,6 @@ public class AccountSettingsActivity extends AppCompatActivity {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         settings.setSyncInterval(ContactsContract.AUTHORITY, Long.parseLong((String)newValue));
-                        getLoaderManager().restartLoader(0, getArguments(), AccountSettingsFragment.this);
                         return false;
                     }
                 });
@@ -154,7 +153,6 @@ public class AccountSettingsActivity extends AppCompatActivity {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         settings.setSyncInterval(CalendarContract.AUTHORITY, Long.parseLong((String)newValue));
-                        getLoaderManager().restartLoader(0, getArguments(), AccountSettingsFragment.this);
                         return false;
                     }
                 });
@@ -175,7 +173,6 @@ public class AccountSettingsActivity extends AppCompatActivity {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Long.parseLong((String)newValue));
-                        getLoaderManager().restartLoader(0, getArguments(), AccountSettingsFragment.this);
                         return false;
                     }
                 });
