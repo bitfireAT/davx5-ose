@@ -85,6 +85,34 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
     }
 
     /**
+     * Queries all contacts with DIRTY flag and checks whether their data checksum has changed, i.e.
+     * if they're "really dirty" (= data has changed, not only metadata, which is not hashed).
+     * The DIRTY flag is removed from contacts which are not "really dirty", i.e. from contacts
+     * whose contact data checksum has not changed.
+     * @return number of "really dirty" contacts
+     */
+    public int verifyDirty() throws ContactsStorageException {
+        int reallyDirty = 0;
+        for (LocalContact contact : getDirtyContacts()) {
+            try {
+                if (contact.getLastHashCode() == contact.dataHashCode()) {
+                    // hash is code still the same, contact is not "really dirty" (only metadata been have changed)
+                    App.log.log(Level.FINE, "Contact data hash has not changed, resetting dirty flag", contact);
+                    contact.resetDirty();
+                } else
+                    reallyDirty++;
+            } catch(FileNotFoundException e) {
+                throw new ContactsStorageException("Couldn't calculate hash code", e);
+            }
+        }
+
+        if (includeGroups)
+            reallyDirty += getDirtyGroups().length;
+
+        return reallyDirty;
+    }
+
+    /**
      * Returns an array of local contacts/groups which have been changed locally (DIRTY != 0).
      */
     @Override

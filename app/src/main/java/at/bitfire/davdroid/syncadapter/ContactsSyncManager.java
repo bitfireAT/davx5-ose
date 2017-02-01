@@ -147,6 +147,12 @@ public class ContactsSyncManager extends SyncManager {
         localCollection = new LocalAddressBook(account, provider);
         LocalAddressBook localAddressBook = localAddressBook();
 
+        int reallyDirty = localAddressBook.verifyDirty();
+        if (extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD) && reallyDirty == 0) {
+            App.log.info("This sync was called to upload dirty contacts, but no contact data have been changed");
+            return false;
+        }
+
         String url = remote.url;
         String lastUrl = localAddressBook.getURL();
         if (!url.equals(lastUrl)) {
