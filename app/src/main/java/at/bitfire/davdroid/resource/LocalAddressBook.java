@@ -14,6 +14,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.RemoteException;
@@ -92,15 +93,22 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
      * @return number of "really dirty" contacts
      */
     public int verifyDirty() throws ContactsStorageException {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
+            App.log.severe("verifyDirty() should not be called on Android <7");
+
         int reallyDirty = 0;
         for (LocalContact contact : getDirtyContacts()) {
             try {
-                if (contact.getLastHashCode() == contact.dataHashCode()) {
+                int lastHash = contact.getLastHashCode(),
+                    currentHash = contact.dataHashCode();
+                if (lastHash == currentHash) {
                     // hash is code still the same, contact is not "really dirty" (only metadata been have changed)
                     App.log.log(Level.FINE, "Contact data hash has not changed, resetting dirty flag", contact);
                     contact.resetDirty();
-                } else
+                } else {
+                    App.log.log(Level.FINE, "Contact data has changed from hash " + lastHash + " to " + currentHash, contact);
                     reallyDirty++;
+                }
             } catch(FileNotFoundException e) {
                 throw new ContactsStorageException("Couldn't calculate hash code", e);
             }
