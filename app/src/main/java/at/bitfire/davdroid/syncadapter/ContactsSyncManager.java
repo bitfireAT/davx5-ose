@@ -17,6 +17,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
@@ -54,6 +55,7 @@ import at.bitfire.dav4android.property.SupportedAddressData;
 import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.ArrayUtils;
+import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.InvalidAccountException;
@@ -147,10 +149,13 @@ public class ContactsSyncManager extends SyncManager {
         localCollection = new LocalAddressBook(account, provider);
         LocalAddressBook localAddressBook = localAddressBook();
 
-        int reallyDirty = localAddressBook.verifyDirty();
-        if (extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD) && reallyDirty == 0) {
-            App.log.info("This sync was called to upload dirty contacts, but no contact data have been changed");
-            return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
+            int reallyDirty = localAddressBook.verifyDirty();
+            if (extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD) && reallyDirty == 0) {
+                App.log.info("This sync was called to upload dirty contacts, but no contact data have been changed");
+                return false;
+            }
         }
 
         String url = remote.url;

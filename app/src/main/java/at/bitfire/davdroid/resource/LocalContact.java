@@ -12,6 +12,7 @@ import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
@@ -70,9 +71,12 @@ public class LocalContact extends AndroidContact implements LocalResource {
             values.put(COLUMN_ETAG, eTag);
             values.put(ContactsContract.RawContacts.DIRTY, 0);
 
-            int hashCode = dataHashCode();
-            values.put(COLUMN_HASHCODE, hashCode);
-            App.log.finer("Clearing dirty flag with eTag = " + eTag + ", contact hash = " + hashCode);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
+                int hashCode = dataHashCode();
+                values.put(COLUMN_HASHCODE, hashCode);
+                App.log.finer("Clearing dirty flag with eTag = " + eTag + ", contact hash = " + hashCode);
+            }
 
             addressBook.provider.update(rawContactSyncURI(), values, null, null);
 
@@ -137,14 +141,24 @@ public class LocalContact extends AndroidContact implements LocalResource {
     @Override
     public int update(Contact contact) throws ContactsStorageException {
         int result = super.update(contact);
-        updateHashCode();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
+            updateHashCode();
+        }
+
         return result;
     }
 
     @Override
     public Uri create() throws ContactsStorageException {
         Uri uri = super.create();
-        updateHashCode();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
+            updateHashCode();
+        }
+
         return uri;
     }
 
@@ -153,11 +167,17 @@ public class LocalContact extends AndroidContact implements LocalResource {
      * @return hash code of contact data (including group memberships)
      */
     public int dataHashCode() throws FileNotFoundException, ContactsStorageException {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
+            App.log.severe("dataHashCode() should not be called on Android <7");
+
         // groupMemberships is filled by getContact()
         return getContact().hashCode() ^ groupMemberships.hashCode();
     }
 
     protected void updateHashCode() throws ContactsStorageException {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
+            App.log.severe("updateHashCode() should not be called on Android <7");
+
         ContentValues values = new ContentValues(1);
         try {
             int hashCode = dataHashCode();
@@ -170,6 +190,9 @@ public class LocalContact extends AndroidContact implements LocalResource {
     }
 
     int getLastHashCode() throws ContactsStorageException {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
+            App.log.severe("getLastHashCode() should not be called on Android <7");
+
         try {
             @Cleanup Cursor c = addressBook.provider.query(rawContactSyncURI(), new String[] { COLUMN_HASHCODE }, null, null, null);
             if (c == null || !c.moveToNext() || c.isNull(0))
