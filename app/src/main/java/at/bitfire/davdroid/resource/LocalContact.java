@@ -142,10 +142,9 @@ public class LocalContact extends AndroidContact implements LocalResource {
     public int update(Contact contact) throws ContactsStorageException {
         int result = super.update(contact);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
             updateHashCode();
-        }
 
         return result;
     }
@@ -154,10 +153,9 @@ public class LocalContact extends AndroidContact implements LocalResource {
     public Uri create() throws ContactsStorageException {
         Uri uri = super.create();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
             updateHashCode();
-        }
 
         return uri;
     }
@@ -177,6 +175,10 @@ public class LocalContact extends AndroidContact implements LocalResource {
     protected void updateHashCode() throws ContactsStorageException {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
             App.log.severe("updateHashCode() should not be called on Android <7");
+
+        // re-read from provider before calculating the hash because the Contact as parsed from
+        // the VCard is not the same as when read from the database
+        contact = null;
 
         ContentValues values = new ContentValues(1);
         try {
