@@ -57,6 +57,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
         super(account, provider, LocalGroup.Factory.INSTANCE, LocalContact.Factory.INSTANCE);
     }
 
+    @NonNull
     public LocalContact findContactByUID(String uid) throws ContactsStorageException, FileNotFoundException {
         LocalContact[] contacts = (LocalContact[])queryContacts(LocalContact.COLUMN_UID + "=?", new String[] { uid });
         if (contacts.length == 0)
@@ -65,6 +66,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
     }
 
     @Override
+    @NonNull
     public LocalResource[] getAll() throws ContactsStorageException {
         List<LocalResource> all = new LinkedList<>();
         Collections.addAll(all, (LocalResource[])queryContacts(null, null));
@@ -77,6 +79,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
      * Returns an array of local contacts/groups which have been deleted locally. (DELETED != 0).
      */
     @Override
+    @NonNull
     public LocalResource[] getDeleted() throws ContactsStorageException {
         List<LocalResource> deleted = new LinkedList<>();
         Collections.addAll(deleted, getDeletedContacts());
@@ -124,6 +127,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
      * Returns an array of local contacts/groups which have been changed locally (DIRTY != 0).
      */
     @Override
+    @NonNull
     public LocalResource[] getDirty() throws ContactsStorageException {
         List<LocalResource> dirty = new LinkedList<>();
         Collections.addAll(dirty, getDirtyContacts());
@@ -136,6 +140,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
      * Returns an array of local contacts which don't have a file name yet.
      */
     @Override
+    @NonNull
     public LocalResource[] getWithoutFileName() throws ContactsStorageException {
         List<LocalResource> nameless = new LinkedList<>();
         Collections.addAll(nameless, (LocalContact[])queryContacts(AndroidContact.COLUMN_FILENAME + " IS NULL", null));
@@ -154,18 +159,22 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
     }
 
 
+    @NonNull
     public LocalContact[] getDeletedContacts() throws ContactsStorageException {
         return (LocalContact[])queryContacts(RawContacts.DELETED + "!= 0", null);
     }
 
+    @NonNull
     public LocalContact[] getDirtyContacts() throws ContactsStorageException {
         return (LocalContact[])queryContacts(RawContacts.DIRTY + "!= 0", null);
     }
 
+    @NonNull
     public LocalGroup[] getDeletedGroups() throws ContactsStorageException {
         return (LocalGroup[])queryGroups(Groups.DELETED + "!= 0", null);
     }
 
+    @NonNull
     public LocalGroup[] getDirtyGroups() throws ContactsStorageException {
         return (LocalGroup[])queryGroups(Groups.DIRTY + "!= 0", null);
     }
