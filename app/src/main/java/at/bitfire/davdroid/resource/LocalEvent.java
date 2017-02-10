@@ -11,6 +11,7 @@ package at.bitfire.davdroid.resource;
 import android.annotation.TargetApi;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
@@ -19,12 +20,14 @@ import android.support.annotation.NonNull;
 
 import net.fortuna.ical4j.model.property.ProdId;
 
+import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.ical4android.AndroidCalendar;
 import at.bitfire.ical4android.AndroidEvent;
 import at.bitfire.ical4android.AndroidEventFactory;
 import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.Event;
+import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -100,9 +103,16 @@ public class LocalEvent extends AndroidEvent implements LocalResource {
 
     /* custom queries */
 
-    public void updateFileNameAndUID(String uid) throws CalendarStorageException {
+    public void prepareForUpload() throws CalendarStorageException {
         try {
-            String newFileName = uid + ".ics";
+            String uid = null;
+            @Cleanup Cursor c = calendar.provider.query(eventSyncURI(), new String[] { Events.UID_2445 }, null, null, null);
+            if (c.moveToNext())
+                uid = c.getString(0);
+            if (uid == null)
+                uid = App.getUidGenerator().generateUid().getValue();
+
+            final String newFileName = uid + ".ics";
 
             ContentValues values = new ContentValues(2);
             values.put(Events._SYNC_ID, newFileName);
