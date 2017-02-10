@@ -8,6 +8,7 @@
 
 package at.bitfire.davdroid;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Application;
 import android.content.BroadcastReceiver;
@@ -23,6 +24,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+
+import net.fortuna.ical4j.util.UidGenerator;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 
@@ -66,6 +69,9 @@ public class App extends Application {
     @Getter
     private static HostnameVerifier hostnameVerifier;
 
+    @Getter
+    private static UidGenerator uidGenerator;
+
     public final static Logger log = Logger.getLogger("davdroid");
     static {
         at.bitfire.dav4android.Constants.log = Logger.getLogger("davdroid.dav4android");
@@ -73,10 +79,13 @@ public class App extends Application {
     }
 
     @Override
+    @SuppressLint("HardwareIds")
     public void onCreate() {
         super.onCreate();
         reinitCertManager();
         reinitLogger();
+
+        uidGenerator = new UidGenerator(null, android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID));
     }
 
     public void reinitCertManager() {

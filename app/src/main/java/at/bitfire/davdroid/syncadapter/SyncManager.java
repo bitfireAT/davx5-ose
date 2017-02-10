@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.logging.Level;
 
 import at.bitfire.dav4android.DavResource;
@@ -309,9 +308,8 @@ abstract public class SyncManager {
         for (final LocalResource local : localCollection.getWithoutFileName()) {
             currentLocalResource = local;
 
-            String uuid = UUID.randomUUID().toString();
-            App.log.fine("Found local record #" + local.getId() + " without file name; assigning file name/UID based on " + uuid);
-            local.updateFileNameAndUID(uuid);
+            App.log.fine("Found local record #" + local.getId() + " without file name; generating file name/UID if necessary");
+            local.prepareForUpload();
 
             currentLocalResource = null;
         }
