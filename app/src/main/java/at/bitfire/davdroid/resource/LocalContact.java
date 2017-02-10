@@ -11,7 +11,6 @@ package at.bitfire.davdroid.resource;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Build;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
@@ -22,6 +21,7 @@ import android.support.annotation.NonNull;
 import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
@@ -86,9 +86,10 @@ public class LocalContact extends AndroidContact implements LocalResource {
         }
     }
 
-    public void updateFileNameAndUID(String uid) throws ContactsStorageException {
+    public void prepareForUpload() throws ContactsStorageException {
         try {
-            String newFileName = uid + ".vcf";
+            final String uid = UUID.randomUUID().toString();
+            final String newFileName = uid + ".vcf";
 
             ContentValues values = new ContentValues(2);
             values.put(COLUMN_FILENAME, newFileName);

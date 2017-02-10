@@ -20,7 +20,7 @@ public interface LocalResource {
 
     int delete() throws CalendarStorageException, ContactsStorageException;
 
-    void updateFileNameAndUID(String uuid) throws CalendarStorageException, ContactsStorageException;
+    void prepareForUpload() throws CalendarStorageException, ContactsStorageException;
     void clearDirty(String eTag) throws CalendarStorageException, ContactsStorageException;
 
 }
