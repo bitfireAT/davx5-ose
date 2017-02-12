@@ -17,6 +17,7 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
 import android.provider.ContactsContract.RawContacts.Data;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.FileNotFoundException;
 import java.util.HashSet;
@@ -141,30 +142,41 @@ public class LocalContact extends AndroidContact implements LocalResource {
 
     /**
      * Calculates a hash code from the contact's data (VCard) and group memberships.
+     * Attention: re-reads {@link #contact} from the database, discarding all changes in memory
      * @return hash code of contact data (including group memberships)
      */
     protected int dataHashCode() throws FileNotFoundException, ContactsStorageException {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
             App.log.severe("dataHashCode() should not be called on Android <7");
 
+        // reset contact so that getContact() reads from database
+        contact = null;
+
         // groupMemberships is filled by getContact()
-        return getContact().hashCode() ^ groupMemberships.hashCode();
+        int dataHash = getContact().hashCode(),
+            groupHash = groupMemberships.hashCode();
+        App.log.finest("Calculated data hash = " + dataHash + ", group memberships hash = " + groupHash);
+        return dataHash ^ groupHash;
     }
 
-    public void updateHashCode() throws ContactsStorageException {
+    public void updateHashCode(@Nullable BatchOperation batch) throws ContactsStorageException {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
             App.log.severe("updateHashCode() should not be called on Android <7");
-
-        // re-read from provider before calculating the hash because the Contact as parsed from
-        // the VCard is not the same as when read from the database
-        contact = null;
 
         ContentValues values = new ContentValues(1);
         try {
             int hashCode = dataHashCode();
             App.log.fine("Storing contact hash = " + hashCode);
             values.put(COLUMN_HASHCODE, hashCode);
-            addressBook.provider.update(rawContactSyncURI(), values, null, null);
+
+            if (batch == null)
+                addressBook.provider.update(rawContactSyncURI(), values, null, null);
+            else {
+                ContentProviderOperation.Builder builder = ContentProviderOperation
+                        .newUpdate(rawContactSyncURI())
+                        .withValues(values);
+                batch.enqueue(new BatchOperation.Operation(builder));
+            }
         } catch(FileNotFoundException|RemoteException e) {
             throw new ContactsStorageException("Couldn't store contact checksum", e);
         }
@@ -187,12 +199,14 @@ public class LocalContact extends AndroidContact implements LocalResource {
 
     public void addToGroup(BatchOperation batch, long groupID) {
         assertID();
+
         batch.enqueue(new BatchOperation.Operation(
                 ContentProviderOperation.newInsert(dataSyncURI())
                         .withValue(GroupMembership.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
                         .withValue(GroupMembership.RAW_CONTACT_ID, id)
                         .withValue(GroupMembership.GROUP_ROW_ID, groupID)
         ));
+        groupMemberships.add(groupID);
 
         batch.enqueue(new BatchOperation.Operation(
                 ContentProviderOperation.newInsert(dataSyncURI())
@@ -201,6 +215,7 @@ public class LocalContact extends AndroidContact implements LocalResource {
                         .withValue(CachedGroupMembership.GROUP_ID, groupID)
                         .withYieldAllowed(true)
         ));
+        cachedGroupMemberships.add(groupID);
     }
 
     public void removeGroupMemberships(BatchOperation batch) {
@@ -213,6 +228,8 @@ public class LocalContact extends AndroidContact implements LocalResource {
                         )
                         .withYieldAllowed(true)
         ));
+        groupMemberships.clear();
+        cachedGroupMemberships.clear();
     }
 
     /**

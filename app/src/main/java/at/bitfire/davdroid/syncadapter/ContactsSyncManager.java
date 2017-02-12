@@ -492,7 +492,7 @@ public class ContactsSyncManager extends SyncManager {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && local instanceof LocalContact)
             // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-            ((LocalContact)local).updateHashCode();
+            ((LocalContact)local).updateHashCode(null);
 
         currentLocalResource = null;
     }
