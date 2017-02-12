@@ -19,20 +19,24 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
 import android.provider.ContactsContract.Groups;
 import android.provider.ContactsContract.RawContacts;
 import android.support.annotation.NonNull;
 
 import java.io.FileNotFoundException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import at.bitfire.davdroid.App;
 import at.bitfire.vcard4android.AndroidAddressBook;
 import at.bitfire.vcard4android.AndroidContact;
 import at.bitfire.vcard4android.AndroidGroup;
+import at.bitfire.vcard4android.CachedGroupMembership;
 import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
 
@@ -149,15 +153,6 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
         return nameless.toArray(new LocalResource[nameless.size()]);
     }
 
-    public void deleteAll() throws ContactsStorageException {
-        try {
-            provider.delete(syncAdapterURI(RawContacts.CONTENT_URI), null, null);
-            provider.delete(syncAdapterURI(Groups.CONTENT_URI), null, null);
-        } catch(RemoteException e) {
-            throw new ContactsStorageException("Couldn't delete all local contacts and groups", e);
-        }
-    }
-
 
     @NonNull
     public LocalContact[] getDeletedContacts() throws ContactsStorageException {
@@ -177,6 +172,38 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
     @NonNull
     public LocalGroup[] getDirtyGroups() throws ContactsStorageException {
         return (LocalGroup[])queryGroups(Groups.DIRTY + "!= 0", null);
+    }
+
+    @NonNull LocalContact[] getByGroupMembership(long groupID) throws ContactsStorageException {
+        try {
+            @Cleanup Cursor cursor = provider.query(syncAdapterURI(ContactsContract.Data.CONTENT_URI),
+                    new String[] { RawContacts.Data.RAW_CONTACT_ID },
+                    "(" + GroupMembership.MIMETYPE + "=? AND " + GroupMembership.GROUP_ROW_ID + "=?) OR (" + CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?)",
+                    new String[] { GroupMembership.CONTENT_ITEM_TYPE, String.valueOf(groupID), CachedGroupMembership.CONTENT_ITEM_TYPE, String.valueOf(groupID) },
+                    null);
+
+            Set<Long> ids = new HashSet<>();
+            while (cursor != null && cursor.moveToNext())
+                ids.add(cursor.getLong(0));
+
+            LocalContact[] contacts = new LocalContact[ids.size()];
+            int i = 0;
+            for (Long id : ids)
+                contacts[i++] = new LocalContact(this, id, null, null);
+            return contacts;
+        } catch (RemoteException e) {
+            throw new ContactsStorageException("Couldn't query contacts", e);
+        }
+    }
+
+
+    public void deleteAll() throws ContactsStorageException {
+        try {
+            provider.delete(syncAdapterURI(RawContacts.CONTENT_URI), null, null);
+            provider.delete(syncAdapterURI(Groups.CONTENT_URI), null, null);
+        } catch(RemoteException e) {
+            throw new ContactsStorageException("Couldn't delete all local contacts and groups", e);
+        }
     }
 
 
