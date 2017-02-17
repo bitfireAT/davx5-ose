@@ -179,6 +179,7 @@
   <plurals name="settings_sync_time_range_past_days">
     <item quantity="one">Wydarzenia starsze niż jeden dzień zostaną zignorowane.</item>
     <item quantity="few">Wydarzenia starsze niż %d dni zostaną zignorowane.</item>
+    <item quantity="many">Wydarzenia starsze niż %d dni zostaną zignorowane.</item>
     <item quantity="other">Wydarzenia starsze niż %d dni zostaną zignorowane.</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Wydarzenia, które są starsze niż podana liczba dni zostaną zignorowane (może być 0). Zostaw puste, aby synchronizować wszystkie wydarzenia.</string>
