@@ -106,7 +106,7 @@ public class LocalEvent extends AndroidEvent implements LocalResource {
     public void prepareForUpload() throws CalendarStorageException {
         try {
             String uid = null;
-            @Cleanup Cursor c = calendar.provider.query(eventSyncURI(), new String[] { Events.UID_2445 }, null, null, null);
+            @Cleanup Cursor c = calendar.provider.query(eventSyncURI(), new String[] { COLUMN_UID }, null, null, null);
             if (c.moveToNext())
                 uid = c.getString(0);
             if (uid == null)
