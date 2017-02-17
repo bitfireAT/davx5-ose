@@ -16,7 +16,7 @@ android {
         applicationId "at.bitfire.davdroid"
         resValue "string", "packageID", applicationId
 
-        versionCode 137
+        versionCode 138
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         minSdkVersion 15
@@ -28,18 +28,18 @@ android {
 
     productFlavors {
         standard {
-            versionName "1.4.0.2"
+            versionName "1.4.0.3"
             buildConfigField "boolean", "customCerts", "true"
         }
         gplay {
-            versionName "1.4.0.2-gplay"
+            versionName "1.4.0.3-gplay"
             buildConfigField "boolean", "customCerts", "true"
         }
         icloud {
             applicationId "at.bitfire.cloudsync"
             resValue "string", "packageID", applicationId
 
-            versionName "1.4.0.2-cloud"
+            versionName "1.4.0.3-cloud"
             buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "at.bitfire.vcard4android.GroupMethod.GROUP_VCARDS"
         }
     }
