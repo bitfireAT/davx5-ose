@@ -31,6 +31,7 @@ android {
             versionName "1.4.0.3"
             buildConfigField "boolean", "customCerts", "true"
         }
+
         gplay {
             versionName "1.4.0.3-gplay"
             buildConfigField "boolean", "customCerts", "true"
@@ -40,16 +41,23 @@ android {
             resValue "string", "packageID", applicationId
 
             versionName "1.4.0.3-cloud"
-            buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "at.bitfire.vcard4android.GroupMethod.GROUP_VCARDS"
+            buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "at.bitfire.vcard4android.GroupMethod.CATEGORIES"
+        }
+        soldupe {
+            applicationId "com.soldupe.sync"
+            resValue "string", "packageID", applicationId
+
+            versionName "1.4.0.3-soldupe"
+            buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "null"
         }
     }
 
     sourceSets {
         standard.java.srcDirs = [ "src/davdroid/java" ]
         standard.res.srcDirs = [ "src/davdroid/res" ]
-
         gplay.java.srcDirs = [ "src/gplay/java", "src/davdroid/java" ]
         gplay.res.srcDirs = [ "src/gplay/res", "src/davdroid/res" ]
+
     }
 
     signingConfigs {
