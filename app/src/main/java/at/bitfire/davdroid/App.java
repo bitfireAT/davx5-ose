@@ -51,6 +51,7 @@ public class App extends Application {
     public static final String
             FLAVOR_GOOGLE_PLAY = "gplay",
             FLAVOR_ICLOUD = "icloud",
+            FLAVOR_SOLDUPE = "soldupe",
             FLAVOR_STANDARD = "standard";
 
     public static final String
