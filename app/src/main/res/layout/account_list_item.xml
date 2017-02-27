@@ -14,7 +14,6 @@
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
             card_view:contentPadding="16dp"
-            card_view:cardBackgroundColor="@color/orange400"
             card_view:cardElevation="2dp">
 
         <LinearLayout

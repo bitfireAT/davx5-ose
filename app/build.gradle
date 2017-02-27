@@ -50,14 +50,14 @@ android {
             resValue "string", "packageID", applicationId
 
             versionName "1.4.0.3-cloud"
-            buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "at.bitfire.vcard4android.GroupMethod.CATEGORIES"
+            buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "at.bitfire.vcard4android.GroupMethod.GROUP_VCARDS"
         }
         soldupe {
             applicationId "com.soldupe.sync"
             resValue "string", "packageID", applicationId
 
             versionName "1.4.0.3-soldupe"
-            buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "null"
+            buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "at.bitfire.vcard4android.GroupMethod.CATEGORIES"
         }
     }
 

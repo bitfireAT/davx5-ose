@@ -9,7 +9,7 @@
 <resources>
 
     <!-- colors -->
-    <color name="green700">#388e3c</color>
+    <color name="green500">#388e3c</color>
 
     <color name="light_green300">#aed581</color>
     <color name="light_green500">#8bc34a</color>
@@ -60,6 +60,7 @@
     </style>
     <style name="account_list_card">
         <item name="android:layout_width">match_parent</item>
+        <item name="cardBackgroundColor">@color/orange400</item>
     </style>
 
 
