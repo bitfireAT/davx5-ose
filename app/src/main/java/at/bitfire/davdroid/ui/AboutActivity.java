@@ -39,6 +39,7 @@ import java.util.logging.Level;
 
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
+import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import ezvcard.Ezvcard;
 import lombok.Cleanup;
@@ -71,8 +72,8 @@ public class AboutActivity extends AppCompatActivity {
 
     private final static ComponentInfo components[] = {
             new ComponentInfo(
-                    null, BuildConfig.VERSION_NAME, "https://davdroid.bitfire.at",
-                    DateFormatUtils.format(BuildConfig.buildTime, "yyyy") + " Ricki Hirner, Bernhard Stockmann (bitfire web engineering)",
+                    null, BuildConfig.VERSION_NAME, Constants.webUri.toString(),
+                    "Ricki Hirner, Bernhard Stockmann (bitfire web engineering)",
                     null, null
             ), new ComponentInfo(
                     "AmbilWarna", null, "https://github.com/yukuku/ambilwarna",

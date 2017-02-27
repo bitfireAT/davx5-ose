@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 
 import java.net.URI;
 import java.util.logging.Level;
@@ -136,9 +137,11 @@ public class AccountDetailsFragment extends Fragment {
                 getActivity().startService(refreshIntent);
 
                 // initial CardDAV account settings
-                int idx = spnrGroupMethod.getSelectedItemPosition();
-                String groupMethodName = getResources().getStringArray(R.array.settings_contact_group_method_values)[idx];
-                settings.setGroupMethod(GroupMethod.valueOf(groupMethodName));
+                if (BuildConfig.settingContactGroupMethod == null) {
+                    int idx = spnrGroupMethod.getSelectedItemPosition();
+                    String groupMethodName = getResources().getStringArray(R.array.settings_contact_group_method_values)[idx];
+                    settings.setGroupMethod(GroupMethod.valueOf(groupMethodName));
+                }
 
                 // contact sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_contacts.xml
                 settings.setSyncInterval(ContactsContract.AUTHORITY, Constants.DEFAULT_SYNC_INTERVAL);
