@@ -6,6 +6,15 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.+'
+    }
+}
+
 apply plugin: 'com.android.application'
 
 android {
@@ -53,7 +62,6 @@ android {
         disable 'RtlEnabled'
         disable 'RtlHardcoded'
         disable 'Typos'
-        disable "RestrictedApi"		// https://code.google.com/p/android/issues/detail?id=230387
     }
     packagingOptions {
         exclude 'LICENSE'
