@@ -53,10 +53,12 @@ android {
             buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "at.bitfire.vcard4android.GroupMethod.GROUP_VCARDS"
         }
         soldupe {
-            applicationId "com.soldupe.sync"
+            applicationId "com.soldupe.cloudsync"
             resValue "string", "packageID", applicationId
+            minSdkVersion 21
 
-            versionName "1.4.0.3-soldupe"
+            versionName "1.4.0.3-soldupe-beta1"
+            buildConfigField "boolean", "customCerts", "true"
             buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "at.bitfire.vcard4android.GroupMethod.CATEGORIES"
         }
     }

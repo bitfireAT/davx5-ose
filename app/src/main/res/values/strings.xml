@@ -60,7 +60,6 @@
     <string name="navigation_drawer_faq">FAQ</string>
     <string name="navigation_drawer_forums">Community</string>
     <string name="navigation_drawer_donate">Donate</string>
-
     <string name="account_list_empty">Welcome to DAVdroid!\n\nYou can add a CalDAV/CardDAV account now.</string>
 
     <!-- DavService -->

@@ -37,7 +37,7 @@
                 android:title="@string/navigation_drawer_website"/>
             <item
                 android:id="@+id/nav_faq"
-                android:icon="@drawable/ic_help_action"
+                android:icon="@drawable/ic_help_dark"
                 android:title="@string/navigation_drawer_faq"/>
             <item
                 android:id="@+id/nav_forums"
