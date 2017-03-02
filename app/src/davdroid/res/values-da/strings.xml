@@ -4,9 +4,12 @@
   <string name="app_name">DAVdroid</string>
   <string name="help">Hjælp</string>
   <string name="manage_accounts">Administrer konti</string>
-  <string name="please_wait">Vent venligst -</string>
+  <string name="please_wait">Vent venligst ...</string>
   <string name="send">Send</string>
   <!--startup dialogs-->
+  <string name="startup_battery_optimization">Batterioptimering</string>
+  <string name="startup_battery_optimization_message">Android kan deaktivere/reducere DAVDroid synkronisering efter et par dage. For at undgå dette, slå batterioptimering fra.</string>
+  <string name="startup_battery_optimization_disable">Deaktiver DAVdroid</string>
   <string name="startup_dont_show_again">Vis ikke igen</string>
   <string name="startup_development_version">DAVdroid Preview</string>
   <string name="startup_development_version_message">Dette er udviklingsversionen af DAVdroid. Bemærk, at nogle ting måske ikke fungerer, som man forventer. Giv os gerne konstruktiv kritik for at forbedre DAVdroid.</string>
@@ -53,7 +56,19 @@
   <string name="app_settings_reset_hints">Nulstil vejledende popups</string>
   <string name="app_settings_reset_hints_summary">Genaktiverer hjælp, som er blevet lukket tidligere</string>
   <string name="app_settings_reset_hints_success">Al vejledning vil blive vist igen</string>
+  <string name="app_settings_connection">Forbindelse</string>
+  <string name="app_settings_override_proxy">Tilsidesæt proxyindstillinger</string>
+  <string name="app_settings_override_proxy_on">Brug brugerdefinerede proxyindstillinger</string>
+  <string name="app_settings_override_proxy_off">Brug systemstandard proxyindstillinger</string>
+  <string name="app_settings_override_proxy_host">HTTP proxy værtsnavn</string>
+  <string name="app_settings_override_proxy_port">HTTP proxy port</string>
   <string name="app_settings_security">Sikkerhed</string>
+  <string name="app_settings_distrust_system_certs">Stol ikke på systemcertifikater</string>
+  <string name="app_settings_distrust_system_certs_on">System og brugertilføjede CA\'er vil ikke blive betroet</string>
+  <string name="app_settings_distrust_system_certs_off">System og brugertilføjede CA\'er vil blive betroet (anbefalet)</string>
+  <string name="app_settings_reset_certificates">Nulstil (ikke-)betroede certifikater</string>
+  <string name="app_settings_reset_certificates_summary">Nulstiller tilliden til brugerdefinerede certifikater</string>
+  <string name="app_settings_reset_certificates_success">Alle brugerdefinerede certifikater er blevet rydet</string>
   <string name="app_settings_debug">Debugging</string>
   <string name="app_settings_log_to_external_storage">Log til ekstern fil</string>
   <string name="app_settings_log_to_external_storage_on">Logger til eksternt lager (hvis muligt)</string>
@@ -64,6 +79,9 @@
   <string name="account_synchronize_now">Synkroniser nu</string>
   <string name="account_synchronizing_now">Synkroniserer nu</string>
   <string name="account_settings">Opsætning af konti</string>
+  <string name="account_rename">Omdøb konto</string>
+  <string name="account_rename_new_name">Lokaldata der ikke er gemt kan gå tabt. Eftersynkronisering er krævet efter omdøbning. Nyt kontonavn: </string>
+  <string name="account_rename_rename">Omdøb</string>
   <string name="account_delete">Slet konto</string>
   <string name="account_delete_confirmation_title">Ønsker du at slette konto?</string>
   <string name="account_delete_confirmation_text">Alle lokale kopier af addessebøger, kalendere og opgavelister vil blive slettet.</string>
@@ -222,4 +240,6 @@
   </string-array>
   <string name="sync_error_unauthorized">Fejl i brugernavn/adgangskode</string>
   <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVdroid: Forbindelsessikkerhed</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVdroid er stødt på et ukendt certifikat. Vil du stole på det? </string>
 </resources>
