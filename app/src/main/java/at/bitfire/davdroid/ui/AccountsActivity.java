@@ -8,12 +8,14 @@
 
 package at.bitfire.davdroid.ui;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
+import android.content.SyncStatusObserver;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -24,12 +26,17 @@ import android.view.MenuItem;
 import android.view.View;
 
 import at.bitfire.davdroid.App;
-import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.ui.setup.LoginActivity;
 
-public class AccountsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+import static android.content.ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS;
+
+public class AccountsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SyncStatusObserver {
+
+    private Snackbar syncStatusSnackbar;
+    private Object syncStatusObserver;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +71,42 @@ public class AccountsActivity extends AppCompatActivity implements NavigationVie
             ft.commit();
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        onStatusChanged(SYNC_OBSERVER_TYPE_SETTINGS);
+        syncStatusObserver = ContentResolver.addStatusChangeListener(SYNC_OBSERVER_TYPE_SETTINGS, this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (syncStatusObserver != null) {
+            ContentResolver.removeStatusChangeListener(syncStatusObserver);
+            syncStatusObserver = null;
+        }
+    }
+
+    @Override
+    public void onStatusChanged(int which) {
+        if (syncStatusSnackbar != null) {
+            syncStatusSnackbar.dismiss();
+            syncStatusSnackbar = null;
+        }
+
+        if (!ContentResolver.getMasterSyncAutomatically()) {
+            syncStatusSnackbar = Snackbar.make(findViewById(R.id.coordinator), R.string.accounts_global_sync_disabled, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.accounts_global_sync_enable, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ContentResolver.setMasterSyncAutomatically(true);
+                        }
+                    });
+            syncStatusSnackbar.show();
+        }
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -104,5 +147,6 @@ public class AccountsActivity extends AppCompatActivity implements NavigationVie
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 
 }
