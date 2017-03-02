@@ -47,6 +47,8 @@
   <string name="navigation_drawer_forums">Community</string>
   <string name="navigation_drawer_donate">Spenden</string>
   <string name="account_list_empty">Herzlich willkommen!\n\nSie können jetzt ein CalDAV/CardDAV-Konto hinzufügen.</string>
+  <string name="accounts_global_sync_disabled">Systemweite automatische Synchronisierung ist nicht aktiv</string>
+  <string name="accounts_global_sync_enable">Aktivieren</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Diensterkennung fehlgeschlagen</string>
   <string name="dav_service_refresh_couldnt_refresh">Ordnerliste konnte nicht aktualisiert werden</string>
