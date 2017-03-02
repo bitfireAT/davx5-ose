@@ -60,7 +60,7 @@
     </style>
     <style name="account_list_card">
         <item name="android:layout_width">match_parent</item>
-        <item name="cardBackgroundColor">@color/orange400</item>
+        <item name="cardBackgroundColor">@color/cardview_background</item>
     </style>
 
 
@@ -85,6 +85,8 @@
 
 
     <!-- widgets -->
+
+    <color name="cardview_background">@color/orange400</color>
 
     <style name="tablayout" parent="Base.Widget.Design.TabLayout">
         <item name="android:background">@color/light_green700</item>
