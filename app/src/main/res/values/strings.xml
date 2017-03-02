@@ -61,6 +61,8 @@
     <string name="navigation_drawer_forums">Community</string>
     <string name="navigation_drawer_donate">Donate</string>
     <string name="account_list_empty">Welcome to DAVdroid!\n\nYou can add a CalDAV/CardDAV account now.</string>
+    <string name="accounts_global_sync_disabled">System-wide automatic synchronization is disabled</string>
+    <string name="accounts_global_sync_enable">Enable</string>
 
     <!-- DavService -->
     <string name="dav_service_refresh_failed">Service detection failed</string>
