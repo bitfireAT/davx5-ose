@@ -13,7 +13,7 @@
             android:layout_margin="8dp"
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
-            app:cardBackgroundColor="@color/preference_fallback_accent_color"
+            app:cardBackgroundColor="@color/cardview_background"
             app:contentPadding="16dp"
             app:cardElevation="2dp">
 
