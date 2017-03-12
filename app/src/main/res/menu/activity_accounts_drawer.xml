@@ -16,7 +16,7 @@
         android:title="@string/navigation_drawer_about"/>
     <item
         android:id="@+id/nav_app_settings"
-        android:icon="@drawable/ic_settings_action"
+        android:icon="@drawable/ic_settings_dark"
         android:title="@string/navigation_drawer_settings"/>
 
     <item android:title="@string/navigation_drawer_news_updates">
