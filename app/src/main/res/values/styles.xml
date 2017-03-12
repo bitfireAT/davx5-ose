@@ -44,6 +44,7 @@
 
     <style name="AppTheme.ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
     </style>
+    <color name="actionBarButton">#8A000000</color>
 
 
     <!-- dialogs -->
