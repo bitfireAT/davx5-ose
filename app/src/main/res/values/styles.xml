@@ -42,7 +42,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
+    <color name="actionBarButton">#8A000000</color>
 
     <!-- dialogs -->
 
