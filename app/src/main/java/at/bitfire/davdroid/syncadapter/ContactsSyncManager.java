@@ -55,12 +55,10 @@ import at.bitfire.dav4android.property.SupportedAddressData;
 import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.ArrayUtils;
-import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
-import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.davdroid.resource.LocalContact;
 import at.bitfire.davdroid.resource.LocalGroup;
@@ -120,16 +118,16 @@ public class ContactsSyncManager extends SyncManager {
     protected static final int MAX_MULTIGET = 10;
 
     final private ContentProviderClient provider;
-    final private CollectionInfo remote;
 
     private boolean hasVCard4;
     private GroupMethod groupMethod;
 
 
-    public ContactsSyncManager(Context context, Account account, AccountSettings settings, Bundle extras, String authority, ContentProviderClient provider, SyncResult result, CollectionInfo remote) throws InvalidAccountException {
+    public ContactsSyncManager(Context context, Account account, AccountSettings settings, Bundle extras, String authority, ContentProviderClient provider, SyncResult result, LocalAddressBook localAddressBook) throws InvalidAccountException {
         super(context, account, settings, extras, authority, result, "addressBook");
         this.provider = provider;
-        this.remote = remote;
+
+        localCollection = localAddressBook;
     }
 
     @Override
@@ -145,8 +143,6 @@ public class ContactsSyncManager extends SyncManager {
 
     @Override
     protected boolean prepare() throws ContactsStorageException {
-        // prepare local address book
-        localCollection = new LocalAddressBook(account, provider);
         LocalAddressBook localAddressBook = localAddressBook();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -159,21 +155,13 @@ public class ContactsSyncManager extends SyncManager {
             }
         }
 
-        String url = remote.url;
-        String lastUrl = localAddressBook.getURL();
-        if (!url.equals(lastUrl)) {
-            App.log.info("Selected address book has changed from " + lastUrl + " to " + url + ", deleting all local contacts");
-            localAddressBook.deleteAll();
-            localAddressBook.setURL(remote.url);
-        }
-
         // set up Contacts Provider Settings
         ContentValues values = new ContentValues(2);
         values.put(ContactsContract.Settings.SHOULD_SYNC, 1);
         values.put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1);
         localAddressBook.updateSettings(values);
 
-        collectionURL = HttpUrl.parse(url);
+        collectionURL = HttpUrl.parse(localAddressBook.getURL());
         davCollection = new DavAddressBook(httpClient, collectionURL);
 
         return true;

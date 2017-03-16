@@ -82,6 +82,11 @@ public class App extends Application {
         at.bitfire.cert4android.Constants.log = Logger.getLogger("davdroid.cert4android");
     }
 
+    @Getter
+    private static String addressBookAccountType;
+    @Getter
+    private static String addressBooksAuthority;
+
     @Override
     @SuppressLint("HardwareIds")
     public void onCreate() {
@@ -90,6 +95,9 @@ public class App extends Application {
         reinitLogger();
 
         uidGenerator = new UidGenerator(null, android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID));
+
+        addressBookAccountType = getString(R.string.account_type_address_book);
+        addressBooksAuthority = getString(R.string.address_books_authority);
     }
 
     public void reinitCertManager() {

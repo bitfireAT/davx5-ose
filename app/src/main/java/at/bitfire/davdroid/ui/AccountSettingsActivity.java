@@ -30,6 +30,7 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 
 import at.bitfire.davdroid.AccountSettings;
+import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
@@ -122,7 +123,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
             // category: synchronization
             final ListPreference prefSyncContacts = (ListPreference)findPreference("sync_interval_contacts");
-            final Long syncIntervalContacts = settings.getSyncInterval(ContactsContract.AUTHORITY);
+            final Long syncIntervalContacts = settings.getSyncInterval(App.getAddressBooksAuthority());
             if (syncIntervalContacts != null) {
                 prefSyncContacts.setValue(syncIntervalContacts.toString());
                 if (syncIntervalContacts == AccountSettings.SYNC_INTERVAL_MANUALLY)
@@ -132,7 +133,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 prefSyncContacts.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        settings.setSyncInterval(ContactsContract.AUTHORITY, Long.parseLong((String)newValue));
+                        settings.setSyncInterval(App.getAddressBooksAuthority(), Long.parseLong((String)newValue));
                         return false;
                     }
                 });

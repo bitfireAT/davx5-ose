@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 – 2015 Ricki Hirner (bitfire web engineering).
+ * Copyright © Ricki Hirner (bitfire web engineering).
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
@@ -22,11 +22,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.InvalidAccountException;
+import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.model.ServiceDB.Collections;
@@ -52,60 +55,23 @@ public class ContactsSyncAdapterService extends SyncAdapterService {
         public void sync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
             SQLiteOpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
             try {
-                AccountSettings settings = new AccountSettings(getContext(), account);
-                if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(settings))
-                    return;
+                LocalAddressBook addressBook = new LocalAddressBook(getContext(), account, provider);
+                AccountSettings settings = new AccountSettings(getContext(), addressBook.getMainAccount());
 
-                SQLiteDatabase db = dbHelper.getReadableDatabase();
-                Long service = getService(db, account);
-                if (service != null) {
-                    CollectionInfo remote = remoteAddressBook(db, service);
-                    if (remote != null)
-                        try {
-                            ContactsSyncManager syncManager = new ContactsSyncManager(getContext(), account, settings, extras, authority, provider, syncResult, remote);
-                            syncManager.performSync();
-                        } catch(InvalidAccountException e) {
-                            App.log.log(Level.SEVERE, "Couldn't get account settings", e);
-                        }
-                    else {
-                        App.log.info("No address book collection selected for synchronization, deleting local contacts");
-                        LocalAddressBook localAddressBook = new LocalAddressBook(account, provider);
-                        try {
-                            localAddressBook.deleteAll();
-                        } catch(ContactsStorageException ignored) {
-                        }
-                    }
-                } else
-                    App.log.info("No CardDAV service found in DB");
-            } catch (InvalidAccountException e) {
+                App.log.info("Synchronizing address book: "  + addressBook.getURL());
+                App.log.info("Taking settings from: "  + addressBook.getMainAccount());
+
+                ContactsSyncManager syncManager = new ContactsSyncManager(getContext(), account, settings, extras, authority, provider, syncResult, addressBook);
+                syncManager.performSync();
+            } catch(InvalidAccountException e) {
                 App.log.log(Level.SEVERE, "Couldn't get account settings", e);
+            } catch(ContactsStorageException e) {
+                App.log.log(Level.SEVERE, "Couldn't prepare local address books", e);
             } finally {
                 dbHelper.close();
             }
 
             App.log.info("Address book sync complete");
-        }
-
-        @Nullable
-        private Long getService(@NonNull SQLiteDatabase db, @NonNull Account account) {
-            @Cleanup Cursor c = db.query(ServiceDB.Services._TABLE, new String[] { ServiceDB.Services.ID },
-                    ServiceDB.Services.ACCOUNT_NAME + "=? AND " + ServiceDB.Services.SERVICE + "=?", new String[] { account.name, ServiceDB.Services.SERVICE_CARDDAV }, null, null, null);
-            if (c.moveToNext())
-                return c.getLong(0);
-            else
-                return null;
-        }
-
-        @Nullable
-        private CollectionInfo remoteAddressBook(@NonNull SQLiteDatabase db, long service) {
-            @Cleanup Cursor c = db.query(Collections._TABLE, null,
-                    Collections.SERVICE_ID + "=? AND " + Collections.SYNC, new String[] { String.valueOf(service) }, null, null, null);
-            if (c.moveToNext()) {
-                ContentValues values = new ContentValues();
-                DatabaseUtils.cursorRowToContentValues(c, values);
-                return CollectionInfo.fromDB(values);
-            } else
-                return null;
         }
 
     }
