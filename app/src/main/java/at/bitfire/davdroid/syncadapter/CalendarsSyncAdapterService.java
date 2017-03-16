@@ -69,52 +69,49 @@ public class CalendarsSyncAdapterService extends SyncAdapterService {
                     CalendarSyncManager syncManager = new CalendarSyncManager(getContext(), account, settings, extras, authority, syncResult, calendar);
                     syncManager.performSync();
                 }
+            } catch(InvalidAccountException e) {
+                App.log.log(Level.SEVERE, "Couldn't get account settings", e);
             } catch(CalendarStorageException|SQLiteException e) {
                 App.log.log(Level.SEVERE, "Couldn't prepare local calendars", e);
                 syncResult.databaseError = true;
-            } catch(InvalidAccountException e) {
-                App.log.log(Level.SEVERE, "Couldn't get account settings", e);
             }
 
             App.log.info("Calendar sync complete");
         }
 
         private void updateLocalCalendars(ContentProviderClient provider, Account account, AccountSettings settings) throws CalendarStorageException {
-            SQLiteOpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
-            try {
-                // enumerate remote and local calendars
-                SQLiteDatabase db = dbHelper.getReadableDatabase();
-                Long service = getService(db, account);
-                Map<String, CollectionInfo> remote = remoteCalendars(db, service);
+            @Cleanup SQLiteOpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
 
-                LocalCalendar[] local = (LocalCalendar[])LocalCalendar.find(account, provider, LocalCalendar.Factory.INSTANCE, null, null);
+            // enumerate remote and local calendars
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            Long service = getService(db, account);
+            Map<String, CollectionInfo> remote = remoteCalendars(db, service);
 
-                boolean updateColors = settings.getManageCalendarColors();
+            LocalCalendar[] local = (LocalCalendar[])LocalCalendar.find(account, provider, LocalCalendar.Factory.INSTANCE, null, null);
 
-                // delete obsolete local calendar
-                for (LocalCalendar calendar : local) {
-                    String url = calendar.getName();
-                    if (!remote.containsKey(url)) {
-                        App.log.fine("Deleting obsolete local calendar " + url);
-                        calendar.delete();
-                    } else {
-                        // remote CollectionInfo found for this local collection, update data
-                        CollectionInfo info = remote.get(url);
-                        App.log.fine("Updating local calendar " + url + " with " + info);
-                        calendar.update(info, updateColors);
-                        // we already have a local calendar for this remote collection, don't take into consideration anymore
-                        remote.remove(url);
-                    }
-                }
+            boolean updateColors = settings.getManageCalendarColors();
 
-                // create new local calendars
-                for (String url : remote.keySet()) {
+            // delete obsolete local calendars
+            for (LocalCalendar calendar : local) {
+                String url = calendar.getName();
+                if (!remote.containsKey(url)) {
+                    App.log.fine("Deleting obsolete local calendar " + url);
+                    calendar.delete();
+                } else {
+                    // remote CollectionInfo found for this local collection, update data
                     CollectionInfo info = remote.get(url);
-                    App.log.info("Adding local calendar list " + info);
-                    LocalCalendar.create(account, provider, info);
+                    App.log.fine("Updating local calendar " + url + " with " + info);
+                    calendar.update(info, updateColors);
+                    // we already have a local calendar for this remote collection, don't take into consideration anymore
+                    remote.remove(url);
                 }
-            } finally {
-                dbHelper.close();
+            }
+
+            // create new local calendars
+            for (String url : remote.keySet()) {
+                CollectionInfo info = remote.get(url);
+                App.log.info("Adding local calendar list " + info);
+                LocalCalendar.create(account, provider, info);
             }
         }
 

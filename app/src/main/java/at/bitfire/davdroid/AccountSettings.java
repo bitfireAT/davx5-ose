@@ -237,7 +237,7 @@ public class AccountSettings {
         if (provider == null)
             throw new ContactsStorageException("Couldn't access Contacts provider");
 
-        LocalAddressBook addr = new LocalAddressBook(account, provider);
+        LocalAddressBook addr = new LocalAddressBook(context, account, provider);
 
         // until now, ContactsContract.Settings.UNGROUPED_VISIBLE was not set explicitly
         ContentValues values = new ContentValues();
@@ -271,7 +271,7 @@ public class AccountSettings {
             ContentProviderClient client = context.getContentResolver().acquireContentProviderClient(ContactsContract.AUTHORITY);
             if (client != null)
                 try {
-                    LocalAddressBook addrBook = new LocalAddressBook(account, client);
+                    LocalAddressBook addrBook = new LocalAddressBook(context, account, client);
                     String url = addrBook.getURL();
                     if (url != null) {
                         App.log.fine("Migrating address book " + url);

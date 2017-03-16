@@ -57,7 +57,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -79,6 +78,7 @@ import at.bitfire.davdroid.model.ServiceDB.Services;
 import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.davdroid.resource.LocalTaskList;
 import at.bitfire.ical4android.TaskProvider;
+import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
 
 import static android.content.ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
@@ -228,22 +228,10 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
             boolean nowChecked = !info.selected;
 
-            if (list.getChoiceMode() == AbsListView.CHOICE_MODE_SINGLE)
-                // clear all other checked items
-                for (int i = adapter.getCount()-1; i >= 0; i--)
-                    adapter.getItem(i).selected = false;
-
             OpenHelper dbHelper = new OpenHelper(AccountActivity.this);
             try {
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 db.beginTransactionNonExclusive();
-
-                if (list.getChoiceMode() == AbsListView.CHOICE_MODE_SINGLE) {
-                    // disable all other collections
-                    ContentValues values = new ContentValues(1);
-                    values.put(Collections.SYNC, 0);
-                    db.update(Collections._TABLE, values, Collections.SERVICE_ID + "=?", new String[] { String.valueOf(info.serviceID) });
-                }
 
                 ContentValues values = new ContentValues(1);
                 values.put(Collections.SYNC, nowChecked ? 1 : 0);
@@ -432,7 +420,19 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                 if (Services.SERVICE_CARDDAV.equals(service)) {
                     info.carddav = new AccountInfo.ServiceInfo();
                     info.carddav.id = id;
-                    info.carddav.refreshing = (davService != null && davService.isRefreshing(id)) || ContentResolver.isSyncActive(account, ContactsContract.AUTHORITY);
+                    info.carddav.refreshing = (davService != null && davService.isRefreshing(id)) ||
+                            ContentResolver.isSyncActive(account, App.getAddressBooksAuthority());
+
+                    AccountManager accountManager = AccountManager.get(getContext());
+                    for (Account addrBookAccount : accountManager.getAccountsByType(App.getAddressBookAccountType())) {
+                        LocalAddressBook addressBook = new LocalAddressBook(getContext(), addrBookAccount, null);
+                        try {
+                            if (account.equals(addressBook.getMainAccount()))
+                                info.carddav.refreshing |= ContentResolver.isSyncActive(addrBookAccount, ContactsContract.AUTHORITY);
+                        } catch(ContactsStorageException e) {
+                        }
+                    }
+
                     info.carddav.hasHomeSets = hasHomeSets(db, id);
                     info.carddav.collections = readCollections(db, id);
 
@@ -484,7 +484,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
             final CollectionInfo info = getItem(position);
 
-            RadioButton checked = (RadioButton)v.findViewById(R.id.checked);
+            CheckBox checked = (CheckBox)v.findViewById(R.id.checked);
             checked.setChecked(info.selected);
 
             TextView tv = (TextView)v.findViewById(R.id.title);
@@ -667,7 +667,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
     protected static void requestSync(Account account) {
         String authorities[] = {
-                ContactsContract.AUTHORITY,
+                App.getAddressBooksAuthority(),
                 CalendarContract.AUTHORITY,
                 TaskProvider.ProviderName.OpenTasks.authority
         };

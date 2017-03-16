@@ -11,6 +11,11 @@
 
     <!-- common strings -->
     <string name="app_name">DAVdroid</string>
+    <string name="account_type">bitfire.at.davdroid</string>
+    <string name="account_type_address_book">at.bitfire.davdroid.address_book</string>
+    <string name="account_title_address_book">DAVdroid Address book</string>
+    <string name="address_books_authority">at.bitfire.davdroid.addressbooks</string>
+    <string name="address_books_authority_title">Address books</string>
     <string name="help">Help</string>
     <string name="manage_accounts">Manage accounts</string>
     <string name="please_wait">Please wait …</string>
