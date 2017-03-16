@@ -8,10 +8,12 @@
 package at.bitfire.davdroid.resource;
 
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -24,6 +26,8 @@ import android.provider.ContactsContract.Groups;
 import android.provider.ContactsContract.RawContacts;
 import android.support.annotation.NonNull;
 
+import net.fortuna.ical4j.model.Content;
+
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,6 +37,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.vcard4android.AndroidAddressBook;
 import at.bitfire.vcard4android.AndroidContact;
 import at.bitfire.vcard4android.AndroidGroup;
@@ -44,9 +49,12 @@ import lombok.Cleanup;
 public class LocalAddressBook extends AndroidAddressBook implements LocalCollection {
 
     protected static final String
-            SYNC_STATE_CTAG = "ctag",
-            SYNC_STATE_URL = "url";
+            USER_DATA_MAIN_ACCOUNT_TYPE = "real_account_type",
+            USER_DATA_MAIN_ACCOUNT_NAME = "real_account_name",
+            USER_DATA_URL = "url",
+            USER_DATA_CTAG = "ctag";
 
+    protected final Context context;
     private final Bundle syncState = new Bundle();
 
     /**
@@ -57,8 +65,47 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
     public boolean includeGroups = true;
 
 
-    public LocalAddressBook(Account account, ContentProviderClient provider) {
+    public static LocalAddressBook[] find(@NonNull Context context, @NonNull ContentProviderClient provider) {
+        AccountManager accountManager = AccountManager.get(context);
+
+        List<LocalAddressBook> addressBooks = new LinkedList<>();
+        for (Account account : accountManager.getAccountsByType(App.getAddressBookAccountType()))
+            addressBooks.add(new LocalAddressBook(context, account, provider));
+
+        return addressBooks.toArray(new LocalAddressBook[addressBooks.size()]);
+    }
+
+    public static LocalAddressBook create(@NonNull Context context, @NonNull ContentProviderClient provider, @NonNull Account mainAccount, @NonNull CollectionInfo info) throws ContactsStorageException {
+        AccountManager accountManager = AccountManager.get(context);
+
+        Account account = new Account(info.displayName, App.getAddressBookAccountType());
+        if (!accountManager.addAccountExplicitly(account, null, null))
+            throw new ContactsStorageException("Couldn't create address book account");
+
+        LocalAddressBook addressBook = new LocalAddressBook(context, account, provider);
+        addressBook.setMainAccount(mainAccount);
+        addressBook.setURL(info.url);
+
+        ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
+
+        return addressBook;
+    }
+
+    public void update(CollectionInfo info) {
+        ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
+
+        // TODO rename
+    }
+
+    public void delete() {
+        AccountManager accountManager = AccountManager.get(context);
+        accountManager.removeAccount(account, null, null);
+    }
+
+
+    public LocalAddressBook(Context context, Account account, ContentProviderClient provider) {
         super(account, provider, LocalGroup.Factory.INSTANCE, LocalContact.Factory.INSTANCE);
+        this.context = context;
     }
 
     @NonNull
@@ -251,57 +298,42 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
     }
 
 
-    // SYNC STATE
+    // SETTINGS
 
-    @SuppressWarnings("ParcelClassLoader,Recycle")
-    protected void readSyncState() throws ContactsStorageException {
-        @Cleanup("recycle") Parcel parcel = Parcel.obtain();
-        byte[] raw = getSyncState();
-        syncState.clear();
-        if (raw != null) {
-            parcel.unmarshall(raw, 0, raw.length);
-            parcel.setDataPosition(0);
-            syncState.putAll(parcel.readBundle());
-        }
+    public Account getMainAccount() throws ContactsStorageException {
+        AccountManager accountManager = AccountManager.get(context);
+        return new Account(
+                accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME),
+                accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
+        );
     }
 
-    @SuppressWarnings("Recycle")
-    protected void writeSyncState() throws ContactsStorageException {
-        @Cleanup("recycle") Parcel parcel = Parcel.obtain();
-        parcel.writeBundle(syncState);
-        setSyncState(parcel.marshall());
+    public void setMainAccount(@NonNull Account mainAccount) throws ContactsStorageException {
+        AccountManager accountManager = AccountManager.get(context);
+        accountManager.setUserData(account, USER_DATA_MAIN_ACCOUNT_NAME, mainAccount.name);
+        accountManager.setUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE, mainAccount.type);
     }
 
     public String getURL() throws ContactsStorageException {
-        synchronized (syncState) {
-            readSyncState();
-            return syncState.getString(SYNC_STATE_URL);
-        }
+        AccountManager accountManager = AccountManager.get(context);
+        return accountManager.getUserData(account, USER_DATA_URL);
     }
 
     public void setURL(String url) throws ContactsStorageException {
-        synchronized (syncState) {
-            readSyncState();
-            syncState.putString(SYNC_STATE_URL, url);
-            writeSyncState();
-        }
+        AccountManager accountManager = AccountManager.get(context);
+        accountManager.setUserData(account, USER_DATA_URL, url);
     }
 
     @Override
     public String getCTag() throws ContactsStorageException {
-        synchronized (syncState) {
-            readSyncState();
-            return syncState.getString(SYNC_STATE_CTAG);
-        }
+        AccountManager accountManager = AccountManager.get(context);
+        return accountManager.getUserData(account, USER_DATA_CTAG);
     }
 
     @Override
     public void setCTag(String cTag) throws ContactsStorageException {
-        synchronized (syncState) {
-            readSyncState();
-            syncState.putString(SYNC_STATE_CTAG, cTag);
-            writeSyncState();
-        }
+        AccountManager accountManager = AccountManager.get(context);
+        accountManager.setUserData(account, USER_DATA_CTAG, cTag);
     }
 
 
@@ -309,10 +341,12 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
 
     public static void onRenameAccount(@NonNull ContentResolver resolver, @NonNull String oldName, @NonNull String newName) throws RemoteException {
         @Cleanup("release") ContentProviderClient client = resolver.acquireContentProviderClient(ContactsContract.AUTHORITY);
+
+        // update raw contacts to new account name
         if (client != null) {
             ContentValues values = new ContentValues(1);
             values.put(RawContacts.ACCOUNT_NAME, newName);
-            client.update(RawContacts.CONTENT_URI, values, RawContacts.ACCOUNT_NAME + "=?", new String[]{oldName});
+            client.update(RawContacts.CONTENT_URI, values, RawContacts.ACCOUNT_NAME + "=?", new String[]{ oldName });
         }
     }
 

@@ -114,7 +114,7 @@ abstract public class SyncManager {
         this.syncResult = syncResult;
 
         // create HttpClient with given logger
-        httpClient = HttpClient.create(context, account);
+        httpClient = HttpClient.create(context, settings);
 
         // dismiss previous error notifications
         this.uniqueCollectionId = uniqueCollectionId;
