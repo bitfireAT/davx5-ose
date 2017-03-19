@@ -139,7 +139,7 @@ public class StartupDialogFragment extends DialogFragment {
                         .setNeutralButton(R.string.startup_development_version_give_feedback, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("forums/").build()));
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://forums.bitfire.at/category/9/beta-test-discussion")));
                             }
                         })
                         .create();
