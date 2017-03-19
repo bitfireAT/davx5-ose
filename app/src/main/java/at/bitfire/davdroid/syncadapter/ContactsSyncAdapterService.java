@@ -71,7 +71,7 @@ public class ContactsSyncAdapterService extends SyncAdapterService {
                 dbHelper.close();
             }
 
-            App.log.info("Address book sync complete");
+            App.log.info("Contacts sync complete");
         }
 
     }
