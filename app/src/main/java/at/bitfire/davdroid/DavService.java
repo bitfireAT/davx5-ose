@@ -56,7 +56,9 @@ import at.bitfire.davdroid.model.ServiceDB.Collections;
 import at.bitfire.davdroid.model.ServiceDB.HomeSets;
 import at.bitfire.davdroid.model.ServiceDB.OpenHelper;
 import at.bitfire.davdroid.model.ServiceDB.Services;
+import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.davdroid.ui.DebugInfoActivity;
+import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -149,10 +151,25 @@ public class DavService extends Service {
             SQLiteDatabase db = dbHelper.getWritableDatabase();
 
             List<String> sqlAccountNames = new LinkedList<>();
+            Set<String> accountNames = new HashSet<>();
             AccountManager am = AccountManager.get(this);
-            for (Account account : am.getAccountsByType(Constants.ACCOUNT_TYPE))
+            for (Account account : am.getAccountsByType(getString(R.string.account_type))) {
                 sqlAccountNames.add(DatabaseUtils.sqlEscapeString(account.name));
+                accountNames.add(account.name);
+            }
 
+            // delete orphaned address book accounts
+            for (Account addrBookAccount : am.getAccountsByType(App.getAddressBookAccountType())) {
+                LocalAddressBook addressBook = new LocalAddressBook(this, addrBookAccount, null);
+                try {
+                    if (!accountNames.contains(addressBook.getMainAccount().name))
+                        addressBook.delete();
+                } catch(ContactsStorageException e) {
+                    App.log.log(Level.SEVERE, "Couldn't get address book main account", e);
+                }
+            }
+
+            // delete orphaned services in DB
             if (sqlAccountNames.isEmpty())
                 db.delete(Services._TABLE, null, null);
             else

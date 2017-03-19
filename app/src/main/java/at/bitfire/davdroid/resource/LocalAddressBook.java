@@ -9,6 +9,10 @@ package at.bitfire.davdroid.resource;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -18,17 +22,18 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
 import android.provider.ContactsContract.Groups;
 import android.provider.ContactsContract.RawContacts;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.Base64;
 
-import net.fortuna.ical4j.model.Content;
-
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -65,36 +70,55 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
     public boolean includeGroups = true;
 
 
-    public static LocalAddressBook[] find(@NonNull Context context, @NonNull ContentProviderClient provider) {
+    public static LocalAddressBook[] find(@NonNull Context context, @NonNull ContentProviderClient provider, @Nullable Account mainAccount) throws ContactsStorageException {
         AccountManager accountManager = AccountManager.get(context);
 
-        List<LocalAddressBook> addressBooks = new LinkedList<>();
-        for (Account account : accountManager.getAccountsByType(App.getAddressBookAccountType()))
-            addressBooks.add(new LocalAddressBook(context, account, provider));
+        List<LocalAddressBook> result = new LinkedList<>();
+        for (Account account : accountManager.getAccountsByType(App.getAddressBookAccountType())) {
+            LocalAddressBook addressBook = new LocalAddressBook(context, account, provider);
+            if (mainAccount == null || addressBook.getMainAccount().equals(mainAccount))
+                result.add(addressBook);
+        }
 
-        return addressBooks.toArray(new LocalAddressBook[addressBooks.size()]);
+        return result.toArray(new LocalAddressBook[result.size()]);
     }
 
     public static LocalAddressBook create(@NonNull Context context, @NonNull ContentProviderClient provider, @NonNull Account mainAccount, @NonNull CollectionInfo info) throws ContactsStorageException {
         AccountManager accountManager = AccountManager.get(context);
 
-        Account account = new Account(info.displayName, App.getAddressBookAccountType());
-        if (!accountManager.addAccountExplicitly(account, null, null))
+        Account account = new Account(accountName(mainAccount, info), App.getAddressBookAccountType());
+        if (!accountManager.addAccountExplicitly(account, null, initialUserData(mainAccount, info.url)))
             throw new ContactsStorageException("Couldn't create address book account");
 
         LocalAddressBook addressBook = new LocalAddressBook(context, account, provider);
-        addressBook.setMainAccount(mainAccount);
-        addressBook.setURL(info.url);
-
         ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
-
         return addressBook;
     }
 
-    public void update(CollectionInfo info) {
-        ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
+    public void update(@NonNull CollectionInfo info) throws AuthenticatorException, OperationCanceledException, IOException, ContactsStorageException {
+        final String newAccountName = accountName(getMainAccount(), info);
+        if (!account.name.equals(newAccountName) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            final AccountManager accountManager = AccountManager.get(context);
+            AccountManagerFuture<Account> future = accountManager.renameAccount(account, newAccountName, new AccountManagerCallback<Account>() {
+                @Override
+                public void run(AccountManagerFuture<Account> future) {
+                    try {
+                        // update raw contacts to new account name
+                        if (provider != null) {
+                            ContentValues values = new ContentValues(1);
+                            values.put(RawContacts.ACCOUNT_NAME, newAccountName);
+                            provider.update(syncAdapterURI(RawContacts.CONTENT_URI), values, RawContacts.ACCOUNT_NAME + "=?", new String[] { account.name });
+                        }
+                    } catch(RemoteException e) {
+                        App.log.log(Level.WARNING, "Couldn't re-assign contacts to new account name", e);
+                    }
+                }
+            }, null);
+            account = future.getResult();
+        }
 
-        // TODO rename
+        // make sure it will still be synchronized when contacts are updated
+        ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
     }
 
     public void delete() {
@@ -300,12 +324,22 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
 
     // SETTINGS
 
+    public static Bundle initialUserData(@NonNull Account mainAccount, @NonNull String url) {
+        Bundle bundle = new Bundle(3);
+        bundle.putString(USER_DATA_MAIN_ACCOUNT_NAME, mainAccount.name);
+        bundle.putString(USER_DATA_MAIN_ACCOUNT_TYPE, mainAccount.type);
+        bundle.putString(USER_DATA_URL, url);
+        return bundle;
+    }
+
     public Account getMainAccount() throws ContactsStorageException {
         AccountManager accountManager = AccountManager.get(context);
-        return new Account(
-                accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME),
-                accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
-        );
+        String  name = accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME),
+                type = accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE);
+        if (name != null && type != null)
+            return new Account(name, type);
+        else
+            throw new ContactsStorageException("Address book doesn't exist anymore");
     }
 
     public void setMainAccount(@NonNull Account mainAccount) throws ContactsStorageException {
@@ -339,15 +373,18 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
 
     // HELPERS
 
-    public static void onRenameAccount(@NonNull ContentResolver resolver, @NonNull String oldName, @NonNull String newName) throws RemoteException {
-        @Cleanup("release") ContentProviderClient client = resolver.acquireContentProviderClient(ContactsContract.AUTHORITY);
+    public static String accountName(@NonNull Account mainAccount, @NonNull CollectionInfo info) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        baos.write(info.url.hashCode());
+        String hash = Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP | Base64.NO_PADDING);
 
-        // update raw contacts to new account name
-        if (client != null) {
-            ContentValues values = new ContentValues(1);
-            values.put(RawContacts.ACCOUNT_NAME, newName);
-            client.update(RawContacts.CONTENT_URI, values, RawContacts.ACCOUNT_NAME + "=?", new String[]{ oldName });
-        }
+        StringBuilder sb = new StringBuilder(info.displayName);
+        sb      .append(" (")
+                .append(mainAccount.name)
+                .append(" ")
+                .append(hash)
+                .append(")");
+        return sb.toString();
     }
 
 }
