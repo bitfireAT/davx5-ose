@@ -50,7 +50,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -595,18 +594,24 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                                             public void run(AccountManagerFuture<Account> future) {
                                                 App.log.info("Updating account name references");
 
-                                                // cancel running synchronization
+                                                // cancel maybe running synchronization
                                                 ContentResolver.cancelSync(oldAccount, null);
+                                                for (Account addrBookAccount : accountManager.getAccountsByType(App.getAddressBookAccountType()))
+                                                    ContentResolver.cancelSync(addrBookAccount, null);
 
                                                 // update account name references in database
                                                 @Cleanup OpenHelper dbHelper = new OpenHelper(getContext());
                                                 ServiceDB.onRenameAccount(dbHelper.getWritableDatabase(), oldAccount.name, newName);
 
-                                                // update account_name of local contacts
+                                                // update main account of address book accounts
                                                 try {
-                                                    LocalAddressBook.onRenameAccount(getContext().getContentResolver(), oldAccount.name, newName);
-                                                } catch(RemoteException e) {
-                                                    App.log.log(Level.SEVERE, "Couldn't propagate new account name to contacts provider");
+                                                    for (Account addrBookAccount : accountManager.getAccountsByType(App.getAddressBookAccountType())) {
+                                                        LocalAddressBook addressBook = new LocalAddressBook(getContext(), addrBookAccount, null);
+                                                        if (oldAccount.equals(addressBook.getMainAccount()))
+                                                            addressBook.setMainAccount(new Account(newName, oldAccount.type));
+                                                    }
+                                                } catch(ContactsStorageException e) {
+                                                    App.log.log(Level.SEVERE, "Couldn't update address book accounts", e);
                                                 }
 
                                                 // calendar provider doesn't allow changing account_name of Events
@@ -615,7 +620,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                                                 try {
                                                     LocalTaskList.onRenameAccount(getContext().getContentResolver(), oldAccount.name, newName);
                                                 } catch(RemoteException e) {
-                                                    App.log.log(Level.SEVERE, "Couldn't propagate new account name to tasks provider");
+                                                    App.log.log(Level.SEVERE, "Couldn't propagate new account name to tasks provider", e);
                                                 }
 
                                                 // synchronize again

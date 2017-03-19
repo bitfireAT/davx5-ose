@@ -9,6 +9,8 @@ package at.bitfire.davdroid.syncadapter;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -24,6 +26,7 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -36,7 +39,6 @@ import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.model.ServiceDB.Collections;
 import at.bitfire.davdroid.resource.LocalAddressBook;
-import at.bitfire.davdroid.resource.LocalCalendar;
 import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
 
@@ -44,25 +46,32 @@ public class AddressBooksSyncAdapterService extends SyncAdapterService {
 
     @Override
     protected AbstractThreadedSyncAdapter syncAdapter() {
-        return new ContactsSyncAdapter(this);
+        return new AddressBooksSyncAdapter(this);
     }
 
 
-	private static class ContactsSyncAdapter extends SyncAdapter {
+	private static class AddressBooksSyncAdapter extends SyncAdapter {
 
-        public ContactsSyncAdapter(Context context) {
+        public AddressBooksSyncAdapter(Context context) {
             super(context);
         }
 
         @Override
-        public void sync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
+        public void sync(Account account, Bundle extras, String authority, ContentProviderClient addressBooksProvider, SyncResult syncResult) {
+            @Cleanup("release") ContentProviderClient contactsProvider = getContext().getContentResolver().acquireContentProviderClient(ContactsContract.AUTHORITY);
+            if (contactsProvider == null) {
+                App.log.severe("Couldn't access contacts provider");
+                syncResult.databaseError = true;
+                return;
+            }
+
             SQLiteOpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
             try {
                 AccountSettings settings = new AccountSettings(getContext(), account);
                 if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(settings))
                     return;
 
-                updateLocalAddressBooks(provider, account);
+                updateLocalAddressBooks(contactsProvider, account);
 
                 AccountManager accountManager = AccountManager.get(getContext());
                 for (Account addressBookAccount : accountManager.getAccountsByType(getContext().getString(R.string.account_type_address_book))) {
@@ -93,17 +102,21 @@ public class AddressBooksSyncAdapterService extends SyncAdapterService {
             Long service = getService(db, account);
             Map<String, CollectionInfo> remote = remoteAddressBooks(db, service);
 
-            LocalAddressBook[] local = LocalAddressBook.find(context, provider);
+            LocalAddressBook[] local = LocalAddressBook.find(context, provider, account);
 
             // delete obsolete local address books
             for (LocalAddressBook addressBook : local) {
                 String url = addressBook.getURL();
                 if (!remote.containsKey(url)) {
-                    App.log.fine("Deleting obsolete local address book " + url);
+                    App.log.log(Level.FINE, "Deleting obsolete local address book", url);
                     addressBook.delete();
                 } else {
                     // we already have a local address book for this remote collection, don't take into consideration anymore
-                    addressBook.update(remote.get(url));
+                    try {
+                        addressBook.update(remote.get(url));
+                    } catch(AuthenticatorException|OperationCanceledException|IOException e) {
+                        App.log.log(Level.WARNING, "Couldn't rename address book account", e);
+                    }
                     remote.remove(url);
                 }
             }
