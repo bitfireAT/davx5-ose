@@ -8,6 +8,7 @@
 
 package at.bitfire.davdroid.ui;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
@@ -20,8 +21,10 @@ import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -46,6 +49,8 @@ import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.ServiceDB;
+import at.bitfire.davdroid.resource.LocalAddressBook;
+import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
 
 public class DebugInfoActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
@@ -228,9 +233,25 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                 App.log.log(Level.SEVERE, "Couldn't get software information", ex);
             }
 
-            report.append(
-                    "CONFIGURATION\n" +
-                    "System-wide synchronization: ").append(ContentResolver.getMasterSyncAutomatically() ? "automatically" : "manually").append("\n");
+            report.append("CONFIGURATION\n");
+            // power saving
+            PowerManager powerManager = (PowerManager)getContext().getSystemService(Context.POWER_SERVICE);
+            if (powerManager != null && Build.VERSION.SDK_INT >= 23)
+                report.append("Power saving disabled: ")
+                      .append(powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID) ? "yes" : "no")
+                      .append("\n");
+            // permissions
+            for (String permission : new String[] { Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS,
+                                                    Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR,
+                                                    PermissionsActivity.PERMISSION_READ_TASKS, PermissionsActivity.PERMISSION_WRITE_TASKS })
+                report.append(permission).append(" permission: ")
+                      .append(ContextCompat.checkSelfPermission(getContext(), permission) == PackageManager.PERMISSION_GRANTED ? "granted" : "denied")
+                      .append("\n");
+            // system-wide sync settings
+            report.append("System-wide synchronization: ")
+                  .append(ContentResolver.getMasterSyncAutomatically() ? "automatically" : "manually")
+                  .append("\n");
+            // main accounts
             AccountManager accountManager = AccountManager.get(getContext());
             for (Account acct : accountManager.getAccountsByType(Constants.ACCOUNT_TYPE))
                 try {
@@ -248,6 +269,16 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                           .append("\n");
                 } catch(InvalidAccountException e) {
                     report.append(acct).append(" is invalid (unsupported settings version) or does not exist\n");
+                }
+            // address book accounts
+            for (Account acct : accountManager.getAccountsByType(getContext().getString(R.string.account_type_address_book)))
+                try {
+                    LocalAddressBook addressBook = new LocalAddressBook(getContext(), acct, null);
+                    report.append("Address book account: ").append(acct.name).append("\n" +
+                            "  Main account: ").append(addressBook.getMainAccount()).append("\n" +
+                            "  URL: ").append(addressBook.getURL()).append("\n");
+                } catch(ContactsStorageException e) {
+                    report.append(acct).append(" is invalid: ").append(e.getMessage()).append("\n");
                 }
             report.append("\n");
 
