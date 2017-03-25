@@ -52,46 +52,45 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
                 SSLSocketFactoryCompat.protocols = protocols.toArray(new String[protocols.size()]);
 
                 /* set up reasonable cipher suites */
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                    // choose known secure cipher suites
-                    List<String> allowedCiphers = Arrays.asList(
-                            // TLS 1.2
-                            "TLS_RSA_WITH_AES_256_GCM_SHA384",
-                            "TLS_RSA_WITH_AES_128_GCM_SHA256",
-                            "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
-                            "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
-                            "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-                            "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-                            "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-                            // maximum interoperability
-                            "TLS_RSA_WITH_3DES_EDE_CBC_SHA",
-                            "TLS_RSA_WITH_AES_128_CBC_SHA",
-                            // additionally
-                            "TLS_RSA_WITH_AES_256_CBC_SHA",
-                            "TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA",
-                            "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
-                            "TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
-                            "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA");
-                    List<String> availableCiphers = Arrays.asList(socket.getSupportedCipherSuites());
-                    App.log.info("Available cipher suites: " + TextUtils.join(", ", availableCiphers));
-                    App.log.info("Cipher suites enabled by default: " + TextUtils.join(", ", socket.getEnabledCipherSuites()));
+                // choose known secure cipher suites
+                List<String> allowedCiphers = Arrays.asList(
+                        // TLS 1.2
+                        "TLS_RSA_WITH_AES_256_GCM_SHA384",
+                        "TLS_RSA_WITH_AES_128_GCM_SHA256",
+                        "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
+                        "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+                        "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+                        "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+                        "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+                        // maximum interoperability
+                        "TLS_RSA_WITH_3DES_EDE_CBC_SHA",
+                        "SSL_RSA_WITH_3DES_EDE_CBC_SHA",
+                        "TLS_RSA_WITH_AES_128_CBC_SHA",
+                        // additionally
+                        "TLS_RSA_WITH_AES_256_CBC_SHA",
+                        "TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA",
+                        "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
+                        "TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
+                        "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"
+                );
+                List<String> availableCiphers = Arrays.asList(socket.getSupportedCipherSuites());
+                App.log.info("Available cipher suites: " + TextUtils.join(", ", availableCiphers));
 
-                    // take all allowed ciphers that are available and put them into preferredCiphers
-                    HashSet<String> preferredCiphers = new HashSet<>(allowedCiphers);
-                    preferredCiphers.retainAll(availableCiphers);
+                /* For maximum security, preferredCiphers should *replace* enabled ciphers (thus
+                 * disabling ciphers which are enabled by default, but have become unsecure), but for
+                 * the security level of DAVdroid and maximum compatibility, disabling of insecure
+                 * ciphers should be a server-side task */
 
-                    /* For maximum security, preferredCiphers should *replace* enabled ciphers (thus disabling
-                     * ciphers which are enabled by default, but have become unsecure), but I guess for
-                     * the security level of DAVdroid and maximum compatibility, disabling of insecure
-                     * ciphers should be a server-side task */
+                // for the final set of enabled ciphers, take the ciphers enabled by default, ...
+                HashSet<String> enabledCiphers = new HashSet<>(Arrays.asList(socket.getEnabledCipherSuites()));
+                App.log.info("Cipher suites enabled by default: " + TextUtils.join(", ", enabledCiphers));
+                // ... add explicitly allowed ciphers ...
+                enabledCiphers.addAll(allowedCiphers);
+                // ... and keep only those which are actually available
+                enabledCiphers.retainAll(availableCiphers);
 
-                    // add preferred ciphers to enabled ciphers
-                    HashSet<String> enabledCiphers = preferredCiphers;
-                    enabledCiphers.addAll(new HashSet<>(Arrays.asList(socket.getEnabledCipherSuites())));
-
-                    App.log.info("Enabling (only) those TLS ciphers: " + TextUtils.join(", ", enabledCiphers));
-                    SSLSocketFactoryCompat.cipherSuites = enabledCiphers.toArray(new String[enabledCiphers.size()]);
-                }
+                App.log.info("Enabling (only) those TLS ciphers: " + TextUtils.join(", ", enabledCiphers));
+                SSLSocketFactoryCompat.cipherSuites = enabledCiphers.toArray(new String[enabledCiphers.size()]);
             }
         } catch (IOException e) {
             App.log.severe("Couldn't determine default TLS settings");
