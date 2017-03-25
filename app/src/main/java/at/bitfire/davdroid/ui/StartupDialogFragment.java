@@ -69,7 +69,7 @@ public class StartupDialogFragment extends DialogFragment {
         // battery optimization whitelisting
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && settings.getBoolean(HINT_BATTERY_OPTIMIZATIONS, true)) {
             PowerManager powerManager = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
-            if (!powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID))
+            if (powerManager != null && !powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID))
                 dialogs.add(StartupDialogFragment.instantiate(Mode.BATTERY_OPTIMIZATIONS));
         }
 
