@@ -47,6 +47,8 @@
   <string name="navigation_drawer_forums">コミュニティ</string>
   <string name="navigation_drawer_donate">寄付</string>
   <string name="account_list_empty">DAVdroid にようこそ!\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>
+  <string name="accounts_global_sync_disabled">システム全体の自動同期が無効です</string>
+  <string name="accounts_global_sync_enable">有効</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">サービスの検出に失敗しました</string>
   <string name="dav_service_refresh_couldnt_refresh">コレクション リストを更新できません</string>
