@@ -47,6 +47,8 @@
   <string name="navigation_drawer_forums">Community</string>
   <string name="navigation_drawer_donate">Doneren</string>
   <string name="account_list_empty">Welkom bij DAVdroid!\n\nJe kunt nu een CalDAV/CardDAv account toevoegen.</string>
+  <string name="accounts_global_sync_disabled">Systeembrede automatische synchronisatie is uitgeschakeld</string>
+  <string name="accounts_global_sync_enable">Inschakelen</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Service herkenning is mislukt</string>
   <string name="dav_service_refresh_couldnt_refresh">Kon de collectie lijst niet vernieuwen</string>
