@@ -375,7 +375,7 @@ public class DavService extends Service {
         private Account account() {
             @Cleanup Cursor cursor = db.query(Services._TABLE, new String[] { Services.ACCOUNT_NAME }, Services.ID + "=?", new String[] { String.valueOf(service) }, null, null, null);
             if (cursor.moveToNext()) {
-                return new Account(cursor.getString(0), Constants.ACCOUNT_TYPE);
+                return new Account(cursor.getString(0), getString(R.string.account_type));
             } else
                 throw new IllegalArgumentException("Service not found");
         }

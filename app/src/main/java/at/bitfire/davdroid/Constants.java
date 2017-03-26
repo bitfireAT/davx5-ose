@@ -11,9 +11,6 @@ import android.net.Uri;
 
 public class Constants {
 
-	public static final String
-		ACCOUNT_TYPE = "bitfire.at.davdroid";
-
     // notification IDs
     public final static int
             NOTIFICATION_EXTERNAL_FILE_LOGGING = 1,

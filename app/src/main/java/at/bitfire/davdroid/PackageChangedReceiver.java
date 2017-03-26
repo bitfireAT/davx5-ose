@@ -46,7 +46,7 @@ public class PackageChangedReceiver extends BroadcastReceiver {
         @Cleanup Cursor cursor = db.query(Services._TABLE, new String[] { Services.ACCOUNT_NAME },
                 Services.SERVICE + "=?", new String[] { Services.SERVICE_CALDAV }, null, null, null);
         while (cursor.moveToNext()) {
-            Account account = new Account(cursor.getString(0), Constants.ACCOUNT_TYPE);
+            Account account = new Account(cursor.getString(0), context.getString(R.string.account_type));
 
             if (tasksInstalled) {
                 if (ContentResolver.getIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority) <= 0) {

@@ -471,7 +471,7 @@ public class AccountSettings {
 
             // peek into AccountSettings to initiate a possible migration
             AccountManager accountManager = AccountManager.get(context);
-            for (Account account : accountManager.getAccountsByType(Constants.ACCOUNT_TYPE))
+            for (Account account : accountManager.getAccountsByType(context.getString(R.string.account_type)))
                 try {
                     App.log.info("Checking account " + account.name);
                     new AccountSettings(context, account);
