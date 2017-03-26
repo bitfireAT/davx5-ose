@@ -216,8 +216,10 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
             if (logs != null)
                 report.append("\nLOGS:\n").append(logs).append("\n");
 
+            final Context context = getContext();
+
             try {
-                PackageManager pm = getContext().getPackageManager();
+                PackageManager pm = context.getPackageManager();
                 String installedFrom = pm.getInstallerPackageName(BuildConfig.APPLICATION_ID);
                 if (TextUtils.isEmpty(installedFrom))
                     installedFrom = "APK (directly)";
@@ -235,7 +237,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
 
             report.append("CONFIGURATION\n");
             // power saving
-            PowerManager powerManager = (PowerManager)getContext().getSystemService(Context.POWER_SERVICE);
+            PowerManager powerManager = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
             if (powerManager != null && Build.VERSION.SDK_INT >= 23)
                 report.append("Power saving disabled: ")
                       .append(powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID) ? "yes" : "no")
@@ -245,19 +247,19 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                                                     Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR,
                                                     PermissionsActivity.PERMISSION_READ_TASKS, PermissionsActivity.PERMISSION_WRITE_TASKS })
                 report.append(permission).append(" permission: ")
-                      .append(ContextCompat.checkSelfPermission(getContext(), permission) == PackageManager.PERMISSION_GRANTED ? "granted" : "denied")
+                      .append(ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED ? "granted" : "denied")
                       .append("\n");
             // system-wide sync settings
             report.append("System-wide synchronization: ")
                   .append(ContentResolver.getMasterSyncAutomatically() ? "automatically" : "manually")
                   .append("\n");
             // main accounts
-            AccountManager accountManager = AccountManager.get(getContext());
-            for (Account acct : accountManager.getAccountsByType(Constants.ACCOUNT_TYPE))
+            AccountManager accountManager = AccountManager.get(context);
+            for (Account acct : accountManager.getAccountsByType(context.getString(R.string.account_type)))
                 try {
-                    AccountSettings settings = new AccountSettings(getContext(), acct);
+                    AccountSettings settings = new AccountSettings(context, acct);
                     report.append("Account: ").append(acct.name).append("\n" +
-                                  "  Address book sync. interval: ").append(syncStatus(settings, ContactsContract.AUTHORITY)).append("\n" +
+                                  "  Address book sync. interval: ").append(syncStatus(settings, context.getString(R.string.address_books_authority))).append("\n" +
                                   "  Calendar     sync. interval: ").append(syncStatus(settings, CalendarContract.AUTHORITY)).append("\n" +
                                   "  OpenTasks    sync. interval: ").append(syncStatus(settings, "org.dmfs.tasks")).append("\n" +
                                   "  WiFi only: ").append(settings.getSyncWifiOnly());
@@ -271,19 +273,20 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                     report.append(acct).append(" is invalid (unsupported settings version) or does not exist\n");
                 }
             // address book accounts
-            for (Account acct : accountManager.getAccountsByType(getContext().getString(R.string.account_type_address_book)))
+            for (Account acct : accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)))
                 try {
-                    LocalAddressBook addressBook = new LocalAddressBook(getContext(), acct, null);
+                    LocalAddressBook addressBook = new LocalAddressBook(context, acct, null);
                     report.append("Address book account: ").append(acct.name).append("\n" +
                             "  Main account: ").append(addressBook.getMainAccount()).append("\n" +
-                            "  URL: ").append(addressBook.getURL()).append("\n");
+                            "  URL: ").append(addressBook.getURL()).append("\n" +
+                            "  Sync automatically: ").append(ContentResolver.getSyncAutomatically(acct, ContactsContract.AUTHORITY)).append("\n");
                 } catch(ContactsStorageException e) {
                     report.append(acct).append(" is invalid: ").append(e.getMessage()).append("\n");
                 }
             report.append("\n");
 
             report.append("SQLITE DUMP\n");
-            @Cleanup ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
+            @Cleanup ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(context);
             dbHelper.dump(report);
             report.append("\n");
 
