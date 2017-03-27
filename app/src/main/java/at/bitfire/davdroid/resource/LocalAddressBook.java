@@ -29,6 +29,7 @@ import android.provider.ContactsContract.Groups;
 import android.provider.ContactsContract.RawContacts;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
@@ -42,6 +43,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.DavUtils;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.vcard4android.AndroidAddressBook;
 import at.bitfire.vcard4android.AndroidContact;
@@ -378,7 +380,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
         baos.write(info.url.hashCode());
         String hash = Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP | Base64.NO_PADDING);
 
-        StringBuilder sb = new StringBuilder(info.displayName);
+        StringBuilder sb = new StringBuilder(!TextUtils.isEmpty(info.displayName) ? info.displayName : DavUtils.lastSegmentOfUrl(info.url));
         sb      .append(" (")
                 .append(mainAccount.name)
                 .append(" ")
