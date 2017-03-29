@@ -180,7 +180,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                 remoteResource = extras.getString(KEY_REMOTE_RESOURCE);
             }
 
-            StringBuilder report = new StringBuilder();
+            StringBuilder report = new StringBuilder("--- BEGIN DEBUG INFO ---\n");
 
             // begin with most specific information
 
@@ -225,7 +225,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                     installedFrom = "APK (directly)";
                 boolean workaroundInstalled = false;
                 try {
-                    workaroundInstalled = pm.getPackageInfo("at.bitfire.davdroid.jbworkaround", 0) != null;
+                    workaroundInstalled = pm.getPackageInfo(BuildConfig.APPLICATION_ID + ".jbworkaround", 0) != null;
                 } catch(PackageManager.NameNotFoundException ignored) {}
                 report.append("\nSOFTWARE INFORMATION\n" +
                                 "DAVdroid version: ").append(BuildConfig.VERSION_NAME).append(" (").append(BuildConfig.VERSION_CODE).append(") ").append(new Date(BuildConfig.buildTime)).append("\n")
@@ -300,6 +300,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                 App.log.log(Level.SEVERE, "Couldn't get system details", ex);
             }
 
+            report.append("--- END DEBUG INFO ---\n");
             return report.toString();
         }
 
