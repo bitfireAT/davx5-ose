@@ -48,8 +48,6 @@ import lombok.Getter;
 import okhttp3.internal.tls.OkHostnameVerifier;
 
 public class App extends Application {
-    public static final String FLAVOR_GOOGLE_PLAY = "gplay";
-
     public static final String
             DISTRUST_SYSTEM_CERTIFICATES = "distrustSystemCerts",
             LOG_TO_EXTERNAL_STORAGE = "logToExternalStorage",
@@ -183,14 +181,17 @@ public class App extends Application {
     }
 
 
-    public static class ReinitLoggingReceiver extends BroadcastReceiver {
+    public static class ReinitSettingsReceiver extends BroadcastReceiver {
+
+        public static final String ACTION_REINIT_SETTINGS = "at.bitfire.davdroid.REINIT_SETTINGS";
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            log.info("Received broadcast: re-initializing logger");
+            log.info("Received broadcast: re-initializing settings (logger/cert manager)");
 
             App app = (App)context.getApplicationContext();
             app.reinitLogger();
+            app.reinitCertManager();
         }
 
     }

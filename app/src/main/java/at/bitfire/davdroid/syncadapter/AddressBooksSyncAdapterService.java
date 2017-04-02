@@ -56,7 +56,8 @@ public class AddressBooksSyncAdapterService extends SyncAdapterService {
             super(context);
         }
 
-        public void sync(Account account, Bundle extras, String authority, ContentProviderClient addressBooksProvider, SyncResult syncResult) {
+        @Override
+        public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient addressBooksProvider, SyncResult syncResult) {
             @Cleanup("release") ContentProviderClient contactsProvider = getContext().getContentResolver().acquireContentProviderClient(ContactsContract.AUTHORITY);
             if (contactsProvider == null) {
                 App.log.severe("Couldn't access contacts provider");
