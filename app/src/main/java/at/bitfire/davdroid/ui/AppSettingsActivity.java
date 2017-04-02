@@ -161,6 +161,9 @@ public class AppSettingsActivity extends AppCompatActivity {
             // re-initialize certificate manager
             App app = (App)getContext().getApplicationContext();
             app.reinitCertManager();
+
+            // reinitialize certificate manager of :sync process
+            getContext().sendBroadcast(new Intent(App.ReinitSettingsReceiver.ACTION_REINIT_SETTINGS));
         }
 
         private void resetCertificates() {
@@ -176,7 +179,7 @@ public class AppSettingsActivity extends AppCompatActivity {
             app.reinitLogger();
 
             // reinitialize logger of :sync process
-            getContext().sendBroadcast(new Intent("at.bitfire.davdroid.REINIT_LOGGER"));
+            getContext().sendBroadcast(new Intent(App.ReinitSettingsReceiver.ACTION_REINIT_SETTINGS));
         }
     }
 
