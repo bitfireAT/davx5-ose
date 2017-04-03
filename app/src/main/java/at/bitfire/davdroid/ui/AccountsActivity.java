@@ -8,6 +8,8 @@
 
 package at.bitfire.davdroid.ui;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
@@ -26,6 +28,8 @@ import android.view.View;
 
 import java.util.ServiceLoader;
 
+import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.ui.setup.LoginActivity;
 
@@ -77,6 +81,15 @@ public class AccountsActivity extends AppCompatActivity implements NavigationVie
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (BuildConfig.FLAVOR == App.FLAVOR_SOLDUPE) {
+            AccountManager accountManager = AccountManager.get(this);
+            Account[] accounts = accountManager.getAccountsByType(getString(R.string.account_type));
+
+            FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
+            fab.setVisibility(accounts.length > 0 ? View.GONE : View.VISIBLE);
+        }
+
         onStatusChanged(SYNC_OBSERVER_TYPE_SETTINGS);
         syncStatusObserver = ContentResolver.addStatusChangeListener(SYNC_OBSERVER_TYPE_SETTINGS, this);
     }
