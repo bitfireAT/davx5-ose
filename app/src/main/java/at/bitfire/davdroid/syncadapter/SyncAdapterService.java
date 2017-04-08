@@ -78,14 +78,14 @@ public abstract class SyncAdapterService extends Service {
 
             boolean runSync = true;
             for (ISyncPlugin plugin : syncPlugins)
-                if (!plugin.beforeSync(context))
+                if (!plugin.beforeSync(context, syncResult))
                     runSync = false;
 
             if (runSync)
                 sync(account, extras, authority, provider, syncResult);
 
             for (ISyncPlugin plugin : syncPlugins)
-                plugin.afterSync(context);
+                plugin.afterSync(context, syncResult);
 
             App.log.info("Sync for " + authority + " complete");
         }
