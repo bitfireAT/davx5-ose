@@ -27,7 +27,7 @@ android {
         applicationId "at.bitfire.davdroid"
         resValue "string", "packageID", applicationId
 
-        versionCode 143
+        versionCode 144
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         minSdkVersion 15
@@ -51,7 +51,7 @@ android {
             applicationId "at.bitfire.cloudsync"
             resValue "string", "packageID", applicationId
 
-            versionName "1.5.0.2-cloud"
+            versionName "1.5.0.2-cloud1"
             buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "at.bitfire.vcard4android.GroupMethod.GROUP_VCARDS"
         }
         soldupe {
