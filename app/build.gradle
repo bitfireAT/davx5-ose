@@ -75,10 +75,16 @@ android {
 
     signingConfigs {
         bitfire {
-            keyAlias 'bitfire'
-            keyPassword '***REMOVED***'
             storeFile file("${System.env.HOME}/Entwicklung/GooglePlay/bitfire.jks")
             storePassword '***REMOVED***'
+            keyAlias 'bitfire'
+            keyPassword '***REMOVED***'
+        }
+        soldupe {
+            storeFile file("${System.env.HOME}/Entwicklung/GooglePlay/soldupe.jks")
+            storePassword 'hei8eePh'
+            keyAlias 'soldupe'
+            keyPassword 'ocaip6oZ'
         }
     }
 
@@ -89,7 +95,9 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+
             signingConfig signingConfigs.bitfire
+            productFlavors.soldupe.signingConfig signingConfigs.soldupe
         }
     }
 
