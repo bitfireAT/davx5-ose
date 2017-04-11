@@ -20,8 +20,6 @@ public class Constants {
             NOTIFICATION_TASK_SYNC = 12,
             NOTIFICATION_PERMISSIONS = 20;
 
-    public static final Uri webUri = Uri.parse("https://davdroid.bitfire.at/?pk_campaign=davdroid-app");
-
     public static final int DEFAULT_SYNC_INTERVAL = 4 * 3600;  // 4 hours
 
 }

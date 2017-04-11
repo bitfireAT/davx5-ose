@@ -130,16 +130,16 @@ public class AccountsActivity extends AppCompatActivity implements NavigationVie
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/davdroidapp")));
                 break;
             case R.id.nav_website:
-                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(App.getHomepageUrl())));
                 break;
             case R.id.nav_faq:
-                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("faq/").build()));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.navigation_drawer_faq_url))));
                 break;
             case R.id.nav_forums:
-                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("forums/").build()));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(App.getHomepageUrl()).buildUpon().appendEncodedPath("forums/").build()));
                 break;
             case R.id.nav_donate:
-                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("donate/").build()));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(App.getHomepageUrl()).buildUpon().appendEncodedPath("donate/").build()));
                 break;
         }
 

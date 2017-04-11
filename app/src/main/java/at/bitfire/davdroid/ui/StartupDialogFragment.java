@@ -152,7 +152,7 @@ public class StartupDialogFragment extends DialogFragment {
                         .setPositiveButton(R.string.startup_donate_now, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("donate/").build()));
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url)).buildUpon().appendEncodedPath("donate/").build()));
                             }
                         })
                         .setNegativeButton(R.string.startup_donate_later, new DialogInterface.OnClickListener() {

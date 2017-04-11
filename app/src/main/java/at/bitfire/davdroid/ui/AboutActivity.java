@@ -71,7 +71,7 @@ public class AboutActivity extends AppCompatActivity {
 
     private final static ComponentInfo components[] = {
             new ComponentInfo(
-                    "DAVdroid", BuildConfig.VERSION_NAME, "https://davdroid.bitfire.at",
+                    App.getAppName(), BuildConfig.VERSION_NAME, App.getHomepageUrl(),
                     DateFormatUtils.format(BuildConfig.buildTime, "yyyy") + " Ricki Hirner, Bernhard Stockmann (bitfire web engineering)",
                     R.string.about_license_info_no_warranty, "gpl-3.0-standalone.html"
             ), new ComponentInfo(
