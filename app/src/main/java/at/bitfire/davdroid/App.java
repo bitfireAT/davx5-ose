@@ -65,6 +65,9 @@ public class App extends Application {
     public static final int OVERRIDE_PROXY_PORT_DEFAULT = 8118;
 
     @Getter
+    private static String appName, homepageUrl;
+
+    @Getter
     private CustomCertManager certManager;
 
     @Getter
@@ -91,6 +94,10 @@ public class App extends Application {
     @SuppressLint("HardwareIds")
     public void onCreate() {
         super.onCreate();
+
+        appName = getString(R.string.app_name);
+        homepageUrl = getString(R.string.homepage_url);
+
         reinitCertManager();
         reinitLogger();
 

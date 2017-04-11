@@ -9,6 +9,7 @@
 package at.bitfire.davdroid.ui.setup;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -85,6 +86,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void showHelp(MenuItem item) {
-        startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("configuration/").build()));
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.login_help_url))));
     }
 }

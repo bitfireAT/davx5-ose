@@ -169,7 +169,7 @@ public class StartupDialogFragment extends DialogFragment {
                         .setNeutralButton(R.string.startup_google_play_accounts_removed_more_info, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("faq/").build());
+                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.navigation_drawer_faq_url)));
                                 getContext().startActivity(intent);
                             }
                         })

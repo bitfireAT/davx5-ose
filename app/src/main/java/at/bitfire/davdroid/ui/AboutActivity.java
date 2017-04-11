@@ -72,7 +72,7 @@ public class AboutActivity extends AppCompatActivity {
 
     private final static ComponentInfo components[] = {
             new ComponentInfo(
-                    null, BuildConfig.VERSION_NAME, Constants.webUri.toString(),
+                    null, BuildConfig.VERSION_NAME, App.getHomepageUrl(),
                     "Ricki Hirner, Bernhard Stockmann (bitfire web engineering)",
                     null, null
             ), new ComponentInfo(
