@@ -21,20 +21,6 @@ public class Constants {
             NOTIFICATION_PERMISSIONS = 20,
             NOTIFICATION_SUBSCRIPTION = 21;
 
-    public static final Uri webUri;
-    static {
-        switch (BuildConfig.FLAVOR) {
-            case App.FLAVOR_ICLOUD:
-                webUri = Uri.parse("https://multisync.cloud/?pk_campaign=multisync-app");
-                break;
-            case App.FLAVOR_SOLDUPE:
-                webUri = Uri.parse("https://soldupe.com/");
-                break;
-            default:
-                webUri = Uri.parse("https://davdroid.bitfire.at/?pk_campaign=davdroid-app");
-        }
-    }
-
     public static final int DEFAULT_SYNC_INTERVAL = 4 * 3600;  // 4 hours
 
 }
