@@ -26,17 +26,17 @@ public class DefaultAccountsDrawerHandler implements IAccountsDrawerHandler {
                 activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/davdroidapp")));
                 break;
             case R.id.nav_website:
-                activity.startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri));
+                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(App.getHomepageUrl())));
                 break;
             case R.id.nav_faq:
-                activity.startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("faq/").build()));
+                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.navigation_drawer_faq_url))));
                 break;
             case R.id.nav_forums:
-                activity.startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("forums/").build()));
+                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(App.getHomepageUrl()).buildUpon().appendEncodedPath("forums/").build()));
                 break;
             case R.id.nav_donate:
                 if (BuildConfig.FLAVOR != App.FLAVOR_GOOGLE_PLAY)
-                    activity.startActivity(new Intent(Intent.ACTION_VIEW, Constants.webUri.buildUpon().appendEncodedPath("donate/").build()));
+                    activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(App.getHomepageUrl()).buildUpon().appendEncodedPath("donate/").build()));
                 break;
 	    default:
                 return false;
