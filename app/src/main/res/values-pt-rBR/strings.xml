@@ -2,6 +2,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
+  <string name="account_title_address_book">Livro de endereços DAVdroid</string>
+  <string name="address_books_authority_title">Livros de endereços</string>
   <string name="help">Ajuda</string>
   <string name="manage_accounts">Gerenciar contas</string>
   <string name="please_wait">Por favor, aguarde...</string>
@@ -47,6 +49,8 @@
   <string name="navigation_drawer_forums">Comunidade</string>
   <string name="navigation_drawer_donate">Doações</string>
   <string name="account_list_empty">Bem-vindo ao DAVdroid!\n\nVocê pode adicionar uma conta CalDAV/CardDAV agora.</string>
+  <string name="accounts_global_sync_disabled">A sincronização automática pelo sistema está desativada</string>
+  <string name="accounts_global_sync_enable">Ativar</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Falha na detecção do serviço</string>
   <string name="dav_service_refresh_couldnt_refresh">Não foi possível atualizar a lista da coleção</string>

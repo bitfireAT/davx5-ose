@@ -2,6 +2,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
+  <string name="account_title_address_book">DAVdroid アドレス帳</string>
+  <string name="address_books_authority_title">アドレス帳</string>
   <string name="help">ヘルプ</string>
   <string name="manage_accounts">アカウントの管理</string>
   <string name="please_wait">しばらくお待ちください …</string>
