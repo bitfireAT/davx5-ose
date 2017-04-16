@@ -2,10 +2,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
+  <string name="account_title_address_book">DAVdroid Adresboek</string>
+  <string name="address_books_authority_title">Adresboeken</string>
   <string name="help">Help</string>
   <string name="manage_accounts">Beheer accounts</string>
   <string name="please_wait">Een moment geduld...</string>
   <string name="send">Verzenden</string>
+  <string name="homepage_url">https://davdroid.bitfire.at/?pk_campaign=davdroid-app</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Batterij optimalisatie</string>
   <string name="startup_battery_optimization_message">Android kan mogelijk de DAVdroid synchronisatie stoppen na een paar dagen. Om dit te voorkomen zet u de batterij optimalisatie uit.</string>
@@ -44,6 +47,7 @@
   <string name="navigation_drawer_external_links">Externe links</string>
   <string name="navigation_drawer_website">Website</string>
   <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_faq_url">https://davdroid.bitfire.at/faq/?pk_campaign=davdroid-app</string>
   <string name="navigation_drawer_forums">Community</string>
   <string name="navigation_drawer_donate">Doneren</string>
   <string name="account_list_empty">Welkom bij DAVdroid!\n\nJe kunt nu een CalDAV/CardDAv account toevoegen.</string>
@@ -103,6 +107,7 @@
   <string name="permissions_opentasks_details">Om CalDAV taken te synchroniseren met uw local takenlijst dient DAVdroid toegang te hebben tot OpenTasks</string>
   <string name="permissions_opentasks_request">OpenTasks rechten verkrijgen</string>
   <!--AddAccountActivity-->
+  <string name="login_help_url">https://davdroid.bitfire.at/configuration/?pk_campaign=davdroid-app</string>
   <string name="login_title">Account toevoegen</string>
   <string name="login_type_email">Inloggen met e-mailadres</string>
   <string name="login_email_address">Email adres</string>
