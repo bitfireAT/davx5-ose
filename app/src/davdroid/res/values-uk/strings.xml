@@ -2,6 +2,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
+  <string name="account_title_address_book">Адресна книга DAVdroid</string>
+  <string name="address_books_authority_title">Адресні книги</string>
   <string name="help">Допомога</string>
   <string name="manage_accounts">Керування обліковими записами</string>
   <string name="please_wait">Будь ласка, зачекайте...</string>

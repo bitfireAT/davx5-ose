@@ -2,6 +2,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">ДАВдроид</string>
+  <string name="account_title_address_book">ДАВдроид адресар</string>
+  <string name="address_books_authority_title">Адресари</string>
   <string name="help">Помоћ</string>
   <string name="manage_accounts">Управљај налозима</string>
   <string name="please_wait">Сачекајте…</string>
