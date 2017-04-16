@@ -10,9 +10,13 @@ comprehensive information about DAVdroid.
 
 DAVdroid is licensed under the [GPLv3 License](LICENSE).
 
-News and updates: [@davdroidapp](https://twitter.com/davdroidapp)
+News and updates: [@davdroidapp](https://twitter.com/davdroidapp) on Twitter /
+[davdroid-announce](https://davdroid.bitfire.at/download/newsletter/) mailing list
 
 Help and discussion: [DAVdroid forums](https://davdroid.bitfire.at/forums)
+
+**If you want to support DAVdroid, please consider [donating to DAVdroid](https://davdroid.bitfire.at/donate/)
+or [purchasing it](https://davdroid.bitfire.at/download/).**
 
 Parts of DAVdroid have been outsourced into these libraries:
 
@@ -20,8 +24,6 @@ Parts of DAVdroid have been outsourced into these libraries:
 * [dav4android](https://gitlab.com/bitfireAT/dav4android) – WebDAV/CalDav/CardDAV framework
 * [ical4android](https://gitlab.com/bitfireAT/ical4android) – iCalendar processing and Calendar Provider access
 * [vcard4android](https://gitlab.com/bitfireAT/vcard4android) – VCard processing and Contacts Provider access
-
-[![Flattr this!](https://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=bitfire&url=https://davdroid.bitfire.at&title=DAVdroid&category=software)
 
 
 USED THIRD-PARTY LIBRARIES
