@@ -57,7 +57,6 @@ import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.HttpClient;
-import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.davdroid.resource.LocalContact;
@@ -123,7 +122,7 @@ public class ContactsSyncManager extends SyncManager {
     private GroupMethod groupMethod;
 
 
-    public ContactsSyncManager(Context context, Account account, AccountSettings settings, Bundle extras, String authority, ContentProviderClient provider, SyncResult result, LocalAddressBook localAddressBook) throws InvalidAccountException {
+    public ContactsSyncManager(Context context, Account account, AccountSettings settings, Bundle extras, String authority, ContentProviderClient provider, SyncResult result, LocalAddressBook localAddressBook) {
         super(context, account, settings, extras, authority, result, "addressBook");
         this.provider = provider;
 
