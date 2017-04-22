@@ -38,7 +38,6 @@ import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.ArrayUtils;
 import at.bitfire.davdroid.Constants;
-import at.bitfire.davdroid.InvalidAccountException;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.resource.LocalResource;
 import at.bitfire.davdroid.resource.LocalTask;
@@ -60,7 +59,7 @@ public class TasksSyncManager extends SyncManager {
     final protected TaskProvider provider;
 
 
-    public TasksSyncManager(Context context, Account account, AccountSettings settings, Bundle extras, String authority, TaskProvider provider, SyncResult result, LocalTaskList taskList) throws InvalidAccountException {
+    public TasksSyncManager(Context context, Account account, AccountSettings settings, Bundle extras, String authority, TaskProvider provider, SyncResult result, LocalTaskList taskList) {
         super(context, account, settings, extras, authority, result, "taskList/" + taskList.getId());
         this.provider = provider;
         localCollection = taskList;
