@@ -58,7 +58,10 @@ public class ContactsSyncAdapterService extends SyncAdapterService {
             SQLiteOpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());
             try {
                 LocalAddressBook addressBook = new LocalAddressBook(getContext(), account, provider);
+
                 AccountSettings settings = new AccountSettings(getContext(), addressBook.getMainAccount());
+                if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(settings))
+                    return;
 
                 App.log.info("Synchronizing address book: "  + addressBook.getURL());
                 App.log.info("Taking settings from: "  + addressBook.getMainAccount());
