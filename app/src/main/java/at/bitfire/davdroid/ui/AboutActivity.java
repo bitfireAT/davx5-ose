@@ -31,7 +31,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +38,6 @@ import java.util.logging.Level;
 
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
-import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.R;
 import ezvcard.Ezvcard;
 import lombok.Cleanup;
@@ -47,32 +45,21 @@ import lombok.RequiredArgsConstructor;
 
 public class AboutActivity extends AppCompatActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_about);
-
-        setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        ViewPager viewPager = (ViewPager)findViewById(R.id.viewpager);
-        viewPager.setAdapter(new TabsAdapter(getSupportFragmentManager()));
-
-        TabLayout tabLayout = (TabLayout)findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
-    }
-
-
     @RequiredArgsConstructor
     private static class ComponentInfo {
         final String title, version, website, copyright;
         final Integer licenseInfo;
         final String licenseTextFile;
     }
+    private ComponentInfo components[];
 
-    private final static ComponentInfo components[] = {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        components = new ComponentInfo[] {
             new ComponentInfo(
-                    null, BuildConfig.VERSION_NAME, App.getHomepageUrl(),
+                    null, BuildConfig.VERSION_NAME, getString(R.string.homepage_url),
                     "Ricki Hirner, Bernhard Stockmann (bitfire web engineering)",
                     null, null
             ), new ComponentInfo(
@@ -97,7 +84,19 @@ public class AboutActivity extends AppCompatActivity {
                     "Project Lombok", null, "https://projectlombok.org/",
                     "The Project Lombok Authors", R.string.about_license_info_no_warranty, "mit.html"
             )
-    };
+        };
+
+        setContentView(R.layout.activity_about);
+
+        setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ViewPager viewPager = (ViewPager)findViewById(R.id.viewpager);
+        viewPager.setAdapter(new TabsAdapter(getSupportFragmentManager()));
+
+        TabLayout tabLayout = (TabLayout)findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+    }
 
 
     private class TabsAdapter extends FragmentPagerAdapter {
@@ -138,7 +137,7 @@ public class AboutActivity extends AppCompatActivity {
         @Override
         @SuppressLint("SetTextI18n")
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            ComponentInfo info = components[getArguments().getInt(KEY_POSITION)];
+            ComponentInfo info = ((AboutActivity)getActivity()).components[getArguments().getInt(KEY_POSITION)];
 
             View v = inflater.inflate(R.layout.about_component, container, false);
 
