@@ -39,10 +39,17 @@ public class HttpClient {
     private static final OkHttpClient client = new OkHttpClient();
     private static final UserAgentInterceptor userAgentInterceptor = new UserAgentInterceptor();
 
-    private static final String userAgent;
+    private static final String productName, userAgent;
     static {
+        if (BuildConfig.FLAVOR == App.FLAVOR_ICLOUD)
+            productName = "MultiSync for Cloud";
+        else if (BuildConfig.FLAVOR == App.FLAVOR_SOLDUPE)
+            productName = "Soldupe Sync";
+        else
+            productName = "DAVdroid";
+
         String date = new SimpleDateFormat("yyyy/MM/dd", Locale.US).format(new Date(BuildConfig.buildTime));
-        userAgent = App.getAppName() + "/" + BuildConfig.VERSION_NAME + " (" + date + "; dav4android; okhttp3) Android/" + Build.VERSION.RELEASE;
+        userAgent = productName + "/" + BuildConfig.VERSION_NAME + " (" + date + "; dav4android; okhttp3) Android/" + Build.VERSION.RELEASE;
     }
 
     private HttpClient() {
