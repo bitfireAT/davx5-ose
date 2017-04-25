@@ -2,10 +2,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
+  <string name="account_title_address_book">DAVdroid 通讯录</string>
+  <string name="address_books_authority_title">通讯录</string>
   <string name="help">帮助</string>
   <string name="manage_accounts">管理账户</string>
   <string name="please_wait">请稍等...</string>
   <string name="send">发送</string>
+  <string name="homepage_url">https://davdroid.bitfire.at/?pk_campaign=davdroid-app</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">电池优化</string>
   <string name="startup_battery_optimization_message">系统可能会在几天后减少或停用 DAVdroid 同步。为了避免这一情况，请禁用对 DAVdroid 的电池优化。</string>
@@ -44,9 +47,12 @@
   <string name="navigation_drawer_external_links">外部链接</string>
   <string name="navigation_drawer_website">应用网站</string>
   <string name="navigation_drawer_faq">常见问题</string>
+  <string name="navigation_drawer_faq_url">https://davdroid.bitfire.at/faq/?pk_campaign=davdroid-app</string>
   <string name="navigation_drawer_forums">社区</string>
   <string name="navigation_drawer_donate">捐助</string>
   <string name="account_list_empty">欢迎使用 DAVdroid！\n\n现在你可以增加 CalDAV/CardDAV 账户。</string>
+  <string name="accounts_global_sync_disabled">系统全局自动同步已禁用</string>
+  <string name="accounts_global_sync_enable">启用</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">服务配置检测失败</string>
   <string name="dav_service_refresh_couldnt_refresh">无法刷新集合列表</string>
@@ -101,6 +107,7 @@
   <string name="permissions_opentasks_details">要把 CalDAV 任务与本地任务列表同步，DAVdroid 需要访问 OpenTasks。</string>
   <string name="permissions_opentasks_request">请求 OpenTasks 权限</string>
   <!--AddAccountActivity-->
+  <string name="login_help_url">https://davdroid.bitfire.at/configuration/?pk_campaign=davdroid-app</string>
   <string name="login_title">增加账户</string>
   <string name="login_type_email">使用邮箱地址登录</string>
   <string name="login_email_address">Email 地址</string>
