@@ -25,8 +25,6 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
-import net.fortuna.ical4j.util.UidGenerator;
-
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.io.File;
@@ -73,9 +71,6 @@ public class App extends Application {
     @Getter
     private static HostnameVerifier hostnameVerifier;
 
-    @Getter
-    private static UidGenerator uidGenerator;
-
     public final static Logger log = Logger.getLogger("davdroid");
     static {
         at.bitfire.dav4android.Constants.log = Logger.getLogger("davdroid.dav4android");
@@ -94,8 +89,6 @@ public class App extends Application {
 
         reinitCertManager();
         reinitLogger();
-
-        uidGenerator = new UidGenerator(null, android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID));
 
         addressBookAccountType = getString(R.string.account_type_address_book);
         addressBooksAuthority = getString(R.string.address_books_authority);
