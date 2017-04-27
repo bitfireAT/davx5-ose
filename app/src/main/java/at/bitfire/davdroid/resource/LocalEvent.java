@@ -20,7 +20,8 @@ import android.support.annotation.NonNull;
 
 import net.fortuna.ical4j.model.property.ProdId;
 
-import at.bitfire.davdroid.App;
+import java.util.UUID;
+
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.ical4android.AndroidCalendar;
 import at.bitfire.ical4android.AndroidEvent;
@@ -111,7 +112,7 @@ public class LocalEvent extends AndroidEvent implements LocalResource {
             if (c.moveToNext())
                 uid = c.getString(0);
             if (uid == null)
-                uid = App.getUidGenerator().generateUid().getValue();
+                uid = UUID.randomUUID().toString();
 
             final String newFileName = uid + ".ics";
 
