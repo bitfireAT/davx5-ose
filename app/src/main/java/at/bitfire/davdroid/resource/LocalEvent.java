@@ -37,7 +37,7 @@ import lombok.ToString;
 @ToString(of={ "fileName","eTag" }, callSuper=true)
 public class LocalEvent extends AndroidEvent implements LocalResource {
     static {
-        Event.prodId = new ProdId("+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " ical4android ical4j/2.x");
+        Event.prodId = new ProdId("+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " ical4j/2.x");
     }
 
     static final String COLUMN_ETAG = CalendarContract.Events.SYNC_DATA1,
