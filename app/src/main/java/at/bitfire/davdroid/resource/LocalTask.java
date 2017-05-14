@@ -35,7 +35,7 @@ import lombok.ToString;
 @ToString(of={ "fileName","eTag" }, callSuper=true)
 public class LocalTask extends AndroidTask implements LocalResource {
     static {
-        Task.prodId = new ProdId("+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " ical4android ical4j/2.x");
+        Task.prodId = new ProdId("+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " ical4j/2.x");
     }
 
     static final String COLUMN_ETAG = Tasks.SYNC1,
