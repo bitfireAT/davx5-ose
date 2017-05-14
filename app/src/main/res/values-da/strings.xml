@@ -2,6 +2,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
+  <string name="account_title_address_book">DAVdroid Addressebog</string>
+  <string name="address_books_authority_title">Adressebøger</string>
   <string name="help">Hjælp</string>
   <string name="manage_accounts">Administrer konti</string>
   <string name="please_wait">Vent venligst ...</string>
@@ -47,6 +49,8 @@
   <string name="navigation_drawer_forums">Community</string>
   <string name="navigation_drawer_donate">Donation</string>
   <string name="account_list_empty">Velkommen til DAVdroid!\n\nDu kan nu tilføje en CaDAV/CardDAV-konto.</string>
+  <string name="accounts_global_sync_disabled">Automatisk synkronisering på tværs af systemet er deaktiveret</string>
+  <string name="accounts_global_sync_enable">Aktiver</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Registrering af tjeneste kunne ikke foretages</string>
   <string name="dav_service_refresh_couldnt_refresh">Kunne opdatere liste over sæt</string>
