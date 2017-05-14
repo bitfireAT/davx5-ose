@@ -39,7 +39,7 @@ import lombok.Cleanup;
 
 public class LocalContact extends AndroidContact implements LocalResource {
     static {
-        Contact.productID = "+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " vcard4android ez-vcard/" + Ezvcard.VERSION;
+        Contact.productID = "+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " ez-vcard/" + Ezvcard.VERSION;
     }
     public static final String COLUMN_HASHCODE = ContactsContract.RawContacts.SYNC3;
 
