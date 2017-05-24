@@ -84,8 +84,8 @@
 		<DataKind kind="website" />
 
         <DataKind kind="event" dateWithTime="false" >
-            <Type maxOccurs="1" type="birthday" yearOptional="false" />
-            <Type maxOccurs="1" type="anniversary" />
+            <Type maxOccurs="1" type="birthday" yearOptional="true" />
+            <Type maxOccurs="1" type="anniversary" yearOptional="true" />
         </DataKind>
 
         <DataKind kind="relationship">
