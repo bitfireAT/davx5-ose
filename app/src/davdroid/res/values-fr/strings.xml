@@ -2,6 +2,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
+  <string name="account_title_address_book">Carnet d\'adresses DAVdroid</string>
+  <string name="address_books_authority_title">Carnets d\'adresses</string>
   <string name="help">Aide</string>
   <string name="manage_accounts">Gestion des comptes</string>
   <string name="please_wait">SVP attendez ...</string>
@@ -9,7 +11,7 @@
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Optimisation de la batterie</string>
   <string name="startup_battery_optimization_message">Android peut désactiver/réduire la synchronisation de DAVdroid après quelques jours. Pour éviter cela, désactivez l\'optimisation de la batterie.</string>
-  <string name="startup_battery_optimization_disable">Désactivez pour DAVdroid</string>
+  <string name="startup_battery_optimization_disable">Désactiver pour DAVdroid</string>
   <string name="startup_dont_show_again">Ne plus afficher</string>
   <string name="startup_development_version">Pré-version de DAVdroid</string>
   <string name="startup_development_version_message">Il s\'agit d\'une version de développement de DAVdroid. Il se peut que les choses ne fonctionnent pas comme prévu. S’il vous plaît faites-nous un retour pour améliorer DAVdroid.</string>
@@ -20,7 +22,7 @@
   <string name="startup_donate_later">Plus tard</string>
   <string name="startup_google_play_accounts_removed">Erreur information Play Store DRM</string>
   <string name="startup_google_play_accounts_removed_message">Dans certaines conditions, Play Store DRM peut provoquer la disparition de tous les comptes DAVdroid après un redémarrage ou après la mise à niveau de DAVdroid. Si vous êtes concerné par ce problème (et seulement alors), s\'il vous plaît installer \"DAVdroid JB Solution\" du Play Store.</string>
-  <string name="startup_google_play_accounts_removed_more_info">Plus d\'information</string>
+  <string name="startup_google_play_accounts_removed_more_info">Plus d\'informations</string>
   <string name="startup_opentasks_not_installed">OpenTasks n\'est pas installé</string>
   <string name="startup_opentasks_not_installed_message">L\'application OpenTasks n\'est pas disponible, donc DAVdroid ne pourra pas synchroniser des listes de tâches.</string>
   <string name="startup_opentasks_reinstall_davdroid">Après l\'installation OpenTasks, vous devez RE-INSTALLER DAVdroid et ajoutez vos comptes à nouveau (bug Android).</string>
@@ -47,6 +49,8 @@
   <string name="navigation_drawer_forums">Communauté</string>
   <string name="navigation_drawer_donate">Faire un don</string>
   <string name="account_list_empty">Bienvenue sur DAVdroid!\n\nVous pouvez maintenant ajouter un compte CalDAV/CardDAV.</string>
+  <string name="accounts_global_sync_disabled">La synchronisation automatique globale est désactivée</string>
+  <string name="accounts_global_sync_enable">Activer</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">La détection du service a échoué</string>
   <string name="dav_service_refresh_couldnt_refresh">Impossible d\'actualiser la liste de collection</string>
@@ -54,7 +58,7 @@
   <string name="app_settings">Paramètres</string>
   <string name="app_settings_user_interface">Interface utilisateur</string>
   <string name="app_settings_reset_hints">Réinitialiser les astuces</string>
-  <string name="app_settings_reset_hints_summary">Réactiver les astuces qui ont été vu précédemment</string>
+  <string name="app_settings_reset_hints_summary">Réactiver les astuces qui ont été vues précédemment</string>
   <string name="app_settings_reset_hints_success">Toutes les astuces seront affichés à nouveau</string>
   <string name="app_settings_connection">Connexion</string>
   <string name="app_settings_override_proxy">Ignorer les paramètres proxy</string>
@@ -85,8 +89,8 @@
   <string name="account_delete">Supprimer le compte</string>
   <string name="account_delete_confirmation_title">Voulez-vous vraiment supprimer le compte?</string>
   <string name="account_delete_confirmation_text">Toutes les copies locales des carnets d\'adresses, des calendriers et des listes de tâches seront supprimées.</string>
-  <string name="account_refresh_address_book_list">Actualiser le carnet d\'adresse</string>
-  <string name="account_create_new_address_book">Créer un nouveau carnet d\'adresse</string>
+  <string name="account_refresh_address_book_list">Actualiser le carnet d\'adresses</string>
+  <string name="account_create_new_address_book">Créer un nouveau carnet d\'adresses</string>
   <string name="account_refresh_calendar_list">Actualiser le calendrier</string>
   <string name="account_create_new_calendar">Créer un nouveau calendrier</string>
   <!--PermissionsActivity-->
@@ -101,10 +105,11 @@
   <string name="permissions_opentasks_details">Pour synchroniser les tâches de CalDAV avec vos listes de tâches locales, DAVdroid a besoin d\'accéder à OpenTasks.</string>
   <string name="permissions_opentasks_request">Demande d\'autorisations d\'accéder à OpenTasks</string>
   <!--AddAccountActivity-->
+  <string name="login_help_url">https://davdroid.bitfire.at/configuration/?pk_campaign=davdroid-app</string>
   <string name="login_title">Ajouter un compte</string>
   <string name="login_type_email">Connexion avec une adresse email</string>
   <string name="login_email_address">Adresse mail</string>
-  <string name="login_email_address_error">Une adresse e-mail valide est requis</string>
+  <string name="login_email_address_error">Une adresse e-mail valide est requise</string>
   <string name="login_password">Mot de passe</string>
   <string name="login_password_required">Mot de passe requis</string>
   <string name="login_type_url">Connexion avec une URL et un nom d\'utilisateur</string>
@@ -134,12 +139,12 @@
   <string name="settings_password_summary">Mettre à jour le mot de passe </string>
   <string name="settings_enter_password">Saisissez votre mot de passe :</string>
   <string name="settings_sync">Synchronisation</string>
-  <string name="settings_sync_interval_contacts">Interval de synchronisation des carnets d\'adresses</string>
+  <string name="settings_sync_interval_contacts">Intervalle de synchronisation des carnets d\'adresses</string>
   <string name="settings_sync_summary_manually">Manuellement</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Toutes les %d minutes et immédiatement après un changement local</string>
   <string name="settings_sync_summary_not_available">Indisponible</string>
-  <string name="settings_sync_interval_calendars">Interval de synchronisation des agendas</string>
-  <string name="settings_sync_interval_tasks">Interval de synchronisation des tâches</string>
+  <string name="settings_sync_interval_calendars">Intervalle de synchronisation des agendas</string>
+  <string name="settings_sync_interval_tasks">Intervalle de synchronisation des tâches</string>
   <string-array name="settings_sync_interval_seconds">
     <item>-1</item>
     <item>300</item>
