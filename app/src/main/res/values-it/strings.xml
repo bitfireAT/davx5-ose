@@ -2,6 +2,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
+  <string name="account_title_address_book">Rubrica degli indirizzi DAVdroid</string>
+  <string name="address_books_authority_title">Rubriche degli indirizzi</string>
   <string name="help">Aiuto</string>
   <string name="manage_accounts">Gestione account</string>
   <string name="please_wait">Attendere prego …</string>
@@ -35,6 +37,8 @@
   <string name="logging_couldnt_create_file">Non riesco a creare il file di log esterno: %s</string>
   <string name="logging_no_external_storage">Dispositivo esterno non disponibile</string>
   <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Apri barra di navigazione</string>
+  <string name="navigation_drawer_close">Chiudi barra di navigazione</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV adattatore di sincronizzazione</string>
   <string name="navigation_drawer_about">Informazioni / Licenza</string>
   <string name="navigation_drawer_settings">Impostazioni</string>
@@ -45,9 +49,11 @@
   <string name="navigation_drawer_forums">Comunità</string>
   <string name="navigation_drawer_donate">Donazione</string>
   <string name="account_list_empty">Benvenuto a DAVdroid!\n\nÈ ora possibile aggiungere account CalDAV/CardDAV.</string>
+  <string name="accounts_global_sync_disabled">La sincronizzazione automatica dell\'intero sistema è disabilitata</string>
+  <string name="accounts_global_sync_enable">Attiva</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Fallita l\'individuazione dei servizi</string>
-  <string name="dav_service_refresh_couldnt_refresh">Impossibile rinnovare la lista delle collezioni</string>
+  <string name="dav_service_refresh_couldnt_refresh">Impossibile aggiornare la lista delle raccolte</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Impostazioni</string>
   <string name="app_settings_user_interface">Interfaccia utente</string>
@@ -77,6 +83,9 @@
   <string name="account_synchronize_now">Sincronizza adesso</string>
   <string name="account_synchronizing_now">Sincronizzazione in corso</string>
   <string name="account_settings">Impostazioni account</string>
+  <string name="account_rename">Rinomina account</string>
+  <string name="account_rename_new_name">I dati locali non salvati potrebbero essere rimossi. È necessario effettuare la risincronizzazione dopo la rinomina. Nuovo nome dell\'account:</string>
+  <string name="account_rename_rename">Rinomina</string>
   <string name="account_delete">Elimina account</string>
   <string name="account_delete_confirmation_title">Cancellare l\'account?</string>
   <string name="account_delete_confirmation_text">Tutte le copie locali delle rubriche, dei calendari e degli elenchi attività verranno eliminate.</string>
@@ -157,11 +166,13 @@
   </string-array>
   <string name="settings_sync_wifi_only">Sincr. solo tramite WiFi</string>
   <string name="settings_sync_wifi_only_on">La sincronizzazione è limitata alle connessioni WiFi</string>
+  <string name="settings_sync_wifi_only_off">Il tipo di connessione non è preso in considerazione</string>
   <string name="settings_sync_wifi_only_ssid">Restrizione sul SSID del WiFi</string>
   <string name="settings_sync_wifi_only_ssid_on">La sincronizzazione avverrà solo con %s</string>
   <string name="settings_sync_wifi_only_ssid_off">Verranno usate tutte le connessioni WiFi</string>
   <string name="settings_sync_wifi_only_ssid_message">Inserisci il nome di una rete WiFi (SSID) per limitare la sincronizzazione solo con questa rete o lasciare in bianco per usare tutte le connessioni WiFi.</string>
   <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Organizzazione dei gruppi di contatto</string>
   <string-array name="settings_contact_group_method_values">
     <item>GROUP_VCARDS</item>
     <item>CATEGORIES</item>
@@ -184,15 +195,24 @@
   <!--collection management-->
   <string name="create_addressbook">Crea indirizzario</string>
   <string name="create_addressbook_display_name_hint">Il mio indirizzario</string>
+  <string name="create_calendar">Crea raccolta CalDAV</string>
   <string name="create_calendar_display_name_hint">Mio calendario</string>
   <string name="create_calendar_time_zone">Fuso orario:</string>
+  <string name="create_calendar_type">Tipo di raccolta:</string>
   <string name="create_calendar_type_only_events">Calendario (solo eventi)</string>
   <string name="create_calendar_type_only_tasks">Elenco attività (solo attività)</string>
   <string name="create_calendar_type_events_and_tasks">Combinato (eventi e attività)</string>
+  <string name="create_collection_color">Imposta colore della raccolta</string>
+  <string name="create_collection_creating">Crea una raccolta</string>
+  <string name="create_collection_display_name">Mostra il nome (titolo) di questa raccolta:</string>
   <string name="create_collection_display_name_required">Il titolo è richiesto</string>
   <string name="create_collection_description">Descrizione (opzionale):</string>
+  <string name="create_collection_home_set">Imposta la home:</string>
   <string name="create_collection_create">Crea</string>
+  <string name="delete_collection">Elimina raccolta</string>
   <string name="delete_collection_confirm_title">Sei sicuro?</string>
+  <string name="delete_collection_confirm_warning">Questa raccolta (%s) e tutti i suoi dati saranno rimossi dal server.</string>
+  <string name="delete_collection_deleting_collection">Cancellazione della raccolta</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Si è verificato un errore.</string>
   <string name="exception_httpexception">Si è verificato un errore HTTP.</string>
