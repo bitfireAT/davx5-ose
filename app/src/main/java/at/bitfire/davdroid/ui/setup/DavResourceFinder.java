@@ -10,6 +10,7 @@ package at.bitfire.davdroid.ui.setup;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SRVRecord;
@@ -31,6 +32,7 @@ import java.util.logging.Logger;
 
 import at.bitfire.dav4android.Constants;
 import at.bitfire.dav4android.DavResource;
+import at.bitfire.dav4android.Property;
 import at.bitfire.dav4android.UrlUtils;
 import at.bitfire.dav4android.exception.DavException;
 import at.bitfire.dav4android.exception.HttpException;
@@ -193,15 +195,20 @@ public class DavResourceFinder {
             }
 
             // check for current-user-principal
-            CurrentUserPrincipal currentUserPrincipal = (CurrentUserPrincipal)davBase.properties.get(CurrentUserPrincipal.NAME);
-            if (currentUserPrincipal != null && currentUserPrincipal.href != null)
-                principal = davBase.location.resolve(currentUserPrincipal.href);
+            Pair<DavResource, Property> result1 = davBase.findProperty(CurrentUserPrincipal.NAME);
+            if (result1 != null) {
+                CurrentUserPrincipal currentUserPrincipal = (CurrentUserPrincipal)result1.getRight();
+                if (currentUserPrincipal.href != null)
+                    principal = result1.getLeft().location.resolve(currentUserPrincipal.href);
+            }
 
             // check for resource type "principal"
             if (principal == null) {
-                ResourceType resourceType = (ResourceType)davBase.properties.get(ResourceType.NAME);
-                if (resourceType != null && resourceType.types.contains(ResourceType.PRINCIPAL))
-                    principal = davBase.location;
+                for (Pair<DavResource, Property> result2 : davBase.findProperties(ResourceType.NAME)) {
+                    ResourceType resourceType = (ResourceType)result2.getRight();
+                    if (resourceType != null && resourceType.types.contains(ResourceType.PRINCIPAL))
+                        principal = result2.getLeft().location;
+                }
             }
 
             // If a principal has been detected successfully, ensure that it provides the required service.
@@ -214,45 +221,56 @@ public class DavResourceFinder {
     }
 
     /**
-     * If #dav is an address book or an address book home set, it will added to
+     * If #dav references an address book or an address book home set, it will added to
      * config.collections or config.homesets. Only evaluates already known properties,
      * does not call dav.propfind()! URLs will be stored with trailing "/".
      * @param dav       resource whose properties are evaluated
      * @param config    structure where the address book (collection) and/or home set is stored into (if found)
      */
     protected void rememberIfAddressBookOrHomeset(@NonNull DavResource dav, @NonNull Configuration.ServiceInfo config) {
-        // Is the collection an address book?
-        ResourceType resourceType = (ResourceType)dav.properties.get(ResourceType.NAME);
-        if (resourceType != null && resourceType.types.contains(ResourceType.ADDRESSBOOK)) {
-            dav.location = UrlUtils.withTrailingSlash(dav.location);
-            log.info("Found address book at " + dav.location);
-            config.collections.put(dav.location.uri(), CollectionInfo.fromDavResource(dav));
+        // Is there an address book?
+        for (Pair<DavResource, Property> result : dav.findProperties(ResourceType.NAME)) {
+            ResourceType resourceType = (ResourceType)result.getRight();
+            if (resourceType.types.contains(ResourceType.ADDRESSBOOK)) {
+                DavResource addressBook = result.getLeft();
+                addressBook.location = UrlUtils.withTrailingSlash(addressBook.location);
+                log.info("Found address book at " + addressBook.location);
+                config.collections.put(addressBook.location.uri(), CollectionInfo.fromDavResource(addressBook));
+            }
         }
 
-        // Does the collection refer to address book homesets?
-        AddressbookHomeSet homeSets = (AddressbookHomeSet)dav.properties.get(AddressbookHomeSet.NAME);
-        if (homeSets != null)
-            for (String href : homeSets.hrefs) {
-                HttpUrl location = UrlUtils.withTrailingSlash(dav.location.resolve(href));
-                log.info("Found addressbook home-set at " + location);
+        // Is there an addressbook-home-set?
+        for (Pair<DavResource, Property> result : dav.findProperties(AddressbookHomeSet.NAME)) {
+            AddressbookHomeSet homeSet = (AddressbookHomeSet)result.getRight();
+            for (String href : homeSet.hrefs) {
+                HttpUrl location = UrlUtils.withTrailingSlash(result.getLeft().location.resolve(href));
+                log.info("Found address book home-set at " + location);
                 config.homeSets.add(location.uri());
             }
+        }
     }
 
     protected void rememberIfCalendarOrHomeset(@NonNull DavResource dav, @NonNull Configuration.ServiceInfo config) {
         // Is the collection a calendar collection?
-        ResourceType resourceType = (ResourceType)dav.properties.get(ResourceType.NAME);
-        if (resourceType != null && resourceType.types.contains(ResourceType.CALENDAR)) {
-            dav.location = UrlUtils.withTrailingSlash(dav.location);
-            log.info("Found calendar collection at " + dav.location);
-            config.collections.put(dav.location.uri(), CollectionInfo.fromDavResource(dav));
+        for (Pair<DavResource, Property> result : dav.findProperties(ResourceType.NAME)) {
+            ResourceType resourceType = (ResourceType)result.getRight();
+            if (resourceType.types.contains(ResourceType.CALENDAR)) {
+                DavResource calendar = result.getLeft();
+                calendar.location = UrlUtils.withTrailingSlash(calendar.location);
+                log.info("Found calendar at " + calendar.location);
+                config.collections.put(calendar.location.uri(), CollectionInfo.fromDavResource(calendar));
+            }
         }
 
-        // Does the collection refer to calendar homesets?
-        CalendarHomeSet homeSets = (CalendarHomeSet)dav.properties.get(CalendarHomeSet.NAME);
-        if (homeSets != null)
-            for (String href : homeSets.hrefs)
-                config.homeSets.add(UrlUtils.withTrailingSlash(dav.location.resolve(href)).uri());
+        // Is there an calendar-home-set?
+        for (Pair<DavResource, Property> result : dav.findProperties(CalendarHomeSet.NAME)) {
+            CalendarHomeSet homeSet = (CalendarHomeSet)result.getRight();
+            for (String href : homeSet.hrefs) {
+                HttpUrl location = UrlUtils.withTrailingSlash(result.getLeft().location.resolve(href));
+                log.info("Found calendar home-set at " + location);
+                config.homeSets.add(location.uri());
+            }
+        }
     }
 
 
@@ -351,19 +369,22 @@ public class DavResourceFinder {
         DavResource dav = new DavResource(httpClient, url, log);
         dav.propfind(0, CurrentUserPrincipal.NAME);
 
-        CurrentUserPrincipal currentUserPrincipal = (CurrentUserPrincipal)dav.properties.get(CurrentUserPrincipal.NAME);
-        if (currentUserPrincipal != null && currentUserPrincipal.href != null) {
-            HttpUrl principal = dav.location.resolve(currentUserPrincipal.href);
-            if (principal != null) {
-                log.info("Found current-user-principal: " + principal);
+        Pair<DavResource, Property> result = dav.findProperty(CurrentUserPrincipal.NAME);
+        if (result != null) {
+            CurrentUserPrincipal currentUserPrincipal = (CurrentUserPrincipal)result.getRight();
+            if (currentUserPrincipal.href != null) {
+                HttpUrl principal = result.getLeft().location.resolve(currentUserPrincipal.href);
+                if (principal != null) {
+                    log.info("Found current-user-principal: " + principal);
 
-                // service check
-                if (service != null && !providesService(principal, service)) {
-                    log.info(principal + " doesn't provide required " + service + " service");
-                    principal = null;
+                    // service check
+                    if (service != null && !providesService(principal, service)) {
+                        log.info(principal + " doesn't provide required " + service + " service");
+                        principal = null;
+                    }
+
+                    return principal != null ? principal.uri() : null;
                 }
-
-                return principal != null ? principal.uri() : null;
             }
         }
         return null;
