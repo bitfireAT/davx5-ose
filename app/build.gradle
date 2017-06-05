@@ -27,7 +27,7 @@ android {
         applicationId "at.bitfire.davdroid"
         resValue "string", "packageID", applicationId
 
-        versionCode 148
+        versionCode 149
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         minSdkVersion 15
