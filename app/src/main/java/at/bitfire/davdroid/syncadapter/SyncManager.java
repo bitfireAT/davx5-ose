@@ -192,7 +192,7 @@ abstract public class SyncManager {
             syncResult.stats.numIoExceptions++;
 
             if (e instanceof ServiceUnavailableException) {
-                Date retryAfter = ((ServiceUnavailableException) e).retryAfter;
+                Date retryAfter = ((ServiceUnavailableException) e).getRetryAfter();
                 if (retryAfter != null) {
                     // how many seconds to wait? getTime() returns ms, so divide by 1000
                     syncResult.delayUntil = (retryAfter.getTime() - new Date().getTime()) / 1000;
@@ -349,9 +349,9 @@ abstract public class SyncManager {
             }
 
             String eTag = null;
-            GetETag newETag = (GetETag) remote.properties.get(GetETag.NAME);
+            GetETag newETag = (GetETag) remote.getProperties().get(GetETag.NAME);
             if (newETag != null) {
-                eTag = newETag.eTag;
+                eTag = newETag.getETag();
                 App.log.fine("Received new ETag=" + eTag + " after uploading");
             } else
                 App.log.fine("Didn't receive new ETag after uploading, setting to null");
@@ -372,9 +372,9 @@ abstract public class SyncManager {
      */
     protected boolean checkSyncState() throws CalendarStorageException, ContactsStorageException {
         // check CTag (ignore on manual sync)
-        GetCTag getCTag = (GetCTag)davCollection.properties.get(GetCTag.NAME);
+        GetCTag getCTag = (GetCTag)davCollection.getProperties().get(GetCTag.NAME);
         if (getCTag != null)
-            remoteCTag = getCTag.cTag;
+            remoteCTag = getCTag.getCTag();
 
         String localCTag = null;
         if (extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL))
@@ -433,11 +433,11 @@ abstract public class SyncManager {
                 syncResult.stats.numDeletes++;
             } else {
                 // contact is still on server, check whether it has been updated remotely
-                GetETag getETag = (GetETag)remote.properties.get(GetETag.NAME);
-                if (getETag == null || getETag.eTag == null)
+                GetETag getETag = (GetETag)remote.getProperties().get(GetETag.NAME);
+                if (getETag == null || getETag.getETag() == null)
                     throw new DavException("Server didn't provide ETag");
                 String localETag = localResources.get(localName).getETag(),
-                        remoteETag = getETag.eTag;
+                        remoteETag = getETag.getETag();
                 if (remoteETag.equals(localETag))
                     syncResult.stats.numSkippedEntries++;
                 else {

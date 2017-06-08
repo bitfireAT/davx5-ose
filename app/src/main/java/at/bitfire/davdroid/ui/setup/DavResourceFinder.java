@@ -10,7 +10,6 @@ package at.bitfire.davdroid.ui.setup;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SRVRecord;
@@ -52,6 +51,7 @@ import at.bitfire.dav4android.property.SupportedCalendarComponentSet;
 import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.log.StringHandler;
 import at.bitfire.davdroid.model.CollectionInfo;
+import kotlin.Pair;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import okhttp3.HttpUrl;
@@ -150,9 +150,9 @@ public class DavResourceFinder {
             DavResource davPrincipal = new DavResource(httpClient, HttpUrl.get(config.principal), log);
             try {
                 davPrincipal.propfind(0, CalendarUserAddressSet.NAME);
-                CalendarUserAddressSet addressSet = (CalendarUserAddressSet)davPrincipal.properties.get(CalendarUserAddressSet.NAME);
+                CalendarUserAddressSet addressSet = (CalendarUserAddressSet)davPrincipal.getProperties().get(CalendarUserAddressSet.NAME);
                 if (addressSet != null)
-                    for (String href : addressSet.hrefs)
+                    for (String href : addressSet.getHrefs())
                         try {
                             URI uri = new URI(href);
                             if ("mailto".equals(uri.getScheme()))
@@ -197,17 +197,17 @@ public class DavResourceFinder {
             // check for current-user-principal
             Pair<DavResource, Property> result1 = davBase.findProperty(CurrentUserPrincipal.NAME);
             if (result1 != null) {
-                CurrentUserPrincipal currentUserPrincipal = (CurrentUserPrincipal)result1.getRight();
-                if (currentUserPrincipal.href != null)
-                    principal = result1.getLeft().location.resolve(currentUserPrincipal.href);
+                CurrentUserPrincipal currentUserPrincipal = (CurrentUserPrincipal)result1.getSecond();
+                if (currentUserPrincipal.getHref() != null)
+                    principal = result1.getFirst().getLocation().resolve(currentUserPrincipal.getHref());
             }
 
             // check for resource type "principal"
             if (principal == null) {
                 for (Pair<DavResource, Property> result2 : davBase.findProperties(ResourceType.NAME)) {
-                    ResourceType resourceType = (ResourceType)result2.getRight();
-                    if (resourceType != null && resourceType.types.contains(ResourceType.PRINCIPAL))
-                        principal = result2.getLeft().location;
+                    ResourceType resourceType = (ResourceType)result2.getSecond();
+                    if (resourceType != null && resourceType.getTypes().contains(ResourceType.PRINCIPAL))
+                        principal = result2.getFirst().getLocation();
                 }
             }
 
@@ -230,20 +230,20 @@ public class DavResourceFinder {
     protected void rememberIfAddressBookOrHomeset(@NonNull DavResource dav, @NonNull Configuration.ServiceInfo config) {
         // Is there an address book?
         for (Pair<DavResource, Property> result : dav.findProperties(ResourceType.NAME)) {
-            ResourceType resourceType = (ResourceType)result.getRight();
-            if (resourceType.types.contains(ResourceType.ADDRESSBOOK)) {
-                DavResource addressBook = result.getLeft();
-                addressBook.location = UrlUtils.withTrailingSlash(addressBook.location);
-                log.info("Found address book at " + addressBook.location);
-                config.collections.put(addressBook.location.uri(), CollectionInfo.fromDavResource(addressBook));
+            ResourceType resourceType = (ResourceType)result.getSecond();
+            if (resourceType.getTypes().contains(ResourceType.ADDRESSBOOK)) {
+                DavResource addressBook = result.getFirst();
+                addressBook.setLocation(UrlUtils.withTrailingSlash(addressBook.getLocation()));
+                log.info("Found address book at " + addressBook.getLocation());
+                config.collections.put(addressBook.getLocation().uri(), CollectionInfo.fromDavResource(addressBook));
             }
         }
 
         // Is there an addressbook-home-set?
         for (Pair<DavResource, Property> result : dav.findProperties(AddressbookHomeSet.NAME)) {
-            AddressbookHomeSet homeSet = (AddressbookHomeSet)result.getRight();
-            for (String href : homeSet.hrefs) {
-                HttpUrl location = UrlUtils.withTrailingSlash(result.getLeft().location.resolve(href));
+            AddressbookHomeSet homeSet = (AddressbookHomeSet)result.getSecond();
+            for (String href : homeSet.getHrefs()) {
+                HttpUrl location = UrlUtils.withTrailingSlash(result.getFirst().getLocation().resolve(href));
                 log.info("Found address book home-set at " + location);
                 config.homeSets.add(location.uri());
             }
@@ -253,20 +253,20 @@ public class DavResourceFinder {
     protected void rememberIfCalendarOrHomeset(@NonNull DavResource dav, @NonNull Configuration.ServiceInfo config) {
         // Is the collection a calendar collection?
         for (Pair<DavResource, Property> result : dav.findProperties(ResourceType.NAME)) {
-            ResourceType resourceType = (ResourceType)result.getRight();
-            if (resourceType.types.contains(ResourceType.CALENDAR)) {
-                DavResource calendar = result.getLeft();
-                calendar.location = UrlUtils.withTrailingSlash(calendar.location);
-                log.info("Found calendar at " + calendar.location);
-                config.collections.put(calendar.location.uri(), CollectionInfo.fromDavResource(calendar));
+            ResourceType resourceType = (ResourceType)result.getSecond();
+            if (resourceType.getTypes().contains(ResourceType.CALENDAR)) {
+                DavResource calendar = result.getFirst();
+                calendar.setLocation(UrlUtils.withTrailingSlash(calendar.getLocation()));
+                log.info("Found calendar at " + calendar.getLocation());
+                config.collections.put(calendar.getLocation().uri(), CollectionInfo.fromDavResource(calendar));
             }
         }
 
         // Is there an calendar-home-set?
         for (Pair<DavResource, Property> result : dav.findProperties(CalendarHomeSet.NAME)) {
-            CalendarHomeSet homeSet = (CalendarHomeSet)result.getRight();
-            for (String href : homeSet.hrefs) {
-                HttpUrl location = UrlUtils.withTrailingSlash(result.getLeft().location.resolve(href));
+            CalendarHomeSet homeSet = (CalendarHomeSet)result.getSecond();
+            for (String href : homeSet.getHrefs()) {
+                HttpUrl location = UrlUtils.withTrailingSlash(result.getFirst().getLocation().resolve(href));
                 log.info("Found calendar home-set at " + location);
                 config.homeSets.add(location.uri());
             }
@@ -279,8 +279,8 @@ public class DavResourceFinder {
         try {
             davPrincipal.options();
 
-            if ((service == Service.CARDDAV && davPrincipal.capabilities.contains("addressbook")) ||
-                (service == Service.CALDAV && davPrincipal.capabilities.contains("calendar-access")))
+            if ((service == Service.CARDDAV && davPrincipal.getCapabilities().contains("addressbook")) ||
+                (service == Service.CALDAV && davPrincipal.getCapabilities().contains("calendar-access")))
                 return true;
 
         } catch (HttpException|DavException e) {
@@ -371,9 +371,9 @@ public class DavResourceFinder {
 
         Pair<DavResource, Property> result = dav.findProperty(CurrentUserPrincipal.NAME);
         if (result != null) {
-            CurrentUserPrincipal currentUserPrincipal = (CurrentUserPrincipal)result.getRight();
-            if (currentUserPrincipal.href != null) {
-                HttpUrl principal = result.getLeft().location.resolve(currentUserPrincipal.href);
+            CurrentUserPrincipal currentUserPrincipal = (CurrentUserPrincipal)result.getSecond();
+            if (currentUserPrincipal.getHref() != null) {
+                HttpUrl principal = result.getFirst().getLocation().resolve(currentUserPrincipal.getHref());
                 if (principal != null) {
                     log.info("Found current-user-principal: " + principal);
 
