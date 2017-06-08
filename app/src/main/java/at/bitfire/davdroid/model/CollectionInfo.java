@@ -65,48 +65,48 @@ public class CollectionInfo implements Serializable {
 
     public static CollectionInfo fromDavResource(DavResource dav) {
         CollectionInfo info = new CollectionInfo();
-        info.url = dav.location.toString();
+        info.url = dav.getLocation().toString();
 
-        ResourceType type = (ResourceType)dav.properties.get(ResourceType.NAME);
+        ResourceType type = (ResourceType)dav.getProperties().get(ResourceType.NAME);
         if (type != null) {
-            if (type.types.contains(ResourceType.ADDRESSBOOK))
+            if (type.getTypes().contains(ResourceType.ADDRESSBOOK))
                 info.type = Type.ADDRESS_BOOK;
-            else if (type.types.contains(ResourceType.CALENDAR))
+            else if (type.getTypes().contains(ResourceType.CALENDAR))
                 info.type = Type.CALENDAR;
         }
 
         info.readOnly = false;
-        CurrentUserPrivilegeSet privilegeSet = (CurrentUserPrivilegeSet)dav.properties.get(CurrentUserPrivilegeSet.NAME);
+        CurrentUserPrivilegeSet privilegeSet = (CurrentUserPrivilegeSet)dav.getProperties().get(CurrentUserPrivilegeSet.NAME);
         if (privilegeSet != null)
-            info.readOnly = !privilegeSet.mayWriteContent;
+            info.readOnly = !privilegeSet.getMayWriteContent();
 
-        DisplayName displayName = (DisplayName)dav.properties.get(DisplayName.NAME);
-        if (displayName != null && !StringUtils.isEmpty(displayName.displayName))
-            info.displayName = displayName.displayName;
+        DisplayName displayName = (DisplayName)dav.getProperties().get(DisplayName.NAME);
+        if (displayName != null && !StringUtils.isEmpty(displayName.getDisplayName()))
+            info.displayName = displayName.getDisplayName();
 
         if (info.type == Type.ADDRESS_BOOK) {
-            AddressbookDescription addressbookDescription = (AddressbookDescription)dav.properties.get(AddressbookDescription.NAME);
+            AddressbookDescription addressbookDescription = (AddressbookDescription)dav.getProperties().get(AddressbookDescription.NAME);
             if (addressbookDescription != null)
-                info.description = addressbookDescription.description;
+                info.description = addressbookDescription.getDescription();
 
         } else if (info.type == Type.CALENDAR) {
-            CalendarDescription calendarDescription = (CalendarDescription)dav.properties.get(CalendarDescription.NAME);
+            CalendarDescription calendarDescription = (CalendarDescription)dav.getProperties().get(CalendarDescription.NAME);
             if (calendarDescription != null)
-                info.description = calendarDescription.description;
+                info.description = calendarDescription.getDescription();
 
-            CalendarColor calendarColor = (CalendarColor)dav.properties.get(CalendarColor.NAME);
+            CalendarColor calendarColor = (CalendarColor)dav.getProperties().get(CalendarColor.NAME);
             if (calendarColor != null)
-                info.color = calendarColor.color;
+                info.color = calendarColor.getColor();
 
-            CalendarTimezone timeZone = (CalendarTimezone)dav.properties.get(CalendarTimezone.NAME);
+            CalendarTimezone timeZone = (CalendarTimezone)dav.getProperties().get(CalendarTimezone.NAME);
             if (timeZone != null)
-                info.timeZone = timeZone.vTimeZone;
+                info.timeZone = timeZone.getVTimeZone();
 
             info.supportsVEVENT = info.supportsVTODO = true;
-            SupportedCalendarComponentSet supportedCalendarComponentSet = (SupportedCalendarComponentSet)dav.properties.get(SupportedCalendarComponentSet.NAME);
+            SupportedCalendarComponentSet supportedCalendarComponentSet = (SupportedCalendarComponentSet)dav.getProperties().get(SupportedCalendarComponentSet.NAME);
             if (supportedCalendarComponentSet != null) {
-                info.supportsVEVENT = supportedCalendarComponentSet.supportsEvents;
-                info.supportsVTODO = supportedCalendarComponentSet.supportsTasks;
+                info.supportsVEVENT = supportedCalendarComponentSet.getSupportsEvents();
+                info.supportsVTODO = supportedCalendarComponentSet.getSupportsTasks();
             }
         }
 
