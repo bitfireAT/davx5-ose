@@ -29,7 +29,6 @@ import android.text.TextUtils;
 
 import org.apache.commons.collections4.iterators.IteratorChain;
 import org.apache.commons.collections4.iterators.SingletonIterator;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -61,6 +60,7 @@ import at.bitfire.davdroid.model.ServiceDB.Services;
 import at.bitfire.davdroid.resource.LocalAddressBook;
 import at.bitfire.davdroid.ui.DebugInfoActivity;
 import at.bitfire.vcard4android.ContactsStorageException;
+import kotlin.Pair;
 import lombok.Cleanup;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -217,26 +217,26 @@ public class DavService extends Service {
 
                     // refresh home sets: calendar-proxy-read/write-for
                     for (Pair<DavResource, Property> result : dav.findProperties(CalendarProxyReadFor.NAME)) {
-                        CalendarProxyReadFor proxyRead = (CalendarProxyReadFor)result.getRight();
-                        for (String href : proxyRead.principals) {
+                        CalendarProxyReadFor proxyRead = (CalendarProxyReadFor)result.getSecond();
+                        for (String href : proxyRead.getHrefs()) {
                             App.log.fine("Principal is a read-only proxy for " + href + ", checking for home sets");
-                            queryHomeSets(serviceType, new DavResource(httpClient, result.getLeft().location.resolve(href)), homeSets);
+                            queryHomeSets(serviceType, new DavResource(httpClient, result.getFirst().getLocation().resolve(href)), homeSets);
                         }
                     }
                     for (Pair<DavResource, Property> result : dav.findProperties(CalendarProxyWriteFor.NAME)) {
-                        CalendarProxyWriteFor proxyWrite = (CalendarProxyWriteFor)result.getRight();
-                        for (String href : proxyWrite.principals) {
+                        CalendarProxyWriteFor proxyWrite = (CalendarProxyWriteFor)result.getSecond();
+                        for (String href : proxyWrite.getHrefs()) {
                             App.log.fine("Principal is a read/write proxy for " + href + ", checking for home sets");
-                            queryHomeSets(serviceType, new DavResource(httpClient, result.getLeft().location.resolve(href)), homeSets);
+                            queryHomeSets(serviceType, new DavResource(httpClient, result.getFirst().getLocation().resolve(href)), homeSets);
                         }
                     }
 
                     // refresh home sets: direct group memberships
-                    GroupMembership groupMembership = (GroupMembership)dav.properties.get(GroupMembership.NAME);
+                    GroupMembership groupMembership = (GroupMembership)dav.getProperties().get(GroupMembership.NAME);
                     if (groupMembership != null)
-                        for (String href : groupMembership.hrefs) {
+                        for (String href : groupMembership.getHrefs()) {
                             App.log.fine("Principal is member of group " + href + ", checking for home sets");
-                            DavResource group = new DavResource(httpClient, dav.location.resolve(href));
+                            DavResource group = new DavResource(httpClient, dav.getLocation().resolve(href));
                             try {
                                 queryHomeSets(serviceType, group, homeSets);
                             } catch(HttpException|DavException e) {
@@ -261,7 +261,7 @@ public class DavService extends Service {
                     DavResource dav = new DavResource(httpClient, homeSet);
                     try {
                         dav.propfind(1, CollectionInfo.DAV_PROPERTIES);
-                        IteratorChain<DavResource> itCollections = new IteratorChain<>(dav.members.iterator(), new SingletonIterator(dav));
+                        IteratorChain<DavResource> itCollections = new IteratorChain<>(dav.getMembers().iterator(), new SingletonIterator(dav));
                         while (itCollections.hasNext()) {
                             DavResource member = itCollections.next();
                             CollectionInfo info = CollectionInfo.fromDavResource(member);
@@ -270,10 +270,10 @@ public class DavService extends Service {
 
                             if ((serviceType.equals(Services.SERVICE_CARDDAV) && info.type == CollectionInfo.Type.ADDRESS_BOOK) ||
                                 (serviceType.equals(Services.SERVICE_CALDAV) && info.type == CollectionInfo.Type.CALENDAR))
-                                collections.put(member.location, info);
+                                collections.put(member.getLocation(), info);
                         }
                     } catch(HttpException e) {
-                        if (e.status == 403 || e.status == 404 || e.status == 410)
+                        if (e.getStatus() == 403 || e.getStatus() == 404 || e.getStatus() == 410)
                             // delete home set only if it was not accessible (40x)
                             itHomeSets.remove();
                     }
@@ -297,7 +297,7 @@ public class DavService extends Service {
                                 (serviceType.equals(Services.SERVICE_CALDAV) && info.type != CollectionInfo.Type.CALENDAR))
                                 iterator.remove();
                         } catch(HttpException e) {
-                            if (e.status == 403 || e.status == 404 || e.status == 410)
+                            if (e.getStatus()== 403 || e.getStatus()== 404 || e.getStatus()== 410)
                                 // delete collection only if it was not accessible (40x)
                                 iterator.remove();
                             else
@@ -362,16 +362,16 @@ public class DavService extends Service {
             if (Services.SERVICE_CARDDAV.equals(serviceType)) {
                 dav.propfind(0, AddressbookHomeSet.NAME, GroupMembership.NAME);
                 for (Pair<DavResource, Property> result : dav.findProperties(AddressbookHomeSet.NAME)) {
-                    AddressbookHomeSet addressbookHomeSet = (AddressbookHomeSet)result.getRight();
-                    for (String href : addressbookHomeSet.hrefs)
-                        homeSets.add(UrlUtils.withTrailingSlash(result.getLeft().location.resolve(href)));
+                    AddressbookHomeSet addressbookHomeSet = (AddressbookHomeSet)result.getSecond();
+                    for (String href : addressbookHomeSet.getHrefs())
+                        homeSets.add(UrlUtils.withTrailingSlash(result.getFirst().getLocation().resolve(href)));
                 }
             } else if (Services.SERVICE_CALDAV.equals(serviceType)) {
                 dav.propfind(0, CalendarHomeSet.NAME, CalendarProxyReadFor.NAME, CalendarProxyWriteFor.NAME, GroupMembership.NAME);
                 for (Pair<DavResource, Property> result : dav.findProperties(CalendarHomeSet.NAME)) {
-                    CalendarHomeSet calendarHomeSet = (CalendarHomeSet)result.getRight();
-                    for (String href : calendarHomeSet.hrefs)
-                        homeSets.add(UrlUtils.withTrailingSlash(result.getLeft().location.resolve(href)));
+                    CalendarHomeSet calendarHomeSet = (CalendarHomeSet)result.getSecond();
+                    for (String href : calendarHomeSet.getHrefs())
+                        homeSets.add(UrlUtils.withTrailingSlash(result.getFirst().getLocation().resolve(href)));
                 }
             }
         }
