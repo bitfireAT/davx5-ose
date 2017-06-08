@@ -127,8 +127,8 @@ public class CalendarSyncManager extends SyncManager {
         currentDavResource = calendar;
         calendar.calendarQuery("VEVENT", limitStart, null);
 
-        remoteResources = new HashMap<>(davCollection.members.size());
-        for (DavResource iCal : davCollection.members) {
+        remoteResources = new HashMap<>(davCollection.getMembers().size());
+        for (DavResource iCal : davCollection.getMembers()) {
             String fileName = iCal.fileName();
             App.log.fine("Found remote VEVENT: " + fileName);
             remoteResources.put(fileName, iCal);
@@ -155,9 +155,9 @@ public class CalendarSyncManager extends SyncManager {
                 ResponseBody body = remote.get("text/calendar");
 
                 // CalDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc4791#section-5.3.4]
-                GetETag eTag = (GetETag)remote.properties.get(GetETag.NAME);
-                if (eTag == null || StringUtils.isEmpty(eTag.eTag))
-                    throw new DavException("Received CalDAV GET response without ETag for " + remote.location);
+                GetETag eTag = (GetETag)remote.getProperties().get(GetETag.NAME);
+                if (eTag == null || StringUtils.isEmpty(eTag.getETag()))
+                    throw new DavException("Received CalDAV GET response without ETag for " + remote.getLocation());
 
                 Charset charset = Charsets.UTF_8;
                 MediaType contentType = body.contentType();
@@ -165,42 +165,42 @@ public class CalendarSyncManager extends SyncManager {
                     charset = contentType.charset(Charsets.UTF_8);
 
                 @Cleanup InputStream stream = body.byteStream();
-                processVEvent(remote.fileName(), eTag.eTag, stream, charset);
+                processVEvent(remote.fileName(), eTag.getETag(), stream, charset);
 
             } else {
                 // multiple contacts, use multi-get
                 List<HttpUrl> urls = new LinkedList<>();
                 for (DavResource remote : bunch)
-                    urls.add(remote.location);
+                    urls.add(remote.getLocation());
 
                 final DavCalendar calendar = davCalendar();
                 currentDavResource = calendar;
                 calendar.multiget(urls.toArray(new HttpUrl[urls.size()]));
 
                 // process multiget results
-                for (final DavResource remote : davCollection.members) {
+                for (final DavResource remote : davCollection.getMembers()) {
                     currentDavResource = remote;
 
                     String eTag;
-                    GetETag getETag = (GetETag)remote.properties.get(GetETag.NAME);
+                    GetETag getETag = (GetETag)remote.getProperties().get(GetETag.NAME);
                     if (getETag != null)
-                        eTag = getETag.eTag;
+                        eTag = getETag.getETag();
                     else
                         throw new DavException("Received multi-get response without ETag");
 
                     Charset charset = Charsets.UTF_8;
-                    GetContentType getContentType = (GetContentType)remote.properties.get(GetContentType.NAME);
-                    if (getContentType != null && getContentType.type != null) {
-                        MediaType type = MediaType.parse(getContentType.type);
+                    GetContentType getContentType = (GetContentType)remote.getProperties().get(GetContentType.NAME);
+                    if (getContentType != null && getContentType.getType() != null) {
+                        MediaType type = MediaType.parse(getContentType.getType());
                         if (type != null)
                             charset = type.charset(Charsets.UTF_8);
                     }
 
-                    CalendarData calendarData = (CalendarData)remote.properties.get(CalendarData.NAME);
-                    if (calendarData == null || calendarData.iCalendar == null)
+                    CalendarData calendarData = (CalendarData)remote.getProperties().get(CalendarData.NAME);
+                    if (calendarData == null || calendarData.getICalendar() == null)
                         throw new DavException("Received multi-get response without address data");
 
-                    @Cleanup InputStream stream = new ByteArrayInputStream(calendarData.iCalendar.getBytes());
+                    @Cleanup InputStream stream = new ByteArrayInputStream(calendarData.getICalendar().getBytes());
                     processVEvent(remote.fileName(), eTag, stream, charset);
                 }
             }

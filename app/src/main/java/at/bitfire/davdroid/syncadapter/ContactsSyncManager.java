@@ -170,7 +170,7 @@ public class ContactsSyncManager extends SyncManager {
     protected void queryCapabilities() throws DavException, IOException, HttpException {
         // prepare remote address book
         davCollection.propfind(0, SupportedAddressData.NAME, GetCTag.NAME);
-        SupportedAddressData supportedAddressData = (SupportedAddressData)davCollection.properties.get(SupportedAddressData.NAME);
+        SupportedAddressData supportedAddressData = (SupportedAddressData)davCollection.getProperties().get(SupportedAddressData.NAME);
         hasVCard4 = supportedAddressData != null && supportedAddressData.hasVCard4();
         App.log.info("Server advertises VCard/4 support: " + hasVCard4);
 
@@ -278,11 +278,11 @@ public class ContactsSyncManager extends SyncManager {
         // fetch list of remote VCards and build hash table to index file name
         addressBook.propfind(1, ResourceType.NAME, GetETag.NAME);
 
-        remoteResources = new HashMap<>(davCollection.members.size());
-        for (DavResource vCard : davCollection.members) {
+        remoteResources = new HashMap<>(davCollection.getMembers().size());
+        for (DavResource vCard : davCollection.getMembers()) {
             // ignore member collections
-            ResourceType type = (ResourceType)vCard.properties.get(ResourceType.NAME);
-            if (type != null && type.types.contains(ResourceType.COLLECTION))
+            ResourceType type = (ResourceType)vCard.getProperties().get(ResourceType.NAME);
+            if (type != null && type.getTypes().contains(ResourceType.COLLECTION))
                 continue;
 
             String fileName = vCard.fileName();
@@ -315,9 +315,9 @@ public class ContactsSyncManager extends SyncManager {
                 ResponseBody body = remote.get("text/vcard;version=4.0, text/vcard;charset=utf-8;q=0.8, text/vcard;q=0.5");
 
                 // CardDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc6352#section-6.3.2.3]
-                GetETag eTag = (GetETag)remote.properties.get(GetETag.NAME);
-                if (eTag == null || StringUtils.isEmpty(eTag.eTag))
-                    throw new DavException("Received CardDAV GET response without ETag for " + remote.location);
+                GetETag eTag = (GetETag)remote.getProperties().get(GetETag.NAME);
+                if (eTag == null || StringUtils.isEmpty(eTag.getETag()))
+                    throw new DavException("Received CardDAV GET response without ETag for " + remote.getLocation());
 
                 Charset charset = Charsets.UTF_8;
                 MediaType contentType = body.contentType();
@@ -325,42 +325,42 @@ public class ContactsSyncManager extends SyncManager {
                     charset = contentType.charset(Charsets.UTF_8);
 
                 @Cleanup InputStream stream = body.byteStream();
-                processVCard(remote.fileName(), eTag.eTag, stream, charset, downloader);
+                processVCard(remote.fileName(), eTag.getETag(), stream, charset, downloader);
 
             } else {
                 // multiple contacts, use multi-get
                 List<HttpUrl> urls = new LinkedList<>();
                 for (DavResource remote : bunch)
-                    urls.add(remote.location);
+                    urls.add(remote.getLocation());
 
                 final DavAddressBook addressBook = davAddressBook();
                 currentDavResource = addressBook;
                 addressBook.multiget(urls.toArray(new HttpUrl[urls.size()]), hasVCard4);
 
                 // process multi-get results
-                for (final DavResource remote : davCollection.members) {
+                for (final DavResource remote : davCollection.getMembers()) {
                     currentDavResource = remote;
 
                     String eTag;
-                    GetETag getETag = (GetETag)remote.properties.get(GetETag.NAME);
+                    GetETag getETag = (GetETag)remote.getProperties().get(GetETag.NAME);
                     if (getETag != null)
-                        eTag = getETag.eTag;
+                        eTag = getETag.getETag();
                     else
                         throw new DavException("Received multi-get response without ETag");
 
                     Charset charset = Charsets.UTF_8;
-                    GetContentType getContentType = (GetContentType)remote.properties.get(GetContentType.NAME);
-                    if (getContentType != null && getContentType.type != null) {
-                        MediaType type = MediaType.parse(getContentType.type);
+                    GetContentType getContentType = (GetContentType)remote.getProperties().get(GetContentType.NAME);
+                    if (getContentType != null && getContentType.getType() != null) {
+                        MediaType type = MediaType.parse(getContentType.getType());
                         if (type != null)
                             charset = type.charset(Charsets.UTF_8);
                     }
 
-                    AddressData addressData = (AddressData)remote.properties.get(AddressData.NAME);
-                    if (addressData == null || addressData.vCard == null)
+                    AddressData addressData = (AddressData)remote.getProperties().get(AddressData.NAME);
+                    if (addressData == null || addressData.getVCard() == null)
                         throw new DavException("Received multi-get response without address data");
 
-                    @Cleanup InputStream stream = new ByteArrayInputStream(addressData.vCard.getBytes());
+                    @Cleanup InputStream stream = new ByteArrayInputStream(addressData.getVCard().getBytes());
                     processVCard(remote.fileName(), eTag, stream, charset, downloader);
                 }
             }
