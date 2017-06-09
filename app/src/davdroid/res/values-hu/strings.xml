@@ -2,6 +2,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
+  <string name="account_title_address_book">DAVdroid címjegyzék</string>
+  <string name="address_books_authority_title">Címjegyzékek</string>
   <string name="help">Súgó</string>
   <string name="manage_accounts">Fiókok kezelése</string>
   <string name="please_wait">Kérjük, várjon ...</string>
@@ -47,6 +49,8 @@
   <string name="navigation_drawer_forums">Közösség</string>
   <string name="navigation_drawer_donate">Támogatás</string>
   <string name="account_list_empty">Üdvözöljük a DAVdroid felhasználók között!\n\nMost már felvehet CalDAV/CardDav fiókokat.</string>
+  <string name="accounts_global_sync_disabled">A rendszerszintű automatikus szinkronizálás ki van kapcsolva</string>
+  <string name="accounts_global_sync_enable">Bekapcsolás</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Szolgáltatások felderítése nem sikerült</string>
   <string name="dav_service_refresh_couldnt_refresh">Gyűjteménylista frissítése nem sikerült</string>
