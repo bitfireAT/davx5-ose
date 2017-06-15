@@ -199,7 +199,7 @@ public class TasksSyncManager extends SyncManager {
     private DavCalendar davCalendar() { return (DavCalendar)davCollection; }
 
     private void processVTodo(String fileName, String eTag, InputStream stream, Charset charset) throws IOException, CalendarStorageException {
-        Task[] tasks;
+        List<Task> tasks;
         try {
             tasks = Task.fromStream(stream, charset);
         } catch (InvalidCalendarException e) {
@@ -207,8 +207,8 @@ public class TasksSyncManager extends SyncManager {
             return;
         }
 
-        if (tasks.length == 1) {
-            Task newData = tasks[0];
+        if (tasks.size() == 1) {
+            Task newData = tasks.get(0);
 
             // update local task, if it exists
             LocalTask localTask = (LocalTask)localResources.get(fileName);

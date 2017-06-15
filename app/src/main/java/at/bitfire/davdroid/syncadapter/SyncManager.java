@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -273,7 +274,7 @@ abstract public class SyncManager {
     protected void processLocallyDeleted() throws CalendarStorageException, ContactsStorageException {
         // Remove locally deleted entries from server (if they have a name, i.e. if they were uploaded before),
         // but only if they don't have changed on the server. Then finally remove them from the local address book.
-        LocalResource[] localList = localCollection.getDeleted();
+        List<LocalResource> localList = localCollection.getDeleted();
         for (final LocalResource local : localList) {
             if (Thread.interrupted())
                 return;
@@ -304,7 +305,7 @@ abstract public class SyncManager {
     protected void prepareDirty() throws CalendarStorageException, ContactsStorageException {
         // assign file names and UIDs to new contacts so that we can use the file name as an index
         App.log.info("Looking for contacts/groups without file name");
-        for (final LocalResource local : localCollection.getWithoutFileName()) {
+        for (final LocalResource local : (Iterable<LocalResource>)localCollection.getWithoutFileName()) {
             currentLocalResource = local;
 
             App.log.fine("Found local record #" + local.getId() + " without file name; generating file name/UID if necessary");
@@ -322,7 +323,7 @@ abstract public class SyncManager {
      */
     protected void uploadDirty() throws IOException, HttpException, CalendarStorageException, ContactsStorageException {
         // upload dirty contacts
-        for (final LocalResource local : localCollection.getDirty()) {
+        for (final LocalResource local : (Iterable<LocalResource>)localCollection.getDirty()) {
             if (Thread.interrupted())
                 return;
 
@@ -394,8 +395,8 @@ abstract public class SyncManager {
      */
     protected void listLocal() throws CalendarStorageException, ContactsStorageException {
         // fetch list of local contacts and build hash table to index file name
-        LocalResource[] localList = localCollection.getAll();
-        localResources = new HashMap<>(localList.length);
+        List<LocalResource> localList = localCollection.getAll();
+        localResources = new HashMap<>(localList.size());
         for (LocalResource resource : localList) {
             App.log.fine("Found local resource: " + resource.getFileName());
             localResources.put(resource.getFileName(), resource);

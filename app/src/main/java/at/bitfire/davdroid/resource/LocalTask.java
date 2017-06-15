@@ -35,7 +35,7 @@ import lombok.ToString;
 @ToString(of={ "fileName","eTag" }, callSuper=true)
 public class LocalTask extends AndroidTask implements LocalResource {
     static {
-        Task.prodId = new ProdId("+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " ical4j/2.x");
+        Task.setProdId(new ProdId("+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " ical4j/2.x"));
     }
 
     static final String COLUMN_ETAG = Tasks.SYNC1,
@@ -68,17 +68,32 @@ public class LocalTask extends AndroidTask implements LocalResource {
 
         fileName = values.getAsString(Events._SYNC_ID);
         eTag = values.getAsString(COLUMN_ETAG);
-        task.uid = values.getAsString(COLUMN_UID);
 
-        task.sequence = values.getAsInteger(COLUMN_SEQUENCE);
+        final Task task;
+        try {
+            task = getTask();
+        } catch(Exception e) {
+            throw new IllegalStateException(e);
+        }
+        task.setUid(values.getAsString(COLUMN_UID));
+
+        task.setSequence(values.getAsInteger(COLUMN_SEQUENCE));
     }
 
     @Override
     protected void buildTask(ContentProviderOperation.Builder builder, boolean update) {
         super.buildTask(builder, update);
+
+        Task task = null;
+        try {
+            task = getTask();
+        } catch(Exception e) {
+            throw new IllegalStateException(e);
+        }
+
         builder .withValue(Tasks._SYNC_ID, fileName)
-                .withValue(COLUMN_UID, task.uid)
-                .withValue(COLUMN_SEQUENCE, task.sequence)
+                .withValue(COLUMN_UID, task.getUid())
+                .withValue(COLUMN_SEQUENCE, task.getSequence())
                 .withValue(COLUMN_ETAG, eTag);
     }
 
@@ -93,13 +108,14 @@ public class LocalTask extends AndroidTask implements LocalResource {
             ContentValues values = new ContentValues(2);
             values.put(Tasks._SYNC_ID, newFileName);
             values.put(COLUMN_UID, uid);
-            taskList.provider.client.update(taskSyncURI(), values, null, null);
+            getTaskList().getProvider().getClient().update(taskSyncURI(), values, null, null);
 
             fileName = newFileName;
-            if (task != null)
-                task.uid = uid;
 
-        } catch (RemoteException e) {
+            Task task = getTask();
+            task.setUid(uid);
+
+        } catch (FileNotFoundException|RemoteException e) {
             throw new CalendarStorageException("Couldn't update UID", e);
         }
     }
@@ -110,18 +126,19 @@ public class LocalTask extends AndroidTask implements LocalResource {
             ContentValues values = new ContentValues(2);
             values.put(Tasks._DIRTY, 0);
             values.put(COLUMN_ETAG, eTag);
-            if (task != null)
-                values.put(COLUMN_SEQUENCE, task.sequence);
-            taskList.provider.client.update(taskSyncURI(), values, null, null);
+
+            Task task = getTask();
+            values.put(COLUMN_SEQUENCE, task.getSequence());
+            getTaskList().getProvider().getClient().update(taskSyncURI(), values, null, null);
 
             this.eTag = eTag;
-        } catch (RemoteException e) {
+        } catch (FileNotFoundException|RemoteException e) {
             throw new CalendarStorageException("Couldn't update _DIRTY/ETag/SEQUENCE", e);
         }
     }
 
 
-    static class Factory implements AndroidTaskFactory {
+    static class Factory implements AndroidTaskFactory<LocalTask> {
         static final Factory INSTANCE = new Factory();
 
         @Override
@@ -134,9 +151,5 @@ public class LocalTask extends AndroidTask implements LocalResource {
             return new LocalTask(taskList, task, null, null);
         }
 
-        @Override
-        public LocalTask[] newArray(int size) {
-            return new LocalTask[size];
-        }
     }
 }

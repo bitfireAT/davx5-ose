@@ -440,7 +440,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                     info.caldav.id = id;
                     info.caldav.refreshing = (davService != null && davService.isRefreshing(id)) ||
                             ContentResolver.isSyncActive(account, CalendarContract.AUTHORITY) ||
-                            ContentResolver.isSyncActive(account, TaskProvider.ProviderName.OpenTasks.authority);
+                            ContentResolver.isSyncActive(account, TaskProvider.ProviderName.OpenTasks.getAuthority());
                     info.caldav.hasHomeSets = hasHomeSets(db, id);
                     info.caldav.collections = readCollections(db, id);
                 }
@@ -674,7 +674,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
         String authorities[] = {
                 App.getAddressBooksAuthority(),
                 CalendarContract.AUTHORITY,
-                TaskProvider.ProviderName.OpenTasks.authority
+                TaskProvider.ProviderName.OpenTasks.getAuthority()
         };
 
         for (String authority : authorities) {

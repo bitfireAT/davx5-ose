@@ -49,13 +49,13 @@ public class PackageChangedReceiver extends BroadcastReceiver {
             Account account = new Account(cursor.getString(0), context.getString(R.string.account_type));
 
             if (tasksInstalled) {
-                if (ContentResolver.getIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority) <= 0) {
-                    ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
-                    ContentResolver.setSyncAutomatically(account, TaskProvider.ProviderName.OpenTasks.authority, true);
-                    ContentResolver.addPeriodicSync(account, TaskProvider.ProviderName.OpenTasks.authority, new Bundle(), Constants.DEFAULT_SYNC_INTERVAL);
+                if (ContentResolver.getIsSyncable(account, TaskProvider.ProviderName.OpenTasks.getAuthority()) <= 0) {
+                    ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.getAuthority(), 1);
+                    ContentResolver.setSyncAutomatically(account, TaskProvider.ProviderName.OpenTasks.getAuthority(), true);
+                    ContentResolver.addPeriodicSync(account, TaskProvider.ProviderName.OpenTasks.getAuthority(), new Bundle(), Constants.DEFAULT_SYNC_INTERVAL);
                 }
             } else
-                ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0);
+                ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.getAuthority(), 0);
 
         }
     }

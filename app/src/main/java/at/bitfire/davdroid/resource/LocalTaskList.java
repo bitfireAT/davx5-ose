@@ -24,6 +24,7 @@ import org.dmfs.provider.tasks.TaskContract.TaskLists;
 import org.dmfs.provider.tasks.TaskContract.Tasks;
 
 import java.io.FileNotFoundException;
+import java.util.List;
 
 import at.bitfire.davdroid.DavUtils;
 import at.bitfire.davdroid.model.CollectionInfo;
@@ -33,7 +34,7 @@ import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.ical4android.TaskProvider;
 import lombok.Cleanup;
 
-public class LocalTaskList extends AndroidTaskList implements LocalCollection {
+public class LocalTaskList extends AndroidTaskList<LocalTask> implements LocalCollection<LocalTask> {
 
     public static final int defaultColor = 0xFFC3EA6E;     // "DAVdroid green"
 
@@ -46,6 +47,7 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
     };
 
 
+    @NonNull
     @Override
     protected String[] taskBaseInfoColumns() {
         return BASE_INFO_COLUMNS;
@@ -81,29 +83,28 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
 
 
     @Override
-    public LocalTask[] getAll() throws CalendarStorageException {
-        return (LocalTask[])queryTasks(null, null);
+    public List<LocalTask> getAll() throws CalendarStorageException {
+        return queryTasks(null, null);
     }
 
     @Override
-    public LocalTask[] getDeleted() throws CalendarStorageException {
-        return (LocalTask[])queryTasks(Tasks._DELETED + "!=0", null);
+    public List<LocalTask> getDeleted() throws CalendarStorageException {
+        return queryTasks(Tasks._DELETED + "!=0", null);
     }
 
     @Override
-    public LocalTask[] getWithoutFileName() throws CalendarStorageException {
-        return (LocalTask[])queryTasks(Tasks._SYNC_ID + " IS NULL", null);
+    public List<LocalTask> getWithoutFileName() throws CalendarStorageException {
+        return queryTasks(Tasks._SYNC_ID + " IS NULL", null);
     }
 
     @Override
-    public LocalResource[] getDirty() throws CalendarStorageException, FileNotFoundException {
-        LocalTask[] tasks = (LocalTask[])queryTasks(Tasks._DIRTY + "!=0", null);
-        if (tasks != null)
+    public List<LocalTask> getDirty() throws CalendarStorageException, FileNotFoundException {
+        List<LocalTask> tasks = queryTasks(Tasks._DIRTY + "!=0", null);
         for (LocalTask task : tasks) {
-            if (task.getTask().sequence == null)    // sequence has not been assigned yet (i.e. this task was just locally created)
-                task.getTask().sequence = 0;
+            if (task.getTask().getSequence() == null)    // sequence has not been assigned yet (i.e. this task was just locally created)
+                task.getTask().setSequence(0);
             else
-                task.getTask().sequence++;
+                task.getTask().setSequence(task.getTask().getSequence() + 1);
         }
         return tasks;
     }
@@ -113,7 +114,7 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
     @SuppressWarnings("Recycle")
     public String getCTag() throws CalendarStorageException {
         try {
-            @Cleanup Cursor cursor = provider.client.query(taskListSyncUri(), new String[] { COLUMN_CTAG }, null, null, null);
+            @Cleanup Cursor cursor = getProvider().getClient().query(taskListSyncUri(), new String[] { COLUMN_CTAG }, null, null, null);
             if (cursor != null && cursor.moveToNext())
                 return cursor.getString(0);
         } catch (RemoteException e) {
@@ -127,7 +128,7 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
         try {
             ContentValues values = new ContentValues(1);
             values.put(COLUMN_CTAG, cTag);
-            provider.client.update(taskListSyncUri(), values, null, null);
+            getProvider().getClient().update(taskListSyncUri(), values, null, null);
         } catch (RemoteException e) {
             throw new CalendarStorageException("Couldn't write local (last known) CTag", e);
         }
@@ -138,7 +139,7 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
 
     public static boolean tasksProviderAvailable(@NonNull Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            return context.getPackageManager().resolveContentProvider(TaskProvider.ProviderName.OpenTasks.authority, 0) != null;
+            return context.getPackageManager().resolveContentProvider(TaskProvider.ProviderName.OpenTasks.getAuthority(), 0) != null;
         else {
             @Cleanup TaskProvider provider = TaskProvider.acquire(context.getContentResolver(), TaskProvider.ProviderName.OpenTasks);
             return provider != null;
@@ -146,29 +147,25 @@ public class LocalTaskList extends AndroidTaskList implements LocalCollection {
     }
 
 
-    public static class Factory implements AndroidTaskListFactory {
+    public static class Factory implements AndroidTaskListFactory<LocalTaskList> {
         public static final Factory INSTANCE = new Factory();
 
         @Override
-        public AndroidTaskList newInstance(Account account, TaskProvider provider, long id) {
+        public LocalTaskList newInstance(Account account, TaskProvider provider, long id) {
             return new LocalTaskList(account, provider, id);
         }
 
-        @Override
-        public AndroidTaskList[] newArray(int size) {
-            return new LocalTaskList[size];
-        }
     }
 
 
     // HELPERS
 
     public static void onRenameAccount(@NonNull ContentResolver resolver, @NonNull String oldName, @NonNull String newName) throws RemoteException {
-        @Cleanup("release") ContentProviderClient client = resolver.acquireContentProviderClient(TaskProvider.ProviderName.OpenTasks.authority);
+        @Cleanup("release") ContentProviderClient client = resolver.acquireContentProviderClient(TaskProvider.ProviderName.OpenTasks.getAuthority());
         if (client != null) {
             ContentValues values = new ContentValues(1);
             values.put(Tasks.ACCOUNT_NAME, newName);
-            client.update(Tasks.getContentUri(TaskProvider.ProviderName.OpenTasks.authority), values, Tasks.ACCOUNT_NAME + "=?", new String[]{oldName});
+            client.update(Tasks.getContentUri(TaskProvider.ProviderName.OpenTasks.getAuthority()), values, Tasks.ACCOUNT_NAME + "=?", new String[]{oldName});
         }
     }
 
