@@ -53,7 +53,7 @@ import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
 
 
-public class LocalAddressBook extends AndroidAddressBook implements LocalCollection {
+public class LocalAddressBook extends AndroidAddressBook implements LocalCollection<LocalResource> {
 
     protected static final String
             USER_DATA_MAIN_ACCOUNT_TYPE = "real_account_type",
@@ -144,12 +144,12 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
 
     @Override
     @NonNull
-    public LocalResource[] getAll() throws ContactsStorageException {
+    public List<LocalResource> getAll() throws ContactsStorageException {
         List<LocalResource> all = new LinkedList<>();
-        Collections.addAll(all, (LocalResource[])queryContacts(null, null));
+        Collections.addAll(all, (LocalContact[])queryContacts(null, null));
         if (includeGroups)
-            Collections.addAll(all, (LocalResource[])queryGroups(null, null));
-        return all.toArray(new LocalResource[all.size()]);
+            Collections.addAll(all, (LocalGroup[])queryGroups(null, null));
+        return all;
     }
 
     /**
@@ -157,12 +157,12 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
      */
     @Override
     @NonNull
-    public LocalResource[] getDeleted() throws ContactsStorageException {
+    public List<LocalResource> getDeleted() throws ContactsStorageException {
         List<LocalResource> deleted = new LinkedList<>();
         Collections.addAll(deleted, getDeletedContacts());
         if (includeGroups)
             Collections.addAll(deleted, getDeletedGroups());
-        return deleted.toArray(new LocalResource[deleted.size()]);
+        return deleted;
     }
 
     /**
@@ -205,12 +205,12 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
      */
     @Override
     @NonNull
-    public LocalResource[] getDirty() throws ContactsStorageException {
+    public List<LocalResource> getDirty() throws ContactsStorageException {
         List<LocalResource> dirty = new LinkedList<>();
         Collections.addAll(dirty, getDirtyContacts());
         if (includeGroups)
             Collections.addAll(dirty, getDirtyGroups());
-        return dirty.toArray(new LocalResource[dirty.size()]);
+        return dirty;
     }
 
     /**
@@ -218,12 +218,12 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
      */
     @Override
     @NonNull
-    public LocalResource[] getWithoutFileName() throws ContactsStorageException {
+    public List<LocalResource> getWithoutFileName() throws ContactsStorageException {
         List<LocalResource> nameless = new LinkedList<>();
         Collections.addAll(nameless, (LocalContact[])queryContacts(AndroidContact.COLUMN_FILENAME + " IS NULL", null));
         if (includeGroups)
             Collections.addAll(nameless, (LocalGroup[])queryGroups(AndroidGroup.COLUMN_FILENAME + " IS NULL", null));
-        return nameless.toArray(new LocalResource[nameless.size()]);
+        return nameless;
     }
 
 

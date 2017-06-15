@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.DavUtils;
@@ -38,11 +39,12 @@ import at.bitfire.ical4android.AndroidCalendar;
 import at.bitfire.ical4android.AndroidCalendarFactory;
 import at.bitfire.ical4android.BatchOperation;
 import at.bitfire.ical4android.CalendarStorageException;
+import at.bitfire.ical4android.Constants;
 import at.bitfire.ical4android.DateUtils;
 import at.bitfire.vcard4android.ContactsStorageException;
 import lombok.Cleanup;
 
-public class LocalCalendar extends AndroidCalendar implements LocalCollection {
+public class LocalCalendar extends AndroidCalendar<LocalEvent> implements LocalCollection<LocalEvent> {
 
     public static final int defaultColor = 0xFF8bc34a;     // light green 500
 
@@ -54,6 +56,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
             LocalEvent.COLUMN_ETAG
     };
 
+    @NonNull
     @Override
     protected String[] eventBaseInfoColumns() {
         return BASE_INFO_COLUMNS;
@@ -99,11 +102,14 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
             values.put(Calendars.CAN_ORGANIZER_RESPOND, 1);
         }
 
-        if (!TextUtils.isEmpty(info.timeZone)) {
-            VTimeZone timeZone = DateUtils.parseVTimeZone(info.timeZone);
-            if (timeZone != null && timeZone.getTimeZoneId() != null)
-                values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(timeZone.getTimeZoneId().getValue()));
-        }
+        if (!TextUtils.isEmpty(info.timeZone))
+            try {
+                VTimeZone timeZone = DateUtils.parseVTimeZone(info.timeZone);
+                if (timeZone.getTimeZoneId() != null)
+                    values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(timeZone.getTimeZoneId().getValue()));
+            } catch(IllegalArgumentException e) {
+                App.log.log(Level.WARNING, "Couldn't parse calendar default time zone", e);
+            }
         values.put(Calendars.ALLOWED_REMINDERS, Reminders.METHOD_ALERT);
         values.put(Calendars.ALLOWED_AVAILABILITY, StringUtils.join(new int[] { Reminders.AVAILABILITY_TENTATIVE, Reminders.AVAILABILITY_FREE, Reminders.AVAILABILITY_BUSY }, ","));
         values.put(Calendars.ALLOWED_ATTENDEE_TYPES, StringUtils.join(new int[] { CalendarContract.Attendees.TYPE_OPTIONAL, CalendarContract.Attendees.TYPE_REQUIRED, CalendarContract.Attendees.TYPE_RESOURCE }, ", "));
@@ -112,34 +118,34 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
 
 
     @Override
-    public LocalResource[] getAll() throws CalendarStorageException, ContactsStorageException {
-        return (LocalEvent[])queryEvents(Events.ORIGINAL_ID + " IS NULL", null);
+    public List<LocalEvent> getAll() throws CalendarStorageException, ContactsStorageException {
+        return queryEvents(Events.ORIGINAL_ID + " IS NULL", null);
     }
 
     @Override
-    public LocalEvent[] getDeleted() throws CalendarStorageException {
-        return (LocalEvent[])queryEvents(Events.DELETED + "!=0 AND " + Events.ORIGINAL_ID + " IS NULL", null);
+    public List<LocalEvent> getDeleted() throws CalendarStorageException {
+        return queryEvents(Events.DELETED + "!=0 AND " + Events.ORIGINAL_ID + " IS NULL", null);
     }
 
     @Override
-    public LocalEvent[] getWithoutFileName() throws CalendarStorageException {
-        return (LocalEvent[])queryEvents(Events._SYNC_ID + " IS NULL AND " + Events.ORIGINAL_ID + " IS NULL", null);
+    public List<LocalEvent> getWithoutFileName() throws CalendarStorageException {
+        return queryEvents(Events._SYNC_ID + " IS NULL AND " + Events.ORIGINAL_ID + " IS NULL", null);
     }
 
     @Override
-    public LocalResource[] getDirty() throws CalendarStorageException, FileNotFoundException {
-        List<LocalResource> dirty = new LinkedList<>();
+    public List<LocalEvent> getDirty() throws CalendarStorageException, FileNotFoundException {
+        List<LocalEvent> dirty = new LinkedList<>();
 
         // get dirty events which are required to have an increased SEQUENCE value
-        for (LocalEvent event : (LocalEvent[])queryEvents(Events.DIRTY + "!=0 AND " + Events.ORIGINAL_ID + " IS NULL", null)) {
-            if (event.getEvent().sequence == null)      // sequence has not been assigned yet (i.e. this event was just locally created)
-                event.getEvent().sequence = 0;
+        for (LocalEvent event : (Iterable<LocalEvent>)queryEvents(Events.DIRTY + "!=0 AND " + Events.ORIGINAL_ID + " IS NULL", null)) {
+            if (event.getEvent().getSequence() == null)      // sequence has not been assigned yet (i.e. this event was just locally created)
+                event.getEvent().setSequence(0);
             else if (event.weAreOrganizer)
-                event.getEvent().sequence++;
+                event.getEvent().setSequence(event.getEvent().getSequence() + 1);
             dirty.add(event);
         }
 
-        return dirty.toArray(new LocalResource[dirty.size()]);
+        return dirty;
     }
 
 
@@ -147,7 +153,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
     @SuppressWarnings("Recycle")
     public String getCTag() throws CalendarStorageException {
         try {
-            @Cleanup Cursor cursor = provider.query(calendarSyncURI(), new String[] { COLUMN_CTAG }, null, null, null);
+            @Cleanup Cursor cursor = getProvider().query(calendarSyncURI(), new String[] { COLUMN_CTAG }, null, null, null);
             if (cursor != null && cursor.moveToNext())
                 return cursor.getString(0);
         } catch (RemoteException e) {
@@ -161,7 +167,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         try {
             ContentValues values = new ContentValues(1);
             values.put(COLUMN_CTAG, cTag);
-            provider.update(calendarSyncURI(), values, null, null);
+            getProvider().update(calendarSyncURI(), values, null, null);
         } catch (RemoteException e) {
             throw new CalendarStorageException("Couldn't write local (last known) CTag", e);
         }
@@ -172,7 +178,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         // process deleted exceptions
         App.log.info("Processing deleted exceptions");
         try {
-            @Cleanup Cursor cursor = provider.query(
+            @Cleanup Cursor cursor = getProvider().query(
                     syncAdapterURI(Events.CONTENT_URI),
                     new String[] { Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE },
                     Events.DELETED + "!=0 AND " + Events.ORIGINAL_ID + " IS NOT NULL", null, null);
@@ -182,13 +188,13 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
                         originalID = cursor.getLong(1);     // can't be null (by query)
 
                 // get original event's SEQUENCE
-                @Cleanup Cursor cursor2 = provider.query(
+                @Cleanup Cursor cursor2 = getProvider().query(
                         syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)),
                         new String[] { LocalEvent.COLUMN_SEQUENCE },
                         null, null, null);
                 int originalSequence = (cursor2 == null || cursor2.isNull(0)) ? 0 : cursor2.getInt(0);
 
-                BatchOperation batch = new BatchOperation(provider);
+                BatchOperation batch = new BatchOperation(getProvider());
                 // re-schedule original event and set it to DIRTY
                 batch.enqueue(new BatchOperation.Operation(
                         ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
@@ -208,7 +214,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
         // process dirty exceptions
         App.log.info("Processing dirty exceptions");
         try {
-            @Cleanup Cursor cursor = provider.query(
+            @Cleanup Cursor cursor = getProvider().query(
                     syncAdapterURI(Events.CONTENT_URI),
                     new String[] { Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE },
                     Events.DIRTY + "!=0 AND " + Events.ORIGINAL_ID + " IS NOT NULL", null, null);
@@ -218,7 +224,7 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
                         originalID = cursor.getLong(1);     // can't be null (by query)
                 int sequence = cursor.isNull(2) ? 0 : cursor.getInt(2);
 
-                BatchOperation batch = new BatchOperation(provider);
+                BatchOperation batch = new BatchOperation(getProvider());
                 // original event to DIRTY
                 batch.enqueue(new BatchOperation.Operation(
                         ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
@@ -238,18 +244,14 @@ public class LocalCalendar extends AndroidCalendar implements LocalCollection {
     }
 
 
-    public static class Factory implements AndroidCalendarFactory {
+    public static class Factory implements AndroidCalendarFactory<LocalCalendar> {
         public static final Factory INSTANCE = new Factory();
 
         @Override
-        public AndroidCalendar newInstance(Account account, ContentProviderClient provider, long id) {
+        public LocalCalendar newInstance(Account account, ContentProviderClient provider, long id) {
             return new LocalCalendar(account, provider, id);
         }
 
-        @Override
-        public AndroidCalendar[] newArray(int size) {
-            return new LocalCalendar[size];
-        }
     }
 
 }

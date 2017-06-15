@@ -9,17 +9,18 @@
 package at.bitfire.davdroid.resource;
 
 import java.io.FileNotFoundException;
+import java.util.List;
 
 import at.bitfire.ical4android.CalendarStorageException;
 import at.bitfire.vcard4android.ContactsStorageException;
 
-public interface LocalCollection {
+public interface LocalCollection<T extends LocalResource> {
 
-    LocalResource[] getDeleted() throws CalendarStorageException, ContactsStorageException;
-    LocalResource[] getWithoutFileName()  throws CalendarStorageException, ContactsStorageException;
-    LocalResource[] getDirty() throws CalendarStorageException, ContactsStorageException, FileNotFoundException;
+    List<T> getDeleted() throws CalendarStorageException, ContactsStorageException;
+    List<T> getWithoutFileName()  throws CalendarStorageException, ContactsStorageException;
+    List<T> getDirty() throws CalendarStorageException, ContactsStorageException, FileNotFoundException;
 
-    LocalResource[] getAll() throws CalendarStorageException, ContactsStorageException;
+    List<T> getAll() throws CalendarStorageException, ContactsStorageException;
 
     String getCTag() throws CalendarStorageException, ContactsStorageException;
     void setCTag(String cTag) throws CalendarStorageException, ContactsStorageException;

@@ -20,6 +20,8 @@ import android.support.annotation.NonNull;
 
 import net.fortuna.ical4j.model.property.ProdId;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.UUID;
 
 import at.bitfire.davdroid.BuildConfig;
@@ -37,7 +39,7 @@ import lombok.ToString;
 @ToString(of={ "fileName","eTag" }, callSuper=true)
 public class LocalEvent extends AndroidEvent implements LocalResource {
     static {
-        Event.prodId = new ProdId("+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " ical4j/2.x");
+        Event.setProdId(new ProdId("+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " ical4j/2.x"));
     }
 
     static final String COLUMN_ETAG = CalendarContract.Events.SYNC_DATA1,
@@ -67,31 +69,31 @@ public class LocalEvent extends AndroidEvent implements LocalResource {
     /* process LocalEvent-specific fields */
 
     @Override
-    protected void populateEvent(ContentValues values) {
+    protected void populateEvent(ContentValues values) throws FileNotFoundException, CalendarStorageException {
         super.populateEvent(values);
         fileName = values.getAsString(Events._SYNC_ID);
         eTag = values.getAsString(COLUMN_ETAG);
-        event.uid = values.getAsString(COLUMN_UID);
+        getEvent().setUid(values.getAsString(COLUMN_UID));
 
-        event.sequence = values.getAsInteger(COLUMN_SEQUENCE);
+        getEvent().setSequence(values.getAsInteger(COLUMN_SEQUENCE));
         if (Build.VERSION.SDK_INT >= 17) {
             Integer isOrganizer = values.getAsInteger(Events.IS_ORGANIZER);
             weAreOrganizer = isOrganizer != null && isOrganizer != 0;
         } else {
             String organizer = values.getAsString(Events.ORGANIZER);
-            weAreOrganizer = organizer == null || organizer.equals(calendar.account.name);
+            weAreOrganizer = organizer == null || organizer.equals(getCalendar().getAccount().name);
         }
     }
 
     @Override
-    protected void buildEvent(Event recurrence, ContentProviderOperation.Builder builder) {
+    protected void buildEvent(Event recurrence, ContentProviderOperation.Builder builder) throws FileNotFoundException, CalendarStorageException {
         super.buildEvent(recurrence, builder);
 
         boolean buildException = recurrence != null;
-        Event eventToBuild = buildException ? recurrence : event;
+        Event eventToBuild = buildException ? recurrence : getEvent();
 
-        builder .withValue(COLUMN_UID, event.uid)
-                .withValue(COLUMN_SEQUENCE, eventToBuild.sequence)
+        builder .withValue(COLUMN_UID, getEvent().getUid())
+                .withValue(COLUMN_SEQUENCE, eventToBuild.getSequence())
                 .withValue(CalendarContract.Events.DIRTY, 0)
                 .withValue(CalendarContract.Events.DELETED, 0);
 
@@ -108,7 +110,7 @@ public class LocalEvent extends AndroidEvent implements LocalResource {
     public void prepareForUpload() throws CalendarStorageException {
         try {
             String uid = null;
-            @Cleanup Cursor c = calendar.provider.query(eventSyncURI(), new String[] { COLUMN_UID }, null, null, null);
+            @Cleanup Cursor c = getCalendar().getProvider().query(eventSyncURI(), new String[] { COLUMN_UID }, null, null, null);
             if (c.moveToNext())
                 uid = c.getString(0);
             if (uid == null)
@@ -119,13 +121,13 @@ public class LocalEvent extends AndroidEvent implements LocalResource {
             ContentValues values = new ContentValues(2);
             values.put(Events._SYNC_ID, newFileName);
             values.put(COLUMN_UID, uid);
-            calendar.provider.update(eventSyncURI(), values, null, null);
+            getCalendar().getProvider().update(eventSyncURI(), values, null, null);
 
             fileName = newFileName;
-            if (event != null)
-                event.uid = uid;
+            if (getEvent() != null)
+                getEvent().setUid(uid);
 
-        } catch (RemoteException e) {
+        } catch (FileNotFoundException|RemoteException e) {
             throw new CalendarStorageException("Couldn't update UID", e);
         }
     }
@@ -136,33 +138,29 @@ public class LocalEvent extends AndroidEvent implements LocalResource {
             ContentValues values = new ContentValues(2);
             values.put(CalendarContract.Events.DIRTY, 0);
             values.put(COLUMN_ETAG, eTag);
-            if (event != null)
-                values.put(COLUMN_SEQUENCE, event.sequence);
-            calendar.provider.update(eventSyncURI(), values, null, null);
+            if (getEvent() != null)
+                values.put(COLUMN_SEQUENCE, getEvent().getSequence());
+            getCalendar().getProvider().update(eventSyncURI(), values, null, null);
 
             this.eTag = eTag;
-        } catch (RemoteException e) {
+        } catch (IOException|RemoteException e) {
             throw new CalendarStorageException("Couldn't update UID", e);
         }
     }
 
 
-    static class Factory implements AndroidEventFactory {
+    static class Factory implements AndroidEventFactory<LocalEvent> {
         static final Factory INSTANCE = new Factory();
 
         @Override
-        public AndroidEvent newInstance(AndroidCalendar calendar, long id, ContentValues baseInfo) {
+        public LocalEvent newInstance(AndroidCalendar calendar, long id, ContentValues baseInfo) {
             return new LocalEvent(calendar, id, baseInfo);
         }
 
         @Override
-        public AndroidEvent newInstance(AndroidCalendar calendar, Event event) {
+        public LocalEvent newInstance(AndroidCalendar calendar, Event event) {
             return new LocalEvent(calendar, event, null, null);
         }
 
-        @Override
-        public AndroidEvent[] newArray(int size) {
-            return new LocalEvent[size];
-        }
     }
 }
