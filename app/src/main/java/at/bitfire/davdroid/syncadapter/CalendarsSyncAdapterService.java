@@ -25,6 +25,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -62,7 +63,7 @@ public class CalendarsSyncAdapterService extends SyncAdapterService {
 
                 updateLocalCalendars(provider, account, settings);
 
-                for (LocalCalendar calendar : (LocalCalendar[])LocalCalendar.find(account, provider, LocalCalendar.Factory.INSTANCE, CalendarContract.Calendars.SYNC_EVENTS + "!=0", null)) {
+                for (LocalCalendar calendar : LocalCalendar.find(account, provider, LocalCalendar.Factory.INSTANCE, CalendarContract.Calendars.SYNC_EVENTS + "!=0", null)) {
                     App.log.info("Synchronizing calendar #"  + calendar.getId() + ", URL: " + calendar.getName());
                     CalendarSyncManager syncManager = new CalendarSyncManager(getContext(), account, settings, extras, authority, syncResult, calendar);
                     syncManager.performSync();
@@ -85,7 +86,7 @@ public class CalendarsSyncAdapterService extends SyncAdapterService {
             Long service = getService(db, account);
             Map<String, CollectionInfo> remote = remoteCalendars(db, service);
 
-            LocalCalendar[] local = (LocalCalendar[])LocalCalendar.find(account, provider, LocalCalendar.Factory.INSTANCE, null, null);
+            List<LocalCalendar> local = LocalCalendar.find(account, provider, LocalCalendar.Factory.INSTANCE, null, null);
 
             boolean updateColors = settings.getManageCalendarColors();
 

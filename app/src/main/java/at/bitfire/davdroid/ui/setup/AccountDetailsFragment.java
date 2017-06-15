@@ -161,8 +161,8 @@ public class AccountDetailsFragment extends Fragment {
                 // enable task sync if OpenTasks is installed
                 // further changes will be handled by PackageChangedReceiver
                 if (LocalTaskList.tasksProviderAvailable(getContext())) {
-                    ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1);
-                    settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL);
+                    ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.getAuthority(), 1);
+                    settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.getAuthority(), Constants.DEFAULT_SYNC_INTERVAL);
                 }
             } else
                 ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0);
