@@ -25,6 +25,7 @@ import android.support.annotation.Nullable;
 import org.dmfs.provider.tasks.TaskContract;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -70,7 +71,7 @@ public class TasksSyncAdapterService extends SyncAdapterService {
 
                 updateLocalTaskLists(provider, account, settings);
 
-                for (LocalTaskList taskList : (LocalTaskList[])LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, TaskContract.TaskLists.SYNC_ENABLED + "!=0", null)) {
+                for (LocalTaskList taskList : LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, TaskContract.TaskLists.SYNC_ENABLED + "!=0", null)) {
                     App.log.info("Synchronizing task list #" + taskList.getId() + " [" + taskList.getSyncId() + "]");
                     TasksSyncManager syncManager = new TasksSyncManager(getContext(), account, settings, extras, authority, provider, syncResult, taskList);
                     syncManager.performSync();
@@ -91,7 +92,7 @@ public class TasksSyncAdapterService extends SyncAdapterService {
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
                 Long service = getService(db, account);
                 Map<String, CollectionInfo> remote = remoteTaskLists(db, service);
-                LocalTaskList[] local = (LocalTaskList[])LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, null, null);
+                List<LocalTaskList> local = LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, null, null);
 
                 boolean updateColors = settings.getManageCalendarColors();
 

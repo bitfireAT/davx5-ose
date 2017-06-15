@@ -319,7 +319,7 @@ public class AccountSettings {
             client = context.getContentResolver().acquireContentProviderClient(CalendarContract.AUTHORITY);
             if (client != null)
                 try {
-                    LocalCalendar calendars[] = (LocalCalendar[])LocalCalendar.find(account, client, LocalCalendar.Factory.INSTANCE, null, null);
+                    List<LocalCalendar> calendars = LocalCalendar.find(account, client, LocalCalendar.Factory.INSTANCE, null, null);
                     for (LocalCalendar calendar : calendars) {
                         String url = calendar.getName();
                         App.log.fine("Migrating calendar " + url);
@@ -335,7 +335,7 @@ public class AccountSettings {
             TaskProvider provider = LocalTaskList.acquireTaskProvider(context.getContentResolver());
             if (provider != null)
                 try {
-                    LocalTaskList[] taskLists = (LocalTaskList[])LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, null, null);
+                    List<LocalTaskList> taskLists = LocalTaskList.find(account, provider, LocalTaskList.Factory.INSTANCE, null, null);
                     for (LocalTaskList taskList : taskLists) {
                         String url = taskList.getSyncId();
                         App.log.fine("Migrating task list " + url);

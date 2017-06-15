@@ -165,7 +165,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
             }
 
             final ListPreference prefSyncTasks = (ListPreference)findPreference("sync_interval_tasks");
-            final Long syncIntervalTasks = settings.getSyncInterval(TaskProvider.ProviderName.OpenTasks.authority);
+            final Long syncIntervalTasks = settings.getSyncInterval(TaskProvider.ProviderName.OpenTasks.getAuthority());
             if (syncIntervalTasks != null) {
                 prefSyncTasks.setValue(syncIntervalTasks.toString());
                 if (syncIntervalTasks == AccountSettings.SYNC_INTERVAL_MANUALLY)
@@ -175,7 +175,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 prefSyncTasks.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Long.parseLong((String)newValue));
+                        settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.getAuthority(), Long.parseLong((String)newValue));
                         getLoaderManager().restartLoader(0, getArguments(), AccountSettingsFragment.this);
                         return false;
                     }
