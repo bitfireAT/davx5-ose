@@ -137,7 +137,7 @@ public class LocalCalendar extends AndroidCalendar<LocalEvent> implements LocalC
         List<LocalEvent> dirty = new LinkedList<>();
 
         // get dirty events which are required to have an increased SEQUENCE value
-        for (LocalEvent event : (Iterable<LocalEvent>)queryEvents(Events.DIRTY + "!=0 AND " + Events.ORIGINAL_ID + " IS NULL", null)) {
+        for (LocalEvent event : queryEvents(Events.DIRTY + "!=0 AND " + Events.ORIGINAL_ID + " IS NULL", null)) {
             if (event.getEvent().getSequence() == null)      // sequence has not been assigned yet (i.e. this event was just locally created)
                 event.getEvent().setSequence(0);
             else if (event.weAreOrganizer)
