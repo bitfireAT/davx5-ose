@@ -1,5 +1,6 @@
 include ':app'
+include ':cert4android'
 include ':dav4android'
 include ':ical4android'
 include ':vcard4android'
-include ':cert4android'
+include ':market_licensing'
