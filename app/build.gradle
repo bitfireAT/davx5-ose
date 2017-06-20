@@ -21,7 +21,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '26.0.0'
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
@@ -29,7 +29,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 25
 
-        versionCode 151
+        versionCode 152
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "customCerts", "true"
@@ -37,7 +37,7 @@ android {
 
     productFlavors {
         standard {
-            versionName "1.6.1.1-ose"
+            versionName "1.6.2-ose"
         }
     }
 
