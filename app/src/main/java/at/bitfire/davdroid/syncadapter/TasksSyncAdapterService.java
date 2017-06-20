@@ -102,7 +102,7 @@ public class TasksSyncAdapterService extends SyncAdapterService {
                 for (LocalTaskList list : local) {
                     String url = list.getSyncId();
                     if (!remote.containsKey(url)) {
-                        App.log.fine("Deleting obsolete local task list" + url);
+                        App.log.fine("Deleting obsolete local task list " + url);
                         list.delete();
                     } else {
                         // remote CollectionInfo found for this local collection, update data
