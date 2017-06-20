@@ -8,8 +8,7 @@ before_script:
 
 cache:
   paths:
-     - .gradle/wrapper
-     - .gradle/caches
+     - .gradle/
 
 test:
   script:
