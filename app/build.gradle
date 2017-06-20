@@ -143,7 +143,7 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.8.1'
     compile 'commons-io:commons-io:2.5'
     compile 'dnsjava:dnsjava:2.1.8'
-    compile 'org.apache.commons:commons-lang3:3.5'
+    compile 'org.apache.commons:commons-lang3:3.6'
     compile 'org.apache.commons:commons-collections4:4.1'
     provided 'org.projectlombok:lombok:1.16.16'
 
