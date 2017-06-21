@@ -6,15 +6,6 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.1'
-    }
-}
-
 apply plugin: 'com.android.application'
 
 android {
