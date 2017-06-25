@@ -19,6 +19,7 @@ import android.app.Dialog;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.ComponentName;
+import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -425,14 +426,16 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                             ContentResolver.isSyncActive(account, App.getAddressBooksAuthority());
 
                     AccountManager accountManager = AccountManager.get(getContext());
-                    for (Account addrBookAccount : accountManager.getAccountsByType(App.getAddressBookAccountType())) {
-                        LocalAddressBook addressBook = new LocalAddressBook(getContext(), addrBookAccount, null);
-                        try {
-                            if (account.equals(addressBook.getMainAccount()))
-                                info.carddav.refreshing |= ContentResolver.isSyncActive(addrBookAccount, ContactsContract.AUTHORITY);
-                        } catch(ContactsStorageException e) {
+                    @Cleanup("release") ContentProviderClient provider = getContext().getContentResolver().acquireContentProviderClient(ContactsContract.AUTHORITY);
+                    if (provider != null)
+                        for (Account addrBookAccount : accountManager.getAccountsByType(App.getAddressBookAccountType())) {
+                            LocalAddressBook addressBook = new LocalAddressBook(getContext(), addrBookAccount, provider);
+                            try {
+                                if (account.equals(addressBook.getMainAccount()))
+                                    info.carddav.refreshing |= ContentResolver.isSyncActive(addrBookAccount, ContactsContract.AUTHORITY);
+                            } catch(ContactsStorageException e) {
+                            }
                         }
-                    }
 
                     info.carddav.hasHomeSets = hasHomeSets(db, id);
                     info.carddav.collections = readCollections(db, id);

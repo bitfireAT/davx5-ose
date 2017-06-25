@@ -99,56 +99,56 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
 
     public void update(@NonNull CollectionInfo info) throws AuthenticatorException, OperationCanceledException, IOException, ContactsStorageException {
         final String newAccountName = accountName(getMainAccount(), info);
-        if (!account.name.equals(newAccountName) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (!getAccount().name.equals(newAccountName) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             final AccountManager accountManager = AccountManager.get(context);
-            AccountManagerFuture<Account> future = accountManager.renameAccount(account, newAccountName, new AccountManagerCallback<Account>() {
+            AccountManagerFuture<Account> future = accountManager.renameAccount(getAccount(), newAccountName, new AccountManagerCallback<Account>() {
                 @Override
                 public void run(AccountManagerFuture<Account> future) {
                     try {
                         // update raw contacts to new account name
-                        if (provider != null) {
+                        if (getProvider() != null) {
                             ContentValues values = new ContentValues(1);
                             values.put(RawContacts.ACCOUNT_NAME, newAccountName);
-                            provider.update(syncAdapterURI(RawContacts.CONTENT_URI), values, RawContacts.ACCOUNT_NAME + "=?", new String[] { account.name });
+                            getProvider().update(syncAdapterURI(RawContacts.CONTENT_URI), values, RawContacts.ACCOUNT_NAME + "=?", new String[] { getAccount().name });
                         }
                     } catch(RemoteException e) {
                         App.log.log(Level.WARNING, "Couldn't re-assign contacts to new account name", e);
                     }
                 }
             }, null);
-            account = future.getResult();
+            setAccount(future.getResult());
         }
 
         // make sure it will still be synchronized when contacts are updated
-        ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
+        ContentResolver.setSyncAutomatically(getAccount(), ContactsContract.AUTHORITY, true);
     }
 
     public void delete() {
         AccountManager accountManager = AccountManager.get(context);
-        accountManager.removeAccount(account, null, null);
+        accountManager.removeAccount(getAccount(), null, null);
     }
 
 
     public LocalAddressBook(Context context, Account account, ContentProviderClient provider) {
-        super(account, provider, LocalGroup.Factory.INSTANCE, LocalContact.Factory.INSTANCE);
+        super(account, provider, LocalContact.Factory.INSTANCE, LocalGroup.Factory.INSTANCE);
         this.context = context;
     }
 
     @NonNull
     public LocalContact findContactByUID(String uid) throws ContactsStorageException, FileNotFoundException {
-        LocalContact[] contacts = (LocalContact[])queryContacts(LocalContact.COLUMN_UID + "=?", new String[] { uid });
-        if (contacts.length == 0)
+        List<LocalContact> contacts = queryContacts(LocalContact.COLUMN_UID + "=?", new String[] { uid });
+        if (contacts.size() == 0)
             throw new FileNotFoundException();
-        return contacts[0];
+        return contacts.get(0);
     }
 
     @Override
     @NonNull
     public List<LocalResource> getAll() throws ContactsStorageException {
         List<LocalResource> all = new LinkedList<>();
-        Collections.addAll(all, (LocalContact[])queryContacts(null, null));
+        all.addAll(queryContacts(null, null));
         if (includeGroups)
-            Collections.addAll(all, (LocalGroup[])queryGroups(null, null));
+            all.addAll(queryGroups(null, null));
         return all;
     }
 
@@ -159,9 +159,9 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
     @NonNull
     public List<LocalResource> getDeleted() throws ContactsStorageException {
         List<LocalResource> deleted = new LinkedList<>();
-        Collections.addAll(deleted, getDeletedContacts());
+        deleted.addAll(getDeletedContacts());
         if (includeGroups)
-            Collections.addAll(deleted, getDeletedGroups());
+            deleted.addAll(getDeletedGroups());
         return deleted;
     }
 
@@ -195,7 +195,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
         }
 
         if (includeGroups)
-            reallyDirty += getDirtyGroups().length;
+            reallyDirty += getDirtyGroups().size();
 
         return reallyDirty;
     }
@@ -207,9 +207,9 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
     @NonNull
     public List<LocalResource> getDirty() throws ContactsStorageException {
         List<LocalResource> dirty = new LinkedList<>();
-        Collections.addAll(dirty, getDirtyContacts());
+        dirty.addAll(getDirtyContacts());
         if (includeGroups)
-            Collections.addAll(dirty, getDirtyGroups());
+            dirty.addAll(getDirtyGroups());
         return dirty;
     }
 
@@ -220,36 +220,36 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
     @NonNull
     public List<LocalResource> getWithoutFileName() throws ContactsStorageException {
         List<LocalResource> nameless = new LinkedList<>();
-        Collections.addAll(nameless, (LocalContact[])queryContacts(AndroidContact.COLUMN_FILENAME + " IS NULL", null));
+        nameless.addAll(queryContacts(AndroidContact.COLUMN_FILENAME + " IS NULL", null));
         if (includeGroups)
-            Collections.addAll(nameless, (LocalGroup[])queryGroups(AndroidGroup.COLUMN_FILENAME + " IS NULL", null));
+            nameless.addAll(queryGroups(AndroidGroup.COLUMN_FILENAME + " IS NULL", null));
         return nameless;
     }
 
 
     @NonNull
-    public LocalContact[] getDeletedContacts() throws ContactsStorageException {
-        return (LocalContact[])queryContacts(RawContacts.DELETED + "!= 0", null);
+    public List<LocalContact> getDeletedContacts() throws ContactsStorageException {
+        return queryContacts(RawContacts.DELETED + "!= 0", null);
     }
 
     @NonNull
-    public LocalContact[] getDirtyContacts() throws ContactsStorageException {
-        return (LocalContact[])queryContacts(RawContacts.DIRTY + "!= 0", null);
+    public List<LocalContact> getDirtyContacts() throws ContactsStorageException {
+        return queryContacts(RawContacts.DIRTY + "!= 0", null);
     }
 
     @NonNull
-    public LocalGroup[] getDeletedGroups() throws ContactsStorageException {
-        return (LocalGroup[])queryGroups(Groups.DELETED + "!= 0", null);
+    public List<LocalGroup> getDeletedGroups() throws ContactsStorageException {
+        return queryGroups(Groups.DELETED + "!= 0", null);
     }
 
     @NonNull
-    public LocalGroup[] getDirtyGroups() throws ContactsStorageException {
-        return (LocalGroup[])queryGroups(Groups.DIRTY + "!= 0", null);
+    public List<LocalGroup> getDirtyGroups() throws ContactsStorageException {
+        return queryGroups(Groups.DIRTY + "!= 0", null);
     }
 
     @NonNull LocalContact[] getByGroupMembership(long groupID) throws ContactsStorageException {
         try {
-            @Cleanup Cursor cursor = provider.query(syncAdapterURI(ContactsContract.Data.CONTENT_URI),
+            @Cleanup Cursor cursor = getProvider().query(syncAdapterURI(ContactsContract.Data.CONTENT_URI),
                     new String[] { RawContacts.Data.RAW_CONTACT_ID },
                     "(" + GroupMembership.MIMETYPE + "=? AND " + GroupMembership.GROUP_ROW_ID + "=?) OR (" + CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?)",
                     new String[] { GroupMembership.CONTENT_ITEM_TYPE, String.valueOf(groupID), CachedGroupMembership.CONTENT_ITEM_TYPE, String.valueOf(groupID) },
@@ -272,8 +272,8 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
 
     public void deleteAll() throws ContactsStorageException {
         try {
-            provider.delete(syncAdapterURI(RawContacts.CONTENT_URI), null, null);
-            provider.delete(syncAdapterURI(Groups.CONTENT_URI), null, null);
+            getProvider().delete(syncAdapterURI(RawContacts.CONTENT_URI), null, null);
+            getProvider().delete(syncAdapterURI(Groups.CONTENT_URI), null, null);
         } catch(RemoteException e) {
             throw new ContactsStorageException("Couldn't delete all local contacts and groups", e);
         }
@@ -289,7 +289,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
      */
     public long findOrCreateGroup(@NonNull String title) throws ContactsStorageException {
         try {
-            @Cleanup Cursor cursor = provider.query(syncAdapterURI(Groups.CONTENT_URI),
+            @Cleanup Cursor cursor = getProvider().query(syncAdapterURI(Groups.CONTENT_URI),
                     new String[] { Groups._ID  },
                     Groups.TITLE + "=?", new String[] { title },
                     null);
@@ -298,7 +298,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
 
             ContentValues values = new ContentValues();
             values.put(Groups.TITLE, title);
-            Uri uri = provider.insert(syncAdapterURI(Groups.CONTENT_URI), values);
+            Uri uri = getProvider().insert(syncAdapterURI(Groups.CONTENT_URI), values);
             return ContentUris.parseId(uri);
         } catch(RemoteException e) {
             throw new ContactsStorageException("Couldn't find local contact group", e);
@@ -308,7 +308,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
     public void removeEmptyGroups() throws ContactsStorageException {
         // find groups without members
         /** should be done using {@link Groups.SUMMARY_COUNT}, but it's not implemented in Android yet */
-        for (LocalGroup group : (LocalGroup[])queryGroups(null, null))
+        for (LocalGroup group : (Iterable<? extends LocalGroup>)queryGroups(null, null))
             if (group.getMembers().length == 0) {
                 App.log.log(Level.FINE, "Deleting group", group);
                 group.delete();
@@ -317,7 +317,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
 
     public void removeGroups() throws ContactsStorageException {
         try {
-            provider.delete(syncAdapterURI(Groups.CONTENT_URI), null, null);
+            getProvider().delete(syncAdapterURI(Groups.CONTENT_URI), null, null);
         } catch(RemoteException e) {
             throw new ContactsStorageException("Couldn't remove all groups", e);
         }
@@ -336,8 +336,8 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
 
     public Account getMainAccount() throws ContactsStorageException {
         AccountManager accountManager = AccountManager.get(context);
-        String  name = accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME),
-                type = accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE);
+        String  name = accountManager.getUserData(getAccount(), USER_DATA_MAIN_ACCOUNT_NAME),
+                type = accountManager.getUserData(getAccount(), USER_DATA_MAIN_ACCOUNT_TYPE);
         if (name != null && type != null)
             return new Account(name, type);
         else
@@ -346,30 +346,30 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
 
     public void setMainAccount(@NonNull Account mainAccount) throws ContactsStorageException {
         AccountManager accountManager = AccountManager.get(context);
-        accountManager.setUserData(account, USER_DATA_MAIN_ACCOUNT_NAME, mainAccount.name);
-        accountManager.setUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE, mainAccount.type);
+        accountManager.setUserData(getAccount(), USER_DATA_MAIN_ACCOUNT_NAME, mainAccount.name);
+        accountManager.setUserData(getAccount(), USER_DATA_MAIN_ACCOUNT_TYPE, mainAccount.type);
     }
 
     public String getURL() throws ContactsStorageException {
         AccountManager accountManager = AccountManager.get(context);
-        return accountManager.getUserData(account, USER_DATA_URL);
+        return accountManager.getUserData(getAccount(), USER_DATA_URL);
     }
 
     public void setURL(String url) throws ContactsStorageException {
         AccountManager accountManager = AccountManager.get(context);
-        accountManager.setUserData(account, USER_DATA_URL, url);
+        accountManager.setUserData(getAccount(), USER_DATA_URL, url);
     }
 
     @Override
     public String getCTag() throws ContactsStorageException {
         AccountManager accountManager = AccountManager.get(context);
-        return accountManager.getUserData(account, USER_DATA_CTAG);
+        return accountManager.getUserData(getAccount(), USER_DATA_CTAG);
     }
 
     @Override
     public void setCTag(String cTag) throws ContactsStorageException {
         AccountManager accountManager = AccountManager.get(context);
-        accountManager.setUserData(account, USER_DATA_CTAG, cTag);
+        accountManager.setUserData(getAccount(), USER_DATA_CTAG, cTag);
     }
 
 

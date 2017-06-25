@@ -207,7 +207,7 @@ public class ContactsSyncManager extends SyncManager {
             /* groups as separate VCards: there are group contacts and individual contacts */
 
             // mark groups with changed members as dirty
-            BatchOperation batch = new BatchOperation(addressBook.provider);
+            BatchOperation batch = new BatchOperation(addressBook.getProvider());
             for (LocalContact contact : addressBook.getDirtyContacts())
                 try {
                     App.log.fine("Looking for changed group memberships of contact " + contact.getFileName());
@@ -247,7 +247,7 @@ public class ContactsSyncManager extends SyncManager {
                         if (c != null && c.moveToNext()) {
                             String title = c.getString(0);
                             if (!TextUtils.isEmpty(title))
-                                contact.categories.add(title);
+                                contact.getCategories().add(title);
                         }
                     } catch(RemoteException e) {
                         throw new ContactsStorageException("Couldn't find group for adding CATEGORIES", e);
@@ -393,16 +393,16 @@ public class ContactsSyncManager extends SyncManager {
 
     private void processVCard(String fileName, String eTag, InputStream stream, Charset charset, Contact.Downloader downloader) throws IOException, ContactsStorageException {
         App.log.info("Processing CardDAV resource " + fileName);
-        Contact[] contacts = Contact.fromStream(stream, charset, downloader);
-        if (contacts.length == 0) {
+        List<Contact> contacts = Contact.fromStream(stream, charset, downloader);
+        if (contacts.size() == 0) {
             App.log.warning("Received VCard without data, ignoring");
             return;
-        } else if (contacts.length > 1)
+        } else if (contacts.size() > 1)
             App.log.warning("Received multiple VCards, using first one");
 
-        final Contact newData = contacts[0];
+        final Contact newData = contacts.get(0);
 
-        if (groupMethod == GroupMethod.CATEGORIES && newData.group) {
+        if (groupMethod == GroupMethod.CATEGORIES && newData.getGroup()) {
             groupMethod = GroupMethod.GROUP_VCARDS;
             App.log.warning("Received group VCard although group method is CATEGORIES. Deleting all groups; new group method: " + groupMethod);
             localAddressBook().removeGroups();
@@ -415,17 +415,17 @@ public class ContactsSyncManager extends SyncManager {
         if (local != null) {
             App.log.log(Level.INFO, "Updating " + fileName + " in local address book", newData);
 
-            if (local instanceof LocalGroup && newData.group) {
+            if (local instanceof LocalGroup && newData.getGroup()) {
                 // update group
                 LocalGroup group = (LocalGroup)local;
-                group.eTag = eTag;
+                group.setETag(eTag);
                 group.updateFromServer(newData);
                 syncResult.stats.numUpdates++;
 
-            } else if (local instanceof LocalContact && !newData.group) {
+            } else if (local instanceof LocalContact && !newData.getGroup()) {
                 // update contact
                 LocalContact contact = (LocalContact)local;
-                contact.eTag = eTag;
+                contact.setETag(eTag);
                 contact.update(newData);
                 syncResult.stats.numUpdates++;
 
@@ -441,7 +441,7 @@ public class ContactsSyncManager extends SyncManager {
         }
 
         if (local == null) {
-            if (newData.group) {
+            if (newData.getGroup()) {
                 App.log.log(Level.INFO, "Creating local group", newData);
                 LocalGroup group = new LocalGroup(localAddressBook(), newData, fileName, eTag);
                 currentLocalResource = group;
@@ -468,7 +468,7 @@ public class ContactsSyncManager extends SyncManager {
             App.log.log(Level.FINE, "Removing contact group memberships");
             contact.removeGroupMemberships(batch);
 
-            for (String category : contact.getContact().categories) {
+            for (String category : contact.getContact().getCategories()) {
                 long groupID = localAddressBook().findOrCreateGroup(category);
                 App.log.log(Level.FINE, "Adding membership in group " + category + " (" + groupID + ")");
                 contact.addToGroup(batch, groupID);
