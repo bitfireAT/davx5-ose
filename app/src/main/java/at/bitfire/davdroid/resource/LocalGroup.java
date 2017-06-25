@@ -44,6 +44,7 @@ import lombok.ToString;
 
 @ToString(callSuper=true)
 public class LocalGroup extends AndroidGroup implements LocalResource {
+
     /** marshalled list of member UIDs, as sent by server */
     public static final String COLUMN_PENDING_MEMBERS = Groups.SYNC3;
 
@@ -62,28 +63,29 @@ public class LocalGroup extends AndroidGroup implements LocalResource {
 
         ContentValues values = new ContentValues(2);
         values.put(Groups.DIRTY, 0);
-        values.put(COLUMN_ETAG, this.eTag = eTag);
+        values.put(COLUMN_ETAG, eTag);
+        setETag(eTag);
         update(values);
 
         // update cached group memberships
-        BatchOperation batch = new BatchOperation(addressBook.provider);
+        BatchOperation batch = new BatchOperation(getAddressBook().getProvider());
 
         // delete cached group memberships
         batch.enqueue(new BatchOperation.Operation(
-                ContentProviderOperation.newDelete(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
+                ContentProviderOperation.newDelete(getAddressBook().syncAdapterURI(ContactsContract.Data.CONTENT_URI))
                         .withSelection(
                                 CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?",
-                                new String[] { CachedGroupMembership.CONTENT_ITEM_TYPE, String.valueOf(id) }
+                                new String[] { CachedGroupMembership.CONTENT_ITEM_TYPE, String.valueOf(getId()) }
                         )
         ));
 
         // insert updated cached group memberships
         for (long member : getMembers())
             batch.enqueue(new BatchOperation.Operation(
-                    ContentProviderOperation.newInsert(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
+                    ContentProviderOperation.newInsert(getAddressBook().syncAdapterURI(ContactsContract.Data.CONTENT_URI))
                             .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
                             .withValue(CachedGroupMembership.RAW_CONTACT_ID, member)
-                            .withValue(CachedGroupMembership.GROUP_ID, id)
+                            .withValue(CachedGroupMembership.GROUP_ID, getId())
                             .withYieldAllowed(true)
             ));
 
@@ -100,15 +102,15 @@ public class LocalGroup extends AndroidGroup implements LocalResource {
         values.put(COLUMN_UID, uid);
         update(values);
 
-        fileName = newFileName;
+        setFileName(newFileName);
     }
 
     @Override
-    protected ContentValues contentValues() {
+    protected ContentValues contentValues() throws FileNotFoundException, ContactsStorageException {
         ContentValues values = super.contentValues();
 
         @Cleanup("recycle") Parcel members = Parcel.obtain();
-        members.writeStringList(contact.members);
+        members.writeStringList(getContact().getMembers());
         values.put(COLUMN_PENDING_MEMBERS, members.marshall());
 
         return values;
@@ -120,11 +122,11 @@ public class LocalGroup extends AndroidGroup implements LocalResource {
      */
     public void markMembersDirty() throws ContactsStorageException {
         assertID();
-        BatchOperation batch = new BatchOperation(addressBook.provider);
+        BatchOperation batch = new BatchOperation(getAddressBook().getProvider());
 
         for (long member : getMembers())
             batch.enqueue(new BatchOperation.Operation(
-                    ContentProviderOperation.newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(RawContacts.CONTENT_URI, member)))
+                    ContentProviderOperation.newUpdate(getAddressBook().syncAdapterURI(ContentUris.withAppendedId(RawContacts.CONTENT_URI, member)))
                             .withValue(RawContacts.DIRTY, 1)
                             .withYieldAllowed(true)
             ));
@@ -140,14 +142,14 @@ public class LocalGroup extends AndroidGroup implements LocalResource {
      */
     public static void applyPendingMemberships(LocalAddressBook addressBook) throws ContactsStorageException {
         try {
-            @Cleanup Cursor cursor = addressBook.provider.query(
+            @Cleanup Cursor cursor = addressBook.getProvider().query(
                     addressBook.syncAdapterURI(Groups.CONTENT_URI),
                     new String[] { Groups._ID, COLUMN_PENDING_MEMBERS },
                     COLUMN_PENDING_MEMBERS + " IS NOT NULL", new String[] {},
                     null
             );
 
-            BatchOperation batch = new BatchOperation(addressBook.provider);
+            BatchOperation batch = new BatchOperation(addressBook.getProvider());
             while (cursor != null && cursor.moveToNext()) {
                 long id = cursor.getLong(0);
                 Constants.log.fine("Assigning members to group " + id);
@@ -206,7 +208,7 @@ public class LocalGroup extends AndroidGroup implements LocalResource {
     // helpers
 
     private void assertID() {
-        if (id == null)
+        if (getId() == null)
             throw new IllegalStateException("Group has not been saved yet");
     }
 
@@ -219,11 +221,11 @@ public class LocalGroup extends AndroidGroup implements LocalResource {
         assertID();
         List<Long> members = new LinkedList<>();
         try {
-            @Cleanup Cursor cursor = addressBook.provider.query(
-                    addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI),
+            @Cleanup Cursor cursor = getAddressBook().getProvider().query(
+                    getAddressBook().syncAdapterURI(ContactsContract.Data.CONTENT_URI),
                     new String[] { Data.RAW_CONTACT_ID },
                     GroupMembership.MIMETYPE + "=? AND " + GroupMembership.GROUP_ROW_ID + "=?",
-                    new String[] { GroupMembership.CONTENT_ITEM_TYPE, String.valueOf(id) },
+                    new String[] { GroupMembership.CONTENT_ITEM_TYPE, String.valueOf(getId()) },
                     null
             );
             while (cursor != null && cursor.moveToNext())
@@ -237,7 +239,7 @@ public class LocalGroup extends AndroidGroup implements LocalResource {
 
     // factory
 
-    static class Factory extends AndroidGroupFactory {
+    static class Factory implements AndroidGroupFactory<LocalGroup> {
         static final Factory INSTANCE = new Factory();
 
         @Override
@@ -248,11 +250,6 @@ public class LocalGroup extends AndroidGroup implements LocalResource {
         @Override
         public LocalGroup newInstance(AndroidAddressBook addressBook, Contact contact, String fileName, String eTag) {
             return new LocalGroup(addressBook, contact, fileName, eTag);
-        }
-
-        @Override
-        public LocalGroup[] newArray(int size) {
-            return new LocalGroup[size];
         }
 
     }
