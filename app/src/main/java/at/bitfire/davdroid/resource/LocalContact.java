@@ -36,6 +36,7 @@ import at.bitfire.vcard4android.Contact;
 import at.bitfire.vcard4android.ContactsStorageException;
 import ezvcard.Ezvcard;
 import lombok.Cleanup;
+import lombok.SneakyThrows;
 
 public class LocalContact extends AndroidContact implements LocalResource {
     static {
@@ -60,7 +61,7 @@ public class LocalContact extends AndroidContact implements LocalResource {
         ContentValues values = new ContentValues(1);
         values.put(ContactsContract.RawContacts.DIRTY, 0);
         try {
-            addressBook.provider.update(rawContactSyncURI(), values, null, null);
+            getAddressBook().getProvider().update(rawContactSyncURI(), values, null, null);
         } catch(RemoteException e) {
             throw new ContactsStorageException("Couldn't clear dirty flag", e);
         }
@@ -79,9 +80,9 @@ public class LocalContact extends AndroidContact implements LocalResource {
                 App.log.finer("Clearing dirty flag with eTag = " + eTag + ", contact hash = " + hashCode);
             }
 
-            addressBook.provider.update(rawContactSyncURI(), values, null, null);
+            getAddressBook().getProvider().update(rawContactSyncURI(), values, null, null);
 
-            this.eTag = eTag;
+            setETag(eTag);
         } catch (FileNotFoundException|RemoteException e) {
             throw new ContactsStorageException("Couldn't clear dirty flag", e);
         }
@@ -95,9 +96,9 @@ public class LocalContact extends AndroidContact implements LocalResource {
             ContentValues values = new ContentValues(2);
             values.put(COLUMN_FILENAME, newFileName);
             values.put(COLUMN_UID, uid);
-            addressBook.provider.update(rawContactSyncURI(), values, null, null);
+            getAddressBook().getProvider().update(rawContactSyncURI(), values, null, null);
 
-            fileName = newFileName;
+            setFileName(newFileName);
         } catch (RemoteException e) {
             throw new ContactsStorageException("Couldn't update UID", e);
         }
@@ -105,7 +106,7 @@ public class LocalContact extends AndroidContact implements LocalResource {
 
 
     @Override
-    protected void populateData(String mimeType, ContentValues row) {
+    protected void populateData(String mimeType, ContentValues row) throws ContactsStorageException {
         switch (mimeType) {
             case CachedGroupMembership.CONTENT_ITEM_TYPE:
                 cachedGroupMemberships.add(row.getAsLong(CachedGroupMembership.GROUP_ID));
@@ -114,7 +115,11 @@ public class LocalContact extends AndroidContact implements LocalResource {
                 groupMemberships.add(row.getAsLong(GroupMembership.GROUP_ROW_ID));
                 break;
             case UnknownProperties.CONTENT_ITEM_TYPE:
-                contact.unknownProperties = row.getAsString(UnknownProperties.UNKNOWN_PROPERTIES);
+                try {
+                    getContact().setUnknownProperties(row.getAsString(UnknownProperties.UNKNOWN_PROPERTIES));
+                } catch(FileNotFoundException e) {
+                    throw new ContactsStorageException("Couldn't fetch data rows", e);
+                }
                 break;
         }
     }
@@ -123,18 +128,22 @@ public class LocalContact extends AndroidContact implements LocalResource {
     protected void insertDataRows(BatchOperation batch) throws ContactsStorageException {
         super.insertDataRows(batch);
 
-        if (contact.unknownProperties != null) {
-            final BatchOperation.Operation op;
-            final ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(dataSyncURI());
-            if (id == null) {
-                op = new BatchOperation.Operation(builder, UnknownProperties.RAW_CONTACT_ID, 0);
-            } else {
-                op = new BatchOperation.Operation(builder);
-                builder.withValue(UnknownProperties.RAW_CONTACT_ID, id);
+        try {
+            if (getContact().getUnknownProperties() != null) {
+                final BatchOperation.Operation op;
+                final ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(dataSyncURI());
+                if (getId() == null)
+                    op = new BatchOperation.Operation(builder, UnknownProperties.RAW_CONTACT_ID, 0);
+                else {
+                    op = new BatchOperation.Operation(builder);
+                    builder.withValue(UnknownProperties.RAW_CONTACT_ID, getId());
+                }
+                builder .withValue(UnknownProperties.MIMETYPE, UnknownProperties.CONTENT_ITEM_TYPE)
+                        .withValue(UnknownProperties.UNKNOWN_PROPERTIES, getContact().getUnknownProperties());
+                batch.enqueue(op);
             }
-            builder .withValue(UnknownProperties.MIMETYPE, UnknownProperties.CONTENT_ITEM_TYPE)
-                    .withValue(UnknownProperties.UNKNOWN_PROPERTIES, contact.unknownProperties);
-            batch.enqueue(op);
+        } catch(FileNotFoundException e) {
+            throw new ContactsStorageException("Couldn't insert data rows", e);
         }
 
     }
@@ -150,7 +159,7 @@ public class LocalContact extends AndroidContact implements LocalResource {
             App.log.severe("dataHashCode() should not be called on Android <7");
 
         // reset contact so that getContact() reads from database
-        contact = null;
+        setContact(null);
 
         // groupMemberships is filled by getContact()
         int dataHash = getContact().hashCode(),
@@ -170,7 +179,7 @@ public class LocalContact extends AndroidContact implements LocalResource {
             values.put(COLUMN_HASHCODE, hashCode);
 
             if (batch == null)
-                addressBook.provider.update(rawContactSyncURI(), values, null, null);
+                getAddressBook().getProvider().update(rawContactSyncURI(), values, null, null);
             else {
                 ContentProviderOperation.Builder builder = ContentProviderOperation
                         .newUpdate(rawContactSyncURI())
@@ -187,7 +196,7 @@ public class LocalContact extends AndroidContact implements LocalResource {
             App.log.severe("getLastHashCode() should not be called on Android <7");
 
         try {
-            @Cleanup Cursor c = addressBook.provider.query(rawContactSyncURI(), new String[] { COLUMN_HASHCODE }, null, null, null);
+            @Cleanup Cursor c = getAddressBook().getProvider().query(rawContactSyncURI(), new String[] { COLUMN_HASHCODE }, null, null, null);
             if (c == null || !c.moveToNext() || c.isNull(0))
                 return 0;
             return c.getInt(0);
@@ -198,12 +207,10 @@ public class LocalContact extends AndroidContact implements LocalResource {
 
 
     public void addToGroup(BatchOperation batch, long groupID) {
-        assertID();
-
         batch.enqueue(new BatchOperation.Operation(
                 ContentProviderOperation.newInsert(dataSyncURI())
                         .withValue(GroupMembership.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
-                        .withValue(GroupMembership.RAW_CONTACT_ID, id)
+                        .withValue(GroupMembership.RAW_CONTACT_ID, getId())
                         .withValue(GroupMembership.GROUP_ROW_ID, groupID)
         ));
         groupMemberships.add(groupID);
@@ -211,7 +218,7 @@ public class LocalContact extends AndroidContact implements LocalResource {
         batch.enqueue(new BatchOperation.Operation(
                 ContentProviderOperation.newInsert(dataSyncURI())
                         .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
-                        .withValue(CachedGroupMembership.RAW_CONTACT_ID, id)
+                        .withValue(CachedGroupMembership.RAW_CONTACT_ID, getId())
                         .withValue(CachedGroupMembership.GROUP_ID, groupID)
                         .withYieldAllowed(true)
         ));
@@ -219,12 +226,11 @@ public class LocalContact extends AndroidContact implements LocalResource {
     }
 
     public void removeGroupMemberships(BatchOperation batch) {
-        assertID();
         batch.enqueue(new BatchOperation.Operation(
                 ContentProviderOperation.newDelete(dataSyncURI())
                         .withSelection(
                                 Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + " IN (?,?)",
-                                new String[] { String.valueOf(id), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembership.CONTENT_ITEM_TYPE }
+                                new String[] { String.valueOf(getId()), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembership.CONTENT_ITEM_TYPE }
                         )
                         .withYieldAllowed(true)
         ));
@@ -261,7 +267,7 @@ public class LocalContact extends AndroidContact implements LocalResource {
 
     // factory
 
-    static class Factory extends AndroidContactFactory {
+    static class Factory implements AndroidContactFactory<LocalContact> {
         static final Factory INSTANCE = new Factory();
 
         @Override
@@ -272,11 +278,6 @@ public class LocalContact extends AndroidContact implements LocalResource {
         @Override
         public LocalContact newInstance(AndroidAddressBook addressBook, Contact contact, String fileName, String eTag) {
             return new LocalContact(addressBook, contact, fileName, eTag);
-        }
-
-        @Override
-        public LocalContact[] newArray(int size) {
-            return new LocalContact[size];
         }
 
     }
