@@ -14,6 +14,7 @@ import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
+import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -275,11 +276,14 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
             // address book accounts
             for (Account acct : accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)))
                 try {
-                    LocalAddressBook addressBook = new LocalAddressBook(context, acct, null);
-                    report.append("Address book account: ").append(acct.name).append("\n" +
-                            "  Main account: ").append(addressBook.getMainAccount()).append("\n" +
-                            "  URL: ").append(addressBook.getURL()).append("\n" +
-                            "  Sync automatically: ").append(ContentResolver.getSyncAutomatically(acct, ContactsContract.AUTHORITY)).append("\n");
+                    @Cleanup("release") ContentProviderClient provider = getContext().getContentResolver().acquireContentProviderClient(ContactsContract.AUTHORITY);
+                    if (provider != null) {
+                        LocalAddressBook addressBook = new LocalAddressBook(context, acct, provider);
+                        report.append("Address book account: ").append(acct.name).append("\n" +
+                                "  Main account: ").append(addressBook.getMainAccount()).append("\n" +
+                                "  URL: ").append(addressBook.getURL()).append("\n" +
+                                "  Sync automatically: ").append(ContentResolver.getSyncAutomatically(acct, ContactsContract.AUTHORITY)).append("\n");
+                    }
                 } catch(ContactsStorageException e) {
                     report.append(acct).append(" is invalid: ").append(e.getMessage()).append("\n");
                 }
