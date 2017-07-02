@@ -155,8 +155,8 @@ public class LocalContact extends AndroidContact implements LocalResource {
      * @return hash code of contact data (including group memberships)
      */
     protected int dataHashCode() throws FileNotFoundException, ContactsStorageException {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
-            App.log.severe("dataHashCode() should not be called on Android <7");
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            App.log.severe("dataHashCode() should not be called on Android != 7");
 
         // reset contact so that getContact() reads from database
         setContact(null);
