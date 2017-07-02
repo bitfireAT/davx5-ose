@@ -35,7 +35,6 @@ import android.util.Base64;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -129,7 +128,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
     }
 
 
-    public LocalAddressBook(Context context, Account account, ContentProviderClient provider) {
+    public LocalAddressBook(@NonNull Context context, @NonNull Account account, @NonNull ContentProviderClient provider) {
         super(account, provider, LocalContact.Factory.INSTANCE, LocalGroup.Factory.INSTANCE);
         this.context = context;
     }
@@ -173,8 +172,8 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
      * @return number of "really dirty" contacts
      */
     public int verifyDirty() throws ContactsStorageException {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
-            App.log.severe("verifyDirty() should not be called on Android <7");
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            App.log.severe("verifyDirty() should not be called on Android != 7");
 
         int reallyDirty = 0;
         for (LocalContact contact : getDirtyContacts()) {

@@ -283,7 +283,8 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                                 "  Main account: ").append(addressBook.getMainAccount()).append("\n" +
                                 "  URL: ").append(addressBook.getURL()).append("\n" +
                                 "  Sync automatically: ").append(ContentResolver.getSyncAutomatically(acct, ContactsContract.AUTHORITY)).append("\n");
-                    }
+                    } else
+                        report.append("Couldn't acquire ContentProviderClient for " + ContactsContract.AUTHORITY);
                 } catch(ContactsStorageException e) {
                     report.append(acct).append(" is invalid: ").append(e.getMessage()).append("\n");
                 }

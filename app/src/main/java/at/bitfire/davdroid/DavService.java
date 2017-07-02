@@ -14,6 +14,7 @@ import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -21,6 +22,7 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Binder;
 import android.os.IBinder;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
@@ -160,16 +162,18 @@ public class DavService extends Service {
                 accountNames.add(account.name);
             }
 
-            // delete orphaned address book accounts
-            for (Account addrBookAccount : am.getAccountsByType(App.getAddressBookAccountType())) {
-                LocalAddressBook addressBook = new LocalAddressBook(this, addrBookAccount, null);
-                try {
-                    if (!accountNames.contains(addressBook.getMainAccount().name))
-                        addressBook.delete();
-                } catch(ContactsStorageException e) {
-                    App.log.log(Level.SEVERE, "Couldn't get address book main account", e);
+            @Cleanup("release") ContentProviderClient contactsClient = getContentResolver().acquireContentProviderClient(ContactsContract.AUTHORITY);
+            if (contactsClient != null)
+                // delete orphaned address book accounts
+                for (Account addrBookAccount : am.getAccountsByType(App.getAddressBookAccountType())) {
+                    LocalAddressBook addressBook = new LocalAddressBook(this, addrBookAccount, contactsClient);
+                    try {
+                        if (!accountNames.contains(addressBook.getMainAccount().name))
+                            addressBook.delete();
+                    } catch(ContactsStorageException e) {
+                        App.log.log(Level.SEVERE, "Couldn't get address book main account", e);
+                    }
                 }
-            }
 
             // delete orphaned services in DB
             if (sqlAccountNames.isEmpty())
