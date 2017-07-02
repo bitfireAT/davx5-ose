@@ -136,7 +136,7 @@ public class StartupDialogFragment extends DialogFragment {
                 return new AlertDialog.Builder(getActivity())
                         .setIcon(R.mipmap.ic_launcher)
                         .setTitle(R.string.startup_development_version)
-                        .setMessage(R.string.startup_development_version_message)
+                        .setMessage(getString(R.string.startup_development_version_message, getString(R.string.app_name)))
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -145,7 +145,7 @@ public class StartupDialogFragment extends DialogFragment {
                         .setNeutralButton(R.string.startup_development_version_give_feedback, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://forums.bitfire.at/category/9/beta-test-discussion")));
+                                startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(getString(R.string.startup_development_version_feedback_url))));
                             }
                         })
                         .create();
