@@ -607,9 +607,12 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                                                 // update main account of address book accounts
                                                 try {
                                                     for (Account addrBookAccount : accountManager.getAccountsByType(App.getAddressBookAccountType())) {
-                                                        LocalAddressBook addressBook = new LocalAddressBook(getContext(), addrBookAccount, null);
-                                                        if (oldAccount.equals(addressBook.getMainAccount()))
-                                                            addressBook.setMainAccount(new Account(newName, oldAccount.type));
+                                                        @Cleanup("release") ContentProviderClient provider = getContext().getContentResolver().acquireContentProviderClient(ContactsContract.AUTHORITY);
+                                                        if (provider != null) {
+                                                            LocalAddressBook addressBook = new LocalAddressBook(getContext(), addrBookAccount, provider);
+                                                            if (oldAccount.equals(addressBook.getMainAccount()))
+                                                                addressBook.setMainAccount(new Account(newName, oldAccount.type));
+                                                        }
                                                     }
                                                 } catch(ContactsStorageException e) {
                                                     App.log.log(Level.SEVERE, "Couldn't update address book accounts", e);
