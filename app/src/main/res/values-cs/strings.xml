@@ -11,8 +11,6 @@
   <string name="startup_battery_optimization_message">Android může po několika dnech vypnout/prodloužit interval synchronizování DAVdroid. Chcete-li tomuto zabránit, vypněte optimalizaci baterie.</string>
   <string name="startup_battery_optimization_disable">Vypnout pro DAVdroid</string>
   <string name="startup_dont_show_again">Již nezobrazovat</string>
-  <string name="startup_development_version">DAVdroid preview vydání</string>
-  <string name="startup_development_version_message">Toto je vývojová verze aplikace DAVdroid. Mějte na paměti, že vše nemusí správně fungovat. Budeme rádi za konstruktivní zpětnou vazbu, která pomůže vylepšit DAVdroid.</string>
   <string name="startup_development_version_give_feedback">Dát zpětnou vazbu</string>
   <string name="startup_donate">Open Source informace</string>
   <string name="startup_donate_message">Jsme velice rádi že používáte DAVdroid, software s otevřeným zdrojovým kódem (GPLv3). Vývoj této aplikace je náročný a trval již několik tisíc hodin, velice nás potěší přispějete-li na jeho vývoj.</string>

@@ -13,8 +13,6 @@
   <string name="startup_battery_optimization_message">Android peut désactiver/réduire la synchronisation de DAVdroid après quelques jours. Pour éviter cela, désactivez l\'optimisation de la batterie.</string>
   <string name="startup_battery_optimization_disable">Désactiver pour DAVdroid</string>
   <string name="startup_dont_show_again">Ne plus afficher</string>
-  <string name="startup_development_version">Pré-version de DAVdroid</string>
-  <string name="startup_development_version_message">Il s\'agit d\'une version de développement de DAVdroid. Il se peut que les choses ne fonctionnent pas comme prévu. S’il vous plaît faites-nous un retour pour améliorer DAVdroid.</string>
   <string name="startup_development_version_give_feedback">Faire un commentaire</string>
   <string name="startup_donate">Open-Source Information</string>
   <string name="startup_donate_message">Nous sommes heureux que vous utilisez DAVdroid, qui est un logiciel open-source (GPLv3). Parce que développer DAVdroid est un travail difficile et nous a pris de nombreuses heures, s\'il vous plaît envisager de faire un don.</string>

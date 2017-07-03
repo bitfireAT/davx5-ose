@@ -13,8 +13,6 @@
   <string name="startup_battery_optimization_message">Az operációs rendszer a DAVdroid szinkronizálást pár nap után leállíthatja vagy visszafoghatja.  Ennek elkerülésére kapcsolja ki az akkumulátoroptimalizálást.</string>
   <string name="startup_battery_optimization_disable">Kikapcsolás a DAVdroid kapcsán</string>
   <string name="startup_dont_show_again">Ne jelenjen meg többet</string>
-  <string name="startup_development_version">DAVdroid előzetes kiadás</string>
-  <string name="startup_development_version_message">Ez a DAVdroid egy fejlesztői verziója.  Elképzelhető, hogy nem minden működik úgy, ahogyan kellene.  Ha így lenne, kérjük küldjön a tapasztaltakról visszajelzést.</string>
   <string name="startup_development_version_give_feedback">Visszajelzés küldése</string>
   <string name="startup_donate">A forrás nyíltságával kapcsolatos információk</string>
   <string name="startup_donate_message">Örülünk, hogy használja a DAVdroidot.  A DAVdroid nyílt forráskódú (GPLv3) szoftver, de a fejlesztése kemény munkát jelent, már eddig több ezer munkaórát emésztett fel, ezért kérjük, fontolja meg, hogy támogassa munkánkat.</string>
