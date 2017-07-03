@@ -52,35 +52,35 @@ public class LicenseCheckSyncPlugin implements ISyncPlugin, LicenseCheckerCallba
 
             if (licenseOk == null)
                 licenseOk = false;
+
+            if (licenseChecker != null) {
+                licenseChecker.onDestroy();
+                licenseChecker = null;
+            }
+
+            NotificationManagerCompat nm = NotificationManagerCompat.from(context);
+            if (!licenseOk) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID));
+                intent.setPackage("com.android.vending");   // open only with Play Store
+
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+                builder.setSmallIcon(R.drawable.ic_error_light)
+                        .setLargeIcon(App.getLauncherBitmap(context))
+                        .setContentTitle("License check failed")
+                        .setContentText("Couldn't verify Google Play purchase")
+                        .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
+                        .setCategory(NotificationCompat.CATEGORY_ERROR)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+                nm.notify(Constants.NOTIFICATION_SUBSCRIPTION, builder.build());
+
+                App.log.warning("No valid license, skipping sync");
+                syncResult.stats.numIoExceptions++;
+                syncResult.delayUntil = 15;     // wait 15 seconds before trying again
+            } else
+                nm.cancel(Constants.NOTIFICATION_SUBSCRIPTION);
+
+            return licenseOk;
         }
-
-        if (licenseChecker != null) {
-            licenseChecker.onDestroy();
-            licenseChecker = null;
-        }
-
-        NotificationManagerCompat nm = NotificationManagerCompat.from(context);
-        if (!licenseOk) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID));
-            intent.setPackage("com.android.vending");   // open only with Play Store
-
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-            builder .setSmallIcon(R.drawable.ic_error_light)
-                    .setLargeIcon(App.getLauncherBitmap(context))
-                    .setContentTitle("License check failed")
-                    .setContentText("Couldn't verify Google Play purchase")
-                    .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
-                    .setCategory(NotificationCompat.CATEGORY_ERROR)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH);
-            nm.notify(Constants.NOTIFICATION_SUBSCRIPTION, builder.build());
-
-            App.log.warning("No valid license, skipping sync");
-            syncResult.stats.numIoExceptions++;
-            syncResult.delayUntil = 15;     // wait 15 seconds before trying again
-        } else
-            nm.cancel(Constants.NOTIFICATION_SUBSCRIPTION);
-
-        return licenseOk;
     }
 
     @Override
