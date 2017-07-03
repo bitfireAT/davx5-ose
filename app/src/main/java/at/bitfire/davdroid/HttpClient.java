@@ -138,11 +138,14 @@ public class HttpClient {
         return builder;
     }
 
-    private static OkHttpClient.Builder addAuthentication(@NonNull OkHttpClient.Builder builder, @Nullable String host, @NonNull String username, @NonNull String password) {
-        BasicDigestAuthHandler authHandler = new BasicDigestAuthHandler(UrlUtils.hostToDomain(host), username, password);
-        return builder
-                .addNetworkInterceptor(authHandler)
-                .authenticator(authHandler);
+    private static OkHttpClient.Builder addAuthentication(@NonNull OkHttpClient.Builder builder, @Nullable String host, String username, String password) {
+        if (username != null && password != null) {
+            BasicDigestAuthHandler authHandler = new BasicDigestAuthHandler(UrlUtils.hostToDomain(host), username, password);
+            return builder
+                    .addNetworkInterceptor(authHandler)
+                    .authenticator(authHandler);
+        } else
+            return builder;
     }
 
     public static OkHttpClient addAuthentication(@NonNull OkHttpClient client, @NonNull String username, @NonNull String password) {

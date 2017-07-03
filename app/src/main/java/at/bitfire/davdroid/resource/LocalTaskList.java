@@ -16,7 +16,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -117,7 +116,7 @@ public class LocalTaskList extends AndroidTaskList<LocalTask> implements LocalCo
             @Cleanup Cursor cursor = getProvider().getClient().query(taskListSyncUri(), new String[] { COLUMN_CTAG }, null, null, null);
             if (cursor != null && cursor.moveToNext())
                 return cursor.getString(0);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             throw new CalendarStorageException("Couldn't read local (last known) CTag", e);
         }
         return null;
@@ -129,7 +128,7 @@ public class LocalTaskList extends AndroidTaskList<LocalTask> implements LocalCo
             ContentValues values = new ContentValues(1);
             values.put(COLUMN_CTAG, cTag);
             getProvider().getClient().update(taskListSyncUri(), values, null, null);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             throw new CalendarStorageException("Couldn't write local (last known) CTag", e);
         }
     }
@@ -160,7 +159,7 @@ public class LocalTaskList extends AndroidTaskList<LocalTask> implements LocalCo
 
     // HELPERS
 
-    public static void onRenameAccount(@NonNull ContentResolver resolver, @NonNull String oldName, @NonNull String newName) throws RemoteException {
+    public static void onRenameAccount(@NonNull ContentResolver resolver, @NonNull String oldName, @NonNull String newName) throws Exception {
         @Cleanup("release") ContentProviderClient client = resolver.acquireContentProviderClient(TaskProvider.ProviderName.OpenTasks.getAuthority());
         if (client != null) {
             ContentValues values = new ContentValues(1);
