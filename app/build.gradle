@@ -19,7 +19,7 @@ android {
         versionCode 153
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
 
         buildConfigField "boolean", "customCerts", "false"
@@ -59,7 +59,6 @@ android {
         standard.res.srcDirs = [ "src/davdroid/res" ]
         gplay.java.srcDirs = [ "src/gplay/java", "src/davdroid/java" ]
         gplay.res.srcDirs = [ "src/gplay/res", "src/davdroid/res" ]
-
     }
 
     signingConfigs {
