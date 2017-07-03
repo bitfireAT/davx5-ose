@@ -8,13 +8,9 @@
 
 package at.bitfire.davdroid;
 
-import android.os.Build;
-import android.support.test.runner.AndroidJUnit4;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -26,6 +22,7 @@ import okhttp3.mockwebserver.MockWebServer;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static junit.framework.TestCase.assertFalse;
+import static org.apache.commons.lang3.ArrayUtils.contains;
 import static org.junit.Assert.assertTrue;
 
 public class SSLSocketFactoryCompatTest {
@@ -51,13 +48,10 @@ public class SSLSocketFactoryCompatTest {
         assertTrue(s instanceof SSLSocket);
 
         SSLSocket ssl = (SSLSocket)s;
-        assertFalse(org.apache.commons.lang3.ArrayUtils.contains(ssl.getEnabledProtocols(), "SSLv3"));
-        assertTrue(org.apache.commons.lang3.ArrayUtils.contains(ssl.getEnabledProtocols(), "TLSv1"));
-
-        if (Build.VERSION.SDK_INT >= 16) {
-            assertTrue(org.apache.commons.lang3.ArrayUtils.contains(ssl.getEnabledProtocols(), "TLSv1.1"));
-            assertTrue(org.apache.commons.lang3.ArrayUtils.contains(ssl.getEnabledProtocols(), "TLSv1.2"));
-        }
+        assertFalse(contains(ssl.getEnabledProtocols(), "SSLv3"));
+        assertTrue(contains(ssl.getEnabledProtocols(), "TLSv1"));
+        assertTrue(contains(ssl.getEnabledProtocols(), "TLSv1.1"));
+        assertTrue(contains(ssl.getEnabledProtocols(), "TLSv1.2"));
     }
 
 }
