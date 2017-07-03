@@ -8,8 +8,6 @@
   <string name="send">Gönder</string>
   <!--startup dialogs-->
   <string name="startup_dont_show_again">Bir daha gösterme</string>
-  <string name="startup_development_version">DAVDroid Önizlenim Dağıtımı</string>
-  <string name="startup_development_version_message">Bu DAVdroid\'in bir geliştirme sürümüdür. Bazı şeyler beklendiği gibi çalışmayabilir. DAVdroid\'i iyileştirmek için bize lütfen yapıcı eleştirilerini ilet.</string>
   <string name="startup_development_version_give_feedback">Geribildirim ver</string>
   <string name="startup_donate">Açık-Kaynak Bilgisi</string>
   <string name="startup_donate_message">Açık kaynaklı yazılım (GPLv3) olan DAVdroid\'i kullandığına çok mutluyuz. DAVdroid\'i geliştirmek zor bir iş ve üzerinde binlerce saat çalıştığımızdan, lütfen bir bağışta bulunmayı düşün.</string>
