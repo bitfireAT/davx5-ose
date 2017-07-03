@@ -14,9 +14,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 
 import at.bitfire.davdroid.App;
 import lombok.Cleanup;
@@ -78,13 +76,6 @@ public class ServiceDB {
         }
 
         @Override
-        public void onOpen(SQLiteDatabase db) {
-            if (Build.VERSION.SDK_INT < 16)
-                db.execSQL("PRAGMA foreign_keys=ON;");
-        }
-
-        @Override
-        @RequiresApi(16)
         public void onConfigure(SQLiteDatabase db) {
             setWriteAheadLoggingEnabled(true);
             db.setForeignKeyConstraintsEnabled(true);
