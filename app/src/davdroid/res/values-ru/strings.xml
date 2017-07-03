@@ -11,8 +11,6 @@
   <string name="startup_battery_optimization_message">Андроид может отключить/уменьшить синхронизацию DAVdroid через несколько дней. Чтобы этого не произошло, выключите оптимизацию батареи.</string>
   <string name="startup_battery_optimization_disable">Отключить для DAVdroid</string>
   <string name="startup_dont_show_again">Больше не показывать</string>
-  <string name="startup_development_version">DAVdroid Предварительный Релиз</string>
-  <string name="startup_development_version_message">Это разрабатываемая версия DAVdroid. Она может не работать как Вы ожидаете. Пожалуйста, присылайте нам конструктивные отзывы, чтобы улучшить DAVdroid.</string>
   <string name="startup_development_version_give_feedback">Оставить отзыв</string>
   <string name="startup_donate">Open-Source информация</string>
   <string name="startup_donate_message">Мы рады, что вы используете DAVdroid, который является программным обеспечением с открытым исходным кодом (GPLv3). Разработка DAVdroid является сложной задачей, потребовавшей от нас тысяч рабочих часов. Пожалуйста, рассмотрите возможность поддержать проект.</string>

@@ -13,8 +13,8 @@
   <string name="startup_battery_optimization_message">Android kann die DAVdroid-Synchronisierung in ein paar Tagen reduzieren/deaktivieren. Um dies zu verhindern, muss die Akku-Leistungsoptimierung deaktiviert werden.</string>
   <string name="startup_battery_optimization_disable">Für DAVdroid deaktivieren</string>
   <string name="startup_dont_show_again">Nicht mehr anzeigen</string>
-  <string name="startup_development_version">DAVdroid Vorab-Version</string>
-  <string name="startup_development_version_message">Dies ist eine Vorschauversion von DAVdroid. Mit konstruktiven Rückmeldungen und Vorschlägen können Sie uns helfen, DAVdroid zu verbessern.</string>
+  <string name="startup_development_version">Vorschau-Version</string>
+  <string name="startup_development_version_message">In dieser Entwicklungsversion von %s verhält sich möglicherweise nicht alles wie erwartet. Wir hoffen auf Ihr Feedback!</string>
   <string name="startup_development_version_give_feedback">Zum Forum</string>
   <string name="startup_donate">Open-Source-Information</string>
   <string name="startup_donate_message">Es freut uns, dass Sie DAVdroid und damit Open-Source-Software (GPLv3) verwenden. Da in DAVdroid tausende Stunden harter Arbeit stecken und es immer noch weiter entwickelt wird, gibt es die Möglichkeit, uns zu spenden.</string>
@@ -89,6 +89,8 @@
   <string name="account_delete">Konto löschen</string>
   <string name="account_delete_confirmation_title">Konto wirklich löschen?</string>
   <string name="account_delete_confirmation_text">Alle Adressbücher, Kalender und Aufgabenlisten werden vom Gerät (nicht am Server) gelöscht.</string>
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
   <string name="account_refresh_address_book_list">Adressbücher neu erkennen</string>
   <string name="account_create_new_address_book">Neues Adressbuch erstellen</string>
   <string name="account_refresh_calendar_list">Kalender neu erkennen</string>

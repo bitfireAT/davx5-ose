@@ -14,8 +14,6 @@
   <string name="startup_battery_optimization_message">Android kan mogelijk de DAVdroid synchronisatie stoppen na een paar dagen. Om dit te voorkomen zet u de batterij optimalisatie uit.</string>
   <string name="startup_battery_optimization_disable">DAVdroid afsluiten</string>
   <string name="startup_dont_show_again">Niet opnieuw weergeven</string>
-  <string name="startup_development_version">DAVdroid voorlopige versie</string>
-  <string name="startup_development_version_message">Dit is een ontwikkelversie van DAVdroid. Het kan zijn dat dingen niet werken zoals verwacht. Geef ons constructieve feedback om DAVdroid te verbeteren.</string>
   <string name="startup_development_version_give_feedback">Feedback geven</string>
   <string name="startup_donate">Open-Source informatie</string>
   <string name="startup_donate_message">We zijn blij dat je DAVdroid gebruikt, wat open-source software (GPLv3) is. Omdat de ontwikkeling van DAVdroid hard werk is en duizenden uren in beslag neemt. overweeg alstublieft een donatie.</string>
