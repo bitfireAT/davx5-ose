@@ -8,6 +8,7 @@
 
 package at.bitfire.davdroid;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
@@ -162,18 +163,16 @@ public class DavService extends Service {
                 accountNames.add(account.name);
             }
 
-            @Cleanup("release") ContentProviderClient contactsClient = getContentResolver().acquireContentProviderClient(ContactsContract.AUTHORITY);
-            if (contactsClient != null)
-                // delete orphaned address book accounts
-                for (Account addrBookAccount : am.getAccountsByType(App.getAddressBookAccountType())) {
-                    LocalAddressBook addressBook = new LocalAddressBook(this, addrBookAccount, contactsClient);
-                    try {
-                        if (!accountNames.contains(addressBook.getMainAccount().name))
-                            addressBook.delete();
-                    } catch(ContactsStorageException e) {
-                        App.log.log(Level.SEVERE, "Couldn't get address book main account", e);
-                    }
+            // delete orphaned address book accounts
+            for (Account addrBookAccount : am.getAccountsByType(App.getAddressBookAccountType())) {
+                LocalAddressBook addressBook = new LocalAddressBook(this, addrBookAccount, null);
+                try {
+                    if (!accountNames.contains(addressBook.getMainAccount().name))
+                        addressBook.delete();
+                } catch(ContactsStorageException e) {
+                    App.log.log(Level.SEVERE, "Couldn't get address book main account", e);
                 }
+            }
 
             // delete orphaned services in DB
             if (sqlAccountNames.isEmpty())

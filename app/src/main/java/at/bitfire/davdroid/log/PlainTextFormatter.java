@@ -35,8 +35,11 @@ public class PlainTextFormatter extends Formatter {
             builder .append(DateFormatUtils.format(r.getMillis(), "yyyy-MM-dd HH:mm:ss"))
                     .append(" ").append(r.getThreadID()).append(" ");
 
-        if (!r.getSourceClassName().replaceFirst("\\$.*", "").equals(r.getLoggerName()))
-            builder.append("[").append(shortClassName(r.getSourceClassName())).append("] ");
+        if (!r.getSourceClassName().replaceFirst("\\$.*", "").equals(r.getLoggerName())) {
+            String className = shortClassName(r.getSourceClassName());
+            if (!className.equals("ical4android.AndroidAppender"))
+                builder.append("[").append(className).append("] ");
+        }
 
         builder.append(r.getMessage());
 
