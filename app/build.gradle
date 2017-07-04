@@ -104,9 +104,8 @@ android {
         disable 'Typos'
     }
     packagingOptions {
-        exclude 'LICENSE'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
     }
 
     defaultConfig {
