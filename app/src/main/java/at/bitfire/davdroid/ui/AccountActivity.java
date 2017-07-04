@@ -34,7 +34,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -424,16 +423,14 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                             ContentResolver.isSyncActive(account, App.getAddressBooksAuthority());
 
                     AccountManager accountManager = AccountManager.get(getContext());
-                    @Cleanup("release") ContentProviderClient provider = getContext().getContentResolver().acquireContentProviderClient(ContactsContract.AUTHORITY);
-                    if (provider != null)
-                        for (Account addrBookAccount : accountManager.getAccountsByType(App.getAddressBookAccountType())) {
-                            LocalAddressBook addressBook = new LocalAddressBook(getContext(), addrBookAccount, provider);
-                            try {
-                                if (account.equals(addressBook.getMainAccount()))
-                                    info.carddav.refreshing |= ContentResolver.isSyncActive(addrBookAccount, ContactsContract.AUTHORITY);
-                            } catch(ContactsStorageException e) {
-                            }
+                    for (Account addrBookAccount : accountManager.getAccountsByType(App.getAddressBookAccountType())) {
+                        LocalAddressBook addressBook = new LocalAddressBook(getContext(), addrBookAccount, null);
+                        try {
+                            if (account.equals(addressBook.getMainAccount()))
+                                info.carddav.refreshing |= ContentResolver.isSyncActive(addrBookAccount, ContactsContract.AUTHORITY);
+                        } catch(ContactsStorageException e) {
                         }
+                    }
 
                     info.carddav.hasHomeSets = hasHomeSets(db, id);
                     info.carddav.collections = readCollections(db, id);
@@ -623,7 +620,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                                                 // update account_name of local tasks
                                                 try {
                                                     LocalTaskList.onRenameAccount(getContext().getContentResolver(), oldAccount.name, newName);
-                                                } catch(RemoteException e) {
+                                                } catch(Exception e) {
                                                     App.log.log(Level.SEVERE, "Couldn't propagate new account name to tasks provider", e);
                                                 }
 

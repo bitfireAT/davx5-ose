@@ -128,7 +128,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
     }
 
 
-    public LocalAddressBook(@NonNull Context context, @NonNull Account account, @NonNull ContentProviderClient provider) {
+    public LocalAddressBook(@NonNull Context context, @NonNull Account account, ContentProviderClient provider) {
         super(account, provider, LocalContact.Factory.INSTANCE, LocalGroup.Factory.INSTANCE);
         this.context = context;
     }
