@@ -89,8 +89,6 @@
   <string name="account_delete">Konto löschen</string>
   <string name="account_delete_confirmation_title">Konto wirklich löschen?</string>
   <string name="account_delete_confirmation_text">Alle Adressbücher, Kalender und Aufgabenlisten werden vom Gerät (nicht am Server) gelöscht.</string>
-  <string name="account_carddav">CardDAV</string>
-  <string name="account_caldav">CalDAV</string>
   <string name="account_refresh_address_book_list">Adressbücher neu erkennen</string>
   <string name="account_create_new_address_book">Neues Adressbuch erstellen</string>
   <string name="account_refresh_calendar_list">Kalender neu erkennen</string>
