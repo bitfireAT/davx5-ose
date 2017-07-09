@@ -10,13 +10,19 @@ package at.bitfire.davdroid.model;
 
 import android.provider.ContactsContract.RawContacts;
 
-public class UnknownProperties {
+object UnknownProperties {
 
-    public static final String CONTENT_ITEM_TYPE = "x.davdroid/unknown-properties";
+    @JvmField
+    val CONTENT_ITEM_TYPE = "x.davdroid/unknown-properties"
 
-    public static final String
-            MIMETYPE = RawContacts.Data.MIMETYPE,
-            RAW_CONTACT_ID = RawContacts.Data.RAW_CONTACT_ID,
-            UNKNOWN_PROPERTIES = RawContacts.Data.DATA1;
+
+    @JvmField
+    val MIMETYPE = RawContacts.Data.MIMETYPE
+
+    @JvmField
+    val RAW_CONTACT_ID = RawContacts.Data.RAW_CONTACT_ID
+
+    @JvmField
+    val UNKNOWN_PROPERTIES = RawContacts.Data.DATA1
 
 }

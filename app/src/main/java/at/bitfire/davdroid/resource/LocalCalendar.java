@@ -88,13 +88,13 @@ public class LocalCalendar extends AndroidCalendar<LocalEvent> implements LocalC
 
     private static ContentValues valuesFromCollectionInfo(CollectionInfo info, boolean withColor) {
         ContentValues values = new ContentValues();
-        values.put(Calendars.NAME, info.url);
-        values.put(Calendars.CALENDAR_DISPLAY_NAME, !TextUtils.isEmpty(info.displayName) ? info.displayName : DavUtils.lastSegmentOfUrl(info.url));
+        values.put(Calendars.NAME, info.getUrl());
+        values.put(Calendars.CALENDAR_DISPLAY_NAME, !TextUtils.isEmpty(info.getDisplayName()) ? info.getDisplayName() : DavUtils.lastSegmentOfUrl(info.getUrl()));
 
         if (withColor)
-            values.put(Calendars.CALENDAR_COLOR, info.color != null ? info.color : defaultColor);
+            values.put(Calendars.CALENDAR_COLOR, info.getColor() != null ? info.getColor() : defaultColor);
 
-        if (info.readOnly)
+        if (info.getReadOnly())
             values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ);
         else {
             values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER);
@@ -102,9 +102,9 @@ public class LocalCalendar extends AndroidCalendar<LocalEvent> implements LocalC
             values.put(Calendars.CAN_ORGANIZER_RESPOND, 1);
         }
 
-        if (!TextUtils.isEmpty(info.timeZone))
+        if (!TextUtils.isEmpty(info.getTimeZone()))
             try {
-                VTimeZone timeZone = DateUtils.parseVTimeZone(info.timeZone);
+                VTimeZone timeZone = DateUtils.parseVTimeZone(info.getTimeZone());
                 if (timeZone.getTimeZoneId() != null)
                     values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(timeZone.getTimeZoneId().getValue()));
             } catch(IllegalArgumentException e) {

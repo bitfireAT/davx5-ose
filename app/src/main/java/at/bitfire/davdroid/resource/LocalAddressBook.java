@@ -88,7 +88,7 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
         AccountManager accountManager = AccountManager.get(context);
 
         Account account = new Account(accountName(mainAccount, info), App.getAddressBookAccountType());
-        if (!accountManager.addAccountExplicitly(account, null, initialUserData(mainAccount, info.url)))
+        if (!accountManager.addAccountExplicitly(account, null, initialUserData(mainAccount, info.getUrl())))
             throw new ContactsStorageException("Couldn't create address book account");
 
         LocalAddressBook addressBook = new LocalAddressBook(context, account, provider);
@@ -376,10 +376,10 @@ public class LocalAddressBook extends AndroidAddressBook implements LocalCollect
 
     public static String accountName(@NonNull Account mainAccount, @NonNull CollectionInfo info) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        baos.write(info.url.hashCode());
+        baos.write(info.getUrl().hashCode());
         String hash = Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP | Base64.NO_PADDING);
 
-        StringBuilder sb = new StringBuilder(!TextUtils.isEmpty(info.displayName) ? info.displayName : DavUtils.lastSegmentOfUrl(info.url));
+        StringBuilder sb = new StringBuilder(!TextUtils.isEmpty(info.getDisplayName()) ? info.getDisplayName() : DavUtils.lastSegmentOfUrl(info.getUrl()));
         sb      .append(" (")
                 .append(mainAccount.name)
                 .append(" ")
