@@ -71,11 +71,11 @@ public class LocalTaskList extends AndroidTaskList<LocalTask> implements LocalCo
 
     private static ContentValues valuesFromCollectionInfo(CollectionInfo info, boolean withColor) {
         ContentValues values = new ContentValues();
-        values.put(TaskLists._SYNC_ID, info.url);
-        values.put(TaskLists.LIST_NAME, !TextUtils.isEmpty(info.displayName) ? info.displayName : DavUtils.lastSegmentOfUrl(info.url));
+        values.put(TaskLists._SYNC_ID, info.getUrl());
+        values.put(TaskLists.LIST_NAME, !TextUtils.isEmpty(info.getDisplayName()) ? info.getDisplayName() : DavUtils.lastSegmentOfUrl(info.getUrl()));
 
         if (withColor)
-            values.put(TaskLists.LIST_COLOR, info.color != null ? info.color : defaultColor);
+            values.put(TaskLists.LIST_COLOR, info.getColor() != null ? info.getColor() : defaultColor);
 
         return values;
     }

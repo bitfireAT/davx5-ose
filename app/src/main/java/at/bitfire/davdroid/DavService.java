@@ -254,8 +254,8 @@ public class DavService extends Service {
                 // (remember selections before)
                 Set<HttpUrl> selectedCollections = new HashSet<>();
                 for (CollectionInfo info : collections.values())
-                    if (info.selected)
-                        selectedCollections.add(HttpUrl.parse(info.url));
+                    if (info.getSelected())
+                        selectedCollections.add(HttpUrl.parse(info.getUrl()));
 
                 for (Iterator<HttpUrl> itHomeSets = homeSets.iterator(); itHomeSets.hasNext(); ) {
                     HttpUrl homeSet = itHomeSets.next();
@@ -267,12 +267,12 @@ public class DavService extends Service {
                         IteratorChain<DavResource> itCollections = new IteratorChain<>(dav.getMembers().iterator(), new SingletonIterator(dav));
                         while (itCollections.hasNext()) {
                             DavResource member = itCollections.next();
-                            CollectionInfo info = CollectionInfo.fromDavResource(member);
-                            info.confirmed = true;
+                            CollectionInfo info = new CollectionInfo(member);
+                            info.setConfirmed(true);
                             App.log.log(Level.FINE, "Found collection", info);
 
-                            if ((serviceType.equals(Services.SERVICE_CARDDAV) && info.type == CollectionInfo.Type.ADDRESS_BOOK) ||
-                                (serviceType.equals(Services.SERVICE_CALDAV) && info.type == CollectionInfo.Type.CALENDAR))
+                            if ((serviceType.equals(Services.SERVICE_CARDDAV) && info.getType() == CollectionInfo.Type.ADDRESS_BOOK) ||
+                                (serviceType.equals(Services.SERVICE_CALDAV) && info.getType() == CollectionInfo.Type.CALENDAR))
                                 collections.put(member.getLocation(), info);
                         }
                     } catch(HttpException e) {
@@ -288,16 +288,16 @@ public class DavService extends Service {
                     HttpUrl url = entry.getKey();
                     CollectionInfo info = entry.getValue();
 
-                    if (!info.confirmed)
+                    if (!info.getConfirmed())
                         try {
                             DavResource dav = new DavResource(httpClient, url);
                             dav.propfind(0, CollectionInfo.DAV_PROPERTIES);
-                            info = CollectionInfo.fromDavResource(dav);
-                            info.confirmed = true;
+                            info = new CollectionInfo(dav);
+                            info.setConfirmed(true);
 
                             // remove unusable collections
-                            if ((serviceType.equals(Services.SERVICE_CARDDAV) && info.type != CollectionInfo.Type.ADDRESS_BOOK) ||
-                                (serviceType.equals(Services.SERVICE_CALDAV) && info.type != CollectionInfo.Type.CALENDAR))
+                            if ((serviceType.equals(Services.SERVICE_CARDDAV) && info.getType() != CollectionInfo.Type.ADDRESS_BOOK) ||
+                                (serviceType.equals(Services.SERVICE_CALDAV) && info.getType() != CollectionInfo.Type.CALENDAR))
                                 iterator.remove();
                         } catch(HttpException e) {
                             if (e.getStatus()== 403 || e.getStatus()== 404 || e.getStatus()== 410)
@@ -312,7 +312,7 @@ public class DavService extends Service {
                 for (HttpUrl url : selectedCollections) {
                     CollectionInfo info = collections.get(url);
                     if (info != null)
-                        info.selected = true;
+                        info.setSelected(true);
                 }
 
                 db.beginTransactionNonExclusive();
@@ -435,7 +435,7 @@ public class DavService extends Service {
             while (cursor.moveToNext()) {
                 ContentValues values = new ContentValues();
                 DatabaseUtils.cursorRowToContentValues(cursor, values);
-                collections.put(HttpUrl.parse(values.getAsString(Collections.URL)), CollectionInfo.fromDB(values));
+                collections.put(HttpUrl.parse(values.getAsString(Collections.URL)), new CollectionInfo(values));
             }
             return collections;
         }

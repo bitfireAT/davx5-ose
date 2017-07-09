@@ -235,7 +235,7 @@ public class DavResourceFinder {
                 DavResource addressBook = result.getFirst();
                 addressBook.setLocation(UrlUtils.withTrailingSlash(addressBook.getLocation()));
                 log.info("Found address book at " + addressBook.getLocation());
-                config.collections.put(addressBook.getLocation().uri(), CollectionInfo.fromDavResource(addressBook));
+                config.collections.put(addressBook.getLocation().uri(), new CollectionInfo(addressBook));
             }
         }
 
@@ -258,7 +258,7 @@ public class DavResourceFinder {
                 DavResource calendar = result.getFirst();
                 calendar.setLocation(UrlUtils.withTrailingSlash(calendar.getLocation()));
                 log.info("Found calendar at " + calendar.getLocation());
-                config.collections.put(calendar.getLocation().uri(), CollectionInfo.fromDavResource(calendar));
+                config.collections.put(calendar.getLocation().uri(), new CollectionInfo(calendar));
             }
         }
 
