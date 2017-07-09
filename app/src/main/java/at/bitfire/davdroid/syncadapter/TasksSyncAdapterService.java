@@ -145,8 +145,8 @@ public class TasksSyncAdapterService extends SyncAdapterService {
                 while (cursor.moveToNext()) {
                     ContentValues values = new ContentValues();
                     DatabaseUtils.cursorRowToContentValues(cursor, values);
-                    CollectionInfo info = CollectionInfo.fromDB(values);
-                    collections.put(info.url, info);
+                    CollectionInfo info = new CollectionInfo(values);
+                    collections.put(info.getUrl(), info);
                 }
             }
             return collections;

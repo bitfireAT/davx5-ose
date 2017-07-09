@@ -98,50 +98,49 @@ public class CreateCalendarActivity extends AppCompatActivity implements LoaderM
     }
 
     public void onCreateCollection(MenuItem item) {
-        boolean ok = true;
-        CollectionInfo info = new CollectionInfo();
-
         Spinner spinner = (Spinner)findViewById(R.id.home_sets);
         String homeSet = (String)spinner.getSelectedItem();
 
+        boolean ok = true;
+        CollectionInfo info = new CollectionInfo(HttpUrl.parse(homeSet).resolve(UUID.randomUUID().toString() + "/").toString());
+
         EditText edit = (EditText)findViewById(R.id.display_name);
-        info.displayName = edit.getText().toString();
-        if (TextUtils.isEmpty(info.displayName)) {
+        info.setDisplayName(edit.getText().toString());
+        if (TextUtils.isEmpty(info.getDisplayName())) {
             edit.setError(getString(R.string.create_collection_display_name_required));
             ok = false;
         }
 
         edit = (EditText)findViewById(R.id.description);
-        info.description = StringUtils.trimToNull(edit.getText().toString());
+        info.setDisplayName(StringUtils.trimToNull(edit.getText().toString()));
 
         View view = findViewById(R.id.color);
-        info.color = ((ColorDrawable)view.getBackground()).getColor();
+        info.setColor(((ColorDrawable)view.getBackground()).getColor());
 
         spinner = (Spinner)findViewById(R.id.time_zone);
         net.fortuna.ical4j.model.TimeZone tz = DateUtils.tzRegistry.getTimeZone((String)spinner.getSelectedItem());
         if (tz != null) {
             Calendar cal = new Calendar();
             cal.getComponents().add(tz.getVTimeZone());
-            info.timeZone = cal.toString();
+            info.setTimeZone(cal.toString());
         }
 
         RadioGroup typeGroup = (RadioGroup)findViewById(R.id.type);
         switch (typeGroup.getCheckedRadioButtonId()) {
             case R.id.type_events:
-                info.supportsVEVENT = true;
+                info.setSupportsVEVENT(true);
                 break;
             case R.id.type_tasks:
-                info.supportsVTODO = true;
+                info.setSupportsVTODO(true);
                 break;
             case R.id.type_events_and_tasks:
-                info.supportsVEVENT = true;
-                info.supportsVTODO = true;
+                info.setSupportsVEVENT(true);
+                info.setSupportsVTODO(true);
                 break;
         }
 
         if (ok) {
-            info.type = CollectionInfo.Type.CALENDAR;
-            info.url = HttpUrl.parse(homeSet).resolve(UUID.randomUUID().toString() + "/").toString();
+            info.setType(CollectionInfo.Type.CALENDAR);
             CreateCollectionFragment.newInstance(account, info).show(getSupportFragmentManager(), null);
         }
     }

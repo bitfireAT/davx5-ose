@@ -422,13 +422,12 @@ public class AccountSettings {
                     App.log.info("No address book URL, ignoring account");
                 else {
                     // create new address book
-                    CollectionInfo info = new CollectionInfo();
-                    info.type = CollectionInfo.Type.ADDRESS_BOOK;
-                    info.url = url;
-                    info.displayName = account.name;
+                    CollectionInfo info = new CollectionInfo(url);
+                    info.setType(CollectionInfo.Type.ADDRESS_BOOK);
+                    info.setDisplayName(account.name);
                     App.log.log(Level.INFO, "Creating new address book account", url);
                     Account addressBookAccount = new Account(LocalAddressBook.accountName(account, info), App.getAddressBookAccountType());
-                    if (!accountManager.addAccountExplicitly(addressBookAccount, null, LocalAddressBook.initialUserData(account, info.url)))
+                    if (!accountManager.addAccountExplicitly(addressBookAccount, null, LocalAddressBook.initialUserData(account, info.getUrl())))
                         throw new ContactsStorageException("Couldn't create address book account");
                     LocalAddressBook addressBook = new LocalAddressBook(context, addressBookAccount, provider);
 

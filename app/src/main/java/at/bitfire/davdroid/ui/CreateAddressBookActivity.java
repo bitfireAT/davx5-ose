@@ -73,25 +73,24 @@ public class CreateAddressBookActivity extends AppCompatActivity implements Load
     }
 
     public void onCreateCollection(MenuItem item) {
-        boolean ok = true;
-        CollectionInfo info = new CollectionInfo();
-
         Spinner spinner = (Spinner)findViewById(R.id.home_sets);
         String homeSet = (String)spinner.getSelectedItem();
 
+        boolean ok = true;
+        CollectionInfo info = new CollectionInfo(HttpUrl.parse(homeSet).resolve(UUID.randomUUID().toString() + "/").toString());
+
         EditText edit = (EditText)findViewById(R.id.display_name);
-        info.displayName = edit.getText().toString();
-        if (TextUtils.isEmpty(info.displayName)) {
+        info.setDisplayName(edit.getText().toString());
+        if (TextUtils.isEmpty(info.getDisplayName())) {
             edit.setError(getString(R.string.create_collection_display_name_required));
             ok = false;
         }
 
         edit = (EditText)findViewById(R.id.description);
-        info.description = StringUtils.trimToNull(edit.getText().toString());
+        info.setDescription(StringUtils.trimToNull(edit.getText().toString()));
 
         if (ok) {
-            info.type = CollectionInfo.Type.ADDRESS_BOOK;
-            info.url = HttpUrl.parse(homeSet).resolve(UUID.randomUUID().toString() + "/").toString();
+            info.setType(CollectionInfo.Type.ADDRESS_BOOK);
             CreateCollectionFragment.newInstance(account, info).show(getSupportFragmentManager(), null);
         }
     }

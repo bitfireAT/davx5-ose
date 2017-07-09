@@ -142,56 +142,56 @@ public class CreateCollectionFragment extends DialogFragment implements LoaderMa
                             serializer.startTag(XmlUtils.NS_WEBDAV, "resourcetype");
                                 serializer.startTag(XmlUtils.NS_WEBDAV, "collection");
                                 serializer.endTag(XmlUtils.NS_WEBDAV, "collection");
-                                if (info.type == CollectionInfo.Type.ADDRESS_BOOK) {
+                                if (info.getType() == CollectionInfo.Type.ADDRESS_BOOK) {
                                     serializer.startTag(XmlUtils.NS_CARDDAV, "addressbook");
                                     serializer.endTag(XmlUtils.NS_CARDDAV, "addressbook");
-                                } else if (info.type == CollectionInfo.Type.CALENDAR) {
+                                } else if (info.getType() == CollectionInfo.Type.CALENDAR) {
                                     serializer.startTag(XmlUtils.NS_CALDAV, "calendar");
                                     serializer.endTag(XmlUtils.NS_CALDAV, "calendar");
                                 }
                             serializer.endTag(XmlUtils.NS_WEBDAV, "resourcetype");
-                            if (info.displayName != null) {
+                            if (info.getDisplayName() != null) {
                                 serializer.startTag(XmlUtils.NS_WEBDAV, "displayname");
-                                    serializer.text(info.displayName);
+                                    serializer.text(info.getDisplayName());
                                 serializer.endTag(XmlUtils.NS_WEBDAV, "displayname");
                             }
 
                             // addressbook-specific properties
-                            if (info.type == CollectionInfo.Type.ADDRESS_BOOK) {
-                                if (info.description != null) {
+                            if (info.getType() == CollectionInfo.Type.ADDRESS_BOOK) {
+                                if (info.getDescription() != null) {
                                     serializer.startTag(XmlUtils.NS_CARDDAV, "addressbook-description");
-                                    serializer.text(info.description);
+                                    serializer.text(info.getDescription());
                                     serializer.endTag(XmlUtils.NS_CARDDAV, "addressbook-description");
                                 }
                             }
 
                             // calendar-specific properties
-                            if (info.type == CollectionInfo.Type.CALENDAR) {
-                                if (info.description != null) {
+                            if (info.getType() == CollectionInfo.Type.CALENDAR) {
+                                if (info.getDescription() != null) {
                                     serializer.startTag(XmlUtils.NS_CALDAV, "calendar-description");
-                                    serializer.text(info.description);
+                                    serializer.text(info.getDescription());
                                     serializer.endTag(XmlUtils.NS_CALDAV, "calendar-description");
                                 }
 
-                                if (info.color != null) {
+                                if (info.getColor() != null) {
                                     serializer.startTag(XmlUtils.NS_APPLE_ICAL, "calendar-color");
-                                    serializer.text(DavUtils.ARGBtoCalDAVColor(info.color));
+                                    serializer.text(DavUtils.ARGBtoCalDAVColor(info.getColor()));
                                     serializer.endTag(XmlUtils.NS_APPLE_ICAL, "calendar-color");
                                 }
 
-                                if (info.timeZone != null) {
+                                if (info.getTimeZone() != null) {
                                     serializer.startTag(XmlUtils.NS_CALDAV, "calendar-timezone");
-                                    serializer.cdsect(info.timeZone);
+                                    serializer.cdsect(info.getTimeZone());
                                     serializer.endTag(XmlUtils.NS_CALDAV, "calendar-timezone");
                                 }
 
                                 serializer.startTag(XmlUtils.NS_CALDAV, "supported-calendar-component-set");
-                                if (BooleanUtils.isTrue(info.supportsVEVENT)) {
+                                if (BooleanUtils.isTrue(info.getSupportsVEVENT())) {
                                     serializer.startTag(XmlUtils.NS_CALDAV, "comp");
                                     serializer.attribute(null, "name", "VEVENT");
                                     serializer.endTag(XmlUtils.NS_CALDAV, "comp");
                                 }
-                                if (BooleanUtils.isTrue(info.supportsVTODO)) {
+                                if (BooleanUtils.isTrue(info.getSupportsVTODO())) {
                                     serializer.startTag(XmlUtils.NS_CALDAV, "comp");
                                     serializer.attribute(null, "name", "VTODO");
                                     serializer.endTag(XmlUtils.NS_CALDAV, "comp");
@@ -211,7 +211,7 @@ public class CreateCollectionFragment extends DialogFragment implements LoaderMa
 
             try {
                 OkHttpClient client = HttpClient.create(getContext(), account);
-                DavResource collection = new DavResource(client, HttpUrl.parse(info.url));
+                DavResource collection = new DavResource(client, HttpUrl.parse(info.getUrl()));
 
                 // create collection on remote server
                 collection.mkCol(writer.toString());
@@ -221,9 +221,9 @@ public class CreateCollectionFragment extends DialogFragment implements LoaderMa
 
                 // 1. find service ID
                 String serviceType;
-                if (info.type == CollectionInfo.Type.ADDRESS_BOOK)
+                if (info.getType() == CollectionInfo.Type.ADDRESS_BOOK)
                     serviceType = ServiceDB.Services.SERVICE_CARDDAV;
-                else if (info.type == CollectionInfo.Type.CALENDAR)
+                else if (info.getType() == CollectionInfo.Type.CALENDAR)
                     serviceType = ServiceDB.Services.SERVICE_CALDAV;
                 else
                     throw new IllegalArgumentException("Collection must be an address book or calendar");
