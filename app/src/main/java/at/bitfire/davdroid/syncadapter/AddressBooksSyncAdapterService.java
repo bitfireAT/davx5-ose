@@ -148,8 +148,8 @@ public class AddressBooksSyncAdapterService extends SyncAdapterService {
                 while (c.moveToNext()) {
                     ContentValues values = new ContentValues();
                     DatabaseUtils.cursorRowToContentValues(c, values);
-                    CollectionInfo info = CollectionInfo.fromDB(values);
-                    collections.put(info.url, info);
+                    CollectionInfo info = new CollectionInfo(values);
+                    collections.put(info.getUrl(), info);
                 }
             }
             return collections;

@@ -112,14 +112,14 @@ public class DeleteCollectionFragment extends DialogFragment implements LoaderMa
         public Exception loadInBackground() {
             try {
                 OkHttpClient httpClient = HttpClient.create(getContext(), account);
-                DavResource collection = new DavResource(httpClient, HttpUrl.parse(collectionInfo.url));
+                DavResource collection = new DavResource(httpClient, HttpUrl.parse(collectionInfo.getUrl()));
 
                 // delete collection from server
                 collection.delete(null);
 
                 // delete collection locally
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
-                db.delete(ServiceDB.Collections._TABLE, ServiceDB.Collections.ID + "=?", new String[] { String.valueOf(collectionInfo.id) });
+                db.delete(ServiceDB.Collections._TABLE, ServiceDB.Collections.ID + "=?", new String[] { String.valueOf(collectionInfo.getId()) });
 
                 return null;
             } catch (InvalidAccountException|IOException|HttpException e) {
@@ -146,7 +146,7 @@ public class DeleteCollectionFragment extends DialogFragment implements LoaderMa
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             CollectionInfo collectionInfo = (CollectionInfo)getArguments().getSerializable(ARG_COLLECTION_INFO);
-            String name = TextUtils.isEmpty(collectionInfo.displayName) ? collectionInfo.url : collectionInfo.displayName;
+            String name = TextUtils.isEmpty(collectionInfo.getDisplayName()) ? collectionInfo.getUrl() : collectionInfo.getDisplayName();
 
             return new AlertDialog.Builder(getContext())
                     .setTitle(R.string.delete_collection_confirm_title)

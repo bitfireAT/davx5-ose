@@ -225,7 +225,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             final ArrayAdapter<CollectionInfo> adapter = (ArrayAdapter)list.getAdapter();
             final CollectionInfo info = adapter.getItem(position);
 
-            boolean nowChecked = !info.selected;
+            boolean nowChecked = !info.getSelected();
 
             OpenHelper dbHelper = new OpenHelper(AccountActivity.this);
             try {
@@ -234,12 +234,12 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
                 ContentValues values = new ContentValues(1);
                 values.put(Collections.SYNC, nowChecked ? 1 : 0);
-                db.update(Collections._TABLE, values, Collections.ID + "=?", new String[] { String.valueOf(info.id) });
+                db.update(Collections._TABLE, values, Collections.ID + "=?", new String[] { String.valueOf(info.getId()) });
 
                 db.setTransactionSuccessful();
                 db.endTransaction();
 
-                info.selected = nowChecked;
+                info.setSelected(nowChecked);
                 adapter.notifyDataSetChanged();
             } finally {
                 dbHelper.close();
@@ -461,7 +461,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             while (cursor.moveToNext()) {
                 ContentValues values = new ContentValues();
                 DatabaseUtils.cursorRowToContentValues(cursor, values);
-                collections.add(CollectionInfo.fromDB(values));
+                collections.add(new CollectionInfo(values));
             }
             return collections;
         }
@@ -484,21 +484,21 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             final CollectionInfo info = getItem(position);
 
             CheckBox checked = (CheckBox)v.findViewById(R.id.checked);
-            checked.setChecked(info.selected);
+            checked.setChecked(info.getSelected());
 
             TextView tv = (TextView)v.findViewById(R.id.title);
-            tv.setText(TextUtils.isEmpty(info.displayName) ? info.url : info.displayName);
+            tv.setText(TextUtils.isEmpty(info.getDisplayName()) ? info.getUrl() : info.getDisplayName());
 
             tv = (TextView)v.findViewById(R.id.description);
-            if (TextUtils.isEmpty(info.description))
+            if (TextUtils.isEmpty(info.getDescription()))
                 tv.setVisibility(View.GONE);
             else {
                 tv.setVisibility(View.VISIBLE);
-                tv.setText(info.description);
+                tv.setText(info.getDescription());
             }
 
             tv = (TextView)v.findViewById(R.id.read_only);
-            tv.setVisibility(info.readOnly ? View.VISIBLE : View.GONE);
+            tv.setVisibility(info.getReadOnly() ? View.VISIBLE : View.GONE);
 
             return v;
         }
@@ -517,34 +517,34 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
             final CollectionInfo info = getItem(position);
 
             CheckBox checked = (CheckBox)v.findViewById(R.id.checked);
-            checked.setChecked(info.selected);
+            checked.setChecked(info.getSelected());
 
             View vColor = v.findViewById(R.id.color);
-            if (info.color != null) {
+            if (info.getColor() != null) {
                 vColor.setVisibility(View.VISIBLE);
-                vColor.setBackgroundColor(info.color);
+                vColor.setBackgroundColor(info.getColor());
             } else
                 vColor.setVisibility(View.GONE);
 
             TextView tv = (TextView)v.findViewById(R.id.title);
-            tv.setText(TextUtils.isEmpty(info.displayName) ? info.url : info.displayName);
+            tv.setText(TextUtils.isEmpty(info.getDisplayName()) ? info.getUrl() : info.getDisplayName());
 
             tv = (TextView)v.findViewById(R.id.description);
-            if (TextUtils.isEmpty(info.description))
+            if (TextUtils.isEmpty(info.getDescription()))
                 tv.setVisibility(View.GONE);
             else {
                 tv.setVisibility(View.VISIBLE);
-                tv.setText(info.description);
+                tv.setText(info.getDescription());
             }
 
             tv = (TextView)v.findViewById(R.id.read_only);
-            tv.setVisibility(info.readOnly ? View.VISIBLE : View.GONE);
+            tv.setVisibility(info.getReadOnly() ? View.VISIBLE : View.GONE);
 
             tv = (TextView)v.findViewById(R.id.events);
-            tv.setVisibility(BooleanUtils.isTrue(info.supportsVEVENT) ? View.VISIBLE : View.GONE);
+            tv.setVisibility(BooleanUtils.isTrue(info.getSupportsVEVENT()) ? View.VISIBLE : View.GONE);
 
             tv = (TextView)v.findViewById(R.id.tasks);
-            tv.setVisibility(BooleanUtils.isTrue(info.supportsVTODO) ? View.VISIBLE : View.GONE);
+            tv.setVisibility(BooleanUtils.isTrue(info.getSupportsVTODO()) ? View.VISIBLE : View.GONE);
 
             return v;
         }

@@ -9,10 +9,8 @@
 package at.bitfire.davdroid.model;
 
 import android.content.ContentValues;
-import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
@@ -52,11 +50,11 @@ public class CollectionInfoTest {
 
         DavResource dav = new DavResource(HttpClient.create(null), server.url("/"));
         dav.propfind(0, ResourceType.NAME);
-        CollectionInfo info = CollectionInfo.fromDavResource(dav);
-        assertEquals(CollectionInfo.Type.ADDRESS_BOOK, info.type);
-        assertFalse(info.readOnly);
-        assertEquals("My Contacts", info.displayName);
-        assertEquals("My Contacts Description", info.description);
+        CollectionInfo info = new CollectionInfo(dav);
+        assertEquals(CollectionInfo.Type.ADDRESS_BOOK, info.getType());
+        assertFalse(info.getReadOnly());
+        assertEquals("My Contacts", info.getDisplayName());
+        assertEquals("My Contacts Description", info.getDescription());
 
         // read-only calendar, no display name
         server.enqueue(new MockResponse()
@@ -76,15 +74,15 @@ public class CollectionInfoTest {
 
         dav = new DavResource(HttpClient.create(null), server.url("/"));
         dav.propfind(0, ResourceType.NAME);
-        info = CollectionInfo.fromDavResource(dav);
-        assertEquals(CollectionInfo.Type.CALENDAR, info.type);
-        assertTrue(info.readOnly);
-        assertNull(info.displayName);
-        assertEquals("My Calendar", info.description);
-        assertEquals(0xFFFF0000, (int)info.color);
-        assertEquals("tzdata", info.timeZone);
-        assertTrue(info.supportsVEVENT);
-        assertTrue(info.supportsVTODO);
+        info = new CollectionInfo(dav);
+        assertEquals(CollectionInfo.Type.CALENDAR, info.getType());
+        assertTrue(info.getReadOnly());
+        assertNull(info.getDisplayName());
+        assertEquals("My Calendar", info.getDescription());
+        assertEquals(0xFFFF0000, (int)info.getColor());
+        assertEquals("tzdata", info.getTimeZone());
+        assertTrue(info.getSupportsVEVENT());
+        assertTrue(info.getSupportsVTODO());
     }
 
     @Test
@@ -102,18 +100,18 @@ public class CollectionInfoTest {
         values.put(Collections.SUPPORTS_VTODO, 1);
         values.put(Collections.SYNC, 1);
 
-        CollectionInfo info = CollectionInfo.fromDB(values);
-        assertEquals(1, info.id);
-        assertEquals(1, (long)info.serviceID);
-        assertEquals("http://example.com", info.url);
-        assertTrue(info.readOnly);
-        assertEquals("display name", info.displayName);
-        assertEquals("description", info.description);
-        assertEquals(0xFFFF0000, (int)info.color);
-        assertEquals("tzdata", info.timeZone);
-        assertTrue(info.supportsVEVENT);
-        assertTrue(info.supportsVTODO);
-        assertTrue(info.selected);
+        CollectionInfo info = new CollectionInfo(values);
+        assertEquals(1, (long)info.getId());
+        assertEquals(1, (long)info.getServiceID());
+        assertEquals("http://example.com", info.getUrl());
+        assertTrue(info.getReadOnly());
+        assertEquals("display name", info.getDisplayName());
+        assertEquals("description", info.getDescription());
+        assertEquals(0xFFFF0000, (int)info.getColor());
+        assertEquals("tzdata", info.getTimeZone());
+        assertTrue(info.getSupportsVEVENT());
+        assertTrue(info.getSupportsVTODO());
+        assertTrue(info.getSelected());
     }
 
 }
