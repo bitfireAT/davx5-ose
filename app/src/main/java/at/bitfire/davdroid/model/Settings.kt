@@ -17,7 +17,7 @@ class Settings(
 
     fun getBoolean(name: String, defaultValue: Boolean): Boolean {
         db.query(ServiceDB.Settings._TABLE, arrayOf(ServiceDB.Settings.VALUE),
-                ServiceDB.Settings.NAME + "=?", arrayOf(name), null, null, null)?.use { cursor ->
+                "${ServiceDB.Settings.NAME}=?", arrayOf(name), null, null, null)?.use { cursor ->
             if (cursor.moveToNext() && !cursor.isNull(0))
                 return cursor.getInt(0) != 0
         }
@@ -34,7 +34,7 @@ class Settings(
 
     fun getInt(name: String, defaultValue: Int): Int {
         db.query(ServiceDB.Settings._TABLE, arrayOf(ServiceDB.Settings.VALUE),
-                ServiceDB.Settings.NAME + "=?", arrayOf(name), null, null, null)?.use { cursor ->
+                "${ServiceDB.Settings.NAME}=?", arrayOf(name), null, null, null)?.use { cursor ->
             if (cursor.moveToNext() && !cursor.isNull(0))
                 return if (cursor.isNull(0)) defaultValue else cursor.getInt(0)
         }
@@ -51,7 +51,7 @@ class Settings(
 
     fun getString(name: String, defaultValue: String?): String? {
         db.query(ServiceDB.Settings._TABLE, arrayOf(ServiceDB.Settings.VALUE),
-                ServiceDB.Settings.NAME + "=?", arrayOf(name), null, null, null)?.use { cursor ->
+                "${ServiceDB.Settings.NAME}=?", arrayOf(name), null, null, null)?.use { cursor ->
             if (cursor.moveToNext())
                 return cursor.getString(0)
         }
@@ -67,7 +67,7 @@ class Settings(
 
 
     fun remove(name: String) {
-        db.delete(ServiceDB.Settings._TABLE, ServiceDB.Settings.NAME + "=?", arrayOf(name))
+        db.delete(ServiceDB.Settings._TABLE, "${ServiceDB.Settings.NAME}=?", arrayOf(name))
     }
 
 }
