@@ -6,14 +6,8 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid;
+package at.bitfire.davdroid
 
-import android.accounts.Account;
+import android.accounts.Account
 
-public class InvalidAccountException extends Exception {
-
-    public InvalidAccountException(Account account) {
-        super("Invalid account: " + account);
-    }
-
-}
+class InvalidAccountException(account: Account): Exception("Invalid account: $account")

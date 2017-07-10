@@ -17,6 +17,13 @@ public class TestDavUtils {
     private static final String exampleURL = "http://example.com/";
 
     @Test
+    public void testARGBtoCalDAVColor() {
+        assertEquals("#00000000", DavUtils.ARGBtoCalDAVColor(0));
+        assertEquals("#123456FF", DavUtils.ARGBtoCalDAVColor(0xFF123456));
+        assertEquals("#000000FF", DavUtils.ARGBtoCalDAVColor(0xFF000000));
+    }
+
+    @Test
     public void testLastSegmentOfUrl() {
         assertEquals("/", DavUtils.lastSegmentOfUrl(exampleURL));
         assertEquals("dir", DavUtils.lastSegmentOfUrl(exampleURL + "dir"));
