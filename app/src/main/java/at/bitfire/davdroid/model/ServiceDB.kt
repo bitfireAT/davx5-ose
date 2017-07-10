@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import at.bitfire.davdroid.App
+import java.io.Closeable
 
 class ServiceDB {
 
@@ -71,7 +72,7 @@ class ServiceDB {
 
     class OpenHelper(
             context: Context
-    ): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+    ): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), Closeable {
 
         companion object {
             val DATABASE_NAME = "services.db"
