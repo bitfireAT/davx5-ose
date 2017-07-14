@@ -28,6 +28,7 @@ import android.support.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -102,7 +103,7 @@ public class AddressBooksSyncAdapterService extends SyncAdapterService {
             Long service = getService(db, account);
             Map<String, CollectionInfo> remote = remoteAddressBooks(db, service);
 
-            LocalAddressBook[] local = LocalAddressBook.find(context, provider, account);
+            List<LocalAddressBook> local = LocalAddressBook.find(context, provider, account);
 
             // delete obsolete local address books
             for (LocalAddressBook addressBook : local) {
@@ -114,7 +115,7 @@ public class AddressBooksSyncAdapterService extends SyncAdapterService {
                     // we already have a local address book for this remote collection, don't take into consideration anymore
                     try {
                         addressBook.update(remote.get(url));
-                    } catch(AuthenticatorException|OperationCanceledException|IOException e) {
+                    } catch(ContactsStorageException e) {
                         App.log.log(Level.WARNING, "Couldn't rename address book account", e);
                     }
                     remote.remove(url);

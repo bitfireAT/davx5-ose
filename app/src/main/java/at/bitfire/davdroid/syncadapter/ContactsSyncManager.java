@@ -177,7 +177,7 @@ public class ContactsSyncManager extends SyncManager {
         groupMethod = settings.getGroupMethod();
         App.log.info("Contact group method: " + groupMethod);
 
-        localAddressBook().includeGroups = groupMethod == GroupMethod.GROUP_VCARDS;
+        localAddressBook().setIncludeGroups(groupMethod == GroupMethod.GROUP_VCARDS);
     }
 
     @Override
@@ -477,7 +477,7 @@ public class ContactsSyncManager extends SyncManager {
             batch.commit();
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && local instanceof LocalContact)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O && local instanceof LocalContact)
             // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
             ((LocalContact)local).updateHashCode(null);
 
