@@ -77,8 +77,9 @@ public class App extends Application {
         at.bitfire.cert4android.Constants.log = Logger.getLogger("davdroid.cert4android");
     }
 
-    @Getter
     private static String addressBookAccountType;
+    public static String getAddressBookAccountType() { return addressBookAccountType; }
+
     @Getter
     private static String addressBooksAuthority;
 
