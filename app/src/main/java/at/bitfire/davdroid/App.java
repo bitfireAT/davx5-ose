@@ -164,7 +164,6 @@ public class App extends Application {
     }
 
     @Nullable
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static Bitmap getLauncherBitmap(@NonNull Context context) {
         Bitmap bitmapLogo = null;
         Drawable drawableLogo = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP ?
