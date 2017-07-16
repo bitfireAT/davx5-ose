@@ -9,7 +9,6 @@
 package at.bitfire.davdroid;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,7 +16,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Process;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -42,7 +40,6 @@ import at.bitfire.davdroid.log.PlainTextFormatter;
 import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.model.Settings;
 import lombok.Cleanup;
-import lombok.Getter;
 import okhttp3.internal.tls.OkHostnameVerifier;
 
 public class App extends Application {
@@ -56,14 +53,14 @@ public class App extends Application {
     public static final String OVERRIDE_PROXY_HOST_DEFAULT = "localhost";
     public static final int OVERRIDE_PROXY_PORT_DEFAULT = 8118;
 
-    @Getter
     private CustomCertManager certManager;
+    public CustomCertManager getCertManager() { return certManager; }
 
-    @Getter
     private static SSLSocketFactoryCompat sslSocketFactoryCompat;
+    public static SSLSocketFactoryCompat getSslSocketFactoryCompat() { return sslSocketFactoryCompat; }
 
-    @Getter
     private static HostnameVerifier hostnameVerifier;
+    public static HostnameVerifier getHostnameVerifier() { return hostnameVerifier; }
 
     public final static Logger log = Logger.getLogger("davdroid");
     static {
@@ -74,8 +71,8 @@ public class App extends Application {
     private static String addressBookAccountType;
     public static String getAddressBookAccountType() { return addressBookAccountType; }
 
-    @Getter
     private static String addressBooksAuthority;
+    public static String getAddressBooksAuthority() { return addressBooksAuthority; }
 
     @Override
     @SuppressLint("HardwareIds")
