@@ -82,7 +82,7 @@ public class DavResourceFinder {
         log.setLevel(Level.FINEST);
         log.addHandler(logBuffer);
 
-        httpClient = HttpClient.create(context, log);
+        httpClient = HttpClient.create(context, null, log);
         httpClient = HttpClient.addAuthentication(httpClient, credentials.userName, credentials.password);
 	}
 
