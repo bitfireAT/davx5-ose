@@ -420,10 +420,10 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                     info.carddav = new AccountInfo.ServiceInfo();
                     info.carddav.id = id;
                     info.carddav.refreshing = (davService != null && davService.isRefreshing(id)) ||
-                            ContentResolver.isSyncActive(account, App.getAddressBooksAuthority());
+                            ContentResolver.isSyncActive(account, App.addressBooksAuthority);
 
                     AccountManager accountManager = AccountManager.get(getContext());
-                    for (Account addrBookAccount : accountManager.getAccountsByType(App.getAddressBookAccountType())) {
+                    for (Account addrBookAccount : accountManager.getAccountsByType(App.addressBookAccountType)) {
                         LocalAddressBook addressBook = new LocalAddressBook(getContext(), addrBookAccount, null);
                         try {
                             if (account.equals(addressBook.getMainAccount()))
@@ -594,7 +594,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
                                                 // cancel maybe running synchronization
                                                 ContentResolver.cancelSync(oldAccount, null);
-                                                for (Account addrBookAccount : accountManager.getAccountsByType(App.getAddressBookAccountType()))
+                                                for (Account addrBookAccount : accountManager.getAccountsByType(App.addressBookAccountType))
                                                     ContentResolver.cancelSync(addrBookAccount, null);
 
                                                 // update account name references in database
@@ -603,7 +603,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
                                                 // update main account of address book accounts
                                                 try {
-                                                    for (Account addrBookAccount : accountManager.getAccountsByType(App.getAddressBookAccountType())) {
+                                                    for (Account addrBookAccount : accountManager.getAccountsByType(App.addressBookAccountType)) {
                                                         @Cleanup("release") ContentProviderClient provider = getContext().getContentResolver().acquireContentProviderClient(ContactsContract.AUTHORITY);
                                                         if (provider != null) {
                                                             LocalAddressBook addressBook = new LocalAddressBook(getContext(), addrBookAccount, provider);
@@ -675,7 +675,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
     protected static void requestSync(Account account) {
         String authorities[] = {
-                App.getAddressBooksAuthority(),
+                App.addressBookAccountType,
                 CalendarContract.AUTHORITY,
                 TaskProvider.ProviderName.OpenTasks.getAuthority()
         };

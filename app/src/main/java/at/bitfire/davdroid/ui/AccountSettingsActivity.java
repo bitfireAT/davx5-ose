@@ -122,7 +122,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
             // category: synchronization
             final ListPreference prefSyncContacts = (ListPreference)findPreference("sync_interval_contacts");
-            final Long syncIntervalContacts = settings.getSyncInterval(App.getAddressBooksAuthority());
+            final Long syncIntervalContacts = settings.getSyncInterval(App.addressBooksAuthority);
             if (syncIntervalContacts != null) {
                 prefSyncContacts.setValue(syncIntervalContacts.toString());
                 if (syncIntervalContacts == AccountSettings.SYNC_INTERVAL_MANUALLY)
@@ -132,7 +132,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 prefSyncContacts.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        settings.setSyncInterval(App.getAddressBooksAuthority(), Long.parseLong((String)newValue));
+                        settings.setSyncInterval(App.addressBooksAuthority, Long.parseLong((String)newValue));
                         getLoaderManager().restartLoader(0, getArguments(), AccountSettingsFragment.this);
                         return false;
                     }

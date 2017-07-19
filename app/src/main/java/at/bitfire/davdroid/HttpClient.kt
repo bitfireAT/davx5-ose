@@ -64,12 +64,14 @@ class HttpClient private constructor() {
             val builder = client.newBuilder()
 
             // use MemorizingTrustManager to manage self-signed certificates
-            context?.let {
-                val app = it.applicationContext as App
-                if (App.getSslSocketFactoryCompat() != null && app.certManager != null)
-                    builder.sslSocketFactory(App.getSslSocketFactoryCompat(), app.certManager)
-                if (App.getHostnameVerifier() != null)
-                    builder.hostnameVerifier(App.getHostnameVerifier())
+            context?.applicationContext?.let { app ->
+                if (app is App) {
+                    if (app.sslSocketFactoryCompat != null && app.certManager != null)
+                        builder.sslSocketFactory(app.sslSocketFactoryCompat, app.certManager)
+                    if (app.hostnameVerifier != null)
+                        builder.hostnameVerifier(app.hostnameVerifier)
+                } else
+                    App.log.severe("Application context is ${app::class.java.canonicalName} instead of App")
             }
 
             // set timeouts

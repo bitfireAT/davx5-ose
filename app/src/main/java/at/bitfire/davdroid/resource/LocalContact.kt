@@ -23,7 +23,6 @@ import ezvcard.Ezvcard
 import java.io.FileNotFoundException
 import java.util.*
 
-// TODO toString
 class LocalContact: AndroidContact, LocalResource {
 
     companion object {
