@@ -143,9 +143,9 @@ public class AccountDetailsFragment extends Fragment {
                 }
 
                 // contact sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_contacts.xml
-                settings.setSyncInterval(App.getAddressBooksAuthority(), Constants.DEFAULT_SYNC_INTERVAL);
+                settings.setSyncInterval(App.addressBooksAuthority, Constants.DEFAULT_SYNC_INTERVAL);
             } else
-                ContentResolver.setIsSyncable(account, App.getAddressBooksAuthority(), 0);
+                ContentResolver.setIsSyncable(account, App.addressBooksAuthority, 0);
 
             if (config.calDAV != null) {
                 // insert CalDAV service
