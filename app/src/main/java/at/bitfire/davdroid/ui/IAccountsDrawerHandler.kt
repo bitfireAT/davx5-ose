@@ -6,14 +6,13 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid.ui;
+package at.bitfire.davdroid.ui
 
-import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.view.MenuItem;
+import android.app.Activity
+import android.view.MenuItem
 
-public interface IAccountsDrawerHandler {
+interface IAccountsDrawerHandler {
 
-    public boolean onNavigationItemSelected(@NonNull Activity activity, MenuItem item);
+    fun onNavigationItemSelected(activity: Activity, item: MenuItem): Boolean
 
 }
