@@ -25,7 +25,6 @@ import java.io.FileNotFoundException
 import java.util.*
 import java.util.logging.Level
 
-// TODO @ToString(callSuper=true)
 class LocalGroup: AndroidGroup, LocalResource {
 
     companion object {

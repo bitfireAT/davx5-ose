@@ -19,8 +19,6 @@ import net.fortuna.ical4j.model.property.ProdId
 import java.io.FileNotFoundException
 import java.util.*
 
-//@TargetApi(17)
-//TODO @ToString(of={ "fileName","eTag" }, callSuper=true)
 class LocalEvent: AndroidEvent, LocalResource {
 
     companion object {
