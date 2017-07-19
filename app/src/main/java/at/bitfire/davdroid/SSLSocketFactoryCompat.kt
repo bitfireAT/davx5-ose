@@ -30,8 +30,9 @@ class SSLSocketFactoryCompat(trustManager: X509TrustManager): SSLSocketFactory()
         val protocols = LinkedList<String>()
         val cipherSuites = LinkedList<String>()
         init {
+            val socket = SSLSocketFactory.getDefault().createSocket() as SSLSocket?
             try {
-                (SSLSocketFactory.getDefault().createSocket() as SSLSocket?)?.use { socket ->
+                socket?.let {
                     /* set reasonable protocol versions */
                     // - enable all supported protocols (enables TLSv1.1 and TLSv1.2 on Android <5.0)
                     // - remove all SSL versions (especially SSLv3) because they're insecure now
@@ -78,8 +79,10 @@ class SSLSocketFactoryCompat(trustManager: X509TrustManager): SSLSocketFactory()
 
                     App.log.info("Enabling (only) those TLS ciphers: " + TextUtils.join(", ", cipherSuites))
                 }
-            } catch (e: IOException) {
+            } catch(e: IOException) {
                 App.log.severe("Couldn't determine default TLS settings")
+            } finally {
+                socket?.close()
             }
         }
     }
