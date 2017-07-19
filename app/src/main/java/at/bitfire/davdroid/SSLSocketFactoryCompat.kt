@@ -77,7 +77,7 @@ class SSLSocketFactoryCompat(trustManager: X509TrustManager): SSLSocketFactory()
                     // ... and keep only those which are actually available
                     cipherSuites.retainAll(availableCiphers)
 
-                    App.log.info("Enabling (only) those TLS ciphers: " + TextUtils.join(", ", cipherSuites))
+                    App.log.info("Enabling (only) those TLS ciphers: " + cipherSuites.joinToString(", "))
                 }
             } catch(e: IOException) {
                 App.log.severe("Couldn't determine default TLS settings")

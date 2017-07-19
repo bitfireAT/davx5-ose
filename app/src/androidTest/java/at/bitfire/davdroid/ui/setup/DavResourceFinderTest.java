@@ -69,7 +69,7 @@ public class DavResourceFinderTest {
         finder = new DavResourceFinder(getTargetContext(), credentials);
 
         client = HttpClient.create(null);
-        client = HttpClient.addAuthentication(client, credentials.userName, credentials.password);
+        client = HttpClient.addAuthentication(client, credentials.getUserName(), credentials.getPassword());
     }
 
     @After
