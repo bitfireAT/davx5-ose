@@ -45,7 +45,7 @@ class LocalAddressBook(
         fun create(context: Context, provider: ContentProviderClient, mainAccount: Account, info: CollectionInfo): LocalAddressBook {
             val accountManager = AccountManager.get(context)
 
-            val account = Account(accountName(mainAccount, info), App.getAddressBookAccountType())
+            val account = Account(accountName(mainAccount, info), App.addressBookAccountType)
             if (!accountManager.addAccountExplicitly(account, null, initialUserData(mainAccount, info.url)))
                 throw ContactsStorageException("Couldn't create address book account")
 
@@ -60,7 +60,7 @@ class LocalAddressBook(
             val accountManager = AccountManager.get(context)
 
             val result = LinkedList<LocalAddressBook>()
-            accountManager.getAccountsByType(App.getAddressBookAccountType())
+            accountManager.getAccountsByType(App.addressBookAccountType)
                     .map { LocalAddressBook(context, it, provider) }
                     .filter { mainAccount == null || it.getMainAccount() == mainAccount }
                     .forEach { result += it }
@@ -135,6 +135,7 @@ class LocalAddressBook(
             if (Build.VERSION.SDK_INT >= 22)
                 accountManager.removeAccount(account, null, null, null)
             else
+                @Suppress("deprecation")
                 accountManager.removeAccount(account, null, null)
         } catch(e: Exception) {
             throw ContactsStorageException("Couldn't remove address book", e)

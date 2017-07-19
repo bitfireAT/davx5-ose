@@ -40,7 +40,7 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
 
     companion object {
 
-        val CURRENT_VERSION = 6;
+        val CURRENT_VERSION = 6
         val KEY_SETTINGS_VERSION = "version"
 
         val KEY_USERNAME = "user_name"
@@ -190,7 +190,7 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
         }
     }
 
-    @SuppressWarnings("unused")
+    @Suppress("unused")
     private fun update_1_2() {
         /* - KEY_ADDRESSBOOK_URL ("addressbook_url"),
            - KEY_ADDRESSBOOK_CTAG ("addressbook_ctag"),
@@ -223,11 +223,12 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
             if (Build.VERSION.SDK_INT >= 24)
                 provider.close()
             else
+                @Suppress("deprecation")
                 provider.release()
         }
     }
 
-    @SuppressWarnings("unused")
+    @Suppress("unused")
     private fun update_2_3() {
         // Don't show a warning for Android updates anymore
         accountManager.setUserData(account, "last_android_version", null)
@@ -273,6 +274,7 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
                     if (Build.VERSION.SDK_INT >= 24)
                         client.close()
                     else
+                        @Suppress("deprecation")
                         client.release()
                 }
             }
@@ -296,6 +298,7 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
                     if (Build.VERSION.SDK_INT >= 24)
                         client.close()
                     else
+                        @Suppress("deprecation")
                         client.release()
                 }
             }
@@ -353,24 +356,24 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
         }
     }
 
-    @SuppressWarnings("unused")
+    @Suppress("unused")
     private fun update_3_4() {
         setGroupMethod(GroupMethod.CATEGORIES)
     }
 
     /* Android 7.1.1 OpenTasks fix */
-    @SuppressWarnings("unused")
+    @Suppress("unused")
     private fun update_4_5() {
         // call PackageChangedReceiver which then enables/disables OpenTasks sync when it's (not) available
         PackageChangedReceiver.updateTaskSync(context)
     }
 
-    @SuppressWarnings("unused")
+    @Suppress("unused")
     private fun update_5_6() {
         context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { provider ->
             // don't run syncs during the migration
             ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0)
-            ContentResolver.setIsSyncable(account, App.getAddressBooksAuthority(), 0)
+            ContentResolver.setIsSyncable(account, App.addressBooksAuthority, 0)
             ContentResolver.cancelSync(account, null)
 
             val parcel = Parcel.obtain()
@@ -392,10 +395,9 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
                         info.type = CollectionInfo.Type.ADDRESS_BOOK
                         info.displayName = account.name
                         App.log.log(Level.INFO, "Creating new address book account", url)
-                        val addressBookAccount = Account(LocalAddressBook.accountName(account, info), App.getAddressBookAccountType())
+                        val addressBookAccount = Account(LocalAddressBook.accountName(account, info), App.addressBookAccountType)
                         if (!accountManager.addAccountExplicitly(addressBookAccount, null, LocalAddressBook.initialUserData(account, info.url)))
                             throw ContactsStorageException("Couldn't create address book account")
-                        val addressBook = LocalAddressBook(context, addressBookAccount, provider)
 
                         // move contacts to new address book
                         App.log.info("Moving contacts from $account to $addressBookAccount")
@@ -425,8 +427,8 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
         accountManager.setUserData(account, KEY_SETTINGS_VERSION, "6")
 
         // request sync of new address book account
-        ContentResolver.setIsSyncable(account, App.getAddressBooksAuthority(), 1)
-        setSyncInterval(App.getAddressBooksAuthority(), Constants.DEFAULT_SYNC_INTERVAL)
+        ContentResolver.setIsSyncable(account, App.addressBooksAuthority, 1)
+        setSyncInterval(App.addressBooksAuthority, Constants.DEFAULT_SYNC_INTERVAL)
     }
 
 

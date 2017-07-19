@@ -125,7 +125,7 @@ class DavService: Service() {
             }
 
             // delete orphaned address book accounts
-            accountManager.getAccountsByType(App.getAddressBookAccountType())
+            accountManager.getAccountsByType(App.addressBookAccountType)
                     .map { LocalAddressBook(this, it, null) }
                     .forEach {
                         try {

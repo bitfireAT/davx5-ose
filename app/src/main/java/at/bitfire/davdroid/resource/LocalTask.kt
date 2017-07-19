@@ -17,7 +17,6 @@ import java.io.FileNotFoundException
 import java.text.ParseException
 import java.util.*
 
-// TODO @ToString(of={ "fileName","eTag" }, callSuper=true)
 class LocalTask: AndroidTask, LocalResource {
 
     companion object {
