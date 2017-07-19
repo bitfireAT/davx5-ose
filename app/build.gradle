@@ -119,7 +119,6 @@ dependencies {
     compile project(':dav4android')
     compile project(':ical4android')
     compile project(':vcard4android')
-    compile project(':market_licensing')
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
