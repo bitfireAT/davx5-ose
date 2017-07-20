@@ -137,7 +137,7 @@ public class AccountDetailsFragment extends Fragment {
                 String groupMethodName = getResources().getStringArray(R.array.settings_contact_group_method_values)[idx];
                 settings.setGroupMethod(GroupMethod.valueOf(groupMethodName));
 
-                // contact sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_contacts.xml
+                // contact sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_address_books.xml
                 settings.setSyncInterval(App.addressBooksAuthority, Constants.DEFAULT_SYNC_INTERVAL);
             } else
                 ContentResolver.setIsSyncable(account, App.addressBooksAuthority, 0);
