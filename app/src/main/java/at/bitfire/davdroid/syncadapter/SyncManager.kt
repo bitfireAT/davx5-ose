@@ -89,6 +89,11 @@ abstract class SyncManager(
     protected val toDownload = mutableSetOf<DavResource>()
 
 
+    companion object {
+        infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)
+    }
+
+
     protected abstract fun notificationId(): Int
     protected abstract fun getSyncErrorTitle(): String
 

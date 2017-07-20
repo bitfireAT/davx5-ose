@@ -56,5 +56,6 @@ class PlainTextFormatter private constructor(
     private fun shortClassName(className: String) = className
             .replace("at.bitfire.davdroid.", "")
             .replace("at.bitfire.", "")
+            .replace(Regex("\\$.*$"), "")
 
 }
