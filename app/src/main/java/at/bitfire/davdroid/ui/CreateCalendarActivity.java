@@ -112,7 +112,7 @@ public class CreateCalendarActivity extends AppCompatActivity implements LoaderM
         }
 
         edit = (EditText)findViewById(R.id.description);
-        info.setDisplayName(StringUtils.trimToNull(edit.getText().toString()));
+        info.setDescription(StringUtils.trimToNull(edit.getText().toString()));
 
         View view = findViewById(R.id.color);
         info.setColor(((ColorDrawable)view.getBackground()).getColor());

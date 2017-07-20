@@ -165,7 +165,7 @@ class ContactsSyncManager(
                     App.log.fine("Looking for changed group memberships of contact ${contact.fileName}")
                     val cachedGroups = contact.getCachedGroupMemberships()
                     val currentGroups = contact.getGroupMemberships()
-                    for (groupID in cachedGroups.minus(currentGroups)) {
+                    for (groupID in cachedGroups disjunct currentGroups) {
                         App.log.fine("Marking group as dirty: $groupID")
                         batch.enqueue(BatchOperation.Operation(
                                 ContentProviderOperation.newUpdate(localAddressBook.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, groupID)))

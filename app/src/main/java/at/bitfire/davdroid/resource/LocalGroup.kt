@@ -86,7 +86,7 @@ class LocalGroup: AndroidGroup, LocalResource {
                             }
                         }
 
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                             // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
                             changeContactIDs
                                     .map { LocalContact(addressBook, it, null, null) }
