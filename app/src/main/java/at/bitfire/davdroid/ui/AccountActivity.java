@@ -677,7 +677,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
 
     protected static void requestSync(Account account) {
         String authorities[] = {
-                App.addressBookAccountType,
+                App.addressBooksAuthority,
                 CalendarContract.AUTHORITY,
                 TaskProvider.ProviderName.OpenTasks.getAuthority()
         };

@@ -62,7 +62,7 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
                 fun getService() =
                         db.query(ServiceDB.Services._TABLE, arrayOf(ServiceDB.Services.ID),
                                 "${ServiceDB.Services.ACCOUNT_NAME}=? AND ${ServiceDB.Services.SERVICE}=?",
-                                arrayOf(account.name, ServiceDB.Services.SERVICE_CARDDAV), null, null, null)?.use { c ->
+                                arrayOf(account.name, ServiceDB.Services.SERVICE_CALDAV), null, null, null)?.use { c ->
                             if (c.moveToNext())
                                 c.getLong(0)
                             else
