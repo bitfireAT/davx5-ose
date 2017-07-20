@@ -18,7 +18,7 @@ android {
         applicationId "at.bitfire.davdroid"
         resValue "string", "packageID", applicationId
 
-        versionCode 155
+        versionCode 156
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         minSdkVersion 16
@@ -30,19 +30,19 @@ android {
 
     productFlavors {
         standard {
-            versionName "1.6.3"
+            versionName "1.6.4-beta1"
             buildConfigField "boolean", "customCerts", "true"
         }
 
         gplay {
-            versionName "1.6.3-gplay"
+            versionName "1.6.4-beta1-gplay"
             buildConfigField "boolean", "customCerts", "true"
         }
         icloud {
             applicationId "at.bitfire.cloudsync"
             resValue "string", "packageID", applicationId
 
-            versionName "1.6.3-cloud"
+            versionName "1.6.4-beta1-cloud"
             buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "at.bitfire.vcard4android.GroupMethod.GROUP_VCARDS"
         }
         soldupe {
@@ -50,7 +50,7 @@ android {
             resValue "string", "packageID", applicationId
             minSdkVersion 21
 
-            versionName "1.6.3-soldupe"
+            versionName "1.6.4-beta1-soldupe"
             buildConfigField "boolean", "customCerts", "true"
             buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "at.bitfire.vcard4android.GroupMethod.CATEGORIES"
         }
