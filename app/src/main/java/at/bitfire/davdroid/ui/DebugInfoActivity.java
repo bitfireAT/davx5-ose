@@ -20,6 +20,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.ProxyInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -221,6 +224,30 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
             } catch(Exception ex) {
                 App.log.log(Level.SEVERE, "Couldn't get software information", ex);
             }
+
+            report.append("CONNECTIVITY (at the moment)\n");
+            ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            report.append("Active connection: ");
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+            if (networkInfo != null) {
+                String type;
+                switch (networkInfo.getType()) {
+                    case ConnectivityManager.TYPE_WIFI: type = "WiFI"; break;
+                    case ConnectivityManager.TYPE_MOBILE: type = "mobile"; break;
+                    default: type = "type: " + String.valueOf(networkInfo.getType());
+                }
+                report  .append(type).append(", ")
+                        .append(networkInfo.getDetailedState().toString());
+            } else
+                report.append("none");
+            report.append("\n");
+            if (Build.VERSION.SDK_INT >= 23) {
+                ProxyInfo proxy = cm.getDefaultProxy();
+                report  .append("System default proxy: ")
+                        .append(proxy == null ? "none" : proxy.getHost()+":"+proxy.getPort())
+                        .append("\n");
+            }
+            report.append("\n");
 
             report.append("CONFIGURATION\n");
             // power saving
