@@ -82,7 +82,7 @@ class SSLSocketFactoryCompat(trustManager: X509TrustManager): SSLSocketFactory()
             } catch(e: IOException) {
                 App.log.severe("Couldn't determine default TLS settings")
             } finally {
-                socket?.close()
+                socket?.close()     // doesn't implement Closeable on all supported Android versions
             }
         }
     }
