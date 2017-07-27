@@ -167,6 +167,10 @@
   <string name="settings_sync_wifi_only_ssid_message">このネットワークで同期を制限する WiFi ネットワーク (SSID) の名前を入力してください。すべての WiFi 接続は空白のままにします。</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">連絡先グループ方法</string>
+  <string-array name="settings_contact_group_method_values">
+    <item>GROUP_VCARDS</item>
+    <item>CATEGORIES</item>
+  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>グループは個別の VCards</item>
     <item>グループは連絡先カテゴリーごと</item>
