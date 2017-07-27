@@ -232,7 +232,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
             if (networkInfo != null) {
                 String type;
                 switch (networkInfo.getType()) {
-                    case ConnectivityManager.TYPE_WIFI: type = "WiFI"; break;
+                    case ConnectivityManager.TYPE_WIFI: type = "WiFi"; break;
                     case ConnectivityManager.TYPE_MOBILE: type = "mobile"; break;
                     default: type = "type: " + String.valueOf(networkInfo.getType());
                 }
