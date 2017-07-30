@@ -136,7 +136,7 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
             accountManager.setUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
 
     fun getSyncWifiOnlySSID(): String? = accountManager.getUserData(account, KEY_WIFI_ONLY_SSID)
-    fun setSyncWifiOnlySSID(ssid: String) = accountManager.setUserData(account, KEY_WIFI_ONLY_SSID, ssid)
+    fun setSyncWifiOnlySSID(ssid: String?) = accountManager.setUserData(account, KEY_WIFI_ONLY_SSID, ssid)
 
 
     // CalDAV settings
