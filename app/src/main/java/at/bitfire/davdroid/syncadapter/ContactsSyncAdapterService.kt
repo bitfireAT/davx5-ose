@@ -15,7 +15,7 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.App
+import at.bitfire.davdroid.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import java.util.logging.Level
 
@@ -36,16 +36,16 @@ class ContactsSyncAdapterService: SyncAdapterService() {
                 if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(settings))
                     return
 
-                App.log.info("Synchronizing address book: ${addressBook.getURL()}")
-                App.log.info("Taking settings from: ${addressBook.getMainAccount()}")
+                Logger.log.info("Synchronizing address book: ${addressBook.getURL()}")
+                Logger.log.info("Taking settings from: ${addressBook.getMainAccount()}")
 
                 ContactsSyncManager(context, account, settings, extras, authority, syncResult, provider, addressBook)
                         .performSync()
             } catch(e: Exception) {
-                App.log.log(Level.SEVERE, "Couldn't sync contacts", e)
+                Logger.log.log(Level.SEVERE, "Couldn't sync contacts", e)
             }
 
-            App.log.info("Contacts sync complete")
+            Logger.log.info("Contacts sync complete")
         }
 
     }

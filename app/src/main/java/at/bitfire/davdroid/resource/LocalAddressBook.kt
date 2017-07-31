@@ -20,6 +20,7 @@ import android.provider.ContactsContract.RawContacts
 import android.util.Base64
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.vcard4android.*
 import java.io.ByteArrayOutputStream
@@ -118,7 +119,7 @@ class LocalAddressBook(
                         provider.update(syncAdapterURI(RawContacts.CONTENT_URI), values, "${RawContacts.ACCOUNT_NAME}=?", arrayOf(account.name))
                     }
                 } catch(e: RemoteException) {
-                    App.log.log(Level.WARNING, "Couldn't re-assign contacts to new account name", e)
+                    Logger.log.log(Level.WARNING, "Couldn't re-assign contacts to new account name", e)
                 }
             }, null)
             account = future.result
@@ -193,10 +194,10 @@ class LocalAddressBook(
                 val currentHash = contact.dataHashCode()
                 if (lastHash == currentHash) {
                     // hash is code still the same, contact is not "really dirty" (only metadata been have changed)
-                    App.log.log(Level.FINE, "Contact data hash has not changed, resetting dirty flag", contact)
+                    Logger.log.log(Level.FINE, "Contact data hash has not changed, resetting dirty flag", contact)
                     contact.resetDirty()
                 } else {
-                    App.log.log(Level.FINE, "Contact data has changed from hash $lastHash to $currentHash", contact)
+                    Logger.log.log(Level.FINE, "Contact data has changed from hash $lastHash to $currentHash", contact)
                     reallyDirty++
                 }
             } catch(e: FileNotFoundException) {
@@ -298,7 +299,7 @@ class LocalAddressBook(
         // find groups without members
         /** should be done using {@link Groups.SUMMARY_COUNT}, but it's not implemented in Android yet */
         queryGroups(null, null).filter { it.getMembers().isEmpty() }.forEach { group ->
-            App.log.log(Level.FINE, "Deleting group", group)
+            Logger.log.log(Level.FINE, "Deleting group", group)
             group.delete()
         }
     }

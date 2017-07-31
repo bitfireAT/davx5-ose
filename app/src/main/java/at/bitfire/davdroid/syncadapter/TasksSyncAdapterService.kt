@@ -12,7 +12,7 @@ import android.content.*
 import android.database.DatabaseUtils
 import android.os.Bundle
 import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.App
+import at.bitfire.davdroid.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.ServiceDB.Collections
@@ -49,15 +49,15 @@ class TasksSyncAdapterService: SyncAdapterService() {
                 updateLocalTaskLists(taskProvider, account, settings)
 
                 for (taskList in AndroidTaskList.find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)) {
-                    App.log.info("Synchronizing task list #${taskList.id} [${taskList.syncId}]")
+                    Logger.log.info("Synchronizing task list #${taskList.id} [${taskList.syncId}]")
                     TasksSyncManager(context, account, settings, extras, authority, syncResult, taskProvider, taskList)
                             .performSync()
                 }
             } catch (e: Exception) {
-                App.log.log(Level.SEVERE, "Couldn't sync task lists", e)
+                Logger.log.log(Level.SEVERE, "Couldn't sync task lists", e)
             }
 
-            App.log.info("Task sync complete")
+            Logger.log.info("Task sync complete")
         }
 
         private fun updateLocalTaskLists(provider: TaskProvider, account: Account, settings: AccountSettings) {
@@ -102,11 +102,11 @@ class TasksSyncAdapterService: SyncAdapterService() {
                     list.syncId?.let { url ->
                         val info = remote[url]
                         if (info == null) {
-                            App.log.fine("Deleting obsolete local task list $url")
+                            Logger.log.fine("Deleting obsolete local task list $url")
                             list.delete()
                         } else {
                             // remote CollectionInfo found for this local collection, update data
-                            App.log.log(Level.FINE, "Updating local task list $url", info)
+                            Logger.log.log(Level.FINE, "Updating local task list $url", info)
                             list.update(info, updateColors)
                             // we already have a local task list for this remote collection, don't take into consideration anymore
                             remote -= url
@@ -115,7 +115,7 @@ class TasksSyncAdapterService: SyncAdapterService() {
 
                 // create new local task lists
                 for ((_,info) in remote) {
-                    App.log.log(Level.INFO, "Adding local task list", info)
+                    Logger.log.log(Level.INFO, "Adding local task list", info)
                     LocalTaskList.create(account, provider, info)
                 }
             }

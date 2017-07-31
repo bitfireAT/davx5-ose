@@ -68,7 +68,9 @@ import java.util.logging.Level;
 
 import at.bitfire.cert4android.CustomCertManager;
 import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.CustomCertificates;
 import at.bitfire.davdroid.DavService;
+import at.bitfire.davdroid.Logger;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
@@ -124,7 +126,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     @Override
     protected void onPause() {
         super.onPause();
-        CustomCertManager certManager = ((App)getApplicationContext()).getCertManager();
+        CustomCertManager certManager = CustomCertificates.certManager;
         if (certManager != null)
             certManager.appInForeground = false;
     }
@@ -132,7 +134,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
     @Override
     protected void onResume() {
         super.onResume();
-        CustomCertManager certManager = ((App)getApplicationContext()).getCertManager();
+        CustomCertManager certManager = CustomCertificates.certManager;
         if (certManager != null)
             certManager.appInForeground = true;
     }
@@ -592,7 +594,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                                         new AccountManagerCallback<Account>() {
                                             @Override
                                             public void run(AccountManagerFuture<Account> future) {
-                                                App.log.info("Updating account name references");
+                                                Logger.log.info("Updating account name references");
 
                                                 // cancel maybe running synchronization
                                                 ContentResolver.cancelSync(oldAccount, null);
@@ -614,7 +616,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                                                         }
                                                     }
                                                 } catch(ContactsStorageException e) {
-                                                    App.log.log(Level.SEVERE, "Couldn't update address book accounts", e);
+                                                    Logger.log.log(Level.SEVERE, "Couldn't update address book accounts", e);
                                                 }
 
                                                 // calendar provider doesn't allow changing account_name of Events
@@ -623,7 +625,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                                                 try {
                                                     LocalTaskList.onRenameAccount(getContext().getContentResolver(), oldAccount.name, newName);
                                                 } catch(Exception e) {
-                                                    App.log.log(Level.SEVERE, "Couldn't propagate new account name to tasks provider", e);
+                                                    Logger.log.log(Level.SEVERE, "Couldn't propagate new account name to tasks provider", e);
                                                 }
 
                                                 // synchronize again
@@ -657,7 +659,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                         if (future.getResult().getBoolean(AccountManager.KEY_BOOLEAN_RESULT))
                             finish();
                     } catch(OperationCanceledException|IOException|AuthenticatorException e) {
-                        App.log.log(Level.SEVERE, "Couldn't remove account", e);
+                        Logger.log.log(Level.SEVERE, "Couldn't remove account", e);
                     }
                 }
             }, null);
@@ -669,7 +671,7 @@ public class AccountActivity extends AppCompatActivity implements Toolbar.OnMenu
                         if (future.getResult())
                             finish();
                     } catch (OperationCanceledException|IOException|AuthenticatorException e) {
-                        App.log.log(Level.SEVERE, "Couldn't remove account", e);
+                        Logger.log.log(Level.SEVERE, "Couldn't remove account", e);
                     }
                 }
             }, null);

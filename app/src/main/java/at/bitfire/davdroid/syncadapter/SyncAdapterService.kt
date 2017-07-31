@@ -17,10 +17,7 @@ import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
-import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.App
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.R
+import at.bitfire.davdroid.*
 import at.bitfire.davdroid.ui.PermissionsActivity
 import org.apache.commons.collections4.IteratorUtils
 import java.util.*
@@ -45,13 +42,13 @@ abstract class SyncAdapterService: Service() {
 
 
         init {
-            syncPlugins.forEach { App.log.info("Registered sync plugin: ${it::class.java.name}") }
+            syncPlugins.forEach { Logger.log.info("Registered sync plugin: ${it::class.java.name}") }
         }
 
         abstract fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult)
 
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
-            App.log.log(Level.INFO, "$authority sync of $account has been initiated", extras.keySet().joinToString(", "))
+            Logger.log.log(Level.INFO, "$authority sync of $account has been initiated", extras.keySet().joinToString(", "))
 
             // required for dav4android (ServiceLoader)
             Thread.currentThread().contextClassLoader = context.classLoader
@@ -61,11 +58,11 @@ abstract class SyncAdapterService: Service() {
                 sync(account, extras, authority, provider, syncResult)
 
             syncPlugins.forEach { it.afterSync(context, syncResult) }
-            App.log.info("Sync for $authority complete")
+            Logger.log.info("Sync for $authority complete")
         }
 
         override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {
-            App.log.log(Level.WARNING, "Security exception when opening content provider for $authority")
+            Logger.log.log(Level.WARNING, "Security exception when opening content provider for $authority")
             syncResult.databaseError = true
 
             val intent = Intent(context, PermissionsActivity::class.java)
@@ -88,7 +85,7 @@ abstract class SyncAdapterService: Service() {
                 val connectivityManager = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
                 val network = connectivityManager.activeNetworkInfo
                 if (network == null || network.type != ConnectivityManager.TYPE_WIFI || !network.isConnected) {
-                    App.log.info("Not on connected WiFi, stopping")
+                    Logger.log.info("Not on connected WiFi, stopping")
                     return false
                 }
 
@@ -97,7 +94,7 @@ abstract class SyncAdapterService: Service() {
                     val wifi = context.applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
                     val info = wifi.connectionInfo
                     if (info == null || info.ssid != quotedSSID) {
-                        App.log.info("Connected to wrong WiFi network (${info.ssid}, required: $quotedSSID), ignoring")
+                        Logger.log.info("Connected to wrong WiFi network (${info.ssid}, required: $quotedSSID), ignoring")
                         return false
                     }
                 }

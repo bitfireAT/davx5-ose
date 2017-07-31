@@ -111,7 +111,7 @@ class DavService: Service() {
 
     @SuppressLint("MissingPermission")
     fun cleanupAccounts() {
-        App.log.info("Cleaning up orphaned accounts")
+        Logger.log.info("Cleaning up orphaned accounts")
 
         OpenHelper(this).use { dbHelper ->
             val db = dbHelper.writableDatabase
@@ -132,7 +132,7 @@ class DavService: Service() {
                             if (!accountNames.contains(it.getMainAccount().name))
                                 it.delete()
                         } catch(e: ContactsStorageException) {
-                            App.log.log(Level.SEVERE, "Couldn't get address book main account", e)
+                            Logger.log.log(Level.SEVERE, "Couldn't get address book main account", e)
                         }
                     }
 
@@ -230,7 +230,7 @@ class DavService: Service() {
                 db.delete(Collections._TABLE, "${HomeSets.SERVICE_ID}=?", arrayOf(service.toString()))
                 for ((_,collection) in collections) {
                     val values = collection.toDB()
-                    App.log.log(Level.FINE, "Saving collection", values)
+                    Logger.log.log(Level.FINE, "Saving collection", values)
                     values.put(Collections.SERVICE_ID, service)
                     db.insertWithOnConflict(Collections._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE)
                 }
@@ -238,40 +238,40 @@ class DavService: Service() {
 
 
             try {
-                App.log.info("Refreshing $serviceType collections of service #$service")
+                Logger.log.info("Refreshing $serviceType collections of service #$service")
 
                 // create authenticating OkHttpClient (credentials taken from account settings)
                 val httpClient = HttpClient.create(this@DavService, account)
 
                 // refresh home set list (from principal)
                 readPrincipal()?.let { principalUrl ->
-                    App.log.fine("Querying principal $principalUrl for home sets")
+                    Logger.log.fine("Querying principal $principalUrl for home sets")
                     val principal = DavResource(httpClient, principalUrl)
                     queryHomeSets(principal)
 
                     // refresh home sets: calendar-proxy-read/write-for
                     for ((resource, proxyRead) in principal.findProperties(CalendarProxyReadFor.NAME) as List<Pair<DavResource, CalendarProxyReadFor>>)
                         for (href in proxyRead.hrefs) {
-                            App.log.fine("Principal is a read-only proxy for $href, checking for home sets")
+                            Logger.log.fine("Principal is a read-only proxy for $href, checking for home sets")
                             resource.location.resolve(href)?.let { queryHomeSets(DavResource(httpClient, it)) }
                         }
                     for ((resource, proxyWrite) in principal.findProperties(CalendarProxyWriteFor.NAME) as List<Pair<DavResource, CalendarProxyWriteFor>>)
                         for (href in proxyWrite.hrefs) {
-                            App.log.fine("Principal is a read/write proxy for $href, checking for home sets")
+                            Logger.log.fine("Principal is a read/write proxy for $href, checking for home sets")
                             resource.location.resolve(href)?.let { queryHomeSets(DavResource(httpClient, it)) }
                         }
 
                     // refresh home sets: direct group memberships
                     (principal.properties[GroupMembership.NAME] as GroupMembership?)?.let { groupMembership ->
                         for (href in groupMembership.hrefs) {
-                            App.log.fine("Principal is member of group $href, checking for home sets")
+                            Logger.log.fine("Principal is member of group $href, checking for home sets")
                             principal.location.resolve(href)?.let { url ->
                                 try {
                                     queryHomeSets(DavResource(httpClient, url))
                                 } catch(e: HttpException) {
-                                    App.log.log(Level.WARNING, "Couldn't query member group", e)
+                                    Logger.log.log(Level.WARNING, "Couldn't query member group", e)
                                 } catch(e: DavException) {
-                                    App.log.log(Level.WARNING, "Couldn't query member group", e)
+                                    Logger.log.log(Level.WARNING, "Couldn't query member group", e)
                                 }
                             }
                         }
@@ -288,7 +288,7 @@ class DavService: Service() {
                 val itHomeSets = homeSets.iterator()
                 while (itHomeSets.hasNext()) {
                     val homeSetUrl = itHomeSets.next()
-                    App.log.fine("Listing home set $homeSetUrl")
+                    Logger.log.fine("Listing home set $homeSetUrl")
 
                     val homeSet = DavResource(httpClient, homeSetUrl)
                     try {
@@ -298,7 +298,7 @@ class DavService: Service() {
                             val member = itCollections.next()
                             val info = CollectionInfo(member)
                             info.confirmed = true
-                            App.log.log(Level.FINE, "Found collection", info)
+                            Logger.log.log(Level.FINE, "Found collection", info)
 
                             if ((serviceType == Services.SERVICE_CARDDAV && info.type == CollectionInfo.Type.ADDRESS_BOOK) ||
                                 (serviceType == Services.SERVICE_CALDAV && info.type == CollectionInfo.Type.CALENDAR))
@@ -349,9 +349,9 @@ class DavService: Service() {
                 }
 
             } catch(e: InvalidAccountException) {
-                App.log.log(Level.SEVERE, "Invalid account", e)
+                Logger.log.log(Level.SEVERE, "Invalid account", e)
             } catch(e: Exception) {
-                App.log.log(Level.SEVERE, "Couldn't refresh collection list", e)
+                Logger.log.log(Level.SEVERE, "Couldn't refresh collection list", e)
 
                 val debugIntent = Intent(this@DavService, DebugInfoActivity::class.java)
                 debugIntent.putExtra(DebugInfoActivity.KEY_THROWABLE, e)
