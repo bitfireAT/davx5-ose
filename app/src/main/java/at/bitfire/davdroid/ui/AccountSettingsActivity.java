@@ -15,7 +15,6 @@ import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.os.Bundle;
 import android.provider.CalendarContract;
-import android.provider.ContactsContract;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.AsyncTaskLoader;
@@ -32,6 +31,7 @@ import android.view.MenuItem;
 import at.bitfire.davdroid.AccountSettings;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.InvalidAccountException;
+import at.bitfire.davdroid.Logger;
 import at.bitfire.davdroid.R;
 import at.bitfire.ical4android.TaskProvider;
 import at.bitfire.vcard4android.GroupMethod;
@@ -319,7 +319,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
         @Override
         public void onStatusChanged(int which) {
-            App.log.fine("Reloading account settings");
+            Logger.log.fine("Reloading account settings");
             forceLoad();
         }
 

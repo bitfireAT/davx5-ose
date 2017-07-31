@@ -17,7 +17,6 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.provider.CalendarContract;
-import android.provider.ContactsContract;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -35,6 +34,7 @@ import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.DavService;
 import at.bitfire.davdroid.InvalidAccountException;
+import at.bitfire.davdroid.Logger;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB.Collections;
@@ -108,14 +108,14 @@ public class AccountDetailsFragment extends Fragment {
 
         // create Android account
         Bundle userData = AccountSettings.initialUserData(config.userName);
-        App.log.log(Level.INFO, "Creating Android account with initial config", new Object[] { account, userData });
+        Logger.log.log(Level.INFO, "Creating Android account with initial config", new Object[] { account, userData });
 
         AccountManager accountManager = AccountManager.get(getContext());
         if (!accountManager.addAccountExplicitly(account, config.password, userData))
             return false;
 
         // add entries for account to service DB
-        App.log.log(Level.INFO, "Writing account configuration to database", config);
+        Logger.log.log(Level.INFO, "Writing account configuration to database", config);
         @Cleanup OpenHelper dbHelper = new OpenHelper(getContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         try {
@@ -163,7 +163,7 @@ public class AccountDetailsFragment extends Fragment {
                 ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0);
 
         } catch(InvalidAccountException e) {
-            App.log.log(Level.SEVERE, "Couldn't access account settings", e);
+            Logger.log.log(Level.SEVERE, "Couldn't access account settings", e);
         }
 
         return true;

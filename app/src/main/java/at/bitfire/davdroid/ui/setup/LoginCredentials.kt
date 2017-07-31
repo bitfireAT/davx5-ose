@@ -8,12 +8,9 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import java.net.URI;
-
-import lombok.RequiredArgsConstructor;
+import android.os.Parcel
+import android.os.Parcelable
+import java.net.URI
 
 data class LoginCredentials(
         val uri: URI,

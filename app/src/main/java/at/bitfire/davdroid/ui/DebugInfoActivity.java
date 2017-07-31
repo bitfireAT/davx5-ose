@@ -14,7 +14,6 @@ import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
-import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -47,10 +46,10 @@ import java.util.logging.Level;
 
 import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.davdroid.AccountSettings;
-import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.BuildConfig;
 import at.bitfire.davdroid.Constants;
 import at.bitfire.davdroid.InvalidAccountException;
+import at.bitfire.davdroid.Logger;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.ServiceDB;
 import at.bitfire.davdroid.resource.LocalAddressBook;
@@ -101,7 +100,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                 debugInfoDir.mkdir();
 
                 reportFile = new File(debugInfoDir, "debug.txt");
-                App.log.fine("Writing debug info to " + reportFile.getAbsolutePath());
+                Logger.log.fine("Writing debug info to " + reportFile.getAbsolutePath());
                 FileWriter writer = new FileWriter(reportFile);
                 writer.write(report);
                 writer.close();
@@ -222,7 +221,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                                 .append("Installed from: ").append(installedFrom).append("\n")
                                 .append("JB Workaround installed: ").append(workaroundInstalled ? "yes" : "no").append("\n\n");
             } catch(Exception ex) {
-                App.log.log(Level.SEVERE, "Couldn't get software information", ex);
+                Logger.log.log(Level.SEVERE, "Couldn't get software information", ex);
             }
 
             report.append("CONNECTIVITY (at the moment)\n");
@@ -311,7 +310,7 @@ public class DebugInfoActivity extends AppCompatActivity implements LoaderManage
                                 "Device: ").append(WordUtils.capitalize(Build.MANUFACTURER)).append(" ").append(Build.MODEL).append(" (").append(Build.DEVICE).append(")\n\n"
                 );
             } catch(Exception ex) {
-                App.log.log(Level.SEVERE, "Couldn't get system details", ex);
+                Logger.log.log(Level.SEVERE, "Couldn't get system details", ex);
             }
 
             report.append("--- END DEBUG INFO ---\n");

@@ -21,10 +21,7 @@ import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.exception.*
 import at.bitfire.dav4android.property.GetCTag
 import at.bitfire.dav4android.property.GetETag
-import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.App
-import at.bitfire.davdroid.HttpClient
-import at.bitfire.davdroid.R
+import at.bitfire.davdroid.*
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.ui.AccountSettingsActivity
@@ -103,70 +100,70 @@ abstract class SyncManager(
 
         var syncPhase = SYNC_PHASE_PREPARE
         try {
-            App.log.info("Preparing synchronization")
+            Logger.log.info("Preparing synchronization")
             if (!prepare()) {
-                App.log.info("No reason to synchronize, aborting")
+                Logger.log.info("No reason to synchronize, aborting")
                 return
             }
 
             if (Thread.interrupted())
                 return
             syncPhase = SYNC_PHASE_QUERY_CAPABILITIES
-            App.log.info("Querying capabilities")
+            Logger.log.info("Querying capabilities")
             queryCapabilities()
 
             syncPhase = SYNC_PHASE_PROCESS_LOCALLY_DELETED
-            App.log.info("Processing locally deleted entries")
+            Logger.log.info("Processing locally deleted entries")
             processLocallyDeleted()
 
             if (Thread.interrupted())
                 return
             syncPhase = SYNC_PHASE_PREPARE_DIRTY
-            App.log.info("Locally preparing dirty entries")
+            Logger.log.info("Locally preparing dirty entries")
             prepareDirty()
 
             syncPhase = SYNC_PHASE_UPLOAD_DIRTY
-            App.log.info("Uploading dirty entries")
+            Logger.log.info("Uploading dirty entries")
             uploadDirty()
 
             syncPhase = SYNC_PHASE_CHECK_SYNC_STATE
-            App.log.info("Checking sync state")
+            Logger.log.info("Checking sync state")
             if (checkSyncState()) {
                 syncPhase = SYNC_PHASE_LIST_LOCAL
-                App.log.info("Listing local entries")
+                Logger.log.info("Listing local entries")
                 listLocal()
 
                 if (Thread.interrupted())
                     return
                 syncPhase = SYNC_PHASE_LIST_REMOTE
-                App.log.info("Listing remote entries")
+                Logger.log.info("Listing remote entries")
                 listRemote()
 
                 if (Thread.interrupted())
                     return
                 syncPhase = SYNC_PHASE_COMPARE_LOCAL_REMOTE
-                App.log.info("Comparing local/remote entries")
+                Logger.log.info("Comparing local/remote entries")
                 compareLocalRemote()
 
                 syncPhase = SYNC_PHASE_DOWNLOAD_REMOTE
-                App.log.info("Downloading remote entries")
+                Logger.log.info("Downloading remote entries")
                 downloadRemote()
 
                 syncPhase = SYNC_PHASE_POST_PROCESSING
-                App.log.info("Post-processing")
+                Logger.log.info("Post-processing")
                 postProcess()
 
                 syncPhase = SYNC_PHASE_SAVE_SYNC_STATE
-                App.log.info("Saving sync state")
+                Logger.log.info("Saving sync state")
                 saveSyncState()
             } else
-                App.log.info("Remote collection didn't change, skipping remote sync")
+                Logger.log.info("Remote collection didn't change, skipping remote sync")
 
         } catch(e: IOException) {
-            App.log.log(Level.WARNING, "I/O exception during sync, trying again later", e)
+            Logger.log.log(Level.WARNING, "I/O exception during sync, trying again later", e)
             syncResult.stats.numIoExceptions++
         } catch(e: ServiceUnavailableException) {
-            App.log.log(Level.WARNING, "Got 503 Service unavailable, trying again later", e)
+            Logger.log.log(Level.WARNING, "Got 503 Service unavailable, trying again later", e)
             syncResult.stats.numIoExceptions++
             e.retryAfter?.let { retryAfter ->
                 // how many seconds to wait? getTime() returns ms, so divide by 1000
@@ -177,22 +174,22 @@ abstract class SyncManager(
 
             when (e) {
                 is UnauthorizedException -> {
-                    App.log.log(Level.SEVERE, "Not authorized anymore", e)
+                    Logger.log.log(Level.SEVERE, "Not authorized anymore", e)
                     messageString = R.string.sync_error_unauthorized
                     syncResult.stats.numAuthExceptions++
                 }
                 is HttpException, is DavException -> {
-                    App.log.log(Level.SEVERE, "HTTP/DAV Exception during sync", e)
+                    Logger.log.log(Level.SEVERE, "HTTP/DAV Exception during sync", e)
                     messageString = R.string.sync_error_http_dav
                     syncResult.stats.numParseExceptions++
                 }
                 is CalendarStorageException, is ContactsStorageException -> {
-                    App.log.log(Level.SEVERE, "Couldn't access local storage", e)
+                    Logger.log.log(Level.SEVERE, "Couldn't access local storage", e)
                     messageString = R.string.sync_error_local_storage
                     syncResult.databaseError = true
                 }
                 else -> {
-                    App.log.log(Level.SEVERE, "Unknown sync error", e)
+                    Logger.log.log(Level.SEVERE, "Unknown sync error", e)
                     messageString = R.string.sync_error
                     syncResult.stats.numParseExceptions++
                 }
@@ -258,17 +255,17 @@ abstract class SyncManager(
 
             val fileName = local.fileName
             if (fileName != null) {
-                App.log.info("$fileName has been deleted locally -> deleting from server")
+                Logger.log.info("$fileName has been deleted locally -> deleting from server")
 
                 val remote = DavResource(httpClient, collectionURL.newBuilder().addPathSegment(fileName).build())
                 currentDavResource = remote
                 try {
                     remote.delete(local.eTag)
                 } catch (e: HttpException) {
-                    App.log.warning("Couldn't delete $fileName from server; ignoring (may be downloaded again)")
+                    Logger.log.warning("Couldn't delete $fileName from server; ignoring (may be downloaded again)")
                 }
             } else
-                App.log.info("Removing local record #${local.id} which has been deleted locally and was never uploaded")
+                Logger.log.info("Removing local record #${local.id} which has been deleted locally and was never uploaded")
             local.delete()
             syncResult.stats.numDeletes++
 
@@ -279,11 +276,11 @@ abstract class SyncManager(
 
     protected open fun prepareDirty() {
         // assign file names and UIDs to new contacts so that we can use the file name as an index
-        App.log.info("Looking for contacts/groups without file name")
+        Logger.log.info("Looking for contacts/groups without file name")
         for (local in localCollection.getWithoutFileName()) {
             currentLocalResource = local
 
-            App.log.fine("Found local record #${local.id} without file name; generating file name/UID if necessary")
+            Logger.log.fine("Found local record #${local.id} without file name; generating file name/UID if necessary")
             local.prepareForUpload()
 
             currentLocalResource = null
@@ -313,26 +310,26 @@ abstract class SyncManager(
 
             try {
                 if (local.eTag == null) {
-                    App.log.info("Uploading new record $fileName")
+                    Logger.log.info("Uploading new record $fileName")
                     remote.put(body, null, true)
                 } else {
-                    App.log.info("Uploading locally modified record $fileName")
+                    Logger.log.info("Uploading locally modified record $fileName")
                     remote.put(body, local.eTag, false)
                 }
             } catch(e: ConflictException) {
                 // we can't interact with the user to resolve the conflict, so we treat 409 like 412
-                App.log.log(Level.INFO, "Edit conflict, ignoring", e)
+                Logger.log.log(Level.INFO, "Edit conflict, ignoring", e)
             } catch(e: PreconditionFailedException) {
-                App.log.log(Level.INFO, "Resource has been modified on the server before upload, ignoring", e)
+                Logger.log.log(Level.INFO, "Resource has been modified on the server before upload, ignoring", e)
             }
 
             val newETag = remote.properties[GetETag.NAME] as GetETag?
             val eTag: String?
             if (newETag != null) {
                 eTag = newETag.eTag
-                App.log.fine("Received new ETag=$eTag after uploading")
+                Logger.log.fine("Received new ETag=$eTag after uploading")
             } else {
-                App.log.fine("Didn't receive new ETag after uploading, setting to null")
+                Logger.log.fine("Didn't receive new ETag after uploading, setting to null")
                 eTag = null
             }
 
@@ -355,13 +352,13 @@ abstract class SyncManager(
         (davCollection.properties[GetCTag.NAME] as GetCTag?)?.let { remoteCTag = it.cTag }
 
         val localCTag = if (extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL)) {
-            App.log.info("Manual sync, ignoring CTag")
+            Logger.log.info("Manual sync, ignoring CTag")
             null
         } else
             localCollection.getCTag()
 
         return if (remoteCTag != null && remoteCTag == localCTag) {
-            App.log.info("Remote collection didn't change (CTag=$remoteCTag), no need to query children")
+            Logger.log.info("Remote collection didn't change (CTag=$remoteCTag), no need to query children")
             false
         } else
             true
@@ -375,7 +372,7 @@ abstract class SyncManager(
         val localList = localCollection.getAll()
         val resources = HashMap<String, LocalResource>(localList.size)
         for (resource in localList) {
-            App.log.fine("Found local resource: ${resource.fileName}")
+            Logger.log.fine("Found local resource: ${resource.fileName}")
             resource.fileName?.let { resources[it] = resource }
         }
         localResources = resources
@@ -405,7 +402,7 @@ abstract class SyncManager(
             currentDavResource = remote
 
             if (remote == null) {
-                App.log.info("$name is not on server anymore, deleting")
+                Logger.log.info("$name is not on server anymore, deleting")
                 currentLocalResource = local
                 local.delete()
                 syncResult.stats.numDeletes++
@@ -417,10 +414,10 @@ abstract class SyncManager(
                 val localETag = local.eTag
                 val remoteETag = getETag.eTag
                 if (remoteETag == localETag) {
-                    App.log.fine("$name has not been changed on server (ETag still $remoteETag)")
+                    Logger.log.fine("$name has not been changed on server (ETag still $remoteETag)")
                     syncResult.stats.numSkippedEntries++
                 } else {
-                    App.log.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
+                    Logger.log.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
                     toDownload.add(remote)
                 }
 
@@ -434,7 +431,7 @@ abstract class SyncManager(
 
         // add all unseen (= remotely added) remote contacts
         if (remoteResources.isNotEmpty()) {
-            App.log.info("New resources have been found on the server: ${remoteResources.keys.joinToString(", ")}")
+            Logger.log.info("New resources have been found on the server: ${remoteResources.keys.joinToString(", ")}")
             toDownload.addAll(remoteResources.values)
         }
     }
@@ -454,7 +451,7 @@ abstract class SyncManager(
         /* Save sync state (CTag). It doesn't matter if it has changed during the sync process
            (for instance, because another client has uploaded changes), because this will simply
            cause all remote entries to be listed at the next sync. */
-        App.log.info("Saving CTag=$remoteCTag")
+        Logger.log.info("Saving CTag=$remoteCTag")
         localCollection.setCTag(remoteCTag)
     }
 

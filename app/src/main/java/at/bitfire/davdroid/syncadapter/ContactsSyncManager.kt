@@ -104,7 +104,7 @@ class ContactsSyncManager(
             val reallyDirty = localAddressBook.verifyDirty()
             val deleted = localAddressBook.getDeleted().size
             if (extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD) && reallyDirty == 0 && deleted == 0) {
-                App.log.info("This sync was called to up-sync dirty/deleted contacts, but no contacts have been changed")
+                Logger.log.info("This sync was called to up-sync dirty/deleted contacts, but no contacts have been changed")
                 return false
             }
         }
@@ -127,10 +127,10 @@ class ContactsSyncManager(
         (davCollection.properties[SupportedAddressData.NAME] as SupportedAddressData?)?.let {
             hasVCard4 = it.hasVCard4()
         }
-        App.log.info("Server advertises VCard/4 support: $hasVCard4")
+        Logger.log.info("Server advertises VCard/4 support: $hasVCard4")
 
         groupMethod = settings.getGroupMethod()
-        App.log.info("Contact group method: $groupMethod")
+        Logger.log.info("Contact group method: $groupMethod")
 
         localAddressBook.includeGroups = groupMethod == GroupMethod.GROUP_VCARDS
     }
@@ -143,7 +143,7 @@ class ContactsSyncManager(
 
             // groups with DELETED=1: set all members to dirty, then remove group
             for (group in localAddressBook.getDeletedGroups()) {
-                App.log.fine("Finally removing group $group")
+                Logger.log.fine("Finally removing group $group")
                 // useless because Android deletes group memberships as soon as a group is set to DELETED:
                 // group.markMembersDirty()
                 group.delete()
@@ -151,7 +151,7 @@ class ContactsSyncManager(
 
             // groups with DIRTY=1: mark all memberships as dirty, then clean DIRTY flag of group
             for (group in localAddressBook.getDirtyGroups()) {
-                App.log.fine("Marking members of modified group $group as dirty")
+                Logger.log.fine("Marking members of modified group $group as dirty")
                 group.markMembersDirty()
                 group.clearDirty(null)
             }
@@ -162,11 +162,11 @@ class ContactsSyncManager(
             val batch = BatchOperation(localAddressBook.provider!!)
             for (contact in localAddressBook.getDirtyContacts())
                 try {
-                    App.log.fine("Looking for changed group memberships of contact ${contact.fileName}")
+                    Logger.log.fine("Looking for changed group memberships of contact ${contact.fileName}")
                     val cachedGroups = contact.getCachedGroupMemberships()
                     val currentGroups = contact.getGroupMemberships()
                     for (groupID in cachedGroups disjunct currentGroups) {
-                        App.log.fine("Marking group as dirty: $groupID")
+                        Logger.log.fine("Marking group as dirty: $groupID")
                         batch.enqueue(BatchOperation.Operation(
                                 ContentProviderOperation.newUpdate(localAddressBook.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, groupID)))
                                 .withValue(Groups.DIRTY, 1)
@@ -208,7 +208,7 @@ class ContactsSyncManager(
         else
             throw IllegalArgumentException("resource must be a LocalContact or a LocalGroup")
 
-        App.log.log(Level.FINE, "Preparing upload of VCard ${resource.fileName}", contact)
+        Logger.log.log(Level.FINE, "Preparing upload of VCard ${resource.fileName}", contact)
 
         val os = ByteArrayOutputStream()
         contact.write(if (hasVCard4) VCardVersion.V4_0 else VCardVersion.V3_0, groupMethod, os)
@@ -234,7 +234,7 @@ class ContactsSyncManager(
                 continue
 
             val fileName = vCard.fileName()
-            App.log.fine("Found remote VCard: $fileName")
+            Logger.log.fine("Found remote VCard: $fileName")
             remoteResources[fileName] = vCard
         }
 
@@ -242,7 +242,7 @@ class ContactsSyncManager(
     }
 
     override fun downloadRemote() {
-        App.log.info("Downloading ${toDownload.size} contacts ($MAX_MULTIGET at once)")
+        Logger.log.info("Downloading ${toDownload.size} contacts ($MAX_MULTIGET at once)")
 
         // prepare downloader which may be used to download external resource like contact photos
         val downloader = ResourceDownloader(collectionURL)
@@ -252,7 +252,7 @@ class ContactsSyncManager(
             if (Thread.interrupted())
                 return
 
-            App.log.info("Downloading ${bunch.joinToString(", ")}")
+            Logger.log.info("Downloading ${bunch.joinToString(", ")}")
 
             if (bunch.size == 1) {
                 // only one contact, use GET
@@ -300,12 +300,12 @@ class ContactsSyncManager(
             /* VCard3 group handling: groups memberships are represented as contact CATEGORIES */
 
             // remove empty groups
-            App.log.info("Removing empty groups")
+            Logger.log.info("Removing empty groups")
             localAddressBook.removeEmptyGroups()
 
         } else {
             /* VCard4 group handling: there are group contacts and individual contacts */
-            App.log.info("Assigning memberships of downloaded contact groups")
+            Logger.log.info("Assigning memberships of downloaded contact groups")
             LocalGroup.applyPendingMemberships(localAddressBook)
         }
     }
@@ -316,19 +316,19 @@ class ContactsSyncManager(
     private fun davAddressBook() = davCollection as DavAddressBook
 
     private fun processVCard(fileName: String, eTag: String, reader: Reader, downloader: Contact.Downloader) {
-        App.log.info("Processing CardDAV resource $fileName")
+        Logger.log.info("Processing CardDAV resource $fileName")
         val contacts = Contact.fromReader(reader, downloader)
         if (contacts.isEmpty()) {
-            App.log.warning("Received VCard without data, ignoring")
+            Logger.log.warning("Received VCard without data, ignoring")
             return
         } else if (contacts.size > 1)
-            App.log.warning("Received multiple VCards, using first one")
+            Logger.log.warning("Received multiple VCards, using first one")
 
         val newData = contacts.first()
 
         if (groupMethod == GroupMethod.CATEGORIES && newData.group) {
             groupMethod = GroupMethod.GROUP_VCARDS
-            App.log.warning("Received group VCard although group method is CATEGORIES. Deleting all groups; new group method: $groupMethod")
+            Logger.log.warning("Received group VCard although group method is CATEGORIES. Deleting all groups; new group method: $groupMethod")
             localAddressBook.removeGroups()
             settings.setGroupMethod(groupMethod)
         }
@@ -337,7 +337,7 @@ class ContactsSyncManager(
         var local = localResources[fileName]
         currentLocalResource = local
         if (local != null) {
-            App.log.log(Level.INFO, "Updating $fileName in local address book", newData)
+            Logger.log.log(Level.INFO, "Updating $fileName in local address book", newData)
 
             if (local is LocalGroup && newData.group) {
                 // update group
@@ -360,14 +360,14 @@ class ContactsSyncManager(
 
         if (local == null) {
             if (newData.group) {
-                App.log.log(Level.INFO, "Creating local group", newData)
+                Logger.log.log(Level.INFO, "Creating local group", newData)
                 val group = LocalGroup(localAddressBook, newData, fileName, eTag)
                 currentLocalResource = group
                 group.create()
 
                 local = group
             } else {
-                App.log.log(Level.INFO, "Creating local contact", newData)
+                Logger.log.log(Level.INFO, "Creating local contact", newData)
                 val contact = LocalContact(localAddressBook, newData, fileName, eTag)
                 currentLocalResource = contact
                 contact.create()
@@ -382,12 +382,12 @@ class ContactsSyncManager(
             currentLocalResource = local
 
             val batch = BatchOperation(provider)
-            App.log.log(Level.FINE, "Removing contact group memberships")
+            Logger.log.log(Level.FINE, "Removing contact group memberships")
             local.removeGroupMemberships(batch)
 
             for (category in local.contact!!.categories) {
                 val groupID = localAddressBook.findOrCreateGroup(category)
-                App.log.log(Level.FINE, "Adding membership in group $category ($groupID)")
+                Logger.log.log(Level.FINE, "Adding membership in group $category ($groupID)")
                 local.addToGroup(batch, groupID)
             }
 
@@ -411,13 +411,13 @@ class ContactsSyncManager(
         override fun download(url: String, accepts: String): ByteArray? {
             val httpUrl = HttpUrl.parse(url)
             if (httpUrl == null) {
-                App.log.log(Level.SEVERE, "Invalid external resource URL", url)
+                Logger.log.log(Level.SEVERE, "Invalid external resource URL", url)
                 return null
             }
 
             val host = httpUrl.host()
             if (host == null) {
-                App.log.log(Level.SEVERE, "External resource URL doesn't specify a host name", url)
+                Logger.log.log(Level.SEVERE, "External resource URL doesn't specify a host name", url)
                 return null
             }
 
@@ -443,9 +443,9 @@ class ContactsSyncManager(
                 if (response.isSuccessful)
                     return response.body()?.bytes()
                 else
-                    App.log.warning("Couldn't download external resource")
+                    Logger.log.warning("Couldn't download external resource")
             } catch(e: IOException) {
-                App.log.log(Level.SEVERE, "Couldn't download external resource", e)
+                Logger.log.log(Level.SEVERE, "Couldn't download external resource", e)
             }
             return null
         }
