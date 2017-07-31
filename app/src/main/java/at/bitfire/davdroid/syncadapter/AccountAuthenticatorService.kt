@@ -33,7 +33,7 @@ class AccountAuthenticatorService: Service() {
             val context: Context
     ): AbstractAccountAuthenticator(context) {
 
-        override fun addAccount(response: AccountAuthenticatorResponse?, accountType: String?, authTokenType: String?, requiredFeatures: Array<String>, options: Bundle): Bundle {
+        override fun addAccount(response: AccountAuthenticatorResponse?, accountType: String?, authTokenType: String?, requiredFeatures: Array<String>?, options: Bundle?): Bundle {
             val intent = Intent(context, LoginActivity::class.java)
             intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
             val bundle = Bundle(1)
