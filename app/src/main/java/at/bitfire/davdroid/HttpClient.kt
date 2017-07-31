@@ -25,7 +25,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
-import java.util.logging.Logger
 
 class HttpClient private constructor() {
 
@@ -45,7 +44,7 @@ class HttpClient private constructor() {
 
         @JvmStatic
         @JvmOverloads
-        fun create(context: Context?, settings: AccountSettings? = null, logger: Logger = App.log): OkHttpClient {
+        fun create(context: Context?, settings: AccountSettings? = null, logger: java.util.logging.Logger = Logger.log): OkHttpClient {
             var builder = defaultBuilder(context, logger)
 
             // use account settings for authentication
@@ -65,19 +64,13 @@ class HttpClient private constructor() {
             create(context, AccountSettings(context, account))
 
 
-        private fun defaultBuilder(context: Context?, logger: Logger): OkHttpClient.Builder {
+        private fun defaultBuilder(context: Context?, logger: java.util.logging.Logger): OkHttpClient.Builder {
             val builder = client.newBuilder()
 
             // use MemorizingTrustManager to manage self-signed certificates
-            context?.applicationContext?.let { app ->
-                if (app is App) {
-                    if (app.sslSocketFactoryCompat != null && app.certManager != null)
-                        builder.sslSocketFactory(app.sslSocketFactoryCompat, app.certManager)
-                    if (app.hostnameVerifier != null)
-                        builder.hostnameVerifier(app.hostnameVerifier)
-                } else
-                    App.log.severe("Application context is ${app::class.java.canonicalName} instead of App")
-            }
+            if (CustomCertificates.sslSocketFactoryCompat != null && CustomCertificates.certManager != null)
+                builder.sslSocketFactory(CustomCertificates.sslSocketFactoryCompat, CustomCertificates.certManager)
+            CustomCertificates.hostnameVerifier?.let { builder.hostnameVerifier(it) }
 
             // set timeouts
             builder.connectTimeout(30, TimeUnit.SECONDS)
@@ -100,10 +93,10 @@ class HttpClient private constructor() {
 
                             val proxy = Proxy(Proxy.Type.HTTP, address)
                             builder.proxy(proxy)
-                            App.log.log(Level.INFO, "Using proxy", proxy)
+                            Logger.log.log(Level.INFO, "Using proxy", proxy)
                         }
                     } catch(e: Exception) {
-                        App.log.log(Level.SEVERE, "Can't set proxy, ignoring", e)
+                        Logger.log.log(Level.SEVERE, "Can't set proxy, ignoring", e)
                     }
                 }
             }

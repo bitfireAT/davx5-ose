@@ -34,7 +34,7 @@ class PackageChangedReceiver: BroadcastReceiver() {
         @JvmStatic
         fun updateTaskSync(context: Context) {
             val tasksInstalled = LocalTaskList.tasksProviderAvailable(context)
-            App.log.info("Package (un)installed; OpenTasks provider now available = $tasksInstalled")
+            Logger.log.info("Package (un)installed; OpenTasks provider now available = $tasksInstalled")
 
             // check all accounts and (de)activate OpenTasks if a CalDAV service is defined
             ServiceDB.OpenHelper(context).use { dbHelper ->

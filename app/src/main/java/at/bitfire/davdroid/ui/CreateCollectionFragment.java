@@ -33,10 +33,10 @@ import java.util.logging.Level;
 import at.bitfire.dav4android.DavResource;
 import at.bitfire.dav4android.XmlUtils;
 import at.bitfire.dav4android.exception.HttpException;
-import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.DavUtils;
 import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.InvalidAccountException;
+import at.bitfire.davdroid.Logger;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.model.CollectionInfo;
 import at.bitfire.davdroid.model.ServiceDB;
@@ -204,7 +204,7 @@ public class CreateCollectionFragment extends DialogFragment implements LoaderMa
                 serializer.endTag(XmlUtils.NS_WEBDAV, "mkcol");
                 serializer.endDocument();
             } catch (IOException e) {
-                App.log.log(Level.SEVERE, "Couldn't assemble Extended MKCOL request", e);
+                Logger.log.log(Level.SEVERE, "Couldn't assemble Extended MKCOL request", e);
             }
 
             ServiceDB.OpenHelper dbHelper = new ServiceDB.OpenHelper(getContext());

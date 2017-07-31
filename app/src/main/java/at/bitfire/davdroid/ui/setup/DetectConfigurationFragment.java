@@ -21,7 +21,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 
-import at.bitfire.davdroid.App;
+import at.bitfire.davdroid.Logger;
 import at.bitfire.davdroid.R;
 import at.bitfire.davdroid.ui.DebugInfoActivity;
 import at.bitfire.davdroid.ui.setup.DavResourceFinder.Configuration;
@@ -76,7 +76,7 @@ public class DetectConfigurationFragment extends DialogFragment implements Loade
                         .addToBackStack(null)
                         .commitAllowingStateLoss();
         } else
-            App.log.severe("Configuration detection failed");
+            Logger.log.severe("Configuration detection failed");
 
         dismissAllowingStateLoss();
     }

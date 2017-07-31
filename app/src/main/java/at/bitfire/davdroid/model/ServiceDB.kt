@@ -13,7 +13,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
-import at.bitfire.davdroid.App
+import at.bitfire.davdroid.Logger
 import java.io.Closeable
 
 class ServiceDB {
@@ -85,7 +85,7 @@ class ServiceDB {
         }
 
         override fun onCreate(db: SQLiteDatabase) {
-            App.log.info("Creating database " + db.path)
+            Logger.log.info("Creating database " + db.path)
 
             db.execSQL("CREATE TABLE ${Settings._TABLE}(" +
                     "${Settings.NAME} TEXT NOT NULL," +
