@@ -19,8 +19,8 @@ import at.bitfire.dav4android.property.CalendarData
 import at.bitfire.dav4android.property.GetCTag
 import at.bitfire.dav4android.property.GetETag
 import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.App
 import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.Logger
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
@@ -73,7 +73,7 @@ class TasksSyncManager(
     override fun prepareUpload(resource: LocalResource): RequestBody {
         if (resource is LocalTask) {
             val task = requireNotNull(resource.task)
-            App.log.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
+            Logger.log.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
 
             val os = ByteArrayOutputStream()
             task.write(os)
@@ -95,7 +95,7 @@ class TasksSyncManager(
         remoteResources = HashMap<String, DavResource>(davCollection.members.size)
         for (vCard in davCollection.members) {
             val fileName = vCard.fileName()
-            App.log.fine("Found remote VTODO: $fileName")
+            Logger.log.fine("Found remote VTODO: $fileName")
             remoteResources[fileName] = vCard
         }
 
@@ -103,14 +103,14 @@ class TasksSyncManager(
     }
 
     override fun downloadRemote() {
-        App.log.info("Downloading ${toDownload.size} tasks ($MAX_MULTIGET at once)")
+        Logger.log.info("Downloading ${toDownload.size} tasks ($MAX_MULTIGET at once)")
 
         // download new/updated iCalendars from server
         for (bunch in ListUtils.partition(toDownload.toList(), MAX_MULTIGET)) {
             if (Thread.interrupted())
                 return
 
-            App.log.info("Downloading ${bunch.joinToString(", ")}")
+            Logger.log.info("Downloading ${bunch.joinToString(", ")}")
 
             if (bunch.size == 1) {
                 // only one contact, use GET
@@ -163,7 +163,7 @@ class TasksSyncManager(
         try {
             tasks = Task.fromReader(reader)
         } catch (e: InvalidCalendarException) {
-            App.log.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
+            Logger.log.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             return
         }
 
@@ -174,19 +174,19 @@ class TasksSyncManager(
             val localTask = localResources[fileName] as LocalTask?
             currentLocalResource = localTask
             if (localTask != null) {
-                App.log.info("Updating $fileName in local tasklist")
+                Logger.log.info("Updating $fileName in local tasklist")
                 localTask.eTag = eTag
                 localTask.update(newData)
                 syncResult.stats.numUpdates++
             } else {
-                App.log.info("Adding $fileName to local task list")
+                Logger.log.info("Adding $fileName to local task list")
                 val newTask = LocalTask(localTaskList, newData, fileName, eTag)
                 currentLocalResource = newTask
                 newTask.add()
                 syncResult.stats.numInserts++
             }
         } else
-            App.log.severe("Received VCALENDAR with not exactly one VTODO; ignoring $fileName")
+            Logger.log.severe("Received VCALENDAR with not exactly one VTODO; ignoring $fileName")
     }
 
 }

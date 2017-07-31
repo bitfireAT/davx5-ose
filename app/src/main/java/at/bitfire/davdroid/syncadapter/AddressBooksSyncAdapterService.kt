@@ -14,7 +14,7 @@ import android.database.DatabaseUtils
 import android.os.Bundle
 import android.provider.ContactsContract
 import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.App
+import at.bitfire.davdroid.Logger
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
@@ -35,7 +35,7 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
         override fun sync(account: Account, extras: Bundle, authority: String, addressBooksProvider: ContentProviderClient, syncResult: SyncResult) {
             val contactsProvider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
             if (contactsProvider == null) {
-                App.log.severe("Couldn't access contacts provider")
+                Logger.log.severe("Couldn't access contacts provider")
                 syncResult.databaseError = true
                 return
             }
@@ -54,17 +54,17 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
 
                 val accountManager = AccountManager.get(context)
                 for (addressBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
-                    App.log.log(Level.INFO, "Running sync for address book", addressBookAccount)
+                    Logger.log.log(Level.INFO, "Running sync for address book", addressBookAccount)
                     val syncExtras = Bundle(extras)
                     syncExtras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, true)
                     syncExtras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_BACKOFF, true)
                     ContentResolver.requestSync(addressBookAccount, ContactsContract.AUTHORITY, syncExtras)
                 }
             } catch(e: Exception) {
-                App.log.log(Level.SEVERE, "Couldn't sync address books", e)
+                Logger.log.log(Level.SEVERE, "Couldn't sync address books", e)
             }
 
-            App.log.info("Address book sync complete")
+            Logger.log.info("Address book sync complete")
         }
 
         private fun updateLocalAddressBooks(provider: ContentProviderClient, account: Account) {
@@ -106,15 +106,15 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
                     val url = addressBook.getURL()
                     val info = remote[url]
                     if (info == null) {
-                        App.log.log(Level.INFO, "Deleting obsolete local address book", url)
+                        Logger.log.log(Level.INFO, "Deleting obsolete local address book", url)
                         addressBook.delete()
                     } else {
                         // remote CollectionInfo found for this local collection, update data
                         try {
-                            App.log.log(Level.FINE, "Updating local address book $url", info)
+                            Logger.log.log(Level.FINE, "Updating local address book $url", info)
                             addressBook.update(info)
                         } catch(e: ContactsStorageException) {
-                            App.log.log(Level.WARNING, "Couldn't rename address book account", e)
+                            Logger.log.log(Level.WARNING, "Couldn't rename address book account", e)
                         }
                         // we already have a local address book for this remote collection, don't take into consideration anymore
                         remote -= url
@@ -123,7 +123,7 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
 
                 // create new local address books
                 for ((_, info) in remote) {
-                    App.log.log(Level.INFO, "Adding local address book", info)
+                    Logger.log.log(Level.INFO, "Adding local address book", info)
                     LocalAddressBook.create(context, provider, account, info)
                 }
             }

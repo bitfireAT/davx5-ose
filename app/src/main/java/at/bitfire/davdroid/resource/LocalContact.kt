@@ -15,8 +15,8 @@ import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.RawContacts.Data
-import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.Logger
 import at.bitfire.davdroid.model.UnknownProperties
 import at.bitfire.vcard4android.*
 import ezvcard.Ezvcard
@@ -68,7 +68,7 @@ class LocalContact: AndroidContact, LocalResource {
                 // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
                 val hashCode = dataHashCode()
                 values.put(COLUMN_HASHCODE, hashCode)
-                App.log.finer("Clearing dirty flag with eTag = $eTag, contact hash = $hashCode")
+                Logger.log.finer("Clearing dirty flag with eTag = $eTag, contact hash = $hashCode")
             }
 
             addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
@@ -154,7 +154,7 @@ class LocalContact: AndroidContact, LocalResource {
         // groupMemberships is filled by getContact()
         val dataHash = contact!!.hashCode()
         val groupHash = groupMemberships.hashCode()
-        App.log.finest("Calculated data hash = $dataHash, group memberships hash = $groupHash")
+        Logger.log.finest("Calculated data hash = $dataHash, group memberships hash = $groupHash")
         return dataHash xor groupHash
     }
 
@@ -166,7 +166,7 @@ class LocalContact: AndroidContact, LocalResource {
         val values = ContentValues(1)
         try {
             val hashCode = dataHashCode()
-            App.log.fine("Storing contact hash = $hashCode")
+            Logger.log.fine("Storing contact hash = $hashCode")
             values.put(COLUMN_HASHCODE, hashCode)
 
             if (batch == null)

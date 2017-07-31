@@ -17,8 +17,8 @@ import android.net.Uri
 import android.os.RemoteException
 import android.provider.CalendarContract
 import android.provider.CalendarContract.*
-import at.bitfire.davdroid.App
 import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.ical4android.*
 import java.io.FileNotFoundException
@@ -84,7 +84,7 @@ class LocalCalendar private constructor(
                         values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(tzId.value))
                     }
                 } catch(e: IllegalArgumentException) {
-                    App.log.log(Level.WARNING, "Couldn't parse calendar default time zone", e)
+                    Logger.log.log(Level.WARNING, "Couldn't parse calendar default time zone", e)
                 }
             }
             values.put(Calendars.ALLOWED_REMINDERS, Reminders.METHOD_ALERT)
@@ -160,13 +160,13 @@ class LocalCalendar private constructor(
     fun processDirtyExceptions() {
         try {
             // process deleted exceptions
-            App.log.info("Processing deleted exceptions")
+            Logger.log.info("Processing deleted exceptions")
             provider.query(
                     syncAdapterURI(Events.CONTENT_URI),
                     arrayOf(Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE),
                     "${Events.DELETED}!=0 AND ${Events.ORIGINAL_ID} IS NOT NULL", null, null)?.use { cursor ->
                 while (cursor.moveToNext()) {
-                    App.log.fine("Found deleted exception, removing; then re-scheduling original event")
+                    Logger.log.fine("Found deleted exception, removing; then re-scheduling original event")
                     val id = cursor.getLong(0)             // can't be null (by definition)
                     val originalID = cursor.getLong(1)     // can't be null (by query)
 
@@ -196,13 +196,13 @@ class LocalCalendar private constructor(
             }
 
             // process dirty exceptions
-            App.log.info("Processing dirty exceptions")
+            Logger.log.info("Processing dirty exceptions")
             provider.query(
                     syncAdapterURI(Events.CONTENT_URI),
                     arrayOf(Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE),
                     "${Events.DIRTY}!=0 AND ${Events.ORIGINAL_ID} IS NOT NULL", null, null)?.use { cursor ->
                 while (cursor.moveToNext()) {
-                    App.log.fine("Found dirty exception, increasing SEQUENCE to re-schedule")
+                    Logger.log.fine("Found dirty exception, increasing SEQUENCE to re-schedule")
                     val id = cursor.getLong(0)             // can't be null (by definition)
                     val originalID = cursor.getLong(1)     // can't be null (by query)
                     val sequence = if (cursor.isNull(2)) 0 else cursor.getInt(2)

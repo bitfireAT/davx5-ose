@@ -15,8 +15,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import at.bitfire.davdroid.App;
-import at.bitfire.davdroid.Constants;
+import at.bitfire.cert4android.CustomCertManager;
+import at.bitfire.davdroid.CustomCertificates;
 import at.bitfire.davdroid.R;
 
 /**
@@ -59,18 +59,18 @@ public class LoginActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        App app = (App)getApplicationContext();
-        if (app.getCertManager() != null)
-            app.getCertManager().appInForeground = true;
+        CustomCertManager certManager = CustomCertificates.certManager;
+        if (certManager != null)
+            certManager.appInForeground = true;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        App app = (App)getApplicationContext();
-        if (app.getCertManager() != null)
-            app.getCertManager().appInForeground = false;
+        CustomCertManager certManager = CustomCertificates.certManager;
+        if (certManager != null)
+            certManager.appInForeground = false;
     }
 
     @Override

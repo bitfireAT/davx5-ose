@@ -29,6 +29,7 @@ android {
     productFlavors {
         standard {
             versionName "1.6.4-ose"
+            buildConfigField "boolean", "customCerts", "true"
         }
     }
 

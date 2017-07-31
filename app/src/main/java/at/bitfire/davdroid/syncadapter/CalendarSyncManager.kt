@@ -20,8 +20,8 @@ import at.bitfire.dav4android.property.CalendarData
 import at.bitfire.dav4android.property.GetCTag
 import at.bitfire.dav4android.property.GetETag
 import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.App
 import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.Logger
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
@@ -81,7 +81,7 @@ class CalendarSyncManager(
     override fun prepareUpload(resource: LocalResource): RequestBody {
         if (resource is LocalEvent) {
             val event = requireNotNull(resource.event)
-            App.log.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
+            Logger.log.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
 
             val os = ByteArrayOutputStream()
             event.write(os)
@@ -111,7 +111,7 @@ class CalendarSyncManager(
         remoteResources = HashMap<String, DavResource>(davCollection.members.size)
         for (iCal in davCollection.members) {
             val fileName = iCal.fileName()
-            App.log.fine("Found remote VEVENT: $fileName")
+            Logger.log.fine("Found remote VEVENT: $fileName")
             remoteResources[fileName] = iCal
         }
 
@@ -119,14 +119,14 @@ class CalendarSyncManager(
     }
 
     override fun downloadRemote() {
-        App.log.info("Downloading ${toDownload.size} events ($MAX_MULTIGET at once)")
+        Logger.log.info("Downloading ${toDownload.size} events ($MAX_MULTIGET at once)")
 
         // download new/updated iCalendars from server
         for (bunch in ListUtils.partition(toDownload.toList(), MAX_MULTIGET)) {
             if (Thread.interrupted())
                 return
 
-            App.log.info("Downloading ${bunch.joinToString(", ")}")
+            Logger.log.info("Downloading ${bunch.joinToString(", ")}")
 
             if (bunch.size == 1) {
                 // only one contact, use GET
@@ -179,7 +179,7 @@ class CalendarSyncManager(
         try {
             events = Event.fromReader(reader)
         } catch (e: InvalidCalendarException) {
-            App.log.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
+            Logger.log.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             return
         }
 
@@ -190,19 +190,19 @@ class CalendarSyncManager(
             val localEvent = localResources[fileName] as LocalEvent?
             currentLocalResource = localEvent
             if (localEvent != null) {
-                App.log.info("Updating $fileName in local calendar")
+                Logger.log.info("Updating $fileName in local calendar")
                 localEvent.eTag = eTag
                 localEvent.update(newData)
                 syncResult.stats.numUpdates++
             } else {
-                App.log.info("Adding $fileName to local calendar")
+                Logger.log.info("Adding $fileName to local calendar")
                 val newEvent = LocalEvent(localCalendar, newData, fileName, eTag)
                 currentLocalResource = newEvent
                 newEvent.add()
                 syncResult.stats.numInserts++
             }
         } else
-            App.log.severe("Received VCALENDAR with not exactly one VEVENT with UID, but without RECURRENCE-ID; ignoring $fileName")
+            Logger.log.severe("Received VCALENDAR with not exactly one VEVENT with UID, but without RECURRENCE-ID; ignoring $fileName")
 
         currentLocalResource = null
     }

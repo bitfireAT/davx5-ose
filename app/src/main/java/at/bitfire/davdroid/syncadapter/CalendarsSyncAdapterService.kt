@@ -13,7 +13,7 @@ import android.database.DatabaseUtils
 import android.os.Bundle
 import android.provider.CalendarContract
 import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.App
+import at.bitfire.davdroid.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.ServiceDB.Collections
@@ -44,15 +44,15 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
                 updateLocalCalendars(provider, account, settings)
 
                 for (calendar in AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)) {
-                    App.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
+                    Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
                     CalendarSyncManager(context, account, settings, extras, authority, syncResult, provider, calendar)
                             .performSync()
                 }
             } catch(e: Exception) {
-                App.log.log(Level.SEVERE, "Couldn't sync calendars", e)
+                Logger.log.log(Level.SEVERE, "Couldn't sync calendars", e)
             }
 
-            App.log.info("Calendar sync complete")
+            Logger.log.info("Calendar sync complete")
         }
 
         private fun updateLocalCalendars(provider: ContentProviderClient, account: Account, settings: AccountSettings) {
@@ -97,11 +97,11 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
                     calendar.name?.let { url ->
                         val info = remote[url]
                         if (info == null) {
-                            App.log.log(Level.INFO, "Deleting obsolete local calendar", url)
+                            Logger.log.log(Level.INFO, "Deleting obsolete local calendar", url)
                             calendar.delete()
                         } else {
                             // remote CollectionInfo found for this local collection, update data
-                            App.log.log(Level.FINE, "Updating local calendar $url", info)
+                            Logger.log.log(Level.FINE, "Updating local calendar $url", info)
                             calendar.update(info, updateColors)
                             // we already have a local calendar for this remote collection, don't take into consideration anymore
                             remote -= url
@@ -110,7 +110,7 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
 
                 // create new local calendars
                 for ((_, info) in remote) {
-                    App.log.log(Level.INFO, "Adding local calendar", info)
+                    Logger.log.log(Level.INFO, "Adding local calendar", info)
                     LocalCalendar.create(account, provider, info)
                 }
             }

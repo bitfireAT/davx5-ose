@@ -92,7 +92,7 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
                 version = Integer.parseInt(versionStr)
             } catch (e: NumberFormatException) {
             }
-            App.log.fine("Account ${account.name} has version $version, current version: $CURRENT_VERSION")
+            Logger.log.fine("Account ${account.name} has version $version, current version: $CURRENT_VERSION")
 
             if (version < CURRENT_VERSION)
                 update(version)
@@ -179,13 +179,13 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
     private fun update(baseVersion: Int) {
         for (toVersion in baseVersion+1 .. CURRENT_VERSION) {
             val fromVersion = toVersion-1
-            App.log.info("Updating account ${account.name} from version $fromVersion to $toVersion")
+            Logger.log.info("Updating account ${account.name} from version $fromVersion to $toVersion")
             try {
                 val updateProc = this::class.java.getDeclaredMethod("update_${fromVersion}_$toVersion")
                 updateProc.invoke(this)
                 accountManager.setUserData(account, KEY_SETTINGS_VERSION, toVersion.toString())
             } catch (e: Exception) {
-                App.log.log(Level.SEVERE, "Couldn't update account settings", e)
+                Logger.log.log(Level.SEVERE, "Couldn't update account settings", e)
             }
         }
     }
@@ -245,7 +245,7 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
                 try {
                     val addrBook = LocalAddressBook(context, account, client)
                     val url = addrBook.getURL()
-                    App.log.fine("Migrating address book $url")
+                    Logger.log.fine("Migrating address book $url")
 
                     // insert CardDAV service
                     val values = ContentValues(3)
@@ -269,7 +269,7 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
                         db.insert(HomeSets._TABLE, null, values)
                     }
                 } catch (e: ContactsStorageException) {
-                    App.log.log(Level.SEVERE, "Couldn't migrate address book", e)
+                    Logger.log.log(Level.SEVERE, "Couldn't migrate address book", e)
                 } finally {
                     if (Build.VERSION.SDK_INT >= 24)
                         client.close()
@@ -288,12 +288,12 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
                     val calendars = AndroidCalendar.find(account, client, LocalCalendar.Factory, null, null)
                     for (calendar in calendars)
                         calendar.name?.let { url ->
-                            App.log.fine("Migrating calendar $url")
+                            Logger.log.fine("Migrating calendar $url")
                             collections.add(url)
                             HttpUrl.parse(url)?.resolve("../")?.let { homeSets.add(it) }
                         }
                 } catch (e: CalendarStorageException) {
-                    App.log.log(Level.SEVERE, "Couldn't migrate calendars", e)
+                    Logger.log.log(Level.SEVERE, "Couldn't migrate calendars", e)
                 } finally {
                     if (Build.VERSION.SDK_INT >= 24)
                         client.close()
@@ -308,12 +308,12 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
                     val taskLists = AndroidTaskList.find(account, provider, LocalTaskList.Factory, null, null)
                     for (taskList in taskLists)
                         taskList.syncId?.let { url ->
-                            App.log.fine("Migrating task list $url")
+                            Logger.log.fine("Migrating task list $url")
                             collections.add(url)
                             HttpUrl.parse(url)?.resolve("../")?.let { homeSets.add(it) }
                         }
                 } catch (e: CalendarStorageException) {
-                    App.log.log(Level.SEVERE, "Couldn't migrate task lists", e)
+                    Logger.log.log(Level.SEVERE, "Couldn't migrate task lists", e)
                 }
             }
 
@@ -381,26 +381,26 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
                 // get previous address book settings (including URL)
                 val raw = ContactsContract.SyncState.get(provider, account)
                 if (raw == null)
-                    App.log.info("No contacts sync state, ignoring account")
+                    Logger.log.info("No contacts sync state, ignoring account")
                 else {
                     parcel.unmarshall(raw, 0, raw.size)
                     parcel.setDataPosition(0)
                     val params = parcel.readBundle()
                     val url = params.getString("url")
                     if (url == null)
-                        App.log.info("No address book URL, ignoring account")
+                        Logger.log.info("No address book URL, ignoring account")
                     else {
                         // create new address book
                         val info = CollectionInfo(url)
                         info.type = CollectionInfo.Type.ADDRESS_BOOK
                         info.displayName = account.name
-                        App.log.log(Level.INFO, "Creating new address book account", url)
+                        Logger.log.log(Level.INFO, "Creating new address book account", url)
                         val addressBookAccount = Account(LocalAddressBook.accountName(account, info), App.addressBookAccountType)
                         if (!accountManager.addAccountExplicitly(addressBookAccount, null, LocalAddressBook.initialUserData(account, info.url)))
                             throw ContactsStorageException("Couldn't create address book account")
 
                         // move contacts to new address book
-                        App.log.info("Moving contacts from $account to $addressBookAccount")
+                        Logger.log.info("Moving contacts from $account to $addressBookAccount")
                         val newAccount = ContentValues(2)
                         newAccount.put(ContactsContract.RawContacts.ACCOUNT_NAME, addressBookAccount.name)
                         newAccount.put(ContactsContract.RawContacts.ACCOUNT_TYPE, addressBookAccount.type)
@@ -411,7 +411,7 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
                                 newAccount,
                                 "${ContactsContract.RawContacts.ACCOUNT_NAME}=? AND ${ContactsContract.RawContacts.ACCOUNT_TYPE}=?",
                                 arrayOf(account.name, account.type))
-                        App.log.info("$affected contacts moved to new address book")
+                        Logger.log.info("$affected contacts moved to new address book")
                     }
 
                     ContactsContract.SyncState.set(provider, account, null)
@@ -436,16 +436,16 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
 
         @SuppressLint("UnsafeProtectedBroadcastReceiver,MissingPermission")
         override fun onReceive(context: Context, intent: Intent?) {
-            App.log.info("DAVdroid was updated, checking for AccountSettings version")
+            Logger.log.info("DAVdroid was updated, checking for AccountSettings version")
 
             // peek into AccountSettings to initiate a possible migration
             val accountManager = AccountManager.get(context)
             for (account in accountManager.getAccountsByType(context.getString(R.string.account_type)))
                 try {
-                    App.log.info("Checking account ${account.name}")
+                    Logger.log.info("Checking account ${account.name}")
                     AccountSettings(context, account)
                 } catch(e: InvalidAccountException) {
-                    App.log.log(Level.SEVERE, "Couldn't check for updated account settings", e)
+                    Logger.log.log(Level.SEVERE, "Couldn't check for updated account settings", e)
                 }
         }
 
