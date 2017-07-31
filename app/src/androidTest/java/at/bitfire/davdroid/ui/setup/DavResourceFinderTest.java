@@ -26,6 +26,7 @@ import at.bitfire.dav4android.property.AddressbookHomeSet;
 import at.bitfire.dav4android.property.ResourceType;
 import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.HttpClient;
+import at.bitfire.davdroid.Logger;
 import at.bitfire.davdroid.ui.setup.DavResourceFinder;
 import at.bitfire.davdroid.ui.setup.DavResourceFinder.Configuration.ServiceInfo;
 import at.bitfire.davdroid.ui.setup.LoginCredentials;
@@ -184,7 +185,7 @@ public class DavResourceFinderTest {
                                 "</resourcetype>";
                         break;
                 }
-                App.log.info("Sending props: " + props);
+                Logger.log.info("Sending props: " + props);
                 return new MockResponse()
                         .setResponseCode(207)
                         .setBody("<multistatus xmlns='DAV:' xmlns:CARD='urn:ietf:params:xml:ns:carddav'>" +
