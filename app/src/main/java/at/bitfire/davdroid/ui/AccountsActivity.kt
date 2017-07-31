@@ -31,8 +31,8 @@ import java.util.*
 class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, SyncStatusObserver {
 
     companion object {
-        val serviceLoader = ServiceLoader.load(IAccountsDrawerHandler::class.java)
-        val accountsDrawerHandler = serviceLoader.iterator().next()
+        val serviceLoader = ServiceLoader.load(IAccountsDrawerHandler::class.java)!!
+        val accountsDrawerHandler = serviceLoader.iterator().next()!!
     }
 
     private var syncStatusSnackbar: Snackbar? = null
@@ -50,7 +50,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         })
 
         val toggle = ActionBarDrawerToggle(
-                this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.setDrawerListener(toggle)
         toggle.syncState()
 
@@ -72,7 +72,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
             val accountManager = AccountManager.get(this)
             val accounts = accountManager.getAccountsByType(getString(R.string.account_type))
 
-            fab.setVisibility(if (accounts.isEmpty()) View.VISIBLE else View.GONE)
+            fab.visibility = if (accounts.isEmpty()) View.VISIBLE else View.GONE
         }
 
         onStatusChanged(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS)
