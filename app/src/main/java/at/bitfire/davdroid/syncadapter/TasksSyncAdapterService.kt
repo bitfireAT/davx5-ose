@@ -81,7 +81,7 @@ class TasksSyncAdapterService: SyncAdapterService() {
                                 "${Collections.SERVICE_ID}=? AND ${Collections.SUPPORTS_VTODO}!=0 AND ${Collections.SYNC}",
                                 arrayOf(service.toString()), null, null, null)?.use { cursor ->
                             while (cursor.moveToNext()) {
-                                val values = ContentValues()
+                                val values = ContentValues(cursor.columnCount)
                                 DatabaseUtils.cursorRowToContentValues(cursor, values)
                                 val info = CollectionInfo(values)
                                 collections[info.url] = info

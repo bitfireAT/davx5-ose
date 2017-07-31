@@ -105,7 +105,6 @@ class AppSettingsActivity: AppCompatActivity() {
             }
 
             val prefDistrustSystemCerts = findPreference("distrust_system_certs") as SwitchPreferenceCompat
-            val app = context.applicationContext
             if (CustomCertificates.certManager == null)
                 prefDistrustSystemCerts.isVisible = false
             else
