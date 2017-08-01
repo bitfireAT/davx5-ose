@@ -8,6 +8,7 @@
 
 package at.bitfire.davdroid
 
+import at.bitfire.davdroid.log.Logger
 import java.io.IOException
 import java.net.InetAddress
 import java.net.Socket

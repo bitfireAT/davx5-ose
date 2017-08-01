@@ -8,13 +8,9 @@
 
 package at.bitfire.davdroid.ui.setup;
 
-import android.support.test.runner.AndroidJUnit4;
-import android.test.InstrumentationTestCase;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.net.URI;
@@ -24,12 +20,9 @@ import at.bitfire.dav4android.exception.DavException;
 import at.bitfire.dav4android.exception.HttpException;
 import at.bitfire.dav4android.property.AddressbookHomeSet;
 import at.bitfire.dav4android.property.ResourceType;
-import at.bitfire.davdroid.App;
 import at.bitfire.davdroid.HttpClient;
-import at.bitfire.davdroid.Logger;
-import at.bitfire.davdroid.ui.setup.DavResourceFinder;
+import at.bitfire.davdroid.log.Logger;
 import at.bitfire.davdroid.ui.setup.DavResourceFinder.Configuration.ServiceInfo;
-import at.bitfire.davdroid.ui.setup.LoginCredentials;
 import okhttp3.OkHttpClient;
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;

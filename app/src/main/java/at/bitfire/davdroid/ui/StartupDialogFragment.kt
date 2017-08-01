@@ -24,8 +24,8 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.Logger
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.Settings
 import at.bitfire.davdroid.resource.LocalTaskList

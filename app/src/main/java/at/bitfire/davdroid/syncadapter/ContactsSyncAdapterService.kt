@@ -15,7 +15,7 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.Logger
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import java.util.logging.Level
 

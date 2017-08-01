@@ -13,6 +13,7 @@ import android.content.Context
 import android.os.Build
 import at.bitfire.dav4android.BasicDigestAuthHandler
 import at.bitfire.dav4android.UrlUtils
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.Settings
 import okhttp3.Interceptor
