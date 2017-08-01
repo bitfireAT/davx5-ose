@@ -20,7 +20,7 @@ import android.provider.ContactsContract.RawContacts
 import android.util.Base64
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.DavUtils
-import at.bitfire.davdroid.Logger
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.vcard4android.*
 import java.io.ByteArrayOutputStream

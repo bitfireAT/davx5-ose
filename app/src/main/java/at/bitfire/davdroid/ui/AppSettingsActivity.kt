@@ -18,8 +18,8 @@ import android.support.v7.preference.PreferenceFragmentCompat
 import android.support.v7.preference.SwitchPreferenceCompat
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.CustomCertificates
-import at.bitfire.davdroid.Logger
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.Settings
 import java.net.URI

@@ -12,7 +12,7 @@ import android.content.*
 import android.database.DatabaseUtils
 import android.os.Bundle
 import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.Logger
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.ServiceDB.Collections
