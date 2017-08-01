@@ -17,7 +17,11 @@ import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
-import at.bitfire.davdroid.*
+import at.bitfire.davdroid.AccountSettings
+import at.bitfire.davdroid.App
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.PermissionsActivity
 import org.apache.commons.collections4.IteratorUtils
 import java.util.*

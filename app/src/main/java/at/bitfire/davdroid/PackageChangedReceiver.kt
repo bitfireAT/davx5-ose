@@ -15,6 +15,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.ServiceDB.Services
 import at.bitfire.davdroid.resource.LocalTaskList

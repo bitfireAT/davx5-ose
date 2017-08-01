@@ -18,7 +18,7 @@ import android.os.RemoteException
 import android.provider.CalendarContract
 import android.provider.CalendarContract.*
 import at.bitfire.davdroid.DavUtils
-import at.bitfire.davdroid.Logger
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.ical4android.*
 import java.io.FileNotFoundException

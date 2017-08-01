@@ -16,7 +16,7 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.RawContacts.Data
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.Logger
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.UnknownProperties
 import at.bitfire.vcard4android.*
 import ezvcard.Ezvcard

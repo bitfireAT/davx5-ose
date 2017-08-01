@@ -25,8 +25,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.Logger
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import ezvcard.Ezvcard
 import kotlinx.android.synthetic.main.about_component.view.*
 import kotlinx.android.synthetic.main.activity_about.*
