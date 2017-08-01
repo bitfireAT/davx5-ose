@@ -169,7 +169,6 @@
     <string name="settings_sync_interval_contacts">Contacts sync. interval</string>
     <string name="settings_sync_summary_manually">Only manually</string>
     <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Every %d minutes + immediately on local changes</string>
-    <string name="settings_sync_summary_not_available">Not available</string>
     <string name="settings_sync_interval_calendars">Calendars sync. interval</string>
     <string name="settings_sync_interval_tasks">Tasks sync. interval</string>
     <string-array name="settings_sync_interval_seconds">

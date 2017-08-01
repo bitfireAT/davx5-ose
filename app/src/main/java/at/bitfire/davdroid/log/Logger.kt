@@ -6,15 +6,16 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid
+package at.bitfire.davdroid.log
 
 import android.content.Context
 import android.os.Process
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import android.util.Log
-import at.bitfire.davdroid.log.LogcatHandler
-import at.bitfire.davdroid.log.PlainTextFormatter
+import at.bitfire.davdroid.App
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.Settings
 import org.apache.commons.lang3.time.DateFormatUtils

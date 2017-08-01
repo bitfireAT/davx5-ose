@@ -14,6 +14,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import at.bitfire.davdroid.log.Logger
 
 class App: Application() {
 

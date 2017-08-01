@@ -27,7 +27,11 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.*
 import android.widget.*
-import at.bitfire.davdroid.*
+import at.bitfire.davdroid.App
+import at.bitfire.davdroid.CustomCertificates
+import at.bitfire.davdroid.DavService
+import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.ServiceDB.*

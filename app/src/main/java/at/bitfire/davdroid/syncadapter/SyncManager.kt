@@ -21,7 +21,11 @@ import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.exception.*
 import at.bitfire.dav4android.property.GetCTag
 import at.bitfire.dav4android.property.GetETag
-import at.bitfire.davdroid.*
+import at.bitfire.davdroid.AccountSettings
+import at.bitfire.davdroid.App
+import at.bitfire.davdroid.HttpClient
+import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.ui.AccountSettingsActivity
