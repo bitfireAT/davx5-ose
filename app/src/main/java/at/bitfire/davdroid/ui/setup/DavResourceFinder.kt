@@ -205,7 +205,7 @@ class DavResourceFinder(
      * @param dav       resource whose properties are evaluated
      * @param config    structure where the address book (collection) and/or home set is stored into (if found)
      */
-    private fun rememberIfAddressBookOrHomeset(dav: DavResource, config: Configuration.ServiceInfo) {
+    fun rememberIfAddressBookOrHomeset(dav: DavResource, config: Configuration.ServiceInfo) {
         // Is there an address book?
         for ((addressBook, second) in dav.findProperties(ResourceType.NAME)) {
             val resourceType = second as ResourceType
@@ -229,7 +229,7 @@ class DavResourceFinder(
         }
     }
 
-    private fun rememberIfCalendarOrHomeset(dav: DavResource, config: Configuration.ServiceInfo) {
+    fun rememberIfCalendarOrHomeset(dav: DavResource, config: Configuration.ServiceInfo) {
         // Is the collection a calendar collection?
         for ((calendar, second) in dav.findProperties(ResourceType.NAME)) {
             val resourceType = second as ResourceType
@@ -255,7 +255,7 @@ class DavResourceFinder(
 
 
     @Throws(IOException::class)
-    private fun providesService(url: HttpUrl, service: Service): Boolean {
+    fun providesService(url: HttpUrl, service: Service): Boolean {
         val davPrincipal = DavResource(httpClient, url, log)
         try {
             davPrincipal.options()
