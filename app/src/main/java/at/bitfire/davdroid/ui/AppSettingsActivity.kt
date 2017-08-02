@@ -144,7 +144,7 @@ class AppSettingsActivity: AppCompatActivity() {
             CustomCertificates.reinitCertManager(context)
 
             // reinitialize certificate manager of :sync process
-            context.sendBroadcast(Intent(App.ReinitSettingsReceiver.ACTION_REINIT_SETTINGS))
+            context.sendBroadcast(Intent(Settings.ReinitSettingsReceiver.ACTION_REINIT_SETTINGS))
         }
 
         private fun resetCertificates() {
@@ -159,7 +159,7 @@ class AppSettingsActivity: AppCompatActivity() {
             Logger.reinitLogger(context)
 
             // reinitialize logger of :sync process
-            context.sendBroadcast(Intent(App.ReinitSettingsReceiver.ACTION_REINIT_SETTINGS))
+            context.sendBroadcast(Intent(Settings.ReinitSettingsReceiver.ACTION_REINIT_SETTINGS))
         }
     }
 

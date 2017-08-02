@@ -9,9 +9,7 @@
 package at.bitfire.davdroid
 
 import android.app.Application
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import at.bitfire.davdroid.log.Logger
@@ -56,22 +54,6 @@ class App: Application() {
 
         addressBookAccountType = getString(R.string.account_type_address_book)
         addressBooksAuthority = getString(R.string.address_books_authority)
-    }
-
-
-    class ReinitSettingsReceiver: BroadcastReceiver() {
-
-        companion object {
-            @JvmField val ACTION_REINIT_SETTINGS = "at.bitfire.davdroid.REINIT_SETTINGS"
-        }
-
-        override fun onReceive(context: Context, intent: Intent) {
-            Logger.log.info("Received broadcast: re-initializing settings (logger/cert manager)")
-
-            CustomCertificates.reinitCertManager(context)
-            Logger.reinitLogger(context)
-        }
-
     }
 
 }

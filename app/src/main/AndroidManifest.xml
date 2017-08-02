@@ -53,7 +53,7 @@
         tools:ignore="UnusedAttribute">
 
         <receiver
-            android:name=".App$ReinitSettingsReceiver"
+            android:name=".model.Settings$ReinitSettingsReceiver"
             android:exported="false"
             android:process=":sync">
             <intent-filter>
