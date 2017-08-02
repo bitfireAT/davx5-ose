@@ -20,7 +20,6 @@ import android.database.sqlite.SQLiteDatabase
 import android.os.Binder
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v7.app.NotificationCompat
-import android.text.TextUtils
 import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.UrlUtils
 import at.bitfire.dav4android.exception.DavException
@@ -141,7 +140,7 @@ class DavService: Service() {
             if (sqlAccountNames.isEmpty())
                 db.delete(Services._TABLE, null, null)
             else
-                db.delete(Services._TABLE, "${Services.ACCOUNT_NAME} NOT IN (${TextUtils.join(",", sqlAccountNames)})", null)
+                db.delete(Services._TABLE, "${Services.ACCOUNT_NAME} NOT IN (${sqlAccountNames.joinToString(",")})", null)
         }
     }
 
