@@ -11,13 +11,13 @@ package at.bitfire.davdroid.ui
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
+import android.app.ListFragment
+import android.app.LoaderManager
+import android.content.AsyncTaskLoader
 import android.content.Context
 import android.content.Intent
+import android.content.Loader
 import android.os.Bundle
-import android.support.v4.app.ListFragment
-import android.support.v4.app.LoaderManager
-import android.support.v4.content.AsyncTaskLoader
-import android.support.v4.content.Loader
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,7 +31,7 @@ import kotlinx.android.synthetic.main.account_list_item.view.*
 class AccountListFragment: ListFragment(), LoaderManager.LoaderCallbacks<Array<Account>> {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        listAdapter = AccountListAdapter(context)
+        listAdapter = AccountListAdapter(activity)
 
         return inflater.inflate(R.layout.account_list, container, false)
     }
@@ -43,7 +43,7 @@ class AccountListFragment: ListFragment(), LoaderManager.LoaderCallbacks<Array<A
         listView.choiceMode = AbsListView.CHOICE_MODE_SINGLE
         listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
             val account = listAdapter.getItem(position) as Account
-            val intent = Intent(context, AccountActivity::class.java)
+            val intent = Intent(activity, AccountActivity::class.java)
             intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
             startActivity(intent)
         }
@@ -53,7 +53,7 @@ class AccountListFragment: ListFragment(), LoaderManager.LoaderCallbacks<Array<A
     // loader
 
     override fun onCreateLoader(id: Int, args: Bundle?) =
-            AccountLoader(context)
+            AccountLoader(activity)
 
     override fun onLoadFinished(loader: Loader<Array<Account>>, accounts: Array<Account>) {
         val adapter = listAdapter as AccountListAdapter

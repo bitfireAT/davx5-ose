@@ -120,7 +120,7 @@ class HttpClient private constructor() {
             return builder
         }
 
-        private fun addAuthentication(builder: OkHttpClient.Builder, host: String?, username: String, password: String): OkHttpClient.Builder {
+        fun addAuthentication(builder: OkHttpClient.Builder, host: String?, username: String, password: String): OkHttpClient.Builder {
             val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), username, password);
             return builder
                     .addNetworkInterceptor(authHandler)

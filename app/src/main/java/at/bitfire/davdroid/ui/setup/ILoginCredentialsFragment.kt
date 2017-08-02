@@ -6,12 +6,12 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid.ui.setup;
+package at.bitfire.davdroid.ui.setup
 
-import android.support.v4.app.Fragment;
+import android.app.Fragment
 
-public interface ILoginCredentialsFragment {
+interface ILoginCredentialsFragment {
 
-    Fragment getFragment();
+    fun getFragment(): Fragment
 
 }
