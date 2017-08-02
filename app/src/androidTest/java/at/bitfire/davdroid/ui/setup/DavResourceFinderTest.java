@@ -78,23 +78,23 @@ public class DavResourceFinderTest {
         // before dav.propfind(), no info is available
         DavResource dav = new DavResource(client, server.url(PATH_CARDDAV + SUBPATH_PRINCIPAL));
         finder.rememberIfAddressBookOrHomeset(dav, info = new ServiceInfo());
-        assertEquals(0, info.collections.size());
-        assertEquals(0, info.homeSets.size());
+        assertEquals(0, info.getCollections().size());
+        assertEquals(0, info.getHomeSets().size());
 
         // recognize home set
         dav.propfind(0, AddressbookHomeSet.NAME);
         finder.rememberIfAddressBookOrHomeset(dav, info = new ServiceInfo());
-        assertEquals(0, info.collections.size());
-        assertEquals(1, info.homeSets.size());
-        assertEquals(server.url(PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET + "/").uri(), info.homeSets.iterator().next());
+        assertEquals(0, info.getCollections().size());
+        assertEquals(1, info.getHomeSets().size());
+        assertEquals(server.url(PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET + "/").uri(), info.getHomeSets().iterator().next());
 
         // recognize address book
         dav = new DavResource(client, server.url(PATH_CARDDAV + SUBPATH_ADDRESSBOOK));
         dav.propfind(0, ResourceType.NAME);
         finder.rememberIfAddressBookOrHomeset(dav, info = new ServiceInfo());
-        assertEquals(1, info.collections.size());
-        assertEquals(server.url(PATH_CARDDAV + SUBPATH_ADDRESSBOOK + "/").uri(), info.collections.keySet().iterator().next());
-        assertEquals(0, info.homeSets.size());
+        assertEquals(1, info.getCollections().size());
+        assertEquals(server.url(PATH_CARDDAV + SUBPATH_ADDRESSBOOK + "/").uri(), info.getCollections().keySet().iterator().next());
+        assertEquals(0, info.getHomeSets().size());
     }
 
     @Test
