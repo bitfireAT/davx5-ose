@@ -10,6 +10,7 @@ package at.bitfire.davdroid.ui
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.app.AlertDialog
 import android.app.Dialog
 import android.app.LoaderManager
 import android.content.*
@@ -22,7 +23,6 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.support.design.widget.Snackbar
 import android.support.v4.app.DialogFragment
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.*
@@ -495,10 +495,10 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val oldAccount: Account = arguments.getParcelable(ARG_ACCOUNT)
 
-            val editText = EditText(context)
+            val editText = EditText(activity)
             editText.setText(oldAccount.name)
 
-            return AlertDialog.Builder(context)
+            return AlertDialog.Builder(activity)
                     .setTitle(R.string.account_rename)
                     .setMessage(R.string.account_rename_new_name)
                     .setView(editText)
@@ -508,7 +508,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                         if (newName == oldAccount.name)
                             return@OnClickListener
 
-                        val accountManager = AccountManager.get(context)
+                        val accountManager = AccountManager.get(activity)
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                             accountManager.renameAccount(oldAccount, newName, { _ ->
                                 Logger.log.info("Updating account name references")
@@ -519,17 +519,17 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                                     ContentResolver.cancelSync(addrBookAccount, null)
 
                                 // update account name references in database
-                                OpenHelper(context).use { dbHelper ->
+                                OpenHelper(activity).use { dbHelper ->
                                     ServiceDB.onRenameAccount(dbHelper.getWritableDatabase(), oldAccount.name, newName)
                                 }
 
                                 // update main account of address book accounts
                                 try {
                                     for (addrBookAccount in accountManager.getAccountsByType(App.addressBookAccountType)) {
-                                        val provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
+                                        val provider = activity.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
                                         try {
                                             if (provider != null) {
-                                                val addressBook = LocalAddressBook(context, addrBookAccount, provider)
+                                                val addressBook = LocalAddressBook(activity, addrBookAccount, provider)
                                                 if (oldAccount == addressBook.getMainAccount())
                                                     addressBook.setMainAccount(Account(newName, oldAccount.type))
                                             }
@@ -550,7 +550,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
                                 // update account_name of local tasks
                                 try {
-                                    LocalTaskList.onRenameAccount(context.contentResolver, oldAccount.name, newName)
+                                    LocalTaskList.onRenameAccount(activity.contentResolver, oldAccount.name, newName)
                                 } catch(e: Exception) {
                                     Logger.log.log(Level.SEVERE, "Couldn't propagate new account name to tasks provider", e)
                                 }

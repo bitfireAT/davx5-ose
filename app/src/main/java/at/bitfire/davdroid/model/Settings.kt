@@ -8,8 +8,13 @@
 
 package at.bitfire.davdroid.model
 
+import android.content.BroadcastReceiver
 import android.content.ContentValues;
+import android.content.Context
+import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
+import at.bitfire.davdroid.CustomCertificates
+import at.bitfire.davdroid.log.Logger
 
 class Settings(
         val db: SQLiteDatabase
@@ -58,7 +63,7 @@ class Settings(
         return defaultValue
     }
 
-    public fun putString(name: String, value: String?) {
+    fun putString(name: String, value: String?) {
         val values = ContentValues(2)
         values.put(ServiceDB.Settings.NAME, name)
         values.put(ServiceDB.Settings.VALUE, value)
@@ -68,6 +73,22 @@ class Settings(
 
     fun remove(name: String) {
         db.delete(ServiceDB.Settings._TABLE, "${ServiceDB.Settings.NAME}=?", arrayOf(name))
+    }
+
+
+    class ReinitSettingsReceiver: BroadcastReceiver() {
+
+        companion object {
+            @JvmField val ACTION_REINIT_SETTINGS = "at.bitfire.davdroid.REINIT_SETTINGS"
+        }
+
+        override fun onReceive(context: Context, intent: Intent) {
+            Logger.log.info("Received broadcast: re-initializing settings (logger/cert manager)")
+
+            CustomCertificates.reinitCertManager(context)
+            Logger.reinitLogger(context)
+        }
+
     }
 
 }
