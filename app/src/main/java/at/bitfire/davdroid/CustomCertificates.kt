@@ -33,11 +33,7 @@ object CustomCertificates {
                 val mgr = CustomCertManager(context.applicationContext, !settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false))
                 certManager = mgr
                 hostnameVerifier = mgr.hostnameVerifier(OkHostnameVerifier.INSTANCE)
-
-                sslSocketFactoryCompat = if (Build.VERSION.SDK_INT >= 23)
-                    SSLSocketFactory.getDefault() as? SSLSocketFactory?
-                else
-                    SSLSocketFactoryCompat(mgr)
+                sslSocketFactoryCompat = SSLSocketFactoryCompat(mgr)
             }
         }
     }
