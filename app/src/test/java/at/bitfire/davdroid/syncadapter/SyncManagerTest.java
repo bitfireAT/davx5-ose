@@ -14,8 +14,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import at.bitfire.davdroid.DavUtils;
-
 import static org.junit.Assert.assertEquals;
 
 public class SyncManagerTest {
