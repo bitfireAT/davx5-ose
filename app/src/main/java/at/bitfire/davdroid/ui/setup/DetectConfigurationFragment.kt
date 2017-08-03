@@ -18,7 +18,7 @@ import at.bitfire.davdroid.ui.setup.DavResourceFinder.Configuration
 import kotlin.concurrent.thread
 
 @Suppress("DEPRECATION")
-class DetectConfigurationFragment private constructor(): DialogFragment(), LoaderManager.LoaderCallbacks<Configuration> {
+class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbacks<Configuration> {
 
     companion object {
         val ARG_LOGIN_CREDENTIALS = "credentials"
@@ -77,7 +77,7 @@ class DetectConfigurationFragment private constructor(): DialogFragment(), Loade
     override fun onLoaderReset(loader: Loader<Configuration>) {}
 
 
-    class NothingDetectedFragment private constructor(): DialogFragment() {
+    class NothingDetectedFragment: DialogFragment() {
 
         companion object {
             val KEY_LOGS = "logs"
