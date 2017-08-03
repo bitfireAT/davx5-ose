@@ -23,7 +23,7 @@ import java.net.URI
 import java.net.URISyntaxException
 import java.util.logging.Level
 
-class DefaultLoginCredentialsFragment private constructor(): Fragment(), CompoundButton.OnCheckedChangeListener {
+class DefaultLoginCredentialsFragment: Fragment(), CompoundButton.OnCheckedChangeListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = inflater.inflate(R.layout.login_credentials_fragment, container, false)
@@ -49,7 +49,7 @@ class DefaultLoginCredentialsFragment private constructor(): Fragment(), Compoun
             }
         }
 
-        v.login.setOnClickListener(View.OnClickListener() { _ ->
+        v.login.setOnClickListener({ _ ->
             validateLoginData()?.let { credentials ->
                 DetectConfigurationFragment.newInstance(credentials).show(fragmentManager, null)
             }
@@ -152,7 +152,7 @@ class DefaultLoginCredentialsFragment private constructor(): Fragment(), Compoun
                 null
         }
 
-        return null;
+        return null
     }
 
 
