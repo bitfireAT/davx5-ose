@@ -211,7 +211,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         popup.setOnMenuItemClickListener({ item ->
             when (item.itemId) {
                 R.id.delete_collection ->
-                    DeleteCollectionFragment.ConfirmDeleteCollectionFragment.newInstance(account, info).show(getSupportFragmentManager(), null);
+                    DeleteCollectionFragment.ConfirmDeleteCollectionFragment.newInstance(account, info).show(supportFragmentManager, null)
             }
             true
         })
@@ -502,7 +502,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                     .setTitle(R.string.account_rename)
                     .setMessage(R.string.account_rename_new_name)
                     .setView(editText)
-                    .setPositiveButton(R.string.account_rename_rename, DialogInterface.OnClickListener { dialog, which ->
+                    .setPositiveButton(R.string.account_rename_rename, DialogInterface.OnClickListener { _, _ ->
                         val newName = editText.text.toString()
 
                         if (newName == oldAccount.name)
@@ -520,7 +520,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
                                 // update account name references in database
                                 OpenHelper(activity).use { dbHelper ->
-                                    ServiceDB.onRenameAccount(dbHelper.getWritableDatabase(), oldAccount.name, newName)
+                                    ServiceDB.onRenameAccount(dbHelper.writableDatabase, oldAccount.name, newName)
                                 }
 
                                 // update main account of address book accounts
