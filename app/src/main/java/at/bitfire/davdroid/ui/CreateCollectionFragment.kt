@@ -31,7 +31,7 @@ import java.io.StringWriter
 import java.util.logging.Level
 
 @Suppress("DEPRECATION")
-class CreateCollectionFragment private constructor(): DialogFragment(), LoaderManager.LoaderCallbacks<Exception> {
+class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<Exception> {
 
     companion object {
 
