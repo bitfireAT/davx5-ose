@@ -18,7 +18,7 @@ import at.bitfire.dav4android.exception.HttpException
 import at.bitfire.davdroid.R
 import java.io.IOException
 
-class ExceptionInfoFragment private constructor(): DialogFragment() {
+class ExceptionInfoFragment: DialogFragment() {
 
     companion object {
         val ARG_ACCOUNT = "account"

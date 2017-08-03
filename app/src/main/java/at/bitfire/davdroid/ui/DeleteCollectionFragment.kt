@@ -26,7 +26,7 @@ import at.bitfire.davdroid.model.ServiceDB
 import okhttp3.HttpUrl
 
 @Suppress("DEPRECATION")
-class DeleteCollectionFragment private constructor(): DialogFragment(), LoaderManager.LoaderCallbacks<Exception> {
+class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<Exception> {
 
     companion object {
         val ARG_ACCOUNT = "account"
@@ -103,7 +103,7 @@ class DeleteCollectionFragment private constructor(): DialogFragment(), LoaderMa
     }
 
 
-    class ConfirmDeleteCollectionFragment private constructor(): DialogFragment() {
+    class ConfirmDeleteCollectionFragment: DialogFragment() {
 
         companion object {
 
