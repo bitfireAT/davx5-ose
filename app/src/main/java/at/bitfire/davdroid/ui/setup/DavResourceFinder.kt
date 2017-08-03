@@ -34,11 +34,11 @@ class DavResourceFinder(
         val credentials: LoginCredentials
 ) {
 
-    enum class Service(val type: String) {
+    enum class Service(val wellKnownName: String) {
         CALDAV("caldav"),
         CARDDAV("carddav");
 
-        override fun toString() = type
+        override fun toString() = wellKnownName
     }
 
     val log = Logger.getLogger("davdroid.DavResourceFinder")!!
@@ -81,7 +81,7 @@ class DavResourceFinder(
 
         // put discovered information here
         val config = Configuration.ServiceInfo()
-        log.info("Finding initial ${service.name} service configuration")
+        log.info("Finding initial ${service.wellKnownName} service configuration")
 
         if (baseURI.scheme.equals("http", true) || baseURI.scheme.equals("https", true)) {
             HttpUrl.get(baseURI)?.let { baseURL ->
@@ -94,7 +94,7 @@ class DavResourceFinder(
 
                 if (config.principal == null)
                     try {
-                        config.principal = getCurrentUserPrincipal(baseURL.resolve("/.well-known/" + service.name)!!, service)
+                        config.principal = getCurrentUserPrincipal(baseURL.resolve("/.well-known/" + service.wellKnownName)!!, service)
                     } catch(e: Exception) {
                         log.log(Level.FINE, "Well-known URL detection failed", e)
                     }
@@ -114,7 +114,7 @@ class DavResourceFinder(
                 try {
                     config.principal = discoverPrincipalUrl(it, service)
                 } catch(e: Exception) {
-                    log.log(Level.FINE, "${service.name} service discovery failed", e)
+                    log.log(Level.FINE, "$service service discovery failed", e)
                 }
             }
 
@@ -287,13 +287,11 @@ class DavResourceFinder(
         var port = 443
         val paths = LinkedList<String>()     // there may be multiple paths to try
 
-        val query = "_${service.name}s._tcp.$domain"
+        val query = "_${service.wellKnownName}s._tcp.$domain"
         log.fine("Looking up SRV records for $query")
-        val records = Lookup(query, Type.SRV).run()
-        if (records != null && records.isNotEmpty()) {
+        val srv = selectSRVRecord(Lookup(query, Type.SRV).run())
+        if (srv != null) {
             // choose SRV record to use (query may return multiple SRV records)
-            val srv = selectSRVRecord(records)
-
             scheme = "https"
             fqdn = srv.target.toString(true)
             port = srv.port
@@ -319,7 +317,7 @@ class DavResourceFinder(
         }
 
         // if there's TXT record and if it it's wrong, try well-known
-        paths.add("/.well-known/" + service.name)
+        paths.add("/.well-known/" + service.wellKnownName)
         // if this fails, too, try "/"
         paths.add("/")
 
@@ -374,10 +372,14 @@ class DavResourceFinder(
 
     // helpers
 
-	private fun selectSRVRecord(records: Array<Record>): SRVRecord {
-		if (records.size > 1)
-			log.warning("Multiple SRV records not supported yet; using first one")
-		return records[0] as SRVRecord
+	private fun selectSRVRecord(records: Array<Record>?): SRVRecord? {
+        val srvRecords = records?.filterIsInstance(SRVRecord::class.java)
+        srvRecords?.let {
+            if (it.size > 1)
+                log.warning("Multiple SRV records not supported yet; using first one")
+            return it[0]
+        }
+		return null
 	}
 
 
