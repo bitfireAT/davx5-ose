@@ -46,7 +46,7 @@
   <string name="navigation_drawer_external_links">Externe Links</string>
   <string name="navigation_drawer_website">Homepage</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_forums">Community</string>
+  <string name="navigation_drawer_forums">Hilfe / Forum</string>
   <string name="navigation_drawer_donate">Spenden</string>
   <string name="account_list_empty">Herzlich willkommen!\n\nSie können jetzt ein CalDAV/CardDAV-Konto hinzufügen.</string>
   <string name="accounts_global_sync_disabled">Systemweite automatische Synchronisierung ist nicht aktiv</string>
@@ -141,7 +141,6 @@
   <string name="settings_sync_interval_contacts">Häufigkeit der Kontakte-Synchronisierung</string>
   <string name="settings_sync_summary_manually">Nur manuell</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Alle %d Minuten + sofort bei lokalen Änderungen</string>
-  <string name="settings_sync_summary_not_available">Nicht verfügbar</string>
   <string name="settings_sync_interval_calendars">Häufigkeit der Kalender-Synchronisierung</string>
   <string name="settings_sync_interval_tasks">Häufigkeit der Aufgaben-Synchronisierung</string>
   <string-array name="settings_sync_interval_seconds">

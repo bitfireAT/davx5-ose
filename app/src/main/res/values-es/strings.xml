@@ -42,7 +42,6 @@
   <string name="navigation_drawer_external_links">Enlaces externos</string>
   <string name="navigation_drawer_website">Sitio web</string>
   <string name="navigation_drawer_faq">Preguntas frequentes</string>
-  <string name="navigation_drawer_forums">Comunidad</string>
   <string name="navigation_drawer_donate">Donar</string>
   <string name="account_list_empty">Bienvenido a DAVdroid!\n\nAhora puedes añadir una cuenta CalDAV/CardDAV.</string>
   <!--DavService-->
@@ -135,7 +134,6 @@
   <string name="settings_sync_interval_contacts">Intervalo de sincronización de contactos</string>
   <string name="settings_sync_summary_manually">Solo manualmente</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Cada %d minutos + inmediatamente con cambios locales</string>
-  <string name="settings_sync_summary_not_available">No disponible</string>
   <string name="settings_sync_interval_calendars">Intervalo de sincronización de calendarios</string>
   <string name="settings_sync_interval_tasks">Intervalo de sincronizacion de Tasks</string>
   <string-array name="settings_sync_interval_seconds">

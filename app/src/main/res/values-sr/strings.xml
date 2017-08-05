@@ -44,7 +44,6 @@
   <string name="navigation_drawer_external_links">Вањске везе</string>
   <string name="navigation_drawer_website">Веб-сајт</string>
   <string name="navigation_drawer_faq">ЧПП</string>
-  <string name="navigation_drawer_forums">Заједница</string>
   <string name="navigation_drawer_donate">Донирај</string>
   <string name="account_list_empty">Добро дошли у ДАВдроид!\n\nМожете сада да додате КалДАВ/КардДАВ налог.</string>
   <string name="accounts_global_sync_disabled">Синхронизација је системски искључена</string>
@@ -139,7 +138,6 @@
   <string name="settings_sync_interval_contacts">Интервал синх. контаката</string>
   <string name="settings_sync_summary_manually">Само ручно</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Сваких %d минута + одмах по локалним изменама</string>
-  <string name="settings_sync_summary_not_available">Није доступно</string>
   <string name="settings_sync_interval_calendars">Интервал синх. календара</string>
   <string name="settings_sync_interval_tasks">Интервал синх. задатака</string>
   <string-array name="settings_sync_interval_seconds">
