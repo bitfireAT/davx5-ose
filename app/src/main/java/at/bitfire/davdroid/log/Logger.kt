@@ -8,7 +8,9 @@
 
 package at.bitfire.davdroid.log
 
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Process
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
@@ -18,6 +20,7 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.Settings
+import at.bitfire.davdroid.ui.AppSettingsActivity
 import org.apache.commons.lang3.time.DateFormatUtils
 import java.io.File
 import java.io.IOException
@@ -70,10 +73,15 @@ object Logger {
                         val fileHandler = FileHandler(fileName)
                         fileHandler.formatter = PlainTextFormatter.DEFAULT
                         log.addHandler(fileHandler)
+
+                        val prefIntent = Intent(context, AppSettingsActivity::class.java)
+                        prefIntent.putExtra(AppSettingsActivity.EXTRA_SCROLL_TO, "log_to_external_storage")
+
                         builder .setContentText(dir.path)
                                 .setSubText(context.getString(R.string.logging_to_external_storage_warning))
                                 .setCategory(NotificationCompat.CATEGORY_STATUS)
                                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                .setContentIntent(PendingIntent.getActivity(context, 0, prefIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                                 .setStyle(NotificationCompat.BigTextStyle()
                                         .bigText(context.getString(R.string.logging_to_external_storage, dir.path)))
                                 .setOngoing(true)
