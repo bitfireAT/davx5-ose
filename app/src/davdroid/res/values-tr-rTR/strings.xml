@@ -39,7 +39,6 @@
   <string name="navigation_drawer_external_links">Harici bağlantılar</string>
   <string name="navigation_drawer_website">Web sitesi</string>
   <string name="navigation_drawer_faq">SSS</string>
-  <string name="navigation_drawer_forums">Camia</string>
   <string name="navigation_drawer_donate">Bağış yap</string>
   <string name="account_list_empty">DAVdroid\'e hoşgeldin!\n\nŞimdi bir CalDAV/CardDAV hesabı ekleyebilirsin.</string>
   <!--DavService-->
@@ -117,7 +116,6 @@
   <string name="settings_sync_interval_contacts">Kişiler senk. aralığı</string>
   <string name="settings_sync_summary_manually">Sadece elle</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Her %d dakika + yerel değişikliklerde hemen</string>
-  <string name="settings_sync_summary_not_available">Mevcut değil</string>
   <string name="settings_sync_interval_calendars">Takvimler senk. aralığı</string>
   <string name="settings_sync_interval_tasks">İşler senk. aralığı</string>
   <string-array name="settings_sync_interval_seconds">

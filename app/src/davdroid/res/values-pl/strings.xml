@@ -13,6 +13,8 @@
   <string name="startup_battery_optimization_message">Android może wyłączyć/zmniejszyć synchronizacje DAVdroid po kilku dniach. Aby temu zapobiec należy wyłączyć optymalizację baterii.</string>
   <string name="startup_battery_optimization_disable">Wyłącz dla DAVdroid</string>
   <string name="startup_dont_show_again">Nie pokazuj ponownie</string>
+  <string name="startup_development_version">Poprzednie wydanie</string>
+  <string name="startup_development_version_message">To jest wersja rozwojowa 1%s. Nie wszystko może działać zgodnie z oczekiwaniami. Twoja opinia jest mile widziana.</string>
   <string name="startup_development_version_give_feedback">Przekaż opinię</string>
   <string name="startup_donate">Informacje Open-Source</string>
   <string name="startup_donate_message">Jesteśmy szczęśliwi, że używasz DAVdroid, który jest oprogramowaniem open-source (GPLv3). Ponieważ rozwijanie DAVdroid jest ciężką pracą i zajęło nam tysiące godzin pracy, prosimy o rozważenie darowizny.</string>
@@ -44,7 +46,6 @@
   <string name="navigation_drawer_external_links">Zewnętrzne odnośniki</string>
   <string name="navigation_drawer_website">Strona WWW</string>
   <string name="navigation_drawer_faq">FQA</string>
-  <string name="navigation_drawer_forums">Społeczność</string>
   <string name="navigation_drawer_donate">Dotacja</string>
   <string name="account_list_empty">Witamy w DAVdroid!\n\nMożesz teraz dodać konto CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Automatyczna synchronizacja dla całego systemu jest wyłączona</string>
@@ -139,7 +140,6 @@
   <string name="settings_sync_interval_contacts">Okres synchronizacji kontktów</string>
   <string name="settings_sync_summary_manually">Tylko ręcznie</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Co %d minut oraz natychmiast przy zmianach lokalnych</string>
-  <string name="settings_sync_summary_not_available">Niedostępne</string>
   <string name="settings_sync_interval_calendars">Okres synchronizacji kalendarzy</string>
   <string name="settings_sync_interval_tasks">Okres synchronizacji list zadań</string>
   <string-array name="settings_sync_interval_seconds">
