@@ -49,7 +49,6 @@
   <string name="navigation_drawer_website">Web サイト</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_faq_url">https://davdroid.bitfire.at/faq/?pk_campaign=davdroid-app</string>
-  <string name="navigation_drawer_forums">コミュニティ</string>
   <string name="navigation_drawer_donate">寄付</string>
   <string name="account_list_empty">DAVdroid にようこそ!\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>
   <string name="accounts_global_sync_disabled">システム全体の自動同期が無効です</string>
@@ -145,7 +144,6 @@
   <string name="settings_sync_interval_contacts">連絡先同期間隔</string>
   <string name="settings_sync_summary_manually">手動のみ</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">%d 分ごと + ローカルの変更時はすぐに</string>
-  <string name="settings_sync_summary_not_available">利用不可</string>
   <string name="settings_sync_interval_calendars">カレンダー同期間隔</string>
   <string name="settings_sync_interval_tasks">タスク同期間隔</string>
   <string-array name="settings_sync_interval_names">
