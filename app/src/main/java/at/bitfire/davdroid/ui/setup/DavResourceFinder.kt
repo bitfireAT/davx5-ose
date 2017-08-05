@@ -55,7 +55,7 @@ class DavResourceFinder(
 	}
 
     fun cancel() {
-        log.warning("Shutting down resource detection forcefully")
+        log.warning("Shutting down resource detection")
         httpClient.dispatcher().executorService().shutdownNow()
         httpClient.connectionPool().evictAll()
     }
@@ -139,7 +139,7 @@ class DavResourceFinder(
         }
 
         // return config or null if config doesn't contain useful information
-        val serviceAvailable = config.principal != null || !config.homeSets.isEmpty() || !config.collections.isEmpty()
+        val serviceAvailable = config.principal != null || config.homeSets.isNotEmpty() || config.collections.isNotEmpty()
         return if (serviceAvailable)
             config
         else
@@ -184,8 +184,10 @@ class DavResourceFinder(
             if (principal == null)
                 for ((dav, second) in davBase.findProperties(ResourceType.NAME)) {
                     val resourceType = second as ResourceType?
-                    if (resourceType != null && resourceType.types.contains(ResourceType.PRINCIPAL))
+                    if (resourceType != null && resourceType.types.contains(ResourceType.PRINCIPAL)) {
                         principal = dav.location
+                        break
+                    }
                 }
 
             // If a principal has been detected successfully, ensure that it provides the required service.
@@ -266,7 +268,7 @@ class DavResourceFinder(
 
         } catch(e: Exception) {
             log.log(Level.SEVERE, "Couldn't detect services on " + url, e)
-            if (!(e is HttpException) && !(e is DavException))
+            if (e !is HttpException && e !is DavException)
                 throw e
         }
         return false
@@ -306,14 +308,13 @@ class DavResourceFinder(
 
         // look for TXT record too (for initial context path)
         Lookup(query, Type.TXT).run()?.let {
-            for (record in it)
-                if (record is TXTRecord)
-                    for (segment in record.strings as List<String>)
-                        if (segment.startsWith("path=")) {
-                            paths.add(segment.substring(5))
-                            log.info("Found TXT record; initial context path=$paths")
-                            break
-                        }
+            for (record in it.filterIsInstance(TXTRecord::class.java))
+                for (segment in record.strings as List<String>)
+                    if (segment.startsWith("path=")) {
+                        paths.add(segment.substring(5))
+                        log.info("Found TXT record; initial context path=$paths")
+                        break
+                    }
         }
 
         // if there's TXT record and if it it's wrong, try well-known
@@ -377,7 +378,7 @@ class DavResourceFinder(
         srvRecords?.let {
             if (it.size > 1)
                 log.warning("Multiple SRV records not supported yet; using first one")
-            return it[0]
+            return it.firstOrNull()
         }
 		return null
 	}
