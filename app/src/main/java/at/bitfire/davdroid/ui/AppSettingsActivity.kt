@@ -27,13 +27,20 @@ import java.net.URISyntaxException
 
 class AppSettingsActivity: AppCompatActivity() {
 
+    companion object {
+        val EXTRA_SCROLL_TO = "scrollTo"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (savedInstanceState == null)
+        if (savedInstanceState == null) {
+            val fragment = SettingsFragment()
+            fragment.arguments = intent.extras
             supportFragmentManager.beginTransaction()
-                    .replace(android.R.id.content, SettingsFragment())
+                    .replace(android.R.id.content, fragment)
                     .commit()
+        }
     }
 
 
@@ -128,6 +135,8 @@ class AppSettingsActivity: AppCompatActivity() {
                 setExternalLogging(prefLogToExternalStorage.isChecked)
                 true
             }
+
+            arguments?.getString(EXTRA_SCROLL_TO)?.let { scrollToPreference(it) }
         }
 
         private fun resetHints() {
