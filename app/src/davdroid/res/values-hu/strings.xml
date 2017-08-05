@@ -44,7 +44,6 @@
   <string name="navigation_drawer_external_links">Weblapok</string>
   <string name="navigation_drawer_website">Honlap</string>
   <string name="navigation_drawer_faq">GYIK</string>
-  <string name="navigation_drawer_forums">Közösség</string>
   <string name="navigation_drawer_donate">Támogatás</string>
   <string name="account_list_empty">Üdvözöljük a DAVdroid felhasználók között!\n\nMost már felvehet CalDAV/CardDav fiókokat.</string>
   <string name="accounts_global_sync_disabled">A rendszerszintű automatikus szinkronizálás ki van kapcsolva</string>
@@ -139,7 +138,6 @@
   <string name="settings_sync_interval_contacts">Névjegyszinkronizálás sűrűsége</string>
   <string name="settings_sync_summary_manually">Manuális</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Minden %d percben + az eszközön történt módosítás után</string>
-  <string name="settings_sync_summary_not_available">Nem elérhető</string>
   <string name="settings_sync_interval_calendars">Naptárszinkronizálás sűrűsége</string>
   <string name="settings_sync_interval_tasks">Feladatlisták szinkronizálásának sűrűsége</string>
   <string-array name="settings_sync_interval_seconds">

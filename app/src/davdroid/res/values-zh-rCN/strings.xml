@@ -46,7 +46,6 @@
   <string name="navigation_drawer_website">应用网站</string>
   <string name="navigation_drawer_faq">常见问题</string>
   <string name="navigation_drawer_faq_url">https://davdroid.bitfire.at/faq/?pk_campaign=davdroid-app</string>
-  <string name="navigation_drawer_forums">社区</string>
   <string name="navigation_drawer_donate">捐助</string>
   <string name="account_list_empty">欢迎使用 DAVdroid！\n\n现在你可以增加 CalDAV/CardDAV 账户。</string>
   <string name="accounts_global_sync_disabled">系统全局自动同步已禁用</string>
@@ -142,7 +141,6 @@
   <string name="settings_sync_interval_contacts">通讯录自动同步间隔</string>
   <string name="settings_sync_summary_manually">手动同步</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">每 %d 分钟或本地修改后</string>
-  <string name="settings_sync_summary_not_available">不可用</string>
   <string name="settings_sync_interval_calendars">日历自动同步间隔</string>
   <string name="settings_sync_interval_tasks">任务自动同步间隔</string>
   <string-array name="settings_sync_interval_seconds">

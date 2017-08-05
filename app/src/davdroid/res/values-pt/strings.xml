@@ -25,7 +25,6 @@
   <string name="settings_sync_interval_contacts">Intervalo de sincronização dos contatos</string>
   <string name="settings_sync_summary_manually">Manualmente apenas</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">A cada %d minutos + imediatamente em alterações locais</string>
-  <string name="settings_sync_summary_not_available">Não avaliado</string>
   <string name="settings_sync_interval_calendars">Intervalo de sincronização do calendário</string>
   <string-array name="settings_sync_interval_seconds">
     <item>-1</item>
