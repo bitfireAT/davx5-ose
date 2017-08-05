@@ -46,7 +46,6 @@
   <string name="navigation_drawer_external_links">Зовнішні посилання</string>
   <string name="navigation_drawer_website">Веб сайт</string>
   <string name="navigation_drawer_faq">Питання/Відповіді</string>
-  <string name="navigation_drawer_forums">Спільнота</string>
   <string name="navigation_drawer_donate">Підтримка</string>
   <string name="account_list_empty">Вітаємо у DAVdroid!\n\nТепер можете додавати облікові записи CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Автоматичну синхронізацію вимкнено зі сторони системи</string>
@@ -141,7 +140,6 @@
   <string name="settings_sync_interval_contacts">Інтервал синхронізації контактів</string>
   <string name="settings_sync_summary_manually">Лише вручну</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Кожних %d хвилин, а також негайно при внесенні локальних змін</string>
-  <string name="settings_sync_summary_not_available">Не доступно</string>
   <string name="settings_sync_interval_calendars">Інтервал синхронізації календарів</string>
   <string name="settings_sync_interval_tasks">Інтервал синхронізації завдань</string>
   <string-array name="settings_sync_interval_seconds">

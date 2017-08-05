@@ -44,7 +44,6 @@
   <string name="navigation_drawer_external_links">Eksterne links</string>
   <string name="navigation_drawer_website">Hjemmeside</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_forums">Community</string>
   <string name="navigation_drawer_donate">Donation</string>
   <string name="account_list_empty">Velkommen til DAVdroid!\n\nDu kan nu tilføje en CaDAV/CardDAV-konto.</string>
   <string name="accounts_global_sync_disabled">Automatisk synkronisering på tværs af systemet er deaktiveret</string>
@@ -139,7 +138,6 @@
   <string name="settings_sync_interval_contacts">Synkroniseringsinterval for kontakter</string>
   <string name="settings_sync_summary_manually">Kun manuelt</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Hver %d minutter + øjeblikkeligt ved lokale ændringer</string>
-  <string name="settings_sync_summary_not_available">Ikke tilgængeligt</string>
   <string name="settings_sync_interval_calendars">Synkroniseringsinterval for kalender</string>
   <string name="settings_sync_interval_tasks">Synkroniseringsinterval for opgaver</string>
   <string-array name="settings_sync_interval_seconds">
