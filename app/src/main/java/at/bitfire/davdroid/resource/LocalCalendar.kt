@@ -44,7 +44,6 @@ class LocalCalendar private constructor(
         )
 
 
-        @JvmStatic
         @Throws(CalendarStorageException::class)
         fun create(account: Account, provider: ContentProviderClient, info: CollectionInfo): Uri {
             val values = valuesFromCollectionInfo(info, true)
@@ -57,8 +56,12 @@ class LocalCalendar private constructor(
             // flag as visible & synchronizable at creation, might be changed by user at any time
             values.put(Calendars.VISIBLE, 1)
             values.put(Calendars.SYNC_EVENTS, 1)
+            val uri = create(account, provider, values)
 
-            return create(account, provider, values)
+            // create calendar colors
+            AndroidCalendar.insertColors(provider, account)
+
+            return uri
         }
 
         private fun valuesFromCollectionInfo(info: CollectionInfo, withColor: Boolean): ContentValues {
