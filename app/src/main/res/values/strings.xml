@@ -194,10 +194,10 @@
     <string name="settings_sync_wifi_only">Sync over WiFi only</string>
     <string name="settings_sync_wifi_only_on">Synchronization is restricted to WiFi connections</string>
     <string name="settings_sync_wifi_only_off">Connection type is not taken into consideration</string>
-    <string name="settings_sync_wifi_only_ssid">WiFi SSID restriction</string>
-    <string name="settings_sync_wifi_only_ssid_on">Will only synchronize over %s</string>
-    <string name="settings_sync_wifi_only_ssid_off">All WiFi connections may be used</string>
-    <string name="settings_sync_wifi_only_ssid_message">Enter the name of a WiFi network (SSID) to restrict synchronization to this network, or leave blank for all WiFi connections.</string>
+    <string name="settings_sync_wifi_only_ssids">WiFi SSID restriction</string>
+    <string name="settings_sync_wifi_only_ssids_on">Will only sync over %s</string>
+    <string name="settings_sync_wifi_only_ssids_off">All WiFi connections will be used</string>
+    <string name="settings_sync_wifi_only_ssids_message">Comma-separated names (SSIDs) of allowed WiFi networks (leave blank for all)</string>
     <string name="settings_carddav">CardDAV</string>
     <string name="settings_contact_group_method">Contact group method</string>
     <string-array name="settings_contact_group_method_values">
