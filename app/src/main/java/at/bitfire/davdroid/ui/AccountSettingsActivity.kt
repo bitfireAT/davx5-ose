@@ -162,15 +162,15 @@ class AccountSettingsActivity: AppCompatActivity() {
                 false
             }
 
-            val prefWifiOnlySSID = findPreference("sync_wifi_only_ssid") as EditTextPreference
-            val onlySSID = settings.getSyncWifiOnlySSID()
-            prefWifiOnlySSID.text = onlySSID
-            if (onlySSID != null)
-                prefWifiOnlySSID.summary = getString(R.string.settings_sync_wifi_only_ssid_on, onlySSID)
+            val prefWifiOnlySSIDs = findPreference("sync_wifi_only_ssids") as EditTextPreference
+            val onlySSIDs = settings.getSyncWifiOnlySSIDs()?.joinToString(", ")
+            prefWifiOnlySSIDs.text = onlySSIDs
+            if (onlySSIDs != null)
+                prefWifiOnlySSIDs.summary = getString(R.string.settings_sync_wifi_only_ssids_on, onlySSIDs)
             else
-                prefWifiOnlySSID.setSummary(R.string.settings_sync_wifi_only_ssid_off)
-            prefWifiOnlySSID.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                settings.setSyncWifiOnlySSID(StringUtils.trimToNull(newValue as String))
+                prefWifiOnlySSIDs.setSummary(R.string.settings_sync_wifi_only_ssids_off)
+            prefWifiOnlySSIDs.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                settings.setSyncWifiOnlySSIDs((newValue as String).split(',').map { StringUtils.trimToNull(it) }.filterNotNull().distinct())
                 loaderManager.restartLoader(0, arguments, this)
                 false
             }
