@@ -226,8 +226,8 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
                                   "  Calendar     sync. interval: ${syncStatus(settings, CalendarContract.AUTHORITY)}\n" +
                                   "  OpenTasks    sync. interval: ${syncStatus(settings, TaskProvider.ProviderName.OpenTasks.authority)}\n" +
                                   "  WiFi only: ").append(settings.getSyncWifiOnly())
-                    settings.getSyncWifiOnlySSID()?.let {
-                        report.append(", SSID: ${settings.getSyncWifiOnlySSID()}")
+                    settings.getSyncWifiOnlySSIDs()?.let {
+                        report.append(", SSIDs: ${settings.getSyncWifiOnlySSIDs()}")
                     }
                     report.append("\n  [CardDAV] Contact group method: ${settings.getGroupMethod()}")
                           .append("\n  [CalDAV] Time range (past days): ${settings.getTimeRangePastDays()}")

@@ -78,12 +78,11 @@ abstract class SyncAdapterService: Service() {
                     return false
                 }
 
-                settings.getSyncWifiOnlySSID()?.let { onlySSID ->
-                    val quotedSSID = "\"$onlySSID\""
+                settings.getSyncWifiOnlySSIDs()?.let { onlySSIDs ->
                     val wifi = context.applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
                     val info = wifi.connectionInfo
-                    if (info == null || info.ssid != quotedSSID) {
-                        Logger.log.info("Connected to wrong WiFi network (${info.ssid}, required: $quotedSSID), ignoring")
+                    if (info == null || !onlySSIDs.contains(info.ssid.trim('"'))) {
+                        Logger.log.info("Connected to wrong WiFi network (${info.ssid}), ignoring")
                         return false
                     }
                 }
