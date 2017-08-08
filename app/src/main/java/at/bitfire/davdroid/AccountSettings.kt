@@ -31,6 +31,7 @@ import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.vcard4android.ContactsStorageException
 import at.bitfire.vcard4android.GroupMethod
 import okhttp3.HttpUrl
+import org.apache.commons.lang3.StringUtils
 import java.util.*
 import java.util.logging.Level
 
@@ -46,8 +47,8 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
 
         val KEY_USERNAME = "user_name"
 
-        val KEY_WIFI_ONLY = "wifi_only"             // sync on WiFi only (default: false)
-        val KEY_WIFI_ONLY_SSID = "wifi_only_ssid"   // restrict sync to specific WiFi SSID
+        val KEY_WIFI_ONLY = "wifi_only"               // sync on WiFi only (default: false)
+        val KEY_WIFI_ONLY_SSIDS = "wifi_only_ssids"   // restrict sync to specific WiFi SSIDs
 
         /** Time range limitation to the past [in days]
         value = null            default value (DEFAULT_TIME_RANGE_PAST_DAYS)
@@ -133,8 +134,10 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
     fun setSyncWiFiOnly(wiFiOnly: Boolean) =
             accountManager.setUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
 
-    fun getSyncWifiOnlySSID(): String? = accountManager.getUserData(account, KEY_WIFI_ONLY_SSID)
-    fun setSyncWifiOnlySSID(ssid: String?) = accountManager.setUserData(account, KEY_WIFI_ONLY_SSID, ssid)
+    fun getSyncWifiOnlySSIDs(): List<String>? =
+            accountManager.getUserData(account, KEY_WIFI_ONLY_SSIDS)?.split(',')
+    fun setSyncWifiOnlySSIDs(ssids: List<String>?) =
+            accountManager.setUserData(account, KEY_WIFI_ONLY_SSIDS, StringUtils.trimToNull(ssids?.joinToString(",")))
 
 
     // CalDAV settings
@@ -196,9 +199,18 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
     @Suppress("unused")
     private fun update_6_7() {
         val accountManager = AccountManager.get(context)
+        val accounts = accountManager.getAccountsByType(context.getString(R.string.account_type))
+
+        // add calendar colors
         context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { provider ->
-            for (account in accountManager.getAccountsByType(context.getString(R.string.account_type)))
-                AndroidCalendar.insertColors(provider, account)
+            accounts.forEach { AndroidCalendar.insertColors(provider, it) }
+        }
+
+        // update allowed WiFi settings key
+        for (account in accounts) {
+            val onlySSID = accountManager.getUserData(account, "wifi_only_ssid")
+            accountManager.setUserData(account, KEY_WIFI_ONLY_SSIDS, onlySSID)
+            accountManager.setUserData(account, "wifi_only_ssid", null)
         }
     }
 

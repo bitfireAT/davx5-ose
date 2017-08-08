@@ -59,11 +59,11 @@
             />
 
         <EditTextPreference
-            android:key="sync_wifi_only_ssid"
+            android:key="sync_wifi_only_ssids"
             android:dependency="sync_wifi_only"
             android:persistent="false"
-            android:title="@string/settings_sync_wifi_only_ssid"
-            android:dialogMessage="@string/settings_sync_wifi_only_ssid_message"/>
+            android:title="@string/settings_sync_wifi_only_ssids"
+            android:dialogMessage="@string/settings_sync_wifi_only_ssids_message"/>
 
     </PreferenceCategory>
 
