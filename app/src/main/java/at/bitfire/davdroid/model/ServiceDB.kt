@@ -64,7 +64,7 @@ class ServiceDB {
         fun onRenameAccount(db: SQLiteDatabase, oldName: String, newName: String) {
             val values = ContentValues(1)
             values.put(Services.ACCOUNT_NAME, newName)
-            db.update(Services._TABLE, values, Services.ACCOUNT_NAME + "=?", arrayOf(oldName))
+            db.updateWithOnConflict(Services._TABLE, values, Services.ACCOUNT_NAME + "=?", arrayOf(oldName), SQLiteDatabase.CONFLICT_REPLACE)
         }
 
     }
