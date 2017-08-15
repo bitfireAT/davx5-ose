@@ -165,10 +165,6 @@
   <string name="settings_sync_wifi_only">Синхронізувати лише через Wi-Fi</string>
   <string name="settings_sync_wifi_only_on">Виконувати синхронізацію лише через Wi-Fi</string>
   <string name="settings_sync_wifi_only_off">Не враховувати тип з\'єднання</string>
-  <string name="settings_sync_wifi_only_ssid">Обмеження WiFi SSID</string>
-  <string name="settings_sync_wifi_only_ssid_on">Синхронізувати лише через %s</string>
-  <string name="settings_sync_wifi_only_ssid_off">Може використовуватись всі Wi-Fi з\'єднання</string>
-  <string name="settings_sync_wifi_only_ssid_message">Вкажіть назву Wi-Fi мережі (SSID), аби дозволити синхронізацію лише через неї. Або залиште пустим, для синхронізації через будь-які Wi-Fi мережі.</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Метод групування контактів</string>
   <string-array name="settings_contact_group_method_entries">

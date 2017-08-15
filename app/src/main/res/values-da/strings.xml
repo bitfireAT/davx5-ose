@@ -163,10 +163,6 @@
   <string name="settings_sync_wifi_only">Synkroniser kun over WiFi</string>
   <string name="settings_sync_wifi_only_on">Synkronisering er begrænset til WiFi-forbindelser</string>
   <string name="settings_sync_wifi_only_off">Forbindelsestypen har ingen betydning</string>
-  <string name="settings_sync_wifi_only_ssid">Begræsning til WiFi-SSID</string>
-  <string name="settings_sync_wifi_only_ssid_on">Vil kun blive synkroniseret over %s</string>
-  <string name="settings_sync_wifi_only_ssid_off">Alle WiFi-forbindelse vil kunne bruges</string>
-  <string name="settings_sync_wifi_only_ssid_message">Indtast navnet på et WiFi-netværk (SSID) for at begrænse synkronisering til dette netværk, eller efterlad feltet blank for at acceptere alle WiFi-forbindelser.</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Gruppering af kontakter</string>
   <string-array name="settings_contact_group_method_values">

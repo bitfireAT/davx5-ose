@@ -163,10 +163,6 @@
   <string name="settings_sync_wifi_only">Само преко бежичног</string>
   <string name="settings_sync_wifi_only_on">Синхронизовање само преко бежичних мрежа</string>
   <string name="settings_sync_wifi_only_off">Тип везе није узет у обзир</string>
-  <string name="settings_sync_wifi_only_ssid">Ограничења ССИД-а бежичних</string>
-  <string name="settings_sync_wifi_only_ssid_on">Синхронизовање само преко %s</string>
-  <string name="settings_sync_wifi_only_ssid_off">Коришћење свих бежичних мрежа</string>
-  <string name="settings_sync_wifi_only_ssid_message">Унесите назив бежичне мреже (њен ССИД) да бисте ограничили синхронизацију само на ту мрежу, или оставите празно за синхронизовање преко било које бежичне мреже.</string>
   <string name="settings_carddav">КардДАВ</string>
   <string name="settings_contact_group_method">Режим група контаката</string>
   <string-array name="settings_contact_group_method_values">

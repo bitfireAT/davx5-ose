@@ -164,10 +164,6 @@
   <string name="settings_sync_wifi_only">Synchronisation en Wifi seulement</string>
   <string name="settings_sync_wifi_only_on">La synchronisation est limitée aux connexions WiFi</string>
   <string name="settings_sync_wifi_only_off">Le type de connexion n\'est pas pris en charge</string>
-  <string name="settings_sync_wifi_only_ssid">Restriction WiFi SSID</string>
-  <string name="settings_sync_wifi_only_ssid_on">Sera seulement synchroniser avec %s</string>
-  <string name="settings_sync_wifi_only_ssid_off">Toutes les connexions WiFi peuvent être utilisées</string>
-  <string name="settings_sync_wifi_only_ssid_message">Entrez le nom d\'un réseau WiFi (SSID) pour restreindre la synchronisation à ce réseau, ou laisser vide pour autoriser toutes les connexions WiFi.</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Méthode pour les contacts de type groupe</string>
   <string-array name="settings_contact_group_method_values">
