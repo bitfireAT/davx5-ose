@@ -159,10 +159,6 @@
   <string name="settings_sync_wifi_only">Синхронизировать только через WiFi</string>
   <string name="settings_sync_wifi_only_on">Разрешить синхронизацию только через WiFi</string>
   <string name="settings_sync_wifi_only_off">Не учитывать тип соединения</string>
-  <string name="settings_sync_wifi_only_ssid">Разрешённые WiFi SSID</string>
-  <string name="settings_sync_wifi_only_ssid_on">Синхронизировать только через %s</string>
-  <string name="settings_sync_wifi_only_ssid_off">Могут использоваться все WiFi подключения</string>
-  <string name="settings_sync_wifi_only_ssid_message">Укажите имя WiFi сети (SSID), чтобы разрешить синхронизацию только через эту сеть. Или оставьте пустым для синхронизации через любые WiFi соединения.</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Метод группировки контактов</string>
   <string-array name="settings_contact_group_method_entries">

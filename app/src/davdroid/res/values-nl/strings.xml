@@ -169,10 +169,6 @@
   <string name="settings_sync_wifi_only">Sync alleen tijdens WiFi</string>
   <string name="settings_sync_wifi_only_on">Synchronisatie is voorbehouden tijdens WiFi verbindingen</string>
   <string name="settings_sync_wifi_only_off">Verbinding type is niet overwogen</string>
-  <string name="settings_sync_wifi_only_ssid">WiFi SSID beperking</string>
-  <string name="settings_sync_wifi_only_ssid_on">Zal alleen synchroniseren over %s</string>
-  <string name="settings_sync_wifi_only_ssid_off">Alle WiFI verbindingen mogen worden gebruikt</string>
-  <string name="settings_sync_wifi_only_ssid_message">Type de naam van het WiFi netwerk (SSID) om synchronisatie tot dit netwerk te beperken. Leeg laten voor sync over alle netwerken.</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Contact groep methode</string>
   <string-array name="settings_contact_group_method_values">

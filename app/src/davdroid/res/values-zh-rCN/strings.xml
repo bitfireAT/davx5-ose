@@ -166,10 +166,6 @@
   <string name="settings_sync_wifi_only">只在 WiFi 下同步</string>
   <string name="settings_sync_wifi_only_on">同步只在 WiFi 连接下进行</string>
   <string name="settings_sync_wifi_only_off">同步不受数据连接类型限制</string>
-  <string name="settings_sync_wifi_only_ssid">WiFi SSID 限制</string>
-  <string name="settings_sync_wifi_only_ssid_on">同步只在 %s 网络下进行</string>
-  <string name="settings_sync_wifi_only_ssid_off">任何 WiFi 网络下均会同步</string>
-  <string name="settings_sync_wifi_only_ssid_message">输入 WiFi 网络的名称 (SSID) ，即可限制同步只在此网络下进行。留空则不限制。</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">联系人分组方式</string>
   <string-array name="settings_contact_group_method_values">
