@@ -163,10 +163,6 @@
   <string name="settings_sync_wifi_only">Szinkronizálás csak WIFI-n</string>
   <string name="settings_sync_wifi_only_on">Csak WIFI kapcsolat keresztül történjen szinkronizálás</string>
   <string name="settings_sync_wifi_only_off">Szinkronizálás a kapcsolat típusától függetlenül</string>
-  <string name="settings_sync_wifi_only_ssid">WIFI SSID szűkítés</string>
-  <string name="settings_sync_wifi_only_ssid_on">Szinkronizálás csak a(z) %s hálózatra kapcsolódva</string>
-  <string name="settings_sync_wifi_only_ssid_off">Szinkronizálás bármely WIFI hálózaton</string>
-  <string name="settings_sync_wifi_only_ssid_message">Adja meg a WIFI hálózat nevét (SSID) a szinkronizálás egy hálózatra való korlátozához, vagy hagyja üresen, ha nem akar ilyen szűkítést.</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">A csoportok kezelésének módja</string>
   <string-array name="settings_contact_group_method_values">

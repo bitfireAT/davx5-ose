@@ -166,10 +166,6 @@
   <string name="settings_sync_wifi_only">Nur über WLAN synchronisieren</string>
   <string name="settings_sync_wifi_only_on">Synchronisierung nur bei aktiver WLAN-Verbindung</string>
   <string name="settings_sync_wifi_only_off">Verbindungstyp wird nicht beachtet</string>
-  <string name="settings_sync_wifi_only_ssid">WLAN-SSID-Beschränkung</string>
-  <string name="settings_sync_wifi_only_ssid_on">Synchronisierung nur über %s</string>
-  <string name="settings_sync_wifi_only_ssid_off">Alle WLAN-Verbindungen können verwendet werden</string>
-  <string name="settings_sync_wifi_only_ssid_message">Name eines WLANs (SSID) eingeben, um Synchronisierung auf dieses WLAN zu beschränken. Leer lassen, um alle WLAN-Verbindungen zuzulassen.</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Kontaktgruppen-Methode</string>
   <string-array name="settings_contact_group_method_values">
