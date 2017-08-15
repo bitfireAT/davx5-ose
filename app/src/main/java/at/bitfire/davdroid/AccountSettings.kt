@@ -193,32 +193,34 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
 
     @Suppress("unused")
     private fun update_6_7() {
-        val accountManager = AccountManager.get(context)
-        val accounts = accountManager.getAccountsByType(context.getString(R.string.account_type))
-
         // add calendar colors
-        context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { provider ->
-            accounts.forEach { AndroidCalendar.insertColors(provider, it) }
+        context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
+            try {
+                AndroidCalendar.insertColors(provider, account)
+            } finally {
+                if (Build.VERSION.SDK_INT >= 24)
+                    provider.close()
+                else
+                    provider.release()
+            }
         }
 
         // update allowed WiFi settings key
-        for (account in accounts) {
-            val onlySSID = accountManager.getUserData(account, "wifi_only_ssid")
-            accountManager.setUserData(account, KEY_WIFI_ONLY_SSIDS, onlySSID)
-            accountManager.setUserData(account, "wifi_only_ssid", null)
-        }
+        val onlySSID = accountManager.getUserData(account, "wifi_only_ssid")
+        accountManager.setUserData(account, KEY_WIFI_ONLY_SSIDS, onlySSID)
+        accountManager.setUserData(account, "wifi_only_ssid", null)
     }
 
     @Suppress("unused")
     private fun update_5_6() {
-        context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { provider ->
-            // don't run syncs during the migration
-            ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0)
-            ContentResolver.setIsSyncable(account, App.addressBooksAuthority, 0)
-            ContentResolver.cancelSync(account, null)
-
+        context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.let { provider ->
             val parcel = Parcel.obtain()
             try {
+                // don't run syncs during the migration
+                ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0)
+                ContentResolver.setIsSyncable(account, App.addressBooksAuthority, 0)
+                ContentResolver.cancelSync(account, null)
+
                 // get previous address book settings (including URL)
                 val raw = ContactsContract.SyncState.get(provider, account)
                 if (raw == null)
@@ -261,6 +263,10 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
                 throw ContactsStorageException("Couldn't migrate contacts to new address book", e)
             } finally {
                 parcel.recycle()
+                if (Build.VERSION.SDK_INT >= 24)
+                    provider.close()
+                else
+                    provider.release()
             }
         }
 
