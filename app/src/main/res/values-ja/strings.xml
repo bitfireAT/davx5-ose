@@ -49,6 +49,7 @@
   <string name="navigation_drawer_website">Web サイト</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_faq_url">https://davdroid.bitfire.at/faq/?pk_campaign=davdroid-app</string>
+  <string name="navigation_drawer_forums">ヘルプ / フォーラム</string>
   <string name="navigation_drawer_donate">寄付</string>
   <string name="account_list_empty">DAVdroid にようこそ!\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>
   <string name="accounts_global_sync_disabled">システム全体の自動同期が無効です</string>
@@ -159,10 +160,10 @@
   <string name="settings_sync_wifi_only">WiFi でのみ同期</string>
   <string name="settings_sync_wifi_only_on">同期は WiFi 接続に制限されます</string>
   <string name="settings_sync_wifi_only_off">接続の種類は考慮されません</string>
-  <string name="settings_sync_wifi_only_ssid">WiFi SSID 制限</string>
-  <string name="settings_sync_wifi_only_ssid_on">%s でのみ同期します</string>
-  <string name="settings_sync_wifi_only_ssid_off">すべての WiFi 接続を使用することができます</string>
-  <string name="settings_sync_wifi_only_ssid_message">このネットワークで同期を制限する WiFi ネットワーク (SSID) の名前を入力してください。すべての WiFi 接続は空白のままにします。</string>
+  <string name="settings_sync_wifi_only_ssids">WiFi SSID 制限</string>
+  <string name="settings_sync_wifi_only_ssids_on">%s でのみ同期します</string>
+  <string name="settings_sync_wifi_only_ssids_off">すべての WiFi 接続が使用されます</string>
+  <string name="settings_sync_wifi_only_ssids_message">利用可能な WiFi ネットワークのカンマ区切りの名前 (SSID) (空白にするとすべて)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">連絡先グループ方法</string>
   <string-array name="settings_contact_group_method_values">

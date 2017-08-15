@@ -159,10 +159,6 @@
   <string name="settings_sync_wifi_only">Synchronizovat pouze přes WiFi</string>
   <string name="settings_sync_wifi_only_on">Synchronizace omezena na WiFi připojení</string>
   <string name="settings_sync_wifi_only_off">Druh připojení není brán v potaz</string>
-  <string name="settings_sync_wifi_only_ssid">Omezení WiFi SSID</string>
-  <string name="settings_sync_wifi_only_ssid_on">Synchronizace pouze přes %s</string>
-  <string name="settings_sync_wifi_only_ssid_off">Použít všechna WiFi připojení</string>
-  <string name="settings_sync_wifi_only_ssid_message">Zadejte jméno WiFi sítě (SSID) pro omezení synchronizace na tutu síť, nebo ponechte prázdné pro použití všech WiFi připojení.</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Metoda seskupování kontaktů</string>
   <string-array name="settings_contact_group_method_values">
