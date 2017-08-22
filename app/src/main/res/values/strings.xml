@@ -30,7 +30,7 @@
     <string name="startup_development_version">Preview Release</string>
     <string name="startup_development_version_message">This is a development version of %s. Things may not work as expected. Your feedback is welcome.</string>
     <string name="startup_development_version_give_feedback">Give feedback</string>
-    <string name="startup_development_version_feedback_url">https://davdroid.bitfire.at/forums/?pk_campaign=davdroid-app</string>
+    <string name="startup_development_version_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
     <string name="startup_donate">Open-Source Information</string>
     <string name="startup_donate_message">We\'re happy that you use DAVdroid, which is open-source software (GPLv3). Because developing DAVdroid is hard work and took us thousands of working hours, please consider a donation.</string>
     <string name="startup_donate_now">Show donation page</string>
