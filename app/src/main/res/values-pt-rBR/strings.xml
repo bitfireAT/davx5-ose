@@ -46,6 +46,7 @@
   <string name="navigation_drawer_external_links">Links externos</string>
   <string name="navigation_drawer_website">Site na Web</string>
   <string name="navigation_drawer_faq">Perguntas fequentes</string>
+  <string name="navigation_drawer_forums">Ajuda / Fóruns</string>
   <string name="navigation_drawer_donate">Doações</string>
   <string name="account_list_empty">Bem-vindo ao DAVdroid!\n\nVocê pode adicionar uma conta CalDAV/CardDAV agora.</string>
   <string name="accounts_global_sync_disabled">A sincronização automática pelo sistema está desativada</string>
@@ -165,6 +166,10 @@
   <string name="settings_sync_wifi_only">Sincronizar apenas por Wi-Fi</string>
   <string name="settings_sync_wifi_only_on">Sincronização restrita a conexões Wi-Fi</string>
   <string name="settings_sync_wifi_only_off">O tipo de conexão não é considerado</string>
+  <string name="settings_sync_wifi_only_ssids">Restrição de WiFi SSID</string>
+  <string name="settings_sync_wifi_only_ssids_on">Sincronizar apenas com %s</string>
+  <string name="settings_sync_wifi_only_ssids_off">Todas as conexões WiFi serão usadas</string>
+  <string name="settings_sync_wifi_only_ssids_message">Nomes separados por vírgula (SSIDs) das redes WiFi (deixe em branco para todas)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Método do grupo Contato</string>
   <string-array name="settings_contact_group_method_values">

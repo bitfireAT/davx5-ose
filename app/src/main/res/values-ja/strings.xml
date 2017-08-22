@@ -17,7 +17,6 @@
   <string name="startup_development_version">プレビュー リリース</string>
   <string name="startup_development_version_message">これは %s の開発版です。期待した通りに動作しない可能性があります。フィードバックを歓迎します。</string>
   <string name="startup_development_version_give_feedback">フィードバックする</string>
-  <string name="startup_development_version_feedback_url">https://davdroid.bitfire.at/forums/?pk_campaign=davdroid-app</string>
   <string name="startup_donate">オープンソース情報</string>
   <string name="startup_donate_message">あなたがオープンソース ソフトウェア (GPLv3) の DAVdroid を使用していただくことに、私たちは満足しています。 DAVdroid の開発はハードワークで、何千もの作業時間がかかりました。寄付をご検討ください。</string>
   <string name="startup_donate_now">寄付ページを表示</string>
