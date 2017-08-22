@@ -17,7 +17,6 @@
   <string name="startup_development_version">Voorvertoning van uitgave</string>
   <string name="startup_development_version_message">Dit is ontwikkelversie %s. Onderdelen werken niet zoals verwacht. Je terugkoppeling is welkom.</string>
   <string name="startup_development_version_give_feedback">Feedback geven</string>
-  <string name="startup_development_version_feedback_url">https://davdroid.bitfire.at/forums/?pk_campaign=davdroid-app</string>
   <string name="startup_donate">Open-Source informatie</string>
   <string name="startup_donate_message">We zijn blij dat je DAVdroid gebruikt, wat open-source software (GPLv3) is. Omdat de ontwikkeling van DAVdroid hard werk is en duizenden uren in beslag neemt. overweeg alstublieft een donatie.</string>
   <string name="startup_donate_now">Toon donatie pagina</string>
