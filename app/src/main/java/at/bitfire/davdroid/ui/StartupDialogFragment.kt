@@ -37,7 +37,8 @@ class StartupDialogFragment: DialogFragment() {
         BATTERY_OPTIMIZATIONS,
         DEVELOPMENT_VERSION,
         GOOGLE_PLAY_ACCOUNTS_REMOVED,
-        OPENTASKS_NOT_INSTALLED
+        OPENTASKS_NOT_INSTALLED,
+        OSE_DONATE
     }
 
     companion object {
@@ -56,14 +57,15 @@ class StartupDialogFragment: DialogFragment() {
 
                 if (BuildConfig.VERSION_NAME.contains("-alpha") || BuildConfig.VERSION_NAME.contains("-beta") || BuildConfig.VERSION_NAME.contains("-rc"))
                     dialogs += StartupDialogFragment.instantiate(Mode.DEVELOPMENT_VERSION)
-                /* else {
-                    // store-specific information
-                    if (BuildConfig.FLAVOR == App.FLAVOR_GOOGLE_PLAY) {
-                        // Play store
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP &&         // only on Android <5
-                            settings.getBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, true))   // and only when "Don't show again" hasn't been clicked yet
-                            dialogs += StartupDialogFragment.instantiate(Mode.GOOGLE_PLAY_ACCOUNTS_REMOVED)
-                    }
+                else
+                    dialogs += StartupDialogFragment.instantiate(Mode.OSE_DONATE)
+
+		/* // store-specific information
+                if (BuildConfig.FLAVOR == App.FLAVOR_GOOGLE_PLAY) {
+                    // Play store
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP &&         // only on Android <5
+                        settings.getBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, true))   // and only when "Don't show again" hasn't been clicked yet
+                        dialogs += StartupDialogFragment.instantiate(Mode.GOOGLE_PLAY_ACCOUNTS_REMOVED)
                 } */
 
                 // battery optimization white-listing
@@ -103,8 +105,8 @@ class StartupDialogFragment: DialogFragment() {
                         .setIcon(R.drawable.ic_info_dark)
                         .setTitle(R.string.startup_battery_optimization)
                         .setMessage(R.string.startup_battery_optimization_message)
-                        .setPositiveButton(android.R.string.ok, { _: DialogInterface, _: Int -> })
-                        .setNeutralButton(R.string.startup_battery_optimization_disable, { _: DialogInterface, _: Int ->
+                        .setPositiveButton(android.R.string.ok, { _, _ -> })
+                        .setNeutralButton(R.string.startup_battery_optimization_disable, { _, _ ->
                                 val intent = Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
                                         Uri.parse("package:" + BuildConfig.APPLICATION_ID))
                                 if (intent.resolveActivity(context.packageManager) != null)
@@ -140,12 +142,12 @@ class StartupDialogFragment: DialogFragment() {
                         .setIcon(icon)
                         .setTitle(R.string.startup_google_play_accounts_removed)
                         .setMessage(R.string.startup_google_play_accounts_removed_message)
-                        .setPositiveButton(android.R.string.ok, { _: DialogInterface, _: Int -> })
-                        .setNeutralButton(R.string.startup_google_play_accounts_removed_more_info, { _: DialogInterface, _: Int ->
+                        .setPositiveButton(android.R.string.ok, { _, _ -> })
+                        .setNeutralButton(R.string.startup_google_play_accounts_removed_more_info, { _, _ ->
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.navigation_drawer_faq_url)))
                             context.startActivity(intent)
                         })
-                        .setNegativeButton(R.string.startup_dont_show_again, { _: DialogInterface, _: Int ->
+                        .setNegativeButton(R.string.startup_dont_show_again, { _, _ ->
                             ServiceDB.OpenHelper(context).use { dbHelper ->
                                 val settings = Settings(dbHelper.writableDatabase)
                                 settings.putBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, false)
@@ -162,8 +164,8 @@ class StartupDialogFragment: DialogFragment() {
                         .setIcon(R.drawable.ic_alarm_on_dark)
                         .setTitle(R.string.startup_opentasks_not_installed)
                         .setMessage(builder.toString())
-                        .setPositiveButton(android.R.string.ok, { _: DialogInterface, _: Int -> })
-                        .setNeutralButton(R.string.startup_opentasks_not_installed_install, { _: DialogInterface, _: Int ->
+                        .setPositiveButton(android.R.string.ok, { _, _ -> })
+                        .setNeutralButton(R.string.startup_opentasks_not_installed_install, { _, _ ->
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.dmfs.tasks"))
                             if (intent.resolveActivity(context.packageManager) != null)
                                 context.startActivity(intent)
@@ -178,6 +180,23 @@ class StartupDialogFragment: DialogFragment() {
                         })
                         .create()
             }
+
+            Mode.OSE_DONATE -> {
+                return AlertDialog.Builder(activity)
+                        .setIcon(R.mipmap.ic_launcher)
+                        .setTitle(R.string.startup_donate)
+                        .setMessage(R.string.startup_donate_message)
+                        .setPositiveButton(R.string.startup_donate_now, { _, _ ->
+                            val uri = Uri.parse(getString(R.string.homepage_url))
+                                    .buildUpon()
+                                    .appendEncodedPath("donate/")
+                                    .build()
+                            startActivity(Intent(Intent.ACTION_VIEW, uri))
+                        })
+                        .setNegativeButton(R.string.startup_donate_later, { _, _ -> })
+                        .create()
+            }
+
         }
     }
 
