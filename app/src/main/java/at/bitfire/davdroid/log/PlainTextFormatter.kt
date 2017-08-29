@@ -29,11 +29,9 @@ class PlainTextFormatter private constructor(
             builder .append(DateFormatUtils.format(r.millis, "yyyy-MM-dd HH:mm:ss"))
                     .append(" ").append(r.threadID).append(" ")
 
-        if (r.sourceClassName.replaceFirst("\\$.*", "") != r.loggerName) {
-            val className = shortClassName(r.sourceClassName)
-            if (className != "ical4android.AndroidAppender")
-                builder.append("[").append(className).append("] ")
-        }
+        val className = shortClassName(r.sourceClassName)
+        if (className != r.loggerName)
+            builder.append("[").append(className).append("] ")
 
         builder.append(r.message)
 
@@ -54,8 +52,7 @@ class PlainTextFormatter private constructor(
     }
 
     private fun shortClassName(className: String) = className
-            .replace("at.bitfire.davdroid.", "")
-            .replace("at.bitfire.", "")
+            .replace(Regex("^at\\.bitfire\\.(dav|cert4an|dav4an|ical4an|vcard4an)droid\\."), "")
             .replace(Regex("\\$.*$"), "")
 
 }

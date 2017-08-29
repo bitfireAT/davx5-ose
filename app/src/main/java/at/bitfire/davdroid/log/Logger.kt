@@ -32,14 +32,11 @@ object Logger {
 
     @JvmField
     val log = Logger.getLogger("davdroid")!!
-    init {
-        at.bitfire.dav4android.Constants.log = Logger.getLogger("davdroid.dav4android")
-        at.bitfire.cert4android.Constants.log = Logger.getLogger("davdroid.cert4android")
-    }
+
 
     fun reinitLogger(context: Context) {
         ServiceDB.OpenHelper(context).use { dbHelper ->
-            val settings = Settings(dbHelper.getReadableDatabase())
+            val settings = Settings(dbHelper.readableDatabase)
 
             val logToFile = settings.getBoolean(App.LOG_TO_EXTERNAL_STORAGE, false)
             val logVerbose = logToFile || Log.isLoggable(log.name, Log.DEBUG)
@@ -72,7 +69,7 @@ object Logger {
 
                         val fileHandler = FileHandler(fileName)
                         fileHandler.formatter = PlainTextFormatter.DEFAULT
-                        log.addHandler(fileHandler)
+                        rootLogger.addHandler(fileHandler)
 
                         val prefIntent = Intent(context, AppSettingsActivity::class.java)
                         prefIntent.putExtra(AppSettingsActivity.EXTRA_SCROLL_TO, "log_to_external_storage")
@@ -86,7 +83,7 @@ object Logger {
                                         .bigText(context.getString(R.string.logging_to_external_storage, dir.path)))
                                 .setOngoing(true)
 
-                    } catch (e: IOException) {
+                    } catch(e: IOException) {
                         log.log(Level.SEVERE, "Couldn't create external log file", e)
 
                         builder .setContentText(context.getString(R.string.logging_couldnt_create_file, e.localizedMessage))
