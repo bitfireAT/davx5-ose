@@ -219,6 +219,10 @@
     <string name="settings_manage_calendar_colors">Manage calendar colors</string>
     <string name="settings_manage_calendar_colors_on">Calendar colors are managed by DAVdroid</string>
     <string name="settings_manage_calendar_colors_off">Calendar colors are not set by DAVdroid</string>
+    <string name="settings_event_colors">Event color support</string>
+    <string name="settings_event_colors_on">Sync event colors</string>
+    <string name="settings_event_colors_off">Do not sync event colors</string>
+    <string name="settings_event_colors_off_confirm">Turning off event colors may remove already synchronized event colors.</string>
 
     <!-- collection management -->
     <string name="create_addressbook">Create address book</string>

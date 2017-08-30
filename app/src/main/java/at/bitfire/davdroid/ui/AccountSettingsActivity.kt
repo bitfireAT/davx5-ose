@@ -20,6 +20,7 @@ import android.support.v4.app.LoaderManager
 import android.support.v4.app.NavUtils
 import android.support.v4.content.AsyncTaskLoader
 import android.support.v4.content.Loader
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.*
 import android.support.v7.preference.Preference.OnPreferenceChangeListener
@@ -222,6 +223,26 @@ class AccountSettingsActivity: AppCompatActivity() {
                 }
             } else
                 prefManageColors.isEnabled = false
+
+            val prefEventColors = findPreference("event_colors") as SwitchPreferenceCompat
+            prefEventColors.isChecked = settings.getEventColors()
+            prefEventColors.onPreferenceChangeListener = OnPreferenceChangeListener { _, newValue ->
+                if (newValue as Boolean) {
+                    settings.setEventColors(true)
+                    loaderManager.restartLoader(0, arguments, this)
+                } else
+                    AlertDialog.Builder(activity)
+                            .setIcon(R.drawable.ic_error_dark)
+                            .setTitle(R.string.settings_event_colors)
+                            .setMessage(R.string.settings_event_colors_off_confirm)
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .setPositiveButton(android.R.string.ok, { _, _ ->
+                                settings.setEventColors(false)
+                                loaderManager.restartLoader(0, arguments, this)
+                            })
+                            .show()
+                false
+            }
 
         }
 
