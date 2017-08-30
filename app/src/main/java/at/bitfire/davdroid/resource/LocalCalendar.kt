@@ -58,9 +58,6 @@ class LocalCalendar private constructor(
             values.put(Calendars.SYNC_EVENTS, 1)
             val uri = create(account, provider, values)
 
-            // create calendar colors
-            AndroidCalendar.insertColors(provider, account)
-
             return uri
         }
 

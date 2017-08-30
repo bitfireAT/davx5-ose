@@ -94,6 +94,13 @@
             android:summaryOn="@string/settings_manage_calendar_colors_on"
             android:summaryOff="@string/settings_manage_calendar_colors_off"/>
 
+        <SwitchPreferenceCompat
+            android:key="event_colors"
+            android:persistent="false"
+            android:title="@string/settings_event_colors"
+            android:summaryOn="@string/settings_event_colors_on"
+            android:summaryOff="@string/settings_event_colors_off"/>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -41,6 +41,11 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
                 if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(settings))
                     return
 
+                if (settings.getEventColors())
+                    AndroidCalendar.insertColors(provider, account)
+                else
+                    AndroidCalendar.removeColors(provider, account)
+
                 updateLocalCalendars(provider, account, settings)
 
                 for (calendar in AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)) {
