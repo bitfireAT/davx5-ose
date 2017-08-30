@@ -63,6 +63,11 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
                    "0"                     false */
         val KEY_MANAGE_CALENDAR_COLORS = "manage_calendar_colors"
 
+        /* Whether DAVdroid populates and uses CalendarContract.Colors
+           value = null (not existing)     false (default)
+                   "1"                     true */
+        val KEY_EVENT_COLORS = "event_colors"
+
         /** Contact group method:
         value = null (not existing)     groups as separate VCards (default)
         "CATEGORIES"            groups are per-contact CATEGORIES
@@ -158,6 +163,9 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
     fun setManageCalendarColors(manage: Boolean) =
             accountManager.setUserData(account, KEY_MANAGE_CALENDAR_COLORS, if (manage) null else "0")
 
+    fun getEventColors() = accountManager.getUserData(account, KEY_EVENT_COLORS) != null
+    fun setEventColors(useColors: Boolean) =
+            accountManager.setUserData(account, KEY_EVENT_COLORS, if (useColors) "1" else null)
 
     // CardDAV settings
 
