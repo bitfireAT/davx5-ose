@@ -54,6 +54,23 @@ class Settings(
     }
 
 
+    fun getLong(name: String, defaultValue: Long): Long {
+        db.query(ServiceDB.Settings._TABLE, arrayOf(ServiceDB.Settings.VALUE),
+                "${ServiceDB.Settings.NAME}=?", arrayOf(name), null, null, null)?.use { cursor ->
+            if (cursor.moveToNext() && !cursor.isNull(0))
+                return if (cursor.isNull(0)) defaultValue else cursor.getLong(0)
+        }
+        return defaultValue
+    }
+
+    fun putLong(name: String, value: Long?) {
+        val values = ContentValues(2)
+        values.put(ServiceDB.Settings.NAME, name)
+        values.put(ServiceDB.Settings.VALUE, value)
+        db.insertWithOnConflict(ServiceDB.Settings._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+    }
+
+
     fun getString(name: String, defaultValue: String?): String? {
         db.query(ServiceDB.Settings._TABLE, arrayOf(ServiceDB.Settings.VALUE),
                 "${ServiceDB.Settings.NAME}=?", arrayOf(name), null, null, null)?.use { cursor ->

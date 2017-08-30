@@ -28,6 +28,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.Settings
 import at.bitfire.davdroid.resource.LocalTaskList
+import java.sql.Time
 import java.util.*
 import java.util.logging.Level
 
@@ -43,6 +44,8 @@ class StartupDialogFragment: DialogFragment() {
 
     companion object {
 
+        private val SETTING_NEXT_DONATION_POPUP = "time_nextDonationPopup"
+
         @JvmField val HINT_BATTERY_OPTIMIZATIONS = "hint_BatteryOptimizations"
         @JvmField val HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED = "hint_GooglePlayAccountsRemoved"
         @JvmField val HINT_OPENTASKS_NOT_INSTALLED = "hint_OpenTasksNotInstalled"
@@ -57,7 +60,7 @@ class StartupDialogFragment: DialogFragment() {
 
                 if (BuildConfig.VERSION_NAME.contains("-alpha") || BuildConfig.VERSION_NAME.contains("-beta") || BuildConfig.VERSION_NAME.contains("-rc"))
                     dialogs += StartupDialogFragment.instantiate(Mode.DEVELOPMENT_VERSION)
-                else
+                else if (System.currentTimeMillis() > settings.getLong(SETTING_NEXT_DONATION_POPUP, 0))
                     dialogs += StartupDialogFragment.instantiate(Mode.OSE_DONATE)
 
 		/* // store-specific information
@@ -97,6 +100,8 @@ class StartupDialogFragment: DialogFragment() {
     @TargetApi(Build.VERSION_CODES.M)
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         isCancelable = false
+
+
 
         val mode = Mode.valueOf(arguments.getString(ARGS_MODE))
         return when (mode) {
@@ -181,21 +186,29 @@ class StartupDialogFragment: DialogFragment() {
                         .create()
             }
 
-            Mode.OSE_DONATE -> {
-                return AlertDialog.Builder(activity)
-                        .setIcon(R.mipmap.ic_launcher)
-                        .setTitle(R.string.startup_donate)
-                        .setMessage(R.string.startup_donate_message)
-                        .setPositiveButton(R.string.startup_donate_now, { _, _ ->
-                            val uri = Uri.parse(getString(R.string.homepage_url))
-                                    .buildUpon()
-                                    .appendEncodedPath("donate/")
-                                    .build()
-                            startActivity(Intent(Intent.ACTION_VIEW, uri))
-                        })
-                        .setNegativeButton(R.string.startup_donate_later, { _, _ -> })
-                        .create()
-            }
+            Mode.OSE_DONATE ->
+                    return AlertDialog.Builder(activity)
+                            .setIcon(R.mipmap.ic_launcher)
+                            .setTitle(R.string.startup_donate)
+                            .setMessage(R.string.startup_donate_message)
+                            .setPositiveButton(R.string.startup_donate_now, { _, _ ->
+                                val uri = Uri.parse(getString(R.string.homepage_url))
+                                        .buildUpon()
+                                        .appendEncodedPath("donate/")
+                                        .build()
+                                startActivity(Intent(Intent.ACTION_VIEW, uri))
+                                ServiceDB.OpenHelper(context).use { dbHelper ->
+                                    val settings = Settings(dbHelper.writableDatabase)
+                                    settings.putLong(SETTING_NEXT_DONATION_POPUP, System.currentTimeMillis() + 30 * 86400000L)    // 30 days
+                                }
+                            })
+                            .setNegativeButton(R.string.startup_donate_later, { _, _ ->
+                                ServiceDB.OpenHelper(context).use { dbHelper ->
+                                    val settings = Settings(dbHelper.writableDatabase)
+                                    settings.putLong(SETTING_NEXT_DONATION_POPUP, System.currentTimeMillis() + 14 * 86400000L)    // 14 days
+                                }
+                            })
+                            .create()
 
         }
     }
