@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="account_title_address_book">DAVdroid-adressebok</string>
+  <string name="address_books_authority_title">Adressebøker</string>
+  <string name="help">Hjelp</string>
+  <string name="manage_accounts">Behandle kontoer</string>
+  <string name="please_wait">Vent…</string>
+  <string name="send">Send</string>
+  <!--startup dialogs-->
+  <string name="startup_battery_optimization">Batterioptimisering</string>
+  <string name="startup_battery_optimization_message">Det kan hende Android skrur av/reduserer DAVdroid-synkronisering etter et par dager. For å forhindre dette, skru av batterioptimisering.</string>
+  <string name="startup_battery_optimization_disable">Skru av for DAVdroid</string>
+  <string name="startup_dont_show_again">Ikke vis igjen</string>
+  <string name="startup_development_version">Forhåndsutgivelse</string>
+  <string name="startup_development_version_message">Dette er en utviklingsversjon av %s. Det kan hende ting ikke svarer til forventningene. Dine tilbakemeldinger er kjærkomne.</string>
+  <string name="startup_development_version_give_feedback">Gi tilbakemelding</string>
+  <string name="startup_donate">Friprog-informasjon</string>
+  <string name="startup_donate_message">Vi er glade for at du bruker DAVdroid, som er fri programvare (GPLv3). Siden utvikling av DAVdroid er hardt arbeid og har tatt tusenvis av arbeidstimer, bes du overveie en donasjon.</string>
+  <string name="startup_donate_now">Vis donasjonsside</string>
+  <string name="startup_donate_later">Kanskje senere</string>
+  <string name="startup_google_play_accounts_removed_more_info">Mer informasjon</string>
+  <!--AboutActivity-->
+  <string name="about_license_terms">Lisensvilkår</string>
+  <!--global settings-->
+  <string name="logging_to_external_storage">Logger til ekstern lagringsmedium: %s</string>
+  <string name="logging_to_external_storage_warning">Slett logger så snart som mulig!</string>
+  <string name="logging_couldnt_create_file">Kan ikke opprette ekstern loggfil: %s</string>
+  <string name="logging_no_external_storage">Fant ingen ekstern lagringsplass</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Åpne navigasjonsskuff</string>
+  <string name="navigation_drawer_close">Lukk navigasjonsskuff</string>
+  <string name="navigation_drawer_about">Om / Lisens</string>
+  <string name="navigation_drawer_settings">Innstillinger</string>
+  <string name="navigation_drawer_external_links">Eksterne lenker</string>
+  <string name="navigation_drawer_website">Nettside</string>
+  <string name="navigation_drawer_faq">O-S-S</string>
+  <string name="navigation_drawer_forums">Hjelp / Forum</string>
+  <string name="navigation_drawer_donate">Doner</string>
+  <string name="accounts_global_sync_disabled">Systemomspennende automatisk synkronisering avskrudd</string>
+  <string name="accounts_global_sync_enable">Skru på</string>
+  <!--DavService-->
+  <string name="dav_service_refresh_failed">Tjenesteoppdagelse mislyktes</string>
+  <string name="dav_service_refresh_couldnt_refresh">Kunne ikke gjenoppfriske innsamlingsliste</string>
+  <!--AppSettingsActivity-->
+  <string name="app_settings">Innstillinger</string>
+  <string name="app_settings_user_interface">Brukergrensesnitt</string>
+  <string name="app_settings_reset_hints">Tilbakestill hint</string>
+  <string name="app_settings_reset_hints_summary">Skrur på hint som har blitt avslått tidligere</string>
+  <string name="app_settings_reset_hints_success">Alle hint vil bli vist igjen</string>
+  <string name="app_settings_connection">Tilkobling</string>
+  <string name="app_settings_override_proxy">Overstyr mellomtjenerinnstillinger</string>
+  <string name="app_settings_override_proxy_on">Bruk egendefinerte mellomtjenerinnstillinger</string>
+  <string name="app_settings_override_proxy_off">Bruk systemets forvalgte mellomtjenerinnstillinger</string>
+  <string name="app_settings_override_proxy_host">Vertsnavn for HTTP-mellomtjener</string>
+  <string name="app_settings_override_proxy_port">HTTP-mellomtjeningsport</string>
+  <string name="app_settings_security">Sikkerhet</string>
+  <string name="app_settings_distrust_system_certs">Fjern tiltro til systemsertifikater</string>
+  <string name="app_settings_debug">Feilretting</string>
+  <string name="app_settings_log_to_external_storage">Logg til ekstern fil</string>
+  <string name="app_settings_log_to_external_storage_on">Logger til eksternt lagringsmedium (hvis tilgjengelig)</string>
+  <string name="app_settings_show_debug_info">Vis feilrettingsinfo</string>
+  <string name="app_settings_show_debug_info_details">Vis/del programvare- og oppsettsdetaljer</string>
+  <!--AccountActivity-->
+  <string name="account_synchronize_now">Synkroniser nå</string>
+  <string name="account_synchronizing_now">Synkroniserer nå</string>
+  <string name="account_settings">Kontoinnstillinger</string>
+  <string name="account_rename">Gi konto nytt navn</string>
+  <string name="account_rename_rename">Gi nytt navn</string>
+  <string name="account_delete">Slett konto</string>
+  <string name="account_delete_confirmation_title">Vil du virkeling slette kontoen?</string>
+  <string name="account_refresh_address_book_list">Gjenoppfrisk adressebokliste</string>
+  <string name="account_create_new_address_book">Opprett ny adressebok</string>
+  <string name="account_refresh_calendar_list">Gjenoppfrisk kalenderliste</string>
+  <string name="account_create_new_calendar">Opprett ny kalender</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">DAVdroid-tilgang</string>
+  <string name="permissions_calendar">Kalender-tilgang</string>
+  <string name="permissions_calendar_request">Forespør kalender-tilganger</string>
+  <string name="permissions_contacts">Kontakt-tilgang</string>
+  <string name="permissions_contacts_request">Forespør kontakt-tilgang</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">Legg til konto</string>
+  <string name="login_email_address">E-postadresse</string>
+  <string name="login_email_address_error">Gyldig e-postadresse påkrevd</string>
+  <string name="login_password">Passord</string>
+  <string name="login_password_required">Passord kreves</string>
+  <string name="login_url_must_be_http_or_https">Nettadresse må begynned med http(s)://</string>
+  <string name="login_url_host_name_required">Vertsnavn kreves</string>
+  <string name="login_back">Tilbake</string>
+  <string name="login_create_account">Opprett konto</string>
+  <string name="login_account_name">Kontonavn</string>
+  <string name="login_account_name_required">Kontonavn påkrevd</string>
+  <string name="login_account_not_created">Kontonavnet kan ikke opprettes</string>
+  <string name="login_configuration_detection">Oppdagelse av oppsett</string>
+  <string name="login_querying_server">Vent, spør tjener…</string>
+  <string name="login_no_caldav_carddav">Fant ikke CalDAV eller CardDAV-tjeneste.</string>
+  <string name="login_view_logs">Vis logger</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">Innstillinger: %s</string>
+  <string name="settings_authentication">Identitetsbekreftelse</string>
+  <string name="settings_username">Brukernavn</string>
+  <string name="settings_enter_username">Skriv inn brukernavn:</string>
+  <string name="settings_password">Passord</string>
+  <string name="settings_password_summary">Oppdater passordet i henhold til din tjener.</string>
+  <string name="settings_enter_password">Skriv inn passordet ditt:</string>
+  <string name="settings_sync">Synkronisering</string>
+  <string name="settings_sync_interval_contacts">Intervall for kontaktsynkronisering</string>
+  <string name="settings_sync_summary_manually">Åpne manuelt</string>
+  <string name="settings_sync_wifi_only">Bare synk. over Wi-Fi</string>
+  <string name="settings_sync_wifi_only_off">Tilkoblingstypen blir ikke tatt i betraktning</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past_none">Alle gjøremål vil bli synkronisert</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Gjøremål for mer enn én dag siden vil bli sett bort fra</item>
+    <item quantity="other">Gjøremål for mer enn %d dager siden vil bli sett bort fra</item>
+  </plurals>
+  <string name="settings_manage_calendar_colors">Velg kalenderfarger</string>
+  <string name="settings_manage_calendar_colors_on">Kalenderfarger behandles av DAVdroid</string>
+  <string name="settings_manage_calendar_colors_off">Kalenderfarger settes ikke av DAVdroid</string>
+  <!--collection management-->
+  <string name="create_addressbook">Opprett adressebok</string>
+  <string name="create_addressbook_display_name_hint">Min adressebok</string>
+  <string name="create_calendar">Opprett CalDAV-samling</string>
+  <string name="create_calendar_display_name_hint">Min kalender</string>
+  <string name="create_calendar_time_zone">Tidssone</string>
+  <string name="create_calendar_type">Samlingstype:</string>
+  <string name="create_calendar_type_only_events">Kalender (bare hendelser)</string>
+  <string name="create_calendar_type_only_tasks">Gjøremålsliste (bare gjøremål)</string>
+  <string name="create_calendar_type_events_and_tasks">Kombinert (hendelser og gjøremål)</string>
+  <string name="create_collection_color">Velg en samlingsfarge</string>
+  <string name="create_collection_creating">Oppretter samling</string>
+  <string name="create_collection_display_name">Vis navn (tittel) for denne samlingen:</string>
+  <string name="create_collection_display_name_required">Tittel kreves</string>
+  <string name="create_collection_description">Beskrivelse (valgfri):</string>
+  <string name="create_collection_create">Opprett</string>
+  <string name="delete_collection">Slett samling</string>
+  <string name="delete_collection_confirm_title">Er du sikker?</string>
+  <string name="delete_collection_deleting_collection">Sletter samling</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">En feil har inntruffet</string>
+  <string name="exception_httpexception">En HTTP-feil har inntruffet.</string>
+  <string name="exception_ioexception">En I/O-feil har inntruffet.</string>
+  <string name="exception_show_details">Vis detaljer</string>
+  <!--sync errors and DebugInfoActivity-->
+  <string name="debug_info_title">Feilrettingsinfo</string>
+  <string name="sync_error_tasks">Gjøremålssynkronisering mislyktes (%s)</string>
+  <string name="sync_error_unauthorized">Brukernavn-/passord feil</string>
+  <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVdroid: Tilkoblingssikkerhet</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVdroid har støtt på et ukjent sertifikat. Har du tiltro til det?</string>
+</resources>

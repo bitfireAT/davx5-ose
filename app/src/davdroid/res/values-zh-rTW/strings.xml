@@ -1,0 +1,232 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVdroid</string>
+  <string name="account_title_address_book">DAVdroid 通訊錄</string>
+  <string name="address_books_authority_title">通訊錄</string>
+  <string name="help">幫助</string>
+  <string name="manage_accounts">管理帳號</string>
+  <string name="please_wait">請稍待 ...</string>
+  <string name="send">送出</string>
+  <string name="homepage_url">https://davdroid.bitfire.at/?pk_campaign=davdroid-app</string>
+  <!--startup dialogs-->
+  <string name="startup_battery_optimization">電池最佳化</string>
+  <string name="startup_battery_optimization_message">Android 在數日之後可能會關閉或減少 DAVdroid 的同步。為了避免這發生，請關閉電池最佳化。</string>
+  <string name="startup_battery_optimization_disable">關閉 DAVdroid 的電池最佳化</string>
+  <string name="startup_dont_show_again">不要再顯示此訊息</string>
+  <string name="startup_development_version_give_feedback">給回饋意見</string>
+  <string name="startup_donate">開源資訊</string>
+  <string name="startup_donate_message">很高興您使用 DAVdroid，這是個開源軟體 (GPLv3授權)。因為開發 DAVdroid 是艱難的工作，需要上千個小時，請考慮捐款支持我們。</string>
+  <string name="startup_donate_now">開啟捐款頁面</string>
+  <string name="startup_donate_later">下次再說</string>
+  <string name="startup_google_play_accounts_removed">Play商店數位權利管理錯誤訊息</string>
+  <string name="startup_google_play_accounts_removed_message">在某些情況下，Play商店 的數位權利管理可能導致在重開機後或更新 DAVdroid 後，DAVdroid 全部帳號消失。如果您遇到此問題 (且只有在遇到此問題時)，請到 Play商店 安裝 \"DAVdroid JB Workaround\"。</string>
+  <string name="startup_google_play_accounts_removed_more_info">更多資訊</string>
+  <string name="startup_opentasks_not_installed">OpenTasks 未安裝</string>
+  <string name="startup_opentasks_not_installed_message">OpenTasks 這個 app 不存在您的裝置上，所以 DAVdroid 無法同步工作清單。</string>
+  <string name="startup_opentasks_reinstall_davdroid">安裝 OpenTasks 後，您必須｢重新安裝｣ DAVdroid 並且重新加入要同步的帳號 (這是 Android 的設計問題)</string>
+  <string name="startup_opentasks_not_installed_install">安裝 OpenTasks</string>
+  <!--AboutActivity-->
+  <string name="about_license_terms">授權條款</string>
+  <string name="about_license_info_no_warranty">我們｢完全不保證｣本程式無瑕疵。這是個自由軟體，歡迎您在符合公用授權條款的情況下任意散布它。</string>
+  <!--global settings-->
+  <string name="logging_davdroid_file_logging">DAVdroid 正在記錄除錯訊息</string>
+  <string name="logging_to_external_storage">正在將除錯訊息存到外部檔案: %s</string>
+  <string name="logging_to_external_storage_warning">盡快刪除除錯訊息!</string>
+  <string name="logging_couldnt_create_file">無法新增除錯訊息檔案: %s</string>
+  <string name="logging_no_external_storage">找不到外部儲存空間</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_open">開啟瀏覽窗格</string>
+  <string name="navigation_drawer_close">關閉瀏覽窗格</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV 同步器</string>
+  <string name="navigation_drawer_about">關於我們 / 授權條款</string>
+  <string name="navigation_drawer_settings">設定</string>
+  <string name="navigation_drawer_news_updates">新聞 &amp; 更新</string>
+  <string name="navigation_drawer_external_links">外部連結</string>
+  <string name="navigation_drawer_website">我們的網站</string>
+  <string name="navigation_drawer_faq">常見問答</string>
+  <string name="navigation_drawer_faq_url">https://davdroid.bitfire.at/faq/?pk_campaign=davdroid-app</string>
+  <string name="navigation_drawer_donate">贊助我們</string>
+  <string name="account_list_empty">歡迎使用 DAVdroid!\n\n您現在可以新增 CalDAV/CardDAV 帳號</string>
+  <string name="accounts_global_sync_enable">啟用</string>
+  <!--DavService-->
+  <string name="dav_service_refresh_failed">未發現遠端服務</string>
+  <string name="dav_service_refresh_couldnt_refresh">無法更新清單</string>
+  <!--AppSettingsActivity-->
+  <string name="app_settings">設定</string>
+  <string name="app_settings_user_interface">使用介面</string>
+  <string name="app_settings_reset_hints">重新開啟提示</string>
+  <string name="app_settings_reset_hints_summary">重新啟用之前取消的提示</string>
+  <string name="app_settings_reset_hints_success">所有提示將再次顯示</string>
+  <string name="app_settings_connection">網路連線</string>
+  <string name="app_settings_override_proxy">自訂代理伺服器</string>
+  <string name="app_settings_override_proxy_on">正在使用自訂的代理伺服器設定值</string>
+  <string name="app_settings_override_proxy_off">正在使用系統預設的代理伺服器設定值</string>
+  <string name="app_settings_override_proxy_host">HTTP 代理伺服器主機名稱或網址</string>
+  <string name="app_settings_override_proxy_port">HTTP 代理伺服器通訊埠</string>
+  <string name="app_settings_security">安全性</string>
+  <string name="app_settings_distrust_system_certs">不信任系統憑證</string>
+  <string name="app_settings_distrust_system_certs_on">系統憑證和使用者自訂憑證將不被信任</string>
+  <string name="app_settings_distrust_system_certs_off">系統憑證和使用者自訂憑證將被信任 (推薦設定)</string>
+  <string name="app_settings_reset_certificates">重新開啟之前關閉的提示</string>
+  <string name="app_settings_reset_certificates_summary">重設對所有自訂憑證的信任</string>
+  <string name="app_settings_reset_certificates_success">所有自訂憑證已清除</string>
+  <string name="app_settings_debug">除錯</string>
+  <string name="app_settings_log_to_external_storage">將除錯訊息存到外部檔案</string>
+  <string name="app_settings_log_to_external_storage_on">除錯訊息將存到外部檔案 (如果發生)</string>
+  <string name="app_settings_log_to_external_storage_off">目前不將除錯訊息存到外部檔案</string>
+  <string name="app_settings_show_debug_info">顯示除錯訊息</string>
+  <string name="app_settings_show_debug_info_details">檢視/分享本軟體及設定檔細節</string>
+  <!--AccountActivity-->
+  <string name="account_synchronize_now">立即同步</string>
+  <string name="account_synchronizing_now">同步中</string>
+  <string name="account_settings">帳號設定</string>
+  <string name="account_rename">重新命名帳號</string>
+  <string name="account_rename_new_name">尚未儲存的本地資料可能會消失。重新命名後必須再次執行同步。新的帳號名稱: </string>
+  <string name="account_rename_rename">重新命名</string>
+  <string name="account_delete">刪除帳號</string>
+  <string name="account_delete_confirmation_title">真的要刪除帳號?</string>
+  <string name="account_delete_confirmation_text">這台裝置上這個帳號的通訊錄、行事曆和工作清單將被刪除。</string>
+  <string name="account_refresh_address_book_list">刷新通訊錄清單</string>
+  <string name="account_create_new_address_book">建立新的通訊錄</string>
+  <string name="account_refresh_calendar_list">刷新行事曆清單</string>
+  <string name="account_create_new_calendar">建立新的行事曆</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">DAVdroid 權限</string>
+  <string name="permissions_calendar">行事曆權限</string>
+  <string name="permissions_calendar_details">為了將 CalDAV 行事曆與您裝置上的行事曆同步，DAVdroid 需要存取行事曆的權限。</string>
+  <string name="permissions_calendar_request">要求行事曆權限</string>
+  <string name="permissions_contacts">通訊錄權限</string>
+  <string name="permissions_contacts_details">為了將 CardDAV 通訊錄與您裝置上的通訊錄同步，DAVdroid 需要存取通訊錄的權限。</string>
+  <string name="permissions_contacts_request">要求通訊錄權限</string>
+  <string name="permissions_opentasks">OpenTasks 權限</string>
+  <string name="permissions_opentasks_details">為了將 CalDAV 工作清單與您裝置上的工作清單同步，DAVdroid 需要存取 OpenTasks 的權限。</string>
+  <string name="permissions_opentasks_request">要求 OpenTasks 權限</string>
+  <!--AddAccountActivity-->
+  <string name="login_help_url">https://davdroid.bitfire.at/configuration/?pk_campaign=davdroid-app</string>
+  <string name="login_title">新增帳號</string>
+  <string name="login_type_email">用 Email 地址登入</string>
+  <string name="login_email_address">Email 地址</string>
+  <string name="login_email_address_error">請輸入有效的 Email 地址</string>
+  <string name="login_password">密碼</string>
+  <string name="login_password_required">必須填寫密碼</string>
+  <string name="login_type_url">用網址和帳號登入</string>
+  <string name="login_url_must_be_http_or_https">網址開頭必須是 http(s)://</string>
+  <string name="login_url_host_name_required">必須輸入伺服器主機名稱</string>
+  <string name="login_user_name">使用者帳號</string>
+  <string name="login_user_name_required">必須填寫使用者帳號</string>
+  <string name="login_base_url">根 URL</string>
+  <string name="login_login">登入</string>
+  <string name="login_back">上一步</string>
+  <string name="login_create_account">新建帳號</string>
+  <string name="login_account_name">帳號名稱</string>
+  <string name="login_account_name_info">使用 Email 地址當作裝置上的帳號顯示名稱，因為當您在行事曆創建活動時，Android 會把帳號顯示名稱放到｢活動發起人」欄位。兩個帳號不能有相同的名稱。</string>
+  <string name="login_account_contact_group_method">聯絡人群組的儲存格式</string>
+  <string name="login_account_name_required">需要帳號名稱</string>
+  <string name="login_account_not_created">無法建立帳號</string>
+  <string name="login_configuration_detection">設定錯誤</string>
+  <string name="login_querying_server">請稍待，正在詢問伺服器...</string>
+  <string name="login_no_caldav_carddav">找不到 CalDAV 或 CardDAV 服務。</string>
+  <string name="login_view_logs">檢視除錯訊息</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">設定: %s</string>
+  <string name="settings_authentication">登入驗證</string>
+  <string name="settings_username">使用者帳號</string>
+  <string name="settings_enter_username">輸入帳號名稱:</string>
+  <string name="settings_password">密碼</string>
+  <string name="settings_password_summary">您在伺服器上使用中的密碼</string>
+  <string name="settings_enter_password">輸入密碼: </string>
+  <string name="settings_sync">同步設定</string>
+  <string name="settings_sync_interval_contacts">聯絡人同步間隔</string>
+  <string name="settings_sync_summary_manually">只手動同步</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">每 %d 分鐘，以及在本裝置上修改時</string>
+  <string name="settings_sync_interval_calendars">行事曆同步間隔</string>
+  <string name="settings_sync_interval_tasks">工作清單同步間隔</string>
+  <string-array name="settings_sync_interval_names">
+    <item>只手動</item>
+    <item>每 5 分鐘</item>
+    <item>每 10 分鐘</item>
+    <item>每 15 分鐘</item>
+    <item>每 1 小時</item>
+    <item>每 2 小時</item>
+    <item>每 4 小時</item>
+    <item>每 1 天</item>
+  </string-array>
+  <string name="settings_sync_wifi_only">只用 WiFi 同步</string>
+  <string name="settings_sync_wifi_only_on">只於 WiFi 連線時同步</string>
+  <string name="settings_sync_wifi_only_off">任何網路連線都可使用</string>
+  <string name="settings_carddav">CardDAV（聯絡人檔案）</string>
+  <string name="settings_contact_group_method">聯絡人群組的儲存格式</string>
+  <string-array name="settings_contact_group_method_values">
+    <item>GROUP_VCARDS</item>
+    <item>CATEGORIES</item>
+  </string-array>
+  <string-array name="settings_contact_group_method_entries">
+    <item>群組存成額外的 VCard 檔案</item>
+    <item>群組存成每個聯絡人的分類屬性</item>
+  </string-array>
+  <string name="settings_caldav">CalDav（行事曆檔案）</string>
+  <string name="settings_sync_time_range_past">過去項目的時間限制</string>
+  <string name="settings_sync_time_range_past_none">將會同步所有項目</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="other">%d 天之前的項目會被忽略</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">這個天數之前的項目將被忽略 (可設為0)。留白，則所有項目都會同步。</string>
+  <string name="settings_manage_calendar_colors">管理行事曆的顏色</string>
+  <string name="settings_manage_calendar_colors_on">行事曆顏色由 DAVdroid 管理</string>
+  <string name="settings_manage_calendar_colors_off">行事曆顏色不由 DAVdroid 管理</string>
+  <!--collection management-->
+  <string name="create_addressbook">建立通訊錄</string>
+  <string name="create_addressbook_display_name_hint">我的通訊錄</string>
+  <string name="create_calendar">建立行事曆</string>
+  <string name="create_calendar_display_name_hint">我的行事曆</string>
+  <string name="create_calendar_time_zone">時區: </string>
+  <string name="create_calendar_type">類型</string>
+  <string name="create_calendar_type_only_events">行事曆 (只有事件)</string>
+  <string name="create_calendar_type_only_tasks">工作清單 (只有任務)</string>
+  <string name="create_calendar_type_events_and_tasks">合併 (事件和任務)</string>
+  <string name="create_collection_color">設定顏色</string>
+  <string name="create_collection_creating">建立新行事曆或工作清單</string>
+  <string name="create_collection_display_name">顯示這份清單的名稱 (標題): </string>
+  <string name="create_collection_display_name_required">必須輸入標題</string>
+  <string name="create_collection_description">描述 (可留白): </string>
+  <string name="create_collection_home_set">Home set: </string>
+  <string name="create_collection_create">建立</string>
+  <string name="delete_collection">刪除行事曆或工作清單</string>
+  <string name="delete_collection_confirm_title">您確定嗎? </string>
+  <string name="delete_collection_confirm_warning">這本行事曆或工作清單 (%s) 和它的所有資料將從伺服器上刪除。</string>
+  <string name="delete_collection_deleting_collection">正在刪除</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">發生錯誤</string>
+  <string name="exception_httpexception">HTTP 發生錯誤</string>
+  <string name="exception_ioexception">讀寫錯誤</string>
+  <string name="exception_show_details">顯示細節</string>
+  <!--sync errors and DebugInfoActivity-->
+  <string name="debug_info_title">除錯訊息</string>
+  <string name="sync_error_permissions">DAVdroid 權限</string>
+  <string name="sync_error_permissions_text">需要額外的權限</string>
+  <string name="sync_error_calendar">行事曆同步失敗 (%s)</string>
+  <string name="sync_error_contacts">通訊錄同步失敗 (%s)</string>
+  <string name="sync_error_tasks">工作清單同步失敗 (%s)</string>
+  <string name="sync_error">在 %s 發生錯誤</string>
+  <string name="sync_error_http_dav">在 %s 發生伺服器錯誤</string>
+  <string name="sync_error_local_storage">在 %s 發生資料庫錯誤</string>
+  <string-array name="sync_error_phases">
+    <item>準備同步</item>
+    <item>詢問能力</item>
+    <item>處理裝置上的項目刪除</item>
+    <item>準備新建 / 修改項目</item>
+    <item>上傳新建 / 修改的項目</item>
+    <item>檢查同步狀態</item>
+    <item>列出裝置上項目</item>
+    <item>列出伺服器上項目</item>
+    <item>比對裝置上 / 伺服器上項目</item>
+    <item>從伺服器下載項目</item>
+    <item>傳輸後處理中</item>
+    <item>儲存同步狀態</item>
+  </string-array>
+  <string name="sync_error_unauthorized">使用者帳號 / 密碼錯誤</string>
+  <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVdroid: 連線安全性</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVdroid 發現未知的憑證，您要信任它嗎?</string>
+</resources>
