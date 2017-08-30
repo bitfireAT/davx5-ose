@@ -53,9 +53,9 @@ class PermissionsActivity: AppCompatActivity() {
             noTaskPermissions =
                     ActivityCompat.checkSelfPermission(this, PERMISSION_READ_TASKS) != PackageManager.PERMISSION_GRANTED ||
                     ActivityCompat.checkSelfPermission(this, PERMISSION_WRITE_TASKS) != PackageManager.PERMISSION_GRANTED
-            findViewById(R.id.opentasks_permissions).visibility = if (noTaskPermissions) View.VISIBLE else View.GONE
+            findViewById<View>(R.id.opentasks_permissions).visibility = if (noTaskPermissions) View.VISIBLE else View.GONE
         } else {
-            findViewById(R.id.opentasks_permissions).visibility = View.GONE;
+            findViewById<View>(R.id.opentasks_permissions).visibility = View.GONE;
             noTaskPermissions = false
         }
 
