@@ -122,14 +122,10 @@ dependencies {
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
-    //noinspection GradleDynamicVersion
-    compile 'com.android.support:appcompat-v7:26.+'
-    //noinspection GradleDynamicVersion
-    compile 'com.android.support:cardview-v7:26.+'
-    //noinspection GradleDynamicVersion
-    compile 'com.android.support:design:26.+'
-    //noinspection GradleDynamicVersion
-    compile 'com.android.support:preference-v14:26.+'
+    compile 'com.android.support:appcompat-v7:26.0.1'
+    compile 'com.android.support:cardview-v7:26.0.1'
+    compile 'com.android.support:design:26.0.1'
+    compile 'com.android.support:preference-v14:26.0.1'
 
     compile 'com.github.yukuku:ambilwarna:2.0.1'
 
