@@ -191,6 +191,10 @@
   <string name="settings_manage_calendar_colors">Kalenderfarben verwalten</string>
   <string name="settings_manage_calendar_colors_on">Kalenderfarben werden von DAVdroid verwaltet</string>
   <string name="settings_manage_calendar_colors_off">DAVdroid setzt keine Kalenderfarben</string>
+  <string name="settings_event_colors">Unterstützung für Terminfarben</string>
+  <string name="settings_event_colors_on">Terminfarben werden synchronisiert</string>
+  <string name="settings_event_colors_off">Terminfarben werden nicht synchronisiert</string>
+  <string name="settings_event_colors_off_confirm">Die Deaktivierung der Terminfarben kann bereits synchronisierte Terminfarben löschen!</string>
   <!--collection management-->
   <string name="create_addressbook">Adressbuch erstellen</string>
   <string name="create_addressbook_display_name_hint">Meine Adressen</string>
