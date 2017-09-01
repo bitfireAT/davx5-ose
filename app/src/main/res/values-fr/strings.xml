@@ -13,6 +13,7 @@
   <string name="startup_battery_optimization_message">Android peut désactiver/réduire la synchronisation de DAVdroid après quelques jours. Pour éviter cela, désactivez l\'optimisation de la batterie.</string>
   <string name="startup_battery_optimization_disable">Désactiver pour DAVdroid</string>
   <string name="startup_dont_show_again">Ne plus afficher</string>
+  <string name="startup_development_version">Aperçu de la version finale</string>
   <string name="startup_development_version_give_feedback">Faire un commentaire</string>
   <string name="startup_donate">Open-Source Information</string>
   <string name="startup_donate_message">Nous sommes heureux que vous utilisez DAVdroid, qui est un logiciel open-source (GPLv3). Parce que développer DAVdroid est un travail difficile et nous a pris de nombreuses heures, s\'il vous plaît envisager de faire un don.</string>
@@ -21,7 +22,7 @@
   <string name="startup_google_play_accounts_removed">Erreur information Play Store DRM</string>
   <string name="startup_google_play_accounts_removed_message">Dans certaines conditions, Play Store DRM peut provoquer la disparition de tous les comptes DAVdroid après un redémarrage ou après la mise à niveau de DAVdroid. Si vous êtes concerné par ce problème (et seulement alors), s\'il vous plaît installer \"DAVdroid JB Solution\" du Play Store.</string>
   <string name="startup_google_play_accounts_removed_more_info">Plus d\'informations</string>
-  <string name="startup_opentasks_not_installed">OpenTasks n\'est pas installé</string>
+  <string name="startup_opentasks_not_installed">L\'application OpenTasks n\'est pas installée</string>
   <string name="startup_opentasks_not_installed_message">L\'application OpenTasks n\'est pas disponible, donc DAVdroid ne pourra pas synchroniser des listes de tâches.</string>
   <string name="startup_opentasks_reinstall_davdroid">Après l\'installation OpenTasks, vous devez RE-INSTALLER DAVdroid et ajoutez vos comptes à nouveau (bug Android).</string>
   <string name="startup_opentasks_not_installed_install">Installer OpenTasks</string>
@@ -40,12 +41,13 @@
   <string name="navigation_drawer_subtitle">Adaptateur de synchronisation CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">A propos / Licence</string>
   <string name="navigation_drawer_settings">Paramètres</string>
-  <string name="navigation_drawer_news_updates">Actualité &amp; mise à jour</string>
+  <string name="navigation_drawer_news_updates">Actualités &amp; mises à jour</string>
   <string name="navigation_drawer_external_links">Liens externes</string>
   <string name="navigation_drawer_website">Site Web</string>
-  <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_faq">Foire aux questions</string>
+  <string name="navigation_drawer_forums">Aide/Forum</string>
   <string name="navigation_drawer_donate">Faire un don</string>
-  <string name="account_list_empty">Bienvenue sur DAVdroid!\n\nVous pouvez maintenant ajouter un compte CalDAV/CardDAV.</string>
+  <string name="account_list_empty">Bienvenue sur DAVdroid!\n\nVous pouvez maintenant ajouter un compte CalDAV ou CardDAV.</string>
   <string name="accounts_global_sync_disabled">La synchronisation automatique globale est désactivée</string>
   <string name="accounts_global_sync_enable">Activer</string>
   <!--DavService-->
@@ -95,7 +97,7 @@
   <string name="permissions_calendar">Autorisations calendrier</string>
   <string name="permissions_calendar_details">Pour synchroniser les événements CalDAV avec vos calendriers locaux, DAVdroid a besoin d\'accéder à vos calendriers.</string>
   <string name="permissions_calendar_request">Demande d\'autorisations d\'accéder au calendrier</string>
-  <string name="permissions_contacts">Autorisations contacts</string>
+  <string name="permissions_contacts">Autorisations d\'accès aux contacts</string>
   <string name="permissions_contacts_details">Pour synchroniser les carnets d\'adresses de CardDAV avec votre carnet d\'adresses local, DAVdroid a besoin d\'accéder à vos contacts.</string>
   <string name="permissions_contacts_request">Demande d\'autorisations d\'accéder aux contacts</string>
   <string name="permissions_opentasks">Autorisations OpenTasks</string>
@@ -124,8 +126,8 @@
   <string name="login_account_name_required">Nom du compte requis</string>
   <string name="login_account_not_created">Le compte n\'a pas pu être créé</string>
   <string name="login_configuration_detection">Détection de la configuration</string>
-  <string name="login_querying_server">S\'il vous plaît patienter, nous interrogeons le serveur ...</string>
-  <string name="login_no_caldav_carddav">Aucun service CalDAV ou CardDAV trouvé.</string>
+  <string name="login_querying_server">Veuillez patienter, nous interrogeons le serveur ...</string>
+  <string name="login_no_caldav_carddav">Aucun accès possible au service CalDAV ou CardDAV.</string>
   <string name="login_view_logs">Voir infos de débogage</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Paramètres: %s</string>
@@ -164,6 +166,10 @@
   <string name="settings_sync_wifi_only">Synchronisation en Wifi seulement</string>
   <string name="settings_sync_wifi_only_on">La synchronisation est limitée aux connexions WiFi</string>
   <string name="settings_sync_wifi_only_off">Le type de connexion n\'est pas pris en charge</string>
+  <string name="settings_sync_wifi_only_ssids">Restrictions concernant le nom de réseau WiFi (SSID)</string>
+  <string name="settings_sync_wifi_only_ssids_on">Synchronisation possible seulement en %s</string>
+  <string name="settings_sync_wifi_only_ssids_off">Toutes les connexions WiFi seront utilisées</string>
+  <string name="settings_sync_wifi_only_ssids_message">Liste des points d\'accès WiFi (SSID) autorisés, séparés par des virgules. (Laissez vide pour tous)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Méthode pour les contacts de type groupe</string>
   <string-array name="settings_contact_group_method_values">
@@ -185,6 +191,10 @@
   <string name="settings_manage_calendar_colors">Choisir couleur du calendrier</string>
   <string name="settings_manage_calendar_colors_on">Les couleurs de calendrier sont gérées par DAVdroid</string>
   <string name="settings_manage_calendar_colors_off">Les couleurs de calendrier ne sont pas gérées par DAVdroid</string>
+  <string name="settings_event_colors">Couleur associée aux événements</string>
+  <string name="settings_event_colors_on">Synchroniser la couleur associée aux événements</string>
+  <string name="settings_event_colors_off">Ne pas synchroniser la couleur associée aux événements</string>
+  <string name="settings_event_colors_off_confirm">Modifier la couleur associée aux événements peut affecter les valeurs déjà synchronisées.</string>
   <!--collection management-->
   <string name="create_addressbook">Créer un carnet d\'adresses</string>
   <string name="create_addressbook_display_name_hint">Mon carnet d\'adresses</string>

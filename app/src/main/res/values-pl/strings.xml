@@ -46,6 +46,7 @@
   <string name="navigation_drawer_external_links">Zewnętrzne odnośniki</string>
   <string name="navigation_drawer_website">Strona WWW</string>
   <string name="navigation_drawer_faq">FQA</string>
+  <string name="navigation_drawer_forums">Pomoc / Forum</string>
   <string name="navigation_drawer_donate">Dotacja</string>
   <string name="account_list_empty">Witamy w DAVdroid!\n\nMożesz teraz dodać konto CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Automatyczna synchronizacja dla całego systemu jest wyłączona</string>
@@ -165,6 +166,10 @@
   <string name="settings_sync_wifi_only">Synchronizuj tylko przez WiFi</string>
   <string name="settings_sync_wifi_only_on">Synchronizacja jest ograniczony do połączeń WiFi</string>
   <string name="settings_sync_wifi_only_off">Rodzaj połączenia nie jest brany pod uwagę</string>
+  <string name="settings_sync_wifi_only_ssids">Ograniczenia WiFi SSID</string>
+  <string name="settings_sync_wifi_only_ssids_on">Będzie synchronizować tylko w %s</string>
+  <string name="settings_sync_wifi_only_ssids_off">Wszystkie połączenia WiFi będą używane</string>
+  <string name="settings_sync_wifi_only_ssids_message">Nazwy oddzielone przecinkami (SSID) dozwolonych sieci WiFi (pozostaw puste dla wszystkich)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Metoda grupowania kontaktów</string>
   <string-array name="settings_contact_group_method_values">
@@ -184,6 +189,10 @@
   <string name="settings_manage_calendar_colors">Zarządzaj kolorami kalendarza</string>
   <string name="settings_manage_calendar_colors_on">Kolory kalendarza są zarządzane przez DAVdroid</string>
   <string name="settings_manage_calendar_colors_off">Kolory kalendarze nie są ustawiane przez DAVdroid</string>
+  <string name="settings_event_colors">Obsługa kolorów wydarzeń</string>
+  <string name="settings_event_colors_on">Synchronizuj kolorów zdarzeń</string>
+  <string name="settings_event_colors_off">Nie synchronizuj kolorów zdarzeń</string>
+  <string name="settings_event_colors_off_confirm">Wyłączenie kolorów zdarzeń może usunąć już zsynchronizowane kolory zdarzeń.</string>
   <!--collection management-->
   <string name="create_addressbook">Stwórz książkę adresową</string>
   <string name="create_addressbook_display_name_hint">Moja książka adresowa</string>
