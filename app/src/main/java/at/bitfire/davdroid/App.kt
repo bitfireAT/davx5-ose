@@ -54,8 +54,8 @@ class App: Application() {
     override fun onCreate() {
         super.onCreate()
 
-        CustomCertificates.reinitCertManager(this)
         Logger.reinitLogger(this)
+        CustomCertificates.reinitCertManager(this)
 
         addressBookAccountType = getString(R.string.account_type_address_book)
         addressBooksAuthority = getString(R.string.address_books_authority)
