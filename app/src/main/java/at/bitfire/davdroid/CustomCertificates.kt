@@ -9,13 +9,13 @@
 package at.bitfire.davdroid
 
 import android.content.Context
-import android.os.Build
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.Settings
 import okhttp3.internal.tls.OkHostnameVerifier
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLSocketFactory
+import kotlin.concurrent.thread
 
 object CustomCertificates {
 
@@ -23,17 +23,21 @@ object CustomCertificates {
     var sslSocketFactoryCompat: SSLSocketFactory? = null
     var hostnameVerifier: HostnameVerifier? = null
 
+    /* must not be run from on thread */
     fun reinitCertManager(context: Context) {
         if (BuildConfig.customCerts) {
             certManager?.close()
 
             ServiceDB.OpenHelper(context).use { dbHelper ->
                 val settings = Settings(dbHelper.readableDatabase)
+                val trustSystem = !settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false)
 
-                val mgr = CustomCertManager(context.applicationContext, !settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false))
-                certManager = mgr
-                hostnameVerifier = mgr.hostnameVerifier(OkHostnameVerifier.INSTANCE)
-                sslSocketFactoryCompat = SSLSocketFactoryCompat(mgr)
+                thread {
+                    val mgr = CustomCertManager(context.applicationContext, trustSystem)
+                    certManager = mgr
+                    hostnameVerifier = mgr.hostnameVerifier(OkHostnameVerifier.INSTANCE)
+                    sslSocketFactoryCompat = SSLSocketFactoryCompat(mgr)
+                }
             }
         }
     }
