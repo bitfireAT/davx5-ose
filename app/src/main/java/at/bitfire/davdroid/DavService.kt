@@ -241,103 +241,107 @@ class DavService: Service() {
                 Logger.log.info("Refreshing $serviceType collections of service #$service")
 
                 // create authenticating OkHttpClient (credentials taken from account settings)
-                val httpClient = HttpClient.create(this@DavService, account)
+                HttpClient.Builder(this@DavService, account)
+                        .setForeground(true)
+                        .build().use { client ->
+                    val httpClient = client.okHttpClient
 
-                // refresh home set list (from principal)
-                readPrincipal()?.let { principalUrl ->
-                    Logger.log.fine("Querying principal $principalUrl for home sets")
-                    val principal = DavResource(httpClient, principalUrl)
-                    queryHomeSets(principal)
+                    // refresh home set list (from principal)
+                    readPrincipal()?.let { principalUrl ->
+                        Logger.log.fine("Querying principal $principalUrl for home sets")
+                        val principal = DavResource(httpClient, principalUrl)
+                        queryHomeSets(principal)
 
-                    // refresh home sets: calendar-proxy-read/write-for
-                    for ((resource, proxyRead) in principal.findProperties(CalendarProxyReadFor.NAME) as List<Pair<DavResource, CalendarProxyReadFor>>)
-                        for (href in proxyRead.hrefs) {
-                            Logger.log.fine("Principal is a read-only proxy for $href, checking for home sets")
-                            resource.location.resolve(href)?.let { queryHomeSets(DavResource(httpClient, it)) }
-                        }
-                    for ((resource, proxyWrite) in principal.findProperties(CalendarProxyWriteFor.NAME) as List<Pair<DavResource, CalendarProxyWriteFor>>)
-                        for (href in proxyWrite.hrefs) {
-                            Logger.log.fine("Principal is a read/write proxy for $href, checking for home sets")
-                            resource.location.resolve(href)?.let { queryHomeSets(DavResource(httpClient, it)) }
-                        }
+                        // refresh home sets: calendar-proxy-read/write-for
+                        for ((resource, proxyRead) in principal.findProperties(CalendarProxyReadFor.NAME) as List<Pair<DavResource, CalendarProxyReadFor>>)
+                            for (href in proxyRead.hrefs) {
+                                Logger.log.fine("Principal is a read-only proxy for $href, checking for home sets")
+                                resource.location.resolve(href)?.let { queryHomeSets(DavResource(httpClient, it)) }
+                            }
+                        for ((resource, proxyWrite) in principal.findProperties(CalendarProxyWriteFor.NAME) as List<Pair<DavResource, CalendarProxyWriteFor>>)
+                            for (href in proxyWrite.hrefs) {
+                                Logger.log.fine("Principal is a read/write proxy for $href, checking for home sets")
+                                resource.location.resolve(href)?.let { queryHomeSets(DavResource(httpClient, it)) }
+                            }
 
-                    // refresh home sets: direct group memberships
-                    (principal.properties[GroupMembership.NAME] as GroupMembership?)?.let { groupMembership ->
-                        for (href in groupMembership.hrefs) {
-                            Logger.log.fine("Principal is member of group $href, checking for home sets")
-                            principal.location.resolve(href)?.let { url ->
-                                try {
-                                    queryHomeSets(DavResource(httpClient, url))
-                                } catch(e: HttpException) {
-                                    Logger.log.log(Level.WARNING, "Couldn't query member group", e)
-                                } catch(e: DavException) {
-                                    Logger.log.log(Level.WARNING, "Couldn't query member group", e)
+                        // refresh home sets: direct group memberships
+                        (principal.properties[GroupMembership.NAME] as GroupMembership?)?.let { groupMembership ->
+                            for (href in groupMembership.hrefs) {
+                                Logger.log.fine("Principal is member of group $href, checking for home sets")
+                                principal.location.resolve(href)?.let { url ->
+                                    try {
+                                        queryHomeSets(DavResource(httpClient, url))
+                                    } catch(e: HttpException) {
+                                        Logger.log.log(Level.WARNING, "Couldn't query member group", e)
+                                    } catch(e: DavException) {
+                                        Logger.log.log(Level.WARNING, "Couldn't query member group", e)
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                // remember selected collections
-                val selectedCollections = HashSet<HttpUrl>()
-                collections.values
-                        .filter { it.selected }
-                        .forEach { (url,_) -> HttpUrl.parse(url)?.let { selectedCollections.add(it) } }
+                    // remember selected collections
+                    val selectedCollections = HashSet<HttpUrl>()
+                    collections.values
+                            .filter { it.selected }
+                            .forEach { (url,_) -> HttpUrl.parse(url)?.let { selectedCollections.add(it) } }
 
-                // now refresh collections (taken from home sets)
-                val itHomeSets = homeSets.iterator()
-                while (itHomeSets.hasNext()) {
-                    val homeSetUrl = itHomeSets.next()
-                    Logger.log.fine("Listing home set $homeSetUrl")
+                    // now refresh collections (taken from home sets)
+                    val itHomeSets = homeSets.iterator()
+                    while (itHomeSets.hasNext()) {
+                        val homeSetUrl = itHomeSets.next()
+                        Logger.log.fine("Listing home set $homeSetUrl")
 
-                    val homeSet = DavResource(httpClient, homeSetUrl)
-                    try {
-                        homeSet.propfind(1, *CollectionInfo.DAV_PROPERTIES)
-                        val itCollections = IteratorChain<DavResource>(homeSet.members.iterator(), SingletonIterator(homeSet))
-                        while (itCollections.hasNext()) {
-                            val member = itCollections.next()
-                            val info = CollectionInfo(member)
-                            info.confirmed = true
-                            Logger.log.log(Level.FINE, "Found collection", info)
-
-                            if ((serviceType == Services.SERVICE_CARDDAV && info.type == CollectionInfo.Type.ADDRESS_BOOK) ||
-                                (serviceType == Services.SERVICE_CALDAV && info.type == CollectionInfo.Type.CALENDAR))
-                                collections[member.location] = info
-                        }
-                    } catch(e: HttpException) {
-                        if (e.status in arrayOf(403, 404, 410))
-                            // delete home set only if it was not accessible (40x)
-                            itHomeSets.remove()
-                    }
-                }
-
-                // check/refresh unconfirmed collections
-                val itCollections = collections.entries.iterator()
-                while (itCollections.hasNext()) {
-                    val (url, info) = itCollections.next()
-                    if (!info.confirmed)
+                        val homeSet = DavResource(httpClient, homeSetUrl)
                         try {
-                            val collection = DavResource(httpClient, url)
-                            collection.propfind(0, *CollectionInfo.DAV_PROPERTIES)
-                            val info = CollectionInfo(collection)
-                            info.confirmed = true
+                            homeSet.propfind(1, *CollectionInfo.DAV_PROPERTIES)
+                            val itCollections = IteratorChain<DavResource>(homeSet.members.iterator(), SingletonIterator(homeSet))
+                            while (itCollections.hasNext()) {
+                                val member = itCollections.next()
+                                val info = CollectionInfo(member)
+                                info.confirmed = true
+                                Logger.log.log(Level.FINE, "Found collection", info)
 
-                            // remove unusable collections
-                            if ((serviceType == Services.SERVICE_CARDDAV && info.type != CollectionInfo.Type.ADDRESS_BOOK) ||
-                                (serviceType == Services.SERVICE_CALDAV && info.type != CollectionInfo.Type.CALENDAR))
-                                itCollections.remove()
+                                if ((serviceType == Services.SERVICE_CARDDAV && info.type == CollectionInfo.Type.ADDRESS_BOOK) ||
+                                    (serviceType == Services.SERVICE_CALDAV && info.type == CollectionInfo.Type.CALENDAR))
+                                    collections[member.location] = info
+                            }
                         } catch(e: HttpException) {
                             if (e.status in arrayOf(403, 404, 410))
-                                // delete collection only if it was not accessible (40x)
-                                itCollections.remove()
-                            else
-                                throw e
+                                // delete home set only if it was not accessible (40x)
+                                itHomeSets.remove()
                         }
-                }
+                    }
 
-                // restore selections
-                for (url in selectedCollections)
-                    collections[url]?.let { it.selected = true }
+                    // check/refresh unconfirmed collections
+                    val itCollections = collections.entries.iterator()
+                    while (itCollections.hasNext()) {
+                        val (url, info) = itCollections.next()
+                        if (!info.confirmed)
+                            try {
+                                val collection = DavResource(httpClient, url)
+                                collection.propfind(0, *CollectionInfo.DAV_PROPERTIES)
+                                val info = CollectionInfo(collection)
+                                info.confirmed = true
+
+                                // remove unusable collections
+                                if ((serviceType == Services.SERVICE_CARDDAV && info.type != CollectionInfo.Type.ADDRESS_BOOK) ||
+                                    (serviceType == Services.SERVICE_CALDAV && info.type != CollectionInfo.Type.CALENDAR))
+                                    itCollections.remove()
+                            } catch(e: HttpException) {
+                                if (e.status in arrayOf(403, 404, 410))
+                                    // delete collection only if it was not accessible (40x)
+                                    itCollections.remove()
+                                else
+                                    throw e
+                            }
+                    }
+
+                    // restore selections
+                    for (url in selectedCollections)
+                        collections[url]?.let { it.selected = true }
+                }
 
                 db.beginTransactionNonExclusive()
                 try {

@@ -17,10 +17,10 @@ import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.log.StringHandler
 import at.bitfire.davdroid.model.CollectionInfo
 import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder
 import org.apache.commons.lang3.builder.ToStringBuilder
 import org.xbill.DNS.*
+import java.io.Closeable
 import java.io.IOException
 import java.io.Serializable
 import java.net.URI
@@ -31,8 +31,8 @@ import java.util.logging.Logger
 
 class DavResourceFinder(
         val context: Context,
-        val credentials: LoginCredentials
-) {
+        private val credentials: LoginCredentials
+): Closeable {
 
     enum class Service(val wellKnownName: String) {
         CALDAV("caldav"),
@@ -42,22 +42,25 @@ class DavResourceFinder(
     }
 
     val log = Logger.getLogger("davdroid.DavResourceFinder")!!
-    val logBuffer = StringHandler()
+    private val logBuffer = StringHandler()
     init {
         log.level = Level.FINEST
         log.addHandler(logBuffer)
     }
 
-    val httpClient: OkHttpClient
-    init {
-        val builder = HttpClient.create(context, null, log).newBuilder()
-        httpClient = HttpClient.addAuthentication(builder, null, credentials.userName, credentials.password).build()
-	}
+    private val httpClient: HttpClient = HttpClient.Builder(context, null, log)
+            .addAuthentication(null, credentials.userName, credentials.password)
+            .setForeground(true)
+            .build()
 
     fun cancel() {
         log.warning("Shutting down resource detection")
-        httpClient.dispatcher().executorService().shutdownNow()
-        httpClient.connectionPool().evictAll()
+        httpClient.okHttpClient.dispatcher().executorService().shutdownNow()
+        httpClient.okHttpClient.connectionPool().evictAll()
+    }
+
+    override fun close() {
+        httpClient.close()
     }
 
 
@@ -120,7 +123,7 @@ class DavResourceFinder(
 
         if (config.principal != null && service == Service.CALDAV) {
             // query email address (CalDAV scheduling: calendar-user-address-set)
-            val davPrincipal = DavResource(httpClient, HttpUrl.get(config.principal)!!, log)
+            val davPrincipal = DavResource(httpClient.okHttpClient, HttpUrl.get(config.principal)!!, log)
             try {
                 davPrincipal.propfind(0, CalendarUserAddressSet.NAME)
                 (davPrincipal.properties[CalendarUserAddressSet.NAME] as CalendarUserAddressSet?)?.let { addressSet ->
@@ -151,7 +154,7 @@ class DavResourceFinder(
 
         var principal: HttpUrl? = null
         try {
-            val davBase = DavResource(httpClient, baseURL, log)
+            val davBase = DavResource(httpClient.okHttpClient, baseURL, log)
 
             when (service) {
                 Service.CARDDAV -> {
@@ -258,7 +261,7 @@ class DavResourceFinder(
 
     @Throws(IOException::class)
     fun providesService(url: HttpUrl, service: Service): Boolean {
-        val davPrincipal = DavResource(httpClient, url, log)
+        val davPrincipal = DavResource(httpClient.okHttpClient, url, log)
         try {
             davPrincipal.options()
 
@@ -348,7 +351,7 @@ class DavResourceFinder(
      */
     @Throws(IOException::class, HttpException::class, DavException::class)
     fun getCurrentUserPrincipal(url: HttpUrl, service: Service?): URI? {
-        val dav = DavResource(httpClient, url, log)
+        val dav = DavResource(httpClient.okHttpClient, url, log)
         dav.propfind(0, CurrentUserPrincipal.NAME)
 
         dav.findProperty(CurrentUserPrincipal.NAME)?.let { (dav, second) ->
