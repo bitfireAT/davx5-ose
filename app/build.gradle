@@ -81,7 +81,7 @@ dependencies {
 
     compile 'com.github.yukuku:ambilwarna:2.0.1'
 
-    compile 'com.squareup.okhttp3:logging-interceptor:3.8.1'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.9.0'
     compile 'commons-io:commons-io:2.5'
     compile 'dnsjava:dnsjava:2.1.8'
     compile 'org.apache.commons:commons-lang3:3.6'
@@ -97,8 +97,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
     androidTestCompile 'junit:junit:4.12'
-    androidTestCompile 'com.squareup.okhttp3:mockwebserver:3.8.1'
+    androidTestCompile 'com.squareup.okhttp3:mockwebserver:3.9.0'
 
     testCompile 'junit:junit:4.12'
-    testCompile 'com.squareup.okhttp3:mockwebserver:3.8.1'
+    testCompile 'com.squareup.okhttp3:mockwebserver:3.9.0'
 }
