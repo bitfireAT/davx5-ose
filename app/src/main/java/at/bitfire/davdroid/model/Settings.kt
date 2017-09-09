@@ -9,11 +9,10 @@
 package at.bitfire.davdroid.model
 
 import android.content.BroadcastReceiver
-import android.content.ContentValues;
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
-import at.bitfire.davdroid.CustomCertificates
 import at.bitfire.davdroid.log.Logger
 
 class Settings(
@@ -100,9 +99,7 @@ class Settings(
         }
 
         override fun onReceive(context: Context, intent: Intent) {
-            Logger.log.info("Received broadcast: re-initializing settings (logger/cert manager)")
-
-            CustomCertificates.reinitCertManager(context)
+            Logger.log.info("Received broadcast: re-initializing settings (logger)")
             Logger.reinitLogger(context)
         }
 

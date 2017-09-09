@@ -65,7 +65,7 @@ abstract class SyncManager(
 
     protected lateinit var localCollection: LocalCollection<*>
 
-    protected val httpClient = HttpClient.create(context, settings)
+    protected val httpClient = HttpClient.Builder(context, settings).build()
     protected lateinit var collectionURL: HttpUrl
     protected lateinit var davCollection: DavResource
 
@@ -232,6 +232,8 @@ abstract class SyncManager(
             }
 
             notificationManager.notify(uniqueCollectionId, notificationId(), builder.build())
+        } finally {
+            httpClient.close()
         }
     }
 
@@ -261,7 +263,7 @@ abstract class SyncManager(
             if (fileName != null) {
                 Logger.log.info("$fileName has been deleted locally -> deleting from server")
 
-                val remote = DavResource(httpClient, collectionURL.newBuilder().addPathSegment(fileName).build())
+                val remote = DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build())
                 currentDavResource = remote
                 try {
                     remote.delete(local.eTag)
@@ -306,7 +308,7 @@ abstract class SyncManager(
             currentLocalResource = local
             val fileName = local.fileName
 
-            val remote = DavResource(httpClient, collectionURL.newBuilder().addPathSegment(fileName).build())
+            val remote = DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build())
             currentDavResource = remote
 
             // generate entity to upload (VCard, iCal, whatever)

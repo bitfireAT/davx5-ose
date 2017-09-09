@@ -23,7 +23,6 @@ import at.bitfire.dav4android.property.ResourceType;
 import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.log.Logger;
 import at.bitfire.davdroid.ui.setup.DavResourceFinder.Configuration.ServiceInfo;
-import okhttp3.OkHttpClient;
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -40,7 +39,7 @@ public class DavResourceFinderTest {
     MockWebServer server = new MockWebServer();
 
     DavResourceFinder finder;
-    OkHttpClient client;
+    HttpClient client;
     LoginCredentials credentials;
 
     private static final String
@@ -62,8 +61,9 @@ public class DavResourceFinderTest {
         credentials = new LoginCredentials(URI.create("/"), "mock", "12345");
         finder = new DavResourceFinder(getTargetContext(), credentials);
 
-        client = HttpClient.create(null);
-        client = HttpClient.addAuthentication(client, credentials.getUserName(), credentials.getPassword());
+        client = new HttpClient.Builder()
+                .addAuthentication(null, credentials.getUserName(), credentials.getPassword())
+                .build();
     }
 
     @After
@@ -76,7 +76,7 @@ public class DavResourceFinderTest {
         ServiceInfo info;
 
         // before dav.propfind(), no info is available
-        DavResource dav = new DavResource(client, server.url(PATH_CARDDAV + SUBPATH_PRINCIPAL));
+        DavResource dav = new DavResource(client.getOkHttpClient(), server.url(PATH_CARDDAV + SUBPATH_PRINCIPAL));
         finder.rememberIfAddressBookOrHomeset(dav, info = new ServiceInfo());
         assertEquals(0, info.getCollections().size());
         assertEquals(0, info.getHomeSets().size());
@@ -89,7 +89,7 @@ public class DavResourceFinderTest {
         assertEquals(server.url(PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET + "/").uri(), info.getHomeSets().iterator().next());
 
         // recognize address book
-        dav = new DavResource(client, server.url(PATH_CARDDAV + SUBPATH_ADDRESSBOOK));
+        dav = new DavResource(client.getOkHttpClient(), server.url(PATH_CARDDAV + SUBPATH_ADDRESSBOOK));
         dav.propfind(0, ResourceType.NAME);
         finder.rememberIfAddressBookOrHomeset(dav, info = new ServiceInfo());
         assertEquals(1, info.getCollections().size());

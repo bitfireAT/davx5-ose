@@ -27,11 +27,11 @@ import static org.junit.Assert.assertNull;
 public class HttpClientTest {
 
     MockWebServer server;
-    OkHttpClient httpClient;
+    HttpClient httpClient;
 
     @Before
     public void setUp() throws IOException {
-        httpClient = HttpClient.create(null);
+        httpClient = new HttpClient.Builder().build();
 
         server = new MockWebServer();
         server.start(30000);
@@ -40,6 +40,7 @@ public class HttpClientTest {
     @After
     public void tearDown() throws IOException {
         server.shutdown();
+        httpClient.close();
     }
 
 
@@ -53,7 +54,7 @@ public class HttpClientTest {
                 .addHeader("Set-Cookie", "cookie1=1; path=/")
                 .addHeader("Set-Cookie", "cookie2=2")
                 .setBody("Cookie set"));
-        httpClient.newCall(new Request.Builder()
+        httpClient.getOkHttpClient().newCall(new Request.Builder()
                 .get().url(url)
                 .build()).execute();
         assertNull(server.takeRequest().getHeader("Cookie"));
@@ -64,14 +65,14 @@ public class HttpClientTest {
                 .addHeader("Set-Cookie", "cookie1=1a; path=/; Max-Age=0")
                 .addHeader("Set-Cookie", "cookie2=2a")
                 .setResponseCode(200));
-        httpClient.newCall(new Request.Builder()
+        httpClient.getOkHttpClient().newCall(new Request.Builder()
                 .get().url(url)
                 .build()).execute();
         assertEquals("cookie2=2; cookie1=1", server.takeRequest().getHeader("Cookie"));
 
         server.enqueue(new MockResponse()
                 .setResponseCode(200));
-        httpClient.newCall(new Request.Builder()
+        httpClient.getOkHttpClient().newCall(new Request.Builder()
                 .get().url(url)
                 .build()).execute();
         assertEquals("cookie2=2a", server.takeRequest().getHeader("Cookie"));

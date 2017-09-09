@@ -62,7 +62,7 @@ class TasksSyncManager(
 
     override fun prepare(): Boolean {
         collectionURL = HttpUrl.parse(localTaskList.syncId ?: return false) ?: return false
-        davCollection = DavCalendar(httpClient, collectionURL)
+        davCollection = DavCalendar(httpClient.okHttpClient, collectionURL)
         return true
     }
 
