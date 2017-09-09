@@ -28,7 +28,6 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.Settings
 import at.bitfire.davdroid.resource.LocalTaskList
-import java.sql.Time
 import java.util.*
 import java.util.logging.Level
 

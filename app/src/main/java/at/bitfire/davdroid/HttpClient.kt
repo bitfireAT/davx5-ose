@@ -11,6 +11,7 @@ package at.bitfire.davdroid;
 import android.accounts.Account
 import android.content.Context
 import android.os.Build
+import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.dav4android.BasicDigestAuthHandler
 import at.bitfire.dav4android.UrlUtils
 import at.bitfire.davdroid.log.Logger
@@ -19,7 +20,9 @@ import at.bitfire.davdroid.model.Settings
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
+import okhttp3.internal.tls.OkHostnameVerifier
 import okhttp3.logging.HttpLoggingInterceptor
+import java.io.Closeable
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.text.SimpleDateFormat
@@ -27,81 +30,38 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 
-class HttpClient private constructor() {
+class HttpClient private constructor(
+        val okHttpClient: OkHttpClient,
+        private val certManager: CustomCertManager?
+): Closeable {
 
-    companion object {
-
-        private val client = OkHttpClient()
-        private val userAgentInterceptor = UserAgentInterceptor()
-
-        private val userAgentDate = SimpleDateFormat("yyyy/MM/dd", Locale.US).format(Date(BuildConfig.buildTime))
-        private val userAgent = "DAVdroid/${BuildConfig.VERSION_NAME} ($userAgentDate; dav4android; okhttp3) Android/${Build.VERSION.RELEASE}"
-
-
-        @JvmStatic
-        @JvmOverloads
-        fun create(context: Context?, settings: AccountSettings? = null, logger: java.util.logging.Logger = Logger.log): OkHttpClient {
-            var builder = defaultBuilder(context, logger)
-
-            // use account settings for authentication
-            settings?.let {
-                val userName = it.username()
-                val password = it.password()
-                if (userName != null && password != null)
-                    builder = addAuthentication(builder, null, userName, password)
-            }
-
-            return builder.build()
-        }
-
-        @JvmStatic
-        @Throws(InvalidAccountException::class)
-        fun create(context: Context, account: Account) =
-            create(context, AccountSettings(context, account))
+    override fun close() {
+        certManager?.close()
+    }
 
 
-        private fun defaultBuilder(context: Context?, logger: java.util.logging.Logger): OkHttpClient.Builder {
-            val builder = client.newBuilder()
+    class Builder @JvmOverloads constructor(
+            val context: Context? = null,
+            accountSettings: AccountSettings? = null,
+            logger: java.util.logging.Logger = Logger.log
+    ) {
+        var certManager: CustomCertManager? = null
+        private val orig = OkHttpClient.Builder()
 
-            // use MemorizingTrustManager to manage self-signed certificates
-            if (CustomCertificates.sslSocketFactoryCompat != null && CustomCertificates.certManager != null)
-                builder.sslSocketFactory(CustomCertificates.sslSocketFactoryCompat, CustomCertificates.certManager)
-            CustomCertificates.hostnameVerifier?.let { builder.hostnameVerifier(it) }
-
+        init {
             // set timeouts
-            builder.connectTimeout(30, TimeUnit.SECONDS)
-            builder.writeTimeout(30, TimeUnit.SECONDS)
-            builder.readTimeout(120, TimeUnit.SECONDS)
+            orig.connectTimeout(30, TimeUnit.SECONDS)
+            orig.writeTimeout(30, TimeUnit.SECONDS)
+            orig.readTimeout(120, TimeUnit.SECONDS)
 
-            // don't allow redirects, because it would break PROPFIND handling
-            builder.followRedirects(false)
-
-            // custom proxy support
-            context?.let {
-                ServiceDB.OpenHelper(it).use { dbHelper ->
-                    try {
-                        val settings = Settings(dbHelper.readableDatabase)
-                        if (settings.getBoolean(App.OVERRIDE_PROXY, false)) {
-                            val address = InetSocketAddress(
-                                    settings.getString(App.OVERRIDE_PROXY_HOST, App.OVERRIDE_PROXY_HOST_DEFAULT),
-                                    settings.getInt(App.OVERRIDE_PROXY_PORT, App.OVERRIDE_PROXY_PORT_DEFAULT)
-                            )
-
-                            val proxy = Proxy(Proxy.Type.HTTP, address)
-                            builder.proxy(proxy)
-                            Logger.log.log(Level.INFO, "Using proxy", proxy)
-                        }
-                    } catch(e: Exception) {
-                        Logger.log.log(Level.SEVERE, "Can't set proxy, ignoring", e)
-                    }
-                }
-            }
+            // don't allow redirects by default, because it would break PROPFIND handling
+            orig.followRedirects(false)
 
             // add User-Agent to every request
-            builder.addNetworkInterceptor(userAgentInterceptor)
+            orig.addNetworkInterceptor(UserAgentInterceptor)
 
             // add cookie store for non-persistent cookies (some services like Horde use cookies for session tracking)
-            builder.cookieJar(MemoryCookieStore())
+            orig.cookieJar(MemoryCookieStore())
 
             // add network logging, if requested
             if (logger.isLoggable(Level.FINEST)) {
@@ -109,31 +69,77 @@ class HttpClient private constructor() {
                     message -> logger.finest(message)
                 })
                 loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-                builder.addInterceptor(loggingInterceptor)
+                orig.addInterceptor(loggingInterceptor)
             }
 
-            return builder
+            context?.let {
+                ServiceDB.OpenHelper(context).use { dbHelper ->
+                    val settings = Settings(dbHelper.readableDatabase)
+
+                    // custom proxy support
+                    try {
+                        if (settings.getBoolean(App.OVERRIDE_PROXY, false)) {
+                            val address = InetSocketAddress(
+                                    settings.getString(App.OVERRIDE_PROXY_HOST, App.OVERRIDE_PROXY_HOST_DEFAULT),
+                                    settings.getInt(App.OVERRIDE_PROXY_PORT, App.OVERRIDE_PROXY_PORT_DEFAULT)
+                            )
+
+                            val proxy = Proxy(Proxy.Type.HTTP, address)
+                            orig.proxy(proxy)
+                            Logger.log.log(Level.INFO, "Using proxy", proxy)
+                        }
+                    } catch(e: Exception) {
+                        Logger.log.log(Level.SEVERE, "Can't set proxy, ignoring", e)
+                    }
+
+                    // use cert4android to manage self-signed certificates
+                    if (BuildConfig.customCerts)
+                        customCertManager(CustomCertManager(context, !settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false)))
+                }
+            }
+
+            // use account settings for authentication
+            accountSettings?.let {
+                val userName = it.username()
+                val password = it.password()
+                if (userName != null && password != null)
+                    addAuthentication(null, userName, password)
+            }
         }
 
-        fun addAuthentication(builder: OkHttpClient.Builder, host: String?, username: String, password: String): OkHttpClient.Builder {
-            val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), username, password);
-            return builder
-                    .addNetworkInterceptor(authHandler)
+        constructor(context: Context, account: Account): this(context, AccountSettings(context, account))
+
+        constructor(context: Context, host: String?, username: String, password: String): this(context) {
+            addAuthentication(host, username, password)
+        }
+
+        fun followRedirects(follow: Boolean) { orig.followRedirects(follow) }
+
+        fun customCertManager(manager: CustomCertManager) {
+            certManager = manager
+            orig.sslSocketFactory(SSLSocketFactoryCompat(manager), manager)
+            orig.hostnameVerifier(manager.hostnameVerifier(OkHostnameVerifier.INSTANCE))
+        }
+        fun setForeground(foreground: Boolean): Builder {
+            certManager?.appInForeground = foreground
+            return this
+        }
+
+        fun addAuthentication(host: String?, username: String, password: String): Builder {
+            val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), username, password)
+            orig    .addNetworkInterceptor(authHandler)
                     .authenticator(authHandler)
+            return this
         }
 
-        @JvmOverloads
-        @JvmStatic
-        fun addAuthentication(client: OkHttpClient, host: String? = null, username: String, password: String): OkHttpClient {
-            val builder = client.newBuilder()
-            addAuthentication(builder, host, username, password)
-            return builder.build()
-        }
-
+        fun build() = HttpClient(orig.build(), certManager)
     }
 
 
-    private class UserAgentInterceptor: Interceptor {
+    private object UserAgentInterceptor: Interceptor {
+
+        private val userAgentDate = SimpleDateFormat("yyyy/MM/dd", Locale.US).format(Date(BuildConfig.buildTime))
+        private val userAgent = "DAVdroid/${BuildConfig.VERSION_NAME} ($userAgentDate; dav4android; okhttp3) Android/${Build.VERSION.RELEASE}"
 
         override fun intercept(chain: Interceptor.Chain): Response {
             val locale = Locale.getDefault()

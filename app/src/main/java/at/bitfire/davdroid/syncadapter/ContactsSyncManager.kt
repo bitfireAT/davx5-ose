@@ -120,7 +120,7 @@ class ContactsSyncManager(
         localAddressBook.updateSettings(values)
 
         collectionURL = HttpUrl.parse(localAddressBook.getURL()) ?: return false
-        davCollection = DavAddressBook(httpClient, collectionURL)
+        davCollection = DavAddressBook(httpClient.okHttpClient, collectionURL)
 
         return true
     }
@@ -425,21 +425,20 @@ class ContactsSyncManager(
                 return null
             }
 
-            var resourceClient = HttpClient.create(context)
-
             // authenticate only against a certain host, and only upon request
             val username = settings.username()
             val password = settings.password()
-            if (username != null && password != null)
-                resourceClient = HttpClient.addAuthentication(resourceClient, baseUrl.host(), username, password)
+            val builder = if (username != null && password != null)
+                    HttpClient.Builder(context, baseUrl.host(), username, password)
+                        else
+                    HttpClient.Builder(context)
 
             // allow redirects
-            resourceClient = resourceClient.newBuilder()
-                    .followRedirects(true)
-                    .build()
+            builder.followRedirects(true)
 
+            val client = builder.build()
             try {
-                val response = resourceClient.newCall(Request.Builder()
+                val response = client.okHttpClient.newCall(Request.Builder()
                         .get()
                         .url(httpUrl)
                         .build()).execute()
@@ -450,6 +449,8 @@ class ContactsSyncManager(
                     Logger.log.warning("Couldn't download external resource")
             } catch(e: IOException) {
                 Logger.log.log(Level.SEVERE, "Couldn't download external resource", e)
+            } finally {
+                client.close()
             }
             return null
         }

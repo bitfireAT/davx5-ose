@@ -82,9 +82,12 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
         override fun onStartLoading() = forceLoad()
 
         override fun loadInBackground(): Exception? {
+            var httpClient: HttpClient? = null
             try {
-                val httpClient = HttpClient.create(context, account)
-                val collection = DavResource(httpClient, HttpUrl.parse(collectionInfo.url)!!)
+                httpClient = HttpClient.Builder(context, account)
+                        .setForeground(true)
+                        .build()
+                val collection = DavResource(httpClient.okHttpClient, HttpUrl.parse(collectionInfo.url)!!)
 
                 // delete collection from server
                 collection.delete(null)
@@ -98,6 +101,8 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
                 return null
             } catch(e: Exception) {
                 return e
+            } finally {
+                httpClient?.close()
             }
         }
     }

@@ -10,6 +10,8 @@ package at.bitfire.davdroid.model;
 
 import android.content.ContentValues;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -30,7 +32,19 @@ import static org.junit.Assert.assertTrue;
 
 public class CollectionInfoTest {
 
+    HttpClient httpClient;
     MockWebServer server = new MockWebServer();
+
+    @Before
+    public void setUp() {
+        httpClient = new HttpClient.Builder().build();
+    }
+
+    @After
+    public void shutDown() {
+        httpClient.close();
+    }
+
 
     @Test
     public void testFromDavResource() throws IOException, HttpException, DavException {
@@ -48,7 +62,7 @@ public class CollectionInfoTest {
                         "</response>" +
                         "</multistatus>"));
 
-        DavResource dav = new DavResource(HttpClient.create(null), server.url("/"));
+        DavResource dav = new DavResource(httpClient.getOkHttpClient(), server.url("/"));
         dav.propfind(0, ResourceType.NAME);
         CollectionInfo info = new CollectionInfo(dav);
         assertEquals(CollectionInfo.Type.ADDRESS_BOOK, info.getType());
@@ -72,7 +86,7 @@ public class CollectionInfoTest {
                         "</response>" +
                         "</multistatus>"));
 
-        dav = new DavResource(HttpClient.create(null), server.url("/"));
+        dav = new DavResource(httpClient.getOkHttpClient(), server.url("/"));
         dav.propfind(0, ResourceType.NAME);
         info = new CollectionInfo(dav);
         assertEquals(CollectionInfo.Type.CALENDAR, info.getType());

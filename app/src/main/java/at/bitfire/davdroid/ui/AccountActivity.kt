@@ -28,7 +28,6 @@ import android.support.v7.widget.Toolbar
 import android.view.*
 import android.widget.*
 import at.bitfire.davdroid.App
-import at.bitfire.davdroid.CustomCertificates
 import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -95,16 +94,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
         // load CardDAV/CalDAV collections
         loaderManager.initLoader(0, intent.extras, this)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        CustomCertificates.certManager?.let { it.appInForeground = false }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        CustomCertificates.certManager?.let { it.appInForeground = true }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -406,7 +395,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     class AddressBookAdapter(
             context: Context
     ): ArrayAdapter<CollectionInfo>(context, R.layout.account_carddav_item) {
-
         override fun getView(position: Int, v: View?, parent: ViewGroup?): View {
             val v = v ?: LayoutInflater.from(context).inflate(R.layout.account_carddav_item, parent, false)
             val info = getItem(position)
@@ -435,7 +423,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     class CalendarAdapter(
             context: Context
     ): ArrayAdapter<CollectionInfo>(context, R.layout.account_caldav_item) {
-
         override fun getView(position: Int, v: View?, parent: ViewGroup?): View {
             val v = v ?: LayoutInflater.from(context).inflate(R.layout.account_caldav_item, parent, false)
             val info = getItem(position)
