@@ -182,9 +182,12 @@ class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
                 Logger.log.log(Level.SEVERE, "Couldn't assemble Extended MKCOL request", e)
             }
 
+            var httpClient: HttpClient? = null
             try {
-                val client = HttpClient.create(context, account)
-                val collection = DavResource(client, HttpUrl.parse(info.url)!!)
+                httpClient = HttpClient.Builder(context, account)
+                        .setForeground(true)
+                        .build()
+                val collection = DavResource(httpClient.okHttpClient, HttpUrl.parse(info.url)!!)
 
                 // create collection on remote server
                 collection.mkCol(writer.toString())
@@ -214,6 +217,8 @@ class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
                 }
             } catch(e: Exception) {
                 return e
+            } finally {
+                httpClient?.close()
             }
             return null
         }

@@ -53,7 +53,6 @@ class CalendarSyncManager(
 
     val MAX_MULTIGET = 20
 
-
     init {
         localCollection = localCalendar
     }
@@ -65,7 +64,7 @@ class CalendarSyncManager(
 
     override fun prepare(): Boolean {
         collectionURL = HttpUrl.parse(localCalendar.name ?: return false) ?: return false
-        davCollection = DavCalendar(httpClient, collectionURL)
+        davCollection = DavCalendar(httpClient.okHttpClient, collectionURL)
         return true
     }
 

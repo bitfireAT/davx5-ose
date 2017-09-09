@@ -16,8 +16,9 @@ import android.support.v7.preference.EditTextPreference
 import android.support.v7.preference.Preference
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.support.v7.preference.SwitchPreferenceCompat
+import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.davdroid.App
-import at.bitfire.davdroid.CustomCertificates
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.ServiceDB
@@ -112,17 +113,17 @@ class AppSettingsActivity: AppCompatActivity() {
             }
 
             val prefDistrustSystemCerts = findPreference("distrust_system_certs") as SwitchPreferenceCompat
-            if (CustomCertificates.certManager == null)
-                prefDistrustSystemCerts.isVisible = false
-            else
+            if (BuildConfig.customCerts)
                 prefDistrustSystemCerts.isChecked = settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false)
+            else
+                prefDistrustSystemCerts.isVisible = false
             prefDistrustSystemCerts.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 setDistrustSystemCerts(prefDistrustSystemCerts.isChecked)
                 true
             }
 
             val prefResetCertificates = findPreference("reset_certificates")
-            if (CustomCertificates.certManager == null)
+            if (!BuildConfig.customCerts)
                 prefResetCertificates.isVisible = false
             prefResetCertificates.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 resetCertificates()
@@ -148,17 +149,11 @@ class AppSettingsActivity: AppCompatActivity() {
 
         private fun setDistrustSystemCerts(distrust: Boolean) {
             settings.putBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, distrust)
-
-            // re-initialize certificate manager
-            CustomCertificates.reinitCertManager(context)
-
-            // reinitialize certificate manager of :sync process
-            context.sendBroadcast(Intent(Settings.ReinitSettingsReceiver.ACTION_REINIT_SETTINGS))
         }
 
         private fun resetCertificates() {
-            CustomCertificates.certManager?.resetCertificates()
-            Snackbar.make(view!!, getString(R.string.app_settings_reset_certificates_success), Snackbar.LENGTH_LONG).show()
+            if (CustomCertManager.resetCertificates(activity))
+                Snackbar.make(view!!, getString(R.string.app_settings_reset_certificates_success), Snackbar.LENGTH_LONG).show()
         }
 
         private fun setExternalLogging(externalLogging: Boolean) {

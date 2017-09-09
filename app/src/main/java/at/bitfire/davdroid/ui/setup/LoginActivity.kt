@@ -14,7 +14,6 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import at.bitfire.davdroid.CustomCertificates
 import at.bitfire.davdroid.R
 import java.util.*
 
@@ -55,16 +54,6 @@ class LoginActivity: AppCompatActivity() {
             fragmentManager.beginTransaction()
                     .replace(android.R.id.content, DefaultLoginCredentialsFragment())
                     .commit()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        CustomCertificates.certManager?.let { it.appInForeground = true }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        CustomCertificates.certManager?.let { it.appInForeground = false }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
