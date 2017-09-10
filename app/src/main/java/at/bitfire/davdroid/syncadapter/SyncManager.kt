@@ -34,6 +34,7 @@ import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.vcard4android.ContactsStorageException
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
+import java.io.Closeable
 import java.io.IOException
 import java.util.*
 import java.util.logging.Level
@@ -46,7 +47,7 @@ abstract class SyncManager(
         val authority: String,
         val syncResult: SyncResult,
         val uniqueCollectionId: String
-) {
+): Closeable {
 
     val SYNC_PHASE_PREPARE = 0
     val SYNC_PHASE_QUERY_CAPABILITIES = 1
@@ -232,9 +233,11 @@ abstract class SyncManager(
             }
 
             notificationManager.notify(uniqueCollectionId, notificationId(), builder.build())
-        } finally {
-            httpClient.close()
         }
+    }
+
+    override fun close() {
+        httpClient.close()
     }
 
 
