@@ -39,8 +39,9 @@ class ContactsSyncAdapterService: SyncAdapterService() {
                 Logger.log.info("Synchronizing address book: ${addressBook.getURL()}")
                 Logger.log.info("Taking settings from: ${addressBook.getMainAccount()}")
 
-                ContactsSyncManager(context, account, settings, extras, authority, syncResult, provider, addressBook)
-                        .performSync()
+                ContactsSyncManager(context, account, settings, extras, authority, syncResult, provider, addressBook).use {
+                    it.performSync()
+                }
             } catch(e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't sync contacts", e)
             }
