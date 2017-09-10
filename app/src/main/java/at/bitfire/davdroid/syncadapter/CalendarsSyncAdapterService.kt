@@ -50,8 +50,9 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
 
                 for (calendar in AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)) {
                     Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
-                    CalendarSyncManager(context, account, settings, extras, authority, syncResult, provider, calendar)
-                            .performSync()
+                    CalendarSyncManager(context, account, settings, extras, authority, syncResult, provider, calendar).use {
+                        it.performSync()
+                    }
                 }
             } catch(e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't sync calendars", e)
