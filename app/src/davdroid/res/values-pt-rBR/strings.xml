@@ -191,6 +191,10 @@
   <string name="settings_manage_calendar_colors">Gerenciar cores dos calendários</string>
   <string name="settings_manage_calendar_colors_on">Cores dos calendários definidas pelo DAVdroid</string>
   <string name="settings_manage_calendar_colors_off">Cores dos calendários não definidas pelo DAVdroid</string>
+  <string name="settings_event_colors">Suporte para cor de evento</string>
+  <string name="settings_event_colors_on">Sincronizar cores de eventos</string>
+  <string name="settings_event_colors_off">Não sincronizar cores de eventos</string>
+  <string name="settings_event_colors_off_confirm">Desativar as cores de eventos poderá remover as que já foram sincronizadas</string>
   <!--collection management-->
   <string name="create_addressbook">Criar livro de endereços</string>
   <string name="create_addressbook_display_name_hint">Meu livro de endereços</string>
