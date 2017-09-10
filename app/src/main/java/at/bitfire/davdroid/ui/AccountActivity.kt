@@ -39,6 +39,7 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.ContactsStorageException
+import kotlinx.android.synthetic.main.account_caldav_item.view.*
 import kotlinx.android.synthetic.main.activity_account.*
 import java.util.*
 import java.util.logging.Level
@@ -167,11 +168,13 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     }
 
 
-    private val onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
+    private val onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, _ ->
+        if (!view.isEnabled)
+            return@OnItemClickListener
+
         val list = parent as ListView
         val adapter = list.adapter as ArrayAdapter<CollectionInfo>
         val info = adapter.getItem(position)
-
         val nowChecked = !info.selected
 
         OpenHelper(this@AccountActivity).use { dbHelper ->
@@ -426,6 +429,10 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         override fun getView(position: Int, v: View?, parent: ViewGroup?): View {
             val v = v ?: LayoutInflater.from(context).inflate(R.layout.account_caldav_item, parent, false)
             val info = getItem(position)
+
+            val enabled = info.selected || info.supportsVEVENT || info.supportsVTODO
+            v.isEnabled = enabled
+            v.checked.isEnabled = enabled
 
             val checked: CheckBox = v.findViewById(R.id.checked)
             checked.isChecked = info.selected
