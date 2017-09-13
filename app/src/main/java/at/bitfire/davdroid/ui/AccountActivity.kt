@@ -8,20 +8,25 @@
 
 package at.bitfire.davdroid.ui
 
+import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.app.Dialog
 import android.app.LoaderManager
 import android.content.*
+import android.content.pm.PackageManager
 import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.support.design.widget.Snackbar
+import android.support.v4.app.ActivityCompat
 import android.support.v4.app.DialogFragment
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
@@ -93,8 +98,19 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         caldav_menu.inflateMenu(R.menu.caldav_actions)
         caldav_menu.setOnMenuItemClickListener(this)
 
+        // Webcal toolbar
+        webcal_menu.overflowIcon = icMenu
+        webcal_menu.inflateMenu(R.menu.webcal_actions)
+        webcal_menu.setOnMenuItemClickListener(this)
+
         // load CardDAV/CalDAV collections
-        loaderManager.initLoader(0, intent.extras, this)
+        loaderManager.initLoader(0, null, this)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (grantResults.any { it == PackageManager.PERMISSION_GRANTED })
+            // we've got additional permissions; try to load everything again
+            reload()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -213,6 +229,46 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         true
     }
 
+    private val webcalOnItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
+        val info = parent.getItemAtPosition(position) as CollectionInfo
+        var uri = Uri.parse(info.source)
+
+        val nowChecked = !info.selected
+        if (nowChecked) {
+            // subscribe to Webcal feed
+            when {
+                uri.scheme.equals("http", true) -> uri = uri.buildUpon().scheme("webcal").build()
+                uri.scheme.equals("https", true) -> uri = uri.buildUpon().scheme("webcals").build()
+            }
+
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            if (packageManager.resolveActivity(intent, 0) != null)
+                startActivity(intent)
+            else {
+                val snack = Snackbar.make(parent, R.string.account_no_webcal_handler_found, Snackbar.LENGTH_LONG)
+
+                val installIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=at.bitfire.icsdroid"))
+                if (packageManager.resolveActivity(installIntent, 0) != null)
+                    snack.setAction(R.string.account_install_icsdroid, {
+                        startActivity(installIntent)
+                    })
+
+                snack.show()
+            }
+        } else {
+            // unsubscribe from Webcal feed
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED)
+                contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
+                    try {
+                        provider.delete(CalendarContract.Calendars.CONTENT_URI, "${CalendarContract.Calendars.NAME}=?", arrayOf(info.source))
+                        reload()
+                    } finally {
+                        provider.release()
+                    }
+                }
+        }
+    }
+
 
     /* LOADERS AND LOADED DATA */
 
@@ -233,7 +289,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             AccountLoader(this, account)
 
     fun reload() {
-        loaderManager.restartLoader(0, intent.extras, this)
+        loaderManager.restartLoader(0, null, this)
     }
 
     override fun onLoadFinished(loader: Loader<AccountInfo>, info: AccountInfo?) {
@@ -265,12 +321,26 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             caldav_menu.menu.findItem(R.id.create_calendar).isEnabled = caldav.hasHomeSets
 
             val adapter = CalendarAdapter(this)
-            adapter.addAll(caldav.collections)
+            adapter.addAll(caldav.collections.filter { it.type == CollectionInfo.Type.CALENDAR })
             calendars.adapter = adapter
             calendars.onItemClickListener = onItemClickListener
             calendars.onItemLongClickListener = onItemLongClickListener
 
             View.VISIBLE
+        } ?: View.GONE
+
+        webcal.visibility = info?.caldav?.let {
+            val collections = it.collections.filter { it.type == CollectionInfo.Type.WEBCAL }
+
+            val adapter = CalendarAdapter(this)
+            adapter.addAll(collections)
+            webcals.adapter = adapter
+            webcals.onItemClickListener = webcalOnItemClickListener
+
+            if (collections.isNotEmpty())
+                View.VISIBLE
+            else
+                View.GONE
         } ?: View.GONE
     }
 
@@ -281,9 +351,9 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
 
     class AccountLoader(
-            context: Context,
+            val activity: AccountActivity,
             val account: Account
-    ): AsyncTaskLoader<AccountInfo>(context), DavService.RefreshingStatusListener, ServiceConnection, SyncStatusObserver {
+    ): AsyncTaskLoader<AccountInfo>(activity), DavService.RefreshingStatusListener, ServiceConnection, SyncStatusObserver {
 
         private var davService: DavService.InfoBinder? = null
         private lateinit var syncStatusListener: Any
@@ -387,6 +457,29 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                     collections.add(CollectionInfo(values))
                 }
             }
+
+            // Webcal: check whether calendar is already subscribed by ICSdroid
+            // (or any other app that stores the URL in Calendars.NAME)
+            val webcalCollections = collections.filter { it.type == CollectionInfo.Type.WEBCAL }
+            if (webcalCollections.isNotEmpty()) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
+                    context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
+                        try {
+                            for (info in webcalCollections) {
+                                provider.query(CalendarContract.Calendars.CONTENT_URI, null,
+                                        "${CalendarContract.Calendars.NAME}=?", arrayOf(info.source), null)?.use { cursor ->
+                                    if (cursor.moveToNext())
+                                        info.selected = true
+                                }
+                            }
+                        } finally {
+                            provider.release()
+                        }
+                    }
+                else
+                    ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_CALENDAR), 0)
+            }
+
             return collections
         }
 

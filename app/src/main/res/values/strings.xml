@@ -113,10 +113,13 @@
     <string name="account_delete_confirmation_text">All local copies of address books, calendars and task lists will be deleted.</string>
     <string name="account_carddav">CardDAV</string>
     <string name="account_caldav">CalDAV</string>
+    <string name="account_webcal">Webcal</string>
     <string name="account_refresh_address_book_list">Refresh address book list</string>
     <string name="account_create_new_address_book">Create new address book</string>
     <string name="account_refresh_calendar_list">Refresh calendar list</string>
     <string name="account_create_new_calendar">Create new calendar</string>
+    <string name="account_no_webcal_handler_found">No Webcal-capable app found</string>
+    <string name="account_install_icsdroid">Install ICSdroid</string>
 
     <!-- PermissionsActivity -->
     <string name="permissions_title">DAVdroid permissions</string>
