@@ -46,6 +46,7 @@ class ServiceDB {
     object Collections {
         @JvmField val _TABLE = "collections"
         @JvmField val ID = "_id"
+        @JvmField val TYPE = "type"
         @JvmField val SERVICE_ID = "serviceID"
         @JvmField val URL = "url"
         @JvmField val READ_ONLY = "readOnly"
@@ -55,6 +56,7 @@ class ServiceDB {
         @JvmField val TIME_ZONE = "timezone"
         @JvmField val SUPPORTS_VEVENT = "supportsVEVENT"
         @JvmField val SUPPORTS_VTODO = "supportsVTODO"
+        @JvmField val SOURCE = "source"
         @JvmField val SYNC = "sync"
     }
 
@@ -76,7 +78,7 @@ class ServiceDB {
 
         companion object {
             val DATABASE_NAME = "services.db"
-            val DATABASE_VERSION = 1
+            val DATABASE_VERSION = 2
         }
 
         override fun onConfigure(db: SQLiteDatabase) {
@@ -108,6 +110,7 @@ class ServiceDB {
             db.execSQL("CREATE TABLE ${Collections._TABLE}(" +
                     "${Collections.ID} INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "${Collections.SERVICE_ID} INTEGER NOT NULL REFERENCES ${Services._TABLE} ON DELETE CASCADE," +
+                    "${Collections.TYPE} TEXT NOT NULL," +
                     "${Collections.URL} TEXT NOT NULL," +
                     "${Collections.READ_ONLY} INTEGER DEFAULT 0 NOT NULL," +
                     "${Collections.DISPLAY_NAME} TEXT NULL," +
@@ -116,12 +119,22 @@ class ServiceDB {
                     "${Collections.TIME_ZONE} TEXT NULL," +
                     "${Collections.SUPPORTS_VEVENT} INTEGER NULL," +
                     "${Collections.SUPPORTS_VTODO} INTEGER NULL," +
+                    "${Collections.SOURCE} TEXT NULL," +
                     "${Collections.SYNC} INTEGER DEFAULT 0 NOT NULL)")
             db.execSQL("CREATE UNIQUE INDEX collections_service_url ON ${Collections._TABLE}(${Collections.SERVICE_ID},${Collections.URL})")
         }
 
         override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-            // no different versions yet
+            if (oldVersion == 1 && newVersion == 2) {
+                // the only possible migration at the moment
+                db.execSQL("ALTER TABLE ${Collections._TABLE} ADD COLUMN ${Collections.TYPE} TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE ${Collections._TABLE} ADD COLUMN ${Collections.SOURCE} TEXT NULL")
+                db.execSQL("UPDATE ${Collections._TABLE} SET ${Collections.TYPE}=(" +
+                            "SELECT CASE ${Services.SERVICE} WHEN ? THEN ? ELSE ? END " +
+                                "FROM ${Services._TABLE} WHERE ${Services.ID}=${Collections._TABLE}.${Collections.SERVICE_ID}" +
+                        ")",
+                        arrayOf(Services.SERVICE_CALDAV, CollectionInfo.Type.CALENDAR, CollectionInfo.Type.ADDRESS_BOOK))
+            }
         }
 
 

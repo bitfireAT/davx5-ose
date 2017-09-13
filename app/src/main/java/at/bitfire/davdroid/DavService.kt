@@ -304,7 +304,7 @@ class DavService: Service() {
                                 Logger.log.log(Level.FINE, "Found collection", info)
 
                                 if ((serviceType == Services.SERVICE_CARDDAV && info.type == CollectionInfo.Type.ADDRESS_BOOK) ||
-                                    (serviceType == Services.SERVICE_CALDAV && info.type == CollectionInfo.Type.CALENDAR))
+                                    (serviceType == Services.SERVICE_CALDAV && arrayOf(CollectionInfo.Type.CALENDAR, CollectionInfo.Type.WEBCAL).contains(info.type)))
                                     collections[member.location] = info
                             }
                         } catch(e: HttpException) {
@@ -327,7 +327,7 @@ class DavService: Service() {
 
                                 // remove unusable collections
                                 if ((serviceType == Services.SERVICE_CARDDAV && info.type != CollectionInfo.Type.ADDRESS_BOOK) ||
-                                    (serviceType == Services.SERVICE_CALDAV && info.type != CollectionInfo.Type.CALENDAR))
+                                    (serviceType == Services.SERVICE_CALDAV && !arrayOf(CollectionInfo.Type.CALENDAR, CollectionInfo.Type.WEBCAL).contains(info.type)))
                                     itCollections.remove()
                             } catch(e: HttpException) {
                                 if (e.status in arrayOf(403, 404, 410))
