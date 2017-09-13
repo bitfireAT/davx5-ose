@@ -7,13 +7,9 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:icon="@drawable/ic_share_action"
-        android:title="@string/send"
-        app:showAsAction="always"
-        android:onClick="onShare"/>
+    <item android:id="@+id/refresh_calendars"
+          android:title="@string/account_refresh_calendar_list"/>
 
 </menu>
