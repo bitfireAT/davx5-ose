@@ -327,7 +327,8 @@ class DavService: Service() {
 
                                 // remove unusable collections
                                 if ((serviceType == Services.SERVICE_CARDDAV && info.type != CollectionInfo.Type.ADDRESS_BOOK) ||
-                                    (serviceType == Services.SERVICE_CALDAV && !arrayOf(CollectionInfo.Type.CALENDAR, CollectionInfo.Type.WEBCAL).contains(info.type)))
+                                    (serviceType == Services.SERVICE_CALDAV && !arrayOf(CollectionInfo.Type.CALENDAR, CollectionInfo.Type.WEBCAL).contains(info.type)) ||
+                                    (info.type == CollectionInfo.Type.WEBCAL && info.source == null))
                                     itCollections.remove()
                             } catch(e: HttpException) {
                                 if (e.status in arrayOf(403, 404, 410))
