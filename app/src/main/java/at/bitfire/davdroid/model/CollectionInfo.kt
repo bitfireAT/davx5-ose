@@ -30,8 +30,10 @@ data class CollectionInfo @JvmOverloads constructor(
         var timeZone: String? = null,
         var supportsVEVENT: Boolean = false,
         var supportsVTODO: Boolean = false,
-
         var selected: Boolean = false,
+
+        // subscriptions
+        var source: String? = null,
 
         // non-persistent properties
         var confirmed: Boolean = false
@@ -39,7 +41,8 @@ data class CollectionInfo @JvmOverloads constructor(
 
     enum class Type {
         ADDRESS_BOOK,
-        CALENDAR
+        CALENDAR,
+        WEBCAL          // iCalendar subscription
     }
 
     companion object {
@@ -50,7 +53,8 @@ data class CollectionInfo @JvmOverloads constructor(
             CurrentUserPrivilegeSet.NAME,
             DisplayName.NAME,
             AddressbookDescription.NAME, SupportedAddressData.NAME,
-            CalendarDescription.NAME, CalendarColor.NAME, SupportedCalendarComponentSet.NAME
+            CalendarDescription.NAME, CalendarColor.NAME, SupportedCalendarComponentSet.NAME,
+            Source.NAME
         )
 
     }
@@ -61,6 +65,7 @@ data class CollectionInfo @JvmOverloads constructor(
             when {
                 type.types.contains(ResourceType.ADDRESSBOOK) -> this.type = Type.ADDRESS_BOOK
                 type.types.contains(ResourceType.CALENDAR)    -> this.type = Type.CALENDAR
+                type.types.contains(ResourceType.SUBSCRIBED)  -> this.type = Type.WEBCAL
             }
         }
 
@@ -89,6 +94,10 @@ data class CollectionInfo @JvmOverloads constructor(
                     supportsVTODO = it.supportsTasks
                 }
             }
+            Type.WEBCAL -> {
+                (dav.properties[Source.NAME] as Source?)?.let { source = it.hrefs.firstOrNull() }
+                supportsVEVENT = true
+            }
         }
     }
 
@@ -96,6 +105,11 @@ data class CollectionInfo @JvmOverloads constructor(
     constructor(values: ContentValues): this(values.getAsString(Collections.URL)) {
         id = values.getAsLong(Collections.ID)
         serviceID = values.getAsLong(Collections.SERVICE_ID)
+        type = try {
+            Type.valueOf(values.getAsString(Collections.TYPE))
+        } catch (e: IllegalArgumentException) {
+            null
+        }
 
         readOnly = values.getAsInteger(Collections.READ_ONLY) != 0
         displayName = values.getAsString(Collections.DISPLAY_NAME)
@@ -107,12 +121,15 @@ data class CollectionInfo @JvmOverloads constructor(
         supportsVEVENT = getAsBooleanOrNull(values, Collections.SUPPORTS_VEVENT) ?: false
         supportsVTODO = getAsBooleanOrNull(values, Collections.SUPPORTS_VTODO) ?: false
 
+        source = values.getAsString(Collections.SOURCE)
+
         selected = values.getAsInteger(Collections.SYNC) != 0
     }
 
     fun toDB(): ContentValues {
         val values = ContentValues()
         // Collections.SERVICE_ID is never changed
+        type?.let { values.put(Collections.TYPE, it.name) }
 
         values.put(Collections.URL, url)
         values.put(Collections.READ_ONLY, if (readOnly) 1 else 0)
@@ -123,6 +140,8 @@ data class CollectionInfo @JvmOverloads constructor(
         values.put(Collections.TIME_ZONE, timeZone)
         values.put(Collections.SUPPORTS_VEVENT, if (supportsVEVENT) 1 else 0)
         values.put(Collections.SUPPORTS_VTODO, if (supportsVTODO) 1 else 0)
+
+        values.put(Collections.SOURCE, source)
 
         values.put(Collections.SYNC, if (selected) 1 else 0)
         return values
