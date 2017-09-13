@@ -93,6 +93,8 @@
   <string name="account_create_new_address_book">Neues Adressbuch erstellen</string>
   <string name="account_refresh_calendar_list">Kalender neu erkennen</string>
   <string name="account_create_new_calendar">Neuen Kalender erstellen</string>
+  <string name="account_no_webcal_handler_found">Keine Webcal-App gefunden</string>
+  <string name="account_install_icsdroid">ICSdroid installieren</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">DAVdroid-Berechtigungen</string>
   <string name="permissions_calendar">Kalender-Zugriff</string>
