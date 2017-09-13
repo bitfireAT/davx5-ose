@@ -107,7 +107,7 @@ data class CollectionInfo @JvmOverloads constructor(
         serviceID = values.getAsLong(Collections.SERVICE_ID)
         type = try {
             Type.valueOf(values.getAsString(Collections.TYPE))
-        } catch (e: IllegalArgumentException) {
+        } catch (e: Exception) {
             null
         }
 
