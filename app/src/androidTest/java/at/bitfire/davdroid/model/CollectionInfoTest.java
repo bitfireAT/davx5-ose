@@ -104,6 +104,7 @@ public class CollectionInfoTest {
         ContentValues values = new ContentValues();
         values.put(Collections.ID, 1);
         values.put(Collections.SERVICE_ID, 1);
+        values.put(Collections.TYPE, CollectionInfo.Type.CALENDAR.name());
         values.put(Collections.URL, "http://example.com");
         values.put(Collections.READ_ONLY, 1);
         values.put(Collections.DISPLAY_NAME, "display name");
@@ -115,6 +116,7 @@ public class CollectionInfoTest {
         values.put(Collections.SYNC, 1);
 
         CollectionInfo info = new CollectionInfo(values);
+        assertEquals(CollectionInfo.Type.CALENDAR, info.getType());
         assertEquals(1, (long)info.getId());
         assertEquals(1, (long)info.getServiceID());
         assertEquals("http://example.com", info.getUrl());
