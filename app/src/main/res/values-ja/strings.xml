@@ -146,16 +146,6 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">%d 分ごと + ローカルの変更時はすぐに</string>
   <string name="settings_sync_interval_calendars">カレンダー同期間隔</string>
   <string name="settings_sync_interval_tasks">タスク同期間隔</string>
-  <string-array name="settings_sync_interval_names">
-    <item>手動のみ</item>
-    <item>5 分ごと</item>
-    <item>10 分ごと</item>
-    <item>15 分ごと</item>
-    <item>1 時間ごと</item>
-    <item>2 時間ごと</item>
-    <item>4 時間ごと</item>
-    <item>1 日 1 回</item>
-  </string-array>
   <string name="settings_sync_wifi_only">WiFi でのみ同期</string>
   <string name="settings_sync_wifi_only_on">同期は WiFi 接続に制限されます</string>
   <string name="settings_sync_wifi_only_off">接続の種類は考慮されません</string>

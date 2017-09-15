@@ -118,26 +118,6 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Her %d dakika + yerel değişikliklerde hemen</string>
   <string name="settings_sync_interval_calendars">Takvimler senk. aralığı</string>
   <string name="settings_sync_interval_tasks">İşler senk. aralığı</string>
-  <string-array name="settings_sync_interval_seconds">
-    <item>-1</item>
-    <item>300</item>
-    <item>600</item>
-    <item>900</item>
-    <item>3600</item>
-    <item>7200</item>
-    <item>14400</item>
-    <item>86400</item>
-  </string-array>
-  <string-array name="settings_sync_interval_names">
-    <item>Sadece elle</item>
-    <item>Her 5 dakikada bir</item>
-    <item>Her 10 dakikada bir</item>
-    <item>Her 15 dakikada bir</item>
-    <item>Her saatte bir</item>
-    <item>Her 2 saatte bir</item>
-    <item>Her 4 saatte bir</item>
-    <item>Günde bir</item>
-  </string-array>
   <string name="settings_sync_wifi_only">Sadece WiFi üzerinden senkronize et</string>
   <string name="settings_sync_wifi_only_on">Senkronizasyon WiFi bağlantıları ile kısıtlıdır</string>
   <string name="settings_sync_wifi_only_off">Bağlantı tipi göz önünde bulundurulmaz</string>
