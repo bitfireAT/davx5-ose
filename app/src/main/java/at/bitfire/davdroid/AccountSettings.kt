@@ -231,7 +231,7 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
             try {
                 // don't run syncs during the migration
                 ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0)
-                ContentResolver.setIsSyncable(account, App.addressBooksAuthority, 0)
+                ContentResolver.setIsSyncable(account, context.getString(R.string.address_books_authority), 0)
                 ContentResolver.cancelSync(account, null)
 
                 // get previous address book settings (including URL)
@@ -251,7 +251,7 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
                         info.type = CollectionInfo.Type.ADDRESS_BOOK
                         info.displayName = account.name
                         Logger.log.log(Level.INFO, "Creating new address book account", url)
-                        val addressBookAccount = Account(LocalAddressBook.accountName(account, info), App.addressBookAccountType)
+                        val addressBookAccount = Account(LocalAddressBook.accountName(account, info), context.getString(R.string.account_type_address_book))
                         if (!accountManager.addAccountExplicitly(addressBookAccount, null, LocalAddressBook.initialUserData(account, info.url)))
                             throw ContactsStorageException("Couldn't create address book account")
 
@@ -287,8 +287,8 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
         accountManager.setUserData(account, KEY_SETTINGS_VERSION, "6")
 
         // request sync of new address book account
-        ContentResolver.setIsSyncable(account, App.addressBooksAuthority, 1)
-        setSyncInterval(App.addressBooksAuthority, Constants.DEFAULT_SYNC_INTERVAL)
+        ContentResolver.setIsSyncable(account, context.getString(R.string.address_books_authority), 1)
+        setSyncInterval(context.getString(R.string.address_books_authority), Constants.DEFAULT_SYNC_INTERVAL)
     }
 
     /* Android 7.1.1 OpenTasks fix */

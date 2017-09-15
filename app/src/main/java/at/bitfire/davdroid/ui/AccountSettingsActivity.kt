@@ -25,8 +25,9 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.*
 import android.support.v7.preference.Preference.OnPreferenceChangeListener
 import android.view.MenuItem
-import at.bitfire.davdroid.*
+import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.ical4android.TaskProvider
@@ -108,7 +109,7 @@ class AccountSettingsActivity: AppCompatActivity() {
 
             // category: synchronization
             val prefSyncContacts = findPreference("sync_interval_contacts") as ListPreference
-            val syncIntervalContacts = settings.getSyncInterval(App.addressBooksAuthority)
+            val syncIntervalContacts = settings.getSyncInterval(getString(R.string.address_books_authority))
             if (syncIntervalContacts != null) {
                 prefSyncContacts.value = syncIntervalContacts.toString()
                 if (syncIntervalContacts == AccountSettings.SYNC_INTERVAL_MANUALLY)
@@ -116,7 +117,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                 else
                     prefSyncContacts.summary = getString(R.string.settings_sync_summary_periodically, syncIntervalContacts / 60)
                 prefSyncContacts.onPreferenceChangeListener = OnPreferenceChangeListener { _, newValue ->
-                    settings.setSyncInterval(App.addressBooksAuthority, (newValue as String).toLong())
+                    settings.setSyncInterval(getString(R.string.address_books_authority), (newValue as String).toLong())
                     loaderManager.restartLoader(0, arguments, this)
                     false
                 }

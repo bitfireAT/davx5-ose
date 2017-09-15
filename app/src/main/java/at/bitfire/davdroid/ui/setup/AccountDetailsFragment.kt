@@ -120,9 +120,9 @@ class AccountDetailsFragment: Fragment() {
                     }
 
                     // contact sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_address_books.xml
-                    settings.setSyncInterval(App.addressBooksAuthority, Constants.DEFAULT_SYNC_INTERVAL)
+                    settings.setSyncInterval(getString(R.string.address_books_authority), Constants.DEFAULT_SYNC_INTERVAL)
                 } else
-                    ContentResolver.setIsSyncable(account, App.addressBooksAuthority, 0)
+                    ContentResolver.setIsSyncable(account, getString(R.string.address_books_authority), 0)
 
                 if (config.calDAV != null) {
                     // insert CalDAV service
