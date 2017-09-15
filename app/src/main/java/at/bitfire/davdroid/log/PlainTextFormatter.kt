@@ -8,18 +8,21 @@
 
 package at.bitfire.davdroid.log
 
+import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.apache.commons.lang3.time.DateFormatUtils
 import java.util.logging.Formatter
 import java.util.logging.LogRecord
 
 class PlainTextFormatter private constructor(
-        val logcat: Boolean
+        private val logcat: Boolean
 ): Formatter() {
 
     companion object {
         @JvmField val LOGCAT = PlainTextFormatter(true)
         @JvmField val DEFAULT = PlainTextFormatter(false)
+
+        val MAX_MESSAGE_LENGTH = 20000
     }
 
     override fun format(r: LogRecord): String {
@@ -33,7 +36,7 @@ class PlainTextFormatter private constructor(
         if (className != r.loggerName)
             builder.append("[").append(className).append("] ")
 
-        builder.append(r.message)
+        builder.append(StringUtils.abbreviate(r.message, MAX_MESSAGE_LENGTH))
 
         r.thrown?.let {
             builder .append("\nEXCEPTION ")
