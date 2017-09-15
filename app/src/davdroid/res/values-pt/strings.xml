@@ -26,26 +26,6 @@
   <string name="settings_sync_summary_manually">Manualmente apenas</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">A cada %d minutos + imediatamente em alterações locais</string>
   <string name="settings_sync_interval_calendars">Intervalo de sincronização do calendário</string>
-  <string-array name="settings_sync_interval_seconds">
-    <item>-1</item>
-    <item>300</item>
-    <item>600</item>
-    <item>900</item>
-    <item>3600</item>
-    <item>7200</item>
-    <item>14400</item>
-    <item>86400</item>
-  </string-array>
-  <string-array name="settings_sync_interval_names">
-    <item>Apenas manualmente</item>
-    <item>A cada 5 minutos</item>
-    <item>A cada 10 minutos</item>
-    <item>A cada 15 minutos</item>
-    <item>A cada hora</item>
-    <item>A cada 2 horas</item>
-    <item>A cada 4 horas</item>
-    <item>Diáriamente</item>
-  </string-array>
   <!--collection management-->
   <!--ExceptionInfoFragment-->
   <!--sync errors and DebugInfoActivity-->

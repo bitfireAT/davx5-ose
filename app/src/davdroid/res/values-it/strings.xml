@@ -140,26 +140,6 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Ogni %d minuti e a seguito di ogni cambiamento locale</string>
   <string name="settings_sync_interval_calendars">Intervallo sincr. calendari</string>
   <string name="settings_sync_interval_tasks">Intervallo sincr. attività</string>
-  <string-array name="settings_sync_interval_seconds">
-    <item>-1</item>
-    <item>300</item>
-    <item>600</item>
-    <item>900</item>
-    <item>3600</item>
-    <item>7200</item>
-    <item>14400</item>
-    <item>86400</item>
-  </string-array>
-  <string-array name="settings_sync_interval_names">
-    <item>Solo manualmente</item>
-    <item>Ogni 5 minuti</item>
-    <item>Ogni 10 minuti</item>
-    <item>Ogni 15 minuti</item>
-    <item>Ogni ora</item>
-    <item>Ogni 2 ore</item>
-    <item>Ogni 4 ore</item>
-    <item>Una volta al giorno</item>
-  </string-array>
   <string name="settings_sync_wifi_only">Sincr. solo tramite WiFi</string>
   <string name="settings_sync_wifi_only_on">La sincronizzazione è limitata alle connessioni WiFi</string>
   <string name="settings_sync_wifi_only_off">Il tipo di connessione non è preso in considerazione</string>
