@@ -142,16 +142,6 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">每 %d 分鐘，以及在本裝置上修改時</string>
   <string name="settings_sync_interval_calendars">行事曆同步間隔</string>
   <string name="settings_sync_interval_tasks">工作清單同步間隔</string>
-  <string-array name="settings_sync_interval_names">
-    <item>只手動</item>
-    <item>每 5 分鐘</item>
-    <item>每 10 分鐘</item>
-    <item>每 15 分鐘</item>
-    <item>每 1 小時</item>
-    <item>每 2 小時</item>
-    <item>每 4 小時</item>
-    <item>每 1 天</item>
-  </string-array>
   <string name="settings_sync_wifi_only">只用 WiFi 同步</string>
   <string name="settings_sync_wifi_only_on">只於 WiFi 連線時同步</string>
   <string name="settings_sync_wifi_only_off">任何網路連線都可使用</string>

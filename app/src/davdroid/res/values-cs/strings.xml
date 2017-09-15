@@ -136,26 +136,6 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Každých %d minut a ihned při lokálních změnách</string>
   <string name="settings_sync_interval_calendars">Interval synchronizace kalendáře</string>
   <string name="settings_sync_interval_tasks">Interval synchronizace úkolů</string>
-  <string-array name="settings_sync_interval_seconds">
-    <item>-1</item>
-    <item>300</item>
-    <item>600</item>
-    <item>900</item>
-    <item>3600</item>
-    <item>7200</item>
-    <item>14400</item>
-    <item>86400</item>
-  </string-array>
-  <string-array name="settings_sync_interval_names">
-    <item>Pouze manuálně</item>
-    <item>Každých 5 minut</item>
-    <item>Každých 10 minut</item>
-    <item>Každých 15 minut</item>
-    <item>Každou hodinu</item>
-    <item>Každé 2 hodiny</item>
-    <item>Každé 4 hodiny</item>
-    <item>Jednou za den</item>
-  </string-array>
   <string name="settings_sync_wifi_only">Synchronizovat pouze přes WiFi</string>
   <string name="settings_sync_wifi_only_on">Synchronizace omezena na WiFi připojení</string>
   <string name="settings_sync_wifi_only_off">Druh připojení není brán v potaz</string>
