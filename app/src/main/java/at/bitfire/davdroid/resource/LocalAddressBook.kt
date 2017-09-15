@@ -18,8 +18,8 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.util.Base64
-import at.bitfire.davdroid.App
 import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.vcard4android.*
@@ -46,7 +46,7 @@ class LocalAddressBook(
         fun create(context: Context, provider: ContentProviderClient, mainAccount: Account, info: CollectionInfo): LocalAddressBook {
             val accountManager = AccountManager.get(context)
 
-            val account = Account(accountName(mainAccount, info), App.addressBookAccountType)
+            val account = Account(accountName(mainAccount, info), context.getString(R.string.account_type_address_book))
             if (!accountManager.addAccountExplicitly(account, null, initialUserData(mainAccount, info.url)))
                 throw ContactsStorageException("Couldn't create address book account")
 
@@ -61,7 +61,7 @@ class LocalAddressBook(
             val accountManager = AccountManager.get(context)
 
             val result = LinkedList<LocalAddressBook>()
-            accountManager.getAccountsByType(App.addressBookAccountType)
+            accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
                     .map { LocalAddressBook(context, it, provider) }
                     .filter { mainAccount == null || it.getMainAccount() == mainAccount }
                     .forEach { result += it }
