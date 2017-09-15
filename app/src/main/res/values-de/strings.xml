@@ -145,25 +145,14 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Alle %d Minuten + sofort bei lokalen Änderungen</string>
   <string name="settings_sync_interval_calendars">Häufigkeit der Kalender-Synchronisierung</string>
   <string name="settings_sync_interval_tasks">Häufigkeit der Aufgaben-Synchronisierung</string>
-  <string-array name="settings_sync_interval_seconds">
-    <item>-1</item>
-    <item>300</item>
-    <item>600</item>
-    <item>900</item>
-    <item>3600</item>
-    <item>7200</item>
-    <item>14400</item>
-    <item>86400</item>
-  </string-array>
   <string-array name="settings_sync_interval_names">
-    <item>Nur manuell</item>
-    <item>Alle 5 Minuten</item>
-    <item>Alle 10 Minuten</item>
-    <item>Alle 15 Minuten</item>
-    <item>Stündlich</item>
-    <item>Alle 2 Stunden</item>
-    <item>Alle 4 Stunden</item>
-    <item>Täglich</item>
+    <item>nur manuell</item>
+    <item>alle 15 Minuten</item>
+    <item>alle halben Stunden</item>
+    <item>jede Stunde</item>
+    <item>alle 2 Stunden</item>
+    <item>alle 4 Stunden</item>
+    <item>einmal am Tag</item>
   </string-array>
   <string name="settings_sync_wifi_only">Nur über WLAN synchronisieren</string>
   <string name="settings_sync_wifi_only_on">Synchronisierung nur bei aktiver WLAN-Verbindung</string>

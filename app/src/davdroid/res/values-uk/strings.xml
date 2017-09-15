@@ -142,26 +142,6 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Кожних %d хвилин, а також негайно при внесенні локальних змін</string>
   <string name="settings_sync_interval_calendars">Інтервал синхронізації календарів</string>
   <string name="settings_sync_interval_tasks">Інтервал синхронізації завдань</string>
-  <string-array name="settings_sync_interval_seconds">
-    <item>-1</item>
-    <item>300</item>
-    <item>600</item>
-    <item>900</item>
-    <item>3600</item>
-    <item>7200</item>
-    <item>14400</item>
-    <item>86400</item>
-  </string-array>
-  <string-array name="settings_sync_interval_names">
-    <item>Лише вручну</item>
-    <item>Кожних 5 хвилин</item>
-    <item>Кожних 10 хвилин</item>
-    <item>Кожних 15 хвилин</item>
-    <item>Щогодини</item>
-    <item>Кожних 2 години</item>
-    <item>Кожних 4 години</item>
-    <item>Раз на добу</item>
-  </string-array>
   <string name="settings_sync_wifi_only">Синхронізувати лише через Wi-Fi</string>
   <string name="settings_sync_wifi_only_on">Виконувати синхронізацію лише через Wi-Fi</string>
   <string name="settings_sync_wifi_only_off">Не враховувати тип з\'єднання</string>
