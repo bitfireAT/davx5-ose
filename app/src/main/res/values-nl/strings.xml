@@ -145,26 +145,6 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Elke %d minuten + meteen na wijziging</string>
   <string name="settings_sync_interval_calendars">Agenda\'s verversen</string>
   <string name="settings_sync_interval_tasks">Taak sync. tussentijd</string>
-  <string-array name="settings_sync_interval_seconds">
-    <item>-1</item>
-    <item>300</item>
-    <item>600</item>
-    <item>900</item>
-    <item>3600</item>
-    <item>7200</item>
-    <item>14400</item>
-    <item>86400</item>
-  </string-array>
-  <string-array name="settings_sync_interval_names">
-    <item>Alleen handmatig</item>
-    <item>Elke 5 minuten</item>
-    <item>Elke 10 minuten</item>
-    <item>Elke 15 minuten</item>
-    <item>Elk uur</item>
-    <item>Elke 2 uur</item>
-    <item>Elke 4 uur</item>
-    <item>Dagelijks</item>
-  </string-array>
   <string name="settings_sync_wifi_only">Sync alleen tijdens WiFi</string>
   <string name="settings_sync_wifi_only_on">Synchronisatie is voorbehouden tijdens WiFi verbindingen</string>
   <string name="settings_sync_wifi_only_off">Verbinding type is niet overwogen</string>

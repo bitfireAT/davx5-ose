@@ -140,26 +140,6 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Minden %d percben + az eszközön történt módosítás után</string>
   <string name="settings_sync_interval_calendars">Naptárszinkronizálás sűrűsége</string>
   <string name="settings_sync_interval_tasks">Feladatlisták szinkronizálásának sűrűsége</string>
-  <string-array name="settings_sync_interval_seconds">
-    <item>-1</item>
-    <item>300</item>
-    <item>600</item>
-    <item>900</item>
-    <item>3600</item>
-    <item>7200</item>
-    <item>14400</item>
-    <item>86400</item>
-  </string-array>
-  <string-array name="settings_sync_interval_names">
-    <item>Manuális</item>
-    <item>5 percenként</item>
-    <item>10 percenként</item>
-    <item>15 percenként</item>
-    <item>Óránként</item>
-    <item>2 óránként</item>
-    <item>4 óránként</item>
-    <item>Naponta</item>
-  </string-array>
   <string name="settings_sync_wifi_only">Szinkronizálás csak WIFI-n</string>
   <string name="settings_sync_wifi_only_on">Csak WIFI kapcsolat keresztül történjen szinkronizálás</string>
   <string name="settings_sync_wifi_only_off">Szinkronizálás a kapcsolat típusától függetlenül</string>
