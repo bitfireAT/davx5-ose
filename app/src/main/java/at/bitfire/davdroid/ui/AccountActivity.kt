@@ -32,7 +32,6 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.*
 import android.widget.*
-import at.bitfire.davdroid.App
 import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -54,9 +53,9 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     companion object {
         @JvmField val EXTRA_ACCOUNT = "account"
 
-        private fun requestSync(account: Account) {
+        private fun requestSync(context: Context, account: Account) {
             val authorities = arrayOf(
-                    App.addressBooksAuthority,
+                    context.getString(R.string.address_books_authority),
                     CalendarContract.AUTHORITY,
                     TaskProvider.ProviderName.OpenTasks.authority
             )
@@ -405,10 +404,10 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                                 carddav.id = id
                                 carddav.refreshing =
                                         davService?.isRefreshing(id) ?: false ||
-                                        ContentResolver.isSyncActive(account, App.addressBooksAuthority)
+                                        ContentResolver.isSyncActive(account, context.getString(R.string.address_books_authority))
 
                                 val accountManager = AccountManager.get(context)
-                                for (addrBookAccount in accountManager.getAccountsByType(App.addressBookAccountType)) {
+                                for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
                                     val addressBook = LocalAddressBook(context, addrBookAccount, null)
                                     try {
                                         if (account == addressBook.getMainAccount())
@@ -602,7 +601,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
                                 // cancel maybe running synchronization
                                 ContentResolver.cancelSync(oldAccount, null)
-                                for (addrBookAccount in accountManager.getAccountsByType(App.addressBookAccountType))
+                                for (addrBookAccount in accountManager.getAccountsByType(getString(R.string.account_type_address_book)))
                                     ContentResolver.cancelSync(addrBookAccount, null)
 
                                 // update account name references in database
@@ -612,7 +611,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
                                 // update main account of address book accounts
                                 try {
-                                    for (addrBookAccount in accountManager.getAccountsByType(App.addressBookAccountType)) {
+                                    for (addrBookAccount in accountManager.getAccountsByType(getString(R.string.account_type_address_book))) {
                                         val provider = activity.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
                                         try {
                                             if (provider != null) {
@@ -643,7 +642,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                                 }
 
                                 // synchronize again
-                                requestSync(Account(newName, oldAccount.type))
+                                requestSync(activity, Account(newName, oldAccount.type))
                             }, null)
                         activity.finish()
                     })
@@ -679,7 +678,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     }
 
     private fun requestSync() {
-        requestSync(account)
+        requestSync(this, account)
         Snackbar.make(findViewById(R.id.parent), R.string.account_synchronizing_now, Snackbar.LENGTH_LONG).show()
     }
 

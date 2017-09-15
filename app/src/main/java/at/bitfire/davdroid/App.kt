@@ -32,8 +32,6 @@ class App: Application() {
         @JvmField val OVERRIDE_PROXY_HOST_DEFAULT = "localhost"
         @JvmField val OVERRIDE_PROXY_PORT_DEFAULT = 8118
 
-        lateinit var addressBookAccountType: String
-        lateinit var addressBooksAuthority: String
 
         @JvmStatic
         fun getLauncherBitmap(context: Context): Bitmap? {
@@ -53,12 +51,7 @@ class App: Application() {
 
     override fun onCreate() {
         super.onCreate()
-
         Logger.reinitLogger(this)
-
-        addressBookAccountType = getString(R.string.account_type_address_book)
-        addressBooksAuthority = getString(R.string.address_books_authority)
     }
-
 
 }
