@@ -89,10 +89,15 @@
   <string name="account_delete">Excluir conta</string>
   <string name="account_delete_confirmation_title">Deseja excluir a conta?</string>
   <string name="account_delete_confirmation_text">Todas as cópias locais dos livros de endereços, calendários e listas de tarefas serão excluídas.</string>
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_refresh_address_book_list">Atualizar lista de livros de endereços</string>
   <string name="account_create_new_address_book">Criar novo livro de endereços</string>
   <string name="account_refresh_calendar_list">Atualizar lista de calendários</string>
   <string name="account_create_new_calendar">Criar novo calendário</string>
+  <string name="account_no_webcal_handler_found">Não foi encontrado um aplicativo capaz de lidar com Webcal</string>
+  <string name="account_install_icsdroid">Instalar ICSdroid</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permissões do DAVdroid</string>
   <string name="permissions_calendar">Permissões do calendário</string>
@@ -105,6 +110,7 @@
   <string name="permissions_opentasks_details">Para sincronizar tarefas CalDAV com suas listas de tarefas locais, o DAVdroid precisa acessar o OpenTasks.</string>
   <string name="permissions_opentasks_request">Solicitar permissão do OpenTasks</string>
   <!--AddAccountActivity-->
+  <string name="login_help_url">https://davdroid.bitfire.at/configuration/?pk_campaign=davdroid-app</string>
   <string name="login_title">Adicionar conta</string>
   <string name="login_type_email">Autenticação com endereço de e-mail</string>
   <string name="login_email_address">Endereço de e-mail</string>
@@ -143,6 +149,15 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">A cada %d minutos + imediatamente nas alterações locais</string>
   <string name="settings_sync_interval_calendars">Intervalo sinc. de calendários</string>
   <string name="settings_sync_interval_tasks">Intervalo sinc. de tarefas</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Apenas manualmente</item>
+    <item>A cada 15 minutos</item>
+    <item>A cada 30 minutos</item>
+    <item>A cada hora</item>
+    <item>A cada 2 horas</item>
+    <item>A cada 4 horas</item>
+    <item>Uma vez por dia</item>
+  </string-array>
   <string name="settings_sync_wifi_only">Sincronizar apenas por Wi-Fi</string>
   <string name="settings_sync_wifi_only_on">Sincronização restrita a conexões Wi-Fi</string>
   <string name="settings_sync_wifi_only_off">O tipo de conexão não é considerado</string>
