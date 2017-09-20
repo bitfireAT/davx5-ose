@@ -6,7 +6,7 @@
   <string name="address_books_authority_title">Carnets d\'adresses</string>
   <string name="help">Aide</string>
   <string name="manage_accounts">Gestion des comptes</string>
-  <string name="please_wait">SVP attendez ...</string>
+  <string name="please_wait">patientez ...</string>
   <string name="send">Envoyer</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Optimisation de la batterie</string>
@@ -14,6 +14,8 @@
   <string name="startup_battery_optimization_disable">Désactiver pour DAVdroid</string>
   <string name="startup_dont_show_again">Ne plus afficher</string>
   <string name="startup_development_version">Aperçu de la version finale</string>
+  <string name="startup_development_version_message">Ceci est la version en développement %s.
+Si vous constatez des dysfonctionnements, faites nous un retour.</string>
   <string name="startup_development_version_give_feedback">Faire un commentaire</string>
   <string name="startup_donate">Open-Source Information</string>
   <string name="startup_donate_message">Nous sommes heureux que vous utilisez DAVdroid, qui est un logiciel open-source (GPLv3). Parce que développer DAVdroid est un travail difficile et nous a pris de nombreuses heures, s\'il vous plaît envisager de faire un don.</string>
@@ -88,10 +90,15 @@
   <string name="account_delete">Supprimer le compte</string>
   <string name="account_delete_confirmation_title">Voulez-vous vraiment supprimer le compte?</string>
   <string name="account_delete_confirmation_text">Toutes les copies locales des carnets d\'adresses, des calendriers et des listes de tâches seront supprimées.</string>
+  <string name="account_carddav">CardDAV (les carnets d\'adresse) </string>
+  <string name="account_caldav">CalDAV (les agendas) </string>
+  <string name="account_webcal">WebCal (les anciens agenda)</string>
   <string name="account_refresh_address_book_list">Actualiser le carnet d\'adresses</string>
   <string name="account_create_new_address_book">Créer un nouveau carnet d\'adresses</string>
   <string name="account_refresh_calendar_list">Actualiser le calendrier</string>
   <string name="account_create_new_calendar">Créer un nouveau calendrier</string>
+  <string name="account_no_webcal_handler_found">Aucune application compatible WebCal</string>
+  <string name="account_install_icsdroid">Installer ICSdroid</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Autorisations DAVdroid</string>
   <string name="permissions_calendar">Autorisations calendrier</string>
@@ -143,6 +150,15 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Toutes les %d minutes et immédiatement après un changement local</string>
   <string name="settings_sync_interval_calendars">Intervalle de synchronisation des agendas</string>
   <string name="settings_sync_interval_tasks">Intervalle de synchronisation des tâches</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Manuellement</item>
+    <item>Tous les quarts d\'heure</item>
+    <item>Toutes les demi-heures</item>
+    <item>Toutes les heures</item>
+    <item>Toutes les deux heures</item>
+    <item>Toutes les quatre heures</item>
+    <item>Une fois par jour</item>
+  </string-array>
   <string name="settings_sync_wifi_only">Synchronisation en Wifi seulement</string>
   <string name="settings_sync_wifi_only_on">La synchronisation est limitée aux connexions WiFi</string>
   <string name="settings_sync_wifi_only_off">Le type de connexion n\'est pas pris en charge</string>
