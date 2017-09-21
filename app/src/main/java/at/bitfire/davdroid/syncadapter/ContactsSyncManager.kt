@@ -15,6 +15,8 @@ import android.os.Bundle
 import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.Groups
+import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationManagerCompat
 import at.bitfire.dav4android.DavAddressBook
 import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.exception.DavException
@@ -84,10 +86,12 @@ class ContactsSyncManager(
         authority: String,
         syncResult: SyncResult,
         val provider: ContentProviderClient,
-        val localAddressBook: LocalAddressBook
+        private val localAddressBook: LocalAddressBook
 ): SyncManager(context, account, settings, extras, authority, syncResult, "addressBook") {
 
-    val MAX_MULTIGET = 10
+    private val MAX_MULTIGET = 10
+
+    private var readOnly = false
 
     private var hasVCard4 = false
     private lateinit var groupMethod: GroupMethod
@@ -122,6 +126,8 @@ class ContactsSyncManager(
         collectionURL = HttpUrl.parse(localAddressBook.getURL()) ?: return false
         davCollection = DavAddressBook(httpClient.okHttpClient, collectionURL)
 
+        readOnly = localAddressBook.getReadOnly()
+
         return true
     }
 
@@ -139,48 +145,91 @@ class ContactsSyncManager(
         localAddressBook.includeGroups = groupMethod == GroupMethod.GROUP_VCARDS
     }
 
-    override fun prepareDirty() {
-        super.prepareDirty()
-
-        if (groupMethod == GroupMethod.CATEGORIES) {
-            /* groups memberships are represented as contact CATEGORIES */
-
-            // groups with DELETED=1: set all members to dirty, then remove group
+    override fun processLocallyDeleted() {
+        if (readOnly) {
             for (group in localAddressBook.getDeletedGroups()) {
-                Logger.log.fine("Finally removing group $group")
-                // useless because Android deletes group memberships as soon as a group is set to DELETED:
-                // group.markMembersDirty()
-                group.delete()
+                Logger.log.warning("Restoring locally deleted group (read-only address book!)")
+                group.resetDeleted()
             }
 
-            // groups with DIRTY=1: mark all memberships as dirty, then clean DIRTY flag of group
+            for (contact in localAddressBook.getDeletedContacts()) {
+                Logger.log.warning("Restoring locally deleted contact (read-only address book!)")
+                notifyDiscardedChange(contact)
+                contact.resetDeleted()
+            }
+        } else
+            super.processLocallyDeleted()
+    }
+
+    override fun prepareDirty() {
+        if (readOnly) {
             for (group in localAddressBook.getDirtyGroups()) {
-                Logger.log.fine("Marking members of modified group $group as dirty")
-                group.markMembersDirty()
+                Logger.log.warning("Resetting locally modified group to ETag=null (read-only address book!)")
                 group.clearDirty(null)
             }
-        } else {
-            /* groups as separate VCards: there are group contacts and individual contacts */
 
-            // mark groups with changed members as dirty
-            val batch = BatchOperation(localAddressBook.provider!!)
-            for (contact in localAddressBook.getDirtyContacts())
-                try {
-                    Logger.log.fine("Looking for changed group memberships of contact ${contact.fileName}")
-                    val cachedGroups = contact.getCachedGroupMemberships()
-                    val currentGroups = contact.getGroupMemberships()
-                    for (groupID in cachedGroups disjunct currentGroups) {
-                        Logger.log.fine("Marking group as dirty: $groupID")
-                        batch.enqueue(BatchOperation.Operation(
-                                ContentProviderOperation.newUpdate(localAddressBook.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, groupID)))
-                                .withValue(Groups.DIRTY, 1)
-                                .withYieldAllowed(true)
-                        ))
-                    }
-                } catch(e: FileNotFoundException) {
+            for (contact in localAddressBook.getDirtyContacts()) {
+                Logger.log.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
+                notifyDiscardedChange(contact)
+                contact.clearDirty(null)
+            }
+
+        } else {
+            super.prepareDirty()
+
+            if (groupMethod == GroupMethod.CATEGORIES) {
+                /* groups memberships are represented as contact CATEGORIES */
+
+                // groups with DELETED=1: set all members to dirty, then remove group
+                for (group in localAddressBook.getDeletedGroups()) {
+                    Logger.log.fine("Finally removing group $group")
+                    // useless because Android deletes group memberships as soon as a group is set to DELETED:
+                    // group.markMembersDirty()
+                    group.delete()
                 }
-            batch.commit()
+
+                // groups with DIRTY=1: mark all memberships as dirty, then clean DIRTY flag of group
+                for (group in localAddressBook.getDirtyGroups()) {
+                    Logger.log.fine("Marking members of modified group $group as dirty")
+                    group.markMembersDirty()
+                    group.clearDirty(null)
+                }
+            } else {
+                /* groups as separate VCards: there are group contacts and individual contacts */
+
+                // mark groups with changed members as dirty
+                val batch = BatchOperation(localAddressBook.provider!!)
+                for (contact in localAddressBook.getDirtyContacts())
+                    try {
+                        Logger.log.fine("Looking for changed group memberships of contact ${contact.fileName}")
+                        val cachedGroups = contact.getCachedGroupMemberships()
+                        val currentGroups = contact.getGroupMemberships()
+                        for (groupID in cachedGroups disjunct currentGroups) {
+                            Logger.log.fine("Marking group as dirty: $groupID")
+                            batch.enqueue(BatchOperation.Operation(
+                                    ContentProviderOperation.newUpdate(localAddressBook.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, groupID)))
+                                    .withValue(Groups.DIRTY, 1)
+                                    .withYieldAllowed(true)
+                            ))
+                        }
+                    } catch(e: FileNotFoundException) {
+                    }
+                batch.commit()
+            }
         }
+    }
+
+    private fun notifyDiscardedChange(contact: LocalContact) {
+        val notification = NotificationCompat.Builder(context)
+                .setSmallIcon(R.drawable.ic_error_light)
+                // TODO .setGroup()
+                .setContentTitle(contact.contact!!.displayName)
+                .setContentText("Local contact change has been discarded")
+                .setSubText("Read-only address book")
+                .setCategory(NotificationCompat.CATEGORY_ERROR)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .build()
+        NotificationManagerCompat.from(context).notify(contact.fileName, 0, notification)
     }
 
     override fun prepareUpload(resource: LocalResource): RequestBody {
