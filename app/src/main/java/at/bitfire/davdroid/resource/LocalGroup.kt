@@ -118,6 +118,19 @@ class LocalGroup: AndroidGroup, LocalResource {
 
 
     @Throws(ContactsStorageException::class)
+    fun resetDeleted() {
+        val uri = ContentUris.withAppendedId(addressBook.syncAdapterURI(ContactsContract.Groups.CONTENT_URI), requireNotNull(id))
+
+        val values = ContentValues(1)
+        values.put(ContactsContract.Groups.DELETED, 0)
+        try {
+            addressBook.provider!!.update(uri, values, null, null)
+        } catch(e: RemoteException) {
+            throw ContactsStorageException("Couldn't clear deleted flag", e)
+        }
+    }
+
+    @Throws(ContactsStorageException::class)
     override fun clearDirty(eTag: String?) {
         val id = requireNotNull(id)
 

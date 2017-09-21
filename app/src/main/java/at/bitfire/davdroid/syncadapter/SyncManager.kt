@@ -252,7 +252,7 @@ abstract class SyncManager(
      * Process locally deleted entries (DELETE them on the server as well).
      * Checks Thread.interrupted() before each request to allow quick sync cancellation.
      */
-    protected fun processLocallyDeleted() {
+    protected open fun processLocallyDeleted() {
         // Remove locally deleted entries from server (if they have a name, i.e. if they were uploaded before),
         // but only if they don't have changed on the server. Then finally remove them from the local address book.
         val localList = localCollection.getDeleted()

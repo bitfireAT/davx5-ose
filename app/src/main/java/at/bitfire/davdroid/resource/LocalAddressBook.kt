@@ -39,6 +39,7 @@ class LocalAddressBook(
         val USER_DATA_MAIN_ACCOUNT_TYPE = "real_account_type"
         val USER_DATA_MAIN_ACCOUNT_NAME = "real_account_name"
         val USER_DATA_URL = "url"
+        val USER_DATA_READ_ONLY = "read_only"
         val USER_DATA_CTAG = "ctag"
 
         @JvmStatic
@@ -124,6 +125,9 @@ class LocalAddressBook(
             }, null)
             account = future.result
         }
+
+        Constants.log.info("Address book read-only? = ${info.readOnly}")
+        setReadOnly(info.readOnly)
 
         // make sure it will still be synchronized when contacts are updated
         ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
@@ -334,24 +338,22 @@ class LocalAddressBook(
     }
 
     @Throws(ContactsStorageException::class)
-    fun getURL(): String {
-        val accountManager = AccountManager.get(context)
-        return accountManager.getUserData(account, USER_DATA_URL) ?: throw ContactsStorageException("Address book has no URL")
-    }
+    fun getURL() =
+            AccountManager.get(context).getUserData(account, USER_DATA_URL) ?: throw ContactsStorageException("Address book has no URL")
 
-    fun setURL(url: String) {
-        val accountManager = AccountManager.get(context)
-        accountManager.setUserData(account, USER_DATA_URL, url)
-    }
+    fun setURL(url: String) =
+            AccountManager.get(context).setUserData(account, USER_DATA_URL, url)
 
-    override fun getCTag(): String? {
-        val accountManager = AccountManager.get(context)
-        return accountManager.getUserData(account, USER_DATA_CTAG)
-    }
+    fun getReadOnly() =
+            AccountManager.get(context).getUserData(account, USER_DATA_READ_ONLY) != null
 
-    override fun setCTag(cTag: String?) {
-        val accountManager = AccountManager.get(context)
-        accountManager.setUserData(account, USER_DATA_CTAG, cTag)
-    }
+    fun setReadOnly(readOnly: Boolean) =
+            AccountManager.get(context).setUserData(account, USER_DATA_READ_ONLY, if (readOnly) "1" else null)
+
+    override fun getCTag(): String? =
+            AccountManager.get(context).getUserData(account, USER_DATA_CTAG)
+
+    override fun setCTag(cTag: String?) =
+            AccountManager.get(context).setUserData(account, USER_DATA_CTAG, cTag)
 
 }
