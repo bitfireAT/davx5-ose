@@ -47,6 +47,17 @@ class LocalContact: AndroidContact, LocalResource {
 
 
     @Throws(ContactsStorageException::class)
+    fun resetDeleted() {
+        val values = ContentValues(1)
+        values.put(ContactsContract.RawContacts.DELETED, 0)
+        try {
+            addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+        } catch(e: RemoteException) {
+            throw ContactsStorageException("Couldn't clear deleted flag", e)
+        }
+    }
+
+    @Throws(ContactsStorageException::class)
     fun resetDirty() {
         val values = ContentValues(1)
         values.put(ContactsContract.RawContacts.DIRTY, 0)
