@@ -189,7 +189,7 @@
   <string name="exception_httpexception">Трапилась помилка HTTP.</string>
   <string name="exception_ioexception">Трапилась помилка I/O.</string>
   <string name="exception_show_details">Показати подробиці</string>
-  <!--sync errors and DebugInfoActivity-->
+  <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Інформація зневадження</string>
   <string name="sync_error_permissions">Дозволи DAVdroid</string>
   <string name="sync_error_permissions_text">Потребує додаткові дозволи</string>

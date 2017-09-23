@@ -28,6 +28,6 @@
   <string name="settings_sync_interval_calendars">Intervalo de sincronização do calendário</string>
   <!--collection management-->
   <!--ExceptionInfoFragment-->
-  <!--sync errors and DebugInfoActivity-->
+  <!--sync adapters and DebugInfoActivity-->
   <!--cert4android-->
 </resources>

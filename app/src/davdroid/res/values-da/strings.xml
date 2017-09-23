@@ -190,7 +190,7 @@
   <string name="exception_httpexception">Der er opstået en HTTP-fejl.</string>
   <string name="exception_ioexception">Der er opstået en I/O-fejl.</string>
   <string name="exception_show_details">Vis detaljer</string>
-  <!--sync errors and DebugInfoActivity-->
+  <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Debug-info</string>
   <string name="sync_error_permissions">DAVdroid-rettigheder</string>
   <string name="sync_error_permissions_text">Yderligere adgang påkrævet</string>
