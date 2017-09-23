@@ -199,7 +199,7 @@
   <string name="exception_httpexception">Wystąpił błąd HTTP.</string>
   <string name="exception_ioexception">Wystąpił błąd I/O.</string>
   <string name="exception_show_details">Pokaż szczegóły</string>
-  <!--sync errors and DebugInfoActivity-->
+  <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Informacje debugowe</string>
   <string name="sync_error_permissions">Uprawnienia DAVdroid</string>
   <string name="sync_error_permissions_text">Wymagane dodatkowe uprawnienia</string>

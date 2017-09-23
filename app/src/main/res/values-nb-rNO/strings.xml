@@ -144,7 +144,7 @@
   <string name="exception_httpexception">En HTTP-feil har inntruffet.</string>
   <string name="exception_ioexception">En I/O-feil har inntruffet.</string>
   <string name="exception_show_details">Vis detaljer</string>
-  <!--sync errors and DebugInfoActivity-->
+  <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Feilrettingsinfo</string>
   <string name="sync_error_tasks">Gjøremålssynkronisering mislyktes (%s)</string>
   <string name="sync_error_unauthorized">Brukernavn-/passord feil</string>
