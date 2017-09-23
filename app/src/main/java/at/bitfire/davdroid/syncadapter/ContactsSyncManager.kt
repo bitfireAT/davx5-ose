@@ -21,10 +21,7 @@ import at.bitfire.dav4android.DavAddressBook
 import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.property.*
-import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.HttpClient
-import at.bitfire.davdroid.R
+import at.bitfire.davdroid.*
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
@@ -92,6 +89,7 @@ class ContactsSyncManager(
     private val MAX_MULTIGET = 10
 
     private var readOnly = false
+    var numDiscarded = 0
 
     private var hasVCard4 = false
     private lateinit var groupMethod: GroupMethod
@@ -154,7 +152,7 @@ class ContactsSyncManager(
 
             for (contact in localAddressBook.getDeletedContacts()) {
                 Logger.log.warning("Restoring locally deleted contact (read-only address book!)")
-                notifyDiscardedChange(contact)
+                notifyDiscardedChange()
                 contact.resetDeleted()
             }
         } else
@@ -170,7 +168,7 @@ class ContactsSyncManager(
 
             for (contact in localAddressBook.getDirtyContacts()) {
                 Logger.log.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
-                notifyDiscardedChange(contact)
+                notifyDiscardedChange()
                 contact.clearDirty(null)
             }
 
@@ -219,17 +217,19 @@ class ContactsSyncManager(
         }
     }
 
-    private fun notifyDiscardedChange(contact: LocalContact) {
+    private fun notifyDiscardedChange() {
         val notification = NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.ic_error_light)
-                // TODO .setGroup()
-                .setContentTitle(contact.contact!!.displayName)
-                .setContentText("Local contact change has been discarded")
-                .setSubText("Read-only address book")
+                .setSmallIcon(R.drawable.ic_delete_light)
+                .setLargeIcon(App.getLauncherBitmap(context))
+                .setContentTitle(context.getString(R.string.sync_contacts_read_only_address_book))
+                .setContentText(context.resources.getQuantityString(R.plurals.sync_contacts_local_contact_changes_discarded, ++numDiscarded, numDiscarded))
+                .setSubText(account.name)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setLocalOnly(true)
+                .setAutoCancel(true)
                 .build()
-        NotificationManagerCompat.from(context).notify(contact.fileName, 0, notification)
+        NotificationManagerCompat.from(context).notify("discarded_${account.name}", 0, notification)
     }
 
     override fun prepareUpload(resource: LocalResource): RequestBody {
