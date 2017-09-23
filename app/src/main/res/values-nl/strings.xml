@@ -195,7 +195,7 @@
   <string name="exception_httpexception">Er is een HTTP fout opgetreden.</string>
   <string name="exception_ioexception">Er is een I/O fout opgetreden.</string>
   <string name="exception_show_details">Toon details</string>
-  <!--sync errors and DebugInfoActivity-->
+  <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Debug informatie</string>
   <string name="sync_error_permissions">DAVdroid rechten</string>
   <string name="sync_error_permissions_text">Aanvullende rechten vereist</string>

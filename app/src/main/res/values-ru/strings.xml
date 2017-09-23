@@ -184,7 +184,7 @@
   <string name="exception_httpexception">Произошла ошибка HTTP</string>
   <string name="exception_ioexception">Произошла ошибка ввода/вывода.</string>
   <string name="exception_show_details">Подробнее</string>
-  <!--sync errors and DebugInfoActivity-->
+  <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>
   <string name="sync_error_permissions">Разрешения DAVdroid</string>
   <string name="sync_error_permissions_text">Требуются дополнительные разрешения</string>

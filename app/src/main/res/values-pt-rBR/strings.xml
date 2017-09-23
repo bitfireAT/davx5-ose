@@ -216,7 +216,7 @@
   <string name="exception_httpexception">Ocorreu um erro de HTTP.</string>
   <string name="exception_ioexception">Ocorreu um erro de leitura/gravação.</string>
   <string name="exception_show_details">Mostrar detalhes</string>
-  <!--sync errors and DebugInfoActivity-->
+  <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Informações de depuração</string>
   <string name="sync_error_permissions">Permissões do DAVdroid</string>
   <string name="sync_error_permissions_text">É necessário permissões adicionais</string>

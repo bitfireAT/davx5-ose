@@ -89,12 +89,16 @@
   <string name="account_delete">Konto löschen</string>
   <string name="account_delete_confirmation_title">Konto wirklich löschen?</string>
   <string name="account_delete_confirmation_text">Alle Adressbücher, Kalender und Aufgabenlisten werden vom Gerät (nicht am Server) gelöscht.</string>
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_refresh_address_book_list">Adressbücher neu erkennen</string>
   <string name="account_create_new_address_book">Neues Adressbuch erstellen</string>
   <string name="account_refresh_calendar_list">Kalender neu erkennen</string>
   <string name="account_create_new_calendar">Neuen Kalender erstellen</string>
   <string name="account_no_webcal_handler_found">Keine Webcal-App gefunden</string>
   <string name="account_install_icsdroid">ICSdroid installieren</string>
+  <string name="account_read_only_address_book_selected">Schreibgeschütztes Adressbuch – lokale Änderungen werden verworfen!</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">DAVdroid-Berechtigungen</string>
   <string name="permissions_calendar">Kalender-Zugriff</string>
@@ -212,8 +216,13 @@
   <string name="exception_httpexception">Ein HTTP-Fehler ist aufgetreten.</string>
   <string name="exception_ioexception">Ein E/A-Fehler ist aufgetreten.</string>
   <string name="exception_show_details">Details anzeigen</string>
-  <!--sync errors and DebugInfoActivity-->
+  <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Informationen zur Fehlersuche</string>
+  <string name="sync_contacts_read_only_address_book">Schreibgeschütztes Adressbuch</string>
+  <plurals name="sync_contacts_local_contact_changes_discarded">
+    <item quantity="one">Lokale Kontakt-Änderung verworfen</item>
+    <item quantity="other">%d lokale Kontakt-Änderungen verworfen</item>
+  </plurals>
   <string name="sync_error_permissions">DAVdroid-Berechtigungen</string>
   <string name="sync_error_permissions_text">Zusätzliche Berechtigungen benötigt</string>
   <string name="sync_error_calendar">Kalender-Synchronisierung fehlgeschlagen (%s)</string>

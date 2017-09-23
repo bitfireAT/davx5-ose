@@ -8,11 +8,14 @@
   <string name="manage_accounts">Fiókok kezelése</string>
   <string name="please_wait">Kérjük, várjon ...</string>
   <string name="send">Küldés</string>
+  <string name="homepage_url">https://davdroid.bitfire.at/?pk_campaign=davdroid-app</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Akkumulátoroptimalizálás </string>
   <string name="startup_battery_optimization_message">Az operációs rendszer a DAVdroid szinkronizálást pár nap után leállíthatja vagy visszafoghatja.  Ennek elkerülésére kapcsolja ki az akkumulátoroptimalizálást.</string>
   <string name="startup_battery_optimization_disable">Kikapcsolás a DAVdroid kapcsán</string>
   <string name="startup_dont_show_again">Ne jelenjen meg többet</string>
+  <string name="startup_development_version">Technológiai előzetes</string>
+  <string name="startup_development_version_message">Ez a %s fejlesztői verziója. Nem biztos, hogy minden úgy fog működni, ahogy az várható lenne.  A visszajelzéseket köszönettel vesszük.</string>
   <string name="startup_development_version_give_feedback">Visszajelzés küldése</string>
   <string name="startup_donate">A forrás nyíltságával kapcsolatos információk</string>
   <string name="startup_donate_message">Örülünk, hogy használja a DAVdroidot.  A DAVdroid nyílt forráskódú (GPLv3) szoftver, de a fejlesztése kemény munkát jelent, már eddig több ezer munkaórát emésztett fel, ezért kérjük, fontolja meg, hogy támogassa munkánkat.</string>
@@ -44,6 +47,8 @@
   <string name="navigation_drawer_external_links">Weblapok</string>
   <string name="navigation_drawer_website">Honlap</string>
   <string name="navigation_drawer_faq">GYIK</string>
+  <string name="navigation_drawer_faq_url">https://davdroid.bitfire.at/faq/?pk_campaign=davdroid-app</string>
+  <string name="navigation_drawer_forums">Segítség / Fórumok</string>
   <string name="navigation_drawer_donate">Támogatás</string>
   <string name="account_list_empty">Üdvözöljük a DAVdroid felhasználók között!\n\nMost már felvehet CalDAV/CardDav fiókokat.</string>
   <string name="accounts_global_sync_disabled">A rendszerszintű automatikus szinkronizálás ki van kapcsolva</string>
@@ -86,10 +91,15 @@
   <string name="account_delete">Fiók törlése</string>
   <string name="account_delete_confirmation_title">Valóban törölni akarja a fiókot?</string>
   <string name="account_delete_confirmation_text">Az összes címjegyzék, naptár és feladatlista helyi példányai törölve lesznek.</string>
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_refresh_address_book_list">Címjegyzék-lista frissítése</string>
   <string name="account_create_new_address_book">Új címjegyzék létrehozása</string>
   <string name="account_refresh_calendar_list">Naptárlista frissítése</string>
   <string name="account_create_new_calendar">Új naptár létrehozása</string>
+  <string name="account_no_webcal_handler_found">Nem található Webcal-képes alkalmazás</string>
+  <string name="account_install_icsdroid">ICSdroid telepítése</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">DAVdroid engedélyek </string>
   <string name="permissions_calendar">Naptárengedély</string>
@@ -102,6 +112,7 @@
   <string name="permissions_opentasks_details">A CalDAV feladatlisták és a helyi feladatlisták szinkronizálásához a DAVdroid OpenTasks hozzáférést igényel.</string>
   <string name="permissions_opentasks_request">OpenTasks engedélyek igénylése</string>
   <!--AddAccountActivity-->
+  <string name="login_help_url">https://davdroid.bitfire.at/configuration/?pk_campaign=davdroid-app</string>
   <string name="login_title">Fiók hozzáadása</string>
   <string name="login_type_email">Bejelentkezés email cím segítségével</string>
   <string name="login_email_address">Email cím:</string>
@@ -140,9 +151,22 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Minden %d percben + az eszközön történt módosítás után</string>
   <string name="settings_sync_interval_calendars">Naptárszinkronizálás sűrűsége</string>
   <string name="settings_sync_interval_tasks">Feladatlisták szinkronizálásának sűrűsége</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Manális</item>
+    <item>15 percenként</item>
+    <item>30 percenként</item>
+    <item>Óránként</item>
+    <item>Kétóránként</item>
+    <item>Négyóránként</item>
+    <item>Naponta</item>
+  </string-array>
   <string name="settings_sync_wifi_only">Szinkronizálás csak WIFI-n</string>
   <string name="settings_sync_wifi_only_on">Csak WIFI kapcsolat keresztül történjen szinkronizálás</string>
   <string name="settings_sync_wifi_only_off">Szinkronizálás a kapcsolat típusától függetlenül</string>
+  <string name="settings_sync_wifi_only_ssids">WiFi SSID szűrés</string>
+  <string name="settings_sync_wifi_only_ssids_on">Az alábbi hálózatok használhatók: %s</string>
+  <string name="settings_sync_wifi_only_ssids_off">Minden hálózat használható</string>
+  <string name="settings_sync_wifi_only_ssids_message">A használható WiFi hálózatok nevei (SSID), vesszővel elválasztva (hagyja üresen, ha nem akar szűrést beállítani)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">A csoportok kezelésének módja</string>
   <string-array name="settings_contact_group_method_values">
@@ -164,6 +188,10 @@
   <string name="settings_manage_calendar_colors">Naptárszínek kezelése</string>
   <string name="settings_manage_calendar_colors_on">A naptárszíneket a DAVdroid kezeli</string>
   <string name="settings_manage_calendar_colors_off">A naptárszíneket nem a DAVdroid kezeli</string>
+  <string name="settings_event_colors">Eseményszínek támogatása</string>
+  <string name="settings_event_colors_on">Eseményszínek szinkronlzálása</string>
+  <string name="settings_event_colors_off">Az eseményszínek szinkronizálásának elhagyása</string>
+  <string name="settings_event_colors_off_confirm">A szinkronizálás kikapcsolása a már szinkronizált eseményszíneket törölheti.</string>
   <!--collection management-->
   <string name="create_addressbook">Címjegyzék létrehozása</string>
   <string name="create_addressbook_display_name_hint">Új címjegyzék</string>
@@ -190,7 +218,7 @@
   <string name="exception_httpexception">HTTP hiba történt.</string>
   <string name="exception_ioexception">I/O hiba történt.</string>
   <string name="exception_show_details">Részletek megjelenítése</string>
-  <!--sync errors and DebugInfoActivity-->
+  <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Hibakeresési információ</string>
   <string name="sync_error_permissions">DAVdroid engedélyek </string>
   <string name="sync_error_permissions_text">További engedélyek szükségesek</string>

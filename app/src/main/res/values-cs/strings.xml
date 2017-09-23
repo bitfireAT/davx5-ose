@@ -187,7 +187,7 @@
   <string name="exception_httpexception">Došlo k HTTP chybě.</string>
   <string name="exception_ioexception">Došlo k I/O chybě.</string>
   <string name="exception_show_details">Zobrazit detaily</string>
-  <!--sync errors and DebugInfoActivity-->
+  <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Ladící informace</string>
   <string name="sync_error_permissions">DAVdroid oprávnění</string>
   <string name="sync_error_permissions_text">Vyžadována dodatečná oprávnění</string>
