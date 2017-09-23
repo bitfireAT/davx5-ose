@@ -205,7 +205,7 @@
   <string name="exception_httpexception">Si è verificato un errore HTTP.</string>
   <string name="exception_ioexception">Si è verificato un errore di I/O.</string>
   <string name="exception_show_details">Mostra dettagli</string>
-  <!--sync errors and DebugInfoActivity-->
+  <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Informazioni di debug</string>
   <string name="sync_error_permissions">Autorizzazioni DAVdroid</string>
   <string name="sync_error_permissions_text">Autorizzazioni addizionali richieste</string>
