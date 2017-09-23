@@ -191,7 +191,7 @@
   <string name="exception_httpexception">HTTP 發生錯誤</string>
   <string name="exception_ioexception">讀寫錯誤</string>
   <string name="exception_show_details">顯示細節</string>
-  <!--sync errors and DebugInfoActivity-->
+  <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">除錯訊息</string>
   <string name="sync_error_permissions">DAVdroid 權限</string>
   <string name="sync_error_permissions_text">需要額外的權限</string>

@@ -217,7 +217,7 @@ Si vous constatez des dysfonctionnements, faites nous un retour.</string>
   <string name="exception_httpexception">Une erreur HTTP est survenue.</string>
   <string name="exception_ioexception">Une erreur I/O est survenue.</string>
   <string name="exception_show_details">Voir détails</string>
-  <!--sync errors and DebugInfoActivity-->
+  <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Infos de débogage</string>
   <string name="sync_error_permissions">Autorisations DAVdroid</string>
   <string name="sync_error_permissions_text">Autorisations supplémentaires demandées</string>

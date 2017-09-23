@@ -158,7 +158,7 @@
   <string name="exception_httpexception">Bir HTTP hatası oluştu.</string>
   <string name="exception_ioexception">Bir I/O hatası oluştu.</string>
   <string name="exception_show_details">Detayları göster</string>
-  <!--sync errors and DebugInfoActivity-->
+  <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Hata ayıklama bilgisi</string>
   <string name="sync_error_permissions">DAVdroid izinleri</string>
   <string name="sync_error_permissions_text">Ek izinler zorunludur</string>
