@@ -71,7 +71,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     }
 
     lateinit var account: Account
-    var accountInfo: AccountInfo? = null
+    private var accountInfo: AccountInfo? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -202,10 +202,13 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
             db.setTransactionSuccessful()
             db.endTransaction()
-
-            info.selected = nowChecked
-            adapter.notifyDataSetChanged()
         }
+
+        info.selected = nowChecked
+        adapter.notifyDataSetChanged()
+
+        if (nowChecked && info.type == CollectionInfo.Type.ADDRESS_BOOK && info.readOnly)
+            Snackbar.make(parent, R.string.account_read_only_address_book_selected, Snackbar.LENGTH_LONG).show()
     }
 
     private val onItemLongClickListener = AdapterView.OnItemLongClickListener { parent, view, position, _ ->
