@@ -91,10 +91,16 @@
   <string name="account_delete">アカウントを削除</string>
   <string name="account_delete_confirmation_title">アカウントを削除してもよろしいですか?</string>
   <string name="account_delete_confirmation_text">アドレス帳、カレンダー、タスクリストのローカルコピーがすべて削除されます。</string>
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_refresh_address_book_list">アドレス帳リストを更新</string>
   <string name="account_create_new_address_book">新しいアドレス帳を作成</string>
   <string name="account_refresh_calendar_list">カレンダーリストを更新</string>
   <string name="account_create_new_calendar">新しいカレンダーを作成</string>
+  <string name="account_no_webcal_handler_found">Webcal に対応するアプリが見つかりません</string>
+  <string name="account_install_icsdroid">ICSdroid をインストール</string>
+  <string name="account_read_only_address_book_selected">読み取り専用のアドレス帳 – ローカルの変更は破棄されます!</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">DAVdroid アクセス許可</string>
   <string name="permissions_calendar">カレンダー アクセス許可</string>
@@ -146,6 +152,15 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">%d 分ごと + ローカルの変更時はすぐに</string>
   <string name="settings_sync_interval_calendars">カレンダー同期間隔</string>
   <string name="settings_sync_interval_tasks">タスク同期間隔</string>
+  <string-array name="settings_sync_interval_names">
+    <item>手動のみ</item>
+    <item>15 分ごと</item>
+    <item>30 分ごと</item>
+    <item>1 時間ごと</item>
+    <item>2 時間ごと</item>
+    <item>4 時間ごと</item>
+    <item>1 日 1 回</item>
+  </string-array>
   <string name="settings_sync_wifi_only">WiFi でのみ同期</string>
   <string name="settings_sync_wifi_only_on">同期は WiFi 接続に制限されます</string>
   <string name="settings_sync_wifi_only_off">接続の種類は考慮されません</string>
@@ -205,6 +220,10 @@
   <string name="exception_show_details">詳細を表示</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">デバッグ情報</string>
+  <string name="sync_contacts_read_only_address_book">読み取り専用のアドレス帳</string>
+  <plurals name="sync_contacts_local_contact_changes_discarded">
+    <item quantity="other">%d ローカル連絡先の変更が破棄されました</item>
+  </plurals>
   <string name="sync_error_permissions">DAVdroid アクセス許可</string>
   <string name="sync_error_permissions_text">追加のアクセス許可が必要です</string>
   <string name="sync_error_calendar">カレンダーの同期に失敗しました (%s)</string>
