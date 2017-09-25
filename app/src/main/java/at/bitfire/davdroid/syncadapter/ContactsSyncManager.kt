@@ -160,10 +160,14 @@ class ContactsSyncManager(
             if (numDiscarded > 0)
                 notifyDiscardedChange()
         } else
+            // mirror deletions to remote collection (DELETE)
             super.processLocallyDeleted()
     }
 
     override fun prepareDirty() {
+        // generate UID/file name for newly created contacts
+        super.prepareDirty()
+
         if (readOnly) {
             for (group in localAddressBook.getDirtyGroups()) {
                 Logger.log.warning("Resetting locally modified group to ETag=null (read-only address book!)")
@@ -181,8 +185,6 @@ class ContactsSyncManager(
                 notifyDiscardedChange()
 
         } else {
-            super.prepareDirty()
-
             if (groupMethod == GroupMethod.CATEGORIES) {
                 /* groups memberships are represented as contact CATEGORIES */
 
