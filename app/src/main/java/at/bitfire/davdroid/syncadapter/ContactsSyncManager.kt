@@ -148,13 +148,17 @@ class ContactsSyncManager(
             for (group in localAddressBook.getDeletedGroups()) {
                 Logger.log.warning("Restoring locally deleted group (read-only address book!)")
                 group.resetDeleted()
+                numDiscarded++
             }
 
             for (contact in localAddressBook.getDeletedContacts()) {
                 Logger.log.warning("Restoring locally deleted contact (read-only address book!)")
-                notifyDiscardedChange()
                 contact.resetDeleted()
+                numDiscarded++
             }
+
+            if (numDiscarded > 0)
+                notifyDiscardedChange()
         } else
             super.processLocallyDeleted()
     }
@@ -164,13 +168,17 @@ class ContactsSyncManager(
             for (group in localAddressBook.getDirtyGroups()) {
                 Logger.log.warning("Resetting locally modified group to ETag=null (read-only address book!)")
                 group.clearDirty(null)
+                numDiscarded++
             }
 
             for (contact in localAddressBook.getDirtyContacts()) {
                 Logger.log.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
-                notifyDiscardedChange()
                 contact.clearDirty(null)
+                numDiscarded++
             }
+
+            if (numDiscarded > 0)
+                notifyDiscardedChange()
 
         } else {
             super.prepareDirty()
@@ -222,7 +230,7 @@ class ContactsSyncManager(
                 .setSmallIcon(R.drawable.ic_delete_light)
                 .setLargeIcon(App.getLauncherBitmap(context))
                 .setContentTitle(context.getString(R.string.sync_contacts_read_only_address_book))
-                .setContentText(context.resources.getQuantityString(R.plurals.sync_contacts_local_contact_changes_discarded, ++numDiscarded, numDiscarded))
+                .setContentText(context.resources.getQuantityString(R.plurals.sync_contacts_local_contact_changes_discarded, numDiscarded, numDiscarded))
                 .setSubText(account.name)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
