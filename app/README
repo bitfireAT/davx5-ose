@@ -1,0 +1,9 @@
+
+flavor        directory
+
+gplay         main + davdroid + gplay
+icloud        main + icloud
+managed       main + managed
+soldupe       main + soldupe
+standard      main + davdroid
+

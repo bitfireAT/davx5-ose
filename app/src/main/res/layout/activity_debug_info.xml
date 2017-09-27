@@ -17,6 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:typeface="monospace"
+        android:fontFamily="monospace"
         android:text="@string/please_wait"
         android:id="@+id/text_report"/>
 

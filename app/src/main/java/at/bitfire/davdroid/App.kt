@@ -20,14 +20,23 @@ class App: Application() {
 
         @JvmField val FLAVOR_GOOGLE_PLAY = "gplay"
         @JvmField val FLAVOR_ICLOUD = "icloud"
+        @JvmField val FLAVOR_MANAGED = "managed"
         @JvmField val FLAVOR_SOLDUPE = "soldupe"
         @JvmField val FLAVOR_STANDARD = "standard"
 
-        @JvmField val DISTRUST_SYSTEM_CERTIFICATES = "distrustSystemCerts"
-        @JvmField val LOG_TO_EXTERNAL_STORAGE = "logToExternalStorage"
-        @JvmField val OVERRIDE_PROXY = "overrideProxy"
-        @JvmField val OVERRIDE_PROXY_HOST = "overrideProxyHost"
-        @JvmField val OVERRIDE_PROXY_PORT = "overrideProxyPort"
+        val ORGANIZATION = "organization"
+        val ORGANIZATION_LOGO_URL = "logo_url"
+
+        val SUPPORT_HOMEPAGE = "support_homepage_url"
+        val SUPPORT_PHONE = "support_phone_number"
+        val SUPPORT_EMAIL = "support_email_address"
+
+        val MAX_ACCOUNTS = "max_accounts"
+
+        @JvmField val DISTRUST_SYSTEM_CERTIFICATES = "distrust_system_certs"
+        @JvmField val OVERRIDE_PROXY = "override_proxy"
+        @JvmField val OVERRIDE_PROXY_HOST = "override_proxy_host"
+        @JvmField val OVERRIDE_PROXY_PORT = "override_proxy_port"
 
         @JvmField val OVERRIDE_PROXY_HOST_DEFAULT = "localhost"
         @JvmField val OVERRIDE_PROXY_PORT_DEFAULT = 8118
@@ -51,7 +60,7 @@ class App: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Logger.reinitLogger(this)
+        Logger.initialize(this)
     }
 
 }

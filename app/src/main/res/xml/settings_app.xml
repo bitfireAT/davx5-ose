@@ -27,13 +27,13 @@
             android:summaryOff="@string/app_settings_override_proxy_off"/>
 
         <EditTextPreference
-            android:key="proxy_host"
+            android:key="override_proxy_host"
             android:dependency="override_proxy"
             android:title="@string/app_settings_override_proxy_host"
             android:inputType="textUri"/>
 
-        <EditTextPreference
-            android:key="proxy_port"
+        <at.bitfire.davdroid.ui.widget.IntEditTextPreference
+            android:key="override_proxy_port"
             android:dependency="override_proxy"
             android:title="@string/app_settings_override_proxy_port"
             android:inputType="number"/>

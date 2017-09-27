@@ -18,41 +18,44 @@ android {
         applicationId "at.bitfire.davdroid"
         resValue "string", "packageID", applicationId
 
-        versionCode 172
+        versionCode 179
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         minSdkVersion 16
         targetSdkVersion 25
 
         buildConfigField "boolean", "customCerts", "false"
-        buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "null"
     }
 
     productFlavors {
         standard {
-            versionName "1.8.1"
+            versionName "1.9-beta1"
             buildConfigField "boolean", "customCerts", "true"
+        }
+        managed {
+            applicationId "com.davdroid.managed"
+            resValue "string", "packageID", applicationId
+            minSdkVersion 21
+
+            versionName "1.9-beta1-mgd"
         }
 
         gplay {
-            versionName "1.8.1-gplay"
+            versionName "1.9-beta1-gplay"
             buildConfigField "boolean", "customCerts", "true"
         }
         icloud {
             applicationId "at.bitfire.cloudsync"
             resValue "string", "packageID", applicationId
 
-            versionName "1.8.1-cloud"
-            buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "at.bitfire.vcard4android.GroupMethod.GROUP_VCARDS"
+            versionName "1.9-beta1-cloud"
         }
         soldupe {
             applicationId "com.soldupe.cloudsync"
             resValue "string", "packageID", applicationId
             minSdkVersion 21
 
-            versionName "1.8.1-soldupe"
-            buildConfigField "boolean", "customCerts", "true"
-            buildConfigField "at.bitfire.vcard4android.GroupMethod", "settingContactGroupMethod", "at.bitfire.vcard4android.GroupMethod.CATEGORIES"
+            versionName "1.9-beta1-soldupe"
         }
     }
 

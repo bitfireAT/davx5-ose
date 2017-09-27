@@ -45,14 +45,14 @@ class LoginActivity: AppCompatActivity() {
         val EXTRA_PASSWORD = "password"
     }
 
-    val loginFragmentLoader = ServiceLoader.load(ILoginCredentialsFragment::class.java)!!
+    private val loginFragmentLoader = ServiceLoader.load(ILoginCredentialsFragment::class.java)!!
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null)
-            // first call, add fragment
+            // first call, add first login fragment
             fragmentManager.beginTransaction()
                     .replace(android.R.id.content, loginFragmentLoader.first().getFragment())
                     .commit()
@@ -62,6 +62,7 @@ class LoginActivity: AppCompatActivity() {
         menuInflater.inflate(R.menu.activity_login, menu)
         return true
     }
+
 
     fun showHelp(item: MenuItem) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.login_help_url))))

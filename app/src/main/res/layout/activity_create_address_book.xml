@@ -35,9 +35,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:labelFor="@+id/display_name"
             android:text="@string/create_collection_display_name"/>
         <EditText
-            android:id="@+id/display_name"
+            android:id="@id/display_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -46,9 +47,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:labelFor="@+id/description"
             android:text="@string/create_collection_description"/>
         <EditText
-            android:id="@+id/description"
+            android:id="@id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"

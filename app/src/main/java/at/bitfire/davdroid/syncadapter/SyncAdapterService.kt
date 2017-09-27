@@ -22,6 +22,8 @@ import at.bitfire.davdroid.App
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.settings.ISettings
+import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.ui.PermissionsActivity
 import org.apache.commons.collections4.IteratorUtils
 import java.util.*
@@ -44,12 +46,12 @@ abstract class SyncAdapterService: Service() {
 
         private val syncPlugins = IteratorUtils.toList(syncPluginLoader.iterator())
 
-
         init {
             syncPlugins.forEach { Logger.log.info("Registered sync plugin: ${it::class.java.name}") }
         }
 
-        abstract fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult)
+
+        abstract fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult)
 
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             Logger.log.log(Level.INFO, "$authority sync of $account has been initiated", extras.keySet().joinToString(", "))
@@ -57,11 +59,22 @@ abstract class SyncAdapterService: Service() {
             // required for dav4android (ServiceLoader)
             Thread.currentThread().contextClassLoader = context.classLoader
 
-            val runSync = syncPlugins.all { it.beforeSync(context, syncResult) }
-            if (runSync)
-                sync(account, extras, authority, provider, syncResult)
+            // load app settings
+            val settings = Settings.getInstance(context)
+            try {
+                if (settings == null) {
+                    syncResult.databaseError = true
+                    throw IllegalStateException()
+                }
 
-            syncPlugins.forEach { it.afterSync(context, syncResult) }
+                val runSync = syncPlugins.all { it.beforeSync(context, settings, syncResult) }
+                if (runSync)
+                    sync(settings, account, extras, authority, provider, syncResult)
+
+                syncPlugins.forEach { it.afterSync(context, settings, syncResult) }
+            } finally {
+                settings?.close()
+            }
             Logger.log.info("Sync for $authority complete")
         }
 

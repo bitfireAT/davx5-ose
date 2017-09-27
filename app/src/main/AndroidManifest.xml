@@ -52,115 +52,8 @@
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute">
 
-        <receiver
-            android:name=".model.Settings$ReinitSettingsReceiver"
-            android:exported="false"
-            android:process=":sync">
-            <intent-filter>
-                <action android:name="at.bitfire.davdroid.REINIT_SETTINGS"/>
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".AccountSettings$AppUpdatedReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_REPLACED" />
-                <data android:scheme="package" android:path="at.bitfire.davdroid" />
-            </intent-filter>
-        </receiver>
-
-        <!-- account type "DAVdroid" -->
-        <service
-            android:name=".syncadapter.AccountAuthenticatorService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator"/>
-            </intent-filter>
-
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/account_authenticator"/>
-        </service>
-        <service
-            android:name=".syncadapter.CalendarsSyncAdapterService"
-            android:exported="true"
-            android:process=":sync"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
-            </intent-filter>
-
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_calendars"/>
-        </service>
-
-        <service
-            android:name=".syncadapter.TasksSyncAdapterService"
-            android:exported="true"
-            android:process=":sync"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
-            </intent-filter>
-
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_tasks"/>
-        </service>
-
-        <!-- account type "DAVdroid Address book" -->
-        <service
-            android:name=".syncadapter.NullAuthenticatorService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator"/>
-            </intent-filter>
-
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/account_authenticator_address_book"/>
-        </service>
-        <provider
-            android:authorities="@string/address_books_authority"
-            android:exported="false"
-            android:label="@string/address_books_authority_title"
-            android:name=".syncadapter.AddressBookProvider"
-            android:multiprocess="false"/>
-        <service
-            android:name=".syncadapter.AddressBooksSyncAdapterService"
-            android:exported="true"
-            android:process=":sync"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
-            </intent-filter>
-
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_address_books"/>
-        </service>
-        <service
-            android:name=".syncadapter.ContactsSyncAdapterService"
-            android:exported="true"
-            android:process=":sync"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
-            </intent-filter>
-
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_contacts"/>
-            <meta-data
-                android:name="android.provider.CONTACTS_STRUCTURE"
-                android:resource="@xml/contacts"/>
-        </service>
-
-        <service
-            android:name=".DavService"
-            android:enabled="true">
-        </service>
+        <service android:name=".DavService"/>
+        <service android:name=".settings.Settings"/>
 
         <receiver android:name=".AccountsChangedReceiver">
             <intent-filter>
@@ -222,6 +115,7 @@
 
         <activity
             android:name=".ui.DebugInfoActivity"
+            android:parentActivityName=".ui.AppSettingsActivity"
             android:exported="true"
             android:label="@string/debug_info_title">
         </activity>
@@ -235,6 +129,92 @@
                 android:resource="@xml/log_paths" />
         </provider>
 
+        <!-- account type "DAVdroid" -->
+        <service
+            android:name=".syncadapter.AccountAuthenticatorService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/account_authenticator"/>
+        </service>
+        <service
+            android:name=".syncadapter.CalendarsSyncAdapterService"
+            android:exported="true"
+            android:process=":sync"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_calendars"/>
+        </service>
+        <service
+            android:name=".syncadapter.TasksSyncAdapterService"
+            android:exported="true"
+            android:process=":sync"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_tasks"/>
+        </service>
+
+        <!-- account type "DAVdroid Address book" -->
+        <service
+            android:name=".syncadapter.NullAuthenticatorService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/account_authenticator_address_book"/>
+        </service>
+        <provider
+            android:authorities="@string/address_books_authority"
+            android:exported="false"
+            android:label="@string/address_books_authority_title"
+            android:name=".syncadapter.AddressBookProvider"
+            android:multiprocess="false"/>
+        <service
+            android:name=".syncadapter.AddressBooksSyncAdapterService"
+            android:exported="true"
+            android:process=":sync"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_address_books"/>
+        </service>
+        <service
+            android:name=".syncadapter.ContactsSyncAdapterService"
+            android:exported="true"
+            android:process=":sync"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_contacts"/>
+            <meta-data
+                android:name="android.provider.CONTACTS_STRUCTURE"
+                android:resource="@xml/contacts"/>
+        </service>
 
     </application>
 

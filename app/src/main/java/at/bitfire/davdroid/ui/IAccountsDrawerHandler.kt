@@ -9,9 +9,13 @@
 package at.bitfire.davdroid.ui
 
 import android.app.Activity
+import android.view.Menu
 import android.view.MenuItem
+import at.bitfire.davdroid.settings.ISettings
 
 interface IAccountsDrawerHandler {
+
+    fun onSettingsChanged(settings: ISettings?, menu: Menu)
 
     fun onNavigationItemSelected(activity: Activity, item: MenuItem): Boolean
 

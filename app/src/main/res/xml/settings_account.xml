@@ -15,7 +15,7 @@
             android:key="username"
             android:title="@string/settings_username"
             android:persistent="false"
-            android:dialogTitle="@string/settings_enter_username" />
+            android:dialogTitle="@string/settings_enter_username"/>
 
         <EditTextPreference
             android:key="password"
@@ -23,40 +23,41 @@
             android:persistent="false"
             android:inputType="textPassword"
             android:summary="@string/settings_password_summary"
-            android:dialogTitle="@string/settings_enter_password" />
+            android:dialogTitle="@string/settings_enter_password"/>
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/settings_sync">
+    <PreferenceCategory
+        android:key="sync"
+        android:title="@string/settings_sync">
 
         <ListPreference
             android:key="sync_interval_contacts"
             android:persistent="false"
             android:title="@string/settings_sync_interval_contacts"
             android:entries="@array/settings_sync_interval_names"
-            android:entryValues="@array/settings_sync_interval_seconds" />
+            android:entryValues="@array/settings_sync_interval_seconds"/>
 
         <ListPreference
             android:key="sync_interval_calendars"
             android:persistent="false"
             android:title="@string/settings_sync_interval_calendars"
             android:entries="@array/settings_sync_interval_names"
-            android:entryValues="@array/settings_sync_interval_seconds" />
+            android:entryValues="@array/settings_sync_interval_seconds"/>
 
         <ListPreference
             android:key="sync_interval_tasks"
             android:persistent="false"
             android:title="@string/settings_sync_interval_tasks"
             android:entries="@array/settings_sync_interval_names"
-            android:entryValues="@array/settings_sync_interval_seconds" />
+            android:entryValues="@array/settings_sync_interval_seconds"/>
 
         <SwitchPreferenceCompat
             android:key="sync_wifi_only"
             android:persistent="false"
             android:title="@string/settings_sync_wifi_only"
             android:summaryOn="@string/settings_sync_wifi_only_on"
-            android:summaryOff="@string/settings_sync_wifi_only_off"
-            />
+            android:summaryOff="@string/settings_sync_wifi_only_off" />
 
         <EditTextPreference
             android:key="sync_wifi_only_ssids"
@@ -67,7 +68,9 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/settings_carddav">
+    <PreferenceCategory
+        android:key="carddav"
+        android:title="@string/settings_carddav">
 
         <ListPreference
             android:key="contact_group_method"
@@ -78,7 +81,9 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/settings_caldav">
+    <PreferenceCategory
+        android:key="caldav"
+        android:title="@string/settings_caldav">
 
         <EditTextPreference
             android:key="time_range_past_days"

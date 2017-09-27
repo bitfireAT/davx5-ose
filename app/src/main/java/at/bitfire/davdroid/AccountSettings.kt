@@ -9,8 +9,10 @@ package at.bitfire.davdroid
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.annotation.SuppressLint
-import android.content.*
+import android.content.ContentResolver
+import android.content.ContentValues
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
@@ -25,6 +27,7 @@ import at.bitfire.davdroid.model.ServiceDB.Collections
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.CalendarStorageException
@@ -37,6 +40,7 @@ import java.util.logging.Level
 
 class AccountSettings @Throws(InvalidAccountException::class) constructor(
         val context: Context,
+        val settings: ISettings,
         val account: Account
 ) {
 
@@ -135,12 +139,17 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
         }
     }
 
-    fun getSyncWifiOnly() = accountManager.getUserData(account, KEY_WIFI_ONLY) != null
+    fun getSyncWifiOnly() = if (settings.has(KEY_WIFI_ONLY))
+            settings.getBoolean(KEY_WIFI_ONLY, false)
+                else
+            accountManager.getUserData(account, KEY_WIFI_ONLY) != null
     fun setSyncWiFiOnly(wiFiOnly: Boolean) =
             accountManager.setUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
 
-    fun getSyncWifiOnlySSIDs(): List<String>? =
-            accountManager.getUserData(account, KEY_WIFI_ONLY_SSIDS)?.split(',')
+    fun getSyncWifiOnlySSIDs(): List<String>? = (if (settings.has(KEY_WIFI_ONLY_SSIDS))
+                settings.getString(KEY_WIFI_ONLY_SSIDS, null)
+            else
+                accountManager.getUserData(account, KEY_WIFI_ONLY_SSIDS))?.split(',')
     fun setSyncWifiOnlySSIDs(ssids: List<String>?) =
             accountManager.setUserData(account, KEY_WIFI_ONLY_SSIDS, StringUtils.trimToNull(ssids?.joinToString(",")))
 
@@ -159,32 +168,36 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
     fun setTimeRangePastDays(days: Int?) =
             accountManager.setUserData(account, KEY_TIME_RANGE_PAST_DAYS, (days ?: -1).toString())
 
-    fun getManageCalendarColors() = accountManager.getUserData(account, KEY_MANAGE_CALENDAR_COLORS) == null
+    fun getManageCalendarColors() = if (settings.has(KEY_MANAGE_CALENDAR_COLORS))
+        settings.getBoolean(KEY_MANAGE_CALENDAR_COLORS, false)
+    else
+        accountManager.getUserData(account, KEY_MANAGE_CALENDAR_COLORS) == null
     fun setManageCalendarColors(manage: Boolean) =
             accountManager.setUserData(account, KEY_MANAGE_CALENDAR_COLORS, if (manage) null else "0")
 
-    fun getEventColors() = accountManager.getUserData(account, KEY_EVENT_COLORS) != null
+    fun getEventColors() = if (settings.has(KEY_EVENT_COLORS))
+            settings.getBoolean(KEY_EVENT_COLORS, false)
+                else
+            accountManager.getUserData(account, KEY_EVENT_COLORS) != null
     fun setEventColors(useColors: Boolean) =
             accountManager.setUserData(account, KEY_EVENT_COLORS, if (useColors) "1" else null)
 
     // CardDAV settings
 
     fun getGroupMethod(): GroupMethod {
-        BuildConfig.settingContactGroupMethod?.let { return it }
-
-        val name = accountManager.getUserData(account, KEY_CONTACT_GROUP_METHOD)
-        return if (name != null)
-            GroupMethod.valueOf(name)
-        else
-            GroupMethod.GROUP_VCARDS
+        val name = settings.getString(KEY_CONTACT_GROUP_METHOD, null) ?:
+                accountManager.getUserData(account, KEY_CONTACT_GROUP_METHOD)
+        if (name != null)
+            try {
+                return GroupMethod.valueOf(name)
+            }
+            catch (e: IllegalArgumentException) {
+            }
+        return GroupMethod.GROUP_VCARDS
     }
 
     fun setGroupMethod(method: GroupMethod) {
-        if (BuildConfig.settingContactGroupMethod == null) {
-            val name = if (method == GroupMethod.GROUP_VCARDS) null else method.name
-            accountManager.setUserData(account, KEY_CONTACT_GROUP_METHOD, name)
-        } else if (BuildConfig.settingContactGroupMethod != method)
-            throw UnsupportedOperationException("Group method setting is read-only")
+        accountManager.setUserData(account, KEY_CONTACT_GROUP_METHOD, method.name)
     }
 
 
@@ -467,26 +480,6 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
                 @Suppress("deprecation")
                 provider.release()
         }
-    }
-
-
-    class AppUpdatedReceiver: BroadcastReceiver() {
-
-        @SuppressLint("UnsafeProtectedBroadcastReceiver,MissingPermission")
-        override fun onReceive(context: Context, intent: Intent?) {
-            Logger.log.info("DAVdroid was updated, checking for AccountSettings version")
-
-            // peek into AccountSettings to initiate a possible migration
-            val accountManager = AccountManager.get(context)
-            for (account in accountManager.getAccountsByType(context.getString(R.string.account_type)))
-                try {
-                    Logger.log.info("Checking account ${account.name}")
-                    AccountSettings(context, account)
-                } catch(e: InvalidAccountException) {
-                    Logger.log.log(Level.SEVERE, "Couldn't check for updated account settings", e)
-                }
-        }
-
     }
 
 }
