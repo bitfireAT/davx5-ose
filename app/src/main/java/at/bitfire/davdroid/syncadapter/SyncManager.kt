@@ -66,7 +66,7 @@ abstract class SyncManager(
 
     protected lateinit var localCollection: LocalCollection<*>
 
-    protected val httpClient = HttpClient.Builder(context, settings).build()
+    protected val httpClient = HttpClient.Builder(context, accountSettings = settings).build()
     protected lateinit var collectionURL: HttpUrl
     protected lateinit var davCollection: DavResource
 

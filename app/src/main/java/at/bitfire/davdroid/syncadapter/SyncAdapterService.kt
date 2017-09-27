@@ -22,6 +22,8 @@ import at.bitfire.davdroid.App
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.settings.ISettings
+import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.ui.PermissionsActivity
 import java.util.*
 import java.util.logging.Level
@@ -37,7 +39,7 @@ abstract class SyncAdapterService: Service() {
             context: Context
     ): AbstractThreadedSyncAdapter(context, false) {
 
-        abstract fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult)
+        abstract fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult)
 
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             Logger.log.log(Level.INFO, "$authority sync of $account has been initiated", extras.keySet().joinToString(", "))
@@ -45,8 +47,18 @@ abstract class SyncAdapterService: Service() {
             // required for dav4android (ServiceLoader)
             Thread.currentThread().contextClassLoader = context.classLoader
 
-            sync(account, extras, authority, provider, syncResult)
+            // load app settings
+            val settings = Settings.getInstance(context)
+            try {
+                if (settings == null) {
+                    syncResult.databaseError = true
+                    throw IllegalStateException()
+                }
 
+                sync(settings, account, extras, authority, provider, syncResult)
+            } finally {
+                settings?.close()
+            }
             Logger.log.info("Sync for $authority complete")
         }
 

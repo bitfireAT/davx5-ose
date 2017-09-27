@@ -13,6 +13,8 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.content.SyncStatusObserver
 import android.net.Uri
+import android.app.LoaderManager
+import android.content.*
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
@@ -21,14 +23,19 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
-import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import kotlinx.android.synthetic.main.accounts_content.*
 import kotlinx.android.synthetic.main.activity_accounts.*
 import java.util.*
 
-class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, SyncStatusObserver {
+class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<AccountsActivity.Settings>, SyncStatusObserver {
+
+    companion object {
+        private val EXTRA_CREATE_STARTUP_FRAGMENTS = "createStartupFragments"
+    }
 
     private var syncStatusSnackbar: Snackbar? = null
     private var syncStatusObserver: Any? = null
@@ -52,12 +59,30 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         nav_view.setNavigationItemSelectedListener(this)
         nav_view.itemIconTintList = null
 
-        if (savedInstanceState == null && packageName != getCallingPackage()) {
-            // first call
-            val ft = supportFragmentManager.beginTransaction()
-            StartupDialogFragment.getStartupDialogs(this).forEach { ft.add(it, null) }
-            ft.commit()
+        /* When the DAVdroid main activity is started, start a Settings service that stays in memory
+        for better performance. The service stops itself when memory is trimmed. */
+        val settingsIntent = Intent(this, Settings::class.java)
+        startService(settingsIntent)
+
+        val args = Bundle(1)
+        args.putBoolean(EXTRA_CREATE_STARTUP_FRAGMENTS, savedInstanceState == null && packageName != callingPackage)
+        loaderManager.initLoader(0, args, this)
+    }
+
+    override fun onCreateLoader(code: Int, args: Bundle) =
+            SettingsLoader(this, args.getBoolean(EXTRA_CREATE_STARTUP_FRAGMENTS))
+
+    override fun onLoadFinished(loader: Loader<Settings>?, result: Settings?) {
+        val result = result ?: return
+
+        if (result.createStartupFragments) {
+            val ft = fragmentManager.beginTransaction()
+            StartupDialogFragment.getStartupDialogs(this, result.settings).forEach { ft.add(it, null) }
+            ft.commitAllowingStateLoss()
         }
+    }
+
+    override fun onLoaderReset(loader: Loader<Settings>?) {
     }
 
     override fun onResume() {
@@ -69,6 +94,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
     override fun onPause() {
         super.onPause()
+
         syncStatusObserver?.let {
             ContentResolver.removeStatusChangeListener(it)
             syncStatusObserver = null
@@ -125,6 +151,32 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return processed
+    }
+
+
+    class Settings(
+            val settings: ISettings,
+            val createStartupFragments: Boolean
+    )
+
+    class SettingsLoader(
+            context: Context,
+            private val createStartupFragments: Boolean
+    ): at.bitfire.davdroid.ui.SettingsLoader<Settings>(context) {
+
+        override fun loadInBackground(): Settings? {
+            settings?.let {
+                val accountManager = AccountManager.get(context)
+                val accounts = accountManager.getAccountsByType(context.getString(R.string.account_type))
+
+                return Settings(
+                        it,
+                        createStartupFragments
+                )
+            }
+            return null
+        }
+
     }
 
 }

@@ -11,27 +11,28 @@ package at.bitfire.davdroid.ui
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Dialog
+import android.app.DialogFragment
+import android.app.LoaderManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.Loader
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
-import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.ServiceDB
-import at.bitfire.davdroid.model.Settings
 import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.settings.ISettings
 import java.util.*
 import java.util.logging.Level
 
-class StartupDialogFragment: DialogFragment() {
+class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISettings?> {
 
     enum class Mode {
         BATTERY_OPTIMIZATIONS,
@@ -51,36 +52,32 @@ class StartupDialogFragment: DialogFragment() {
 
         val ARGS_MODE = "mode"
 
-        fun getStartupDialogs(context: Context): List<StartupDialogFragment> {
+        fun getStartupDialogs(context: Context, settings: ISettings): List<StartupDialogFragment> {
             val dialogs = LinkedList<StartupDialogFragment>()
 
-            ServiceDB.OpenHelper(context).use { dbHelper ->
-                val settings = Settings(dbHelper.readableDatabase)
+            if (BuildConfig.VERSION_NAME.contains("-alpha") || BuildConfig.VERSION_NAME.contains("-beta") || BuildConfig.VERSION_NAME.contains("-rc"))
+                dialogs += StartupDialogFragment.instantiate(Mode.DEVELOPMENT_VERSION)
+            /* else if (System.currentTimeMillis() > settings.getLong(SETTING_NEXT_DONATION_POPUP, 0))
+                dialogs += StartupDialogFragment.instantiate(Mode.OSE_DONATE) */
 
-                if (BuildConfig.VERSION_NAME.contains("-alpha") || BuildConfig.VERSION_NAME.contains("-beta") || BuildConfig.VERSION_NAME.contains("-rc"))
-                    dialogs += StartupDialogFragment.instantiate(Mode.DEVELOPMENT_VERSION)
-                else if (System.currentTimeMillis() > settings.getLong(SETTING_NEXT_DONATION_POPUP, 0))
-                    dialogs += StartupDialogFragment.instantiate(Mode.OSE_DONATE)
+            // store-specific information
+            /*if (BuildConfig.FLAVOR == App.FLAVOR_GOOGLE_PLAY) {
+                // Play store
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP &&         // only on Android <5
+                    settings.getBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, true))   // and only when "Don't show again" hasn't been clicked yet
+                    dialogs += StartupDialogFragment.instantiate(Mode.GOOGLE_PLAY_ACCOUNTS_REMOVED)
+            }*/
 
-		/* // store-specific information
-                if (BuildConfig.FLAVOR == App.FLAVOR_GOOGLE_PLAY) {
-                    // Play store
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP &&         // only on Android <5
-                        settings.getBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, true))   // and only when "Don't show again" hasn't been clicked yet
-                        dialogs += StartupDialogFragment.instantiate(Mode.GOOGLE_PLAY_ACCOUNTS_REMOVED)
-                } */
-
-                // battery optimization white-listing
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && settings.getBoolean(HINT_BATTERY_OPTIMIZATIONS, true)) {
-                    val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
-                    if (!powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID))
-                        dialogs.add(StartupDialogFragment.instantiate(Mode.BATTERY_OPTIMIZATIONS))
-                }
-
-                // OpenTasks information
-                if (!LocalTaskList.tasksProviderAvailable(context) && settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED, true))
-                    dialogs.add(StartupDialogFragment.instantiate(Mode.OPENTASKS_NOT_INSTALLED))
+            // battery optimization white-listing
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && settings.getBoolean(HINT_BATTERY_OPTIMIZATIONS, true)) {
+                val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+                if (!powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID))
+                    dialogs.add(StartupDialogFragment.instantiate(Mode.BATTERY_OPTIMIZATIONS))
             }
+
+            // OpenTasks information
+            if (!LocalTaskList.tasksProviderAvailable(context) && settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED, true))
+                dialogs.add(StartupDialogFragment.instantiate(Mode.OPENTASKS_NOT_INSTALLED))
 
             return dialogs.reversed()
         }
@@ -95,12 +92,30 @@ class StartupDialogFragment: DialogFragment() {
 
     }
 
+
+    var settings: ISettings? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        loaderManager.initLoader(0, null, this)
+    }
+
+    override fun onCreateLoader(code: Int, args: Bundle?): Loader<ISettings?> =
+            SettingsLoader(activity)
+
+    override fun onLoadFinished(loader: Loader<ISettings?>?, result: ISettings?) {
+        settings = result
+    }
+
+    override fun onLoaderReset(loader: Loader<ISettings?>?) {
+        settings = null
+    }
+
+
     @SuppressLint("BatteryLife")
     @TargetApi(Build.VERSION_CODES.M)
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         isCancelable = false
-
-
 
         val mode = Mode.valueOf(arguments.getString(ARGS_MODE))
         return when (mode) {
@@ -117,10 +132,7 @@ class StartupDialogFragment: DialogFragment() {
                                     context.startActivity(intent)
                             })
                         .setNegativeButton(R.string.startup_dont_show_again, { _: DialogInterface, _: Int ->
-                            ServiceDB.OpenHelper(context).use { dbHelper ->
-                                val settings = Settings(dbHelper.writableDatabase)
-                                settings.putBoolean(HINT_BATTERY_OPTIMIZATIONS, false)
-                            }
+                            settings?.putBoolean(HINT_BATTERY_OPTIMIZATIONS, false)
                         })
                         .create()
 
@@ -138,7 +150,7 @@ class StartupDialogFragment: DialogFragment() {
             Mode.GOOGLE_PLAY_ACCOUNTS_REMOVED -> {
                 var icon: Drawable? = null
                 try {
-                    icon = context.packageManager.getApplicationIcon("com.android.vending").current
+                    icon = activity.packageManager.getApplicationIcon("com.android.vending").current
                 } catch(e: PackageManager.NameNotFoundException) {
                     Logger.log.log(Level.WARNING, "Can't load Play Store icon", e)
                 }
@@ -152,10 +164,7 @@ class StartupDialogFragment: DialogFragment() {
                             context.startActivity(intent)
                         })
                         .setNegativeButton(R.string.startup_dont_show_again, { _, _ ->
-                            ServiceDB.OpenHelper(context).use { dbHelper ->
-                                val settings = Settings(dbHelper.writableDatabase)
-                                settings.putBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, false)
-                            }
+                            settings?.putBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, false)
                         })
                         .create()
             }
@@ -177,10 +186,7 @@ class StartupDialogFragment: DialogFragment() {
                                 Logger.log.warning("No market app available, can't install OpenTasks")
                         })
                         .setNegativeButton(R.string.startup_dont_show_again, { _: DialogInterface, _: Int ->
-                            ServiceDB.OpenHelper(context).use { dbHelper ->
-                                val settings = Settings(dbHelper.writableDatabase)
-                                settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
-                            }
+                            settings?.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
                         })
                         .create()
             }
@@ -196,20 +202,26 @@ class StartupDialogFragment: DialogFragment() {
                                         .appendEncodedPath("donate/")
                                         .build()
                                 startActivity(Intent(Intent.ACTION_VIEW, uri))
-                                ServiceDB.OpenHelper(context).use { dbHelper ->
-                                    val settings = Settings(dbHelper.writableDatabase)
-                                    settings.putLong(SETTING_NEXT_DONATION_POPUP, System.currentTimeMillis() + 30 * 86400000L)    // 30 days
-                                }
+                                settings?.putLong(SETTING_NEXT_DONATION_POPUP, System.currentTimeMillis() + 30 * 86400000L) // 30 days
                             })
                             .setNegativeButton(R.string.startup_donate_later, { _, _ ->
-                                ServiceDB.OpenHelper(context).use { dbHelper ->
-                                    val settings = Settings(dbHelper.writableDatabase)
-                                    settings.putLong(SETTING_NEXT_DONATION_POPUP, System.currentTimeMillis() + 14 * 86400000L)    // 14 days
-                                }
+                                settings?.putLong(SETTING_NEXT_DONATION_POPUP, System.currentTimeMillis() + 14 * 86400000L) // 14 days
                             })
                             .create()
 
         }
+    }
+
+
+    class SettingsLoader(
+            context: Context
+    ): at.bitfire.davdroid.ui.SettingsLoader<ISettings?>(context) {
+
+        override fun loadInBackground(): ISettings? {
+            settings?.let { return it }
+            return null
+        }
+
     }
 
 }

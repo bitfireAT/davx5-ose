@@ -48,7 +48,7 @@ class DavResourceFinder(
         log.addHandler(logBuffer)
     }
 
-    private val httpClient: HttpClient = HttpClient.Builder(context, null, log)
+    private val httpClient: HttpClient = HttpClient.Builder(context, logger = log)
             .addAuthentication(null, credentials.userName, credentials.password)
             .setForeground(true)
             .build()

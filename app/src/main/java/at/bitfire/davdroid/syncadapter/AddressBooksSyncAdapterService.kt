@@ -20,6 +20,7 @@ import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.ServiceDB.Collections
 import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.vcard4android.ContactsStorageException
 import java.util.logging.Level
 
@@ -32,7 +33,7 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
             context: Context
     ): SyncAdapter(context) {
 
-        override fun sync(account: Account, extras: Bundle, authority: String, addressBooksProvider: ContentProviderClient, syncResult: SyncResult) {
+        override fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, addressBooksProvider: ContentProviderClient, syncResult: SyncResult) {
             val contactsProvider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
             if (contactsProvider == null) {
                 Logger.log.severe("Couldn't access contacts provider")
@@ -41,13 +42,13 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
             }
 
             try {
-                val settings = AccountSettings(context, account)
+                val accountSettings = AccountSettings(context, settings, account)
 
                 /* don't run sync if
                    - sync conditions (e.g. "sync only in WiFi") are not met AND
                    - this is is an automatic sync (i.e. manual syncs are run regardless of sync conditions)
                  */
-                if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(settings))
+                if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(accountSettings))
                     return
 
                 updateLocalAddressBooks(contactsProvider, account)

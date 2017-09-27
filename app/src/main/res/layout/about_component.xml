@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_margin="@dimen/activity_margin">
+        android:padding="@dimen/activity_margin">
 
         <TextView
             android:id="@+id/title"
@@ -43,28 +43,42 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_marginBottom="16dp"/>
 
-        <TextView
-            android:id="@+id/license_info"
-            tools:text="This program comes with ABSOLUTELY NO WARRANTY. It is free software, and you are welcome to redistribute it under certain conditions."
+        <LinearLayout
+            android:id="@+id/license_terms"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"/>
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/license_header"
+            <TextView
+                android:id="@+id/license_info"
+                tools:text="This program comes with ABSOLUTELY NO WARRANTY. It is free software, and you are welcome to redistribute it under certain conditions."
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"/>
+
+            <TextView
+                android:id="@+id/license_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/TextView.Heading"
+                android:text="@string/about_license_terms"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:id="@+id/license_text"
+                android:text="@string/please_wait"
+                tools:text="(Full license text)"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/license_fragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/TextView.Heading"
-            android:text="@string/about_license_terms"
-            android:layout_marginBottom="16dp"/>
-
-        <TextView
-            android:id="@+id/license_text"
-            android:text="@string/please_wait"
-            tools:text="(Full license text)"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 

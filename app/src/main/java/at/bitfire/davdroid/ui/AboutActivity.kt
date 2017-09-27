@@ -32,6 +32,7 @@ import kotlinx.android.synthetic.main.about_component.view.*
 import kotlinx.android.synthetic.main.activity_about.*
 import org.apache.commons.io.IOUtils
 import java.io.IOException
+import java.util.*
 import java.util.logging.Level
 
 class AboutActivity: AppCompatActivity() {
@@ -44,7 +45,9 @@ class AboutActivity: AppCompatActivity() {
             val licenseInfo: Int?,
             val licenseTextFile: String?
     )
+
     private lateinit var components: Array<ComponentInfo>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,6 +103,7 @@ class AboutActivity: AppCompatActivity() {
         override fun getItem(position: Int) = ComponentFragment.instantiate(position)
     }
 
+
     class ComponentFragment: Fragment(), LoaderManager.LoaderCallbacks<Spanned> {
 
         companion object {
@@ -114,6 +118,9 @@ class AboutActivity: AppCompatActivity() {
                 return frag
             }
         }
+
+        private val licenseFragmentLoader = ServiceLoader.load(ILicenseFragment::class.java)!!.firstOrNull()
+
 
         @SuppressLint("SetTextI18n")
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -130,20 +137,33 @@ class AboutActivity: AppCompatActivity() {
 
             v.copyright.text = "© ${info.copyright}"
 
-            if (info.licenseInfo == null)
-                v.license_info.visibility = View.GONE
-            else
-                v.license_info.setText(info.licenseInfo)
+            if (info.licenseInfo == null && info.licenseTextFile == null) {
+                // No license text, so this must be the app's tab. Show the license fragment here, if available.
+                licenseFragmentLoader?.let { factory ->
+                    fragmentManager.beginTransaction()
+                            .add(R.id.license_fragment, factory.getFragment())
+                            .commit()
+                }
+                v.license_terms.visibility = View.GONE
 
-            // load and format license text
-            if (info.licenseTextFile == null) {
-                v.license_header.visibility = View.GONE
-                v.license_text.visibility = View.GONE
             } else {
-                val args = Bundle(1)
-                args.putString(KEY_FILE_NAME, info.licenseTextFile)
-                loaderManager.initLoader(0, args, this)
+                // show license info
+                if (info.licenseInfo == null)
+                    v.license_info.visibility = View.GONE
+                else
+                    v.license_info.setText(info.licenseInfo)
+
+                // load and format license text
+                if (info.licenseTextFile == null) {
+                    v.license_header.visibility = View.GONE
+                    v.license_text.visibility = View.GONE
+                } else {
+                    val args = Bundle(1)
+                    args.putString(KEY_FILE_NAME, info.licenseTextFile)
+                    loaderManager.initLoader(0, args, this)
+                }
             }
+
 
             return v
         }
@@ -187,6 +207,13 @@ class AboutActivity: AppCompatActivity() {
                 return null
             }
         }
+    }
+
+
+    interface ILicenseFragment {
+
+        fun getFragment(): Fragment
+
     }
 
 }

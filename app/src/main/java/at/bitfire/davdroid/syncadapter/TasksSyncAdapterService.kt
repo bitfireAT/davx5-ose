@@ -18,6 +18,7 @@ import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.ServiceDB.Collections
 import at.bitfire.davdroid.model.ServiceDB.Services
 import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.TaskProvider
 import org.dmfs.provider.tasks.TaskContract
@@ -35,10 +36,10 @@ class TasksSyncAdapterService: SyncAdapterService() {
             context: Context
     ): SyncAdapterService.SyncAdapter(context) {
 
-        override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+        override fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
                 val taskProvider = TaskProvider.fromProviderClient(provider)
-                val settings = AccountSettings(context, account)
+                val settings = AccountSettings(context, settings, account)
                 /* don't run sync if
                    - sync conditions (e.g. "sync only in WiFi") are not met AND
                    - this is is an automatic sync (i.e. manual syncs are run regardless of sync conditions)

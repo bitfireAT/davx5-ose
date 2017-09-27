@@ -17,19 +17,17 @@ android {
     defaultConfig {
         applicationId "at.bitfire.davdroid"
 
-        minSdkVersion 16
-        targetSdkVersion 25
-
-        versionCode 172
-
+        versionCode 179
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "customCerts", "true"
+
+        minSdkVersion 16
+        targetSdkVersion 25
     }
 
     productFlavors {
         standard {
-            versionName "1.8.1-ose"
-            buildConfigField "boolean", "customCerts", "true"
+            versionName "1.9-beta1-ose"
         }
     }
 

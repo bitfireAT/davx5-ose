@@ -8,8 +8,14 @@
 
 package at.bitfire.davdroid.ui
 
+import android.app.ActivityManager
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
+import android.os.Process
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.EditTextPreference
@@ -21,8 +27,9 @@ import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.ServiceDB
-import at.bitfire.davdroid.model.Settings
+import at.bitfire.davdroid.settings.ISettings
+import at.bitfire.davdroid.settings.ISettingsObserver
+import at.bitfire.davdroid.settings.Settings
 import java.net.URI
 import java.net.URISyntaxException
 
@@ -46,39 +53,71 @@ class AppSettingsActivity: AppCompatActivity() {
 
 
     class SettingsFragment: PreferenceFragmentCompat() {
-        lateinit var dbHelper: ServiceDB.OpenHelper
-        lateinit var settings: Settings
+
+        val observer = object: ISettingsObserver.Stub() {
+            override fun onSettingsChanged() {
+                loadSettings()
+            }
+        }
+
+        var settings: ISettings? = null
+        var settingsSvc: ServiceConnection? = object: ServiceConnection {
+            override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+                settings = ISettings.Stub.asInterface(binder)
+                settings?.registerObserver(observer)
+                loadSettings()
+            }
+            override fun onServiceDisconnected(name: ComponentName) {
+                settings?.unregisterObserver(observer)
+                settings = null
+            }
+        }
 
         override fun onCreate(savedInstanceState: Bundle?) {
-            dbHelper = ServiceDB.OpenHelper(context)
-            settings = Settings(dbHelper.readableDatabase)
-
-            // will call onCreatePreferences, so settings should be already initialized
             super.onCreate(savedInstanceState)
+
+            if (!activity.bindService(Intent(activity, Settings::class.java), settingsSvc, Context.BIND_AUTO_CREATE))
+                settingsSvc = null
         }
 
         override fun onDestroy() {
             super.onDestroy()
-            dbHelper.close()
+            settingsSvc?.let { activity.unbindService(it) }
         }
 
         override fun onCreatePreferences(bundle: Bundle?, s: String?) {
             addPreferencesFromResource(R.xml.settings_app)
 
+            // UI settings
             val prefResetHints = findPreference("reset_hints")
             prefResetHints.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 resetHints()
-                true
+                false
             }
 
-            val prefOverrideProxy = findPreference("override_proxy") as SwitchPreferenceCompat
+            // security settings
+            findPreference(App.DISTRUST_SYSTEM_CERTIFICATES).isVisible = BuildConfig.customCerts
+
+            val prefResetCertificates = findPreference("reset_certificates")
+            prefResetCertificates.isVisible = BuildConfig.customCerts
+            prefResetCertificates.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                resetCertificates()
+                false
+            }
+
+            arguments?.getString(EXTRA_SCROLL_TO)?.let { scrollToPreference(it) }
+        }
+
+        private fun loadSettings() {
+            val settings = requireNotNull(settings)
+
+            // connection settings
+            val prefOverrideProxy = findPreference(App.OVERRIDE_PROXY) as SwitchPreferenceCompat
             prefOverrideProxy.isChecked = settings.getBoolean(App.OVERRIDE_PROXY, false)
-            prefOverrideProxy.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                settings.putBoolean(App.OVERRIDE_PROXY, newValue as Boolean)
-                true
-            }
+            prefOverrideProxy.isEnabled = settings.isWritable(App.OVERRIDE_PROXY)
 
-            val prefProxyHost = findPreference("proxy_host") as EditTextPreference
+            val prefProxyHost = findPreference(App.OVERRIDE_PROXY_HOST) as EditTextPreference
+            prefProxyHost.isEnabled = settings.isWritable(App.OVERRIDE_PROXY_HOST)
             val proxyHost = settings.getString(App.OVERRIDE_PROXY_HOST, App.OVERRIDE_PROXY_HOST_DEFAULT)
             prefProxyHost.text = proxyHost
             prefProxyHost.summary = proxyHost
@@ -95,60 +134,50 @@ class AppSettingsActivity: AppCompatActivity() {
                 }
             }
 
-            val prefProxyPort = findPreference("proxy_port") as EditTextPreference
-            val proxyPort = settings.getString(App.OVERRIDE_PROXY_PORT, App.OVERRIDE_PROXY_PORT_DEFAULT.toString())
-            prefProxyPort.text = proxyPort
-            prefProxyPort.summary = proxyPort
+            val prefProxyPort = findPreference(App.OVERRIDE_PROXY_PORT) as EditTextPreference
+            prefProxyHost.isEnabled = settings.isWritable(App.OVERRIDE_PROXY_PORT)
+            val proxyPort = settings.getInt(App.OVERRIDE_PROXY_PORT, App.OVERRIDE_PROXY_PORT_DEFAULT)
+            prefProxyPort.text = proxyPort.toString()
+            prefProxyPort.summary = proxyPort.toString()
             prefProxyPort.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                var port: Int
                 try {
-                    port = Integer.parseInt(newValue as String)
+                    val port = Integer.parseInt(newValue as String)
+                    if (port in 1..65535) {
+                        settings.putInt(App.OVERRIDE_PROXY_PORT, port)
+                        prefProxyPort.text = port.toString()
+                        prefProxyPort.summary = port.toString()
+                        true
+                    } else
+                        false
                 } catch(e: NumberFormatException) {
-                    port = App.OVERRIDE_PROXY_PORT_DEFAULT
+                    false
                 }
-                settings.putInt(App.OVERRIDE_PROXY_PORT, port)
-                prefProxyPort.text = port.toString()
-                prefProxyPort.summary = port.toString()
-                true
             }
 
-            val prefDistrustSystemCerts = findPreference("distrust_system_certs") as SwitchPreferenceCompat
-            if (BuildConfig.customCerts)
-                prefDistrustSystemCerts.isChecked = settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false)
-            else
-                prefDistrustSystemCerts.isVisible = false
-            prefDistrustSystemCerts.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                setDistrustSystemCerts(prefDistrustSystemCerts.isChecked)
+            // security settings
+            val prefDistrustSystemCerts = findPreference(App.DISTRUST_SYSTEM_CERTIFICATES) as SwitchPreferenceCompat
+            prefDistrustSystemCerts.isChecked = settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false)
+
+            // debugging settings
+            val prefLogToExternalStorage = findPreference(Logger.LOG_TO_EXTERNAL_STORAGE) as SwitchPreferenceCompat
+            prefLogToExternalStorage.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                // kill a potential :sync process, so that the new logger settings will be used
+                val am = activity.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                am.runningAppProcesses.forEach {
+                    if (it.pid != Process.myPid()) {
+                        Logger.log.info("Killing ${it.processName} process, pid = ${it.pid}")
+                        Process.killProcess(it.pid)
+                    }
+                }
                 true
             }
-
-            val prefResetCertificates = findPreference("reset_certificates")
-            if (!BuildConfig.customCerts)
-                prefResetCertificates.isVisible = false
-            prefResetCertificates.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                resetCertificates()
-                true
-            }
-
-            val prefLogToExternalStorage = findPreference("log_to_external_storage") as SwitchPreferenceCompat
-            prefLogToExternalStorage.isChecked = settings.getBoolean(App.LOG_TO_EXTERNAL_STORAGE, false)
-            prefLogToExternalStorage.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                setExternalLogging(prefLogToExternalStorage.isChecked)
-                true
-            }
-
-            arguments?.getString(EXTRA_SCROLL_TO)?.let { scrollToPreference(it) }
         }
 
         private fun resetHints() {
-            settings.remove(StartupDialogFragment.HINT_BATTERY_OPTIMIZATIONS)
-            settings.remove(StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED)
-            settings.remove(StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED)
+            settings?.remove(StartupDialogFragment.HINT_BATTERY_OPTIMIZATIONS)
+            settings?.remove(StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED)
+            settings?.remove(StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED)
             Snackbar.make(view!!, R.string.app_settings_reset_hints_success, Snackbar.LENGTH_LONG).show()
-        }
-
-        private fun setDistrustSystemCerts(distrust: Boolean) {
-            settings.putBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, distrust)
         }
 
         private fun resetCertificates() {
@@ -156,15 +185,6 @@ class AppSettingsActivity: AppCompatActivity() {
                 Snackbar.make(view!!, getString(R.string.app_settings_reset_certificates_success), Snackbar.LENGTH_LONG).show()
         }
 
-        private fun setExternalLogging(externalLogging: Boolean) {
-            settings.putBoolean(App.LOG_TO_EXTERNAL_STORAGE, externalLogging)
-
-            // reinitialize logger of default process
-            Logger.reinitLogger(context)
-
-            // reinitialize logger of :sync process
-            context.sendBroadcast(Intent(Settings.ReinitSettingsReceiver.ACTION_REINIT_SETTINGS))
-        }
     }
 
 }

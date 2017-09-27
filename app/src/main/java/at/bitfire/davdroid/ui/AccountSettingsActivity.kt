@@ -9,26 +9,24 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
-import android.content.ContentResolver
-import android.content.Context
-import android.content.Intent
-import android.content.SyncStatusObserver
+import android.app.DialogFragment
+import android.app.LoaderManager
+import android.content.*
 import android.os.Bundle
 import android.provider.CalendarContract
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.LoaderManager
+import android.support.v14.preference.PreferenceFragment
 import android.support.v4.app.NavUtils
-import android.support.v4.content.AsyncTaskLoader
-import android.support.v4.content.Loader
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.preference.*
-import android.support.v7.preference.Preference.OnPreferenceChangeListener
+import android.support.v7.preference.EditTextPreference
+import android.support.v7.preference.ListPreference
+import android.support.v7.preference.Preference
+import android.support.v7.preference.SwitchPreferenceCompat
 import android.view.MenuItem
 import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import org.apache.commons.lang3.StringUtils
@@ -51,7 +49,7 @@ class AccountSettingsActivity: AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         if (savedInstanceState == null)
-            supportFragmentManager.beginTransaction()
+            fragmentManager.beginTransaction()
                     .replace(android.R.id.content, DialogFragment.instantiate(this, AccountSettingsFragment::class.java.name, intent.extras))
                     .commit()
     }
@@ -66,7 +64,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                 false
 
 
-    class AccountSettingsFragment: PreferenceFragmentCompat(), LoaderManager.LoaderCallbacks<AccountSettings> {
+    class AccountSettingsFragment: PreferenceFragment(), LoaderManager.LoaderCallbacks<Pair<ISettings, AccountSettings>?> {
         lateinit var account: Account
 
         override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,178 +74,201 @@ class AccountSettingsActivity: AppCompatActivity() {
             loaderManager.initLoader(0, arguments, this)
         }
 
-        override fun onCreatePreferences(bundle: Bundle?, s: String?) {
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             addPreferencesFromResource(R.xml.settings_account)
         }
 
         override fun onCreateLoader(id: Int, args: Bundle) =
-                AccountSettingsLoader(context, args.getParcelable(EXTRA_ACCOUNT))
+                AccountSettingsLoader(activity, args.getParcelable(EXTRA_ACCOUNT))
 
-        override fun onLoadFinished(loader: Loader<AccountSettings>, settings: AccountSettings?) {
-            if (settings == null) {
-                activity.finish()
-                return
-            }
+        override fun onLoadFinished(loader: Loader<Pair<ISettings, AccountSettings>?>, result: Pair<ISettings, AccountSettings>?) {
+            val (settings, accountSettings) = result ?: return
 
-            // category: authentication
+            // preference group: authentication
             val prefUserName = findPreference("username") as EditTextPreference
-            prefUserName.summary = settings.username()
-            prefUserName.text = settings.username()
-            prefUserName.onPreferenceChangeListener = OnPreferenceChangeListener { _, newValue ->
-                settings.username(newValue as String)
+            prefUserName.summary = accountSettings.username()
+            prefUserName.text = accountSettings.username()
+            prefUserName.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                accountSettings.username(newValue as String)
                 loaderManager.restartLoader(0, arguments, this)
                 false
             }
 
             val prefPassword = findPreference("password") as EditTextPreference
-            prefPassword.onPreferenceChangeListener = OnPreferenceChangeListener { _, newValue ->
-                settings.password(newValue as String)
+            prefPassword.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                accountSettings.password(newValue as String)
                 loaderManager.restartLoader(0, arguments, this)
                 false
             }
 
-            // category: synchronization
-            val prefSyncContacts = findPreference("sync_interval_contacts") as ListPreference
-            val syncIntervalContacts = settings.getSyncInterval(getString(R.string.address_books_authority))
-            if (syncIntervalContacts != null) {
-                prefSyncContacts.value = syncIntervalContacts.toString()
-                if (syncIntervalContacts == AccountSettings.SYNC_INTERVAL_MANUALLY)
-                    prefSyncContacts.setSummary(R.string.settings_sync_summary_manually)
-                else
-                    prefSyncContacts.summary = getString(R.string.settings_sync_summary_periodically, syncIntervalContacts / 60)
-                prefSyncContacts.onPreferenceChangeListener = OnPreferenceChangeListener { _, newValue ->
-                    settings.setSyncInterval(getString(R.string.address_books_authority), (newValue as String).toLong())
-                    loaderManager.restartLoader(0, arguments, this)
-                    false
-                }
-            } else
-                prefSyncContacts.isVisible = false
+            // preference group: sync
+            // those are null if the respective sync type is not available for this account:
+            val syncIntervalContacts = accountSettings.getSyncInterval(getString(R.string.address_books_authority))
+            val syncIntervalCalendars = accountSettings.getSyncInterval(CalendarContract.AUTHORITY)
+            val syncIntervalTasks = accountSettings.getSyncInterval(TaskProvider.ProviderName.OpenTasks.authority)
 
-            val prefSyncCalendars = findPreference("sync_interval_calendars") as ListPreference
-            val syncIntervalCalendars = settings.getSyncInterval(CalendarContract.AUTHORITY)
-            if (syncIntervalCalendars != null) {
-                prefSyncCalendars.value = syncIntervalCalendars.toString()
-                if (syncIntervalCalendars == AccountSettings.SYNC_INTERVAL_MANUALLY)
-                    prefSyncCalendars.setSummary(R.string.settings_sync_summary_manually)
-                else
-                    prefSyncCalendars.summary = getString(R.string.settings_sync_summary_periodically, syncIntervalCalendars / 60)
-                prefSyncCalendars.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                    settings.setSyncInterval(CalendarContract.AUTHORITY, (newValue as String).toLong())
-                    loaderManager.restartLoader(0, arguments, this)
-                    false
-                }
-            } else
-                prefSyncCalendars.isVisible = false
+            (findPreference("sync_interval_contacts") as ListPreference).let {
+                if (syncIntervalContacts != null) {
+                    it.isVisible = true
+                    it.value = syncIntervalContacts.toString()
+                    if (syncIntervalContacts == AccountSettings.SYNC_INTERVAL_MANUALLY)
+                        it.setSummary(R.string.settings_sync_summary_manually)
+                    else
+                        it.summary = getString(R.string.settings_sync_summary_periodically, syncIntervalContacts / 60)
+                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                        accountSettings.setSyncInterval(getString(R.string.address_books_authority), (newValue as String).toLong())
+                        loaderManager.restartLoader(0, arguments, this)
+                        false
+                    }
+                } else
+                    it.isVisible = false
+            }
 
-            val prefSyncTasks = findPreference("sync_interval_tasks") as ListPreference
-            val syncIntervalTasks = settings.getSyncInterval(TaskProvider.ProviderName.OpenTasks.authority)
-            if (syncIntervalTasks != null) {
-                prefSyncTasks.value = syncIntervalTasks.toString()
-                if (syncIntervalTasks == AccountSettings.SYNC_INTERVAL_MANUALLY)
-                    prefSyncTasks.setSummary(R.string.settings_sync_summary_manually)
-                else
-                    prefSyncTasks.summary = getString(R.string.settings_sync_summary_periodically, syncIntervalTasks / 60)
-                prefSyncTasks.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                    settings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, (newValue as String).toLong())
-                    loaderManager.restartLoader(0, arguments, this)
-                    false
-                }
-            } else
-                prefSyncTasks.isVisible = false
+            (findPreference("sync_interval_calendars") as ListPreference).let {
+                if (syncIntervalCalendars != null) {
+                    it.isVisible = true
+                    it.value = syncIntervalCalendars.toString()
+                    if (syncIntervalCalendars == AccountSettings.SYNC_INTERVAL_MANUALLY)
+                        it.setSummary(R.string.settings_sync_summary_manually)
+                    else
+                        it.summary = getString(R.string.settings_sync_summary_periodically, syncIntervalCalendars / 60)
+                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                        accountSettings.setSyncInterval(CalendarContract.AUTHORITY, (newValue as String).toLong())
+                        loaderManager.restartLoader(0, arguments, this)
+                        false
+                    }
+                } else
+                    it.isVisible = false
+            }
+
+            (findPreference("sync_interval_tasks") as ListPreference).let {
+                if (syncIntervalTasks != null) {
+                    it.isVisible = true
+                    it.value = syncIntervalTasks.toString()
+                    if (syncIntervalTasks == AccountSettings.SYNC_INTERVAL_MANUALLY)
+                        it.setSummary(R.string.settings_sync_summary_manually)
+                    else
+                        it.summary = getString(R.string.settings_sync_summary_periodically, syncIntervalTasks / 60)
+                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                        accountSettings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, (newValue as String).toLong())
+                        loaderManager.restartLoader(0, arguments, this)
+                        false
+                    }
+                } else
+                    it.isVisible = false
+            }
 
             val prefWifiOnly = findPreference("sync_wifi_only") as SwitchPreferenceCompat
-            prefWifiOnly.isChecked = settings.getSyncWifiOnly()
+            prefWifiOnly.isEnabled = !settings.has(AccountSettings.KEY_WIFI_ONLY)
+            prefWifiOnly.isChecked = accountSettings.getSyncWifiOnly()
             prefWifiOnly.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, wifiOnly ->
-                settings.setSyncWiFiOnly(wifiOnly as Boolean)
+                accountSettings.setSyncWiFiOnly(wifiOnly as Boolean)
                 loaderManager.restartLoader(0, arguments, this)
                 false
             }
 
             val prefWifiOnlySSIDs = findPreference("sync_wifi_only_ssids") as EditTextPreference
-            val onlySSIDs = settings.getSyncWifiOnlySSIDs()?.joinToString(", ")
+            val onlySSIDs = accountSettings.getSyncWifiOnlySSIDs()?.joinToString(", ")
             prefWifiOnlySSIDs.text = onlySSIDs
             if (onlySSIDs != null)
                 prefWifiOnlySSIDs.summary = getString(R.string.settings_sync_wifi_only_ssids_on, onlySSIDs)
             else
                 prefWifiOnlySSIDs.setSummary(R.string.settings_sync_wifi_only_ssids_off)
             prefWifiOnlySSIDs.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                settings.setSyncWifiOnlySSIDs((newValue as String).split(',').map { StringUtils.trimToNull(it) }.filterNotNull().distinct())
+                accountSettings.setSyncWifiOnlySSIDs((newValue as String).split(',').map { StringUtils.trimToNull(it) }.filterNotNull().distinct())
                 loaderManager.restartLoader(0, arguments, this)
                 false
             }
 
-            // category: CardDAV
-            val prefGroupMethod = findPreference("contact_group_method") as ListPreference
-            if (syncIntervalContacts != null) {
-                prefGroupMethod.value = settings.getGroupMethod().name
-                prefGroupMethod.summary = prefGroupMethod.entry
-                prefGroupMethod.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, groupMethod ->
-                    settings.setGroupMethod(GroupMethod.valueOf(groupMethod as String))
-                    loaderManager.restartLoader(0, arguments, this)
-                    false
-                }
-            } else
-                prefGroupMethod.isEnabled = false
-
-            // category: CalDAV
-            val prefTimeRangePastDays = findPreference("time_range_past_days") as EditTextPreference
-            if (syncIntervalCalendars != null) {
-                val pastDays = settings.getTimeRangePastDays()
-                if (pastDays != null) {
-                    prefTimeRangePastDays.text = pastDays.toString()
-                    prefTimeRangePastDays.summary = resources.getQuantityString(R.plurals.settings_sync_time_range_past_days, pastDays, pastDays)
-                } else {
-                    prefTimeRangePastDays.text = null
-                    prefTimeRangePastDays.setSummary(R.string.settings_sync_time_range_past_none)
-                }
-                prefTimeRangePastDays.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                    var days: Int
-                    try {
-                        days = (newValue as String).toInt()
-                    } catch(ignored: NumberFormatException) {
-                        days = -1
+            // preference group: CardDAV
+            (findPreference("contact_group_method") as ListPreference).let {
+                if (syncIntervalContacts != null) {
+                    it.isVisible = true
+                    it.value = accountSettings.getGroupMethod().name
+                    it.summary = it.entry
+                    if (settings.has(AccountSettings.KEY_CONTACT_GROUP_METHOD))
+                        it.isEnabled = false
+                    else {
+                        it.isEnabled = true
+                        it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, groupMethod ->
+                            accountSettings.setGroupMethod(GroupMethod.valueOf(groupMethod as String))
+                            loaderManager.restartLoader(0, arguments, this)
+                            false
+                        }
                     }
-                    settings.setTimeRangePastDays(if (days < 0) null else days)
-                    loaderManager.restartLoader(0, arguments, this)
-                    false
-                }
-            } else
-                prefTimeRangePastDays.isEnabled = false
-
-            val prefManageColors = findPreference("manage_calendar_colors") as SwitchPreferenceCompat
-            if (syncIntervalCalendars != null || syncIntervalTasks != null) {
-                prefManageColors.isChecked = settings.getManageCalendarColors()
-                prefManageColors.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                    settings.setManageCalendarColors(newValue as Boolean)
-                    loaderManager.restartLoader(0, arguments, this)
-                    false
-                }
-            } else
-                prefManageColors.isEnabled = false
-
-            val prefEventColors = findPreference("event_colors") as SwitchPreferenceCompat
-            prefEventColors.isChecked = settings.getEventColors()
-            prefEventColors.onPreferenceChangeListener = OnPreferenceChangeListener { _, newValue ->
-                if (newValue as Boolean) {
-                    settings.setEventColors(true)
-                    loaderManager.restartLoader(0, arguments, this)
                 } else
-                    AlertDialog.Builder(activity)
-                            .setIcon(R.drawable.ic_error_dark)
-                            .setTitle(R.string.settings_event_colors)
-                            .setMessage(R.string.settings_event_colors_off_confirm)
-                            .setNegativeButton(android.R.string.cancel, null)
-                            .setPositiveButton(android.R.string.ok, { _, _ ->
-                                settings.setEventColors(false)
-                                loaderManager.restartLoader(0, arguments, this)
-                            })
-                            .show()
-                false
+                    it.isVisible = false
             }
 
+            // preference group: CalDAV
+            (findPreference("time_range_past_days") as EditTextPreference).let {
+                if (syncIntervalCalendars != null) {
+                    it.isVisible = true
+                    val pastDays = accountSettings.getTimeRangePastDays()
+                    if (pastDays != null) {
+                        it.text = pastDays.toString()
+                        it.summary = resources.getQuantityString(R.plurals.settings_sync_time_range_past_days, pastDays, pastDays)
+                    } else {
+                        it.text = null
+                        it.setSummary(R.string.settings_sync_time_range_past_none)
+                    }
+                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                        var days: Int
+                        try {
+                            days = (newValue as String).toInt()
+                        } catch(ignored: NumberFormatException) {
+                            days = -1
+                        }
+                        accountSettings.setTimeRangePastDays(if (days < 0) null else days)
+                        loaderManager.restartLoader(0, arguments, this)
+                        false
+                    }
+                } else
+                    it.isVisible = false
+            }
+
+            (findPreference("manage_calendar_colors") as SwitchPreferenceCompat).let {
+                if (syncIntervalCalendars != null || syncIntervalTasks != null) {
+                    it.isVisible = true
+                    it.isEnabled = !settings.has(AccountSettings.KEY_MANAGE_CALENDAR_COLORS)
+                    it.isChecked = accountSettings.getManageCalendarColors()
+                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                        accountSettings.setManageCalendarColors(newValue as Boolean)
+                        loaderManager.restartLoader(0, arguments, this)
+                        false
+                    }
+                } else
+                    it.isVisible = false
+            }
+
+            (findPreference("event_colors") as SwitchPreferenceCompat).let {
+                if (syncIntervalCalendars != null) {
+                    it.isVisible = true
+                    it.isEnabled = !settings.has(AccountSettings.KEY_EVENT_COLORS)
+                    it.isChecked = accountSettings.getEventColors()
+                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                        if (newValue as Boolean) {
+                            accountSettings.setEventColors(true)
+                            loaderManager.restartLoader(0, arguments, this)
+                        } else
+                            AlertDialog.Builder(activity)
+                                    .setIcon(R.drawable.ic_error_dark)
+                                    .setTitle(R.string.settings_event_colors)
+                                    .setMessage(R.string.settings_event_colors_off_confirm)
+                                    .setNegativeButton(android.R.string.cancel, null)
+                                    .setPositiveButton(android.R.string.ok, { _, _ ->
+                                        accountSettings.setEventColors(false)
+                                        loaderManager.restartLoader(0, arguments, this)
+                                    })
+                                    .show()
+                        false
+                    }
+                } else
+                    it.isVisible = false
+            }
         }
 
-        override fun onLoaderReset(loader: Loader<AccountSettings>) {
+        override fun onLoaderReset(loader: Loader<Pair<ISettings, AccountSettings>?>) {
         }
 
     }
@@ -256,29 +277,35 @@ class AccountSettingsActivity: AppCompatActivity() {
     class AccountSettingsLoader(
             context: Context,
             val account: Account
-    ): AsyncTaskLoader<AccountSettings>(context), SyncStatusObserver {
+    ): SettingsLoader<Pair<ISettings, AccountSettings>?>(context), SyncStatusObserver {
 
-        lateinit var listenerHandle: Any
+        var listenerHandle: Any? = null
 
         override fun onStartLoading() {
-            forceLoad()
-            listenerHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this)
+            super.onStartLoading()
+            listenerHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this@AccountSettingsLoader)
         }
 
-        override fun onStopLoading() =
-            ContentResolver.removeStatusChangeListener(listenerHandle)
+        override fun onStopLoading() {
+            super.onStopLoading()
+            listenerHandle?.let { ContentResolver.removeStatusChangeListener(it) }
+            listenerHandle = null
+        }
 
-        override fun abandon() = onStopLoading()
-
-        override fun loadInBackground() =
+        override fun loadInBackground(): Pair<ISettings, AccountSettings>? {
+            settings?.let { settings ->
                 try {
-                    AccountSettings(context, account)
-                } catch(e: InvalidAccountException) {
-                    null
+                    return Pair(
+                            settings,
+                            AccountSettings(context, settings, account)
+                    )
+                } catch (e: InvalidAccountException) {
                 }
+            }
+            return null
+        }
 
         override fun onStatusChanged(which: Int) {
-            Logger.log.fine("Reloading account settings")
             forceLoad()
         }
 

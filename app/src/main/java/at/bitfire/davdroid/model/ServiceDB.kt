@@ -13,16 +13,20 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
+import android.preference.PreferenceManager
+import at.bitfire.davdroid.App
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.ui.StartupDialogFragment
 import java.io.Closeable
+import java.util.logging.Level
 
 class ServiceDB {
 
-    object Settings {
+    /*object Settings {
         @JvmField val _TABLE = "settings"
         @JvmField val NAME = "setting"
         @JvmField val VALUE = "value"
-    }
+    }*/
 
     object Services {
         @JvmField val _TABLE = "services"
@@ -73,12 +77,12 @@ class ServiceDB {
 
 
     class OpenHelper(
-            context: Context
+            val context: Context
     ): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), Closeable {
 
         companion object {
             val DATABASE_NAME = "services.db"
-            val DATABASE_VERSION = 2
+            val DATABASE_VERSION = 3
         }
 
         override fun onConfigure(db: SQLiteDatabase) {
@@ -88,11 +92,6 @@ class ServiceDB {
 
         override fun onCreate(db: SQLiteDatabase) {
             Logger.log.info("Creating database " + db.path)
-
-            db.execSQL("CREATE TABLE ${Settings._TABLE}(" +
-                    "${Settings.NAME} TEXT NOT NULL," +
-                    "${Settings.VALUE} TEXT NOT NULL)")
-            db.execSQL("CREATE UNIQUE INDEX settings_name ON ${Settings._TABLE} (${Settings.NAME})")
 
             db.execSQL("CREATE TABLE ${Services._TABLE}(" +
                     "${Services.ID} INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -125,16 +124,52 @@ class ServiceDB {
         }
 
         override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-            if (oldVersion == 1 && newVersion == 2) {
-                // the only possible migration at the moment
-                db.execSQL("ALTER TABLE ${Collections._TABLE} ADD COLUMN ${Collections.TYPE} TEXT NOT NULL DEFAULT ''")
-                db.execSQL("ALTER TABLE ${Collections._TABLE} ADD COLUMN ${Collections.SOURCE} TEXT NULL")
-                db.execSQL("UPDATE ${Collections._TABLE} SET ${Collections.TYPE}=(" +
-                            "SELECT CASE ${Services.SERVICE} WHEN ? THEN ? ELSE ? END " +
-                                "FROM ${Services._TABLE} WHERE ${Services.ID}=${Collections._TABLE}.${Collections.SERVICE_ID}" +
-                        ")",
-                        arrayOf(Services.SERVICE_CALDAV, CollectionInfo.Type.CALENDAR, CollectionInfo.Type.ADDRESS_BOOK))
+            for (upgradeFrom in oldVersion until newVersion) {
+                val upgradeTo = oldVersion + 1
+                Logger.log.info("Upgrading database from version $upgradeFrom to $upgradeTo")
+                try {
+                    val upgradeProc = this::class.java.getDeclaredMethod("upgrade_${upgradeFrom}_$upgradeTo", SQLiteDatabase::class.java)
+                    upgradeProc.invoke(this, db)
+                } catch(e: Exception) {
+                    Logger.log.log(Level.SEVERE, "Couldn't upgrade database", e)
+                }
             }
+        }
+
+        @Suppress("unused")
+        private fun upgrade_2_3(db: SQLiteDatabase) {
+            val edit = PreferenceManager.getDefaultSharedPreferences(context).edit()
+            try {
+                db.query("settings", arrayOf("setting", "value"), null, null, null, null, null).use { cursor ->
+                    while (cursor.moveToNext()) {
+                        when (cursor.getString(0)) {
+                            "distrustSystemCerts" -> edit.putBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, cursor.getInt(1) != 0)
+                            "overrideProxy" -> edit.putBoolean(App.OVERRIDE_PROXY, cursor.getInt(1) != 0)
+                            "overrideProxyHost" -> edit.putString(App.OVERRIDE_PROXY_HOST, cursor.getString(1))
+                            "overrideProxyPort" -> edit.putInt(App.OVERRIDE_PROXY_PORT, cursor.getInt(1))
+
+                            StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED ->
+                                edit.putBoolean(StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, cursor.getInt(1) != 0)
+                            StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED ->
+                                edit.putBoolean(StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED, cursor.getInt(1) != 0)
+                        }
+                    }
+                }
+                db.execSQL("DROP TABLE settings")
+            } finally {
+                edit.apply()
+            }
+        }
+
+        @Suppress("unused")
+        private fun upgrade_1_2(db: SQLiteDatabase) {
+            db.execSQL("ALTER TABLE ${Collections._TABLE} ADD COLUMN ${Collections.TYPE} TEXT NOT NULL DEFAULT ''")
+            db.execSQL("ALTER TABLE ${Collections._TABLE} ADD COLUMN ${Collections.SOURCE} TEXT NULL")
+            db.execSQL("UPDATE ${Collections._TABLE} SET ${Collections.TYPE}=(" +
+                    "SELECT CASE ${Services.SERVICE} WHEN ? THEN ? ELSE ? END " +
+                    "FROM ${Services._TABLE} WHERE ${Services.ID}=${Collections._TABLE}.${Collections.SERVICE_ID}" +
+                    ")",
+                    arrayOf(Services.SERVICE_CALDAV, CollectionInfo.Type.CALENDAR, CollectionInfo.Type.ADDRESS_BOOK))
         }
 
 

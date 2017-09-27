@@ -50,7 +50,6 @@
     <!-- global settings -->
     <string name="logging_davdroid_file_logging">DAVdroid file logging</string>
     <string name="logging_to_external_storage">Logging to external storage: %s</string>
-    <string name="logging_to_external_storage_warning">Delete logs as soon as possible!</string>
     <string name="logging_couldnt_create_file">Couldn\'t create external log file: %s</string>
     <string name="logging_no_external_storage">External storage not found</string>
 

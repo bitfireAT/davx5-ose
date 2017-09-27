@@ -18,11 +18,10 @@ class App: Application() {
 
     companion object {
 
-        @JvmField val DISTRUST_SYSTEM_CERTIFICATES = "distrustSystemCerts"
-        @JvmField val LOG_TO_EXTERNAL_STORAGE = "logToExternalStorage"
-        @JvmField val OVERRIDE_PROXY = "overrideProxy"
-        @JvmField val OVERRIDE_PROXY_HOST = "overrideProxyHost"
-        @JvmField val OVERRIDE_PROXY_PORT = "overrideProxyPort"
+        @JvmField val DISTRUST_SYSTEM_CERTIFICATES = "distrust_system_certs"
+        @JvmField val OVERRIDE_PROXY = "override_proxy"
+        @JvmField val OVERRIDE_PROXY_HOST = "override_proxy_host"
+        @JvmField val OVERRIDE_PROXY_PORT = "override_proxy_port"
 
         @JvmField val OVERRIDE_PROXY_HOST_DEFAULT = "localhost"
         @JvmField val OVERRIDE_PROXY_PORT_DEFAULT = 8118
@@ -46,7 +45,7 @@ class App: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Logger.reinitLogger(this)
+        Logger.initialize(this)
     }
 
 }

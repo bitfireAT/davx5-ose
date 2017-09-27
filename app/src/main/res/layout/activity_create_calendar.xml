@@ -35,6 +35,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:labelFor="@id/display_name"
             android:text="@string/create_collection_display_name"/>
         <EditText
             android:id="@+id/display_name"
@@ -46,6 +47,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:labelFor="@id/description"
             android:text="@string/create_collection_description"/>
         <EditText
             android:id="@+id/description"
@@ -67,7 +69,7 @@
                 android:layout_height="32dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="8dp"
-                android:background="@color/orangeA700"/>
+                android:background="@color/secondaryColor"/>
 
             <TextView
                 android:layout_width="wrap_content"

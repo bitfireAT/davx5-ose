@@ -86,6 +86,7 @@
             android:layout_weight="1"
             android:layout_gravity="center"
             android:text="@string/login_create_account"
+            android:enabled="false"
             style="@style/stepper_nav_button"/>
 
     </LinearLayout>

@@ -17,6 +17,7 @@ import android.os.Bundle
 import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.settings.ISettings
 import java.util.logging.Level
 
 class ContactsSyncAdapterService: SyncAdapterService() {
@@ -28,24 +29,23 @@ class ContactsSyncAdapterService: SyncAdapterService() {
             context: Context
     ): SyncAdapter(context) {
 
-        override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+        override fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
                 val addressBook = LocalAddressBook(context, account, provider)
 
-                val settings = AccountSettings(context, addressBook.getMainAccount())
-                if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(settings))
+                val accountSettings = AccountSettings(context, settings, addressBook.getMainAccount())
+                if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(accountSettings))
                     return
 
                 Logger.log.info("Synchronizing address book: ${addressBook.getURL()}")
                 Logger.log.info("Taking settings from: ${addressBook.getMainAccount()}")
 
-                ContactsSyncManager(context, account, settings, extras, authority, syncResult, provider, addressBook).use {
+                ContactsSyncManager(context, account, accountSettings, extras, authority, syncResult, provider, addressBook).use {
                     it.performSync()
                 }
             } catch(e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't sync contacts", e)
             }
-
             Logger.log.info("Contacts sync complete")
         }
 
