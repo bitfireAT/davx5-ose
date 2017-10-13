@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright © 2013 – 2016 Ricki Hirner (bitfire web engineering).
+  ~ Copyright © Ricki Hirner (bitfire web engineering).
   ~ All rights reserved. This program and the accompanying materials
   ~ are made available under the terms of the GNU Public License v3.0
   ~ which accompanies this distribution, and is available at
@@ -14,9 +14,16 @@
         android:id="@+id/nav_about"
         android:icon="@drawable/ic_info_dark"
         android:title="@string/navigation_drawer_about"/>
+
+    <item
+        android:id="@+id/nav_beta_feedback"
+        android:icon="@drawable/ic_forum_dark"
+        android:title="@string/navigation_drawer_beta_feedback"
+        android:visible="false"/>
+
     <item
         android:id="@+id/nav_app_settings"
-        android:icon="@drawable/ic_settings_action"
+        android:icon="@drawable/ic_settings_dark"
         android:title="@string/navigation_drawer_settings"/>
 
     <item android:title="@string/navigation_drawer_news_updates">
@@ -37,7 +44,7 @@
                 android:title="@string/navigation_drawer_website"/>
             <item
                 android:id="@+id/nav_faq"
-                android:icon="@drawable/ic_help_action"
+                android:icon="@drawable/ic_help_dark"
                 android:title="@string/navigation_drawer_faq"/>
             <item
                 android:id="@+id/nav_forums"
