@@ -18,7 +18,7 @@ android {
         applicationId "at.bitfire.davdroid"
         resValue "string", "packageID", applicationId
 
-        versionCode 179
+        versionCode 180
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         minSdkVersion 16
@@ -29,7 +29,7 @@ android {
 
     productFlavors {
         standard {
-            versionName "1.9-beta1"
+            versionName "1.9-beta2"
             buildConfigField "boolean", "customCerts", "true"
         }
         managed {
@@ -37,25 +37,25 @@ android {
             resValue "string", "packageID", applicationId
             minSdkVersion 21
 
-            versionName "1.9-beta1-mgd"
+            versionName "1.9-beta2-mgd"
         }
 
         gplay {
-            versionName "1.9-beta1-gplay"
+            versionName "1.9-beta2-gplay"
             buildConfigField "boolean", "customCerts", "true"
         }
         icloud {
             applicationId "at.bitfire.cloudsync"
             resValue "string", "packageID", applicationId
 
-            versionName "1.9-beta1-cloud"
+            versionName "1.9-beta2-cloud"
         }
         soldupe {
             applicationId "com.soldupe.cloudsync"
             resValue "string", "packageID", applicationId
             minSdkVersion 21
 
-            versionName "1.9-beta1-soldupe"
+            versionName "1.9-beta2-soldupe"
         }
     }
 
