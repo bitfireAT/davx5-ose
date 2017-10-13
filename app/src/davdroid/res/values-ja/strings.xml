@@ -14,9 +14,6 @@
   <string name="startup_battery_optimization_message">Android は数日後に DAVdroid の同期を無効にする/減らすことがあります。これを防止するには、バッテリー最適化をオフにしてください。</string>
   <string name="startup_battery_optimization_disable">DAVdroid 用にオフにする</string>
   <string name="startup_dont_show_again">次回から表示しない</string>
-  <string name="startup_development_version">プレビュー リリース</string>
-  <string name="startup_development_version_message">これは %s の開発版です。期待した通りに動作しない可能性があります。フィードバックを歓迎します。</string>
-  <string name="startup_development_version_give_feedback">フィードバックする</string>
   <string name="startup_donate">オープンソース情報</string>
   <string name="startup_donate_message">あなたがオープンソース ソフトウェア (GPLv3) の DAVdroid を使用していただくことに、私たちは満足しています。 DAVdroid の開発はハードワークで、何千もの作業時間がかかりました。寄付をご検討ください。</string>
   <string name="startup_donate_now">寄付ページを表示</string>
@@ -34,7 +31,6 @@
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid ファイルログ</string>
   <string name="logging_to_external_storage">外部ストレージにログ: %s</string>
-  <string name="logging_to_external_storage_warning">できる限り早くログを削除してください!</string>
   <string name="logging_couldnt_create_file">外部ログファイルを作成できませんでした: %s</string>
   <string name="logging_no_external_storage">外部ストレージが見つかりません</string>
   <!--AccountsActivity-->

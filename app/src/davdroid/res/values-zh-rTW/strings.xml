@@ -14,7 +14,6 @@
   <string name="startup_battery_optimization_message">Android 在數日之後可能會關閉或減少 DAVdroid 的同步。為了避免這發生，請關閉電池最佳化。</string>
   <string name="startup_battery_optimization_disable">關閉 DAVdroid 的電池最佳化</string>
   <string name="startup_dont_show_again">不要再顯示此訊息</string>
-  <string name="startup_development_version_give_feedback">給回饋意見</string>
   <string name="startup_donate">開源資訊</string>
   <string name="startup_donate_message">很高興您使用 DAVdroid，這是個開源軟體 (GPLv3授權)。因為開發 DAVdroid 是艱難的工作，需要上千個小時，請考慮捐款支持我們。</string>
   <string name="startup_donate_now">開啟捐款頁面</string>
@@ -32,7 +31,6 @@
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid 正在記錄除錯訊息</string>
   <string name="logging_to_external_storage">正在將除錯訊息存到外部檔案: %s</string>
-  <string name="logging_to_external_storage_warning">盡快刪除除錯訊息!</string>
   <string name="logging_couldnt_create_file">無法新增除錯訊息檔案: %s</string>
   <string name="logging_no_external_storage">找不到外部儲存空間</string>
   <!--AccountsActivity-->

@@ -13,7 +13,6 @@
   <string name="startup_battery_optimization_message">Android può ridurre o disabilitare la sincronizzazione di DAVdroid dopo alcuni giorni. Per prevenire questo comportamento disabilita l\'ottimizzazione della batteria</string>
   <string name="startup_battery_optimization_disable">Disabilita per DAVdroid</string>
   <string name="startup_dont_show_again">Non mostrare più</string>
-  <string name="startup_development_version_give_feedback">Invia un rapporto</string>
   <string name="startup_donate">Informazioni sull\'Open-Source</string>
   <string name="startup_donate_message">Siamo soddisfatti del tuo uso di DAVdroid, programma Open-Source (GPLv3). Poiché lo sviluppo è un\'iniziativa complessa che comporta molte ore di lavoro ti invitiamo a fare una donazione.</string>
   <string name="startup_donate_now">Mostra pagina donazioni</string>
@@ -31,7 +30,6 @@
   <!--global settings-->
   <string name="logging_davdroid_file_logging">Invio del log di DAVdroid su file</string>
   <string name="logging_to_external_storage">Log su dispositivo esterno: %s</string>
-  <string name="logging_to_external_storage_warning">Cancellare prima possibile i file di log!</string>
   <string name="logging_couldnt_create_file">Non riesco a creare il file di log esterno: %s</string>
   <string name="logging_no_external_storage">Dispositivo esterno non disponibile</string>
   <!--AccountsActivity-->

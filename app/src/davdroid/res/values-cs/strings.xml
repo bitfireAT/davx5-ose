@@ -11,7 +11,6 @@
   <string name="startup_battery_optimization_message">Android může po několika dnech vypnout/prodloužit interval synchronizování DAVdroid. Chcete-li tomuto zabránit, vypněte optimalizaci baterie.</string>
   <string name="startup_battery_optimization_disable">Vypnout pro DAVdroid</string>
   <string name="startup_dont_show_again">Již nezobrazovat</string>
-  <string name="startup_development_version_give_feedback">Dát zpětnou vazbu</string>
   <string name="startup_donate">Open Source informace</string>
   <string name="startup_donate_message">Jsme velice rádi že používáte DAVdroid, software s otevřeným zdrojovým kódem (GPLv3). Vývoj této aplikace je náročný a trval již několik tisíc hodin, velice nás potěší přispějete-li na jeho vývoj.</string>
   <string name="startup_donate_now">Zobrazit stránku pro obdarování</string>
@@ -29,7 +28,6 @@
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid logování do souboru</string>
   <string name="logging_to_external_storage">Logování do externího úložiště: %s</string>
-  <string name="logging_to_external_storage_warning">Smazat logy jak nejdříve možno!</string>
   <string name="logging_couldnt_create_file">Nelze vytvořit externí soubor logu: %s</string>
   <string name="logging_no_external_storage">Externí úložiště nenalezeno</string>
   <!--AccountsActivity-->
