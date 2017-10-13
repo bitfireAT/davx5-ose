@@ -39,7 +39,7 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
-    <color name="actionBarButton">#8f000000</color>
+    <color name="actionBarButton">#8a000000</color>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>

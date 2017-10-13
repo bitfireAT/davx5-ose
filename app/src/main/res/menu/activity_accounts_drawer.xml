@@ -14,6 +14,13 @@
         android:id="@+id/nav_about"
         android:icon="@drawable/ic_info_dark"
         android:title="@string/navigation_drawer_about"/>
+
+    <item
+        android:id="@+id/nav_beta_feedback"
+        android:icon="@drawable/ic_forum_dark"
+        android:title="@string/navigation_drawer_beta_feedback"
+        android:visible="false"/>
+
     <item
         android:id="@+id/nav_app_settings"
         android:icon="@drawable/ic_settings_dark"

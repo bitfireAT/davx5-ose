@@ -240,7 +240,7 @@ class Settings: Service(), Provider.Observer {
                 }
             }
 
-            if (!context.bindService(Intent(context, Settings::class.java), serviceConn, Context.BIND_AUTO_CREATE))
+            if (!context.bindService(Intent(context, Settings::class.java), serviceConn, Context.BIND_AUTO_CREATE or Context.BIND_IMPORTANT))
                 return null
 
             synchronized(serviceLock) {
@@ -251,7 +251,10 @@ class Settings: Service(), Provider.Observer {
                     }
 
                 if (service == null) {
-                    context.unbindService(serviceConn)
+                    try {
+                        context.unbindService(serviceConn)
+                    } catch (e: IllegalArgumentException) {
+                    }
                     return null
                 }
             }

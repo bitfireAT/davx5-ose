@@ -37,7 +37,6 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
 
     enum class Mode {
         BATTERY_OPTIMIZATIONS,
-        DEVELOPMENT_VERSION,
         GOOGLE_PLAY_ACCOUNTS_REMOVED,
         OPENTASKS_NOT_INSTALLED,
         OSE_DONATE
@@ -56,9 +55,7 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
         fun getStartupDialogs(context: Context, settings: ISettings): List<StartupDialogFragment> {
             val dialogs = LinkedList<StartupDialogFragment>()
 
-            if (BuildConfig.VERSION_NAME.contains("-alpha") || BuildConfig.VERSION_NAME.contains("-beta") || BuildConfig.VERSION_NAME.contains("-rc"))
-                dialogs += StartupDialogFragment.instantiate(Mode.DEVELOPMENT_VERSION)
-            /* else if (System.currentTimeMillis() > settings.getLong(SETTING_NEXT_DONATION_POPUP, 0))
+            /* if (System.currentTimeMillis() > settings.getLong(SETTING_NEXT_DONATION_POPUP, 0))
                 dialogs += StartupDialogFragment.instantiate(Mode.OSE_DONATE) */
 
             // store-specific information
@@ -134,17 +131,6 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                             })
                         .setNegativeButton(R.string.startup_dont_show_again, { _: DialogInterface, _: Int ->
                             settings?.putBoolean(HINT_BATTERY_OPTIMIZATIONS, false)
-                        })
-                        .create()
-
-            Mode.DEVELOPMENT_VERSION ->
-                AlertDialog.Builder(activity)
-                        .setIcon(R.mipmap.ic_launcher)
-                        .setTitle(R.string.startup_development_version)
-                        .setMessage(getString(R.string.startup_development_version_message, getString(R.string.app_name)))
-                        .setPositiveButton(android.R.string.ok, { _: DialogInterface, _: Int -> })
-                        .setNeutralButton(R.string.startup_development_version_give_feedback, { _: DialogInterface, _: Int ->
-                            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.startup_development_version_feedback_url))))
                         })
                         .create()
 

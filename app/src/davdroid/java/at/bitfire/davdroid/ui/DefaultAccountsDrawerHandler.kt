@@ -21,6 +21,8 @@ import at.bitfire.davdroid.settings.ISettings
 class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
 
     override fun onSettingsChanged(settings: ISettings?, menu: Menu) {
+        if (BuildConfig.VERSION_NAME.contains("-beta") || BuildConfig.VERSION_NAME.contains("-rc"))
+            menu.findItem(R.id.nav_beta_feedback).isVisible = true
     }
 
     override fun onNavigationItemSelected(activity: Activity, item: MenuItem): Boolean {
@@ -29,6 +31,8 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
                 activity.startActivity(Intent(activity, AboutActivity::class.java))
             R.id.nav_app_settings ->
                 activity.startActivity(Intent(activity, AppSettingsActivity::class.java))
+            R.id.nav_beta_feedback ->
+                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.beta_feedback_url))))
             R.id.nav_twitter ->
                 activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/davdroidapp")))
             R.id.nav_website ->

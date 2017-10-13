@@ -61,19 +61,17 @@ abstract class SyncAdapterService: Service() {
 
             // load app settings
             val settings = Settings.getInstance(context)
-            try {
-                if (settings == null) {
-                    syncResult.databaseError = true
-                    throw IllegalStateException()
-                }
-
+            if (settings == null) {
+                syncResult.databaseError = true
+                Logger.log.severe("Couldn't connect to Settings service, aborting sync")
+                return
+            } else settings.use { settings ->
                 val runSync = syncPlugins.all { it.beforeSync(context, settings, syncResult) }
+
                 if (runSync)
                     sync(settings, account, extras, authority, provider, syncResult)
 
                 syncPlugins.forEach { it.afterSync(context, settings, syncResult) }
-            } finally {
-                settings?.close()
             }
             Logger.log.info("Sync for $authority complete")
         }
