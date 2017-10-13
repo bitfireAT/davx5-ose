@@ -111,7 +111,6 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
 
 
     @SuppressLint("BatteryLife")
-    @TargetApi(Build.VERSION_CODES.M)
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         isCancelable = false
 
@@ -123,11 +122,11 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         .setTitle(R.string.startup_battery_optimization)
                         .setMessage(R.string.startup_battery_optimization_message)
                         .setPositiveButton(android.R.string.ok, { _, _ -> })
-                        .setNeutralButton(R.string.startup_battery_optimization_disable, { _, _ ->
-                                val intent = Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                        .setNeutralButton(R.string.startup_battery_optimization_disable, @TargetApi(Build.VERSION_CODES.M) { _, _ ->
+                            val intent = Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
                                         Uri.parse("package:" + BuildConfig.APPLICATION_ID))
-                                if (intent.resolveActivity(context.packageManager) != null)
-                                    context.startActivity(intent)
+                                if (intent.resolveActivity(activity.packageManager) != null)
+                                    activity.startActivity(intent)
                             })
                         .setNegativeButton(R.string.startup_dont_show_again, { _: DialogInterface, _: Int ->
                             settings?.putBoolean(HINT_BATTERY_OPTIMIZATIONS, false)
@@ -148,7 +147,7 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         .setPositiveButton(android.R.string.ok, { _, _ -> })
                         .setNeutralButton(R.string.startup_google_play_accounts_removed_more_info, { _, _ ->
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.navigation_drawer_faq_url)))
-                            context.startActivity(intent)
+                            activity.startActivity(intent)
                         })
                         .setNegativeButton(R.string.startup_dont_show_again, { _, _ ->
                             settings?.putBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, false)
@@ -167,8 +166,8 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         .setPositiveButton(android.R.string.ok, { _, _ -> })
                         .setNeutralButton(R.string.startup_opentasks_not_installed_install, { _, _ ->
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.dmfs.tasks"))
-                            if (intent.resolveActivity(context.packageManager) != null)
-                                context.startActivity(intent)
+                            if (intent.resolveActivity(activity.packageManager) != null)
+                                activity.startActivity(intent)
                             else
                                 Logger.log.warning("No market app available, can't install OpenTasks")
                         })
