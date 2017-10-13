@@ -8,7 +8,6 @@
   <string name="send">Gönder</string>
   <!--startup dialogs-->
   <string name="startup_dont_show_again">Bir daha gösterme</string>
-  <string name="startup_development_version_give_feedback">Geribildirim ver</string>
   <string name="startup_donate">Açık-Kaynak Bilgisi</string>
   <string name="startup_donate_message">Açık kaynaklı yazılım (GPLv3) olan DAVdroid\'i kullandığına çok mutluyuz. DAVdroid\'i geliştirmek zor bir iş ve üzerinde binlerce saat çalıştığımızdan, lütfen bir bağışta bulunmayı düşün.</string>
   <string name="startup_donate_now">Bağış sayfasını göster</string>
@@ -26,7 +25,6 @@
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid dosya jurnallemesi</string>
   <string name="logging_to_external_storage">Harici depolamaya jurnalleniyor: %s</string>
-  <string name="logging_to_external_storage_warning">Jurnalleri bir an önce silin!</string>
   <string name="logging_couldnt_create_file">Harici jurnal dosyası yaratılamadı: %s </string>
   <string name="logging_no_external_storage">Harici depolama alanı bulunamadı</string>
   <!--AccountsActivity-->

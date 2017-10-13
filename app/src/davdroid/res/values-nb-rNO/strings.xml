@@ -8,36 +8,45 @@
   <string name="manage_accounts">Behandle kontoer</string>
   <string name="please_wait">Vent…</string>
   <string name="send">Send</string>
+  <string name="homepage_url">https://davdroid.bitfire.at/?pk_campaign=davdroid-app</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Batterioptimisering</string>
   <string name="startup_battery_optimization_message">Det kan hende Android skrur av/reduserer DAVdroid-synkronisering etter et par dager. For å forhindre dette, skru av batterioptimisering.</string>
   <string name="startup_battery_optimization_disable">Skru av for DAVdroid</string>
   <string name="startup_dont_show_again">Ikke vis igjen</string>
-  <string name="startup_development_version">Forhåndsutgivelse</string>
-  <string name="startup_development_version_message">Dette er en utviklingsversjon av %s. Det kan hende ting ikke svarer til forventningene. Dine tilbakemeldinger er kjærkomne.</string>
-  <string name="startup_development_version_give_feedback">Gi tilbakemelding</string>
   <string name="startup_donate">Friprog-informasjon</string>
   <string name="startup_donate_message">Vi er glade for at du bruker DAVdroid, som er fri programvare (GPLv3). Siden utvikling av DAVdroid er hardt arbeid og har tatt tusenvis av arbeidstimer, bes du overveie en donasjon.</string>
   <string name="startup_donate_now">Vis donasjonsside</string>
   <string name="startup_donate_later">Kanskje senere</string>
+  <string name="startup_google_play_accounts_removed">DRM-feilinformasjon på Play-butikken</string>
+  <string name="startup_google_play_accounts_removed_message">Under gitte forhold vil DRM fra Play-butikken forårsake at alle DAVdroid-kontoer forsvinner etter omstart eller etter oppgradering av DAVdroid. Hvis du rammes av dette problemet (og bare da), installer \"DAVdroid JB Workaround\" fra Play-butikken.</string>
   <string name="startup_google_play_accounts_removed_more_info">Mer informasjon</string>
+  <string name="startup_opentasks_not_installed">OpenTasks er ikke installert</string>
+  <string name="startup_opentasks_not_installed_message">OpenTasks-programmet er ikke tilgjengelig, så DAVdroid kan ikke synkronisere gjøremålslister.</string>
+  <string name="startup_opentasks_reinstall_davdroid">Etter å ha installert OpenTasks, må du reinstallere Davdroid og legge til kontoene dine igjen (Android-feil).</string>
+  <string name="startup_opentasks_not_installed_install">Installer OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_license_terms">Lisensvilkår</string>
+  <string name="about_license_info_no_warranty">Dette programmet kommer uten NOEN FORM FOR GARANTI. Det er fri programvare, og du er velkommen til å redistribuere det under gitte forhold.</string>
   <!--global settings-->
+  <string name="logging_davdroid_file_logging">DAVDroid fil-logging</string>
   <string name="logging_to_external_storage">Logger til ekstern lagringsmedium: %s</string>
-  <string name="logging_to_external_storage_warning">Slett logger så snart som mulig!</string>
   <string name="logging_couldnt_create_file">Kan ikke opprette ekstern loggfil: %s</string>
   <string name="logging_no_external_storage">Fant ingen ekstern lagringsplass</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Åpne navigasjonsskuff</string>
   <string name="navigation_drawer_close">Lukk navigasjonsskuff</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV -synkroniseringsadapter</string>
   <string name="navigation_drawer_about">Om / Lisens</string>
   <string name="navigation_drawer_settings">Innstillinger</string>
+  <string name="navigation_drawer_news_updates">Nyheter og oppdateringer</string>
   <string name="navigation_drawer_external_links">Eksterne lenker</string>
   <string name="navigation_drawer_website">Nettside</string>
   <string name="navigation_drawer_faq">O-S-S</string>
+  <string name="navigation_drawer_faq_url">https://davdroid.bitfire.at/faq/?pk_campaign=davdroid-app</string>
   <string name="navigation_drawer_forums">Hjelp / Forum</string>
   <string name="navigation_drawer_donate">Doner</string>
+  <string name="account_list_empty">Velkommen til DAVdroid.\n\nDu kan legge til en CalDAV/CardDAV-konto nå.</string>
   <string name="accounts_global_sync_disabled">Systemomspennende automatisk synkronisering avskrudd</string>
   <string name="accounts_global_sync_enable">Skru på</string>
   <!--DavService-->
@@ -57,9 +66,15 @@
   <string name="app_settings_override_proxy_port">HTTP-mellomtjeningsport</string>
   <string name="app_settings_security">Sikkerhet</string>
   <string name="app_settings_distrust_system_certs">Fjern tiltro til systemsertifikater</string>
+  <string name="app_settings_distrust_system_certs_on">System og brukertillagte sertifikatsmyntigheter vil ikke bli tiltrodd</string>
+  <string name="app_settings_distrust_system_certs_off">System- og bruker -tillagte sertifikatsmyndigheter vil bli tiltrodd (anbefalt)</string>
+  <string name="app_settings_reset_certificates">Tilbakestill (ikke)tiltrodde sertifikater</string>
+  <string name="app_settings_reset_certificates_summary">Tilbakestiller tillit til alle egendefinerte sertifikater</string>
+  <string name="app_settings_reset_certificates_success">Alle egendefinerte sertifikater har blitt fjernet</string>
   <string name="app_settings_debug">Feilretting</string>
   <string name="app_settings_log_to_external_storage">Logg til ekstern fil</string>
   <string name="app_settings_log_to_external_storage_on">Logger til eksternt lagringsmedium (hvis tilgjengelig)</string>
+  <string name="app_settings_log_to_external_storage_off">Ekstern fillogging har blitt skrudd av</string>
   <string name="app_settings_show_debug_info">Vis feilrettingsinfo</string>
   <string name="app_settings_show_debug_info_details">Vis/del programvare- og oppsettsdetaljer</string>
   <!--AccountActivity-->
@@ -67,30 +82,52 @@
   <string name="account_synchronizing_now">Synkroniserer nå</string>
   <string name="account_settings">Kontoinnstillinger</string>
   <string name="account_rename">Gi konto nytt navn</string>
+  <string name="account_rename_new_name">Ulagret lokal data kan bli avslått. Ny synkronisering kreves etter ny navngivning. Nytt kontonavn:</string>
   <string name="account_rename_rename">Gi nytt navn</string>
   <string name="account_delete">Slett konto</string>
   <string name="account_delete_confirmation_title">Vil du virkeling slette kontoen?</string>
+  <string name="account_delete_confirmation_text">Alle lokale kopier av adressebøker, kalendere og gjøremålslister vil bli slettet.</string>
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_refresh_address_book_list">Gjenoppfrisk adressebokliste</string>
   <string name="account_create_new_address_book">Opprett ny adressebok</string>
   <string name="account_refresh_calendar_list">Gjenoppfrisk kalenderliste</string>
   <string name="account_create_new_calendar">Opprett ny kalender</string>
+  <string name="account_no_webcal_handler_found">Fant ingen programmer med støtte for Webcal</string>
+  <string name="account_install_icsdroid">Installer ICSdroid</string>
+  <string name="account_read_only_address_book_selected">Adressebok uten skrivemuligheter - lokale endringer vil bli forkastet!</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">DAVdroid-tilgang</string>
   <string name="permissions_calendar">Kalender-tilgang</string>
+  <string name="permissions_calendar_details">For å synkronisere CalDAV-hendelser med dine lokale kalendere må DAVdroid ha tilgang til kalenderne dine.</string>
   <string name="permissions_calendar_request">Forespør kalender-tilganger</string>
   <string name="permissions_contacts">Kontakt-tilgang</string>
+  <string name="permissions_contacts_details">For å synkronisere CardDAV-adressebøker med dine lokale kontakter må DAVdroid ha tilgang til dine kontakter.</string>
   <string name="permissions_contacts_request">Forespør kontakt-tilgang</string>
+  <string name="permissions_opentasks">OpenTasks-tilganger</string>
+  <string name="permissions_opentasks_details">For å synkronisere CalDAV-gjøremål med din lokale gjøremålslister må DAVdroid ha tilgang til OpenTasks.</string>
+  <string name="permissions_opentasks_request">Forespør OpenTasks-tilganger</string>
   <!--AddAccountActivity-->
+  <string name="login_help_url">https://davdroid.bitfire.at/configuration/?pk_campaign=davdroid-app</string>
   <string name="login_title">Legg til konto</string>
+  <string name="login_type_email">Innlogging med e-postadresse</string>
   <string name="login_email_address">E-postadresse</string>
   <string name="login_email_address_error">Gyldig e-postadresse påkrevd</string>
   <string name="login_password">Passord</string>
   <string name="login_password_required">Passord kreves</string>
+  <string name="login_type_url">Logg inn med nettadresse og brukernavn</string>
   <string name="login_url_must_be_http_or_https">Nettadresse må begynned med http(s)://</string>
   <string name="login_url_host_name_required">Vertsnavn kreves</string>
+  <string name="login_user_name">Brukernavn</string>
+  <string name="login_user_name_required">Brukernavn påkrevd</string>
+  <string name="login_base_url">Landings-nettadresse</string>
+  <string name="login_login">Logg inn</string>
   <string name="login_back">Tilbake</string>
   <string name="login_create_account">Opprett konto</string>
   <string name="login_account_name">Kontonavn</string>
+  <string name="login_account_name_info">Bruk din e-postadresse som kontonavn fordi Android vil bruke kontonavnet som ORGANISATOR-felt for hendelser du oppretter. Du kan ikke ha to kontoer med samme navn.</string>
+  <string name="login_account_contact_group_method">Kontaktgruppemetode:</string>
   <string name="login_account_name_required">Kontonavn påkrevd</string>
   <string name="login_account_not_created">Kontonavnet kan ikke opprettes</string>
   <string name="login_configuration_detection">Oppdagelse av oppsett</string>
@@ -108,18 +145,50 @@
   <string name="settings_sync">Synkronisering</string>
   <string name="settings_sync_interval_contacts">Intervall for kontaktsynkronisering</string>
   <string name="settings_sync_summary_manually">Åpne manuelt</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Hvert %d minutt + umiddelbart ved lokale endringer</string>
+  <string name="settings_sync_interval_calendars">Kalendersynkroniseringsintervall</string>
+  <string name="settings_sync_interval_tasks">Gjøremålssynkroniseringsintervall</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Bare manuelt</item>
+    <item>Hvert kvarter</item>
+    <item>Hver halvtime</item>
+    <item>Hver time</item>
+    <item>Hver andre time</item>
+    <item>Hver fjerde time</item>
+    <item>Én gang om dagen</item>
+  </string-array>
   <string name="settings_sync_wifi_only">Bare synk. over Wi-Fi</string>
+  <string name="settings_sync_wifi_only_on">Synkronisering er begrenset til Wi-Fi -tilkoblinger</string>
   <string name="settings_sync_wifi_only_off">Tilkoblingstypen blir ikke tatt i betraktning</string>
+  <string name="settings_sync_wifi_only_ssids">Wi-Fi SSID -begrensning</string>
+  <string name="settings_sync_wifi_only_ssids_on">Vil kun synkronisere over %s</string>
+  <string name="settings_sync_wifi_only_ssids_off">Alle Wi-Fi -tilkoblinger vil bli brukt</string>
+  <string name="settings_sync_wifi_only_ssids_message">Kommainndelte navn (SSID-er) på tillatte Wi-Fi -nettverk (la stå tomt for alle)</string>
   <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Kontaktgruppemetode</string>
+  <string-array name="settings_contact_group_method_values">
+    <item>GROUP_VCARDS</item>
+    <item>CATEGORIES</item>
+  </string-array>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Grupper er egne vKort</item>
+    <item>Grupper er kategorier per kontakt</item>
+  </string-array>
   <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Tidsgrense for tidligere hendelser</string>
   <string name="settings_sync_time_range_past_none">Alle gjøremål vil bli synkronisert</string>
   <plurals name="settings_sync_time_range_past_days">
     <item quantity="one">Gjøremål for mer enn én dag siden vil bli sett bort fra</item>
     <item quantity="other">Gjøremål for mer enn %d dager siden vil bli sett bort fra</item>
   </plurals>
+  <string name="settings_sync_time_range_past_message">Hendelser som er mer enn dette antallet dager i fortid vil bli ignorert (kan være 0). La stå tomt for å synkronisere alle hendelser.</string>
   <string name="settings_manage_calendar_colors">Velg kalenderfarger</string>
   <string name="settings_manage_calendar_colors_on">Kalenderfarger behandles av DAVdroid</string>
   <string name="settings_manage_calendar_colors_off">Kalenderfarger settes ikke av DAVdroid</string>
+  <string name="settings_event_colors">Støtte for fargelegging av hendelser</string>
+  <string name="settings_event_colors_on">Synkroniser hendelsesfarger</string>
+  <string name="settings_event_colors_off">Ikke synkroniser hendelsesfarger</string>
+  <string name="settings_event_colors_off_confirm">Det kan hende at det å skru av hendelsesfarger vil fjerne allerede synkroniserte hendelsesfarger.</string>
   <!--collection management-->
   <string name="create_addressbook">Opprett adressebok</string>
   <string name="create_addressbook_display_name_hint">Min adressebok</string>
@@ -135,9 +204,11 @@
   <string name="create_collection_display_name">Vis navn (tittel) for denne samlingen:</string>
   <string name="create_collection_display_name_required">Tittel kreves</string>
   <string name="create_collection_description">Beskrivelse (valgfri):</string>
+  <string name="create_collection_home_set">Hjemmemappe:</string>
   <string name="create_collection_create">Opprett</string>
   <string name="delete_collection">Slett samling</string>
   <string name="delete_collection_confirm_title">Er du sikker?</string>
+  <string name="delete_collection_confirm_warning">Denne samlingen (%s) og all dens data vil bli fjernet fra tjeneren.</string>
   <string name="delete_collection_deleting_collection">Sletter samling</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">En feil har inntruffet</string>
@@ -146,7 +217,33 @@
   <string name="exception_show_details">Vis detaljer</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Feilrettingsinfo</string>
+  <string name="sync_contacts_read_only_address_book">Adressebok uten skrivetilgang</string>
+  <plurals name="sync_contacts_local_contact_changes_discarded">
+    <item quantity="one">Lokal kontaktendring forkastet</item>
+    <item quantity="other">%d lokale kontaktendringer forkastet</item>
+  </plurals>
+  <string name="sync_error_permissions">DAVdroid-tilganger</string>
+  <string name="sync_error_permissions_text">Ytterligere tilganger kreves</string>
+  <string name="sync_error_calendar">Kalendersynkronisering feilet (%s)</string>
+  <string name="sync_error_contacts">Adresseboksynkronisering mislyktes (%s)</string>
   <string name="sync_error_tasks">Gjøremålssynkronisering mislyktes (%s)</string>
+  <string name="sync_error">Feil under %s</string>
+  <string name="sync_error_http_dav">Tjener feil under %s</string>
+  <string name="sync_error_local_storage">Databasefeil under %s</string>
+  <string-array name="sync_error_phases">
+    <item>forbereder synkronisering</item>
+    <item>spør om muligheter</item>
+    <item>behandler lokalt slettede oppføringer</item>
+    <item>forbereder opprettede/endrede oppføringer</item>
+    <item>laster opp opprettede/modifiserte oppføringer</item>
+    <item>sjekker synkroniseringstilstand</item>
+    <item>listefører lokale oppføringer</item>
+    <item>listefører oppføringer annensteds hen</item>
+    <item>sammenlign lokale/oppføringer annensteds hen</item>
+    <item>laster ned oppføringer annensteds fra</item>
+    <item>etterbehandling</item>
+    <item>lagrer synkroniseringstilstand</item>
+  </string-array>
   <string name="sync_error_unauthorized">Brukernavn-/passord feil</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid: Tilkoblingssikkerhet</string>
