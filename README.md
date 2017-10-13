@@ -1,5 +1,5 @@
 
-[![build status](https://gitlab.com/bitfireAT/davdroid/badges/master/build.svg)](https://gitlab.com/bitfireAT/davdroid/commits/master)
+[![build status](https://gitlab.com/bitfireAT/davdroid-ose/badges/master/build.svg)](https://gitlab.com/bitfireAT/davdroid-ose/commits/master)
 
 
 DAVdroid
