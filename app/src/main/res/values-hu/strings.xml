@@ -14,9 +14,6 @@
   <string name="startup_battery_optimization_message">Az operációs rendszer a DAVdroid szinkronizálást pár nap után leállíthatja vagy visszafoghatja.  Ennek elkerülésére kapcsolja ki az akkumulátoroptimalizálást.</string>
   <string name="startup_battery_optimization_disable">Kikapcsolás a DAVdroid kapcsán</string>
   <string name="startup_dont_show_again">Ne jelenjen meg többet</string>
-  <string name="startup_development_version">Technológiai előzetes</string>
-  <string name="startup_development_version_message">Ez a %s fejlesztői verziója. Nem biztos, hogy minden úgy fog működni, ahogy az várható lenne.  A visszajelzéseket köszönettel vesszük.</string>
-  <string name="startup_development_version_give_feedback">Visszajelzés küldése</string>
   <string name="startup_donate">A forrás nyíltságával kapcsolatos információk</string>
   <string name="startup_donate_message">Örülünk, hogy használja a DAVdroidot.  A DAVdroid nyílt forráskódú (GPLv3) szoftver, de a fejlesztése kemény munkát jelent, már eddig több ezer munkaórát emésztett fel, ezért kérjük, fontolja meg, hogy támogassa munkánkat.</string>
   <string name="startup_donate_now">Támogatás küldése</string>
@@ -34,7 +31,6 @@
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid fájlalapú naplózás</string>
   <string name="logging_to_external_storage">Naplózás külső tárhelyre: %s</string>
-  <string name="logging_to_external_storage_warning">Törölje a naplófájlt, amint lehetséges!</string>
   <string name="logging_couldnt_create_file">Külső naplófájl létrehozása sikertelen: %s</string>
   <string name="logging_no_external_storage">A külső tárhely nem érhető el</string>
   <!--AccountsActivity-->

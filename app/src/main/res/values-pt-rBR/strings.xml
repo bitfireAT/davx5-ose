@@ -13,9 +13,6 @@
   <string name="startup_battery_optimization_message">O Android pode desativar/reduzir a sincronização do DAVdroid depois de alguns dias. Para evitar isso, desligue a otimização da bateria.</string>
   <string name="startup_battery_optimization_disable">Desligar para o DAVdroid</string>
   <string name="startup_dont_show_again">Não mostrar novamente</string>
-  <string name="startup_development_version">Preview Release</string>
-  <string name="startup_development_version_message">Esta é uma versão de desenvolvimento do %s. Alguma coisa pode não funcionar como esperado. Suas sugestões e comentários são bem-vindos.</string>
-  <string name="startup_development_version_give_feedback">Enviar sugestões</string>
   <string name="startup_donate">Informação sobre Código Aberto</string>
   <string name="startup_donate_message">Estamos felizes que você usa o DAVdroid, um software de código aberto (GPLv3). O desenvolvimento do DAVdroid é trabalhoso e consome muitas horas de trabalho. Por esse motivo, considere fazer uma doação.</string>
   <string name="startup_donate_now">Mostrar a página de doações</string>
@@ -33,7 +30,6 @@
   <!--global settings-->
   <string name="logging_davdroid_file_logging">Registro do arquivo do DAVdroid</string>
   <string name="logging_to_external_storage">Registrando no arquivo externo: %s</string>
-  <string name="logging_to_external_storage_warning">Excluir os registros assim que possível!</string>
   <string name="logging_couldnt_create_file">Não foi possível criar o arquivo de registro externo: %s</string>
   <string name="logging_no_external_storage">Armazenamento externo não encontrado</string>
   <!--AccountsActivity-->
@@ -98,6 +94,7 @@
   <string name="account_create_new_calendar">Criar novo calendário</string>
   <string name="account_no_webcal_handler_found">Não foi encontrado um aplicativo capaz de lidar com Webcal</string>
   <string name="account_install_icsdroid">Instalar ICSdroid</string>
+  <string name="account_read_only_address_book_selected">Livro de endereços somente leitura – as alterações locais serão descartadas!</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permissões do DAVdroid</string>
   <string name="permissions_calendar">Permissões do calendário</string>
@@ -218,6 +215,11 @@
   <string name="exception_show_details">Mostrar detalhes</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Informações de depuração</string>
+  <string name="sync_contacts_read_only_address_book">Livro de endereços somente leitura</string>
+  <plurals name="sync_contacts_local_contact_changes_discarded">
+    <item quantity="one">Alteração local de contato descartada</item>
+    <item quantity="other">%d alterações locais de contatos descartadas</item>
+  </plurals>
   <string name="sync_error_permissions">Permissões do DAVdroid</string>
   <string name="sync_error_permissions_text">É necessário permissões adicionais</string>
   <string name="sync_error_calendar">Falha na sincronização do calendário (%s)</string>

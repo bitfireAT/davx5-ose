@@ -13,9 +13,6 @@
   <string name="startup_battery_optimization_message">Android może wyłączyć/zmniejszyć synchronizacje DAVdroid po kilku dniach. Aby temu zapobiec należy wyłączyć optymalizację baterii.</string>
   <string name="startup_battery_optimization_disable">Wyłącz dla DAVdroid</string>
   <string name="startup_dont_show_again">Nie pokazuj ponownie</string>
-  <string name="startup_development_version">Poprzednie wydanie</string>
-  <string name="startup_development_version_message">To jest wersja rozwojowa 1%s. Nie wszystko może działać zgodnie z oczekiwaniami. Twoja opinia jest mile widziana.</string>
-  <string name="startup_development_version_give_feedback">Przekaż opinię</string>
   <string name="startup_donate">Informacje Open-Source</string>
   <string name="startup_donate_message">Jesteśmy szczęśliwi, że używasz DAVdroid, który jest oprogramowaniem open-source (GPLv3). Ponieważ rozwijanie DAVdroid jest ciężką pracą i zajęło nam tysiące godzin pracy, prosimy o rozważenie darowizny.</string>
   <string name="startup_donate_now">Pokaż stronę darowizny</string>
@@ -33,7 +30,6 @@
   <!--global settings-->
   <string name="logging_davdroid_file_logging">Plik logów DAVdroid</string>
   <string name="logging_to_external_storage">Logowanie do zewnątrznej pamięci: %s</string>
-  <string name="logging_to_external_storage_warning">Usuń logi tak szybko jak to możliwe!</string>
   <string name="logging_couldnt_create_file">Nie można stworzyć zewnętrznego pliku logów: %s</string>
   <string name="logging_no_external_storage">Zewnętrzna pamięci nie została naleziona</string>
   <!--AccountsActivity-->
@@ -89,10 +85,16 @@
   <string name="account_delete">Usuń konto</string>
   <string name="account_delete_confirmation_title">Naprawdę chcesz usunąć konto?</string>
   <string name="account_delete_confirmation_text">Wszystkie lokalne kopie książek adresowych, kalendarzy i list zadań zostaną usunięte.</string>
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_refresh_address_book_list">Odśwież list książek adresowych</string>
   <string name="account_create_new_address_book">Stwórz nową książkę adresową</string>
   <string name="account_refresh_calendar_list">Odśwież liste kalendarzy</string>
   <string name="account_create_new_calendar">Stwórz nowy kalendarz</string>
+  <string name="account_no_webcal_handler_found">Nie znaleziono aplikacji obsługującej Webcal</string>
+  <string name="account_install_icsdroid">Zainstaluj ICSdroid</string>
+  <string name="account_read_only_address_book_selected">Książka adresowa tylko do odczytu - lokalne zmiany zostaną usunięte</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Uprawnienia DAVdroid</string>
   <string name="permissions_calendar">Uprawnienia kalendarza</string>
@@ -143,6 +145,15 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Co %d minut oraz natychmiast przy zmianach lokalnych</string>
   <string name="settings_sync_interval_calendars">Okres synchronizacji kalendarzy</string>
   <string name="settings_sync_interval_tasks">Okres synchronizacji list zadań</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Tylko ręcznie</item>
+    <item>Co 15 minut</item>
+    <item>Co 30 minut</item>
+    <item>Co godzinę</item>
+    <item>Co 2 godzinny</item>
+    <item>Co 4 godzinny</item>
+    <item>Raz dziennie</item>
+  </string-array>
   <string name="settings_sync_wifi_only">Synchronizuj tylko przez WiFi</string>
   <string name="settings_sync_wifi_only_on">Synchronizacja jest ograniczony do połączeń WiFi</string>
   <string name="settings_sync_wifi_only_off">Rodzaj połączenia nie jest brany pod uwagę</string>
@@ -201,6 +212,13 @@
   <string name="exception_show_details">Pokaż szczegóły</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Informacje debugowe</string>
+  <string name="sync_contacts_read_only_address_book">Książka adresowa tylko do odczytu</string>
+  <plurals name="sync_contacts_local_contact_changes_discarded">
+    <item quantity="one">Lokalny kontakt zostanie odrzucony</item>
+    <item quantity="few">%d lokalne kontakty zostaną odrzucone</item>
+    <item quantity="many">%d lokalne kontakty zostaną odrzucone</item>
+    <item quantity="other">%d lokalne kontakty zostaną odrzucone</item>
+  </plurals>
   <string name="sync_error_permissions">Uprawnienia DAVdroid</string>
   <string name="sync_error_permissions_text">Wymagane dodatkowe uprawnienia</string>
   <string name="sync_error_calendar">Synchronizacja kalendarza nie powiodała się (%s)</string>

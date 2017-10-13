@@ -13,7 +13,6 @@
   <string name="startup_battery_optimization_message">Андроид може да искључи/умањи синхронизацију ДАВдроида након неколико дана. Да бисте спречили ово, искључите оптимизацију батерије.</string>
   <string name="startup_battery_optimization_disable">Искључи за ДАВдроид</string>
   <string name="startup_dont_show_again">Не приказуј поново</string>
-  <string name="startup_development_version_give_feedback">Повратне информације</string>
   <string name="startup_donate">Подаци о отвореном кôду</string>
   <string name="startup_donate_message">Драго нам је да користите ДАВдроид, софтвер отвореног кôда (ГПЛв3). Развој ДАВдроида није баш лак посао и захтева хиљаде радних сати, стога вас молимо да размотрите донацију.</string>
   <string name="startup_donate_now">Прикажи страницу за донације</string>
@@ -31,7 +30,6 @@
   <!--global settings-->
   <string name="logging_davdroid_file_logging">ДАВдроид евиденција</string>
   <string name="logging_to_external_storage">Уписивање евиденције у спољашње складиште: %s</string>
-  <string name="logging_to_external_storage_warning">Обришите записе што пре!</string>
   <string name="logging_couldnt_create_file">Не могох да направим спољашњи фајл записа: %s</string>
   <string name="logging_no_external_storage">Спољашње складиште није нађено</string>
   <!--AccountsActivity-->
