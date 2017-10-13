@@ -15,7 +15,7 @@ import org.junit.Test
 
 class DefaultsProviderTest {
 
-    private val provider: Provider = DefaultsProvider
+    private val provider: Provider = DefaultsProvider()
 
     @Test
     fun testHas() {

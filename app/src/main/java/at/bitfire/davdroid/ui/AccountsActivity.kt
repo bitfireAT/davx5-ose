@@ -21,9 +21,11 @@ import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import at.bitfire.davdroid.App
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.davdroid.ui.setup.LoginActivity
@@ -58,6 +60,8 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
         nav_view.setNavigationItemSelectedListener(this)
         nav_view.itemIconTintList = null
+        if (BuildConfig.VERSION_NAME.contains("-beta") || BuildConfig.VERSION_NAME.contains("-rc"))
+            nav_view.menu.findItem(R.id.nav_beta_feedback).isVisible = true
 
         /* When the DAVdroid main activity is started, start a Settings service that stays in memory
         for better performance. The service stops itself when memory is trimmed. */
@@ -133,6 +137,8 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
                 startActivity(Intent(this, AboutActivity::class.java))
             R.id.nav_app_settings ->
                 startActivity(Intent(this, AppSettingsActivity::class.java))
+            R.id.nav_beta_feedback ->
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.beta_feedback_url))))
             R.id.nav_twitter ->
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/davdroidapp")))
             R.id.nav_website ->
