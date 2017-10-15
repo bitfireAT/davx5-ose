@@ -87,7 +87,7 @@ class LocalCalendar private constructor(
                     Logger.log.log(Level.WARNING, "Couldn't parse calendar default time zone", e)
                 }
             }
-            values.put(Calendars.ALLOWED_REMINDERS, Reminders.METHOD_ALERT)
+            values.put(Calendars.ALLOWED_REMINDERS, "${Reminders.METHOD_ALERT},${Reminders.METHOD_EMAIL}")
             values.put(Calendars.ALLOWED_AVAILABILITY, "${Reminders.AVAILABILITY_TENTATIVE},${Reminders.AVAILABILITY_FREE},${Reminders.AVAILABILITY_BUSY}")
             values.put(Calendars.ALLOWED_ATTENDEE_TYPES, "${CalendarContract.Attendees.TYPE_OPTIONAL},${CalendarContract.Attendees.TYPE_REQUIRED},${CalendarContract.Attendees.TYPE_RESOURCE}")
             return values
