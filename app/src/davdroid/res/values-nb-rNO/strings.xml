@@ -38,6 +38,7 @@
   <string name="navigation_drawer_close">Lukk navigasjonsskuff</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV -synkroniseringsadapter</string>
   <string name="navigation_drawer_about">Om / Lisens</string>
+  <string name="navigation_drawer_beta_feedback">Tilbakemelding om beta-en</string>
   <string name="navigation_drawer_settings">Innstillinger</string>
   <string name="navigation_drawer_news_updates">Nyheter og oppdateringer</string>
   <string name="navigation_drawer_external_links">Eksterne lenker</string>
