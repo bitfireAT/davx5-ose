@@ -296,7 +296,7 @@ class DavService: Service() {
                         val homeSet = DavResource(httpClient, homeSetUrl)
                         try {
                             homeSet.propfind(1, *CollectionInfo.DAV_PROPERTIES)
-                            val itCollections = IteratorChain<DavResource>(homeSet.members.iterator(), SingletonIterator(homeSet))
+                            val itCollections = IteratorChain<DavResource>(homeSet.members.iterator(), homeSet.related.iterator(), SingletonIterator(homeSet))
                             while (itCollections.hasNext()) {
                                 val member = itCollections.next()
                                 val info = CollectionInfo(member)
