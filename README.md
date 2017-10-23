@@ -5,14 +5,14 @@
 DAVdroid
 ========
 
-Please see the [DAVdroid Web site](https://davdroid.bitfire.at) for
+Please see the [DAVdroid Web site](https://www.davdroid.com) for
 comprehensive information about DAVdroid.
 
 DAVdroid is licensed under the [GPLv3 License](LICENSE).
 
 News and updates: [@davdroidapp](https://twitter.com/davdroidapp) on Twitter
 
-Help and discussion: [DAVdroid forums](https://davdroid.bitfire.at/forums)
+Help and discussion: [DAVdroid forums](https://www.davdroid.com/forums/)
 
 **If you want to support DAVdroid, please consider [donating to DAVdroid](https://davdroid.bitfire.at/donate/)
 or [purchasing it](https://davdroid.bitfire.at/download/).**
