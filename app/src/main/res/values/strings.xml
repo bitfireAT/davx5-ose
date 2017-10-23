@@ -20,7 +20,7 @@
     <string name="manage_accounts">Manage accounts</string>
     <string name="please_wait">Please wait …</string>
     <string name="send">Send</string>
-    <string name="homepage_url">https://davdroid.bitfire.at/?pk_campaign=davdroid-app</string>
+    <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
     <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
 
     <!-- startup dialogs -->
@@ -61,7 +61,7 @@
     <string name="navigation_drawer_external_links">External links</string>
     <string name="navigation_drawer_website">Web site</string>
     <string name="navigation_drawer_faq">FAQ</string>
-    <string name="navigation_drawer_faq_url">https://davdroid.bitfire.at/faq/?pk_campaign=davdroid-app</string>
+    <string name="navigation_drawer_faq_url">https://www.davdroid.com/faq/?pk_campaign=davdroid-app</string>
     <string name="navigation_drawer_forums">Help / Forums</string>
     <string name="navigation_drawer_donate">Donate</string>
     <string name="account_list_empty">Welcome to DAVdroid!\n\nYou can add a CalDAV/CardDAV account now.</string>
@@ -132,7 +132,7 @@
     <string name="permissions_opentasks_request">Request OpenTasks permissions</string>
 
     <!-- AddAccountActivity -->
-    <string name="login_help_url">https://davdroid.bitfire.at/configuration/?pk_campaign=davdroid-app</string>
+    <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
     <string name="login_title">Add account</string>
     <string name="login_type_email">Login with email address</string>
     <string name="login_email_address">Email address</string>
