@@ -191,8 +191,22 @@ class AccountSettingsActivity: AppCompatActivity() {
                     else {
                         it.isEnabled = true
                         it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, groupMethod ->
-                            accountSettings.setGroupMethod(GroupMethod.valueOf(groupMethod as String))
-                            loaderManager.restartLoader(0, arguments, this)
+                            AlertDialog.Builder(activity)
+                                    .setIcon(R.drawable.ic_error_dark)
+                                    .setTitle(R.string.settings_contact_group_method_change)
+                                    .setMessage(R.string.settings_contact_group_method_change_reload_contacts)
+                                    .setPositiveButton(android.R.string.ok, { _, _ ->
+                                        // change group method
+                                        accountSettings.setGroupMethod(GroupMethod.valueOf(groupMethod as String))
+                                        loaderManager.restartLoader(0, arguments, this)
+
+                                        // reload all contacts
+                                        val args = Bundle(1)
+                                        args.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)
+                                        ContentResolver.requestSync(account, getString(R.string.address_books_authority), args)
+                                    })
+                                    .setNegativeButton(android.R.string.cancel, null)
+                                    .show()
                             false
                         }
                     }

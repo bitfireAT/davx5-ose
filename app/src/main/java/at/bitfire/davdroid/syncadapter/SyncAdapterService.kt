@@ -60,12 +60,13 @@ abstract class SyncAdapterService: Service() {
             Thread.currentThread().contextClassLoader = context.classLoader
 
             // load app settings
-            val settings = Settings.getInstance(context)
-            if (settings == null) {
-                syncResult.databaseError = true
-                Logger.log.severe("Couldn't connect to Settings service, aborting sync")
-                return
-            } else settings.use { settings ->
+            Settings.getInstance(context).use { settings ->
+                if (settings == null) {
+                    syncResult.databaseError = true
+                    Logger.log.severe("Couldn't connect to Settings service, aborting sync")
+                    return
+                }
+
                 val runSync = syncPlugins.all { it.beforeSync(context, settings, syncResult) }
 
                 if (runSync)

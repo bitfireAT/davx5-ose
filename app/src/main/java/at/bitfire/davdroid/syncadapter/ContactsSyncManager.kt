@@ -51,7 +51,7 @@ import java.util.logging.Level
  *     dirty, too (because they have to be uploaded without the respective category). This
  *     is done in {@link #prepareDirty()}. Empty groups can be deleted without further processing,
  *     which is done in {@link #postProcess()} because groups may become empty after downloading
- *     updated remoted contacts.</li>
+ *     updated remote contacts.</li>
  *     <li>Groups as separate VCards: individual and group contacts (with a list of member UIDs) are
  *     distinguished. When a local group is dirty, its members don't need to be set to dirty.
  *     <ol>
@@ -86,13 +86,15 @@ class ContactsSyncManager(
         private val localAddressBook: LocalAddressBook
 ): SyncManager(context, account, settings, extras, authority, syncResult, "addressBook") {
 
-    private val MAX_MULTIGET = 10
+    companion object {
+        private val MAX_MULTIGET = 10
+    }
 
-    private var readOnly = false
-    var numDiscarded = 0
+    private val readOnly = localAddressBook.getReadOnly()
+    private var numDiscarded = 0
 
     private var hasVCard4 = false
-    private lateinit var groupMethod: GroupMethod
+    private val groupMethod = settings.getGroupMethod()
 
 
     init {
@@ -124,8 +126,6 @@ class ContactsSyncManager(
         collectionURL = HttpUrl.parse(localAddressBook.getURL()) ?: return false
         davCollection = DavAddressBook(httpClient.okHttpClient, collectionURL)
 
-        readOnly = localAddressBook.getReadOnly()
-
         return true
     }
 
@@ -137,9 +137,8 @@ class ContactsSyncManager(
         }
         Logger.log.info("Server advertises VCard/4 support: $hasVCard4")
 
-        groupMethod = settings.getGroupMethod()
         Logger.log.info("Contact group method: $groupMethod")
-
+        // in case of GROUP_VCARDs, treat groups as contacts in the local address book
         localAddressBook.includeGroups = groupMethod == GroupMethod.GROUP_VCARDS
     }
 
@@ -390,10 +389,8 @@ class ContactsSyncManager(
         val newData = contacts.first()
 
         if (groupMethod == GroupMethod.CATEGORIES && newData.group) {
-            groupMethod = GroupMethod.GROUP_VCARDS
-            Logger.log.warning("Received group VCard although group method is CATEGORIES. Deleting all groups; new group method: $groupMethod")
-            localAddressBook.removeGroups()
-            settings.setGroupMethod(groupMethod)
+            Logger.log.warning("Received group VCard although group method is CATEGORIES. Saving as regular contact")
+            newData.group = false
         }
 
         // update local contact, if it exists

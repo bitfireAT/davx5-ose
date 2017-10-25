@@ -14,6 +14,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
+import android.provider.ContactsContract
 import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -21,6 +22,10 @@ import at.bitfire.davdroid.settings.ISettings
 import java.util.logging.Level
 
 class ContactsSyncAdapterService: SyncAdapterService() {
+
+    companion object {
+        val PREVIOUS_GROUP_METHOD = "previous_group_method"
+    }
 
     override fun syncAdapter() = ContactsSyncAdapter(this)
 
@@ -32,8 +37,24 @@ class ContactsSyncAdapterService: SyncAdapterService() {
         override fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
                 val addressBook = LocalAddressBook(context, account, provider)
-
                 val accountSettings = AccountSettings(context, settings, addressBook.getMainAccount())
+
+                // handle group method change
+                val groupMethod = accountSettings.getGroupMethod().name
+                accountSettings.accountManager.getUserData(account, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
+                    if (previousGroupMethod != groupMethod) {
+                        Logger.log.info("Group method changed, deleting all local contacts/groups")
+
+                        // delete all local contacts and groups so that they will be downloaded again
+                        provider.delete(addressBook.syncAdapterURI(ContactsContract.RawContacts.CONTENT_URI), null, null)
+                        provider.delete(addressBook.syncAdapterURI(ContactsContract.Groups.CONTENT_URI), null, null)
+
+                        // reset CTag
+                        addressBook.setCTag(null)
+                    }
+                }
+                accountSettings.accountManager.setUserData(account, PREVIOUS_GROUP_METHOD, groupMethod)
+
                 if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(accountSettings))
                     return
 

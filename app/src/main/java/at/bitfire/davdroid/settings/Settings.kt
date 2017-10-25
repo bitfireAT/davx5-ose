@@ -219,7 +219,7 @@ class Settings: Service(), Provider.Observer {
 
         override fun close() {
             try {
-                serviceConn.let { context.unbindService(it) }
+                context.unbindService(serviceConn)
             } catch(e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't unbind Settings service", e)
             }

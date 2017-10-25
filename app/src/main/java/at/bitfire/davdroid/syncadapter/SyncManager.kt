@@ -135,13 +135,13 @@ abstract class SyncManager(
             Logger.log.info("Checking sync state")
             if (checkSyncState()) {
                 syncPhase = SYNC_PHASE_LIST_LOCAL
-                Logger.log.info("Listing local entries")
+                Logger.log.info("Listing local resources")
                 listLocal()
 
                 if (Thread.interrupted())
                     return
                 syncPhase = SYNC_PHASE_LIST_REMOTE
-                Logger.log.info("Listing remote entries")
+                Logger.log.info("Listing remote resources")
                 listRemote()
 
                 if (Thread.interrupted())
@@ -385,6 +385,7 @@ abstract class SyncManager(
             resource.fileName?.let { resources[it] = resource }
         }
         localResources = resources
+        Logger.log.info("Found ${localResources.size} local resources")
     }
 
     /**
