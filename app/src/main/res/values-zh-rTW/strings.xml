@@ -8,7 +8,6 @@
   <string name="manage_accounts">管理帳號</string>
   <string name="please_wait">請稍待 ...</string>
   <string name="send">送出</string>
-  <string name="homepage_url">https://davdroid.bitfire.at/?pk_campaign=davdroid-app</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">電池最佳化</string>
   <string name="startup_battery_optimization_message">Android 在數日之後可能會關閉或減少 DAVdroid 的同步。為了避免這發生，請關閉電池最佳化。</string>
@@ -43,7 +42,6 @@
   <string name="navigation_drawer_external_links">外部連結</string>
   <string name="navigation_drawer_website">我們的網站</string>
   <string name="navigation_drawer_faq">常見問答</string>
-  <string name="navigation_drawer_faq_url">https://davdroid.bitfire.at/faq/?pk_campaign=davdroid-app</string>
   <string name="navigation_drawer_donate">贊助我們</string>
   <string name="account_list_empty">歡迎使用 DAVdroid!\n\n您現在可以新增 CalDAV/CardDAV 帳號</string>
   <string name="accounts_global_sync_enable">啟用</string>
@@ -101,7 +99,6 @@
   <string name="permissions_opentasks_details">為了將 CalDAV 工作清單與您裝置上的工作清單同步，DAVdroid 需要存取 OpenTasks 的權限。</string>
   <string name="permissions_opentasks_request">要求 OpenTasks 權限</string>
   <!--AddAccountActivity-->
-  <string name="login_help_url">https://davdroid.bitfire.at/configuration/?pk_campaign=davdroid-app</string>
   <string name="login_title">新增帳號</string>
   <string name="login_type_email">用 Email 地址登入</string>
   <string name="login_email_address">Email 地址</string>

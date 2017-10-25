@@ -44,7 +44,6 @@
   <string name="navigation_drawer_external_links">Externe Links</string>
   <string name="navigation_drawer_website">Homepage</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_faq_url">https://davdroid.bitfire.at/faq/?pk_campaign=davdroid-app</string>
   <string name="navigation_drawer_forums">Hilfe / Forum</string>
   <string name="navigation_drawer_donate">Spenden</string>
   <string name="account_list_empty">Herzlich willkommen!\n\nSie können jetzt ein CalDAV/CardDAV-Konto hinzufügen.</string>
@@ -110,7 +109,6 @@
   <string name="permissions_opentasks_details">Um CalDAV-Aufgaben mit lokalen Aufgabenlisten abzugleichen, benötigt DAVdroid Zugriffsrechte für OpenTasks.</string>
   <string name="permissions_opentasks_request">OpenTasks-Zugriff anfordern</string>
   <!--AddAccountActivity-->
-  <string name="login_help_url">https://davdroid.bitfire.at/configuration/?pk_campaign=davdroid-app</string>
   <string name="login_title">Konto hinzufügen</string>
   <string name="login_type_email">Mit Email-Adresse anmelden</string>
   <string name="login_email_address">Email-Adresse</string>
@@ -175,6 +173,8 @@
     <item>Gruppen sind eigene VCards</item>
     <item>Gruppen sind Kategorien der Kontakte</item>
   </string-array>
+  <string name="settings_contact_group_method_change">Gruppen-Methode ändern</string>
+  <string name="settings_contact_group_method_change_reload_contacts">Dazu müssen alle Kontakte neu geladen werden. Ungesicherte lokale Änderungen werden verworfen.</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Abrufbeschränkung vergangener Termine</string>
   <string name="settings_sync_time_range_past_none">Alle Termine werden synchronisiert</string>
