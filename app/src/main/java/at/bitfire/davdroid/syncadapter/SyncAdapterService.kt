@@ -30,6 +30,10 @@ import java.util.logging.Level
 
 abstract class SyncAdapterService: Service() {
 
+    companion object {
+        val runningSyncs = Collections.synchronizedSet(mutableSetOf<Pair<String, Account>>())
+    }
+
     abstract protected fun syncAdapter(): AbstractThreadedSyncAdapter
 
     override fun onBind(intent: Intent?) = syncAdapter().syncAdapterBinder!!
@@ -44,20 +48,31 @@ abstract class SyncAdapterService: Service() {
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             Logger.log.log(Level.INFO, "$authority sync of $account has been initiated", extras.keySet().joinToString(", "))
 
-            // required for dav4android (ServiceLoader)
-            Thread.currentThread().contextClassLoader = context.classLoader
-
-            // load app settings
-            Settings.getInstance(context).use { settings ->
-                if (settings == null) {
-                    syncResult.databaseError = true
-                    Logger.log.severe("Couldn't connect to Settings service, aborting sync")
-                    return
-                }
-
-                sync(settings, account, extras, authority, provider, syncResult)
+            // prevent multiple syncs of the same authority to be run for the same account
+            val currentSync = Pair(authority, account)
+            if (!runningSyncs.add(currentSync)) {
+                Logger.log.warning("There's already another $authority sync running for $account, aborting")
+                return
             }
-            Logger.log.info("Sync for $authority complete")
+
+            try {
+                // required for dav4android (ServiceLoader)
+                Thread.currentThread().contextClassLoader = context.classLoader
+
+                // load app settings
+                Settings.getInstance(context).use { settings ->
+                    if (settings == null) {
+                        syncResult.databaseError = true
+                        Logger.log.severe("Couldn't connect to Settings service, aborting sync")
+                        return
+                    }
+
+                    sync(settings, account, extras, authority, provider, syncResult)
+                }
+                Logger.log.info("Sync for $authority complete")
+            } finally {
+                runningSyncs -= currentSync
+            }
         }
 
         override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {
