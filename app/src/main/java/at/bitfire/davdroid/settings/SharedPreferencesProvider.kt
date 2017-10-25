@@ -39,6 +39,9 @@ class SharedPreferencesProvider(
     override fun close() {
     }
 
+    override fun forceReload() {
+    }
+
 
     override fun has(key: String) =
             Pair(preferences.contains(key), true)

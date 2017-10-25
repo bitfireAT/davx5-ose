@@ -33,6 +33,9 @@ open class DefaultsProvider(
     override fun close() {
     }
 
+    override fun forceReload() {
+    }
+
 
     private fun hasKey(key: String) =
             booleanDefaults.containsKey(key) ||

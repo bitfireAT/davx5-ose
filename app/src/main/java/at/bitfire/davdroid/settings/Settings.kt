@@ -51,6 +51,10 @@ class Settings: Service(), Provider.Observer {
     }
 
 
+    fun forceReload() {
+        providers.forEach { it.forceReload() }
+    }
+
     override fun onReload() {
         observers.forEach {
             Handler(Looper.getMainLooper()).post {
@@ -148,6 +152,9 @@ class Settings: Service(), Provider.Observer {
 
 
     val binder = object: ISettings.Stub() {
+
+        override fun forceReload() =
+               this@Settings.forceReload()
 
         override fun has(key: String) =
                 this@Settings.has(key)
