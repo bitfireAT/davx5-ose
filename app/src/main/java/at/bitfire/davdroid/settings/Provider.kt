@@ -12,6 +12,8 @@ import java.io.Closeable
 
 interface Provider: Closeable {
 
+    fun forceReload()
+
     fun has(key: String): Pair<Boolean, Boolean>
 
     fun getBoolean(key: String): Pair<Boolean?, Boolean>

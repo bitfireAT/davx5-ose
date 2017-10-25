@@ -4,6 +4,8 @@ import at.bitfire.davdroid.settings.ISettingsObserver;
 
 interface ISettings {
 
+    void forceReload();
+
     boolean has(String key);
 
     boolean getBoolean(String key, boolean defaultValue);
