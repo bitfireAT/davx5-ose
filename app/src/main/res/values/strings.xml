@@ -209,6 +209,8 @@
         <item>Groups are separate VCards</item>
         <item>Groups are per-contact categories</item>
     </string-array>
+    <string name="settings_contact_group_method_change">Change group method</string>
+    <string name="settings_contact_group_method_change_reload_contacts">This requires to reload all contacts. Unsaved local changes will be dismissed.</string>
     <string name="settings_caldav">CalDAV</string>
     <string name="settings_sync_time_range_past">Past event time limit</string>
     <string name="settings_sync_time_range_past_none">All events will be synchronized</string>
