@@ -8,7 +8,7 @@
   <string name="manage_accounts">Beheer accounts</string>
   <string name="please_wait">Een moment geduld...</string>
   <string name="send">Verzenden</string>
-  <string name="homepage_url">https://davdroid.bitfire.at/?pk_campaign=davdroid-app</string>
+  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Batterij optimalisatie</string>
   <string name="startup_battery_optimization_message">Android kan mogelijk de DAVdroid synchronisatie stoppen na een paar dagen. Om dit te voorkomen zet u de batterij optimalisatie uit.</string>
@@ -38,12 +38,13 @@
   <string name="navigation_drawer_close">Sluit navigatie drawer</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDav Sync adapter</string>
   <string name="navigation_drawer_about">Over / Licentie</string>
+  <string name="navigation_drawer_beta_feedback">Beta terugkoppeling</string>
   <string name="navigation_drawer_settings">Instellingen</string>
   <string name="navigation_drawer_news_updates">Nieuws &amp; updates</string>
   <string name="navigation_drawer_external_links">Externe links</string>
   <string name="navigation_drawer_website">Website</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_faq_url">https://davdroid.bitfire.at/faq/?pk_campaign=davdroid-app</string>
+  <string name="navigation_drawer_forums">Help / Forums</string>
   <string name="navigation_drawer_donate">Doneren</string>
   <string name="account_list_empty">Welkom bij DAVdroid!\n\nJe kunt nu een CalDAV/CardDAv account toevoegen.</string>
   <string name="accounts_global_sync_disabled">Systeembrede automatische synchronisatie is uitgeschakeld</string>
@@ -86,10 +87,15 @@
   <string name="account_delete">Account verwijderen</string>
   <string name="account_delete_confirmation_title">Account echt verwijderen?</string>
   <string name="account_delete_confirmation_text">Alle lokale kopieën van adresboeken, agenda\'s en taken worden verwijderd.</string>
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_refresh_address_book_list">Adresboeken vernieuwen</string>
   <string name="account_create_new_address_book">Maak een nieuw adresboek</string>
   <string name="account_refresh_calendar_list">Agenda\'s vernieuwen</string>
   <string name="account_create_new_calendar">Maak een nieuwe agenda</string>
+  <string name="account_no_webcal_handler_found">Geen mogelijke Webcal app gevonden</string>
+  <string name="account_install_icsdroid">ICSdroid installeren</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">DAVdroid rechten</string>
   <string name="permissions_calendar">Agenda rechten</string>
@@ -102,7 +108,6 @@
   <string name="permissions_opentasks_details">Om CalDAV taken te synchroniseren met uw local takenlijst dient DAVdroid toegang te hebben tot OpenTasks</string>
   <string name="permissions_opentasks_request">OpenTasks rechten verkrijgen</string>
   <!--AddAccountActivity-->
-  <string name="login_help_url">https://davdroid.bitfire.at/configuration/?pk_campaign=davdroid-app</string>
   <string name="login_title">Account toevoegen</string>
   <string name="login_type_email">Inloggen met e-mailadres</string>
   <string name="login_email_address">Email adres</string>
@@ -144,6 +149,9 @@
   <string name="settings_sync_wifi_only">Sync alleen tijdens WiFi</string>
   <string name="settings_sync_wifi_only_on">Synchronisatie is voorbehouden tijdens WiFi verbindingen</string>
   <string name="settings_sync_wifi_only_off">Verbinding type is niet overwogen</string>
+  <string name="settings_sync_wifi_only_ssids">WiFi SSID beperking</string>
+  <string name="settings_sync_wifi_only_ssids_on">Zal alleen synchroniseren over %s</string>
+  <string name="settings_sync_wifi_only_ssids_off">Alle WiFI verbindingen zullen worden gebruikt</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Contact groep methode</string>
   <string-array name="settings_contact_group_method_values">
@@ -165,6 +173,9 @@
   <string name="settings_manage_calendar_colors">Agenda kleuren beheren</string>
   <string name="settings_manage_calendar_colors_on">Agenda kleuren worden door DAVdroid beheerd.</string>
   <string name="settings_manage_calendar_colors_off">Agenda kleuren worden niet door DAVdroid ingesteld</string>
+  <string name="settings_event_colors">Evenement kleur ondersteuning</string>
+  <string name="settings_event_colors_on">Evenement kleuren synchroniseren</string>
+  <string name="settings_event_colors_off">Evenement kleuren niet synchroniseren</string>
   <!--collection management-->
   <string name="create_addressbook">Maak adresboek</string>
   <string name="create_addressbook_display_name_hint">Mijn adresboek</string>
@@ -193,6 +204,7 @@
   <string name="exception_show_details">Toon details</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Debug informatie</string>
+  <string name="sync_contacts_read_only_address_book">Alleen-lezen adresboek</string>
   <string name="sync_error_permissions">DAVdroid rechten</string>
   <string name="sync_error_permissions_text">Aanvullende rechten vereist</string>
   <string name="sync_error_calendar">Agenda synchronisatie is mislukt (%s)</string>

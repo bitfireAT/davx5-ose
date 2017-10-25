@@ -8,7 +8,7 @@
   <string name="manage_accounts">管理账户</string>
   <string name="please_wait">请稍等...</string>
   <string name="send">发送</string>
-  <string name="homepage_url">https://davdroid.bitfire.at/?pk_campaign=davdroid-app</string>
+  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">电池优化</string>
   <string name="startup_battery_optimization_message">系统可能会在几天后减少或停用 DAVdroid 同步。为了避免这一情况，请禁用对 DAVdroid 的电池优化。</string>
@@ -38,12 +38,12 @@
   <string name="navigation_drawer_close">关闭导航抽屉</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV 同步器</string>
   <string name="navigation_drawer_about">关于 / 许可</string>
+  <string name="navigation_drawer_beta_feedback">测试版反馈</string>
   <string name="navigation_drawer_settings">设置</string>
   <string name="navigation_drawer_news_updates">最新消息</string>
   <string name="navigation_drawer_external_links">外部链接</string>
   <string name="navigation_drawer_website">应用网站</string>
   <string name="navigation_drawer_faq">常见问题</string>
-  <string name="navigation_drawer_faq_url">https://davdroid.bitfire.at/faq/?pk_campaign=davdroid-app</string>
   <string name="navigation_drawer_forums">帮助 / 论坛</string>
   <string name="navigation_drawer_donate">捐助</string>
   <string name="account_list_empty">欢迎使用 DAVdroid！\n\n现在你可以增加 CalDAV/CardDAV 账户。</string>
@@ -96,6 +96,7 @@
   <string name="account_create_new_calendar">创建日历</string>
   <string name="account_no_webcal_handler_found">找不到支持 Webcal 的应用</string>
   <string name="account_install_icsdroid">安装 ICSdroid</string>
+  <string name="account_read_only_address_book_selected">这是只读通讯录，本地修改会被自动撤销！</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">DAVdroid 权限</string>
   <string name="permissions_calendar">日历权限</string>
@@ -108,7 +109,6 @@
   <string name="permissions_opentasks_details">要把 CalDAV 任务与本地任务列表同步，DAVdroid 需要访问 OpenTasks。</string>
   <string name="permissions_opentasks_request">请求 OpenTasks 权限</string>
   <!--AddAccountActivity-->
-  <string name="login_help_url">https://davdroid.bitfire.at/configuration/?pk_campaign=davdroid-app</string>
   <string name="login_title">增加账户</string>
   <string name="login_type_email">使用邮箱地址登录</string>
   <string name="login_email_address">Email 地址</string>
@@ -215,6 +215,10 @@
   <string name="exception_show_details">显示详情</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">调试信息</string>
+  <string name="sync_contacts_read_only_address_book">只读通讯录</string>
+  <plurals name="sync_contacts_local_contact_changes_discarded">
+    <item quantity="other">%d 本地联系人修改被撤销</item>
+  </plurals>
   <string name="sync_error_permissions">DAVdroid 权限</string>
   <string name="sync_error_permissions_text">需要额外权限</string>
   <string name="sync_error_calendar">日历同步失败（%s）</string>

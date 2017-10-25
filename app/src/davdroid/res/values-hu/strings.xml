@@ -8,7 +8,6 @@
   <string name="manage_accounts">Fiókok kezelése</string>
   <string name="please_wait">Kérjük, várjon ...</string>
   <string name="send">Küldés</string>
-  <string name="homepage_url">https://davdroid.bitfire.at/?pk_campaign=davdroid-app</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Akkumulátoroptimalizálás </string>
   <string name="startup_battery_optimization_message">Az operációs rendszer a DAVdroid szinkronizálást pár nap után leállíthatja vagy visszafoghatja.  Ennek elkerülésére kapcsolja ki az akkumulátoroptimalizálást.</string>
@@ -43,7 +42,6 @@
   <string name="navigation_drawer_external_links">Weblapok</string>
   <string name="navigation_drawer_website">Honlap</string>
   <string name="navigation_drawer_faq">GYIK</string>
-  <string name="navigation_drawer_faq_url">https://davdroid.bitfire.at/faq/?pk_campaign=davdroid-app</string>
   <string name="navigation_drawer_forums">Segítség / Fórumok</string>
   <string name="navigation_drawer_donate">Támogatás</string>
   <string name="account_list_empty">Üdvözöljük a DAVdroid felhasználók között!\n\nMost már felvehet CalDAV/CardDav fiókokat.</string>
@@ -108,7 +106,6 @@
   <string name="permissions_opentasks_details">A CalDAV feladatlisták és a helyi feladatlisták szinkronizálásához a DAVdroid OpenTasks hozzáférést igényel.</string>
   <string name="permissions_opentasks_request">OpenTasks engedélyek igénylése</string>
   <!--AddAccountActivity-->
-  <string name="login_help_url">https://davdroid.bitfire.at/configuration/?pk_campaign=davdroid-app</string>
   <string name="login_title">Fiók hozzáadása</string>
   <string name="login_type_email">Bejelentkezés email cím segítségével</string>
   <string name="login_email_address">Email cím:</string>

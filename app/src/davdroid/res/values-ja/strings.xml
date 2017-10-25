@@ -8,7 +8,7 @@
   <string name="manage_accounts">アカウントの管理</string>
   <string name="please_wait">しばらくお待ちください …</string>
   <string name="send">送信</string>
-  <string name="homepage_url">https://davdroid.bitfire.at/?pk_campaign=davdroid-app</string>
+  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">バッテリー最適化</string>
   <string name="startup_battery_optimization_message">Android は数日後に DAVdroid の同期を無効にする/減らすことがあります。これを防止するには、バッテリー最適化をオフにしてください。</string>
@@ -38,12 +38,12 @@
   <string name="navigation_drawer_close">ナビゲーションドロワーを閉じる</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV 同期アダプター</string>
   <string name="navigation_drawer_about">アプリについて / ライセンス</string>
+  <string name="navigation_drawer_beta_feedback">ベータフィードバック</string>
   <string name="navigation_drawer_settings">設定</string>
   <string name="navigation_drawer_news_updates">ニュース &amp; 更新</string>
   <string name="navigation_drawer_external_links">外部リンク</string>
   <string name="navigation_drawer_website">Web サイト</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_faq_url">https://davdroid.bitfire.at/faq/?pk_campaign=davdroid-app</string>
   <string name="navigation_drawer_forums">ヘルプ / フォーラム</string>
   <string name="navigation_drawer_donate">寄付</string>
   <string name="account_list_empty">DAVdroid にようこそ!\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>
@@ -109,7 +109,6 @@
   <string name="permissions_opentasks_details">ローカルのタスクリストと CalDAV タスクを同期するため、DAVdroid が OpenTasks にアクセスする必要があります。</string>
   <string name="permissions_opentasks_request">OpenTasks アクセス許可の要求</string>
   <!--AddAccountActivity-->
-  <string name="login_help_url">https://davdroid.bitfire.at/configuration/?pk_campaign=davdroid-app</string>
   <string name="login_title">アカウントを追加</string>
   <string name="login_type_email">メールアドレスでログイン</string>
   <string name="login_email_address">メールアドレス</string>
