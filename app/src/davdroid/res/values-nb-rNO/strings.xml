@@ -8,7 +8,6 @@
   <string name="manage_accounts">Behandle kontoer</string>
   <string name="please_wait">Vent…</string>
   <string name="send">Send</string>
-  <string name="homepage_url">https://davdroid.bitfire.at/?pk_campaign=davdroid-app</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Batterioptimisering</string>
   <string name="startup_battery_optimization_message">Det kan hende Android skrur av/reduserer DAVdroid-synkronisering etter et par dager. For å forhindre dette, skru av batterioptimisering.</string>
@@ -44,7 +43,6 @@
   <string name="navigation_drawer_external_links">Eksterne lenker</string>
   <string name="navigation_drawer_website">Nettside</string>
   <string name="navigation_drawer_faq">O-S-S</string>
-  <string name="navigation_drawer_faq_url">https://davdroid.bitfire.at/faq/?pk_campaign=davdroid-app</string>
   <string name="navigation_drawer_forums">Hjelp / Forum</string>
   <string name="navigation_drawer_donate">Doner</string>
   <string name="account_list_empty">Velkommen til DAVdroid.\n\nDu kan legge til en CalDAV/CardDAV-konto nå.</string>
@@ -110,7 +108,6 @@
   <string name="permissions_opentasks_details">For å synkronisere CalDAV-gjøremål med din lokale gjøremålslister må DAVdroid ha tilgang til OpenTasks.</string>
   <string name="permissions_opentasks_request">Forespør OpenTasks-tilganger</string>
   <!--AddAccountActivity-->
-  <string name="login_help_url">https://davdroid.bitfire.at/configuration/?pk_campaign=davdroid-app</string>
   <string name="login_title">Legg til konto</string>
   <string name="login_type_email">Innlogging med e-postadresse</string>
   <string name="login_email_address">E-postadresse</string>

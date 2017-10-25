@@ -106,7 +106,6 @@
   <string name="permissions_opentasks_details">Pour synchroniser les tâches de CalDAV avec vos listes de tâches locales, DAVdroid a besoin d\'accéder à OpenTasks.</string>
   <string name="permissions_opentasks_request">Demande d\'autorisations d\'accéder à OpenTasks</string>
   <!--AddAccountActivity-->
-  <string name="login_help_url">https://davdroid.bitfire.at/configuration/?pk_campaign=davdroid-app</string>
   <string name="login_title">Ajouter un compte</string>
   <string name="login_type_email">Connexion avec une adresse email</string>
   <string name="login_email_address">Adresse mail</string>
