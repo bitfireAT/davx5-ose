@@ -12,7 +12,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.1'
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
@@ -27,12 +27,16 @@ android {
         buildConfigField "boolean", "customCerts", "false"
     }
 
+    flavorDimensions "type"
+
     productFlavors {
         standard {
+            dimension "type"
             versionName "1.9.1"
             buildConfigField "boolean", "customCerts", "true"
         }
         managed {
+            dimension "type"
             applicationId "com.davdroid.managed"
             resValue "string", "packageID", applicationId
             minSdkVersion 21
@@ -41,16 +45,19 @@ android {
         }
 
         gplay {
+            dimension "type"
             versionName "1.9.1-gplay"
             buildConfigField "boolean", "customCerts", "true"
         }
         icloud {
+            dimension "type"
             applicationId "at.bitfire.cloudsync"
             resValue "string", "packageID", applicationId
 
             versionName "1.9.1-cloud"
         }
         soldupe {
+            dimension "type"
             applicationId "com.soldupe.cloudsync"
             resValue "string", "packageID", applicationId
             minSdkVersion 21
@@ -125,10 +132,10 @@ dependencies {
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
-    compile 'com.android.support:appcompat-v7:26.0.1'
-    compile 'com.android.support:cardview-v7:26.0.1'
-    compile 'com.android.support:design:26.0.1'
-    compile 'com.android.support:preference-v14:26.0.1'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:cardview-v7:26.1.0'
+    compile 'com.android.support:design:26.1.0'
+    compile 'com.android.support:preference-v14:26.1.0'
 
     compile 'com.github.yukuku:ambilwarna:2.0.1'
 
