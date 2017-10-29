@@ -511,8 +511,8 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                 tv.text = info.description
             }
 
-            tv = v.findViewById(R.id.read_only)
-            tv.visibility = if (info.readOnly) View.VISIBLE else View.GONE
+            v.findViewById<ImageView>(R.id.read_only).visibility =
+                    if (info.readOnly) View.VISIBLE else View.GONE
 
             return v
         }
@@ -549,14 +549,14 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                 tv.text = info.description
             }
 
-            tv = v.findViewById(R.id.read_only)
-            tv.visibility = if (info.readOnly) View.VISIBLE else View.GONE
+            v.findViewById<ImageView>(R.id.read_only).visibility =
+                    if (info.readOnly) View.VISIBLE else View.GONE
 
-            tv = v.findViewById(R.id.events)
-            tv.visibility = if (info.supportsVEVENT) View.VISIBLE else View.GONE
+            v.findViewById<ImageView>(R.id.events).visibility =
+                    if (info.supportsVEVENT) View.VISIBLE else View.GONE
 
-            tv = v.findViewById(R.id.tasks)
-            tv.visibility = if (info.supportsVTODO) View.VISIBLE else View.GONE
+            v.findViewById<ImageView>(R.id.tasks).visibility =
+                    if (info.supportsVTODO) View.VISIBLE else View.GONE
 
             return v
         }

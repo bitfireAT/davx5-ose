@@ -23,6 +23,8 @@ android {
 
         minSdkVersion 16
         targetSdkVersion 25
+
+        vectorDrawables.useSupportLibrary = true
     }
 
     flavorDimensions "type"

@@ -8,6 +8,7 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -45,10 +46,10 @@
 
     </LinearLayout>
 
-    <TextView
+    <ImageView
         android:id="@+id/read_only"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:background="@drawable/ic_remove_circle_dark"/>
+        app:srcCompat="@drawable/ic_remove_circle_dark"/>
 
 </LinearLayout>

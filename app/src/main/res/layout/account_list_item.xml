@@ -23,10 +23,10 @@
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
-            <TextView
+            <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/ic_account_circle_white"/>
+                app:srcCompat="@drawable/ic_account_circle_white"/>
 
             <TextView
                 android:id="@+id/account_name"
