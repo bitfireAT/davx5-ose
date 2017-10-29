@@ -9,6 +9,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -51,24 +52,25 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             tools:text="Calendar Description"/>
+
     </LinearLayout>
 
-    <TextView
+    <ImageView
         android:id="@+id/read_only"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:background="@drawable/ic_remove_circle_dark"/>
+        app:srcCompat="@drawable/ic_remove_circle_dark"/>
 
-    <TextView
+    <ImageView
         android:id="@+id/events"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:background="@drawable/ic_today_dark"/>
+        app:srcCompat="@drawable/ic_today_dark"/>
 
-    <TextView
+    <ImageView
         android:id="@+id/tasks"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:background="@drawable/ic_alarm_on_dark"/>
+        app:srcCompat="@drawable/ic_alarm_on_dark"/>
 
 </LinearLayout>

@@ -12,6 +12,8 @@ import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build
+import android.support.v7.app.AppCompatDelegate
 import at.bitfire.davdroid.log.Logger
 
 class App: Application() {
@@ -61,6 +63,9 @@ class App: Application() {
     override fun onCreate() {
         super.onCreate()
         Logger.initialize(this)
+
+        if (Build.VERSION.SDK_INT <= 21)
+            AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
     }
 
 }

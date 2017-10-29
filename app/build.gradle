@@ -25,6 +25,7 @@ android {
         targetSdkVersion 25
 
         buildConfigField "boolean", "customCerts", "false"
+        vectorDrawables.useSupportLibrary = true
     }
 
     flavorDimensions "type"
@@ -33,36 +34,40 @@ android {
         standard {
             dimension "type"
             versionName "1.9.1"
+
             buildConfigField "boolean", "customCerts", "true"
         }
         managed {
             dimension "type"
+            versionName "1.9.1-mgd"
+
             applicationId "com.davdroid.managed"
             resValue "string", "packageID", applicationId
             minSdkVersion 21
 
-            versionName "1.9.1-mgd"
+            buildConfigField "boolean", "customCerts", "true"
         }
 
         gplay {
             dimension "type"
             versionName "1.9.1-gplay"
+
             buildConfigField "boolean", "customCerts", "true"
         }
         icloud {
             dimension "type"
+            versionName "1.9.1-cloud"
+
             applicationId "at.bitfire.cloudsync"
             resValue "string", "packageID", applicationId
-
-            versionName "1.9.1-cloud"
         }
         soldupe {
             dimension "type"
+            versionName "1.9.1-soldupe"
+
             applicationId "com.soldupe.cloudsync"
             resValue "string", "packageID", applicationId
             minSdkVersion 21
-
-            versionName "1.9.1-soldupe"
         }
     }
 
