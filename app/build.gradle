@@ -108,12 +108,9 @@ android {
 
     lintOptions {
         disable 'GoogleAppIndexingWarning'      // we don't need Google indexing, thanks
-        disable 'GradleDependency'
-        disable 'IconColors'
-        disable 'IconLauncherShape'
-        disable 'IconMissingDensityFolder'
-        disable 'ImpliedQuantity', 'MissingQuantity'
+        disable 'ImpliedQuantity', 'MissingQuantity'		// quantities from Transifex may vary
         disable 'MissingTranslation', 'ExtraTranslation'	// translations from Transifex are not always up to date
+        disable "OnClick"     // doesn't recognize Kotlin onClick methods
         disable 'Recycle'           // doesn't understand Lombok's @Cleanup
         disable 'RtlEnabled'
         disable 'RtlHardcoded'
