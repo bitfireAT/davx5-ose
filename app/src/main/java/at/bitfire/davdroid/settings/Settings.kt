@@ -67,16 +67,19 @@ class Settings: Service(), Provider.Observer {
     private fun has(key: String): Boolean {
         Logger.log.fine("Looking for setting $key")
         var result = false
-        for (provider in providers) {
-            val (value, further) = provider.has(key)
-            Logger.log.finer("${provider::class.java.simpleName}: has $key = $value, continue: $further")
-            if (value) {
-                result = true
-                break
+        for (provider in providers)
+            try {
+                val (value, further) = provider.has(key)
+                Logger.log.finer("${provider::class.java.simpleName}: has $key = $value, continue: $further")
+                if (value) {
+                    result = true
+                    break
+                }
+                if (!further)
+                    break
+            } catch(e: Exception) {
+                Logger.log.log(Level.SEVERE, "Couldn't look up setting in $provider", e)
             }
-            if (!further)
-                break
-        }
         Logger.log.fine("Looking for setting $key -> $result")
         return result
     }
@@ -84,13 +87,16 @@ class Settings: Service(), Provider.Observer {
     private fun<T> getValue(key: String, reader: (Provider) -> Pair<T?, Boolean>): T? {
         Logger.log.fine("Looking up setting $key")
         var result: T? = null
-        for (provider in providers) {
-            val (value, further) = reader(provider)
-            Logger.log.finer("${provider::class.java.simpleName}: value = $value, continue: $further")
-            value?.let { result = it }
-            if (!further)
-                break
-        }
+        for (provider in providers)
+            try {
+                val (value, further) = reader(provider)
+                Logger.log.finer("${provider::class.java.simpleName}: value = $value, continue: $further")
+                value?.let { result = it }
+                if (!further)
+                    break
+            } catch(e: Exception) {
+                Logger.log.log(Level.SEVERE, "Couldn't read setting from $provider", e)
+            }
         Logger.log.fine("Looked up setting $key -> $result")
         return result
     }
@@ -125,7 +131,12 @@ class Settings: Service(), Provider.Observer {
             val (writable, further) = provider.isWritable(key)
             Logger.log.finer("${provider::class.java.simpleName}: writable = $writable, continue: $further")
             if (writable)
-                return writer(provider)
+                return try {
+                    writer(provider)
+                } catch (e: Exception) {
+                    Logger.log.log(Level.SEVERE, "Couldn't write setting to $provider", e)
+                    false
+                }
             if (!further)
                 return false
         }
