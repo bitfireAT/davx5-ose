@@ -159,7 +159,7 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                 if (Build.VERSION.SDK_INT < 23)
                     builder.append("\n\n").append(getString(R.string.startup_opentasks_reinstall_davdroid))
                 return AlertDialog.Builder(activity)
-                        .setIcon(R.drawable.ic_alarm_on_dark)
+                        .setIcon(R.drawable.ic_playlist_add_check_dark)
                         .setTitle(R.string.startup_opentasks_not_installed)
                         .setMessage(builder.toString())
                         .setPositiveButton(android.R.string.ok, { _, _ -> })
