@@ -170,9 +170,11 @@
     <item>CATEGORIES</item>
   </string-array>
   <string-array name="settings_contact_group_method_entries">
-    <item>分为不同的 VCards</item>
-    <item>每个联系人的分类</item>
+    <item>按 VCard 文件分组</item>
+    <item>按联系人分类分组</item>
   </string-array>
+  <string name="settings_contact_group_method_change">修改分组方式</string>
+  <string name="settings_contact_group_method_change_reload_contacts">本次操作需要重新载入所有联系人，未同步的本地修改会被撤销。</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">旧日程时间限制</string>
   <string name="settings_sync_time_range_past_none">同步所有日程</string>
