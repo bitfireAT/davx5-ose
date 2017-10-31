@@ -90,6 +90,9 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_read_only">schreibgeschützt</string>
+  <string name="account_calendar">Kalender</string>
+  <string name="account_task_list">Aufgabenliste</string>
   <string name="account_refresh_address_book_list">Adressbücher neu erkennen</string>
   <string name="account_create_new_address_book">Neues Adressbuch erstellen</string>
   <string name="account_refresh_calendar_list">Kalender neu erkennen</string>
