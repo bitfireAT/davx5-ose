@@ -76,13 +76,13 @@ class AppSettingsActivity: AppCompatActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
 
-            if (!activity.bindService(Intent(activity, Settings::class.java), settingsSvc, Context.BIND_AUTO_CREATE))
+            if (!activity!!.bindService(Intent(activity, Settings::class.java), settingsSvc, Context.BIND_AUTO_CREATE))
                 settingsSvc = null
         }
 
         override fun onDestroy() {
             super.onDestroy()
-            settingsSvc?.let { activity.unbindService(it) }
+            settingsSvc?.let { activity!!.unbindService(it) }
         }
 
         override fun onCreatePreferences(bundle: Bundle?, s: String?) {
@@ -162,7 +162,7 @@ class AppSettingsActivity: AppCompatActivity() {
             val prefLogToExternalStorage = findPreference(Logger.LOG_TO_EXTERNAL_STORAGE) as SwitchPreferenceCompat
             prefLogToExternalStorage.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                 // kill a potential :sync process, so that the new logger settings will be used
-                val am = activity.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                val am = activity!!.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
                 am.runningAppProcesses.forEach {
                     if (it.pid != Process.myPid()) {
                         Logger.log.info("Killing ${it.processName} process, pid = ${it.pid}")
@@ -181,7 +181,7 @@ class AppSettingsActivity: AppCompatActivity() {
         }
 
         private fun resetCertificates() {
-            if (CustomCertManager.resetCertificates(activity))
+            if (CustomCertManager.resetCertificates(activity!!))
                 Snackbar.make(view!!, getString(R.string.app_settings_reset_certificates_success), Snackbar.LENGTH_LONG).show()
         }
 

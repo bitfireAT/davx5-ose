@@ -582,12 +582,12 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val oldAccount: Account = arguments.getParcelable(ARG_ACCOUNT)
+            val oldAccount: Account = arguments!!.getParcelable(ARG_ACCOUNT)
 
             val editText = EditText(activity)
             editText.setText(oldAccount.name)
 
-            return AlertDialog.Builder(activity)
+            return AlertDialog.Builder(activity!!)
                     .setTitle(R.string.account_rename)
                     .setMessage(R.string.account_rename_new_name)
                     .setView(editText)
@@ -608,17 +608,17 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                                     ContentResolver.cancelSync(addrBookAccount, null)
 
                                 // update account name references in database
-                                OpenHelper(activity).use { dbHelper ->
+                                OpenHelper(activity!!).use { dbHelper ->
                                     ServiceDB.onRenameAccount(dbHelper.writableDatabase, oldAccount.name, newName)
                                 }
 
                                 // update main account of address book accounts
                                 try {
                                     for (addrBookAccount in accountManager.getAccountsByType(getString(R.string.account_type_address_book))) {
-                                        val provider = activity.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
+                                        val provider = activity!!.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
                                         try {
                                             if (provider != null) {
-                                                val addressBook = LocalAddressBook(activity, addrBookAccount, provider)
+                                                val addressBook = LocalAddressBook(activity!!, addrBookAccount, provider)
                                                 if (oldAccount == addressBook.getMainAccount())
                                                     addressBook.setMainAccount(Account(newName, oldAccount.type))
                                             }
@@ -639,15 +639,15 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
                                 // update account_name of local tasks
                                 try {
-                                    LocalTaskList.onRenameAccount(activity.contentResolver, oldAccount.name, newName)
+                                    LocalTaskList.onRenameAccount(activity!!.contentResolver, oldAccount.name, newName)
                                 } catch(e: Exception) {
                                     Logger.log.log(Level.SEVERE, "Couldn't propagate new account name to tasks provider", e)
                                 }
 
                                 // synchronize again
-                                requestSync(activity, Account(newName, oldAccount.type))
+                                requestSync(activity!!, Account(newName, oldAccount.type))
                             }, null)
-                        activity.finish()
+                        activity!!.finish()
                     })
                     .setNegativeButton(android.R.string.cancel, { _, _ -> })
                     .create()

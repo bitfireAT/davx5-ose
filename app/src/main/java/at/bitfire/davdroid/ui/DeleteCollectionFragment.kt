@@ -39,8 +39,8 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        account = arguments.getParcelable(ARG_ACCOUNT)
-        collectionInfo = arguments.getSerializable(ARG_COLLECTION_INFO) as CollectionInfo
+        account = arguments!!.getParcelable(ARG_ACCOUNT)
+        collectionInfo = arguments!!.getSerializable(ARG_COLLECTION_INFO) as CollectionInfo
 
         loaderManager.initLoader(0, null, this)
     }
@@ -57,13 +57,13 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
 
 
     override fun onCreateLoader(id: Int, args: Bundle?) =
-            DeleteCollectionLoader(context, account, collectionInfo)
+            DeleteCollectionLoader(activity!!, account, collectionInfo)
 
     override fun onLoadFinished(loader: Loader<Exception>, exception: Exception?) {
         dismissAllowingStateLoss()
 
         if (exception != null)
-            fragmentManager.beginTransaction()
+            fragmentManager!!.beginTransaction()
                     .add(ExceptionInfoFragment.newInstance(exception, account), null)
                     .commitAllowingStateLoss()
         else
@@ -124,13 +124,13 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val collectionInfo = arguments.getSerializable(ARG_COLLECTION_INFO) as CollectionInfo
+            val collectionInfo = arguments!!.getSerializable(ARG_COLLECTION_INFO) as CollectionInfo
             val name = if (collectionInfo.displayName.isNullOrBlank())
                 collectionInfo.url
             else
                 collectionInfo.displayName
 
-            return AlertDialog.Builder(context)
+            return AlertDialog.Builder(activity!!)
                     .setTitle(R.string.delete_collection_confirm_title)
                     .setMessage(getString(R.string.delete_collection_confirm_warning, name))
                     .setPositiveButton(android.R.string.yes, { _, _ ->
