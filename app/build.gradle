@@ -11,8 +11,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.0'
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
@@ -73,10 +73,10 @@ dependencies {
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support:cardview-v7:26.1.0'
-    compile 'com.android.support:design:26.1.0'
-    compile 'com.android.support:preference-v14:26.1.0'
+    compile 'com.android.support:appcompat-v7:27.0.0'
+    compile 'com.android.support:cardview-v7:27.0.0'
+    compile 'com.android.support:design:27.0.0'
+    compile 'com.android.support:preference-v14:27.0.0'
 
     compile 'com.github.yukuku:ambilwarna:2.0.1'
 

@@ -35,8 +35,8 @@ class ExceptionInfoFragment: DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val exception = arguments.getSerializable(ARG_EXCEPTION) as Exception
-        val account: Account? = arguments.getParcelable(ARG_ACCOUNT)
+        val exception = arguments!!.getSerializable(ARG_EXCEPTION) as Exception
+        val account: Account? = arguments!!.getParcelable(ARG_ACCOUNT)
 
         val title = when (exception) {
             is HttpException -> R.string.exception_httpexception
@@ -44,12 +44,12 @@ class ExceptionInfoFragment: DialogFragment() {
             else -> R.string.exception
         }
 
-        val dialog = AlertDialog.Builder(context)
+        val dialog = AlertDialog.Builder(activity!!)
                 .setIcon(R.drawable.ic_error_dark)
                 .setTitle(title)
                 .setMessage(exception::class.java.name + "\n" + exception.localizedMessage)
                 .setNegativeButton(R.string.exception_show_details, { _, _ ->
-                    val intent = Intent(getContext(), DebugInfoActivity::class.java)
+                    val intent = Intent(activity, DebugInfoActivity::class.java)
                     intent.putExtra(DebugInfoActivity.KEY_THROWABLE, exception)
                     account?.let { intent.putExtra(DebugInfoActivity.KEY_ACCOUNT, it) }
                     startActivity(intent)

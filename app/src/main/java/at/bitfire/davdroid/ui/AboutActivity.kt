@@ -124,7 +124,7 @@ class AboutActivity: AppCompatActivity() {
 
         @SuppressLint("SetTextI18n")
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-            val info = (activity as AboutActivity).components[arguments.getInt(KEY_POSITION)]
+            val info = (activity as AboutActivity).components[arguments!!.getInt(KEY_POSITION)]
 
             val v = inflater.inflate(R.layout.about_component, container, false)
 
@@ -140,7 +140,7 @@ class AboutActivity: AppCompatActivity() {
             if (info.licenseInfo == null && info.licenseTextFile == null) {
                 // No license text, so this must be the app's tab. Show the license fragment here, if available.
                 licenseFragmentLoader?.let { factory ->
-                    fragmentManager.beginTransaction()
+                    fragmentManager!!.beginTransaction()
                             .add(R.id.license_fragment, factory.getFragment())
                             .commit()
                 }
@@ -169,7 +169,7 @@ class AboutActivity: AppCompatActivity() {
         }
 
         override fun onCreateLoader(id: Int, args: Bundle) =
-                LicenseLoader(context, args.getString(KEY_FILE_NAME))
+                LicenseLoader(activity!!, args.getString(KEY_FILE_NAME))
 
         override fun onLoadFinished(loader: Loader<Spanned>, license: Spanned?) {
             view?.let { v ->

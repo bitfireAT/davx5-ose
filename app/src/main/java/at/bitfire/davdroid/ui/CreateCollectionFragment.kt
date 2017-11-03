@@ -55,8 +55,8 @@ class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        account = arguments.getParcelable(ARG_ACCOUNT)
-        info = arguments.getSerializable(ARG_COLLECTION_INFO) as CollectionInfo
+        account = arguments!!.getParcelable(ARG_ACCOUNT)
+        info = arguments!!.getSerializable(ARG_COLLECTION_INFO) as CollectionInfo
 
         loaderManager.initLoader(0, null, this)
     }
@@ -72,14 +72,14 @@ class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
     }
 
 
-    override fun onCreateLoader(id: Int, args: Bundle?) = CreateCollectionLoader(context, account, info)
+    override fun onCreateLoader(id: Int, args: Bundle?) = CreateCollectionLoader(activity!!, account, info)
 
     override fun onLoadFinished(loader: Loader<Exception>, exception: Exception?) {
         dismissAllowingStateLoss()
 
         activity?.let { parent ->
             if (exception != null)
-                fragmentManager.beginTransaction()
+                fragmentManager!!.beginTransaction()
                         .add(ExceptionInfoFragment.newInstance(exception, account), null)
                         .commitAllowingStateLoss()
             else

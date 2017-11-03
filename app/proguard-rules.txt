@@ -24,6 +24,7 @@
 # ical4j: ignore unused dynamic libraries
 -dontwarn aQute.**
 -dontwarn groovy.**                       # Groovy-based ContentBuilder not used
+-dontwarn javax.cache.**                  # no JCache support in Android
 -dontwarn net.fortuna.ical4j.model.**
 -dontwarn org.codehaus.groovy.**
 -dontwarn org.apache.log4j.**             # ignore warnings from log4j dependency

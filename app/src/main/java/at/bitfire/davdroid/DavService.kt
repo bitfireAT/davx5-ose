@@ -18,8 +18,8 @@ import android.content.Intent
 import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import android.os.Binder
+import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
-import android.support.v7.app.NotificationCompat
 import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.UrlUtils
 import at.bitfire.dav4android.exception.DavException
