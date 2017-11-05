@@ -225,14 +225,16 @@ class Settings: Service(), Provider.Observer {
     class Stub(
             delegate: ISettings,
             private val context: Context,
-            private val serviceConn: ServiceConnection
+            private val serviceConn: ServiceConnection?
     ): ISettings by delegate, Closeable {
 
         override fun close() {
-            try {
-                context.unbindService(serviceConn)
-            } catch(e: Exception) {
-                Logger.log.log(Level.SEVERE, "Couldn't unbind Settings service", e)
+            serviceConn?.let {
+                try {
+                    context.unbindService(it)
+                } catch (e: Exception) {
+                    Logger.log.log(Level.SEVERE, "Couldn't unbind Settings service", e)
+                }
             }
         }
 
@@ -241,6 +243,9 @@ class Settings: Service(), Provider.Observer {
     companion object {
 
         fun getInstance(context: Context): Stub? {
+            if (context is Settings)
+                return Stub(context.binder, context, null)
+
             if (Looper.getMainLooper().thread == Thread.currentThread())
                 throw IllegalStateException("Must not be called from main thread")
 

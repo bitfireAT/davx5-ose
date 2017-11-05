@@ -135,6 +135,7 @@ class HttpClient private constructor(
             orig.sslSocketFactory(SSLSocketFactoryCompat(manager), manager)
             orig.hostnameVerifier(manager.hostnameVerifier(OkHostnameVerifier.INSTANCE))
         }
+
         fun setForeground(foreground: Boolean): Builder {
             certManager?.appInForeground = foreground
             return this
