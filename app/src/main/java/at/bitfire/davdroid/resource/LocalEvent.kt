@@ -10,7 +10,6 @@ package at.bitfire.davdroid.resource
 
 import android.content.ContentProviderOperation
 import android.content.ContentValues
-import android.os.Build
 import android.provider.CalendarContract
 import android.provider.CalendarContract.Events
 import at.bitfire.davdroid.BuildConfig
@@ -27,7 +26,6 @@ class LocalEvent: AndroidEvent, LocalResource {
         }
 
         val COLUMN_ETAG = CalendarContract.Events.SYNC_DATA1
-        val COLUMN_UID = if (Build.VERSION.SDK_INT >= 17) Events.UID_2445 else Events.SYNC_DATA2
         val COLUMN_SEQUENCE = CalendarContract.Events.SYNC_DATA3
     }
 
@@ -59,16 +57,11 @@ class LocalEvent: AndroidEvent, LocalResource {
 
         fileName = row.getAsString(Events._SYNC_ID)
         eTag = row.getAsString(COLUMN_ETAG)
-        event.uid = row.getAsString(COLUMN_UID)
+        event.uid = row.getAsString(Events.UID_2445)
 
         event.sequence = row.getAsInteger(COLUMN_SEQUENCE)
-        if (Build.VERSION.SDK_INT >= 17) {
-            val isOrganizer = row.getAsInteger(Events.IS_ORGANIZER)
-            weAreOrganizer = isOrganizer != null && isOrganizer != 0
-        } else {
-            val organizer = row.getAsString(Events.ORGANIZER)
-            weAreOrganizer = organizer == null || organizer == calendar.account.name
-        }
+        val isOrganizer = row.getAsInteger(Events.IS_ORGANIZER)
+        weAreOrganizer = isOrganizer != null && isOrganizer != 0
     }
 
     @Throws(FileNotFoundException::class, CalendarStorageException::class)
@@ -79,7 +72,7 @@ class LocalEvent: AndroidEvent, LocalResource {
         val buildException = recurrence != null
         val eventToBuild = recurrence ?: event
 
-        builder .withValue(COLUMN_UID, event.uid)
+        builder .withValue(Events.UID_2445, event.uid)
                 .withValue(COLUMN_SEQUENCE, eventToBuild.sequence)
                 .withValue(CalendarContract.Events.DIRTY, 0)
                 .withValue(CalendarContract.Events.DELETED, 0)
@@ -98,7 +91,7 @@ class LocalEvent: AndroidEvent, LocalResource {
     override fun prepareForUpload() {
         try {
             var uid: String? = null
-            calendar.provider.query(eventSyncURI(), arrayOf(COLUMN_UID), null, null, null)?.use { cursor ->
+            calendar.provider.query(eventSyncURI(), arrayOf(Events.UID_2445), null, null, null)?.use { cursor ->
                 if (cursor.moveToNext())
                     uid = cursor.getString(0)
             }
@@ -109,7 +102,7 @@ class LocalEvent: AndroidEvent, LocalResource {
 
             val values = ContentValues(2)
             values.put(Events._SYNC_ID, newFileName)
-            values.put(COLUMN_UID, uid)
+            values.put(Events.UID_2445, uid)
             calendar.provider.update(eventSyncURI(), values, null, null)
 
             fileName = newFileName
@@ -126,7 +119,7 @@ class LocalEvent: AndroidEvent, LocalResource {
             val values = ContentValues(2)
             values.put(CalendarContract.Events.DIRTY, 0)
             values.put(COLUMN_ETAG, eTag)
-            values.put(COLUMN_SEQUENCE, event!!.sequence);
+            values.put(COLUMN_SEQUENCE, event!!.sequence)
             calendar.provider.update(eventSyncURI(), values, null, null)
 
             this.eTag = eTag

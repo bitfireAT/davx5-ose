@@ -83,7 +83,7 @@ abstract class SyncAdapterService: Service() {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
             val notify = NotificationCompat.Builder(context)
-                    .setSmallIcon(R.drawable.ic_error_light)
+                    .setSmallIcon(R.drawable.ic_sync_error_notification)
                     .setLargeIcon(App.getLauncherBitmap(context))
                     .setContentTitle(context.getString(R.string.sync_error_permissions))
                     .setContentText(context.getString(R.string.sync_error_permissions_text))

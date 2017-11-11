@@ -14,7 +14,6 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import at.bitfire.dav4android.DavCalendar
-import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.property.CalendarData
 import at.bitfire.dav4android.property.GetCTag
@@ -26,6 +25,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
 import okhttp3.HttpUrl
@@ -42,14 +42,15 @@ import java.util.logging.Level
  */
 class CalendarSyncManager(
         context: Context,
+        settings: ISettings,
         account: Account,
-        settings: AccountSettings,
+        accountSettings: AccountSettings,
         extras: Bundle,
         authority: String,
         syncResult: SyncResult,
         val provider: ContentProviderClient,
         val localCalendar: LocalCalendar
-): SyncManager(context, account, settings, extras, authority, syncResult, "calendar/${localCalendar.id}") {
+): SyncManager(context, settings, account, accountSettings, extras, authority, syncResult, "calendar/${localCalendar.id}") {
 
     val MAX_MULTIGET = 20
 
@@ -96,7 +97,7 @@ class CalendarSyncManager(
     override fun listRemote() {
         // calculate time range limits
         var limitStart: Date? = null
-        settings.getTimeRangePastDays()?.let { pastDays ->
+        accountSettings.getTimeRangePastDays()?.let { pastDays ->
             val calendar = Calendar.getInstance()
             calendar.add(Calendar.DAY_OF_MONTH, -pastDays)
             limitStart = calendar.time
@@ -107,7 +108,7 @@ class CalendarSyncManager(
         currentDavResource = calendar
         calendar.calendarQuery("VEVENT", limitStart, null)
 
-        remoteResources = HashMap<String, DavResource>(davCollection.members.size)
+        remoteResources = HashMap(davCollection.members.size)
         for (iCal in davCollection.members) {
             val fileName = iCal.fileName()
             Logger.log.fine("Found remote VEVENT: $fileName")

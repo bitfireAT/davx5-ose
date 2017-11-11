@@ -19,6 +19,7 @@ import android.support.v4.content.AsyncTaskLoader
 import android.support.v4.content.Loader
 import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.XmlUtils
+import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
@@ -183,8 +184,8 @@ class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
                 Logger.log.log(Level.SEVERE, "Couldn't assemble Extended MKCOL request", e)
             }
 
-            Settings.getInstance(context).use { settings ->
-                HttpClient.Builder(context, settings, account)
+            Settings.getInstance(context)?.use { settings ->
+                HttpClient.Builder(context, settings, AccountSettings(context, settings, account))
                         .setForeground(true)
                         .build().use { httpClient ->
                     try {

@@ -24,12 +24,12 @@ import java.util.logging.Level
 
 class CalendarsSyncAdapterService: SyncAdapterService() {
 
-    override fun syncAdapter() = SyncAdapter(this)
+    override fun syncAdapter() = CalendarsSyncAdapter(this)
 
 
-	protected class SyncAdapter(
+	class CalendarsSyncAdapter(
             context: Context
-    ): SyncAdapterService.SyncAdapter(context) {
+    ): SyncAdapter(context) {
 
         override fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
@@ -51,7 +51,7 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
 
                 for (calendar in AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)) {
                     Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
-                    CalendarSyncManager(context, account, accountSettings, extras, authority, syncResult, provider, calendar).use {
+                    CalendarSyncManager(context, settings, account, accountSettings, extras, authority, syncResult, provider, calendar).use {
                         it.performSync()
                     }
                 }

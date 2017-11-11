@@ -241,9 +241,9 @@ class DavService: Service() {
             try {
                 Logger.log.info("Refreshing $serviceType collections of service #$service")
 
-                Settings.getInstance(this).use { settings ->
+                Settings.getInstance(this)?.use { settings ->
                     // create authenticating OkHttpClient (credentials taken from account settings)
-                    HttpClient.Builder(this, settings, account)
+                    HttpClient.Builder(this, settings, AccountSettings(this, settings, account))
                             .setForeground(true)
                             .build().use { client ->
                         val httpClient = client.okHttpClient
@@ -366,13 +366,13 @@ class DavService: Service() {
                 debugIntent.putExtra(DebugInfoActivity.KEY_THROWABLE, e)
                 debugIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account)
 
-                val nm = NotificationManagerCompat.from(this@DavService)
-                val notify = NotificationCompat.Builder(this@DavService)
-                        .setSmallIcon(R.drawable.ic_error_light)
-                        .setLargeIcon(App.getLauncherBitmap(this@DavService))
+                val nm = NotificationManagerCompat.from(this)
+                val notify = NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_sync_error_notification)
+                        .setLargeIcon(App.getLauncherBitmap(this))
                         .setContentTitle(getString(R.string.dav_service_refresh_failed))
                         .setContentText(getString(R.string.dav_service_refresh_couldnt_refresh))
-                        .setContentIntent(PendingIntent.getActivity(this@DavService, 0, debugIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                        .setContentIntent(PendingIntent.getActivity(this, 0, debugIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                         .build()
                 nm.notify(Constants.NOTIFICATION_REFRESH_COLLECTIONS, notify)
             } finally {

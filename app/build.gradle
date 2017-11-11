@@ -12,7 +12,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.0'
+    buildToolsVersion '27.0.1'
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
@@ -21,9 +21,10 @@ android {
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "customCerts", "true"
 
-        minSdkVersion 16
+        minSdkVersion 19        // Android 4.4
         targetSdkVersion 25
 
+        // when using this, make sure that notification icons are real bitmaps
         vectorDrawables.useSupportLibrary = true
     }
 

@@ -17,6 +17,7 @@ import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.log.StringHandler
 import at.bitfire.davdroid.model.CollectionInfo
+import at.bitfire.davdroid.settings.Settings
 import okhttp3.HttpUrl
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder
 import org.apache.commons.lang3.builder.ToStringBuilder
@@ -50,7 +51,8 @@ class DavResourceFinder(
         log.addHandler(logBuffer)
     }
 
-    private val httpClient: HttpClient = HttpClient.Builder(context, logger = log)
+    private val settings = Settings.getInstance(context)
+    private val httpClient: HttpClient = HttpClient.Builder(context, settings, logger = log)
             .addAuthentication(null, credentials.userName, credentials.password)
             .setForeground(true)
             .build()
@@ -62,6 +64,7 @@ class DavResourceFinder(
     }
 
     override fun close() {
+        settings?.close()
         httpClient.close()
     }
 

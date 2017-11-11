@@ -29,29 +29,29 @@ import java.util.logging.Level
  */
 class TasksSyncAdapterService: SyncAdapterService() {
 
-    override fun syncAdapter() = SyncAdapter(this)
+    override fun syncAdapter() = TasksSyncAdapter(this)
 
 
-	protected class SyncAdapter(
+	class TasksSyncAdapter(
             context: Context
-    ): SyncAdapterService.SyncAdapter(context) {
+    ): SyncAdapter(context) {
 
         override fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
                 val taskProvider = TaskProvider.fromProviderClient(provider)
-                val settings = AccountSettings(context, settings, account)
+                val accountSettings = AccountSettings(context, settings, account)
                 /* don't run sync if
                    - sync conditions (e.g. "sync only in WiFi") are not met AND
                    - this is is an automatic sync (i.e. manual syncs are run regardless of sync conditions)
                  */
-                if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(settings))
+                if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(accountSettings))
                     return
 
-                updateLocalTaskLists(taskProvider, account, settings)
+                updateLocalTaskLists(taskProvider, account, accountSettings)
 
                 for (taskList in AndroidTaskList.find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)) {
                     Logger.log.info("Synchronizing task list #${taskList.id} [${taskList.syncId}]")
-                    TasksSyncManager(context, account, settings, extras, authority, syncResult, taskProvider, taskList).use {
+                    TasksSyncManager(context, settings, account, accountSettings, extras, authority, syncResult, taskProvider, taskList).use {
                         it.performSync()
                     }
                 }

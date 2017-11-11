@@ -18,7 +18,6 @@ import android.provider.ContactsContract.Groups
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import at.bitfire.dav4android.DavAddressBook
-import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.property.*
 import at.bitfire.davdroid.*
@@ -27,6 +26,7 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.davdroid.resource.LocalGroup
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.ContactsStorageException
@@ -77,14 +77,15 @@ import java.util.logging.Level
  */
 class ContactsSyncManager(
         context: Context,
+        settings: ISettings,
         account: Account,
-        settings: AccountSettings,
+        accountSettings: AccountSettings,
         extras: Bundle,
         authority: String,
         syncResult: SyncResult,
         val provider: ContentProviderClient,
         private val localAddressBook: LocalAddressBook
-): SyncManager(context, account, settings, extras, authority, syncResult, "addressBook") {
+): SyncManager(context, settings, account, accountSettings, extras, authority, syncResult, "addressBook") {
 
     companion object {
         private val MAX_MULTIGET = 10
@@ -94,7 +95,7 @@ class ContactsSyncManager(
     private var numDiscarded = 0
 
     private var hasVCard4 = false
-    private val groupMethod = settings.getGroupMethod()
+    private val groupMethod = accountSettings.getGroupMethod()
 
 
     init {
@@ -228,7 +229,7 @@ class ContactsSyncManager(
 
     private fun notifyDiscardedChange() {
         val notification = NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.ic_delete_light)
+                .setSmallIcon(R.drawable.ic_delete_notification)
                 .setLargeIcon(App.getLauncherBitmap(context))
                 .setContentTitle(context.getString(R.string.sync_contacts_read_only_address_book))
                 .setContentText(context.resources.getQuantityString(R.plurals.sync_contacts_local_contact_changes_discarded, numDiscarded, numDiscarded))
@@ -288,7 +289,7 @@ class ContactsSyncManager(
         // fetch list of remote VCards and build hash table to index file name
         addressBook.propfind(1, ResourceType.NAME, GetETag.NAME)
 
-        remoteResources = HashMap<String, DavResource>(davCollection.members.size)
+        remoteResources = HashMap(davCollection.members.size)
         for (vCard in davCollection.members) {
             // ignore member collections
             val type = vCard.properties[ResourceType.NAME] as ResourceType?
@@ -482,8 +483,8 @@ class ContactsSyncManager(
             }
 
             // authenticate only against a certain host, and only upon request
-            val username = settings.username()
-            val password = settings.password()
+            val username = accountSettings.username()
+            val password = accountSettings.password()
             val builder = if (username != null && password != null)
                     HttpClient.Builder(context, baseUrl.host(), username, password)
                         else
