@@ -1,5 +1,5 @@
 
-[![build status](https://gitlab.com/bitfireAT/davdroid/badges/master/build.svg)](https://gitlab.com/bitfireAT/davdroid/commits/master)
+[![build status](https://gitlab.com/bitfireAT/davdroid/badges/master-ose/build.svg)](https://gitlab.com/bitfireAT/davdroid/commits/master-ose)
 
 
 DAVdroid
@@ -14,8 +14,10 @@ News and updates: [@davdroidapp](https://twitter.com/davdroidapp) on Twitter
 
 Help and discussion: [DAVdroid forums](https://www.davdroid.com/forums/)
 
-**If you want to support DAVdroid, please consider [donating to DAVdroid](https://davdroid.bitfire.at/donate/)
-or [purchasing it](https://davdroid.bitfire.at/download/).**
+**If you want to support DAVdroid, please consider [donating to DAVdroid](https://www.davdroid.com/donate/)
+or [purchasing it](https://www.davdroid.com/download/).**
+
+Generated KDoc: https://bitfireAT.gitlab.io/davdroid/dokka/app/
 
 Parts of DAVdroid have been outsourced into these libraries:
 

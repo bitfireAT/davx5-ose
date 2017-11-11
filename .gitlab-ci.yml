@@ -3,18 +3,29 @@ image: registry.gitlab.com/bitfireat/davdroid:latest
 before_script:
   - git submodule update --init --recursive
   - export GRADLE_USER_HOME=`pwd`/.gradle; chmod +x gradlew
-  - (cd /sdk/emulator; ./emulator @test -no-audio -no-window & wait-for-emulator.sh)
-  - wget -q https://f-droid.org/repo/org.dmfs.tasks_481.apk && adb install org.dmfs.tasks_481.apk
 
 cache:
   paths:
      - .gradle/
+     - apk/
 
 test:
   script:
+    - (cd /sdk/emulator; ./emulator @test -no-audio -no-window & wait-for-emulator.sh)
+    - (mkdir -p apk && cd apk && wget -q https://f-droid.org/repo/org.dmfs.tasks_481.apk && adb install org.dmfs.tasks_481.apk)
     - ./gradlew check mergeAndroidReports
   artifacts:
     paths:
       - app/build/outputs/lint-results-debug.html
       - app/build/reports
       - build/reports
+
+pages:
+  script:
+    - ./gradlew app:dokka
+    - mkdir public && mv app/build/dokka public
+  artifacts:
+    paths:
+      - public
+  only:
+    - master-ose
