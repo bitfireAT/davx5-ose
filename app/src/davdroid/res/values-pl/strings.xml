@@ -8,6 +8,8 @@
   <string name="manage_accounts">Zadządzaj kontami</string>
   <string name="please_wait">Proszę czekać</string>
   <string name="send">Wyślij</string>
+  <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
+  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Optymalizacja baterii</string>
   <string name="startup_battery_optimization_message">Android może wyłączyć/zmniejszyć synchronizacje DAVdroid po kilku dniach. Aby temu zapobiec należy wyłączyć optymalizację baterii.</string>
@@ -37,11 +39,13 @@
   <string name="navigation_drawer_close">Zamknij menu nawigacji</string>
   <string name="navigation_drawer_subtitle">Adapter synchronizacji CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">O DAVdroid / Licencja</string>
+  <string name="navigation_drawer_beta_feedback">Przekaż opinię</string>
   <string name="navigation_drawer_settings">Ustawienia</string>
   <string name="navigation_drawer_news_updates">Nowości &amp; aktualizacje</string>
   <string name="navigation_drawer_external_links">Zewnętrzne odnośniki</string>
   <string name="navigation_drawer_website">Strona WWW</string>
-  <string name="navigation_drawer_faq">FQA</string>
+  <string name="navigation_drawer_faq">Pytania i odpowiedzi</string>
+  <string name="navigation_drawer_faq_url">https://www.davdroid.com/faq/?pk_campaign=davdroid-app</string>
   <string name="navigation_drawer_forums">Pomoc / Forum</string>
   <string name="navigation_drawer_donate">Dotacja</string>
   <string name="account_list_empty">Witamy w DAVdroid!\n\nMożesz teraz dodać konto CalDAV/CardDAV.</string>
@@ -72,9 +76,9 @@
   <string name="app_settings_debug">Debugowanie</string>
   <string name="app_settings_log_to_external_storage">Loguj to zewnętrznego pliku</string>
   <string name="app_settings_log_to_external_storage_on">Logowanie do zewnętrznej pamięci (jeśli jest dostępna)</string>
-  <string name="app_settings_log_to_external_storage_off">Logowanie do zewnętrznego pliku jest niedostępne</string>
-  <string name="app_settings_show_debug_info">Pokaż informacje do debug\'owania</string>
-  <string name="app_settings_show_debug_info_details">Przeglądaj/udostępnij oprogramowanie i szczegóły konfiguracji </string>
+  <string name="app_settings_log_to_external_storage_off">Logowanie do zewnętrznego pliku jest wyłączone</string>
+  <string name="app_settings_show_debug_info">Pokaż informacje do debugowania</string>
+  <string name="app_settings_show_debug_info_details">Przejrzyj lub udostępnij informacje o programie i jego konfiguracji</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Synchronizuj teraz</string>
   <string name="account_synchronizing_now">Synchronizcja w toku</string>
@@ -88,9 +92,13 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_refresh_address_book_list">Odśwież list książek adresowych</string>
+  <string name="account_synchronize_this_collection">Synchronizuj są kolekcję</string>
+  <string name="account_read_only">tylko do odczytu</string>
+  <string name="account_calendar">kalendarz</string>
+  <string name="account_task_list">lista zadań</string>
+  <string name="account_refresh_address_book_list">Odśwież listę książek adresowych</string>
   <string name="account_create_new_address_book">Stwórz nową książkę adresową</string>
-  <string name="account_refresh_calendar_list">Odśwież liste kalendarzy</string>
+  <string name="account_refresh_calendar_list">Odśwież listę kalendarzy</string>
   <string name="account_create_new_calendar">Stwórz nowy kalendarz</string>
   <string name="account_no_webcal_handler_found">Nie znaleziono aplikacji obsługującej Webcal</string>
   <string name="account_install_icsdroid">Zainstaluj ICSdroid</string>
@@ -107,6 +115,7 @@
   <string name="permissions_opentasks_details">Aby synchronizować zadania CalDav z lokalnymi listami zadań, DAVdroid potrzebuje dostępu do OpenTasks.</string>
   <string name="permissions_opentasks_request">Zezwól na uprawnienia OpenTasks</string>
   <!--AddAccountActivity-->
+  <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
   <string name="login_title">Dodaj konto</string>
   <string name="login_type_email">Logowanie za pomocą adresu e-mail</string>
   <string name="login_email_address">Adres e-mail</string>
@@ -140,11 +149,11 @@
   <string name="settings_password_summary">Zaktualizuj hasło zgodnie z serwerem.</string>
   <string name="settings_enter_password">Wpisz hasło:</string>
   <string name="settings_sync">Synchronizacja</string>
-  <string name="settings_sync_interval_contacts">Okres synchronizacji kontktów</string>
+  <string name="settings_sync_interval_contacts">Częstotliwość synchronizacji kontaktów</string>
   <string name="settings_sync_summary_manually">Tylko ręcznie</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Co %d minut oraz natychmiast przy zmianach lokalnych</string>
-  <string name="settings_sync_interval_calendars">Okres synchronizacji kalendarzy</string>
-  <string name="settings_sync_interval_tasks">Okres synchronizacji list zadań</string>
+  <string name="settings_sync_interval_calendars">Częstotliwość synchronizacji kalendarzy</string>
+  <string name="settings_sync_interval_tasks">Częstotliwość synchronizacji list zadań</string>
   <string-array name="settings_sync_interval_names">
     <item>Tylko ręcznie</item>
     <item>Co 15 minut</item>
@@ -155,7 +164,7 @@
     <item>Raz dziennie</item>
   </string-array>
   <string name="settings_sync_wifi_only">Synchronizuj tylko przez WiFi</string>
-  <string name="settings_sync_wifi_only_on">Synchronizacja jest ograniczony do połączeń WiFi</string>
+  <string name="settings_sync_wifi_only_on">Synchronizacja jest ograniczona do połączeń WiFi</string>
   <string name="settings_sync_wifi_only_off">Rodzaj połączenia nie jest brany pod uwagę</string>
   <string name="settings_sync_wifi_only_ssids">Ograniczenia WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">Będzie synchronizować tylko w %s</string>
@@ -167,6 +176,8 @@
     <item>GROUP_VCARDS</item>
     <item>CATEGORIES</item>
   </string-array>
+  <string name="settings_contact_group_method_change">Zmień metodę grupową</string>
+  <string name="settings_contact_group_method_change_reload_contacts">Wymaga to ponownego pobrania wszystkich kontaktów. Niezapisane zmiany z tego telefonu zostaną usunięte.</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limit czasowy przeszłych wydarzeń</string>
   <string name="settings_sync_time_range_past_none">Wszystkie wydarzenia zostaną synchronizowane</string>

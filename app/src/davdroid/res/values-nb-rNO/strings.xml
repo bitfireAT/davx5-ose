@@ -8,6 +8,8 @@
   <string name="manage_accounts">Behandle kontoer</string>
   <string name="please_wait">Vent…</string>
   <string name="send">Send</string>
+  <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
+  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Batterioptimisering</string>
   <string name="startup_battery_optimization_message">Det kan hende Android skrur av/reduserer DAVdroid-synkronisering etter et par dager. For å forhindre dette, skru av batterioptimisering.</string>
@@ -43,6 +45,7 @@
   <string name="navigation_drawer_external_links">Eksterne lenker</string>
   <string name="navigation_drawer_website">Nettside</string>
   <string name="navigation_drawer_faq">O-S-S</string>
+  <string name="navigation_drawer_faq_url">https://www.davdroid.com/faq/?pk_campaign=davdroid-app</string>
   <string name="navigation_drawer_forums">Hjelp / Forum</string>
   <string name="navigation_drawer_donate">Doner</string>
   <string name="account_list_empty">Velkommen til DAVdroid.\n\nDu kan legge til en CalDAV/CardDAV-konto nå.</string>
@@ -89,6 +92,10 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_synchronize_this_collection">synkroniser denne samlingen</string>
+  <string name="account_read_only">kun lesbar</string>
+  <string name="account_calendar">kalender</string>
+  <string name="account_task_list">oppgaveliste</string>
   <string name="account_refresh_address_book_list">Gjenoppfrisk adressebokliste</string>
   <string name="account_create_new_address_book">Opprett ny adressebok</string>
   <string name="account_refresh_calendar_list">Gjenoppfrisk kalenderliste</string>
@@ -108,6 +115,7 @@
   <string name="permissions_opentasks_details">For å synkronisere CalDAV-gjøremål med din lokale gjøremålslister må DAVdroid ha tilgang til OpenTasks.</string>
   <string name="permissions_opentasks_request">Forespør OpenTasks-tilganger</string>
   <!--AddAccountActivity-->
+  <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
   <string name="login_title">Legg til konto</string>
   <string name="login_type_email">Innlogging med e-postadresse</string>
   <string name="login_email_address">E-postadresse</string>
@@ -172,6 +180,8 @@
     <item>Grupper er egne vKort</item>
     <item>Grupper er kategorier per kontakt</item>
   </string-array>
+  <string name="settings_contact_group_method_change">Endre gruppemetode</string>
+  <string name="settings_contact_group_method_change_reload_contacts">Dette krever ny innlasting av alle kontakter. Ulagrede lokale endringer vil bli forkastet.</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tidsgrense for tidligere hendelser</string>
   <string name="settings_sync_time_range_past_none">Alle gjøremål vil bli synkronisert</string>
