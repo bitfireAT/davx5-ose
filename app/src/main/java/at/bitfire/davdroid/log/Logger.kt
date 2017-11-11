@@ -35,22 +35,19 @@ object Logger {
     val log = java.util.logging.Logger.getLogger("davdroid")!!
 
 
-    lateinit var context: Context
     lateinit var preferences: SharedPreferences
 
     fun initialize(context: Context) {
-        this.context = context
-
         preferences = PreferenceManager.getDefaultSharedPreferences(context)
         preferences.registerOnSharedPreferenceChangeListener { _, s ->
             if (s == LOG_TO_EXTERNAL_STORAGE)
-                reinitialize()
+                reinitialize(context.applicationContext)
         }
 
-        reinitialize()
+        reinitialize(context.applicationContext)
     }
 
-    private fun reinitialize() {
+    private fun reinitialize(context: Context) {
         val logToFile = preferences.getBoolean(LOG_TO_EXTERNAL_STORAGE, false)
         val logVerbose = logToFile || Log.isLoggable(log.name, Log.DEBUG)
 

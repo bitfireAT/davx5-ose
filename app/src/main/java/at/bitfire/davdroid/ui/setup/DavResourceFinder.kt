@@ -13,13 +13,15 @@ import at.bitfire.dav4android.UrlUtils
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.exception.HttpException
 import at.bitfire.dav4android.property.*
+import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.log.StringHandler
 import at.bitfire.davdroid.model.CollectionInfo
 import okhttp3.HttpUrl
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder
 import org.apache.commons.lang3.builder.ToStringBuilder
-import org.xbill.DNS.*
+import org.xbill.DNS.Lookup
+import org.xbill.DNS.Type
 import java.io.Closeable
 import java.io.IOException
 import java.io.Serializable
@@ -294,7 +296,7 @@ class DavResourceFinder(
 
         val query = "_${service.wellKnownName}s._tcp.$domain"
         log.fine("Looking up SRV records for $query")
-        val srv = selectSRVRecord(Lookup(query, Type.SRV).run())
+        val srv = DavUtils.selectSRVRecord(Lookup(query, Type.SRV).run())
         if (srv != null) {
             // choose SRV record to use (query may return multiple SRV records)
             scheme = "https"
@@ -310,15 +312,7 @@ class DavResourceFinder(
         }
 
         // look for TXT record too (for initial context path)
-        Lookup(query, Type.TXT).run()?.let {
-            for (record in it.filterIsInstance(TXTRecord::class.java))
-                for (segment in record.strings as List<String>)
-                    if (segment.startsWith("path=")) {
-                        paths.add(segment.substring(5))
-                        log.info("Found TXT record; initial context path=$paths")
-                        break
-                    }
-        }
+        paths.addAll(DavUtils.pathsFromTXTRecords(Lookup(query, Type.TXT).run()))
 
         // if there's TXT record and if it it's wrong, try well-known
         paths.add("/.well-known/" + service.wellKnownName)
@@ -372,19 +366,6 @@ class DavResourceFinder(
         }
         return null
     }
-
-
-    // helpers
-
-	private fun selectSRVRecord(records: Array<Record>?): SRVRecord? {
-        val srvRecords = records?.filterIsInstance(SRVRecord::class.java)
-        srvRecords?.let {
-            if (it.size > 1)
-                log.warning("Multiple SRV records not supported yet; using first one")
-            return it.firstOrNull()
-        }
-		return null
-	}
 
 
     // data classes

@@ -32,6 +32,9 @@ android {
     productFlavors {
         standard {
             versionName "1.9.2-ose"
+
+            buildConfigField "boolean", "customCerts", "true"
+            buildConfigField "boolean", "customCertsUI", "true"
         }
     }
 
@@ -73,15 +76,15 @@ dependencies {
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
-    compile 'com.android.support:appcompat-v7:27.0.0'
-    compile 'com.android.support:cardview-v7:27.0.0'
-    compile 'com.android.support:design:27.0.0'
-    compile 'com.android.support:preference-v14:27.0.0'
+    compile 'com.android.support:appcompat-v7:27.0.1'
+    compile 'com.android.support:cardview-v7:27.0.1'
+    compile 'com.android.support:design:27.0.1'
+    compile 'com.android.support:preference-v14:27.0.1'
 
     compile 'com.github.yukuku:ambilwarna:2.0.1'
 
     compile 'com.squareup.okhttp3:logging-interceptor:3.9.0'
-    compile 'commons-io:commons-io:2.5'
+    compile 'commons-io:commons-io:2.6'
     compile 'dnsjava:dnsjava:2.1.8'
     compile 'org.apache.commons:commons-lang3:3.6'
     compile 'org.apache.commons:commons-collections4:4.1'
