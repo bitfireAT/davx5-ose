@@ -20,7 +20,9 @@ import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.X509TrustManager
 
-class SSLSocketFactoryCompat(trustManager: X509TrustManager): SSLSocketFactory() {
+class SSLSocketFactoryCompat(
+        trustManager: X509TrustManager
+): SSLSocketFactory() {
 
     private var delegate: SSLSocketFactory
 
@@ -40,9 +42,8 @@ class SSLSocketFactoryCompat(trustManager: X509TrustManager): SSLSocketFactory()
                 cipherSuites = null
                 Logger.log.fine("Using device default TLS protocols/ciphers")
             } else {
-                val socket = SSLSocketFactory.getDefault().createSocket() as SSLSocket?
-                try {
-                    socket?.let {
+                (SSLSocketFactory.getDefault().createSocket() as? SSLSocket)?.use { socket ->
+                    try {
                         /* set reasonable protocol versions */
                         // - enable all supported protocols (enables TLSv1.1 and TLSv1.2 on Android <5.0)
                         // - remove all SSL versions (especially SSLv3) because they're insecure now
@@ -53,7 +54,7 @@ class SSLSocketFactoryCompat(trustManager: X509TrustManager): SSLSocketFactory()
                         protocols = _protocols.toTypedArray()
 
                         /* set up reasonable cipher suites */
-                       val knownCiphers = arrayOf<String>(
+                        val knownCiphers = arrayOf<String>(
                                 // TLS 1.2
                                 "TLS_RSA_WITH_AES_256_GCM_SHA384",
                                 "TLS_RSA_WITH_AES_128_GCM_SHA256",
@@ -92,11 +93,9 @@ class SSLSocketFactoryCompat(trustManager: X509TrustManager): SSLSocketFactory()
 
                         Logger.log.info("Enabling (only) these TLS ciphers: " + _cipherSuites.joinToString(", "))
                         cipherSuites = _cipherSuites.toTypedArray()
+                    } catch (e: IOException) {
+                        Logger.log.severe("Couldn't determine default TLS settings")
                     }
-                } catch(e: IOException) {
-                    Logger.log.severe("Couldn't determine default TLS settings")
-                } finally {
-                    socket?.close()     // doesn't implement Closeable on all supported Android versions
                 }
             }
         }

@@ -8,7 +8,6 @@
 
 package at.bitfire.davdroid;
 
-import android.accounts.Account
 import android.content.Context
 import android.os.Build
 import at.bitfire.cert4android.CustomCertManager
@@ -16,7 +15,6 @@ import at.bitfire.dav4android.BasicDigestAuthHandler
 import at.bitfire.dav4android.UrlUtils
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.ISettings
-import at.bitfire.davdroid.settings.Settings
 import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -44,7 +42,6 @@ class HttpClient private constructor(
     class Builder @JvmOverloads constructor(
             val context: Context? = null,
             val settings: ISettings? = null,
-            account: Account? = null,
             accountSettings: AccountSettings? = null,
             logger: java.util.logging.Logger = Logger.log
     ) {
@@ -97,7 +94,6 @@ class HttpClient private constructor(
                         customCertManager(CustomCertManager(context, BuildConfig.customCertsUI, !settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false)))
 
                     // use account settings for authentication
-                    val accountSettings = accountSettings ?: account?.let { AccountSettings(context, settings, account) }
                     accountSettings?.let {
                         val userName = accountSettings.username()
                         val password = accountSettings.password()

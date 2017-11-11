@@ -13,7 +13,6 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import at.bitfire.dav4android.DavCalendar
-import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.property.CalendarData
 import at.bitfire.dav4android.property.GetCTag
@@ -25,6 +24,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
@@ -39,14 +39,15 @@ import java.util.logging.Level
 
 class TasksSyncManager(
         context: Context,
+        settings: ISettings,
         account: Account,
-        settings: AccountSettings,
+        accountSettings: AccountSettings,
         extras: Bundle,
         authority: String,
         syncResult: SyncResult,
         val provider: TaskProvider,
         val localTaskList: LocalTaskList
-): SyncManager(context, account, settings, extras, authority, syncResult, "taskList/${localTaskList.id}") {
+): SyncManager(context, settings, account, accountSettings, extras, authority, syncResult, "taskList/${localTaskList.id}") {
 
     val MAX_MULTIGET = 30
 
@@ -92,7 +93,7 @@ class TasksSyncManager(
         currentDavResource = calendar
         calendar.calendarQuery("VTODO", null, null)
 
-        remoteResources = HashMap<String, DavResource>(davCollection.members.size)
+        remoteResources = HashMap(davCollection.members.size)
         for (vCard in davCollection.members) {
             val fileName = vCard.fileName()
             Logger.log.fine("Found remote VTODO: $fileName")

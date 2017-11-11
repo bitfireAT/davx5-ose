@@ -30,7 +30,7 @@ class ContactsSyncAdapterService: SyncAdapterService() {
     override fun syncAdapter() = ContactsSyncAdapter(this)
 
 
-	protected class ContactsSyncAdapter(
+	class ContactsSyncAdapter(
             context: Context
     ): SyncAdapter(context) {
 
@@ -61,7 +61,7 @@ class ContactsSyncAdapterService: SyncAdapterService() {
                 Logger.log.info("Synchronizing address book: ${addressBook.getURL()}")
                 Logger.log.info("Taking settings from: ${addressBook.getMainAccount()}")
 
-                ContactsSyncManager(context, account, accountSettings, extras, authority, syncResult, provider, addressBook).use {
+                ContactsSyncManager(context, settings, account, accountSettings, extras, authority, syncResult, provider, addressBook).use {
                     it.performSync()
                 }
             } catch(e: Exception) {

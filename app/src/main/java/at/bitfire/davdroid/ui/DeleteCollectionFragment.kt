@@ -19,6 +19,7 @@ import android.support.v4.content.AsyncTaskLoader
 import android.support.v4.content.Loader
 import android.support.v7.app.AlertDialog
 import at.bitfire.dav4android.DavResource
+import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.CollectionInfo
@@ -83,8 +84,8 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
         override fun onStartLoading() = forceLoad()
 
         override fun loadInBackground(): Exception? {
-            Settings.getInstance(context).use { settings ->
-                HttpClient.Builder(context, settings, account)
+            Settings.getInstance(context)?.use { settings ->
+                HttpClient.Builder(context, settings, AccountSettings(context, settings, account))
                         .setForeground(true)
                         .build().use { httpClient ->
                     try {
@@ -98,13 +99,12 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
                             val db = dbHelper.writableDatabase
                             db.delete(ServiceDB.Collections._TABLE, "${ServiceDB.Collections.ID}=?", arrayOf(collectionInfo.id.toString()))
                         }
-
-                        return null
                     } catch(e: Exception) {
                         return e
                     }
                 }
             }
+            return null
         }
     }
 

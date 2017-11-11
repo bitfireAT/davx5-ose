@@ -66,7 +66,7 @@ object Logger {
         // log to external file according to preferences
         if (logToFile) {
             val builder = NotificationCompat.Builder(context)
-            builder .setSmallIcon(R.drawable.ic_sd_storage_light)
+            builder .setSmallIcon(R.drawable.ic_sd_storage_notification)
                     .setLargeIcon(App.getLauncherBitmap(context))
                     .setContentTitle(context.getString(R.string.logging_davdroid_file_logging))
                     .setLocalOnly(true)

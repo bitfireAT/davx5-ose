@@ -28,6 +28,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.davdroid.ui.AccountSettingsActivity
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.ical4android.CalendarStorageException
@@ -41,32 +42,39 @@ import java.util.logging.Level
 
 abstract class SyncManager(
         val context: Context,
+        val settings: ISettings,
         val account: Account,
-        val settings: AccountSettings,
+        val accountSettings: AccountSettings,
         val extras: Bundle,
         val authority: String,
         val syncResult: SyncResult,
         val uniqueCollectionId: String
 ): Closeable {
 
-    val SYNC_PHASE_PREPARE = 0
-    val SYNC_PHASE_QUERY_CAPABILITIES = 1
-    val SYNC_PHASE_PROCESS_LOCALLY_DELETED = 2
-    val SYNC_PHASE_PREPARE_DIRTY = 3
-    val SYNC_PHASE_UPLOAD_DIRTY = 4
-    val SYNC_PHASE_CHECK_SYNC_STATE = 5
-    val SYNC_PHASE_LIST_LOCAL = 6
-    val SYNC_PHASE_LIST_REMOTE = 7
-    val SYNC_PHASE_COMPARE_LOCAL_REMOTE = 8
-    val SYNC_PHASE_DOWNLOAD_REMOTE = 9
-    val SYNC_PHASE_POST_PROCESSING = 10
-    val SYNC_PHASE_SAVE_SYNC_STATE = 11
+    companion object {
+
+        val SYNC_PHASE_PREPARE = 0
+        val SYNC_PHASE_QUERY_CAPABILITIES = 1
+        val SYNC_PHASE_PROCESS_LOCALLY_DELETED = 2
+        val SYNC_PHASE_PREPARE_DIRTY = 3
+        val SYNC_PHASE_UPLOAD_DIRTY = 4
+        val SYNC_PHASE_CHECK_SYNC_STATE = 5
+        val SYNC_PHASE_LIST_LOCAL = 6
+        val SYNC_PHASE_LIST_REMOTE = 7
+        val SYNC_PHASE_COMPARE_LOCAL_REMOTE = 8
+        val SYNC_PHASE_DOWNLOAD_REMOTE = 9
+        val SYNC_PHASE_POST_PROCESSING = 10
+        val SYNC_PHASE_SAVE_SYNC_STATE = 11
+
+        infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)
+
+    }
 
     protected val notificationManager = NotificationManagerCompat.from(context)!!
 
     protected lateinit var localCollection: LocalCollection<*>
 
-    protected val httpClient = HttpClient.Builder(context, accountSettings = settings).build()
+    protected val httpClient = HttpClient.Builder(context, settings, accountSettings).build()
     protected lateinit var collectionURL: HttpUrl
     protected lateinit var davCollection: DavResource
 
@@ -91,14 +99,10 @@ abstract class SyncManager(
     protected val toDownload = mutableSetOf<DavResource>()
 
 
-    companion object {
-        infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)
-    }
-
-
     protected abstract fun notificationId(): Int
     protected abstract fun getSyncErrorTitle(): String
 
+    @Suppress("UNUSED_VALUE")
     fun performSync() {
         // dismiss previous error notifications
         notificationManager.cancel(uniqueCollectionId, notificationId())
@@ -218,7 +222,7 @@ abstract class SyncManager(
             detailsIntent.data = Uri.parse("uri://${javaClass.name}/$uniqueCollectionId")
 
             val builder = NotificationCompat.Builder(context)
-            builder .setSmallIcon(R.drawable.ic_error_light)
+            builder .setSmallIcon(R.drawable.ic_sync_error_notification)
                     .setLargeIcon(App.getLauncherBitmap(context))
                     .setContentTitle(getSyncErrorTitle())
                     .setContentIntent(PendingIntent.getActivity(context, 0, detailsIntent, PendingIntent.FLAG_CANCEL_CURRENT))
@@ -302,7 +306,7 @@ abstract class SyncManager(
      * Uploads dirty records to the server, using a PUT request for each record.
      * Checks Thread.interrupted() before each request to allow quick sync cancellation.
      */
-    protected fun uploadDirty() {
+    protected open fun uploadDirty() {
         // upload dirty contacts
         for (local in localCollection.getDirty()) {
             if (Thread.interrupted())
@@ -356,7 +360,7 @@ abstract class SyncManager(
      *      <li><code>false</code>  if the remote collection hasn't changed</li>
      * </ul>
      */
-    protected fun checkSyncState(): Boolean {
+    protected open fun checkSyncState(): Boolean {
         // check CTag (ignore on manual sync)
         (davCollection.properties[GetCTag.NAME] as GetCTag?)?.let { remoteCTag = it.cTag }
 
@@ -376,7 +380,7 @@ abstract class SyncManager(
     /**
      * Lists all local resources which should be taken into account for synchronization into {@link #localResources}.
      */
-    protected fun listLocal() {
+    protected open fun listLocal() {
         // fetch list of local contacts and build hash table to index file name
         val localList = localCollection.getAll()
         val resources = HashMap<String, LocalResource>(localList.size)
@@ -400,7 +404,7 @@ abstract class SyncManager(
      *     <li>Resources whose remote ETag has changed will be added into {@link #toDownload}</li>
      * </ul>
      */
-    protected fun compareLocalRemote() {
+    protected open fun compareLocalRemote() {
         /* check which contacts
            1. are not present anymore remotely -> delete immediately on local side
            2. updated remotely -> add to downloadNames
@@ -418,11 +422,9 @@ abstract class SyncManager(
                 syncResult.stats.numDeletes++
             } else {
                 // contact is still on server, check whether it has been updated remotely
-                val getETag = remote.properties[GetETag.NAME] as GetETag?
-                if (getETag == null || getETag.eTag == null)
-                    throw DavException("Server didn't provide ETag")
                 val localETag = local.eTag
-                val remoteETag = getETag.eTag
+                val getETag = remote.properties[GetETag.NAME] as GetETag?
+                val remoteETag = getETag?.eTag ?: throw DavException("Server didn't provide ETag")
                 if (remoteETag == localETag) {
                     Logger.log.fine("$name has not been changed on server (ETag still $remoteETag)")
                     syncResult.stats.numSkippedEntries++
@@ -457,7 +459,7 @@ abstract class SyncManager(
      */
     protected open fun postProcess() {}
 
-    protected fun saveSyncState() {
+    protected open fun saveSyncState() {
         /* Save sync state (CTag). It doesn't matter if it has changed during the sync process
            (for instance, because another client has uploaded changes), because this will simply
            cause all remote entries to be listed at the next sync. */
