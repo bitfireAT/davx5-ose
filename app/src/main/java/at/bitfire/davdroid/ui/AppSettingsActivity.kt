@@ -96,10 +96,13 @@ class AppSettingsActivity: AppCompatActivity() {
             }
 
             // security settings
-            findPreference(App.DISTRUST_SYSTEM_CERTIFICATES).isVisible = BuildConfig.customCerts
+            val prefDistrustSystemCerts = findPreference(App.DISTRUST_SYSTEM_CERTIFICATES)
+            prefDistrustSystemCerts.isVisible = BuildConfig.customCerts
+            prefDistrustSystemCerts.isEnabled = BuildConfig.customCertsUI
 
             val prefResetCertificates = findPreference("reset_certificates")
             prefResetCertificates.isVisible = BuildConfig.customCerts
+            prefResetCertificates.isEnabled = BuildConfig.customCertsUI
             prefResetCertificates.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 resetCertificates()
                 false
@@ -181,7 +184,7 @@ class AppSettingsActivity: AppCompatActivity() {
         }
 
         private fun resetCertificates() {
-            if (CustomCertManager.resetCertificates(activity!!))
+            if (BuildConfig.customCertsUI && CustomCertManager.resetCertificates(activity!!))
                 Snackbar.make(view!!, getString(R.string.app_settings_reset_certificates_success), Snackbar.LENGTH_LONG).show()
         }
 

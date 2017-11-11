@@ -23,6 +23,7 @@ import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
+import at.bitfire.davdroid.settings.Settings
 import okhttp3.HttpUrl
 
 @Suppress("DEPRECATION")
@@ -82,27 +83,27 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
         override fun onStartLoading() = forceLoad()
 
         override fun loadInBackground(): Exception? {
-            var httpClient: HttpClient? = null
-            try {
-                httpClient = HttpClient.Builder(context, account)
+            Settings.getInstance(context).use { settings ->
+                HttpClient.Builder(context, settings, account)
                         .setForeground(true)
-                        .build()
-                val collection = DavResource(httpClient.okHttpClient, HttpUrl.parse(collectionInfo.url)!!)
+                        .build().use { httpClient ->
+                    try {
+                        val collection = DavResource(httpClient.okHttpClient, HttpUrl.parse(collectionInfo.url)!!)
 
-                // delete collection from server
-                collection.delete(null)
+                        // delete collection from server
+                        collection.delete(null)
 
-                // delete collection locally
-                ServiceDB.OpenHelper(context).use { dbHelper ->
-                    val db = dbHelper.writableDatabase
-                    db.delete(ServiceDB.Collections._TABLE, "${ServiceDB.Collections.ID}=?", arrayOf(collectionInfo.id.toString()))
+                        // delete collection locally
+                        ServiceDB.OpenHelper(context).use { dbHelper ->
+                            val db = dbHelper.writableDatabase
+                            db.delete(ServiceDB.Collections._TABLE, "${ServiceDB.Collections.ID}=?", arrayOf(collectionInfo.id.toString()))
+                        }
+
+                        return null
+                    } catch(e: Exception) {
+                        return e
+                    }
                 }
-
-                return null
-            } catch(e: Exception) {
-                return e
-            } finally {
-                httpClient?.close()
             }
         }
     }

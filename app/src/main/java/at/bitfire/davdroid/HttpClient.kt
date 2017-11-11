@@ -15,6 +15,7 @@ import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.dav4android.BasicDigestAuthHandler
 import at.bitfire.dav4android.UrlUtils
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.davdroid.settings.Settings
 import okhttp3.Cache
 import okhttp3.Interceptor
@@ -40,9 +41,9 @@ class HttpClient private constructor(
         certManager?.close()
     }
 
-
     class Builder @JvmOverloads constructor(
             val context: Context? = null,
+            val settings: ISettings? = null,
             account: Account? = null,
             accountSettings: AccountSettings? = null,
             logger: java.util.logging.Logger = Logger.log
@@ -74,29 +75,29 @@ class HttpClient private constructor(
                 orig.addInterceptor(loggingInterceptor)
             }
 
-            context?.let {
-                Settings.getInstance(context)?.use { settings ->
-                    // custom proxy support
-                    try {
-                        if (settings.getBoolean(App.OVERRIDE_PROXY, false)) {
-                            val address = InetSocketAddress(
-                                    settings.getString(App.OVERRIDE_PROXY_HOST, App.OVERRIDE_PROXY_HOST_DEFAULT),
-                                    settings.getInt(App.OVERRIDE_PROXY_PORT, App.OVERRIDE_PROXY_PORT_DEFAULT)
-                            )
+            settings?.let {
+                // custom proxy support
+                try {
+                    if (settings.getBoolean(App.OVERRIDE_PROXY, false)) {
+                        val address = InetSocketAddress(
+                                settings.getString(App.OVERRIDE_PROXY_HOST, App.OVERRIDE_PROXY_HOST_DEFAULT),
+                                settings.getInt(App.OVERRIDE_PROXY_PORT, App.OVERRIDE_PROXY_PORT_DEFAULT)
+                        )
 
-                            val proxy = Proxy(Proxy.Type.HTTP, address)
-                            orig.proxy(proxy)
-                            Logger.log.log(Level.INFO, "Using proxy", proxy)
-                        }
-                    } catch(e: Exception) {
-                        Logger.log.log(Level.SEVERE, "Can't set proxy, ignoring", e)
+                        val proxy = Proxy(Proxy.Type.HTTP, address)
+                        orig.proxy(proxy)
+                        Logger.log.log(Level.INFO, "Using proxy", proxy)
                     }
+                } catch(e: Exception) {
+                    Logger.log.log(Level.SEVERE, "Can't set proxy, ignoring", e)
+                }
 
+                context?.let {
                     if (BuildConfig.customCerts)
-                        customCertManager(CustomCertManager(context, !settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false)))
+                        customCertManager(CustomCertManager(context, BuildConfig.customCertsUI, !settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false)))
 
                     // use account settings for authentication
-                    val accountSettings = accountSettings ?: account?.let { AccountSettings(context, settings, it) }
+                    val accountSettings = accountSettings ?: account?.let { AccountSettings(context, settings, account) }
                     accountSettings?.let {
                         val userName = accountSettings.username()
                         val password = accountSettings.password()

@@ -36,7 +36,7 @@ public class SSLSocketFactoryCompatTest {
 
     @Before
     public void startServer() throws Exception {
-        certMgr = new CustomCertManager(getInstrumentation().getContext(), true, null);
+        certMgr = new CustomCertManager(getInstrumentation().getContext(), false, true);
         factory = new SSLSocketFactoryCompat(certMgr);
         server.start();
     }
