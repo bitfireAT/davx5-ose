@@ -54,6 +54,7 @@ class ServiceDB {
         @JvmField val SERVICE_ID = "serviceID"
         @JvmField val URL = "url"
         @JvmField val READ_ONLY = "readOnly"
+        @JvmField val FORCE_READ_ONLY = "forceReadOnly"
         @JvmField val DISPLAY_NAME = "displayName"
         @JvmField val DESCRIPTION = "description"
         @JvmField val COLOR = "color"
@@ -82,7 +83,7 @@ class ServiceDB {
 
         companion object {
             val DATABASE_NAME = "services.db"
-            val DATABASE_VERSION = 3
+            val DATABASE_VERSION = 4
         }
 
         override fun onConfigure(db: SQLiteDatabase) {
@@ -112,6 +113,7 @@ class ServiceDB {
                     "${Collections.TYPE} TEXT NOT NULL," +
                     "${Collections.URL} TEXT NOT NULL," +
                     "${Collections.READ_ONLY} INTEGER DEFAULT 0 NOT NULL," +
+                    "${Collections.FORCE_READ_ONLY} INTEGER DEFAULT 0 NOT NULL," +
                     "${Collections.DISPLAY_NAME} TEXT NULL," +
                     "${Collections.DESCRIPTION} TEXT NULL," +
                     "${Collections.COLOR} INTEGER NULL," +
@@ -134,6 +136,11 @@ class ServiceDB {
                     Logger.log.log(Level.SEVERE, "Couldn't upgrade database", e)
                 }
             }
+        }
+
+        @Suppress("unused")
+        private fun upgrade_3_4(db: SQLiteDatabase) {
+            db.execSQL("ALTER TABLE ${Collections._TABLE} ADD COLUMN ${Collections.FORCE_READ_ONLY} INTEGER DEFAULT 0 NOT NULL")
         }
 
         @Suppress("unused")
