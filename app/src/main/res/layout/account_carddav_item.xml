@@ -48,8 +48,16 @@
 
     <ImageView
         android:id="@+id/read_only"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="@string/account_read_only"
         app:srcCompat="@drawable/ic_remove_circle_dark"/>
+
+    <ImageView
+        android:id="@+id/action_overflow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="0dp"
+        style="@style/Widget.AppCompat.ActionButton.Overflow"/>
 
 </LinearLayout>

@@ -9,6 +9,10 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item android:id="@+id/force_read_only"
+          android:checkable="true"
+          android:title="@string/collection_force_read_only"/>
+
     <item android:id="@+id/delete_collection"
           android:title="@string/delete_collection"/>
 

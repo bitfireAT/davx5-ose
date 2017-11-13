@@ -251,6 +251,7 @@
     <string name="delete_collection_confirm_title">Are you sure?</string>
     <string name="delete_collection_confirm_warning">This collection (%s) and all its data will be removed from the server.</string>
     <string name="delete_collection_deleting_collection">Deleting collection</string>
+    <string name="collection_force_read_only">Force read-only</string>
 
     <!-- ExceptionInfoFragment -->
     <string name="exception">An error has occurred.</string>

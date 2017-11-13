@@ -69,7 +69,7 @@ class LocalCalendar private constructor(
             if (withColor)
                 values.put(Calendars.CALENDAR_COLOR, info.color ?: defaultColor)
 
-            if (info.readOnly)
+            if (info.readOnly || info.forceReadOnly)
                 values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ)
             else {
                 values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER)

@@ -23,6 +23,7 @@ data class CollectionInfo @JvmOverloads constructor(
         var type: Type? = null,
 
         var readOnly: Boolean = false,
+        var forceReadOnly: Boolean = false,
         var displayName: String? = null,
         var description: String? = null,
         var color: Int? = null,
@@ -112,6 +113,7 @@ data class CollectionInfo @JvmOverloads constructor(
         }
 
         readOnly = values.getAsInteger(Collections.READ_ONLY) != 0
+        forceReadOnly = values.getAsInteger(Collections.FORCE_READ_ONLY) != 0
         displayName = values.getAsString(Collections.DISPLAY_NAME)
         description = values.getAsString(Collections.DESCRIPTION)
 
@@ -133,6 +135,7 @@ data class CollectionInfo @JvmOverloads constructor(
 
         values.put(Collections.URL, url)
         values.put(Collections.READ_ONLY, if (readOnly) 1 else 0)
+        values.put(Collections.FORCE_READ_ONLY, if (forceReadOnly) 1 else 0)
         values.put(Collections.DISPLAY_NAME, displayName)
         values.put(Collections.DESCRIPTION, description)
         values.put(Collections.COLOR, color)

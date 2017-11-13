@@ -192,7 +192,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         val info = adapter.getItem(position)
         val nowChecked = !info.selected
 
-        OpenHelper(this@AccountActivity).use { dbHelper ->
+        OpenHelper(this).use { dbHelper ->
             val db = dbHelper.writableDatabase
             db.beginTransactionNonExclusive()
 
@@ -211,15 +211,34 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             Snackbar.make(parent, R.string.account_read_only_address_book_selected, Snackbar.LENGTH_LONG).show()
     }
 
-    private val onItemLongClickListener = AdapterView.OnItemLongClickListener { parent, view, position, _ ->
-        val list = parent as ListView
-        val adapter = list.adapter as ArrayAdapter<CollectionInfo>
-        val info = adapter.getItem(position)
-
-        val popup = PopupMenu(this@AccountActivity, view)
+    private val onActionOverflowListener = { anchor: View, info: CollectionInfo ->
+        val popup = PopupMenu(this, anchor, Gravity.RIGHT)
         popup.inflate(R.menu.account_collection_operations)
+
+        with(popup.menu.findItem(R.id.force_read_only)) {
+            if (info.readOnly)
+                isVisible = false
+            else
+                isChecked = info.forceReadOnly
+        }
+
         popup.setOnMenuItemClickListener({ item ->
             when (item.itemId) {
+                R.id.force_read_only -> {
+                    val nowChecked = !item.isChecked
+                    OpenHelper(this).use { dbHelper ->
+                        val db = dbHelper.writableDatabase
+                        db.beginTransactionNonExclusive()
+
+                        val values = ContentValues(1)
+                        values.put(Collections.FORCE_READ_ONLY, nowChecked)
+                        db.update(Collections._TABLE, values, "${Collections.ID}=?", arrayOf(info.id.toString()))
+
+                        db.setTransactionSuccessful()
+                        db.endTransaction()
+                        reload()
+                    }
+                }
                 R.id.delete_collection ->
                     DeleteCollectionFragment.ConfirmDeleteCollectionFragment.newInstance(account, info).show(supportFragmentManager, null)
             }
@@ -309,7 +328,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             adapter.addAll(carddav.collections)
             address_books.adapter = adapter
             address_books.onItemClickListener = onItemClickListener
-            address_books.onItemLongClickListener = onItemLongClickListener
 
             View.VISIBLE
         } ?: View.GONE
@@ -326,7 +344,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             adapter.addAll(caldav.collections.filter { it.type == CollectionInfo.Type.CALENDAR })
             calendars.adapter = adapter
             calendars.onItemClickListener = onItemClickListener
-            calendars.onItemLongClickListener = onItemLongClickListener
 
             View.VISIBLE
         } ?: View.GONE
@@ -512,7 +529,13 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             }
 
             v.findViewById<ImageView>(R.id.read_only).visibility =
-                    if (info.readOnly) View.VISIBLE else View.GONE
+                    if (info.readOnly || info.forceReadOnly) View.VISIBLE else View.GONE
+
+            v.findViewById<ImageView>(R.id.action_overflow).setOnClickListener({ view ->
+                (context as? AccountActivity)?.let {
+                    it.onActionOverflowListener(view, info)
+                }
+            })
 
             return v
         }
@@ -536,7 +559,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             vColor.visibility = info.color?.let {
                 vColor.setBackgroundColor(it)
                 View.VISIBLE
-            } ?: View.GONE
+            } ?: View.INVISIBLE
 
             var tv: TextView = v.findViewById(R.id.title)
             tv.text = if (!info.displayName.isNullOrBlank()) info.displayName else info.url
@@ -550,13 +573,23 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             }
 
             v.findViewById<ImageView>(R.id.read_only).visibility =
-                    if (info.readOnly) View.VISIBLE else View.GONE
+                    if (info.readOnly || info.forceReadOnly) View.VISIBLE else View.GONE
 
             v.findViewById<ImageView>(R.id.events).visibility =
                     if (info.supportsVEVENT) View.VISIBLE else View.GONE
 
             v.findViewById<ImageView>(R.id.tasks).visibility =
                     if (info.supportsVTODO) View.VISIBLE else View.GONE
+
+            val overflow = v.findViewById<ImageView>(R.id.action_overflow)
+            if (info.type == CollectionInfo.Type.WEBCAL)
+                overflow.visibility = View.GONE
+            else
+                overflow.setOnClickListener({ view ->
+                    (context as? AccountActivity)?.let {
+                        it.onActionOverflowListener(view, info)
+                    }
+                })
 
             return v
         }
