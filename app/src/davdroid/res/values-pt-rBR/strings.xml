@@ -37,6 +37,7 @@
   <string name="navigation_drawer_close">Fechar gaveta de navegação</string>
   <string name="navigation_drawer_subtitle">Sincronização de CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Sobre / Licença</string>
+  <string name="navigation_drawer_beta_feedback">Comentários sobre a versão beta</string>
   <string name="navigation_drawer_settings">Configurações</string>
   <string name="navigation_drawer_news_updates">Novidades e atualizações</string>
   <string name="navigation_drawer_external_links">Links externos</string>
@@ -88,6 +89,10 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_synchronize_this_collection">sincronizar esta coleção</string>
+  <string name="account_read_only">Somente leitura</string>
+  <string name="account_calendar">calendário</string>
+  <string name="account_task_list">lista de tarefas</string>
   <string name="account_refresh_address_book_list">Atualizar lista de livros de endereços</string>
   <string name="account_create_new_address_book">Criar novo livro de endereços</string>
   <string name="account_refresh_calendar_list">Atualizar lista de calendários</string>
@@ -171,6 +176,8 @@
     <item>Grupos são VCards separados</item>
     <item>Grupos são categorias por contato</item>
   </string-array>
+  <string name="settings_contact_group_method_change">Alterar a forma de agrupamento</string>
+  <string name="settings_contact_group_method_change_reload_contacts">É necessário recarregar todos os contatos. As alterações locais que não foram salvas serão descartadas.</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limite de tempo para eventos passados</string>
   <string name="settings_sync_time_range_past_none">Todos os eventos serão sincronizados</string>
@@ -207,6 +214,7 @@
   <string name="delete_collection_confirm_title">Tem certeza?</string>
   <string name="delete_collection_confirm_warning">Esta coleção (%s) e todos os seus dados serão removidos do servidor.</string>
   <string name="delete_collection_deleting_collection">Excluindo coleção</string>
+  <string name="collection_force_read_only">Forçar somente leitura</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Ocorreu um erro.</string>
   <string name="exception_httpexception">Ocorreu um erro de HTTP.</string>
