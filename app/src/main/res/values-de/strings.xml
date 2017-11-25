@@ -90,6 +90,7 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_synchronize_this_collection">diesen Ordner synchronisieren</string>
   <string name="account_read_only">schreibgeschützt</string>
   <string name="account_calendar">Kalender</string>
   <string name="account_task_list">Aufgabenliste</string>
@@ -214,6 +215,7 @@
   <string name="delete_collection_confirm_title">Sind Sie sicher?</string>
   <string name="delete_collection_confirm_warning">Dieser Ordner (%s) wird samt allen Inhalten vom Server gelöscht.</string>
   <string name="delete_collection_deleting_collection">Ordner wird gelöscht</string>
+  <string name="collection_force_read_only">Schreibschutz erzwingen</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Ein Fehler ist aufgetreten.</string>
   <string name="exception_httpexception">Ein HTTP-Fehler ist aufgetreten.</string>

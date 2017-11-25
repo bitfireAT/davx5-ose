@@ -90,6 +90,10 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_synchronize_this_collection">同步该集合</string>
+  <string name="account_read_only">只读</string>
+  <string name="account_calendar">日历</string>
+  <string name="account_task_list">任务列表</string>
   <string name="account_refresh_address_book_list">刷新通讯录列表</string>
   <string name="account_create_new_address_book">创建通讯录</string>
   <string name="account_refresh_calendar_list">刷新日历列表</string>
@@ -210,6 +214,7 @@
   <string name="delete_collection_confirm_title">你确定吗？</string>
   <string name="delete_collection_confirm_warning">这个集合 %s 及其所有数据将会从服务器删除。</string>
   <string name="delete_collection_deleting_collection">正在删除集合</string>
+  <string name="collection_force_read_only">强制只读</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">出现错误</string>
   <string name="exception_httpexception">出现 HTTP 错误</string>
