@@ -407,6 +407,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
         override fun loadInBackground(): AccountInfo {
             val info = AccountInfo()
+            val requiredPermissions = mutableSetOf<String>()
 
             OpenHelper(context).use { dbHelper ->
                 val db = dbHelper.readableDatabase
@@ -437,7 +438,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                                 }
 
                                 carddav.hasHomeSets = hasHomeSets(db, id)
-                                carddav.collections = readCollections(db, id)
+                                carddav.collections = readCollections(db, id, requiredPermissions)
                             }
                             Services.SERVICE_CALDAV -> {
                                 val caldav = AccountInfo.ServiceInfo()
@@ -448,13 +449,17 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                                         ContentResolver.isSyncActive(account, CalendarContract.AUTHORITY) ||
                                         ContentResolver.isSyncActive(account, TaskProvider.ProviderName.OpenTasks.authority)
                                 caldav.hasHomeSets = hasHomeSets(db, id)
-                                caldav.collections = readCollections(db, id)
+                                caldav.collections = readCollections(db, id, requiredPermissions)
                             }
                         }
                     }
                 }
-
             }
+
+            val askPermissions = requiredPermissions.filter { ActivityCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }
+            if (askPermissions.isNotEmpty())
+                ActivityCompat.requestPermissions(activity, askPermissions.toTypedArray(), 0)
+
             return info
         }
 
@@ -466,7 +471,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             return false
         }
 
-        private fun readCollections(db: SQLiteDatabase, service: Long): List<CollectionInfo>  {
+        private fun readCollections(db: SQLiteDatabase, service: Long, requiredPermissions: MutableSet<String>): List<CollectionInfo>  {
             val collections = LinkedList<CollectionInfo>()
             db.query(Collections._TABLE, null, Collections.SERVICE_ID + "=?", arrayOf(service.toString()),
                     null, null, "${Collections.SUPPORTS_VEVENT} DESC,${Collections.DISPLAY_NAME}").use { cursor ->
@@ -480,24 +485,33 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             // Webcal: check whether calendar is already subscribed by ICSdroid
             // (or any other app that stores the URL in Calendars.NAME)
             val webcalCollections = collections.filter { it.type == CollectionInfo.Type.WEBCAL }
-            if (webcalCollections.isNotEmpty()) {
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
-                    context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
-                        try {
-                            for (info in webcalCollections) {
-                                provider.query(CalendarContract.Calendars.CONTENT_URI, null,
-                                        "${CalendarContract.Calendars.NAME}=?", arrayOf(info.source), null)?.use { cursor ->
-                                    if (cursor.moveToNext())
-                                        info.selected = true
-                                }
+            if (webcalCollections.isNotEmpty() && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
+                context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
+                    try {
+                        for (info in webcalCollections) {
+                            provider.query(CalendarContract.Calendars.CONTENT_URI, null,
+                                    "${CalendarContract.Calendars.NAME}=?", arrayOf(info.source), null)?.use { cursor ->
+                                if (cursor.moveToNext())
+                                    info.selected = true
                             }
-                        } finally {
-                            provider.release()
                         }
+                    } finally {
+                        provider.release()
                     }
-                else
-                    ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_CALENDAR), 0)
+                }
+
+            if (collections.any { it.type == CollectionInfo.Type.ADDRESS_BOOK } && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                requiredPermissions += Manifest.permission.READ_CONTACTS
+                requiredPermissions += Manifest.permission.WRITE_CONTACTS
             }
+            if (collections.any { it.type == CollectionInfo.Type.CALENDAR }) {
+                requiredPermissions += Manifest.permission.READ_CALENDAR
+                requiredPermissions += Manifest.permission.WRITE_CALENDAR
+                requiredPermissions += TaskProvider.PERMISSION_READ_TASKS
+                requiredPermissions += TaskProvider.PERMISSION_WRITE_TASKS
+            }
+            if (collections.any { it.type == CollectionInfo.Type.WEBCAL })
+                requiredPermissions += Manifest.permission.READ_CALENDAR
 
             return collections
         }

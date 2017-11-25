@@ -18,14 +18,10 @@ import android.view.View
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.ical4android.TaskProvider
 import kotlinx.android.synthetic.main.activity_permissions.*
 
 class PermissionsActivity: AppCompatActivity() {
-
-    companion object {
-        @JvmField val PERMISSION_READ_TASKS = "org.dmfs.permission.READ_TASKS"
-        @JvmField val PERMISSION_WRITE_TASKS = "org.dmfs.permission.WRITE_TASKS"
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,8 +47,8 @@ class PermissionsActivity: AppCompatActivity() {
         val noTaskPermissions: Boolean
         if (LocalTaskList.tasksProviderAvailable(this)) {
             noTaskPermissions =
-                    ActivityCompat.checkSelfPermission(this, PERMISSION_READ_TASKS) != PackageManager.PERMISSION_GRANTED ||
-                    ActivityCompat.checkSelfPermission(this, PERMISSION_WRITE_TASKS) != PackageManager.PERMISSION_GRANTED
+                    ActivityCompat.checkSelfPermission(this, TaskProvider.PERMISSION_READ_TASKS) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, TaskProvider.PERMISSION_WRITE_TASKS) != PackageManager.PERMISSION_GRANTED
             findViewById<View>(R.id.opentasks_permissions).visibility = if (noTaskPermissions) View.VISIBLE else View.GONE
         } else {
             findViewById<View>(R.id.opentasks_permissions).visibility = View.GONE;
@@ -83,8 +79,8 @@ class PermissionsActivity: AppCompatActivity() {
 
     fun requestOpenTasksPermissions(v: View) {
         ActivityCompat.requestPermissions(this, arrayOf(
-                PERMISSION_READ_TASKS,
-                PERMISSION_WRITE_TASKS
+                TaskProvider.PERMISSION_READ_TASKS,
+                TaskProvider.PERMISSION_WRITE_TASKS
         ), 0)
     }
 
