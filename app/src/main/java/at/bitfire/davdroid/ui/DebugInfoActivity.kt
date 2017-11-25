@@ -209,7 +209,7 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
             // permissions
             for (permission in arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS,
                                        Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR,
-                                       PermissionsActivity.PERMISSION_READ_TASKS, PermissionsActivity.PERMISSION_WRITE_TASKS))
+                                       TaskProvider.PERMISSION_READ_TASKS, TaskProvider.PERMISSION_WRITE_TASKS))
                 report.append(permission).append(" permission: ")
                       .append(if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) "granted" else "denied")
                       .append("\n")
