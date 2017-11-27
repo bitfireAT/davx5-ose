@@ -263,6 +263,8 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             }
 
             val intent = Intent(Intent.ACTION_VIEW, uri)
+            info.displayName?.let { intent.putExtra("title", it) }
+            info.color?.let { intent.putExtra("color", it) }
             if (packageManager.resolveActivity(intent, 0) != null)
                 startActivity(intent)
             else {
