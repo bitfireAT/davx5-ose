@@ -83,21 +83,22 @@ data class CollectionInfo @JvmOverloads constructor(
             Type.ADDRESS_BOOK -> {
                 (dav.properties[AddressbookDescription.NAME] as AddressbookDescription?)?.let { description = it.description }
             }
-            Type.CALENDAR -> {
+            Type.CALENDAR, Type.WEBCAL -> {
                 (dav.properties[CalendarDescription.NAME] as CalendarDescription?)?.let { description = it.description }
                 (dav.properties[CalendarColor.NAME] as CalendarColor?)?.let { color = it.color }
                 (dav.properties[CalendarTimezone.NAME] as CalendarTimezone?)?.let { timeZone = it.vTimeZone }
 
-                supportsVEVENT = true
-                supportsVTODO = true
-                (dav.properties[SupportedCalendarComponentSet.NAME] as SupportedCalendarComponentSet?)?.let {
-                    supportsVEVENT = it.supportsEvents
-                    supportsVTODO = it.supportsTasks
+                if (type == Type.CALENDAR) {
+                    supportsVEVENT = true
+                    supportsVTODO = true
+                    (dav.properties[SupportedCalendarComponentSet.NAME] as SupportedCalendarComponentSet?)?.let {
+                        supportsVEVENT = it.supportsEvents
+                        supportsVTODO = it.supportsTasks
+                    }
+                } else { // Type.WEBCAL
+                    (dav.properties[Source.NAME] as Source?)?.let { source = it.hrefs.firstOrNull() }
+                    supportsVEVENT = true
                 }
-            }
-            Type.WEBCAL -> {
-                (dav.properties[Source.NAME] as Source?)?.let { source = it.hrefs.firstOrNull() }
-                supportsVEVENT = true
             }
         }
     }
