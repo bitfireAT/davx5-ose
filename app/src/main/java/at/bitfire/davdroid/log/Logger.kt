@@ -15,12 +15,12 @@ import android.content.SharedPreferences
 import android.os.Process
 import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
 import android.util.Log
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppSettingsActivity
+import at.bitfire.davdroid.ui.NotificationUtils
 import org.apache.commons.lang3.time.DateFormatUtils
 import java.io.File
 import java.io.IOException
@@ -35,7 +35,7 @@ object Logger {
     val log = java.util.logging.Logger.getLogger("davdroid")!!
 
 
-    lateinit var preferences: SharedPreferences
+    lateinit private var preferences: SharedPreferences
 
     fun initialize(context: Context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -62,10 +62,10 @@ object Logger {
         rootLogger.handlers.forEach { rootLogger.removeHandler(it) }
         rootLogger.addHandler(LogcatHandler)
 
-        val nm = NotificationManagerCompat.from(context)
+        val nm = NotificationUtils.createChannels(context)
         // log to external file according to preferences
         if (logToFile) {
-            val builder = NotificationCompat.Builder(context)
+            val builder = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_DEBUG)
             builder .setSmallIcon(R.drawable.ic_sd_storage_notification)
                     .setLargeIcon(App.getLauncherBitmap(context))
                     .setContentTitle(context.getString(R.string.logging_davdroid_file_logging))
