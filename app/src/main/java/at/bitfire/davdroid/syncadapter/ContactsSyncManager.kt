@@ -16,7 +16,6 @@ import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.Groups
 import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
 import at.bitfire.dav4android.DavAddressBook
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.property.*
@@ -27,6 +26,7 @@ import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.davdroid.resource.LocalGroup
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.ISettings
+import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.ContactsStorageException
@@ -228,7 +228,7 @@ class ContactsSyncManager(
     }
 
     private fun notifyDiscardedChange() {
-        val notification = NotificationCompat.Builder(context)
+        val notification = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_SYNC_STATUS)
                 .setSmallIcon(R.drawable.ic_delete_notification)
                 .setLargeIcon(App.getLauncherBitmap(context))
                 .setContentTitle(context.getString(R.string.sync_contacts_read_only_address_book))
@@ -239,7 +239,8 @@ class ContactsSyncManager(
                 .setLocalOnly(true)
                 .setAutoCancel(true)
                 .build()
-        NotificationManagerCompat.from(context).notify("discarded_${account.name}", 0, notification)
+        val nm = NotificationUtils.createChannels(context)
+        nm.notify("discarded_${account.name}", 0, notification)
     }
 
     override fun prepareUpload(resource: LocalResource): RequestBody {

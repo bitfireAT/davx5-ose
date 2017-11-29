@@ -16,7 +16,6 @@ import android.content.SyncResult
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
 import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.exception.*
 import at.bitfire.dav4android.property.GetCTag
@@ -31,6 +30,7 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.davdroid.ui.AccountSettingsActivity
 import at.bitfire.davdroid.ui.DebugInfoActivity
+import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.vcard4android.ContactsStorageException
 import okhttp3.HttpUrl
@@ -70,7 +70,7 @@ abstract class SyncManager(
 
     }
 
-    protected val notificationManager = NotificationManagerCompat.from(context)!!
+    protected val notificationManager = NotificationUtils.createChannels(context)
 
     protected lateinit var localCollection: LocalCollection<*>
 
@@ -221,7 +221,7 @@ abstract class SyncManager(
             // to make the PendingIntent unique
             detailsIntent.data = Uri.parse("uri://${javaClass.name}/$uniqueCollectionId")
 
-            val builder = NotificationCompat.Builder(context)
+            val builder = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_SYNC_PROBLEMS)
             builder .setSmallIcon(R.drawable.ic_sync_error_notification)
                     .setLargeIcon(App.getLauncherBitmap(context))
                     .setContentTitle(getSyncErrorTitle())

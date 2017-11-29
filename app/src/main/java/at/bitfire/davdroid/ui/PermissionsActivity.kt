@@ -12,7 +12,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
-import android.support.v4.app.NotificationManagerCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import at.bitfire.davdroid.Constants
@@ -56,7 +55,7 @@ class PermissionsActivity: AppCompatActivity() {
         }
 
         if (!noCalendarPermissions && !noContactsPermissions && !noTaskPermissions) {
-            val nm = NotificationManagerCompat.from(this)
+            val nm = NotificationUtils.createChannels(this)
             nm.cancel(Constants.NOTIFICATION_PERMISSIONS)
 
             finish()
