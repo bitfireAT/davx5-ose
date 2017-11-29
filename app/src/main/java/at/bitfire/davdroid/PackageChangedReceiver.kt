@@ -9,7 +9,6 @@
 package at.bitfire.davdroid
 
 import android.accounts.Account
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.ContentResolver
 import android.content.Context
@@ -23,19 +22,12 @@ import at.bitfire.ical4android.TaskProvider
 
 class PackageChangedReceiver: BroadcastReceiver() {
 
-    @SuppressLint("MissingPermission")
-    override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == Intent.ACTION_PACKAGE_ADDED || intent.action == Intent.ACTION_PACKAGE_FULLY_REMOVED)
-            updateTaskSync(context)
-    }
-
-
     companion object {
 
         @JvmStatic
         fun updateTaskSync(context: Context) {
             val tasksInstalled = LocalTaskList.tasksProviderAvailable(context)
-            Logger.log.info("Package (un)installed; OpenTasks provider now available = $tasksInstalled")
+            Logger.log.info("Tasks provider available = $tasksInstalled")
 
             // check all accounts and (de)activate OpenTasks if a CalDAV service is defined
             ServiceDB.OpenHelper(context).use { dbHelper ->
@@ -60,6 +52,11 @@ class PackageChangedReceiver: BroadcastReceiver() {
             }
         }
 
+    }
+
+
+    override fun onReceive(context: Context, intent: Intent) {
+        updateTaskSync(context)
     }
 
 }

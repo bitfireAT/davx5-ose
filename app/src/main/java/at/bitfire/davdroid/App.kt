@@ -10,11 +10,14 @@ package at.bitfire.davdroid
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.support.v7.app.AppCompatDelegate
 import at.bitfire.davdroid.log.Logger
+import kotlin.concurrent.thread
 
 class App: Application() {
 
@@ -66,6 +69,19 @@ class App: Application() {
 
         if (Build.VERSION.SDK_INT <= 21)
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+
+        // don't block UI for some background checks
+        thread {
+            // watch installed/removed apps
+            val tasksFilter = IntentFilter()
+            tasksFilter.addAction(Intent.ACTION_PACKAGE_ADDED)
+            tasksFilter.addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED)
+            tasksFilter.addDataScheme("package")
+            registerReceiver(PackageChangedReceiver(), tasksFilter)
+
+            // check whether a tasks app is currently installed
+            PackageChangedReceiver.updateTaskSync(this)
+        }
     }
 
 }
