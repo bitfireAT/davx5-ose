@@ -409,7 +409,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
         override fun loadInBackground(): AccountInfo {
             val info = AccountInfo()
-            val requiredPermissions = mutableSetOf<String>()
 
             OpenHelper(context).use { dbHelper ->
                 val db = dbHelper.readableDatabase
@@ -440,7 +439,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                                 }
 
                                 carddav.hasHomeSets = hasHomeSets(db, id)
-                                carddav.collections = readCollections(db, id, requiredPermissions)
+                                carddav.collections = readCollections(db, id)
                             }
                             Services.SERVICE_CALDAV -> {
                                 val caldav = AccountInfo.ServiceInfo()
@@ -451,11 +450,33 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                                         ContentResolver.isSyncActive(account, CalendarContract.AUTHORITY) ||
                                         ContentResolver.isSyncActive(account, TaskProvider.ProviderName.OpenTasks.authority)
                                 caldav.hasHomeSets = hasHomeSets(db, id)
-                                caldav.collections = readCollections(db, id, requiredPermissions)
+                                caldav.collections = readCollections(db, id)
                             }
                         }
                     }
                 }
+            }
+
+            val requiredPermissions = mutableSetOf<String>()
+            info.carddav?.let { carddav ->
+                if (carddav.collections.any { it.type == CollectionInfo.Type.ADDRESS_BOOK }) {
+                    requiredPermissions += Manifest.permission.READ_CONTACTS
+                    requiredPermissions += Manifest.permission.WRITE_CONTACTS
+                }
+            }
+
+            info.caldav?.let { caldav ->
+                if (caldav.collections.any { it.type == CollectionInfo.Type.CALENDAR }) {
+                    requiredPermissions += Manifest.permission.READ_CALENDAR
+                    requiredPermissions += Manifest.permission.WRITE_CALENDAR
+
+                    if (LocalTaskList.tasksProviderAvailable(context)) {
+                        requiredPermissions += TaskProvider.PERMISSION_READ_TASKS
+                        requiredPermissions += TaskProvider.PERMISSION_WRITE_TASKS
+                    }
+                }
+                if (caldav.collections.any { it.type == CollectionInfo.Type.WEBCAL })
+                    requiredPermissions += Manifest.permission.READ_CALENDAR
             }
 
             val askPermissions = requiredPermissions.filter { ActivityCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }
@@ -473,7 +494,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             return false
         }
 
-        private fun readCollections(db: SQLiteDatabase, service: Long, requiredPermissions: MutableSet<String>): List<CollectionInfo>  {
+        private fun readCollections(db: SQLiteDatabase, service: Long): List<CollectionInfo>  {
             val collections = LinkedList<CollectionInfo>()
             db.query(Collections._TABLE, null, Collections.SERVICE_ID + "=?", arrayOf(service.toString()),
                     null, null, "${Collections.SUPPORTS_VEVENT} DESC,${Collections.DISPLAY_NAME}").use { cursor ->
@@ -501,19 +522,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                         provider.release()
                     }
                 }
-
-            if (collections.any { it.type == CollectionInfo.Type.ADDRESS_BOOK } && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-                requiredPermissions += Manifest.permission.READ_CONTACTS
-                requiredPermissions += Manifest.permission.WRITE_CONTACTS
-            }
-            if (collections.any { it.type == CollectionInfo.Type.CALENDAR }) {
-                requiredPermissions += Manifest.permission.READ_CALENDAR
-                requiredPermissions += Manifest.permission.WRITE_CALENDAR
-                requiredPermissions += TaskProvider.PERMISSION_READ_TASKS
-                requiredPermissions += TaskProvider.PERMISSION_WRITE_TASKS
-            }
-            if (collections.any { it.type == CollectionInfo.Type.WEBCAL })
-                requiredPermissions += Manifest.permission.READ_CALENDAR
 
             return collections
         }
