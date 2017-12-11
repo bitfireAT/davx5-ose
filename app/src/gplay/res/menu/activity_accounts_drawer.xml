@@ -43,6 +43,10 @@
                 android:icon="@drawable/ic_home_dark"
                 android:title="@string/navigation_drawer_website"/>
             <item
+                android:id="@+id/nav_manual"
+                android:icon="@drawable/ic_info_dark"
+                android:title="@string/navigation_drawer_manual"/>
+            <item
                 android:id="@+id/nav_faq"
                 android:icon="@drawable/ic_help_dark"
                 android:title="@string/navigation_drawer_faq"/>

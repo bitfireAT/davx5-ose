@@ -146,7 +146,8 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         .setMessage(R.string.startup_google_play_accounts_removed_message)
                         .setPositiveButton(android.R.string.ok, { _, _ -> })
                         .setNeutralButton(R.string.startup_google_play_accounts_removed_more_info, { _, _ ->
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.navigation_drawer_faq_url)))
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url)).buildUpon()
+                                    .appendPath("faq").appendPath("accounts-gone-after-reboot-or-update").build())
                             activity.startActivity(intent)
                         })
                         .setNegativeButton(R.string.startup_dont_show_again, { _, _ ->

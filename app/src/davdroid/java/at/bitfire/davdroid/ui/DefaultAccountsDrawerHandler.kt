@@ -45,8 +45,12 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
                 activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/davdroidapp")))
             R.id.nav_website ->
                 activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.homepage_url))))
+            R.id.nav_manual ->
+                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.homepage_url))
+                        .buildUpon().appendEncodedPath("manual/").build()))
             R.id.nav_faq ->
-                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.navigation_drawer_faq_url))))
+                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.homepage_url))
+                        .buildUpon().appendEncodedPath("faq/").build()))
             R.id.nav_forums ->
                 activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.homepage_url))
                         .buildUpon().appendEncodedPath("forums/").build()))
