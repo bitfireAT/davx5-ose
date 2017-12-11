@@ -37,6 +37,8 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
     companion object {
         private val EXTRA_CREATE_STARTUP_FRAGMENTS = "createStartupFragments"
+
+        private val BETA_FEEDBACK_URI = "mailto:support@davdroid.com?subject=${BuildConfig.APPLICATION_ID} beta feedback ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
     }
 
     private var syncStatusSnackbar: Snackbar? = null
@@ -137,14 +139,21 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
                 startActivity(Intent(this, AboutActivity::class.java))
             R.id.nav_app_settings ->
                 startActivity(Intent(this, AppSettingsActivity::class.java))
-            R.id.nav_beta_feedback ->
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.beta_feedback_url))))
+            R.id.nav_beta_feedback -> {
+                val intent = Intent(Intent.ACTION_SENDTO, Uri.parse(BETA_FEEDBACK_URI))
+                if (packageManager.resolveActivity(intent, 0) != null)
+                    startActivity(intent)
+            }
             R.id.nav_twitter ->
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/davdroidapp")))
             R.id.nav_website ->
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url))))
+            R.id.nav_manual ->
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url))
+                        .buildUpon().appendEncodedPath("manual/").build()))
             R.id.nav_faq ->
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.navigation_drawer_faq_url))))
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url))
+                        .buildUpon().appendEncodedPath("faq/").build()))
             R.id.nav_forums ->
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url))
                         .buildUpon().appendEncodedPath("forums/").build()))
