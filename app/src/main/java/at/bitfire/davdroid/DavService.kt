@@ -9,8 +9,6 @@
 package at.bitfire.davdroid
 
 import android.accounts.Account
-import android.accounts.AccountManager
-import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.app.Service
 import android.content.ContentValues
@@ -28,11 +26,9 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB.*
 import at.bitfire.davdroid.model.ServiceDB.Collections
-import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.vcard4android.ContactsStorageException
 import okhttp3.HttpUrl
 import org.apache.commons.collections4.iterators.IteratorChain
 import org.apache.commons.collections4.iterators.SingletonIterator
@@ -45,7 +41,6 @@ import kotlin.concurrent.thread
 class DavService: Service() {
 
     companion object {
-        @JvmField val ACTION_ACCOUNTS_UPDATED = "accountsUpdated"
         @JvmField val ACTION_REFRESH_COLLECTIONS = "refreshCollections"
         @JvmField val EXTRA_DAV_SERVICE_ID = "davServiceID"
     }
@@ -59,8 +54,6 @@ class DavService: Service() {
             val id = intent.getLongExtra(EXTRA_DAV_SERVICE_ID, -1)
 
             when (intent.action) {
-                ACTION_ACCOUNTS_UPDATED ->
-                    cleanupAccounts()
                 ACTION_REFRESH_COLLECTIONS ->
                     if (runningRefresh.add(id)) {
                         thread { refreshCollections(id) }
@@ -110,42 +103,7 @@ class DavService: Service() {
        which actually do the work
      */
 
-    @SuppressLint("MissingPermission")
-    fun cleanupAccounts() {
-        Logger.log.info("Cleaning up orphaned accounts")
-
-        OpenHelper(this).use { dbHelper ->
-            val db = dbHelper.writableDatabase
-
-            val sqlAccountNames = LinkedList<String>()
-            val accountNames = HashSet<String>()
-            val accountManager = AccountManager.get(this)
-            for (account in accountManager.getAccountsByType(getString(R.string.account_type))) {
-                sqlAccountNames.add(DatabaseUtils.sqlEscapeString(account.name))
-                accountNames += account.name
-            }
-
-            // delete orphaned address book accounts
-            accountManager.getAccountsByType(getString(R.string.account_type_address_book))
-                    .map { LocalAddressBook(this, it, null) }
-                    .forEach {
-                        try {
-                            if (!accountNames.contains(it.getMainAccount().name))
-                                it.delete()
-                        } catch(e: ContactsStorageException) {
-                            Logger.log.log(Level.SEVERE, "Couldn't get address book main account", e)
-                        }
-                    }
-
-            // delete orphaned services in DB
-            if (sqlAccountNames.isEmpty())
-                db.delete(Services._TABLE, null, null)
-            else
-                db.delete(Services._TABLE, "${Services.ACCOUNT_NAME} NOT IN (${sqlAccountNames.joinToString(",")})", null)
-        }
-    }
-
-    fun refreshCollections(service: Long) {
+    private fun refreshCollections(service: Long) {
         OpenHelper(this@DavService).use { dbHelper ->
             val db = dbHelper.writableDatabase
 

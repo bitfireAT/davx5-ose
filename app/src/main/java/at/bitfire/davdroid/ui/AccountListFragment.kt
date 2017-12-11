@@ -24,7 +24,6 @@ import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import at.bitfire.davdroid.AccountsChangedReceiver
 import at.bitfire.davdroid.R
 import kotlinx.android.synthetic.main.account_list_item.view.*
 
@@ -69,11 +68,13 @@ class AccountListFragment: ListFragment(), LoaderManager.LoaderCallbacks<Array<A
             context: Context
     ): AsyncTaskLoader<Array<Account>>(context), OnAccountsUpdateListener {
 
+        val accountManager = AccountManager.get(context)!!
+
         override fun onStartLoading() =
-                AccountsChangedReceiver.registerListener(this, true)
+                accountManager.addOnAccountsUpdatedListener(this, null, true)
 
         override fun onStopLoading() =
-                AccountsChangedReceiver.unregisterListener(this)
+                accountManager.removeOnAccountsUpdatedListener(this)
 
         override fun onAccountsUpdated(accounts: Array<Account>?) =
                 forceLoad()
