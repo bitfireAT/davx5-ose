@@ -218,6 +218,7 @@
   <string name="delete_collection_confirm_title">Er du sikker?</string>
   <string name="delete_collection_confirm_warning">Denne samlingen (%s) og all dens data vil bli fjernet fra tjeneren.</string>
   <string name="delete_collection_deleting_collection">Sletter samling</string>
+  <string name="collection_force_read_only">Tving kun lesbar</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">En feil har inntruffet</string>
   <string name="exception_httpexception">En HTTP-feil har inntruffet.</string>
