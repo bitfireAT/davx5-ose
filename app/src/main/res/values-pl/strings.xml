@@ -45,7 +45,6 @@
   <string name="navigation_drawer_external_links">Zewnętrzne odnośniki</string>
   <string name="navigation_drawer_website">Strona WWW</string>
   <string name="navigation_drawer_faq">Pytania i odpowiedzi</string>
-  <string name="navigation_drawer_faq_url">https://www.davdroid.com/faq/?pk_campaign=davdroid-app</string>
   <string name="navigation_drawer_forums">Pomoc / Forum</string>
   <string name="navigation_drawer_donate">Dotacja</string>
   <string name="account_list_empty">Witamy w DAVdroid!\n\nMożesz teraz dodać konto CalDAV/CardDAV.</string>

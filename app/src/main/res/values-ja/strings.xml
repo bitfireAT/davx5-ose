@@ -45,7 +45,6 @@
   <string name="navigation_drawer_external_links">外部リンク</string>
   <string name="navigation_drawer_website">Web サイト</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_faq_url">https://www.davdroid.com/faq/?pk_campaign=davdroid-app</string>
   <string name="navigation_drawer_forums">ヘルプ / フォーラム</string>
   <string name="navigation_drawer_donate">寄付</string>
   <string name="account_list_empty">DAVdroid にようこそ!\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>
