@@ -240,7 +240,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                     }
                 }
                 R.id.delete_collection ->
-                    DeleteCollectionFragment.ConfirmDeleteCollectionFragment.newInstance(account, info).show(getSupportFragmentManager(), null);
+                    DeleteCollectionFragment.ConfirmDeleteCollectionFragment.newInstance(account, info).show(supportFragmentManager, null)
             }
             true
         })
@@ -363,6 +363,33 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             else
                 View.GONE
         } ?: View.GONE
+
+        // ask for permissions
+        val requiredPermissions = mutableSetOf<String>()
+        info?.carddav?.let { carddav ->
+            if (carddav.collections.any { it.type == CollectionInfo.Type.ADDRESS_BOOK }) {
+                requiredPermissions += Manifest.permission.READ_CONTACTS
+                requiredPermissions += Manifest.permission.WRITE_CONTACTS
+            }
+        }
+
+        info?.caldav?.let { caldav ->
+            if (caldav.collections.any { it.type == CollectionInfo.Type.CALENDAR }) {
+                requiredPermissions += Manifest.permission.READ_CALENDAR
+                requiredPermissions += Manifest.permission.WRITE_CALENDAR
+
+                if (LocalTaskList.tasksProviderAvailable(this)) {
+                    requiredPermissions += TaskProvider.PERMISSION_READ_TASKS
+                    requiredPermissions += TaskProvider.PERMISSION_WRITE_TASKS
+                }
+            }
+            if (caldav.collections.any { it.type == CollectionInfo.Type.WEBCAL })
+                requiredPermissions += Manifest.permission.READ_CALENDAR
+        }
+
+        val askPermissions = requiredPermissions.filter { ActivityCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED }
+        if (askPermissions.isNotEmpty())
+            ActivityCompat.requestPermissions(this, askPermissions.toTypedArray(), 0)
     }
 
     override fun onLoaderReset(loader: Loader<AccountInfo>) {
@@ -372,44 +399,58 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
 
     class AccountLoader(
-            val activity: AccountActivity,
+            context: Context,
             val account: Account
-    ): AsyncTaskLoader<AccountInfo>(activity), DavService.RefreshingStatusListener, ServiceConnection, SyncStatusObserver {
+    ): AsyncTaskLoader<AccountInfo>(context), DavService.RefreshingStatusListener, SyncStatusObserver {
 
+        private var syncStatusListener: Any? = null
+
+        private var davServiceConn: ServiceConnection? = null
         private var davService: DavService.InfoBinder? = null
-        private lateinit var syncStatusListener: Any
 
         override fun onStartLoading() {
-            syncStatusListener = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this)
-            context.bindService(Intent(context, DavService::class.java), this, Context.BIND_AUTO_CREATE)
+            // get notified when sync status changes
+            if (syncStatusListener == null)
+                syncStatusListener = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this)
+
+            // bind to DavService to get notified when it's running
+            if (davServiceConn == null) {
+                davServiceConn = object: ServiceConnection {
+                    override fun onServiceConnected(name: ComponentName, service: IBinder) {
+                        // get notified when DavService is running
+                        davService = service as DavService.InfoBinder
+                        service.addRefreshingStatusListener(this@AccountLoader, false)
+
+                        onContentChanged()
+                    }
+
+                    override fun onServiceDisconnected(name: ComponentName) {
+                        davService = null
+                    }
+                }
+                context.bindService(Intent(context, DavService::class.java), davServiceConn, Context.BIND_AUTO_CREATE)
+            } else
+                forceLoad()
         }
 
-        override fun onStopLoading() {
-            davService?.removeRefreshingStatusListener(this)
-            context.unbindService(this)
+        override fun onReset() {
             ContentResolver.removeStatusChangeListener(syncStatusListener)
-        }
 
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            davService = service as DavService.InfoBinder
-            service.addRefreshingStatusListener(this, false)
-
-            forceLoad()
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            davService = null
+            davService?.removeRefreshingStatusListener(this)
+            davServiceConn?.let {
+                context.unbindService(it)
+                davServiceConn = null
+            }
         }
 
         override fun onDavRefreshStatusChanged(id: Long, refreshing: Boolean) =
-                forceLoad()
+                onContentChanged()
 
         override fun onStatusChanged(which: Int) =
-                forceLoad()
+                onContentChanged()
 
         override fun loadInBackground(): AccountInfo {
             val info = AccountInfo()
-            val requiredPermissions = mutableSetOf<String>()
 
             OpenHelper(context).use { dbHelper ->
                 val db = dbHelper.readableDatabase
@@ -440,7 +481,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                                 }
 
                                 carddav.hasHomeSets = hasHomeSets(db, id)
-                                carddav.collections = readCollections(db, id, requiredPermissions)
+                                carddav.collections = readCollections(db, id)
                             }
                             Services.SERVICE_CALDAV -> {
                                 val caldav = AccountInfo.ServiceInfo()
@@ -451,16 +492,12 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                                         ContentResolver.isSyncActive(account, CalendarContract.AUTHORITY) ||
                                         ContentResolver.isSyncActive(account, TaskProvider.ProviderName.OpenTasks.authority)
                                 caldav.hasHomeSets = hasHomeSets(db, id)
-                                caldav.collections = readCollections(db, id, requiredPermissions)
+                                caldav.collections = readCollections(db, id)
                             }
                         }
                     }
                 }
             }
-
-            val askPermissions = requiredPermissions.filter { ActivityCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }
-            if (askPermissions.isNotEmpty())
-                ActivityCompat.requestPermissions(activity, askPermissions.toTypedArray(), 0)
 
             return info
         }
@@ -473,7 +510,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             return false
         }
 
-        private fun readCollections(db: SQLiteDatabase, service: Long, requiredPermissions: MutableSet<String>): List<CollectionInfo>  {
+        private fun readCollections(db: SQLiteDatabase, service: Long): List<CollectionInfo>  {
             val collections = LinkedList<CollectionInfo>()
             db.query(Collections._TABLE, null, Collections.SERVICE_ID + "=?", arrayOf(service.toString()),
                     null, null, "${Collections.SUPPORTS_VEVENT} DESC,${Collections.DISPLAY_NAME}").use { cursor ->
@@ -501,19 +538,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                         provider.release()
                     }
                 }
-
-            if (collections.any { it.type == CollectionInfo.Type.ADDRESS_BOOK } && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-                requiredPermissions += Manifest.permission.READ_CONTACTS
-                requiredPermissions += Manifest.permission.WRITE_CONTACTS
-            }
-            if (collections.any { it.type == CollectionInfo.Type.CALENDAR }) {
-                requiredPermissions += Manifest.permission.READ_CALENDAR
-                requiredPermissions += Manifest.permission.WRITE_CALENDAR
-                requiredPermissions += TaskProvider.PERMISSION_READ_TASKS
-                requiredPermissions += TaskProvider.PERMISSION_WRITE_TASKS
-            }
-            if (collections.any { it.type == CollectionInfo.Type.WEBCAL })
-                requiredPermissions += Manifest.permission.READ_CALENDAR
 
             return collections
         }
@@ -640,7 +664,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                     .setTitle(R.string.account_rename)
                     .setMessage(R.string.account_rename_new_name)
                     .setView(editText)
-                    .setPositiveButton(R.string.account_rename_rename, DialogInterface.OnClickListener { dialog, which ->
+                    .setPositiveButton(R.string.account_rename_rename, DialogInterface.OnClickListener { _, _ ->
                         val newName = editText.text.toString()
 
                         if (newName == oldAccount.name)

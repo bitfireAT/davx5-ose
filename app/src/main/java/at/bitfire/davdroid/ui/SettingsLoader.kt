@@ -23,33 +23,39 @@ abstract class SettingsLoader<T>(
     val settingsObserver = object: ISettingsObserver.Stub() {
         override fun onSettingsChanged() {
             handler.post {
-                forceLoad()
+                onContentChanged()
             }
         }
     }
 
+    private var settingsSvc: ServiceConnection? = null
     var settings: ISettings? = null
-    private val settingsSvc = object: ServiceConnection {
-
-        override fun onServiceConnected(name: ComponentName?, binder: IBinder) {
-            settings = ISettings.Stub.asInterface(binder)
-            settings!!.registerObserver(settingsObserver)
-            forceLoad()
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            settings!!.unregisterObserver(settingsObserver)
-            settings = null
-        }
-
-    }
 
     override fun onStartLoading() {
-        context.bindService(Intent(context, Settings::class.java), settingsSvc, Context.BIND_AUTO_CREATE)
+        if (settingsSvc != null)
+            forceLoad()
+        else {
+            settingsSvc = object: ServiceConnection {
+                override fun onServiceConnected(name: ComponentName?, binder: IBinder) {
+                    settings = ISettings.Stub.asInterface(binder)
+                    settings!!.registerObserver(settingsObserver)
+                    onContentChanged()
+                }
+
+                override fun onServiceDisconnected(name: ComponentName?) {
+                    settings!!.unregisterObserver(settingsObserver)
+                    settings = null
+                }
+            }
+            context.bindService(Intent(context, Settings::class.java), settingsSvc, Context.BIND_AUTO_CREATE)
+        }
     }
 
-    override fun onStopLoading() {
-        context.unbindService(settingsSvc)
+    override fun onReset() {
+        settingsSvc?.let {
+            context.unbindService(it)
+            settingsSvc = null
+        }
     }
 
 }

@@ -66,18 +66,26 @@ class AccountListFragment: ListFragment(), LoaderManager.LoaderCallbacks<Array<A
 
     class AccountLoader(
             context: Context
-    ): AsyncTaskLoader<Array<Account>>(context), OnAccountsUpdateListener {
+    ): AsyncTaskLoader<Array<Account>>(context) {
 
-        val accountManager = AccountManager.get(context)!!
+        private val accountManager = AccountManager.get(context)!!
+        private var listener: OnAccountsUpdateListener? = null
 
-        override fun onStartLoading() =
-                accountManager.addOnAccountsUpdatedListener(this, null, true)
+        override fun onStartLoading() {
+            if (listener == null) {
+                listener = OnAccountsUpdateListener { onContentChanged() }
+                accountManager.addOnAccountsUpdatedListener(listener, null, false)
+            }
 
-        override fun onStopLoading() =
-                accountManager.removeOnAccountsUpdatedListener(this)
+            forceLoad()
+        }
 
-        override fun onAccountsUpdated(accounts: Array<Account>?) =
-                forceLoad()
+        override fun onReset() {
+            listener?.let {
+                accountManager.removeOnAccountsUpdatedListener(it)
+                listener = null
+            }
+        }
 
         override fun loadInBackground(): Array<Account> =
             AccountManager.get(context).getAccountsByType(context.getString(R.string.account_type))
