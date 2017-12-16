@@ -120,9 +120,17 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
             val extras: Bundle?
     ): AsyncTaskLoader<String>(context) {
 
-        override fun onStartLoading() = forceLoad()
+        var result: String? = null
+
+        override fun onStartLoading() {
+            if (result != null)
+                deliverResult(result)
+            else
+                forceLoad()
+        }
 
         override fun loadInBackground(): String {
+            Logger.log.info("Building debug info")
             val report = StringBuilder("--- BEGIN DEBUG INFO ---\n")
 
             // begin with most specific information
@@ -270,7 +278,11 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
             }
 
             report.append("--- END DEBUG INFO ---\n")
-            return report.toString()
+
+            report.toString().let {
+                result = it
+                return it
+            }
         }
 
         private fun syncStatus(settings: AccountSettings, authority: String): String {

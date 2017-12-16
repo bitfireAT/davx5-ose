@@ -111,18 +111,18 @@ class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbac
 
     class ServerConfigurationLoader(
             context: Context,
-            val credentials: LoginCredentials
+            private val credentials: LoginCredentials
     ): AsyncTaskLoader<Configuration>(context) {
 
         var resourceFinder: DavResourceFinder? = null
 
         override fun onStartLoading() = forceLoad()
 
-        override fun onCancelLoad(): Boolean {
+        override fun cancelLoadInBackground() {
             thread {
                 resourceFinder?.cancel()
+                resourceFinder = null
             }
-            return true
         }
 
         override fun loadInBackground(): Configuration {

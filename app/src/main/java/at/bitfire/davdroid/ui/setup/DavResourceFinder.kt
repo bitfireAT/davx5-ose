@@ -59,7 +59,7 @@ class DavResourceFinder(
 
     fun cancel() {
         log.warning("Shutting down resource detection")
-        httpClient.okHttpClient.dispatcher().executorService().shutdownNow()
+        httpClient.okHttpClient.dispatcher().executorService().shutdown()
         httpClient.okHttpClient.connectionPool().evictAll()
     }
 

@@ -186,13 +186,13 @@ class AboutActivity: AppCompatActivity() {
             val fileName: String
     ): AsyncTaskLoader<Spanned>(context) {
 
-        var content: Spanned? = null
+        private var content: Spanned? = null
 
         override fun onStartLoading() {
-            if (content == null)
-                forceLoad()
-            else
+            if (content != null)
                 deliverResult(content)
+            else
+                forceLoad()
         }
 
         override fun loadInBackground(): Spanned? {

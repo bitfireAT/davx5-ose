@@ -363,6 +363,33 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             else
                 View.GONE
         } ?: View.GONE
+
+        // ask for permissions
+        val requiredPermissions = mutableSetOf<String>()
+        info?.carddav?.let { carddav ->
+            if (carddav.collections.any { it.type == CollectionInfo.Type.ADDRESS_BOOK }) {
+                requiredPermissions += Manifest.permission.READ_CONTACTS
+                requiredPermissions += Manifest.permission.WRITE_CONTACTS
+            }
+        }
+
+        info?.caldav?.let { caldav ->
+            if (caldav.collections.any { it.type == CollectionInfo.Type.CALENDAR }) {
+                requiredPermissions += Manifest.permission.READ_CALENDAR
+                requiredPermissions += Manifest.permission.WRITE_CALENDAR
+
+                if (LocalTaskList.tasksProviderAvailable(this)) {
+                    requiredPermissions += TaskProvider.PERMISSION_READ_TASKS
+                    requiredPermissions += TaskProvider.PERMISSION_WRITE_TASKS
+                }
+            }
+            if (caldav.collections.any { it.type == CollectionInfo.Type.WEBCAL })
+                requiredPermissions += Manifest.permission.READ_CALENDAR
+        }
+
+        val askPermissions = requiredPermissions.filter { ActivityCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED }
+        if (askPermissions.isNotEmpty())
+            ActivityCompat.requestPermissions(this, askPermissions.toTypedArray(), 0)
     }
 
     override fun onLoaderReset(loader: Loader<AccountInfo>) {
@@ -372,40 +399,55 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
 
     class AccountLoader(
-            val activity: AccountActivity,
+            context: Context,
             val account: Account
-    ): AsyncTaskLoader<AccountInfo>(activity), DavService.RefreshingStatusListener, ServiceConnection, SyncStatusObserver {
+    ): AsyncTaskLoader<AccountInfo>(context), DavService.RefreshingStatusListener, SyncStatusObserver {
 
+        private var syncStatusListener: Any? = null
+
+        private var davServiceConn: ServiceConnection? = null
         private var davService: DavService.InfoBinder? = null
-        private lateinit var syncStatusListener: Any
 
         override fun onStartLoading() {
-            syncStatusListener = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this)
-            context.bindService(Intent(context, DavService::class.java), this, Context.BIND_AUTO_CREATE)
+            // get notified when sync status changes
+            if (syncStatusListener == null)
+                syncStatusListener = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this)
+
+            // bind to DavService to get notified when it's running
+            if (davServiceConn == null) {
+                davServiceConn = object: ServiceConnection {
+                    override fun onServiceConnected(name: ComponentName, service: IBinder) {
+                        // get notified when DavService is running
+                        davService = service as DavService.InfoBinder
+                        service.addRefreshingStatusListener(this@AccountLoader, false)
+
+                        onContentChanged()
+                    }
+
+                    override fun onServiceDisconnected(name: ComponentName) {
+                        davService = null
+                    }
+                }
+                context.bindService(Intent(context, DavService::class.java), davServiceConn, Context.BIND_AUTO_CREATE)
+            } else
+                forceLoad()
         }
 
-        override fun onStopLoading() {
-            davService?.removeRefreshingStatusListener(this)
-            context.unbindService(this)
+        override fun onReset() {
             ContentResolver.removeStatusChangeListener(syncStatusListener)
-        }
 
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            davService = service as DavService.InfoBinder
-            service.addRefreshingStatusListener(this, false)
-
-            forceLoad()
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            davService = null
+            davService?.removeRefreshingStatusListener(this)
+            davServiceConn?.let {
+                context.unbindService(it)
+                davServiceConn = null
+            }
         }
 
         override fun onDavRefreshStatusChanged(id: Long, refreshing: Boolean) =
-                forceLoad()
+                onContentChanged()
 
         override fun onStatusChanged(which: Int) =
-                forceLoad()
+                onContentChanged()
 
         override fun loadInBackground(): AccountInfo {
             val info = AccountInfo()
@@ -456,32 +498,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                     }
                 }
             }
-
-            val requiredPermissions = mutableSetOf<String>()
-            info.carddav?.let { carddav ->
-                if (carddav.collections.any { it.type == CollectionInfo.Type.ADDRESS_BOOK }) {
-                    requiredPermissions += Manifest.permission.READ_CONTACTS
-                    requiredPermissions += Manifest.permission.WRITE_CONTACTS
-                }
-            }
-
-            info.caldav?.let { caldav ->
-                if (caldav.collections.any { it.type == CollectionInfo.Type.CALENDAR }) {
-                    requiredPermissions += Manifest.permission.READ_CALENDAR
-                    requiredPermissions += Manifest.permission.WRITE_CALENDAR
-
-                    if (LocalTaskList.tasksProviderAvailable(context)) {
-                        requiredPermissions += TaskProvider.PERMISSION_READ_TASKS
-                        requiredPermissions += TaskProvider.PERMISSION_WRITE_TASKS
-                    }
-                }
-                if (caldav.collections.any { it.type == CollectionInfo.Type.WEBCAL })
-                    requiredPermissions += Manifest.permission.READ_CALENDAR
-            }
-
-            val askPermissions = requiredPermissions.filter { ActivityCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }
-            if (askPermissions.isNotEmpty())
-                ActivityCompat.requestPermissions(activity, askPermissions.toTypedArray(), 0)
 
             return info
         }

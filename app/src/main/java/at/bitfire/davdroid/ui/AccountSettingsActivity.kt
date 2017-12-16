@@ -293,17 +293,22 @@ class AccountSettingsActivity: AppCompatActivity() {
             val account: Account
     ): SettingsLoader<Pair<ISettings, AccountSettings>?>(context), SyncStatusObserver {
 
-        var listenerHandle: Any? = null
+        private var listenerHandle: Any? = null
 
         override fun onStartLoading() {
             super.onStartLoading()
-            listenerHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this@AccountSettingsLoader)
+
+            if (listenerHandle == null)
+                listenerHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this@AccountSettingsLoader)
         }
 
-        override fun onStopLoading() {
-            super.onStopLoading()
-            listenerHandle?.let { ContentResolver.removeStatusChangeListener(it) }
-            listenerHandle = null
+        override fun onReset() {
+            super.onReset()
+
+            listenerHandle?.let {
+                ContentResolver.removeStatusChangeListener(it)
+                listenerHandle = null
+            }
         }
 
         override fun loadInBackground(): Pair<ISettings, AccountSettings>? {
@@ -320,7 +325,7 @@ class AccountSettingsActivity: AppCompatActivity() {
         }
 
         override fun onStatusChanged(which: Int) {
-            forceLoad()
+            onContentChanged()
         }
 
     }

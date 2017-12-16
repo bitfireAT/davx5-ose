@@ -6,7 +6,7 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid;
+package at.bitfire.davdroid
 
 import android.content.Context
 import android.os.Build
@@ -35,6 +35,23 @@ class HttpClient private constructor(
         private val certManager: CustomCertManager?
 ): Closeable {
 
+    companion object {
+        /** [OkHttpClient] singleton to build all clients from */
+        val sharedClient = OkHttpClient.Builder()
+                // set timeouts
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
+
+                // don't allow redirects by default, because it would break PROPFIND handling
+                .followRedirects(false)
+
+                // add User-Agent to every request
+                .addNetworkInterceptor(UserAgentInterceptor)
+
+                .build()!!
+    }
+
     override fun close() {
         certManager?.close()
     }
@@ -45,21 +62,10 @@ class HttpClient private constructor(
             accountSettings: AccountSettings? = null,
             logger: java.util.logging.Logger = Logger.log
     ) {
-        var certManager: CustomCertManager? = null
-        private val orig = OkHttpClient.Builder()
+        private var certManager: CustomCertManager? = null
+        private val orig = sharedClient.newBuilder()
 
         init {
-            // set timeouts
-            orig.connectTimeout(30, TimeUnit.SECONDS)
-            orig.writeTimeout(30, TimeUnit.SECONDS)
-            orig.readTimeout(120, TimeUnit.SECONDS)
-
-            // don't allow redirects by default, because it would break PROPFIND handling
-            orig.followRedirects(false)
-
-            // add User-Agent to every request
-            orig.addNetworkInterceptor(UserAgentInterceptor)
-
             // add cookie store for non-persistent cookies (some services like Horde use cookies for session tracking)
             orig.cookieJar(MemoryCookieStore())
 
