@@ -8,13 +8,18 @@
 
 package at.bitfire.davdroid;
 
+import android.annotation.TargetApi
+import android.content.Context
+import android.net.ConnectivityManager
+import android.os.Build
 import at.bitfire.davdroid.log.Logger
 import okhttp3.HttpUrl
-import org.xbill.DNS.Record
-import org.xbill.DNS.SRVRecord
-import org.xbill.DNS.TXTRecord
+import org.xbill.DNS.*
 import java.util.*
 
+/**
+ * Some WebDAV and related network utility methods
+ */
 object DavUtils {
 
     @JvmStatic
@@ -37,6 +42,26 @@ object DavUtils {
                 return segment
 
         return "/"
+    }
+
+    fun prepareLookup(context: Context, lookup: Lookup) {
+        @TargetApi(Build.VERSION_CODES.O)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            /* Since Android 8, the system properties net.dns1, net.dns2, ... are not available anymore.
+               The current version of dnsjava relies on these properties to find the default name servers,
+               so we have to add the servers explicitly (fortunately, there's an Android API to
+               get the active DNS servers). */
+            val connectivity = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeLink = connectivity.getLinkProperties(connectivity.activeNetwork)
+            val simpleResolvers = activeLink.dnsServers.map {
+                Logger.log.fine("Using DNS server ${it.hostAddress}")
+                val resolver = SimpleResolver()
+                resolver.setAddress(it)
+                resolver
+            }
+            val resolver = ExtendedResolver(simpleResolvers.toTypedArray())
+            lookup.setResolver(resolver)
+        }
     }
 
     fun selectSRVRecord(records: Array<Record>?): SRVRecord? {

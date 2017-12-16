@@ -299,7 +299,9 @@ class DavResourceFinder(
 
         val query = "_${service.wellKnownName}s._tcp.$domain"
         log.fine("Looking up SRV records for $query")
-        val srv = DavUtils.selectSRVRecord(Lookup(query, Type.SRV).run())
+        val srvLookup = Lookup(query, Type.SRV)
+        DavUtils.prepareLookup(context, srvLookup)
+        val srv = DavUtils.selectSRVRecord(srvLookup.run())
         if (srv != null) {
             // choose SRV record to use (query may return multiple SRV records)
             scheme = "https"
@@ -315,7 +317,9 @@ class DavResourceFinder(
         }
 
         // look for TXT record too (for initial context path)
-        paths.addAll(DavUtils.pathsFromTXTRecords(Lookup(query, Type.TXT).run()))
+        val txtLookup = Lookup(query, Type.TXT)
+        DavUtils.prepareLookup(context, txtLookup)
+        paths.addAll(DavUtils.pathsFromTXTRecords(txtLookup.run()))
 
         // if there's TXT record and if it it's wrong, try well-known
         paths.add("/.well-known/" + service.wellKnownName)
