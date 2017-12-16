@@ -9,6 +9,9 @@
   <string name="please_wait">Bitte warten …</string>
   <string name="send">Senden</string>
   <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
+  <string name="notification_channel_debugging">Fehlersuche</string>
+  <string name="notification_channel_sync_status">Sync-Status</string>
+  <string name="notification_channel_sync_problems">Sync-Probleme</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Akku-Leistungsoptimierung</string>
   <string name="startup_battery_optimization_message">Android kann die DAVdroid-Synchronisierung in ein paar Tagen reduzieren/deaktivieren. Um dies zu verhindern, muss die Akku-Leistungsoptimierung deaktiviert werden.</string>
@@ -43,6 +46,7 @@
   <string name="navigation_drawer_news_updates">Aktuelles</string>
   <string name="navigation_drawer_external_links">Externe Links</string>
   <string name="navigation_drawer_website">Homepage</string>
+  <string name="navigation_drawer_manual">Handbuch</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_forums">Hilfe / Forum</string>
   <string name="navigation_drawer_donate">Spenden</string>
