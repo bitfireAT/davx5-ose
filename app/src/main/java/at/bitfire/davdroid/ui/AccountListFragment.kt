@@ -82,7 +82,9 @@ class AccountListFragment: ListFragment(), LoaderManager.LoaderCallbacks<Array<A
 
         override fun onReset() {
             listener?.let {
-                accountManager.removeOnAccountsUpdatedListener(it)
+                try {
+                    accountManager.removeOnAccountsUpdatedListener(it)
+                } catch(ignored: IllegalArgumentException) {}
                 listener = null
             }
         }
