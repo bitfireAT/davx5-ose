@@ -25,7 +25,7 @@ import java.io.Closeable
 import java.io.File
 import java.net.InetSocketAddress
 import java.net.Proxy
-import java.text.SimpleDateFormat
+import java.text.DateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
@@ -156,7 +156,7 @@ class HttpClient private constructor(
 
     private object UserAgentInterceptor: Interceptor {
 
-        private val userAgentDate = SimpleDateFormat("yyyy/MM/dd", Locale.US).format(Date(BuildConfig.buildTime))
+        private val userAgentDate = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US).format(Date(BuildConfig.buildTime))
         private val userAgent = "DAVdroid/${BuildConfig.VERSION_NAME} ($userAgentDate; dav4android; okhttp3) Android/${Build.VERSION.RELEASE}"
 
         override fun intercept(chain: Interceptor.Chain): Response {

@@ -21,8 +21,8 @@ import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.AndroidTaskListFactory
 import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.ical4android.TaskProvider
-import org.dmfs.provider.tasks.TaskContract.TaskLists
-import org.dmfs.provider.tasks.TaskContract.Tasks
+import org.dmfs.tasks.contract.TaskContract.TaskLists
+import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.io.FileNotFoundException
 
 class LocalTaskList private constructor(
@@ -48,7 +48,7 @@ class LocalTaskList private constructor(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                 return context.packageManager.resolveContentProvider(TaskProvider.ProviderName.OpenTasks.authority, 0) != null
             else {
-                val provider = TaskProvider.acquire(context.contentResolver, TaskProvider.ProviderName.OpenTasks)
+                val provider = TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)
                 provider?.use { return true }
                 return false
             }
