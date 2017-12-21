@@ -9,10 +9,7 @@ package at.bitfire.davdroid
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.ContentResolver
-import android.content.ContentValues
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
@@ -31,10 +28,12 @@ import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.CalendarStorageException
+import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.ContactsStorageException
 import at.bitfire.vcard4android.GroupMethod
 import okhttp3.HttpUrl
 import org.apache.commons.lang3.StringUtils
+import org.dmfs.tasks.contract.TaskContract
 import java.util.*
 import java.util.logging.Level
 
@@ -46,7 +45,7 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
 
     companion object {
 
-        val CURRENT_VERSION = 7
+        val CURRENT_VERSION = 8
         val KEY_SETTINGS_VERSION = "version"
 
         val KEY_USERNAME = "user_name"
@@ -210,9 +209,37 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
             try {
                 val updateProc = this::class.java.getDeclaredMethod("update_${fromVersion}_$toVersion")
                 updateProc.invoke(this)
+
+                Logger.log.info("Account version update successful")
                 accountManager.setUserData(account, KEY_SETTINGS_VERSION, toVersion.toString())
             } catch (e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't update account settings", e)
+            }
+        }
+    }
+
+    @Suppress("unused")
+    private fun update_7_8() {
+        TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)?.let { provider ->
+            // ETag is now in sync_version instead of sync1
+            // UID  is now in _uid         instead of sync2
+            val cursor = provider.client.query(TaskProvider.syncAdapterUri(provider.tasksUri(), account),
+                    arrayOf(TaskContract.Tasks._ID, TaskContract.Tasks.SYNC1, TaskContract.Tasks.SYNC2),
+                    "${TaskContract.Tasks.ACCOUNT_TYPE}=? AND ${TaskContract.Tasks.ACCOUNT_NAME}=?",
+                    arrayOf(account.type, account.name), null)
+            while (cursor.moveToNext()) {
+                val id = cursor.getLong(0)
+                val eTag = cursor.getString(1)
+                val uid = cursor.getString(2)
+                val values = ContentValues(4)
+                values.put(TaskContract.Tasks._UID, uid)
+                values.put(TaskContract.Tasks.SYNC_VERSION, eTag)
+                values.putNull(TaskContract.Tasks.SYNC1)
+                values.putNull(TaskContract.Tasks.SYNC2)
+                Logger.log.log(Level.FINER, "Updating task $id", values)
+                provider.client.update(
+                        TaskProvider.syncAdapterUri(ContentUris.withAppendedId(provider.tasksUri(), id), account),
+                        values, null, null)
             }
         }
     }
@@ -391,7 +418,7 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
                 }
             }
 
-            AndroidTaskList.acquireTaskProvider(context.contentResolver)?.use { provider ->
+            AndroidTaskList.acquireTaskProvider(context)?.use { provider ->
                 try {
                     val taskLists = AndroidTaskList.find(account, provider, LocalTaskList.Factory, null, null)
                     for (taskList in taskLists)

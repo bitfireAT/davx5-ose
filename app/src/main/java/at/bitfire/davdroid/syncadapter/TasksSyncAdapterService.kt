@@ -8,10 +8,18 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.*
+import android.content.pm.PackageManager
 import android.database.DatabaseUtils
+import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
+import android.support.v4.app.NotificationCompat
 import at.bitfire.davdroid.AccountSettings
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
@@ -19,9 +27,10 @@ import at.bitfire.davdroid.model.ServiceDB.Collections
 import at.bitfire.davdroid.model.ServiceDB.Services
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.ISettings
+import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.TaskProvider
-import org.dmfs.provider.tasks.TaskContract
+import org.dmfs.tasks.contract.TaskContract
 import java.util.logging.Level
 
 /**
@@ -38,7 +47,7 @@ class TasksSyncAdapterService: SyncAdapterService() {
 
         override fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
-                val taskProvider = TaskProvider.fromProviderClient(provider)
+                val taskProvider = TaskProvider.fromProviderClient(context, provider)
                 val accountSettings = AccountSettings(context, settings, account)
                 /* don't run sync if
                    - sync conditions (e.g. "sync only in WiFi") are not met AND
@@ -55,8 +64,30 @@ class TasksSyncAdapterService: SyncAdapterService() {
                         it.performSync()
                     }
                 }
+            } catch (e: TaskProvider.ProviderTooOldException) {
+                val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                val notify = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_SYNC_PROBLEMS)
+                        .setSmallIcon(R.drawable.ic_sync_error_notification)
+                        .setContentTitle(context.getString(R.string.sync_error_opentasks_too_old))
+                        .setContentText(context.getString(R.string.sync_error_opentasks_required_version, e.provider.minVersionName, e.installedVersionName))
+                        .setCategory(NotificationCompat.CATEGORY_ERROR)
+
+                try {
+                    val icon = context.packageManager.getApplicationIcon(e.provider.packageName)
+                    if (icon is BitmapDrawable)
+                        notify.setLargeIcon(icon.bitmap)
+                } catch(ignored: PackageManager.NameNotFoundException) {}
+
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${e.provider.packageName}"))
+                if (intent.resolveActivity(context.packageManager) != null)
+                    notify  .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
+                            .setAutoCancel(true)
+
+                nm.notify(Constants.NOTIFICATION_TASK_SYNC, notify.build())
+                syncResult.databaseError = true
             } catch (e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't sync task lists", e)
+                syncResult.databaseError = true
             }
 
             Logger.log.info("Task sync complete")

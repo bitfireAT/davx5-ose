@@ -12,7 +12,7 @@ import android.content.ContentProviderOperation
 import android.content.ContentValues
 import android.provider.CalendarContract.Events
 import at.bitfire.ical4android.*
-import org.dmfs.provider.tasks.TaskContract.Tasks
+import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.io.FileNotFoundException
 import java.text.ParseException
 import java.util.*
@@ -20,8 +20,7 @@ import java.util.*
 class LocalTask: AndroidTask, LocalResource {
 
     companion object {
-        val COLUMN_ETAG = Tasks.SYNC1
-        val COLUMN_UID = Tasks.SYNC2
+        val COLUMN_ETAG = Tasks.SYNC_VERSION
         val COLUMN_SEQUENCE = Tasks.SYNC3
     }
 
@@ -51,7 +50,6 @@ class LocalTask: AndroidTask, LocalResource {
         eTag = values.getAsString(COLUMN_ETAG)
 
         val task = requireNotNull(task)
-        task.uid = values.getAsString(COLUMN_UID)
         task.sequence = values.getAsInteger(COLUMN_SEQUENCE)
     }
 
@@ -61,7 +59,6 @@ class LocalTask: AndroidTask, LocalResource {
         val task = requireNotNull(task)
 
         builder .withValue(Tasks._SYNC_ID, fileName)
-                .withValue(COLUMN_UID, task.uid)
                 .withValue(COLUMN_SEQUENCE, task.sequence)
                 .withValue(COLUMN_ETAG, eTag)
     }
@@ -77,7 +74,7 @@ class LocalTask: AndroidTask, LocalResource {
 
             val values = ContentValues(2)
             values.put(Tasks._SYNC_ID, newFileName)
-            values.put(COLUMN_UID, uid)
+            values.put(Tasks._UID, uid)
             taskList.provider.client.update(taskSyncURI(), values, null, null)
 
             fileName = newFileName
