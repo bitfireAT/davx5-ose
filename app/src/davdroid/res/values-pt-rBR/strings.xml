@@ -8,6 +8,9 @@
   <string name="manage_accounts">Gerenciar contas</string>
   <string name="please_wait">Por favor, aguarde...</string>
   <string name="send">Enviar</string>
+  <string name="notification_channel_debugging">Depuração</string>
+  <string name="notification_channel_sync_status">Status da sincronização</string>
+  <string name="notification_channel_sync_problems">Problemas de sincronização</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Otimização da bateria</string>
   <string name="startup_battery_optimization_message">O Android pode desativar/reduzir a sincronização do DAVdroid depois de alguns dias. Para evitar isso, desligue a otimização da bateria.</string>
@@ -42,6 +45,7 @@
   <string name="navigation_drawer_news_updates">Novidades e atualizações</string>
   <string name="navigation_drawer_external_links">Links externos</string>
   <string name="navigation_drawer_website">Site na Web</string>
+  <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">Perguntas fequentes</string>
   <string name="navigation_drawer_forums">Ajuda / Fóruns</string>
   <string name="navigation_drawer_donate">Doações</string>
