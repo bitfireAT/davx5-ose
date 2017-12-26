@@ -234,6 +234,8 @@
   </plurals>
   <string name="sync_error_permissions">DAVdroid-Berechtigungen</string>
   <string name="sync_error_permissions_text">Zusätzliche Berechtigungen benötigt</string>
+  <string name="sync_error_opentasks_too_old">OpenTasks zu alt</string>
+  <string name="sync_error_opentasks_required_version">Version %1$s benötigt (derzeit %2$s)</string>
   <string name="sync_error_calendar">Kalender-Synchronisierung fehlgeschlagen (%s)</string>
   <string name="sync_error_contacts">Adressbuch-Synchronisierung fehlgeschlagen (%s)</string>
   <string name="sync_error_tasks">Aufgaben-Synchronisierung fehlgeschlagen (%s)</string>
