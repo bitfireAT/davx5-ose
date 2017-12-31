@@ -9,6 +9,7 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.annotation.TargetApi
 import android.content.*
 import android.os.Build
 import android.os.Bundle
@@ -28,6 +29,12 @@ import java.io.FileNotFoundException
 import java.util.*
 import java.util.logging.Level
 
+/**
+ * A local address book. Requires an own Android account, because Android manages contacts per
+ * account and there is no such thing as "address books". So, DAVdroid creates a "DAVdroid
+ * address book" account for every CardDAV address book. These accounts are bound to a
+ * DAVdroid main account.
+ */
 class LocalAddressBook(
         private val context: Context,
         account: Account,
@@ -53,6 +60,13 @@ class LocalAddressBook(
 
             val addressBook = LocalAddressBook(context, account, provider)
             ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
+
+            // set up Contacts Provider Settings
+            val values = ContentValues(2)
+            values.put(ContactsContract.Settings.SHOULD_SYNC, 1)
+            values.put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
+            addressBook.updateSettings(values)
+
             return addressBook
         }
 
@@ -109,6 +123,8 @@ class LocalAddressBook(
     @Throws(ContactsStorageException::class)
     fun update(info: CollectionInfo) {
         val newAccountName = accountName(getMainAccount(), info)
+
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         if (account.name != newAccountName && Build.VERSION.SDK_INT >= 21) {
             val accountManager = AccountManager.get(context)
             val future = accountManager.renameAccount(account, newAccountName, {
@@ -305,15 +321,6 @@ class LocalAddressBook(
         queryGroups(null, null).filter { it.getMembers().isEmpty() }.forEach { group ->
             Logger.log.log(Level.FINE, "Deleting group", group)
             group.delete()
-        }
-    }
-
-    @Throws(ContactsStorageException::class)
-    fun removeGroups() {
-        try {
-            provider!!.delete(syncAdapterURI(Groups.CONTENT_URI), null, null)
-        } catch(e: RemoteException) {
-            throw ContactsStorageException("Couldn't remove all groups", e)
         }
     }
 

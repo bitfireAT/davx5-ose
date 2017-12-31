@@ -13,7 +13,6 @@ import android.content.*
 import android.os.Build
 import android.os.Bundle
 import android.os.RemoteException
-import android.provider.ContactsContract
 import android.provider.ContactsContract.Groups
 import android.support.v4.app.NotificationCompat
 import at.bitfire.dav4android.DavAddressBook
@@ -41,39 +40,39 @@ import java.util.*
 import java.util.logging.Level
 
 /**
- * <p>Synchronization manager for CardDAV collections; handles contacts and groups.</p>
+ * Synchronization manager for CardDAV collections; handles contacts and groups.
  *
- * <p></p>Group handling differs according to the {@link #groupMethod}. There are two basic methods to
- * handle/manage groups:</p>
- * <ul>
- *     <li>{@code CATEGORIES}: groups memberships are attached to each contact and represented as
+ * Group handling differs according to the {@link #groupMethod}. There are two basic methods to
+ * handle/manage groups:
+ *
+ *     1. CATEGORIES: groups memberships are attached to each contact and represented as
  *     "category". When a group is dirty or has been deleted, all its members have to be set to
  *     dirty, too (because they have to be uploaded without the respective category). This
- *     is done in {@link #prepareDirty()}. Empty groups can be deleted without further processing,
- *     which is done in {@link #postProcess()} because groups may become empty after downloading
- *     updated remote contacts.</li>
- *     <li>Groups as separate VCards: individual and group contacts (with a list of member UIDs) are
+ *     is done in [prepareDirty]. Empty groups can be deleted without further processing,
+ *     which is done in [postProcess] because groups may become empty after downloading
+ *     updated remote contacts.
+ *
+ *     2. Groups as separate VCards: individual and group contacts (with a list of member UIDs) are
  *     distinguished. When a local group is dirty, its members don't need to be set to dirty.
- *     <ol>
- *         <li>However, when a contact is dirty, it has
+ *
+ *         * However, when a contact is dirty, it has
  *         to be checked whether its group memberships have changed. In this case, the respective
  *         groups have to be set to dirty. For instance, if contact A is in group G and H, and then
  *         group membership of G is removed, the contact will be set to dirty because of the changed
- *         {@link android.provider.ContactsContract.CommonDataKinds.GroupMembership}. DAVdroid will
+ *         [android.provider.ContactsContract.CommonDataKinds.GroupMembership]. DAVdroid will
  *         then have to check whether the group memberships have actually changed, and if so,
  *         all affected groups have to be set to dirty. To detect changes in group memberships,
- *         DAVdroid always mirrors all {@link android.provider.ContactsContract.CommonDataKinds.GroupMembership}
- *         data rows in respective {@link at.bitfire.vcard4android.CachedGroupMembership} rows.
+ *         DAVdroid always mirrors all [android.provider.ContactsContract.CommonDataKinds.GroupMembership]
+ *         data rows in respective [at.bitfire.vcard4android.CachedGroupMembership] rows.
  *         If the cached group memberships are not the same as the current group member ships, the
  *         difference set (in our example G, because its in the cached memberships, but not in the
- *         actual ones) is marked as dirty. This is done in {@link #prepareDirty()}.</li>
- *         <li>When downloading remote contacts, groups (+ member information) may be received
+ *         actual ones) is marked as dirty. This is done in [prepareDirty].
+ *
+ *         * When downloading remote contacts, groups (+ member information) may be received
  *         by the actual members. Thus, the member lists have to be cached until all VCards
  *         are received. This is done by caching the member UIDs of each group in
- *         {@link LocalGroup#COLUMN_PENDING_MEMBERS}. In {@link #postProcess()},
- *         these "pending memberships" are assigned to the actual contacs and then cleaned up.</li>
- *     </ol>
- * </ul>
+ *         [LocalGroup.COLUMN_PENDING_MEMBERS]. In [postProcess],
+ *         these "pending memberships" are assigned to the actual contacts and then cleaned up.
  */
 class ContactsSyncManager(
         context: Context,
@@ -117,12 +116,6 @@ class ContactsSyncManager(
                 return false
             }
         }
-
-        // set up Contacts Provider Settings
-        val values = ContentValues(2)
-        values.put(ContactsContract.Settings.SHOULD_SYNC, 1)
-        values.put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
-        localAddressBook.updateSettings(values)
 
         collectionURL = HttpUrl.parse(localAddressBook.getURL()) ?: return false
         davCollection = DavAddressBook(httpClient.okHttpClient, collectionURL)
