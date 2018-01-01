@@ -62,7 +62,7 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
 
         val config = arguments.getSerializable(KEY_CONFIG) as DavResourceFinder.Configuration
 
-        v.account_name.setText(if (config.calDAV != null && config.calDAV.email != null)
+        v.account_name.setText(if (config.calDAV?.email != null)
             config.calDAV.email
         else
             config.userName)

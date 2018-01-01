@@ -175,7 +175,7 @@ class AccountSettingsActivity: AppCompatActivity() {
             else
                 prefWifiOnlySSIDs.setSummary(R.string.settings_sync_wifi_only_ssids_off)
             prefWifiOnlySSIDs.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                accountSettings.setSyncWifiOnlySSIDs((newValue as String).split(',').map { StringUtils.trimToNull(it) }.filterNotNull().distinct())
+                accountSettings.setSyncWifiOnlySSIDs((newValue as String).split(',').mapNotNull { StringUtils.trimToNull(it) }.distinct())
                 loaderManager.restartLoader(0, arguments, this)
                 false
             }

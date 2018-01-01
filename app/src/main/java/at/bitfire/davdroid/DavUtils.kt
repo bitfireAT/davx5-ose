@@ -6,7 +6,7 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid;
+package at.bitfire.davdroid
 
 import android.annotation.TargetApi
 import android.content.Context
@@ -37,11 +37,7 @@ object DavUtils {
         val segments = LinkedList<String>(httpUrl.pathSegments())
         Collections.reverse(segments)
 
-        for (segment in segments)
-            if (segment.isNotEmpty())
-                return segment
-
-        return "/"
+        return segments.firstOrNull { it.isNotEmpty() } ?: "/"
     }
 
     fun prepareLookup(context: Context, lookup: Lookup) {

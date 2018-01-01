@@ -131,7 +131,7 @@ class DavResourceFinder(
             val davPrincipal = DavResource(httpClient.okHttpClient, HttpUrl.get(config.principal)!!, log)
             try {
                 davPrincipal.propfind(0, CalendarUserAddressSet.NAME)
-                (davPrincipal.properties[CalendarUserAddressSet.NAME] as CalendarUserAddressSet?)?.let { addressSet ->
+                davPrincipal.properties[CalendarUserAddressSet::class.java]?.let { addressSet ->
                     for (href in addressSet.hrefs)
                         try {
                             val uri = URI(href)
@@ -181,18 +181,16 @@ class DavResourceFinder(
             }
 
             // check for current-user-principal
-            davBase.findProperty(CurrentUserPrincipal.NAME)?.let { (dav, second) ->
-                val currentUserPrincipal = second as CurrentUserPrincipal?
-                currentUserPrincipal?.href?.let {
+            davBase.findProperty(CurrentUserPrincipal::class.java)?.let { (dav, currentUserPrincipal) ->
+                currentUserPrincipal.href?.let {
                     principal = dav.location.resolve(it)
                 }
             }
 
             // check for resource type "principal"
             if (principal == null)
-                for ((dav, second) in davBase.findProperties(ResourceType.NAME)) {
-                    val resourceType = second as ResourceType?
-                    if (resourceType != null && resourceType.types.contains(ResourceType.PRINCIPAL)) {
+                for ((dav, resourceType) in davBase.findProperties(ResourceType::class.java)) {
+                    if (resourceType.types.contains(ResourceType.PRINCIPAL)) {
                         principal = dav.location
                         break
                     }
@@ -217,8 +215,7 @@ class DavResourceFinder(
      */
     fun rememberIfAddressBookOrHomeset(dav: DavResource, config: Configuration.ServiceInfo) {
         // Is there an address book?
-        for ((addressBook, second) in dav.findProperties(ResourceType.NAME)) {
-            val resourceType = second as ResourceType
+        for ((addressBook, resourceType) in dav.findProperties(ResourceType::class.java)) {
             if (resourceType.types.contains(ResourceType.ADDRESSBOOK)) {
                 addressBook.location = UrlUtils.withTrailingSlash(addressBook.location)
                 log.info("Found address book at ${addressBook.location}")
@@ -227,8 +224,7 @@ class DavResourceFinder(
         }
 
         // Is there an addressbook-home-set?
-        for ((dav, second) in dav.findProperties(AddressbookHomeSet.NAME)) {
-            val homeSet = second as AddressbookHomeSet
+        for ((dav, homeSet) in dav.findProperties(AddressbookHomeSet::class.java)) {
             for (href in homeSet.hrefs) {
                 dav.location.resolve(href)?.let {
                     val location = UrlUtils.withTrailingSlash(it)
@@ -239,10 +235,9 @@ class DavResourceFinder(
         }
     }
 
-    fun rememberIfCalendarOrHomeset(dav: DavResource, config: Configuration.ServiceInfo) {
+    private fun rememberIfCalendarOrHomeset(dav: DavResource, config: Configuration.ServiceInfo) {
         // Is the collection a calendar collection?
-        for ((calendar, second) in dav.findProperties(ResourceType.NAME)) {
-            val resourceType = second as ResourceType
+        for ((calendar, resourceType) in dav.findProperties(ResourceType::class.java)) {
             if (resourceType.types.contains(ResourceType.CALENDAR)) {
                 calendar.location = UrlUtils.withTrailingSlash(calendar.location)
                 log.info("Found calendar at ${calendar.location}")
@@ -251,8 +246,7 @@ class DavResourceFinder(
         }
 
         // Is there an calendar-home-set?
-        for ((dav, second) in dav.findProperties(CalendarHomeSet.NAME)) {
-            val homeSet = second as CalendarHomeSet
+        for ((dav, homeSet) in dav.findProperties(CalendarHomeSet::class.java)) {
             for (href in homeSet.hrefs) {
                 dav.location.resolve(href)?.let {
                     val location = UrlUtils.withTrailingSlash(it)
@@ -355,8 +349,7 @@ class DavResourceFinder(
         val dav = DavResource(httpClient.okHttpClient, url, log)
         dav.propfind(0, CurrentUserPrincipal.NAME)
 
-        dav.findProperty(CurrentUserPrincipal.NAME)?.let { (dav, second) ->
-            val currentUserPrincipal = second as CurrentUserPrincipal
+        dav.findProperty(CurrentUserPrincipal::class.java)?.let { (dav, currentUserPrincipal) ->
             currentUserPrincipal.href?.let { href ->
                 dav.location.resolve(href)?.let { principal ->
                     log.info("Found current-user-principal: $principal")

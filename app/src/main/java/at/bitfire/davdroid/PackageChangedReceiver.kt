@@ -50,7 +50,7 @@ class PackageChangedReceiver: BroadcastReceiver() {
                             if (ContentResolver.getIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority) <= 0) {
                                 ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1)
                                 ContentResolver.setSyncAutomatically(account, TaskProvider.ProviderName.OpenTasks.authority, true)
-                                ContentResolver.addPeriodicSync(account, TaskProvider.ProviderName.OpenTasks.authority, Bundle(), Constants.DEFAULT_SYNC_INTERVAL.toLong())
+                                ContentResolver.addPeriodicSync(account, TaskProvider.ProviderName.OpenTasks.authority, Bundle(), Constants.DEFAULT_SYNC_INTERVAL)
                             }
                         } else
                             ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0)

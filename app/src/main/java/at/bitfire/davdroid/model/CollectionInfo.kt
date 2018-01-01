@@ -62,7 +62,7 @@ data class CollectionInfo @JvmOverloads constructor(
 
 
     constructor(dav: DavResource): this(dav.location.toString()) {
-        (dav.properties[ResourceType.NAME] as ResourceType?)?.let { type ->
+        dav.properties[ResourceType::class.java]?.let { type ->
             when {
                 type.types.contains(ResourceType.ADDRESSBOOK) -> this.type = Type.ADDRESS_BOOK
                 type.types.contains(ResourceType.CALENDAR)    -> this.type = Type.CALENDAR
@@ -70,33 +70,33 @@ data class CollectionInfo @JvmOverloads constructor(
             }
         }
 
-        (dav.properties[CurrentUserPrivilegeSet.NAME] as CurrentUserPrivilegeSet?)?.let { privilegeSet ->
+        dav.properties[CurrentUserPrivilegeSet::class.java]?.let { privilegeSet ->
             readOnly = !privilegeSet.mayWriteContent
         }
 
-        (dav.properties[DisplayName.NAME] as DisplayName?)?.let {
+        dav.properties[DisplayName::class.java]?.let {
             if (!it.displayName.isNullOrEmpty())
                 displayName = it.displayName
         }
 
         when (type) {
             Type.ADDRESS_BOOK -> {
-                (dav.properties[AddressbookDescription.NAME] as AddressbookDescription?)?.let { description = it.description }
+                dav.properties[AddressbookDescription::class.java]?.let { description = it.description }
             }
             Type.CALENDAR, Type.WEBCAL -> {
-                (dav.properties[CalendarDescription.NAME] as CalendarDescription?)?.let { description = it.description }
-                (dav.properties[CalendarColor.NAME] as CalendarColor?)?.let { color = it.color }
-                (dav.properties[CalendarTimezone.NAME] as CalendarTimezone?)?.let { timeZone = it.vTimeZone }
+                dav.properties[CalendarDescription::class.java]?.let { description = it.description }
+                dav.properties[CalendarColor::class.java]?.let { color = it.color }
+                dav.properties[CalendarTimezone::class.java]?.let { timeZone = it.vTimeZone }
 
                 if (type == Type.CALENDAR) {
                     supportsVEVENT = true
                     supportsVTODO = true
-                    (dav.properties[SupportedCalendarComponentSet.NAME] as SupportedCalendarComponentSet?)?.let {
+                    dav.properties[SupportedCalendarComponentSet::class.java]?.let {
                         supportsVEVENT = it.supportsEvents
                         supportsVTODO = it.supportsTasks
                     }
                 } else { // Type.WEBCAL
-                    (dav.properties[Source.NAME] as Source?)?.let { source = it.hrefs.firstOrNull() }
+                    dav.properties[Source::class.java]?.let { source = it.hrefs.firstOrNull() }
                     supportsVEVENT = true
                 }
             }

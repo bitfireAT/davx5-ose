@@ -56,9 +56,7 @@ class LocalCalendar private constructor(
             // flag as visible & synchronizable at creation, might be changed by user at any time
             values.put(Calendars.VISIBLE, 1)
             values.put(Calendars.SYNC_EVENTS, 1)
-            val uri = create(account, provider, values)
-
-            return uri
+            return create(account, provider, values)
         }
 
         private fun valuesFromCollectionInfo(info: CollectionInfo, withColor: Boolean): ContentValues {

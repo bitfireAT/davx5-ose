@@ -336,7 +336,7 @@ abstract class SyncManager(
                 Logger.log.log(Level.INFO, "Resource has been modified on the server before upload, ignoring", e)
             }
 
-            val newETag = remote.properties[GetETag.NAME] as GetETag?
+            val newETag = remote.properties[GetETag::class.java]
             val eTag: String?
             if (newETag != null) {
                 eTag = newETag.eTag
@@ -362,7 +362,7 @@ abstract class SyncManager(
      */
     protected open fun checkSyncState(): Boolean {
         // check CTag (ignore on manual sync)
-        (davCollection.properties[GetCTag.NAME] as GetCTag?)?.let { remoteCTag = it.cTag }
+        davCollection.properties[GetCTag::class.java]?.let { remoteCTag = it.cTag }
 
         val localCTag = if (extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL)) {
             Logger.log.info("Manual sync, ignoring CTag")
@@ -423,7 +423,7 @@ abstract class SyncManager(
             } else {
                 // contact is still on server, check whether it has been updated remotely
                 val localETag = local.eTag
-                val getETag = remote.properties[GetETag.NAME] as GetETag?
+                val getETag = remote.properties[GetETag::class.java]
                 val remoteETag = getETag?.eTag ?: throw DavException("Server didn't provide ETag")
                 if (remoteETag == localETag) {
                     Logger.log.fine("$name has not been changed on server (ETag still $remoteETag)")

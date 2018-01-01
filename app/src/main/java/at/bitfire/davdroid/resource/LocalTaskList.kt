@@ -102,7 +102,7 @@ class LocalTaskList private constructor(
 
     @Throws(CalendarStorageException::class)
     fun update(info: CollectionInfo, updateColor: Boolean) {
-        update(valuesFromCollectionInfo(info, updateColor));
+        update(valuesFromCollectionInfo(info, updateColor))
     }
 
 

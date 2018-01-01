@@ -162,13 +162,13 @@ class DavService: Service() {
                 when (serviceType) {
                     Services.SERVICE_CARDDAV -> {
                         dav.propfind(0, AddressbookHomeSet.NAME, GroupMembership.NAME)
-                        for ((resource, addressbookHomeSet) in dav.findProperties(AddressbookHomeSet.NAME) as List<Pair<DavResource, AddressbookHomeSet>>)
+                        for ((resource, addressbookHomeSet) in dav.findProperties(AddressbookHomeSet::class.java))
                             for (href in addressbookHomeSet.hrefs)
                                 resource.location.resolve(href)?.let { homeSets += UrlUtils.withTrailingSlash(it) }
                     }
                     Services.SERVICE_CALDAV -> {
                         dav.propfind(0, CalendarHomeSet.NAME, CalendarProxyReadFor.NAME, CalendarProxyWriteFor.NAME, GroupMembership.NAME)
-                        for ((resource, calendarHomeSet) in dav.findProperties(CalendarHomeSet.NAME) as List<Pair<DavResource, CalendarHomeSet>>)
+                        for ((resource, calendarHomeSet) in dav.findProperties(CalendarHomeSet::class.java))
                             for (href in calendarHomeSet.hrefs)
                                 resource.location.resolve(href)?.let { homeSets.add(UrlUtils.withTrailingSlash(it)) }
                     }
@@ -213,19 +213,19 @@ class DavService: Service() {
                             queryHomeSets(principal)
 
                             // refresh home sets: calendar-proxy-read/write-for
-                            for ((resource, proxyRead) in principal.findProperties(CalendarProxyReadFor.NAME) as List<Pair<DavResource, CalendarProxyReadFor>>)
+                            for ((resource, proxyRead) in principal.findProperties(CalendarProxyReadFor::class.java))
                                 for (href in proxyRead.hrefs) {
                                     Logger.log.fine("Principal is a read-only proxy for $href, checking for home sets")
                                     resource.location.resolve(href)?.let { queryHomeSets(DavResource(httpClient, it)) }
                                 }
-                            for ((resource, proxyWrite) in principal.findProperties(CalendarProxyWriteFor.NAME) as List<Pair<DavResource, CalendarProxyWriteFor>>)
+                            for ((resource, proxyWrite) in principal.findProperties(CalendarProxyWriteFor::class.java))
                                 for (href in proxyWrite.hrefs) {
                                     Logger.log.fine("Principal is a read/write proxy for $href, checking for home sets")
                                     resource.location.resolve(href)?.let { queryHomeSets(DavResource(httpClient, it)) }
                                 }
 
                             // refresh home sets: direct group memberships
-                            (principal.properties[GroupMembership.NAME] as GroupMembership?)?.let { groupMembership ->
+                            principal.properties[GroupMembership::class.java]?.let { groupMembership ->
                                 for (href in groupMembership.hrefs) {
                                     Logger.log.fine("Principal is member of group $href, checking for home sets")
                                     principal.location.resolve(href)?.let { url ->

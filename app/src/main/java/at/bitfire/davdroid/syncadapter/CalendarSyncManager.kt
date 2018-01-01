@@ -136,7 +136,7 @@ class CalendarSyncManager(
                 val body = remote.get("text/calendar")
 
                 // CalDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc4791#section-5.3.4]
-                val eTag = remote.properties[GetETag.NAME] as GetETag?
+                val eTag = remote.properties[GetETag::class.java]
                 if (eTag == null || eTag.eTag.isNullOrEmpty())
                     throw DavException("Received CalDAV GET response without ETag for ${remote.location}")
 
@@ -154,10 +154,10 @@ class CalendarSyncManager(
                 for (remote in davCollection.members) {
                     currentDavResource = remote
 
-                    val eTag = (remote.properties[GetETag.NAME] as GetETag?)?.eTag
+                    val eTag = remote.properties[GetETag::class.java]?.eTag
                             ?: throw DavException("Received multi-get response without ETag")
 
-                    val calendarData = remote.properties[CalendarData.NAME] as CalendarData?
+                    val calendarData = remote.properties[CalendarData::class.java]
                     val iCalendar = calendarData?.iCalendar
                             ?: throw DavException("Received multi-get response without event data")
 
