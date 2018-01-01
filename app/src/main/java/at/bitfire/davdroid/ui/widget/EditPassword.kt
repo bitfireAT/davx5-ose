@@ -20,7 +20,7 @@ class EditPassword(
         context: Context,
         attrs: AttributeSet?
 ): LinearLayout(context, attrs) {
-    val NS_ANDROID = "http://schemas.android.com/apk/res/android";
+    val NS_ANDROID = "http://schemas.android.com/apk/res/android"
 
     constructor(context: Context): this(context, null)
 

@@ -14,18 +14,18 @@ open class DefaultsProvider(
         private val allowOverride: Boolean = true
 ): Provider {
 
-    open val booleanDefaults = mapOf<String, Boolean>(
+    open val booleanDefaults = mapOf(
             Pair(App.DISTRUST_SYSTEM_CERTIFICATES, false),
             Pair(App.OVERRIDE_PROXY, false)
     )
 
-    open val intDefaults = mapOf<String, Int>(
+    open val intDefaults = mapOf(
             Pair(App.OVERRIDE_PROXY_PORT, App.OVERRIDE_PROXY_PORT_DEFAULT)
     )
 
     open val longDefaults = mapOf<String, Long>()
 
-    open val stringDefaults = mapOf<String, String>(
+    open val stringDefaults = mapOf(
             Pair(App.OVERRIDE_PROXY_HOST, App.OVERRIDE_PROXY_HOST_DEFAULT)
     )
 

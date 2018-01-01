@@ -8,8 +8,8 @@
 
 package at.bitfire.davdroid.log
 
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
+import java.util.logging.Handler
+import java.util.logging.LogRecord
 
 class StringHandler: Handler() {
 

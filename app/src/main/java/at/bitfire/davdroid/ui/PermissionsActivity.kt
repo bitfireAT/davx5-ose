@@ -35,12 +35,12 @@ class PermissionsActivity: AppCompatActivity() {
     private fun refresh() {
         val noCalendarPermissions =
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED;
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED
         calendar_permissions.visibility = if (noCalendarPermissions) View.VISIBLE else View.GONE
 
         val noContactsPermissions =
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED;
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED
         contacts_permissions.visibility = if (noContactsPermissions) View.VISIBLE else View.GONE
 
         val noTaskPermissions: Boolean
@@ -50,7 +50,7 @@ class PermissionsActivity: AppCompatActivity() {
                     ActivityCompat.checkSelfPermission(this, TaskProvider.PERMISSION_WRITE_TASKS) != PackageManager.PERMISSION_GRANTED
             findViewById<View>(R.id.opentasks_permissions).visibility = if (noTaskPermissions) View.VISIBLE else View.GONE
         } else {
-            findViewById<View>(R.id.opentasks_permissions).visibility = View.GONE;
+            findViewById<View>(R.id.opentasks_permissions).visibility = View.GONE
             noTaskPermissions = false
         }
 

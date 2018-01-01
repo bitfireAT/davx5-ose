@@ -121,7 +121,7 @@ class CreateCalendarActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks
 
         // select system time zone
         val defaultTimeZone = TimeZone.getDefault().id
-        for (i in 0 .. timeZones.size - 1)
+        for (i in 0 until timeZones.size)
             if (timeZones[i] == defaultTimeZone) {
                 time_zone.setSelection(i)
                 break

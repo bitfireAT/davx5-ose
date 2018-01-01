@@ -94,6 +94,7 @@ class ContactsSyncManager(
     private var numDiscarded = 0
 
     private var hasVCard4 = false
+    private var hasCollectionSync = false
     private val groupMethod = accountSettings.getGroupMethod()
 
 
@@ -125,11 +126,18 @@ class ContactsSyncManager(
 
     override fun queryCapabilities() {
         // prepare remote address book
-        davCollection.propfind(0, SupportedAddressData.NAME, GetCTag.NAME)
-        (davCollection.properties[SupportedAddressData.NAME] as SupportedAddressData?)?.let {
+        davCollection.propfind(0, SupportedAddressData.NAME, GetCTag.NAME, SupportedReportSet.NAME)
+
+        val properties = davCollection.properties
+        properties[SupportedAddressData::class.java]?.let {
             hasVCard4 = it.hasVCard4()
         }
         Logger.log.info("Server advertises VCard/4 support: $hasVCard4")
+
+        properties[SupportedReportSet::class.java]?.let {
+            hasCollectionSync = it.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+        }
+        Logger.log.info("Server advertises collection synchronization support: $hasCollectionSync")
 
         Logger.log.info("Contact group method: $groupMethod")
         // in case of GROUP_VCARDs, treat groups as contacts in the local address book
@@ -286,8 +294,12 @@ class ContactsSyncManager(
         remoteResources = HashMap(davCollection.members.size)
         for (vCard in davCollection.members) {
             // ignore member collections
-            val type = vCard.properties[ResourceType.NAME] as ResourceType?
-            if (type != null && type.types.contains(ResourceType.COLLECTION))
+            var ignore = false
+            vCard.properties[ResourceType::class.java]?.let { type ->
+                if (type.types.contains(ResourceType.COLLECTION))
+                    ignore = true
+            }
+            if (ignore)
                 continue
 
             val fileName = vCard.fileName()
@@ -319,7 +331,7 @@ class ContactsSyncManager(
                 val body = remote.get("text/vcard;version=4.0, text/vcard;charset=utf-8;q=0.8, text/vcard;q=0.5")
 
                 // CardDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc6352#section-6.3.2.3]
-                val eTag = remote.properties[GetETag.NAME] as GetETag?
+                val eTag = remote.properties[GetETag::class.java]
                 if (eTag == null || eTag.eTag.isNullOrEmpty())
                     throw DavException("Received CardDAV GET response without ETag for ${remote.location}")
 
@@ -337,10 +349,10 @@ class ContactsSyncManager(
                 for (remote in davCollection.members) {
                     currentDavResource = remote
 
-                    val eTag = (remote.properties[GetETag.NAME] as GetETag?)?.eTag
+                    val eTag = remote.properties[GetETag::class.java]?.eTag
                             ?: throw DavException("Received multi-get response without ETag")
 
-                    val addressData = remote.properties[AddressData.NAME] as AddressData?
+                    val addressData = remote.properties[AddressData::class.java]
                     val vCard = addressData?.vCard
                             ?: throw DavException("Received multi-get response without address data")
 

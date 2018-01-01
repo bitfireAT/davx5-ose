@@ -37,7 +37,7 @@ class MaximizedListView(
         else {
             adapter?.let { listAdapter ->
                 val widthSpec = View.MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY)
-                for (i in 0 .. listAdapter.count - 1) {
+                for (i in 0 until listAdapter.count) {
                     val listItem = listAdapter.getView(i, null, this)
                     listItem.measure(widthSpec, View.MeasureSpec.UNSPECIFIED)
                     height += listItem.measuredHeight

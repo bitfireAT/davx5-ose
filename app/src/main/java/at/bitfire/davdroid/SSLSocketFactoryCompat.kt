@@ -54,7 +54,7 @@ class SSLSocketFactoryCompat(
                         protocols = _protocols.toTypedArray()
 
                         /* set up reasonable cipher suites */
-                        val knownCiphers = arrayOf<String>(
+                        val knownCiphers = arrayOf(
                                 // TLS 1.2
                                 "TLS_RSA_WITH_AES_256_GCM_SHA384",
                                 "TLS_RSA_WITH_AES_128_GCM_SHA256",

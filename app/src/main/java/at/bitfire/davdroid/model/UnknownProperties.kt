@@ -6,9 +6,9 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid.model;
+package at.bitfire.davdroid.model
 
-import android.provider.ContactsContract.RawContacts;
+import android.provider.ContactsContract.RawContacts
 
 object UnknownProperties {
 

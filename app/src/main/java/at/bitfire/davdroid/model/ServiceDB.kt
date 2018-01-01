@@ -193,7 +193,7 @@ class ServiceDB {
                         // print columns
                         val cols = cursor.columnCount
                         sb.append("\t| ")
-                        for (i in 0 .. cols-1)
+                        for (i in 0 until cols)
                             sb  .append(" ")
                                 .append(cursor.getColumnName(i))
                                 .append(" |")
@@ -202,7 +202,7 @@ class ServiceDB {
                         // print rows
                         while (cursor.moveToNext()) {
                             sb.append("\t| ")
-                            for (i in 0 .. cols-1) {
+                            for (i in 0 until cols) {
                                 sb.append(" ")
                                 try {
                                     val value = cursor.getString(i)
