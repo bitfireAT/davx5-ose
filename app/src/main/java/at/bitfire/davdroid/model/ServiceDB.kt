@@ -127,7 +127,7 @@ class ServiceDB {
 
         override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
             for (upgradeFrom in oldVersion until newVersion) {
-                val upgradeTo = oldVersion + 1
+                val upgradeTo = upgradeFrom + 1
                 Logger.log.info("Upgrading database from version $upgradeFrom to $upgradeTo")
                 try {
                     val upgradeProc = this::class.java.getDeclaredMethod("upgrade_${upgradeFrom}_$upgradeTo", SQLiteDatabase::class.java)
