@@ -94,7 +94,6 @@ class ContactsSyncManager(
     private var numDiscarded = 0
 
     private var hasVCard4 = false
-    private var hasCollectionSync = false
     private val groupMethod = accountSettings.getGroupMethod()
 
 
@@ -126,18 +125,13 @@ class ContactsSyncManager(
 
     override fun queryCapabilities() {
         // prepare remote address book
-        davCollection.propfind(0, SupportedAddressData.NAME, GetCTag.NAME, SupportedReportSet.NAME)
+        davCollection.propfind(0, SupportedAddressData.NAME, GetCTag.NAME)
 
         val properties = davCollection.properties
         properties[SupportedAddressData::class.java]?.let {
             hasVCard4 = it.hasVCard4()
         }
         Logger.log.info("Server advertises VCard/4 support: $hasVCard4")
-
-        properties[SupportedReportSet::class.java]?.let {
-            hasCollectionSync = it.reports.contains(SupportedReportSet.SYNC_COLLECTION)
-        }
-        Logger.log.info("Server advertises collection synchronization support: $hasCollectionSync")
 
         Logger.log.info("Contact group method: $groupMethod")
         // in case of GROUP_VCARDs, treat groups as contacts in the local address book
