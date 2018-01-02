@@ -233,6 +233,8 @@
   </plurals>
   <string name="sync_error_permissions">Permissões do DAVdroid</string>
   <string name="sync_error_permissions_text">É necessário permissões adicionais</string>
+  <string name="sync_error_opentasks_too_old">A versão do OpenTasks é muito antiga</string>
+  <string name="sync_error_opentasks_required_version">Versão necessária: %1$s (atual %2$s)</string>
   <string name="sync_error_calendar">Falha na sincronização do calendário (%s)</string>
   <string name="sync_error_contacts">Falha na sincronização do livro de endereços (%s)</string>
   <string name="sync_error_tasks">Falha na sincronização das tarefas (%s)</string>
