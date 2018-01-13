@@ -16,14 +16,11 @@ import java.io.IOException;
 import java.net.Socket;
 
 import javax.net.ssl.SSLSocket;
-import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
 
 import at.bitfire.cert4android.CustomCertManager;
 import okhttp3.mockwebserver.MockWebServer;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
-import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static junit.framework.TestCase.assertFalse;
 import static org.apache.commons.lang3.ArrayUtils.contains;
 import static org.junit.Assert.assertTrue;
@@ -31,13 +28,13 @@ import static org.junit.Assert.assertTrue;
 public class SSLSocketFactoryCompatTest {
 
     CustomCertManager certMgr;
-    SSLSocketFactoryCompat factory;
+    CustomTlsSocketFactory factory;
     MockWebServer server = new MockWebServer();
 
     @Before
     public void startServer() throws Exception {
         certMgr = new CustomCertManager(getInstrumentation().getContext(), false, true);
-        factory = new SSLSocketFactoryCompat(certMgr);
+        factory = new CustomTlsSocketFactory(null, certMgr);
         server.start();
     }
 

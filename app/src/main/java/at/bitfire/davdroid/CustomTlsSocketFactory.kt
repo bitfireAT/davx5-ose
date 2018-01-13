@@ -15,12 +15,15 @@ import java.net.InetAddress
 import java.net.Socket
 import java.security.GeneralSecurityException
 import java.util.*
-import javax.net.ssl.SSLContext
-import javax.net.ssl.SSLSocket
-import javax.net.ssl.SSLSocketFactory
-import javax.net.ssl.X509TrustManager
+import javax.net.ssl.*
 
-class SSLSocketFactoryCompat(
+/**
+ * Custom TLS socket factory with support for
+ *   - enabling/disabling algorithms depending on the Android version,
+ *   - client certificate authentication
+ */
+class CustomTlsSocketFactory(
+        keyManager: KeyManager?,
         trustManager: X509TrustManager
 ): SSLSocketFactory() {
 
@@ -105,7 +108,10 @@ class SSLSocketFactoryCompat(
     init {
         try {
             val sslContext = SSLContext.getInstance("TLS")
-            sslContext.init(null, arrayOf(trustManager), null)
+            sslContext.init(
+                    if (keyManager != null) arrayOf(keyManager) else null,
+                    arrayOf(trustManager),
+                    null)
             delegate = sslContext.socketFactory
         } catch (e: GeneralSecurityException) {
             throw IllegalStateException()      // system has no TLS

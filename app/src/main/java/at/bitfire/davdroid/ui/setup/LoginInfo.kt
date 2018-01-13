@@ -10,34 +10,35 @@ package at.bitfire.davdroid.ui.setup
 
 import android.os.Parcel
 import android.os.Parcelable
+import at.bitfire.davdroid.model.Credentials
 import java.net.URI
 
-data class LoginCredentials(
-        val uri: URI,
-        val userName: String,
-        val password: String
+data class LoginInfo(
+        @JvmField val uri: URI,
+        @JvmField val credentials: Credentials
 ): Parcelable {
+
+    constructor(uri: URI, userName: String? = null, password: String? = null, certificateAlias: String? = null):
+        this(uri, Credentials(userName, password, certificateAlias))
 
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeSerializable(uri)
-        dest.writeString(userName)
-        dest.writeString(password)
+        dest.writeSerializable(credentials)
     }
 
     companion object {
 
         @JvmField
-        val CREATOR = object: Parcelable.Creator<LoginCredentials> {
+        val CREATOR = object: Parcelable.Creator<LoginInfo> {
             override fun createFromParcel(source: Parcel) =
-                    LoginCredentials(
+                    LoginInfo(
                         source.readSerializable() as URI,
-                        source.readString(),
-                        source.readString()
+                        source.readSerializable() as Credentials
                     )
 
-            override fun newArray(size: Int) = arrayOfNulls<LoginCredentials>(size)
+            override fun newArray(size: Int) = arrayOfNulls<LoginInfo>(size)
         }
 
     }

@@ -62,10 +62,9 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
 
         val config = arguments.getSerializable(KEY_CONFIG) as DavResourceFinder.Configuration
 
-        v.account_name.setText(if (config.calDAV?.email != null)
-            config.calDAV.email
-        else
-            config.userName)
+        v.account_name.setText(config.calDAV?.email ?:
+                config.credentials.userName ?:
+                config.credentials.certificateAlias)
 
         // CardDAV-specific
         v.carddav.visibility = if (config.cardDAV != null) View.VISIBLE else View.GONE
@@ -125,11 +124,11 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
         val settings = settings ?: return false
 
         // create Android account
-        val userData = AccountSettings.initialUserData(config.userName)
+        val userData = AccountSettings.initialUserData(config.credentials)
         Logger.log.log(Level.INFO, "Creating Android account with initial config", arrayOf(account, userData))
 
         val accountManager = AccountManager.get(activity)
-        if (!accountManager.addAccountExplicitly(account, config.password, userData))
+        if (!accountManager.addAccountExplicitly(account, config.credentials.password, userData))
             return false
 
         // add entries for account to service DB

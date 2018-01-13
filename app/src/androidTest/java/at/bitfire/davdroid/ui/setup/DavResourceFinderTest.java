@@ -22,6 +22,7 @@ import at.bitfire.dav4android.property.AddressbookHomeSet;
 import at.bitfire.dav4android.property.ResourceType;
 import at.bitfire.davdroid.HttpClient;
 import at.bitfire.davdroid.log.Logger;
+import at.bitfire.davdroid.model.Credentials;
 import at.bitfire.davdroid.ui.setup.DavResourceFinder.Configuration.ServiceInfo;
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
@@ -40,7 +41,7 @@ public class DavResourceFinderTest {
 
     DavResourceFinder finder;
     HttpClient client;
-    LoginCredentials credentials;
+    LoginInfo loginInfo;
 
     private static final String
             PATH_NO_DAV = "/nodav",
@@ -58,11 +59,11 @@ public class DavResourceFinderTest {
         server.setDispatcher(new TestDispatcher());
         server.start();
 
-        credentials = new LoginCredentials(URI.create("/"), "mock", "12345");
-        finder = new DavResourceFinder(getTargetContext(), credentials);
+        loginInfo = new LoginInfo(URI.create("/"), new Credentials("mock", "12345"));
+        finder = new DavResourceFinder(getTargetContext(), loginInfo);
 
         client = new HttpClient.Builder()
-                .addAuthentication(null, credentials.getUserName(), credentials.getPassword())
+                .addAuthentication(null, loginInfo.credentials)
                 .build();
     }
 
