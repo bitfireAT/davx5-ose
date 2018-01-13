@@ -17,6 +17,7 @@ import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.log.StringHandler
 import at.bitfire.davdroid.model.CollectionInfo
+import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.settings.Settings
 import okhttp3.HttpUrl
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder
@@ -34,7 +35,7 @@ import java.util.logging.Logger
 
 class DavResourceFinder(
         val context: Context,
-        private val credentials: LoginCredentials
+        private val loginInfo: LoginInfo
 ): Closeable {
 
     enum class Service(val wellKnownName: String) {
@@ -53,7 +54,7 @@ class DavResourceFinder(
 
     private val settings = Settings.getInstance(context)
     private val httpClient: HttpClient = HttpClient.Builder(context, settings, logger = log)
-            .addAuthentication(null, credentials.userName, credentials.password)
+            .addAuthentication(null, loginInfo.credentials)
             .setForeground(true)
             .build()
 
@@ -74,7 +75,7 @@ class DavResourceFinder(
         val calDavConfig = findInitialConfiguration(Service.CALDAV)
 
         return Configuration(
-                credentials.userName, credentials.password,
+                loginInfo.credentials,
                 cardDavConfig, calDavConfig,
                 logBuffer.toString()
         )
@@ -82,7 +83,7 @@ class DavResourceFinder(
 
     private fun findInitialConfiguration(service: Service): Configuration.ServiceInfo? {
         // user-given base URI (either mailto: URI or http(s):// URL)
-        val baseURI = credentials.uri
+        val baseURI = loginInfo.uri
 
         // domain for service discovery
         var discoveryFQDN: String? = null
@@ -371,8 +372,7 @@ class DavResourceFinder(
     // data classes
 
     class Configuration(
-            val userName: String,
-            val password: String,
+            val credentials: Credentials,
 
             val cardDAV: ServiceInfo?,
             val calDAV: ServiceInfo?,

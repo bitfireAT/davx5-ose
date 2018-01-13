@@ -23,7 +23,7 @@ class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbac
     companion object {
         val ARG_LOGIN_CREDENTIALS = "credentials"
 
-        fun newInstance(credentials: LoginCredentials): DetectConfigurationFragment {
+        fun newInstance(credentials: LoginInfo): DetectConfigurationFragment {
             val frag = DetectConfigurationFragment()
             val args = Bundle(1)
             args.putParcelable(ARG_LOGIN_CREDENTIALS, credentials)
@@ -111,7 +111,7 @@ class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbac
 
     class ServerConfigurationLoader(
             context: Context,
-            private val credentials: LoginCredentials
+            private val credentials: LoginInfo
     ): AsyncTaskLoader<Configuration>(context) {
 
         var resourceFinder: DavResourceFinder? = null

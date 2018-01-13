@@ -18,6 +18,7 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
+import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.ServiceDB.*
 import at.bitfire.davdroid.model.ServiceDB.Collections
@@ -49,6 +50,7 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
         val KEY_SETTINGS_VERSION = "version"
 
         val KEY_USERNAME = "user_name"
+        val KEY_CERTIFICATE_ALIAS = "certificate_alias"
 
         val KEY_WIFI_ONLY = "wifi_only"               // sync on WiFi only (default: false)
         val KEY_WIFI_ONLY_SSIDS = "wifi_only_ssids"   // restrict sync to specific WiFi SSIDs
@@ -80,10 +82,17 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
         @JvmField
         val SYNC_INTERVAL_MANUALLY = -1L
 
-        fun initialUserData(userName: String): Bundle {
+        fun initialUserData(credentials: Credentials): Bundle {
             val bundle = Bundle(2)
             bundle.putString(KEY_SETTINGS_VERSION, CURRENT_VERSION.toString())
-            bundle.putString(KEY_USERNAME, userName)
+
+            when (credentials.type) {
+                Credentials.Type.UsernamePassword ->
+                    bundle.putString(KEY_USERNAME, credentials.userName)
+                Credentials.Type.ClientCertificate ->
+                    bundle.putString(KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
+            }
+
             return bundle
         }
 
@@ -110,11 +119,17 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
 
     // authentication settings
 
-    fun username(): String? = accountManager.getUserData(account, KEY_USERNAME)
-    fun username(userName: String) = accountManager.setUserData(account, KEY_USERNAME, userName)
+    fun credentials() = Credentials(
+            accountManager.getUserData(account, KEY_USERNAME),
+            accountManager.getPassword(account),
+            accountManager.getUserData(account, KEY_CERTIFICATE_ALIAS)
+    )
 
-    fun password(): String? = accountManager.getPassword(account)
-    fun password(password: String) = accountManager.setPassword(account, password)
+    fun credentials(credentials: Credentials) {
+        accountManager.setUserData(account, KEY_USERNAME, credentials.userName)
+        accountManager.setPassword(account, credentials.password)
+        accountManager.setUserData(account, KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
+    }
 
 
     // sync. settings

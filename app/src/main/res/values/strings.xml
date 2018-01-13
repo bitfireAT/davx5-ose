@@ -150,10 +150,15 @@
     <string name="login_password_required">Password required</string>
     <string name="login_type_url">Login with URL and user name</string>
     <string name="login_url_must_be_http_or_https">URL must begin with http(s)://</string>
+    <string name="login_url_must_be_https">URL must begin with https://</string>
     <string name="login_url_host_name_required">Host name required</string>
     <string name="login_user_name">User name</string>
     <string name="login_user_name_required">User name required</string>
     <string name="login_base_url">Base URL</string>
+    <string name="login_type_url_certificate">Login with URL and client certificate</string>
+    <string name="login_select_certificate">Select certificate</string>
+    <string name="login_selected_certificate">Certificate: %s</string>
+    <string name="login_selected_certificate_empty">No certificate selected</string>
     <string name="login_login">Login</string>
     <string name="login_back">Back</string>
     <string name="login_create_account">Create account</string>
@@ -176,6 +181,7 @@
     <string name="settings_password">Password</string>
     <string name="settings_password_summary">Update the password according to your server.</string>
     <string name="settings_enter_password">Enter your password:</string>
+    <string name="settings_certificate_alias">Client certificate alias</string>
     <string name="settings_sync">Synchronization</string>
     <string name="settings_sync_interval_contacts">Contacts sync. interval</string>
     <string name="settings_sync_summary_manually">Only manually</string>

@@ -10,10 +10,12 @@ package at.bitfire.davdroid
 
 import android.content.Context
 import android.os.Build
+import android.security.KeyChain
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.dav4android.BasicDigestAuthHandler
 import at.bitfire.dav4android.UrlUtils
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.settings.ISettings
 import okhttp3.Cache
 import okhttp3.Interceptor
@@ -25,10 +27,17 @@ import java.io.Closeable
 import java.io.File
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.net.Socket
+import java.security.KeyStore
+import java.security.Principal
 import java.text.DateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
+import javax.net.ssl.KeyManager
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509ExtendedKeyManager
+import javax.net.ssl.X509TrustManager
 
 class HttpClient private constructor(
         val okHttpClient: OkHttpClient,
@@ -60,9 +69,11 @@ class HttpClient private constructor(
             val context: Context? = null,
             val settings: ISettings? = null,
             accountSettings: AccountSettings? = null,
-            logger: java.util.logging.Logger = Logger.log
+            val logger: java.util.logging.Logger = Logger.log
     ) {
         private var certManager: CustomCertManager? = null
+        private var certificateAlias: String? = null
+
         private val orig = sharedClient.newBuilder()
 
         init {
@@ -101,17 +112,14 @@ class HttpClient private constructor(
 
                     // use account settings for authentication
                     accountSettings?.let {
-                        val userName = accountSettings.username()
-                        val password = accountSettings.password()
-                        if (userName != null && password != null)
-                            addAuthentication(null, userName, password)
+                        addAuthentication(null, it.credentials())
                     }
                 }
             }
         }
 
-        constructor(context: Context, host: String?, username: String, password: String): this(context) {
-            addAuthentication(host, username, password)
+        constructor(context: Context, host: String?, credentials: Credentials): this(context) {
+            addAuthentication(host, credentials)
         }
 
         fun withDiskCache(): Builder {
@@ -135,22 +143,76 @@ class HttpClient private constructor(
 
         fun customCertManager(manager: CustomCertManager) {
             certManager = manager
-            orig.sslSocketFactory(SSLSocketFactoryCompat(manager), manager)
-            orig.hostnameVerifier(manager.hostnameVerifier(OkHostnameVerifier.INSTANCE))
         }
         fun setForeground(foreground: Boolean): Builder {
             certManager?.appInForeground = foreground
             return this
         }
 
-        fun addAuthentication(host: String?, username: String, password: String): Builder {
-            val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), username, password)
-            orig    .addNetworkInterceptor(authHandler)
-                    .authenticator(authHandler)
+        fun addAuthentication(host: String?, credentials: Credentials): Builder {
+            when (credentials.type) {
+                Credentials.Type.UsernamePassword -> {
+                    val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), credentials.userName!!, credentials.password!!)
+                    orig    .addNetworkInterceptor(authHandler)
+                            .authenticator(authHandler)
+                }
+                Credentials.Type.ClientCertificate -> {
+                    certificateAlias = credentials.certificateAlias
+                }
+            }
             return this
         }
 
-        fun build() = HttpClient(orig.build(), certManager)
+        fun build(): HttpClient {
+            val trustManager = certManager ?: {
+                val factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+                factory.init(null as KeyStore?)
+                factory.trustManagers.first() as X509TrustManager
+            }()
+
+            val hostnameVerifier = certManager?.hostnameVerifier(OkHostnameVerifier.INSTANCE)
+                    ?: OkHostnameVerifier.INSTANCE
+
+            var keyManager: KeyManager? = null
+            try {
+                certificateAlias?.let { alias ->
+                    // get client certificate and private key
+                    val certs = KeyChain.getCertificateChain(context, alias) ?: return@let
+                    val key = KeyChain.getPrivateKey(context, alias) ?: return@let
+                    logger.fine("Using client certificate $alias for authentication (chain length: ${certs.size})")
+
+                    // create Android KeyStore (performs key operations without revealing secret data to DAVdroid)
+                    val keyStore = KeyStore.getInstance("AndroidKeyStore")
+                    keyStore.load(null)
+
+                    // create KeyManager
+                    keyManager = object: X509ExtendedKeyManager() {
+                        override fun getServerAliases(p0: String?, p1: Array<out Principal>?): Array<String>? = null
+                        override fun chooseServerAlias(p0: String?, p1: Array<out Principal>?, p2: Socket?) = null
+
+                        override fun getClientAliases(p0: String?, p1: Array<out Principal>?) =
+                                arrayOf(alias)
+
+                        override fun chooseClientAlias(p0: Array<out String>?, p1: Array<out Principal>?, p2: Socket?) =
+                                alias
+
+                        override fun getCertificateChain(forAlias: String?) =
+                                certs.takeIf { forAlias == alias }
+
+                        override fun getPrivateKey(forAlias: String?) =
+                                key.takeIf { forAlias == alias }
+                    }
+                }
+            } catch (e: Exception) {
+                logger.log(Level.SEVERE, "Couldn't set up client certificate authentication", e)
+            }
+
+            orig.sslSocketFactory(CustomTlsSocketFactory(keyManager, trustManager), trustManager)
+            orig.hostnameVerifier(hostnameVerifier)
+
+            return HttpClient(orig.build(), certManager)
+        }
+
     }
 
 

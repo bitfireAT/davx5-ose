@@ -483,12 +483,7 @@ class ContactsSyncManager(
             }
 
             // authenticate only against a certain host, and only upon request
-            val username = accountSettings.username()
-            val password = accountSettings.password()
-            val builder = if (username != null && password != null)
-                    HttpClient.Builder(context, baseUrl.host(), username, password)
-                        else
-                    HttpClient.Builder(context)
+            val builder = HttpClient.Builder(context, baseUrl.host(), accountSettings.credentials())
 
             // allow redirects
             builder.followRedirects(true)

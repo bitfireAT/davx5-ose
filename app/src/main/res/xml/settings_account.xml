@@ -25,6 +25,11 @@
             android:summary="@string/settings_password_summary"
             android:dialogTitle="@string/settings_enter_password"/>
 
+        <Preference
+            android:key="certificate_alias"
+            android:title="@string/settings_certificate_alias"
+            android:persistent="false"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory

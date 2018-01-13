@@ -13,7 +13,10 @@ import android.app.DialogFragment
 import android.app.LoaderManager
 import android.content.*
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.CalendarContract
+import android.security.KeyChain
 import android.support.v14.preference.PreferenceFragment
 import android.support.v4.app.NavUtils
 import android.support.v7.app.AlertDialog
@@ -26,6 +29,7 @@ import android.view.MenuItem
 import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
@@ -86,19 +90,46 @@ class AccountSettingsActivity: AppCompatActivity() {
 
             // preference group: authentication
             val prefUserName = findPreference("username") as EditTextPreference
-            prefUserName.summary = accountSettings.username()
-            prefUserName.text = accountSettings.username()
-            prefUserName.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                accountSettings.username(newValue as String)
-                loaderManager.restartLoader(0, arguments, this)
-                false
-            }
-
             val prefPassword = findPreference("password") as EditTextPreference
-            prefPassword.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                accountSettings.password(newValue as String)
-                loaderManager.restartLoader(0, arguments, this)
-                false
+            val prefCertAlias = findPreference("certificate_alias") as Preference
+
+            val credentials = accountSettings.credentials()
+            when (credentials.type) {
+                Credentials.Type.UsernamePassword -> {
+                    prefUserName.isVisible = true
+                    prefUserName.summary = credentials.userName
+                    prefUserName.text = credentials.userName
+                    prefUserName.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                        accountSettings.credentials(Credentials(newValue as String, credentials.password))
+                        loaderManager.restartLoader(0, arguments, this)
+                        false
+                    }
+
+                    prefPassword.isVisible = true
+                    prefPassword.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                        accountSettings.credentials(Credentials(credentials.userName, newValue as String))
+                        loaderManager.restartLoader(0, arguments, this)
+                        false
+                    }
+
+                    prefCertAlias.isVisible = false
+                }
+                Credentials.Type.ClientCertificate -> {
+                    prefUserName.isVisible = false
+                    prefPassword.isVisible = false
+
+                    prefCertAlias.isVisible = true
+                    prefCertAlias.summary = credentials.certificateAlias
+                    prefCertAlias.setOnPreferenceClickListener {
+                        KeyChain.choosePrivateKeyAlias(activity, { alias ->
+                            accountSettings.credentials(Credentials(certificateAlias = alias))
+                            Handler(Looper.getMainLooper()).post({
+                                loaderManager.restartLoader(0, arguments, this)
+                            })
+                        }, null, null, null, -1, credentials.certificateAlias)
+                        true
+                    }
+                }
             }
 
             // preference group: sync
