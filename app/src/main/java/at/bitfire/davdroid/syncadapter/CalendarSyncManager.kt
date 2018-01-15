@@ -52,7 +52,9 @@ class CalendarSyncManager(
         val localCalendar: LocalCalendar
 ): SyncManager(context, settings, account, accountSettings, extras, authority, syncResult, "calendar/${localCalendar.id}") {
 
-    val MAX_MULTIGET = 20
+    companion object {
+        private val MAX_MULTIGET = 20
+    }
 
     init {
         localCollection = localCalendar
@@ -123,9 +125,7 @@ class CalendarSyncManager(
 
         // download new/updated iCalendars from server
         for (bunch in ListUtils.partition(toDownload.toList(), MAX_MULTIGET)) {
-            if (Thread.interrupted())
-                return
-
+            abortIfCancelled()
             Logger.log.info("Downloading ${bunch.joinToString(", ")}")
 
             if (bunch.size == 1) {

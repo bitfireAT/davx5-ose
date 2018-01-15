@@ -23,6 +23,7 @@ import android.provider.ContactsContract
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import at.bitfire.dav4android.exception.HttpException
@@ -37,7 +38,6 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.ContactsStorageException
 import kotlinx.android.synthetic.main.activity_debug_info.*
-import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -163,7 +163,7 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
             }
 
             throwable?.let {
-                report.append("\nEXCEPTION:\n${ExceptionUtils.getStackTrace(throwable)}")
+                report.append("\nEXCEPTION:\n${Log.getStackTraceString(throwable)}")
             }
 
             // logs (for instance, from failed resource detection)
