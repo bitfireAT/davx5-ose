@@ -10,6 +10,9 @@
   <string name="send">送信</string>
   <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
   <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
+  <string name="notification_channel_debugging">デバッグ中</string>
+  <string name="notification_channel_sync_status">同期ステータス</string>
+  <string name="notification_channel_sync_problems">同期の問題</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">バッテリー最適化</string>
   <string name="startup_battery_optimization_message">Android は数日後に DAVdroid の同期を無効にする/減らすことがあります。これを防止するには、バッテリー最適化をオフにしてください。</string>
@@ -44,6 +47,7 @@
   <string name="navigation_drawer_news_updates">ニュース &amp; 更新</string>
   <string name="navigation_drawer_external_links">外部リンク</string>
   <string name="navigation_drawer_website">Web サイト</string>
+  <string name="navigation_drawer_manual">手動</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_forums">ヘルプ / フォーラム</string>
   <string name="navigation_drawer_donate">寄付</string>
@@ -216,6 +220,7 @@
   <string name="delete_collection_confirm_title">よろしいですか?</string>
   <string name="delete_collection_confirm_warning">このコレクション (%s) とそのすべてのデータがサーバーから削除されます。</string>
   <string name="delete_collection_deleting_collection">コレクションの削除中</string>
+  <string name="collection_force_read_only">強制的に読み取り専用</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">エラーが発生しました。</string>
   <string name="exception_httpexception">HTTP エラーが発生しました。</string>
@@ -229,6 +234,8 @@
   </plurals>
   <string name="sync_error_permissions">DAVdroid アクセス許可</string>
   <string name="sync_error_permissions_text">追加のアクセス許可が必要です</string>
+  <string name="sync_error_opentasks_too_old">OpenTasks が古すぎます</string>
+  <string name="sync_error_opentasks_required_version">必要なバージョン: %1$s (現在 %2$s)</string>
   <string name="sync_error_calendar">カレンダーの同期に失敗しました (%s)</string>
   <string name="sync_error_contacts">アドレス帳の同期に失敗しました (%s)</string>
   <string name="sync_error_tasks">タスクの同期に失敗しました (%s)</string>

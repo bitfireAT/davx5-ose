@@ -2,56 +2,68 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
+  <string name="account_title_address_book">Адресная книга DAVdroid</string>
+  <string name="address_books_authority_title">Адресные книги</string>
   <string name="help">Помощь</string>
   <string name="manage_accounts">Управление аккаунтами</string>
-  <string name="please_wait">Пожалуйста подождите...</string>
+  <string name="please_wait">Пожалуйста, подождите …</string>
   <string name="send">Отправить</string>
+  <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
+  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
+  <string name="notification_channel_debugging">Отладка</string>
+  <string name="notification_channel_sync_status">Статус синхронизации</string>
+  <string name="notification_channel_sync_problems">Проблемы с синхронизацией</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Оптимизация батареи</string>
-  <string name="startup_battery_optimization_message">Андроид может отключить/уменьшить синхронизацию DAVdroid через несколько дней. Чтобы этого не произошло, выключите оптимизацию батареи.</string>
+  <string name="startup_battery_optimization_message">Андроид может отключить/понизить синхронизацию DAVdroid через несколько дней. Чтобы это предотвратить, отключите оптимизацию батареи.</string>
   <string name="startup_battery_optimization_disable">Отключить для DAVdroid</string>
-  <string name="startup_dont_show_again">Больше не показывать</string>
+  <string name="startup_dont_show_again">Не показывать снова</string>
   <string name="startup_donate">Open-Source информация</string>
-  <string name="startup_donate_message">Мы рады, что вы используете DAVdroid, который является программным обеспечением с открытым исходным кодом (GPLv3). Разработка DAVdroid является сложной задачей, потребовавшей от нас тысяч рабочих часов. Пожалуйста, рассмотрите возможность поддержать проект.</string>
-  <string name="startup_donate_now">Поддержать проект</string>
+  <string name="startup_donate_message">Мы рады, что вы используете DAVdroid, который является программным обеспечением с открытым исходным кодом (GPLv3). Поскольку разработка DAVdroid - тяжелая работа и заняла у нас нас очень много времени, пожалуйста, рассмотрите возможность поддержать проект.</string>
+  <string name="startup_donate_now">Показать страницу пожертвования</string>
   <string name="startup_donate_later">Возможно, позже</string>
   <string name="startup_google_play_accounts_removed">Информация об ошибке в Play Store DRM</string>
-  <string name="startup_google_play_accounts_removed_message">При определённых условиях Play Store DRM может стать причиной потери всех DAVdroid аккаунтов после перезагрузки устройства или после обновления DAVdroid. Если Вы столкнулись с этой проблемой (и только в этом случае), установите \"DAVdroid JB Workaround\" из Play Store.</string>
-  <string name="startup_google_play_accounts_removed_more_info">Дополнительно</string>
+  <string name="startup_google_play_accounts_removed_message">При определенных условиях Play Store DRM может стать причиной потери всех DAVdroid аккаунтов после перезагрузки устройства или после обновления DAVdroid. Если Вы столкнулись с этой проблемой (и только в этом случае), установите \"DAVdroid JB Workaround\" из Play Store.</string>
+  <string name="startup_google_play_accounts_removed_more_info">Дополнительная информация</string>
   <string name="startup_opentasks_not_installed">OpenTasks не установлен</string>
-  <string name="startup_opentasks_not_installed_message">OpenTasks недоступен, DAVdroid не сможет синхронизировать список задач</string>
-  <string name="startup_opentasks_reinstall_davdroid">После установки OpenTasks необходимо ПЕРЕУСТАНОВИТЬ DAVdroid и добавить Ваши аккаунты ещё раз (ошибка Android).</string>
+  <string name="startup_opentasks_not_installed_message">Приложение OpenTasks не установлено, поэтому DAVdroid не сможет синхронизировать список задач</string>
+  <string name="startup_opentasks_reinstall_davdroid">После установки OpenTasks необходимо ПЕРЕУСТАНОВИТЬ DAVdroid и повторно добавить ваши аккаунты (проблема Android).</string>
   <string name="startup_opentasks_not_installed_install">Установить OpenTasks</string>
   <!--AboutActivity-->
-  <string name="about_license_terms">Лицензионное соглашение</string>
-  <string name="about_license_info_no_warranty">Эта программа поставляется АБСОЛЮТНО БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ. Это свободная программа, и вы приглашаетесь повторно распространять ее при определенных условиях.</string>
+  <string name="about_license_terms">Условия лицензии</string>
+  <string name="about_license_info_no_warranty">Эта программа поставляется АБСОЛЮТНО БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ. Это свободное программное обеспечение и вы можете передавать его при соблюдении определенных условий.</string>
   <!--global settings-->
-  <string name="logging_davdroid_file_logging">Файл логов DAVdroid</string>
+  <string name="logging_davdroid_file_logging">Файл журнала DAVdroid</string>
   <string name="logging_to_external_storage">Сохранение логов во внешнем хранилище: %s</string>
-  <string name="logging_couldnt_create_file">Не удалось создать внешний лог файл: %s</string>
+  <string name="logging_couldnt_create_file">Не удалось создать внешний файл журнала: %s</string>
   <string name="logging_no_external_storage">Внешнее хранилище не найдено</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Открыть панель навигации</string>
   <string name="navigation_drawer_close">Закрыть панель навигации</string>
   <string name="navigation_drawer_subtitle">Адаптер синхронизации CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">О программе / Лицензия</string>
+  <string name="navigation_drawer_beta_feedback">Отзыв о бета-тестировании</string>
   <string name="navigation_drawer_settings">Настройки</string>
-  <string name="navigation_drawer_news_updates">Новости и обновления</string>
+  <string name="navigation_drawer_news_updates">Новости &amp; обновления</string>
   <string name="navigation_drawer_external_links">Внешние ссылки</string>
-  <string name="navigation_drawer_website">Веб сайт</string>
-  <string name="navigation_drawer_faq">ЧАВО</string>
+  <string name="navigation_drawer_website">Веб-сайт</string>
+  <string name="navigation_drawer_manual">Руководство</string>
+  <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_forums">Помощь / Форумы</string>
   <string name="navigation_drawer_donate">Пожертвовать</string>
-  <string name="account_list_empty">Вас приветствует DAVdroid\n\nМожете добавить CalDAV/CardDAV аккаунт сейчас.</string>
+  <string name="account_list_empty">Добро пожаловать в DAVdroid\n\nТеперь вы можете добавить аккаунт CalDAV/CardDAV.</string>
+  <string name="accounts_global_sync_disabled">Синхронизация отключена на уровне устройства</string>
+  <string name="accounts_global_sync_enable">Включить</string>
   <!--DavService-->
-  <string name="dav_service_refresh_failed">Не удалось обнаружить сервисы</string>
-  <string name="dav_service_refresh_couldnt_refresh">Невозможно обновить список коллекций</string>
+  <string name="dav_service_refresh_failed">Сбой при обнаружении службы</string>
+  <string name="dav_service_refresh_couldnt_refresh">Не удалось обновить список коллекций</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Настройки</string>
   <string name="app_settings_user_interface">Интерфейс пользователя</string>
   <string name="app_settings_reset_hints">Включить подсказки</string>
   <string name="app_settings_reset_hints_summary">Включить подсказки, которые были отключены ранее</string>
   <string name="app_settings_reset_hints_success">Все подсказки будут показаны снова</string>
-  <string name="app_settings_connection">Соединение</string>
+  <string name="app_settings_connection">Подключение</string>
   <string name="app_settings_override_proxy">Переопределить настройки прокси-сервера</string>
   <string name="app_settings_override_proxy_on">Использовать пользовательские настройки прокси-сервера</string>
   <string name="app_settings_override_proxy_off">Использовать системные настройки прокси-сервера</string>
@@ -63,7 +75,7 @@
   <string name="app_settings_distrust_system_certs_off">Доверять системным и добавленным пользователем CA (рекомендуется)</string>
   <string name="app_settings_reset_certificates">Сброс (не)доверенных сертификатов</string>
   <string name="app_settings_reset_certificates_summary">Отменить доверие ко всем пользовательским сертификатам</string>
-  <string name="app_settings_reset_certificates_success">Все пользовательские сертификаты были очищены</string>
+  <string name="app_settings_reset_certificates_success">Все пользовательские сертификаты были удалены</string>
   <string name="app_settings_debug">Отладка</string>
   <string name="app_settings_log_to_external_storage">Сохранять лог во внешний файл</string>
   <string name="app_settings_log_to_external_storage_on">Сохранение логов во внешнем хранилище (если доступно)</string>
@@ -75,55 +87,66 @@
   <string name="account_synchronizing_now">Синхронизация</string>
   <string name="account_settings">Настройки аккаунта</string>
   <string name="account_rename">Переименовать аккаунт</string>
-  <string name="account_rename_new_name">Несохранённые локальные данные могут быть потеряны. Требуется выполнить синхронизацию после переименования. Новое имя аккаунта:</string>
+  <string name="account_rename_new_name">Несохраненные локальные данные могут быть потеряны. Необходима повторная синхронизация после переименования. Новое имя аккаунта:</string>
   <string name="account_rename_rename">Переименовать</string>
   <string name="account_delete">Удалить аккаунт</string>
   <string name="account_delete_confirmation_title">Вы действительно хотите удалить аккаунт?</string>
-  <string name="account_delete_confirmation_text">Все локальные копии контактов, календарей и задач будут удалены.</string>
+  <string name="account_delete_confirmation_text">Все локальные копии адресных книг, календарей и задач будут удалены.</string>
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">WebСal</string>
+  <string name="account_synchronize_this_collection">синхронизировать эту коллекцию</string>
+  <string name="account_read_only">только для чтения</string>
+  <string name="account_calendar">календарь</string>
+  <string name="account_task_list">список задач</string>
   <string name="account_refresh_address_book_list">Обновить список адресных книг</string>
   <string name="account_create_new_address_book">Создать новую адресную книгу</string>
-  <string name="account_refresh_calendar_list">Обновить календарь</string>
+  <string name="account_refresh_calendar_list">Обновить список календарей</string>
   <string name="account_create_new_calendar">Создать новый календарь</string>
+  <string name="account_no_webcal_handler_found">Не найдено приложение, поддерживающее WebCal</string>
+  <string name="account_install_icsdroid">Установить ICSdroid</string>
+  <string name="account_read_only_address_book_selected">Адресная книга только для чтения – локальные изменения будут отменены!</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Разрешения DAVdroid</string>
   <string name="permissions_calendar">Разрешения для календаря</string>
-  <string name="permissions_calendar_details">Для синхронизации CalDAV событий с Вашими локальными календарями DAVdroid должен иметь доступ к Вашим календарям.</string>
-  <string name="permissions_calendar_request">Запрос разрешений для календаря</string>
+  <string name="permissions_calendar_details">Для синхронизации событий CalDAV с локальными календарями DAVdroid необходимо получить доступ к календарям.</string>
+  <string name="permissions_calendar_request">Запросить разрешения календаря</string>
   <string name="permissions_contacts">Разрешения для контактов</string>
-  <string name="permissions_contacts_details">Для синхронизации CardDAV адресных книг с Вашими локальными контактами DAVdroid должен иметь доступ к Вашим контактам.</string>
-  <string name="permissions_contacts_request">Запрос разрешений для контактов</string>
+  <string name="permissions_contacts_details">Для синхронизации CardDAV адресных книг с локальными контактами DAVdroid необходимо получить доступ к контактам.</string>
+  <string name="permissions_contacts_request">Запросить разрешения для контактов</string>
   <string name="permissions_opentasks">Разрешения OpenTasks</string>
-  <string name="permissions_opentasks_details">Для синхронизации CalDAV задач с Вашими локальными списками задач DAVdroid должен иметь доступ к OpenTasks.</string>
-  <string name="permissions_opentasks_request">Запрос разрешений для OpenTasks</string>
+  <string name="permissions_opentasks_details">Для синхронизации задач CalDAV с локальными списками задач DAVdroid необходимо получить доступ к OpenTasks.</string>
+  <string name="permissions_opentasks_request">Запросить разрешения для OpenTasks</string>
   <!--AddAccountActivity-->
+  <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
   <string name="login_title">Добавить аккаунт</string>
-  <string name="login_type_email">Вход по адресу электронной почты</string>
+  <string name="login_type_email">Вход с адресом электронной почты</string>
   <string name="login_email_address">Адрес электронной почты</string>
   <string name="login_email_address_error">Требуется действующий адрес электронной почты</string>
   <string name="login_password">Пароль</string>
   <string name="login_password_required">Требуется пароль</string>
-  <string name="login_type_url">Вход через URL и имя пользователя</string>
+  <string name="login_type_url">Вход с URL и именем пользователя</string>
   <string name="login_url_must_be_http_or_https">URL должен начинаться с http(s)://</string>
   <string name="login_url_host_name_required">Требуется имя хоста</string>
-  <string name="login_user_name">Имя</string>
-  <string name="login_user_name_required">Требуется имя</string>
+  <string name="login_user_name">Имя пользователя</string>
+  <string name="login_user_name_required">Требуется Имя пользователя</string>
   <string name="login_base_url">Базовый URL</string>
-  <string name="login_login">Логин</string>
+  <string name="login_login">Вход</string>
   <string name="login_back">Назад</string>
   <string name="login_create_account">Создать аккаунт</string>
   <string name="login_account_name">Имя аккаунта</string>
-  <string name="login_account_name_info">Используйте Ваш адрес адрес электронной почты в качестве имени аккаунта, так как Android будет использовать имя аккаунта в поле ORGANIZER для событий, которые Вы создаёте. Вы не можете иметь два аккаунта с одинаковыми именами.</string>
+  <string name="login_account_name_info">Используйте ваш адрес адрес электронной почты в качестве имени аккаунта, поскольку Android будет использовать имя аккаунта в поле ORGANIZER для событий, которые вы создаете. У вас не может быть двух аккаунтов с тем же именем.</string>
   <string name="login_account_contact_group_method">Метод группировки контактов:</string>
   <string name="login_account_name_required">Требуется имя аккаунта</string>
   <string name="login_account_not_created">Аккаунт не может быть создан</string>
   <string name="login_configuration_detection">Обнаружение конфигурации</string>
-  <string name="login_querying_server">Пожалуйста, подождите, выполняется запрос к серверу...</string>
-  <string name="login_no_caldav_carddav">Не найдены CalDAV или CardDAV сервисы.</string>
+  <string name="login_querying_server">Ожидайте, выполняется запрос к серверу…</string>
+  <string name="login_no_caldav_carddav">Не удалось найти службу CalDAV или CardDAV.</string>
   <string name="login_view_logs">Просмотр логов</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Настройки: %s</string>
   <string name="settings_authentication">Аутентификация</string>
-  <string name="settings_username">Имя</string>
+  <string name="settings_username">Имя пользователя</string>
   <string name="settings_enter_username">Введите имя пользователя:</string>
   <string name="settings_password">Пароль</string>
   <string name="settings_password_summary">Обновить пароль в соответствии с вашим сервером.</string>
@@ -134,18 +157,37 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Каждые %d минут и немедленно при локальных изменениях</string>
   <string name="settings_sync_interval_calendars">Интервал синхронизации календарей</string>
   <string name="settings_sync_interval_tasks">Интервал синхронизации задач</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Только вручную</item>
+    <item>Каждые 15 минут</item>
+    <item>Каждые 30 минут</item>
+    <item>Каждый час</item>
+    <item>Каждые 2 часа</item>
+    <item>Каждые 4 часа</item>
+    <item>Один раз в день</item>
+  </string-array>
   <string name="settings_sync_wifi_only">Синхронизировать только через WiFi</string>
   <string name="settings_sync_wifi_only_on">Разрешить синхронизацию только через WiFi</string>
   <string name="settings_sync_wifi_only_off">Не учитывать тип соединения</string>
+  <string name="settings_sync_wifi_only_ssids">Ограничение WiFi SSID</string>
+  <string name="settings_sync_wifi_only_ssids_on">Будет синхронизироваться только  %s</string>
+  <string name="settings_sync_wifi_only_ssids_off">Все соединения WiFi будут использоваться</string>
+  <string name="settings_sync_wifi_only_ssids_message">Названия (SSID), разделенные запятыми разрешенных сетей Wi-Fi (оставьте пустым для всех)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Метод группировки контактов</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>Группы как отдельные vCards</item>
-    <item>Группы как категории внутри контакта</item>
+  <string-array name="settings_contact_group_method_values">
+    <item>GROUP_VCARDS</item>
+    <item>CATEGORIES</item>
   </string-array>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Группы являются отдельными vCards</item>
+    <item>Группы относятся к категориям контактов</item>
+  </string-array>
+  <string name="settings_contact_group_method_change">Изменить метод группировки</string>
+  <string name="settings_contact_group_method_change_reload_contacts">Вам потребуется перезагрузить все контакты. Несохраненные локальные изменения будут отброшены.</string>
   <string name="settings_caldav">CalDAV</string>
-  <string name="settings_sync_time_range_past">Интервал синхронизации</string>
-  <string name="settings_sync_time_range_past_none">Все события будут синхронизированы</string>
+  <string name="settings_sync_time_range_past">Ограничение по времени прошедшего события</string>
+  <string name="settings_sync_time_range_past_none">Все события будут синхронизироваться</string>
   <plurals name="settings_sync_time_range_past_days">
     <item quantity="one">События старше одного дня будут игнорироваться</item>
     <item quantity="few">События старше %d дней будут игнорироваться</item>
@@ -154,60 +196,74 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">События старше указанного количества дней будут игнорироваться (может быть 0). Оставьте пустым для синхронизации всех событий.</string>
   <string name="settings_manage_calendar_colors">Управление цветами календаря</string>
-  <string name="settings_manage_calendar_colors_on">Цвета календаря управляются DAVdroid</string>
-  <string name="settings_manage_calendar_colors_off">Цвета календаря не управляются DAVdroid</string>
+  <string name="settings_manage_calendar_colors_on">Цвета календаря устанавливаются DAVdroid</string>
+  <string name="settings_manage_calendar_colors_off">Цвета календаря не устанавливаются DAVdroid</string>
+  <string name="settings_event_colors">Поддержка цвета событий</string>
+  <string name="settings_event_colors_on">Синхронизация цветов событий</string>
+  <string name="settings_event_colors_off">Не синхронизировать цвета событий</string>
+  <string name="settings_event_colors_off_confirm">Отключение цветов событий может удалить уже синхронизированные цвета событий.</string>
   <!--collection management-->
   <string name="create_addressbook">Создать адресную книгу</string>
-  <string name="create_addressbook_display_name_hint">Моя Адресная книга</string>
-  <string name="create_calendar">Создать CalDAV коллекцию</string>
-  <string name="create_calendar_display_name_hint">Мой Календарь</string>
+  <string name="create_addressbook_display_name_hint">Моя адресная книга</string>
+  <string name="create_calendar">Создать коллекцию CalDAV</string>
+  <string name="create_calendar_display_name_hint">Мой календарь</string>
   <string name="create_calendar_time_zone">Часовой пояс:</string>
   <string name="create_calendar_type">Тип коллекции:</string>
   <string name="create_calendar_type_only_events">Календарь (только события)</string>
   <string name="create_calendar_type_only_tasks">Список задач (только задачи)</string>
-  <string name="create_calendar_type_events_and_tasks">Совмещённый (события и задачи)</string>
+  <string name="create_calendar_type_events_and_tasks">Совмещенный (события и задачи)</string>
   <string name="create_collection_color">Установить цвет коллекции</string>
   <string name="create_collection_creating">Создание коллекции</string>
   <string name="create_collection_display_name">Отображаемое имя (название) этой коллекции:</string>
   <string name="create_collection_display_name_required">Требуется название</string>
   <string name="create_collection_description">Описание (необязательно):</string>
-  <string name="create_collection_home_set">Главная папка:</string>
+  <string name="create_collection_home_set">Адрес каталога:</string>
   <string name="create_collection_create">Создать</string>
   <string name="delete_collection">Удалить коллекцию</string>
   <string name="delete_collection_confirm_title">Вы уверены?</string>
-  <string name="delete_collection_confirm_warning">Коллекция (%s) и все её данные будут удалены с сервера.</string>
+  <string name="delete_collection_confirm_warning">Эта коллекция (%s) и все ее данные будут удалены с сервера.</string>
   <string name="delete_collection_deleting_collection">Удаление коллекции</string>
+  <string name="collection_force_read_only">Принудительно только для чтения</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Произошла ошибка.</string>
   <string name="exception_httpexception">Произошла ошибка HTTP</string>
   <string name="exception_ioexception">Произошла ошибка ввода/вывода.</string>
-  <string name="exception_show_details">Подробнее</string>
+  <string name="exception_show_details">Показать детали</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>
+  <string name="sync_contacts_read_only_address_book">Адресная книга только для чтения</string>
+  <plurals name="sync_contacts_local_contact_changes_discarded">
+    <item quantity="one">Локальное изменение контакта отменено</item>
+    <item quantity="few">%d локальных изменений контакта отменены</item>
+    <item quantity="many">%d локальных изменений контакта отменены</item>
+    <item quantity="other">%d локальных изменений контакта отменены</item>
+  </plurals>
   <string name="sync_error_permissions">Разрешения DAVdroid</string>
   <string name="sync_error_permissions_text">Требуются дополнительные разрешения</string>
-  <string name="sync_error_calendar">Ошибка при синхронизации Календаря (%s)</string>
-  <string name="sync_error_contacts">Ошибка при синхронизации Контактов (%s)</string>
-  <string name="sync_error_tasks">Ошибка при синхронизации Задачи (%s)</string>
+  <string name="sync_error_opentasks_too_old">OpenTasks устарел</string>
+  <string name="sync_error_opentasks_required_version">Требуется версия: %1$s (текущая %2$s)</string>
+  <string name="sync_error_calendar">Ошибка при синхронизации календаря (%s)</string>
+  <string name="sync_error_contacts">Ошибка при синхронизации адресной книги (%s)</string>
+  <string name="sync_error_tasks">Ошибка при синхронизации задач (%s)</string>
   <string name="sync_error">Ошибка %s</string>
   <string name="sync_error_http_dav">Ошибка сервера %s</string>
   <string name="sync_error_local_storage">Ошибка базы данных %s</string>
   <string-array name="sync_error_phases">
     <item>подготовка синхронизации</item>
-    <item>запрос поддерживаемых возможностей</item>
-    <item>обработка локально удалённых записей</item>
-    <item>подготовка созданных/изменённых записей</item>
-    <item>загрузка созданных/изменённых записей</item>
+    <item>запрос возможностей сервера</item>
+    <item>локальная обработка удаленных данных</item>
+    <item>подготовка созданных/измененных записей</item>
+    <item>загрузка созданных/измененных записей</item>
     <item>проверка статуса синхронизации</item>
     <item>просмотр локальных записей</item>
-    <item>просмотр серверных записей</item>
-    <item>сравнение локальных/серверных записей</item>
-    <item>загрузка серверных записей</item>
-    <item>пост-обработка</item>
+    <item>просмотр удаленных записей</item>
+    <item>сравнение локальных/удаленных записей</item>
+    <item>загрузка удаленных записей</item>
+    <item>постобработка</item>
     <item>сохранение статуса синхронизации</item>
   </string-array>
   <string name="sync_error_unauthorized">Имя пользователя/пароль неверные</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVdroid: Безопасность подключения</string>
+  <string name="certificate_notification_connection_security">DAVdroid: безопасность подключения</string>
   <string name="trust_certificate_unknown_certificate_found">DAVdroid обнаружил неизвестный сертификат. Вы хотите доверять ему?</string>
 </resources>
