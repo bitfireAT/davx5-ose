@@ -11,12 +11,15 @@ package at.bitfire.davdroid.ui.setup
 import android.app.Fragment
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.security.KeyChain
 import android.security.KeyChainAliasCallback
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import android.widget.Toast
 import at.bitfire.dav4android.Constants
 import at.bitfire.davdroid.R
 import kotlinx.android.synthetic.main.login_credentials_fragment.view.*
@@ -52,10 +55,12 @@ class DefaultLoginCredentialsFragment: Fragment(), CompoundButton.OnCheckedChang
         }
 
         v.urlcert_select_cert.setOnClickListener {
-            val baseUrl = Uri.parse(view.urlcert_base_url.text.toString())
             KeyChain.choosePrivateKeyAlias(activity, KeyChainAliasCallback { alias ->
-                v.urlcert_cert_alias.text = alias
-            }, null, null, baseUrl.host, baseUrl.port,view.urlcert_cert_alias.text.toString())
+                Handler(Looper.getMainLooper()).post({
+                    v.urlcert_cert_alias.text = alias
+                    v.urlcert_cert_alias.error = null
+                })
+            }, null, null, null, -1, view.urlcert_cert_alias.text.toString())
         }
 
         v.login.setOnClickListener {
@@ -105,7 +110,7 @@ class DefaultLoginCredentialsFragment: Fragment(), CompoundButton.OnCheckedChang
 
                 val password = view.email_password.getText().toString()
                 if (password.isEmpty()) {
-                    view.email_password.setError(getString(R.string.login_password_required))
+                    view.email_password.error = getString(R.string.login_password_required)
                     valid = false
                 }
 
@@ -132,9 +137,9 @@ class DefaultLoginCredentialsFragment: Fragment(), CompoundButton.OnCheckedChang
                     valid = false
                 }
 
-                val password = view.urlpwd_password.getText().toString()
+                val password = view.urlpwd_password.text.toString()
                 if (password.isEmpty()) {
-                    view.urlpwd_password.setError(getString(R.string.login_password_required))
+                    view.urlpwd_password.error = getString(R.string.login_password_required)
                     valid = false
                 }
 
@@ -155,8 +160,10 @@ class DefaultLoginCredentialsFragment: Fragment(), CompoundButton.OnCheckedChang
                 })
 
                 val alias = view.urlcert_cert_alias.text.toString()
-                if (alias.isEmpty())
+                if (alias.isEmpty()) {
+                    view.urlcert_cert_alias.error = ""
                     valid = false
+                }
 
                 if (valid && uri != null)
                     return LoginInfo(uri, certificateAlias = alias)
