@@ -108,9 +108,7 @@ class TasksSyncManager(
 
         // download new/updated iCalendars from server
         for (bunch in ListUtils.partition(toDownload.toList(), MAX_MULTIGET)) {
-            if (Thread.interrupted())
-                return
-
+            abortIfCancelled()
             Logger.log.info("Downloading ${bunch.joinToString(", ")}")
 
             if (bunch.size == 1) {

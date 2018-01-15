@@ -234,8 +234,7 @@ class ContactsSyncManager(
                 .setLocalOnly(true)
                 .setAutoCancel(true)
                 .build()
-        val nm = NotificationUtils.createChannels(context)
-        nm.notify("discarded_${account.name}", 0, notification)
+        notificationManager.notify("discarded_${account.name}", 0, notification)
     }
 
     override fun prepareUpload(resource: LocalResource): RequestBody {
@@ -312,9 +311,7 @@ class ContactsSyncManager(
 
         // download new/updated VCards from server
         for (bunch in ListUtils.partition(toDownload.toList(), MAX_MULTIGET)) {
-            if (Thread.interrupted())
-                return
-
+            abortIfCancelled()
             Logger.log.info("Downloading ${bunch.joinToString(", ")}")
 
             if (bunch.size == 1) {

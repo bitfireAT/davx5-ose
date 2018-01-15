@@ -20,10 +20,7 @@ import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.exception.*
 import at.bitfire.dav4android.property.GetCTag
 import at.bitfire.dav4android.property.GetETag
-import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.App
-import at.bitfire.davdroid.HttpClient
-import at.bitfire.davdroid.R
+import at.bitfire.davdroid.*
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
@@ -37,8 +34,10 @@ import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import java.io.Closeable
 import java.io.IOException
+import java.security.cert.CertificateException
 import java.util.*
 import java.util.logging.Level
+import javax.net.ssl.SSLHandshakeException
 
 abstract class SyncManager(
         val context: Context,
@@ -79,6 +78,9 @@ abstract class SyncManager(
     protected lateinit var davCollection: DavResource
 
 
+    /** current sync phase */
+    private var syncPhase: Int = SYNC_PHASE_PREPARE
+
     /** state information for debug info (local resource) */
     protected var currentLocalResource: LocalResource? = null
 
@@ -107,7 +109,6 @@ abstract class SyncManager(
         // dismiss previous error notifications
         notificationManager.cancel(uniqueCollectionId, notificationId())
 
-        var syncPhase = SYNC_PHASE_PREPARE
         try {
             Logger.log.info("Preparing synchronization")
             if (!prepare()) {
@@ -115,8 +116,7 @@ abstract class SyncManager(
                 return
             }
 
-            if (Thread.interrupted())
-                return
+            abortIfCancelled()
             syncPhase = SYNC_PHASE_QUERY_CAPABILITIES
             Logger.log.info("Querying capabilities")
             queryCapabilities()
@@ -125,8 +125,7 @@ abstract class SyncManager(
             Logger.log.info("Processing locally deleted entries")
             processLocallyDeleted()
 
-            if (Thread.interrupted())
-                return
+            abortIfCancelled()
             syncPhase = SYNC_PHASE_PREPARE_DIRTY
             Logger.log.info("Locally preparing dirty entries")
             prepareDirty()
@@ -142,14 +141,12 @@ abstract class SyncManager(
                 Logger.log.info("Listing local resources")
                 listLocal()
 
-                if (Thread.interrupted())
-                    return
+                abortIfCancelled()
                 syncPhase = SYNC_PHASE_LIST_REMOTE
                 Logger.log.info("Listing remote resources")
                 listRemote()
 
-                if (Thread.interrupted())
-                    return
+                abortIfCancelled()
                 syncPhase = SYNC_PHASE_COMPARE_LOCAL_REMOTE
                 Logger.log.info("Comparing local/remote entries")
                 compareLocalRemote()
@@ -168,76 +165,98 @@ abstract class SyncManager(
             } else
                 Logger.log.info("Remote collection didn't change, skipping remote sync")
 
-        } catch(e: IOException) {
+        } catch (e: InterruptedException) {
+            Logger.log.info("Synchronization was cancelled, stopping")
+        } catch (e: SSLHandshakeException) {
+            Logger.log.log(Level.WARNING, "SSL handshake failed", e)
+
+            // when a certificate is rejected by cert4android, the cause will be a CertificateException
+            if (!BuildConfig.customCerts || e.cause !is CertificateException)
+                notifyException(e)
+        } catch (e: IOException) {
             Logger.log.log(Level.WARNING, "I/O exception during sync, trying again later", e)
             syncResult.stats.numIoExceptions++
-        } catch(e: ServiceUnavailableException) {
+        } catch (e: ServiceUnavailableException) {
             Logger.log.log(Level.WARNING, "Got 503 Service unavailable, trying again later", e)
             syncResult.stats.numIoExceptions++
             e.retryAfter?.let { retryAfter ->
                 // how many seconds to wait? getTime() returns ms, so divide by 1000
                 syncResult.delayUntil = (retryAfter.time - Date().time) / 1000
             }
-        } catch(e: Throwable) {
-            val messageString: Int
-
-            when (e) {
-                is UnauthorizedException -> {
-                    Logger.log.log(Level.SEVERE, "Not authorized anymore", e)
-                    messageString = R.string.sync_error_unauthorized
-                    syncResult.stats.numAuthExceptions++
-                }
-                is HttpException, is DavException -> {
-                    Logger.log.log(Level.SEVERE, "HTTP/DAV Exception during sync", e)
-                    messageString = R.string.sync_error_http_dav
-                    syncResult.stats.numParseExceptions++
-                }
-                is CalendarStorageException, is ContactsStorageException -> {
-                    Logger.log.log(Level.SEVERE, "Couldn't access local storage", e)
-                    messageString = R.string.sync_error_local_storage
-                    syncResult.databaseError = true
-                }
-                else -> {
-                    Logger.log.log(Level.SEVERE, "Unknown sync error", e)
-                    messageString = R.string.sync_error
-                    syncResult.stats.numParseExceptions++
-                }
-            }
-
-            val detailsIntent: Intent
-            if (e is UnauthorizedException) {
-                detailsIntent = Intent(context, AccountSettingsActivity::class.java)
-                detailsIntent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
-            } else {
-                detailsIntent = Intent(context, DebugInfoActivity::class.java)
-                detailsIntent.putExtra(DebugInfoActivity.KEY_THROWABLE, e)
-                detailsIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account)
-                detailsIntent.putExtra(DebugInfoActivity.KEY_AUTHORITY, authority)
-                detailsIntent.putExtra(DebugInfoActivity.KEY_PHASE, syncPhase)
-                currentLocalResource?.let { detailsIntent.putExtra(DebugInfoActivity.KEY_LOCAL_RESOURCE, it.toString()) }
-                currentDavResource?.let { detailsIntent.putExtra(DebugInfoActivity.KEY_REMOTE_RESOURCE, it.toString()) }
-            }
-
-            // to make the PendingIntent unique
-            detailsIntent.data = Uri.parse("uri://${javaClass.name}/$uniqueCollectionId")
-
-            val builder = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_SYNC_PROBLEMS)
-            builder .setSmallIcon(R.drawable.ic_sync_error_notification)
-                    .setLargeIcon(App.getLauncherBitmap(context))
-                    .setContentTitle(getSyncErrorTitle())
-                    .setContentIntent(PendingIntent.getActivity(context, 0, detailsIntent, PendingIntent.FLAG_CANCEL_CURRENT))
-                    .setCategory(NotificationCompat.CATEGORY_ERROR)
-
-            try {
-                val phases = context.resources.getStringArray(R.array.sync_error_phases)
-                val message = context.getString(messageString, phases[syncPhase])
-                builder.setContentText(message)
-            } catch (ex: IndexOutOfBoundsException) {
-                // should never happen
-            }
-
-            notificationManager.notify(uniqueCollectionId, notificationId(), builder.build())
+        } catch (e: Throwable) {
+            notifyException(e)
         }
+    }
+
+    private fun notifyException(e: Throwable) {
+        val messageString: Int
+
+        when (e) {
+            is UnauthorizedException -> {
+                Logger.log.log(Level.SEVERE, "Not authorized anymore", e)
+                messageString = R.string.sync_error_unauthorized
+                syncResult.stats.numAuthExceptions++
+            }
+            is HttpException, is DavException -> {
+                Logger.log.log(Level.SEVERE, "HTTP/DAV Exception during sync", e)
+                messageString = R.string.sync_error_http_dav
+                syncResult.stats.numParseExceptions++
+            }
+            is CalendarStorageException, is ContactsStorageException -> {
+                Logger.log.log(Level.SEVERE, "Couldn't access local storage", e)
+                messageString = R.string.sync_error_local_storage
+                syncResult.databaseError = true
+            }
+            else -> {
+                Logger.log.log(Level.SEVERE, "Unknown sync error", e)
+                messageString = R.string.sync_error
+                syncResult.stats.numParseExceptions++
+            }
+        }
+
+        val detailsIntent: Intent
+        if (e is UnauthorizedException) {
+            detailsIntent = Intent(context, AccountSettingsActivity::class.java)
+            detailsIntent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
+        } else {
+            detailsIntent = Intent(context, DebugInfoActivity::class.java)
+            detailsIntent.putExtra(DebugInfoActivity.KEY_THROWABLE, e)
+            detailsIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account)
+            detailsIntent.putExtra(DebugInfoActivity.KEY_AUTHORITY, authority)
+            detailsIntent.putExtra(DebugInfoActivity.KEY_PHASE, syncPhase)
+            currentLocalResource?.let { detailsIntent.putExtra(DebugInfoActivity.KEY_LOCAL_RESOURCE, it.toString()) }
+            currentDavResource?.let { detailsIntent.putExtra(DebugInfoActivity.KEY_REMOTE_RESOURCE, it.toString()) }
+        }
+
+        // to make the PendingIntent unique
+        detailsIntent.data = Uri.parse("uri://${javaClass.name}/$uniqueCollectionId")
+
+        val builder = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_SYNC_PROBLEMS)
+        builder .setSmallIcon(R.drawable.ic_sync_error_notification)
+                .setLargeIcon(App.getLauncherBitmap(context))
+                .setContentTitle(getSyncErrorTitle())
+                .setContentIntent(PendingIntent.getActivity(context, 0, detailsIntent, PendingIntent.FLAG_CANCEL_CURRENT))
+                .setCategory(NotificationCompat.CATEGORY_ERROR)
+
+        try {
+            val phases = context.resources.getStringArray(R.array.sync_error_phases)
+            val message = context.getString(messageString, phases[syncPhase])
+            builder.setContentText(message)
+        } catch (ex: IndexOutOfBoundsException) {
+            // should never happen
+        }
+
+        notificationManager.notify(uniqueCollectionId, notificationId(), builder.build())
+    }
+
+    /**
+     * Throws an [InterruptedException] if the current thread has been interrupted,
+     * most probably because synchronization was cancelled by the user.
+     * @throws InterruptedException (which will be catched by [performSync])
+     * */
+    protected fun abortIfCancelled() {
+        if (Thread.interrupted())
+            throw InterruptedException("Sync was cancelled")
     }
 
     override fun close() {
