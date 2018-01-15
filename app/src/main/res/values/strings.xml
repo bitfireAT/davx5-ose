@@ -156,8 +156,6 @@
     <string name="login_base_url">Base URL</string>
     <string name="login_type_url_certificate">Login with URL and client certificate</string>
     <string name="login_select_certificate">Select certificate</string>
-    <string name="login_selected_certificate">Certificate: %s</string>
-    <string name="login_selected_certificate_empty">No certificate selected</string>
     <string name="login_login">Login</string>
     <string name="login_back">Back</string>
     <string name="login_create_account">Create account</string>
