@@ -34,6 +34,7 @@ import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import java.io.Closeable
 import java.io.IOException
+import java.io.InterruptedIOException
 import java.security.cert.CertificateException
 import java.util.*
 import java.util.logging.Level
@@ -166,7 +167,11 @@ abstract class SyncManager(
                 Logger.log.info("Remote collection didn't change, skipping remote sync")
 
         } catch (e: InterruptedException) {
-            Logger.log.info("Synchronization was cancelled, stopping")
+            // re-throw to SyncAdapterService
+            throw e
+        } catch (e: InterruptedIOException) {
+            throw e
+
         } catch (e: SSLHandshakeException) {
             Logger.log.log(Level.WARNING, "SSL handshake failed", e)
 
