@@ -41,7 +41,7 @@
   <string name="navigation_drawer_close">Hauptmenü schließen</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV-Sync-Adapter</string>
   <string name="navigation_drawer_about">Über / Lizenz</string>
-  <string name="navigation_drawer_beta_feedback">Beta-Diskussion</string>
+  <string name="navigation_drawer_beta_feedback">Beta-Rückmeldung</string>
   <string name="navigation_drawer_settings">Einstellungen</string>
   <string name="navigation_drawer_news_updates">Aktuelles</string>
   <string name="navigation_drawer_external_links">Externe Links</string>
