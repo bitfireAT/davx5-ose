@@ -137,7 +137,7 @@ dependencies {
     compile project(':ical4android')
     compile project(':vcard4android')
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     compile 'com.android.support:appcompat-v7:27.0.2'
     compile 'com.android.support:cardview-v7:27.0.2'
