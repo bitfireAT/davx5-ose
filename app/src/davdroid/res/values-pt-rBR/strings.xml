@@ -124,10 +124,13 @@
   <string name="login_password_required">É necessário uma senha</string>
   <string name="login_type_url">Autenticação com usuário e URL</string>
   <string name="login_url_must_be_http_or_https">A URL deve começar com http(s)://</string>
+  <string name="login_url_must_be_https">A URL deve começar com https://</string>
   <string name="login_url_host_name_required">É necessário um nome de máquina</string>
   <string name="login_user_name">Usuário</string>
   <string name="login_user_name_required">É necessário um nome de usuário</string>
   <string name="login_base_url">URL base</string>
+  <string name="login_type_url_certificate">Autenticação com URL e certificado do cliente</string>
+  <string name="login_select_certificate">Selecionar certificado</string>
   <string name="login_login">Autenticar</string>
   <string name="login_back">Voltar</string>
   <string name="login_create_account">Criar conta</string>
@@ -148,6 +151,7 @@
   <string name="settings_password">Senha</string>
   <string name="settings_password_summary">Atualize a senha de acordo com seu servidor</string>
   <string name="settings_enter_password">Digite sua senha:</string>
+  <string name="settings_certificate_alias">Nome do certificado do cliente</string>
   <string name="settings_sync">Sincronização</string>
   <string name="settings_sync_interval_contacts">Intervalo sinc. de contatos</string>
   <string name="settings_sync_summary_manually">Apenas manualmente</string>
