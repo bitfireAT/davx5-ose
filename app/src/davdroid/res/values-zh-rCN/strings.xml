@@ -8,7 +8,11 @@
   <string name="manage_accounts">管理账户</string>
   <string name="please_wait">请稍等...</string>
   <string name="send">发送</string>
+  <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
   <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
+  <string name="notification_channel_debugging">调试</string>
+  <string name="notification_channel_sync_status">同步状态</string>
+  <string name="notification_channel_sync_problems">同步错误</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">电池优化</string>
   <string name="startup_battery_optimization_message">系统可能会在几天后减少或停用 DAVdroid 同步。为了避免这一情况，请禁用对 DAVdroid 的电池优化。</string>
@@ -43,10 +47,11 @@
   <string name="navigation_drawer_news_updates">最新消息</string>
   <string name="navigation_drawer_external_links">外部链接</string>
   <string name="navigation_drawer_website">应用网站</string>
+  <string name="navigation_drawer_manual">手动</string>
   <string name="navigation_drawer_faq">常见问题</string>
   <string name="navigation_drawer_forums">帮助 / 论坛</string>
   <string name="navigation_drawer_donate">捐助</string>
-  <string name="account_list_empty">欢迎使用 DAVdroid！\n\n现在你可以增加 CalDAV/CardDAV 账户。</string>
+  <string name="account_list_empty">欢迎使用 DAVdroid！\n\n请开始增加 CalDAV/CardDAV 账户。</string>
   <string name="accounts_global_sync_disabled">系统全局自动同步已禁用</string>
   <string name="accounts_global_sync_enable">启用</string>
   <!--DavService-->
@@ -113,6 +118,7 @@
   <string name="permissions_opentasks_details">要把 CalDAV 任务与本地任务列表同步，DAVdroid 需要访问 OpenTasks。</string>
   <string name="permissions_opentasks_request">请求 OpenTasks 权限</string>
   <!--AddAccountActivity-->
+  <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
   <string name="login_title">增加账户</string>
   <string name="login_type_email">使用邮箱地址登录</string>
   <string name="login_email_address">Email 地址</string>
@@ -120,11 +126,14 @@
   <string name="login_password">密码</string>
   <string name="login_password_required">请输入密码</string>
   <string name="login_type_url">使用 URL 和用户名登录</string>
-  <string name="login_url_must_be_http_or_https">URL 必须以 http(s):// 为开头</string>
+  <string name="login_url_must_be_http_or_https">URL 需以 http(s):// 为开头</string>
+  <string name="login_url_must_be_https">URL 需以 https:// 为开头</string>
   <string name="login_url_host_name_required">请输入主机名</string>
   <string name="login_user_name">用户名</string>
   <string name="login_user_name_required">请输入用户名</string>
   <string name="login_base_url">根地址</string>
+  <string name="login_type_url_certificate">使用 URL 和客户端证书登录</string>
+  <string name="login_select_certificate">选择证书</string>
   <string name="login_login">登录</string>
   <string name="login_back">返回</string>
   <string name="login_create_account">创建账户</string>
@@ -145,6 +154,7 @@
   <string name="settings_password">密码</string>
   <string name="settings_password_summary">修改服务器密码</string>
   <string name="settings_enter_password">输入密码</string>
+  <string name="settings_certificate_alias">客户端证书别名</string>
   <string name="settings_sync">同步</string>
   <string name="settings_sync_interval_contacts">通讯录自动同步间隔</string>
   <string name="settings_sync_summary_manually">手动同步</string>
@@ -228,6 +238,8 @@
   </plurals>
   <string name="sync_error_permissions">DAVdroid 权限</string>
   <string name="sync_error_permissions_text">需要额外权限</string>
+  <string name="sync_error_opentasks_too_old">OpenTasks 版本太旧</string>
+  <string name="sync_error_opentasks_required_version">最低版本 %1$s （当前 %2$s）</string>
   <string name="sync_error_calendar">日历同步失败（%s）</string>
   <string name="sync_error_contacts">通讯录同步失败（%s）</string>
   <string name="sync_error_tasks">任务同步失败（%s）</string>
