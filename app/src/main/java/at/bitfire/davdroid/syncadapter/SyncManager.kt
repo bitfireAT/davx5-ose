@@ -32,7 +32,6 @@ import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.vcard4android.ContactsStorageException
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
-import java.io.Closeable
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.security.cert.CertificateException
@@ -49,7 +48,7 @@ abstract class SyncManager(
         val authority: String,
         val syncResult: SyncResult,
         val uniqueCollectionId: String
-): Closeable {
+): AutoCloseable {
 
     companion object {
 

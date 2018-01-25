@@ -23,7 +23,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import okhttp3.internal.tls.OkHostnameVerifier
 import okhttp3.logging.HttpLoggingInterceptor
-import java.io.Closeable
 import java.io.File
 import java.net.InetSocketAddress
 import java.net.Proxy
@@ -42,7 +41,7 @@ import javax.net.ssl.X509TrustManager
 class HttpClient private constructor(
         val okHttpClient: OkHttpClient,
         private val certManager: CustomCertManager?
-): Closeable {
+): AutoCloseable {
 
     companion object {
         /** [OkHttpClient] singleton to build all clients from */

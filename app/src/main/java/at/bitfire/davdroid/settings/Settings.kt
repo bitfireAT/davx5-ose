@@ -19,7 +19,6 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import at.bitfire.davdroid.log.Logger
-import java.io.Closeable
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level
@@ -226,7 +225,7 @@ class Settings: Service(), Provider.Observer {
             delegate: ISettings,
             private val context: Context,
             private val serviceConn: ServiceConnection?
-    ): ISettings by delegate, Closeable {
+    ): ISettings by delegate, AutoCloseable {
 
         override fun close() {
             serviceConn?.let {
