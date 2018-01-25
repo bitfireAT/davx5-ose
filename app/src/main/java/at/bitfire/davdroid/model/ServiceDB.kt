@@ -17,7 +17,6 @@ import android.preference.PreferenceManager
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.StartupDialogFragment
-import java.io.Closeable
 import java.util.logging.Level
 
 class ServiceDB {
@@ -79,7 +78,7 @@ class ServiceDB {
 
     class OpenHelper(
             val context: Context
-    ): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), Closeable {
+    ): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), AutoCloseable {
 
         companion object {
             val DATABASE_NAME = "services.db"

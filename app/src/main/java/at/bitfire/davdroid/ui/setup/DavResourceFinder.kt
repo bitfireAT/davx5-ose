@@ -24,7 +24,6 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder
 import org.apache.commons.lang3.builder.ToStringBuilder
 import org.xbill.DNS.Lookup
 import org.xbill.DNS.Type
-import java.io.Closeable
 import java.io.IOException
 import java.io.Serializable
 import java.net.URI
@@ -36,7 +35,7 @@ import java.util.logging.Logger
 class DavResourceFinder(
         val context: Context,
         private val loginInfo: LoginInfo
-): Closeable {
+): AutoCloseable {
 
     enum class Service(val wellKnownName: String) {
         CALDAV("caldav"),
