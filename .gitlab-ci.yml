@@ -12,7 +12,6 @@ cache:
 test:
   script:
     - (cd /sdk/emulator; ./emulator @test -no-audio -no-window & wait-for-emulator.sh)
-    - (mkdir -p apk && cd apk && wget -q https://f-droid.org/repo/org.dmfs.tasks_481.apk && adb install org.dmfs.tasks_481.apk)
     - ./gradlew check mergeAndroidReports
   artifacts:
     paths:
