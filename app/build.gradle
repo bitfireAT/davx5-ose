@@ -81,6 +81,7 @@ android {
         standard.res.srcDirs = [ "src/davdroid/res" ]
         gplay.java.srcDirs = [ "src/gplay/java", "src/davdroid/java" ]
         gplay.res.srcDirs = [ "src/gplay/res", "src/davdroid/res" ]
+        androidTest.java.srcDirs = [ "src/androidTest/java", "src/espressoTest/java" ]
     }
 
     signingConfigs {
@@ -153,14 +154,10 @@ dependencies {
     compile 'org.apache.commons:commons-collections4:4.1'
 
     // for tests
-    //noinspection GradleDynamicVersion
-    androidTestCompile('com.android.support.test:runner:+') {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    }
-    //noinspection GradleDynamicVersion
-    androidTestCompile('com.android.support.test:rules:+') {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    }
+    androidTestCompile('com.android.support.test:runner:1.0.1')
+    androidTestCompile('com.android.support.test:rules:1.0.1')
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:3.0.1'
     androidTestCompile 'junit:junit:4.12'
     androidTestCompile 'com.squareup.okhttp3:mockwebserver:3.9.1'
 
