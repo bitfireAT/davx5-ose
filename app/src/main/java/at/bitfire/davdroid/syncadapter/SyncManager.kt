@@ -277,15 +277,14 @@ abstract class SyncManager(
 
     /**
      * Process locally deleted entries (DELETE them on the server as well).
-     * Checks Thread.interrupted() before each request to allow quick sync cancellation.
+     * Checks for thread interruption before each request to allow quick sync cancellation.
      */
     protected open fun processLocallyDeleted() {
         // Remove locally deleted entries from server (if they have a name, i.e. if they were uploaded before),
         // but only if they don't have changed on the server. Then finally remove them from the local address book.
         val localList = localCollection.getDeleted()
         for (local in localList) {
-            if (Thread.interrupted())
-                return
+            abortIfCancelled()
 
             currentLocalResource = local
 
@@ -327,13 +326,12 @@ abstract class SyncManager(
 
     /**
      * Uploads dirty records to the server, using a PUT request for each record.
-     * Checks Thread.interrupted() before each request to allow quick sync cancellation.
+     * Checks for thread interruption before each request to allow quick sync cancellation.
      */
     protected open fun uploadDirty() {
         // upload dirty contacts
         for (local in localCollection.getDirty()) {
-            if (Thread.interrupted())
-                return
+            abortIfCancelled()
 
             currentLocalResource = local
             val fileName = local.fileName
@@ -473,7 +471,7 @@ abstract class SyncManager(
 
     /**
      * Downloads the remote resources in {@link #toDownload} and stores them locally.
-     * Must check Thread.interrupted() periodically to allow quick sync cancellation.
+     * Must check for thread interruption periodically to allow quick sync cancellation.
      */
     abstract protected fun downloadRemote()
 
