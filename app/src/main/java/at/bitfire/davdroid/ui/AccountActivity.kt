@@ -18,12 +18,12 @@ import android.content.pm.PackageManager
 import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.IBinder
+import android.os.*
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.support.design.widget.Snackbar
+import android.support.test.espresso.IdlingRegistry
+import android.support.test.espresso.IdlingResource
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
@@ -32,6 +32,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.*
 import android.widget.*
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -73,6 +74,8 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     lateinit var account: Account
     private var accountInfo: AccountInfo? = null
 
+    private var isActiveIdlingResource: IsActiveIdlingResource? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,6 +107,18 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
         // load CardDAV/CalDAV collections
         loaderManager.initLoader(0, null, this)
+
+        // register Espresso idling resource
+        if (BuildConfig.DEBUG) {
+            isActiveIdlingResource = IsActiveIdlingResource()
+            IdlingRegistry.getInstance().register(isActiveIdlingResource)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (BuildConfig.DEBUG)
+            IdlingRegistry.getInstance().unregister(isActiveIdlingResource)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -363,6 +378,12 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             else
                 View.GONE
         } ?: View.GONE
+
+        // set idle state for UI tests
+        if (BuildConfig.DEBUG && isActiveIdlingResource!!.isIdleNow)
+            Handler(Looper.getMainLooper()).post {
+                isActiveIdlingResource!!.callback?.onTransitionToIdle()
+            }
 
         // ask for permissions
         val requiredPermissions = mutableSetOf<String>()
@@ -756,6 +777,27 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     private fun requestSync() {
         requestSync(this, account)
         Snackbar.make(findViewById(R.id.parent), R.string.account_synchronizing_now, Snackbar.LENGTH_LONG).show()
+    }
+
+
+    /**
+     * For Espresso tests. Is idle when the CalDAV/CardDAV cards are either invisible or
+     * there's no more progress bar.
+     */
+    inner class IsActiveIdlingResource: IdlingResource {
+
+        var callback: IdlingResource.ResourceCallback? = null
+
+        override fun getName() = "CalDAV/CardDAV activity (progress bar)"
+
+        override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback) {
+            this.callback = callback
+        }
+
+        override fun isIdleNow() =
+                (carddav.visibility == View.GONE || carddav_refreshing.visibility == View.GONE) &&
+                (caldav.visibility == View.GONE || caldav_refreshing.visibility == View.GONE)
+
     }
 
 }
