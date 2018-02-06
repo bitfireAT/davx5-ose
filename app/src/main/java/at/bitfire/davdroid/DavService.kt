@@ -327,10 +327,10 @@ class DavService: Service() {
                 val nm = NotificationUtils.createChannels(this)
                 val notify = NotificationCompat.Builder(this, NotificationUtils.CHANNEL_SYNC_PROBLEMS)
                         .setSmallIcon(R.drawable.ic_sync_error_notification)
-                        .setLargeIcon(App.getLauncherBitmap(this))
                         .setContentTitle(getString(R.string.dav_service_refresh_failed))
                         .setContentText(getString(R.string.dav_service_refresh_couldnt_refresh))
                         .setContentIntent(PendingIntent.getActivity(this, 0, debugIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                        .setSubText(account.name)
                         .build()
                 nm.notify(Constants.NOTIFICATION_REFRESH_COLLECTIONS, notify)
             } finally {

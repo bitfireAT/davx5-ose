@@ -13,6 +13,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.NotificationCompat
@@ -22,6 +23,7 @@ import at.bitfire.dav4android.property.GetCTag
 import at.bitfire.dav4android.property.GetETag
 import at.bitfire.davdroid.*
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.ISettings
@@ -235,12 +237,13 @@ abstract class SyncManager(
         // to make the PendingIntent unique
         detailsIntent.data = Uri.parse("uri://${javaClass.name}/$uniqueCollectionId")
 
+        val mainAccount = (localCollection as? LocalAddressBook)?.getMainAccount() ?: account
         val builder = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_SYNC_PROBLEMS)
         builder .setSmallIcon(R.drawable.ic_sync_error_notification)
-                .setLargeIcon(App.getLauncherBitmap(context))
                 .setContentTitle(getSyncErrorTitle())
                 .setContentIntent(PendingIntent.getActivity(context, 0, detailsIntent, PendingIntent.FLAG_CANCEL_CURRENT))
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
+                .setSubText(mainAccount.name)
 
         try {
             val phases = context.resources.getStringArray(R.array.sync_error_phases)
