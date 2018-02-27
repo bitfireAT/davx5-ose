@@ -474,9 +474,9 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                                 for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
                                     val addressBook = LocalAddressBook(context, addrBookAccount, null)
                                     try {
-                                        if (account == addressBook.getMainAccount())
+                                        if (account == addressBook.mainAccount)
                                             carddav.refreshing = carddav.refreshing || ContentResolver.isSyncActive(addrBookAccount, ContactsContract.AUTHORITY)
-                                    } catch(e: ContactsStorageException) {
+                                    } catch(e: Exception) {
                                     }
                                 }
 
@@ -692,8 +692,8 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                                         try {
                                             if (provider != null) {
                                                 val addressBook = LocalAddressBook(activity!!, addrBookAccount, provider)
-                                                if (oldAccount == addressBook.getMainAccount())
-                                                    addressBook.setMainAccount(Account(newName, oldAccount.type))
+                                                if (oldAccount == addressBook.mainAccount)
+                                                    addressBook.mainAccount = Account(newName, oldAccount.type)
                                             }
                                         } finally {
                                             if (Build.VERSION.SDK_INT >= 24)
@@ -703,7 +703,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                                         }
 
                                     }
-                                } catch(e: ContactsStorageException) {
+                                } catch(e: Exception) {
                                     Logger.log.log(Level.SEVERE, "Couldn't update address book accounts", e)
                                 }
 

@@ -60,7 +60,7 @@ class TasksSyncAdapterService: SyncAdapterService() {
 
                 for (taskList in AndroidTaskList.find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)) {
                     Logger.log.info("Synchronizing task list #${taskList.id} [${taskList.syncId}]")
-                    TasksSyncManager(context, settings, account, accountSettings, extras, authority, syncResult, taskProvider, taskList).use {
+                    TasksSyncManager(context, settings, account, accountSettings, extras, authority, syncResult, taskList).use {
                         it.performSync()
                     }
                 }

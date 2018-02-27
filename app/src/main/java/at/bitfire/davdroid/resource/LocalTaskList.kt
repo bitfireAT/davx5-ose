@@ -16,14 +16,15 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
+import at.bitfire.davdroid.model.SyncState
 import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.AndroidTaskListFactory
-import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.ical4android.TaskProvider
 import org.dmfs.tasks.contract.TaskContract.TaskLists
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.io.FileNotFoundException
+import java.util.logging.Level
 
 class LocalTaskList private constructor(
         account: Account,
@@ -33,17 +34,8 @@ class LocalTaskList private constructor(
 
     companion object {
 
-        val defaultColor = 0xFFC3EA6E.toInt()     // "DAVdroid green"
+        private const val defaultColor = 0xFFC3EA6E.toInt()     // "DAVdroid green"
 
-        val COLUMN_CTAG = TaskLists.SYNC_VERSION
-
-        val BASE_INFO_COLUMNS = arrayOf(
-            Tasks._ID,
-            Tasks._SYNC_ID,
-            LocalTask.COLUMN_ETAG
-        )
-
-        @JvmStatic
         fun tasksProviderAvailable(context: Context): Boolean {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                 return context.packageManager.resolveContentProvider(TaskProvider.ProviderName.OpenTasks.authority, 0) != null
@@ -54,8 +46,6 @@ class LocalTaskList private constructor(
             }
         }
 
-        @JvmStatic
-        @Throws(CalendarStorageException::class)
         fun create(account: Account, provider: TaskProvider, info: CollectionInfo): Uri {
             val values = valuesFromCollectionInfo(info, true)
             values.put(TaskLists.OWNER, account.name)
@@ -64,7 +54,6 @@ class LocalTaskList private constructor(
             return create(account, provider, values)
         }
 
-        @JvmStatic
         @Throws(Exception::class)
         fun onRenameAccount(resolver: ContentResolver, oldName: String, newName: String) {
             var client: ContentProviderClient? = null
@@ -96,27 +85,36 @@ class LocalTaskList private constructor(
 
     }
 
+    override var lastSyncState: SyncState?
+        get() {
+            try {
+                provider.client.query(taskListSyncUri(), arrayOf(TaskLists.SYNC_VERSION),
+                        null, null, null)?.use { cursor ->
+                    if (cursor.moveToNext())
+                        cursor.getString(0)?.let {
+                            return SyncState.fromString(it)
+                        }
+                }
+            } catch (e: Exception) {
+                Logger.log.log(Level.WARNING, "Couldn't read sync state", e)
+            }
+            return null
+        }
+        set(state) {
+            val values = ContentValues(1)
+            values.put(TaskLists.SYNC_VERSION, state?.toString())
+            provider.client.update(taskListSyncUri(), values, null, null)
+        }
 
-    override fun taskBaseInfoColumns() = BASE_INFO_COLUMNS
 
-
-    @Throws(CalendarStorageException::class)
     fun update(info: CollectionInfo, updateColor: Boolean) {
         update(valuesFromCollectionInfo(info, updateColor))
     }
 
 
-    @Throws(CalendarStorageException::class)
-    override fun getAll() = queryTasks(null, null)
+    override fun findDeleted() = queryTasks("${Tasks._DELETED}!=0", null)
 
-    @Throws(CalendarStorageException::class)
-    override fun getDeleted() = queryTasks("${Tasks._DELETED}!=0", null)
-
-    @Throws(CalendarStorageException::class)
-    override fun getWithoutFileName() = queryTasks("${Tasks._SYNC_ID} IS NULL", null)
-
-    @Throws(FileNotFoundException::class, CalendarStorageException::class)
-    override fun getDirty(): List<LocalTask> {
+    override fun findDirty(): List<LocalTask> {
         val tasks = queryTasks("${Tasks._DIRTY}!=0", null)
         for (localTask in tasks) {
             val task = requireNotNull(localTask.task)
@@ -129,29 +127,20 @@ class LocalTaskList private constructor(
         return tasks
     }
 
+    override fun findByName(name: String) =
+            queryTasks("${Tasks._SYNC_ID}=?", arrayOf(name)).firstOrNull()
 
-    @Throws(CalendarStorageException::class)
-    override fun getCTag(): String? =
-        try {
-            provider.client.query(taskListSyncUri(), arrayOf(COLUMN_CTAG), null, null, null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return cursor.getString(0)
-            }
-            null
-        } catch(e: Exception) {
-            throw CalendarStorageException("Couldn't read local (last known) CTag", e)
-        }
 
-    @Throws(CalendarStorageException::class)
-    override fun setCTag(cTag: String?) {
-        try {
-            val values = ContentValues(1)
-            values.put(COLUMN_CTAG, cTag)
-            provider.client.update(taskListSyncUri(), values, null, null)
-        } catch (e: Exception) {
-            throw CalendarStorageException("Couldn't write local (last known) CTag", e)
-        }
+    override fun markNotDirty(flags: Int): Int {
+        val values = ContentValues(1)
+        values.put(LocalTask.COLUMN_FLAGS, flags)
+        return provider.client.update(tasksSyncUri(), values, "${Tasks._DIRTY}=0", null)
     }
+
+    override fun removeNotDirtyMarked(flags: Int) =
+            provider.client.delete(tasksSyncUri(),
+                    "${Tasks._DIRTY}=0 AND ${LocalTask.COLUMN_FLAGS}=?",
+                    arrayOf(flags.toString()))
 
 
     object Factory: AndroidTaskListFactory<LocalTaskList> {

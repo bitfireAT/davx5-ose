@@ -23,6 +23,7 @@ import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
+import at.bitfire.davdroid.model.SyncState
 import at.bitfire.vcard4android.*
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
@@ -39,67 +40,50 @@ class LocalAddressBook(
         private val context: Context,
         account: Account,
         provider: ContentProviderClient?
-): AndroidAddressBook<LocalContact, LocalGroup>(account, provider, LocalContact.Factory, LocalGroup.Factory), LocalCollection<LocalResource> {
+): AndroidAddressBook<LocalContact, LocalGroup>(account, provider, LocalContact.Factory, LocalGroup.Factory), LocalCollection<LocalAddress> {
 
     companion object {
 
-        val USER_DATA_MAIN_ACCOUNT_TYPE = "real_account_type"
-        val USER_DATA_MAIN_ACCOUNT_NAME = "real_account_name"
-        val USER_DATA_URL = "url"
-        val USER_DATA_READ_ONLY = "read_only"
-        val USER_DATA_CTAG = "ctag"
+        const val USER_DATA_MAIN_ACCOUNT_TYPE = "real_account_type"
+        const val USER_DATA_MAIN_ACCOUNT_NAME = "real_account_name"
+        const val USER_DATA_URL = "url"
+        const val USER_DATA_READ_ONLY = "read_only"
 
-        @JvmStatic
-        @Throws(ContactsStorageException::class)
         fun create(context: Context, provider: ContentProviderClient, mainAccount: Account, info: CollectionInfo): LocalAddressBook {
             val accountManager = AccountManager.get(context)
 
             val account = Account(accountName(mainAccount, info), context.getString(R.string.account_type_address_book))
             if (!accountManager.addAccountExplicitly(account, null, initialUserData(mainAccount, info.url)))
-                throw ContactsStorageException("Couldn't create address book account")
+                throw IllegalStateException("Couldn't create address book account")
 
             val addressBook = LocalAddressBook(context, account, provider)
             ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
 
-            // set up Contacts Provider Settings
+            // initialize Contacts Provider Settings
             val values = ContentValues(2)
             values.put(ContactsContract.Settings.SHOULD_SYNC, 1)
             values.put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
-            addressBook.updateSettings(values)
+            addressBook.settings = values
 
             return addressBook
         }
 
-        @JvmStatic
-        @Throws(ContactsStorageException::class)
-        fun find(context: Context, provider: ContentProviderClient, mainAccount: Account?): List<LocalAddressBook> {
-            val accountManager = AccountManager.get(context)
+        fun findAll(context: Context, provider: ContentProviderClient, mainAccount: Account?) = AccountManager.get(context)
+                .getAccountsByType(context.getString(R.string.account_type_address_book))
+                .map { LocalAddressBook(context, it, provider) }
+                .filter { mainAccount == null || it.mainAccount == mainAccount }
+                .toList()
 
-            val result = LinkedList<LocalAddressBook>()
-            accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
-                    .map { LocalAddressBook(context, it, provider) }
-                    .filter { mainAccount == null || it.getMainAccount() == mainAccount }
-                    .forEach { result += it }
-
-            return result
-        }
-
-        @JvmStatic
         fun accountName(mainAccount: Account, info: CollectionInfo): String {
             val baos = ByteArrayOutputStream()
             baos.write(info.url.hashCode())
             val hash = Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP or Base64.NO_PADDING)
 
             val sb = StringBuilder(if (info.displayName.isNullOrEmpty()) DavUtils.lastSegmentOfUrl(info.url) else info.displayName)
-            sb      .append(" (")
-                    .append(mainAccount.name)
-                    .append(" ")
-                    .append(hash)
-                    .append(")")
+            sb.append(" (${mainAccount.name} $hash)")
             return sb.toString()
         }
 
-        @JvmStatic
         fun initialUserData(mainAccount: Account, url: String): Bundle {
             val bundle = Bundle(3)
             bundle.putString(USER_DATA_MAIN_ACCOUNT_NAME, mainAccount.name)
@@ -111,18 +95,80 @@ class LocalAddressBook(
     }
 
     /**
-     * Whether contact groups (LocalGroup resources) are included in query results for
-     * {@link #getAll()}, {@link #getDeleted()}, {@link #getDirty()} and
-     * {@link #getWithoutFileName()}.
+     * Whether contact groups ([LocalGroup]) are included in query results
+     * and are affected by updates/deletes on generic members.
+     *
+     * For instance, if this option is disabled, [findDirty] will find only dirty [LocalContact]s,
+     * but if it is enabled, [findDirty] will find dirty [LocalContact]s and [LocalGroup]s.
      */
     var includeGroups = true
+
+    private var _mainAccount: Account? = null
+    var mainAccount: Account
+        get() {
+            _mainAccount?.let { return it }
+
+            val accountManager = AccountManager.get(context)
+            val name = accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME)
+            val type = accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
+            if (name != null && type != null)
+                return Account(name, type)
+            else
+                throw IllegalStateException("Address book doesn't exist anymore")
+        }
+        set(account) {
+            val accountManager = AccountManager.get(context)
+            accountManager.setUserData(account, USER_DATA_MAIN_ACCOUNT_NAME, account.name)
+            accountManager.setUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE, account.type)
+
+            _mainAccount = account
+        }
+
+    var url: String
+        get() = AccountManager.get(context).getUserData(account, USER_DATA_URL)
+                ?: throw IllegalStateException("Address book has no URL")
+        set(url) = AccountManager.get(context).setUserData(account, USER_DATA_URL, url)
+
+    var readOnly: Boolean
+        get() = AccountManager.get(context).getUserData(account, USER_DATA_READ_ONLY) != null
+        set(readOnly) = AccountManager.get(context).setUserData(account, USER_DATA_READ_ONLY, if (readOnly) "1" else null)
+
+    override var lastSyncState: SyncState?
+        get() = syncState?.let { SyncState.fromString(String(it)) }
+        set(state) {
+            syncState = state?.toString()?.toByteArray()
+        }
 
 
     /* operations on the collection (address book) itself */
 
-    @Throws(ContactsStorageException::class)
+    override fun markNotDirty(flags: Int): Int {
+        val values = ContentValues(1)
+        values.put(LocalContact.COLUMN_FLAGS, flags)
+        var number = provider!!.update(rawContactsSyncUri(), values, "${RawContacts.DIRTY}=0", null)
+
+        if (includeGroups) {
+            values.clear()
+            values.put(LocalGroup.COLUMN_FLAGS, flags)
+            number += provider.update(groupsSyncUri(), values, "${Groups.DIRTY}=0", null)
+        }
+
+        return number
+    }
+
+    override fun removeNotDirtyMarked(flags: Int): Int {
+        var number = provider!!.delete(rawContactsSyncUri(),
+                "${RawContacts.DIRTY}=0 AND ${LocalContact.COLUMN_FLAGS}=?", arrayOf(flags.toString()))
+
+        if (includeGroups)
+            number += provider.delete(groupsSyncUri(),
+                    "${Groups.DIRTY}=0 AND ${LocalGroup.COLUMN_FLAGS}=?", arrayOf(flags.toString()))
+
+        return number
+    }
+
     fun update(info: CollectionInfo) {
-        val newAccountName = accountName(getMainAccount(), info)
+        val newAccountName = accountName(mainAccount, info)
 
         @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         if (account.name != newAccountName && Build.VERSION.SDK_INT >= 21) {
@@ -135,7 +181,7 @@ class LocalAddressBook(
                         values.put(RawContacts.ACCOUNT_NAME, newAccountName)
                         provider.update(syncAdapterURI(RawContacts.CONTENT_URI), values, "${RawContacts.ACCOUNT_NAME}=?", arrayOf(account.name))
                     }
-                } catch(e: RemoteException) {
+                } catch (e: RemoteException) {
                     Logger.log.log(Level.WARNING, "Couldn't re-assign contacts to new account name", e)
                 }
             }, null)
@@ -143,57 +189,66 @@ class LocalAddressBook(
         }
 
         Constants.log.info("Address book read-only? = ${info.readOnly}")
-        setReadOnly(info.readOnly || info.forceReadOnly)
+        readOnly = info.readOnly || info.forceReadOnly
 
         // make sure it will still be synchronized when contacts are updated
         ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
     }
 
-    @Throws(ContactsStorageException::class)
     fun delete() {
         val accountManager = AccountManager.get(context)
-        try {
-            if (Build.VERSION.SDK_INT >= 22)
-                accountManager.removeAccount(account, null, null, null)
-            else
-                @Suppress("deprecation")
-                accountManager.removeAccount(account, null, null)
-        } catch(e: Exception) {
-            throw ContactsStorageException("Couldn't remove address book", e)
-        }
+        if (Build.VERSION.SDK_INT >= 22)
+            accountManager.removeAccount(account, null, null, null)
+        else
+            accountManager.removeAccount(account, null, null)
     }
 
 
     /* operations on members (contacts/groups) */
 
-    @Throws(ContactsStorageException::class, FileNotFoundException::class)
-    fun findContactByUID(uid: String): LocalContact {
-        val contacts = queryContacts("${AndroidContact.COLUMN_UID}=?", arrayOf(uid))
-        if (contacts.isEmpty())
-            throw FileNotFoundException()
-        return contacts.first()
+    override fun findByName(name: String): LocalAddress? {
+        val result = queryContacts("${AndroidContact.COLUMN_FILENAME}=?", arrayOf(name)).firstOrNull()
+        return if (includeGroups)
+            result ?: queryGroups("${AndroidGroup.COLUMN_FILENAME}=?", arrayOf(name)).firstOrNull()
+        else
+            result
     }
 
-    @Throws(ContactsStorageException::class)
-    override fun getAll(): List<LocalResource> {
-        val all = LinkedList<LocalResource>()
-        all.addAll(queryContacts(null, null))
-        if (includeGroups)
-            all.addAll(queryGroups(null, null))
-        return all
-    }
 
     /**
      * Returns an array of local contacts/groups which have been deleted locally. (DELETED != 0).
+     * @throws RemoteException on content provider errors
      */
-    @Throws(ContactsStorageException::class)
-    override fun getDeleted(): List<LocalResource> {
-        val deleted = LinkedList<LocalResource>()
-        deleted.addAll(getDeletedContacts())
-        if (includeGroups)
-            deleted.addAll(getDeletedGroups())
-        return deleted
+    override fun findDeleted() =
+            if (includeGroups)
+                findDeletedContacts() + findDeletedGroups()
+            else
+                findDeletedContacts()
+
+    fun findDeletedContacts() = queryContacts("${RawContacts.DELETED}!=0", null)
+    fun findDeletedGroups() = queryGroups("${Groups.DELETED}!=0", null)
+
+    /**
+     * Returns an array of local contacts/groups which have been changed locally (DIRTY != 0).
+     * @throws RemoteException on content provider errors
+     */
+    override fun findDirty() =
+            if (includeGroups)
+                findDirtyContacts() + findDirtyGroups()
+            else
+                findDirtyContacts()
+
+    fun findDirtyContacts() = queryContacts("${RawContacts.DIRTY}!=0", null)
+    fun findDirtyGroups() = queryGroups("${Groups.DIRTY}!=0", null)
+
+    private fun queryContactsGroups(whereContacts: String?, whereArgsContacts: Array<String>?, whereGroups: String?, whereArgsGroups: Array<String>?): List<LocalAddress> {
+        val contacts = queryContacts(whereContacts, whereArgsContacts)
+        return if (includeGroups)
+            contacts + queryGroups(whereGroups, whereArgsGroups)
+        else
+            contacts
     }
+
 
     /**
      * Queries all contacts with DIRTY flag and checks whether their data checksum has changed, i.e.
@@ -201,89 +256,44 @@ class LocalAddressBook(
      * The DIRTY flag is removed from contacts which are not "really dirty", i.e. from contacts
      * whose contact data checksum has not changed.
      * @return number of "really dirty" contacts
+     * @throws RemoteException on content provider errors
      */
-    @Throws(ContactsStorageException::class)
     fun verifyDirty(): Int {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             throw IllegalStateException("verifyDirty() should not be called on Android != 7")
 
         var reallyDirty = 0
-        for (contact in getDirtyContacts())
-            try {
-                val lastHash = contact.getLastHashCode()
-                val currentHash = contact.dataHashCode()
-                if (lastHash == currentHash) {
-                    // hash is code still the same, contact is not "really dirty" (only metadata been have changed)
-                    Logger.log.log(Level.FINE, "Contact data hash has not changed, resetting dirty flag", contact)
-                    contact.resetDirty()
-                } else {
-                    Logger.log.log(Level.FINE, "Contact data has changed from hash $lastHash to $currentHash", contact)
-                    reallyDirty++
-                }
-            } catch(e: FileNotFoundException) {
-                throw ContactsStorageException("Couldn't calculate hash code", e)
+        for (contact in findDirtyContacts()) {
+            val lastHash = contact.getLastHashCode()
+            val currentHash = contact.dataHashCode()
+            if (lastHash == currentHash) {
+                // hash is code still the same, contact is not "really dirty" (only metadata been have changed)
+                Logger.log.log(Level.FINE, "Contact data hash has not changed, resetting dirty flag", contact)
+                contact.resetDirty()
+            } else {
+                Logger.log.log(Level.FINE, "Contact data has changed from hash $lastHash to $currentHash", contact)
+                reallyDirty++
             }
+        }
 
         if (includeGroups)
-            reallyDirty += getDirtyGroups().size
+            reallyDirty += findDirtyGroups().size
 
         return reallyDirty
     }
 
-    /**
-     * Returns an array of local contacts/groups which have been changed locally (DIRTY != 0).
-     */
-    @Throws(ContactsStorageException::class)
-    override fun getDirty(): List<LocalResource> {
-        val dirty = LinkedList<LocalResource>()
-        dirty.addAll(getDirtyContacts())
-        if (includeGroups)
-            dirty.addAll(getDirtyGroups())
-        return dirty
-    }
-
-    /**
-     * Returns an array of local contacts which don't have a file name yet.
-     */
-    @Throws(ContactsStorageException::class)
-    override fun getWithoutFileName(): List<LocalResource> {
-        val nameless = LinkedList<LocalResource>()
-        nameless.addAll(queryContacts("${AndroidContact.COLUMN_FILENAME} IS NULL", null))
-        if (includeGroups)
-            nameless.addAll(queryGroups("${AndroidGroup.COLUMN_FILENAME} IS NULL", null))
-        return nameless
-    }
-
-    @Throws(ContactsStorageException::class)
-    fun getDeletedContacts() = queryContacts("${RawContacts.DELETED} != 0", null)
-
-    @Throws(ContactsStorageException::class)
-    fun getDirtyContacts() = queryContacts("${RawContacts.DIRTY} != 0", null)
-
-    @Throws(ContactsStorageException::class)
-    fun getDeletedGroups() = queryGroups("${Groups.DELETED} != 0", null)
-
-    @Throws(ContactsStorageException::class)
-    fun getDirtyGroups() = queryGroups("${Groups.DIRTY} != 0", null)
-
-    @Throws(ContactsStorageException::class)
     fun getByGroupMembership(groupID: Long): List<LocalContact> {
-        try {
-            val ids = HashSet<Long>()
-
-            provider!!.query(syncAdapterURI(ContactsContract.Data.CONTENT_URI),
-                    arrayOf(RawContacts.Data.RAW_CONTACT_ID),
-                    "(${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?) OR (${CachedGroupMembership.MIMETYPE}=? AND ${CachedGroupMembership.GROUP_ID}=?)",
-                    arrayOf(GroupMembership.CONTENT_ITEM_TYPE, groupID.toString(), CachedGroupMembership.CONTENT_ITEM_TYPE, groupID.toString()),
-                    null)?.use { cursor ->
-                while (cursor.moveToNext())
-                    ids += cursor.getLong(0)
-            }
-
-            return ids.map { id -> LocalContact(this, id, null, null) }
-        } catch (e: RemoteException) {
-            throw ContactsStorageException("Couldn't query contacts", e)
+        val ids = HashSet<Long>()
+        provider!!.query(syncAdapterURI(ContactsContract.Data.CONTENT_URI),
+                arrayOf(RawContacts.Data.RAW_CONTACT_ID),
+                "(${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?) OR (${CachedGroupMembership.MIMETYPE}=? AND ${CachedGroupMembership.GROUP_ID}=?)",
+                arrayOf(GroupMembership.CONTENT_ITEM_TYPE, groupID.toString(), CachedGroupMembership.CONTENT_ITEM_TYPE, groupID.toString()),
+                null)?.use { cursor ->
+            while (cursor.moveToNext())
+                ids += cursor.getLong(0)
         }
+
+        return ids.map { findContactByID(it) }
     }
 
 
@@ -292,29 +302,23 @@ class LocalAddressBook(
     /**
      * Finds the first group with the given title. If there is no group with this
      * title, a new group is created.
-     * @param title     title of the group to look for
-     * @return          id of the group with given title
-     * @throws ContactsStorageException on contact provider errors
+     * @param title title of the group to look for
+     * @return id of the group with given title
+     * @throws RemoteException on content provider errors
      */
-    @Throws(ContactsStorageException::class)
     fun findOrCreateGroup(title: String): Long {
-        try {
-            provider!!.query(syncAdapterURI(Groups.CONTENT_URI), arrayOf(Groups._ID),
-                    "${Groups.TITLE}=?", arrayOf(title), null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return cursor.getLong(0)
-            }
-
-            val values = ContentValues(1)
-            values.put(Groups.TITLE, title)
-            val uri = provider.insert(syncAdapterURI(Groups.CONTENT_URI), values)
-            return ContentUris.parseId(uri)
-        } catch(e: RemoteException) {
-            throw ContactsStorageException("Couldn't find local contact group", e)
+        provider!!.query(syncAdapterURI(Groups.CONTENT_URI), arrayOf(Groups._ID),
+                "${Groups.TITLE}=?", arrayOf(title), null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.getLong(0)
         }
+
+        val values = ContentValues(1)
+        values.put(Groups.TITLE, title)
+        val uri = provider.insert(syncAdapterURI(Groups.CONTENT_URI), values)
+        return ContentUris.parseId(uri)
     }
 
-    @Throws(ContactsStorageException::class)
     fun removeEmptyGroups() {
         // find groups without members
         /** should be done using {@link Groups.SUMMARY_COUNT}, but it's not implemented in Android yet */
@@ -323,44 +327,5 @@ class LocalAddressBook(
             group.delete()
         }
     }
-
-
-    // SETTINGS
-
-    @Throws(ContactsStorageException::class)
-    fun getMainAccount(): Account {
-        val accountManager = AccountManager.get(context)
-        val name = accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME)
-        val type = accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
-        if (name != null && type != null)
-            return Account(name, type)
-        else
-            throw ContactsStorageException("Address book doesn't exist anymore")
-    }
-
-    fun setMainAccount(mainAccount: Account) {
-        val accountManager = AccountManager.get(context)
-        accountManager.setUserData(account, USER_DATA_MAIN_ACCOUNT_NAME, mainAccount.name)
-        accountManager.setUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE, mainAccount.type)
-    }
-
-    @Throws(ContactsStorageException::class)
-    fun getURL() =
-            AccountManager.get(context).getUserData(account, USER_DATA_URL) ?: throw ContactsStorageException("Address book has no URL")
-
-    fun setURL(url: String) =
-            AccountManager.get(context).setUserData(account, USER_DATA_URL, url)
-
-    fun getReadOnly() =
-            AccountManager.get(context).getUserData(account, USER_DATA_READ_ONLY) != null
-
-    fun setReadOnly(readOnly: Boolean) =
-            AccountManager.get(context).setUserData(account, USER_DATA_READ_ONLY, if (readOnly) "1" else null)
-
-    override fun getCTag(): String? =
-            AccountManager.get(context).getUserData(account, USER_DATA_CTAG)
-
-    override fun setCTag(cTag: String?) =
-            AccountManager.get(context).setUserData(account, USER_DATA_CTAG, cTag)
 
 }

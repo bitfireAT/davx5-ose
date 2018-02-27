@@ -13,36 +13,39 @@ import android.content.ContentValues
 import android.provider.CalendarContract.Events
 import at.bitfire.ical4android.*
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.io.FileNotFoundException
-import java.text.ParseException
 import java.util.*
 
 class LocalTask: AndroidTask, LocalResource {
 
     companion object {
-        val COLUMN_ETAG = Tasks.SYNC_VERSION
-        val COLUMN_SEQUENCE = Tasks.SYNC3
+        const val COLUMN_ETAG = Tasks.SYNC_VERSION
+        const val COLUMN_FLAGS = Tasks.SYNC1
+        const val COLUMN_SEQUENCE = Tasks.SYNC3
     }
 
     override var fileName: String? = null
     override var eTag: String? = null
 
-    constructor(taskList: AndroidTaskList<*>, task: Task, fileName: String?, eTag: String?): super(taskList, task) {
+    override var flags = 0
+        private set
+
+
+    constructor(taskList: AndroidTaskList<*>, task: Task, fileName: String?, eTag: String?, flags: Int)
+            : super(taskList, task) {
         this.fileName = fileName
         this.eTag = eTag
+        this.flags = flags
     }
 
-    private constructor(taskList: AndroidTaskList<*>, id: Long, baseInfo: ContentValues?): super(taskList, id) {
-        baseInfo?.let {
-            fileName = it.getAsString(Events._SYNC_ID)
-            eTag = it.getAsString(COLUMN_ETAG)
-        }
+    private constructor(taskList: AndroidTaskList<*>, values: ContentValues): super(taskList) {
+        id = values.getAsLong(Tasks._ID)
+        fileName = values.getAsString(Tasks._SYNC_ID)
+        eTag = values.getAsString(COLUMN_ETAG)
     }
 
 
     /* process LocalTask-specific fields */
 
-    @Throws(ParseException::class)
     override fun populateTask(values: ContentValues) {
         super.populateTask(values)
 
@@ -53,7 +56,6 @@ class LocalTask: AndroidTask, LocalResource {
         task.sequence = values.getAsInteger(COLUMN_SEQUENCE)
     }
 
-    @Throws(FileNotFoundException::class, CalendarStorageException::class)
     override fun buildTask(builder: ContentProviderOperation.Builder, update: Boolean) {
         super.buildTask(builder, update)
         val task = requireNotNull(task)
@@ -66,8 +68,7 @@ class LocalTask: AndroidTask, LocalResource {
 
     /* custom queries */
 
-    @Throws(CalendarStorageException::class)
-    override fun prepareForUpload() {
+    override fun assignNameAndUID() {
         try {
             val uid = UUID.randomUUID().toString()
             val newFileName = uid + ".ics"
@@ -85,7 +86,6 @@ class LocalTask: AndroidTask, LocalResource {
         }
     }
 
-    @Throws(CalendarStorageException::class)
     override fun clearDirty(eTag: String?) {
         try {
             val values = ContentValues(2)
@@ -101,14 +101,19 @@ class LocalTask: AndroidTask, LocalResource {
         }
     }
 
+    override fun updateFlags(flags: Int) {
+        if (id != null) {
+            val values = ContentValues(1)
+            values.put(COLUMN_FLAGS, flags)
+            taskList.provider.client.update(taskSyncURI(), values, null, null)
+        }
+
+        this.flags = flags
+    }
+
 
     object Factory: AndroidTaskFactory<LocalTask> {
-
-        override fun newInstance(calendar: AndroidTaskList<*>, id: Long, baseInfo: ContentValues?) =
-                LocalTask(calendar, id, baseInfo)
-
-        override fun newInstance(calendar: AndroidTaskList<*>, task: Task) =
-                LocalTask(calendar, task, null, null)
-
+        override fun fromProvider(taskList: AndroidTaskList<*>, values: ContentValues) =
+                LocalTask(taskList, values)
     }
 }

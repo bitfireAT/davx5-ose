@@ -21,7 +21,6 @@ import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.ServiceDB.Collections
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.ISettings
-import at.bitfire.vcard4android.ContactsStorageException
 import java.util.logging.Level
 
 class AddressBooksSyncAdapterService: SyncAdapterService() {
@@ -29,7 +28,7 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
     override fun syncAdapter() = AddressBooksSyncAdapter(this)
 
 
-	protected class AddressBooksSyncAdapter(
+    class AddressBooksSyncAdapter(
             context: Context
     ): SyncAdapter(context) {
 
@@ -103,8 +102,8 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
                 val remote = remoteAddressBooks(service)
 
                 // delete/update local address books
-                for (addressBook in LocalAddressBook.find(context, provider, account)) {
-                    val url = addressBook.getURL()
+                for (addressBook in LocalAddressBook.findAll(context, provider, account)) {
+                    val url = addressBook.url
                     val info = remote[url]
                     if (info == null) {
                         Logger.log.log(Level.INFO, "Deleting obsolete local address book", url)
@@ -114,7 +113,7 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
                         try {
                             Logger.log.log(Level.FINE, "Updating local address book $url", info)
                             addressBook.update(info)
-                        } catch(e: ContactsStorageException) {
+                        } catch(e: Exception) {
                             Logger.log.log(Level.WARNING, "Couldn't rename address book account", e)
                         }
                         // we already have a local address book for this remote collection, don't take into consideration anymore

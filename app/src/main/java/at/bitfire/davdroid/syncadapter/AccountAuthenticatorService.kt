@@ -52,10 +52,10 @@ class AccountAuthenticatorService: Service(), OnAccountsUpdateListener {
                         .map { LocalAddressBook(context, it, null) }
                         .forEach {
                             try {
-                                if (!accountNames.contains(it.getMainAccount().name))
+                                if (!accountNames.contains(it.mainAccount.name))
                                     it.delete()
-                            } catch(e: ContactsStorageException) {
-                                Logger.log.log(Level.SEVERE, "Couldn't get address book main account", e)
+                            } catch(e: Exception) {
+                                Logger.log.log(Level.SEVERE, "Couldn't delete address book account", e)
                             }
                         }
 
