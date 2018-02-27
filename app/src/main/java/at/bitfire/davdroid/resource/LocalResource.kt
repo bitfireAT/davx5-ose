@@ -8,23 +8,32 @@
 
 package at.bitfire.davdroid.resource
 
-import at.bitfire.ical4android.CalendarStorageException
-import at.bitfire.vcard4android.ContactsStorageException
-
 interface LocalResource {
 
+    companion object {
+        /**
+         * Resource is present on remote server. This flag is used to identify resources
+         * which are not present on the remote server anymore and can be deleted at the end
+         * of the synchronization.
+         */
+        const val FLAG_REMOTELY_PRESENT = 1
+    }
+
+
+    /**
+     * Unique ID which identifies the resource in the local storage. May be null if the
+     * resource has not been saved yet.
+     */
     val id: Long?
 
-    var fileName: String?
+    val fileName: String?
     var eTag: String?
+    val flags: Int
 
-    @Throws(CalendarStorageException::class, ContactsStorageException::class)
-    fun delete(): Int
-
-    @Throws(CalendarStorageException::class, ContactsStorageException::class)
-    fun prepareForUpload()
-
-    @Throws(CalendarStorageException::class, ContactsStorageException::class)
+    fun assignNameAndUID()
     fun clearDirty(eTag: String?)
+    fun updateFlags(flags: Int)
+
+    fun delete(): Int
 
 }

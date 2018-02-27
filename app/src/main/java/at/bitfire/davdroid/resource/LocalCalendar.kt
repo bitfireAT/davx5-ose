@@ -14,14 +14,16 @@ import android.content.ContentProviderOperation
 import android.content.ContentUris
 import android.content.ContentValues
 import android.net.Uri
-import android.os.RemoteException
 import android.provider.CalendarContract
 import android.provider.CalendarContract.*
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
-import at.bitfire.ical4android.*
-import java.io.FileNotFoundException
+import at.bitfire.davdroid.model.SyncState
+import at.bitfire.ical4android.AndroidCalendar
+import at.bitfire.ical4android.AndroidCalendarFactory
+import at.bitfire.ical4android.BatchOperation
+import at.bitfire.ical4android.DateUtils
 import java.util.*
 import java.util.logging.Level
 
@@ -33,18 +35,10 @@ class LocalCalendar private constructor(
 
     companion object {
 
-        val defaultColor = 0xFF8bc34a.toInt()     // light green 500
+        private const val defaultColor = 0xFF8bc34a.toInt()     // light green 500
 
-        val COLUMN_CTAG = Calendars.CAL_SYNC1
+        private const val COLUMN_SYNC_STATE = Calendars.CAL_SYNC1
 
-        val BASE_INFO_COLUMNS = arrayOf(
-            Events._ID,
-            Events._SYNC_ID,
-            LocalEvent.COLUMN_ETAG
-        )
-
-
-        @Throws(CalendarStorageException::class)
         fun create(account: Account, provider: ContentProviderClient, info: CollectionInfo): Uri {
             val values = valuesFromCollectionInfo(info, true)
 
@@ -90,31 +84,30 @@ class LocalCalendar private constructor(
             values.put(Calendars.ALLOWED_ATTENDEE_TYPES, "${CalendarContract.Attendees.TYPE_OPTIONAL},${CalendarContract.Attendees.TYPE_REQUIRED},${CalendarContract.Attendees.TYPE_RESOURCE}")
             return values
         }
-
     }
 
+    override var lastSyncState: SyncState?
+        get() = provider.query(calendarSyncURI(), arrayOf(COLUMN_SYNC_STATE), null, null, null)?.let { cursor ->
+                    if (cursor.moveToNext())
+                        return SyncState.fromString(cursor.getString(0))
+                    else
+                        null
+                }
+        set(state) {
+            val values = ContentValues(1)
+            values.put(COLUMN_SYNC_STATE, state.toString())
+            provider.update(calendarSyncURI(), values, null, null)
+        }
 
-    override fun eventBaseInfoColumns() = BASE_INFO_COLUMNS
 
-
-    @Throws(CalendarStorageException::class)
     fun update(info: CollectionInfo, updateColor: Boolean) =
             update(valuesFromCollectionInfo(info, updateColor))
 
-    @Throws(CalendarStorageException::class)
-    override fun getAll(): List<LocalEvent> =
-            queryEvents("${Events.ORIGINAL_ID} IS NULL", null)
 
-    @Throws(CalendarStorageException::class)
-    override fun getDeleted() =
+    override fun findDeleted() =
             queryEvents("${Events.DELETED}!=0 AND ${Events.ORIGINAL_ID} IS NULL", null)
 
-    @Throws(CalendarStorageException::class)
-    override fun getWithoutFileName() =
-            queryEvents("${Events._SYNC_ID} IS NULL AND ${Events.ORIGINAL_ID} IS NULL", null)
-
-    @Throws(FileNotFoundException::class, CalendarStorageException::class)
-    override fun getDirty(): List<LocalEvent> {
+    override fun findDirty(): List<LocalEvent> {
         val dirty = LinkedList<LocalEvent>()
 
         // get dirty events which are required to have an increased SEQUENCE value
@@ -131,97 +124,85 @@ class LocalCalendar private constructor(
         return dirty
     }
 
-    @Throws(CalendarStorageException::class)
-    override fun getCTag(): String? =
-        try {
-            provider.query(calendarSyncURI(), arrayOf(COLUMN_CTAG), null, null, null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return cursor.getString(0)
-            }
-            null
-        } catch (e: RemoteException) {
-            throw CalendarStorageException("Couldn't read local (last known) CTag", e)
-        }
+    override fun findByName(name: String) =
+            queryEvents("${Events._SYNC_ID}=?", arrayOf(name)).firstOrNull()
 
-    @Throws(CalendarStorageException::class)
-    override fun setCTag(cTag: String?) {
-        try {
-            val values = ContentValues(1)
-            values.put(COLUMN_CTAG, cTag)
-            provider.update(calendarSyncURI(), values, null, null)
-        } catch (e: RemoteException) {
-            throw CalendarStorageException("Couldn't write local (last known) CTag", e)
-        }
+
+    override fun markNotDirty(flags: Int): Int {
+        val values = ContentValues(1)
+        values.put(LocalEvent.COLUMN_FLAGS, flags)
+        return provider.update(eventsSyncURI(), values, "${Events.DIRTY}=0 AND ${Events.ORIGINAL_ID} IS NULL", null)
     }
 
-    @Throws(CalendarStorageException::class)
+    override fun removeNotDirtyMarked(flags: Int) =
+            provider.delete(eventsSyncURI(),
+                    "${Events.DIRTY}=0 AND ${Events.ORIGINAL_ID} IS NULL AND ${LocalEvent.COLUMN_FLAGS}=?",
+                    arrayOf(flags.toString()))
+
+
     fun processDirtyExceptions() {
-        try {
-            // process deleted exceptions
-            Logger.log.info("Processing deleted exceptions")
-            provider.query(
-                    syncAdapterURI(Events.CONTENT_URI),
-                    arrayOf(Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE),
-                    "${Events.DELETED}!=0 AND ${Events.ORIGINAL_ID} IS NOT NULL", null, null)?.use { cursor ->
-                while (cursor.moveToNext()) {
-                    Logger.log.fine("Found deleted exception, removing; then re-scheduling original event")
-                    val id = cursor.getLong(0)             // can't be null (by definition)
-                    val originalID = cursor.getLong(1)     // can't be null (by query)
+        // process deleted exceptions
+        Logger.log.info("Processing deleted exceptions")
+        provider.query(
+                syncAdapterURI(Events.CONTENT_URI),
+                arrayOf(Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE),
+                "${Events.DELETED}!=0 AND ${Events.ORIGINAL_ID} IS NOT NULL", null, null)?.use { cursor ->
+            while (cursor.moveToNext()) {
+                Logger.log.fine("Found deleted exception, removing; then re-scheduling original event")
+                val id = cursor.getLong(0)             // can't be null (by definition)
+                val originalID = cursor.getLong(1)     // can't be null (by query)
 
-                    val batch = BatchOperation(provider)
+                val batch = BatchOperation(provider)
 
-                    // get original event's SEQUENCE
-                    provider.query(
-                            syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)),
-                            arrayOf(LocalEvent.COLUMN_SEQUENCE),
-                            null, null, null)?.use { cursor2 ->
-                        val originalSequence = if (cursor2.isNull(0)) 0 else cursor2.getInt(0)
+                // get original event's SEQUENCE
+                provider.query(
+                        syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)),
+                        arrayOf(LocalEvent.COLUMN_SEQUENCE),
+                        null, null, null)?.use { cursor2 ->
+                    val originalSequence = if (cursor2.isNull(0)) 0 else cursor2.getInt(0)
 
-                        // re-schedule original event and set it to DIRTY
-                        batch.enqueue(BatchOperation.Operation(
-                                ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
-                                        .withValue(LocalEvent.COLUMN_SEQUENCE, originalSequence + 1)
-                                        .withValue(Events.DIRTY, 1)
-                        ))
-                    }
-
-                    // remove exception
+                    // re-schedule original event and set it to DIRTY
                     batch.enqueue(BatchOperation.Operation(
-                            ContentProviderOperation.newDelete(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id)))
-                    ))
-                    batch.commit()
-                }
-            }
-
-            // process dirty exceptions
-            Logger.log.info("Processing dirty exceptions")
-            provider.query(
-                    syncAdapterURI(Events.CONTENT_URI),
-                    arrayOf(Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE),
-                    "${Events.DIRTY}!=0 AND ${Events.ORIGINAL_ID} IS NOT NULL", null, null)?.use { cursor ->
-                while (cursor.moveToNext()) {
-                    Logger.log.fine("Found dirty exception, increasing SEQUENCE to re-schedule")
-                    val id = cursor.getLong(0)             // can't be null (by definition)
-                    val originalID = cursor.getLong(1)     // can't be null (by query)
-                    val sequence = if (cursor.isNull(2)) 0 else cursor.getInt(2)
-
-                    val batch = BatchOperation(provider)
-                    // original event to DIRTY
-                    batch.enqueue(BatchOperation.Operation (
                             ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
+                                    .withValue(LocalEvent.COLUMN_SEQUENCE, originalSequence + 1)
                                     .withValue(Events.DIRTY, 1)
                     ))
-                    // increase SEQUENCE and set DIRTY to 0
-                    batch.enqueue(BatchOperation.Operation (
-                            ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id)))
-                                    .withValue(LocalEvent.COLUMN_SEQUENCE, sequence + 1)
-                                    .withValue(Events.DIRTY, 0)
-                    ))
-                    batch.commit()
                 }
+
+                // remove exception
+                batch.enqueue(BatchOperation.Operation(
+                        ContentProviderOperation.newDelete(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id)))
+                ))
+                batch.commit()
             }
-        } catch (e: RemoteException) {
-            throw CalendarStorageException("Couldn't process locally modified exception", e)
+        }
+
+        // process dirty exceptions
+        Logger.log.info("Processing dirty exceptions")
+        provider.query(
+                syncAdapterURI(Events.CONTENT_URI),
+                arrayOf(Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE),
+                "${Events.DIRTY}!=0 AND ${Events.ORIGINAL_ID} IS NOT NULL", null, null)?.use { cursor ->
+            while (cursor.moveToNext()) {
+                Logger.log.fine("Found dirty exception, increasing SEQUENCE to re-schedule")
+                val id = cursor.getLong(0)             // can't be null (by definition)
+                val originalID = cursor.getLong(1)     // can't be null (by query)
+                val sequence = if (cursor.isNull(2)) 0 else cursor.getInt(2)
+
+                val batch = BatchOperation(provider)
+                // original event to DIRTY
+                batch.enqueue(BatchOperation.Operation (
+                        ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
+                                .withValue(Events.DIRTY, 1)
+                ))
+                // increase SEQUENCE and set DIRTY to 0
+                batch.enqueue(BatchOperation.Operation (
+                        ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id)))
+                                .withValue(LocalEvent.COLUMN_SEQUENCE, sequence + 1)
+                                .withValue(Events.DIRTY, 0)
+                ))
+                batch.commit()
+            }
         }
     }
 

@@ -8,28 +8,33 @@
 
 package at.bitfire.davdroid.resource
 
-import at.bitfire.ical4android.CalendarStorageException
-import at.bitfire.vcard4android.ContactsStorageException
-import java.io.FileNotFoundException
+import at.bitfire.davdroid.model.SyncState
 
 interface LocalCollection<out T: LocalResource> {
 
-    @Throws(CalendarStorageException::class, ContactsStorageException::class)
-    fun getDeleted(): List<T>
+    var lastSyncState: SyncState?
 
-    @Throws(CalendarStorageException::class, ContactsStorageException::class)
-    fun getWithoutFileName(): List<T>
+    /**
+     * Unique collection ID. Used to distinguish collections in Android notifications.
+     */
+    val uid: String
 
-    @Throws(CalendarStorageException::class, ContactsStorageException::class, FileNotFoundException::class)
-    fun getDirty(): List<T>
+    fun findDeleted(): List<T>
+    fun findDirty(): List<T>
 
-    @Throws(CalendarStorageException::class, ContactsStorageException::class)
-    fun getAll(): List<T>
+    fun findByName(name: String): T?
 
-    @Throws(CalendarStorageException::class, ContactsStorageException::class)
-    fun getCTag(): String?
 
-    @Throws(CalendarStorageException::class, ContactsStorageException::class)
-    fun setCTag(cTag: String?)
+    /**
+     * Marks all entries which are not dirty with the given flags only.
+     * @return number of marked entries
+     **/
+    fun markNotDirty(flags: Int): Int
+
+    /**
+     * Removes all entries with are not dirty and are marked with exactly the given flags.
+     * @return number of removed entries
+     */
+    fun removeNotDirtyMarked(flags: Int): Int
 
 }

@@ -12,29 +12,24 @@ import android.accounts.Account
 import android.content.*
 import android.os.Build
 import android.os.Bundle
-import android.os.RemoteException
 import android.provider.ContactsContract.Groups
 import android.support.v4.app.NotificationCompat
 import at.bitfire.dav4android.DavAddressBook
+import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.property.*
 import at.bitfire.davdroid.*
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.LocalContact
-import at.bitfire.davdroid.resource.LocalGroup
-import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.*
 import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.Contact
-import at.bitfire.vcard4android.ContactsStorageException
 import at.bitfire.vcard4android.GroupMethod
 import ezvcard.VCardVersion
 import okhttp3.HttpUrl
 import okhttp3.Request
 import okhttp3.RequestBody
-import org.apache.commons.collections4.ListUtils
 import java.io.*
 import java.util.*
 import java.util.logging.Level
@@ -45,34 +40,34 @@ import java.util.logging.Level
  * Group handling differs according to the {@link #groupMethod}. There are two basic methods to
  * handle/manage groups:
  *
- *     1. CATEGORIES: groups memberships are attached to each contact and represented as
- *     "category". When a group is dirty or has been deleted, all its members have to be set to
- *     dirty, too (because they have to be uploaded without the respective category). This
- *     is done in [prepareDirty]. Empty groups can be deleted without further processing,
- *     which is done in [postProcess] because groups may become empty after downloading
- *     updated remote contacts.
+ * 1. CATEGORIES: groups memberships are attached to each contact and represented as
+ *   "category". When a group is dirty or has been deleted, all its members have to be set to
+ *   dirty, too (because they have to be uploaded without the respective category). This
+ *   is done in [uploadDirty]. Empty groups can be deleted without further processing,
+ *   which is done in [postProcess] because groups may become empty after downloading
+ *   updated remote contacts.
  *
- *     2. Groups as separate VCards: individual and group contacts (with a list of member UIDs) are
- *     distinguished. When a local group is dirty, its members don't need to be set to dirty.
+ * 2. Groups as separate VCards: individual and group contacts (with a list of member UIDs) are
+ *   distinguished. When a local group is dirty, its members don't need to be set to dirty.
  *
- *         * However, when a contact is dirty, it has
- *         to be checked whether its group memberships have changed. In this case, the respective
- *         groups have to be set to dirty. For instance, if contact A is in group G and H, and then
- *         group membership of G is removed, the contact will be set to dirty because of the changed
- *         [android.provider.ContactsContract.CommonDataKinds.GroupMembership]. DAVdroid will
- *         then have to check whether the group memberships have actually changed, and if so,
- *         all affected groups have to be set to dirty. To detect changes in group memberships,
- *         DAVdroid always mirrors all [android.provider.ContactsContract.CommonDataKinds.GroupMembership]
- *         data rows in respective [at.bitfire.vcard4android.CachedGroupMembership] rows.
- *         If the cached group memberships are not the same as the current group member ships, the
- *         difference set (in our example G, because its in the cached memberships, but not in the
- *         actual ones) is marked as dirty. This is done in [prepareDirty].
+ *   However, when a contact is dirty, it has
+ *   to be checked whether its group memberships have changed. In this case, the respective
+ *   groups have to be set to dirty. For instance, if contact A is in group G and H, and then
+ *   group membership of G is removed, the contact will be set to dirty because of the changed
+ *   [android.provider.ContactsContract.CommonDataKinds.GroupMembership]. DAVdroid will
+ *   then have to check whether the group memberships have actually changed, and if so,
+ *   all affected groups have to be set to dirty. To detect changes in group memberships,
+ *   DAVdroid always mirrors all [android.provider.ContactsContract.CommonDataKinds.GroupMembership]
+ *   data rows in respective [at.bitfire.vcard4android.CachedGroupMembership] rows.
+ *   If the cached group memberships are not the same as the current group member ships, the
+ *   difference set (in our example G, because its in the cached memberships, but not in the
+ *   actual ones) is marked as dirty. This is done in [uploadDirty].
  *
- *         * When downloading remote contacts, groups (+ member information) may be received
- *         by the actual members. Thus, the member lists have to be cached until all VCards
- *         are received. This is done by caching the member UIDs of each group in
- *         [LocalGroup.COLUMN_PENDING_MEMBERS]. In [postProcess],
- *         these "pending memberships" are assigned to the actual contacts and then cleaned up.
+ *   When downloading remote contacts, groups (+ member information) may be received
+ *   by the actual members. Thus, the member lists have to be cached until all VCards
+ *   are received. This is done by caching the member UIDs of each group in
+ *   [LocalGroup.COLUMN_PENDING_MEMBERS]. In [postProcess],
+ *   these "pending memberships" are assigned to the actual contacts and then cleaned up.
  */
 class ContactsSyncManager(
         context: Context,
@@ -83,41 +78,39 @@ class ContactsSyncManager(
         authority: String,
         syncResult: SyncResult,
         val provider: ContentProviderClient,
-        private val localAddressBook: LocalAddressBook
-): SyncManager(context, settings, account, accountSettings, extras, authority, syncResult, "addressBook") {
+        localAddressBook: LocalAddressBook
+): BaseDavSyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(context, settings, account, accountSettings, extras, authority, syncResult, localAddressBook) {
 
     companion object {
-        private val MAX_MULTIGET = 10
+        private const val MULTIGET_MAX_RESOURCES = 10
+
+        infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)
     }
 
-    private val readOnly = localAddressBook.getReadOnly()
+    private val readOnly = localAddressBook.readOnly
     private var numDiscarded = 0
 
     private var hasVCard4 = false
     private val groupMethod = accountSettings.getGroupMethod()
 
-
-    init {
-        localCollection = localAddressBook
-    }
-
-    override fun notificationId() = Constants.NOTIFICATION_CONTACTS_SYNC
-
-    override fun getSyncErrorTitle() = context.getString(R.string.sync_error_contacts, account.name)!!
+    override val notificationId = Constants.NOTIFICATION_CONTACTS_SYNC
 
 
     override fun prepare(): Boolean {
+        if (!super.prepare())
+            return false
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-            val reallyDirty = localAddressBook.verifyDirty()
-            val deleted = localAddressBook.getDeleted().size
+            val reallyDirty = localCollection.verifyDirty()
+            val deleted = localCollection.findDeleted().size
             if (extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD) && reallyDirty == 0 && deleted == 0) {
                 Logger.log.info("This sync was called to up-sync dirty/deleted contacts, but no contacts have been changed")
                 return false
             }
         }
 
-        collectionURL = HttpUrl.parse(localAddressBook.getURL()) ?: return false
+        collectionURL = HttpUrl.parse(localCollection.url) ?: return false
         davCollection = DavAddressBook(httpClient.okHttpClient, collectionURL)
 
         return true
@@ -125,7 +118,7 @@ class ContactsSyncManager(
 
     override fun queryCapabilities() {
         // prepare remote address book
-        davCollection.propfind(0, SupportedAddressData.NAME, GetCTag.NAME)
+        davCollection.propfind(0, SupportedAddressData.NAME, GetCTag.NAME, SyncToken.NAME)
 
         val properties = davCollection.properties
         properties[SupportedAddressData::class.java]?.let {
@@ -135,18 +128,20 @@ class ContactsSyncManager(
 
         Logger.log.info("Contact group method: $groupMethod")
         // in case of GROUP_VCARDs, treat groups as contacts in the local address book
-        localAddressBook.includeGroups = groupMethod == GroupMethod.GROUP_VCARDS
+        localCollection.includeGroups = groupMethod == GroupMethod.GROUP_VCARDS
     }
 
-    override fun processLocallyDeleted() {
+    override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
+
+    override fun processLocallyDeleted(): Boolean {
         if (readOnly) {
-            for (group in localAddressBook.getDeletedGroups()) {
+            for (group in localCollection.findDeletedGroups()) {
                 Logger.log.warning("Restoring locally deleted group (read-only address book!)")
                 group.resetDeleted()
                 numDiscarded++
             }
 
-            for (contact in localAddressBook.getDeletedContacts()) {
+            for (contact in localCollection.findDeletedContacts()) {
                 Logger.log.warning("Restoring locally deleted contact (read-only address book!)")
                 contact.resetDeleted()
                 numDiscarded++
@@ -154,23 +149,21 @@ class ContactsSyncManager(
 
             if (numDiscarded > 0)
                 notifyDiscardedChange()
+            return false
         } else
             // mirror deletions to remote collection (DELETE)
-            super.processLocallyDeleted()
+            return super.processLocallyDeleted()
     }
 
-    override fun prepareDirty() {
-        // generate UID/file name for newly created contacts
-        super.prepareDirty()
-
+    override fun uploadDirty(): Boolean {
         if (readOnly) {
-            for (group in localAddressBook.getDirtyGroups()) {
+            for (group in localCollection.findDirtyGroups()) {
                 Logger.log.warning("Resetting locally modified group to ETag=null (read-only address book!)")
                 group.clearDirty(null)
                 numDiscarded++
             }
 
-            for (contact in localAddressBook.getDirtyContacts()) {
+            for (contact in localCollection.findDirtyContacts()) {
                 Logger.log.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
                 contact.clearDirty(null)
                 numDiscarded++
@@ -184,7 +177,7 @@ class ContactsSyncManager(
                 /* groups memberships are represented as contact CATEGORIES */
 
                 // groups with DELETED=1: set all members to dirty, then remove group
-                for (group in localAddressBook.getDeletedGroups()) {
+                for (group in localCollection.findDeletedGroups()) {
                     Logger.log.fine("Finally removing group $group")
                     // useless because Android deletes group memberships as soon as a group is set to DELETED:
                     // group.markMembersDirty()
@@ -192,7 +185,7 @@ class ContactsSyncManager(
                 }
 
                 // groups with DIRTY=1: mark all memberships as dirty, then clean DIRTY flag of group
-                for (group in localAddressBook.getDirtyGroups()) {
+                for (group in localCollection.findDirtyGroups()) {
                     Logger.log.fine("Marking members of modified group $group as dirty")
                     group.markMembersDirty()
                     group.clearDirty(null)
@@ -201,8 +194,8 @@ class ContactsSyncManager(
                 /* groups as separate VCards: there are group contacts and individual contacts */
 
                 // mark groups with changed members as dirty
-                val batch = BatchOperation(localAddressBook.provider!!)
-                for (contact in localAddressBook.getDirtyContacts())
+                val batch = BatchOperation(localCollection.provider!!)
+                for (contact in localCollection.findDirtyContacts())
                     try {
                         Logger.log.fine("Looking for changed group memberships of contact ${contact.fileName}")
                         val cachedGroups = contact.getCachedGroupMemberships()
@@ -210,7 +203,7 @@ class ContactsSyncManager(
                         for (groupID in cachedGroups disjunct currentGroups) {
                             Logger.log.fine("Marking group as dirty: $groupID")
                             batch.enqueue(BatchOperation.Operation(
-                                    ContentProviderOperation.newUpdate(localAddressBook.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, groupID)))
+                                    ContentProviderOperation.newUpdate(localCollection.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, groupID)))
                                     .withValue(Groups.DIRTY, 1)
                                     .withYieldAllowed(true)
                             ))
@@ -220,6 +213,9 @@ class ContactsSyncManager(
                 batch.commit()
             }
         }
+
+        // generate UID/file name for newly created contacts
+        return super.uploadDirty()
     }
 
     private fun notifyDiscardedChange() {
@@ -237,7 +233,7 @@ class ContactsSyncManager(
         notificationManager.notify("discarded_${account.name}", 0, notification)
     }
 
-    override fun prepareUpload(resource: LocalResource): RequestBody {
+    override fun prepareUpload(resource: LocalAddress): RequestBody {
         val contact: Contact
         if (resource is LocalContact) {
             contact = resource.contact!!
@@ -245,26 +241,22 @@ class ContactsSyncManager(
             if (groupMethod == GroupMethod.CATEGORIES) {
                 // add groups as CATEGORIES
                 for (groupID in resource.getGroupMemberships()) {
-                    try {
-                        provider.query(
-                                localAddressBook.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, groupID)),
-                                arrayOf(Groups.TITLE), null, null, null
-                        )?.use { cursor ->
-                            if (cursor.moveToNext()) {
-                                val title = cursor.getString(0)
-                                if (!title.isNullOrEmpty())
-                                    contact.categories.add(title)
-                            }
+                    provider.query(
+                            localCollection.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, groupID)),
+                            arrayOf(Groups.TITLE), null, null, null
+                    )?.use { cursor ->
+                        if (cursor.moveToNext()) {
+                            val title = cursor.getString(0)
+                            if (!title.isNullOrEmpty())
+                                contact.categories.add(title)
                         }
-                    } catch(e: RemoteException) {
-                        throw ContactsStorageException("Couldn't find group for adding CATEGORIES", e)
                     }
                 }
             }
         } else if (resource is LocalGroup)
             contact = resource.contact!!
         else
-            throw IllegalArgumentException("resource must be a LocalContact or a LocalGroup")
+            throw IllegalArgumentException("resource must be LocalContact or LocalGroup")
 
         Logger.log.log(Level.FINE, "Preparing upload of VCard ${resource.fileName}", contact)
 
@@ -277,14 +269,11 @@ class ContactsSyncManager(
         )
     }
 
-    override fun listRemote() {
-        val addressBook = davAddressBook()
-        currentDavResource = addressBook
-
+    override fun listAllRemote(): Map<String, DavResource> {
         // fetch list of remote VCards and build hash table to index file name
-        addressBook.propfind(1, ResourceType.NAME, GetETag.NAME)
+        davCollection.propfind(1, ResourceType.NAME, GetETag.NAME)
 
-        remoteResources = HashMap(davCollection.members.size)
+        val result = LinkedHashMap<String, DavResource>(davCollection.members.size)
         for (vCard in davCollection.members) {
             // ignore member collections
             var ignore = false
@@ -297,49 +286,48 @@ class ContactsSyncManager(
 
             val fileName = vCard.fileName()
             Logger.log.fine("Found remote VCard: $fileName")
-            remoteResources[fileName] = vCard
+            result[fileName] = vCard
         }
 
-        currentDavResource = null
+        return result
     }
 
-    override fun downloadRemote() {
-        Logger.log.info("Downloading ${toDownload.size} contacts ($MAX_MULTIGET at once)")
+    override fun processRemoteChanges(changes: RemoteChanges) {
+        for (name in changes.deleted) {
+            localCollection.findByName(name)?.let {
+                Logger.log.info("Deleting local address $name")
+                it.delete()
+                syncResult.stats.numDeletes++
+            }
+        }
+
+        val toDownload = changes.updated.map { it.location }
+        Logger.log.info("Downloading ${toDownload.size} resources (${MULTIGET_MAX_RESOURCES} at once)")
 
         // prepare downloader which may be used to download external resource like contact photos
         val downloader = ResourceDownloader(collectionURL)
 
         // download new/updated VCards from server
-        for (bunch in ListUtils.partition(toDownload.toList(), MAX_MULTIGET)) {
-            abortIfCancelled()
-            Logger.log.info("Downloading ${bunch.joinToString(", ")}")
-
+        for (bunch in toDownload.chunked(CalendarSyncManager.MULTIGET_MAX_RESOURCES)) {
             if (bunch.size == 1) {
                 // only one contact, use GET
-                val remote = bunch.first()
-                currentDavResource = remote
-
+                val remote = DavResource(httpClient.okHttpClient, bunch.first())
                 val body = remote.get("text/vcard;version=4.0, text/vcard;charset=utf-8;q=0.8, text/vcard;q=0.5")
 
                 // CardDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc6352#section-6.3.2.3]
-                val eTag = remote.properties[GetETag::class.java]
-                if (eTag == null || eTag.eTag.isNullOrEmpty())
-                    throw DavException("Received CardDAV GET response without ETag for ${remote.location}")
+                val eTag = remote.properties[GetETag::class.java]?.eTag
+                        ?: throw DavException("Received CardDAV GET response without ETag for ${remote.location}")
 
                 body.charStream().use { reader ->
-                    processVCard(remote.fileName(), eTag.eTag!!, reader, downloader)
+                    processVCard(remote.fileName(), eTag, reader, downloader)
                 }
 
             } else {
                 // multiple contacts, use multi-get
-                val addressBook = davAddressBook()
-                currentDavResource = addressBook
-                addressBook.multiget(bunch.map { it.location }, hasVCard4)
+                davCollection.multiget(bunch, hasVCard4)
 
                 // process multi-get results
                 for (remote in davCollection.members) {
-                    currentDavResource = remote
-
                     val eTag = remote.properties[GetETag::class.java]?.eTag
                             ?: throw DavException("Received multi-get response without ETag")
 
@@ -351,7 +339,7 @@ class ContactsSyncManager(
                 }
             }
 
-            currentDavResource = null
+            abortIfCancelled()
         }
     }
 
@@ -361,19 +349,17 @@ class ContactsSyncManager(
 
             // remove empty groups
             Logger.log.info("Removing empty groups")
-            localAddressBook.removeEmptyGroups()
+            localCollection.removeEmptyGroups()
 
         } else {
             /* VCard4 group handling: there are group contacts and individual contacts */
             Logger.log.info("Assigning memberships of downloaded contact groups")
-            LocalGroup.applyPendingMemberships(localAddressBook)
+            LocalGroup.applyPendingMemberships(localCollection)
         }
     }
 
 
     // helpers
-
-    private fun davAddressBook() = davCollection as DavAddressBook
 
     private fun processVCard(fileName: String, eTag: String, reader: Reader, downloader: Contact.Downloader) {
         Logger.log.info("Processing CardDAV resource $fileName")
@@ -392,8 +378,7 @@ class ContactsSyncManager(
         }
 
         // update local contact, if it exists
-        var local = localResources[fileName]
-        currentLocalResource = local
+        var local = localCollection.findByName(fileName)
         if (local != null) {
             Logger.log.log(Level.INFO, "Updating $fileName in local address book", newData)
 
@@ -419,15 +404,13 @@ class ContactsSyncManager(
         if (local == null) {
             if (newData.group) {
                 Logger.log.log(Level.INFO, "Creating local group", newData)
-                val group = LocalGroup(localAddressBook, newData, fileName, eTag)
-                currentLocalResource = group
+                val group = LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                 group.create()
 
                 local = group
             } else {
                 Logger.log.log(Level.INFO, "Creating local contact", newData)
-                val contact = LocalContact(localAddressBook, newData, fileName, eTag)
-                currentLocalResource = contact
+                val contact = LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                 contact.create()
 
                 local = contact
@@ -437,14 +420,12 @@ class ContactsSyncManager(
 
         if (groupMethod == GroupMethod.CATEGORIES && local is LocalContact) {
             // VCard3: update group memberships from CATEGORIES
-            currentLocalResource = local
-
             val batch = BatchOperation(provider)
             Logger.log.log(Level.FINE, "Removing contact group memberships")
             local.removeGroupMemberships(batch)
 
             for (category in local.contact!!.categories) {
-                val groupID = localAddressBook.findOrCreateGroup(category)
+                val groupID = localCollection.findOrCreateGroup(category)
                 Logger.log.log(Level.FINE, "Adding membership in group $category ($groupID)")
                 local.addToGroup(batch, groupID)
             }
@@ -455,8 +436,6 @@ class ContactsSyncManager(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O && local is LocalContact)
             // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
             local.updateHashCode(null)
-
-        currentLocalResource = null
     }
 
 

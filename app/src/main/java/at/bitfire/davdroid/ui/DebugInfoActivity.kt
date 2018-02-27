@@ -36,7 +36,6 @@ import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.ical4android.TaskProvider
-import at.bitfire.vcard4android.ContactsStorageException
 import kotlinx.android.synthetic.main.activity_debug_info.*
 import java.io.File
 import java.io.FileWriter
@@ -253,10 +252,10 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
                 try {
                     val addressBook = LocalAddressBook(context, acct, null)
                     report.append("Address book account: ${acct.name}\n" +
-                            "  Main account: ${addressBook.getMainAccount()}\n" +
-                            "  URL: ${addressBook.getURL()}\n" +
+                            "  Main account: ${addressBook.mainAccount}\n" +
+                            "  URL: ${addressBook.url}\n" +
                             "  Sync automatically: ").append(ContentResolver.getSyncAutomatically(acct, ContactsContract.AUTHORITY)).append("\n")
-                } catch(e: ContactsStorageException) {
+                } catch(e: Exception) {
                     report.append("$acct is invalid: ${e.message}\n")
                 }
             report.append("\n")

@@ -37,7 +37,7 @@ class ContactsSyncAdapterService: SyncAdapterService() {
         override fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
                 val addressBook = LocalAddressBook(context, account, provider)
-                val accountSettings = AccountSettings(context, settings, addressBook.getMainAccount())
+                val accountSettings = AccountSettings(context, settings, addressBook.mainAccount)
 
                 // handle group method change
                 val groupMethod = accountSettings.getGroupMethod().name
@@ -49,8 +49,8 @@ class ContactsSyncAdapterService: SyncAdapterService() {
                         provider.delete(addressBook.syncAdapterURI(ContactsContract.RawContacts.CONTENT_URI), null, null)
                         provider.delete(addressBook.syncAdapterURI(ContactsContract.Groups.CONTENT_URI), null, null)
 
-                        // reset CTag
-                        addressBook.setCTag(null)
+                        // reset sync state
+                        addressBook.syncState = null
                     }
                 }
                 accountSettings.accountManager.setUserData(account, PREVIOUS_GROUP_METHOD, groupMethod)
@@ -58,8 +58,8 @@ class ContactsSyncAdapterService: SyncAdapterService() {
                 if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(accountSettings))
                     return
 
-                Logger.log.info("Synchronizing address book: ${addressBook.getURL()}")
-                Logger.log.info("Taking settings from: ${addressBook.getMainAccount()}")
+                Logger.log.info("Synchronizing address book: ${addressBook.url}")
+                Logger.log.info("Taking settings from: ${addressBook.mainAccount}")
 
                 ContactsSyncManager(context, settings, account, accountSettings, extras, authority, syncResult, provider, addressBook).use {
                     it.performSync()

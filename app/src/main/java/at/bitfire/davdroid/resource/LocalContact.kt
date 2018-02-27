@@ -23,92 +23,86 @@ import ezvcard.Ezvcard
 import java.io.FileNotFoundException
 import java.util.*
 
-class LocalContact: AndroidContact, LocalResource {
+class LocalContact: AndroidContact, LocalAddress {
 
     companion object {
-
         init {
             Contact.productID = "+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " ez-vcard/" + Ezvcard.VERSION
         }
 
-        val COLUMN_HASHCODE = ContactsContract.RawContacts.SYNC3
+        const val COLUMN_FLAGS = ContactsContract.RawContacts.SYNC4
+        const val COLUMN_HASHCODE = ContactsContract.RawContacts.SYNC3
 
     }
 
     private val cachedGroupMemberships = HashSet<Long>()
     private val groupMemberships = HashSet<Long>()
 
-
-    constructor(addressBook: AndroidAddressBook<LocalContact,*>, id: Long, fileName: String?, eTag: String?):
-            super(addressBook, id, fileName, eTag)
-
-    constructor(addressBook: AndroidAddressBook<LocalContact,*>, contact: Contact, fileName: String?, eTag: String?):
-            super(addressBook, contact, fileName, eTag)
+    override var flags: Int = 0
+        private set
 
 
-    @Throws(ContactsStorageException::class)
-    fun resetDeleted() {
-        val values = ContentValues(1)
-        values.put(ContactsContract.RawContacts.DELETED, 0)
-        try {
-            addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
-        } catch(e: RemoteException) {
-            throw ContactsStorageException("Couldn't clear deleted flag", e)
-        }
+    constructor(addressBook: AndroidAddressBook<LocalContact,*>, values: ContentValues)
+            : super(addressBook, values) {
+        flags = values.getAsInteger(COLUMN_FLAGS)
     }
 
-    @Throws(ContactsStorageException::class)
+    constructor(addressBook: AndroidAddressBook<LocalContact,*>, contact: Contact, fileName: String?, eTag: String?, flags: Int)
+            : super(addressBook, contact, fileName, eTag) {
+        this.flags = flags
+    }
+
+
+    override fun assignNameAndUID() {
+        val uid = UUID.randomUUID().toString()
+        val newFileName = "$uid.vcf"
+
+        val values = ContentValues(2)
+        values.put(COLUMN_FILENAME, newFileName)
+        values.put(COLUMN_UID, uid)
+        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+
+        fileName = newFileName
+    }
+
+    override fun clearDirty(eTag: String?) {
+        val values = ContentValues(3)
+        values.put(COLUMN_ETAG, eTag)
+        values.put(ContactsContract.RawContacts.DIRTY, 0)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
+            val hashCode = dataHashCode()
+            values.put(COLUMN_HASHCODE, hashCode)
+            Logger.log.finer("Clearing dirty flag with eTag = $eTag, contact hash = $hashCode")
+        }
+
+        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+
+        this.eTag = eTag
+    }
+
+    override fun resetDeleted() {
+        val values = ContentValues(1)
+        values.put(ContactsContract.Groups.DELETED, 0)
+        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+    }
+
     fun resetDirty() {
         val values = ContentValues(1)
         values.put(ContactsContract.RawContacts.DIRTY, 0)
-        try {
-            addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
-        } catch(e: RemoteException) {
-            throw ContactsStorageException("Couldn't clear dirty flag", e)
-        }
+        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
 
-    @Throws(ContactsStorageException::class)
-    override fun clearDirty(eTag: String?) {
-        try {
-            val values = ContentValues(3)
-            values.put(COLUMN_ETAG, eTag)
-            values.put(ContactsContract.RawContacts.DIRTY, 0)
+    override fun updateFlags(flags: Int) {
+        val values = ContentValues(1)
+        values.put(LocalContact.COLUMN_FLAGS, flags)
+        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-                val hashCode = dataHashCode()
-                values.put(COLUMN_HASHCODE, hashCode)
-                Logger.log.finer("Clearing dirty flag with eTag = $eTag, contact hash = $hashCode")
-            }
-
-            addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
-
-            this.eTag = eTag
-        } catch(e: Exception) {
-            throw ContactsStorageException("Couldn't clear dirty flag", e)
-        }
-    }
-
-    @Throws(ContactsStorageException::class)
-    override fun prepareForUpload() {
-        try {
-            val uid = UUID.randomUUID().toString()
-            val newFileName = uid + ".vcf"
-
-            val values = ContentValues(2)
-            values.put(COLUMN_FILENAME, newFileName)
-            values.put(COLUMN_UID, uid)
-            addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
-
-            fileName = newFileName
-        } catch(e: RemoteException) {
-            throw ContactsStorageException("Couldn't update UID", e)
-        }
+        this.flags = flags
     }
 
 
-    @Throws(ContactsStorageException::class)
     override fun populateData(mimeType: String, row: ContentValues) {
         when (mimeType) {
             CachedGroupMembership.CONTENT_ITEM_TYPE ->
@@ -116,36 +110,26 @@ class LocalContact: AndroidContact, LocalResource {
             GroupMembership.CONTENT_ITEM_TYPE ->
                 groupMemberships.add(row.getAsLong(GroupMembership.GROUP_ROW_ID))
             UnknownProperties.CONTENT_ITEM_TYPE ->
-                try {
-                    contact!!.unknownProperties = row.getAsString(UnknownProperties.UNKNOWN_PROPERTIES)
-                } catch(e: FileNotFoundException) {
-                    throw ContactsStorageException("Couldn't fetch data rows", e)
-                }
+                contact!!.unknownProperties = row.getAsString(UnknownProperties.UNKNOWN_PROPERTIES)
         }
     }
 
-    @Throws(ContactsStorageException::class)
     override fun insertDataRows(batch: BatchOperation) {
         super.insertDataRows(batch)
 
-        try {
-            contact!!.unknownProperties?.let { unknownProperties ->
-                val op: BatchOperation.Operation
-                val builder = ContentProviderOperation.newInsert(dataSyncURI())
-                if (id == null)
-                    op = BatchOperation.Operation(builder, UnknownProperties.RAW_CONTACT_ID, 0)
-                else {
-                    op = BatchOperation.Operation(builder)
-                    builder.withValue(UnknownProperties.RAW_CONTACT_ID, id)
-                }
-                builder .withValue(UnknownProperties.MIMETYPE, UnknownProperties.CONTENT_ITEM_TYPE)
-                        .withValue(UnknownProperties.UNKNOWN_PROPERTIES, unknownProperties)
-                batch.enqueue(op)
+        contact!!.unknownProperties?.let { unknownProperties ->
+            val op: BatchOperation.Operation
+            val builder = ContentProviderOperation.newInsert(dataSyncURI())
+            if (id == null)
+                op = BatchOperation.Operation(builder, UnknownProperties.RAW_CONTACT_ID, 0)
+            else {
+                op = BatchOperation.Operation(builder)
+                builder.withValue(UnknownProperties.RAW_CONTACT_ID, id)
             }
-        } catch(e: FileNotFoundException) {
-            throw ContactsStorageException("Couldn't insert data rows", e)
+            builder .withValue(UnknownProperties.MIMETYPE, UnknownProperties.CONTENT_ITEM_TYPE)
+                    .withValue(UnknownProperties.UNKNOWN_PROPERTIES, unknownProperties)
+            batch.enqueue(op)
         }
-
     }
 
 
@@ -154,7 +138,6 @@ class LocalContact: AndroidContact, LocalResource {
      * Attention: re-reads {@link #contact} from the database, discarding all changes in memory
      * @return hash code of contact data (including group memberships)
      */
-    @Throws(FileNotFoundException::class, ContactsStorageException::class)
     internal fun dataHashCode(): Int {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             throw IllegalStateException("dataHashCode() should not be called on Android != 7")
@@ -169,44 +152,34 @@ class LocalContact: AndroidContact, LocalResource {
         return dataHash xor groupHash
     }
 
-    @Throws(ContactsStorageException::class)
     fun updateHashCode(batch: BatchOperation?) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             throw IllegalStateException("updateHashCode() should not be called on Android != 7")
 
         val values = ContentValues(1)
-        try {
-            val hashCode = dataHashCode()
-            Logger.log.fine("Storing contact hash = $hashCode")
-            values.put(COLUMN_HASHCODE, hashCode)
+        val hashCode = dataHashCode()
+        Logger.log.fine("Storing contact hash = $hashCode")
+        values.put(COLUMN_HASHCODE, hashCode)
 
-            if (batch == null)
-                addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
-            else {
-                val builder = ContentProviderOperation
-                        .newUpdate(rawContactSyncURI())
-                        .withValues(values)
-                batch.enqueue(BatchOperation.Operation(builder))
-            }
-        } catch(e: Exception) {
-            throw ContactsStorageException("Couldn't store contact checksum", e)
+        if (batch == null)
+            addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+        else {
+            val builder = ContentProviderOperation
+                    .newUpdate(rawContactSyncURI())
+                    .withValues(values)
+            batch.enqueue(BatchOperation.Operation(builder))
         }
     }
 
-    @Throws(ContactsStorageException::class)
     fun getLastHashCode(): Int {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             throw IllegalStateException("getLastHashCode() should not be called on Android != 7")
 
-        try {
-            addressBook.provider!!.query(rawContactSyncURI(), arrayOf(COLUMN_HASHCODE), null, null, null)?.use { c ->
-                if (c.moveToNext() && !c.isNull(0))
-                    return c.getInt(0)
-            }
-            return 0
-        } catch(e: RemoteException) {
-            throw ContactsStorageException("Could't read last hash code", e)
+        addressBook.provider!!.query(rawContactSyncURI(), arrayOf(COLUMN_HASHCODE), null, null, null)?.use { c ->
+            if (c.moveToNext() && !c.isNull(0))
+                return c.getInt(0)
         }
+        return 0
     }
 
 
@@ -247,10 +220,9 @@ class LocalContact: AndroidContact, LocalResource {
      * Cached memberships are kept in sync with memberships by DAVdroid and are used to determine
      * whether a membership has been deleted/added when a raw contact is dirty.
      * @return set of {@link GroupMembership#GROUP_ROW_ID} (may be empty)
-     * @throws ContactsStorageException   on contact provider errors
-     * @throws FileNotFoundException      if the current contact can't be found
+     * @throws FileNotFoundException if the current contact can't be found
+     * @throws RemoteException on contacts provider errors
      */
-    @Throws(FileNotFoundException::class, ContactsStorageException::class)
     fun getCachedGroupMemberships(): Set<Long> {
         contact
         return cachedGroupMemberships
@@ -259,10 +231,9 @@ class LocalContact: AndroidContact, LocalResource {
     /**
      * Returns the IDs of all groups the contact is member of.
      * @return set of {@link GroupMembership#GROUP_ROW_ID}s (may be empty)
-     * @throws ContactsStorageException   on contact provider errors
-     * @throws FileNotFoundException      if the current contact can't be found
+     * @throws FileNotFoundException if the current contact can't be found
+     * @throws RemoteException on contacts provider errors
      */
-    @Throws(FileNotFoundException::class, ContactsStorageException::class)
     fun getGroupMemberships(): Set<Long> {
         contact
         return groupMemberships
@@ -272,13 +243,8 @@ class LocalContact: AndroidContact, LocalResource {
     // factory
 
     object Factory: AndroidContactFactory<LocalContact> {
-
-        override fun newInstance(addressBook: AndroidAddressBook<LocalContact, *>, id: Long, fileName: String?, eTag: String?) =
-                LocalContact(addressBook, id, fileName, eTag)
-
-        override fun newInstance(addressBook: AndroidAddressBook<LocalContact, *>, contact: Contact, fileName: String?, eTag: String?) =
-                LocalContact(addressBook, contact, fileName, eTag)
-
+        override fun fromProvider(addressBook: AndroidAddressBook<LocalContact, *>, values: ContentValues) =
+                LocalContact(addressBook, values)
     }
 
 }

@@ -22,6 +22,7 @@ import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.ServiceDB.*
 import at.bitfire.davdroid.model.ServiceDB.Collections
+import at.bitfire.davdroid.model.SyncState
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalTaskList
@@ -374,7 +375,7 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
             context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.let { client ->
                 try {
                     val addrBook = LocalAddressBook(context, account, client)
-                    val url = addrBook.getURL()
+                    val url = addrBook.url
                     Logger.log.fine("Migrating address book $url")
 
                     // insert CardDAV service
@@ -504,16 +505,16 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
             // until now, ContactsContract.Settings.UNGROUPED_VISIBLE was not set explicitly
             val values = ContentValues()
             values.put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
-            addr.updateSettings(values)
+            addr.settings = values
 
             val url = accountManager.getUserData(account, "addressbook_url")
             if (!url.isNullOrEmpty())
-                addr.setURL(url)
+                addr.url = url
             accountManager.setUserData(account, "addressbook_url", null)
 
             val cTag = accountManager.getUserData (account, "addressbook_ctag")
             if (!cTag.isNullOrEmpty())
-                addr.setCTag(cTag)
+                addr.lastSyncState = SyncState(SyncState.Type.CTAG, cTag)
             accountManager.setUserData(account, "addressbook_ctag", null)
         } finally {
             if (Build.VERSION.SDK_INT >= 24)
