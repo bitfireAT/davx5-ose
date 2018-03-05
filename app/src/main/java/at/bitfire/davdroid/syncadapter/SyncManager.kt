@@ -64,9 +64,9 @@ abstract class SyncManager<out ResourceType: LocalResource, out CollectionType: 
     protected val notificationManager = NotificationManagerCompat.from(context)
 
     /** Local resource we're currently operating on. Used for error notifications. **/
-    protected val currentLocalResource = Stack<LocalResource>()
+    protected val currentLocalResource = LinkedList<LocalResource>()
     /** Remote resource we're currently operating on. Used for error notifications. **/
-    protected val currentRemoteResource = Stack<DavResource>()
+    protected val currentRemoteResource = LinkedList<DavResource>()
 
 
     fun performSync() {
@@ -311,16 +311,16 @@ abstract class SyncManager<out ResourceType: LocalResource, out CollectionType: 
 
         // use current local/remote resource
         var viewItemAction: NotificationCompat.Action? = null
-        if (currentLocalResource.isNotEmpty()) {
+        currentLocalResource.firstOrNull()?.let { local ->
             // pass local resource info to debug info
-            val local = currentLocalResource.peek()
             contentIntent.putExtra(DebugInfoActivity.KEY_LOCAL_RESOURCE, local.toString())
 
             // generate "view item" action
             viewItemAction = buildViewItemAction(local)
         }
-        if (currentRemoteResource.isNotEmpty())
-            contentIntent.putExtra(DebugInfoActivity.KEY_REMOTE_RESOURCE, currentRemoteResource.peek().location.toString())
+        currentRemoteResource.firstOrNull()?.let { remote ->
+            contentIntent.putExtra(DebugInfoActivity.KEY_REMOTE_RESOURCE, remote.location.toString())
+        }
 
         // to make the PendingIntent unique
         contentIntent.data = Uri.parse("uri://${javaClass.name}/${localCollection.uniqueId}")

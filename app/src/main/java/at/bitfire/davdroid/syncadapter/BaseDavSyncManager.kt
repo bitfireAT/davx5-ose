@@ -265,24 +265,20 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource, out CollectionTyp
 
 
     protected fun<T: LocalResource?, R> useLocal(local: T, body: (T) -> R): R {
-        currentLocalResource += local
+        local?.let { currentLocalResource.push(it) }
         val result = body(local)
-        currentLocalResource.pop()
+        local?.let { currentLocalResource.pop() }
         return result
     }
 
     protected fun<T: DavResource, R> useRemote(remote: T, body: (T) -> R): R {
-        currentRemoteResource += remote
+        currentRemoteResource.push(remote)
         val result = body(remote)
         currentRemoteResource.pop()
         return result
     }
 
-    protected fun<R> useRemoteCollection(body: (RemoteType) -> R): R {
-        currentRemoteResource += davCollection
-        val result = body(davCollection)
-        currentRemoteResource.pop()
-        return result
-    }
+    protected fun<R> useRemoteCollection(body: (RemoteType) -> R) =
+            useRemote(davCollection, body)
 
 }
