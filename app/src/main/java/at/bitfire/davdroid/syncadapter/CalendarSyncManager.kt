@@ -20,7 +20,6 @@ import at.bitfire.dav4android.property.GetCTag
 import at.bitfire.dav4android.property.GetETag
 import at.bitfire.dav4android.property.SyncToken
 import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
@@ -54,8 +53,6 @@ class CalendarSyncManager(
         const val MULTIGET_MAX_RESOURCES = 30
     }
 
-    override val notificationId = Constants.NOTIFICATION_CALENDAR_SYNC
-
 
     override fun prepare(): Boolean {
         if (!super.prepare())
@@ -71,23 +68,23 @@ class CalendarSyncManager(
     }
 
     override fun queryCapabilities() {
-        davCollection.propfind(0, GetCTag.NAME, SyncToken.NAME)
+        useRemoteCollection { it.propfind(0, GetCTag.NAME, SyncToken.NAME) }
     }
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
-    override fun prepareUpload(resource: LocalEvent): RequestBody {
+    override fun prepareUpload(resource: LocalEvent): RequestBody = useLocal(resource, {
         val event = requireNotNull(resource.event)
         Logger.log.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
 
         val os = ByteArrayOutputStream()
         event.write(os)
 
-        return RequestBody.create(
+        RequestBody.create(
                 DavCalendar.MIME_ICALENDAR_UTF8,
                 os.toByteArray()
         )
-    }
+    })
 
     override fun listAllRemote(): Map<String, DavResource> {
         // calculate time range limits
@@ -98,60 +95,62 @@ class CalendarSyncManager(
             limitStart = calendar.time
         }
 
-        // fetch list of remote VEVENTs and build hash table to index file name
-        Logger.log.info("Querying events since $limitStart")
-        davCollection.calendarQuery("VEVENT", limitStart, null)
+        return useRemoteCollection { remote ->
+            // fetch list of remote VEVENTs and build hash table to index file name
+            Logger.log.info("Querying events since $limitStart")
+            remote.calendarQuery("VEVENT", limitStart, null)
 
-        val result = LinkedHashMap<String, DavResource>(davCollection.members.size)
-        for (iCal in davCollection.members) {
-            val fileName = iCal.fileName()
-            Logger.log.fine("Found remote VEVENT: $fileName")
-            result[fileName] = iCal
+            val result = LinkedHashMap<String, DavResource>(remote.members.size)
+            for (iCal in remote.members) {
+                val fileName = iCal.fileName()
+                Logger.log.fine("Found remote VEVENT: $fileName")
+                result[fileName] = iCal
+            }
+            result
         }
-
-        return result
     }
 
     override fun processRemoteChanges(changes: RemoteChanges) {
-        for (name in changes.deleted) {
+        for (name in changes.deleted)
             localCollection.findByName(name)?.let {
                 Logger.log.info("Deleting local event $name")
-                it.delete()
+                useLocal(it, { local -> local.delete() })
                 syncResult.stats.numDeletes++
             }
-        }
 
         val toDownload = changes.updated.map { it.location }
-        Logger.log.info("Downloading ${toDownload.size} resources (${MULTIGET_MAX_RESOURCES} at once)")
+        Logger.log.info("Downloading ${toDownload.size} resources ($MULTIGET_MAX_RESOURCES at once)")
 
         for (bunch in toDownload.chunked(MULTIGET_MAX_RESOURCES)) {
-            if (bunch.size == 1) {
+            if (bunch.size == 1)
                 // only one contact, use GET
-                val remote = DavResource(httpClient.okHttpClient, bunch.first())
-                val body = remote.get(DavCalendar.MIME_ICALENDAR.toString())
+                useRemote(DavResource(httpClient.okHttpClient, bunch.first()), { remote ->
+                    val body = remote.get(DavCalendar.MIME_ICALENDAR.toString())
 
-                // CalDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc4791#section-5.3.4]
-                val eTag = remote.properties[GetETag::class.java]?.eTag
-                        ?: throw DavException("Received CalDAV GET response without ETag for ${remote.location}")
+                    // CalDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc4791#section-5.3.4]
+                    val eTag = remote.properties[GetETag::class.java]?.eTag
+                            ?: throw DavException("Received CalDAV GET response without ETag for ${remote.location}")
 
-                body.charStream().use { reader ->
-                    processVEvent(remote.fileName(), eTag, reader)
-                }
-            } else {
+                    body.charStream().use { reader ->
+                        processVEvent(remote.fileName(), eTag, reader)
+                    }
+                })
+            else {
                 // multiple contacts, use multi-get
-                davCollection.multiget(bunch)
+                useRemoteCollection { it.multiget(bunch) }
 
                 // process multiget results
-                for (remote in davCollection.members) {
-                    val eTag = remote.properties[GetETag::class.java]?.eTag
-                            ?: throw DavException("Received multi-get response without ETag")
+                for (remote in davCollection.members)
+                    useRemote(remote, {
+                        val eTag = remote.properties[GetETag::class.java]?.eTag
+                                ?: throw DavException("Received multi-get response without ETag")
 
-                    val calendarData = remote.properties[CalendarData::class.java]
-                    val iCalendar = calendarData?.iCalendar
-                            ?: throw DavException("Received multi-get response without task data")
+                        val calendarData = remote.properties[CalendarData::class.java]
+                        val iCalendar = calendarData?.iCalendar
+                                ?: throw DavException("Received multi-get response without task data")
 
-                    processVEvent(remote.fileName(), eTag, StringReader(iCalendar))
-                }
+                        processVEvent(remote.fileName(), eTag, StringReader(iCalendar))
+                    })
             }
 
             abortIfCancelled()
@@ -174,18 +173,19 @@ class CalendarSyncManager(
             val newData = events.first()
 
             // delete local event, if it exists
-            val localEvent = localCollection.findByName(fileName)
-            if (localEvent != null) {
-                Logger.log.info("Updating $fileName in local calendar")
-                localEvent.eTag = eTag
-                localEvent.update(newData)
-                syncResult.stats.numUpdates++
-            } else {
-                Logger.log.info("Adding $fileName to local calendar")
-                val newEvent = LocalEvent(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
-                newEvent.add()
-                syncResult.stats.numInserts++
-            }
+            useLocal(localCollection.findByName(fileName), { local ->
+                if (local != null) {
+                    Logger.log.info("Updating $fileName in local calendar")
+                    local.eTag = eTag
+                    local.update(newData)
+                    syncResult.stats.numUpdates++
+                } else {
+                    Logger.log.info("Adding $fileName to local calendar")
+                    val newEvent = LocalEvent(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                    newEvent.add()
+                    syncResult.stats.numInserts++
+                }
+            })
         } else
             Logger.log.severe("Received VCALENDAR with not exactly one VEVENT with UID, but without RECURRENCE-ID; ignoring $fileName")
     }

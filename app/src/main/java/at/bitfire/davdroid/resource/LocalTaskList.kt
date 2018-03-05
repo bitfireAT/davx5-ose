@@ -15,6 +15,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
 import android.os.Build
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
@@ -33,8 +34,6 @@ class LocalTaskList private constructor(
 ): AndroidTaskList<LocalTask>(account, provider, LocalTask.Factory, id), LocalCollection<LocalTask> {
 
     companion object {
-
-        private const val defaultColor = 0xFFC3EA6E.toInt()     // "DAVdroid green"
 
         fun tasksProviderAvailable(context: Context): Boolean {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -78,12 +77,17 @@ class LocalTaskList private constructor(
             values.put(TaskLists.LIST_NAME, if (info.displayName.isNullOrBlank()) DavUtils.lastSegmentOfUrl(info.url) else info.displayName)
 
             if (withColor)
-                values.put(TaskLists.LIST_COLOR, info.color ?: defaultColor)
+                values.put(TaskLists.LIST_COLOR, info.color ?: Constants.DAVDROID_GREEN_RGBA)
 
             return values
         }
 
     }
+
+    override val title: String
+        get() = name ?: id.toString()
+
+    override val uniqueId = "tasks-$id"
 
     override var lastSyncState: SyncState?
         get() {

@@ -49,16 +49,12 @@ class LocalEvent: AndroidEvent, LocalResource {
     private constructor(calendar: AndroidCalendar<*>, values: ContentValues): super(calendar, values) {
         fileName = values.getAsString(Events._SYNC_ID)
         eTag = values.getAsString(COLUMN_ETAG)
-        flags = values.getAsInteger(COLUMN_FLAGS)
+        flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
     }
 
     override fun populateEvent(row: ContentValues) {
         super.populateEvent(row)
         val event = requireNotNull(event)
-
-        fileName = row.getAsString(Events._SYNC_ID)
-        eTag = row.getAsString(COLUMN_ETAG)
-        flags = row.getAsInteger(COLUMN_FLAGS)
 
         event.uid = row.getAsString(Events.UID_2445)
         event.sequence = row.getAsInteger(COLUMN_SEQUENCE)

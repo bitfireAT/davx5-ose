@@ -117,7 +117,6 @@ android {
         disable 'ImpliedQuantity', 'MissingQuantity'		// quantities from Transifex may vary
         disable 'MissingTranslation', 'ExtraTranslation'	// translations from Transifex are not always up to date
         disable "OnClick"     // doesn't recognize Kotlin onClick methods
-        disable 'Recycle'           // doesn't understand Lombok's @Cleanup
         disable 'RtlEnabled'
         disable 'RtlHardcoded'
         disable 'Typos'
@@ -148,7 +147,7 @@ dependencies {
 
     compile 'com.github.yukuku:ambilwarna:2.0.1'
 
-    compile 'com.squareup.okhttp3:logging-interceptor:3.9.1'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.10.0'
     compile 'commons-io:commons-io:2.6'
     compile 'dnsjava:dnsjava:2.1.8'
     compile 'org.apache.commons:commons-lang3:3.6'
@@ -160,8 +159,8 @@ dependencies {
     androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
     androidTestCompile 'com.android.support.test.espresso:espresso-intents:3.0.1'
     androidTestCompile 'junit:junit:4.12'
-    androidTestCompile 'com.squareup.okhttp3:mockwebserver:3.9.1'
+    androidTestCompile 'com.squareup.okhttp3:mockwebserver:3.10.0'
 
     testCompile 'junit:junit:4.12'
-    testCompile 'com.squareup.okhttp3:mockwebserver:3.9.1'
+    testCompile 'com.squareup.okhttp3:mockwebserver:3.10.0'
 }

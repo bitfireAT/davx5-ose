@@ -18,7 +18,9 @@ import at.bitfire.dav4android.DavAddressBook
 import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.property.*
-import at.bitfire.davdroid.*
+import at.bitfire.davdroid.AccountSettings
+import at.bitfire.davdroid.HttpClient
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.*
 import at.bitfire.davdroid.settings.ISettings
@@ -93,8 +95,6 @@ class ContactsSyncManager(
     private var hasVCard4 = false
     private val groupMethod = accountSettings.getGroupMethod()
 
-    override val notificationId = Constants.NOTIFICATION_CONTACTS_SYNC
-
 
     override fun prepare(): Boolean {
         if (!super.prepare())
@@ -117,18 +117,19 @@ class ContactsSyncManager(
     }
 
     override fun queryCapabilities() {
-        // prepare remote address book
-        davCollection.propfind(0, SupportedAddressData.NAME, GetCTag.NAME, SyncToken.NAME)
+        useRemoteCollection { dav ->
+            dav.propfind(0, SupportedAddressData.NAME, GetCTag.NAME, SyncToken.NAME)
 
-        val properties = davCollection.properties
-        properties[SupportedAddressData::class.java]?.let {
-            hasVCard4 = it.hasVCard4()
+            val properties = dav.properties
+            properties[SupportedAddressData::class.java]?.let {
+                hasVCard4 = it.hasVCard4()
+            }
+            Logger.log.info("Server advertises VCard/4 support: $hasVCard4")
+
+            Logger.log.info("Contact group method: $groupMethod")
+            // in case of GROUP_VCARDs, treat groups as contacts in the local address book
+            localCollection.includeGroups = groupMethod == GroupMethod.GROUP_VCARDS
         }
-        Logger.log.info("Server advertises VCard/4 support: $hasVCard4")
-
-        Logger.log.info("Contact group method: $groupMethod")
-        // in case of GROUP_VCARDs, treat groups as contacts in the local address book
-        localCollection.includeGroups = groupMethod == GroupMethod.GROUP_VCARDS
     }
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
@@ -137,13 +138,13 @@ class ContactsSyncManager(
         if (readOnly) {
             for (group in localCollection.findDeletedGroups()) {
                 Logger.log.warning("Restoring locally deleted group (read-only address book!)")
-                group.resetDeleted()
+                useLocal(group, { it.resetDeleted() })
                 numDiscarded++
             }
 
             for (contact in localCollection.findDeletedContacts()) {
                 Logger.log.warning("Restoring locally deleted contact (read-only address book!)")
-                contact.resetDeleted()
+                useLocal(contact, { it.resetDeleted() })
                 numDiscarded++
             }
 
@@ -159,13 +160,13 @@ class ContactsSyncManager(
         if (readOnly) {
             for (group in localCollection.findDirtyGroups()) {
                 Logger.log.warning("Resetting locally modified group to ETag=null (read-only address book!)")
-                group.clearDirty(null)
+                useLocal(group, { it.clearDirty(null) })
                 numDiscarded++
             }
 
             for (contact in localCollection.findDirtyContacts()) {
                 Logger.log.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
-                contact.clearDirty(null)
+                useLocal(contact, { it.clearDirty(null) })
                 numDiscarded++
             }
 
@@ -181,14 +182,16 @@ class ContactsSyncManager(
                     Logger.log.fine("Finally removing group $group")
                     // useless because Android deletes group memberships as soon as a group is set to DELETED:
                     // group.markMembersDirty()
-                    group.delete()
+                    useLocal(group, { it.delete() })
                 }
 
                 // groups with DIRTY=1: mark all memberships as dirty, then clean DIRTY flag of group
                 for (group in localCollection.findDirtyGroups()) {
                     Logger.log.fine("Marking members of modified group $group as dirty")
-                    group.markMembersDirty()
-                    group.clearDirty(null)
+                    useLocal(group, {
+                        it.markMembersDirty()
+                        it.clearDirty(null)
+                    })
                 }
             } else {
                 /* groups as separate VCards: there are group contacts and individual contacts */
@@ -221,11 +224,10 @@ class ContactsSyncManager(
     private fun notifyDiscardedChange() {
         val notification = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_SYNC_STATUS)
                 .setSmallIcon(R.drawable.ic_delete_notification)
-                .setLargeIcon(App.getLauncherBitmap(context))
                 .setContentTitle(context.getString(R.string.sync_contacts_read_only_address_book))
                 .setContentText(context.resources.getQuantityString(R.plurals.sync_contacts_local_contact_changes_discarded, numDiscarded, numDiscarded))
                 .setSubText(account.name)
-                .setCategory(NotificationCompat.CATEGORY_ERROR)
+                .setCategory(NotificationCompat.CATEGORY_STATUS)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setLocalOnly(true)
                 .setAutoCancel(true)
@@ -233,7 +235,7 @@ class ContactsSyncManager(
         notificationManager.notify("discarded_${account.name}", 0, notification)
     }
 
-    override fun prepareUpload(resource: LocalAddress): RequestBody {
+    override fun prepareUpload(resource: LocalAddress): RequestBody = useLocal(resource, {
         val contact: Contact
         if (resource is LocalContact) {
             contact = resource.contact!!
@@ -263,18 +265,18 @@ class ContactsSyncManager(
         val os = ByteArrayOutputStream()
         contact.write(if (hasVCard4) VCardVersion.V4_0 else VCardVersion.V3_0, groupMethod, os)
 
-        return RequestBody.create(
+        RequestBody.create(
                 if (hasVCard4) DavAddressBook.MIME_VCARD4 else DavAddressBook.MIME_VCARD3_UTF8,
                 os.toByteArray()
         )
-    }
+    })
 
-    override fun listAllRemote(): Map<String, DavResource> {
+    override fun listAllRemote() = useRemoteCollection { dav ->
         // fetch list of remote VCards and build hash table to index file name
-        davCollection.propfind(1, ResourceType.NAME, GetETag.NAME)
+        dav.propfind(1, ResourceType.NAME, GetETag.NAME)
 
-        val result = LinkedHashMap<String, DavResource>(davCollection.members.size)
-        for (vCard in davCollection.members) {
+        val result = LinkedHashMap<String, DavResource>(dav.members.size)
+        for (vCard in dav.members) {
             // ignore member collections
             var ignore = false
             vCard.properties[ResourceType::class.java]?.let { type ->
@@ -288,55 +290,55 @@ class ContactsSyncManager(
             Logger.log.fine("Found remote VCard: $fileName")
             result[fileName] = vCard
         }
-
-        return result
+        result
     }
 
     override fun processRemoteChanges(changes: RemoteChanges) {
-        for (name in changes.deleted) {
+        for (name in changes.deleted)
             localCollection.findByName(name)?.let {
                 Logger.log.info("Deleting local address $name")
-                it.delete()
+                useLocal(it, { it.delete() })
                 syncResult.stats.numDeletes++
             }
-        }
 
         val toDownload = changes.updated.map { it.location }
-        Logger.log.info("Downloading ${toDownload.size} resources (${MULTIGET_MAX_RESOURCES} at once)")
+        Logger.log.info("Downloading ${toDownload.size} resources ($MULTIGET_MAX_RESOURCES at once)")
 
         // prepare downloader which may be used to download external resource like contact photos
         val downloader = ResourceDownloader(collectionURL)
 
         // download new/updated VCards from server
         for (bunch in toDownload.chunked(CalendarSyncManager.MULTIGET_MAX_RESOURCES)) {
-            if (bunch.size == 1) {
+            if (bunch.size == 1)
                 // only one contact, use GET
-                val remote = DavResource(httpClient.okHttpClient, bunch.first())
-                val body = remote.get("text/vcard;version=4.0, text/vcard;charset=utf-8;q=0.8, text/vcard;q=0.5")
+                useRemote(DavResource(httpClient.okHttpClient, bunch.first()), { remote ->
+                    val body = remote.get("text/vcard;version=4.0, text/vcard;charset=utf-8;q=0.8, text/vcard;q=0.5")
 
-                // CardDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc6352#section-6.3.2.3]
-                val eTag = remote.properties[GetETag::class.java]?.eTag
-                        ?: throw DavException("Received CardDAV GET response without ETag for ${remote.location}")
+                    // CardDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc6352#section-6.3.2.3]
+                    val eTag = remote.properties[GetETag::class.java]?.eTag
+                            ?: throw DavException("Received CardDAV GET response without ETag for ${remote.location}")
 
-                body.charStream().use { reader ->
-                    processVCard(remote.fileName(), eTag, reader, downloader)
-                }
+                    body.charStream().use { reader ->
+                        processVCard(remote.fileName(), eTag, reader, downloader)
+                    }
+                })
 
-            } else {
+            else {
                 // multiple contacts, use multi-get
-                davCollection.multiget(bunch, hasVCard4)
+                useRemoteCollection { it.multiget(bunch, hasVCard4) }
 
                 // process multi-get results
-                for (remote in davCollection.members) {
-                    val eTag = remote.properties[GetETag::class.java]?.eTag
-                            ?: throw DavException("Received multi-get response without ETag")
+                for (remote in davCollection.members)
+                    useRemote(remote, {
+                        val eTag = remote.properties[GetETag::class.java]?.eTag
+                                ?: throw DavException("Received multi-get response without ETag")
 
-                    val addressData = remote.properties[AddressData::class.java]
-                    val vCard = addressData?.vCard
-                            ?: throw DavException("Received multi-get response without address data")
+                        val addressData = remote.properties[AddressData::class.java]
+                        val vCard = addressData?.vCard
+                                ?: throw DavException("Received multi-get response without address data")
 
-                    processVCard(remote.fileName(), eTag, StringReader(vCard), downloader)
-                }
+                        processVCard(remote.fileName(), eTag, StringReader(vCard), downloader)
+                    })
             }
 
             abortIfCancelled()
@@ -378,64 +380,66 @@ class ContactsSyncManager(
         }
 
         // update local contact, if it exists
-        var local = localCollection.findByName(fileName)
-        if (local != null) {
-            Logger.log.log(Level.INFO, "Updating $fileName in local address book", newData)
+        useLocal(localCollection.findByName(fileName), {
+            var local = it
+            if (local != null) {
+                Logger.log.log(Level.INFO, "Updating $fileName in local address book", newData)
 
-            if (local is LocalGroup && newData.group) {
-                // update group
-                local.eTag = eTag
-                local.updateFromServer(newData)
-                syncResult.stats.numUpdates++
+                if (local is LocalGroup && newData.group) {
+                    // update group
+                    local.eTag = eTag
+                    local.updateFromServer(newData)
+                    syncResult.stats.numUpdates++
 
-            } else if (local is LocalContact && !newData.group) {
-                // update contact
-                local.eTag = eTag
-                local.update(newData)
-                syncResult.stats.numUpdates++
+                } else if (local is LocalContact && !newData.group) {
+                    // update contact
+                    local.eTag = eTag
+                    local.update(newData)
+                    syncResult.stats.numUpdates++
 
-            } else {
-                // group has become an individual contact or vice versa
-                local.delete()
-                local = null
-            }
-        }
-
-        if (local == null) {
-            if (newData.group) {
-                Logger.log.log(Level.INFO, "Creating local group", newData)
-                val group = LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
-                group.create()
-
-                local = group
-            } else {
-                Logger.log.log(Level.INFO, "Creating local contact", newData)
-                val contact = LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
-                contact.create()
-
-                local = contact
-            }
-            syncResult.stats.numInserts++
-        }
-
-        if (groupMethod == GroupMethod.CATEGORIES && local is LocalContact) {
-            // VCard3: update group memberships from CATEGORIES
-            val batch = BatchOperation(provider)
-            Logger.log.log(Level.FINE, "Removing contact group memberships")
-            local.removeGroupMemberships(batch)
-
-            for (category in local.contact!!.categories) {
-                val groupID = localCollection.findOrCreateGroup(category)
-                Logger.log.log(Level.FINE, "Adding membership in group $category ($groupID)")
-                local.addToGroup(batch, groupID)
+                } else {
+                    // group has become an individual contact or vice versa
+                    local.delete()
+                    local = null
+                }
             }
 
-            batch.commit()
-        }
+            if (local == null) {
+                if (newData.group) {
+                    Logger.log.log(Level.INFO, "Creating local group", newData)
+                    val group = LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                    group.create()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O && local is LocalContact)
-            // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-            local.updateHashCode(null)
+                    local = group
+                } else {
+                    Logger.log.log(Level.INFO, "Creating local contact", newData)
+                    val contact = LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                    contact.create()
+
+                    local = contact
+                }
+                syncResult.stats.numInserts++
+            }
+
+            if (groupMethod == GroupMethod.CATEGORIES && local is LocalContact) {
+                // VCard3: update group memberships from CATEGORIES
+                val batch = BatchOperation(provider)
+                Logger.log.log(Level.FINE, "Removing contact group memberships")
+                local.removeGroupMemberships(batch)
+
+                for (category in local.contact!!.categories) {
+                    val groupID = localCollection.findOrCreateGroup(category)
+                    Logger.log.log(Level.FINE, "Adding membership in group $category ($groupID)")
+                    local.addToGroup(batch, groupID)
+                }
+
+                batch.commit()
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O && local is LocalContact)
+                // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
+                local.updateHashCode(null)
+        })
     }
 
 

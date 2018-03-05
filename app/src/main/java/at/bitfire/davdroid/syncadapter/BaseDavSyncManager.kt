@@ -71,25 +71,27 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource, out CollectionTyp
         // Remove locally deleted entries from server (if they have a name, i.e. if they were uploaded before),
         // but only if they don't have changed on the server. Then finally remove them from the local address book.
         val localList = localCollection.findDeleted()
-        for (local in localList) {
-            abortIfCancelled()
+        for (local in localList)
+            useLocal(local, {
+                abortIfCancelled()
 
-            val fileName = local.fileName
-            if (fileName != null) {
-                Logger.log.info("$fileName has been deleted locally -> deleting from server")
+                val fileName = local.fileName
+                if (fileName != null) {
+                    Logger.log.info("$fileName has been deleted locally -> deleting from server")
 
-                val remote = DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build())
-                try {
-                    remote.delete(local.eTag)
-                    numDeleted++
-                } catch (e: HttpException) {
-                    Logger.log.warning("Couldn't delete $fileName from server; ignoring (may be downloaded again)")
-                }
-            } else
-                Logger.log.info("Removing local record #${local.id} which has been deleted locally and was never uploaded")
-            local.delete()
-            syncResult.stats.numDeletes++
-        }
+                    useRemote(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build()), { remote ->
+                        try {
+                            remote.delete(local.eTag)
+                            numDeleted++
+                        } catch (e: HttpException) {
+                            Logger.log.warning("Couldn't delete $fileName from server; ignoring (may be downloaded again)")
+                        }
+                    })
+                } else
+                    Logger.log.info("Removing local record #${local.id} which has been deleted locally and was never uploaded")
+                local.delete()
+                syncResult.stats.numDeletes++
+            })
         Logger.log.info("Removed $numDeleted record(s) from server")
         return numDeleted > 0
     }
@@ -104,48 +106,49 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource, out CollectionTyp
         var numUploaded = 0
 
         // upload dirty contacts
-        for (local in localCollection.findDirty()) {
-            abortIfCancelled()
+        for (local in localCollection.findDirty())
+            useLocal(local, {
+                abortIfCancelled()
 
-            if (local.fileName == null) {
-                Logger.log.fine("Generating file name/UID for local record #${local.id}")
-                local.assignNameAndUID()
-            }
-
-            val fileName = local.fileName!!
-            val remote = DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build())
-
-            // generate entity to upload (VCard, iCal, whatever)
-            val body = prepareUpload(local)
-
-            try {
-                if (local.eTag == null) {
-                    Logger.log.info("Uploading new record $fileName")
-                    remote.put(body, null, true)
-                } else {
-                    Logger.log.info("Uploading locally modified record $fileName")
-                    remote.put(body, local.eTag, false)
+                if (local.fileName == null) {
+                    Logger.log.fine("Generating file name/UID for local record #${local.id}")
+                    local.assignNameAndUID()
                 }
-                numUploaded++
-            } catch(e: ConflictException) {
-                // we can't interact with the user to resolve the conflict, so we treat 409 like 412
-                Logger.log.log(Level.INFO, "Edit conflict, ignoring", e)
-            } catch(e: PreconditionFailedException) {
-                Logger.log.log(Level.INFO, "Resource has been modified on the server before upload, ignoring", e)
-            }
 
-            val newETag = remote.properties[GetETag::class.java]
-            val eTag: String?
-            if (newETag != null) {
-                eTag = newETag.eTag
-                Logger.log.fine("Received new ETag=$eTag after uploading")
-            } else {
-                Logger.log.fine("Didn't receive new ETag after uploading, setting to null")
-                eTag = null
-            }
+                val fileName = local.fileName!!
+                useRemote(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build()), { remote ->
+                    // generate entity to upload (VCard, iCal, whatever)
+                    val body = prepareUpload(local)
 
-            local.clearDirty(eTag)
-        }
+                    try {
+                        if (local.eTag == null) {
+                            Logger.log.info("Uploading new record $fileName")
+                            remote.put(body, null, true)
+                        } else {
+                            Logger.log.info("Uploading locally modified record $fileName")
+                            remote.put(body, local.eTag, false)
+                        }
+                        numUploaded++
+                    } catch(e: ConflictException) {
+                        // we can't interact with the user to resolve the conflict, so we treat 409 like 412
+                        Logger.log.log(Level.INFO, "Edit conflict, ignoring", e)
+                    } catch(e: PreconditionFailedException) {
+                        Logger.log.log(Level.INFO, "Resource has been modified on the server before upload, ignoring", e)
+                    }
+
+                    val newETag = remote.properties[GetETag::class.java]
+                    val eTag: String?
+                    if (newETag != null) {
+                        eTag = newETag.eTag
+                        Logger.log.fine("Received new ETag=$eTag after uploading")
+                    } else {
+                        Logger.log.fine("Didn't receive new ETag after uploading, setting to null")
+                        eTag = null
+                    }
+
+                    local.clearDirty(eTag)
+                })
+            })
         Logger.log.info("Sent $numUploaded record(s) to server")
         return numUploaded > 0
     }
@@ -168,14 +171,14 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource, out CollectionTyp
         }
     }
 
-    override fun syncState(forceRefresh: Boolean): SyncState? {
+    override fun syncState(forceRefresh: Boolean) = useRemoteCollection { remote ->
         if (forceRefresh)
-            davCollection.propfind(0, GetCTag.NAME, SyncToken.NAME)
+            remote.propfind(0, GetCTag.NAME, SyncToken.NAME)
 
-        return davCollection.properties[SyncToken::class.java]?.token?.let {
+        remote.properties[SyncToken::class.java]?.token?.let {
             SyncState(SyncState.Type.SYNC_TOKEN, it)
         } ?:
-        davCollection.properties[GetCTag::class.java]?.cTag?.let {
+        remote.properties[GetCTag::class.java]?.cTag?.let {
             SyncState(SyncState.Type.CTAG, it)
         }
     }
@@ -194,26 +197,25 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource, out CollectionTyp
 
         val changes = RemoteChanges(syncState, false)
 
-        for ((name, remote) in remoteResources) {
-            val local = localCollection.findByName(name)
-
-            if (local == null) {
-                Logger.log.info("$name has been added remotely")
-                changes.updated += remote
-            } else {
-                val localETag = local.eTag
-                val remoteETag = remote.properties[GetETag::class.java]?.eTag ?: throw DavException("Server didn't provide ETag")
-                if (localETag == remoteETag)
-                    Logger.log.fine("$name has not been changed on server (ETag still $remoteETag)")
-                else {
-                    Logger.log.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
+        for ((name, remote) in remoteResources)
+            useLocal(localCollection.findByName(name), { local ->
+                if (local == null) {
+                    Logger.log.info("$name has been added remotely")
                     changes.updated += remote
-                }
+                } else {
+                    val localETag = local.eTag
+                    val remoteETag = remote.properties[GetETag::class.java]?.eTag ?: throw DavException("Server didn't provide ETag")
+                    if (localETag == remoteETag)
+                        Logger.log.fine("$name has not been changed on server (ETag still $remoteETag)")
+                    else {
+                        Logger.log.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
+                        changes.updated += remote
+                    }
 
-                // mark as remotely present, so that this resource won't be deleted at the end
-                local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
-            }
-        }
+                    // mark as remotely present, so that this resource won't be deleted at the end
+                    local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
+                }
+            })
 
         return changes
     }
@@ -259,6 +261,28 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource, out CollectionTyp
     }
 
     override fun postProcess() {
+    }
+
+
+    protected fun<T: LocalResource?, R> useLocal(local: T, body: (T) -> R): R {
+        currentLocalResource += local
+        val result = body(local)
+        currentLocalResource.pop()
+        return result
+    }
+
+    protected fun<T: DavResource, R> useRemote(remote: T, body: (T) -> R): R {
+        currentRemoteResource += remote
+        val result = body(remote)
+        currentRemoteResource.pop()
+        return result
+    }
+
+    protected fun<R> useRemoteCollection(body: (RemoteType) -> R): R {
+        currentRemoteResource += davCollection
+        val result = body(davCollection)
+        currentRemoteResource.pop()
+        return result
     }
 
 }

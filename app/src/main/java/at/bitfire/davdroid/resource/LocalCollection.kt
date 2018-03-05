@@ -12,12 +12,12 @@ import at.bitfire.davdroid.model.SyncState
 
 interface LocalCollection<out T: LocalResource> {
 
-    var lastSyncState: SyncState?
+    /** collection title (used for user notifications etc.) **/
+    val title: String
+    /** unique ID, used to distinguish notifications for different collections **/
+    val uniqueId: String
 
-    /**
-     * Unique collection ID. Used to distinguish collections in Android notifications.
-     */
-    val uid: String
+    var lastSyncState: SyncState?
 
     fun findDeleted(): List<T>
     fun findDirty(): List<T>

@@ -8,29 +8,67 @@
 
 package at.bitfire.davdroid.ui
 
+import android.annotation.TargetApi
 import android.app.NotificationChannel
+import android.app.NotificationChannelGroup
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationManagerCompat
+import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 
 object NotificationUtils {
 
-    val CHANNEL_DEBUG = "debug"
-    val CHANNEL_SYNC_STATUS = "syncStatus"
-    val CHANNEL_SYNC_PROBLEMS = "syncProblems"
+    // notification IDs
+    const val NOTIFY_SYNC_ERROR = 10
+    const val NOTIFY_OPENTASKS = 20
 
-    fun createChannels(context: Context): NotificationManager {
-        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    // notification channels
+    const val CHANNEL_GENERAL = "general"
+    const val CHANNEL_DEBUG = "debug"
 
-        if (Build.VERSION.SDK_INT >= 26)
+    private const val CHANNEL_SYNC = "sync"
+    const val CHANNEL_SYNC_ERRORS = "syncProblems"
+    const val CHANNEL_SYNC_IO_ERRORS = "syncIoErrors"
+    const val CHANNEL_SYNC_STATUS = "syncStatus"
+
+
+    fun createChannels(context: Context): NotificationManagerCompat {
+        @TargetApi(Build.VERSION_CODES.O)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            val syncChannelGroup = NotificationChannelGroup(CHANNEL_SYNC, context.getString(R.string.notification_channel_sync))
+            nm.createNotificationChannelGroup(syncChannelGroup)
+            val syncChannels = arrayOf(
+                NotificationChannel(CHANNEL_SYNC_ERRORS, context.getString(R.string.notification_channel_sync_errors), NotificationManager.IMPORTANCE_DEFAULT),
+                NotificationChannel(CHANNEL_SYNC_IO_ERRORS, context.getString(R.string.notification_channel_sync_io_errors), NotificationManager.IMPORTANCE_LOW),
+                NotificationChannel(CHANNEL_SYNC_STATUS, context.getString(R.string.notification_channel_sync_status), NotificationManager.IMPORTANCE_MIN)
+            )
+            syncChannels.forEach {
+                it.group = CHANNEL_SYNC
+            }
+
             nm.createNotificationChannels(listOf(
-                    NotificationChannel(CHANNEL_DEBUG, context.getString(R.string.notification_channel_debugging), NotificationManager.IMPORTANCE_LOW),
-                    NotificationChannel(CHANNEL_SYNC_STATUS, context.getString(R.string.notification_channel_sync_status), NotificationManager.IMPORTANCE_LOW),
-                    NotificationChannel(CHANNEL_SYNC_PROBLEMS, context.getString(R.string.notification_channel_sync_problems), NotificationManager.IMPORTANCE_DEFAULT)
+                    NotificationChannel(CHANNEL_DEBUG, context.getString(R.string.notification_channel_debugging), NotificationManager.IMPORTANCE_DEFAULT),
+                    NotificationChannel(CHANNEL_GENERAL, context.getString(R.string.notification_channel_general), NotificationManager.IMPORTANCE_DEFAULT),
+                    *syncChannels
             ))
+        }
 
-        return nm
+        return NotificationManagerCompat.from(context)
+    }
+
+    fun newBuilder(context: Context, channel: String = CHANNEL_GENERAL): NotificationCompat.Builder {
+        val builder = NotificationCompat.Builder(context, channel)
+                .setColor(context.resources.getColor(R.color.primaryColor))
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
+            builder.setLargeIcon(App.getLauncherBitmap(context))
+
+        return builder
     }
 
 }

@@ -16,6 +16,7 @@ import android.content.ContentValues
 import android.net.Uri
 import android.provider.CalendarContract
 import android.provider.CalendarContract.*
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
@@ -34,8 +35,6 @@ class LocalCalendar private constructor(
 ): AndroidCalendar<LocalEvent>(account, provider, LocalEvent.Factory, id), LocalCollection<LocalEvent> {
 
     companion object {
-
-        private const val defaultColor = 0xFF8bc34a.toInt()     // light green 500
 
         private const val COLUMN_SYNC_STATE = Calendars.CAL_SYNC1
 
@@ -59,7 +58,7 @@ class LocalCalendar private constructor(
             values.put(Calendars.CALENDAR_DISPLAY_NAME, if (info.displayName.isNullOrBlank()) DavUtils.lastSegmentOfUrl(info.url) else info.displayName)
 
             if (withColor)
-                values.put(Calendars.CALENDAR_COLOR, info.color ?: defaultColor)
+                values.put(Calendars.CALENDAR_COLOR, info.color ?: Constants.DAVDROID_GREEN_RGBA)
 
             if (info.readOnly || info.forceReadOnly)
                 values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ)
@@ -85,6 +84,11 @@ class LocalCalendar private constructor(
             return values
         }
     }
+
+    override val title: String
+        get() = displayName ?: id.toString()
+
+    override val uniqueId = "calendar-$id"
 
     override var lastSyncState: SyncState?
         get() = provider.query(calendarSyncURI(), arrayOf(COLUMN_SYNC_STATE), null, null, null)?.let { cursor ->

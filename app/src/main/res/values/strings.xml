@@ -24,8 +24,11 @@
     <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
 
     <string name="notification_channel_debugging">Debugging</string>
-    <string name="notification_channel_sync_status">Sync status</string>
-    <string name="notification_channel_sync_problems">Sync problems</string>
+    <string name="notification_channel_general">Other important messages</string>
+    <string name="notification_channel_sync">Synchronization</string>
+    <string name="notification_channel_sync_errors">Synchronization errors</string>
+    <string name="notification_channel_sync_io_errors">Network and I/O errors</string>
+    <string name="notification_channel_sync_status">Status messages</string>
 
     <!-- startup dialogs -->
     <string name="startup_battery_optimization">Battery Optimization</string>
@@ -275,31 +278,14 @@
         <item quantity="one">Local contact change discarded</item>
         <item quantity="other">%d local contact changes discarded</item>
     </plurals>
+    <string name="sync_error_authentication_failed">Authentication failed (check login credentials)</string>
     <string name="sync_error_permissions">DAVdroid permissions</string>
     <string name="sync_error_permissions_text">Additional permissions required</string>
     <string name="sync_error_opentasks_too_old">OpenTasks too old</string>
     <string name="sync_error_opentasks_required_version">Required version: %1$s (currently %2$s)</string>
-    <string name="sync_error_calendar">Calendar synchronization failed (%s)</string>
-    <string name="sync_error_contacts">Address book synchronization failed (%s)</string>
-    <string name="sync_error_tasks">Task synchronization failed (%s)</string>
-    <string name="sync_error">Error while %s</string>
-    <string name="sync_error_http_dav">Server error while %s</string>
-    <string name="sync_error_local_storage">Database error while %s</string>
-    <string-array name="sync_error_phases">
-        <item>preparing synchronization</item>
-        <item>querying capabilities</item>
-        <item>processing locally deleted entries</item>
-        <item>preparing created/modified entries</item>
-        <item>uploading created/modified entries</item>
-        <item>checking sync state</item>
-        <item>listing local entries</item>
-        <item>listing remote entries</item>
-        <item>comparing local/remote entries</item>
-        <item>downloading remote entries</item>
-        <item>post-processing</item>
-        <item>saving sync state</item>
-    </string-array>
-    <string name="sync_error_unauthorized">User name/password wrong</string>
+    <string name="sync_error_io">Network or I/O error – %s</string>
+    <string name="sync_error_http_dav">HTTP server error – %s</string>
+    <string name="sync_error_local_storage">Local storage error – %s</string>
 
     <!-- cert4android -->
     <string name="certificate_notification_connection_security">DAVdroid: Connection security</string>

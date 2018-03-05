@@ -18,7 +18,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.NotificationCompat
 import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
@@ -66,7 +65,7 @@ class TasksSyncAdapterService: SyncAdapterService() {
                 }
             } catch (e: TaskProvider.ProviderTooOldException) {
                 val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                val notify = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_SYNC_PROBLEMS)
+                val notify = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_SYNC_ERRORS)
                         .setSmallIcon(R.drawable.ic_sync_error_notification)
                         .setContentTitle(context.getString(R.string.sync_error_opentasks_too_old))
                         .setContentText(context.getString(R.string.sync_error_opentasks_required_version, e.provider.minVersionName, e.installedVersionName))
@@ -83,7 +82,7 @@ class TasksSyncAdapterService: SyncAdapterService() {
                     notify  .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
                             .setAutoCancel(true)
 
-                nm.notify(Constants.NOTIFICATION_TASK_SYNC, notify.build())
+                nm.notify(NotificationUtils.NOTIFY_OPENTASKS, notify.build())
                 syncResult.databaseError = true
             } catch (e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't sync task lists", e)
