@@ -106,7 +106,9 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
 
     constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues):
-        super(addressBook, values)
+        super(addressBook, values) {
+        flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
+    }
 
     constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, contact: Contact, fileName: String?, eTag: String?, flags: Int)
         : super(addressBook, contact, fileName, eTag) {

@@ -41,6 +41,7 @@ class LocalTask: AndroidTask, LocalResource {
         id = values.getAsLong(Tasks._ID)
         fileName = values.getAsString(Tasks._SYNC_ID)
         eTag = values.getAsString(COLUMN_ETAG)
+        flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
     }
 
 
@@ -48,9 +49,6 @@ class LocalTask: AndroidTask, LocalResource {
 
     override fun populateTask(values: ContentValues) {
         super.populateTask(values)
-
-        fileName = values.getAsString(Events._SYNC_ID)
-        eTag = values.getAsString(COLUMN_ETAG)
 
         val task = requireNotNull(task)
         task.sequence = values.getAsInteger(COLUMN_SEQUENCE)

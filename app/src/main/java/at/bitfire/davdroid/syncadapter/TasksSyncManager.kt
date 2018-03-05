@@ -20,7 +20,6 @@ import at.bitfire.dav4android.property.GetCTag
 import at.bitfire.dav4android.property.GetETag
 import at.bitfire.dav4android.property.SyncToken
 import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
@@ -54,8 +53,6 @@ class TasksSyncManager(
         const val MULTIGET_MAX_RESOURCES = 30
     }
 
-    override val notificationId = Constants.NOTIFICATION_TASK_SYNC
-
 
     override fun prepare(): Boolean {
         if (!super.prepare())
@@ -63,48 +60,47 @@ class TasksSyncManager(
 
         val url = localCollection.syncId ?: return false
         collectionURL = HttpUrl.parse(url) ?: return false
-
         davCollection = DavCalendar(httpClient.okHttpClient, collectionURL)
+
         return true
     }
 
     override fun queryCapabilities() {
-        davCollection.propfind(0, GetCTag.NAME, SyncToken.NAME)
+        useRemoteCollection { it.propfind(0, GetCTag.NAME, SyncToken.NAME) }
     }
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
-    override fun prepareUpload(resource: LocalTask): RequestBody {
+    override fun prepareUpload(resource: LocalTask): RequestBody = useLocal(resource, {
         val task = requireNotNull(resource.task)
         Logger.log.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
 
         val os = ByteArrayOutputStream()
         task.write(os)
 
-        return RequestBody.create(
+        RequestBody.create(
                 DavCalendar.MIME_ICALENDAR_UTF8,
                 os.toByteArray()
         )
-    }
+    })
 
-    override fun listAllRemote(): Map<String, DavResource> {
-        davCollection.calendarQuery("VTODO", null, null)
+    override fun listAllRemote() = useRemoteCollection { remote ->
+        remote.calendarQuery("VTODO", null, null)
 
-        val result = LinkedHashMap<String, DavResource>(davCollection.members.size)
-        for (vCard in davCollection.members) {
+        val result = LinkedHashMap<String, DavResource>(remote.members.size)
+        for (vCard in remote.members) {
             val fileName = vCard.fileName()
             Logger.log.fine("Found remote VTODO: $fileName")
             result[fileName] = vCard
         }
-
-        return result
+        result
     }
 
     override fun processRemoteChanges(changes: RemoteChanges) {
         for (name in changes.deleted) {
             localCollection.findByName(name)?.let {
                 Logger.log.info("Deleting local task $name")
-                it.delete()
+                useLocal(it, { it.delete() })
                 syncResult.stats.numDeletes++
             }
         }
@@ -113,19 +109,20 @@ class TasksSyncManager(
         Logger.log.info("Downloading ${toDownload.size} resources (${MULTIGET_MAX_RESOURCES} at once)")
 
         for (bunch in toDownload.chunked(MULTIGET_MAX_RESOURCES)) {
-            if (bunch.size == 1) {
+            if (bunch.size == 1)
                 // only one contact, use GET
-                val remote = DavResource(httpClient.okHttpClient, bunch.first())
-                val body = remote.get(DavCalendar.MIME_ICALENDAR.toString())
+                useRemote(DavResource(httpClient.okHttpClient, bunch.first()), { remote ->
+                    val body = remote.get(DavCalendar.MIME_ICALENDAR.toString())
 
-                // CalDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc4791#section-5.3.4]
-                val eTag = remote.properties[GetETag::class.java]?.eTag
-                        ?: throw DavException("Received CalDAV GET response without ETag for ${remote.location}")
+                    // CalDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc4791#section-5.3.4]
+                    val eTag = remote.properties[GetETag::class.java]?.eTag
+                            ?: throw DavException("Received CalDAV GET response without ETag for ${remote.location}")
 
-                body.charStream().use { reader ->
-                    processVTodo(remote.fileName(), eTag, reader)
-                }
-            } else {
+                    body.charStream().use { reader ->
+                        processVTodo(remote.fileName(), eTag, reader)
+                    }
+                })
+            else {
                 // multiple contacts, use multi-get
                 davCollection.multiget(bunch)
 
@@ -159,18 +156,19 @@ class TasksSyncManager(
             val newData = tasks.first()
 
             // update local task, if it exists
-            val localTask = localCollection.findByName(fileName)
-            if (localTask != null) {
-                Logger.log.info("Updating $fileName in local tasklist")
-                localTask.eTag = eTag
-                localTask.update(newData)
-                syncResult.stats.numUpdates++
-            } else {
-                Logger.log.info("Adding $fileName to local task list")
-                val newTask = LocalTask(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
-                newTask.add()
-                syncResult.stats.numInserts++
-            }
+            useLocal(localCollection.findByName(fileName), { local ->
+                if (local != null) {
+                    Logger.log.info("Updating $fileName in local tasklist")
+                    local.eTag = eTag
+                    local.update(newData)
+                    syncResult.stats.numUpdates++
+                } else {
+                    Logger.log.info("Adding $fileName to local task list")
+                    val newTask = LocalTask(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                    newTask.add()
+                    syncResult.stats.numInserts++
+                }
+            })
         } else
             Logger.log.info("Received VCALENDAR with not exactly one VTODO; ignoring $fileName")
     }

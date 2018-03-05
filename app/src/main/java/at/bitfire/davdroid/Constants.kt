@@ -10,14 +10,15 @@ package at.bitfire.davdroid
 object Constants {
 
     // notification IDs
-    @JvmField val NOTIFICATION_EXTERNAL_FILE_LOGGING = 1
-    @JvmField val NOTIFICATION_REFRESH_COLLECTIONS = 2
-    @JvmField val NOTIFICATION_CONTACTS_SYNC = 10
-    @JvmField val NOTIFICATION_CALENDAR_SYNC = 11
-    @JvmField val NOTIFICATION_TASK_SYNC = 12
-    @JvmField val NOTIFICATION_PERMISSIONS = 20
+    const val NOTIFICATION_EXTERNAL_FILE_LOGGING = 1
+    const val NOTIFICATION_REFRESH_COLLECTIONS = 2
 
-    @JvmField
-    val DEFAULT_SYNC_INTERVAL = 4 * 3600L    // 4 hours
+    const val NOTIFICATION_PERMISSIONS = 20
+    const val NOTIFICATION_SUBSCRIPTION = 21
+
+
+    const val DAVDROID_GREEN_RGBA = 0xFF8bc34a.toInt()
+
+    const val DEFAULT_SYNC_INTERVAL = 4 * 3600L    // 4 hours
 
 }

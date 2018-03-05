@@ -44,7 +44,7 @@ class LocalContact: AndroidContact, LocalAddress {
 
     constructor(addressBook: AndroidAddressBook<LocalContact,*>, values: ContentValues)
             : super(addressBook, values) {
-        flags = values.getAsInteger(COLUMN_FLAGS)
+        flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
     }
 
     constructor(addressBook: AndroidAddressBook<LocalContact,*>, contact: Contact, fileName: String?, eTag: String?, flags: Int)

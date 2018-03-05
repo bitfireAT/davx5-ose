@@ -94,6 +94,9 @@ class LocalAddressBook(
 
     }
 
+    override val title = account.name
+    override val uniqueId = "contacts-${account.name}"
+
     /**
      * Whether contact groups ([LocalGroup]) are included in query results
      * and are affected by updates/deletes on generic members.

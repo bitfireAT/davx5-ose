@@ -82,7 +82,7 @@ abstract class SyncAdapterService: Service() {
             val intent = Intent(context, PermissionsActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-            val notify = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_SYNC_PROBLEMS)
+            val notify = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_SYNC_ERRORS)
                     .setSmallIcon(R.drawable.ic_sync_error_notification)
                     .setLargeIcon(App.getLauncherBitmap(context))
                     .setContentTitle(context.getString(R.string.sync_error_permissions))
