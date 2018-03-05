@@ -164,8 +164,11 @@ class AppSettingsActivity: AppCompatActivity() {
             // debugging settings
             val prefLogToExternalStorage = findPreference(Logger.LOG_TO_EXTERNAL_STORAGE) as SwitchPreferenceCompat
             prefLogToExternalStorage.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                val context = activity!!
+                Logger.initialize(context)
+
                 // kill a potential :sync process, so that the new logger settings will be used
-                val am = activity!!.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
                 am.runningAppProcesses.forEach {
                     if (it.pid != Process.myPid()) {
                         Logger.log.info("Killing ${it.processName} process, pid = ${it.pid}")

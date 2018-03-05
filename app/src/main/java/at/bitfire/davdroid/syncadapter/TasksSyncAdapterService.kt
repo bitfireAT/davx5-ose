@@ -8,7 +8,6 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.*
 import android.content.pm.PackageManager
@@ -17,6 +16,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationManagerCompat
 import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -64,11 +64,13 @@ class TasksSyncAdapterService: SyncAdapterService() {
                     }
                 }
             } catch (e: TaskProvider.ProviderTooOldException) {
-                val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                val notify = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_SYNC_ERRORS)
+                val nm = NotificationManagerCompat.from(context)
+                val message = context.getString(R.string.sync_error_opentasks_required_version, e.provider.minVersionName, e.installedVersionName)
+                val notify = NotificationUtils.newBuilder(context)
                         .setSmallIcon(R.drawable.ic_sync_error_notification)
                         .setContentTitle(context.getString(R.string.sync_error_opentasks_too_old))
-                        .setContentText(context.getString(R.string.sync_error_opentasks_required_version, e.provider.minVersionName, e.installedVersionName))
+                        .setContentText(message)
+                        .setStyle(NotificationCompat.BigTextStyle().bigText(message))
                         .setCategory(NotificationCompat.CATEGORY_ERROR)
 
                 try {

@@ -222,15 +222,15 @@ class ContactsSyncManager(
     }
 
     private fun notifyDiscardedChange() {
-        val notification = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_SYNC_STATUS)
+        val notification = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_SYNC_STATUS)
                 .setSmallIcon(R.drawable.ic_delete_notification)
                 .setContentTitle(context.getString(R.string.sync_contacts_read_only_address_book))
                 .setContentText(context.resources.getQuantityString(R.plurals.sync_contacts_local_contact_changes_discarded, numDiscarded, numDiscarded))
+                .setNumber(numDiscarded)
                 .setSubText(account.name)
                 .setCategory(NotificationCompat.CATEGORY_STATUS)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setPriority(NotificationCompat.PRIORITY_MIN)
                 .setLocalOnly(true)
-                .setAutoCancel(true)
                 .build()
         notificationManager.notify("discarded_${account.name}", 0, notification)
     }

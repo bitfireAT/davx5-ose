@@ -30,14 +30,14 @@ class App: Application() {
         const val FLAVOR_SOLDUPE = "soldupe"
         const val FLAVOR_STANDARD = "standard"
 
-        val ORGANIZATION = "organization"
-        val ORGANIZATION_LOGO_URL = "logo_url"
+        const val ORGANIZATION = "organization"
+        const val ORGANIZATION_LOGO_URL = "logo_url"
 
-        val SUPPORT_HOMEPAGE = "support_homepage_url"
-        val SUPPORT_PHONE = "support_phone_number"
-        val SUPPORT_EMAIL = "support_email_address"
+        const val SUPPORT_HOMEPAGE = "support_homepage_url"
+        const val SUPPORT_PHONE = "support_phone_number"
+        const val SUPPORT_EMAIL = "support_email_address"
 
-        val MAX_ACCOUNTS = "max_accounts"
+        const val MAX_ACCOUNTS = "max_accounts"
 
         const val DISTRUST_SYSTEM_CERTIFICATES = "distrust_system_certs"
         const val OVERRIDE_PROXY = "override_proxy"

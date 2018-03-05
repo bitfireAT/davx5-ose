@@ -21,6 +21,8 @@ import at.bitfire.davdroid.R
 object NotificationUtils {
 
     // notification IDs
+    const val NOTIFY_EXTERNAL_FILE_LOGGING = 1
+    const val NOTIFY_REFRESH_COLLECTIONS = 2
     const val NOTIFY_SYNC_ERROR = 10
     const val NOTIFY_OPENTASKS = 20
     const val NOTIFY_PERMISSIONS = 21
@@ -52,7 +54,7 @@ object NotificationUtils {
             }
 
             nm.createNotificationChannels(listOf(
-                    NotificationChannel(CHANNEL_DEBUG, context.getString(R.string.notification_channel_debugging), NotificationManager.IMPORTANCE_DEFAULT),
+                    NotificationChannel(CHANNEL_DEBUG, context.getString(R.string.notification_channel_debugging), NotificationManager.IMPORTANCE_HIGH),
                     NotificationChannel(CHANNEL_GENERAL, context.getString(R.string.notification_channel_general), NotificationManager.IMPORTANCE_DEFAULT),
                     *syncChannels
             ))
