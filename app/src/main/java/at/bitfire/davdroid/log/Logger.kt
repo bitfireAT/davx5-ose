@@ -17,8 +17,6 @@ import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import android.util.Log
-import at.bitfire.davdroid.App
-import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppSettingsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -30,13 +28,12 @@ import java.util.logging.Level
 
 object Logger {
 
-    val LOG_TO_EXTERNAL_STORAGE = "log_to_external_storage"
+    const val LOG_TO_EXTERNAL_STORAGE = "log_to_external_storage"
 
-    @JvmField
     val log = java.util.logging.Logger.getLogger("davdroid")!!
 
 
-    lateinit private var preferences: SharedPreferences
+    private lateinit var preferences: SharedPreferences
 
     fun initialize(context: Context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -66,9 +63,8 @@ object Logger {
         val nm = NotificationManagerCompat.from(context)
         // log to external file according to preferences
         if (logToFile) {
-            val builder = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_DEBUG)
+            val builder = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_DEBUG)
             builder .setSmallIcon(R.drawable.ic_sd_storage_notification)
-                    .setLargeIcon(App.getLauncherBitmap(context))
                     .setContentTitle(context.getString(R.string.logging_davdroid_file_logging))
                     .setLocalOnly(true)
 
@@ -89,22 +85,22 @@ object Logger {
                             .setCategory(NotificationCompat.CATEGORY_STATUS)
                             .setPriority(NotificationCompat.PRIORITY_HIGH)
                             .setContentIntent(PendingIntent.getActivity(context, 0, prefIntent, PendingIntent.FLAG_UPDATE_CURRENT))
-                            .setStyle(NotificationCompat.BigTextStyle()
-                                    .bigText(context.getString(R.string.logging_to_external_storage, dir.path)))
+                            .setStyle(NotificationCompat.BigTextStyle().bigText(context.getString(R.string.logging_to_external_storage, dir.path)))
                             .setOngoing(true)
 
                 } catch(e: IOException) {
                     log.log(Level.SEVERE, "Couldn't create external log file", e)
-
-                    builder .setContentText(context.getString(R.string.logging_couldnt_create_file, e.localizedMessage))
+                    val message = context.getString(R.string.logging_couldnt_create_file, e.localizedMessage)
+                    builder .setContentText(message)
+                            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
                             .setCategory(NotificationCompat.CATEGORY_ERROR)
                 }
             else
                 builder.setContentText(context.getString(R.string.logging_no_external_storage))
 
-            nm.notify(Constants.NOTIFICATION_EXTERNAL_FILE_LOGGING, builder.build())
+            nm.notify(NotificationUtils.NOTIFY_EXTERNAL_FILE_LOGGING, builder.build())
         } else
-            nm.cancel(Constants.NOTIFICATION_EXTERNAL_FILE_LOGGING)
+            nm.cancel(NotificationUtils.NOTIFY_EXTERNAL_FILE_LOGGING)
     }
 
 }

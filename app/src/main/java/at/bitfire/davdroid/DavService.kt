@@ -11,11 +11,13 @@ package at.bitfire.davdroid
 import android.accounts.Account
 import android.app.PendingIntent
 import android.app.Service
+import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Intent
 import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import android.os.Binder
+import android.os.Bundle
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import at.bitfire.dav4android.DavResource
@@ -42,8 +44,14 @@ import kotlin.concurrent.thread
 class DavService: Service() {
 
     companion object {
-        @JvmField val ACTION_REFRESH_COLLECTIONS = "refreshCollections"
-        @JvmField val EXTRA_DAV_SERVICE_ID = "davServiceID"
+        const val ACTION_REFRESH_COLLECTIONS = "refreshCollections"
+        const val EXTRA_DAV_SERVICE_ID = "davServiceID"
+
+        /** Initialize a forced synchronization. Expects intent data
+            to be an URI of this format:
+            contents://<authority>/<account.type>/<account name>
+         **/
+        const val ACTION_FORCE_SYNC = "forceSync"
     }
 
     private val runningRefresh = HashSet<Long>()
@@ -60,6 +68,15 @@ class DavService: Service() {
                         thread { refreshCollections(id) }
                         refreshingStatusListeners.forEach { it.get()?.onDavRefreshStatusChanged(id, true) }
                     }
+
+                ACTION_FORCE_SYNC -> {
+                    val authority = intent.data.authority
+                    val account = Account(
+                            intent.data.pathSegments[1],
+                            intent.data.pathSegments[0]
+                    )
+                    forceSync(authority, account)
+                }
             }
         }
 
@@ -103,6 +120,14 @@ class DavService: Service() {
     /* ACTION RUNNABLES
        which actually do the work
      */
+
+    private fun forceSync(authority: String, account: Account) {
+        Logger.log.info("Forcing $authority synchronization of $account")
+        val extras = Bundle(2)
+        extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)        // manual sync
+        extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)     // run immediately (don't queue)
+        ContentResolver.requestSync(account, authority, extras)
+    }
 
     private fun refreshCollections(service: Long) {
         OpenHelper(this@DavService).use { dbHelper ->
@@ -321,19 +346,20 @@ class DavService: Service() {
             } catch(e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't refresh collection list", e)
 
-                val debugIntent = Intent(this@DavService, DebugInfoActivity::class.java)
+                val debugIntent = Intent(this, DebugInfoActivity::class.java)
                 debugIntent.putExtra(DebugInfoActivity.KEY_THROWABLE, e)
                 debugIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account)
 
-                val nm = NotificationManagerCompat.from(this)
-                val notify = NotificationCompat.Builder(this, NotificationUtils.CHANNEL_SYNC_ERRORS)
+                val notify = NotificationUtils.newBuilder(this)
                         .setSmallIcon(R.drawable.ic_sync_error_notification)
                         .setContentTitle(getString(R.string.dav_service_refresh_failed))
                         .setContentText(getString(R.string.dav_service_refresh_couldnt_refresh))
                         .setContentIntent(PendingIntent.getActivity(this, 0, debugIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                         .setSubText(account.name)
+                        .setCategory(NotificationCompat.CATEGORY_ERROR)
                         .build()
-                nm.notify(Constants.NOTIFICATION_REFRESH_COLLECTIONS, notify)
+                NotificationManagerCompat.from(this)
+                        .notify(service.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS, notify)
             } finally {
                 runningRefresh.remove(service)
                 refreshingStatusListeners.forEach { it.get()?.onDavRefreshStatusChanged(service, false) }

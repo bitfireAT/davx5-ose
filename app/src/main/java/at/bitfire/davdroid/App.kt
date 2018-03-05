@@ -15,11 +15,8 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.support.v7.app.AppCompatDelegate
 import at.bitfire.davdroid.log.Logger
-<<<<<<< HEAD
-=======
 import at.bitfire.davdroid.ui.NotificationUtils
 import kotlin.concurrent.thread
->>>>>>> 787260f1... Remove PermissionsActivity
 
 class App: Application() {
 

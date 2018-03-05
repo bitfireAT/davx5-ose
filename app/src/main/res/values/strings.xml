@@ -267,14 +267,16 @@
         <item quantity="one">Local contact change discarded</item>
         <item quantity="other">%d local contact changes discarded</item>
     </plurals>
-    <string name="sync_error_authentication_failed">Authentication failed (check login credentials)</string>
     <string name="sync_error_permissions">DAVdroid permissions</string>
     <string name="sync_error_permissions_text">Additional permissions required</string>
     <string name="sync_error_opentasks_too_old">OpenTasks too old</string>
     <string name="sync_error_opentasks_required_version">Required version: %1$s (currently %2$s)</string>
+    <string name="sync_error_authentication_failed">Authentication failed (check login credentials)</string>
     <string name="sync_error_io">Network or I/O error – %s</string>
     <string name="sync_error_http_dav">HTTP server error – %s</string>
     <string name="sync_error_local_storage">Local storage error – %s</string>
+    <string name="sync_error_retry">Retry</string>
+    <string name="sync_error_view_item">View item</string>
 
     <!-- cert4android -->
     <string name="certificate_notification_connection_security">DAVdroid: Connection security</string>

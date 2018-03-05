@@ -28,6 +28,7 @@ import at.bitfire.dav4android.exception.ServiceUnavailableException
 import at.bitfire.dav4android.exception.UnauthorizedException
 import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.SyncState
@@ -329,13 +330,17 @@ abstract class SyncManager<out ResourceType: LocalResource, out CollectionType: 
         else
             account
 
-        // TODO: "Retry" intent
-        /*val retryIntent = Intent(context, DavService::class.java)
-        retryIntent.data = notifyUri
-        val pendingRetryIntent = PendingIntent.getActivity(context, 1, retryIntent, PendingIntent.FLAG_UPDATE_CURRENT)*/
+        val channel: String
+        val priority: Int
+        if (e is IOError) {
+            channel = NotificationUtils.CHANNEL_SYNC_IO_ERRORS
+            priority = NotificationCompat.PRIORITY_LOW
+        } else {
+            channel = NotificationUtils.CHANNEL_SYNC_ERRORS
+            priority = NotificationCompat.PRIORITY_DEFAULT
+        }
 
-        val builder = NotificationUtils.newBuilder(context,
-                if (e is IOError) NotificationUtils.CHANNEL_SYNC_IO_ERRORS else NotificationUtils.CHANNEL_SYNC_ERRORS)
+        val builder = NotificationUtils.newBuilder(context, channel)
         builder .setSmallIcon(R.drawable.ic_sync_error_notification)
                 .setContentTitle(localCollection.title)
                 .setContentText(message)
@@ -343,8 +348,20 @@ abstract class SyncManager<out ResourceType: LocalResource, out CollectionType: 
                 .setSubText(account.name)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setPriority(priority)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
         viewItemAction?.let { builder.addAction(it) }
+
+        val retryIntent = Intent(context, DavService::class.java)
+        retryIntent.action = DavService.ACTION_FORCE_SYNC
+        retryIntent.data = Uri.parse("contents://").buildUpon()
+                .authority(authority)
+                .appendPath(account.type)
+                .appendPath(account.name)
+                .build()
+        builder.addAction(android.R.drawable.ic_menu_rotate, context.getString(R.string.sync_error_retry),
+                PendingIntent.getService(context, 0, retryIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+
         notificationManager.notify(localCollection.uniqueId, NotificationUtils.NOTIFY_SYNC_ERROR, builder.build())
     }
 
@@ -363,7 +380,7 @@ abstract class SyncManager<out ResourceType: LocalResource, out CollectionType: 
             }
         }
         return if (intent != null && context.packageManager.resolveActivity(intent, 0) != null)
-            NotificationCompat.Action(android.R.drawable.ic_menu_view, "View item",
+            NotificationCompat.Action(android.R.drawable.ic_menu_view, context.getString(R.string.sync_error_view_item),
                     PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
         else
             null
