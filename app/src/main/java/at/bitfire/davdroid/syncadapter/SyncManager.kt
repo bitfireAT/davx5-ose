@@ -15,20 +15,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.RemoteException
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.support.v4.app.NotificationCompat
-import android.text.Html
+import android.support.v4.app.NotificationManagerCompat
 import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.exception.HttpException
 import at.bitfire.dav4android.exception.ServiceUnavailableException
 import at.bitfire.dav4android.exception.UnauthorizedException
 import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -62,7 +60,7 @@ abstract class SyncManager<out ResourceType: LocalResource, out CollectionType: 
         val localCollection: CollectionType
 ): AutoCloseable {
 
-    protected val notificationManager = NotificationUtils.createChannels(context)
+    protected val notificationManager = NotificationManagerCompat.from(context)
 
     /** Local resource we're currently operating on. Used for error notifications. **/
     protected val currentLocalResource = Stack<LocalResource>()

@@ -16,15 +16,15 @@ import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationManagerCompat
 import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.App
-import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.ui.AccountActivity
 import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.ui.PermissionsActivity
+import org.apache.commons.collections4.IteratorUtils
 import java.util.*
 import java.util.logging.Level
 
@@ -34,7 +34,7 @@ abstract class SyncAdapterService: Service() {
         val runningSyncs = Collections.synchronizedSet(mutableSetOf<Pair<String, Account>>())!!
     }
 
-    abstract protected fun syncAdapter(): AbstractThreadedSyncAdapter
+    protected abstract fun syncAdapter(): AbstractThreadedSyncAdapter
 
     override fun onBind(intent: Intent?) = syncAdapter().syncAdapterBinder!!
 
@@ -79,19 +79,18 @@ abstract class SyncAdapterService: Service() {
             Logger.log.log(Level.WARNING, "Security exception when opening content provider for $authority")
             syncResult.databaseError = true
 
-            val intent = Intent(context, PermissionsActivity::class.java)
+            val intent = Intent(context, AccountActivity::class.java)
+            intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-            val notify = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_SYNC_ERRORS)
+            val notify = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_SYNC_ERRORS)
                     .setSmallIcon(R.drawable.ic_sync_error_notification)
-                    .setLargeIcon(App.getLauncherBitmap(context))
                     .setContentTitle(context.getString(R.string.sync_error_permissions))
                     .setContentText(context.getString(R.string.sync_error_permissions_text))
                     .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
                     .setCategory(NotificationCompat.CATEGORY_ERROR)
                     .build()
-            val nm = NotificationUtils.createChannels(context)
-            nm.notify(Constants.NOTIFICATION_PERMISSIONS, notify)
+            NotificationManagerCompat.from(context).notify(NotificationUtils.NOTIFY_PERMISSIONS, notify)
         }
 
         protected fun checkSyncConditions(settings: AccountSettings): Boolean {

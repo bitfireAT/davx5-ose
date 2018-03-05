@@ -10,7 +10,6 @@ package at.bitfire.davdroid.resource
 
 import android.content.ContentProviderOperation
 import android.content.ContentValues
-import android.provider.CalendarContract.Events
 import at.bitfire.ical4android.*
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.*

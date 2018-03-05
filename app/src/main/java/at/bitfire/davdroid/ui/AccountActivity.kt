@@ -42,7 +42,6 @@ import at.bitfire.davdroid.model.ServiceDB.Collections
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.ical4android.TaskProvider
-import at.bitfire.vcard4android.ContactsStorageException
 import kotlinx.android.synthetic.main.account_caldav_item.view.*
 import kotlinx.android.synthetic.main.activity_account.*
 import java.util.*
@@ -51,7 +50,7 @@ import java.util.logging.Level
 class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, PopupMenu.OnMenuItemClickListener, LoaderManager.LoaderCallbacks<AccountActivity.AccountInfo> {
 
     companion object {
-        @JvmField val EXTRA_ACCOUNT = "account"
+        const val EXTRA_ACCOUNT = "account"
 
         private fun requestSync(context: Context, account: Account) {
             val authorities = arrayOf(
@@ -77,7 +76,9 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        account = intent.getParcelableExtra(EXTRA_ACCOUNT)
+        // account may be a DAVdroid address book account -> use main account in this case
+        account = LocalAddressBook.mainAccount(this,
+                requireNotNull(intent.getParcelableExtra(EXTRA_ACCOUNT)))
         title = account.name
 
         setContentView(R.layout.activity_account)

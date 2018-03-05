@@ -76,10 +76,6 @@
             android:label="@string/app_settings"
             android:parentActivityName=".ui.AccountsActivity"/>
 
-        <activity android:name=".ui.PermissionsActivity"
-                  android:label="@string/permissions_title"
-                  android:parentActivityName=".ui.AccountsActivity"/>
-
         <activity
             android:name=".ui.setup.LoginActivity"
             android:label="@string/login_title"

@@ -26,7 +26,6 @@ import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.SyncState
 import at.bitfire.vcard4android.*
 import java.io.ByteArrayOutputStream
-import java.io.FileNotFoundException
 import java.util.*
 import java.util.logging.Level
 
@@ -91,6 +90,16 @@ class LocalAddressBook(
             bundle.putString(USER_DATA_URL, url)
             return bundle
         }
+
+        fun mainAccount(context: Context, account: Account): Account =
+                if (account.type == context.getString(R.string.account_type_address_book)) {
+                    val manager = AccountManager.get(context)
+                    Account(
+                            manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME),
+                            manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
+                    )
+                } else
+                    account
 
     }
 

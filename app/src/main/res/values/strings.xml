@@ -131,18 +131,6 @@
     <string name="account_install_icsdroid">Install ICSdroid</string>
     <string name="account_read_only_address_book_selected">Read-only address book – local changes will be discarded!</string>
 
-    <!-- PermissionsActivity -->
-    <string name="permissions_title">DAVdroid permissions</string>
-    <string name="permissions_calendar">Calendar permissions</string>
-    <string name="permissions_calendar_details">To synchronize CalDAV events with your local calendars, DAVdroid needs to access your calendars.</string>
-    <string name="permissions_calendar_request">Request calendar permissions</string>
-    <string name="permissions_contacts">Contacts permissions</string>
-    <string name="permissions_contacts_details">To synchronize CardDAV address books with your local contacts, DAVdroid needs to access your contacts.</string>
-    <string name="permissions_contacts_request">Request contacts permissions</string>
-    <string name="permissions_opentasks">OpenTasks permissions</string>
-    <string name="permissions_opentasks_details">To synchronize CalDAV tasks with your local task lists, DAVdroid needs to access OpenTasks.</string>
-    <string name="permissions_opentasks_request">Request OpenTasks permissions</string>
-
     <!-- AddAccountActivity -->
     <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
     <string name="login_title">Add account</string>

@@ -13,10 +13,6 @@ object Constants {
     const val NOTIFICATION_EXTERNAL_FILE_LOGGING = 1
     const val NOTIFICATION_REFRESH_COLLECTIONS = 2
 
-    const val NOTIFICATION_PERMISSIONS = 20
-    const val NOTIFICATION_SUBSCRIPTION = 21
-
-
     const val DAVDROID_GREEN_RGBA = 0xFF8bc34a.toInt()
 
     const val DEFAULT_SYNC_INTERVAL = 4 * 3600L    // 4 hours

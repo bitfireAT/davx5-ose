@@ -18,7 +18,6 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.ui.setup.LoginActivity
-import at.bitfire.vcard4android.ContactsStorageException
 import java.util.*
 import java.util.logging.Level
 
