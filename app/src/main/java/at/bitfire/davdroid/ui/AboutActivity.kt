@@ -75,9 +75,6 @@ class AboutActivity: AppCompatActivity() {
             ), ComponentInfo(
                     "OkHttp", null, "https://square.github.io/okhttp/",
                     "Square, Inc.", R.string.about_license_info_no_warranty, "apache2.html"
-            ), ComponentInfo(
-                    "Project Lombok", null, "https://projectlombok.org/",
-                    "The Project Lombok Authors", R.string.about_license_info_no_warranty, "mit.html"
             )
         )
 
