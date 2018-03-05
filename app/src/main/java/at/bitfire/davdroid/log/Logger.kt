@@ -15,6 +15,7 @@ import android.content.SharedPreferences
 import android.os.Process
 import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationManagerCompat
 import android.util.Log
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.Constants
@@ -62,7 +63,7 @@ object Logger {
         rootLogger.handlers.forEach { rootLogger.removeHandler(it) }
         rootLogger.addHandler(LogcatHandler)
 
-        val nm = NotificationUtils.createChannels(context)
+        val nm = NotificationManagerCompat.from(context)
         // log to external file according to preferences
         if (logToFile) {
             val builder = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_DEBUG)

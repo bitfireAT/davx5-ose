@@ -17,17 +17,18 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.support.v7.app.AppCompatDelegate
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.ui.NotificationUtils
 import kotlin.concurrent.thread
 
 class App: Application() {
 
     companion object {
 
-        @JvmField val FLAVOR_GOOGLE_PLAY = "gplay"
-        @JvmField val FLAVOR_ICLOUD = "icloud"
-        @JvmField val FLAVOR_MANAGED = "managed"
-        @JvmField val FLAVOR_SOLDUPE = "soldupe"
-        @JvmField val FLAVOR_STANDARD = "standard"
+        const val FLAVOR_GOOGLE_PLAY = "gplay"
+        const val FLAVOR_ICLOUD = "icloud"
+        const val FLAVOR_MANAGED = "managed"
+        const val FLAVOR_SOLDUPE = "soldupe"
+        const val FLAVOR_STANDARD = "standard"
 
         val ORGANIZATION = "organization"
         val ORGANIZATION_LOGO_URL = "logo_url"
@@ -38,16 +39,15 @@ class App: Application() {
 
         val MAX_ACCOUNTS = "max_accounts"
 
-        @JvmField val DISTRUST_SYSTEM_CERTIFICATES = "distrust_system_certs"
-        @JvmField val OVERRIDE_PROXY = "override_proxy"
-        @JvmField val OVERRIDE_PROXY_HOST = "override_proxy_host"
-        @JvmField val OVERRIDE_PROXY_PORT = "override_proxy_port"
+        const val DISTRUST_SYSTEM_CERTIFICATES = "distrust_system_certs"
+        const val OVERRIDE_PROXY = "override_proxy"
+        const val OVERRIDE_PROXY_HOST = "override_proxy_host"
+        const val OVERRIDE_PROXY_PORT = "override_proxy_port"
 
-        @JvmField val OVERRIDE_PROXY_HOST_DEFAULT = "localhost"
-        @JvmField val OVERRIDE_PROXY_PORT_DEFAULT = 8118
+        const val OVERRIDE_PROXY_HOST_DEFAULT = "localhost"
+        const val OVERRIDE_PROXY_PORT_DEFAULT = 8118
 
 
-        @JvmStatic
         fun getLauncherBitmap(context: Context): Bitmap? {
             val drawableLogo = if (android.os.Build.VERSION.SDK_INT >= 21)
                     context.getDrawable(R.mipmap.ic_launcher)
@@ -69,6 +69,8 @@ class App: Application() {
 
         if (Build.VERSION.SDK_INT <= 21)
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+
+        NotificationUtils.createChannels(this)
 
         // don't block UI for some background checks
         thread {

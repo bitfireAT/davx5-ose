@@ -17,6 +17,7 @@ import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import android.os.Binder
 import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationManagerCompat
 import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.UrlUtils
 import at.bitfire.dav4android.exception.DavException
@@ -324,7 +325,7 @@ class DavService: Service() {
                 debugIntent.putExtra(DebugInfoActivity.KEY_THROWABLE, e)
                 debugIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account)
 
-                val nm = NotificationUtils.createChannels(this)
+                val nm = NotificationManagerCompat.from(this)
                 val notify = NotificationCompat.Builder(this, NotificationUtils.CHANNEL_SYNC_ERRORS)
                         .setSmallIcon(R.drawable.ic_sync_error_notification)
                         .setContentTitle(getString(R.string.dav_service_refresh_failed))

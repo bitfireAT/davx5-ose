@@ -15,7 +15,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 
@@ -24,6 +23,7 @@ object NotificationUtils {
     // notification IDs
     const val NOTIFY_SYNC_ERROR = 10
     const val NOTIFY_OPENTASKS = 20
+    const val NOTIFY_PERMISSIONS = 21
 
     // notification channels
     const val CHANNEL_GENERAL = "general"
@@ -35,7 +35,7 @@ object NotificationUtils {
     const val CHANNEL_SYNC_STATUS = "syncStatus"
 
 
-    fun createChannels(context: Context): NotificationManagerCompat {
+    fun createChannels(context: Context) {
         @TargetApi(Build.VERSION_CODES.O)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -57,8 +57,6 @@ object NotificationUtils {
                     *syncChannels
             ))
         }
-
-        return NotificationManagerCompat.from(context)
     }
 
     fun newBuilder(context: Context, channel: String = CHANNEL_GENERAL): NotificationCompat.Builder {
