@@ -36,7 +36,7 @@ import java.net.URISyntaxException
 class AppSettingsActivity: AppCompatActivity() {
 
     companion object {
-        val EXTRA_SCROLL_TO = "scrollTo"
+        const val EXTRA_SCROLL_TO = "scrollTo"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

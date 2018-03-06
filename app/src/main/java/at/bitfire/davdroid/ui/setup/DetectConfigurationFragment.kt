@@ -8,9 +8,17 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import android.app.*
-import android.content.*
+import android.app.Dialog
+import android.app.ProgressDialog
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.DialogFragment
+import android.support.v4.app.LoaderManager
+import android.support.v4.content.AsyncTaskLoader
+import android.support.v4.content.Loader
+import android.support.v7.app.AlertDialog
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.DebugInfoActivity
@@ -21,7 +29,7 @@ import kotlin.concurrent.thread
 class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbacks<Configuration> {
 
     companion object {
-        val ARG_LOGIN_CREDENTIALS = "credentials"
+        const val ARG_LOGIN_CREDENTIALS = "credentials"
 
         fun newInstance(credentials: LoginInfo): DetectConfigurationFragment {
             val frag = DetectConfigurationFragment()
@@ -53,22 +61,22 @@ class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbac
     }
 
 
-    override fun onCreateLoader(id: Int, args: Bundle) =
-            ServerConfigurationLoader(activity, args.getParcelable(ARG_LOGIN_CREDENTIALS))
+    override fun onCreateLoader(id: Int, args: Bundle?) =
+            ServerConfigurationLoader(requireActivity(), args!!.getParcelable(ARG_LOGIN_CREDENTIALS))
 
     override fun onLoadFinished(loader: Loader<Configuration>, data: Configuration?) {
         data?.let {
             if (it.calDAV == null && it.cardDAV == null)
                 // no service found: show error message
-                fragmentManager.beginTransaction()
+                requireFragmentManager().beginTransaction()
                         .add(NothingDetectedFragment.newInstance(it.logs), null)
-                        .commitAllowingStateLoss()
+                        .commit()
             else
                 // service found: continue
-                fragmentManager.beginTransaction()
+                requireFragmentManager().beginTransaction()
                         .replace(android.R.id.content, AccountDetailsFragment.newInstance(data))
                         .addToBackStack(null)
-                        .commitAllowingStateLoss()
+                        .commit()
         }
 
         dismissAllowingStateLoss()
@@ -80,7 +88,7 @@ class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbac
     class NothingDetectedFragment: DialogFragment() {
 
         companion object {
-            val KEY_LOGS = "logs"
+            const val KEY_LOGS = "logs"
 
             fun newInstance(logs: String): NothingDetectedFragment {
                 val args = Bundle()
@@ -92,13 +100,13 @@ class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbac
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?) =
-                AlertDialog.Builder(activity)
+                AlertDialog.Builder(requireActivity())
                         .setTitle(R.string.login_configuration_detection)
                         .setIcon(R.drawable.ic_error_dark)
                         .setMessage(R.string.login_no_caldav_carddav)
                         .setNeutralButton(R.string.login_view_logs, { _, _ ->
                             val intent = Intent(activity, DebugInfoActivity::class.java)
-                            intent.putExtra(DebugInfoActivity.KEY_LOGS, arguments.getString(KEY_LOGS))
+                            intent.putExtra(DebugInfoActivity.KEY_LOGS, arguments!!.getString(KEY_LOGS))
                             startActivity(intent)
                         })
                         .setPositiveButton(android.R.string.ok, { _, _ ->
@@ -114,7 +122,7 @@ class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbac
             private val credentials: LoginInfo
     ): AsyncTaskLoader<Configuration>(context) {
 
-        var resourceFinder: DavResourceFinder? = null
+        private var resourceFinder: DavResourceFinder? = null
 
         override fun onStartLoading() = forceLoad()
 

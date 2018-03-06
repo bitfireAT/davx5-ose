@@ -9,22 +9,22 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
-import android.app.DialogFragment
-import android.app.LoaderManager
-import android.content.*
+import android.content.ContentResolver
+import android.content.Context
+import android.content.Intent
+import android.content.SyncStatusObserver
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.CalendarContract
 import android.security.KeyChain
-import android.support.v14.preference.PreferenceFragment
+import android.support.v4.app.DialogFragment
+import android.support.v4.app.LoaderManager
 import android.support.v4.app.NavUtils
+import android.support.v4.content.Loader
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.preference.EditTextPreference
-import android.support.v7.preference.ListPreference
-import android.support.v7.preference.Preference
-import android.support.v7.preference.SwitchPreferenceCompat
+import android.support.v7.preference.*
 import android.view.MenuItem
 import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.InvalidAccountException
@@ -38,7 +38,7 @@ import org.apache.commons.lang3.StringUtils
 class AccountSettingsActivity: AppCompatActivity() {
 
     companion object {
-        val EXTRA_ACCOUNT = "account"
+        const val EXTRA_ACCOUNT = "account"
     }
 
     private lateinit var account: Account
@@ -53,7 +53,7 @@ class AccountSettingsActivity: AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         if (savedInstanceState == null)
-            fragmentManager.beginTransaction()
+            supportFragmentManager.beginTransaction()
                     .replace(android.R.id.content, DialogFragment.instantiate(this, AccountSettingsFragment::class.java.name, intent.extras))
                     .commit()
     }
@@ -68,13 +68,13 @@ class AccountSettingsActivity: AppCompatActivity() {
                 false
 
 
-    class AccountSettingsFragment: PreferenceFragment(), LoaderManager.LoaderCallbacks<Pair<ISettings, AccountSettings>?> {
+    class AccountSettingsFragment: PreferenceFragmentCompat(), LoaderManager.LoaderCallbacks<Pair<ISettings, AccountSettings>> {
         lateinit var account: Account
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
 
-            account = arguments.getParcelable(EXTRA_ACCOUNT)
+            account = arguments!!.getParcelable(EXTRA_ACCOUNT)
             loaderManager.initLoader(0, arguments, this)
         }
 
@@ -82,10 +82,10 @@ class AccountSettingsActivity: AppCompatActivity() {
             addPreferencesFromResource(R.xml.settings_account)
         }
 
-        override fun onCreateLoader(id: Int, args: Bundle) =
-                AccountSettingsLoader(activity, args.getParcelable(EXTRA_ACCOUNT))
+        override fun onCreateLoader(id: Int, args: Bundle?) =
+                AccountSettingsLoader(requireActivity(), args!!.getParcelable(EXTRA_ACCOUNT))
 
-        override fun onLoadFinished(loader: Loader<Pair<ISettings, AccountSettings>?>, result: Pair<ISettings, AccountSettings>?) {
+        override fun onLoadFinished(loader: Loader<Pair<ISettings, AccountSettings>>, result: Pair<ISettings, AccountSettings>?) {
             val (settings, accountSettings) = result ?: return
 
             // preference group: authentication
@@ -222,7 +222,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                     else {
                         it.isEnabled = true
                         it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, groupMethod ->
-                            AlertDialog.Builder(activity)
+                            AlertDialog.Builder(requireActivity())
                                     .setIcon(R.drawable.ic_error_dark)
                                     .setTitle(R.string.settings_contact_group_method_change)
                                     .setMessage(R.string.settings_contact_group_method_change_reload_contacts)
@@ -258,11 +258,10 @@ class AccountSettingsActivity: AppCompatActivity() {
                         it.setSummary(R.string.settings_sync_time_range_past_none)
                     }
                     it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                        var days: Int
-                        try {
-                            days = (newValue as String).toInt()
-                        } catch(ignored: NumberFormatException) {
-                            days = -1
+                        val days = try {
+                            (newValue as String).toInt()
+                        } catch(e: NumberFormatException) {
+                            -1
                         }
                         accountSettings.setTimeRangePastDays(if (days < 0) null else days)
                         loaderManager.restartLoader(0, arguments, this)
@@ -296,7 +295,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                             accountSettings.setEventColors(true)
                             loaderManager.restartLoader(0, arguments, this)
                         } else
-                            AlertDialog.Builder(activity)
+                            AlertDialog.Builder(requireActivity())
                                     .setIcon(R.drawable.ic_error_dark)
                                     .setTitle(R.string.settings_event_colors)
                                     .setMessage(R.string.settings_event_colors_off_confirm)
@@ -313,7 +312,7 @@ class AccountSettingsActivity: AppCompatActivity() {
             }
         }
 
-        override fun onLoaderReset(loader: Loader<Pair<ISettings, AccountSettings>?>) {
+        override fun onLoaderReset(loader: Loader<Pair<ISettings, AccountSettings>>) {
         }
 
     }
@@ -330,7 +329,7 @@ class AccountSettingsActivity: AppCompatActivity() {
             super.onStartLoading()
 
             if (listenerHandle == null)
-                listenerHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this@AccountSettingsLoader)
+                listenerHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this)
         }
 
         override fun onReset() {

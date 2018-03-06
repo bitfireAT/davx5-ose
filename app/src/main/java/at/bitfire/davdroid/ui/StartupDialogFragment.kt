@@ -11,18 +11,18 @@ package at.bitfire.davdroid.ui
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Dialog
-import android.app.DialogFragment
-import android.app.LoaderManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.Loader
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
+import android.support.v4.app.DialogFragment
+import android.support.v4.app.LoaderManager
+import android.support.v4.content.Loader
 import android.support.v7.app.AlertDialog
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
@@ -32,7 +32,7 @@ import at.bitfire.davdroid.settings.ISettings
 import java.util.*
 import java.util.logging.Level
 
-class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISettings?> {
+class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISettings> {
 
     enum class Mode {
         BATTERY_OPTIMIZATIONS,
@@ -43,13 +43,13 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
 
     companion object {
 
-        private val SETTING_NEXT_DONATION_POPUP = "time_nextDonationPopup"
+        private const val SETTING_NEXT_DONATION_POPUP = "time_nextDonationPopup"
 
-        @JvmField val HINT_BATTERY_OPTIMIZATIONS = "hint_BatteryOptimizations"
-        @JvmField val HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED = "hint_GooglePlayAccountsRemoved"
-        @JvmField val HINT_OPENTASKS_NOT_INSTALLED = "hint_OpenTasksNotInstalled"
+        const val HINT_BATTERY_OPTIMIZATIONS = "hint_BatteryOptimizations"
+        const val HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED = "hint_GooglePlayAccountsRemoved"
+        const val HINT_OPENTASKS_NOT_INSTALLED = "hint_OpenTasksNotInstalled"
 
-        val ARGS_MODE = "mode"
+        const val ARGS_MODE = "mode"
 
         fun getStartupDialogs(context: Context, settings: ISettings): List<StartupDialogFragment> {
             val dialogs = LinkedList<StartupDialogFragment>()
@@ -97,14 +97,14 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
         loaderManager.initLoader(0, null, this)
     }
 
-    override fun onCreateLoader(code: Int, args: Bundle?): Loader<ISettings?> =
-            SettingsLoader(activity)
+    override fun onCreateLoader(code: Int, args: Bundle?) =
+            SettingsLoader(requireActivity())
 
-    override fun onLoadFinished(loader: Loader<ISettings?>?, result: ISettings?) {
+    override fun onLoadFinished(loader: Loader<ISettings>, result: ISettings?) {
         settings = result
     }
 
-    override fun onLoaderReset(loader: Loader<ISettings?>?) {
+    override fun onLoaderReset(loader: Loader<ISettings>) {
         settings = null
     }
 
@@ -113,7 +113,8 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         isCancelable = false
 
-        val mode = Mode.valueOf(arguments.getString(ARGS_MODE))
+        val activity = requireActivity()
+        val mode = Mode.valueOf(arguments!!.getString(ARGS_MODE))
         return when (mode) {
             Mode.BATTERY_OPTIMIZATIONS ->
                 AlertDialog.Builder(activity)

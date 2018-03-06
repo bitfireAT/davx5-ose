@@ -31,7 +31,7 @@ import java.util.*
 class CreateAddressBookActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<CreateAddressBookActivity.AccountInfo> {
 
     companion object {
-        val EXTRA_ACCOUNT = "account"
+        const val EXTRA_ACCOUNT = "account"
     }
 
     private lateinit var account: Account

@@ -11,8 +11,9 @@ package at.bitfire.davdroid.ui
 import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.app.LoaderManager
-import android.content.*
+import android.content.ContentResolver
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.os.Build
@@ -20,8 +21,11 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.provider.CalendarContract
 import android.provider.ContactsContract
+import android.support.v4.app.LoaderManager
+import android.support.v4.content.AsyncTaskLoader
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
+import android.support.v4.content.Loader
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
@@ -47,13 +51,13 @@ import java.util.logging.Level
 class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<String> {
 
     companion object {
-        @JvmField val KEY_THROWABLE = "throwable"
-        @JvmField val KEY_LOGS = "logs"
-        @JvmField val KEY_ACCOUNT = "account"
-        @JvmField val KEY_AUTHORITY = "authority"
-        @JvmField val KEY_PHASE = "phase"
-        @JvmField val KEY_LOCAL_RESOURCE = "localResource"
-        @JvmField val KEY_REMOTE_RESOURCE = "remoteResource"
+        const val KEY_THROWABLE = "throwable"
+        const val KEY_LOGS = "logs"
+        const val KEY_ACCOUNT = "account"
+        const val KEY_AUTHORITY = "authority"
+        const val KEY_PHASE = "phase"
+        const val KEY_LOCAL_RESOURCE = "localResource"
+        const val KEY_REMOTE_RESOURCE = "remoteResource"
     }
 
     private var report: String? = null
@@ -62,7 +66,7 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_debug_info)
 
-        loaderManager.initLoader(0, intent.extras, this)
+        supportLoaderManager.initLoader(0, intent.extras, this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

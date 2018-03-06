@@ -35,7 +35,7 @@ import java.util.*
 class CreateCalendarActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<CreateCalendarActivity.AccountInfo> {
 
     companion object {
-        val EXTRA_ACCOUNT = "account"
+        const val EXTRA_ACCOUNT = "account"
     }
 
     private lateinit var account: Account

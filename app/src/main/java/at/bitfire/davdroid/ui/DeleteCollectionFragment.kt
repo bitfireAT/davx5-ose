@@ -31,8 +31,8 @@ import okhttp3.HttpUrl
 class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<Exception> {
 
     companion object {
-        val ARG_ACCOUNT = "account"
-        val ARG_COLLECTION_INFO = "collectionInfo"
+        const val ARG_ACCOUNT = "account"
+        const val ARG_COLLECTION_INFO = "collectionInfo"
     }
 
     private lateinit var account: Account
@@ -65,9 +65,9 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
         dismissAllowingStateLoss()
 
         if (exception != null)
-            fragmentManager!!.beginTransaction()
+            requireFragmentManager().beginTransaction()
                     .add(ExceptionInfoFragment.newInstance(exception, account), null)
-                    .commitAllowingStateLoss()
+                    .commit()
         else
             (activity as? AccountActivity)?.reload()
     }

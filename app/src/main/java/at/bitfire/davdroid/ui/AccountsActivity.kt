@@ -10,35 +10,32 @@ package at.bitfire.davdroid.ui
 
 import android.accounts.AccountManager
 import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.content.SyncStatusObserver
-import android.net.Uri
-import android.app.LoaderManager
-import android.content.*
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
+import android.support.v4.app.LoaderManager
+import android.support.v4.content.Loader
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import at.bitfire.davdroid.App
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import kotlinx.android.synthetic.main.accounts_content.*
 import kotlinx.android.synthetic.main.activity_accounts.*
-import java.util.*
 
 class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<AccountsActivity.Settings>, SyncStatusObserver {
 
     companion object {
-        private val EXTRA_CREATE_STARTUP_FRAGMENTS = "createStartupFragments"
+        val accountsDrawerHandler = DefaultAccountsDrawerHandler()
 
-        private val BETA_FEEDBACK_URI = "mailto:support@davdroid.com?subject=${BuildConfig.APPLICATION_ID} beta feedback ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+        private const val fragTagStartup = "startup"
     }
 
     private var syncStatusSnackbar: Snackbar? = null
@@ -52,7 +49,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener({
-            startActivity(Intent(this@AccountsActivity, LoginActivity::class.java))
+            startActivity(Intent(this, LoginActivity::class.java))
         })
 
         val toggle = ActionBarDrawerToggle(
@@ -62,8 +59,6 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
         nav_view.setNavigationItemSelectedListener(this)
         nav_view.itemIconTintList = null
-        if (BuildConfig.VERSION_NAME.contains("-beta") || BuildConfig.VERSION_NAME.contains("-rc"))
-            nav_view.menu.findItem(R.id.nav_beta_feedback).isVisible = true
 
         /* When the DAVdroid main activity is started, start a Settings service that stays in memory
         for better performance. The service stops itself when memory is trimmed. */
@@ -71,24 +66,30 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         startService(settingsIntent)
 
         val args = Bundle(1)
-        args.putBoolean(EXTRA_CREATE_STARTUP_FRAGMENTS, savedInstanceState == null && packageName != callingPackage)
-        loaderManager.initLoader(0, args, this)
+        supportLoaderManager.initLoader(0, args, this)
     }
 
-    override fun onCreateLoader(code: Int, args: Bundle) =
-            SettingsLoader(this, args.getBoolean(EXTRA_CREATE_STARTUP_FRAGMENTS))
+    override fun onCreateLoader(code: Int, args: Bundle?) =
+            SettingsLoader(this)
 
-    override fun onLoadFinished(loader: Loader<Settings>?, result: Settings?) {
+    override fun onLoadFinished(loader: Loader<Settings>, result: Settings?) {
         val result = result ?: return
 
-        if (result.createStartupFragments) {
-            val ft = fragmentManager.beginTransaction()
-            StartupDialogFragment.getStartupDialogs(this, result.settings).forEach { ft.add(it, null) }
-            ft.commitAllowingStateLoss()
+        if (supportFragmentManager.findFragmentByTag(fragTagStartup) == null) {
+            val ft = supportFragmentManager.beginTransaction()
+            StartupDialogFragment.getStartupDialogs(this, result.settings).forEach { ft.add(it, fragTagStartup) }
+            ft.commit()
+        }
+
+        nav_view?.menu?.let {
+            accountsDrawerHandler.onSettingsChanged(result.settings, it)
         }
     }
 
-    override fun onLoaderReset(loader: Loader<Settings>?) {
+    override fun onLoaderReset(loader: Loader<Settings>) {
+        nav_view?.menu?.let {
+            accountsDrawerHandler.onSettingsChanged(null, it)
+        }
     }
 
     override fun onResume() {
@@ -133,50 +134,18 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        var processed = true
-        when (item.itemId) {
-            R.id.nav_about ->
-                startActivity(Intent(this, AboutActivity::class.java))
-            R.id.nav_app_settings ->
-                startActivity(Intent(this, AppSettingsActivity::class.java))
-            R.id.nav_beta_feedback -> {
-                val intent = Intent(Intent.ACTION_SENDTO, Uri.parse(BETA_FEEDBACK_URI))
-                if (packageManager.resolveActivity(intent, 0) != null)
-                    startActivity(intent)
-            }
-            R.id.nav_twitter ->
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/davdroidapp")))
-            R.id.nav_website ->
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url))))
-            R.id.nav_manual ->
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url))
-                        .buildUpon().appendEncodedPath("manual/").build()))
-            R.id.nav_faq ->
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url))
-                        .buildUpon().appendEncodedPath("faq/").build()))
-            R.id.nav_forums ->
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url))
-                        .buildUpon().appendEncodedPath("forums/").build()))
-            R.id.nav_donate ->
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url))
-                        .buildUpon().appendEncodedPath("donate/").build()))
-            else ->
-                processed = false
-        }
-
+        val processed = accountsDrawerHandler.onNavigationItemSelected(this, item)
         drawer_layout.closeDrawer(GravityCompat.START)
         return processed
     }
 
 
     class Settings(
-            val settings: ISettings,
-            val createStartupFragments: Boolean
+            val settings: ISettings
     )
 
     class SettingsLoader(
-            context: Context,
-            private val createStartupFragments: Boolean
+            context: Context
     ): at.bitfire.davdroid.ui.SettingsLoader<Settings>(context) {
 
         override fun loadInBackground(): Settings? {
@@ -185,8 +154,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
                 val accounts = accountManager.getAccountsByType(context.getString(R.string.account_type))
 
                 return Settings(
-                        it,
-                        createStartupFragments
+                        it
                 )
             }
             return null

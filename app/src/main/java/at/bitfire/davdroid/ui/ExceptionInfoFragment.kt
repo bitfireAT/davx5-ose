@@ -21,8 +21,8 @@ import java.io.IOException
 class ExceptionInfoFragment: DialogFragment() {
 
     companion object {
-        val ARG_ACCOUNT = "account"
-        val ARG_EXCEPTION = "exception"
+        const val ARG_ACCOUNT = "account"
+        const val ARG_EXCEPTION = "exception"
 
         fun newInstance(exception: Exception, account: Account?): ExceptionInfoFragment {
             val frag = ExceptionInfoFragment()
@@ -35,8 +35,9 @@ class ExceptionInfoFragment: DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val exception = arguments!!.getSerializable(ARG_EXCEPTION) as Exception
-        val account: Account? = arguments!!.getParcelable(ARG_ACCOUNT)
+        val args = requireNotNull(arguments)
+        val exception = args.getSerializable(ARG_EXCEPTION) as Exception
+        val account: Account? = args.getParcelable(ARG_ACCOUNT)
 
         val title = when (exception) {
             is HttpException -> R.string.exception_httpexception
@@ -44,7 +45,7 @@ class ExceptionInfoFragment: DialogFragment() {
             else -> R.string.exception
         }
 
-        val dialog = AlertDialog.Builder(activity!!)
+        val dialog = AlertDialog.Builder(requireActivity())
                 .setIcon(R.drawable.ic_error_dark)
                 .setTitle(title)
                 .setMessage(exception::class.java.name + "\n" + exception.localizedMessage)
