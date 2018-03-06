@@ -37,8 +37,8 @@ class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
 
     companion object {
 
-        val ARG_ACCOUNT = "account"
-        val ARG_COLLECTION_INFO = "collectionInfo"
+        const val ARG_ACCOUNT = "account"
+        const val ARG_COLLECTION_INFO = "collectionInfo"
 
         fun newInstance(account: Account, info: CollectionInfo): CreateCollectionFragment {
             val frag = CreateCollectionFragment()
@@ -57,8 +57,9 @@ class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        account = arguments!!.getParcelable(ARG_ACCOUNT)
-        info = arguments!!.getSerializable(ARG_COLLECTION_INFO) as CollectionInfo
+        val args = requireNotNull(arguments)
+        account = args.getParcelable(ARG_ACCOUNT)
+        info = args.getSerializable(ARG_COLLECTION_INFO) as CollectionInfo
 
         loaderManager.initLoader(0, null, this)
     }
@@ -74,16 +75,16 @@ class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
     }
 
 
-    override fun onCreateLoader(id: Int, args: Bundle?) = CreateCollectionLoader(activity!!, account, info)
+    override fun onCreateLoader(id: Int, args: Bundle?) = CreateCollectionLoader(requireActivity(), account, info)
 
     override fun onLoadFinished(loader: Loader<Exception>, exception: Exception?) {
         dismissAllowingStateLoss()
 
         activity?.let { parent ->
             if (exception != null)
-                fragmentManager!!.beginTransaction()
+                requireFragmentManager().beginTransaction()
                         .add(ExceptionInfoFragment.newInstance(exception, account), null)
-                        .commitAllowingStateLoss()
+                        .commit()
             else
                 parent.finish()
         }

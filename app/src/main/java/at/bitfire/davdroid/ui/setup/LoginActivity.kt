@@ -28,21 +28,18 @@ class LoginActivity: AppCompatActivity() {
          * When set, "login by URL" will be activated by default, and the URL field will be set to this value.
          * When not set, "login by email" will be activated by default.
          */
-        @JvmField
-        val EXTRA_URL = "url"
+        const val EXTRA_URL = "url"
 
         /**
          * When set, and {@link #EXTRA_PASSWORD} is set too, the user name field will be set to this value.
          * When set, and {@link #EXTRA_URL} is not set, the email address field will be set to this value.
          */
-        @JvmField
-        val EXTRA_USERNAME = "username"
+        const val EXTRA_USERNAME = "username"
 
         /**
          * When set, the password field will be set to this value.
          */
-        @JvmField
-        val EXTRA_PASSWORD = "password"
+        const val EXTRA_PASSWORD = "password"
     }
 
     private val loginFragmentLoader = ServiceLoader.load(ILoginCredentialsFragment::class.java)!!
@@ -53,7 +50,7 @@ class LoginActivity: AppCompatActivity() {
 
         if (savedInstanceState == null)
             // first call, add first login fragment
-            fragmentManager.beginTransaction()
+            supportFragmentManager.beginTransaction()
                     .replace(android.R.id.content, loginFragmentLoader.first().getFragment())
                     .commit()
     }

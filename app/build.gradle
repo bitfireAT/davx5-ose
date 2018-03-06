@@ -139,10 +139,10 @@ dependencies {
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    compile 'com.android.support:appcompat-v7:27.0.2'
-    compile 'com.android.support:cardview-v7:27.0.2'
-    compile 'com.android.support:design:27.0.2'
-    compile 'com.android.support:preference-v14:27.0.2'
+    compile 'com.android.support:appcompat-v7:27.1.0'
+    compile 'com.android.support:cardview-v7:27.1.0'
+    compile 'com.android.support:design:27.1.0'
+    compile 'com.android.support:preference-v14:27.1.0'
     compile 'com.android.support.test.espresso:espresso-idling-resource:3.0.1'
 
     compile 'com.github.yukuku:ambilwarna:2.0.1'

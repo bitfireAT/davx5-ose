@@ -8,7 +8,7 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import android.app.Fragment
+import android.support.v4.app.Fragment
 
 interface ILoginCredentialsFragment {
 

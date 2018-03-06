@@ -104,8 +104,8 @@ class AboutActivity: AppCompatActivity() {
     class ComponentFragment: Fragment(), LoaderManager.LoaderCallbacks<Spanned> {
 
         companion object {
-            val KEY_POSITION = "position"
-            val KEY_FILE_NAME = "fileName"
+            const val KEY_POSITION = "position"
+            const val KEY_FILE_NAME = "fileName"
 
             fun instantiate(position: Int): ComponentFragment {
                 val frag = ComponentFragment()
@@ -165,8 +165,8 @@ class AboutActivity: AppCompatActivity() {
             return v
         }
 
-        override fun onCreateLoader(id: Int, args: Bundle) =
-                LicenseLoader(activity!!, args.getString(KEY_FILE_NAME))
+        override fun onCreateLoader(id: Int, args: Bundle?) =
+                LicenseLoader(activity!!, args!!.getString(KEY_FILE_NAME))
 
         override fun onLoadFinished(loader: Loader<Spanned>, license: Spanned?) {
             view?.let { v ->

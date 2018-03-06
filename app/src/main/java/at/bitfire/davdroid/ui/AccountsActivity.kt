@@ -9,11 +9,15 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.AccountManager
-import android.app.LoaderManager
-import android.content.*
+import android.content.ContentResolver
+import android.content.Context
+import android.content.Intent
+import android.content.SyncStatusObserver
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
+import android.support.v4.app.LoaderManager
+import android.support.v4.content.Loader
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
@@ -33,7 +37,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         private val serviceLoader = ServiceLoader.load(IAccountsDrawerHandler::class.java)!!
         val accountsDrawerHandler = serviceLoader.iterator().next()!!
 
-        private val EXTRA_CREATE_STARTUP_FRAGMENTS = "createStartupFragments"
+        private const val EXTRA_CREATE_STARTUP_FRAGMENTS = "createStartupFragments"
     }
 
     private var syncStatusSnackbar: Snackbar? = null
@@ -47,7 +51,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener({
-            startActivity(Intent(this@AccountsActivity, LoginActivity::class.java))
+            startActivity(Intent(this, LoginActivity::class.java))
         })
 
         val toggle = ActionBarDrawerToggle(
@@ -65,19 +69,19 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
         val args = Bundle(1)
         args.putBoolean(EXTRA_CREATE_STARTUP_FRAGMENTS, savedInstanceState == null && packageName != callingPackage)
-        loaderManager.initLoader(0, args, this)
+        supportLoaderManager.initLoader(0, args, this)
     }
 
-    override fun onCreateLoader(code: Int, args: Bundle) =
-            SettingsLoader(this, args.getBoolean(EXTRA_CREATE_STARTUP_FRAGMENTS))
+    override fun onCreateLoader(code: Int, args: Bundle?) =
+            SettingsLoader(this, args!!.getBoolean(EXTRA_CREATE_STARTUP_FRAGMENTS))
 
-    override fun onLoadFinished(loader: Loader<Settings>?, result: Settings?) {
+    override fun onLoadFinished(loader: Loader<Settings>, result: Settings?) {
         val result = result ?: return
 
         if (result.createStartupFragments) {
-            val ft = fragmentManager.beginTransaction()
+            val ft = supportFragmentManager.beginTransaction()
             StartupDialogFragment.getStartupDialogs(this, result.settings).forEach { ft.add(it, null) }
-            ft.commitAllowingStateLoss()
+            ft.commit()
         }
 
         fab.visibility = if (result.allowAddAccount) View.VISIBLE else View.GONE
@@ -87,7 +91,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         }
     }
 
-    override fun onLoaderReset(loader: Loader<Settings>?) {
+    override fun onLoaderReset(loader: Loader<Settings>) {
         nav_view?.menu?.let {
             accountsDrawerHandler.onSettingsChanged(null, it)
         }

@@ -14,8 +14,8 @@ import at.bitfire.davdroid.model.Credentials
 import java.net.URI
 
 data class LoginInfo(
-        @JvmField val uri: URI,
-        @JvmField val credentials: Credentials
+        val uri: URI,
+        val credentials: Credentials
 ): Parcelable {
 
     constructor(uri: URI, userName: String? = null, password: String? = null, certificateAlias: String? = null):

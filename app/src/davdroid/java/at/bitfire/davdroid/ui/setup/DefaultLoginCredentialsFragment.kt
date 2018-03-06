@@ -8,18 +8,16 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import android.app.Fragment
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.security.KeyChain
-import android.security.KeyChainAliasCallback
+import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
-import android.widget.Toast
 import at.bitfire.dav4android.Constants
 import at.bitfire.davdroid.R
 import kotlinx.android.synthetic.standard.login_credentials_fragment.view.*
@@ -55,12 +53,12 @@ class DefaultLoginCredentialsFragment: Fragment(), CompoundButton.OnCheckedChang
         }
 
         v.urlcert_select_cert.setOnClickListener {
-            KeyChain.choosePrivateKeyAlias(activity, KeyChainAliasCallback { alias ->
+            KeyChain.choosePrivateKeyAlias(activity, { alias ->
                 Handler(Looper.getMainLooper()).post({
                     v.urlcert_cert_alias.text = alias
                     v.urlcert_cert_alias.error = null
                 })
-            }, null, null, null, -1, view.urlcert_cert_alias.text.toString())
+            }, null, null, null, -1, view!!.urlcert_cert_alias.text.toString())
         }
 
         v.login.setOnClickListener {
@@ -80,7 +78,7 @@ class DefaultLoginCredentialsFragment: Fragment(), CompoundButton.OnCheckedChang
     }
 
     override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
-        onCheckedChanged(view)
+        onCheckedChanged(view!!)
     }
 
     private fun onCheckedChanged(v: View) {
@@ -90,6 +88,7 @@ class DefaultLoginCredentialsFragment: Fragment(), CompoundButton.OnCheckedChang
     }
 
     private fun validateLoginData(): LoginInfo? {
+        val view = requireNotNull(view)
         when {
             // Login with email address
             view.login_type_email.isChecked -> {
