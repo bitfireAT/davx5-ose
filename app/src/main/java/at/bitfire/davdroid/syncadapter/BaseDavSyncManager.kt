@@ -155,7 +155,7 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource, out CollectionTyp
 
     override fun syncRequired(): Boolean {
         val localState = localCollection.lastSyncState
-        val remoteState = syncState(true)
+        val remoteState = syncState(false)
         Logger.log.info("Local sync state = $localState, remote sync state = $remoteState")
         return when {
             remoteState?.type == SyncState.Type.SYNC_TOKEN -> {
