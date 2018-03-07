@@ -25,6 +25,7 @@ import android.support.v4.content.Loader
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import at.bitfire.davdroid.*
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.ServiceDB.*

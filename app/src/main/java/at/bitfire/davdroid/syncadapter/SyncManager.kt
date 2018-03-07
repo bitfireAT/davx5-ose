@@ -184,8 +184,35 @@ abstract class SyncManager<out ResourceType: LocalResource, out CollectionType: 
     protected abstract fun processLocallyDeleted(): Boolean
     protected abstract fun uploadDirty(): Boolean
 
+    /**
+     * Determines whether a sync is required because there were changes on the server.
+     * For instance, this method can check the collection's CTag/sync-token.
+     *
+     * When local changes have been uploaded ([processLocallyDeleted] and/or
+     * [uploadDirty] were true), a sync is always required and this method
+     * will not be evaluated.
+     *
+     * @return whether data has been changed on the server = whether running the
+     *   sync algorithm is required
+     */
     protected abstract fun syncRequired(): Boolean
+
+    /**
+     * Determines which sync algorithm to use.
+     * @return
+     *   - [SyncAlgorithm.PROPFIND_REPORT]: list all resources (with plain WebDAV
+     *   PROPFIND or specific REPORT requests), then compare and synchronize
+     *   - [SyncAlgorithm.COLLECTION_SYNC]: use incremental collection synchronization (RFC 6578)
+     */
     protected abstract fun syncAlgorithm(): SyncAlgorithm
+
+    /**
+     * Returns the current sync state of the remote resource. Keep in mind that
+     * WebDAV operations are atomic and the sync state might already be obsolete when used.
+     *
+     * @param forceRefresh false: result may be taken from a previous request, for instance
+     * from the [prepare] phase; true: sends a request to determine the current sync state
+     */
     protected abstract fun syncState(forceRefresh: Boolean): SyncState?
 
     /**

@@ -19,7 +19,7 @@
 -dontwarn ezvcard.io.json.**            # JSON serializer (for jCards) not used
 -dontwarn freemarker.**                 # freemarker templating library (for creating hCards) not used
 -dontwarn org.jsoup.**                  # jsoup library (for hCard parsing) not used
--keep class ezvcard.property.** { *; }  # keep all VCard properties (created at runtime)
+-keep class ezvcard.property.** { *; }  # keep all vCard properties (created at runtime)
 
 # ical4j: ignore unused dynamic libraries
 -dontwarn aQute.**
@@ -35,6 +35,7 @@
 -dontwarn okio.**
 -dontwarn javax.annotation.Nullable
 -dontwarn javax.annotation.ParametersAreNonnullByDefault
+-dontwarn org.conscrypt.**
 
 # dnsjava
 -dontwarn sun.net.spi.nameservice.**   # not available on Android

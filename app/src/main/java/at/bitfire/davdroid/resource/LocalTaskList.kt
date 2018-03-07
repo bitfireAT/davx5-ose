@@ -138,13 +138,15 @@ class LocalTaskList private constructor(
     override fun markNotDirty(flags: Int): Int {
         val values = ContentValues(1)
         values.put(LocalTask.COLUMN_FLAGS, flags)
-        return provider.client.update(tasksSyncUri(), values, "${Tasks._DIRTY}=0", null)
+        return provider.client.update(tasksSyncUri(), values,
+                "${Tasks.LIST_ID}=? AND ${Tasks._DIRTY}=0",
+                arrayOf(id.toString()))
     }
 
     override fun removeNotDirtyMarked(flags: Int) =
             provider.client.delete(tasksSyncUri(),
-                    "${Tasks._DIRTY}=0 AND ${LocalTask.COLUMN_FLAGS}=?",
-                    arrayOf(flags.toString()))
+                    "${Tasks.LIST_ID}=? AND ${Tasks._DIRTY}=0 AND ${LocalTask.COLUMN_FLAGS}=?",
+                    arrayOf(id.toString(), flags.toString()))
 
 
     object Factory: AndroidTaskListFactory<LocalTaskList> {

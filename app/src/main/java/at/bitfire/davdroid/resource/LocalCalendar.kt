@@ -135,13 +135,15 @@ class LocalCalendar private constructor(
     override fun markNotDirty(flags: Int): Int {
         val values = ContentValues(1)
         values.put(LocalEvent.COLUMN_FLAGS, flags)
-        return provider.update(eventsSyncURI(), values, "${Events.DIRTY}=0 AND ${Events.ORIGINAL_ID} IS NULL", null)
+        return provider.update(eventsSyncURI(), values,
+                "${Events.CALENDAR_ID}=? AND ${Events.DIRTY}=0 AND ${Events.ORIGINAL_ID} IS NULL",
+                arrayOf(id.toString()))
     }
 
     override fun removeNotDirtyMarked(flags: Int) =
             provider.delete(eventsSyncURI(),
-                    "${Events.DIRTY}=0 AND ${Events.ORIGINAL_ID} IS NULL AND ${LocalEvent.COLUMN_FLAGS}=?",
-                    arrayOf(flags.toString()))
+                    "${Events.CALENDAR_ID}=? AND ${Events.DIRTY}=0 AND ${Events.ORIGINAL_ID} IS NULL AND ${LocalEvent.COLUMN_FLAGS}=?",
+                    arrayOf(id.toString(), flags.toString()))
 
 
     fun processDirtyExceptions() {
@@ -150,7 +152,8 @@ class LocalCalendar private constructor(
         provider.query(
                 syncAdapterURI(Events.CONTENT_URI),
                 arrayOf(Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE),
-                "${Events.DELETED}!=0 AND ${Events.ORIGINAL_ID} IS NOT NULL", null, null)?.use { cursor ->
+                "${Events.CALENDAR_ID}=? AND ${Events.DELETED}!=0 AND ${Events.ORIGINAL_ID} IS NOT NULL",
+                arrayOf(id.toString()), null)?.use { cursor ->
             while (cursor.moveToNext()) {
                 Logger.log.fine("Found deleted exception, removing; then re-scheduling original event")
                 val id = cursor.getLong(0)             // can't be null (by definition)
@@ -186,7 +189,8 @@ class LocalCalendar private constructor(
         provider.query(
                 syncAdapterURI(Events.CONTENT_URI),
                 arrayOf(Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE),
-                "${Events.DIRTY}!=0 AND ${Events.ORIGINAL_ID} IS NOT NULL", null, null)?.use { cursor ->
+                "${Events.CALENDAR_ID}=? AND ${Events.DIRTY}!=0 AND ${Events.ORIGINAL_ID} IS NOT NULL",
+                arrayOf(id.toString()), null)?.use { cursor ->
             while (cursor.moveToNext()) {
                 Logger.log.fine("Found dirty exception, increasing SEQUENCE to re-schedule")
                 val id = cursor.getLong(0)             // can't be null (by definition)
