@@ -37,7 +37,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         private val serviceLoader = ServiceLoader.load(IAccountsDrawerHandler::class.java)!!
         val accountsDrawerHandler = serviceLoader.iterator().next()!!
 
-        private const val EXTRA_CREATE_STARTUP_FRAGMENTS = "createStartupFragments"
+        private const val fragTagStartup = "startup"
     }
 
     private var syncStatusSnackbar: Snackbar? = null
@@ -68,19 +68,18 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         startService(settingsIntent)
 
         val args = Bundle(1)
-        args.putBoolean(EXTRA_CREATE_STARTUP_FRAGMENTS, savedInstanceState == null && packageName != callingPackage)
         supportLoaderManager.initLoader(0, args, this)
     }
 
     override fun onCreateLoader(code: Int, args: Bundle?) =
-            SettingsLoader(this, args!!.getBoolean(EXTRA_CREATE_STARTUP_FRAGMENTS))
+            SettingsLoader(this)
 
     override fun onLoadFinished(loader: Loader<Settings>, result: Settings?) {
         val result = result ?: return
 
-        if (result.createStartupFragments) {
+        if (supportFragmentManager.findFragmentByTag(fragTagStartup) == null) {
             val ft = supportFragmentManager.beginTransaction()
-            StartupDialogFragment.getStartupDialogs(this, result.settings).forEach { ft.add(it, null) }
+            StartupDialogFragment.getStartupDialogs(this, result.settings).forEach { ft.add(it, fragTagStartup) }
             ft.commit()
         }
 
@@ -147,13 +146,11 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
     class Settings(
             val settings: ISettings,
-            val createStartupFragments: Boolean,
             val allowAddAccount: Boolean
     )
 
     class SettingsLoader(
-            context: Context,
-            private val createStartupFragments: Boolean
+            context: Context
     ): at.bitfire.davdroid.ui.SettingsLoader<Settings>(context) {
 
         override fun loadInBackground(): Settings? {
@@ -163,7 +160,6 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
                 return Settings(
                         it,
-                        createStartupFragments,
                         accounts.size < it.getInt(App.MAX_ACCOUNTS, Int.MAX_VALUE)
                 )
             }
