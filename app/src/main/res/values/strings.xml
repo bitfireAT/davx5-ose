@@ -129,7 +129,6 @@
     <string name="account_create_new_calendar">Create new calendar</string>
     <string name="account_no_webcal_handler_found">No Webcal-capable app found</string>
     <string name="account_install_icsdroid">Install ICSdroid</string>
-    <string name="account_read_only_address_book_selected">Read-only address book – local changes will be discarded!</string>
 
     <!-- AddAccountActivity -->
     <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>

@@ -207,9 +207,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
         info.selected = nowChecked
         adapter.notifyDataSetChanged()
-
-        if (nowChecked && info.type == CollectionInfo.Type.ADDRESS_BOOK && info.readOnly)
-            Snackbar.make(parent, R.string.account_read_only_address_book_selected, Snackbar.LENGTH_LONG).show()
     }
 
     private val onActionOverflowListener = { anchor: View, info: CollectionInfo ->
