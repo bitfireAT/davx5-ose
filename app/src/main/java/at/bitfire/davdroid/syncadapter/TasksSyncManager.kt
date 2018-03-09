@@ -164,8 +164,9 @@ class TasksSyncManager(
                     syncResult.stats.numUpdates++
                 } else {
                     Logger.log.info("Adding $fileName to local task list")
-                    val newTask = LocalTask(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
-                    newTask.add()
+                    useLocal(LocalTask(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT), {
+                        it.add()
+                    })
                     syncResult.stats.numInserts++
                 }
             })

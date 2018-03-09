@@ -61,7 +61,23 @@ abstract class SyncManager<out ResourceType: LocalResource, out CollectionType: 
         val localCollection: CollectionType
 ): AutoCloseable {
 
+    companion object {
+
+        fun cancelNotifications(manager: NotificationManagerCompat, authority: String, account: Account) =
+                manager.cancel(notificationTag(authority, account), NotificationUtils.NOTIFY_SYNC_ERROR)
+
+        private fun notificationTag(authority: String, account: Account) =
+                "$authority-${account.name}".hashCode().toString()
+
+    }
+
+    private val mainAccount = if (localCollection is LocalAddressBook)
+        localCollection.mainAccount
+    else
+        account
+
     protected val notificationManager = NotificationManagerCompat.from(context)
+    protected val notificationTag = Companion.notificationTag(authority, mainAccount)
 
     /** Local resource we're currently operating on. Used for error notifications. **/
     protected val currentLocalResource = LinkedList<LocalResource>()
@@ -71,7 +87,7 @@ abstract class SyncManager<out ResourceType: LocalResource, out CollectionType: 
 
     fun performSync() {
         // dismiss previous error notifications
-        notificationManager.cancel(localCollection.uniqueId, NotificationUtils.NOTIFY_SYNC_ERROR)
+        notificationManager.cancel(notificationTag, NotificationUtils.NOTIFY_SYNC_ERROR)
 
         try {
             Logger.log.info("Preparing synchronization")
@@ -326,6 +342,7 @@ abstract class SyncManager<out ResourceType: LocalResource, out CollectionType: 
         }
 
         val contentIntent: Intent
+        var viewItemAction: NotificationCompat.Action? = null
         if (e is UnauthorizedException) {
             contentIntent = Intent(context, AccountSettingsActivity::class.java)
             contentIntent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
@@ -334,34 +351,28 @@ abstract class SyncManager<out ResourceType: LocalResource, out CollectionType: 
             contentIntent.putExtra(DebugInfoActivity.KEY_THROWABLE, e)
             contentIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account)
             contentIntent.putExtra(DebugInfoActivity.KEY_AUTHORITY, authority)
-        }
 
-        // use current local/remote resource
-        var viewItemAction: NotificationCompat.Action? = null
-        currentLocalResource.firstOrNull()?.let { local ->
-            // pass local resource info to debug info
-            contentIntent.putExtra(DebugInfoActivity.KEY_LOCAL_RESOURCE, local.toString())
+            // use current local/remote resource
+            currentLocalResource.firstOrNull()?.let { local ->
+                // pass local resource info to debug info
+                contentIntent.putExtra(DebugInfoActivity.KEY_LOCAL_RESOURCE, local.toString())
 
-            // generate "view item" action
-            viewItemAction = buildViewItemAction(local)
-        }
-        currentRemoteResource.firstOrNull()?.let { remote ->
-            contentIntent.putExtra(DebugInfoActivity.KEY_REMOTE_RESOURCE, remote.location.toString())
+                // generate "view item" action
+                viewItemAction = buildViewItemAction(local)
+            }
+            currentRemoteResource.firstOrNull()?.let { remote ->
+                contentIntent.putExtra(DebugInfoActivity.KEY_REMOTE_RESOURCE, remote.location.toString())
+            }
         }
 
         // to make the PendingIntent unique
-        contentIntent.data = Uri.parse("uri://${javaClass.name}/${localCollection.uniqueId}")
-
-        val account = if (localCollection is LocalAddressBook)
-            localCollection.mainAccount
-        else
-            account
+        contentIntent.data = Uri.parse("davdroid:exception/${e.hashCode()}")
 
         val channel: String
         val priority: Int
-        if (e is IOError) {
+        if (e is IOException) {
             channel = NotificationUtils.CHANNEL_SYNC_IO_ERRORS
-            priority = NotificationCompat.PRIORITY_LOW
+            priority = NotificationCompat.PRIORITY_MIN
         } else {
             channel = NotificationUtils.CHANNEL_SYNC_ERRORS
             priority = NotificationCompat.PRIORITY_DEFAULT
@@ -372,24 +383,41 @@ abstract class SyncManager<out ResourceType: LocalResource, out CollectionType: 
                 .setContentTitle(localCollection.title)
                 .setContentText(message)
                 .setStyle(NotificationCompat.BigTextStyle(builder).bigText(message))
-                .setSubText(account.name)
+                .setSubText(mainAccount.name)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                 .setPriority(priority)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
         viewItemAction?.let { builder.addAction(it) }
+        builder.addAction(buildRetryAction())
 
+        notificationManager.notify(notificationTag, NotificationUtils.NOTIFY_SYNC_ERROR, builder.build())
+    }
+
+    private fun buildRetryAction(): NotificationCompat.Action {
         val retryIntent = Intent(context, DavService::class.java)
         retryIntent.action = DavService.ACTION_FORCE_SYNC
-        retryIntent.data = Uri.parse("contents://").buildUpon()
-                .authority(authority)
-                .appendPath(account.type)
-                .appendPath(account.name)
-                .build()
-        builder.addAction(android.R.drawable.ic_menu_rotate, context.getString(R.string.sync_error_retry),
-                PendingIntent.getService(context, 0, retryIntent, PendingIntent.FLAG_UPDATE_CURRENT))
 
-        notificationManager.notify(localCollection.uniqueId, NotificationUtils.NOTIFY_SYNC_ERROR, builder.build())
+        val syncAuthority: String
+        val syncAccount: Account
+        if (authority == ContactsContract.AUTHORITY) {
+            // if this is a contacts sync, retry syncing all address books of the main account
+            syncAuthority = context.getString(R.string.address_books_authority)
+            syncAccount = mainAccount
+        } else {
+            syncAuthority = authority
+            syncAccount = account
+        }
+
+        retryIntent.data = Uri.parse("sync://").buildUpon()
+                .authority(syncAuthority)
+                .appendPath(syncAccount.type)
+                .appendPath(syncAccount.name)
+                .build()
+
+        return NotificationCompat.Action(
+                android.R.drawable.ic_menu_rotate, context.getString(R.string.sync_error_retry),
+                PendingIntent.getService(context, 0, retryIntent, PendingIntent.FLAG_UPDATE_CURRENT))
     }
 
     private fun buildViewItemAction(local: LocalResource): NotificationCompat.Action? {

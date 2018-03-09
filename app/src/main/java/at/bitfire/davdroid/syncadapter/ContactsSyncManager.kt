@@ -407,38 +407,39 @@ class ContactsSyncManager(
             if (local == null) {
                 if (newData.group) {
                     Logger.log.log(Level.INFO, "Creating local group", newData)
-                    val group = LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
-                    group.create()
-
-                    local = group
+                    useLocal(LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT), {
+                        it.create()
+                        local = it
+                    })
                 } else {
                     Logger.log.log(Level.INFO, "Creating local contact", newData)
-                    val contact = LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
-                    contact.create()
-
-                    local = contact
+                    useLocal(LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT), {
+                        it.create()
+                        local = it
+                    })
                 }
                 syncResult.stats.numInserts++
             }
 
-            if (groupMethod == GroupMethod.CATEGORIES && local is LocalContact) {
-                // VCard3: update group memberships from CATEGORIES
-                val batch = BatchOperation(provider)
-                Logger.log.log(Level.FINE, "Removing contact group memberships")
-                local.removeGroupMemberships(batch)
+            if (groupMethod == GroupMethod.CATEGORIES)
+                (local as? LocalContact)?.let { localContact ->
+                    // VCard3: update group memberships from CATEGORIES
+                    val batch = BatchOperation(provider)
+                    Logger.log.log(Level.FINE, "Removing contact group memberships")
+                    localContact.removeGroupMemberships(batch)
 
-                for (category in local.contact!!.categories) {
-                    val groupID = localCollection.findOrCreateGroup(category)
-                    Logger.log.log(Level.FINE, "Adding membership in group $category ($groupID)")
-                    local.addToGroup(batch, groupID)
+                    for (category in localContact.contact!!.categories) {
+                        val groupID = localCollection.findOrCreateGroup(category)
+                        Logger.log.log(Level.FINE, "Adding membership in group $category ($groupID)")
+                        localContact.addToGroup(batch, groupID)
+                    }
+
+                    batch.commit()
                 }
 
-                batch.commit()
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O && local is LocalContact)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                 // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-                local.updateHashCode(null)
+                (local as? LocalContact)?.updateHashCode(null)
         })
     }
 

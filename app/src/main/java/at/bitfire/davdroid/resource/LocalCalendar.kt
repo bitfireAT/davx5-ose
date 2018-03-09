@@ -88,8 +88,6 @@ class LocalCalendar private constructor(
     override val title: String
         get() = displayName ?: id.toString()
 
-    override val uniqueId = "calendar-$id"
-
     override var lastSyncState: SyncState?
         get() = provider.query(calendarSyncURI(), arrayOf(COLUMN_SYNC_STATE), null, null, null)?.let { cursor ->
                     if (cursor.moveToNext())

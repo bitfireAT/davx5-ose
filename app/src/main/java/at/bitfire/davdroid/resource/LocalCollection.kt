@@ -14,8 +14,6 @@ interface LocalCollection<out T: LocalResource> {
 
     /** collection title (used for user notifications etc.) **/
     val title: String
-    /** unique ID, used to distinguish notifications for different collections **/
-    val uniqueId: String
 
     var lastSyncState: SyncState?
 

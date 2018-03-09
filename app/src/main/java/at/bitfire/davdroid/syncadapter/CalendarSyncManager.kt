@@ -181,8 +181,9 @@ class CalendarSyncManager(
                     syncResult.stats.numUpdates++
                 } else {
                     Logger.log.info("Adding $fileName to local calendar")
-                    val newEvent = LocalEvent(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
-                    newEvent.add()
+                    useLocal(LocalEvent(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT), {
+                        it.add()
+                    })
                     syncResult.stats.numInserts++
                 }
             })
