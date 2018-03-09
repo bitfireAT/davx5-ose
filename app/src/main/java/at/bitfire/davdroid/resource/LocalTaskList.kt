@@ -87,8 +87,6 @@ class LocalTaskList private constructor(
     override val title: String
         get() = name ?: id.toString()
 
-    override val uniqueId = "tasks-$id"
-
     override var lastSyncState: SyncState?
         get() {
             try {

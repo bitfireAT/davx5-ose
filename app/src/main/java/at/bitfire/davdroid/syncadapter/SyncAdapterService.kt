@@ -31,7 +31,7 @@ import java.util.logging.Level
 abstract class SyncAdapterService: Service() {
 
     companion object {
-        val runningSyncs = Collections.synchronizedSet(mutableSetOf<Pair<String, Account>>())!!
+        val runningSyncs: MutableSet<Pair<String, Account>> = Collections.synchronizedSet(mutableSetOf<Pair<String, Account>>())
     }
 
     protected abstract fun syncAdapter(): AbstractThreadedSyncAdapter
@@ -80,8 +80,10 @@ abstract class SyncAdapterService: Service() {
 
                     val runSync = syncPlugins.all { it.beforeSync(context, settings, syncResult) }
 
-                    if (runSync)
+                    if (runSync) {
+                        SyncManager.cancelNotifications(NotificationManagerCompat.from(context), authority, account)
                         sync(settings, account, extras, authority, provider, syncResult)
+                    }
 
                     syncPlugins.forEach { it.afterSync(context, settings, syncResult) }
                 }

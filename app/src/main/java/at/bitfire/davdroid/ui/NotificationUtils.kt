@@ -46,7 +46,7 @@ object NotificationUtils {
             nm.createNotificationChannelGroup(syncChannelGroup)
             val syncChannels = arrayOf(
                 NotificationChannel(CHANNEL_SYNC_ERRORS, context.getString(R.string.notification_channel_sync_errors), NotificationManager.IMPORTANCE_DEFAULT),
-                NotificationChannel(CHANNEL_SYNC_IO_ERRORS, context.getString(R.string.notification_channel_sync_io_errors), NotificationManager.IMPORTANCE_LOW),
+                NotificationChannel(CHANNEL_SYNC_IO_ERRORS, context.getString(R.string.notification_channel_sync_io_errors), NotificationManager.IMPORTANCE_MIN),
                 NotificationChannel(CHANNEL_SYNC_STATUS, context.getString(R.string.notification_channel_sync_status), NotificationManager.IMPORTANCE_MIN)
             )
             syncChannels.forEach {

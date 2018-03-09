@@ -24,7 +24,7 @@ import java.util.logging.Level
 class ContactsSyncAdapterService: SyncAdapterService() {
 
     companion object {
-        val PREVIOUS_GROUP_METHOD = "previous_group_method"
+        const val PREVIOUS_GROUP_METHOD = "previous_group_method"
     }
 
     override fun syncAdapter() = ContactsSyncAdapter(this)
