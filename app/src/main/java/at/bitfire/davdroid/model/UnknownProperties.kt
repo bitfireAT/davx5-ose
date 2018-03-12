@@ -12,17 +12,10 @@ import android.provider.ContactsContract.RawContacts
 
 object UnknownProperties {
 
-    @JvmField
-    val CONTENT_ITEM_TYPE = "x.davdroid/unknown-properties"
+    const val CONTENT_ITEM_TYPE = "x.davdroid/unknown-properties"
 
-
-    @JvmField
-    val MIMETYPE = RawContacts.Data.MIMETYPE
-
-    @JvmField
-    val RAW_CONTACT_ID = RawContacts.Data.RAW_CONTACT_ID
-
-    @JvmField
-    val UNKNOWN_PROPERTIES = RawContacts.Data.DATA1
+    const val MIMETYPE = RawContacts.Data.MIMETYPE
+    const val RAW_CONTACT_ID = RawContacts.Data.RAW_CONTACT_ID
+    const val UNKNOWN_PROPERTIES = RawContacts.Data.DATA1
 
 }

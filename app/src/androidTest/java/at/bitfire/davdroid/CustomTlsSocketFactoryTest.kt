@@ -6,7 +6,7 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid;
+package at.bitfire.davdroid
 
 import android.support.test.InstrumentationRegistry.getInstrumentation
 import at.bitfire.cert4android.CustomCertManager
@@ -33,9 +33,9 @@ import javax.net.ssl.X509TrustManager
 
 class CustomTlsSocketFactoryTest {
 
-    lateinit var certMgr: CustomCertManager
-    lateinit var factory: CustomTlsSocketFactory
-    val server = MockWebServer()
+    private lateinit var certMgr: CustomCertManager
+    private lateinit var factory: CustomTlsSocketFactory
+    private val server = MockWebServer()
 
     @Before
     fun startServer() {

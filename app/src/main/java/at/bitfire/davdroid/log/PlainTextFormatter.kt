@@ -19,10 +19,10 @@ class PlainTextFormatter private constructor(
 ): Formatter() {
 
     companion object {
-        @JvmField val LOGCAT = PlainTextFormatter(true)
-        @JvmField val DEFAULT = PlainTextFormatter(false)
+        val LOGCAT = PlainTextFormatter(true)
+        val DEFAULT = PlainTextFormatter(false)
 
-        val MAX_MESSAGE_LENGTH = 20000
+        const val MAX_MESSAGE_LENGTH = 20000
     }
 
     override fun format(r: LogRecord): String {

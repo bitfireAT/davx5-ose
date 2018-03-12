@@ -8,11 +8,11 @@
 
 package at.bitfire.davdroid.settings
 
-import android.content.ServiceConnection
 import android.support.test.InstrumentationRegistry
 import android.support.test.InstrumentationRegistry.getTargetContext
 import at.bitfire.davdroid.App
-import junit.framework.Assert.*
+import junit.framework.Assert.assertFalse
+import junit.framework.Assert.assertTrue
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

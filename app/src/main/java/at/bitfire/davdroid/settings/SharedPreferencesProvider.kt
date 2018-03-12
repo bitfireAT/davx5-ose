@@ -20,8 +20,8 @@ class SharedPreferencesProvider(
 ): Provider {
 
     companion object {
-        private val META_VERSION = "version"
-        private val CURRENT_VERSION = 0
+        private const val META_VERSION = "version"
+        private const val CURRENT_VERSION = 0
     }
 
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)

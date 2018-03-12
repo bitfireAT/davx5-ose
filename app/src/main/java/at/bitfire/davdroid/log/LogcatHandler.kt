@@ -18,7 +18,7 @@ import java.util.logging.LogRecord
 
 object LogcatHandler: Handler() {
 
-    private val MAX_LINE_LENGTH = 3000
+    private const val MAX_LINE_LENGTH = 3000
 
     init {
         formatter = PlainTextFormatter.LOGCAT

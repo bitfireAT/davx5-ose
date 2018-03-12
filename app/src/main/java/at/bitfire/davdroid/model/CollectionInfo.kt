@@ -14,7 +14,7 @@ import at.bitfire.dav4android.property.*
 import at.bitfire.davdroid.model.ServiceDB.Collections
 import java.io.Serializable
 
-data class CollectionInfo @JvmOverloads constructor(
+data class CollectionInfo(
         val url: String,
 
         var id: Long? = null,
@@ -48,7 +48,6 @@ data class CollectionInfo @JvmOverloads constructor(
 
     companion object {
 
-        @JvmField
         val DAV_PROPERTIES = arrayOf(
             ResourceType.NAME,
             CurrentUserPrivilegeSet.NAME,

@@ -32,7 +32,6 @@ class LocalContact: AndroidContact, LocalAddress {
 
         const val COLUMN_FLAGS = ContactsContract.RawContacts.SYNC4
         const val COLUMN_HASHCODE = ContactsContract.RawContacts.SYNC3
-
     }
 
     private val cachedGroupMemberships = HashSet<Long>()

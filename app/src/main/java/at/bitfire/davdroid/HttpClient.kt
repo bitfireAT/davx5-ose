@@ -64,7 +64,7 @@ class HttpClient private constructor(
         certManager?.close()
     }
 
-    class Builder @JvmOverloads constructor(
+    class Builder(
             val context: Context? = null,
             val settings: ISettings? = null,
             accountSettings: AccountSettings? = null,

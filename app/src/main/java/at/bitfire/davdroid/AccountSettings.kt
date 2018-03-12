@@ -39,7 +39,12 @@ import org.dmfs.tasks.contract.TaskContract
 import java.util.*
 import java.util.logging.Level
 
-class AccountSettings @Throws(InvalidAccountException::class) constructor(
+/**
+ * Manages settings of an account.
+ *
+ * @throws InvalidAccountException on construction when the account doesn't exist (anymore)
+ */
+class AccountSettings(
         val context: Context,
         val settings: ISettings,
         val account: Account
@@ -47,41 +52,40 @@ class AccountSettings @Throws(InvalidAccountException::class) constructor(
 
     companion object {
 
-        val CURRENT_VERSION = 8
-        val KEY_SETTINGS_VERSION = "version"
+        const val CURRENT_VERSION = 8
+        const val KEY_SETTINGS_VERSION = "version"
 
-        val KEY_USERNAME = "user_name"
-        val KEY_CERTIFICATE_ALIAS = "certificate_alias"
+        const val KEY_USERNAME = "user_name"
+        const val KEY_CERTIFICATE_ALIAS = "certificate_alias"
 
-        val KEY_WIFI_ONLY = "wifi_only"               // sync on WiFi only (default: false)
-        val KEY_WIFI_ONLY_SSIDS = "wifi_only_ssids"   // restrict sync to specific WiFi SSIDs
+        const val KEY_WIFI_ONLY = "wifi_only"               // sync on WiFi only (default: false)
+        const val KEY_WIFI_ONLY_SSIDS = "wifi_only_ssids"   // restrict sync to specific WiFi SSIDs
 
         /** Time range limitation to the past [in days]
         value = null            default value (DEFAULT_TIME_RANGE_PAST_DAYS)
         < 0 (-1)          no limit
         >= 0              entries more than n days in the past won't be synchronized
          */
-        val KEY_TIME_RANGE_PAST_DAYS = "time_range_past_days"
-        val DEFAULT_TIME_RANGE_PAST_DAYS = 90
+        const val KEY_TIME_RANGE_PAST_DAYS = "time_range_past_days"
+        const val DEFAULT_TIME_RANGE_PAST_DAYS = 90
 
         /* Whether DAVdroid sets the local calendar color to the value from service DB at every sync
            value = null (not existing)     true (default)
                    "0"                     false */
-        val KEY_MANAGE_CALENDAR_COLORS = "manage_calendar_colors"
+        const val KEY_MANAGE_CALENDAR_COLORS = "manage_calendar_colors"
 
         /* Whether DAVdroid populates and uses CalendarContract.Colors
            value = null (not existing)     false (default)
                    "1"                     true */
-        val KEY_EVENT_COLORS = "event_colors"
+        const val KEY_EVENT_COLORS = "event_colors"
 
         /** Contact group method:
         value = null (not existing)     groups as separate VCards (default)
         "CATEGORIES"            groups are per-contact CATEGORIES
          */
-        val KEY_CONTACT_GROUP_METHOD = "contact_group_method"
+        const val KEY_CONTACT_GROUP_METHOD = "contact_group_method"
 
-        @JvmField
-        val SYNC_INTERVAL_MANUALLY = -1L
+        const val SYNC_INTERVAL_MANUALLY = -1L
 
         fun initialUserData(credentials: Credentials): Bundle {
             val bundle = Bundle(2)
