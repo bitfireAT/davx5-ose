@@ -27,7 +27,7 @@ class MemoryCookieStore: CookieJar {
      * This ensures that cookies can be overwritten. [RFC 6265 5.3 Storage Model]
      * Not thread-safe!
      */
-    val storage = MultiKeyMap.multiKeyMap(HashedMap<MultiKey<out String>, Cookie>())!!
+    private val storage = MultiKeyMap.multiKeyMap(HashedMap<MultiKey<out String>, Cookie>())!!
 
     override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
         synchronized(storage) {

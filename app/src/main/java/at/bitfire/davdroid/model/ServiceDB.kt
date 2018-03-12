@@ -21,52 +21,45 @@ import java.util.logging.Level
 
 class ServiceDB {
 
-    /*object Settings {
-        @JvmField val _TABLE = "settings"
-        @JvmField val NAME = "setting"
-        @JvmField val VALUE = "value"
-    }*/
-
     object Services {
-        @JvmField val _TABLE = "services"
-        @JvmField val ID = "_id"
-        @JvmField val ACCOUNT_NAME = "accountName"
-        @JvmField val SERVICE = "service"
-        @JvmField val PRINCIPAL = "principal"
+        const val _TABLE = "services"
+        const val ID = "_id"
+        const val ACCOUNT_NAME = "accountName"
+        const val SERVICE = "service"
+        const val PRINCIPAL = "principal"
 
         // allowed values for SERVICE column
-        @JvmField val SERVICE_CALDAV = "caldav"
-        @JvmField val SERVICE_CARDDAV = "carddav"
+        const val SERVICE_CALDAV = "caldav"
+        const val SERVICE_CARDDAV = "carddav"
     }
 
     object HomeSets {
-        @JvmField val _TABLE = "homesets"
-        @JvmField val ID = "_id"
-        @JvmField val SERVICE_ID = "serviceID"
-        @JvmField val URL = "url"
+        const val _TABLE = "homesets"
+        const val ID = "_id"
+        const val SERVICE_ID = "serviceID"
+        const val URL = "url"
     }
 
     object Collections {
-        @JvmField val _TABLE = "collections"
-        @JvmField val ID = "_id"
-        @JvmField val TYPE = "type"
-        @JvmField val SERVICE_ID = "serviceID"
-        @JvmField val URL = "url"
-        @JvmField val READ_ONLY = "readOnly"
-        @JvmField val FORCE_READ_ONLY = "forceReadOnly"
-        @JvmField val DISPLAY_NAME = "displayName"
-        @JvmField val DESCRIPTION = "description"
-        @JvmField val COLOR = "color"
-        @JvmField val TIME_ZONE = "timezone"
-        @JvmField val SUPPORTS_VEVENT = "supportsVEVENT"
-        @JvmField val SUPPORTS_VTODO = "supportsVTODO"
-        @JvmField val SOURCE = "source"
-        @JvmField val SYNC = "sync"
+        const val _TABLE = "collections"
+        const val ID = "_id"
+        const val TYPE = "type"
+        const val SERVICE_ID = "serviceID"
+        const val URL = "url"
+        const val READ_ONLY = "readOnly"
+        const val FORCE_READ_ONLY = "forceReadOnly"
+        const val DISPLAY_NAME = "displayName"
+        const val DESCRIPTION = "description"
+        const val COLOR = "color"
+        const val TIME_ZONE = "timezone"
+        const val SUPPORTS_VEVENT = "supportsVEVENT"
+        const val SUPPORTS_VTODO = "supportsVTODO"
+        const val SOURCE = "source"
+        const val SYNC = "sync"
     }
 
     companion object {
 
-        @JvmStatic
         fun onRenameAccount(db: SQLiteDatabase, oldName: String, newName: String) {
             val values = ContentValues(1)
             values.put(Services.ACCOUNT_NAME, newName)
@@ -81,8 +74,8 @@ class ServiceDB {
     ): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), AutoCloseable {
 
         companion object {
-            val DATABASE_NAME = "services.db"
-            val DATABASE_VERSION = 4
+            const val DATABASE_NAME = "services.db"
+            const val DATABASE_VERSION = 4
         }
 
         override fun onConfigure(db: SQLiteDatabase) {

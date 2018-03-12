@@ -22,14 +22,12 @@ import java.util.*
  */
 object DavUtils {
 
-    @JvmStatic
     fun ARGBtoCalDAVColor(colorWithAlpha: Int): String {
         val alpha = (colorWithAlpha shr 24) and 0xFF
         val color = colorWithAlpha and 0xFFFFFF
         return String.format("#%06X%02X", color, alpha)
     }
 
-    @JvmStatic
     fun lastSegmentOfUrl(url: String): String {
         val httpUrl = HttpUrl.parse(url) ?: throw IllegalArgumentException("url not parsable")
 

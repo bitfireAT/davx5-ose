@@ -39,6 +39,6 @@ data class SyncState(
     enum class Type { CTAG, SYNC_TOKEN }
 
     override fun toString() =
-            "${type.name}:${value}"
+            "${type.name}:$value"
 
 }

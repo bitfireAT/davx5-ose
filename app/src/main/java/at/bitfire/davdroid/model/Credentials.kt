@@ -10,10 +10,10 @@ package at.bitfire.davdroid.model
 
 import java.io.Serializable
 
-class Credentials @JvmOverloads constructor(
-        @JvmField val userName: String? = null,
-        @JvmField val password: String? = null,
-        @JvmField val certificateAlias: String? = null
+class Credentials(
+        val userName: String? = null,
+        val password: String? = null,
+        val certificateAlias: String? = null
 ): Serializable {
 
     enum class Type {
@@ -34,8 +34,7 @@ class Credentials @JvmOverloads constructor(
         }
     }
 
-    override fun toString(): String {
-        return "Credentials(type=$type, userName=$userName, certificateAlias=$certificateAlias)"
-    }
+    override fun toString() =
+            "Credentials(type=$type, userName=$userName, certificateAlias=$certificateAlias)"
 
 }

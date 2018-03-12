@@ -24,7 +24,6 @@ class PackageChangedReceiver: BroadcastReceiver() {
 
     companion object {
 
-        @JvmStatic
         fun updateTaskSync(context: Context) {
             val tasksInstalled = LocalTaskList.tasksProviderAvailable(context)
             Logger.log.info("Tasks provider available = $tasksInstalled")
