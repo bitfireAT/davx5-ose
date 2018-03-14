@@ -29,12 +29,14 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.ISettings
+import org.apache.commons.lang3.StringUtils
 import java.util.*
 import java.util.logging.Level
 
 class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISettings> {
 
     enum class Mode {
+        AUTOSTART_PERMISSIONS,
         BATTERY_OPTIMIZATIONS,
         GOOGLE_PLAY_ACCOUNTS_REMOVED,
         OPENTASKS_NOT_INSTALLED,
@@ -45,6 +47,10 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
 
         private const val SETTING_NEXT_DONATION_POPUP = "time_nextDonationPopup"
 
+        const val HINT_AUTOSTART_PERMISSIONS = "hint_AutostartPermissions"
+        // see https://github.com/jaredrummler/AndroidDeviceNames/blob/master/json/ for manufacturer values
+        private val autostartManufacturers = arrayOf("huawei", "letv", "oneplus", "vivo", "xiaomi", "zte")
+
         const val HINT_BATTERY_OPTIMIZATIONS = "hint_BatteryOptimizations"
         const val HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED = "hint_GooglePlayAccountsRemoved"
         const val HINT_OPENTASKS_NOT_INSTALLED = "hint_OpenTasksNotInstalled"
@@ -54,8 +60,8 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
         fun getStartupDialogs(context: Context, settings: ISettings): List<StartupDialogFragment> {
             val dialogs = LinkedList<StartupDialogFragment>()
 
-            /* if (System.currentTimeMillis() > settings.getLong(SETTING_NEXT_DONATION_POPUP, 0))
-                dialogs += StartupDialogFragment.instantiate(Mode.OSE_DONATE) */
+            if (System.currentTimeMillis() > settings.getLong(SETTING_NEXT_DONATION_POPUP, 0))
+                dialogs += StartupDialogFragment.instantiate(Mode.OSE_DONATE)
 
             // store-specific information
             /*if (BuildConfig.FLAVOR == App.FLAVOR_GOOGLE_PLAY) {
@@ -71,6 +77,10 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                 if (!powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID))
                     dialogs.add(StartupDialogFragment.instantiate(Mode.BATTERY_OPTIMIZATIONS))
             }
+
+            // vendor-specific auto-start information
+            if (autostartManufacturers.contains(Build.MANUFACTURER.toLowerCase()) && settings.getBoolean(HINT_AUTOSTART_PERMISSIONS, true))
+                dialogs.add(StartupDialogFragment.instantiate(Mode.AUTOSTART_PERMISSIONS))
 
             // OpenTasks information
             if (!LocalTaskList.tasksProviderAvailable(context) && settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED, true))
@@ -116,18 +126,35 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
         val activity = requireActivity()
         val mode = Mode.valueOf(arguments!!.getString(ARGS_MODE))
         return when (mode) {
+            Mode.AUTOSTART_PERMISSIONS ->
+                AlertDialog.Builder(activity)
+                        .setIcon(R.drawable.ic_error_dark)
+                        .setTitle(getString(R.string.startup_autostart_permission, StringUtils.capitalize(Build.MANUFACTURER)))
+                        .setMessage(R.string.startup_autostart_permission_message)
+                        .setPositiveButton(R.string.startup_more_info, { _, _ ->
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url)).buildUpon()
+                                    .appendPath("faq").appendPath("automatic-synchronization-is-not-run-as-expected").build())
+                            if (intent.resolveActivity(activity.packageManager) != null)
+                                activity.startActivity(intent)
+                        })
+                        .setNeutralButton(android.R.string.ok, { _, _ -> })
+                        .setNegativeButton(R.string.startup_dont_show_again, { _, _ ->
+                            settings?.putBoolean(HINT_AUTOSTART_PERMISSIONS, false)
+                        })
+                        .create()
+
             Mode.BATTERY_OPTIMIZATIONS ->
                 AlertDialog.Builder(activity)
                         .setIcon(R.drawable.ic_info_dark)
                         .setTitle(R.string.startup_battery_optimization)
                         .setMessage(R.string.startup_battery_optimization_message)
-                        .setPositiveButton(android.R.string.ok, { _, _ -> })
-                        .setNeutralButton(R.string.startup_battery_optimization_disable, @TargetApi(Build.VERSION_CODES.M) { _, _ ->
+                        .setPositiveButton(R.string.startup_battery_optimization_disable, @TargetApi(Build.VERSION_CODES.M) { _, _ ->
                             val intent = Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
                                         Uri.parse("package:" + BuildConfig.APPLICATION_ID))
                                 if (intent.resolveActivity(activity.packageManager) != null)
                                     activity.startActivity(intent)
                             })
+                        .setNeutralButton(android.R.string.ok, { _, _ -> })
                         .setNegativeButton(R.string.startup_dont_show_again, { _: DialogInterface, _: Int ->
                             settings?.putBoolean(HINT_BATTERY_OPTIMIZATIONS, false)
                         })
@@ -144,12 +171,13 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         .setIcon(icon)
                         .setTitle(R.string.startup_google_play_accounts_removed)
                         .setMessage(R.string.startup_google_play_accounts_removed_message)
-                        .setPositiveButton(android.R.string.ok, { _, _ -> })
-                        .setNeutralButton(R.string.startup_google_play_accounts_removed_more_info, { _, _ ->
+                        .setPositiveButton(R.string.startup_more_info, { _, _ ->
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url)).buildUpon()
-                                    .appendPath("faq").build())
-                            activity.startActivity(intent)
+                                    .appendPath("faq").appendPath("accounts-gone-after-reboot-or-update").build())
+                            if (intent.resolveActivity(activity.packageManager) != null)
+                                activity.startActivity(intent)
                         })
+                        .setNeutralButton(android.R.string.ok, { _, _ -> })
                         .setNegativeButton(R.string.startup_dont_show_again, { _, _ ->
                             settings?.putBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, false)
                         })
@@ -164,14 +192,14 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         .setIcon(R.drawable.ic_playlist_add_check_dark)
                         .setTitle(R.string.startup_opentasks_not_installed)
                         .setMessage(builder.toString())
-                        .setPositiveButton(android.R.string.ok, { _, _ -> })
-                        .setNeutralButton(R.string.startup_opentasks_not_installed_install, { _, _ ->
+                        .setPositiveButton(R.string.startup_opentasks_not_installed_install, { _, _ ->
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.dmfs.tasks"))
                             if (intent.resolveActivity(activity.packageManager) != null)
                                 activity.startActivity(intent)
                             else
                                 Logger.log.warning("No market app available, can't install OpenTasks")
                         })
+                        .setNeutralButton(android.R.string.ok, { _, _ -> })
                         .setNegativeButton(R.string.startup_dont_show_again, { _: DialogInterface, _: Int ->
                             settings?.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
                         })

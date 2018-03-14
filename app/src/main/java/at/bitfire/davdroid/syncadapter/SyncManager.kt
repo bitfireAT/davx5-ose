@@ -42,7 +42,6 @@ import at.bitfire.ical4android.MiscUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.ContactsStorageException
 import org.dmfs.tasks.contract.TaskContract
-import java.io.IOError
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.security.cert.CertificateException
