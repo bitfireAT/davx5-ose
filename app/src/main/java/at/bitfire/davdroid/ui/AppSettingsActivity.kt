@@ -180,6 +180,7 @@ class AppSettingsActivity: AppCompatActivity() {
         }
 
         private fun resetHints() {
+            settings?.remove(StartupDialogFragment.HINT_AUTOSTART_PERMISSIONS)
             settings?.remove(StartupDialogFragment.HINT_BATTERY_OPTIMIZATIONS)
             settings?.remove(StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED)
             settings?.remove(StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED)
