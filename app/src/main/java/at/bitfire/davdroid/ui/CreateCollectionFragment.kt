@@ -78,7 +78,7 @@ class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
     override fun onCreateLoader(id: Int, args: Bundle?) = CreateCollectionLoader(requireActivity(), account, info)
 
     override fun onLoadFinished(loader: Loader<Exception>, exception: Exception?) {
-        dismissAllowingStateLoss()
+        dismiss()
 
         activity?.let { parent ->
             if (exception != null)

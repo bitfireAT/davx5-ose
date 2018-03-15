@@ -79,7 +79,7 @@ class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbac
                         .commit()
         }
 
-        dismissAllowingStateLoss()
+        dismiss()
     }
 
     override fun onLoaderReset(loader: Loader<Configuration>) {}

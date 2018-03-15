@@ -21,7 +21,7 @@ import at.bitfire.davdroid.settings.ISettings
 class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
 
     companion object {
-        private val BETA_FEEDBACK_URI = "mailto:support@davdroid.com?subject=${BuildConfig.APPLICATION_ID} beta feedback ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+        private const val BETA_FEEDBACK_URI = "mailto:support@davdroid.com?subject=${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME} feedback (${BuildConfig.VERSION_CODE})"
     }
 
 
