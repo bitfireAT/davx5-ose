@@ -107,7 +107,7 @@ class HttpClient private constructor(
 
                 context?.let {
                     if (BuildConfig.customCerts)
-                        customCertManager(CustomCertManager(context, BuildConfig.customCertsUI, !settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false)))
+                        customCertManager(CustomCertManager(context, true, !settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false)))
 
                     // use account settings for authentication
                     accountSettings?.let {

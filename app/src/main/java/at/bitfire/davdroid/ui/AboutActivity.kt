@@ -56,7 +56,7 @@ class AboutActivity: AppCompatActivity() {
             ComponentInfo(
                     null, BuildConfig.VERSION_NAME, getString(R.string.homepage_url),
                     "Ricki Hirner, Bernhard Stockmann (bitfire web engineering)",
-                    null, null
+                    R.string.about_license_info_no_warranty, "gpl-3.0-standalone.html"
             ), ComponentInfo(
                     "AmbilWarna", null, "https://github.com/yukuku/ambilwarna",
                     "Yuku", R.string.about_license_info_no_warranty, "apache2.html"

@@ -55,7 +55,7 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
                 activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.homepage_url))
                         .buildUpon().appendEncodedPath("forums/").build()))
             R.id.nav_donate ->
-                if (BuildConfig.FLAVOR != App.FLAVOR_GOOGLE_PLAY)
+                //if (BuildConfig.FLAVOR != App.FLAVOR_GOOGLE_PLAY)
                     activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.homepage_url))
                             .buildUpon().appendEncodedPath("donate/").build()))
             else ->
