@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
   <string name="help">Ajuda</string>
