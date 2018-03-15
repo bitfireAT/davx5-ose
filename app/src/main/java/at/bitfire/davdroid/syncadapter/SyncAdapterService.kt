@@ -92,6 +92,7 @@ abstract class SyncAdapterService: Service() {
                     .setContentText(context.getString(R.string.sync_error_permissions_text))
                     .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
                     .setCategory(NotificationCompat.CATEGORY_ERROR)
+                    .setAutoCancel(true)
                     .build()
             NotificationManagerCompat.from(context).notify(NotificationUtils.NOTIFY_PERMISSIONS, notify)
         }

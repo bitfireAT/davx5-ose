@@ -12,6 +12,7 @@
 
     <color name="grey200">#eeeeee</color>
     <color name="grey500">#9E9E9E</color>
+    <color name="grey700">#616161</color>
 
     <color name="primaryColor">#7cb342</color>
     <color name="primaryLightColor">#aee571</color>
@@ -25,7 +26,9 @@
 
     <!-- app theme -->
 
-    <style name="AppBaseTheme" parent="Theme.AppCompat.Light">
+    <style name="AppBaseTheme" parent="Theme.AppCompat.Light" />
+
+    <style name="AppTheme" parent="AppBaseTheme">
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/secondaryColor</item>
@@ -33,26 +36,22 @@
         <item name="android:textColorPrimary">@drawable/text_color</item>
         <item name="android:textColorSecondary">@color/secondaryTextColor</item>
 
-        <item name="alertDialogTheme">@style/AppBaseTheme.Dialog.Alert</item>
+        <item name="alertDialogTheme">@style/AppTheme.Dialog.Alert</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <color name="actionBarButton">#8a000000</color>
 
-    <style name="AppBaseTheme.Dialog.Alert" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <style name="AppTheme.Dialog.Alert" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/secondaryColor</item>
     </style>
-
-    <style name="AppTheme" parent="AppBaseTheme" />
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-
-    <!-- preference-v14 uses this color for categories text on API <21 -->
-    <color name="preference_fallback_accent_color">@color/secondaryColor</color>
+    <style name="AppThemeExt" parent="AppTheme" />
 
 
     <!-- AddAccountActivity -->

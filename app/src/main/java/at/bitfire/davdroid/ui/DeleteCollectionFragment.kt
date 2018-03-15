@@ -62,7 +62,7 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
             DeleteCollectionLoader(activity!!, account, collectionInfo)
 
     override fun onLoadFinished(loader: Loader<Exception>, exception: Exception?) {
-        dismissAllowingStateLoss()
+        dismiss()
 
         if (exception != null)
             requireFragmentManager().beginTransaction()

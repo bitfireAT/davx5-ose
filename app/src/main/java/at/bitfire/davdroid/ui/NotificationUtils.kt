@@ -26,6 +26,7 @@ object NotificationUtils {
     const val NOTIFY_SYNC_ERROR = 10
     const val NOTIFY_OPENTASKS = 20
     const val NOTIFY_PERMISSIONS = 21
+    const val NOTIFY_LICENSE = 100
 
     // notification channels
     const val CHANNEL_GENERAL = "general"
