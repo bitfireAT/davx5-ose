@@ -6,7 +6,7 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- colors -->
 
@@ -52,6 +52,10 @@
     </style>
 
     <style name="AppThemeExt" parent="AppTheme" />
+
+    <!-- preference-v14 uses this color for categories text on API <21 -->
+    <color name="preference_fallback_accent_color"
+        tools:override="true">@color/secondaryColor</color>
 
 
     <!-- AddAccountActivity -->
