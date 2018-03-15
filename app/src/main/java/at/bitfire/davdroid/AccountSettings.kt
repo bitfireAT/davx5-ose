@@ -239,27 +239,32 @@ class AccountSettings(
     }
 
     @Suppress("unused")
+    /**
+     * There is a mistake in this method. [TaskContract.Tasks.SYNC_VERSION] is used to store the
+     * SEQUENCE and should not be used for the eTag.
+     */
     private fun update_7_8() {
         TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)?.let { provider ->
             // ETag is now in sync_version instead of sync1
             // UID  is now in _uid         instead of sync2
-            val cursor = provider.client.query(TaskProvider.syncAdapterUri(provider.tasksUri(), account),
+            provider.client.query(TaskProvider.syncAdapterUri(provider.tasksUri(), account),
                     arrayOf(TaskContract.Tasks._ID, TaskContract.Tasks.SYNC1, TaskContract.Tasks.SYNC2),
                     "${TaskContract.Tasks.ACCOUNT_TYPE}=? AND ${TaskContract.Tasks.ACCOUNT_NAME}=?",
-                    arrayOf(account.type, account.name), null)
-            while (cursor.moveToNext()) {
-                val id = cursor.getLong(0)
-                val eTag = cursor.getString(1)
-                val uid = cursor.getString(2)
-                val values = ContentValues(4)
-                values.put(TaskContract.Tasks._UID, uid)
-                values.put(TaskContract.Tasks.SYNC_VERSION, eTag)
-                values.putNull(TaskContract.Tasks.SYNC1)
-                values.putNull(TaskContract.Tasks.SYNC2)
-                Logger.log.log(Level.FINER, "Updating task $id", values)
-                provider.client.update(
-                        TaskProvider.syncAdapterUri(ContentUris.withAppendedId(provider.tasksUri(), id), account),
-                        values, null, null)
+                    arrayOf(account.type, account.name), null).use { cursor ->
+                while (cursor.moveToNext()) {
+                    val id = cursor.getLong(0)
+                    val eTag = cursor.getString(1)
+                    val uid = cursor.getString(2)
+                    val values = ContentValues(4)
+                    values.put(TaskContract.Tasks._UID, uid)
+                    values.put(TaskContract.Tasks.SYNC_VERSION, eTag)
+                    values.putNull(TaskContract.Tasks.SYNC1)
+                    values.putNull(TaskContract.Tasks.SYNC2)
+                    Logger.log.log(Level.FINER, "Updating task $id", values)
+                    provider.client.update(
+                            TaskProvider.syncAdapterUri(ContentUris.withAppendedId(provider.tasksUri(), id), account),
+                            values, null, null)
+                }
             }
         }
     }

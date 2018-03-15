@@ -18,7 +18,10 @@ data class SyncState(
 
     companion object {
 
-        fun fromString(s: String): SyncState? {
+        fun fromString(s: String?): SyncState? {
+            if (s == null)
+                return null
+
             val pos = s.indexOf(':')
             if (pos == -1)
                 return null
