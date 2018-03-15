@@ -10,16 +10,20 @@ package at.bitfire.davdroid.resource
 
 import android.content.ContentProviderOperation
 import android.content.ContentValues
-import at.bitfire.ical4android.*
+import at.bitfire.davdroid.log.Logger
+import at.bitfire.ical4android.AndroidTask
+import at.bitfire.ical4android.AndroidTaskFactory
+import at.bitfire.ical4android.AndroidTaskList
+import at.bitfire.ical4android.Task
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.*
+import java.util.logging.Level
 
 class LocalTask: AndroidTask, LocalResource {
 
     companion object {
-        const val COLUMN_ETAG = Tasks.SYNC_VERSION
-        const val COLUMN_FLAGS = Tasks.SYNC1
-        const val COLUMN_SEQUENCE = Tasks.SYNC3
+        const val COLUMN_ETAG = Tasks.SYNC1
+        const val COLUMN_FLAGS = Tasks.SYNC2
     }
 
     override var fileName: String? = null
@@ -46,56 +50,41 @@ class LocalTask: AndroidTask, LocalResource {
 
     /* process LocalTask-specific fields */
 
-    override fun populateTask(values: ContentValues) {
-        super.populateTask(values)
-
-        val task = requireNotNull(task)
-        task.sequence = values.getAsInteger(COLUMN_SEQUENCE)
-    }
-
     override fun buildTask(builder: ContentProviderOperation.Builder, update: Boolean) {
         super.buildTask(builder, update)
         val task = requireNotNull(task)
 
         builder .withValue(Tasks._SYNC_ID, fileName)
-                .withValue(COLUMN_SEQUENCE, task.sequence)
                 .withValue(COLUMN_ETAG, eTag)
+                .withValue(COLUMN_FLAGS, flags)
+        Logger.log.log(Level.FINE, "Built task object", builder.build())
     }
 
 
     /* custom queries */
 
     override fun assignNameAndUID() {
-        try {
-            val uid = UUID.randomUUID().toString()
-            val newFileName = uid + ".ics"
+        val uid = UUID.randomUUID().toString()
+        val newFileName = "$uid.ics"
 
-            val values = ContentValues(2)
-            values.put(Tasks._SYNC_ID, newFileName)
-            values.put(Tasks._UID, uid)
-            taskList.provider.client.update(taskSyncURI(), values, null, null)
+        val values = ContentValues(2)
+        values.put(Tasks._SYNC_ID, newFileName)
+        values.put(Tasks._UID, uid)
+        taskList.provider.client.update(taskSyncURI(), values, null, null)
 
-            fileName = newFileName
+        fileName = newFileName
 
-            task!!.uid = uid
-        } catch (e: Exception) {
-            throw CalendarStorageException("Couldn't update UID", e)
-        }
+        task!!.uid = uid
     }
 
     override fun clearDirty(eTag: String?) {
-        try {
-            val values = ContentValues(2)
-            values.put(Tasks._DIRTY, 0)
-            values.put(COLUMN_ETAG, eTag)
+        val values = ContentValues(3)
+        values.put(Tasks._DIRTY, 0)
+        values.put(COLUMN_ETAG, eTag)
+        values.put(Tasks.SYNC_VERSION, task!!.sequence)
+        taskList.provider.client.update(taskSyncURI(), values, null, null)
 
-            values.put(COLUMN_SEQUENCE, task!!.sequence)
-            taskList.provider.client.update(taskSyncURI(), values, null, null)
-
-            this.eTag = eTag
-        } catch (e: Exception) {
-            throw CalendarStorageException("Couldn't update _DIRTY/ETag/SEQUENCE", e)
-        }
+        this.eTag = eTag
     }
 
     override fun updateFlags(flags: Int) {
