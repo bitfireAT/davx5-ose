@@ -10,7 +10,7 @@ package at.bitfire.davdroid.resource
 
 import at.bitfire.davdroid.model.SyncState
 
-interface LocalCollection<out T: LocalResource> {
+interface LocalCollection<out T: LocalResource<*>> {
 
     /** collection title (used for user notifications etc.) **/
     val title: String

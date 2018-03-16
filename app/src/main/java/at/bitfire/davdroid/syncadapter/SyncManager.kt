@@ -49,7 +49,7 @@ import java.util.*
 import java.util.logging.Level
 import javax.net.ssl.SSLHandshakeException
 
-abstract class SyncManager<out ResourceType: LocalResource, out CollectionType: LocalCollection<ResourceType>>(
+abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>>(
         val context: Context,
         val settings: ISettings,
         val account: Account,
@@ -79,7 +79,7 @@ abstract class SyncManager<out ResourceType: LocalResource, out CollectionType: 
     protected val notificationTag = Companion.notificationTag(authority, mainAccount)
 
     /** Local resource we're currently operating on. Used for error notifications. **/
-    protected val currentLocalResource = LinkedList<LocalResource>()
+    protected val currentLocalResource = LinkedList<LocalResource<*>>()
     /** Remote resource we're currently operating on. Used for error notifications. **/
     protected val currentRemoteResource = LinkedList<DavResource>()
 
@@ -419,7 +419,7 @@ abstract class SyncManager<out ResourceType: LocalResource, out CollectionType: 
                 PendingIntent.getService(context, 0, retryIntent, PendingIntent.FLAG_UPDATE_CURRENT))
     }
 
-    private fun buildViewItemAction(local: LocalResource): NotificationCompat.Action? {
+    private fun buildViewItemAction(local: LocalResource<*>): NotificationCompat.Action? {
         Logger.log.log(Level.FINE, "Adding view action for local resource", local)
         val intent = local.id?.let { id ->
             when (local) {

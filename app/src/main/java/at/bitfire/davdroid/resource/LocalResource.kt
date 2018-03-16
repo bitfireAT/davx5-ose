@@ -8,7 +8,9 @@
 
 package at.bitfire.davdroid.resource
 
-interface LocalResource {
+import android.net.Uri
+
+interface LocalResource<in TData: Any> {
 
     companion object {
         /**
@@ -34,6 +36,22 @@ interface LocalResource {
     fun clearDirty(eTag: String?)
     fun updateFlags(flags: Int)
 
+    /**
+     * Adds the data object to the content provider and ensures that the dirty flag is clear.
+     * @return content URI of the created row (e.g. event URI)
+     */
+    fun add(): Uri
+
+    /**
+     * Updates the data object in the content provider and ensures that the dirty flag is clear.
+     * @return content URI of the updated row (e.g. event URI)
+     */
+    fun update(data: TData): Uri
+
+    /**
+     * Deletes the data object from the content provider.
+     * @return number of affected rows
+     */
     fun delete(): Int
 
 }

@@ -109,9 +109,8 @@ class LocalTaskList private constructor(
         }
 
 
-    fun update(info: CollectionInfo, updateColor: Boolean) {
-        update(valuesFromCollectionInfo(info, updateColor))
-    }
+    fun update(info: CollectionInfo, updateColor: Boolean) =
+            update(valuesFromCollectionInfo(info, updateColor))
 
 
     override fun findDeleted() = queryTasks("${Tasks._DELETED}!=0", null)

@@ -105,9 +105,9 @@ class LocalContact: AndroidContact, LocalAddress {
     override fun populateData(mimeType: String, row: ContentValues) {
         when (mimeType) {
             CachedGroupMembership.CONTENT_ITEM_TYPE ->
-                cachedGroupMemberships.add(row.getAsLong(CachedGroupMembership.GROUP_ID))
+                cachedGroupMemberships += row.getAsLong(CachedGroupMembership.GROUP_ID)
             GroupMembership.CONTENT_ITEM_TYPE ->
-                groupMemberships.add(row.getAsLong(GroupMembership.GROUP_ROW_ID))
+                groupMemberships += row.getAsLong(GroupMembership.GROUP_ROW_ID)
             UnknownProperties.CONTENT_ITEM_TYPE ->
                 contact!!.unknownProperties = row.getAsString(UnknownProperties.UNKNOWN_PROPERTIES)
         }
@@ -189,7 +189,7 @@ class LocalContact: AndroidContact, LocalAddress {
                         .withValue(GroupMembership.RAW_CONTACT_ID, id)
                         .withValue(GroupMembership.GROUP_ROW_ID, groupID)
         ))
-        groupMemberships.add(groupID)
+        groupMemberships += groupID
 
         batch.enqueue(BatchOperation.Operation(
                 ContentProviderOperation.newInsert(dataSyncURI())
@@ -198,7 +198,7 @@ class LocalContact: AndroidContact, LocalAddress {
                         .withValue(CachedGroupMembership.GROUP_ID, groupID)
                         .withYieldAllowed(true)
         ))
-        cachedGroupMemberships.add(groupID)
+        cachedGroupMemberships += groupID
     }
 
     fun removeGroupMemberships(batch: BatchOperation) {

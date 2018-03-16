@@ -33,7 +33,7 @@ import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import java.util.logging.Level
 
-abstract class BaseDavSyncManager<ResourceType: LocalResource, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
+abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
         context: Context,
         settings: ISettings,
         account: Account,
@@ -264,7 +264,7 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource, out CollectionTyp
     }
 
 
-    protected fun<T: LocalResource?, R> useLocal(local: T, body: (T) -> R): R {
+    protected fun<T: LocalResource<*>?, R> useLocal(local: T, body: (T) -> R): R {
         local?.let { currentLocalResource.push(it) }
         val result = body(local)
         local?.let { currentLocalResource.pop() }

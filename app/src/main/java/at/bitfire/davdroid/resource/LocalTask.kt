@@ -10,16 +10,14 @@ package at.bitfire.davdroid.resource
 
 import android.content.ContentProviderOperation
 import android.content.ContentValues
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.ical4android.AndroidTask
 import at.bitfire.ical4android.AndroidTaskFactory
 import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.Task
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.*
-import java.util.logging.Level
 
-class LocalTask: AndroidTask, LocalResource {
+class LocalTask: AndroidTask, LocalResource<Task> {
 
     companion object {
         const val COLUMN_ETAG = Tasks.SYNC1
@@ -57,7 +55,6 @@ class LocalTask: AndroidTask, LocalResource {
         builder .withValue(Tasks._SYNC_ID, fileName)
                 .withValue(COLUMN_ETAG, eTag)
                 .withValue(COLUMN_FLAGS, flags)
-        Logger.log.log(Level.FINE, "Built task object", builder.build())
     }
 
 
