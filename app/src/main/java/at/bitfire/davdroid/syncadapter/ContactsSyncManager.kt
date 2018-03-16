@@ -388,7 +388,7 @@ class ContactsSyncManager(
                 if (local is LocalGroup && newData.group) {
                     // update group
                     local.eTag = eTag
-                    local.updateFromServer(newData)
+                    local.update(newData)
                     syncResult.stats.numUpdates++
 
                 } else if (local is LocalContact && !newData.group) {
@@ -408,13 +408,13 @@ class ContactsSyncManager(
                 if (newData.group) {
                     Logger.log.log(Level.INFO, "Creating local group", newData)
                     useLocal(LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT), {
-                        it.create()
+                        it.add()
                         local = it
                     })
                 } else {
                     Logger.log.log(Level.INFO, "Creating local contact", newData)
                     useLocal(LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT), {
-                        it.create()
+                        it.add()
                         local = it
                     })
                 }

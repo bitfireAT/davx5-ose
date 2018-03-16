@@ -17,7 +17,7 @@ import at.bitfire.ical4android.*
 import net.fortuna.ical4j.model.property.ProdId
 import java.util.*
 
-class LocalEvent: AndroidEvent, LocalResource {
+class LocalEvent: AndroidEvent, LocalResource<Event> {
 
     companion object {
         init {

@@ -106,7 +106,7 @@ class TasksSyncManager(
         }
 
         val toDownload = changes.updated.map { it.location }
-        Logger.log.info("Downloading ${toDownload.size} resources (${MULTIGET_MAX_RESOURCES} at once)")
+        Logger.log.info("Downloading ${toDownload.size} resources ($MULTIGET_MAX_RESOURCES at once)")
 
         for (bunch in toDownload.chunked(MULTIGET_MAX_RESOURCES)) {
             if (bunch.size == 1)
@@ -158,7 +158,7 @@ class TasksSyncManager(
             // update local task, if it exists
             useLocal(localCollection.findByName(fileName), { local ->
                 if (local != null) {
-                    Logger.log.info("Updating $fileName in local tasklist")
+                    Logger.log.info("Updating $fileName in local task list")
                     local.eTag = eTag
                     local.update(newData)
                     syncResult.stats.numUpdates++

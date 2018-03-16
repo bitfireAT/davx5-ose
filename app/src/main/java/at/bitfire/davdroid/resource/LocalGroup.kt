@@ -56,7 +56,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
                     // delete all memberships and cached memberships for this group
                     for (contact in addressBook.getByGroupMembership(id)) {
                         contact.removeGroupMemberships(batch)
-                        changeContactIDs.add(contact.id!!)
+                        changeContactIDs += contact.id!!
                     }
 
                     // extract list of member UIDs
@@ -76,7 +76,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
                         Constants.log.fine("Assigning member: $uid")
                         addressBook.findContactByUID(uid)?.let { member ->
                             member.addToGroup(batch, id)
-                            changeContactIDs.add(member.id!!)
+                            changeContactIDs += member.id!!
                         } ?: Constants.log.warning("Group member not found: $uid")
                     }
 
@@ -230,7 +230,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
                 null
         )?.use { cursor ->
             while (cursor.moveToNext())
-                members.add(cursor.getLong(0))
+                members += cursor.getLong(0)
         }
         return members
     }
