@@ -153,7 +153,7 @@ class LocalCalendar private constructor(
                 "${Events.CALENDAR_ID}=? AND ${Events.DELETED}!=0 AND ${Events.ORIGINAL_ID} IS NOT NULL",
                 arrayOf(id.toString()), null)?.use { cursor ->
             while (cursor.moveToNext()) {
-                Logger.log.fine("Found deleted exception, removing; then re-scheduling original event")
+                Logger.log.fine("Found deleted exception, removing and re-scheduling original event (if available)")
                 val id = cursor.getLong(0)             // can't be null (by definition)
                 val originalID = cursor.getLong(1)     // can't be null (by query)
 
@@ -164,17 +164,20 @@ class LocalCalendar private constructor(
                         syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)),
                         arrayOf(LocalEvent.COLUMN_SEQUENCE),
                         null, null, null)?.use { cursor2 ->
-                    val originalSequence = if (cursor2.isNull(0)) 0 else cursor2.getInt(0)
+                    if (cursor2.moveToNext()) {
+                        // original event is available
+                        val originalSequence = if (cursor2.isNull(0)) 0 else cursor2.getInt(0)
 
-                    // re-schedule original event and set it to DIRTY
-                    batch.enqueue(BatchOperation.Operation(
-                            ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
-                                    .withValue(LocalEvent.COLUMN_SEQUENCE, originalSequence + 1)
-                                    .withValue(Events.DIRTY, 1)
-                    ))
+                        // re-schedule original event and set it to DIRTY
+                        batch.enqueue(BatchOperation.Operation(
+                                ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
+                                        .withValue(LocalEvent.COLUMN_SEQUENCE, originalSequence + 1)
+                                        .withValue(Events.DIRTY, 1)
+                        ))
+                    }
                 }
 
-                // remove exception
+                // completely remove deleted exception
                 batch.enqueue(BatchOperation.Operation(
                         ContentProviderOperation.newDelete(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id)))
                 ))
