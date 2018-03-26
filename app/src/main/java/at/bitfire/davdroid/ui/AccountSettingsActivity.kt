@@ -8,19 +8,24 @@
 
 package at.bitfire.davdroid.ui
 
+import android.Manifest
 import android.accounts.Account
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.SyncStatusObserver
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.CalendarContract
 import android.security.KeyChain
+import android.support.v4.app.ActivityCompat
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.LoaderManager
 import android.support.v4.app.NavUtils
+import android.support.v4.content.ContextCompat
 import android.support.v4.content.Loader
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -210,6 +215,13 @@ class AccountSettingsActivity: AppCompatActivity() {
                 loaderManager.restartLoader(0, arguments, this)
                 false
             }
+
+            // getting the WiFi name requires location permission (and active location services) since Android 8.1
+            // see https://issuetracker.google.com/issues/70633700
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 &&
+                accountSettings.getSyncWifiOnly() && onlySSIDs != null &&
+                ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 0)
 
             // preference group: CardDAV
             (findPreference("contact_group_method") as ListPreference).let {
