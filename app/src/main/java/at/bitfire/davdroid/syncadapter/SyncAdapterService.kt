@@ -8,21 +8,26 @@
 
 package at.bitfire.davdroid.syncadapter
 
+import android.Manifest
 import android.accounts.Account
 import android.app.PendingIntent
 import android.app.Service
 import android.content.*
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
+import android.support.v4.content.ContextCompat
 import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.ui.AccountActivity
+import at.bitfire.davdroid.ui.AccountSettingsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import org.apache.commons.collections4.IteratorUtils
 import java.util.*
@@ -101,15 +106,7 @@ abstract class SyncAdapterService: Service() {
             intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-            val notify = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_SYNC_ERRORS)
-                    .setSmallIcon(R.drawable.ic_sync_error_notification)
-                    .setContentTitle(context.getString(R.string.sync_error_permissions))
-                    .setContentText(context.getString(R.string.sync_error_permissions_text))
-                    .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
-                    .setCategory(NotificationCompat.CATEGORY_ERROR)
-                    .setAutoCancel(true)
-                    .build()
-            NotificationManagerCompat.from(context).notify(NotificationUtils.NOTIFY_PERMISSIONS, notify)
+            notifyPermissions(intent)
         }
 
         protected fun checkSyncConditions(settings: AccountSettings): Boolean {
@@ -122,6 +119,17 @@ abstract class SyncAdapterService: Service() {
                 }
 
                 settings.getSyncWifiOnlySSIDs()?.let { onlySSIDs ->
+                    // getting the WiFi name requires location permission (and active location services) since Android 8.1
+                    // see https://issuetracker.google.com/issues/70633700
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 &&
+                        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        val intent = Intent(context, AccountSettingsActivity::class.java)
+                        intent.putExtra(AccountActivity.EXTRA_ACCOUNT, settings.account)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+                        notifyPermissions(intent)
+                    }
+
                     val wifi = context.applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
                     val info = wifi.connectionInfo
                     if (info == null || !onlySSIDs.contains(info.ssid.trim('"'))) {
@@ -131,6 +139,18 @@ abstract class SyncAdapterService: Service() {
                 }
             }
             return true
+        }
+
+        private fun notifyPermissions(intent: Intent) {
+            val notify = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_SYNC_ERRORS)
+                    .setSmallIcon(R.drawable.ic_sync_error_notification)
+                    .setContentTitle(context.getString(R.string.sync_error_permissions))
+                    .setContentText(context.getString(R.string.sync_error_permissions_text))
+                    .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
+                    .setCategory(NotificationCompat.CATEGORY_ERROR)
+                    .setAutoCancel(true)
+                    .build()
+            NotificationManagerCompat.from(context).notify(NotificationUtils.NOTIFY_PERMISSIONS, notify)
         }
 
     }
