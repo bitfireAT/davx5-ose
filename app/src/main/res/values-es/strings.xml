@@ -17,9 +17,7 @@
   <string name="startup_donate_later">Quizás luego</string>
   <string name="startup_google_play_accounts_removed">Información de error de DRM de Play Store</string>
   <string name="startup_google_play_accounts_removed_message">Bajo ciertas condiciones, el DRM de Play Store puede causar que todas las cuentas de DAVdroid se desconfiguren tras un reinicio o una actualización de DAVdroid. Si esto le afecta (y sólo en ese caso), por favor, instale \"DAVdroid JB Workaround\" desde Play Store.</string>
-  <string name="startup_google_play_accounts_removed_more_info">Más información</string>
   <string name="startup_opentasks_not_installed">OpenTasks no está instalado</string>
-  <string name="startup_opentasks_not_installed_message">La aplicación OpenTasks no está disponible. DAVdroid no podrá sincronizar listas de tareas.</string>
   <string name="startup_opentasks_reinstall_davdroid">Tras instalar OpenTasks, tendrás que re-instalar DAVdroid y añadir tus cuentas de nuevo (por un error de Android).</string>
   <string name="startup_opentasks_not_installed_install">Instalar OpenTasks</string>
   <!--AboutActivity-->
@@ -84,17 +82,6 @@
   <string name="account_create_new_address_book">Crear nueva lista de contactos</string>
   <string name="account_refresh_calendar_list">Refrescar calendario</string>
   <string name="account_create_new_calendar">Crear nuevo calendario</string>
-  <!--PermissionsActivity-->
-  <string name="permissions_title">Permisos de DAVdroid</string>
-  <string name="permissions_calendar">Permisos de calendario</string>
-  <string name="permissions_calendar_details">Para sincronizar eventos CalDAV con tus calendarios locales, DAVdroid necesita acceder a los mismos.</string>
-  <string name="permissions_calendar_request">Solicitar permisos sobre calendario</string>
-  <string name="permissions_contacts">Permisos de contactos</string>
-  <string name="permissions_contacts_details">Para sincronizar libretas de contactos CadDAV con tus contactos locales, DAVdroid necesita acceder a los mismos.</string>
-  <string name="permissions_contacts_request">Solicitar permisos sobre contactos</string>
-  <string name="permissions_opentasks">Permisos de OpenTasks</string>
-  <string name="permissions_opentasks_details">Para sincronizar listas de tareas CalDAV con tus listas de tareas locales, DAVdroid necesita acceder a OpenTasks.</string>
-  <string name="permissions_opentasks_request">Solicitar permisos sobre OpenTasks</string>
   <!--AddAccountActivity-->
   <string name="login_title">Añadir cuenta</string>
   <string name="login_type_email">Acceder con cuenta de correo</string>
@@ -188,27 +175,6 @@
   <string name="debug_info_title">Información de depuración</string>
   <string name="sync_error_permissions">Permisos de DAVdroid</string>
   <string name="sync_error_permissions_text">Permisos adicionales requeridos</string>
-  <string name="sync_error_calendar">La sincronización de calendario falló (%s)</string>
-  <string name="sync_error_contacts">La sincronización de agenda falló (%s)</string>
-  <string name="sync_error_tasks">La sincronización de tareas falló (%s)</string>
-  <string name="sync_error">Error al %s</string>
-  <string name="sync_error_http_dav">Error de servidor al %s</string>
-  <string name="sync_error_local_storage">Error de base de datos al %s</string>
-  <string-array name="sync_error_phases">
-    <item>preparando sincronización</item>
-    <item>buscando capacidades</item>
-    <item>procesando entradas borradas localmente</item>
-    <item>preparando entradas creadas/modificadas</item>
-    <item>cargando entradas creadas/modificadas</item>
-    <item>comprobando estado de sincronización</item>
-    <item>enumerando entradas locales</item>
-    <item>enumerando entradas remotas</item>
-    <item>comparando entradas locales/remotas</item>
-    <item>descargando entradas remotas</item>
-    <item>post-procesando</item>
-    <item>guardando estado de sincronización</item>
-  </string-array>
-  <string name="sync_error_unauthorized">Nombre de usuario/contraseña erróneo</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid: Seguridad de conexión</string>
   <string name="trust_certificate_unknown_certificate_found">DAVdroid ha encontrado un certificado desconocido. ¿Quieres que sea válido?</string>

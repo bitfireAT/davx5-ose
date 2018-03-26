@@ -11,8 +11,6 @@
   <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
   <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <string name="notification_channel_debugging">调试</string>
-  <string name="notification_channel_sync_status">同步状态</string>
-  <string name="notification_channel_sync_problems">同步错误</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">电池优化</string>
   <string name="startup_battery_optimization_message">系统可能会在几天后减少或停用 DAVdroid 同步。为了避免这一情况，请禁用对 DAVdroid 的电池优化。</string>
@@ -24,9 +22,7 @@
   <string name="startup_donate_later">稍后提示</string>
   <string name="startup_google_play_accounts_removed">Play 商店 DRM 问题提醒</string>
   <string name="startup_google_play_accounts_removed_message">在某些情况下，Play 商店的 DRM 可能会导致所有 DAVdroid 账户在设备重启或升级 DAVdroid 后消失。如果你遇到了该问题，请从 Play 商店安装“DAVdroid JB Workaround”，否则请不要安装修复程序。</string>
-  <string name="startup_google_play_accounts_removed_more_info">更多信息</string>
   <string name="startup_opentasks_not_installed">OpenTasks 未安装</string>
-  <string name="startup_opentasks_not_installed_message">未安装 OpenTasks 应用，故 DAVdroid 无法同步任务列表。</string>
   <string name="startup_opentasks_reinstall_davdroid">安装 OpenTasks 后，由于 Android 的限制，请重新安装 DAVdroid 并重新创建账户。</string>
   <string name="startup_opentasks_not_installed_install">安装 OpenTasks</string>
   <!--AboutActivity-->
@@ -105,18 +101,6 @@
   <string name="account_create_new_calendar">创建日历</string>
   <string name="account_no_webcal_handler_found">找不到支持 Webcal 的应用</string>
   <string name="account_install_icsdroid">安装 ICSdroid</string>
-  <string name="account_read_only_address_book_selected">这是只读通讯录，本地修改会被自动撤销！</string>
-  <!--PermissionsActivity-->
-  <string name="permissions_title">DAVdroid 权限</string>
-  <string name="permissions_calendar">日历权限</string>
-  <string name="permissions_calendar_details">要把 CalDAV 事件与本地日历同步，DAVdroid 需要日历权限。</string>
-  <string name="permissions_calendar_request">请求日历权限</string>
-  <string name="permissions_contacts">通讯录权限</string>
-  <string name="permissions_contacts_details">要把 CardDAV 通讯录与本地通讯录同步，DAVdroid 需要通讯录权限。</string>
-  <string name="permissions_contacts_request">请求通讯录权限</string>
-  <string name="permissions_opentasks">OpenTasks 权限</string>
-  <string name="permissions_opentasks_details">要把 CalDAV 任务与本地任务列表同步，DAVdroid 需要访问 OpenTasks。</string>
-  <string name="permissions_opentasks_request">请求 OpenTasks 权限</string>
   <!--AddAccountActivity-->
   <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
   <string name="login_title">增加账户</string>
@@ -240,27 +224,6 @@
   <string name="sync_error_permissions_text">需要额外权限</string>
   <string name="sync_error_opentasks_too_old">OpenTasks 版本太旧</string>
   <string name="sync_error_opentasks_required_version">最低版本 %1$s （当前 %2$s）</string>
-  <string name="sync_error_calendar">日历同步失败（%s）</string>
-  <string name="sync_error_contacts">通讯录同步失败（%s）</string>
-  <string name="sync_error_tasks">任务同步失败（%s）</string>
-  <string name="sync_error">%s时错误</string>
-  <string name="sync_error_http_dav">%s时服务器错误</string>
-  <string name="sync_error_local_storage">%s时数据库错误</string>
-  <string-array name="sync_error_phases">
-    <item>准备同步</item>
-    <item>请求功能列表</item>
-    <item>处理本地删除项目</item>
-    <item>准备创建/修改项目</item>
-    <item>上传创建/修改项目</item>
-    <item>检查同步状态</item>
-    <item>检查本地数据</item>
-    <item>检查远程数据</item>
-    <item>比较本地和远程数据</item>
-    <item>下载远程数据</item>
-    <item>预处理</item>
-    <item>保存同步状态</item>
-  </string-array>
-  <string name="sync_error_unauthorized">用户名或密码错误</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid: 连接安全性</string>
   <string name="trust_certificate_unknown_certificate_found">DAVdroid 遇到了未知证书。你是否要信任该证书？</string>

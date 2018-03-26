@@ -19,9 +19,7 @@
   <string name="startup_donate_later">Можда касније</string>
   <string name="startup_google_play_accounts_removed">Грешка ДРМ-а Плеј продавнице</string>
   <string name="startup_google_play_accounts_removed_message">Под одређеним околностима ДРМ Плеј продавнице може да узрокује да сви налози ДАВдроида нестане након рестарта или ажурирања ДАВдроида. Ако и само ако имате овај проблем, инсталирајте „DAVdroid JB Workaround“ са Плеј продавнице.</string>
-  <string name="startup_google_play_accounts_removed_more_info">Још информација</string>
   <string name="startup_opentasks_not_installed">Отворени задаци нису инсталирани</string>
-  <string name="startup_opentasks_not_installed_message">Отворени задаци нису доступни па ДАВдроид неће моћи да синхронизује листе задатака. </string>
   <string name="startup_opentasks_reinstall_davdroid">Након инсталирања Отворених задатака, морате поново да инсталирате ДАВдроид и поново додате ваше налоге (због грешке у Андроиду).</string>
   <string name="startup_opentasks_not_installed_install">Инсталирај Отворене задатке</string>
   <!--AboutActivity-->
@@ -88,17 +86,6 @@
   <string name="account_create_new_address_book">Направи нови адресар</string>
   <string name="account_refresh_calendar_list">Освежи списак календара</string>
   <string name="account_create_new_calendar">Направи нови календар</string>
-  <!--PermissionsActivity-->
-  <string name="permissions_title">ДАВдроид дозволе</string>
-  <string name="permissions_calendar">Дозволе за календар</string>
-  <string name="permissions_calendar_details">Да би синхронизовао КалДАВ догађаје са вашим локалним календарима, ДАВдроиду треба приступ вашим календарима.</string>
-  <string name="permissions_calendar_request">Захтевај дозволе за календар</string>
-  <string name="permissions_contacts">Дозволе за контакте</string>
-  <string name="permissions_contacts_details">Да би синхронизовао КардДАВ адресаре са вашим локалним контактима, ДАВдроиду треба приступ вашим контактима.</string>
-  <string name="permissions_contacts_request">Захтевај дозволе за контакте</string>
-  <string name="permissions_opentasks">Дозволе за задатке</string>
-  <string name="permissions_opentasks_details">Да би синхронизовао КалДАВ задатке са вашим локалним листама задатака, ДАВдроиду треба приступ Задацима.</string>
-  <string name="permissions_opentasks_request">Захтевај дозволе за задатке</string>
   <!--AddAccountActivity-->
   <string name="login_title">Додај налог</string>
   <string name="login_type_email">Пријавите се адресом е-поште</string>
@@ -193,27 +180,6 @@
   <string name="debug_info_title">Подаци за исправљање грешака</string>
   <string name="sync_error_permissions">ДАВдроид дозволе</string>
   <string name="sync_error_permissions_text">Потребне су додатне доволе</string>
-  <string name="sync_error_calendar">Синхронизација календара није успела (%s)</string>
-  <string name="sync_error_contacts">Синхронизација адресара није успела (%s)</string>
-  <string name="sync_error_tasks">Синхронизација задатака није успела (%s)</string>
-  <string name="sync_error">Грешка током %s</string>
-  <string name="sync_error_http_dav">Грешка сервера током %s</string>
-  <string name="sync_error_local_storage">Грешка базе података током %s</string>
-  <string-array name="sync_error_phases">
-    <item>припремам синхронизацију</item>
-    <item>проверавам могућности</item>
-    <item>обрађујем локално обрисане уносе</item>
-    <item>припремам направљене/измењене уносе</item>
-    <item>отпремам направљене/измењене уносе</item>
-    <item>проверавам стање синхронизације</item>
-    <item>излиставам локалне уносе</item>
-    <item>излиставам удаљене уносе</item>
-    <item>упоређујем локалне/удаљене уносе</item>
-    <item>преузимам удаљене уносе</item>
-    <item>додатна обрада</item>
-    <item>уписујем стање синхронизације</item>
-  </string-array>
-  <string name="sync_error_unauthorized">Корисничко име или лозинка погрешни</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">ДАВдроид: Безбедност везе</string>
   <string name="trust_certificate_unknown_certificate_found">ДАВдроид је наишао на непознат сертификат. Желите ли да се поуздате у њега?</string>

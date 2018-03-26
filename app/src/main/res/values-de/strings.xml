@@ -8,11 +8,17 @@
   <string name="manage_accounts">Konten verwalten</string>
   <string name="please_wait">Bitte warten …</string>
   <string name="send">Senden</string>
+  <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
   <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <string name="notification_channel_debugging">Fehlersuche</string>
-  <string name="notification_channel_sync_status">Sync-Status</string>
-  <string name="notification_channel_sync_problems">Sync-Probleme</string>
+  <string name="notification_channel_general">Andere wichtige Mitteilungen</string>
+  <string name="notification_channel_sync">Synchronisierung</string>
+  <string name="notification_channel_sync_errors">Synchronisierungsfehler</string>
+  <string name="notification_channel_sync_io_errors">Netzwerk- und E/A-Fehler</string>
+  <string name="notification_channel_sync_status">Status-Mitteilungen</string>
   <!--startup dialogs-->
+  <string name="startup_autostart_permission">%s Auto-Start-Berechtigung</string>
+  <string name="startup_autostart_permission_message">Automatische Synchronisierung wird möglicherweise von Ihrer Geräte-Firmware verhindert. In diesem Fall müssen Sie die automatische Synchronisierung manuell erlauben.</string>
   <string name="startup_battery_optimization">Akku-Leistungsoptimierung</string>
   <string name="startup_battery_optimization_message">Android kann die DAVdroid-Synchronisierung in ein paar Tagen reduzieren/deaktivieren. Um dies zu verhindern, muss die Akku-Leistungsoptimierung deaktiviert werden.</string>
   <string name="startup_battery_optimization_disable">Für DAVdroid deaktivieren</string>
@@ -23,9 +29,9 @@
   <string name="startup_donate_later">Vielleicht später</string>
   <string name="startup_google_play_accounts_removed">Möglicher Play Store DRM-Fehler</string>
   <string name="startup_google_play_accounts_removed_message">Unter bestimmten Umständen verursacht die zwangsweise Play Store-Verschlüsselung, dass Accounts nach einem Neustart oder einem DAVdroid-Update verschwinden. Installieren Sie \"DAVdroid JB Workaround\", falls Sie von dem Problem betroffen sind.</string>
-  <string name="startup_google_play_accounts_removed_more_info">Weitere Infos</string>
+  <string name="startup_more_info">Mehr Infos</string>
   <string name="startup_opentasks_not_installed">OpenTasks nicht installiert</string>
-  <string name="startup_opentasks_not_installed_message">Die OpenTasks-App ist nicht verfügbar; Aufgabenlisten können also nicht synchronisiert werden.</string>
+  <string name="startup_opentasks_not_installed_message">Für die Synchronisierung von Aufgaben wird die freie App OpenTasks benötigt. (Nicht benötigt für Kontakte/Termine.)</string>
   <string name="startup_opentasks_reinstall_davdroid">Nach der Installation von OpenTasks muss DAVdroid NEU INSTALLIERT und die Konten neu hinzugefügt werden (Android-Bug).</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks installieren</string>
   <!--AboutActivity-->
@@ -104,19 +110,8 @@
   <string name="account_create_new_calendar">Neuen Kalender erstellen</string>
   <string name="account_no_webcal_handler_found">Keine Webcal-App gefunden</string>
   <string name="account_install_icsdroid">ICSdroid installieren</string>
-  <string name="account_read_only_address_book_selected">Schreibgeschütztes Adressbuch – lokale Änderungen werden verworfen!</string>
-  <!--PermissionsActivity-->
-  <string name="permissions_title">DAVdroid-Berechtigungen</string>
-  <string name="permissions_calendar">Kalender-Zugriff</string>
-  <string name="permissions_calendar_details">Um CalDAV-Termine mit lokalen Kalendern abzugleichen, benötigt DAVdroid Kalender-Zugriffsrechte.</string>
-  <string name="permissions_calendar_request">Kalender-Zugriff anfordern</string>
-  <string name="permissions_contacts">Adressbuch-Zugriff</string>
-  <string name="permissions_contacts_details">Um CardDAV-Kontakte mit dem lokalen Adressbuch abzugleichen, benötigt DAVdroid Adressbuch-Zugriffsrechte.</string>
-  <string name="permissions_contacts_request">Adressbuch-Zugriff anfordern</string>
-  <string name="permissions_opentasks">OpenTasks-Zugriff</string>
-  <string name="permissions_opentasks_details">Um CalDAV-Aufgaben mit lokalen Aufgabenlisten abzugleichen, benötigt DAVdroid Zugriffsrechte für OpenTasks.</string>
-  <string name="permissions_opentasks_request">OpenTasks-Zugriff anfordern</string>
   <!--AddAccountActivity-->
+  <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
   <string name="login_title">Konto hinzufügen</string>
   <string name="login_type_email">Mit Email-Adresse anmelden</string>
   <string name="login_email_address">Email-Adresse</string>
@@ -240,27 +235,12 @@
   <string name="sync_error_permissions_text">Zusätzliche Berechtigungen benötigt</string>
   <string name="sync_error_opentasks_too_old">OpenTasks zu alt</string>
   <string name="sync_error_opentasks_required_version">Version %1$s benötigt (derzeit %2$s)</string>
-  <string name="sync_error_calendar">Kalender-Synchronisierung fehlgeschlagen (%s)</string>
-  <string name="sync_error_contacts">Adressbuch-Synchronisierung fehlgeschlagen (%s)</string>
-  <string name="sync_error_tasks">Aufgaben-Synchronisierung fehlgeschlagen (%s)</string>
-  <string name="sync_error">Fehler beim %s</string>
-  <string name="sync_error_http_dav">Serverfehler beim %s</string>
-  <string name="sync_error_local_storage">Datenbank-Fehler beim %s</string>
-  <string-array name="sync_error_phases">
-    <item>Vorbereiten der Synchronisierung</item>
-    <item>Abfragen der Server-Fähigkeiten</item>
-    <item>Verarbeiten lokal gelöschter Einträge</item>
-    <item>Vorbereiten neuer/geänderter Einträge</item>
-    <item>Hochladen neuer/geänderter Einträge</item>
-    <item>Abfragen des Synchronisierungs-Zustands</item>
-    <item>Auflisten lokaler Einträge</item>
-    <item>Auflisten der Server-Einträge</item>
-    <item>Vergleich lokaler/Server-Einträge</item>
-    <item>Herunterladen von Server-Einträgen</item>
-    <item>Nachverarbeitung</item>
-    <item>Speichern des Synchronisierungzustands</item>
-  </string-array>
-  <string name="sync_error_unauthorized">Benutzername/Passwort falsch</string>
+  <string name="sync_error_authentication_failed">Anmeldungsfehler (Login-Daten überprüfen)</string>
+  <string name="sync_error_io">Netzwerk- oder E/A-Fehler – %s</string>
+  <string name="sync_error_http_dav">HTTP-Serverfehler – %s</string>
+  <string name="sync_error_local_storage">Lokaler Speicherfehler – %s</string>
+  <string name="sync_error_retry">Wiederholen</string>
+  <string name="sync_error_view_item">Untersuchen</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid: Verbindungssicherheit</string>
   <string name="trust_certificate_unknown_certificate_found">DAVdroid ist auf ein unbekanntes Zertifikat gestoßen. Ist dieses vertrauenswürdig?</string>

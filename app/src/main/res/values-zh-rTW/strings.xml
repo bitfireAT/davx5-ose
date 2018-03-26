@@ -19,9 +19,7 @@
   <string name="startup_donate_later">下次再說</string>
   <string name="startup_google_play_accounts_removed">Play商店數位權利管理錯誤訊息</string>
   <string name="startup_google_play_accounts_removed_message">在某些情況下，Play商店 的數位權利管理可能導致在重開機後或更新 DAVdroid 後，DAVdroid 全部帳號消失。如果您遇到此問題 (且只有在遇到此問題時)，請到 Play商店 安裝 \"DAVdroid JB Workaround\"。</string>
-  <string name="startup_google_play_accounts_removed_more_info">更多資訊</string>
   <string name="startup_opentasks_not_installed">OpenTasks 未安裝</string>
-  <string name="startup_opentasks_not_installed_message">OpenTasks 這個 app 不存在您的裝置上，所以 DAVdroid 無法同步工作清單。</string>
   <string name="startup_opentasks_reinstall_davdroid">安裝 OpenTasks 後，您必須｢重新安裝｣ DAVdroid 並且重新加入要同步的帳號 (這是 Android 的設計問題)</string>
   <string name="startup_opentasks_not_installed_install">安裝 OpenTasks</string>
   <!--AboutActivity-->
@@ -87,17 +85,6 @@
   <string name="account_create_new_address_book">建立新的通訊錄</string>
   <string name="account_refresh_calendar_list">刷新行事曆清單</string>
   <string name="account_create_new_calendar">建立新的行事曆</string>
-  <!--PermissionsActivity-->
-  <string name="permissions_title">DAVdroid 權限</string>
-  <string name="permissions_calendar">行事曆權限</string>
-  <string name="permissions_calendar_details">為了將 CalDAV 行事曆與您裝置上的行事曆同步，DAVdroid 需要存取行事曆的權限。</string>
-  <string name="permissions_calendar_request">要求行事曆權限</string>
-  <string name="permissions_contacts">通訊錄權限</string>
-  <string name="permissions_contacts_details">為了將 CardDAV 通訊錄與您裝置上的通訊錄同步，DAVdroid 需要存取通訊錄的權限。</string>
-  <string name="permissions_contacts_request">要求通訊錄權限</string>
-  <string name="permissions_opentasks">OpenTasks 權限</string>
-  <string name="permissions_opentasks_details">為了將 CalDAV 工作清單與您裝置上的工作清單同步，DAVdroid 需要存取 OpenTasks 的權限。</string>
-  <string name="permissions_opentasks_request">要求 OpenTasks 權限</string>
   <!--AddAccountActivity-->
   <string name="login_title">新增帳號</string>
   <string name="login_type_email">用 Email 地址登入</string>
@@ -190,27 +177,6 @@
   <string name="debug_info_title">除錯訊息</string>
   <string name="sync_error_permissions">DAVdroid 權限</string>
   <string name="sync_error_permissions_text">需要額外的權限</string>
-  <string name="sync_error_calendar">行事曆同步失敗 (%s)</string>
-  <string name="sync_error_contacts">通訊錄同步失敗 (%s)</string>
-  <string name="sync_error_tasks">工作清單同步失敗 (%s)</string>
-  <string name="sync_error">在 %s 發生錯誤</string>
-  <string name="sync_error_http_dav">在 %s 發生伺服器錯誤</string>
-  <string name="sync_error_local_storage">在 %s 發生資料庫錯誤</string>
-  <string-array name="sync_error_phases">
-    <item>準備同步</item>
-    <item>詢問能力</item>
-    <item>處理裝置上的項目刪除</item>
-    <item>準備新建 / 修改項目</item>
-    <item>上傳新建 / 修改的項目</item>
-    <item>檢查同步狀態</item>
-    <item>列出裝置上項目</item>
-    <item>列出伺服器上項目</item>
-    <item>比對裝置上 / 伺服器上項目</item>
-    <item>從伺服器下載項目</item>
-    <item>傳輸後處理中</item>
-    <item>儲存同步狀態</item>
-  </string-array>
-  <string name="sync_error_unauthorized">使用者帳號 / 密碼錯誤</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid: 連線安全性</string>
   <string name="trust_certificate_unknown_certificate_found">DAVdroid 發現未知的憑證，您要信任它嗎?</string>
