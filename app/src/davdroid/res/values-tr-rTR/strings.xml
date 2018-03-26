@@ -14,9 +14,7 @@
   <string name="startup_donate_later">Belki sonra</string>
   <string name="startup_google_play_accounts_removed">Play Store DRM hata bilgisi</string>
   <string name="startup_google_play_accounts_removed_message">Bazı durumlarda Play Store DRM\'i, cihazı yeniden başlatınca veya DAVdroid\'i yükseltince DAVdroid hesaplarının yokolmasına sebep olabiliyor. Bu sorundan etkileniyorsan (ve sadece bu durumda), lütfen Play Store\'daki \"DAVdroid JB Workaround\" uygulamasını kur.</string>
-  <string name="startup_google_play_accounts_removed_more_info">Daha fazla bilgi</string>
   <string name="startup_opentasks_not_installed">OpenTasks kurulu değil</string>
-  <string name="startup_opentasks_not_installed_message">OpenTasks uygulaması yok, dolayısıyla DAVdroid iş listelerini senkronize edemeyecektir.</string>
   <string name="startup_opentasks_reinstall_davdroid">OpenTasks\'i kurduktan sonra, DAVdroid\'i YENİDEN KURMAN ve hesaplarını yeniden eklemen gerek. (Android hatası).</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks kur</string>
   <!--AboutActivity-->
@@ -66,18 +64,6 @@
   <string name="account_create_new_address_book">Yeni rehber oluştur</string>
   <string name="account_refresh_calendar_list">Takvim listesini yenile</string>
   <string name="account_create_new_calendar">Yeni takvim oluştur</string>
-  <!--PermissionsActivity-->
-  <string name="permissions_title">DAVdroid izinleri</string>
-  <string name="permissions_calendar">Takvim izinleri</string>
-  <string name="permissions_calendar_details">Takvim (sadece olaylar)
-</string>
-  <string name="permissions_calendar_request">Takvim izinleri iste</string>
-  <string name="permissions_contacts">Kişiler izinleri</string>
-  <string name="permissions_contacts_details">CardDAV rehberlerinin cihazınızdaki kişilerinizle senkronize edebilmek için, DAVdroid cihazınızdaki kişilerinize erişime ihtiyacı vardır.</string>
-  <string name="permissions_contacts_request">Kişiler izinleri iste</string>
-  <string name="permissions_opentasks">OpenTasks izinleri</string>
-  <string name="permissions_opentasks_details">CalDav iş listelerinizi yerel iş listelerinizle senkronize edebilmek için DAVdroid\'in OpenTasks\'e erişime ihtiyacı vardır.</string>
-  <string name="permissions_opentasks_request">OpenTasks izinleri iste</string>
   <!--AddAccountActivity-->
   <string name="login_title">Hesap ekle</string>
   <string name="login_type_email">Eposta adresi ile giriş yap</string>
@@ -123,6 +109,7 @@
   <string name="settings_sync_time_range_past">Geçmiş olay zaman sınırı</string>
   <string name="settings_sync_time_range_past_none">Tüm olaylar senkronize edilecek</string>
   <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">%d günden daha eski olaylar göz ardı edilecektir</item>
     <item quantity="other">%d günden daha eski olaylar göz ardı edilecektir</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Bu sayıdan daha eski olan olaylar yok sayılacaktır (0 olabilir). Tüm olayları senkronize etmek için boş bırak.</string>
@@ -160,12 +147,5 @@
   <string name="debug_info_title">Hata ayıklama bilgisi</string>
   <string name="sync_error_permissions">DAVdroid izinleri</string>
   <string name="sync_error_permissions_text">Ek izinler zorunludur</string>
-  <string name="sync_error_calendar">Takvim senkronizasyonu başarısız (%s)</string>
-  <string name="sync_error_contacts">Rehber senkronizasyonu başarısız (%s)</string>
-  <string name="sync_error_tasks">İş senkronizasyonu başarısız (%s)</string>
-  <string name="sync_error">%s yaparken hata</string>
-  <string name="sync_error_http_dav">%s yaparken sunucu hatası</string>
-  <string name="sync_error_local_storage">%s yaparken veritabanı hatası</string>
-  <string name="sync_error_unauthorized">Kullanıcı adı/parola yanlış</string>
   <!--cert4android-->
 </resources>

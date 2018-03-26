@@ -11,8 +11,6 @@
   <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
   <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <string name="notification_channel_debugging">デバッグ中</string>
-  <string name="notification_channel_sync_status">同期ステータス</string>
-  <string name="notification_channel_sync_problems">同期の問題</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">バッテリー最適化</string>
   <string name="startup_battery_optimization_message">Android は数日後に DAVdroid の同期を無効にする/減らすことがあります。これを防止するには、バッテリー最適化をオフにしてください。</string>
@@ -24,9 +22,7 @@
   <string name="startup_donate_later">たぶん後で</string>
   <string name="startup_google_play_accounts_removed">Play ストア DRM バグ情報</string>
   <string name="startup_google_play_accounts_removed_message">特定の条件下で、DAVdroid を再起動後またはアップグレードした後、Play ストア DRM によりすべての DAVdroid アカウントがなくなる可能性があります。この問題の影響を受けている場合 (のみ)、Play ストアから「DAVdroid JB 回避策」をインストールしてください。</string>
-  <string name="startup_google_play_accounts_removed_more_info">追加情報</string>
   <string name="startup_opentasks_not_installed">OpenTasks がインストールされていません</string>
-  <string name="startup_opentasks_not_installed_message">OpenTasks アプリが利用できないため、DAVdroid はタスクリストを同期することができません。</string>
   <string name="startup_opentasks_reinstall_davdroid">OpenTasks をインストールした後で、DAVdroidを再インストールして、再度アカウントを追加してください (Android のバグ)。</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks をインストール</string>
   <!--AboutActivity-->
@@ -105,18 +101,6 @@
   <string name="account_create_new_calendar">新しいカレンダーを作成</string>
   <string name="account_no_webcal_handler_found">Webcal に対応するアプリが見つかりません</string>
   <string name="account_install_icsdroid">ICSdroid をインストール</string>
-  <string name="account_read_only_address_book_selected">読み取り専用のアドレス帳 – ローカルの変更は破棄されます!</string>
-  <!--PermissionsActivity-->
-  <string name="permissions_title">DAVdroid アクセス許可</string>
-  <string name="permissions_calendar">カレンダー アクセス許可</string>
-  <string name="permissions_calendar_details">ローカルのカレンダーと CalDAV イベントを同期するため、DAVdroid がカレンダーにアクセスする必要があります。</string>
-  <string name="permissions_calendar_request">カレンダー アクセス許可の要求</string>
-  <string name="permissions_contacts">連絡先アクセス許可</string>
-  <string name="permissions_contacts_details">ローカルの連絡先と CalDAV アドレス帳を同期するため、DAVdroid が連絡先にアクセスする必要があります。</string>
-  <string name="permissions_contacts_request">連絡先アクセス許可の要求</string>
-  <string name="permissions_opentasks">OpenTasks アクセス許可</string>
-  <string name="permissions_opentasks_details">ローカルのタスクリストと CalDAV タスクを同期するため、DAVdroid が OpenTasks にアクセスする必要があります。</string>
-  <string name="permissions_opentasks_request">OpenTasks アクセス許可の要求</string>
   <!--AddAccountActivity-->
   <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
   <string name="login_title">アカウントを追加</string>
@@ -240,27 +224,6 @@
   <string name="sync_error_permissions_text">追加のアクセス許可が必要です</string>
   <string name="sync_error_opentasks_too_old">OpenTasks が古すぎます</string>
   <string name="sync_error_opentasks_required_version">必要なバージョン: %1$s (現在 %2$s)</string>
-  <string name="sync_error_calendar">カレンダーの同期に失敗しました (%s)</string>
-  <string name="sync_error_contacts">アドレス帳の同期に失敗しました (%s)</string>
-  <string name="sync_error_tasks">タスクの同期に失敗しました (%s)</string>
-  <string name="sync_error">%s 時にエラー</string>
-  <string name="sync_error_http_dav">%s 時にサーバーエラー</string>
-  <string name="sync_error_local_storage">%s 時にデータベースエラー</string>
-  <string-array name="sync_error_phases">
-    <item>同期の準備中</item>
-    <item>機能の問い合わせ中</item>
-    <item>ローカルで削除されたエントリーの処理中</item>
-    <item>作成済/更新済エントリーの準備中</item>
-    <item>作成済/更新済エントリーのアップロード中</item>
-    <item>同期の状態を確認中</item>
-    <item>ローカルのエントリーをリスト中</item>
-    <item>リモートのエントリーをリスト中</item>
-    <item>ローカル/リモートのエントリーを比較中</item>
-    <item>リモートのエントリーをダウンロード中</item>
-    <item>後処理中</item>
-    <item>同期の状態を保存中</item>
-  </string-array>
-  <string name="sync_error_unauthorized">ユーザー名/パスワードが間違っています</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid: 接続セキュリティ</string>
   <string name="trust_certificate_unknown_certificate_found">DAVdroidは、未知の証明書を検出しました。それを信頼しますか?</string>

@@ -20,9 +20,7 @@
   <string name="startup_donate_later">Misschien later</string>
   <string name="startup_google_play_accounts_removed">Play Store DRM fout-informatie</string>
   <string name="startup_google_play_accounts_removed_message">Onder bepaalde omstandigheden, kan Play Store DRM ervoor zorgen dat accounts kwijt zijn na een herstart of na een DAVdroid update. Als dit probleem zich bij je voordoet (en alleen dan), Installeer dan \"DAVdroid JB Workaround\" vanuit de Play Store</string>
-  <string name="startup_google_play_accounts_removed_more_info">Meer informatie</string>
   <string name="startup_opentasks_not_installed">OpenTasks niet geinstalleerd</string>
-  <string name="startup_opentasks_not_installed_message">De OpenTasks app is niet beschikbaar, Hierdoor is het voor DAVdroid niet mogelijk om uw taken te synchroniseren.</string>
   <string name="startup_opentasks_reinstall_davdroid">Na installatie van OpenTasks dient u DAVdroid opnieuw te installeren en de accounts toe te voegen (Android bug).</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks installeren</string>
   <!--AboutActivity-->
@@ -96,17 +94,6 @@
   <string name="account_create_new_calendar">Maak een nieuwe agenda</string>
   <string name="account_no_webcal_handler_found">Geen mogelijke Webcal app gevonden</string>
   <string name="account_install_icsdroid">ICSdroid installeren</string>
-  <!--PermissionsActivity-->
-  <string name="permissions_title">DAVdroid rechten</string>
-  <string name="permissions_calendar">Agenda rechten</string>
-  <string name="permissions_calendar_details">Om CalDAV afspraken te synchroniseren met u agenda dient DAVdroid toegang te verkrijgen. </string>
-  <string name="permissions_calendar_request">Agenda rechten verkrijgen</string>
-  <string name="permissions_contacts">Contact rechten</string>
-  <string name="permissions_contacts_details">Om CalDAV afspraken te synchroniseren met u contacten dient DAVdroid toegang te verkrijgen. </string>
-  <string name="permissions_contacts_request">Contacten rechten verkrijgen</string>
-  <string name="permissions_opentasks">OpenTasks rechten</string>
-  <string name="permissions_opentasks_details">Om CalDAV taken te synchroniseren met uw local takenlijst dient DAVdroid toegang te hebben tot OpenTasks</string>
-  <string name="permissions_opentasks_request">OpenTasks rechten verkrijgen</string>
   <!--AddAccountActivity-->
   <string name="login_title">Account toevoegen</string>
   <string name="login_type_email">Inloggen met e-mailadres</string>
@@ -207,27 +194,6 @@
   <string name="sync_contacts_read_only_address_book">Alleen-lezen adresboek</string>
   <string name="sync_error_permissions">DAVdroid rechten</string>
   <string name="sync_error_permissions_text">Aanvullende rechten vereist</string>
-  <string name="sync_error_calendar">Agenda synchronisatie is mislukt (%s)</string>
-  <string name="sync_error_contacts">Adresboek synchronisatie is mislukt (%s)</string>
-  <string name="sync_error_tasks">Taak synchronisatie is mislukt (%s)</string>
-  <string name="sync_error">Fout tijdens %s</string>
-  <string name="sync_error_http_dav">Serverfout tijdens %s</string>
-  <string name="sync_error_local_storage">Database fout tijdens %s</string>
-  <string-array name="sync_error_phases">
-    <item>synchronisatie voorbereiden</item>
-    <item>querying mogelijkheden</item>
-    <item>verwerken van lokaal verwijderde data</item>
-    <item>voorberteiding maken/wijzigen data</item>
-    <item>uploaden maken/bewerken data</item>
-    <item>controleren syngronisatie voortgang</item>
-    <item>lijst lokale data</item>
-    <item>lijst remote data</item>
-    <item>vergelijken lokale/remote data</item>
-    <item>downloaden remote data</item>
-    <item>nabewerking</item>
-    <item>opslaan sync voortgang</item>
-  </string-array>
-  <string name="sync_error_unauthorized">Gebruikersnaam/wachtwoord onjuist</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid: Verbinding beveiliging</string>
   <string name="trust_certificate_unknown_certificate_found">Davdroid is benaderd door een onbekend certificaat. Vertrouwd u dit?</string>

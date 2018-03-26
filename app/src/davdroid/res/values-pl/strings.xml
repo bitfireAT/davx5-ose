@@ -10,6 +10,7 @@
   <string name="send">Wyślij</string>
   <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
   <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
+  <string name="notification_channel_debugging">Debugowanie</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Optymalizacja baterii</string>
   <string name="startup_battery_optimization_message">Android może wyłączyć/zmniejszyć synchronizacje DAVdroid po kilku dniach. Aby temu zapobiec należy wyłączyć optymalizację baterii.</string>
@@ -21,9 +22,7 @@
   <string name="startup_donate_later">Może później</string>
   <string name="startup_google_play_accounts_removed">Informacje o błędzie DRM Sklepu Play</string>
   <string name="startup_google_play_accounts_removed_message">Pod pewnymi warunkami, DRM Sklepu Play może powodować, że wszystkie konta DAVdroid mogą zostać usunięte po uruchomieniu lub po uaktualnieniu DAVdroid. Jeśli jesteś dotknięty tym problemem (i tylko wtedy) należy zainstalować \"DAVdroid JB Obejście\" ze Sklepu Play.</string>
-  <string name="startup_google_play_accounts_removed_more_info">Więcej informacji</string>
   <string name="startup_opentasks_not_installed">OpenTasks nie jest zainstalowany</string>
-  <string name="startup_opentasks_not_installed_message">Aplikacja Open Tasks nie jest dostępna, więc DAVdroid nie będzie mógł synchronizować listy zadań. </string>
   <string name="startup_opentasks_reinstall_davdroid">Po zainstalowaniu OpenTasks konieczne jest PRZEINSTALOWANIE DAVdroid i ponowne dodanie twoich kont (błąd Androida).</string>
   <string name="startup_opentasks_not_installed_install">Zainstaluj OpenTasks</string>
   <!--AboutActivity-->
@@ -44,6 +43,7 @@
   <string name="navigation_drawer_news_updates">Nowości &amp; aktualizacje</string>
   <string name="navigation_drawer_external_links">Zewnętrzne odnośniki</string>
   <string name="navigation_drawer_website">Strona WWW</string>
+  <string name="navigation_drawer_manual">Ręcznie</string>
   <string name="navigation_drawer_faq">Pytania i odpowiedzi</string>
   <string name="navigation_drawer_forums">Pomoc / Forum</string>
   <string name="navigation_drawer_donate">Dotacja</string>
@@ -101,18 +101,6 @@
   <string name="account_create_new_calendar">Stwórz nowy kalendarz</string>
   <string name="account_no_webcal_handler_found">Nie znaleziono aplikacji obsługującej Webcal</string>
   <string name="account_install_icsdroid">Zainstaluj ICSdroid</string>
-  <string name="account_read_only_address_book_selected">Książka adresowa tylko do odczytu - lokalne zmiany zostaną odrzucone</string>
-  <!--PermissionsActivity-->
-  <string name="permissions_title">Uprawnienia DAVdroid</string>
-  <string name="permissions_calendar">Uprawnienia kalendarza</string>
-  <string name="permissions_calendar_details">Aby synchronizować wydarzenia CalDav z lokalnymi kalendarzami, DAVdroid potrzebuje dostępu do twoich kalendarzy.</string>
-  <string name="permissions_calendar_request">Zezwól na uprawnienia kalendarza</string>
-  <string name="permissions_contacts">Uprawnienia kontaktów</string>
-  <string name="permissions_contacts_details">Aby synchronizować książki adresowe CardDAV z lokalnymi kontaktami, DAVdroid potrzebuje dostępu do twoich kontaktów.</string>
-  <string name="permissions_contacts_request">Zezwól na uprawnienia kontaktów</string>
-  <string name="permissions_opentasks">Uprawnienia OpenTasks</string>
-  <string name="permissions_opentasks_details">Aby synchronizować zadania CalDav z lokalnymi listami zadań, DAVdroid potrzebuje dostępu do OpenTasks.</string>
-  <string name="permissions_opentasks_request">Zezwól na uprawnienia OpenTasks</string>
   <!--AddAccountActivity-->
   <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
   <string name="login_title">Dodaj konto</string>
@@ -123,10 +111,13 @@
   <string name="login_password_required">Wymagane hasło</string>
   <string name="login_type_url">Logowanie za pomocą adresu URL i nazwy użytkownika</string>
   <string name="login_url_must_be_http_or_https">URL musi zaczynać się od http(s)://</string>
+  <string name="login_url_must_be_https">Adres URL musi zaczynać się od https://</string>
   <string name="login_url_host_name_required">Wymagana nazwa hosta</string>
   <string name="login_user_name">Nazwa użytkownika</string>
   <string name="login_user_name_required">Wymagana nazwa użytkownika</string>
   <string name="login_base_url">Podstawowy URL</string>
+  <string name="login_type_url_certificate">Logowanie za pomocą adresu URL i certyfikatu klienta</string>
+  <string name="login_select_certificate">Wybierz certyfikat</string>
   <string name="login_login">Zaloguj</string>
   <string name="login_back">Wróć</string>
   <string name="login_create_account">Stwórz konto</string>
@@ -147,6 +138,7 @@
   <string name="settings_password">Hasło</string>
   <string name="settings_password_summary">Zaktualizuj hasło zgodnie z serwerem.</string>
   <string name="settings_enter_password">Wpisz hasło:</string>
+  <string name="settings_certificate_alias">Alias certyfikatu klienta</string>
   <string name="settings_sync">Synchronizacja</string>
   <string name="settings_sync_interval_contacts">Częstotliwość synchronizacji kontaktów</string>
   <string name="settings_sync_summary_manually">Tylko ręcznie</string>
@@ -232,27 +224,8 @@
   </plurals>
   <string name="sync_error_permissions">Uprawnienia DAVdroid</string>
   <string name="sync_error_permissions_text">Wymagane dodatkowe uprawnienia</string>
-  <string name="sync_error_calendar">Synchronizacja kalendarza nie powiodła się (%s)</string>
-  <string name="sync_error_contacts">Synchronizacja książki adresowej nie powiodła się (%s)</string>
-  <string name="sync_error_tasks">Synchronizacja zadań nie powiodła się (%s)</string>
-  <string name="sync_error">Błąd podczas %s</string>
-  <string name="sync_error_http_dav">Błąd serwera podczas %s</string>
-  <string name="sync_error_local_storage">Bład bazy danych podczas %s</string>
-  <string-array name="sync_error_phases">
-    <item>przygotowanie synchronizacji</item>
-    <item>odpytywanie możliwości</item>
-    <item>przetwarzanie lokalnie usuniętych wpisów</item>
-    <item>przygotowanie stworzonych/zmodyfikowanych wpisów</item>
-    <item>wysyłanie stworzonych/zmodyfikowanych wpisów</item>
-    <item>sprawdzanie stanu synchronizacji</item>
-    <item>listowanie lokalnych wpisów</item>
-    <item>listowanie zdalnych wpisów</item>
-    <item>porównywanie lokalnych/zdalnych wpisów</item>
-    <item>pobieranie zdalnych wpisów</item>
-    <item>przetwarzanie końcowe</item>
-    <item>zapisywanie stanu synchronizacji</item>
-  </string-array>
-  <string name="sync_error_unauthorized">Błędna nazwa użytkownika lub hasło</string>
+  <string name="sync_error_opentasks_too_old">OpenTask jest niekompatybilny</string>
+  <string name="sync_error_opentasks_required_version">Wymagana wersja: %1$s (obecna %2$s)</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid: Bezpieczeństwo połączenia</string>
   <string name="trust_certificate_unknown_certificate_found">DAVdroid napotkał nieznany certyfikat. Czy chcesz go dodać?</string>

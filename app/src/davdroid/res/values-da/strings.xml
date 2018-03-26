@@ -19,9 +19,7 @@
   <string name="startup_donate_later">Måske senere</string>
   <string name="startup_google_play_accounts_removed">Play Store DRM-fejl: Information</string>
   <string name="startup_google_play_accounts_removed_message">Under visse tekniske omstændigheder kan DRM fra Play Store bevirke, at alle DAVdroid-konti er væk efter en genstart eller opgradering af DAVdroid. Hvis du er udsat for dette problem (og ellers ikke), opfordres du til at installere DAVDroid JB Workaround\" fra Play Store.</string>
-  <string name="startup_google_play_accounts_removed_more_info">Yderligere oplysninger</string>
   <string name="startup_opentasks_not_installed">OpenTasks ikke installeret</string>
-  <string name="startup_opentasks_not_installed_message">OpenTasks er ikke til rådighedm så DAVdroid vil ikke kunne synkronisere opgavelister.</string>
   <string name="startup_opentasks_reinstall_davdroid">Efter at have installeret OpenTasks, vil du være nødt til at GENINSTALLERE DAVdroid og dine konti igen (en fejl i Android).</string>
   <string name="startup_opentasks_not_installed_install">Installer OpenTasks</string>
   <!--AboutActivity-->
@@ -88,17 +86,6 @@
   <string name="account_create_new_address_book">Opret ny adressebog</string>
   <string name="account_refresh_calendar_list">Opdater kalenderliste</string>
   <string name="account_create_new_calendar">Opret ny kalender</string>
-  <!--PermissionsActivity-->
-  <string name="permissions_title">DAVdroid adgangsrettigheder</string>
-  <string name="permissions_calendar">Kalenderadgange</string>
-  <string name="permissions_calendar_details">For at synkronisere CalDAV-begivenheder med dine lokale kalendere, skal DAVdroid have adgang til dine kalendere.</string>
-  <string name="permissions_calendar_request">Anmod om kalenderadgang</string>
-  <string name="permissions_contacts">Kontakter: Adgangsrettigheder</string>
-  <string name="permissions_contacts_details">DAVdroid er nødt til at have adgang til dine kontakter, hvis CardDAV-adressebøger skal kunne synkronisere med dine kontakter.</string>
-  <string name="permissions_contacts_request">Anmod om adgang til kontakter</string>
-  <string name="permissions_opentasks">OpenTasks: Adgangsrettigheder</string>
-  <string name="permissions_opentasks_details">DAVdroid er nødt til at have adgang til OpenTasks, hvis CalDAV-opgaver skal kunne synkronisere med dine lokale opgavelister.</string>
-  <string name="permissions_opentasks_request">Anmod om adgang til OpenTasks</string>
   <!--AddAccountActivity-->
   <string name="login_title">Tilføj konto</string>
   <string name="login_type_email">Log ind med emailadresse</string>
@@ -192,27 +179,6 @@
   <string name="debug_info_title">Debug-info</string>
   <string name="sync_error_permissions">DAVdroid-rettigheder</string>
   <string name="sync_error_permissions_text">Yderligere adgang påkrævet</string>
-  <string name="sync_error_calendar">Synkronisering af kalenderen lykkedes ikke (%s)</string>
-  <string name="sync_error_contacts">Synkronisering af adressebogen lykkedes ikke (%s)</string>
-  <string name="sync_error_tasks">Synkronisering af opgaver lykkedes ikke (%s)</string>
-  <string name="sync_error">Fejl under %s</string>
-  <string name="sync_error_http_dav">Serverfejl under %s</string>
-  <string name="sync_error_local_storage">Databasefejl under %s</string>
-  <string-array name="sync_error_phases">
-    <item>forbereder synkronisering</item>
-    <item>checker understøttelse</item>
-    <item>behandler poster, der er slettet lokalt</item>
-    <item>behandler poster, der er blevet oprettet/redigeret</item>
-    <item>uploader poster, der er blevet oprettet/redigeret</item>
-    <item>checker synkroniseringsstatus</item>
-    <item>laver liste af lokale poster</item>
-    <item>laver lister af poster på server</item>
-    <item>sammenligner poster lokalt og på server</item>
-    <item>downloader poster på server</item>
-    <item>efterbehandler</item>
-    <item>gemmer synkroniseringsstatus</item>
-  </string-array>
-  <string name="sync_error_unauthorized">Fejl i brugernavn/adgangskode</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid: Forbindelsessikkerhed</string>
   <string name="trust_certificate_unknown_certificate_found">DAVdroid er stødt på et ukendt certifikat. Vil du stole på det? </string>
