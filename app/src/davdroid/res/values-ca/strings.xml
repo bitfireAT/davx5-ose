@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
   <string name="help">Ajuda</string>
@@ -10,7 +10,6 @@
   <!--DavService-->
   <!--AppSettingsActivity-->
   <!--AccountActivity-->
-  <!--PermissionsActivity-->
   <!--AddAccountActivity-->
   <string name="login_type_email">Entra amb una adreça de correu electrònic</string>
   <string name="login_type_url">Entra amb una URL i un nom d\'usuari</string>

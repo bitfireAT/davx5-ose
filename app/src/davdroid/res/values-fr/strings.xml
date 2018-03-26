@@ -19,9 +19,7 @@
   <string name="startup_donate_later">Plus tard</string>
   <string name="startup_google_play_accounts_removed">Erreur information Play Store DRM</string>
   <string name="startup_google_play_accounts_removed_message">Dans certaines conditions, Play Store DRM peut provoquer la disparition de tous les comptes DAVdroid après un redémarrage ou après la mise à niveau de DAVdroid. Si vous êtes concerné par ce problème (et seulement alors), s\'il vous plaît installer \"DAVdroid JB Solution\" du Play Store.</string>
-  <string name="startup_google_play_accounts_removed_more_info">Plus d\'informations</string>
   <string name="startup_opentasks_not_installed">L\'application OpenTasks n\'est pas installée</string>
-  <string name="startup_opentasks_not_installed_message">L\'application OpenTasks n\'est pas disponible, donc DAVdroid ne pourra pas synchroniser des listes de tâches.</string>
   <string name="startup_opentasks_reinstall_davdroid">Après l\'installation OpenTasks, vous devez RE-INSTALLER DAVdroid et ajoutez vos comptes à nouveau (bug Android).</string>
   <string name="startup_opentasks_not_installed_install">Installer OpenTasks</string>
   <!--AboutActivity-->
@@ -96,17 +94,6 @@
   <string name="account_create_new_calendar">Créer un nouveau calendrier</string>
   <string name="account_no_webcal_handler_found">Aucune application compatible WebCal</string>
   <string name="account_install_icsdroid">Installer ICSdroid</string>
-  <!--PermissionsActivity-->
-  <string name="permissions_title">Autorisations DAVdroid</string>
-  <string name="permissions_calendar">Autorisations calendrier</string>
-  <string name="permissions_calendar_details">Pour synchroniser les événements CalDAV avec vos calendriers locaux, DAVdroid a besoin d\'accéder à vos calendriers.</string>
-  <string name="permissions_calendar_request">Demande d\'autorisations d\'accéder au calendrier</string>
-  <string name="permissions_contacts">Autorisations d\'accès aux contacts</string>
-  <string name="permissions_contacts_details">Pour synchroniser les carnets d\'adresses de CardDAV avec votre carnet d\'adresses local, DAVdroid a besoin d\'accéder à vos contacts.</string>
-  <string name="permissions_contacts_request">Demande d\'autorisations d\'accéder aux contacts</string>
-  <string name="permissions_opentasks">Autorisations OpenTasks</string>
-  <string name="permissions_opentasks_details">Pour synchroniser les tâches de CalDAV avec vos listes de tâches locales, DAVdroid a besoin d\'accéder à OpenTasks.</string>
-  <string name="permissions_opentasks_request">Demande d\'autorisations d\'accéder à OpenTasks</string>
   <!--AddAccountActivity-->
   <string name="login_title">Ajouter un compte</string>
   <string name="login_type_email">Connexion avec une adresse email</string>
@@ -217,27 +204,6 @@
   <string name="debug_info_title">Infos de débogage</string>
   <string name="sync_error_permissions">Autorisations DAVdroid</string>
   <string name="sync_error_permissions_text">Autorisations supplémentaires demandées</string>
-  <string name="sync_error_calendar">Échec de la synchronisation du calendrier (%s)</string>
-  <string name="sync_error_contacts">Échec de la synchronisation du carnet d\'adresse (%s)</string>
-  <string name="sync_error_tasks">Échec de la synchronisation (%s)</string>
-  <string name="sync_error">Erreur durant %s</string>
-  <string name="sync_error_http_dav">Erreur de serveur durant %s</string>
-  <string name="sync_error_local_storage">Erreur de base de donnée durant %s</string>
-  <string-array name="sync_error_phases">
-    <item>prépare la synchronisation</item>
-    <item>demande les autorisations</item>
-    <item>procède à la suppression des entrées locales</item>
-    <item>prépare les entrées créées/modifiées</item>
-    <item>envoi les entrées créées/modifiées</item>
-    <item>vérifie l\'état de la synchronisation</item>
-    <item>liste les entrées locales</item>
-    <item>liste les entrées distantes</item>
-    <item>compare les entrées locales/distantes</item>
-    <item>télécharge les entrées distantes</item>
-    <item>post-traitement</item>
-    <item>enregistre l\'état de la synchronisation</item>
-  </string-array>
-  <string name="sync_error_unauthorized">Nom d\'utilisateur ou mot de passe erroné</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid : Sécurité de la connexion</string>
   <string name="trust_certificate_unknown_certificate_found">DAVdroid a rencontré un certificat inconnu. Voulez-vous lui faire confiance?</string>

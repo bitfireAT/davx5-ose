@@ -8,6 +8,7 @@
   <string name="manage_accounts">Керування обліковими записами</string>
   <string name="please_wait">Будь ласка, зачекайте...</string>
   <string name="send">Відправити</string>
+  <string name="notification_channel_debugging">Зневадження</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Оптимізація енергоспоживання</string>
   <string name="startup_battery_optimization_message">Android може вимкнути, чи призупинити синхронізацію DAVdroid через деякий час. Аби запобігти цьому, вимкніть оптимізацію енергоспоживання для додатку.</string>
@@ -19,9 +20,7 @@
   <string name="startup_donate_later">Можливо пізніше</string>
   <string name="startup_google_play_accounts_removed">Інформація про ваду в Play Store DRM</string>
   <string name="startup_google_play_accounts_removed_message">При деяких обставинах Play Store DRM може стати причиною втрати всіх облікових записів DAVdroid після перезавантаження пристрою чи оновлення DAVdroid. Якщо ви зіткнулися із цим (і лише у цьому випадку), будь ласка, встановіть \"DAVdroid JB Workaround\" з Play Store.</string>
-  <string name="startup_google_play_accounts_removed_more_info">Детальніше</string>
   <string name="startup_opentasks_not_installed">OpenTasks не встановлено</string>
-  <string name="startup_opentasks_not_installed_message">Додаток OpenTasks не встановлено, ото ж DAVdroid не зможе синхронізувати завдання.</string>
   <string name="startup_opentasks_reinstall_davdroid">Після встановлення OpenTasks, необхідно перевстановити DAVdroid та додати облікові записи знову (Вада системи Android).</string>
   <string name="startup_opentasks_not_installed_install">Встановити OpenTasks</string>
   <!--AboutActivity-->
@@ -37,11 +36,14 @@
   <string name="navigation_drawer_close">Закрити панель навігації</string>
   <string name="navigation_drawer_subtitle">Адаптер синхронізації CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Про / Ліцензія</string>
+  <string name="navigation_drawer_beta_feedback">Beta відгук</string>
   <string name="navigation_drawer_settings">Налаштування</string>
   <string name="navigation_drawer_news_updates">Новини та оновлення</string>
   <string name="navigation_drawer_external_links">Зовнішні посилання</string>
   <string name="navigation_drawer_website">Веб сайт</string>
+  <string name="navigation_drawer_manual">Посібник</string>
   <string name="navigation_drawer_faq">Питання/Відповіді</string>
+  <string name="navigation_drawer_forums">Допомога / Форуми</string>
   <string name="navigation_drawer_donate">Підтримка</string>
   <string name="account_list_empty">Вітаємо у DAVdroid!\n\nТепер можете додавати облікові записи CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Автоматичну синхронізацію вимкнено зі сторони системи</string>
@@ -84,21 +86,18 @@
   <string name="account_delete">Видалити запис</string>
   <string name="account_delete_confirmation_title">Дійсно видалити обліковий запис?</string>
   <string name="account_delete_confirmation_text">Всі локальні копії адресних книг, календарів та завдань будуть вилучені.</string>
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_synchronize_this_collection">синхронізувати дану колекцію</string>
+  <string name="account_read_only">лише читання</string>
+  <string name="account_calendar">календар</string>
+  <string name="account_task_list">перелік завдань</string>
   <string name="account_refresh_address_book_list">Оновити перелік адресних книг</string>
   <string name="account_create_new_address_book">Створити нову адресну книгу</string>
   <string name="account_refresh_calendar_list">Оновити перелік каленарів</string>
   <string name="account_create_new_calendar">Створити новий календар</string>
-  <!--PermissionsActivity-->
-  <string name="permissions_title">Дозволи DAVdroid</string>
-  <string name="permissions_calendar">Дозволи календаря</string>
-  <string name="permissions_calendar_details">Для синхронізації CalDAV подій з локальним календарем необхідний дозвіл до Ваших календарів.</string>
-  <string name="permissions_calendar_request">Запит дозволів календаря</string>
-  <string name="permissions_contacts">Дозволи контактів</string>
-  <string name="permissions_contacts_details">Для синхронізації адресної книги CalDAV з локальними контактами необхідний дозвіл до Ваших контактів.</string>
-  <string name="permissions_contacts_request">Запит дозволів контактів</string>
-  <string name="permissions_opentasks">Дозволи OpenTasks</string>
-  <string name="permissions_opentasks_details">Для синхронізації CalDAV завдань з локальним списком завдань необхідний дозвіл до OpenTasks.</string>
-  <string name="permissions_opentasks_request">Запит дозволів OpenTasks</string>
+  <string name="account_install_icsdroid">Встановити ICSdroid</string>
   <!--AddAccountActivity-->
   <string name="login_title">Додати запис</string>
   <string name="login_type_email">Увійти за допомогою електронної пошти</string>
@@ -108,10 +107,13 @@
   <string name="login_password_required">Потребує пароль</string>
   <string name="login_type_url">Увійти за допомогою URL та імені користувача</string>
   <string name="login_url_must_be_http_or_https">URL адреса повинна починатися з http(s)://</string>
+  <string name="login_url_must_be_https">Посилання повинно починатися з https://</string>
   <string name="login_url_host_name_required">Потребує назву хосту</string>
   <string name="login_user_name">Ім\'я користувача</string>
   <string name="login_user_name_required">Потребує ім\'я користувача</string>
   <string name="login_base_url">Базовий URL</string>
+  <string name="login_type_url_certificate">Вхід по посиланню та сертифікату клієнта</string>
+  <string name="login_select_certificate">Обрати сертифікат</string>
   <string name="login_login">Увійти</string>
   <string name="login_back">Назад</string>
   <string name="login_create_account">Створити запис</string>
@@ -138,9 +140,21 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Кожних %d хвилин, а також негайно при внесенні локальних змін</string>
   <string name="settings_sync_interval_calendars">Інтервал синхронізації календарів</string>
   <string name="settings_sync_interval_tasks">Інтервал синхронізації завдань</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Вручну</item>
+    <item>Кожні 15 хвилин</item>
+    <item>Кожні 30 хвилин</item>
+    <item>Щогодинно</item>
+    <item>Кожні 2 години</item>
+    <item>Кожні 4 години</item>
+    <item>Щоденно</item>
+  </string-array>
   <string name="settings_sync_wifi_only">Синхронізувати лише через Wi-Fi</string>
   <string name="settings_sync_wifi_only_on">Виконувати синхронізацію лише через Wi-Fi</string>
   <string name="settings_sync_wifi_only_off">Не враховувати тип з\'єднання</string>
+  <string name="settings_sync_wifi_only_ssids">Обмеження WiFi SSID</string>
+  <string name="settings_sync_wifi_only_ssids_on">Синхронізувати лише через %s</string>
+  <string name="settings_sync_wifi_only_ssids_off">Може використовуватись всі Wi-Fi з\'єднання</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Метод групування контактів</string>
   <string-array name="settings_contact_group_method_entries">
@@ -159,6 +173,9 @@
   <string name="settings_manage_calendar_colors">Керування кольорами календаря</string>
   <string name="settings_manage_calendar_colors_on">Кольори календаря керуються DAVdroid</string>
   <string name="settings_manage_calendar_colors_off">Кольори календаря не керуються DAVdroid</string>
+  <string name="settings_event_colors">Підтримка кольорів подій</string>
+  <string name="settings_event_colors_on">Синхронізувати кольори подій</string>
+  <string name="settings_event_colors_off">Не синхронізувати кольори подій</string>
   <!--collection management-->
   <string name="create_addressbook">Створити адресну книгу</string>
   <string name="create_addressbook_display_name_hint">Моя адресна книга</string>
@@ -187,29 +204,11 @@
   <string name="exception_show_details">Показати подробиці</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Інформація зневадження</string>
+  <string name="sync_contacts_read_only_address_book">Адресна книга лише для читання</string>
   <string name="sync_error_permissions">Дозволи DAVdroid</string>
   <string name="sync_error_permissions_text">Потребує додаткові дозволи</string>
-  <string name="sync_error_calendar">Помилка синхронізації календаря (%s)</string>
-  <string name="sync_error_contacts">Помилка синхронізації адресної книги (%s)</string>
-  <string name="sync_error_tasks">Помилка синхронізації завдань (%s)</string>
-  <string name="sync_error">Помилка під час %s</string>
-  <string name="sync_error_http_dav">Помилка серверу під час %s</string>
-  <string name="sync_error_local_storage">Помилка серверу під час %s</string>
-  <string-array name="sync_error_phases">
-    <item>підготовка синхронізації</item>
-    <item>опитування можливостей</item>
-    <item>обробка локально вилучених записів</item>
-    <item>підготовка створених/змінених записів</item>
-    <item>вивантаження створених/змінених записів</item>
-    <item>перевірка стану синхронізації</item>
-    <item>перелік локальних записів</item>
-    <item>перелік віддалених записів</item>
-    <item>порівняння локальних/віддалених записів</item>
-    <item>завантаження віддалених записів</item>
-    <item>після обробка</item>
-    <item>збереження стану синхронізації</item>
-  </string-array>
-  <string name="sync_error_unauthorized">Невірне ім\'я користувача чи пароль</string>
+  <string name="sync_error_opentasks_too_old">OpenTasks застарів</string>
+  <string name="sync_error_opentasks_required_version">Необхідна версія: %1$s (поточна %2$s)</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid: Безпека з\'єднання</string>
   <string name="trust_certificate_unknown_certificate_found">DAVdroid зіткнувся з невідомим сертифікатом. Чи довіряти йому?</string>
