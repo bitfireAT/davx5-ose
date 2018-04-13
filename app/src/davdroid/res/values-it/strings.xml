@@ -2,14 +2,19 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
-  <string name="account_title_address_book">Rubrica degli indirizzi DAVdroid</string>
-  <string name="address_books_authority_title">Rubriche degli indirizzi</string>
+  <string name="account_title_address_book">Rubrica DAVdroid</string>
+  <string name="address_books_authority_title">Rubriche</string>
   <string name="help">Aiuto</string>
   <string name="manage_accounts">Gestione account</string>
   <string name="please_wait">Attendere prego …</string>
   <string name="send">Invia</string>
+  <string name="notification_channel_general">Altri messaggi importanti</string>
+  <string name="notification_channel_sync">Sincronizzazione</string>
+  <string name="notification_channel_sync_errors">Errori di sincronizzazione</string>
+  <string name="notification_channel_sync_io_errors">Errori di Rete e di I/O</string>
+  <string name="notification_channel_sync_status">Messaggi di stato</string>
   <!--startup dialogs-->
-  <string name="startup_battery_optimization">Ottimizazione della batteria</string>
+  <string name="startup_battery_optimization">Ottimizzazione della batteria</string>
   <string name="startup_battery_optimization_message">Android può ridurre o disabilitare la sincronizzazione di DAVdroid dopo alcuni giorni. Per prevenire questo comportamento disabilita l\'ottimizzazione della batteria</string>
   <string name="startup_battery_optimization_disable">Disabilita per DAVdroid</string>
   <string name="startup_dont_show_again">Non mostrare più</string>
@@ -19,7 +24,9 @@
   <string name="startup_donate_later">Più tardi</string>
   <string name="startup_google_play_accounts_removed">Informazioni sul bug del DRM di Play Store</string>
   <string name="startup_google_play_accounts_removed_message">In alcune condizioni il DRM di Play Store può causare la perdita di tutti gli account DAVdroid dopo un riavvio o dopo un aggiornamento di DAVdroid. Se verificate questo problema installate successivamente \"DAVdroid JB Workaround\" da Play Store.</string>
+  <string name="startup_more_info">Più informazioni</string>
   <string name="startup_opentasks_not_installed">OpenTasks non installata</string>
+  <string name="startup_opentasks_not_installed_message">Per sincronizzare le attività è richiesta l\'app gratuita OpenTasks. (Non richiesta per contatti/eventi.)</string>
   <string name="startup_opentasks_reinstall_davdroid">Dopo l\'installazione di OpenTasks è necessario INSTALLARE NUOVAMENTE DAVdroid e aggiungere ancora gli account (per un bug di Android).</string>
   <string name="startup_opentasks_not_installed_install">Installa OpenTasks</string>
   <!--AboutActivity-->
@@ -39,7 +46,9 @@
   <string name="navigation_drawer_news_updates">Notizie &amp; aggiornamenti</string>
   <string name="navigation_drawer_external_links">Link esterni</string>
   <string name="navigation_drawer_website">Sito web</string>
+  <string name="navigation_drawer_manual">Manuale</string>
   <string name="navigation_drawer_faq">Domande Frequenti</string>
+  <string name="navigation_drawer_forums">Aiuto / Forum</string>
   <string name="navigation_drawer_donate">Donazione</string>
   <string name="account_list_empty">Benvenuto a DAVdroid!\n\nÈ ora possibile aggiungere account CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">La sincronizzazione automatica dell\'intero sistema è disabilitata</string>
@@ -85,6 +94,9 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_read_only">sola lettura</string>
+  <string name="account_calendar">calendario</string>
+  <string name="account_task_list">elenco attività</string>
   <string name="account_refresh_address_book_list">Aggiorna elenco degli indirizzari</string>
   <string name="account_create_new_address_book">Crea un nuovo indirizzario</string>
   <string name="account_refresh_calendar_list">Aggiorna lista calendari</string>
@@ -99,10 +111,13 @@
   <string name="login_password_required">Password richiesta</string>
   <string name="login_type_url">Accedi con URL e nome utente</string>
   <string name="login_url_must_be_http_or_https">L\'URL deve iniziare con http(s)://</string>
+  <string name="login_url_must_be_https">L\'URL deve iniziare con https://</string>
   <string name="login_url_host_name_required">Nome host richiesto</string>
   <string name="login_user_name">Nome utente</string>
   <string name="login_user_name_required">Nome utente richiesto</string>
   <string name="login_base_url">Base URL</string>
+  <string name="login_type_url_certificate">Accedi con URL e certificato client</string>
+  <string name="login_select_certificate">Seleziona certificato</string>
   <string name="login_login">Login</string>
   <string name="login_back">Indietro</string>
   <string name="login_create_account">Crea account</string>
@@ -141,6 +156,7 @@
   <string name="settings_sync_wifi_only">Sincr. solo tramite WiFi</string>
   <string name="settings_sync_wifi_only_on">La sincronizzazione è limitata alle connessioni WiFi</string>
   <string name="settings_sync_wifi_only_off">Il tipo di connessione non è preso in considerazione</string>
+  <string name="settings_sync_wifi_only_ssids">Restrizione SSID WiFi</string>
   <string name="settings_sync_wifi_only_ssids_message">Nomi (SSID) delle reti WiFi autorizzate separati da virgola (lascia vuoto per autorizzarle tutte)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Organizzazione dei gruppi di contatto</string>
@@ -163,9 +179,12 @@
   <string name="settings_manage_calendar_colors">Cambia il colore del calendario</string>
   <string name="settings_manage_calendar_colors_on">I colori dei calendari sono gestiti da DAVdroid</string>
   <string name="settings_manage_calendar_colors_off">I colori dei calendari non sono gestiti da DAVdroid</string>
+  <string name="settings_event_colors">Supporto colore dell\'evento</string>
+  <string name="settings_event_colors_on">Sincronizza colori eventi</string>
+  <string name="settings_event_colors_off">Non sincronizza colori eventi</string>
   <!--collection management-->
-  <string name="create_addressbook">Crea indirizzario</string>
-  <string name="create_addressbook_display_name_hint">Il mio indirizzario</string>
+  <string name="create_addressbook">Crea rubrica</string>
+  <string name="create_addressbook_display_name_hint">La mia rubrica</string>
   <string name="create_calendar">Crea raccolta CalDAV</string>
   <string name="create_calendar_display_name_hint">Mio calendario</string>
   <string name="create_calendar_time_zone">Fuso orario:</string>
@@ -184,6 +203,7 @@
   <string name="delete_collection_confirm_title">Sei sicuro?</string>
   <string name="delete_collection_confirm_warning">Questa raccolta (%s) e tutti i suoi dati saranno rimossi dal server.</string>
   <string name="delete_collection_deleting_collection">Cancellazione della raccolta</string>
+  <string name="collection_force_read_only">Forza sola lettura</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Si è verificato un errore.</string>
   <string name="exception_httpexception">Si è verificato un errore HTTP.</string>
@@ -191,8 +211,12 @@
   <string name="exception_show_details">Mostra dettagli</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Informazioni di debug</string>
+  <string name="sync_contacts_read_only_address_book">Rubrica in sola lettura</string>
   <string name="sync_error_permissions">Autorizzazioni DAVdroid</string>
   <string name="sync_error_permissions_text">Autorizzazioni addizionali richieste</string>
+  <string name="sync_error_opentasks_too_old">OpenTasks troppo vecchia</string>
+  <string name="sync_error_opentasks_required_version">Versione richiesta: %1$s (attualmente %2$s)</string>
+  <string name="sync_error_authentication_failed">Autenticazione fallita (controlla credenziali login)</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid: sicurezza della connessione</string>
   <string name="trust_certificate_unknown_certificate_found">DAVdroid ha trovato un certificato sconosciuto. Ritenerlo affidabile?</string>
