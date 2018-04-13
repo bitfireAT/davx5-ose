@@ -162,10 +162,9 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
 
         }
         // sync was cancelled: re-throw to SyncAdapterService
-        catch(e: InterruptedException) { throw e }
-        catch (e: InterruptedIOException) { throw e }
+        catch (e: InterruptedException) { throw e }
 
-        // I/O errors
+        // specific I/O errors
         catch (e: SSLHandshakeException) {
             Logger.log.log(Level.WARNING, "SSL handshake failed", e)
 
@@ -313,7 +312,8 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
         val message: String
 
         when (e) {
-            is IOException -> {
+            is IOException,
+            is InterruptedIOException -> {
                 Logger.log.log(Level.WARNING, "I/O error", e)
                 message = context.getString(R.string.sync_error_io, e.localizedMessage)
                 syncResult.stats.numIoExceptions++
@@ -369,7 +369,7 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
 
         val channel: String
         val priority: Int
-        if (e is IOException) {
+        if (e is IOException || e is InterruptedIOException) {
             channel = NotificationUtils.CHANNEL_SYNC_IO_ERRORS
             priority = NotificationCompat.PRIORITY_MIN
         } else {
