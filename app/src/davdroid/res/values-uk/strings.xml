@@ -8,8 +8,17 @@
   <string name="manage_accounts">Керування обліковими записами</string>
   <string name="please_wait">Будь ласка, зачекайте...</string>
   <string name="send">Відправити</string>
+  <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
+  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <string name="notification_channel_debugging">Зневадження</string>
+  <string name="notification_channel_general">Інші важливі повідомлення</string>
+  <string name="notification_channel_sync">Синхронізація</string>
+  <string name="notification_channel_sync_errors">Помилки синхронізації</string>
+  <string name="notification_channel_sync_io_errors">Помилка мережі та вводу/виводу</string>
+  <string name="notification_channel_sync_status">Повідомлення про стан</string>
   <!--startup dialogs-->
+  <string name="startup_autostart_permission">Дозвіл автозапуску %s</string>
+  <string name="startup_autostart_permission_message">Програмне забезпечення пристрою може запобігати автоматичні синхронізації. Можливо доведеться дозволити автоматичну синхронізацію вручну.</string>
   <string name="startup_battery_optimization">Оптимізація енергоспоживання</string>
   <string name="startup_battery_optimization_message">Android може вимкнути, чи призупинити синхронізацію DAVdroid через деякий час. Аби запобігти цьому, вимкніть оптимізацію енергоспоживання для додатку.</string>
   <string name="startup_battery_optimization_disable">Вимкнути для DAVdroid</string>
@@ -20,7 +29,9 @@
   <string name="startup_donate_later">Можливо пізніше</string>
   <string name="startup_google_play_accounts_removed">Інформація про ваду в Play Store DRM</string>
   <string name="startup_google_play_accounts_removed_message">При деяких обставинах Play Store DRM може стати причиною втрати всіх облікових записів DAVdroid після перезавантаження пристрою чи оновлення DAVdroid. Якщо ви зіткнулися із цим (і лише у цьому випадку), будь ласка, встановіть \"DAVdroid JB Workaround\" з Play Store.</string>
+  <string name="startup_more_info">Додаткова інформація</string>
   <string name="startup_opentasks_not_installed">OpenTasks не встановлено</string>
+  <string name="startup_opentasks_not_installed_message">Для синхронізації завдань необхідно встановити додаток OpenTasks. (Не має потреби для контактів/подій.)</string>
   <string name="startup_opentasks_reinstall_davdroid">Після встановлення OpenTasks, необхідно перевстановити DAVdroid та додати облікові записи знову (Вада системи Android).</string>
   <string name="startup_opentasks_not_installed_install">Встановити OpenTasks</string>
   <!--AboutActivity-->
@@ -97,8 +108,10 @@
   <string name="account_create_new_address_book">Створити нову адресну книгу</string>
   <string name="account_refresh_calendar_list">Оновити перелік каленарів</string>
   <string name="account_create_new_calendar">Створити новий календар</string>
+  <string name="account_no_webcal_handler_found">Не знайдено додатку з підтримкою Webcal</string>
   <string name="account_install_icsdroid">Встановити ICSdroid</string>
   <!--AddAccountActivity-->
+  <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
   <string name="login_title">Додати запис</string>
   <string name="login_type_email">Увійти за допомогою електронної пошти</string>
   <string name="login_email_address">Адреса пошти</string>
@@ -134,6 +147,7 @@
   <string name="settings_password">Пароль</string>
   <string name="settings_password_summary">Оновити пароль, згідно налаштувань Вашого сервера.</string>
   <string name="settings_enter_password">Введіть Ваш пароль:</string>
+  <string name="settings_certificate_alias">Прив\'язка сертифікату клієнта</string>
   <string name="settings_sync">Синхронізація</string>
   <string name="settings_sync_interval_contacts">Інтервал синхронізації контактів</string>
   <string name="settings_sync_summary_manually">Лише вручну</string>
@@ -155,12 +169,19 @@
   <string name="settings_sync_wifi_only_ssids">Обмеження WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">Синхронізувати лише через %s</string>
   <string name="settings_sync_wifi_only_ssids_off">Може використовуватись всі Wi-Fi з\'єднання</string>
+  <string name="settings_sync_wifi_only_ssids_message">Назви (SSID) дозволених Wi-Fi мереж, розділені комами (залиште порожнім для всіх)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Метод групування контактів</string>
+  <string-array name="settings_contact_group_method_values">
+    <item>GROUP_VCARDS</item>
+    <item>CATEGORIES</item>
+  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>Групи як окремі VCard</item>
     <item>Групи як категорії в середині контактів</item>
   </string-array>
+  <string name="settings_contact_group_method_change">Змінити метод групування</string>
+  <string name="settings_contact_group_method_change_reload_contacts">Це потребує перезавантаження всіх контактів. Незбережені локальні зміни буде відхилено.</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Інтервал синхронізації</string>
   <string name="settings_sync_time_range_past_none">Всі події будуть синхронізовані</string>
@@ -176,6 +197,7 @@
   <string name="settings_event_colors">Підтримка кольорів подій</string>
   <string name="settings_event_colors_on">Синхронізувати кольори подій</string>
   <string name="settings_event_colors_off">Не синхронізувати кольори подій</string>
+  <string name="settings_event_colors_off_confirm">Вимикання кольорів подій може видалити вже синхронізовані кольори подій.</string>
   <!--collection management-->
   <string name="create_addressbook">Створити адресну книгу</string>
   <string name="create_addressbook_display_name_hint">Моя адресна книга</string>
@@ -197,6 +219,7 @@
   <string name="delete_collection_confirm_title">Ви впевнені?</string>
   <string name="delete_collection_confirm_warning">Колекція (%s) та всі пов\'язані данні будуть вилучені з даного серверу.</string>
   <string name="delete_collection_deleting_collection">Видалення колекції</string>
+  <string name="collection_force_read_only">Примусово лише читання</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Трапилась помилка.</string>
   <string name="exception_httpexception">Трапилась помилка HTTP.</string>
@@ -205,10 +228,21 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Інформація зневадження</string>
   <string name="sync_contacts_read_only_address_book">Адресна книга лише для читання</string>
+  <plurals name="sync_contacts_local_contact_changes_discarded">
+    <item quantity="one">Локальну зміну контакту відхилено</item>
+    <item quantity="few">%d локальні зміни контакту відхилено</item>
+    <item quantity="other">%d локальних змін контакту відхилено</item>
+  </plurals>
   <string name="sync_error_permissions">Дозволи DAVdroid</string>
   <string name="sync_error_permissions_text">Потребує додаткові дозволи</string>
   <string name="sync_error_opentasks_too_old">OpenTasks застарів</string>
   <string name="sync_error_opentasks_required_version">Необхідна версія: %1$s (поточна %2$s)</string>
+  <string name="sync_error_authentication_failed">Помилка аутентифікації (перевірте обліковий запис)</string>
+  <string name="sync_error_io">Помилка мережі та вводу/виводу — %s</string>
+  <string name="sync_error_http_dav">Помилка сервера HTTP — %s</string>
+  <string name="sync_error_local_storage">Помилка локального сховища — %s</string>
+  <string name="sync_error_retry">Повторити</string>
+  <string name="sync_error_view_item">Перегляд елементу</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid: Безпека з\'єднання</string>
   <string name="trust_certificate_unknown_certificate_found">DAVdroid зіткнувся з невідомим сертифікатом. Чи довіряти йому?</string>
