@@ -38,11 +38,15 @@ class LocalTaskList private constructor(
         fun tasksProviderAvailable(context: Context): Boolean {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                 return context.packageManager.resolveContentProvider(TaskProvider.ProviderName.OpenTasks.authority, 0) != null
-            else {
-                val provider = TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)
-                provider?.use { return true }
+            else
+                try {
+                    TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)?.use {
+                        return true
+                    }
+                } catch (e: Exception) {
+                    // couldn't acquire task provider
+                }
                 return false
-            }
         }
 
         fun create(account: Account, provider: TaskProvider, info: CollectionInfo): Uri {
