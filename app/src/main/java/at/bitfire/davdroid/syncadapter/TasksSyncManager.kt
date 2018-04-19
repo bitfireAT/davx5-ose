@@ -127,16 +127,17 @@ class TasksSyncManager(
                 davCollection.multiget(bunch)
 
                 // process multiget results
-                for (remote in davCollection.members) {
-                    val eTag = remote.properties[GetETag::class.java]?.eTag
-                            ?: throw DavException("Received multi-get response without ETag")
+                for (remote in davCollection.members)
+                    useRemote(remote, {
+                        val eTag = remote.properties[GetETag::class.java]?.eTag
+                                ?: throw DavException("Received multi-get response without ETag")
 
-                    val calendarData = remote.properties[CalendarData::class.java]
-                    val iCalendar = calendarData?.iCalendar
-                            ?: throw DavException("Received multi-get response without task data")
+                        val calendarData = remote.properties[CalendarData::class.java]
+                        val iCalendar = calendarData?.iCalendar
+                                ?: throw DavException("Received multi-get response without task data")
 
-                    processVTodo(remote.fileName(), eTag, StringReader(iCalendar))
-                }
+                        processVTodo(remote.fileName(), eTag, StringReader(iCalendar))
+                    })
             }
 
             abortIfCancelled()
