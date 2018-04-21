@@ -70,10 +70,10 @@ class AboutActivity: AppCompatActivity() {
                     "ez-vcard", Ezvcard.VERSION, "https://github.com/mangstadt/ez-vcard",
                     "Michael Angstadt", R.string.about_license_info_no_warranty, "bsd.html"
             ), ComponentInfo(
-                    "ical4j", "2.x", "https://ical4j.github.io/",
+                    "ical4j", at.bitfire.ical4android.Constants.ical4jVersion, "https://ical4j.github.io/",
                     "Ben Fortuna", R.string.about_license_info_no_warranty, "bsd-3clause.html"
             ), ComponentInfo(
-                    "OkHttp", null, "https://square.github.io/okhttp/",
+                    "OkHttp", at.bitfire.dav4android.Constants.okHttpVersion, "https://square.github.io/okhttp/",
                     "Square, Inc.", R.string.about_license_info_no_warranty, "apache2.html"
             )
         )
