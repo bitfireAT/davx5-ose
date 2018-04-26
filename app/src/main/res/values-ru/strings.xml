@@ -85,7 +85,7 @@
   <string name="app_settings_log_to_external_storage">Сохранять лог во внешний файл</string>
   <string name="app_settings_log_to_external_storage_on">Сохранение логов во внешнем хранилище (если доступно)</string>
   <string name="app_settings_log_to_external_storage_off">Сохранение логов во внешний файл отключено</string>
-  <string name="app_settings_show_debug_info">Отладочная информация</string>
+  <string name="app_settings_show_debug_info">Показать отладочную информацию</string>
   <string name="app_settings_show_debug_info_details">Просмотреть/поделиться программой и настройками</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Синхронизировать</string>
