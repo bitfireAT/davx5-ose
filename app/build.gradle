@@ -18,7 +18,7 @@ android {
     defaultConfig {
         applicationId "at.bitfire.davdroid"
 
-        versionCode 213
+        versionCode 214
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "customCerts", "true"
 
@@ -33,7 +33,7 @@ android {
 
     productFlavors {
         standard {
-            versionName "1.11-ose"
+            versionName "1.11.1-ose"
 
             buildConfigField "boolean", "customCerts", "true"
         }
@@ -76,10 +76,10 @@ dependencies {
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    compile 'com.android.support:appcompat-v7:27.1.0'
-    compile 'com.android.support:cardview-v7:27.1.0'
-    compile 'com.android.support:design:27.1.0'
-    compile 'com.android.support:preference-v14:27.1.0'
+    compile 'com.android.support:appcompat-v7:27.1.1'
+    compile 'com.android.support:cardview-v7:27.1.1'
+    compile 'com.android.support:design:27.1.1'
+    compile 'com.android.support:preference-v14:27.1.1'
 
     compile 'com.github.yukuku:ambilwarna:2.0.1'
 
