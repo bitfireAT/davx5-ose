@@ -6,14 +6,12 @@
   <string name="address_books_authority_title">Adressebøger</string>
   <string name="help">Hjælp</string>
   <string name="manage_accounts">Administrere konti</string>
-  <string name="please_wait">Vent venligst ...</string>
+  <string name="please_wait">Vent...</string>
   <string name="send">Send</string>
-  <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
-  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
-  <string name="notification_channel_debugging">Debugging</string>
+  <string name="notification_channel_debugging">Fejlsøgning</string>
   <string name="notification_channel_general">Andre vigtige meddelelser</string>
   <string name="notification_channel_sync">Synkronisering</string>
-  <string name="notification_channel_sync_errors">Synkroniserings fejl</string>
+  <string name="notification_channel_sync_errors">Synkroniserings-fejl</string>
   <string name="notification_channel_sync_io_errors">Netværks- og I/O-fejl</string>
   <string name="notification_channel_sync_status">Statusmeddelelser</string>
   <!--startup dialogs-->
@@ -23,11 +21,11 @@
   <string name="startup_battery_optimization_message">Android kan deaktivere/reducere DAVDroid synkronisering efter et par dage. For at undgå dette, slå batterioptimering fra.</string>
   <string name="startup_battery_optimization_disable">Deaktivere DAVdroid</string>
   <string name="startup_dont_show_again">Vis ikke igen</string>
-  <string name="startup_donate">Open-Source Information</string>
+  <string name="startup_donate">Open-Source information</string>
   <string name="startup_donate_message">Det glæder os, at du bruger DAVdroid, som er open source-software (GPLv3). Det er hårdt arbejde at udvikle DAVdroid og taget tusindvis af arbejdstimer, så overvej at donere til projektet.</string>
   <string name="startup_donate_now">Vis donationsside</string>
   <string name="startup_donate_later">Måske senere</string>
-  <string name="startup_google_play_accounts_removed">Play Store DRM-fejl: Information</string>
+  <string name="startup_google_play_accounts_removed">Play Store DRM fejl information</string>
   <string name="startup_google_play_accounts_removed_message">Under visse tekniske omstændigheder kan DRM fra Play Store bevirke, at alle DAVdroid-konti er væk efter en genstart eller opgradering af DAVdroid. Hvis du er udsat for dette problem (og ellers ikke), opfordres du til at installere DAVDroid JB Workaround\" fra Play Store.</string>
   <string name="startup_more_info">Mere information</string>
   <string name="startup_opentasks_not_installed">OpenTasks ikke installeret</string>
@@ -35,7 +33,7 @@
   <string name="startup_opentasks_reinstall_davdroid">Efter at have installeret OpenTasks, vil du være nødt til at GENINSTALLERE DAVdroid og dine konti igen (en fejl i Android).</string>
   <string name="startup_opentasks_not_installed_install">Installere OpenTasks</string>
   <!--AboutActivity-->
-  <string name="about_license_terms">Licensforhold</string>
+  <string name="about_license_terms">Licensbetingelser</string>
   <string name="about_license_info_no_warranty">Dette program leveres ABSOLUT UDEN GARANTI. Det er fri software, og du er velkommen til at videredistribuere det under visse betingelse.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid fil-logning</string>
@@ -46,14 +44,14 @@
   <string name="navigation_drawer_open">Åbn navigationsvindue</string>
   <string name="navigation_drawer_close">Luk navigationsvindue</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV synkroniseringsadapter</string>
-  <string name="navigation_drawer_about">Om / Licens</string>
-  <string name="navigation_drawer_beta_feedback">Beta feedback</string>
+  <string name="navigation_drawer_about">Om / licens</string>
+  <string name="navigation_drawer_beta_feedback">Beta tilbagemelding</string>
   <string name="navigation_drawer_settings">Indstillinger</string>
   <string name="navigation_drawer_news_updates">Nyheder &amp; opdateringer</string>
   <string name="navigation_drawer_external_links">Eksterne henvisninger</string>
-  <string name="navigation_drawer_website">Hjemmeside</string>
+  <string name="navigation_drawer_website">Netsted</string>
   <string name="navigation_drawer_manual">Manual</string>
-  <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_faq">OSS</string>
   <string name="navigation_drawer_forums">Hjælp / fora</string>
   <string name="navigation_drawer_donate">Donation</string>
   <string name="account_list_empty">Velkommen til DAVdroid!\n\nDu kan nu tilføje en CalDAV/CardDAV konto.</string>
@@ -65,8 +63,8 @@
   <!--AppSettingsActivity-->
   <string name="app_settings">Indstillinger</string>
   <string name="app_settings_user_interface">Brugerflade</string>
-  <string name="app_settings_reset_hints">Nulstil vejledende popups</string>
-  <string name="app_settings_reset_hints_summary">Genaktiverer hjælp, som er blevet lukket tidligere</string>
+  <string name="app_settings_reset_hints">Nulstil vejledende pop op</string>
+  <string name="app_settings_reset_hints_summary">Genaktivere tidligere lukket pop op</string>
   <string name="app_settings_reset_hints_success">Al vejledning vil blive vist igen</string>
   <string name="app_settings_connection">Forbindelse</string>
   <string name="app_settings_override_proxy">Tilsidesæt proxyindstillinger</string>
