@@ -330,7 +330,7 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
             }
             is CalendarStorageException, is ContactsStorageException, is RemoteException -> {
                 Logger.log.log(Level.SEVERE, "Couldn't access local storage", e)
-                message = context.getString(R.string.sync_error_local_storage)
+                message = context.getString(R.string.sync_error_local_storage, e.localizedMessage)
                 syncResult.databaseError = true
             }
             else -> {
