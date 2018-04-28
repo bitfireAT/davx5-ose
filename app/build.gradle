@@ -143,7 +143,7 @@ dependencies {
     compile 'com.android.support:cardview-v7:27.1.1'
     compile 'com.android.support:design:27.1.1'
     compile 'com.android.support:preference-v14:27.1.1'
-    compile 'com.android.support.test.espresso:espresso-idling-resource:3.0.1'
+    compile 'com.android.support.test.espresso:espresso-idling-resource:3.0.2'
 
     compile 'com.github.yukuku:ambilwarna:2.0.1'
 
@@ -154,10 +154,10 @@ dependencies {
     compile 'org.apache.commons:commons-collections4:4.1'
 
     // for tests
-    androidTestCompile 'com.android.support.test:runner:1.0.1'
-    androidTestCompile 'com.android.support.test:rules:1.0.1'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
-    androidTestCompile 'com.android.support.test.espresso:espresso-intents:3.0.1'
+    androidTestCompile 'com.android.support.test:runner:1.0.2'
+    androidTestCompile 'com.android.support.test:rules:1.0.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:3.0.2'
     androidTestCompile 'junit:junit:4.12'
     androidTestCompile 'com.squareup.okhttp3:mockwebserver:3.10.0'
 

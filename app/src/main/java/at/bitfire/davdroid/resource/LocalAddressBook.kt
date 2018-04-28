@@ -103,7 +103,7 @@ class LocalAddressBook(
 
     }
 
-    override val title = account.name
+    override val title = account.name!!
 
     /**
      * Whether contact groups ([LocalGroup]) are included in query results

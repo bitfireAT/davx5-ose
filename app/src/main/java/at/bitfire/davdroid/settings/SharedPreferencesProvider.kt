@@ -72,14 +72,14 @@ class SharedPreferencesProvider(
             Pair(true, true)
 
     private fun<T> putValue(key: String, value: T?, writer: (SharedPreferences.Editor, T) -> Unit): Boolean {
-        if (value == null)
-            return remove(key)
+        return if (value == null)
+            remove(key)
         else {
             Logger.log.fine("Writing setting $key = $value")
             val edit = preferences.edit()
             writer(edit, value)
             edit.apply()
-            return true
+            true
         }
     }
 

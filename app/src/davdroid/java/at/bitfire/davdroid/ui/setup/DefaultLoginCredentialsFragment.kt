@@ -107,7 +107,7 @@ class DefaultLoginCredentialsFragment: Fragment(), CompoundButton.OnCheckedChang
                         valid = false
                     }
 
-                val password = view.email_password.getText().toString()
+                val password = view.email_password.text.toString()
                 if (password.isEmpty()) {
                     view.email_password.error = getString(R.string.login_password_required)
                     valid = false

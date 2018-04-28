@@ -9,6 +9,7 @@ package at.bitfire.davdroid
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.annotation.SuppressLint
 import android.content.*
 import android.os.Build
 import android.os.Bundle
@@ -177,11 +178,11 @@ class AccountSettings(
 
     fun getTimeRangePastDays(): Int? {
         val strDays = accountManager.getUserData(account, KEY_TIME_RANGE_PAST_DAYS)
-        if (strDays != null) {
+        return if (strDays != null) {
             val days = Integer.valueOf(strDays)
-            return if (days < 0) null else days
+            if (days < 0) null else days
         } else
-            return DEFAULT_TIME_RANGE_PAST_DAYS
+            DEFAULT_TIME_RANGE_PAST_DAYS
     }
 
     fun setTimeRangePastDays(days: Int?) =
@@ -290,6 +291,7 @@ class AccountSettings(
     }
 
     @Suppress("unused")
+    @SuppressLint("ParcelClassLoader")
     private fun update_5_6() {
         context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.let { provider ->
             val parcel = Parcel.obtain()
@@ -497,6 +499,7 @@ class AccountSettings(
     }
 
     @Suppress("unused")
+    @SuppressLint("Recycle")
     private fun update_1_2() {
         /* - KEY_ADDRESSBOOK_URL ("addressbook_url"),
            - KEY_ADDRESSBOOK_CTAG ("addressbook_ctag"),
