@@ -38,8 +38,6 @@ class LocalContact: AndroidContact, LocalAddress {
     private val groupMemberships = HashSet<Long>()
 
     override var flags: Int = 0
-        private set
-
 
     constructor(addressBook: AndroidAddressBook<LocalContact,*>, values: ContentValues)
             : super(addressBook, values) {
@@ -238,6 +236,12 @@ class LocalContact: AndroidContact, LocalAddress {
         return groupMemberships
     }
 
+
+    // data rows
+    override fun buildContact(builder: ContentProviderOperation.Builder, update: Boolean) {
+        builder.withValue(COLUMN_FLAGS, flags)
+        super.buildContact(builder, update)
+    }
 
     // factory
 

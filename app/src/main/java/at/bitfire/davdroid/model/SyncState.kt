@@ -8,31 +8,38 @@
 
 package at.bitfire.davdroid.model
 
-import at.bitfire.davdroid.log.Logger
-import java.util.logging.Level
+import org.json.JSONException
+import org.json.JSONObject
 
 data class SyncState(
         val type: Type,
-        val value: String
+        val value: String,
+
+        /**
+         * Whether this sync state occurred during an initial sync as described
+         * in RFC 6578, which means the initial sync is not complete yet.
+         */
+        var initialSync: Boolean? = null
 ) {
 
     companion object {
+
+        private const val KEY_TYPE = "type"
+        private const val KEY_VALUE = "value"
+        private const val KEY_INITIAL_SYNC = "initialSync"
 
         fun fromString(s: String?): SyncState? {
             if (s == null)
                 return null
 
-            val pos = s.indexOf(':')
-            if (pos == -1)
-                return null
-
             return try {
+                val json = JSONObject(s)
                 SyncState(
-                        Type.valueOf(s.substring(0, pos)),
-                        s.substring(pos + 1)
+                        Type.valueOf(json.getString(KEY_TYPE)),
+                        json.getString(KEY_VALUE),
+                        try { json.getBoolean(KEY_INITIAL_SYNC) } catch(e: JSONException) { null }
                 )
-            } catch (e: Exception) {
-                Logger.log.log(Level.WARNING, "Couldn't restore SyncState", e)
+            } catch (e: JSONException) {
                 null
             }
         }
@@ -41,7 +48,12 @@ data class SyncState(
 
     enum class Type { CTAG, SYNC_TOKEN }
 
-    override fun toString() =
-            "${type.name}:$value"
+    override fun toString(): String {
+        val json = JSONObject()
+        json.put(KEY_TYPE, type.name)
+        json.put(KEY_VALUE, value)
+        initialSync?.let { json.put(KEY_INITIAL_SYNC, it) }
+        return json.toString()
+    }
 
 }

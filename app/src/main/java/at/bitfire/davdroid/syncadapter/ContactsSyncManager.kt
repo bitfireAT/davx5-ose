@@ -118,13 +118,18 @@ class ContactsSyncManager(
 
     override fun queryCapabilities() {
         useRemoteCollection { dav ->
-            dav.propfind(0, SupportedAddressData.NAME, GetCTag.NAME, SyncToken.NAME)
+            dav.propfind(0, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME)
 
             val properties = dav.properties
             properties[SupportedAddressData::class.java]?.let {
                 hasVCard4 = it.hasVCard4()
             }
-            Logger.log.info("Server advertises VCard/4 support: $hasVCard4")
+            Logger.log.info("Server supports vCard/4: $hasVCard4")
+
+            properties[SupportedReportSet::class.java]?.let {
+                hasCollectionSync = it.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+            }
+            Logger.log.info("Server supports Collection Sync: $hasCollectionSync")
 
             Logger.log.info("Contact group method: $groupMethod")
             // in case of GROUP_VCARDs, treat groups as contacts in the local address book
@@ -132,7 +137,10 @@ class ContactsSyncManager(
         }
     }
 
-    override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
+    override fun syncAlgorithm() = if (hasCollectionSync)
+                SyncAlgorithm.COLLECTION_SYNC
+            else
+                SyncAlgorithm.PROPFIND_REPORT
 
     override fun processLocallyDeleted(): Boolean {
         if (readOnly) {
@@ -388,12 +396,14 @@ class ContactsSyncManager(
                 if (local is LocalGroup && newData.group) {
                     // update group
                     local.eTag = eTag
+                    local.flags = LocalResource.FLAG_REMOTELY_PRESENT
                     local.update(newData)
                     syncResult.stats.numUpdates++
 
                 } else if (local is LocalContact && !newData.group) {
                     // update contact
                     local.eTag = eTag
+                    local.flags = LocalResource.FLAG_REMOTELY_PRESENT
                     local.update(newData)
                     syncResult.stats.numUpdates++
 

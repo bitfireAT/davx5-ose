@@ -102,11 +102,10 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
 
     override var flags: Int = 0
-        private set
 
 
-    constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues):
-        super(addressBook, values) {
+    constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues)
+        : super(addressBook, values) {
         flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
     }
 
@@ -118,6 +117,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
     override fun contentValues(): ContentValues  {
         val values = super.contentValues()
+        values.put(COLUMN_FLAGS, flags)
 
         val members = Parcel.obtain()
         try {
