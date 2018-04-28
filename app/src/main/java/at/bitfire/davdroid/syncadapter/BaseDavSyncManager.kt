@@ -236,8 +236,22 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
         }
 
         val changes = RemoteChanges(syncToken?.let { SyncState(SyncState.Type.SYNC_TOKEN, it) }, davCollection.furtherResults)
-        for (member in davCollection.members)
-            changes.updated += member
+        for (member in davCollection.members) {
+            // ignore if resource is existing locally with same ETag
+            // (happens at initial sync, when resources are already present locally)
+            var skip = false
+            localCollection.findByName(member.fileName())?.let { local ->
+                member.properties[GetETag::class.java]?.eTag?.let { remoteETag ->
+                    if (local.eTag == remoteETag) {
+                        Logger.log.info("${local.fileName} is already available with ETag $remoteETag, skipping update")
+                        skip = true
+                    }
+                }
+            }
+
+            if (!skip)
+                changes.updated += member
+        }
 
         for (member in davCollection.removedMembers)
             changes.deleted += member.fileName()
