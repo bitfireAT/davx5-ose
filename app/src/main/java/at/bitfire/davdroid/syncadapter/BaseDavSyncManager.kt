@@ -9,7 +9,6 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
-import android.content.ContentResolver
 import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
@@ -49,17 +48,13 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
     protected lateinit var collectionURL: HttpUrl
     protected lateinit var davCollection: RemoteType
 
+    protected var hasCollectionSync = false
+
     override fun close() {
         httpClient.close()
     }
 
-    override fun prepare(): Boolean {
-        // always re-sync on manual syncs
-        if (extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL))
-            localCollection.lastSyncState = null
-
-        return true
-    }
+    override fun prepare() = true
 
     /**
      * Process locally deleted entries (DELETE them on the server as well).
@@ -221,22 +216,19 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
     }
 
     override fun listRemoteChanges(state: SyncState?): RemoteChanges {
-        throw UnsupportedOperationException("Collection sync not implemented yet")
-
-        /* TODO
-        try {
+        //try {
             davCollection.reportChanges(
                     state?.takeIf { state.type == SyncState.Type.SYNC_TOKEN }?.value,
-                    false, COLLECTION_SYNC_PAGE_SIZE,
+                    false, null,
                     GetETag.NAME)
-        } catch(e: HttpException) {
+        /*} catch(e: HttpException) {
             if (e.status in arrayOf(500,507))
                 // some servers don't like the limit, try again without
                 davCollection.reportChanges(
                         state?.takeIf { state.type == SyncState.Type.SYNC_TOKEN }?.value,
                         false, null,
-                        GetETag.NAME, GetContentType.NAME)
-        }
+                        GetETag.NAME)
+        }*/
 
         var syncToken: String? = null
         davCollection.properties[SyncToken::class.java]?.let {
@@ -252,7 +244,6 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
 
         Logger.log.log(Level.INFO, "Received list of changed/removed resources", changes)
         return changes
-        */
     }
 
     override fun deleteNotPresentRemotely() {

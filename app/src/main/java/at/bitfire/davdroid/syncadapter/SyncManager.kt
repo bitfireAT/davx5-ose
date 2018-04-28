@@ -136,25 +136,52 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
                         localCollection.lastSyncState = changes.state
                     }
                     SyncAlgorithm.COLLECTION_SYNC -> {
-                        throw UnsupportedOperationException("Collection sync not supported yet")
+                        var initialSync = false
 
-                        /*val lastSyncState = localCollection.getLastSyncState()?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }
-                        val initialSync = lastSyncState == null
-                        if (initialSync)
+                        val lastSyncState = localCollection.lastSyncState?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }
+                        if (lastSyncState == null) {
+                            Logger.log.info("Starting initial sync")
+                            initialSync = true
                             resetPresentRemotely()
+                        }
+                        if (lastSyncState?.initialSync == true) {
+                            Logger.log.info("Continuing initial sync")
+                            initialSync = true
+                        }
 
+                        Logger.log.info("Listing changes since $lastSyncState")
                         var changes = listRemoteChanges(lastSyncState)
                         do {
+                            Logger.log.info("Processing received changes")
                             processRemoteChanges(changes)
-                            localCollection.setLastSyncState(changes.state)
 
+                            // save sync state and keep whether we're in initial sync
+                            val newState = changes.state
+                            newState?.initialSync = initialSync
+                            Logger.log.log(Level.INFO, "Saving sync state", newState)
+                            localCollection.lastSyncState = newState
+
+                            Logger.log.info("Listing changes since ${changes.state}")
                             changes = listRemoteChanges(changes.state)
-                        } while(changes.furtherChanges)
+                        } while (changes.furtherChanges)
 
-                        if (initialSync)
+                        Logger.log.info("No more changes available on server")
+                        if (initialSync) {
+                            // initial sync is finished, remove all local resources which have
+                            // not been sent by the server
+                            Logger.log.info("Deleting local resources which are not on server (anymore)")
                             deleteNotPresentRemotely()
 
-                        postProcess()*/
+                            // remove initial sync flag
+                            lastSyncState?.let { state ->
+                                state.initialSync = false
+                                Logger.log.log(Level.INFO, "Saving sync state", state)
+                                localCollection.lastSyncState = state
+                            }
+                        }
+
+                        Logger.log.info("Post-processing")
+                        postProcess()
                     }
                 }
             else
@@ -276,8 +303,12 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
      * Processes remote changes:
      *   + downloads and locally saves remotely updated resources
      *   + locally deletes remotely deleted resources
+     *
      * Should call [abortIfCancelled] from time to time, for instance
      * after downloading a resource.
+     *
+     * Must mark downloaded resources as present on server.
+     *
      * @param changes List of remotely updated and deleted resources
      */
     protected abstract fun processRemoteChanges(changes: RemoteChanges)
