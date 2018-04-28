@@ -76,7 +76,7 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
         account
 
     protected val notificationManager = NotificationManagerCompat.from(context)
-    protected val notificationTag = Companion.notificationTag(authority, mainAccount)
+    protected val notificationTag = notificationTag(authority, mainAccount)
 
     /** Local resource we're currently operating on. Used for error notifications. **/
     protected val currentLocalResource = LinkedList<LocalResource<*>>()

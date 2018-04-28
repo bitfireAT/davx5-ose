@@ -640,7 +640,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
         companion object {
 
-            val ARG_ACCOUNT = "account"
+            const val ARG_ACCOUNT = "account"
 
             fun newInstance(account: Account): RenameAccountFragment {
                 val fragment = RenameAccountFragment()

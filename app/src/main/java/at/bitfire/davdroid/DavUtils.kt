@@ -33,7 +33,7 @@ object DavUtils {
 
         // the list returned by HttpUrl.pathSegments() is unmodifiable, so we have to create a copy
         val segments = LinkedList<String>(httpUrl.pathSegments())
-        Collections.reverse(segments)
+        segments.reverse()
 
         return segments.firstOrNull { it.isNotEmpty() } ?: "/"
     }

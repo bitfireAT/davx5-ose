@@ -219,7 +219,7 @@ class DavResourceFinder(
             if (resourceType.types.contains(ResourceType.ADDRESSBOOK)) {
                 addressBook.location = UrlUtils.withTrailingSlash(addressBook.location)
                 log.info("Found address book at ${addressBook.location}")
-                config.collections.put(addressBook.location.uri(), CollectionInfo(addressBook))
+                config.collections[addressBook.location.uri()] = CollectionInfo(addressBook)
             }
         }
 
@@ -241,7 +241,7 @@ class DavResourceFinder(
             if (resourceType.types.contains(ResourceType.CALENDAR)) {
                 calendar.location = UrlUtils.withTrailingSlash(calendar.location)
                 log.info("Found calendar at ${calendar.location}")
-                config.collections.put(calendar.location.uri(), CollectionInfo(calendar))
+                config.collections[calendar.location.uri()] = CollectionInfo(calendar)
             }
         }
 
@@ -269,7 +269,7 @@ class DavResourceFinder(
                 return true
 
         } catch(e: Exception) {
-            log.log(Level.SEVERE, "Couldn't detect services on " + url, e)
+            log.log(Level.SEVERE, "Couldn't detect services on $url", e)
             if (e !is HttpException && e !is DavException)
                 throw e
         }
