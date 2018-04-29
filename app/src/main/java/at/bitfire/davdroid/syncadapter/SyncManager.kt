@@ -132,37 +132,35 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
                         Logger.log.info("Post-processing")
                         postProcess()
 
-                        Logger.log.info("Saving sync state")
+                        Logger.log.log(Level.INFO, "Saving sync state", changes.state)
                         localCollection.lastSyncState = changes.state
                     }
                     SyncAlgorithm.COLLECTION_SYNC -> {
                         var initialSync = false
 
-                        val lastSyncState = localCollection.lastSyncState?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }
-                        if (lastSyncState == null) {
+                        var syncState = localCollection.lastSyncState?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }
+                        if (syncState == null) {
                             Logger.log.info("Starting initial sync")
                             initialSync = true
                             resetPresentRemotely()
                         }
-                        if (lastSyncState?.initialSync == true) {
+                        if (syncState?.initialSync == true) {
                             Logger.log.info("Continuing initial sync")
                             initialSync = true
                         }
 
-                        Logger.log.info("Listing changes since $lastSyncState")
-                        var changes = listRemoteChanges(lastSyncState)
                         do {
+                            Logger.log.info("Listing changes since $syncState")
+                            val changes = listRemoteChanges(syncState)
+
                             Logger.log.info("Processing received changes")
                             processRemoteChanges(changes)
 
                             // save sync state and keep whether we're in initial sync
-                            val newState = changes.state
-                            newState?.initialSync = initialSync
-                            Logger.log.log(Level.INFO, "Saving sync state", newState)
-                            localCollection.lastSyncState = newState
-
-                            Logger.log.info("Listing changes since ${changes.state}")
-                            changes = listRemoteChanges(changes.state)
+                            syncState = changes.state ?: throw DavException("Received sync-collection without sync-token")
+                            syncState.initialSync = initialSync
+                            Logger.log.log(Level.INFO, "Saving sync state", syncState)
+                            localCollection.lastSyncState = syncState
                         } while (changes.furtherChanges)
 
                         Logger.log.info("No more changes available on server")
@@ -173,11 +171,9 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
                             deleteNotPresentRemotely()
 
                             // remove initial sync flag
-                            lastSyncState?.let { state ->
-                                state.initialSync = false
-                                Logger.log.log(Level.INFO, "Saving sync state", state)
-                                localCollection.lastSyncState = state
-                            }
+                            syncState!!.initialSync = false
+                            Logger.log.log(Level.INFO, "Initial sync completed, saving sync state", syncState)
+                            localCollection.lastSyncState = syncState
                         }
 
                         Logger.log.info("Post-processing")

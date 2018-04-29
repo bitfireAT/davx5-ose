@@ -9,6 +9,7 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
+import android.content.ContentResolver
 import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
@@ -42,6 +43,15 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
         syncResult: SyncResult,
         localCollection: CollectionType
 ): SyncManager<ResourceType, CollectionType>(context, settings, account, accountSettings, extras, authority, syncResult, localCollection), AutoCloseable {
+
+    companion object {
+        /**
+         * How many updates are requested per collection-sync REPORT. We use a rather small number
+         * because the response has to be parsed and held in memory, which is a spare resource on
+         * handheld devices.
+         */
+        const val COLLECTION_SYNC_LIMIT = 1
+    }
 
     protected val httpClient = HttpClient.Builder(context, settings, accountSettings).build()
 
@@ -149,6 +159,11 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
     }
 
     override fun syncRequired(): Boolean {
+        if (syncAlgorithm() == SyncAlgorithm.PROPFIND_REPORT && extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL)) {
+            Logger.log.info("Manual sync in PROPFIND/REPORT mode, forcing sync")
+            return true
+        }
+
         val localState = localCollection.lastSyncState
         val remoteState = syncState(false)
         Logger.log.info("Local sync state = $localState, remote sync state = $remoteState")
@@ -216,18 +231,20 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
     }
 
     override fun listRemoteChanges(state: SyncState?): RemoteChanges {
-        //try {
+        /*try {
             davCollection.reportChanges(
                     state?.takeIf { state.type == SyncState.Type.SYNC_TOKEN }?.value,
-                    false, null,
+                    false, COLLECTION_SYNC_LIMIT,
                     GetETag.NAME)
-        /*} catch(e: HttpException) {
-            if (e.status in arrayOf(500,507))
+        } catch(e: HttpException) {
+            if (e.status == 507)*/
                 // some servers don't like the limit, try again without
                 davCollection.reportChanges(
                         state?.takeIf { state.type == SyncState.Type.SYNC_TOKEN }?.value,
                         false, null,
                         GetETag.NAME)
+            /*else
+                throw e
         }*/
 
         var syncToken: String? = null
