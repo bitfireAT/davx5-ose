@@ -188,7 +188,7 @@ class CalendarSyncManager(
                 }
             })
         } else
-            Logger.log.severe("Received VCALENDAR with not exactly one VEVENT with UID, but without RECURRENCE-ID; ignoring $fileName")
+            Logger.log.severe("Received VCALENDAR with not exactly one VEVENT with UID and without RECURRENCE-ID; ignoring $fileName")
     }
 
 }
