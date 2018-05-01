@@ -262,6 +262,9 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
                     if (local.eTag == remoteETag) {
                         Logger.log.info("${local.fileName} is already available with ETag $remoteETag, skipping update")
                         skip = true
+
+                        // mark as remotely present, so that this resource won't be deleted at the end
+                        local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
                     }
                 }
             }
