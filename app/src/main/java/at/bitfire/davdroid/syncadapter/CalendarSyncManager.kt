@@ -15,10 +15,7 @@ import android.os.Bundle
 import at.bitfire.dav4android.DavCalendar
 import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.exception.DavException
-import at.bitfire.dav4android.property.CalendarData
-import at.bitfire.dav4android.property.GetCTag
-import at.bitfire.dav4android.property.GetETag
-import at.bitfire.dav4android.property.SyncToken
+import at.bitfire.dav4android.property.*
 import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalCalendar
@@ -68,10 +65,20 @@ class CalendarSyncManager(
     }
 
     override fun queryCapabilities() {
-        useRemoteCollection { it.propfind(0, GetCTag.NAME, SyncToken.NAME) }
+        useRemoteCollection { dav ->
+            dav.propfind(0, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME)
+
+            dav.properties[SupportedReportSet::class.java]?.let {
+                hasCollectionSync = it.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+            }
+            Logger.log.info("Server supports Collection Sync: $hasCollectionSync")
+        }
     }
 
-    override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
+    override fun syncAlgorithm() = if (accountSettings.getTimeRangePastDays() != null || !hasCollectionSync)
+                SyncAlgorithm.PROPFIND_REPORT
+            else
+                SyncAlgorithm.COLLECTION_SYNC
 
     override fun prepareUpload(resource: LocalEvent): RequestBody = useLocal(resource, {
         val event = requireNotNull(resource.event)
@@ -188,7 +195,7 @@ class CalendarSyncManager(
                 }
             })
         } else
-            Logger.log.severe("Received VCALENDAR with not exactly one VEVENT with UID and without RECURRENCE-ID; ignoring $fileName")
+            Logger.log.info("Received VCALENDAR with not exactly one VEVENT with UID and without RECURRENCE-ID; ignoring $fileName")
     }
 
 }
