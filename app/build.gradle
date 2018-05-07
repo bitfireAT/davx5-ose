@@ -19,7 +19,7 @@ android {
         applicationId "at.bitfire.davdroid"
         resValue "string", "packageID", applicationId
 
-        versionCode 218
+        versionCode 219
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         minSdkVersion 19        // Android 4.4
@@ -37,13 +37,13 @@ android {
     productFlavors {
         standard {
             dimension "type"
-            versionName "1.11.2"
+            versionName "1.11.3-beta1"
 
             buildConfigField "boolean", "customCerts", "true"
         }
         managed {
             dimension "type"
-            versionName "1.11.2-mgd"
+            versionName "1.11.3-beta1-mgd"
 
             applicationId "com.davdroid.managed"
             resValue "string", "packageID", applicationId
@@ -55,7 +55,7 @@ android {
 
         gplay {
             dimension "type"
-            versionName "1.11.2-gplay"
+            versionName "1.11.3-beta1-gplay"
 
             buildConfigField "boolean", "customCerts", "true"
         }
@@ -68,7 +68,7 @@ android {
         }
         soldupe {
             dimension "type"
-            versionName "1.11.2-beta2-soldupe"
+            versionName "1.11.3-beta1-soldupe"
 
             applicationId "com.soldupe.cloudsync"
             resValue "string", "packageID", applicationId
