@@ -44,6 +44,7 @@ import at.bitfire.vcard4android.ContactsStorageException
 import org.dmfs.tasks.contract.TaskContract
 import java.io.IOException
 import java.io.InterruptedIOException
+import java.net.HttpURLConnection
 import java.security.cert.CertificateException
 import java.util.*
 import java.util.logging.Level
@@ -139,6 +140,19 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
                         var initialSync = false
 
                         var syncState = localCollection.lastSyncState?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }
+
+                        Logger.log.info("Listing changes since $syncState")
+                        var changes: RemoteChanges? = try {
+                            listRemoteChanges(syncState)
+                        } catch(e: HttpException) {
+                            if (e.status == HttpURLConnection.HTTP_FORBIDDEN /* TODO: check for valid-sync-token precondition */) {
+                                Logger.log.info("Sync token stale, retrying without sync-token")
+                                syncState == null
+                                listRemoteChanges(null)
+                            } else
+                                throw e
+                        }
+
                         if (syncState == null) {
                             Logger.log.info("Starting initial sync")
                             initialSync = true
@@ -149,10 +163,7 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
                             initialSync = true
                         }
 
-                        do {
-                            Logger.log.info("Listing changes since $syncState")
-                            val changes = listRemoteChanges(syncState)
-
+                        while (changes != null) {
                             Logger.log.info("Processing received changes")
                             processRemoteChanges(changes)
 
@@ -161,9 +172,16 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
                             syncState.initialSync = initialSync
                             Logger.log.log(Level.INFO, "Saving sync state", syncState)
                             localCollection.lastSyncState = syncState
-                        } while (changes.furtherChanges)
 
-                        Logger.log.info("No more changes available on server")
+                            // request next bunch of changes (if available), or exit loop
+                            changes = if (changes.furtherChanges)
+                                listRemoteChanges(syncState)
+                            else {
+                                Logger.log.info("No more changes available on server")
+                                null
+                            }
+                        }
+
                         if (initialSync) {
                             // initial sync is finished, remove all local resources which have
                             // not been sent by the server
