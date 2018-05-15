@@ -2,18 +2,119 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVdroid</string>
+  <string name="account_title_address_book">DAVdroid Llibreta d’Adreces</string>
+  <string name="address_books_authority_title">Llibreta d’adreces</string>
   <string name="help">Ajuda</string>
+  <string name="manage_accounts">Gestiona comptes</string>
+  <string name="please_wait">Esperi si us plau...</string>
+  <string name="send">Enviar</string>
+  <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
+  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
+  <string name="notification_channel_debugging">Depurador</string>
+  <string name="notification_channel_general">Altres missatges importants</string>
+  <string name="notification_channel_sync">Sincronització</string>
+  <string name="notification_channel_sync_io_errors">Xarxa i errors E/S</string>
+  <string name="notification_channel_sync_status">Estat dels misatges</string>
   <!--startup dialogs-->
+  <string name="startup_autostart_permission">%s permisos d\'inici automàtic</string>
+  <string name="startup_autostart_permission_message">El microprogramari del dispositiu pot impedir la sincronització automàtica. Hauries de permetre la sincronització automàtica manualment.</string>
+  <string name="startup_battery_optimization">Optimització de la bateria</string>
+  <string name="startup_battery_optimization_message">Android pot desactivar/reduir la sincronització de DAVdroid després d\'uns dies. Per impedir això, desactiva l\'optimització de la bateria.</string>
+  <string name="startup_battery_optimization_disable">Desactiva per DAVdroid</string>
+  <string name="startup_dont_show_again">No mostrar de nou</string>
+  <string name="startup_donate">Informació de Codi Obert</string>
+  <string name="startup_donate_message">Som feliços de que utilitzis DAVdroid, el qual és programari lliure (GPLv3). Desenvolupar DAVdroid ens porte moltes hores i molta feina, si us plau, considera fer una donació.</string>
+  <string name="startup_donate_now">Mostra la pàgina de donació</string>
+  <string name="startup_donate_later">Més tard</string>
+  <string name="startup_google_play_accounts_removed">Informació d\'errors DRM a Play Store</string>
+  <string name="startup_more_info">Més informació</string>
+  <string name="startup_opentasks_not_installed">OpenTasks no està instal·lada</string>
+  <string name="startup_opentasks_not_installed_install">Instal·lar OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_license_terms">Termes de la llicència</string>
   <!--global settings-->
+  <string name="logging_no_external_storage">Emmagatzematge extern no trobat</string>
   <!--AccountsActivity-->
+  <string name="navigation_drawer_about">Quan a / Llicència</string>
+  <string name="navigation_drawer_beta_feedback">Retroacció de la Beta</string>
+  <string name="navigation_drawer_settings">Paràmetres</string>
+  <string name="navigation_drawer_news_updates">Novetats &amp; Actualitzacions</string>
+  <string name="navigation_drawer_external_links">Enllaços externs</string>
+  <string name="navigation_drawer_website">Pàgina web</string>
+  <string name="navigation_drawer_manual">Manual</string>
+  <string name="navigation_drawer_faq">Preguntes Freqüents</string>
+  <string name="navigation_drawer_forums">Ajuda / Fòrums</string>
+  <string name="navigation_drawer_donate">Fer donació</string>
+  <string name="accounts_global_sync_enable">Activar</string>
   <!--DavService-->
   <!--AppSettingsActivity-->
+  <string name="app_settings">Paràmetres</string>
+  <string name="app_settings_user_interface">Interfície d’usuari</string>
+  <string name="app_settings_reset_hints">Reiniciar pistes</string>
+  <string name="app_settings_security">Seguretat</string>
+  <string name="app_settings_debug">Depurador</string>
   <!--AccountActivity-->
+  <string name="account_synchronize_now">Sincronitza ara</string>
+  <string name="account_synchronizing_now">Sincronitzant ara</string>
+  <string name="account_settings">Paràmetres del compte</string>
+  <string name="account_rename">Canvia el nom al compte</string>
+  <string name="account_rename_rename">Canvia el nom</string>
+  <string name="account_delete">Esborra el compte</string>
+  <string name="account_delete_confirmation_title">Segur que vols esborrar el compte?</string>
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_synchronize_this_collection">Sincronitzar aquesta col·lecció</string>
+  <string name="account_read_only">Només de lectura</string>
+  <string name="account_calendar">Calendari</string>
+  <string name="account_task_list">Llista de tasques</string>
+  <string name="account_refresh_address_book_list">Actualitza la llista de llibretes d’adreces</string>
+  <string name="account_create_new_address_book">Crear nova llibreta d’adreces</string>
+  <string name="account_refresh_calendar_list">Actualitzar llista de calendaris</string>
+  <string name="account_create_new_calendar">Crear nou calendari</string>
+  <string name="account_install_icsdroid">Instal·lar ICSdroid</string>
   <!--AddAccountActivity-->
+  <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
+  <string name="login_title">Afegir compte</string>
   <string name="login_type_email">Entra amb una adreça de correu electrònic</string>
+  <string name="login_email_address">Correu electrònic</string>
+  <string name="login_email_address_error">Es requereix un correu electrònic vàlid</string>
+  <string name="login_password">Contrasenya</string>
+  <string name="login_password_required">Es requereix contrasenya</string>
   <string name="login_type_url">Entra amb una URL i un nom d\'usuari</string>
+  <string name="login_url_must_be_http_or_https">La URL hauria de començar amb http(s)://</string>
+  <string name="login_url_must_be_https">La URL hauria de començar amb https://</string>
+  <string name="login_url_host_name_required">Es requereix nom d\'amfitrió</string>
+  <string name="login_user_name">Nom d\'usuari/a</string>
+  <string name="login_user_name_required">Es requereix nom d\'usuari/a</string>
+  <string name="login_base_url">URL base</string>
+  <string name="login_select_certificate">Selecciona certificat</string>
+  <string name="login_login">Entrada</string>
+  <string name="login_back">Sortir</string>
+  <string name="login_create_account">Crear compte</string>
+  <string name="login_account_name">Nom del compte</string>
+  <string name="login_view_logs">Veure els registres</string>
   <!--AccountSettingsActivity-->
+  <string name="settings_title">Paràmetres: %s</string>
+  <string name="settings_authentication">Autentificació</string>
+  <string name="settings_username">Nom d\'usuari/a</string>
+  <string name="settings_enter_username">Escriu el nom d\'usuari/a:</string>
+  <string name="settings_password">Contrasenya</string>
+  <string name="settings_enter_password">Escriu la teva contrasenya</string>
+  <string name="settings_sync">Sincronització</string>
+  <string name="settings_sync_summary_manually">Només a mà</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Només a mà</item>
+    <item>Cada 15 minuts</item>
+    <item>Cada 30 minuts</item>
+    <item>Cada hora</item>
+    <item>Cada 2 hores</item>
+    <item>Cada 4 hores</item>
+    <item>Una vegada al dia</item>
+  </string-array>
+  <string name="settings_sync_wifi_only">Sincronitzar només amb WI-FI</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_caldav">CalDAV</string>
   <!--collection management-->
   <!--ExceptionInfoFragment-->
   <!--sync adapters and DebugInfoActivity-->
