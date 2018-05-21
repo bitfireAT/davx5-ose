@@ -8,6 +8,7 @@
 
 package at.bitfire.davdroid.model
 
+import at.bitfire.dav4android.property.SyncToken
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -43,6 +44,9 @@ data class SyncState(
                 null
             }
         }
+
+        fun fromSyncToken(token: SyncToken) =
+                token.token?.let { SyncState(Type.SYNC_TOKEN, it) }
 
     }
 

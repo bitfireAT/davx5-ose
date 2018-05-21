@@ -15,6 +15,7 @@ import android.content.SyncResult
 import android.os.Bundle
 import at.bitfire.dav4android.DavCollection
 import at.bitfire.dav4android.DavResource
+import at.bitfire.dav4android.DavResponse
 import at.bitfire.dav4android.exception.ConflictException
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.exception.HttpException
@@ -50,6 +51,7 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
          * because the response has to be parsed and held in memory, which is a spare resource on
          * handheld devices.
          */
+        @Suppress("unused")
         const val COLLECTION_SYNC_LIMIT = 1
     }
 
@@ -60,11 +62,25 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
 
     protected var hasCollectionSync = false
 
+
     override fun close() {
         httpClient.close()
     }
 
     override fun prepare() = true
+
+    protected fun syncState(dav: DavResponse) =
+            dav[SyncToken::class.java]?.token?.let {
+                SyncState(SyncState.Type.SYNC_TOKEN, it)
+            } ?:
+            dav[GetCTag::class.java]?.cTag?.let {
+                SyncState(SyncState.Type.CTAG, it)
+            }
+
+    override fun querySyncState(): SyncState? =
+            davCollection.propfind(0, GetCTag.NAME, SyncToken.NAME).use {
+                syncState(it)
+            }
 
     /**
      * Process locally deleted entries (DELETE them on the server as well).
@@ -125,8 +141,9 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
                     // generate entity to upload (VCard, iCal, whatever)
                     val body = prepareUpload(local)
 
+                    lateinit var response: DavResponse
                     try {
-                        if (local.eTag == null) {
+                        response = if (local.eTag == null) {
                             Logger.log.info("Uploading new record $fileName")
                             remote.put(body, null, true)
                         } else {
@@ -139,9 +156,11 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
                         Logger.log.log(Level.INFO, "Edit conflict, ignoring", e)
                     } catch(e: PreconditionFailedException) {
                         Logger.log.log(Level.INFO, "Resource has been modified on the server before upload, ignoring", e)
+                    } finally {
+                        response.close()
                     }
 
-                    val newETag = remote.properties[GetETag::class.java]
+                    val newETag = response[GetETag::class.java]
                     val eTag: String?
                     if (newETag != null) {
                         eTag = newETag.eTag
@@ -158,38 +177,25 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
         return numUploaded > 0
     }
 
-    override fun syncRequired(): Boolean {
+    override fun syncRequired(state: SyncState?): Boolean {
         if (syncAlgorithm() == SyncAlgorithm.PROPFIND_REPORT && extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL)) {
             Logger.log.info("Manual sync in PROPFIND/REPORT mode, forcing sync")
             return true
         }
 
         val localState = localCollection.lastSyncState
-        val remoteState = syncState(false)
-        Logger.log.info("Local sync state = $localState, remote sync state = $remoteState")
+        Logger.log.info("Local sync state = $localState, remote sync state = $state")
         return when {
-            remoteState?.type == SyncState.Type.SYNC_TOKEN -> {
+            state?.type == SyncState.Type.SYNC_TOKEN -> {
                 val lastKnownToken = localState?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }?.value
-                lastKnownToken != remoteState.value
+                lastKnownToken != state.value
             }
-            remoteState?.type == SyncState.Type.CTAG -> {
+            state?.type == SyncState.Type.CTAG -> {
                 val lastKnownCTag = localState?.takeIf { it.type == SyncState.Type.CTAG }?.value
-                lastKnownCTag != remoteState.value
+                lastKnownCTag != state.value
             }
             else ->
                 true
-        }
-    }
-
-    override fun syncState(forceRefresh: Boolean) = useRemoteCollection { remote ->
-        if (forceRefresh)
-            remote.propfind(0, GetCTag.NAME, SyncToken.NAME)
-
-        remote.properties[SyncToken::class.java]?.token?.let {
-            SyncState(SyncState.Type.SYNC_TOKEN, it)
-        } ?:
-        remote.properties[GetCTag::class.java]?.cTag?.let {
-            SyncState(SyncState.Type.CTAG, it)
         }
     }
 
@@ -198,14 +204,14 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
         Logger.log.info("Number of local non-dirty entries: $number")
     }
 
-    override fun compareLocalRemote(syncState: SyncState?, remoteResources: Map<String, DavResource>): RemoteChanges {
+    override fun compareLocalRemote(remoteResources: Map<String, DavResponse>): RemoteChanges {
         /* check which resources are
            1. updated remotely -> update
            2. added remotely -> update
            3. not present remotely anymore -> ignore (because they will be deleted by deleteObsolete()
          */
 
-        val changes = RemoteChanges(syncState, false)
+        val changes = RemoteChanges(null, false)
 
         for ((name, remote) in remoteResources)
             useLocal(localCollection.findByName(name), { local ->
@@ -214,7 +220,7 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
                     changes.updated += remote
                 } else {
                     val localETag = local.eTag
-                    val remoteETag = remote.properties[GetETag::class.java]?.eTag ?: throw DavException("Server didn't provide ETag")
+                    val remoteETag = remote[GetETag::class.java]?.eTag ?: throw DavException("Server didn't provide ETag")
                     if (localETag == remoteETag)
                         Logger.log.fine("$name has not been changed on server (ETag still $remoteETag)")
                     else {
@@ -231,7 +237,7 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
     }
 
     override fun listRemoteChanges(state: SyncState?): RemoteChanges {
-        /*try {
+        val dav = /*try {
             davCollection.reportChanges(
                     state?.takeIf { state.type == SyncState.Type.SYNC_TOKEN }?.value,
                     false, COLLECTION_SYNC_LIMIT,
@@ -246,38 +252,34 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
             /*else
                 throw e
         }*/
+        dav.use {
+            val changes = RemoteChanges(dav.syncToken?.let { SyncState.fromSyncToken(it) }, dav.furtherResults)
+            for (member in dav.members) {
+                // ignore if resource is existing locally with same ETag
+                // (happens at initial sync, when resources are already present locally)
+                var skip = false
+                localCollection.findByName(member.fileName())?.let { local ->
+                    member[GetETag::class.java]?.eTag?.let { remoteETag ->
+                        if (local.eTag == remoteETag) {
+                            Logger.log.info("${local.fileName} is already available with ETag $remoteETag, skipping update")
+                            skip = true
 
-        var syncToken: String? = null
-        davCollection.properties[SyncToken::class.java]?.let {
-            syncToken = it.token
-        }
-
-        val changes = RemoteChanges(syncToken?.let { SyncState(SyncState.Type.SYNC_TOKEN, it) }, davCollection.furtherResults)
-        for (member in davCollection.members) {
-            // ignore if resource is existing locally with same ETag
-            // (happens at initial sync, when resources are already present locally)
-            var skip = false
-            localCollection.findByName(member.fileName())?.let { local ->
-                member.properties[GetETag::class.java]?.eTag?.let { remoteETag ->
-                    if (local.eTag == remoteETag) {
-                        Logger.log.info("${local.fileName} is already available with ETag $remoteETag, skipping update")
-                        skip = true
-
-                        // mark as remotely present, so that this resource won't be deleted at the end
-                        local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
+                            // mark as remotely present, so that this resource won't be deleted at the end
+                            local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
+                        }
                     }
                 }
+
+                if (!skip)
+                    changes.updated += member
             }
 
-            if (!skip)
-                changes.updated += member
+            for (member in dav.removedMembers)
+                changes.deleted += member.fileName()
+
+            Logger.log.log(Level.INFO, "Received list of changed/removed resources", changes)
+            return changes
         }
-
-        for (member in davCollection.removedMembers)
-            changes.deleted += member.fileName()
-
-        Logger.log.log(Level.INFO, "Received list of changed/removed resources", changes)
-        return changes
     }
 
     override fun deleteNotPresentRemotely() {
@@ -297,7 +299,14 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
     }
 
     protected fun<T: DavResource, R> useRemote(remote: T, body: (T) -> R): R {
-        currentRemoteResource.push(remote)
+        currentRemoteResource.push(remote.location)
+        val result = body(remote)
+        currentRemoteResource.pop()
+        return result
+    }
+
+    protected fun<T> useRemote(remote: DavResponse, body: (DavResponse) -> T): T {
+        currentRemoteResource.push(remote.url)
         val result = body(remote)
         currentRemoteResource.pop()
         return result

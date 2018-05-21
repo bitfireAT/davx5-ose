@@ -16,12 +16,14 @@ import android.provider.ContactsContract.Groups
 import android.support.v4.app.NotificationCompat
 import at.bitfire.dav4android.DavAddressBook
 import at.bitfire.dav4android.DavResource
+import at.bitfire.dav4android.DavResponse
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.property.*
 import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.model.SyncState
 import at.bitfire.davdroid.resource.*
 import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -116,24 +118,25 @@ class ContactsSyncManager(
         return true
     }
 
-    override fun queryCapabilities() {
-        useRemoteCollection { dav ->
-            dav.propfind(0, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME)
+    override fun queryCapabilities(): SyncState? {
+        Logger.log.info("Contact group method: $groupMethod")
+        // in case of GROUP_VCARDs, treat groups as contacts in the local address book
+        localCollection.includeGroups = groupMethod == GroupMethod.GROUP_VCARDS
 
-            val properties = dav.properties
-            properties[SupportedAddressData::class.java]?.let {
-                hasVCard4 = it.hasVCard4()
+        return useRemoteCollection {
+            it.propfind(0, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME).use { dav ->
+                dav[SupportedAddressData::class.java]?.let {
+                    hasVCard4 = it.hasVCard4()
+                }
+                Logger.log.info("Server supports vCard/4: $hasVCard4")
+
+                dav[SupportedReportSet::class.java]?.let {
+                    hasCollectionSync = it.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                }
+                Logger.log.info("Server supports Collection Sync: $hasCollectionSync")
+
+                syncState(dav)
             }
-            Logger.log.info("Server supports vCard/4: $hasVCard4")
-
-            properties[SupportedReportSet::class.java]?.let {
-                hasCollectionSync = it.reports.contains(SupportedReportSet.SYNC_COLLECTION)
-            }
-            Logger.log.info("Server supports Collection Sync: $hasCollectionSync")
-
-            Logger.log.info("Contact group method: $groupMethod")
-            // in case of GROUP_VCARDs, treat groups as contacts in the local address book
-            localCollection.includeGroups = groupMethod == GroupMethod.GROUP_VCARDS
         }
     }
 
@@ -279,26 +282,26 @@ class ContactsSyncManager(
         )
     })
 
-    override fun listAllRemote() = useRemoteCollection { dav ->
+    override fun listAllRemote() = useRemoteCollection {
         // fetch list of remote VCards and build hash table to index file name
-        dav.propfind(1, ResourceType.NAME, GetETag.NAME)
+        it.propfind(1, ResourceType.NAME, GetETag.NAME).use { dav ->
+            val result = LinkedHashMap<String, DavResponse>(dav.members.size)
+            for (vCard in dav.members) {
+                // ignore member collections
+                var ignore = false
+                vCard[ResourceType::class.java]?.let { type ->
+                    if (type.types.contains(ResourceType.COLLECTION))
+                        ignore = true
+                }
+                if (ignore)
+                    continue
 
-        val result = LinkedHashMap<String, DavResource>(dav.members.size)
-        for (vCard in dav.members) {
-            // ignore member collections
-            var ignore = false
-            vCard.properties[ResourceType::class.java]?.let { type ->
-                if (type.types.contains(ResourceType.COLLECTION))
-                    ignore = true
+                val fileName = vCard.fileName()
+                Logger.log.fine("Found remote VCard: $fileName")
+                result[fileName] = vCard
             }
-            if (ignore)
-                continue
-
-            val fileName = vCard.fileName()
-            Logger.log.fine("Found remote VCard: $fileName")
-            result[fileName] = vCard
+            result
         }
-        result
     }
 
     override fun processRemoteChanges(changes: RemoteChanges) {
@@ -309,7 +312,7 @@ class ContactsSyncManager(
                 syncResult.stats.numDeletes++
             }
 
-        val toDownload = changes.updated.map { it.location }
+        val toDownload = changes.updated.map { it.url }
         Logger.log.info("Downloading ${toDownload.size} resources ($MULTIGET_MAX_RESOURCES at once)")
 
         // prepare downloader which may be used to download external resource like contact photos
@@ -319,34 +322,36 @@ class ContactsSyncManager(
         for (bunch in toDownload.chunked(CalendarSyncManager.MULTIGET_MAX_RESOURCES)) {
             if (bunch.size == 1)
                 // only one contact, use GET
-                useRemote(DavResource(httpClient.okHttpClient, bunch.first()), { remote ->
-                    val body = remote.get("text/vcard;version=4.0, text/vcard;charset=utf-8;q=0.8, text/vcard;q=0.5")
+                useRemote(DavResource(httpClient.okHttpClient, bunch.first()), {
+                    it.get("text/vcard;version=4.0, text/vcard;charset=utf-8;q=0.8, text/vcard;q=0.5").use { dav ->
+                        // CardDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc6352#section-6.3.2.3]
+                        val eTag = dav[GetETag::class.java]?.eTag
+                                ?: throw DavException("Received CardDAV GET response without ETag for ${dav.url}")
 
-                    // CardDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc6352#section-6.3.2.3]
-                    val eTag = remote.properties[GetETag::class.java]?.eTag
-                            ?: throw DavException("Received CardDAV GET response without ETag for ${remote.location}")
-
-                    body.charStream().use { reader ->
-                        processVCard(remote.fileName(), eTag, reader, downloader)
+                        dav.body?.charStream()?.use { reader ->
+                            processVCard(dav.fileName(), eTag, reader, downloader)
+                        }
                     }
                 })
 
             else {
                 // multiple contacts, use multi-get
-                useRemoteCollection { it.multiget(bunch, hasVCard4) }
+                useRemoteCollection {
+                    it.multiget(bunch, hasVCard4).use { dav ->
+                        // process multi-get results
+                        for (remote in dav.members)
+                            useRemote(remote, {
+                                val eTag = remote[GetETag::class.java]?.eTag
+                                        ?: throw DavException("Received multi-get response without ETag")
 
-                // process multi-get results
-                for (remote in davCollection.members)
-                    useRemote(remote, {
-                        val eTag = remote.properties[GetETag::class.java]?.eTag
-                                ?: throw DavException("Received multi-get response without ETag")
+                                val addressData = remote[AddressData::class.java]
+                                val vCard = addressData?.vCard
+                                        ?: throw DavException("Received multi-get response without address data")
 
-                        val addressData = remote.properties[AddressData::class.java]
-                        val vCard = addressData?.vCard
-                                ?: throw DavException("Received multi-get response without address data")
-
-                        processVCard(remote.fileName(), eTag, StringReader(vCard), downloader)
-                    })
+                                processVCard(remote.fileName(), eTag, StringReader(vCard), downloader)
+                            })
+                    }
+                }
             }
 
             abortIfCancelled()
