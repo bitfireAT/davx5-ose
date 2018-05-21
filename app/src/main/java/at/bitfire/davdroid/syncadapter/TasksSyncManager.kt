@@ -14,6 +14,7 @@ import android.content.SyncResult
 import android.os.Bundle
 import at.bitfire.dav4android.DavCalendar
 import at.bitfire.dav4android.DavResource
+import at.bitfire.dav4android.DavResponse
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.property.CalendarData
 import at.bitfire.dav4android.property.GetCTag
@@ -65,9 +66,12 @@ class TasksSyncManager(
         return true
     }
 
-    override fun queryCapabilities() {
-        useRemoteCollection { it.propfind(0, GetCTag.NAME, SyncToken.NAME) }
-    }
+    override fun queryCapabilities() =
+            useRemoteCollection {
+                it.propfind(0, GetCTag.NAME, SyncToken.NAME).use { dav ->
+                    syncState(dav)
+                }
+            }
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
@@ -85,15 +89,15 @@ class TasksSyncManager(
     })
 
     override fun listAllRemote() = useRemoteCollection { remote ->
-        remote.calendarQuery("VTODO", null, null)
-
-        val result = LinkedHashMap<String, DavResource>(remote.members.size)
-        for (vCard in remote.members) {
-            val fileName = vCard.fileName()
-            Logger.log.fine("Found remote VTODO: $fileName")
-            result[fileName] = vCard
+        remote.calendarQuery("VTODO", null, null).use { dav ->
+            val result = LinkedHashMap<String, DavResponse>(dav.members.size)
+            for (vCard in dav.members) {
+                val fileName = vCard.fileName()
+                Logger.log.fine("Found remote VTODO: $fileName")
+                result[fileName] = vCard
+            }
+            result
         }
-        result
     }
 
     override fun processRemoteChanges(changes: RemoteChanges) {
@@ -105,39 +109,39 @@ class TasksSyncManager(
             }
         }
 
-        val toDownload = changes.updated.map { it.location }
+        val toDownload = changes.updated.map { it.url }
         Logger.log.info("Downloading ${toDownload.size} resources ($MULTIGET_MAX_RESOURCES at once)")
 
         for (bunch in toDownload.chunked(MULTIGET_MAX_RESOURCES)) {
             if (bunch.size == 1)
                 // only one contact, use GET
                 useRemote(DavResource(httpClient.okHttpClient, bunch.first()), { remote ->
-                    val body = remote.get(DavCalendar.MIME_ICALENDAR.toString())
+                    remote.get(DavCalendar.MIME_ICALENDAR.toString()).use { dav ->
+                        // CalDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc4791#section-5.3.4]
+                        val eTag = dav[GetETag::class.java]?.eTag
+                                ?: throw DavException("Received CalDAV GET response without ETag for ${remote.location}")
 
-                    // CalDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc4791#section-5.3.4]
-                    val eTag = remote.properties[GetETag::class.java]?.eTag
-                            ?: throw DavException("Received CalDAV GET response without ETag for ${remote.location}")
-
-                    body.charStream().use { reader ->
-                        processVTodo(remote.fileName(), eTag, reader)
+                        dav.body?.charStream()?.use { reader ->
+                            processVTodo(remote.fileName(), eTag, reader)
+                        }
                     }
                 })
             else {
                 // multiple contacts, use multi-get
-                davCollection.multiget(bunch)
+                davCollection.multiget(bunch).use { dav ->
+                    // process multiget results
+                    for (remote in dav.members)
+                        useRemote(remote, {
+                            val eTag = remote[GetETag::class.java]?.eTag
+                                    ?: throw DavException("Received multi-get response without ETag")
 
-                // process multiget results
-                for (remote in davCollection.members)
-                    useRemote(remote, {
-                        val eTag = remote.properties[GetETag::class.java]?.eTag
-                                ?: throw DavException("Received multi-get response without ETag")
+                            val calendarData = remote[CalendarData::class.java]
+                            val iCalendar = calendarData?.iCalendar
+                                    ?: throw DavException("Received multi-get response without task data")
 
-                        val calendarData = remote.properties[CalendarData::class.java]
-                        val iCalendar = calendarData?.iCalendar
-                                ?: throw DavException("Received multi-get response without task data")
-
-                        processVTodo(remote.fileName(), eTag, StringReader(iCalendar))
-                    })
+                            processVTodo(remote.fileName(), eTag, StringReader(iCalendar))
+                        })
+                }
             }
 
             abortIfCancelled()

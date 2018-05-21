@@ -9,6 +9,7 @@ package at.bitfire.davdroid.ui.setup
 
 import android.content.Context
 import at.bitfire.dav4android.DavResource
+import at.bitfire.dav4android.DavResponse
 import at.bitfire.dav4android.UrlUtils
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.exception.HttpException
@@ -130,16 +131,17 @@ class DavResourceFinder(
             // query email address (CalDAV scheduling: calendar-user-address-set)
             val davPrincipal = DavResource(httpClient.okHttpClient, HttpUrl.get(config.principal)!!, log)
             try {
-                davPrincipal.propfind(0, CalendarUserAddressSet.NAME)
-                davPrincipal.properties[CalendarUserAddressSet::class.java]?.let { addressSet ->
-                    for (href in addressSet.hrefs)
-                        try {
-                            val uri = URI(href)
-                            if (uri.scheme.equals("mailto", true))
-                                config.email = uri.schemeSpecificPart
-                        } catch(e: URISyntaxException) {
-                            log.log(Level.WARNING, "Unparseable user address", e)
-                        }
+                davPrincipal.propfind(0, CalendarUserAddressSet.NAME).use { response ->
+                    response[CalendarUserAddressSet::class.java]?.let { addressSet ->
+                        for (href in addressSet.hrefs)
+                            try {
+                                val uri = URI(href)
+                                if (uri.scheme.equals("mailto", true))
+                                    config.email = uri.schemeSpecificPart
+                            } catch(e: URISyntaxException) {
+                                log.log(Level.WARNING, "Couldn't parse user address", e)
+                            }
+                    }
                 }
             } catch(e: Exception) {
                 log.log(Level.WARNING, "Couldn't query user email address", e)
@@ -161,40 +163,45 @@ class DavResourceFinder(
         try {
             val davBase = DavResource(httpClient.okHttpClient, baseURL, log)
 
-            when (service) {
-                Service.CARDDAV -> {
-                    davBase.propfind(0,
-                            ResourceType.NAME, DisplayName.NAME, AddressbookDescription.NAME,
-                            AddressbookHomeSet.NAME,
-                            CurrentUserPrincipal.NAME
-                    )
-                    rememberIfAddressBookOrHomeset(davBase, config)
-                }
-                Service.CALDAV -> {
-                    davBase.propfind(0,
-                            ResourceType.NAME, DisplayName.NAME, CalendarColor.NAME, CalendarDescription.NAME, CalendarTimezone.NAME, CurrentUserPrivilegeSet.NAME, SupportedCalendarComponentSet.NAME,
-                            CalendarHomeSet.NAME,
-                            CurrentUserPrincipal.NAME
-                    )
-                    rememberIfCalendarOrHomeset(davBase, config)
-                }
-            }
-
-            // check for current-user-principal
-            davBase.findProperty(CurrentUserPrincipal::class.java)?.let { (dav, currentUserPrincipal) ->
-                currentUserPrincipal.href?.let {
-                    principal = dav.location.resolve(it)
-                }
-            }
-
-            // check for resource type "principal"
-            if (principal == null)
-                for ((dav, resourceType) in davBase.findProperties(ResourceType::class.java)) {
-                    if (resourceType.types.contains(ResourceType.PRINCIPAL)) {
-                        principal = dav.location
-                        break
+            lateinit var response: DavResponse
+            try {
+                when (service) {
+                    Service.CARDDAV -> {
+                        response = davBase.propfind(0,
+                                ResourceType.NAME, DisplayName.NAME, AddressbookDescription.NAME,
+                                AddressbookHomeSet.NAME,
+                                CurrentUserPrincipal.NAME
+                        )
+                        rememberIfAddressBookOrHomeset(response, config)
+                    }
+                    Service.CALDAV -> {
+                        response = davBase.propfind(0,
+                                ResourceType.NAME, DisplayName.NAME, CalendarColor.NAME, CalendarDescription.NAME, CalendarTimezone.NAME, CurrentUserPrivilegeSet.NAME, SupportedCalendarComponentSet.NAME,
+                                CalendarHomeSet.NAME,
+                                CurrentUserPrincipal.NAME
+                        )
+                        rememberIfCalendarOrHomeset(response, config)
                     }
                 }
+
+                // check for current-user-principal
+                response.searchProperty(CurrentUserPrincipal::class.java)?.let { (dav, currentUserPrincipal) ->
+                    currentUserPrincipal.href?.let {
+                        principal = dav.url.resolve(it)
+                    }
+                }
+
+                // check for resource type "principal"
+                if (principal == null)
+                    for ((dav, resourceType) in response.searchProperties(ResourceType::class.java)) {
+                        if (resourceType.types.contains(ResourceType.PRINCIPAL)) {
+                            principal = dav.url
+                            break
+                        }
+                    }
+            } finally {
+                response.close()
+            }
 
             // If a principal has been detected successfully, ensure that it provides the required service.
             principal?.let {
@@ -207,26 +214,24 @@ class DavResourceFinder(
     }
 
     /**
-     * If #dav references an address book or an address book home set, it will added to
-     * config.collections or config.homesets. Only evaluates already known properties,
-     * does not call dav.propfind()! URLs will be stored with trailing "/".
+     * If [dav] references an address book or an address book home set, it will added to
+     * config.collections or config.homesets. URLs will be stored with trailing "/".
      * @param dav       resource whose properties are evaluated
      * @param config    structure where the address book (collection) and/or home set is stored into (if found)
      */
-    fun rememberIfAddressBookOrHomeset(dav: DavResource, config: Configuration.ServiceInfo) {
+    fun rememberIfAddressBookOrHomeset(dav: DavResponse, config: Configuration.ServiceInfo) {
         // Is there an address book?
-        for ((addressBook, resourceType) in dav.findProperties(ResourceType::class.java)) {
+        for ((addressBook, resourceType) in dav.searchProperties(ResourceType::class.java)) {
             if (resourceType.types.contains(ResourceType.ADDRESSBOOK)) {
-                addressBook.location = UrlUtils.withTrailingSlash(addressBook.location)
-                log.info("Found address book at ${addressBook.location}")
-                config.collections[addressBook.location.uri()] = CollectionInfo(addressBook)
+                log.info("Found address book at ${addressBook.url}")
+                config.collections[addressBook.url.uri()] = CollectionInfo(addressBook)
             }
         }
 
         // Is there an addressbook-home-set?
-        for ((dav, homeSet) in dav.findProperties(AddressbookHomeSet::class.java)) {
+        for ((dav, homeSet) in dav.searchProperties(AddressbookHomeSet::class.java)) {
             for (href in homeSet.hrefs) {
-                dav.location.resolve(href)?.let {
+                dav.url.resolve(href)?.let {
                     val location = UrlUtils.withTrailingSlash(it)
                     log.info("Found address book home-set at $location")
                     config.homeSets.add(location.uri())
@@ -235,20 +240,19 @@ class DavResourceFinder(
         }
     }
 
-    private fun rememberIfCalendarOrHomeset(dav: DavResource, config: Configuration.ServiceInfo) {
+    private fun rememberIfCalendarOrHomeset(dav: DavResponse, config: Configuration.ServiceInfo) {
         // Is the collection a calendar collection?
-        for ((calendar, resourceType) in dav.findProperties(ResourceType::class.java)) {
+        for ((calendar, resourceType) in dav.searchProperties(ResourceType::class.java)) {
             if (resourceType.types.contains(ResourceType.CALENDAR)) {
-                calendar.location = UrlUtils.withTrailingSlash(calendar.location)
-                log.info("Found calendar at ${calendar.location}")
-                config.collections[calendar.location.uri()] = CollectionInfo(calendar)
+                log.info("Found calendar at ${calendar.url}")
+                config.collections[calendar.url.uri()] = CollectionInfo(calendar)
             }
         }
 
         // Is there an calendar-home-set?
-        for ((dav, homeSet) in dav.findProperties(CalendarHomeSet::class.java)) {
+        for ((dav, homeSet) in dav.searchProperties(CalendarHomeSet::class.java)) {
             for (href in homeSet.hrefs) {
-                dav.location.resolve(href)?.let {
+                dav.url.resolve(href)?.let {
                     val location = UrlUtils.withTrailingSlash(it)
                     log.info("Found calendar home-set at $location")
                     config.homeSets.add(location.uri())
@@ -262,12 +266,12 @@ class DavResourceFinder(
     fun providesService(url: HttpUrl, service: Service): Boolean {
         val davPrincipal = DavResource(httpClient.okHttpClient, url, log)
         try {
-            davPrincipal.options()
-
-            if ((service == Service.CARDDAV && davPrincipal.capabilities.contains("addressbook")) ||
-                (service == Service.CALDAV && davPrincipal.capabilities.contains("calendar-access")))
-                return true
-
+            davPrincipal.options().use {
+                val capabilities = it.capabilities
+                if ((service == Service.CARDDAV && capabilities.contains("addressbook")) ||
+                    (service == Service.CALDAV && capabilities.contains("calendar-access")))
+                    return true
+            }
         } catch(e: Exception) {
             log.log(Level.SEVERE, "Couldn't detect services on $url", e)
             if (e !is HttpException && e !is DavException)
@@ -347,20 +351,20 @@ class DavResourceFinder(
     @Throws(IOException::class, HttpException::class, DavException::class)
     fun getCurrentUserPrincipal(url: HttpUrl, service: Service?): URI? {
         val dav = DavResource(httpClient.okHttpClient, url, log)
-        dav.propfind(0, CurrentUserPrincipal.NAME)
+        dav.propfind(0, CurrentUserPrincipal.NAME).use {
+            it.searchProperty(CurrentUserPrincipal::class.java)?.let { (dav, currentUserPrincipal) ->
+                currentUserPrincipal.href?.let { href ->
+                    dav.url.resolve(href)?.let { principal ->
+                        log.info("Found current-user-principal: $principal")
 
-        dav.findProperty(CurrentUserPrincipal::class.java)?.let { (dav, currentUserPrincipal) ->
-            currentUserPrincipal.href?.let { href ->
-                dav.location.resolve(href)?.let { principal ->
-                    log.info("Found current-user-principal: $principal")
+                        // service check
+                        if (service != null && !providesService(principal, service)) {
+                            log.info("$principal doesn't provide required $service service")
+                            return null
+                        }
 
-                    // service check
-                    if (service != null && !providesService(principal, service)) {
-                        log.info("$principal doesn't provide required $service service")
-                        return null
+                        return principal.uri()
                     }
-
-                    return principal.uri()
                 }
             }
         }

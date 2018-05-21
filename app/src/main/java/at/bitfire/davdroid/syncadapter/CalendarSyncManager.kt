@@ -14,6 +14,7 @@ import android.content.SyncResult
 import android.os.Bundle
 import at.bitfire.dav4android.DavCalendar
 import at.bitfire.dav4android.DavResource
+import at.bitfire.dav4android.DavResponse
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.property.*
 import at.bitfire.davdroid.AccountSettings
@@ -64,16 +65,17 @@ class CalendarSyncManager(
         return true
     }
 
-    override fun queryCapabilities() {
-        useRemoteCollection { dav ->
-            dav.propfind(0, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME)
+    override fun queryCapabilities() =
+            useRemoteCollection {
+                it.propfind(0, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME).use { dav ->
+                    dav[SupportedReportSet::class.java]?.let {
+                        hasCollectionSync = it.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                    }
+                    Logger.log.info("Server supports Collection Sync: $hasCollectionSync")
 
-            dav.properties[SupportedReportSet::class.java]?.let {
-                hasCollectionSync = it.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                    syncState(dav)
+                }
             }
-            Logger.log.info("Server supports Collection Sync: $hasCollectionSync")
-        }
-    }
 
     override fun syncAlgorithm() = if (accountSettings.getTimeRangePastDays() != null || !hasCollectionSync)
                 SyncAlgorithm.PROPFIND_REPORT
@@ -93,7 +95,7 @@ class CalendarSyncManager(
         )
     })
 
-    override fun listAllRemote(): Map<String, DavResource> {
+    override fun listAllRemote(): Map<String, DavResponse> {
         // calculate time range limits
         var limitStart: Date? = null
         accountSettings.getTimeRangePastDays()?.let { pastDays ->
@@ -105,15 +107,15 @@ class CalendarSyncManager(
         return useRemoteCollection { remote ->
             // fetch list of remote VEVENTs and build hash table to index file name
             Logger.log.info("Querying events since $limitStart")
-            remote.calendarQuery("VEVENT", limitStart, null)
-
-            val result = LinkedHashMap<String, DavResource>(remote.members.size)
-            for (iCal in remote.members) {
-                val fileName = iCal.fileName()
-                Logger.log.fine("Found remote VEVENT: $fileName")
-                result[fileName] = iCal
+            remote.calendarQuery("VEVENT", limitStart, null).use { dav ->
+                val result = LinkedHashMap<String, DavResponse>(dav.members.size)
+                for (iCal in dav.members) {
+                    val fileName = iCal.fileName()
+                    Logger.log.fine("Found remote VEVENT: $fileName")
+                    result[fileName] = iCal
+                }
+                result
             }
-            result
         }
     }
 
@@ -125,39 +127,42 @@ class CalendarSyncManager(
                 syncResult.stats.numDeletes++
             }
 
-        val toDownload = changes.updated.map { it.location }
+        val toDownload = changes.updated.map { it.url }
         Logger.log.info("Downloading ${toDownload.size} resources ($MULTIGET_MAX_RESOURCES at once)")
 
         for (bunch in toDownload.chunked(MULTIGET_MAX_RESOURCES)) {
             if (bunch.size == 1)
                 // only one contact, use GET
-                useRemote(DavResource(httpClient.okHttpClient, bunch.first()), { remote ->
-                    val body = remote.get(DavCalendar.MIME_ICALENDAR.toString())
+                useRemote(DavResource(httpClient.okHttpClient, bunch.first()), {
+                    it.get(DavCalendar.MIME_ICALENDAR.toString()).use { dav ->
+                        // CalDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc4791#section-5.3.4]
+                        val eTag = dav[GetETag::class.java]?.eTag
+                                ?: throw DavException("Received CalDAV GET response without ETag for ${dav.url}")
 
-                    // CalDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc4791#section-5.3.4]
-                    val eTag = remote.properties[GetETag::class.java]?.eTag
-                            ?: throw DavException("Received CalDAV GET response without ETag for ${remote.location}")
-
-                    body.charStream().use { reader ->
-                        processVEvent(remote.fileName(), eTag, reader)
+                        dav.body?.charStream()?.use { reader ->
+                            processVEvent(dav.fileName(), eTag, reader)
+                        }
                     }
                 })
             else {
                 // multiple contacts, use multi-get
-                useRemoteCollection { it.multiget(bunch) }
+                useRemoteCollection {
+                    it.multiget(bunch).use { dav ->
 
-                // process multiget results
-                for (remote in davCollection.members)
-                    useRemote(remote, {
-                        val eTag = remote.properties[GetETag::class.java]?.eTag
-                                ?: throw DavException("Received multi-get response without ETag")
+                    // process multiget results
+                    for (remote in dav.members)
+                        useRemote(remote, {
+                            val eTag = remote[GetETag::class.java]?.eTag
+                                    ?: throw DavException("Received multi-get response without ETag")
 
-                        val calendarData = remote.properties[CalendarData::class.java]
-                        val iCalendar = calendarData?.iCalendar
-                                ?: throw DavException("Received multi-get response without task data")
+                            val calendarData = remote[CalendarData::class.java]
+                            val iCalendar = calendarData?.iCalendar
+                                    ?: throw DavException("Received multi-get response without task data")
 
-                        processVEvent(remote.fileName(), eTag, StringReader(iCalendar))
-                    })
+                            processVEvent(remote.fileName(), eTag, StringReader(iCalendar))
+                        })
+                    }
+                }
             }
 
             abortIfCancelled()
