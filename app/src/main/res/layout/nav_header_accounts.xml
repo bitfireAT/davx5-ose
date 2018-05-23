@@ -22,6 +22,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
+        android:maxWidth="48dp"
+        android:adjustViewBounds="true"
         android:src="@mipmap/ic_launcher"
         tools:ignore="ContentDescription"/>
 
