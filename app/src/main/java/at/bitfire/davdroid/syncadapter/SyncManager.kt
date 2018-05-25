@@ -207,6 +207,7 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
         }
         // sync was cancelled: re-throw to SyncAdapterService
         catch (e: InterruptedException) { throw e }
+        catch (e: InterruptedIOException) { throw e }
 
         // specific I/O errors
         catch (e: SSLHandshakeException) {
@@ -436,7 +437,7 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
 
         val channel: String
         val priority: Int
-        if (e is IOException || e is InterruptedIOException) {
+        if (e is IOException) {
             channel = NotificationUtils.CHANNEL_SYNC_IO_ERRORS
             priority = NotificationCompat.PRIORITY_MIN
         } else {
