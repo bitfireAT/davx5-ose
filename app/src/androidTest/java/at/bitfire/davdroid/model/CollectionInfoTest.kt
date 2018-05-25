@@ -54,13 +54,14 @@ class CollectionInfoTest {
                         "</response>" +
                         "</multistatus>"))
 
-        var dav = DavResource(httpClient.okHttpClient, server.url("/"))
-        dav.propfind(0, ResourceType.NAME)
-        var info = CollectionInfo(dav)
-        assertEquals(CollectionInfo.Type.ADDRESS_BOOK, info.type)
-        assertFalse(info.readOnly)
-        assertEquals("My Contacts", info.displayName)
-        assertEquals("My Contacts Description", info.description)
+        DavResource(httpClient.okHttpClient, server.url("/"))
+                .propfind(0, ResourceType.NAME).use {
+            val info = CollectionInfo(it)
+            assertEquals(CollectionInfo.Type.ADDRESS_BOOK, info.type)
+            assertFalse(info.readOnly)
+            assertEquals("My Contacts", info.displayName)
+            assertEquals("My Contacts Description", info.description)
+        }
 
         // read-only calendar, no display name
         server.enqueue(MockResponse()
@@ -78,17 +79,18 @@ class CollectionInfoTest {
                         "</response>" +
                         "</multistatus>"))
 
-        dav = DavResource(httpClient.okHttpClient, server.url("/"))
-        dav.propfind(0, ResourceType.NAME)
-        info = CollectionInfo(dav)
-        assertEquals(CollectionInfo.Type.CALENDAR, info.type)
-        assertTrue(info.readOnly)
-        assertNull(info.displayName)
-        assertEquals("My Calendar", info.description)
-        assertEquals(0xFFFF0000.toInt(), info.color)
-        assertEquals("tzdata", info.timeZone)
-        assertTrue(info.supportsVEVENT)
-        assertTrue(info.supportsVTODO)
+        DavResource(httpClient.okHttpClient, server.url("/"))
+                .propfind(0, ResourceType.NAME).use {
+            val info = CollectionInfo(it)
+            assertEquals(CollectionInfo.Type.CALENDAR, info.type)
+            assertTrue(info.readOnly)
+            assertNull(info.displayName)
+            assertEquals("My Calendar", info.description)
+            assertEquals(0xFFFF0000.toInt(), info.color)
+            assertEquals("tzdata", info.timeZone)
+            assertTrue(info.supportsVEVENT)
+            assertTrue(info.supportsVTODO)
+        }
     }
 
     @Test
