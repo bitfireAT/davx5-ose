@@ -283,7 +283,7 @@ class DavService: Service() {
                         val selectedCollections = HashSet<HttpUrl>()
                         collections.values
                                 .filter { it.selected }
-                                .forEach { (url,_) -> HttpUrl.parse(url)?.let { selectedCollections.add(it) } }
+                                .forEach { (url,_) -> selectedCollections.add(url) }
 
                         // now refresh collections (taken from home sets)
                         val itHomeSets = homeSets.iterator()

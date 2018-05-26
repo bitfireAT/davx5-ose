@@ -8,6 +8,8 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.content.Context
+import android.os.Parcel
+import android.os.Parcelable
 import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.DavResponse
 import at.bitfire.dav4android.UrlUtils
@@ -22,11 +24,9 @@ import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.settings.Settings
 import okhttp3.HttpUrl
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder
-import org.apache.commons.lang3.builder.ToStringBuilder
 import org.xbill.DNS.Lookup
 import org.xbill.DNS.Type
 import java.io.IOException
-import java.io.Serializable
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.*
@@ -129,7 +129,7 @@ class DavResourceFinder(
 
         if (config.principal != null && service == Service.CALDAV) {
             // query email address (CalDAV scheduling: calendar-user-address-set)
-            val davPrincipal = DavResource(httpClient.okHttpClient, HttpUrl.get(config.principal)!!, log)
+            val davPrincipal = DavResource(httpClient.okHttpClient, config.principal!!, log)
             try {
                 davPrincipal.propfind(0, CalendarUserAddressSet.NAME).use { response ->
                     response[CalendarUserAddressSet::class.java]?.let { addressSet ->
@@ -206,7 +206,7 @@ class DavResourceFinder(
             // If a principal has been detected successfully, ensure that it provides the required service.
             principal?.let {
                 if (providesService(it, service))
-                    config.principal = it.uri()
+                    config.principal = it
             }
         } catch(e: Exception) {
             log.log(Level.FINE, "PROPFIND/OPTIONS on user-given URL failed", e)
@@ -223,8 +223,9 @@ class DavResourceFinder(
         // Is there an address book?
         for ((addressBook, resourceType) in dav.searchProperties(ResourceType::class.java)) {
             if (resourceType.types.contains(ResourceType.ADDRESSBOOK)) {
-                log.info("Found address book at ${addressBook.url}")
-                config.collections[addressBook.url.uri()] = CollectionInfo(addressBook)
+                val info = CollectionInfo(addressBook)
+                log.info("Found address book at ${info.url}")
+                config.collections[info.url] = info
             }
         }
 
@@ -234,7 +235,7 @@ class DavResourceFinder(
                 dav.url.resolve(href)?.let {
                     val location = UrlUtils.withTrailingSlash(it)
                     log.info("Found address book home-set at $location")
-                    config.homeSets.add(location.uri())
+                    config.homeSets += location
                 }
             }
         }
@@ -244,8 +245,9 @@ class DavResourceFinder(
         // Is the collection a calendar collection?
         for ((calendar, resourceType) in dav.searchProperties(ResourceType::class.java)) {
             if (resourceType.types.contains(ResourceType.CALENDAR)) {
-                log.info("Found calendar at ${calendar.url}")
-                config.collections[calendar.url.uri()] = CollectionInfo(calendar)
+                val info = CollectionInfo(calendar)
+                log.info("Found calendar at ${info.url}")
+                config.collections[info.url] = info
             }
         }
 
@@ -255,7 +257,7 @@ class DavResourceFinder(
                 dav.url.resolve(href)?.let {
                     val location = UrlUtils.withTrailingSlash(it)
                     log.info("Found calendar home-set at $location")
-                    config.homeSets.add(location.uri())
+                    config.homeSets += location
                 }
             }
         }
@@ -289,7 +291,7 @@ class DavResourceFinder(
      * @return principal URL, or null if none found
      */
     @Throws(IOException::class, HttpException::class, DavException::class)
-    private fun discoverPrincipalUrl(domain: String, service: Service): URI? {
+    private fun discoverPrincipalUrl(domain: String, service: Service): HttpUrl? {
         val scheme: String
         val fqdn: String
         var port = 443
@@ -349,7 +351,7 @@ class DavResourceFinder(
      * @return          current-user-principal URL that provides required service, or null if none
      */
     @Throws(IOException::class, HttpException::class, DavException::class)
-    fun getCurrentUserPrincipal(url: HttpUrl, service: Service?): URI? {
+    fun getCurrentUserPrincipal(url: HttpUrl, service: Service?): HttpUrl? {
         val dav = DavResource(httpClient.okHttpClient, url, log)
         dav.propfind(0, CurrentUserPrincipal.NAME).use {
             it.searchProperty(CurrentUserPrincipal::class.java)?.let { (dav, currentUserPrincipal) ->
@@ -363,7 +365,7 @@ class DavResourceFinder(
                             return null
                         }
 
-                        return principal.uri()
+                        return principal
                     }
                 }
             }
@@ -381,23 +383,88 @@ class DavResourceFinder(
             val calDAV: ServiceInfo?,
 
             val logs: String
-    ): Serializable {
-        // We have to use URI here because HttpUrl is not serializable!
+    ): Parcelable {
 
-        class ServiceInfo: Serializable {
-            var principal: URI? = null
-            val homeSets = HashSet<URI>()
-            val collections = HashMap<URI, CollectionInfo>()
+        data class ServiceInfo(
+                var principal: HttpUrl? = null,
+                val homeSets: MutableSet<HttpUrl> = HashSet(),
+                val collections: MutableMap<HttpUrl, CollectionInfo> = HashMap(),
 
-            var email: String? = null
-
-            override fun toString() = ToStringBuilder.reflectionToString(this)!!
-        }
+                var email: String? = null
+        )
 
         override fun toString(): String {
             val builder = ReflectionToStringBuilder(this)
             builder.setExcludeFieldNames("logs")
             return builder.toString()
+        }
+
+
+        override fun describeContents() = 0
+
+        override fun writeToParcel(dest: Parcel, flags: Int) {
+            fun writeServiceInfo(info: ServiceInfo?) {
+                if (info == null)
+                    dest.writeByte(0)
+                else {
+                    dest.writeByte(1)
+                    dest.writeString(info.principal?.toString())
+
+                    dest.writeInt(info.homeSets.size)
+                    info.homeSets.forEach { dest.writeString(it.toString()) }
+
+                    dest.writeInt(info.collections.size)
+                    info.collections.forEach { url, collectionInfo ->
+                        dest.writeString(url.toString())
+                        dest.writeParcelable(collectionInfo, 0)
+                    }
+
+                    dest.writeString(info.email)
+                }
+            }
+
+            dest.writeSerializable(credentials)
+            writeServiceInfo(cardDAV)
+            writeServiceInfo(calDAV)
+            dest.writeString(logs)
+        }
+
+        @Suppress("unused")
+        @JvmField
+        val CREATOR = object: Parcelable.Creator<Configuration> {
+
+            override fun createFromParcel(source: Parcel): Configuration {
+                fun readCollections(): MutableMap<HttpUrl, CollectionInfo> {
+                    val size = source.readInt()
+                    val map = HashMap<HttpUrl, CollectionInfo>(size)
+                    (1..size).forEach {
+                        val url = HttpUrl.parse(source.readString())!!
+                        map[url] = source.readParcelable(Thread.currentThread().contextClassLoader)
+                    }
+                    return map
+                }
+
+                fun readServiceInfo(): ServiceInfo? {
+                    return if (source.readByte() == 0.toByte())
+                        null
+                    else
+                        ServiceInfo(
+                                source.readString()?.let { HttpUrl.parse(it) },
+                                (1..source.readInt()).map { HttpUrl.parse(source.readString())!! }.toMutableSet(),
+                                readCollections()
+                        )
+                }
+
+                return Configuration(
+                        source.readSerializable() as Credentials,
+                        readServiceInfo(),
+                        readServiceInfo(),
+                        source.readString()
+                )
+            }
+
+            override fun newArray(size: Int) = arrayOfNulls<Configuration>(size)
+
         }
 
     }

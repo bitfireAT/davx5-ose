@@ -78,7 +78,7 @@ class CreateCalendarActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks
 
         var ok = true
         HttpUrl.parse(homeSet)?.let {
-            val info = CollectionInfo(it.resolve(UUID.randomUUID().toString() + "/").toString())
+            val info = CollectionInfo(it.resolve(UUID.randomUUID().toString() + "/")!!)
             info.displayName = display_name.text.toString()
             if (info.displayName.isNullOrBlank()) {
                 display_name.error = getString(R.string.create_collection_display_name_required)

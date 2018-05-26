@@ -21,6 +21,7 @@ import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.ServiceDB.Collections
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.ISettings
+import okhttp3.HttpUrl
 import java.util.logging.Level
 
 class AddressBooksSyncAdapterService: SyncAdapterService() {
@@ -32,7 +33,7 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
             context: Context
     ): SyncAdapter(context) {
 
-        override fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, addressBooksProvider: ContentProviderClient, syncResult: SyncResult) {
+        override fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             val contactsProvider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
             if (contactsProvider == null) {
                 Logger.log.severe("Couldn't access contacts provider")
@@ -81,8 +82,8 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
                                 null
                         }
 
-                fun remoteAddressBooks(service: Long?): MutableMap<String, CollectionInfo> {
-                    val collections = mutableMapOf<String, CollectionInfo>()
+                fun remoteAddressBooks(service: Long?): MutableMap<HttpUrl, CollectionInfo> {
+                    val collections = mutableMapOf<HttpUrl, CollectionInfo>()
                     service?.let {
                         db.query(Collections._TABLE, null,
                             Collections.SERVICE_ID + "=? AND " + Collections.SYNC, arrayOf(service.toString()), null, null, null)?.use { cursor ->
@@ -103,7 +104,7 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
 
                 // delete/update local address books
                 for (addressBook in LocalAddressBook.findAll(context, provider, account)) {
-                    val url = addressBook.url
+                    val url = HttpUrl.parse(addressBook.url)!!
                     val info = remote[url]
                     if (info == null) {
                         Logger.log.log(Level.INFO, "Deleting obsolete local address book", url)

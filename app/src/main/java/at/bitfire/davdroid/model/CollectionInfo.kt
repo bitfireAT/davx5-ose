@@ -9,14 +9,25 @@
 package at.bitfire.davdroid.model
 
 import android.content.ContentValues
+import android.os.Parcel
+import android.os.Parcelable
 import at.bitfire.dav4android.DavResponse
 import at.bitfire.dav4android.UrlUtils
 import at.bitfire.dav4android.property.*
 import at.bitfire.davdroid.model.ServiceDB.Collections
-import java.io.Serializable
+import okhttp3.HttpUrl
 
+/**
+ * Represents a WebDAV collection.
+ *
+ * @constructor always appends a trailing slash to the URL
+ */
 data class CollectionInfo(
-        val url: String,
+
+        /**
+         * URL of the collection (including trailing slash)
+         */
+        val url: HttpUrl,
 
         var id: Long? = null,
         var serviceID: Long? = null,
@@ -39,7 +50,7 @@ data class CollectionInfo(
 
         // non-persistent properties
         var confirmed: Boolean = false
-): Serializable {
+): Parcelable {
 
     enum class Type {
         ADDRESS_BOOK,
@@ -61,7 +72,7 @@ data class CollectionInfo(
     }
 
 
-    constructor(dav: DavResponse): this(UrlUtils.withTrailingSlash(dav.url).toString()) {
+    constructor(dav: DavResponse): this(UrlUtils.withTrailingSlash(dav.url)) {
         dav[ResourceType::class.java]?.let { type ->
             when {
                 type.types.contains(ResourceType.ADDRESSBOOK) -> this.type = Type.ADDRESS_BOOK
@@ -104,7 +115,7 @@ data class CollectionInfo(
     }
 
 
-    constructor(values: ContentValues): this(values.getAsString(Collections.URL)) {
+    constructor(values: ContentValues): this(UrlUtils.withTrailingSlash(HttpUrl.parse(values.getAsString(Collections.URL))!!)) {
         id = values.getAsLong(Collections.ID)
         serviceID = values.getAsLong(Collections.SERVICE_ID)
         type = try {
@@ -134,7 +145,7 @@ data class CollectionInfo(
         // Collections.SERVICE_ID is never changed
         type?.let { values.put(Collections.TYPE, it.name) }
 
-        values.put(Collections.URL, url)
+        values.put(Collections.URL, url.toString())
         values.put(Collections.READ_ONLY, if (readOnly) 1 else 0)
         values.put(Collections.FORCE_READ_ONLY, if (forceReadOnly) 1 else 0)
         values.put(Collections.DISPLAY_NAME, displayName)
@@ -158,6 +169,81 @@ data class CollectionInfo(
             null
         else
             (i != 0)
+    }
+
+
+    override fun describeContents(): Int = 0
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        fun<T> writeOrNull(value: T?, write: (T) -> Unit) {
+            if (value == null)
+                dest.writeByte(0)
+            else {
+                dest.writeByte(1)
+                write(value)
+            }
+        }
+
+        dest.writeString(url.toString())
+
+        writeOrNull(id, { dest.writeLong(it) })
+        writeOrNull(serviceID, { dest.writeLong(it) })
+
+        dest.writeString(type?.name)
+
+        dest.writeByte(if (readOnly) 1 else 0)
+        dest.writeByte(if (forceReadOnly) 1 else 0)
+        dest.writeString(displayName)
+        dest.writeString(description)
+        writeOrNull(color, { dest.writeInt(it) })
+
+        dest.writeString(timeZone)
+        dest.writeByte(if (supportsVEVENT) 1 else 0)
+        dest.writeByte(if (supportsVTODO) 1 else 0)
+        dest.writeByte(if (selected) 1 else 0)
+
+        dest.writeString(source)
+
+        dest.writeByte(if (confirmed) 1 else 0)
+    }
+
+    @Suppress("unused")
+    @JvmField
+    val CREATOR = object: Parcelable.Creator<CollectionInfo> {
+        override fun createFromParcel(parcel: Parcel): CollectionInfo {
+            fun<T> readOrNull(parcel: Parcel, read: () -> T): T? {
+                return if (parcel.readByte() == 0.toByte())
+                    null
+                else
+                    read()
+            }
+
+            return CollectionInfo(
+                    HttpUrl.parse(parcel.readString())!!,
+
+                    readOrNull(parcel, { parcel.readLong() }),
+                    readOrNull(parcel, { parcel.readLong() }),
+
+                    parcel.readString()?.let { Type.valueOf(it) },
+
+                    parcel.readByte() != 0.toByte(),
+                    parcel.readByte() != 0.toByte(),
+                    parcel.readString(),
+                    parcel.readString(),
+                    readOrNull(parcel, { parcel.readInt() }),
+
+                    parcel.readString(),
+                    parcel.readByte() != 0.toByte(),
+                    parcel.readByte() != 0.toByte(),
+                    parcel.readByte() != 0.toByte(),
+
+                    parcel.readString(),
+
+                    parcel.readByte() != 0.toByte()
+            )
+        }
+
+        override fun newArray(size: Int) = arrayOfNulls<CollectionInfo>(size)
+
     }
 
 }

@@ -29,6 +29,7 @@ import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.TaskProvider
+import okhttp3.HttpUrl
 import org.dmfs.tasks.contract.TaskContract
 import java.util.logging.Level
 
@@ -108,8 +109,8 @@ class TasksSyncAdapterService: SyncAdapterService() {
                                 null
                         }
 
-                fun remoteTaskLists(service: Long?): MutableMap<String, CollectionInfo> {
-                    val collections = mutableMapOf<String, CollectionInfo>()
+                fun remoteTaskLists(service: Long?): MutableMap<HttpUrl, CollectionInfo> {
+                    val collections = mutableMapOf<HttpUrl, CollectionInfo>()
                     service?.let {
                         db.query(Collections._TABLE, null,
                                 "${Collections.SERVICE_ID}=? AND ${Collections.SUPPORTS_VTODO}!=0 AND ${Collections.SYNC}",
@@ -133,7 +134,8 @@ class TasksSyncAdapterService: SyncAdapterService() {
                 val updateColors = settings.getManageCalendarColors()
 
                 for (list in AndroidTaskList.find(account, provider, LocalTaskList.Factory, null, null))
-                    list.syncId?.let { url ->
+                    list.syncId?.let {
+                        val url = HttpUrl.parse(it)!!
                         val info = remote[url]
                         if (info == null) {
                             Logger.log.fine("Deleting obsolete local task list $url")

@@ -25,7 +25,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.settings.Settings
-import okhttp3.HttpUrl
 
 @Suppress("DEPRECATION")
 class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<Exception> {
@@ -89,7 +88,7 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
                         .setForeground(true)
                         .build().use { httpClient ->
                     try {
-                        val collection = DavResource(httpClient.okHttpClient, HttpUrl.parse(collectionInfo.url)!!)
+                        val collection = DavResource(httpClient.okHttpClient, collectionInfo.url)
 
                         // delete collection from server
                         collection.delete(null)
@@ -117,7 +116,7 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
                 val frag = ConfirmDeleteCollectionFragment()
                 val args = Bundle(2)
                 args.putParcelable(ARG_ACCOUNT, account)
-                args.putSerializable(ARG_COLLECTION_INFO, collectionInfo)
+                args.putParcelable(ARG_COLLECTION_INFO, collectionInfo)
                 frag.arguments = args
                 return frag
             }
@@ -125,9 +124,9 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val collectionInfo = arguments!!.getSerializable(ARG_COLLECTION_INFO) as CollectionInfo
+            val collectionInfo = arguments!!.getParcelable(ARG_COLLECTION_INFO) as CollectionInfo
             val name = if (collectionInfo.displayName.isNullOrBlank())
-                collectionInfo.url
+                collectionInfo.url.toString()
             else
                 collectionInfo.displayName
 

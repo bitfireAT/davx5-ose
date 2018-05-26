@@ -309,7 +309,7 @@ class AccountSettings(
                     parcel.unmarshall(raw, 0, raw.size)
                     parcel.setDataPosition(0)
                     val params = parcel.readBundle()
-                    val url = params.getString("url")
+                    val url = params.getString("url")?.let { HttpUrl.parse(it) }
                     if (url == null)
                         Logger.log.info("No address book URL, ignoring account")
                     else {
@@ -319,7 +319,7 @@ class AccountSettings(
                         info.displayName = account.name
                         Logger.log.log(Level.INFO, "Creating new address book account", url)
                         val addressBookAccount = Account(LocalAddressBook.accountName(account, info), context.getString(R.string.account_type_address_book))
-                        if (!accountManager.addAccountExplicitly(addressBookAccount, null, LocalAddressBook.initialUserData(account, info.url)))
+                        if (!accountManager.addAccountExplicitly(addressBookAccount, null, LocalAddressBook.initialUserData(account, info.url.toString())))
                             throw ContactsStorageException("Couldn't create address book account")
 
                         // move contacts to new address book

@@ -52,7 +52,7 @@ class LocalAddressBook(
             val accountManager = AccountManager.get(context)
 
             val account = Account(accountName(mainAccount, info), context.getString(R.string.account_type_address_book))
-            if (!accountManager.addAccountExplicitly(account, null, initialUserData(mainAccount, info.url)))
+            if (!accountManager.addAccountExplicitly(account, null, initialUserData(mainAccount, info.url.toString())))
                 throw IllegalStateException("Couldn't create address book account")
 
             val addressBook = LocalAddressBook(context, account, provider)

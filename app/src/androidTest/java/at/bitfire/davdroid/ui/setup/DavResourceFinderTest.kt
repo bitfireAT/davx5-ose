@@ -75,7 +75,7 @@ class DavResourceFinderTest {
                 finder.rememberIfAddressBookOrHomeset(it, info)
                 assertEquals(0, info.collections.size)
                 assertEquals(1, info.homeSets.size)
-                assertEquals(server.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET/").uri(), info.homeSets.first())
+                assertEquals(server.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET/"), info.homeSets.first())
             }
         }
 
@@ -85,7 +85,7 @@ class DavResourceFinderTest {
             ServiceInfo().let { info ->
                 finder.rememberIfAddressBookOrHomeset(it, info)
                 assertEquals(1, info.collections.size)
-                assertEquals(server.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/").uri(), info.collections.keys.first())
+                assertEquals(server.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"), info.collections.keys.first())
                 assertEquals(0, info.homeSets.size)
             }
         }
@@ -112,13 +112,13 @@ class DavResourceFinderTest {
         assertNull(finder.getCurrentUserPrincipal(server.url(PATH_NO_DAV), DavResourceFinder.Service.CARDDAV))
 
         assertEquals(
-                server.url(PATH_CALDAV + SUBPATH_PRINCIPAL).uri(),
+                server.url(PATH_CALDAV + SUBPATH_PRINCIPAL),
                 finder.getCurrentUserPrincipal(server.url(PATH_CALDAV), DavResourceFinder.Service.CALDAV)
         )
         assertNull(finder.getCurrentUserPrincipal(server.url(PATH_CALDAV), DavResourceFinder.Service.CARDDAV))
 
         assertEquals(
-                server.url(PATH_CARDDAV + SUBPATH_PRINCIPAL).uri(),
+                server.url(PATH_CARDDAV + SUBPATH_PRINCIPAL),
                 finder.getCurrentUserPrincipal(server.url(PATH_CARDDAV), DavResourceFinder.Service.CARDDAV)
         )
         assertNull(finder.getCurrentUserPrincipal(server.url(PATH_CARDDAV), DavResourceFinder.Service.CALDAV))
