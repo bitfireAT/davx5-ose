@@ -29,14 +29,18 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.ui.AccountActivity
 import at.bitfire.davdroid.ui.AccountSettingsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
-import org.apache.commons.collections4.IteratorUtils
+import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level
 
 abstract class SyncAdapterService: Service() {
 
     companion object {
-        val runningSyncs: MutableSet<Pair<String, Account>> = Collections.synchronizedSet(mutableSetOf<Pair<String, Account>>())
+        /** Keep a list of running syncs to block multiple calls at the same time,
+         *  like run by some devices. Weak references are used for the case that a thread
+         *  is terminated and the `finally` block which cleans up [runningSyncs] is not
+         *  executed. */
+        private val runningSyncs = mutableListOf<WeakReference<Pair<String, Account>>>()
     }
 
     protected abstract fun syncAdapter(): AbstractThreadedSyncAdapter
@@ -55,9 +59,12 @@ abstract class SyncAdapterService: Service() {
 
             // prevent multiple syncs of the same authority to be run for the same account
             val currentSync = Pair(authority, account)
-            if (!runningSyncs.add(currentSync)) {
-                Logger.log.warning("There's already another $authority sync running for $account, aborting")
-                return
+            synchronized(runningSyncs) {
+                if (runningSyncs.any { it.get() == currentSync }) {
+                    Logger.log.warning("There's already another $authority sync running for $account, aborting")
+                    return
+                }
+                runningSyncs += WeakReference(currentSync)
             }
 
             try {
@@ -77,10 +84,13 @@ abstract class SyncAdapterService: Service() {
                         sync(settings, account, extras, authority, provider, syncResult)
                     //}
                 }
-                Logger.log.info("Sync for $authority complete")
             } finally {
-                runningSyncs -= currentSync
+                synchronized(runningSyncs) {
+                    runningSyncs.removeAll { it.get() == null || it.get() == currentSync }
+                }
             }
+
+            Logger.log.info("Sync for $currentSync finished")
         }
 
         override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {
