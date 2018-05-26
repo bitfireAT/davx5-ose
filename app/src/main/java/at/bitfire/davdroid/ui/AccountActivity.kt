@@ -577,7 +577,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             checked.isChecked = info.selected
 
             var tv: TextView = v.findViewById(R.id.title)
-            tv.text = if (!info.displayName.isNullOrBlank()) info.displayName else info.url
+            tv.text = if (!info.displayName.isNullOrBlank()) info.displayName else info.url.toString()
 
             tv = v.findViewById(R.id.description)
             if (info.description.isNullOrBlank())
@@ -621,7 +621,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             } ?: View.INVISIBLE
 
             var tv: TextView = v.findViewById(R.id.title)
-            tv.text = if (!info.displayName.isNullOrBlank()) info.displayName else info.url
+            tv.text = if (!info.displayName.isNullOrBlank()) info.displayName else info.url.toString()
 
             tv = v.findViewById(R.id.description)
             if (info.description.isNullOrBlank())

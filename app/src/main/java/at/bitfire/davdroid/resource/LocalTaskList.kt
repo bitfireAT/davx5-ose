@@ -77,7 +77,7 @@ class LocalTaskList private constructor(
 
         private fun valuesFromCollectionInfo(info: CollectionInfo, withColor: Boolean): ContentValues {
             val values = ContentValues(3)
-            values.put(TaskLists._SYNC_ID, info.url)
+            values.put(TaskLists._SYNC_ID, info.url.toString())
             values.put(TaskLists.LIST_NAME, if (info.displayName.isNullOrBlank()) DavUtils.lastSegmentOfUrl(info.url) else info.displayName)
 
             if (withColor)

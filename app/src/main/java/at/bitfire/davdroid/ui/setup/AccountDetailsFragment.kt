@@ -45,7 +45,7 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
         fun newInstance(config: DavResourceFinder.Configuration): AccountDetailsFragment {
             val frag = AccountDetailsFragment()
             val args = Bundle(1)
-            args.putSerializable(KEY_CONFIG, config)
+            args.putParcelable(KEY_CONFIG, config)
             frag.arguments = args
             return frag
         }
@@ -63,7 +63,7 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
         })
 
         val args = requireNotNull(arguments)
-        val config = args.getSerializable(KEY_CONFIG) as DavResourceFinder.Configuration
+        val config = args.getParcelable(KEY_CONFIG) as DavResourceFinder.Configuration
 
         v.account_name.setText(config.calDAV?.email ?:
                 config.credentials.userName ?:
@@ -81,7 +81,7 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
             if (name.isEmpty())
                 v.account_name.error = getString(R.string.login_account_name_required)
             else {
-                if (createAccount(name, args.getSerializable(KEY_CONFIG) as DavResourceFinder.Configuration)) {
+                if (createAccount(name, args.getParcelable(KEY_CONFIG) as DavResourceFinder.Configuration)) {
                     requireActivity().setResult(Activity.RESULT_OK)
                     requireActivity().finish()
                 } else

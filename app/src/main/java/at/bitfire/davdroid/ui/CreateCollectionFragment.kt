@@ -27,7 +27,6 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.settings.Settings
-import okhttp3.HttpUrl
 import java.io.IOException
 import java.io.StringWriter
 import java.util.logging.Level
@@ -44,7 +43,7 @@ class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
             val frag = CreateCollectionFragment()
             val args = Bundle(2)
             args.putParcelable(ARG_ACCOUNT, account)
-            args.putSerializable(ARG_COLLECTION_INFO, info)
+            args.putParcelable(ARG_COLLECTION_INFO, info)
             frag.arguments = args
             return frag
         }
@@ -59,7 +58,7 @@ class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
 
         val args = requireNotNull(arguments)
         account = args.getParcelable(ARG_ACCOUNT)
-        info = args.getSerializable(ARG_COLLECTION_INFO) as CollectionInfo
+        info = args.getParcelable(ARG_COLLECTION_INFO)
 
         loaderManager.initLoader(0, null, this)
     }
@@ -190,7 +189,7 @@ class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
                         .setForeground(true)
                         .build().use { httpClient ->
                     try {
-                        val collection = DavResource(httpClient.okHttpClient, HttpUrl.parse(info.url)!!)
+                        val collection = DavResource(httpClient.okHttpClient, info.url)
 
                         // create collection on remote server
                         collection.mkCol(writer.toString())

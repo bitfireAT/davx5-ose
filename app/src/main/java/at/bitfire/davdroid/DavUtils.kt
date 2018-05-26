@@ -28,11 +28,9 @@ object DavUtils {
         return String.format("#%06X%02X", color, alpha)
     }
 
-    fun lastSegmentOfUrl(url: String): String {
-        val httpUrl = HttpUrl.parse(url) ?: throw IllegalArgumentException("url not parsable")
-
+    fun lastSegmentOfUrl(url: HttpUrl): String {
         // the list returned by HttpUrl.pathSegments() is unmodifiable, so we have to create a copy
-        val segments = LinkedList<String>(httpUrl.pathSegments())
+        val segments = LinkedList<String>(url.pathSegments())
         segments.reverse()
 
         return segments.firstOrNull { it.isNotEmpty() } ?: "/"

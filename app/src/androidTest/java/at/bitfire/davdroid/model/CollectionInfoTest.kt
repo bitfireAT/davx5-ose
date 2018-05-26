@@ -14,6 +14,7 @@ import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.property.ResourceType
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.model.ServiceDB.Collections
+import okhttp3.HttpUrl
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -113,7 +114,7 @@ class CollectionInfoTest {
         assertEquals(CollectionInfo.Type.CALENDAR, info.type)
         assertEquals(1.toLong(), info.id)
         assertEquals(1.toLong(), info.serviceID)
-        assertEquals("http://example.com", info.url)
+        assertEquals(HttpUrl.parse("http://example.com/"), info.url)
         assertTrue(info.readOnly)
         assertEquals("display name", info.displayName)
         assertEquals("description", info.description)

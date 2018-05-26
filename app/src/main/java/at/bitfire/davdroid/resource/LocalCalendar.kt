@@ -54,7 +54,7 @@ class LocalCalendar private constructor(
 
         private fun valuesFromCollectionInfo(info: CollectionInfo, withColor: Boolean): ContentValues {
             val values = ContentValues()
-            values.put(Calendars.NAME, info.url)
+            values.put(Calendars.NAME, info.url.toString())
             values.put(Calendars.CALENDAR_DISPLAY_NAME, if (info.displayName.isNullOrBlank()) DavUtils.lastSegmentOfUrl(info.url) else info.displayName)
 
             if (withColor)
