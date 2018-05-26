@@ -141,7 +141,7 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
                     // generate entity to upload (VCard, iCal, whatever)
                     val body = prepareUpload(local)
 
-                    lateinit var response: DavResponse
+                    var response: DavResponse? = null
                     try {
                         response = if (local.eTag == null) {
                             Logger.log.info("Uploading new record $fileName")
@@ -157,10 +157,10 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
                     } catch(e: PreconditionFailedException) {
                         Logger.log.log(Level.INFO, "Resource has been modified on the server before upload, ignoring", e)
                     } finally {
-                        response.close()
+                        response?.close()
                     }
 
-                    val newETag = response[GetETag::class.java]
+                    val newETag = response?.get(GetETag::class.java)
                     val eTag: String?
                     if (newETag != null) {
                         eTag = newETag.eTag
