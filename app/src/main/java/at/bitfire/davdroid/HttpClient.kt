@@ -224,7 +224,9 @@ class HttpClient private constructor(
             App.FLAVOR_SOLDUPE -> "Soldupe Sync"
             else               -> "DAVdroid"
         }
-        private val userAgentDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
+
+        // use Locale.US because numbers may be encoded as non-ASCII characters in other locales
+        private val userAgentDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US)
         private val userAgentDate = userAgentDateFormat.format(Date(BuildConfig.buildTime))
         private val userAgent = "$productName/${BuildConfig.VERSION_NAME} ($userAgentDate; dav4android; okhttp/${Constants.okHttpVersion}) Android/${Build.VERSION.RELEASE}"
 
