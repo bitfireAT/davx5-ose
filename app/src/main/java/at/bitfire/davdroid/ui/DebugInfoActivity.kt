@@ -151,10 +151,14 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
             val throwable = extras?.getSerializable(KEY_THROWABLE) as Throwable?
             if (throwable is HttpException) {
                 throwable.request?.let {
-                    report.append("\nHTTP REQUEST:\n$it\n\n")
+                    report.append("\nHTTP REQUEST:\n$it\n")
+                    throwable.requestBody?.let { report.append(it) }
+                    report.append("\n\n")
                 }
                 throwable.response?.let {
                     report.append("HTTP RESPONSE:\n$it\n")
+                    throwable.responseBody?.let { report.append(it) }
+                    report.append("\n\n")
                 }
             }
 
