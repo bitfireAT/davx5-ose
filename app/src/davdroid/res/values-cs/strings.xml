@@ -140,6 +140,7 @@
   <plurals name="settings_sync_time_range_past_days">
     <item quantity="one">Ignorovat události starší než 1 den</item>
     <item quantity="few">Ignorovat události starší než %d dny</item>
+    <item quantity="many">Ignorovat události starší než %d dnů</item>
     <item quantity="other">Ignorovat události starší než %d dnů</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Události z minulosti starší než vyznačený počet dnů budou ignorovány (lze zadat 0). Ponechte prázdné pro synchronizaci všech událostí.</string>
