@@ -74,7 +74,7 @@
         
         <DataKind kind="note" maxOccurs="1" />
 
-        <DataKind kind="group_membership" />
+        <DataKind kind="group_membership" maxOccurs="1" />
 
         <DataKind kind="postal" needsStructured="true" >
             <Type type="home" />
