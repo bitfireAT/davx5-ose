@@ -188,6 +188,7 @@
   <plurals name="settings_sync_time_range_past_days">
     <item quantity="one">Події старші одного дня будуть проігноровані</item>
     <item quantity="few">Події старші %d днів будуть проігноровані</item>
+    <item quantity="many">Події старші %d днів будуть проігноровані</item>
     <item quantity="other">Події старші %d днів будуть проігноровані</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Події старші вказаного часу будуть проігноровані (може бути 0). Залиште порожнім, аби синхронізувати всі події.</string>
@@ -231,6 +232,7 @@
   <plurals name="sync_contacts_local_contact_changes_discarded">
     <item quantity="one">Локальну зміну контакту відхилено</item>
     <item quantity="few">%d локальні зміни контакту відхилено</item>
+    <item quantity="many">%d локальних змін контакту відхилено</item>
     <item quantity="other">%d локальних змін контакту відхилено</item>
   </plurals>
   <string name="sync_error_permissions">Дозволи DAVdroid</string>

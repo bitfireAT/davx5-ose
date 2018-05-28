@@ -18,7 +18,7 @@
   <string name="notification_channel_sync_status">رسائل الحالة</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">إذن البدء التلقائي %s</string>
-  <string name="startup_autostart_permission_message">برامج تشغيل الجهاز قد تمنع المزامنة التلقائية.  قد يتطلب الأمر منك السماح بالمزامنة التلقائية يدوياً.</string>
+  <string name="startup_autostart_permission_message">البرنامج الثابت للجهاز قد يمنع المزامنة التلقائية.  قد يتطلب الأمر منك السماح بالمزامنة التلقائية يدوياً.</string>
   <string name="startup_battery_optimization">تحسين البطارية</string>
   <string name="startup_battery_optimization_message">قد يعطّل نظام آندرويد مزامنة DAVdroid أو يقللها بعد عدة أيام.  قم بتعطيل تحسين البطارية لمنع حدوث ذلك.</string>
   <string name="startup_battery_optimization_disable">التعطيل لـ DAVdroid</string>
@@ -41,23 +41,23 @@
   <string name="logging_davdroid_file_logging">تسجيل ملفات DAVdroid</string>
   <string name="logging_to_external_storage">التسجيل في التخزين الخارجي: %s</string>
   <string name="logging_couldnt_create_file">لا يمكن إنشاء ملف سجل خارجي: %s</string>
-  <string name="logging_no_external_storage">لايمكن العثور على تخزين خارجي</string>
+  <string name="logging_no_external_storage">لم نجِد أي تخزين خارجي</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">فتح درج التنقل</string>
   <string name="navigation_drawer_close">إغلاق درج التنقل</string>
   <string name="navigation_drawer_subtitle">مهايئ مزامنة CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">حول / الترخيص</string>
-  <string name="navigation_drawer_beta_feedback">انطباعات المستخدمين عن نسخة بيتا</string>
+  <string name="navigation_drawer_beta_feedback">انطباعات المستخدمين عن البيتا</string>
   <string name="navigation_drawer_settings">الإعدادات</string>
   <string name="navigation_drawer_news_updates">أخبار وتحديثات</string>
   <string name="navigation_drawer_external_links">روابط خارجية</string>
-  <string name="navigation_drawer_website">موقع الوب</string>
+  <string name="navigation_drawer_website">موقع الويب</string>
   <string name="navigation_drawer_manual">دليل الاستخدام</string>
   <string name="navigation_drawer_faq">الأسئلة الشائعة</string>
   <string name="navigation_drawer_forums">المساعدة / المنتدى</string>
   <string name="navigation_drawer_donate">تبرَّع</string>
   <string name="account_list_empty">مرحباً بك في DAVdroid !\n\n يمكنك إضافة حساب CalDAV أو CardDAV الآن.</string>
-  <string name="accounts_global_sync_disabled">تم تعطيل المزامنة التلقائية على مستوى النظام بأكمله</string>
+  <string name="accounts_global_sync_disabled">تم تعطيل المزامنة التلقائية على مستوى النظام</string>
   <string name="accounts_global_sync_enable">تفعيل</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">فشل اكتشاف الخدمة</string>
@@ -108,7 +108,7 @@
   <string name="account_create_new_address_book">إنشاء دفتر عناوين جديد</string>
   <string name="account_refresh_calendar_list">تجديد قائمة التقويم</string>
   <string name="account_create_new_calendar">إنشاء تقويم جديد</string>
-  <string name="account_no_webcal_handler_found">لم يتم العثور على تطبيق قادر على استخدام Webcal</string>
+  <string name="account_no_webcal_handler_found">لم نجِد تطبيقاً قادراً على استخدام Webcal</string>
   <string name="account_install_icsdroid">تثبيت ICSdroid</string>
   <!--AddAccountActivity-->
   <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
@@ -137,7 +137,7 @@
   <string name="login_account_not_created">لم نتمكن من إنشاء الحساب</string>
   <string name="login_configuration_detection">اكتشاف الضبط</string>
   <string name="login_querying_server">يجري استعلام الخادم ... يرجى الانتظار</string>
-  <string name="login_no_caldav_carddav">لم نتمكن من العثور على خدمة CalDAV أو CardDAV.</string>
+  <string name="login_no_caldav_carddav">لم نجِد خدمة CalDAV أو CardDAV.</string>
   <string name="login_view_logs">عرض السجلات</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">%s الإعدادات:</string>
@@ -186,7 +186,11 @@
   <string name="settings_sync_time_range_past">الحد الزمني للأحداث الماضية</string>
   <string name="settings_sync_time_range_past_none">ستتم مزامنة جميع الأحداث</string>
   <plurals name="settings_sync_time_range_past_days">
+    <item quantity="zero">سيتم تجاهل الأحداث الأقدم من %d أيام</item>
     <item quantity="one">سيتم تجاهل الأحداث الأقدم من يوم واحد</item>
+    <item quantity="two">سيتم تجاهل الأحداث الأقدم من %d أيام</item>
+    <item quantity="few">سيتم تجاهل الأحداث الأقدم من %d أيام</item>
+    <item quantity="many">سيتم تجاهل الأحداث الأقدم من %d أيام</item>
     <item quantity="other">سيتم تجاهل الأحداث الأقدم من %d أيام</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">الأحداث التي جرت بعد عدد الأيام هذا في الماضي سيتم تجاهلها (يمكن أن يكون 0).  أتركه فارغاً لمزامنة جميع الأحداث.</string>
@@ -228,7 +232,11 @@
   <string name="debug_info_title">معلومات تصحيح العلل</string>
   <string name="sync_contacts_read_only_address_book">دفتر عناوين للقراءة فقط</string>
   <plurals name="sync_contacts_local_contact_changes_discarded">
+    <item quantity="zero">تم تجاهل تغيير في جهة الاتصال المحلية %d</item>
     <item quantity="one">تم تجاهل تغيير في جهة الاتصال المحلية</item>
+    <item quantity="two">تم تجاهل تغيير في جهة الاتصال المحلية %d</item>
+    <item quantity="few">تم تجاهل تغيير في جهة الاتصال المحلية %d</item>
+    <item quantity="many">تم تجاهل تغيير في جهة الاتصال المحلية %d</item>
     <item quantity="other">تم تجاهل تغيير في جهة الاتصال المحلية %d</item>
   </plurals>
   <string name="sync_error_permissions">أذونات DAVdroid</string>
