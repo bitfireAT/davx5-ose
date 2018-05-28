@@ -73,7 +73,9 @@
         <DataKind kind="nickname" maxOccurs="1" />
         
         <DataKind kind="note" maxOccurs="1" />
-        
+
+        <DataKind kind="group_membership" />
+
         <DataKind kind="postal" needsStructured="true" >
             <Type type="home" />
             <Type type="work" />
