@@ -41,7 +41,7 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
         super.onCreate(savedInstanceState)
 
         account = arguments!!.getParcelable(ARG_ACCOUNT)
-        collectionInfo = arguments!!.getSerializable(ARG_COLLECTION_INFO) as CollectionInfo
+        collectionInfo = arguments!!.getParcelable(ARG_COLLECTION_INFO)
 
         loaderManager.initLoader(0, null, this)
     }
