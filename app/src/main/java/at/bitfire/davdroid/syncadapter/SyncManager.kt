@@ -143,24 +143,27 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
                         var initialSync = false
 
                         var syncState = localCollection.lastSyncState?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }
+                        if (syncState == null) {
+                            Logger.log.info("Starting initial sync")
+                            initialSync = true
+                            resetPresentRemotely()
+                        }
 
                         Logger.log.info("Listing changes since $syncState")
                         var changes: RemoteChanges? = try {
                             listRemoteChanges(syncState)
                         } catch(e: HttpException) {
                             if (e.errors.contains(Property.Name(XmlUtils.NS_WEBDAV, "valid-sync-token"))) {
-                                Logger.log.info("Sync token stale, retrying without sync-token")
+                                Logger.log.info("Sync token invalid, retrying from scratch without sync-token")
                                 syncState = null
+                                initialSync = true
+                                resetPresentRemotely()
+
                                 listRemoteChanges(null)
                             } else
                                 throw e
                         }
 
-                        if (syncState == null) {
-                            Logger.log.info("Starting initial sync")
-                            initialSync = true
-                            resetPresentRemotely()
-                        }
                         if (syncState?.initialSync == true) {
                             Logger.log.info("Continuing initial sync")
                             initialSync = true
