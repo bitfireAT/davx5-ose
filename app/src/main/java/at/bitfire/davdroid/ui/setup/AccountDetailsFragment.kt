@@ -172,7 +172,7 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
                     refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
                     requireActivity().startService(refreshIntent)
 
-                    // calendar sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_contacts.xml
+                    // calendar sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_calendars.xml
                     accountSettings.setSyncInterval(CalendarContract.AUTHORITY, Constants.DEFAULT_SYNC_INTERVAL)
 
                     // enable task sync if OpenTasks is installed

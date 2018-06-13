@@ -7,12 +7,15 @@
  */
 package at.bitfire.davdroid.syncadapter
 
+import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.*
+import android.content.pm.PackageManager
 import android.database.DatabaseUtils
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.support.v4.content.ContextCompat
 import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -21,6 +24,7 @@ import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.ServiceDB.Collections
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.ISettings
+import at.bitfire.davdroid.ui.AccountActivity
 import okhttp3.HttpUrl
 import java.util.logging.Level
 
@@ -34,13 +38,6 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
     ): SyncAdapter(context) {
 
         override fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
-            val contactsProvider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
-            if (contactsProvider == null) {
-                Logger.log.severe("Couldn't access contacts provider")
-                syncResult.databaseError = true
-                return
-            }
-
             try {
                 val accountSettings = AccountSettings(context, settings, account)
 
@@ -51,7 +48,7 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
                 if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(accountSettings))
                     return
 
-                updateLocalAddressBooks(contactsProvider, account)
+                updateLocalAddressBooks(provider, account, syncResult)
 
                 val accountManager = AccountManager.get(context)
                 for (addressBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
@@ -68,7 +65,7 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
             Logger.log.info("Address book sync complete")
         }
 
-        private fun updateLocalAddressBooks(provider: ContentProviderClient, account: Account) {
+        private fun updateLocalAddressBooks(provider: ContentProviderClient, account: Account, syncResult: SyncResult) {
             ServiceDB.OpenHelper(context).use { dbHelper ->
                 val db = dbHelper.readableDatabase
 
@@ -102,8 +99,29 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
                 val service = getService()
                 val remote = remoteAddressBooks(service)
 
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                    if (remote.isEmpty()) {
+                        Logger.log.info("No contacts permission, but no address book selected for synchronization")
+                        return
+                    } else {
+                        // no contacts permission, but address books should be synchronized -> show notification
+                        val intent = Intent(context, AccountActivity::class.java)
+                        intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+                        notifyPermissions(intent)
+                    }
+                }
+
+                val contactsProvider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
+                if (contactsProvider == null) {
+                    Logger.log.severe("Couldn't access contacts provider")
+                    syncResult.databaseError = true
+                    return
+                }
+
                 // delete/update local address books
-                for (addressBook in LocalAddressBook.findAll(context, provider, account)) {
+                for (addressBook in LocalAddressBook.findAll(context, contactsProvider, account)) {
                     val url = HttpUrl.parse(addressBook.url)!!
                     val info = remote[url]
                     if (info == null) {
@@ -125,7 +143,7 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
                 // create new local address books
                 for ((_, info) in remote) {
                     Logger.log.log(Level.INFO, "Adding local address book", info)
-                    LocalAddressBook.create(context, provider, account, info)
+                    LocalAddressBook.create(context, contactsProvider, account, info)
                 }
             }
         }
