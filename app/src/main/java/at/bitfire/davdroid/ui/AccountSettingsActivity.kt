@@ -35,7 +35,9 @@ import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.Credentials
+import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.settings.ISettings
+import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import org.apache.commons.lang3.StringUtils
@@ -276,6 +278,16 @@ class AccountSettingsActivity: AppCompatActivity() {
                             -1
                         }
                         accountSettings.setTimeRangePastDays(if (days < 0) null else days)
+
+                        // reset sync state of all calendars in this account to trigger a full sync
+                        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
+                            requireContext().contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
+                                AndroidCalendar.find(account, provider, LocalCalendar.Factory, null, null).forEach { calendar ->
+                                    calendar.lastSyncState = null
+                                }
+                            }
+                        }
+
                         loaderManager.restartLoader(0, arguments, this)
                         false
                     }
