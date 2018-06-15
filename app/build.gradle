@@ -19,7 +19,7 @@ android {
         applicationId "at.bitfire.davdroid"
         resValue "string", "packageID", applicationId
 
-        versionCode 231
+        versionCode 232
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         minSdkVersion 19        // Android 4.4
@@ -43,7 +43,7 @@ android {
         }
         managed {
             dimension "type"
-            versionName "1.11.4.1-mgd"
+            versionName "1.11.4.1-mgd1"
 
             applicationId "com.davdroid.managed"
             resValue "string", "packageID", applicationId
