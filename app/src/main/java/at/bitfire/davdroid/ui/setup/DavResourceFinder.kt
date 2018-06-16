@@ -163,7 +163,7 @@ class DavResourceFinder(
         try {
             val davBase = DavResource(httpClient.okHttpClient, baseURL, log)
 
-            lateinit var response: DavResponse
+            var response: DavResponse? = null
             try {
                 when (service) {
                     Service.CARDDAV -> {
@@ -200,7 +200,7 @@ class DavResourceFinder(
                         }
                     }
             } finally {
-                response.close()
+                response?.close()
             }
 
             // If a principal has been detected successfully, ensure that it provides the required service.
