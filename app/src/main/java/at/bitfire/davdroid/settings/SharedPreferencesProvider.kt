@@ -56,16 +56,16 @@ class SharedPreferencesProvider(
     }
 
     override fun getBoolean(key: String): Pair<Boolean?, Boolean> =
-            getValue(key, { preferences -> preferences.getBoolean(key, /* will never be used: */ false) })
+            getValue(key) { preferences -> preferences.getBoolean(key, /* will never be used: */ false) }
 
     override fun getInt(key: String): Pair<Int?, Boolean> =
-            getValue(key, { preferences -> preferences.getInt(key, /* will never be used: */ -1) })
+            getValue(key) { preferences -> preferences.getInt(key, /* will never be used: */ -1) }
 
     override fun getLong(key: String): Pair<Long?, Boolean> =
-            getValue(key, { preferences -> preferences.getLong(key, /* will never be used: */ -1) })
+            getValue(key) { preferences -> preferences.getLong(key, /* will never be used: */ -1) }
 
     override fun getString(key: String): Pair<String?, Boolean> =
-            getValue(key, { preferences -> preferences.getString(key, /* will never be used: */ null) })
+            getValue(key) { preferences -> preferences.getString(key, /* will never be used: */ null) }
 
 
     override fun isWritable(key: String) =
@@ -84,16 +84,16 @@ class SharedPreferencesProvider(
     }
 
     override fun putBoolean(key: String, value: Boolean?) =
-            putValue(key, value, { editor, v -> editor.putBoolean(key, v) })
+            putValue(key, value) { editor, v -> editor.putBoolean(key, v) }
 
     override fun putInt(key: String, value: Int?) =
-            putValue(key, value, { editor, v -> editor.putInt(key, v) })
+            putValue(key, value) { editor, v -> editor.putInt(key, v) }
 
     override fun putLong(key: String, value: Long?) =
-            putValue(key, value, { editor, v -> editor.putLong(key, v) })
+            putValue(key, value) { editor, v -> editor.putLong(key, v) }
 
     override fun putString(key: String, value: String?) =
-            putValue(key, value, { editor, v -> editor.putString(key, v) })
+            putValue(key, value) { editor, v -> editor.putString(key, v) }
 
     override fun remove(key: String): Boolean {
         Logger.log.fine("Removing setting $key")

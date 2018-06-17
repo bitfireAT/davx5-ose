@@ -82,7 +82,7 @@ class CalendarSyncManager(
             else
                 SyncAlgorithm.COLLECTION_SYNC
 
-    override fun prepareUpload(resource: LocalEvent): RequestBody = useLocal(resource, {
+    override fun prepareUpload(resource: LocalEvent): RequestBody = useLocal(resource) {
         val event = requireNotNull(resource.event)
         Logger.log.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
 
@@ -93,7 +93,7 @@ class CalendarSyncManager(
                 DavCalendar.MIME_ICALENDAR_UTF8,
                 os.toByteArray()
         )
-    })
+    }
 
     override fun listAllRemote(): Map<String, DavResponse> {
         // calculate time range limits
@@ -123,7 +123,7 @@ class CalendarSyncManager(
         for (name in changes.deleted)
             localCollection.findByName(name)?.let {
                 Logger.log.info("Deleting local event $name")
-                useLocal(it, { local -> local.delete() })
+                useLocal(it) { local -> local.delete() }
                 syncResult.stats.numDeletes++
             }
 
@@ -133,7 +133,7 @@ class CalendarSyncManager(
         for (bunch in toDownload.chunked(MULTIGET_MAX_RESOURCES)) {
             if (bunch.size == 1)
                 // only one contact, use GET
-                useRemote(DavResource(httpClient.okHttpClient, bunch.first()), {
+                useRemote(DavResource(httpClient.okHttpClient, bunch.first())) {
                     it.get(DavCalendar.MIME_ICALENDAR.toString()).use { dav ->
                         // CalDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc4791#section-5.3.4]
                         val eTag = dav[GetETag::class.java]?.eTag
@@ -143,7 +143,7 @@ class CalendarSyncManager(
                             processVEvent(dav.fileName(), eTag, reader)
                         }
                     }
-                })
+                }
             else {
                 // multiple contacts, use multi-get
                 useRemoteCollection {
@@ -151,7 +151,7 @@ class CalendarSyncManager(
 
                     // process multiget results
                     for (remote in dav.members)
-                        useRemote(remote, {
+                        useRemote(remote) {
                             val eTag = remote[GetETag::class.java]?.eTag
                                     ?: throw DavException("Received multi-get response without ETag")
 
@@ -160,7 +160,7 @@ class CalendarSyncManager(
                                     ?: throw DavException("Received multi-get response without task data")
 
                             processVEvent(remote.fileName(), eTag, StringReader(iCalendar))
-                        })
+                        }
                     }
                 }
             }
@@ -185,7 +185,7 @@ class CalendarSyncManager(
             val newData = events.first()
 
             // delete local event, if it exists
-            useLocal(localCollection.findByName(fileName), { local ->
+            useLocal(localCollection.findByName(fileName)) { local ->
                 if (local != null) {
                     Logger.log.info("Updating $fileName in local calendar")
                     local.eTag = eTag
@@ -193,12 +193,12 @@ class CalendarSyncManager(
                     syncResult.stats.numUpdates++
                 } else {
                     Logger.log.info("Adding $fileName to local calendar")
-                    useLocal(LocalEvent(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT), {
+                    useLocal(LocalEvent(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) {
                         it.add()
-                    })
+                    }
                     syncResult.stats.numInserts++
                 }
-            })
+            }
         } else
             Logger.log.info("Received VCALENDAR with not exactly one VEVENT with UID and without RECURRENCE-ID; ignoring $fileName")
     }

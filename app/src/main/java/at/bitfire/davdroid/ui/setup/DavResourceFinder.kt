@@ -429,9 +429,8 @@ class DavResourceFinder(
             dest.writeString(logs)
         }
 
-        @Suppress("unused")
-        @JvmField
-        val CREATOR = object: Parcelable.Creator<Configuration> {
+
+        companion object CREATOR : Parcelable.Creator<Configuration> {
 
             override fun createFromParcel(source: Parcel): Configuration {
                 fun readCollections(): MutableMap<HttpUrl, CollectionInfo> {

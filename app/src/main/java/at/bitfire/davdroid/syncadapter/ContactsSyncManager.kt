@@ -149,13 +149,13 @@ class ContactsSyncManager(
         if (readOnly) {
             for (group in localCollection.findDeletedGroups()) {
                 Logger.log.warning("Restoring locally deleted group (read-only address book!)")
-                useLocal(group, { it.resetDeleted() })
+                useLocal(group) { it.resetDeleted() }
                 numDiscarded++
             }
 
             for (contact in localCollection.findDeletedContacts()) {
                 Logger.log.warning("Restoring locally deleted contact (read-only address book!)")
-                useLocal(contact, { it.resetDeleted() })
+                useLocal(contact) { it.resetDeleted() }
                 numDiscarded++
             }
 
@@ -171,13 +171,13 @@ class ContactsSyncManager(
         if (readOnly) {
             for (group in localCollection.findDirtyGroups()) {
                 Logger.log.warning("Resetting locally modified group to ETag=null (read-only address book!)")
-                useLocal(group, { it.clearDirty(null) })
+                useLocal(group) { it.clearDirty(null) }
                 numDiscarded++
             }
 
             for (contact in localCollection.findDirtyContacts()) {
                 Logger.log.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
-                useLocal(contact, { it.clearDirty(null) })
+                useLocal(contact) { it.clearDirty(null) }
                 numDiscarded++
             }
 
@@ -193,16 +193,16 @@ class ContactsSyncManager(
                     Logger.log.fine("Finally removing group $group")
                     // useless because Android deletes group memberships as soon as a group is set to DELETED:
                     // group.markMembersDirty()
-                    useLocal(group, { it.delete() })
+                    useLocal(group) { it.delete() }
                 }
 
                 // groups with DIRTY=1: mark all memberships as dirty, then clean DIRTY flag of group
                 for (group in localCollection.findDirtyGroups()) {
                     Logger.log.fine("Marking members of modified group $group as dirty")
-                    useLocal(group, {
+                    useLocal(group) {
                         it.markMembersDirty()
                         it.clearDirty(null)
-                    })
+                    }
                 }
             } else {
                 /* groups as separate VCards: there are group contacts and individual contacts */
@@ -246,7 +246,7 @@ class ContactsSyncManager(
         notificationManager.notify("discarded_${account.name}", 0, notification)
     }
 
-    override fun prepareUpload(resource: LocalAddress): RequestBody = useLocal(resource, {
+    override fun prepareUpload(resource: LocalAddress): RequestBody = useLocal(resource) {
         val contact: Contact
         if (resource is LocalContact) {
             contact = resource.contact!!
@@ -280,7 +280,7 @@ class ContactsSyncManager(
                 if (hasVCard4) DavAddressBook.MIME_VCARD4 else DavAddressBook.MIME_VCARD3_UTF8,
                 os.toByteArray()
         )
-    })
+    }
 
     override fun listAllRemote() = useRemoteCollection {
         // fetch list of remote VCards and build hash table to index file name
@@ -308,7 +308,7 @@ class ContactsSyncManager(
         for (name in changes.deleted)
             localCollection.findByName(name)?.let {
                 Logger.log.info("Deleting local address $name")
-                useLocal(it, { it.delete() })
+                useLocal(it) { it.delete() }
                 syncResult.stats.numDeletes++
             }
 
@@ -322,7 +322,7 @@ class ContactsSyncManager(
         for (bunch in toDownload.chunked(CalendarSyncManager.MULTIGET_MAX_RESOURCES)) {
             if (bunch.size == 1)
                 // only one contact, use GET
-                useRemote(DavResource(httpClient.okHttpClient, bunch.first()), {
+                useRemote(DavResource(httpClient.okHttpClient, bunch.first())) {
                     it.get("text/vcard;version=4.0, text/vcard;charset=utf-8;q=0.8, text/vcard;q=0.5").use { dav ->
                         // CardDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc6352#section-6.3.2.3]
                         val eTag = dav[GetETag::class.java]?.eTag
@@ -332,15 +332,14 @@ class ContactsSyncManager(
                             processVCard(dav.fileName(), eTag, reader, downloader)
                         }
                     }
-                })
-
+                }
             else {
                 // multiple contacts, use multi-get
                 useRemoteCollection {
                     it.multiget(bunch, hasVCard4).use { dav ->
                         // process multi-get results
                         for (remote in dav.members)
-                            useRemote(remote, {
+                            useRemote(remote) {
                                 val eTag = remote[GetETag::class.java]?.eTag
                                         ?: throw DavException("Received multi-get response without ETag")
 
@@ -349,7 +348,7 @@ class ContactsSyncManager(
                                         ?: throw DavException("Received multi-get response without address data")
 
                                 processVCard(remote.fileName(), eTag, StringReader(vCard), downloader)
-                            })
+                            }
                     }
                 }
             }
@@ -393,7 +392,7 @@ class ContactsSyncManager(
         }
 
         // update local contact, if it exists
-        useLocal(localCollection.findByName(fileName), {
+        useLocal(localCollection.findByName(fileName)) {
             var local = it
             if (local != null) {
                 Logger.log.log(Level.INFO, "Updating $fileName in local address book", newData)
@@ -422,16 +421,16 @@ class ContactsSyncManager(
             if (local == null) {
                 if (newData.group) {
                     Logger.log.log(Level.INFO, "Creating local group", newData)
-                    useLocal(LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT), {
+                    useLocal(LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) {
                         it.add()
                         local = it
-                    })
+                    }
                 } else {
                     Logger.log.log(Level.INFO, "Creating local contact", newData)
-                    useLocal(LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT), {
+                    useLocal(LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) {
                         it.add()
                         local = it
-                    })
+                    }
                 }
                 syncResult.stats.numInserts++
             }
@@ -453,9 +452,9 @@ class ContactsSyncManager(
                 }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
+            // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
                 (local as? LocalContact)?.updateHashCode(null)
-        })
+        }
     }
 
 

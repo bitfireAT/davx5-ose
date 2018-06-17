@@ -93,26 +93,26 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
         // but only if they don't have changed on the server. Then finally remove them from the local address book.
         val localList = localCollection.findDeleted()
         for (local in localList)
-            useLocal(local, {
+            useLocal(local) {
                 abortIfCancelled()
 
                 val fileName = local.fileName
                 if (fileName != null) {
                     Logger.log.info("$fileName has been deleted locally -> deleting from server")
 
-                    useRemote(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build()), { remote ->
+                    useRemote(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build())) { remote ->
                         try {
                             remote.delete(local.eTag)
                             numDeleted++
                         } catch (e: HttpException) {
                             Logger.log.warning("Couldn't delete $fileName from server; ignoring (may be downloaded again)")
                         }
-                    })
+                    }
                 } else
                     Logger.log.info("Removing local record #${local.id} which has been deleted locally and was never uploaded")
                 local.delete()
                 syncResult.stats.numDeletes++
-            })
+            }
         Logger.log.info("Removed $numDeleted record(s) from server")
         return numDeleted > 0
     }
@@ -128,7 +128,7 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
 
         // upload dirty contacts
         for (local in localCollection.findDirty())
-            useLocal(local, {
+            useLocal(local) {
                 abortIfCancelled()
 
                 if (local.fileName == null) {
@@ -137,7 +137,7 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
                 }
 
                 val fileName = local.fileName!!
-                useRemote(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build()), { remote ->
+                useRemote(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build())) { remote ->
                     // generate entity to upload (VCard, iCal, whatever)
                     val body = prepareUpload(local)
 
@@ -171,8 +171,8 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
                     }
 
                     local.clearDirty(eTag)
-                })
-            })
+                }
+            }
         Logger.log.info("Sent $numUploaded record(s) to server")
         return numUploaded > 0
     }
@@ -214,7 +214,7 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
         val changes = RemoteChanges(null, false)
 
         for ((name, remote) in remoteResources)
-            useLocal(localCollection.findByName(name), { local ->
+            useLocal(localCollection.findByName(name)) { local ->
                 if (local == null) {
                     Logger.log.info("$name has been added remotely")
                     changes.updated += remote
@@ -231,7 +231,7 @@ abstract class BaseDavSyncManager<ResourceType: LocalResource<*>, out Collection
                     // mark as remotely present, so that this resource won't be deleted at the end
                     local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
                 }
-            })
+            }
 
         return changes
     }

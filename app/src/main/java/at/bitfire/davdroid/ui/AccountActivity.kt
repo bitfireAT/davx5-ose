@@ -142,9 +142,9 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                         .setTitle(R.string.account_delete_confirmation_title)
                         .setMessage(R.string.account_delete_confirmation_text)
                         .setNegativeButton(android.R.string.no, null)
-                        .setPositiveButton(android.R.string.yes, { _, _ ->
+                        .setPositiveButton(android.R.string.yes) { _, _ ->
                             deleteAccount()
-                        })
+                        }
                         .show()
             }
             else ->
@@ -220,7 +220,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                 isChecked = info.forceReadOnly
         }
 
-        popup.setOnMenuItemClickListener({ item ->
+        popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.force_read_only -> {
                     val nowChecked = !item.isChecked
@@ -241,7 +241,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                     DeleteCollectionFragment.ConfirmDeleteCollectionFragment.newInstance(account, info).show(supportFragmentManager, null)
             }
             true
-        })
+        }
         popup.show()
 
         // long click was handled
@@ -270,9 +270,9 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
                 val installIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=at.bitfire.icsdroid"))
                 if (packageManager.resolveActivity(installIntent, 0) != null)
-                    snack.setAction(R.string.account_install_icsdroid, {
+                    snack.setAction(R.string.account_install_icsdroid) {
                         startActivity(installIntent)
-                    })
+                    }
 
                 snack.show()
             }
@@ -569,11 +569,11 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             v.findViewById<ImageView>(R.id.read_only).visibility =
                     if (info.readOnly || info.forceReadOnly) View.VISIBLE else View.GONE
 
-            v.findViewById<ImageView>(R.id.action_overflow).setOnClickListener({ view ->
+            v.findViewById<ImageView>(R.id.action_overflow).setOnClickListener { view ->
                 (context as? AccountActivity)?.let {
                     it.onActionOverflowListener(view, info)
                 }
-            })
+            }
 
             return v
         }
@@ -623,11 +623,11 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             if (info.type == CollectionInfo.Type.WEBCAL)
                 overflow.visibility = View.GONE
             else
-                overflow.setOnClickListener({ view ->
+                overflow.setOnClickListener { view ->
                     (context as? AccountActivity)?.let {
                         it.onActionOverflowListener(view, info)
                     }
-                })
+                }
 
             return v
         }
@@ -720,7 +720,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                             }, null)
                         activity!!.finish()
                     })
-                    .setNegativeButton(android.R.string.cancel, { _, _ -> })
+                    .setNegativeButton(android.R.string.cancel) { _, _ -> }
                     .create()
         }
     }

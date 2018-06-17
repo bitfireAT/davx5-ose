@@ -28,18 +28,16 @@ data class LoginInfo(
         dest.writeSerializable(credentials)
     }
 
-    companion object {
 
-        @JvmField
-        val CREATOR = object: Parcelable.Creator<LoginInfo> {
-            override fun createFromParcel(source: Parcel) =
-                    LoginInfo(
-                        source.readSerializable() as URI,
-                        source.readSerializable() as Credentials
-                    )
+    companion object CREATOR : Parcelable.Creator<LoginInfo> {
 
-            override fun newArray(size: Int) = arrayOfNulls<LoginInfo>(size)
-        }
+        override fun createFromParcel(source: Parcel) =
+                LoginInfo(
+                    source.readSerializable() as URI,
+                    source.readSerializable() as Credentials
+                )
+
+        override fun newArray(size: Int) = arrayOfNulls<LoginInfo>(size)
 
     }
 
