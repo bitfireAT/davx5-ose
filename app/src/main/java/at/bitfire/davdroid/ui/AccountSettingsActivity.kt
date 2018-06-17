@@ -130,9 +130,9 @@ class AccountSettingsActivity: AppCompatActivity() {
                     prefCertAlias.setOnPreferenceClickListener {
                         KeyChain.choosePrivateKeyAlias(activity, { alias ->
                             accountSettings.credentials(Credentials(certificateAlias = alias))
-                            Handler(Looper.getMainLooper()).post({
+                            Handler(Looper.getMainLooper()).post {
                                 loaderManager.restartLoader(0, arguments, this)
-                            })
+                            }
                         }, null, null, null, -1, credentials.certificateAlias)
                         true
                     }
@@ -240,7 +240,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                                     .setIcon(R.drawable.ic_error_dark)
                                     .setTitle(R.string.settings_contact_group_method_change)
                                     .setMessage(R.string.settings_contact_group_method_change_reload_contacts)
-                                    .setPositiveButton(android.R.string.ok, { _, _ ->
+                                    .setPositiveButton(android.R.string.ok) { _, _ ->
                                         // change group method
                                         accountSettings.setGroupMethod(GroupMethod.valueOf(groupMethod as String))
                                         loaderManager.restartLoader(0, arguments, this)
@@ -249,7 +249,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                                         val args = Bundle(1)
                                         args.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)
                                         ContentResolver.requestSync(account, getString(R.string.address_books_authority), args)
-                                    })
+                                    }
                                     .setNegativeButton(android.R.string.cancel, null)
                                     .show()
                             false
@@ -324,10 +324,10 @@ class AccountSettingsActivity: AppCompatActivity() {
                                     .setTitle(R.string.settings_event_colors)
                                     .setMessage(R.string.settings_event_colors_off_confirm)
                                     .setNegativeButton(android.R.string.cancel, null)
-                                    .setPositiveButton(android.R.string.ok, { _, _ ->
+                                    .setPositiveButton(android.R.string.ok) { _, _ ->
                                         accountSettings.setEventColors(false)
                                         loaderManager.restartLoader(0, arguments, this)
-                                    })
+                                    }
                                     .show()
                         false
                     }

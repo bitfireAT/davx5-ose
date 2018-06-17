@@ -133,14 +133,14 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
             return AlertDialog.Builder(activity!!)
                     .setTitle(R.string.delete_collection_confirm_title)
                     .setMessage(getString(R.string.delete_collection_confirm_warning, name))
-                    .setPositiveButton(android.R.string.yes, { _, _ ->
+                    .setPositiveButton(android.R.string.yes) { _, _ ->
                         val frag = DeleteCollectionFragment()
                         frag.arguments = arguments
                         frag.show(fragmentManager, null)
-                    })
-                    .setNegativeButton(android.R.string.no, { _, _ ->
+                    }
+                    .setNegativeButton(android.R.string.no) { _, _ ->
                         dismiss()
-                    })
+                    }
                     .create()
         }
     }

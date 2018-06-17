@@ -49,13 +49,13 @@ class ExceptionInfoFragment: DialogFragment() {
                 .setIcon(R.drawable.ic_error_dark)
                 .setTitle(title)
                 .setMessage(exception::class.java.name + "\n" + exception.localizedMessage)
-                .setNegativeButton(R.string.exception_show_details, { _, _ ->
+                .setNegativeButton(R.string.exception_show_details) { _, _ ->
                     val intent = Intent(activity, DebugInfoActivity::class.java)
                     intent.putExtra(DebugInfoActivity.KEY_THROWABLE, exception)
                     account?.let { intent.putExtra(DebugInfoActivity.KEY_ACCOUNT, it) }
                     startActivity(intent)
-                })
-                .setPositiveButton(android.R.string.ok, { _, _ -> })
+                }
+                .setPositiveButton(android.R.string.ok) { _, _ -> }
                 .create()
         isCancelable = false
         return dialog

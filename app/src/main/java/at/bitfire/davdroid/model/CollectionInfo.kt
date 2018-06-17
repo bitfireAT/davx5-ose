@@ -58,20 +58,6 @@ data class CollectionInfo(
         WEBCAL          // iCalendar subscription
     }
 
-    companion object {
-
-        val DAV_PROPERTIES = arrayOf(
-            ResourceType.NAME,
-            CurrentUserPrivilegeSet.NAME,
-            DisplayName.NAME,
-            AddressbookDescription.NAME, SupportedAddressData.NAME,
-            CalendarDescription.NAME, CalendarColor.NAME, SupportedCalendarComponentSet.NAME,
-            Source.NAME
-        )
-
-    }
-
-
     constructor(dav: DavResponse): this(UrlUtils.withTrailingSlash(dav.url)) {
         dav[ResourceType::class.java]?.let { type ->
             when {
@@ -185,8 +171,8 @@ data class CollectionInfo(
 
         dest.writeString(url.toString())
 
-        writeOrNull(id, { dest.writeLong(it) })
-        writeOrNull(serviceID, { dest.writeLong(it) })
+        writeOrNull(id) { dest.writeLong(it) }
+        writeOrNull(serviceID) { dest.writeLong(it) }
 
         dest.writeString(type?.name)
 
@@ -194,7 +180,7 @@ data class CollectionInfo(
         dest.writeByte(if (forceReadOnly) 1 else 0)
         dest.writeString(displayName)
         dest.writeString(description)
-        writeOrNull(color, { dest.writeInt(it) })
+        writeOrNull(color) { dest.writeInt(it) }
 
         dest.writeString(timeZone)
         dest.writeByte(if (supportsVEVENT) 1 else 0)
@@ -206,9 +192,17 @@ data class CollectionInfo(
         dest.writeByte(if (confirmed) 1 else 0)
     }
 
-    @Suppress("unused")
-    @JvmField
-    val CREATOR = object: Parcelable.Creator<CollectionInfo> {
+    companion object CREATOR : Parcelable.Creator<CollectionInfo> {
+
+        val DAV_PROPERTIES = arrayOf(
+                ResourceType.NAME,
+                CurrentUserPrivilegeSet.NAME,
+                DisplayName.NAME,
+                AddressbookDescription.NAME, SupportedAddressData.NAME,
+                CalendarDescription.NAME, CalendarColor.NAME, SupportedCalendarComponentSet.NAME,
+                Source.NAME
+        )
+
         override fun createFromParcel(parcel: Parcel): CollectionInfo {
             fun<T> readOrNull(parcel: Parcel, read: () -> T): T? {
                 return if (parcel.readByte() == 0.toByte())
@@ -220,8 +214,8 @@ data class CollectionInfo(
             return CollectionInfo(
                     HttpUrl.parse(parcel.readString())!!,
 
-                    readOrNull(parcel, { parcel.readLong() }),
-                    readOrNull(parcel, { parcel.readLong() }),
+                    readOrNull(parcel) { parcel.readLong() },
+                    readOrNull(parcel) { parcel.readLong() },
 
                     parcel.readString()?.let { Type.valueOf(it) },
 
@@ -229,7 +223,7 @@ data class CollectionInfo(
                     parcel.readByte() != 0.toByte(),
                     parcel.readString(),
                     parcel.readString(),
-                    readOrNull(parcel, { parcel.readInt() }),
+                    readOrNull(parcel) { parcel.readInt() },
 
                     parcel.readString(),
                     parcel.readByte() != 0.toByte(),

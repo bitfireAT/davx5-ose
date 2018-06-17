@@ -104,14 +104,14 @@ class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbac
                         .setTitle(R.string.login_configuration_detection)
                         .setIcon(R.drawable.ic_error_dark)
                         .setMessage(R.string.login_no_caldav_carddav)
-                        .setNeutralButton(R.string.login_view_logs, { _, _ ->
+                        .setNeutralButton(R.string.login_view_logs) { _, _ ->
                             val intent = Intent(activity, DebugInfoActivity::class.java)
                             intent.putExtra(DebugInfoActivity.KEY_LOGS, arguments!!.getString(KEY_LOGS))
                             startActivity(intent)
-                        })
-                        .setPositiveButton(android.R.string.ok, { _, _ ->
+                        }
+                        .setPositiveButton(android.R.string.ok) { _, _ ->
                             // dismiss
-                        })
+                        }
                         .create()!!
 
     }

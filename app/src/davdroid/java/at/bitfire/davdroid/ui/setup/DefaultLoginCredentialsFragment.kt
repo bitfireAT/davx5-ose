@@ -54,10 +54,10 @@ class DefaultLoginCredentialsFragment: Fragment(), CompoundButton.OnCheckedChang
 
         v.urlcert_select_cert.setOnClickListener {
             KeyChain.choosePrivateKeyAlias(activity, { alias ->
-                Handler(Looper.getMainLooper()).post({
+                Handler(Looper.getMainLooper()).post {
                     v.urlcert_cert_alias.text = alias
                     v.urlcert_cert_alias.error = null
-                })
+                }
             }, null, null, null, -1, view!!.urlcert_cert_alias.text.toString())
         }
 
@@ -125,10 +125,10 @@ class DefaultLoginCredentialsFragment: Fragment(), CompoundButton.OnCheckedChang
                 var valid = true
 
                 val baseUrl = Uri.parse(view.urlpwd_base_url.text.toString())
-                val uri = validateBaseUrl(baseUrl, false, { message ->
+                val uri = validateBaseUrl(baseUrl, false) { message ->
                     view.urlpwd_base_url.error = message
                     valid = false
-                })
+                }
 
                 val userName = view.urlpwd_user_name.text.toString()
                 if (userName.isBlank()) {
@@ -153,10 +153,10 @@ class DefaultLoginCredentialsFragment: Fragment(), CompoundButton.OnCheckedChang
                 var valid = true
 
                 val baseUrl = Uri.parse(view.urlcert_base_url.text.toString())
-                val uri = validateBaseUrl(baseUrl, true, { message ->
+                val uri = validateBaseUrl(baseUrl, true) { message ->
                     view.urlcert_base_url.error = message
                     valid = false
-                })
+                }
 
                 val alias = view.urlcert_cert_alias.text.toString()
                 if (alias.isEmpty()) {

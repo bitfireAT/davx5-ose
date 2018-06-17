@@ -110,16 +110,16 @@ class Settings: Service(), Provider.Observer {
     }
 
     fun getBoolean(key: String) =
-            getValue(key, { provider -> provider.getBoolean(key) })
+            getValue(key) { provider -> provider.getBoolean(key) }
 
     fun getInt(key: String) =
-            getValue(key, { provider -> provider.getInt(key) })
+            getValue(key) { provider -> provider.getInt(key) }
 
     fun getLong(key: String) =
-            getValue(key, { provider -> provider.getLong(key) })
+            getValue(key) { provider -> provider.getLong(key) }
 
     fun getString(key: String) =
-            getValue(key, { provider -> provider.getString(key) })
+            getValue(key) { provider -> provider.getString(key) }
 
 
     fun isWritable(key: String): Boolean {
@@ -152,16 +152,16 @@ class Settings: Service(), Provider.Observer {
     }
 
     fun putBoolean(key: String, value: Boolean?) =
-            putValue(key, value, { provider -> provider.putBoolean(key, value) })
+            putValue(key, value) { provider -> provider.putBoolean(key, value) }
 
     fun putInt(key: String, value: Int?) =
-            putValue(key, value, { provider -> provider.putInt(key, value) })
+            putValue(key, value) { provider -> provider.putInt(key, value) }
 
     fun putLong(key: String, value: Long?) =
-            putValue(key, value, { provider -> provider.putLong(key, value) })
+            putValue(key, value) { provider -> provider.putLong(key, value) }
 
     fun putString(key: String, value: String?) =
-            putValue(key, value, { provider -> provider.putString(key, value) })
+            putValue(key, value) { provider -> provider.putString(key, value) }
 
     fun remove(key: String): Boolean {
         var deleted = false

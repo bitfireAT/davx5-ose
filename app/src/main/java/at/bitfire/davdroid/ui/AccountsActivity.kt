@@ -50,9 +50,9 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener({
+        fab.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
-        })
+        }
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -121,9 +121,9 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         if (!ContentResolver.getMasterSyncAutomatically()) {
             val snackbar = Snackbar
                     .make(findViewById(R.id.coordinator), R.string.accounts_global_sync_disabled, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.accounts_global_sync_enable, {
-                            ContentResolver.setMasterSyncAutomatically(true)
-                        })
+                    .setAction(R.string.accounts_global_sync_enable) {
+                        ContentResolver.setMasterSyncAutomatically(true)
+                    }
             syncStatusSnackbar = snackbar
             snackbar.show()
         }

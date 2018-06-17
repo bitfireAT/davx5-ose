@@ -132,16 +132,16 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         .setIcon(R.drawable.ic_error_dark)
                         .setTitle(getString(R.string.startup_autostart_permission, StringUtils.capitalize(Build.MANUFACTURER)))
                         .setMessage(R.string.startup_autostart_permission_message)
-                        .setPositiveButton(R.string.startup_more_info, { _, _ ->
+                        .setPositiveButton(R.string.startup_more_info) { _, _ ->
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url)).buildUpon()
                                     .appendPath("faq").appendPath("automatic-synchronization-is-not-run-as-expected").build())
                             if (intent.resolveActivity(activity.packageManager) != null)
                                 activity.startActivity(intent)
-                        })
-                        .setNeutralButton(android.R.string.ok, { _, _ -> })
-                        .setNegativeButton(R.string.startup_dont_show_again, { _, _ ->
+                        }
+                        .setNeutralButton(android.R.string.ok) { _, _ -> }
+                        .setNegativeButton(R.string.startup_dont_show_again) { _, _ ->
                             settings?.putBoolean(HINT_AUTOSTART_PERMISSIONS, false)
-                        })
+                        }
                         .create()
 
             Mode.BATTERY_OPTIMIZATIONS ->
@@ -149,16 +149,16 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         .setIcon(R.drawable.ic_info_dark)
                         .setTitle(R.string.startup_battery_optimization)
                         .setMessage(R.string.startup_battery_optimization_message)
-                        .setPositiveButton(R.string.startup_battery_optimization_disable, @TargetApi(Build.VERSION_CODES.M) { _, _ ->
+                        .setPositiveButton(R.string.startup_battery_optimization_disable) @TargetApi(Build.VERSION_CODES.M) { _, _ ->
                             val intent = Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                                        Uri.parse("package:" + BuildConfig.APPLICATION_ID))
-                                if (intent.resolveActivity(activity.packageManager) != null)
-                                    activity.startActivity(intent)
-                            })
-                        .setNeutralButton(android.R.string.ok, { _, _ -> })
-                        .setNegativeButton(R.string.startup_dont_show_again, { _: DialogInterface, _: Int ->
+                                    Uri.parse("package:" + BuildConfig.APPLICATION_ID))
+                            if (intent.resolveActivity(activity.packageManager) != null)
+                                activity.startActivity(intent)
+                        }
+                        .setNeutralButton(android.R.string.ok) { _, _ -> }
+                        .setNegativeButton(R.string.startup_dont_show_again) { _: DialogInterface, _: Int ->
                             settings?.putBoolean(HINT_BATTERY_OPTIMIZATIONS, false)
-                        })
+                        }
                         .create()
 
             Mode.GOOGLE_PLAY_ACCOUNTS_REMOVED -> {
@@ -172,16 +172,16 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         .setIcon(icon)
                         .setTitle(R.string.startup_google_play_accounts_removed)
                         .setMessage(R.string.startup_google_play_accounts_removed_message)
-                        .setPositiveButton(R.string.startup_more_info, { _, _ ->
+                        .setPositiveButton(R.string.startup_more_info) { _, _ ->
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url)).buildUpon()
                                     .appendPath("faq").appendPath("accounts-gone-after-reboot-or-update").build())
                             if (intent.resolveActivity(activity.packageManager) != null)
                                 activity.startActivity(intent)
-                        })
-                        .setNeutralButton(android.R.string.ok, { _, _ -> })
-                        .setNegativeButton(R.string.startup_dont_show_again, { _, _ ->
+                        }
+                        .setNeutralButton(android.R.string.ok) { _, _ -> }
+                        .setNegativeButton(R.string.startup_dont_show_again) { _, _ ->
                             settings?.putBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, false)
-                        })
+                        }
                         .create()
             }
 
@@ -193,17 +193,17 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         .setIcon(R.drawable.ic_playlist_add_check_dark)
                         .setTitle(R.string.startup_opentasks_not_installed)
                         .setMessage(builder.toString())
-                        .setPositiveButton(R.string.startup_opentasks_not_installed_install, { _, _ ->
+                        .setPositiveButton(R.string.startup_opentasks_not_installed_install) { _, _ ->
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.dmfs.tasks"))
                             if (intent.resolveActivity(activity.packageManager) != null)
                                 activity.startActivity(intent)
                             else
                                 Logger.log.warning("No market app available, can't install OpenTasks")
-                        })
-                        .setNeutralButton(android.R.string.ok, { _, _ -> })
-                        .setNegativeButton(R.string.startup_dont_show_again, { _: DialogInterface, _: Int ->
+                        }
+                        .setNeutralButton(android.R.string.ok) { _, _ -> }
+                        .setNegativeButton(R.string.startup_dont_show_again) { _: DialogInterface, _: Int ->
                             settings?.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
-                        })
+                        }
                         .create()
             }
 
@@ -212,17 +212,17 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                             .setIcon(R.mipmap.ic_launcher)
                             .setTitle(R.string.startup_donate)
                             .setMessage(R.string.startup_donate_message)
-                            .setPositiveButton(R.string.startup_donate_now, { _, _ ->
+                            .setPositiveButton(R.string.startup_donate_now) { _, _ ->
                                 val uri = Uri.parse(getString(R.string.homepage_url))
                                         .buildUpon()
                                         .appendEncodedPath("donate/")
                                         .build()
                                 startActivity(Intent(Intent.ACTION_VIEW, uri))
                                 settings?.putLong(SETTING_NEXT_DONATION_POPUP, System.currentTimeMillis() + 30 * 86400000L) // 30 days
-                            })
-                            .setNegativeButton(R.string.startup_donate_later, { _, _ ->
+                            }
+                            .setNegativeButton(R.string.startup_donate_later) { _, _ ->
                                 settings?.putLong(SETTING_NEXT_DONATION_POPUP, System.currentTimeMillis() + 14 * 86400000L) // 14 days
-                            })
+                            }
                             .create()
 
         }

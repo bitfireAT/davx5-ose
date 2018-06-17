@@ -58,9 +58,9 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = inflater.inflate(R.layout.login_account_details, container, false)
 
-        v.back.setOnClickListener({ _ ->
+        v.back.setOnClickListener { _ ->
             requireFragmentManager().popBackStack()
-        })
+        }
 
         val args = requireNotNull(arguments)
         val config = args.getParcelable(KEY_CONFIG) as DavResourceFinder.Configuration
@@ -76,7 +76,7 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
                 v.contact_group_method.isEnabled = false
         }
 
-        v.create_account.setOnClickListener({ _ ->
+        v.create_account.setOnClickListener { _ ->
             val name = v.account_name.text.toString()
             if (name.isEmpty())
                 v.account_name.error = getString(R.string.login_account_name_required)
@@ -87,7 +87,7 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
                 } else
                     Snackbar.make(v, R.string.login_account_not_created, Snackbar.LENGTH_LONG).show()
             }
-        })
+        }
 
         loaderManager.initLoader(0, null, this)
 
