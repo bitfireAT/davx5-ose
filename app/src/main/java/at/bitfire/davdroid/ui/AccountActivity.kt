@@ -679,31 +679,29 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                                     ContentResolver.cancelSync(addrBookAccount, null)
 
                                 // update account name references in database
-                                OpenHelper(activity!!).use { dbHelper ->
+                                OpenHelper(requireActivity()).use { dbHelper ->
                                     ServiceDB.onRenameAccount(dbHelper.writableDatabase, oldAccount.name, newName)
                                 }
 
                                 // update main account of address book accounts
-                                try {
-                                    for (addrBookAccount in accountManager.getAccountsByType(getString(R.string.account_type_address_book))) {
-                                        val provider = activity!!.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
-                                        try {
-                                            if (provider != null) {
-                                                val addressBook = LocalAddressBook(activity!!, addrBookAccount, provider)
-                                                if (oldAccount == addressBook.mainAccount)
-                                                    addressBook.mainAccount = Account(newName, oldAccount.type)
-                                            }
-                                        } finally {
-                                            if (Build.VERSION.SDK_INT >= 24)
-                                                provider?.close()
-                                            else
-                                                provider?.release()
+                                if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED)
+                                    try {
+                                        requireActivity().contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.let { provider ->
+                                            for (addrBookAccount in accountManager.getAccountsByType(getString(R.string.account_type_address_book)))
+                                                try {
+                                                    val addressBook = LocalAddressBook(requireActivity(), addrBookAccount, provider)
+                                                    if (oldAccount == addressBook.mainAccount)
+                                                        addressBook.mainAccount = Account(newName, oldAccount.type)
+                                                } finally {
+                                                    if (Build.VERSION.SDK_INT >= 24)
+                                                        provider.close()
+                                                    else
+                                                        provider.release()
+                                                }
                                         }
-
+                                    } catch(e: Exception) {
+                                        Logger.log.log(Level.SEVERE, "Couldn't update address book accounts", e)
                                     }
-                                } catch(e: Exception) {
-                                    Logger.log.log(Level.SEVERE, "Couldn't update address book accounts", e)
-                                }
 
                                 // calendar provider doesn't allow changing account_name of Events
                                 // (all events will have to be downloaded again)

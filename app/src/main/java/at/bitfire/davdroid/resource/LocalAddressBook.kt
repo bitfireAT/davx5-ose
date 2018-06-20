@@ -119,20 +119,22 @@ class LocalAddressBook(
         get() {
             _mainAccount?.let { return it }
 
-            val accountManager = AccountManager.get(context)
-            val name = accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME)
-            val type = accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
-            if (name != null && type != null)
-                return Account(name, type)
-            else
-                throw IllegalStateException("Address book doesn't exist anymore")
+            AccountManager.get(context).let { accountManager ->
+                val name = accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME)
+                val type = accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
+                if (name != null && type != null)
+                    return Account(name, type)
+                else
+                    throw IllegalStateException("Address book doesn't exist anymore")
+            }
         }
-        set(account) {
-            val accountManager = AccountManager.get(context)
-            accountManager.setUserData(account, USER_DATA_MAIN_ACCOUNT_NAME, account.name)
-            accountManager.setUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE, account.type)
+        set(newMainAccount) {
+            AccountManager.get(context).let { accountManager ->
+                accountManager.setUserData(account, USER_DATA_MAIN_ACCOUNT_NAME, newMainAccount.name)
+                accountManager.setUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE, newMainAccount.type)
+            }
 
-            _mainAccount = account
+            _mainAccount = newMainAccount
         }
 
     var url: String
@@ -183,19 +185,9 @@ class LocalAddressBook(
 
         @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         if (account.name != newAccountName && Build.VERSION.SDK_INT >= 21) {
+            // no need to re-assign contacts to new account, because they will be deleted by contacts provider in any case
             val accountManager = AccountManager.get(context)
-            val future = accountManager.renameAccount(account, newAccountName, {
-                try {
-                    // update raw contacts to new account name
-                    provider?.let { provider ->
-                        val values = ContentValues(1)
-                        values.put(RawContacts.ACCOUNT_NAME, newAccountName)
-                        provider.update(syncAdapterURI(RawContacts.CONTENT_URI), values, "${RawContacts.ACCOUNT_NAME}=?", arrayOf(account.name))
-                    }
-                } catch (e: RemoteException) {
-                    Logger.log.log(Level.WARNING, "Couldn't re-assign contacts to new account name", e)
-                }
-            }, null)
+            val future = accountManager.renameAccount(account, newAccountName, null, null)
             account = future.result
         }
 
