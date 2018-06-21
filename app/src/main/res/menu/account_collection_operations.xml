@@ -16,4 +16,7 @@
     <item android:id="@+id/delete_collection"
           android:title="@string/delete_collection"/>
 
+    <item android:id="@+id/properties"
+        android:title="@string/collection_properties"/>
+
 </menu>

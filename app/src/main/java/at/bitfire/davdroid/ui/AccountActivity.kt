@@ -253,6 +253,8 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                 }
                 R.id.delete_collection ->
                     DeleteCollectionFragment.ConfirmDeleteCollectionFragment.newInstance(account, info).show(supportFragmentManager, null)
+                R.id.properties ->
+                    CollectionInfoFragment.newInstance(info).show(supportFragmentManager, null)
             }
             true
         }
