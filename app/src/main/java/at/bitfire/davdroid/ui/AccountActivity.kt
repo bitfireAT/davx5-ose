@@ -45,6 +45,7 @@ import at.bitfire.ical4android.TaskProvider
 import kotlinx.android.synthetic.main.account_caldav_item.view.*
 import kotlinx.android.synthetic.main.activity_account.*
 import java.util.*
+import java.util.concurrent.Executors
 import java.util.logging.Level
 
 class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, PopupMenu.OnMenuItemClickListener, LoaderManager.LoaderCallbacks<AccountActivity.AccountInfo> {
@@ -71,6 +72,8 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
     lateinit var account: Account
     private var accountInfo: AccountInfo? = null
+
+    private val dbExecutor = Executors.newSingleThreadExecutor()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,6 +108,11 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
         // load CardDAV/CalDAV collections
         loaderManager.initLoader(0, null, this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        dbExecutor.shutdown()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -193,20 +201,24 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         val info = adapter.getItem(position)
         val nowChecked = !info.selected
 
-        OpenHelper(this).use { dbHelper ->
-            val db = dbHelper.writableDatabase
-            db.beginTransactionNonExclusive()
+        dbExecutor.execute {
+            OpenHelper(this).use { dbHelper ->
+                val db = dbHelper.writableDatabase
+                db.beginTransactionNonExclusive()
 
-            val values = ContentValues(1)
-            values.put(Collections.SYNC, if (nowChecked) 1 else 0)
-            db.update(Collections._TABLE, values, "${Collections.ID}=?", arrayOf(info.id.toString()))
+                val values = ContentValues(1)
+                values.put(Collections.SYNC, if (nowChecked) 1 else 0)
+                db.update(Collections._TABLE, values, "${Collections.ID}=?", arrayOf(info.id.toString()))
 
-            db.setTransactionSuccessful()
-            db.endTransaction()
+                db.setTransactionSuccessful()
+                db.endTransaction()
+            }
+
+            info.selected = nowChecked
+            runOnUiThread {
+                adapter.notifyDataSetChanged()
+            }
         }
-
-        info.selected = nowChecked
-        adapter.notifyDataSetChanged()
     }
 
     private val onActionOverflowListener = { anchor: View, info: CollectionInfo ->
@@ -224,17 +236,19 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             when (item.itemId) {
                 R.id.force_read_only -> {
                     val nowChecked = !item.isChecked
-                    OpenHelper(this).use { dbHelper ->
-                        val db = dbHelper.writableDatabase
-                        db.beginTransactionNonExclusive()
+                    dbExecutor.execute {
+                        OpenHelper(this).use { dbHelper ->
+                            val db = dbHelper.writableDatabase
+                            db.beginTransactionNonExclusive()
 
-                        val values = ContentValues(1)
-                        values.put(Collections.FORCE_READ_ONLY, nowChecked)
-                        db.update(Collections._TABLE, values, "${Collections.ID}=?", arrayOf(info.id.toString()))
+                            val values = ContentValues(1)
+                            values.put(Collections.FORCE_READ_ONLY, nowChecked)
+                            db.update(Collections._TABLE, values, "${Collections.ID}=?", arrayOf(info.id.toString()))
 
-                        db.setTransactionSuccessful()
-                        db.endTransaction()
-                        reload()
+                            db.setTransactionSuccessful()
+                            db.endTransaction()
+                            reload()
+                        }
                     }
                 }
                 R.id.delete_collection ->
