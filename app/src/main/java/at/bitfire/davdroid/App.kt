@@ -15,6 +15,7 @@ import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
+import android.os.StrictMode
 import android.support.v7.app.AppCompatDelegate
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -66,6 +67,23 @@ class App: Application() {
     override fun onCreate() {
         super.onCreate()
         Logger.initialize(this)
+
+        if (BuildConfig.DEBUG) {
+            StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder()
+                    .detectActivityLeaks()
+                    .detectFileUriExposure()
+                    .detectLeakedClosableObjects()
+                    .detectLeakedRegistrationObjects()
+                    .detectLeakedSqlLiteObjects()
+                    .penaltyLog()
+                    .build())
+
+            // main thread
+            StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build())
+        }
 
         if (Build.VERSION.SDK_INT <= 21)
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
