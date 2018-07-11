@@ -11,7 +11,7 @@ package at.bitfire.davdroid.model
 import android.content.ContentValues
 import android.os.Parcel
 import android.os.Parcelable
-import at.bitfire.dav4android.DavResponse
+import at.bitfire.dav4android.Response
 import at.bitfire.dav4android.UrlUtils
 import at.bitfire.dav4android.property.*
 import at.bitfire.davdroid.model.ServiceDB.Collections
@@ -58,7 +58,7 @@ data class CollectionInfo(
         WEBCAL          // iCalendar subscription
     }
 
-    constructor(dav: DavResponse): this(UrlUtils.withTrailingSlash(dav.url)) {
+    constructor(dav: Response): this(UrlUtils.withTrailingSlash(dav.href)) {
         dav[ResourceType::class.java]?.let { type ->
             when {
                 type.types.contains(ResourceType.ADDRESSBOOK) -> this.type = Type.ADDRESS_BOOK

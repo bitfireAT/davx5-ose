@@ -45,8 +45,8 @@ data class SyncState(
             }
         }
 
-        fun fromSyncToken(token: SyncToken) =
-                token.token?.let { SyncState(Type.SYNC_TOKEN, it) }
+        fun fromSyncToken(token: SyncToken, initialSync: Boolean? = null) =
+                SyncState(Type.SYNC_TOKEN, requireNotNull(token.token), initialSync)
 
     }
 

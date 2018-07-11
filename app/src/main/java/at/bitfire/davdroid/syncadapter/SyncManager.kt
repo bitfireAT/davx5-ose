@@ -10,10 +10,7 @@ package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
 import android.app.PendingIntent
-import android.content.ContentUris
-import android.content.Context
-import android.content.Intent
-import android.content.SyncResult
+import android.content.*
 import android.net.Uri
 import android.os.Bundle
 import android.os.RemoteException
@@ -21,16 +18,13 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
-import at.bitfire.dav4android.DavResponse
-import at.bitfire.dav4android.Property
-import at.bitfire.dav4android.XmlUtils
-import at.bitfire.dav4android.exception.DavException
-import at.bitfire.dav4android.exception.HttpException
-import at.bitfire.dav4android.exception.ServiceUnavailableException
-import at.bitfire.dav4android.exception.UnauthorizedException
-import at.bitfire.davdroid.AccountSettings
+import at.bitfire.dav4android.*
+import at.bitfire.dav4android.exception.*
+import at.bitfire.dav4android.property.GetCTag
+import at.bitfire.dav4android.property.GetETag
+import at.bitfire.dav4android.property.SyncToken
+import at.bitfire.davdroid.*
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.SyncState
@@ -40,19 +34,23 @@ import at.bitfire.davdroid.ui.AccountSettingsActivity
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.ical4android.CalendarStorageException
-import at.bitfire.ical4android.MiscUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.ContactsStorageException
 import okhttp3.HttpUrl
+import okhttp3.RequestBody
 import org.dmfs.tasks.contract.TaskContract
 import java.io.IOException
 import java.io.InterruptedIOException
+import java.net.HttpURLConnection
 import java.security.cert.CertificateException
 import java.util.*
+import java.util.concurrent.*
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import javax.net.ssl.SSLHandshakeException
 
-abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>>(
+@Suppress("MemberVisibilityCanBePrivate")
+abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
         val context: Context,
         val settings: ISettings,
         val account: Account,
@@ -63,7 +61,16 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
         val localCollection: CollectionType
 ): AutoCloseable {
 
+    enum class SyncAlgorithm {
+        PROPFIND_REPORT,
+        COLLECTION_SYNC
+    }
+
     companion object {
+
+        val MAX_PROCESSING_THREADS = Math.max(Runtime.getRuntime().availableProcessors(), 4)
+        val MAX_DOWNLOAD_THREADS = Math.max(Runtime.getRuntime().availableProcessors(), 4)
+        const val MAX_MULTIGET_RESOURCES = 10
 
         fun cancelNotifications(manager: NotificationManagerCompat, authority: String, account: Account) =
                 manager.cancel(notificationTag(authority, account), NotificationUtils.NOTIFY_SYNC_ERROR)
@@ -81,21 +88,27 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
     protected val notificationManager = NotificationManagerCompat.from(context)
     protected val notificationTag = notificationTag(authority, mainAccount)
 
-    /** Local resource we're currently operating on. Used for error notifications. **/
-    protected val currentLocalResource = LinkedList<LocalResource<*>>()
-    /** Remote resource we're currently operating on. Used for error notifications. **/
-    protected val currentRemoteResource = LinkedList<HttpUrl>()
+    protected val httpClient = HttpClient.Builder(context, settings, accountSettings).build()
+
+    protected lateinit var collectionURL: HttpUrl
+    protected lateinit var davCollection: RemoteType
+
+    protected var hasCollectionSync = false
+
+    override fun close() {
+        httpClient.close()
+    }
 
 
     fun performSync() {
         // dismiss previous error notifications
         notificationManager.cancel(notificationTag, NotificationUtils.NOTIFY_SYNC_ERROR)
 
-        try {
+        unwrapExceptions({
             Logger.log.info("Preparing synchronization")
             if (!prepare()) {
                 Logger.log.info("No reason to synchronize, aborting")
-                return
+                return@unwrapExceptions
             }
             abortIfCancelled()
 
@@ -104,8 +117,7 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
             abortIfCancelled()
 
             Logger.log.info("Sending local deletes/updates to server")
-            val modificationsSent =
-                    processLocallyDeleted() ||
+            val modificationsSent = processLocallyDeleted() ||
                     uploadDirty()
             abortIfCancelled()
 
@@ -119,19 +131,14 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
                         if (modificationsSent)
                             remoteSyncState = querySyncState()
 
-                        // list all entries at current sync state (which may be the same as or newer than remoteSyncState)
-                        Logger.log.info("Listing remote entries")
-                        val remote = listAllRemote()
-                        abortIfCancelled()
-
-                        Logger.log.info("Comparing local/remote entries")
-                        val changes = compareLocalRemote(remote)
-
-                        Logger.log.info("Processing remote changes")
-                        processRemoteChanges(changes)
+                        // list and process all entries at current sync state (which may be the same as or newer than remoteSyncState)
+                        Logger.log.info("Processing remote entries")
+                        syncRemote { callback ->
+                            listAllRemote(callback)
+                        }
 
                         Logger.log.info("Deleting entries which are not present remotely anymore")
-                        deleteNotPresentRemotely()
+                        syncResult.stats.numDeletes += deleteNotPresentRemotely()
 
                         Logger.log.info("Post-processing")
                         postProcess()
@@ -147,50 +154,41 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
                             Logger.log.info("Starting initial sync")
                             initialSync = true
                             resetPresentRemotely()
-                        }
-
-                        Logger.log.info("Listing changes since $syncState")
-                        var changes: RemoteChanges? = try {
-                            listRemoteChanges(syncState)
-                        } catch(e: HttpException) {
-                            if (e.errors.contains(Property.Name(XmlUtils.NS_WEBDAV, "valid-sync-token"))) {
-                                Logger.log.info("Sync token invalid, retrying from scratch without sync-token")
-                                syncState = null
-                                initialSync = true
-                                resetPresentRemotely()
-
-                                listRemoteChanges(null)
-                            } else
-                                throw e
-                        }
-
-                        if (syncState?.initialSync == true) {
+                        } else if (syncState.initialSync == true) {
                             Logger.log.info("Continuing initial sync")
                             initialSync = true
                         }
 
-                        while (changes != null) {
-                            Logger.log.info("Processing received changes")
-                            processRemoteChanges(changes)
+                        var furtherChanges = false
+                        do {
+                            Logger.log.info("Listing changes since $syncState")
+                            syncRemote { callback ->
+                                try {
+                                    val result = listRemoteChanges(syncState, callback)
+                                    syncState = SyncState.fromSyncToken(result.first, initialSync)
+                                    furtherChanges = result.second
+                                } catch(e: HttpException) {
+                                    if (e.errors.any { it.name == Property.Name(XmlUtils.NS_WEBDAV, "valid-sync-token") }) {
+                                        Logger.log.info("Sync token invalid, performing initial sync")
+                                        initialSync = true
+                                        resetPresentRemotely()
 
-                            // save sync state and keep whether we're in initial sync
-                            syncState = changes.state ?: throw DavException("Received sync-collection without sync-token")
-                            syncState.initialSync = initialSync
-                            Logger.log.log(Level.INFO, "Saving sync state", syncState)
-                            localCollection.lastSyncState = syncState
+                                        val result = listRemoteChanges(null, callback)
+                                        syncState = SyncState.fromSyncToken(result.first, initialSync)
+                                        furtherChanges = result.second
+                                    } else
+                                        throw e
+                                }
 
-                            // request next bunch of changes (if available), or exit loop
-                            changes = if (changes.furtherChanges)
-                                listRemoteChanges(syncState)
-                            else {
-                                Logger.log.info("No more changes available on server")
-                                null
+                                Logger.log.log(Level.INFO, "Saving sync state", syncState)
+                                localCollection.lastSyncState = syncState
                             }
-                        }
+
+                            Logger.log.info("Server has further changes: $furtherChanges")
+                        } while(furtherChanges)
 
                         if (initialSync) {
-                            // initial sync is finished, remove all local resources which have
-                            // not been sent by the server
+                            // initial sync is finished, remove all local resources which have not been listed by server
                             Logger.log.info("Deleting local resources which are not on server (anymore)")
                             deleteNotPresentRemotely()
 
@@ -207,31 +205,36 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
             else
                 Logger.log.info("Remote collection didn't change, no reason to sync")
 
-        }
-        // sync was cancelled: re-throw to SyncAdapterService
-        catch (e: InterruptedException) { throw e }
-        catch (e: InterruptedIOException) { throw e }
+        }, { e, local, remote ->
+            when (e) {
+                // sync was cancelled: re-throw to SyncAdapterService
+                is InterruptedException,
+                is InterruptedIOException ->
+                    throw e
 
-        // specific I/O errors
-        catch (e: SSLHandshakeException) {
-            Logger.log.log(Level.WARNING, "SSL handshake failed", e)
+                // specific I/O errors
+                is SSLHandshakeException -> {
+                    Logger.log.log(Level.WARNING, "SSL handshake failed", e)
 
-            // when a certificate is rejected by cert4android, the cause will be a CertificateException
-            if (!BuildConfig.customCerts || e.cause !is CertificateException)
-                notifyException(e)
-        }
+                    // when a certificate is rejected by cert4android, the cause will be a CertificateException
+                    if (!BuildConfig.customCerts || e.cause !is CertificateException)
+                        notifyException(e, local, remote)
+                }
 
-        // specific HTTP errors
-        catch (e: ServiceUnavailableException) {
-            Logger.log.log(Level.WARNING, "Got 503 Service unavailable, trying again later", e)
-            e.retryAfter?.let { retryAfter ->
-                // how many seconds to wait? getTime() returns ms, so divide by 1000
-                syncResult.delayUntil = (retryAfter.time - Date().time) / 1000
+                // specific HTTP errors
+                is ServiceUnavailableException -> {
+                    Logger.log.log(Level.WARNING, "Got 503 Service unavailable, trying again later", e)
+                    e.retryAfter?.let { retryAfter ->
+                        // how many seconds to wait? getTime() returns ms, so divide by 1000
+                        syncResult.delayUntil = (retryAfter.time - Date().time) / 1000
+                    }
+                }
+
+                // all others
+                else ->
+                    notifyException(e, local, remote)
             }
-        }
-
-        // all others
-        catch (e: Throwable) { notifyException(e) }
+        })
     }
 
 
@@ -248,41 +251,135 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
     protected abstract fun queryCapabilities(): SyncState?
 
     /**
-     * Queries the remote sync state of the collection.
+     * Processes locally deleted entries and forwards them to the server (HTTP `DELETE`).
      *
-     * @return sync state (may be null)
+     * @return whether resources have been deleted from the server
      */
-    protected abstract fun querySyncState(): SyncState?
+    protected open fun processLocallyDeleted(): Boolean {
+        var numDeleted = 0
+
+        // Remove locally deleted entries from server (if they have a name, i.e. if they were uploaded before),
+        // but only if they don't have changed on the server. Then finally remove them from the local address book.
+        val localList = localCollection.findDeleted()
+        for (local in localList) {
+            abortIfCancelled()
+            useLocal(local) {
+                val fileName = local.fileName
+                if (fileName != null) {
+                    Logger.log.info("$fileName has been deleted locally -> deleting from server (ETag ${local.eTag})")
+
+                    useRemote(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build())) { remote ->
+                        try {
+                            remote.delete(local.eTag) {}
+                            numDeleted++
+                        } catch (e: HttpException) {
+                            Logger.log.warning("Couldn't delete $fileName from server; ignoring (may be downloaded again)")
+                        }
+                    }
+                } else
+                    Logger.log.info("Removing local record #${local.id} which has been deleted locally and was never uploaded")
+                local.delete()
+                syncResult.stats.numDeletes++
+            }
+        }
+        Logger.log.info("Removed $numDeleted record(s) from server")
+        return numDeleted > 0
+    }
 
     /**
-     * Forwards local deletions to the server.
-     *
-     * @return whether remote resources have been deleted
-     */
-    protected abstract fun processLocallyDeleted(): Boolean
-
-    /**
-     * Uploads locally modified resources to the server.
+     * Uploads locally modified resources to the server (HTTP `PUT`).
      *
      * @return whether resources have been uploaded
      */
-    protected abstract fun uploadDirty(): Boolean
+    protected open fun uploadDirty(): Boolean {
+        var numUploaded = 0
+
+        // upload dirty contacts
+        for (local in localCollection.findDirty())
+            useLocal(local) {
+                abortIfCancelled()
+
+                if (local.fileName == null) {
+                    Logger.log.fine("Generating file name/UID for local record #${local.id}")
+                    local.assignNameAndUID()
+                }
+
+                val fileName = local.fileName!!
+                useRemote(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build())) { remote ->
+                    // generate entity to upload (VCard, iCal, whatever)
+                    val body = prepareUpload(local)
+
+                    var eTag: String? = null
+                    val processETag: (response: okhttp3.Response) -> Unit = {
+                        it.header("ETag")?.let {
+                            eTag = GetETag(it).eTag
+                        }
+                    }
+                    try {
+                        if (local.eTag == null) {
+                            Logger.log.info("Uploading new record $fileName")
+                            remote.put(body, null, true, processETag)
+                        } else {
+                            Logger.log.info("Uploading locally modified record $fileName")
+                            remote.put(body, local.eTag, false, processETag)
+                        }
+                        numUploaded++
+                    } catch(e: ConflictException) {
+                        // we can't interact with the user to resolve the conflict, so we treat 409 like 412
+                        Logger.log.log(Level.INFO, "Edit conflict, ignoring", e)
+                    } catch(e: PreconditionFailedException) {
+                        Logger.log.log(Level.INFO, "Resource has been modified on the server before upload, ignoring", e)
+                    }
+
+                    if (eTag != null)
+                        Logger.log.fine("Received new ETag=$eTag after uploading")
+                    else
+                        Logger.log.fine("Didn't receive new ETag after uploading, setting to null")
+
+                    local.clearDirty(eTag)
+                }
+            }
+        Logger.log.info("Sent $numUploaded record(s) to server")
+        return numUploaded > 0
+    }
+
+    protected abstract fun prepareUpload(resource: ResourceType): RequestBody
 
     /**
      * Determines whether a sync is required because there were changes on the server.
-     * For instance, this method can compare the collection's CTag/sync-token with
+     * For instance, this method can compare the collection's `CTag`/`sync-token` with
      * the last known local value.
      *
      * When local changes have been uploaded ([processLocallyDeleted] and/or
      * [uploadDirty] were true), a sync is always required and this method
-     * should not be evaluated.
+     * should *not* be evaluated.
      *
      * @param state remote sync state to compare local sync state with
      *
-     * @return whether data has been changed on the server = whether running the
-     *   sync algorithm is required
+     * @return whether data has been changed on the server, i.e. whether running the
+     * sync algorithm is required
      */
-    protected abstract fun syncRequired(state: SyncState?): Boolean
+    protected open fun syncRequired(state: SyncState?): Boolean {
+        if (syncAlgorithm() == SyncAlgorithm.PROPFIND_REPORT && extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL)) {
+            Logger.log.info("Manual sync in PROPFIND/REPORT mode, forcing sync")
+            return true
+        }
+
+        val localState = localCollection.lastSyncState
+        Logger.log.info("Local sync state = $localState, remote sync state = $state")
+        return when {
+            state?.type == SyncState.Type.SYNC_TOKEN -> {
+                val lastKnownToken = localState?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }?.value
+                lastKnownToken != state.value
+            }
+            state?.type == SyncState.Type.CTAG -> {
+                val lastKnownCTag = localState?.takeIf { it.type == SyncState.Type.CTAG }?.value
+                lastKnownCTag != state.value
+            }
+            else ->
+                true
+        }
+    }
 
     /**
      * Determines which sync algorithm to use.
@@ -300,57 +397,161 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
      *
      * Used together with [deleteNotPresentRemotely].
      */
-    protected abstract fun resetPresentRemotely()
+    protected open fun resetPresentRemotely() {
+        val number = localCollection.markNotDirty(0)
+        Logger.log.info("Number of local non-dirty entries: $number")
+    }
 
-    /**
-     * Lists all remote resources which should be taken into account for synchronization.
-     * Will be used if incremental synchronization is not available.
-     *
-     * @return map with resource names (like "mycontact.vcf") as keys and the resources
-     */
-    protected abstract fun listAllRemote(): Map<String, DavResponse>
+    protected open fun syncRemote(listRemote: (DavResponseCallback) -> Unit) {
+        // results must be processed in main thread because exceptions must be thrown in main
+        // thread, so that they can be catched by SyncManager
+        val results = ConcurrentLinkedQueue<Future<*>>()
 
+        // thread-safe sync stats
+        val nInserted = AtomicInteger()
+        val nUpdated = AtomicInteger()
+        val nDeleted = AtomicInteger()
+        val nSkipped = AtomicInteger()
 
-    /**
-     * Compares local resources which are marked for synchronization and remote resources by file name and ETag.
-     * Remote resources
-     *   + which are not present locally
-     *   + whose ETag has changed since the last sync (i.e. remote ETag != locally known last remote ETag)
-     * will be saved as "updated" in the result.
-     *
-     * Must mark all found remote resources as "present remotely", so that a later execution of
-     * [deleteNotPresentRemotely] doesn't (locally) delete any currently available remote resources.
-     *
-     * @param remoteResources map of remote resource names and resources
-     *
-     * @return List of updated resources on the server. The "deleted" list remains empty. Sync
-     *         state will be null.
-     */
-    protected abstract fun compareLocalRemote(remoteResources: Map<String, DavResponse>): RemoteChanges
+        // download queue
+        val toDownload = LinkedBlockingQueue<HttpUrl>()
 
-    /**
-     * Lists remote changes (incremental sync).
-     *
-     * Must mark all found remote resources as "present remotely", so that a later execution of
-     * [deleteNotPresentRemotely] doesn't (locally) delete any currently available remote resources.
-     *
-     * @return list of of remote changes together with the sync state after those changes
-     */
-    protected abstract fun listRemoteChanges(state: SyncState?): RemoteChanges
+        // tasks from this executor create the download tasks (if necessary)
+        val processor = ThreadPoolExecutor(1, MAX_PROCESSING_THREADS,
+                10, TimeUnit.SECONDS,
+                LinkedBlockingQueue(MAX_PROCESSING_THREADS),  // accept up to MAX_PROCESSING_THREADS processing tasks
+                ThreadPoolExecutor.CallerRunsPolicy()         // if the queue is full, run task in submitting thread
+        )
 
-    /**
-     * Processes remote changes:
-     *   + downloads and locally saves remotely updated resources
-     *   + locally deletes remotely deleted resources
-     *
-     * Should call [abortIfCancelled] from time to time, for instance
-     * after downloading a resource.
-     *
-     * Must mark downloaded resources as present on server.
-     *
-     * @param changes list of remotely updated and deleted resources
-     */
-    protected abstract fun processRemoteChanges(changes: RemoteChanges)
+        // this executor runs the actual download tasks
+        val downloader = ThreadPoolExecutor(0, MAX_DOWNLOAD_THREADS,
+                10, TimeUnit.SECONDS,
+                LinkedBlockingQueue(MAX_DOWNLOAD_THREADS),  // accept up to MAX_DOWNLOAD_THREADS download tasks
+                ThreadPoolExecutor.CallerRunsPolicy()       // if the queue is full, run task in submitting thread
+        )
+        fun downloadBunch() {
+            val bunch = LinkedList<HttpUrl>()
+            toDownload.drainTo(bunch, MAX_MULTIGET_RESOURCES)
+            results += downloader.submit {
+                downloadRemote(bunch)
+            }
+        }
+
+        listRemote { response, relation ->
+            // ignore non-members
+            if (relation != Response.HrefRelation.MEMBER)
+                return@listRemote
+
+            // ignore collections
+            if (response[at.bitfire.dav4android.property.ResourceType::class.java]?.types?.contains(at.bitfire.dav4android.property.ResourceType.COLLECTION) == true)
+                return@listRemote
+
+            val name = response.hrefName()
+
+            if (response.isSuccess()) {
+                Logger.log.fine("Found remote resource: $name")
+
+                results += processor.submit {
+                    useLocal(localCollection.findByName(name)) { local ->
+                        if (local == null) {
+                            Logger.log.info("$name has been added remotely")
+                            toDownload += response.href
+                            nInserted.incrementAndGet()
+                        } else {
+                            val localETag = local.eTag
+                            val remoteETag = response[GetETag::class.java]?.eTag ?: throw DavException("Server didn't provide ETag")
+                            if (localETag == remoteETag) {
+                                Logger.log.info("$name has not been changed on server (ETag still $remoteETag)")
+                                nSkipped.incrementAndGet()
+                            } else {
+                                Logger.log.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
+                                toDownload += response.href
+                                nUpdated.incrementAndGet()
+                            }
+
+                            // mark as remotely present, so that this resource won't be deleted at the end
+                            local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
+                        }
+                    }
+
+                    synchronized(processor) {
+                        if (toDownload.size >= MAX_MULTIGET_RESOURCES)
+                            // download another bunch of MAX_MULTIGET_RESOURCES resources
+                            downloadBunch()
+                    }
+                }
+
+            } else if (response.status?.code == HttpURLConnection.HTTP_NOT_FOUND) {
+                // collection sync: resource has been deleted on remote server
+                results += processor.submit {
+                    useLocal(localCollection.findByName(name)) { local ->
+                        Logger.log.info("$name has been deleted on server, deleting locally")
+                        local?.delete()
+                        nDeleted.incrementAndGet()
+                    }
+                }
+            }
+
+            // check already available results for exceptions so that they don't become too many
+            checkResults(results)
+        }
+
+        // process remaining responses
+        processor.shutdown()
+        processor.awaitTermination(5, TimeUnit.MINUTES)
+
+        // download remaining resources
+        if (toDownload.isNotEmpty())
+            downloadBunch()
+
+        // signal end of queue and wait for download thread
+        downloader.shutdown()
+        downloader.awaitTermination(5, TimeUnit.MINUTES)
+
+        // check remaining results for exceptions
+        checkResults(results)
+
+        // update sync stats
+        with(syncResult.stats) {
+            numInserts += nInserted.get()
+            numUpdates += nUpdated.get()
+            numDeletes += nDeleted.get()
+            numSkippedEntries += nSkipped.get()
+        }
+    }
+
+    protected abstract fun listAllRemote(callback: DavResponseCallback)
+
+    protected open fun listRemoteChanges(syncState: SyncState?, callback: DavResponseCallback): Pair<SyncToken, Boolean> {
+        var furtherResults = false
+
+        val report = davCollection.reportChanges(
+                syncState?.takeIf { syncState.type == SyncState.Type.SYNC_TOKEN }?.value,
+                false, null,
+                GetETag.NAME) { response, relation ->
+            when (relation) {
+                Response.HrefRelation.SELF ->
+                    furtherResults = response.status?.code == 507
+
+                Response.HrefRelation.MEMBER ->
+                    callback(response, relation)
+
+                else ->
+                    Logger.log.fine("Unexpected sync-collection response: $response")
+            }
+        }
+
+        var syncToken: SyncToken? = null
+        report.filterIsInstance(SyncToken::class.java).firstOrNull()?.let {
+            syncToken = it
+        }
+        if (syncToken == null)
+            throw DavException("Received sync-collection response without sync-token")
+
+        return Pair(syncToken!!, furtherResults)
+    }
+
+    protected abstract fun downloadRemote(bunch: List<HttpUrl>)
 
     /**
      * Locally deletes entries which are
@@ -360,13 +561,19 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
      * Used together with [resetPresentRemotely] when a full listing has been received from
      * the server to locally delete resources which are not present remotely (anymore).
      */
-    protected abstract fun deleteNotPresentRemotely()
+    protected open fun deleteNotPresentRemotely(): Int {
+        val removed = localCollection.removeNotDirtyMarked(0)
+        Logger.log.info("Removed $removed local resources which are not present on the server anymore")
+        return removed
+    }
 
     /**
      * Post-processing of synchronized entries, for instance contact group membership operations.
      */
     protected abstract fun postProcess()
 
+
+    // sync helpers
 
     /**
      * Throws an [InterruptedException] if the current thread has been interrupted,
@@ -379,7 +586,27 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
             throw InterruptedException("Sync was cancelled")
     }
 
-    private fun notifyException(e: Throwable) {
+    protected fun syncState(dav: Response) =
+            dav[SyncToken::class.java]?.token?.let {
+                SyncState(SyncState.Type.SYNC_TOKEN, it)
+            } ?:
+            dav[GetCTag::class.java]?.cTag?.let {
+                SyncState(SyncState.Type.CTAG, it)
+            }
+
+    private fun querySyncState(): SyncState? {
+        var state: SyncState? = null
+        davCollection.propfind(0, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+            if (relation == Response.HrefRelation.SELF)
+                state = syncState(response)
+        }
+        return state
+    }
+
+
+    // exception helpers
+
+    private fun notifyException(e: Throwable, local: ResourceType?, remote: HttpUrl?) {
         val message: String
 
         when (e) {
@@ -423,16 +650,15 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
             contentIntent.putExtra(DebugInfoActivity.KEY_AUTHORITY, authority)
 
             // use current local/remote resource
-            currentLocalResource.firstOrNull()?.let { local ->
+            if (local != null) {
                 // pass local resource info to debug info
                 contentIntent.putExtra(DebugInfoActivity.KEY_LOCAL_RESOURCE, local.toString())
 
                 // generate "view item" action
                 viewItemAction = buildViewItemAction(local)
             }
-            currentRemoteResource.firstOrNull()?.let { remote ->
+            if (remote != null)
                 contentIntent.putExtra(DebugInfoActivity.KEY_REMOTE_RESOURCE, remote.toString())
-            }
         }
 
         // to make the PendingIntent unique
@@ -490,7 +716,7 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
                 PendingIntent.getService(context, 0, retryIntent, PendingIntent.FLAG_UPDATE_CURRENT))
     }
 
-    private fun buildViewItemAction(local: LocalResource<*>): NotificationCompat.Action? {
+    private fun buildViewItemAction(local: ResourceType): NotificationCompat.Action? {
         Logger.log.log(Level.FINE, "Adding view action for local resource", local)
         val intent = local.id?.let { id ->
             when (local) {
@@ -511,20 +737,78 @@ abstract class SyncManager<out ResourceType: LocalResource<*>, out CollectionTyp
             null
     }
 
-
-    enum class SyncAlgorithm {
-        PROPFIND_REPORT,
-        COLLECTION_SYNC
+    fun checkResults(results: MutableCollection<Future<*>>) {
+        val iter = results.iterator()
+        while (iter.hasNext()) {
+            val result = iter.next()
+            if (result.isDone) {
+                try {
+                    result.get()
+                } catch(e: ExecutionException) {
+                    throw e.cause!!
+                }
+                iter.remove()
+            }
+        }
     }
 
-    class RemoteChanges(
-        val state: SyncState?,
-        val furtherChanges: Boolean
-    ) {
-        val deleted = LinkedList<String>()
-        val updated = LinkedList<DavResponse>()
-
-        override fun toString() = MiscUtils.reflectionToString(this)
+    protected fun<T: ResourceType?, R> useLocal(local: T, body: (T) -> R): R {
+        try {
+            return body(local)
+        } catch(e: Throwable) {
+            if (local != null)
+                throw ExceptionInfo(e, local)
+            else
+                throw e
+        }
     }
+
+    protected fun<T: DavResource, R> useRemote(remote: T, body: (T) -> R): R {
+        try {
+            return body(remote)
+        } catch(e: Throwable) {
+            throw ExceptionInfo(e, remote.location)
+        }
+    }
+
+    protected fun<T> useRemote(remote: Response, body: (Response) -> T): T {
+        try {
+            return body(remote)
+        } catch (e: Throwable) {
+            throw ExceptionInfo(e, remote.href)
+        }
+    }
+
+    protected fun<R> useRemoteCollection(body: (RemoteType) -> R) =
+            useRemote(davCollection, body)
+
+    private fun unwrapExceptions(body: () -> Unit, handler: (e: Throwable, local: ResourceType?, remote: HttpUrl?) -> Unit) {
+        var ex: Throwable? = null
+        try {
+            body()
+        } catch(e: Throwable) {
+            ex = e
+        }
+
+        var local: ResourceType? = null
+        var remote: HttpUrl? = null
+
+        while (ex is ExceptionInfo) {
+            @Suppress("UNCHECKED_CAST")
+            (ex.context as? ResourceType)?.let {
+                if (local == null)
+                    local = it
+            }
+            (ex.context as? HttpUrl)?.let {
+                if (remote == null)
+                    remote = it
+            }
+            ex = ex.exception
+        }
+
+        if (ex != null)
+            handler(ex, local, remote)
+    }
+
 
 }
