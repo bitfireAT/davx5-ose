@@ -192,7 +192,7 @@ class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
                         val collection = DavResource(httpClient.okHttpClient, info.url)
 
                         // create collection on remote server
-                        collection.mkCol(writer.toString())
+                        collection.mkCol(writer.toString()) {}
 
                         // now insert collection into database:
                         ServiceDB.OpenHelper(context).use { dbHelper ->

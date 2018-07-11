@@ -13,6 +13,7 @@ import android.accounts.AccountManager
 import android.content.*
 import android.content.pm.PackageManager
 import android.database.DatabaseUtils
+import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.support.v4.content.ContextCompat
@@ -28,14 +29,14 @@ import at.bitfire.davdroid.ui.AccountActivity
 import okhttp3.HttpUrl
 import java.util.logging.Level
 
-class AddressBooksSyncAdapterService: SyncAdapterService() {
+class AddressBooksSyncAdapterService : SyncAdapterService() {
 
     override fun syncAdapter() = AddressBooksSyncAdapter(this)
 
 
     class AddressBooksSyncAdapter(
             context: Context
-    ): SyncAdapter(context) {
+    ) : SyncAdapter(context) {
 
         override fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
@@ -58,7 +59,7 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
                     syncExtras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_BACKOFF, true)
                     ContentResolver.requestSync(addressBookAccount, ContactsContract.AUTHORITY, syncExtras)
                 }
-            } catch(e: Exception) {
+            } catch (e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't sync address books", e)
             }
 
@@ -71,8 +72,8 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
 
                 fun getService() =
                         db.query(ServiceDB.Services._TABLE, arrayOf(ServiceDB.Services.ID),
-                            "${ServiceDB.Services.ACCOUNT_NAME}=? AND ${ServiceDB.Services.SERVICE}=?",
-                            arrayOf(account.name, ServiceDB.Services.SERVICE_CARDDAV), null, null, null)?.use { c ->
+                                "${ServiceDB.Services.ACCOUNT_NAME}=? AND ${ServiceDB.Services.SERVICE}=?",
+                                arrayOf(account.name, ServiceDB.Services.SERVICE_CARDDAV), null, null, null)?.use { c ->
                             if (c.moveToNext())
                                 c.getLong(0)
                             else
@@ -83,7 +84,7 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
                     val collections = mutableMapOf<HttpUrl, CollectionInfo>()
                     service?.let {
                         db.query(Collections._TABLE, null,
-                            Collections.SERVICE_ID + "=? AND " + Collections.SYNC, arrayOf(service.toString()), null, null, null)?.use { cursor ->
+                                Collections.SERVICE_ID + "=? AND " + Collections.SYNC, arrayOf(service.toString()), null, null, null)?.use { cursor ->
                             while (cursor.moveToNext()) {
                                 val values = ContentValues(cursor.columnCount)
                                 DatabaseUtils.cursorRowToContentValues(cursor, values)
@@ -114,36 +115,43 @@ class AddressBooksSyncAdapterService: SyncAdapterService() {
                 }
 
                 val contactsProvider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
-                if (contactsProvider == null) {
-                    Logger.log.severe("Couldn't access contacts provider")
-                    syncResult.databaseError = true
-                    return
-                }
-
-                // delete/update local address books
-                for (addressBook in LocalAddressBook.findAll(context, contactsProvider, account)) {
-                    val url = HttpUrl.parse(addressBook.url)!!
-                    val info = remote[url]
-                    if (info == null) {
-                        Logger.log.log(Level.INFO, "Deleting obsolete local address book", url)
-                        addressBook.delete()
-                    } else {
-                        // remote CollectionInfo found for this local collection, update data
-                        try {
-                            Logger.log.log(Level.FINE, "Updating local address book $url", info)
-                            addressBook.update(info)
-                        } catch(e: Exception) {
-                            Logger.log.log(Level.WARNING, "Couldn't rename address book account", e)
-                        }
-                        // we already have a local address book for this remote collection, don't take into consideration anymore
-                        remote -= url
+                try {
+                    if (contactsProvider == null) {
+                        Logger.log.severe("Couldn't access contacts provider")
+                        syncResult.databaseError = true
+                        return
                     }
-                }
 
-                // create new local address books
-                for ((_, info) in remote) {
-                    Logger.log.log(Level.INFO, "Adding local address book", info)
-                    LocalAddressBook.create(context, contactsProvider, account, info)
+                    // delete/update local address books
+                    for (addressBook in LocalAddressBook.findAll(context, contactsProvider, account)) {
+                        val url = HttpUrl.parse(addressBook.url)!!
+                        val info = remote[url]
+                        if (info == null) {
+                            Logger.log.log(Level.INFO, "Deleting obsolete local address book", url)
+                            addressBook.delete()
+                        } else {
+                            // remote CollectionInfo found for this local collection, update data
+                            try {
+                                Logger.log.log(Level.FINE, "Updating local address book $url", info)
+                                addressBook.update(info)
+                            } catch (e: Exception) {
+                                Logger.log.log(Level.WARNING, "Couldn't rename address book account", e)
+                            }
+                            // we already have a local address book for this remote collection, don't take into consideration anymore
+                            remote -= url
+                        }
+                    }
+
+                    // create new local address books
+                    for ((_, info) in remote) {
+                        Logger.log.log(Level.INFO, "Adding local address book", info)
+                        LocalAddressBook.create(context, contactsProvider, account, info)
+                    }
+                } finally {
+                    if (Build.VERSION.SDK_INT >= 24)
+                        contactsProvider?.close()
+                    else
+                        contactsProvider?.release()
                 }
             }
         }

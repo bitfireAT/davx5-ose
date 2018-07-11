@@ -69,26 +69,24 @@ class DavResourceFinderTest {
     @SmallTest
     fun testRememberIfAddressBookOrHomeset() {
         // recognize home set
+        var info = ServiceInfo()
         DavResource(client.okHttpClient, server.url(PATH_CARDDAV + SUBPATH_PRINCIPAL))
-                .propfind(0, AddressbookHomeSet.NAME).use {
-            ServiceInfo().let { info ->
-                finder.rememberIfAddressBookOrHomeset(it, info)
-                assertEquals(0, info.collections.size)
-                assertEquals(1, info.homeSets.size)
-                assertEquals(server.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET/"), info.homeSets.first())
-            }
+                .propfind(0, AddressbookHomeSet.NAME) { response, _ ->
+            finder.scanCardDavResponse(response, info)
         }
+        assertEquals(0, info.collections.size)
+        assertEquals(1, info.homeSets.size)
+        assertEquals(server.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET/"), info.homeSets.first())
 
         // recognize address book
+        info = ServiceInfo()
         DavResource(client.okHttpClient, server.url(PATH_CARDDAV + SUBPATH_ADDRESSBOOK))
-                .propfind(0, ResourceType.NAME).use {
-            ServiceInfo().let { info ->
-                finder.rememberIfAddressBookOrHomeset(it, info)
-                assertEquals(1, info.collections.size)
-                assertEquals(server.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"), info.collections.keys.first())
-                assertEquals(0, info.homeSets.size)
-            }
+                .propfind(0, ResourceType.NAME) { response, _ ->
+            finder.scanCardDavResponse(response, info)
         }
+        assertEquals(1, info.collections.size)
+        assertEquals(server.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"), info.collections.keys.first())
+        assertEquals(0, info.homeSets.size)
     }
 
     @Test

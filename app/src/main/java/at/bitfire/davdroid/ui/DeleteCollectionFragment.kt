@@ -91,7 +91,7 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
                         val collection = DavResource(httpClient.okHttpClient, collectionInfo.url)
 
                         // delete collection from server
-                        collection.delete(null)
+                        collection.delete(null) {}
 
                         // delete collection locally
                         ServiceDB.OpenHelper(context).use { dbHelper ->

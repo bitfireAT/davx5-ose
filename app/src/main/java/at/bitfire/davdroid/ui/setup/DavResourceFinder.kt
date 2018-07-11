@@ -11,7 +11,7 @@ import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
 import at.bitfire.dav4android.DavResource
-import at.bitfire.dav4android.DavResponse
+import at.bitfire.dav4android.Response
 import at.bitfire.dav4android.UrlUtils
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.exception.HttpException
@@ -127,11 +127,10 @@ class DavResourceFinder(
                 }
             }
 
-        if (config.principal != null && service == Service.CALDAV) {
+        if (config.principal != null && service == Service.CALDAV)
             // query email address (CalDAV scheduling: calendar-user-address-set)
-            val davPrincipal = DavResource(httpClient.okHttpClient, config.principal!!, log)
             try {
-                davPrincipal.propfind(0, CalendarUserAddressSet.NAME).use { response ->
+                DavResource(httpClient.okHttpClient, config.principal!!, log).propfind(0, CalendarUserAddressSet.NAME) { response, _ ->
                     response[CalendarUserAddressSet::class.java]?.let { addressSet ->
                         for (href in addressSet.hrefs)
                             try {
@@ -146,7 +145,6 @@ class DavResourceFinder(
             } catch(e: Exception) {
                 log.log(Level.WARNING, "Couldn't query user email address", e)
             }
-        }
 
         // return config or null if config doesn't contain useful information
         val serviceAvailable = config.principal != null || config.homeSets.isNotEmpty() || config.collections.isNotEmpty()
@@ -159,54 +157,27 @@ class DavResourceFinder(
     private fun checkUserGivenURL(baseURL: HttpUrl, service: Service, config: Configuration.ServiceInfo) {
         log.info("Checking user-given URL: $baseURL")
 
-        var principal: HttpUrl? = null
+        val davBase = DavResource(httpClient.okHttpClient, baseURL, log)
         try {
-            val davBase = DavResource(httpClient.okHttpClient, baseURL, log)
-
-            var response: DavResponse? = null
-            try {
-                when (service) {
-                    Service.CARDDAV -> {
-                        response = davBase.propfind(0,
-                                ResourceType.NAME, DisplayName.NAME, AddressbookDescription.NAME,
-                                AddressbookHomeSet.NAME,
-                                CurrentUserPrincipal.NAME
-                        )
-                        rememberIfAddressBookOrHomeset(response, config)
-                    }
-                    Service.CALDAV -> {
-                        response = davBase.propfind(0,
-                                ResourceType.NAME, DisplayName.NAME, CalendarColor.NAME, CalendarDescription.NAME, CalendarTimezone.NAME, CurrentUserPrivilegeSet.NAME, SupportedCalendarComponentSet.NAME,
-                                CalendarHomeSet.NAME,
-                                CurrentUserPrincipal.NAME
-                        )
-                        rememberIfCalendarOrHomeset(response, config)
+            when (service) {
+                Service.CARDDAV -> {
+                    davBase.propfind(0,
+                            ResourceType.NAME, DisplayName.NAME, AddressbookDescription.NAME,
+                            AddressbookHomeSet.NAME,
+                            CurrentUserPrincipal.NAME
+                    ) { response, _ ->
+                        scanCardDavResponse(response, config)
                     }
                 }
-
-                // check for current-user-principal
-                response.searchProperty(CurrentUserPrincipal::class.java)?.let { (dav, currentUserPrincipal) ->
-                    currentUserPrincipal.href?.let {
-                        principal = dav.url.resolve(it)
+                Service.CALDAV -> {
+                    davBase.propfind(0,
+                            ResourceType.NAME, DisplayName.NAME, CalendarColor.NAME, CalendarDescription.NAME, CalendarTimezone.NAME, CurrentUserPrivilegeSet.NAME, SupportedCalendarComponentSet.NAME,
+                            CalendarHomeSet.NAME,
+                            CurrentUserPrincipal.NAME
+                    ) { response, _ ->
+                        scanCalDavResponse(response, config)
                     }
                 }
-
-                // check for resource type "principal"
-                if (principal == null)
-                    for ((dav, resourceType) in response.searchProperties(ResourceType::class.java)) {
-                        if (resourceType.types.contains(ResourceType.PRINCIPAL)) {
-                            principal = dav.url
-                            break
-                        }
-                    }
-            } finally {
-                response?.close()
-            }
-
-            // If a principal has been detected successfully, ensure that it provides the required service.
-            principal?.let {
-                if (providesService(it, service))
-                    config.principal = it
             }
         } catch(e: Exception) {
             log.log(Level.FINE, "PROPFIND/OPTIONS on user-given URL failed", e)
@@ -214,72 +185,111 @@ class DavResourceFinder(
     }
 
     /**
-     * If [dav] references an address book or an address book home set, it will added to
-     * config.collections or config.homesets. URLs will be stored with trailing "/".
-     * @param dav       resource whose properties are evaluated
-     * @param config    structure where the address book (collection) and/or home set is stored into (if found)
+     * If [dav] references an address book, an address book home set, and/or a princiapl,
+     * it will added to, config.collections, config.homesets and/or config.principal.
+     * URLs will be stored with trailing "/".
+     *
+     * @param dav       response whose properties are evaluated
+     * @param config    structure where the results are stored into
      */
-    fun rememberIfAddressBookOrHomeset(dav: DavResponse, config: Configuration.ServiceInfo) {
-        // Is there an address book?
-        for ((addressBook, resourceType) in dav.searchProperties(ResourceType::class.java)) {
-            if (resourceType.types.contains(ResourceType.ADDRESSBOOK)) {
-                val info = CollectionInfo(addressBook)
+    fun scanCardDavResponse(dav: Response, config: Configuration.ServiceInfo) {
+        var principal: HttpUrl? = null
+
+        // check for current-user-principal
+        dav[CurrentUserPrincipal::class.java]?.href?.let {
+            principal = dav.requestedUrl.resolve(it)
+        }
+
+        // Is it an address book and/or principal?
+        dav[ResourceType::class.java]?.let {
+            if (it.types.contains(ResourceType.ADDRESSBOOK)) {
+                val info = CollectionInfo(dav)
                 log.info("Found address book at ${info.url}")
                 config.collections[info.url] = info
             }
+
+            if (it.types.contains(ResourceType.PRINCIPAL))
+                principal = dav.href
         }
 
-        // Is there an addressbook-home-set?
-        for ((dav, homeSet) in dav.searchProperties(AddressbookHomeSet::class.java)) {
+        // Is it an addressbook-home-set?
+        dav[AddressbookHomeSet::class.java]?.let { homeSet ->
             for (href in homeSet.hrefs) {
-                dav.url.resolve(href)?.let {
+                dav.requestedUrl.resolve(href)?.let {
                     val location = UrlUtils.withTrailingSlash(it)
                     log.info("Found address book home-set at $location")
                     config.homeSets += location
                 }
             }
         }
+
+        principal?.let {
+            if (providesService(it, Service.CARDDAV))
+                config.principal = principal
+        }
     }
 
-    private fun rememberIfCalendarOrHomeset(dav: DavResponse, config: Configuration.ServiceInfo) {
-        // Is the collection a calendar collection?
-        for ((calendar, resourceType) in dav.searchProperties(ResourceType::class.java)) {
-            if (resourceType.types.contains(ResourceType.CALENDAR)) {
-                val info = CollectionInfo(calendar)
+    /**
+     * If [dav] references an address book, an address book home set, and/or a princiapl,
+     * it will added to, config.collections, config.homesets and/or config.principal.
+     * URLs will be stored with trailing "/".
+     *
+     * @param dav       response whose properties are evaluated
+     * @param config    structure where the results are stored into
+     */
+    fun scanCalDavResponse(dav: Response, config: Configuration.ServiceInfo) {
+        var principal: HttpUrl? = null
+
+        // check for current-user-principal
+        dav[CurrentUserPrincipal::class.java]?.href?.let {
+            principal = dav.requestedUrl.resolve(it)
+        }
+
+        // Is it a calendar book and/or principal?
+        dav[ResourceType::class.java]?.let {
+            if (it.types.contains(ResourceType.CALENDAR)) {
+                val info = CollectionInfo(dav)
                 log.info("Found calendar at ${info.url}")
                 config.collections[info.url] = info
             }
+
+            if (it.types.contains(ResourceType.PRINCIPAL))
+                principal = dav.href
         }
 
-        // Is there an calendar-home-set?
-        for ((dav, homeSet) in dav.searchProperties(CalendarHomeSet::class.java)) {
+        // Is it an calendar-home-set?
+        dav[CalendarHomeSet::class.java]?.let { homeSet ->
             for (href in homeSet.hrefs) {
-                dav.url.resolve(href)?.let {
+                dav.requestedUrl.resolve(href)?.let {
                     val location = UrlUtils.withTrailingSlash(it)
-                    log.info("Found calendar home-set at $location")
+                    log.info("Found calendar book home-set at $location")
                     config.homeSets += location
                 }
             }
+        }
+
+        principal?.let {
+            if (providesService(it, Service.CALDAV))
+                config.principal = principal
         }
     }
 
 
     @Throws(IOException::class)
     fun providesService(url: HttpUrl, service: Service): Boolean {
-        val davPrincipal = DavResource(httpClient.okHttpClient, url, log)
+        var provided = false
         try {
-            davPrincipal.options().use {
-                val capabilities = it.capabilities
+            DavResource(httpClient.okHttpClient, url, log).options { capabilities, _ ->
                 if ((service == Service.CARDDAV && capabilities.contains("addressbook")) ||
                     (service == Service.CALDAV && capabilities.contains("calendar-access")))
-                    return true
+                    provided = true
             }
         } catch(e: Exception) {
             log.log(Level.SEVERE, "Couldn't detect services on $url", e)
             if (e !is HttpException && e !is DavException)
                 throw e
         }
-        return false
+        return provided
     }
 
 
@@ -346,31 +356,28 @@ class DavResourceFinder(
 
     /**
      * Queries a given URL for current-user-principal
+     *
      * @param url       URL to query with PROPFIND (Depth: 0)
      * @param service   required service (may be null, in which case no service check is done)
      * @return          current-user-principal URL that provides required service, or null if none
      */
     @Throws(IOException::class, HttpException::class, DavException::class)
     fun getCurrentUserPrincipal(url: HttpUrl, service: Service?): HttpUrl? {
-        val dav = DavResource(httpClient.okHttpClient, url, log)
-        dav.propfind(0, CurrentUserPrincipal.NAME).use {
-            it.searchProperty(CurrentUserPrincipal::class.java)?.let { (dav, currentUserPrincipal) ->
-                currentUserPrincipal.href?.let { href ->
-                    dav.url.resolve(href)?.let { principal ->
-                        log.info("Found current-user-principal: $principal")
+        var principal: HttpUrl? = null
+        DavResource(httpClient.okHttpClient, url, log).propfind(0, CurrentUserPrincipal.NAME) { response, _ ->
+            response[CurrentUserPrincipal::class.java]?.href?.let { href ->
+                response.requestedUrl.resolve(href)?.let {
+                    log.info("Found current-user-principal: $it")
 
-                        // service check
-                        if (service != null && !providesService(principal, service)) {
-                            log.info("$principal doesn't provide required $service service")
-                            return null
-                        }
-
-                        return principal
-                    }
+                    // service check
+                    if (service != null && !providesService(it, service))
+                        log.info("$it doesn't provide required $service service")
+                    else
+                        principal = it
                 }
             }
         }
-        return null
+        return principal
     }
 
 

@@ -16,10 +16,12 @@ import android.provider.ContactsContract.Groups
 import android.support.v4.app.NotificationCompat
 import at.bitfire.dav4android.DavAddressBook
 import at.bitfire.dav4android.DavResource
-import at.bitfire.dav4android.DavResponse
+import at.bitfire.dav4android.DavResponseCallback
+import at.bitfire.dav4android.Response
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.property.*
 import at.bitfire.davdroid.AccountSettings
+import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -35,7 +37,6 @@ import okhttp3.HttpUrl
 import okhttp3.Request
 import okhttp3.RequestBody
 import java.io.*
-import java.util.*
 import java.util.logging.Level
 
 /**
@@ -83,11 +84,9 @@ class ContactsSyncManager(
         syncResult: SyncResult,
         val provider: ContentProviderClient,
         localAddressBook: LocalAddressBook
-): BaseDavSyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(context, settings, account, accountSettings, extras, authority, syncResult, localAddressBook) {
+): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(context, settings, account, accountSettings, extras, authority, syncResult, localAddressBook) {
 
     companion object {
-        private const val MULTIGET_MAX_RESOURCES = 10
-
         infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)
     }
 
@@ -97,11 +96,13 @@ class ContactsSyncManager(
     private var hasVCard4 = false
     private val groupMethod = accountSettings.getGroupMethod()
 
+    /**
+     * Used to download images which are referenced by URL
+     */
+    private lateinit var resourceDownloader: ResourceDownloader
+
 
     override fun prepare(): Boolean {
-        if (!super.prepare())
-            return false
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
             val reallyDirty = localCollection.verifyDirty()
@@ -115,6 +116,8 @@ class ContactsSyncManager(
         collectionURL = HttpUrl.parse(localCollection.url) ?: return false
         davCollection = DavAddressBook(httpClient.okHttpClient, collectionURL)
 
+        resourceDownloader = ResourceDownloader(davCollection.location)
+
         return true
     }
 
@@ -124,19 +127,25 @@ class ContactsSyncManager(
         localCollection.includeGroups = groupMethod == GroupMethod.GROUP_VCARDS
 
         return useRemoteCollection {
-            it.propfind(0, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME).use { dav ->
-                dav[SupportedAddressData::class.java]?.let {
-                    hasVCard4 = it.hasVCard4()
-                }
-                Logger.log.info("Server supports vCard/4: $hasVCard4")
+            var syncState: SyncState? = null
+            it.propfind(0, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                if (relation == Response.HrefRelation.SELF) {
+                    response[SupportedAddressData::class.java]?.let {
+                        hasVCard4 = it.hasVCard4()
+                    }
 
-                dav[SupportedReportSet::class.java]?.let {
-                    hasCollectionSync = it.reports.contains(SupportedReportSet.SYNC_COLLECTION)
-                }
-                Logger.log.info("Server supports Collection Sync: $hasCollectionSync")
+                    response[SupportedReportSet::class.java]?.let {
+                        hasCollectionSync = it.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                    }
 
-                syncState(dav)
+                    syncState = syncState(response)
+                }
             }
+
+            Logger.log.info("Server supports vCard/4: $hasVCard4")
+            Logger.log.info("Server supports Collection Sync: $hasCollectionSync")
+
+            syncState
         }
     }
 
@@ -282,79 +291,43 @@ class ContactsSyncManager(
         )
     }
 
-    override fun listAllRemote() = useRemoteCollection {
-        // fetch list of remote VCards and build hash table to index file name
-        it.propfind(1, ResourceType.NAME, GetETag.NAME).use { dav ->
-            val result = LinkedHashMap<String, DavResponse>(dav.members.size)
-            for (vCard in dav.members) {
-                // ignore member collections
-                var ignore = false
-                vCard[ResourceType::class.java]?.let { type ->
-                    if (type.types.contains(ResourceType.COLLECTION))
-                        ignore = true
-                }
-                if (ignore)
-                    continue
-
-                val fileName = vCard.fileName()
-                Logger.log.fine("Found remote VCard: $fileName")
-                result[fileName] = vCard
-            }
-            result
-        }
-    }
-
-    override fun processRemoteChanges(changes: RemoteChanges) {
-        for (name in changes.deleted)
-            localCollection.findByName(name)?.let {
-                Logger.log.info("Deleting local address $name")
-                useLocal(it) { it.delete() }
-                syncResult.stats.numDeletes++
+    override fun listAllRemote(callback: DavResponseCallback) =
+            useRemoteCollection {
+                it.propfind(1, ResourceType.NAME, GetETag.NAME, callback = callback)
             }
 
-        val toDownload = changes.updated.map { it.url }
-        Logger.log.info("Downloading ${toDownload.size} resources ($MULTIGET_MAX_RESOURCES at once)")
+    override fun downloadRemote(bunch: List<HttpUrl>) {
+        Logger.log.info("Downloading ${bunch.size} vCards: $bunch")
+        if (bunch.size == 1) {
+            val remote = bunch.first()
+            // only one contact, use GET
+            useRemote(DavResource(httpClient.okHttpClient, remote)) { resource ->
+                resource.get("text/vcard;version=4.0, text/vcard;charset=utf-8;q=0.8, text/vcard;q=0.5") { response ->
+                    // CardDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc6352#section-6.3.2.3]
+                    val eTag = response.header("ETag")?.let { GetETag(it).eTag }
+                            ?: throw DavException("Received CardDAV GET response without ETag")
 
-        // prepare downloader which may be used to download external resource like contact photos
-        val downloader = ResourceDownloader(collectionURL)
-
-        // download new/updated VCards from server
-        for (bunch in toDownload.chunked(CalendarSyncManager.MULTIGET_MAX_RESOURCES)) {
-            if (bunch.size == 1)
-                // only one contact, use GET
-                useRemote(DavResource(httpClient.okHttpClient, bunch.first())) {
-                    it.get("text/vcard;version=4.0, text/vcard;charset=utf-8;q=0.8, text/vcard;q=0.5").use { dav ->
-                        // CardDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc6352#section-6.3.2.3]
-                        val eTag = dav[GetETag::class.java]?.eTag
-                                ?: throw DavException("Received CardDAV GET response without ETag for ${dav.url}")
-
-                        dav.body?.charStream()?.use { reader ->
-                            processVCard(dav.fileName(), eTag, reader, downloader)
-                        }
-                    }
-                }
-            else {
-                // multiple contacts, use multi-get
-                useRemoteCollection {
-                    it.multiget(bunch, hasVCard4).use { dav ->
-                        // process multi-get results
-                        for (remote in dav.members)
-                            useRemote(remote) {
-                                val eTag = remote[GetETag::class.java]?.eTag
-                                        ?: throw DavException("Received multi-get response without ETag")
-
-                                val addressData = remote[AddressData::class.java]
-                                val vCard = addressData?.vCard
-                                        ?: throw DavException("Received multi-get response without address data")
-
-                                processVCard(remote.fileName(), eTag, StringReader(vCard), downloader)
-                            }
+                    response.body()!!.use {
+                        processVCard(resource.fileName(), eTag, it.charStream(), resourceDownloader)
                     }
                 }
             }
+        } else
+            // multiple vCards, use addressbook-multi-get
+            useRemoteCollection {
+                it.multiget(bunch, hasVCard4) { response, _ ->
+                    useRemote(response) {
+                        val eTag = response[GetETag::class.java]?.eTag
+                                ?: throw DavException("Received multi-get response without ETag")
 
-            abortIfCancelled()
-        }
+                        val addressData = response[AddressData::class.java]
+                        val vCard = addressData?.vCard
+                                ?: throw DavException("Received multi-get response without address data")
+
+                        processVCard(DavUtils.lastSegmentOfUrl(response.href), eTag, StringReader(vCard), resourceDownloader)
+                    }
+                }
+            }
     }
 
     override fun postProcess() {
