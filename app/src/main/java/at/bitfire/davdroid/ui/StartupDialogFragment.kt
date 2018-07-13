@@ -133,8 +133,8 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         .setTitle(getString(R.string.startup_autostart_permission, StringUtils.capitalize(Build.MANUFACTURER)))
                         .setMessage(R.string.startup_autostart_permission_message)
                         .setPositiveButton(R.string.startup_more_info) { _, _ ->
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url)).buildUpon()
-                                    .appendPath("faq").appendPath("automatic-synchronization-is-not-run-as-expected").build())
+                            val intent = Intent(Intent.ACTION_VIEW, App.homepageUrl(requireActivity()).buildUpon()
+                                    .appendPath("faq").appendEncodedPath("automatic-synchronization-is-not-run-as-expected/").build())
                             if (intent.resolveActivity(activity.packageManager) != null)
                                 activity.startActivity(intent)
                         }
@@ -173,8 +173,8 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         .setTitle(R.string.startup_google_play_accounts_removed)
                         .setMessage(R.string.startup_google_play_accounts_removed_message)
                         .setPositiveButton(R.string.startup_more_info) { _, _ ->
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.homepage_url)).buildUpon()
-                                    .appendPath("faq").appendPath("accounts-gone-after-reboot-or-update").build())
+                            val intent = Intent(Intent.ACTION_VIEW, App.homepageUrl(requireActivity()).buildUpon()
+                                    .appendPath("faq").appendEncodedPath("accounts-gone-after-reboot-or-update/").build())
                             if (intent.resolveActivity(activity.packageManager) != null)
                                 activity.startActivity(intent)
                         }
@@ -213,8 +213,7 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                             .setTitle(R.string.startup_donate)
                             .setMessage(R.string.startup_donate_message)
                             .setPositiveButton(R.string.startup_donate_now) { _, _ ->
-                                val uri = Uri.parse(getString(R.string.homepage_url))
-                                        .buildUpon()
+                                val uri = App.homepageUrl(requireActivity()).buildUpon()
                                         .appendEncodedPath("donate/")
                                         .build()
                                 startActivity(Intent(Intent.ACTION_VIEW, uri))

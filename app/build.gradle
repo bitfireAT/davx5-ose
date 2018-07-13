@@ -19,7 +19,7 @@ android {
         applicationId "at.bitfire.davdroid"
         resValue "string", "packageID", applicationId
 
-        versionCode 235
+        versionCode 236
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         minSdkVersion 19        // Android 4.4
@@ -146,6 +146,7 @@ dependencies {
     implementation 'com.android.support.test.espresso:espresso-idling-resource:3.0.2'
 
     implementation 'com.github.yukuku:ambilwarna:2.0.1'
+    implementation 'com.mikepenz:aboutlibraries:6.0.9'
 
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
     implementation 'commons-io:commons-io:2.6'
