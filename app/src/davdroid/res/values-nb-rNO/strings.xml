@@ -8,8 +8,6 @@
   <string name="manage_accounts">Behandle kontoer</string>
   <string name="please_wait">Vent…</string>
   <string name="send">Send</string>
-  <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
-  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Batterioptimisering</string>
   <string name="startup_battery_optimization_message">Det kan hende Android skrur av/reduserer DAVdroid-synkronisering etter et par dager. For å forhindre dette, skru av batterioptimisering.</string>
@@ -25,7 +23,6 @@
   <string name="startup_opentasks_reinstall_davdroid">Etter å ha installert OpenTasks, må du reinstallere Davdroid og legge til kontoene dine igjen (Android-feil).</string>
   <string name="startup_opentasks_not_installed_install">Installer OpenTasks</string>
   <!--AboutActivity-->
-  <string name="about_license_terms">Lisensvilkår</string>
   <string name="about_license_info_no_warranty">Dette programmet kommer uten NOEN FORM FOR GARANTI. Det er fri programvare, og du er velkommen til å redistribuere det under gitte forhold.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVDroid fil-logging</string>
@@ -100,7 +97,6 @@
   <string name="account_no_webcal_handler_found">Fant ingen programmer med støtte for Webcal</string>
   <string name="account_install_icsdroid">Installer ICSdroid</string>
   <!--AddAccountActivity-->
-  <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
   <string name="login_title">Legg til konto</string>
   <string name="login_type_email">Innlogging med e-postadresse</string>
   <string name="login_email_address">E-postadresse</string>
@@ -124,7 +120,6 @@
   <string name="login_configuration_detection">Oppdagelse av oppsett</string>
   <string name="login_querying_server">Vent, spør tjener…</string>
   <string name="login_no_caldav_carddav">Fant ikke CalDAV eller CardDAV-tjeneste.</string>
-  <string name="login_view_logs">Vis logger</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Innstillinger: %s</string>
   <string name="settings_authentication">Identitetsbekreftelse</string>

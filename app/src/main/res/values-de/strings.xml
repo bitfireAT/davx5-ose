@@ -8,8 +8,6 @@
   <string name="manage_accounts">Konten verwalten</string>
   <string name="please_wait">Bitte warten …</string>
   <string name="send">Senden</string>
-  <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
-  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <string name="notification_channel_debugging">Fehlersuche</string>
   <string name="notification_channel_general">Andere wichtige Mitteilungen</string>
   <string name="notification_channel_sync">Synchronisierung</string>
@@ -35,7 +33,10 @@
   <string name="startup_opentasks_reinstall_davdroid">Nach der Installation von OpenTasks muss DAVdroid NEU INSTALLIERT und die Konten neu hinzugefügt werden (Android-Bug).</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks installieren</string>
   <!--AboutActivity-->
-  <string name="about_license_terms">Lizenzbedingungen</string>
+  <string name="about_libraries">Bibliotheken</string>
+  <string name="about_version">Version %1s (%2d)</string>
+  <string name="about_build_date">Erstellt am %s</string>
+  <string name="about_flavor_info">Diese Version ist nur zur Verteilung über Google Play bestimmt.</string>
   <string name="about_license_info_no_warranty">Dieses Programm wird OHNE JEDE GEWÄHRLEISTUNG bereitgestellt. Es ist freie Software – Sie können es also unter bestimmten Bedingungen weiterverbreiten.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid Datei-Protokollierung</string>
@@ -111,7 +112,6 @@
   <string name="account_no_webcal_handler_found">Keine Webcal-App gefunden</string>
   <string name="account_install_icsdroid">ICSdroid installieren</string>
   <!--AddAccountActivity-->
-  <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
   <string name="login_title">Konto hinzufügen</string>
   <string name="login_type_email">Mit Email-Adresse anmelden</string>
   <string name="login_email_address">Email-Adresse</string>
@@ -138,7 +138,7 @@
   <string name="login_configuration_detection">Ressourcen-Erkennung</string>
   <string name="login_querying_server">Server-Informationen werden abgerufen. Bitte warten …</string>
   <string name="login_no_caldav_carddav">Es konnte weder ein CalDAV- noch ein CardDAV-Dienst gefunden werden.</string>
-  <string name="login_view_logs">Protokoll anzeigen</string>
+  <string name="login_view_logs">Details anzeigen</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Einstellungen: %s</string>
   <string name="settings_authentication">Anmeldeinformationen</string>

@@ -30,7 +30,6 @@
   <string name="startup_opentasks_reinstall_davdroid">Dopo l\'installazione di OpenTasks è necessario INSTALLARE NUOVAMENTE DAVdroid e aggiungere ancora gli account (per un bug di Android).</string>
   <string name="startup_opentasks_not_installed_install">Installa OpenTasks</string>
   <!--AboutActivity-->
-  <string name="about_license_terms">Termini di licenza</string>
   <string name="about_license_info_no_warranty">Il programma è distribuito SENZA ALCUNA GARANZIA. È software libero e può essere redistribuito sotto alcune condizioni.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">Invio del log di DAVdroid su file</string>
@@ -129,7 +128,6 @@
   <string name="login_configuration_detection">Rilevazione configurazione</string>
   <string name="login_querying_server">Attendere, invio richiesta al server...</string>
   <string name="login_no_caldav_carddav">Impossibile trovare servizi CalDAV o CardDAV.</string>
-  <string name="login_view_logs">Vedi i log</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Impostazioni: %s</string>
   <string name="settings_authentication">Autenticazione</string>

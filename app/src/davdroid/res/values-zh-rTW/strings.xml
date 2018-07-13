@@ -23,7 +23,6 @@
   <string name="startup_opentasks_reinstall_davdroid">安裝 OpenTasks 後，您必須｢重新安裝｣ DAVdroid 並且重新加入要同步的帳號 (這是 Android 的設計問題)</string>
   <string name="startup_opentasks_not_installed_install">安裝 OpenTasks</string>
   <!--AboutActivity-->
-  <string name="about_license_terms">授權條款</string>
   <string name="about_license_info_no_warranty">我們｢完全不保證｣本程式無瑕疵。這是個自由軟體，歡迎您在符合公用授權條款的情況下任意散布它。</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid 正在記錄除錯訊息</string>
@@ -109,7 +108,6 @@
   <string name="login_configuration_detection">設定錯誤</string>
   <string name="login_querying_server">請稍待，正在詢問伺服器...</string>
   <string name="login_no_caldav_carddav">找不到 CalDAV 或 CardDAV 服務。</string>
-  <string name="login_view_logs">檢視除錯訊息</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">設定: %s</string>
   <string name="settings_authentication">登入驗證</string>

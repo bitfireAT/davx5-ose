@@ -23,7 +23,6 @@
   <string name="startup_opentasks_reinstall_davdroid">Након инсталирања Отворених задатака, морате поново да инсталирате ДАВдроид и поново додате ваше налоге (због грешке у Андроиду).</string>
   <string name="startup_opentasks_not_installed_install">Инсталирај Отворене задатке</string>
   <!--AboutActivity-->
-  <string name="about_license_terms">Услови лиценце</string>
   <string name="about_license_info_no_warranty">Овај програм НЕМА НИКАКВЕ ГАРАНЦИЈЕ. Бесплатан је софтвер којег можете слободно да делите под одређеним условима.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">ДАВдроид евиденција</string>
@@ -110,7 +109,6 @@
   <string name="login_configuration_detection">Откривање конфигурације</string>
   <string name="login_querying_server">Сачекајте, шаљем упит серверу…</string>
   <string name="login_no_caldav_carddav">Не могох да нађем КалДАВ или КардДАВ услугу.</string>
-  <string name="login_view_logs">Прикажи записе</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Поставке: %s</string>
   <string name="settings_authentication">Аутентификација</string>
