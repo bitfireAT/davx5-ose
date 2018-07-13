@@ -8,10 +8,15 @@
   <string name="manage_accounts">アカウントの管理</string>
   <string name="please_wait">しばらくお待ちください …</string>
   <string name="send">送信</string>
-  <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
-  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <string name="notification_channel_debugging">デバッグ中</string>
+  <string name="notification_channel_general">他の重要なメッセージ</string>
+  <string name="notification_channel_sync">同期</string>
+  <string name="notification_channel_sync_errors">同期エラー</string>
+  <string name="notification_channel_sync_io_errors">ネットワークおよび I/O エラー</string>
+  <string name="notification_channel_sync_status">ステータスメッセージ</string>
   <!--startup dialogs-->
+  <string name="startup_autostart_permission">%s 自動開始アクセス許可</string>
+  <string name="startup_autostart_permission_message">デバイスのファームウェアにより自動同期を妨げる可能性があります。 手動で自動同期を許可する必要があります。</string>
   <string name="startup_battery_optimization">バッテリー最適化</string>
   <string name="startup_battery_optimization_message">Android は数日後に DAVdroid の同期を無効にする/減らすことがあります。これを防止するには、バッテリー最適化をオフにしてください。</string>
   <string name="startup_battery_optimization_disable">DAVdroid 用にオフにする</string>
@@ -22,11 +27,12 @@
   <string name="startup_donate_later">たぶん後で</string>
   <string name="startup_google_play_accounts_removed">Play ストア DRM バグ情報</string>
   <string name="startup_google_play_accounts_removed_message">特定の条件下で、DAVdroid を再起動後またはアップグレードした後、Play ストア DRM によりすべての DAVdroid アカウントがなくなる可能性があります。この問題の影響を受けている場合 (のみ)、Play ストアから「DAVdroid JB 回避策」をインストールしてください。</string>
+  <string name="startup_more_info">追加情報</string>
   <string name="startup_opentasks_not_installed">OpenTasks がインストールされていません</string>
+  <string name="startup_opentasks_not_installed_message">タスクを同期するために、無料アプリのOpenTasksが必要です。 (連絡先/イベントには必要ありません)</string>
   <string name="startup_opentasks_reinstall_davdroid">OpenTasks をインストールした後で、DAVdroidを再インストールして、再度アカウントを追加してください (Android のバグ)。</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks をインストール</string>
   <!--AboutActivity-->
-  <string name="about_license_terms">ライセンス規約</string>
   <string name="about_license_info_no_warranty">このプログラムは完全に無保証で提供されます。これはフリーソフトウェアで、特定の条件下での再頒布を歓迎します。</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid ファイルログ</string>
@@ -102,7 +108,6 @@
   <string name="account_no_webcal_handler_found">Webcal に対応するアプリが見つかりません</string>
   <string name="account_install_icsdroid">ICSdroid をインストール</string>
   <!--AddAccountActivity-->
-  <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
   <string name="login_title">アカウントを追加</string>
   <string name="login_type_email">メールアドレスでログイン</string>
   <string name="login_email_address">メールアドレス</string>
@@ -129,7 +134,7 @@
   <string name="login_configuration_detection">設定の検出</string>
   <string name="login_querying_server">しばらくお待ちください。サーバーに問い合わせ中…</string>
   <string name="login_no_caldav_carddav">CalDAV または CardDAV サービスが見つかりません。</string>
-  <string name="login_view_logs">ログを表示</string>
+  <string name="login_view_logs">詳細を表示</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">設定: %s</string>
   <string name="settings_authentication">認証</string>
@@ -224,6 +229,12 @@
   <string name="sync_error_permissions_text">追加のアクセス許可が必要です</string>
   <string name="sync_error_opentasks_too_old">OpenTasks が古すぎます</string>
   <string name="sync_error_opentasks_required_version">必要なバージョン: %1$s (現在 %2$s)</string>
+  <string name="sync_error_authentication_failed">認証に失敗しました (ログイン情報を確認してください)</string>
+  <string name="sync_error_io">ネットワークまたは I/O エラー – %s</string>
+  <string name="sync_error_http_dav">HTTP サーバーエラー – %s</string>
+  <string name="sync_error_local_storage">内蔵ストレージエラー – %s</string>
+  <string name="sync_error_retry">再試行</string>
+  <string name="sync_error_view_item">アイテムを表示</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid: 接続セキュリティ</string>
   <string name="trust_certificate_unknown_certificate_found">DAVdroidは、未知の証明書を検出しました。それを信頼しますか?</string>

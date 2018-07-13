@@ -21,7 +21,6 @@
   <string name="startup_opentasks_reinstall_davdroid">Po instalaci OpenTasks musíte PŘEINSTALOVAT DAVdroid a přidat znovu své účty (Android chyba).</string>
   <string name="startup_opentasks_not_installed_install">Nainstalovat OpenTasks</string>
   <!--AboutActivity-->
-  <string name="about_license_terms">Licenční podmínky</string>
   <string name="about_license_info_no_warranty">Tento program je distribuován BEZ JAKÉKOLIV ZÁRUKY. Je to volně dostupný software a lze jej za určitých podmínek dále distribuovat.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid logování do souboru</string>
@@ -106,7 +105,6 @@
   <string name="login_configuration_detection">Vyhledání konfigurace</string>
   <string name="login_querying_server">Chvíli strpení, probíhá dotazování serveru...</string>
   <string name="login_no_caldav_carddav">Nelze nalézt službu CalDAV nebo CardDAV.</string>
-  <string name="login_view_logs">Prohlížet logy</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Nastavení: %s</string>
   <string name="settings_authentication">Ověření</string>

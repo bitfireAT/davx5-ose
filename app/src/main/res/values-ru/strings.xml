@@ -8,8 +8,6 @@
   <string name="manage_accounts">Управление аккаунтами</string>
   <string name="please_wait">Пожалуйста, подождите …</string>
   <string name="send">Отправить</string>
-  <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
-  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <string name="notification_channel_debugging">Отладка</string>
   <string name="notification_channel_general">Другие важные сообщения</string>
   <string name="notification_channel_sync">Синхронизация</string>
@@ -35,7 +33,6 @@
   <string name="startup_opentasks_reinstall_davdroid">После установки OpenTasks необходимо ПЕРЕУСТАНОВИТЬ DAVdroid и повторно добавить ваши аккаунты (проблема Android).</string>
   <string name="startup_opentasks_not_installed_install">Установить OpenTasks</string>
   <!--AboutActivity-->
-  <string name="about_license_terms">Условия лицензии</string>
   <string name="about_license_info_no_warranty">Эта программа поставляется БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ. Это свободное программное обеспечение и вы можете распространять его при соблюдении определенных условий.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">Файл журнала DAVdroid</string>
@@ -111,7 +108,6 @@
   <string name="account_no_webcal_handler_found">Не найдено приложение, поддерживающее WebCal</string>
   <string name="account_install_icsdroid">Установить ICSdroid</string>
   <!--AddAccountActivity-->
-  <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
   <string name="login_title">Добавить аккаунт</string>
   <string name="login_type_email">Вход с адресом электронной почты</string>
   <string name="login_email_address">Адрес электронной почты</string>
@@ -138,7 +134,7 @@
   <string name="login_configuration_detection">Обнаружение конфигурации</string>
   <string name="login_querying_server">Ожидайте, выполняется запрос к серверу…</string>
   <string name="login_no_caldav_carddav">Не удалось найти службу CalDAV или CardDAV.</string>
-  <string name="login_view_logs">Просмотр логов</string>
+  <string name="login_view_logs">Показать детали</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Настройки: %s</string>
   <string name="settings_authentication">Аутентификация</string>

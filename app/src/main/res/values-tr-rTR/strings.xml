@@ -18,7 +18,6 @@
   <string name="startup_opentasks_reinstall_davdroid">OpenTasks\'i kurduktan sonra, DAVdroid\'i YENİDEN KURMAN ve hesaplarını yeniden eklemen gerek. (Android hatası).</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks kur</string>
   <!--AboutActivity-->
-  <string name="about_license_terms">Lisans şartları</string>
   <string name="about_license_info_no_warranty">Bu uygulama HİÇ BİR GARANTİ ile gelmemektedir. Bedava bir yazılımdır ve belli koşullar altında dağıtabilirsiniz.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid dosya jurnallemesi</string>
@@ -87,7 +86,6 @@
   <string name="login_configuration_detection">Konfigürasyon keşfi</string>
   <string name="login_querying_server">Lütfen bekle, sunucu sorgulanıyor...</string>
   <string name="login_no_caldav_carddav">CalDAV veya CardDAV servisi bulunamadı.</string>
-  <string name="login_view_logs">Jurnallere bak</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Ayarlar: %s</string>
   <string name="settings_authentication">Doğrulama</string>

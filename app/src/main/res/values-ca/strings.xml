@@ -8,8 +8,6 @@
   <string name="manage_accounts">Gestiona comptes</string>
   <string name="please_wait">Esperi si us plau...</string>
   <string name="send">Enviar</string>
-  <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
-  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <string name="notification_channel_debugging">Depurador</string>
   <string name="notification_channel_general">Altres missatges importants</string>
   <string name="notification_channel_sync">Sincronització</string>
@@ -31,7 +29,6 @@
   <string name="startup_opentasks_not_installed">OpenTasks no està instal·lada</string>
   <string name="startup_opentasks_not_installed_install">Instal·lar OpenTasks</string>
   <!--AboutActivity-->
-  <string name="about_license_terms">Termes de la llicència</string>
   <!--global settings-->
   <string name="logging_no_external_storage">Emmagatzematge extern no trobat</string>
   <!--AccountsActivity-->
@@ -74,7 +71,6 @@
   <string name="account_create_new_calendar">Crear nou calendari</string>
   <string name="account_install_icsdroid">Instal·lar ICSdroid</string>
   <!--AddAccountActivity-->
-  <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
   <string name="login_title">Afegir compte</string>
   <string name="login_type_email">Entra amb una adreça de correu electrònic</string>
   <string name="login_email_address">Correu electrònic</string>
@@ -93,7 +89,6 @@
   <string name="login_back">Sortir</string>
   <string name="login_create_account">Crear compte</string>
   <string name="login_account_name">Nom del compte</string>
-  <string name="login_view_logs">Veure els registres</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Paràmetres: %s</string>
   <string name="settings_authentication">Autentificació</string>

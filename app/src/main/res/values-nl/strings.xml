@@ -8,7 +8,6 @@
   <string name="manage_accounts">Beheer accounts</string>
   <string name="please_wait">Een moment geduld...</string>
   <string name="send">Verzenden</string>
-  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Batterij optimalisatie</string>
   <string name="startup_battery_optimization_message">Android kan mogelijk de DAVdroid synchronisatie stoppen na een paar dagen. Om dit te voorkomen zet u de batterij optimalisatie uit.</string>
@@ -24,7 +23,6 @@
   <string name="startup_opentasks_reinstall_davdroid">Na installatie van OpenTasks dient u DAVdroid opnieuw te installeren en de accounts toe te voegen (Android bug).</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks installeren</string>
   <!--AboutActivity-->
-  <string name="about_license_terms">Licentie voorwaarden</string>
   <string name="about_license_info_no_warranty">Dit programma kom met ABSOLUUT GEEN GARANTIE. Het is gratis software, en je bent welkom dit te herdistribueren onder bepaalde voorwaarden.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVDroid bestand loggen</string>
@@ -121,7 +119,6 @@
   <string name="login_configuration_detection">Configuratie detectie</string>
   <string name="login_querying_server">Even geduld, verzoek naar server...</string>
   <string name="login_no_caldav_carddav">Kon geen CalDAV of CardDAV service vinden.</string>
-  <string name="login_view_logs">Bekijk logs</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Instellingen: %s</string>
   <string name="settings_authentication">Authenticatie</string>
