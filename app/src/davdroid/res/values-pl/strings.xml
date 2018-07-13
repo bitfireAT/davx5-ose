@@ -8,8 +8,6 @@
   <string name="manage_accounts">Zadządzaj kontami</string>
   <string name="please_wait">Proszę czekać</string>
   <string name="send">Wyślij</string>
-  <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
-  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <string name="notification_channel_debugging">Debugowanie</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">Optymalizacja baterii</string>
@@ -26,7 +24,6 @@
   <string name="startup_opentasks_reinstall_davdroid">Po zainstalowaniu OpenTasks konieczne jest PRZEINSTALOWANIE DAVdroid i ponowne dodanie twoich kont (błąd Androida).</string>
   <string name="startup_opentasks_not_installed_install">Zainstaluj OpenTasks</string>
   <!--AboutActivity-->
-  <string name="about_license_terms">Warunki licencji</string>
   <string name="about_license_info_no_warranty">Ten program jest ABSOLUTNIE BEZ GWARANCJI. To jest wolne oprogramowanie i mile widziane jest dalsze rozpowszechnianie go pod pewnymi warunkami.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">Plik logów DAVdroid</string>
@@ -102,7 +99,6 @@
   <string name="account_no_webcal_handler_found">Nie znaleziono aplikacji obsługującej Webcal</string>
   <string name="account_install_icsdroid">Zainstaluj ICSdroid</string>
   <!--AddAccountActivity-->
-  <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
   <string name="login_title">Dodaj konto</string>
   <string name="login_type_email">Logowanie za pomocą adresu e-mail</string>
   <string name="login_email_address">Adres e-mail</string>
@@ -129,7 +125,6 @@
   <string name="login_configuration_detection">Wykrywanie konfiguracji</string>
   <string name="login_querying_server">Proszę czekać, odpytywanie serwera...</string>
   <string name="login_no_caldav_carddav">Nie można znaleźć usługi CalDAV lub CardDAV.</string>
-  <string name="login_view_logs">Pokaż logi</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Ustawienia: %s</string>
   <string name="settings_authentication">Uwierzytelnianie</string>

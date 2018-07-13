@@ -8,8 +8,6 @@
   <string name="manage_accounts">管理账户</string>
   <string name="please_wait">请稍等...</string>
   <string name="send">发送</string>
-  <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
-  <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
   <string name="notification_channel_debugging">调试</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization">电池优化</string>
@@ -26,7 +24,6 @@
   <string name="startup_opentasks_reinstall_davdroid">安装 OpenTasks 后，由于 Android 的限制，请重新安装 DAVdroid 并重新创建账户。</string>
   <string name="startup_opentasks_not_installed_install">安装 OpenTasks</string>
   <!--AboutActivity-->
-  <string name="about_license_terms">许可协议</string>
   <string name="about_license_info_no_warranty">本程序不附带任何担保。这是一款自由软件，你可以有条件地传播它。</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid 文件日志</string>
@@ -102,7 +99,6 @@
   <string name="account_no_webcal_handler_found">找不到支持 Webcal 的应用</string>
   <string name="account_install_icsdroid">安装 ICSdroid</string>
   <!--AddAccountActivity-->
-  <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
   <string name="login_title">增加账户</string>
   <string name="login_type_email">使用邮箱地址登录</string>
   <string name="login_email_address">Email 地址</string>
@@ -129,7 +125,6 @@
   <string name="login_configuration_detection">正在配置</string>
   <string name="login_querying_server">正在与服务器通信，请稍等...</string>
   <string name="login_no_caldav_carddav">找不到 CalDAV 或 CardDAV 服务。</string>
-  <string name="login_view_logs">查看日志</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">设置：%s</string>
   <string name="settings_authentication">认证</string>
