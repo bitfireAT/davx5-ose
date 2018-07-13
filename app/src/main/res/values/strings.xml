@@ -11,17 +11,17 @@
 
     <!-- common strings -->
     <string name="app_name">DAVdroid</string>
-    <string name="account_type">bitfire.at.davdroid</string>
-    <string name="account_type_address_book">at.bitfire.davdroid.address_book</string>
+    <string name="account_type" translatable="false">bitfire.at.davdroid</string>
+    <string name="account_type_address_book" translatable="false">at.bitfire.davdroid.address_book</string>
     <string name="account_title_address_book">DAVdroid Address book</string>
-    <string name="address_books_authority">at.bitfire.davdroid.addressbooks</string>
+    <string name="address_books_authority" translatable="false">at.bitfire.davdroid.addressbooks</string>
     <string name="address_books_authority_title">Address books</string>
     <string name="help">Help</string>
     <string name="manage_accounts">Manage accounts</string>
     <string name="please_wait">Please wait …</string>
     <string name="send">Send</string>
-    <string name="homepage_url">https://www.davdroid.com/?pk_campaign=davdroid-app</string>
-    <string name="beta_feedback_url">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
+    <string name="homepage_url" translatable="false">https://www.davdroid.com/</string>
+    <string name="beta_feedback_url" translatable="false">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
 
     <string name="notification_channel_debugging">Debugging</string>
     <string name="notification_channel_general">Other important messages</string>
@@ -50,7 +50,11 @@
     <string name="startup_opentasks_not_installed_install">Install OpenTasks</string>
 
     <!-- AboutActivity -->
-    <string name="about_license_terms">License terms</string>
+    <string name="about_libraries">Libraries</string>
+    <string name="about_version">Version %1s (%2d)</string>
+    <string name="about_build_date">Compiled on %s</string>
+    <string name="about_copyright" translatable="false">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering)</string>
+    <string name="about_flavor_info">This version is only eligible for distribution over Google Play.</string>
     <string name="about_license_info_no_warranty">This program comes with ABSOLUTELY NO WARRANTY. It is free software, and you are welcome to redistribute it under certain conditions.</string>
 
     <!-- global settings -->
@@ -133,7 +137,6 @@
     <string name="account_install_icsdroid">Install ICSdroid</string>
 
     <!-- AddAccountActivity -->
-    <string name="login_help_url">https://www.davdroid.com/tested-with/?pk_campaign=davdroid-app</string>
     <string name="login_title">Add account</string>
     <string name="login_type_email">Login with email address</string>
     <string name="login_email_address">Email address</string>

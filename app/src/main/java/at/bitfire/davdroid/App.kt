@@ -14,6 +14,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Build
 import android.os.StrictMode
 import android.support.v7.app.AppCompatDelegate
@@ -45,6 +46,13 @@ class App: Application() {
             else
                 null
         }
+
+        fun homepageUrl(context: Context) =
+                Uri.parse(context.getString(R.string.homepage_url)).buildUpon()
+                        .appendQueryParameter("pk_campaign", BuildConfig.APPLICATION_ID)
+                        .appendQueryParameter("pk_kwd", context::class.java.simpleName)
+                        .appendQueryParameter("app-version", BuildConfig.VERSION_NAME)
+                        .build()!!
 
     }
 

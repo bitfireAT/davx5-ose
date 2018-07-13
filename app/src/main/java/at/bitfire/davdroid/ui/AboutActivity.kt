@@ -8,75 +8,36 @@
 
 package at.bitfire.davdroid.ui
 
-import android.annotation.SuppressLint
-import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.app.LoaderManager
-import android.support.v4.content.AsyncTaskLoader
-import android.support.v4.content.Loader
 import android.support.v7.app.AppCompatActivity
 import android.text.Html
-import android.text.Spanned
-import android.text.util.Linkify
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
-import ezvcard.Ezvcard
-import kotlinx.android.synthetic.main.about_component.view.*
+import com.mikepenz.aboutlibraries.LibsBuilder
+import kotlinx.android.synthetic.main.about_davdroid.*
 import kotlinx.android.synthetic.main.activity_about.*
-import org.apache.commons.io.IOUtils
-import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.*
-import java.util.logging.Level
 
 class AboutActivity: AppCompatActivity() {
 
-    private class ComponentInfo(
-            val title: String?,
-            val version: String?,
-            val website: String,
-            val copyright: String,
-            val licenseInfo: Int?,
-            val licenseTextFile: String?
-    )
+    companion object {
 
-    private lateinit var components: Array<ComponentInfo>
+        const val pixelsHtml = "<font color=\"#fff433\">■</font>" +
+                "<font color=\"#ffffff\">■</font>" +
+                "<font color=\"#9b59d0\">■</font>" +
+                "<font color=\"#000000\">■</font>"
 
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        components = arrayOf(
-            ComponentInfo(
-                    null, BuildConfig.VERSION_NAME, getString(R.string.homepage_url),
-                    "Ricki Hirner, Bernhard Stockmann (bitfire web engineering)",
-                    R.string.about_license_info_no_warranty, "gpl-3.0-standalone.html"
-            ), ComponentInfo(
-                    "AmbilWarna", null, "https://github.com/yukuku/ambilwarna",
-                    "Yuku", R.string.about_license_info_no_warranty, "apache2.html"
-            ), ComponentInfo(
-                    "Apache Commons", null, "http://commons.apache.org/",
-                    "Apache Software Foundation", R.string.about_license_info_no_warranty, "apache2.html"
-            ), ComponentInfo(
-                    "dnsjava", null, "http://dnsjava.org/",
-                    "Brian Wellington", R.string.about_license_info_no_warranty, "bsd.html"
-            ), ComponentInfo(
-                    "ez-vcard", Ezvcard.VERSION, "https://github.com/mangstadt/ez-vcard",
-                    "Michael Angstadt", R.string.about_license_info_no_warranty, "bsd.html"
-            ), ComponentInfo(
-                    "ical4j", at.bitfire.ical4android.Constants.ical4jVersion, "https://ical4j.github.io/",
-                    "Ben Fortuna", R.string.about_license_info_no_warranty, "bsd-3clause.html"
-            ), ComponentInfo(
-                    "OkHttp", at.bitfire.dav4android.Constants.okHttpVersion, "https://square.github.io/okhttp/",
-                    "Square, Inc.", R.string.about_license_info_no_warranty, "apache2.html"
-            )
-        )
 
         setContentView(R.layout.activity_about)
 
@@ -84,7 +45,18 @@ class AboutActivity: AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         viewpager.adapter = TabsAdapter(supportFragmentManager)
-        tabs.setupWithViewPager(viewpager)
+        tabs.setupWithViewPager(viewpager, false)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.about_davdroid, menu)
+        return true
+    }
+
+    fun showWebsite(item: MenuItem) {
+        val intent = Intent(Intent.ACTION_VIEW, App.homepageUrl(this))
+        if (intent.resolveActivity(packageManager) != null)
+            startActivity(intent)
     }
 
 
@@ -92,124 +64,42 @@ class AboutActivity: AppCompatActivity() {
             fm: FragmentManager
     ): FragmentPagerAdapter(fm) {
 
-        override fun getCount() = components.size
+        override fun getCount() = 2
 
         override fun getPageTitle(position: Int) =
-                components[position].title ?: getString(R.string.app_name)!!
+                when (position) {
+                    1 -> getString(R.string.about_libraries)
+                    else -> getString(R.string.app_name)
+                }!!
 
-        override fun getItem(position: Int) = ComponentFragment.instantiate(position)
+        override fun getItem(position: Int) =
+                when (position) {
+                    1 -> LibsBuilder()
+                            .withAutoDetect(false)
+                            .withFields(R.string::class.java.fields)
+                            .withLicenseShown(true)
+                            .supportFragment()
+                    else -> DavdroidFragment()
+                }!!
     }
 
 
-    class ComponentFragment: Fragment(), LoaderManager.LoaderCallbacks<Spanned> {
+    class DavdroidFragment: Fragment() {
 
-        companion object {
-            const val KEY_POSITION = "position"
-            const val KEY_FILE_NAME = "fileName"
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+                inflater.inflate(R.layout.about_davdroid, container, false)!!
 
-            fun instantiate(position: Int): ComponentFragment {
-                val frag = ComponentFragment()
-                val args = Bundle(1)
-                args.putInt(KEY_POSITION, position)
-                frag.arguments = args
-                return frag
-            }
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            app_name.text = getString(R.string.app_name)
+            app_version.text = getString(R.string.about_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
+            build_time.text = getString(R.string.about_build_date, SimpleDateFormat.getDateInstance().format(BuildConfig.buildTime))
+
+            pixels.text = Html.fromHtml(pixelsHtml)
+
+            /* open-source version */
+                warranty.text = Html.fromHtml(getString(R.string.about_license_info_no_warranty))
+                license_text.text = Html.fromHtml(getString(R.string.gpl_v3))
         }
-
-        private val licenseFragmentLoader = ServiceLoader.load(ILicenseFragment::class.java)!!.firstOrNull()
-
-
-        @SuppressLint("SetTextI18n")
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-            val info = (activity as AboutActivity).components[arguments!!.getInt(KEY_POSITION)]
-
-            val v = inflater.inflate(R.layout.about_component, container, false)
-
-            var title = info.title ?: getString(R.string.app_name)
-            info.version?.let { title += " ${info.version}" }
-            v.title.text = title
-
-            v.website.autoLinkMask = Linkify.WEB_URLS
-            v.website.text = info.website
-
-            v.copyright.text = "© ${info.copyright}"
-
-            if (info.licenseInfo == null && info.licenseTextFile == null) {
-                // No license text, so this must be the app's tab. Show the license fragment here, if available.
-                licenseFragmentLoader?.let { factory ->
-                    fragmentManager!!.beginTransaction()
-                            .add(R.id.license_fragment, factory.getFragment())
-                            .commit()
-                }
-                v.license_terms.visibility = View.GONE
-
-            } else {
-                // show license info
-                if (info.licenseInfo == null)
-                    v.license_info.visibility = View.GONE
-                else
-                    v.license_info.setText(info.licenseInfo)
-
-                // load and format license text
-                if (info.licenseTextFile == null) {
-                    v.license_header.visibility = View.GONE
-                    v.license_text.visibility = View.GONE
-                } else {
-                    val args = Bundle(1)
-                    args.putString(KEY_FILE_NAME, info.licenseTextFile)
-                    loaderManager.initLoader(0, args, this)
-                }
-            }
-
-
-            return v
-        }
-
-        override fun onCreateLoader(id: Int, args: Bundle?) =
-                LicenseLoader(activity!!, args!!.getString(KEY_FILE_NAME))
-
-        override fun onLoadFinished(loader: Loader<Spanned>, license: Spanned?) {
-            view?.let { v ->
-                v.license_text.autoLinkMask = Linkify.EMAIL_ADDRESSES or Linkify.WEB_URLS
-                v.license_text.text = license
-            }
-        }
-
-        override fun onLoaderReset(loader: Loader<Spanned>) {}
-    }
-
-    class LicenseLoader(
-            context: Context,
-            val fileName: String
-    ): AsyncTaskLoader<Spanned>(context) {
-
-        private var content: Spanned? = null
-
-        override fun onStartLoading() {
-            if (content != null)
-                deliverResult(content)
-            else
-                forceLoad()
-        }
-
-        override fun loadInBackground(): Spanned? {
-            Logger.log.fine("Loading license file $fileName")
-            try {
-                context.resources.assets.open(fileName).use {
-                    content = Html.fromHtml(IOUtils.toString(it, Charsets.UTF_8))
-                    return content
-                }
-            } catch(e: IOException) {
-                Logger.log.log(Level.SEVERE, "Couldn't read license file", e)
-                return null
-            }
-        }
-    }
-
-
-    interface ILicenseFragment {
-
-        fun getFragment(): Fragment
 
     }
 

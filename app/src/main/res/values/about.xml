@@ -1,4 +1,72 @@
-<h3 style="text-align: center;">GNU GENERAL PUBLIC LICENSE</h3>
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © Ricki Hirner (bitfire web engineering).
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0
+  ~ which accompanies this distribution, and is available at
+  ~ http://www.gnu.org/licenses/gpl.html
+  -->
+
+<resources>
+
+    <string name="define_ambilwarna" translatable="false" />
+    <string name="library_ambilwarna_author" translatable="false">Randy Sugianto</string>
+    <string name="library_ambilwarna_authorWebsite">https://github.com/yukuku</string>
+    <string name="library_ambilwarna_libraryName" translatable="false">AmbilWarna</string>
+    <string name="library_ambilwarna_libraryDescription">This is a small library for your application to enable the users to select an arbitrary color.</string>
+    <string name="library_ambilwarna_libraryWebsite" translatable="false">https://github.com/yukuku/ambilwarna</string>
+    <string name="library_ambilwarna_isOpenSource" translatable="false">true</string>
+    <string name="library_ambilwarna_licenseId">apache_2_0</string>
+
+    <string name="define_commons" translatable="false" />
+    <string name="library_commons_author" translatable="false">Apache Software Foundation</string>
+    <string name="library_commons_authorWebsite">https://www.apache.org/</string>
+    <string name="library_commons_libraryName" translatable="false">Apache Commons</string>
+    <string name="library_commons_libraryDescription">Apache Commons is an Apache project focused on all aspects of reusable Java components.</string>
+    <string name="library_commons_libraryWebsite" translatable="false">https://commons.apache.org/components.html</string>
+    <string name="library_commons_isOpenSource" translatable="false">true</string>
+    <string name="library_commons_licenseId">apache_2_0</string>
+
+    <string name="define_dnsjava" translatable="false" />
+    <string name="library_dnsjava_author" translatable="false">Brian Wellington</string>
+    <string name="library_dnsjava_authorWebsite">http://www.xbill.org/~bwelling/</string>
+    <string name="library_dnsjava_libraryName" translatable="false">dnsjava</string>
+    <string name="library_dnsjava_libraryDescription">dnsjava is an implementation of DNS in Java.</string>
+    <string name="library_dnsjava_libraryWebsite" translatable="false">http://dnsjava.org/</string>
+    <string name="library_dnsjava_isOpenSource" translatable="false">true</string>
+    <string name="library_dnsjava_licenseId">bsd_3</string>
+
+    <string name="define_ezvcard" translatable="false" />
+    <string name="library_ezvcard_author" translatable="false">Michael Angstadt</string>
+    <string name="library_ezvcard_authorWebsite" translatable="false">http://mikeangstadt.name/</string>
+    <string name="library_ezvcard_libraryName" translatable="false">ez-vcard</string>
+    <string name="library_ezvcard_libraryDescription">ez-vcard is a vCard library written in Java.</string>
+    <string name="library_ezvcard_libraryWebsite" translatable="false">https://github.com/mangstadt/ez-vcard</string>
+    <string name="library_ezvcard_isOpenSource" translatable="false">true</string>
+    <string name="library_ezvcard_licenseId">bsd_2</string>
+
+    <string name="define_ical4j" translatable="false" />
+    <string name="library_ical4j_author" translatable="false">Ben Fortuna</string>
+    <string name="library_ical4j_authorWebsite">http://basepatterns.org/</string>
+    <string name="library_ical4j_libraryName" translatable="false">ical4j</string>
+    <string name="library_ical4j_libraryDescription">iCal4j is a Java API that provides support for the iCalendar specification as defined in RFC2445.</string>
+    <string name="library_ical4j_libraryWebsite" translatable="false">https://ical4j.github.io/</string>
+    <string name="library_ical4j_isOpenSource" translatable="false">true</string>
+    <string name="library_ical4j_licenseId">bsd_3</string>
+
+    <string name="define_okhttp" translatable="false" />
+    <string name="library_okhttp_author" translatable="false">Square, Inc.</string>
+    <string name="library_okhttp_authorWebsite">https://squareup.com/</string>
+    <string name="library_okhttp_libraryName" translatable="false">okhttp</string>
+    <string name="library_okhttp_libraryDescription">An HTTP+HTTP/2 client for Android and Java applications that\’s efficient by default.</string>
+    <string name="library_okhttp_libraryWebsite" translatable="false">http://square.github.io/okhttp/</string>
+    <string name="library_okhttp_isOpenSource" translatable="false">true</string>
+    <string name="library_okhttp_licenseId">apache_2_0</string>
+
+
+    <!-- license texts -->
+    <string name="gpl_v3"><![CDATA[
+    <h3 style="text-align: center;">GNU GENERAL PUBLIC LICENSE</h3>
 <p style="text-align: center;">Version 3, 29 June 2007</p>
 
 <p>Copyright &copy; 2007 Free Software Foundation, Inc.
@@ -42,16 +110,16 @@ know their rights.</p>
 (1) assert copyright on the software, and (2) offer you this License
 giving you legal permission to copy, distribute and/or modify it.</p>
 
-<p>For the developers' and authors' protection, the GPL clearly explains
-that there is no warranty for this free software.  For both users' and
-authors' sake, the GPL requires that modified versions be marked as
+<p>For the developers\' and authors\' protection, the GPL clearly explains
+that there is no warranty for this free software.  For both users\' and
+authors\' sake, the GPL requires that modified versions be marked as
 changed, so that their problems will not be attributed erroneously to
 authors of previous versions.</p>
 
 <p>Some devices are designed to deny users access to install or run
 modified versions of the software inside them, although the manufacturer
 can do so.  This is fundamentally incompatible with the aim of
-protecting users' freedom to change the software.  The systematic
+protecting users\' freedom to change the software.  The systematic
 pattern of such abuse occurs in the area of products for individuals to
 use, which is precisely where it is most unacceptable.  Therefore, we
 have designed this version of the GPL to prohibit the practice for those
@@ -77,7 +145,7 @@ modification follow.</p>
 
 <p>&ldquo;Copyright&rdquo; also means copyright-like laws that apply to other kinds of
 works, such as semiconductor masks.</p>
- 
+
 <p>&ldquo;The Program&rdquo; refers to any copyrightable work licensed under this
 License.  Each licensee is addressed as &ldquo;you&rdquo;.  &ldquo;Licensees&rdquo; and
 &ldquo;recipients&rdquo; may be individuals or organizations.</p>
@@ -135,7 +203,7 @@ produce the work, or an object code interpreter used to run it.</p>
 <p>The &ldquo;Corresponding Source&rdquo; for a work in object code form means all
 the source code needed to generate, install, and (for an executable
 work) run the object code and to modify the work, including scripts to
-control those activities.  However, it does not include the work's
+control those activities.  However, it does not include the work\'s
 System Libraries, or general-purpose tools or generally available free
 programs which are used unmodified in performing those activities but
 which are not part of the work.  For example, Corresponding Source
@@ -177,7 +245,7 @@ your copyrighted material outside their relationship with you.</p>
 the conditions stated below.  Sublicensing is not allowed; section 10
 makes it unnecessary.</p>
 
-<h4><a name="section3"></a>3. Protecting Users' Legal Rights From Anti-Circumvention Law.</h4>
+<h4><a name="section3"></a>3. Protecting Users\' Legal Rights From Anti-Circumvention Law.</h4>
 
 <p>No covered work shall be deemed part of an effective technological
 measure under any applicable law fulfilling obligations under article
@@ -189,13 +257,13 @@ measures.</p>
 circumvention of technological measures to the extent such circumvention
 is effected by exercising rights under this License with respect to
 the covered work, and you disclaim any intention to limit operation or
-modification of the work as a means of enforcing, against the work's
-users, your or third parties' legal rights to forbid circumvention of
+modification of the work as a means of enforcing, against the work\'s
+users, your or third parties\' legal rights to forbid circumvention of
 technological measures.</p>
 
 <h4><a name="section4"></a>4. Conveying Verbatim Copies.</h4>
 
-<p>You may convey verbatim copies of the Program's source code as you
+<p>You may convey verbatim copies of the Program\'s source code as you
 receive it, in any medium, provided that you conspicuously and
 appropriately publish on each copy an appropriate copyright notice;
 keep intact all notices stating that this License and any
@@ -240,7 +308,7 @@ works, which are not by their nature extensions of the covered work,
 and which are not combined with it such as to form a larger program,
 in or on a volume of a storage or distribution medium, is called an
 &ldquo;aggregate&rdquo; if the compilation and its resulting copyright are not
-used to limit the access or legal rights of the compilation's users
+used to limit the access or legal rights of the compilation\'s users
 beyond what the individual works permit.  Inclusion of a covered work
 in an aggregate does not cause this License to apply to the other
 parts of the aggregate.</p>
@@ -462,7 +530,7 @@ organization, or substantially all assets of one, or subdividing an
 organization, or merging organizations.  If propagation of a covered
 work results from an entity transaction, each party to that
 transaction who receives a copy of the work also receives whatever
-licenses to the work the party's predecessor in interest had or could
+licenses to the work the party\'s predecessor in interest had or could
 give under the previous paragraph, plus a right to possession of the
 Corresponding Source of the work from the predecessor in interest, if
 the predecessor has it or can get it with reasonable efforts.</p>
@@ -479,9 +547,9 @@ sale, or importing the Program or any portion of it.</p>
 
 <p>A &ldquo;contributor&rdquo; is a copyright holder who authorizes use under this
 License of the Program or a work on which the Program is based.  The
-work thus licensed is called the contributor's &ldquo;contributor version&rdquo;.</p>
+work thus licensed is called the contributor\'s &ldquo;contributor version&rdquo;.</p>
 
-<p>A contributor's &ldquo;essential patent claims&rdquo; are all patent claims
+<p>A contributor\'s &ldquo;essential patent claims&rdquo; are all patent claims
 owned or controlled by the contributor, whether already acquired or
 hereafter acquired, that would be infringed by some manner, permitted
 by this License, of making, using, or selling its contributor version,
@@ -492,7 +560,7 @@ patent sublicenses in a manner consistent with the requirements of
 this License.</p>
 
 <p>Each contributor grants you a non-exclusive, worldwide, royalty-free
-patent license under the contributor's essential patent claims, to
+patent license under the contributor\'s essential patent claims, to
 make, use, sell, offer for sale, import and otherwise run, modify and
 propagate the contents of its contributor version.</p>
 
@@ -513,10 +581,10 @@ patent license for this particular work, or (3) arrange, in a manner
 consistent with the requirements of this License, to extend the patent
 license to downstream recipients.  &ldquo;Knowingly relying&rdquo; means you have
 actual knowledge that, but for the patent license, your conveying the
-covered work in a country, or your recipient's use of the covered work
+covered work in a country, or your recipient\'s use of the covered work
 in a country, would infringe one or more identifiable patents in that
 country that you have reason to believe are valid.</p>
-  
+
 <p>If, pursuant to or in connection with a single transaction or
 arrangement, you convey, or propagate by procuring conveyance of, a
 covered work, and grant a patent license to some of the parties
@@ -544,7 +612,7 @@ or that patent license was granted, prior to 28 March 2007.</p>
 any implied license or other defenses to infringement that may
 otherwise be available to you under applicable patent law.</p>
 
-<h4><a name="section12"></a>12. No Surrender of Others' Freedom.</h4>
+<h4><a name="section12"></a>12. No Surrender of Others\' Freedom.</h4>
 
 <p>If conditions are imposed on you (whether by court order, agreement or
 otherwise) that contradict the conditions of this License, they do not
@@ -584,7 +652,7 @@ GNU General Public License, you may choose any version ever published
 by the Free Software Foundation.</p>
 
 <p>If the Program specifies that a proxy can decide which future
-versions of the GNU General Public License can be used, that proxy's
+versions of the GNU General Public License can be used, that proxy\'s
 public statement of acceptance of a version permanently authorizes you
 to choose that version for the Program.</p>
 
@@ -626,3 +694,6 @@ Program, unless a warranty or assumption of liability accompanies a
 copy of the Program in return for a fee.</p>
 
 <p>END OF TERMS AND CONDITIONS</p>
+    ]]></string>
+
+</resources>

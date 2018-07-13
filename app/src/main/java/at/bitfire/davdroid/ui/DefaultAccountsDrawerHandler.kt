@@ -44,19 +44,18 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
             R.id.nav_twitter ->
                 activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/davdroidapp")))
             R.id.nav_website ->
-                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.homepage_url))))
+                activity.startActivity(Intent(Intent.ACTION_VIEW, App.homepageUrl(activity)))
             R.id.nav_manual ->
-                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.homepage_url))
+                activity.startActivity(Intent(Intent.ACTION_VIEW, App.homepageUrl(activity)
                         .buildUpon().appendEncodedPath("manual/").build()))
             R.id.nav_faq ->
-                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.homepage_url))
+                activity.startActivity(Intent(Intent.ACTION_VIEW, App.homepageUrl(activity)
                         .buildUpon().appendEncodedPath("faq/").build()))
             R.id.nav_forums ->
-                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.homepage_url))
+                activity.startActivity(Intent(Intent.ACTION_VIEW, App.homepageUrl(activity)
                         .buildUpon().appendEncodedPath("forums/").build()))
             R.id.nav_donate ->
-                //if (BuildConfig.FLAVOR != App.FLAVOR_GOOGLE_PLAY)
-                    activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.homepage_url))
+                    activity.startActivity(Intent(Intent.ACTION_VIEW, App.homepageUrl(activity)
                             .buildUpon().appendEncodedPath("donate/").build()))
             else ->
                 return false
