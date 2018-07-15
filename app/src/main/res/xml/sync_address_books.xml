@@ -10,4 +10,5 @@
     android:accountType="@string/account_type"
     android:contentAuthority="@string/address_books_authority"
     android:isAlwaysSyncable="true"
+    android:allowParallelSyncs="true"
     android:supportsUploading="false" />
