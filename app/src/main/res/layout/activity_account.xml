@@ -17,7 +17,20 @@
     <LinearLayout android:orientation="vertical"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:padding="@dimen/activity_margin">
+                  android:padding="@dimen/activity_margin"
+                  android:animateLayoutChanges="true">
+
+        <TextView
+            android:id="@+id/select_collections_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:drawableLeft="@drawable/ic_touch_app_dark"
+            android:drawableStart="@drawable/ic_touch_app_dark"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:visibility="gone"
+            android:text="@string/account_select_collections_hint"/>
 
         <android.support.v7.widget.CardView
             android:id="@+id/carddav"
