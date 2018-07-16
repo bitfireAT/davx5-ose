@@ -330,6 +330,10 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     override fun onLoadFinished(loader: Loader<AccountInfo>, info: AccountInfo?) {
         accountInfo = info
 
+        if (info?.caldav?.collections?.any { it.selected } != true &&
+            info?.carddav?.collections?.any { it.selected} != true)
+            select_collections_hint.visibility = View.VISIBLE
+
         carddav.visibility = info?.carddav?.let { carddav ->
             carddav_refreshing.visibility = if (carddav.refreshing) View.VISIBLE else View.GONE
 
