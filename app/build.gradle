@@ -11,6 +11,10 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka-android'
 
+ext {
+    baseVersionName = "1.12-beta2"
+}
+
 android {
     compileSdkVersion 27
     buildToolsVersion '28.0.1'
@@ -18,7 +22,7 @@ android {
     defaultConfig {
         applicationId "at.bitfire.davdroid"
 
-        versionCode 236
+        versionCode 237
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "customCerts", "true"
 
@@ -30,10 +34,9 @@ android {
     }
 
     flavorDimensions "type"
-
     productFlavors {
         standard {
-            versionName "1.12-beta1-ose"
+            versionName "$baseVersionName-ose"
 
             buildConfigField "boolean", "customCerts", "true"
         }
