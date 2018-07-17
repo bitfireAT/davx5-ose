@@ -11,6 +11,10 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka-android'
 
+ext {
+    baseVersionName = "1.12-beta2"
+}
+
 android {
     compileSdkVersion 27
     buildToolsVersion '28.0.1'
@@ -19,7 +23,7 @@ android {
         applicationId "at.bitfire.davdroid"
         resValue "string", "packageID", applicationId
 
-        versionCode 236
+        versionCode 237
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         minSdkVersion 19        // Android 4.4
@@ -33,17 +37,16 @@ android {
     }
 
     flavorDimensions "type"
-
     productFlavors {
         standard {
             dimension "type"
-            versionName "1.12-beta1"
+            versionName baseVersionName
 
             buildConfigField "boolean", "customCerts", "true"
         }
         managed {
             dimension "type"
-            versionName "1.12-beta1-mgd"
+            versionName "$baseVersionName-mgd"
 
             applicationId "com.davdroid.managed"
             resValue "string", "packageID", applicationId
@@ -55,20 +58,20 @@ android {
 
         gplay {
             dimension "type"
-            versionName "1.12-beta1-gplay"
+            versionName "$baseVersionName-gplay"
 
             buildConfigField "boolean", "customCerts", "true"
         }
         icloud {
             dimension "type"
-            versionName "1.12-beta1-icloud"
+            versionName "$baseVersionName-icloud"
 
             applicationId "at.bitfire.cloudsync"
             resValue "string", "packageID", applicationId
         }
         soldupe {
             dimension "type"
-            versionName "1.12-beta1-soldupe"
+            versionName "$baseVersionName-soldupe"
 
             applicationId "com.soldupe.cloudsync"
             resValue "string", "packageID", applicationId
