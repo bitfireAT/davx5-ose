@@ -16,6 +16,7 @@
     <string name="account_title_address_book">DAVdroid Address book</string>
     <string name="address_books_authority" translatable="false">at.bitfire.davdroid.addressbooks</string>
     <string name="address_books_authority_title">Address books</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="help">Help</string>
     <string name="manage_accounts">Manage accounts</string>
     <string name="please_wait">Please wait …</string>
@@ -258,7 +259,8 @@
     <string name="delete_collection_deleting_collection">Deleting collection</string>
     <string name="collection_force_read_only">Force read-only</string>
     <string name="collection_properties">Properties</string>
-    <string name="collection_properties_url">URL:</string>
+    <string name="collection_properties_url">Address (URL):</string>
+    <string name="collection_properties_copy_url">Copy URL</string>
 
     <!-- ExceptionInfoFragment -->
     <string name="exception">An error has occurred.</string>

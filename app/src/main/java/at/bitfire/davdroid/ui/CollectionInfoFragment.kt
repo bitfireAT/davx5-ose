@@ -10,9 +10,14 @@ package at.bitfire.davdroid.ui
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
+import android.widget.Toast
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.CollectionInfo
 import kotlinx.android.synthetic.main.collection_properties.view.*
@@ -39,6 +44,13 @@ class CollectionInfoFragment : DialogFragment() {
 
         val view = requireActivity().layoutInflater.inflate(R.layout.collection_properties, null)
         view.url.text = info.url.toString()
+
+        view.url_copy.setOnClickListener {
+            val clipboard = requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val text = ClipData.newPlainText(info.displayName, info.url.toString())
+            clipboard.primaryClip = text
+            Toast.makeText(requireActivity(), R.string.copied_to_clipboard, Toast.LENGTH_LONG).show()
+        }
 
         return AlertDialog.Builder(requireActivity())
                 .setTitle(info.displayName)
