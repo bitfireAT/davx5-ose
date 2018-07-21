@@ -13,4 +13,18 @@ object Constants {
 
     const val DEFAULT_SYNC_INTERVAL = 4 * 3600L    // 4 hours
 
+    /**
+     * Context label for [org.apache.commons.lang3.exception.ContextedException].
+     * Context value is the [at.bitfire.davdroid.resource.LocalResource]
+     * which is related to the exception cause.
+     */
+    const val EXCEPTION_CONTEXT_LOCAL_RESOURCE = "localResource"
+
+    /**
+     * Context label for [org.apache.commons.lang3.exception.ContextedException].
+     * Context value is the [okhttp3.HttpUrl] of the remote resource
+     * which is related to the exception cause.
+     */
+    const val EXCEPTION_CONTEXT_REMOTE_RESOURCE = "remoteResource"
+
 }

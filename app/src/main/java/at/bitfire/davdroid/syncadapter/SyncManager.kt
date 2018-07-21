@@ -25,6 +25,7 @@ import at.bitfire.dav4android.property.GetETag
 import at.bitfire.dav4android.property.SyncToken
 import at.bitfire.davdroid.*
 import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.SyncState
@@ -38,6 +39,7 @@ import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.ContactsStorageException
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
+import org.apache.commons.lang3.exception.ContextedException
 import org.dmfs.tasks.contract.TaskContract
 import java.io.IOException
 import java.io.InterruptedIOException
@@ -755,9 +757,12 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     protected fun<T: ResourceType?, R> useLocal(local: T, body: (T) -> R): R {
         try {
             return body(local)
-        } catch(e: Throwable) {
+        } catch (e: ContextedException) {
+            e.addContextValue(Constants.EXCEPTION_CONTEXT_LOCAL_RESOURCE, local)
+            throw e
+        } catch (e: Throwable) {
             if (local != null)
-                throw ExceptionInfo(e, local)
+                throw ContextedException(e).setContextValue(Constants.EXCEPTION_CONTEXT_LOCAL_RESOURCE, local)
             else
                 throw e
         }
@@ -766,16 +771,22 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     protected fun<T: DavResource, R> useRemote(remote: T, body: (T) -> R): R {
         try {
             return body(remote)
+        } catch (e: ContextedException) {
+            e.addContextValue(Constants.EXCEPTION_CONTEXT_REMOTE_RESOURCE, remote.location)
+            throw e
         } catch(e: Throwable) {
-            throw ExceptionInfo(e, remote.location)
+            throw ContextedException(e).setContextValue(Constants.EXCEPTION_CONTEXT_REMOTE_RESOURCE, remote.location)
         }
     }
 
     protected fun<T> useRemote(remote: Response, body: (Response) -> T): T {
         try {
             return body(remote)
+        } catch (e: ContextedException) {
+            e.addContextValue(Constants.EXCEPTION_CONTEXT_REMOTE_RESOURCE, remote.href)
+            throw e
         } catch (e: Throwable) {
-            throw ExceptionInfo(e, remote.href)
+            throw ContextedException(e).setContextValue(Constants.EXCEPTION_CONTEXT_REMOTE_RESOURCE, remote.href)
         }
     }
 
@@ -793,17 +804,18 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         var local: ResourceType? = null
         var remote: HttpUrl? = null
 
-        while (ex is ExceptionInfo) {
+        while (ex is ContextedException) {
             @Suppress("UNCHECKED_CAST")
-            (ex.context as? ResourceType)?.let {
+            // we want the innermost context value, which is the first one
+            (ex.getFirstContextValue(Constants.EXCEPTION_CONTEXT_LOCAL_RESOURCE) as? ResourceType)?.let {
                 if (local == null)
                     local = it
             }
-            (ex.context as? HttpUrl)?.let {
+            (ex.getFirstContextValue(Constants.EXCEPTION_CONTEXT_REMOTE_RESOURCE) as? HttpUrl)?.let {
                 if (remote == null)
                     remote = it
             }
-            ex = ex.exception
+            ex = ex.cause
         }
 
         if (ex != null)
