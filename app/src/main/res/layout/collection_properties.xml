@@ -44,6 +44,7 @@
                 android:layout_gravity="center"
                 android:padding="1sp"
                 android:background="@android:color/transparent"
+                android:layout_marginLeft="4dp"
                 app:srcCompat="@drawable/ic_content_copy_dark"
                 android:contentDescription="@string/collection_properties_copy_url" />
 
