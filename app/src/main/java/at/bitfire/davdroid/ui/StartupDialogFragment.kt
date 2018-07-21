@@ -30,7 +30,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.ISettings
-import org.apache.commons.lang3.StringUtils
+import org.apache.commons.lang3.text.WordUtils
 import java.util.*
 import java.util.logging.Level
 
@@ -130,15 +130,15 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
             Mode.AUTOSTART_PERMISSIONS ->
                 AlertDialog.Builder(activity)
                         .setIcon(R.drawable.ic_error_dark)
-                        .setTitle(getString(R.string.startup_autostart_permission, StringUtils.capitalize(Build.MANUFACTURER)))
-                        .setMessage(R.string.startup_autostart_permission_message)
+                        .setTitle(R.string.startup_autostart_permission)
+                        .setMessage(getString(R.string.startup_autostart_permission_message, WordUtils.capitalize(Build.MANUFACTURER.toLowerCase())))
                         .setPositiveButton(R.string.startup_more_info) { _, _ ->
                             val intent = Intent(Intent.ACTION_VIEW, App.homepageUrl(requireActivity()).buildUpon()
                                     .appendPath("faq").appendEncodedPath("automatic-synchronization-is-not-run-as-expected/").build())
                             if (intent.resolveActivity(activity.packageManager) != null)
                                 activity.startActivity(intent)
                         }
-                        .setNeutralButton(android.R.string.ok) { _, _ -> }
+                        .setNeutralButton(R.string.startup_not_now) { _, _ -> }
                         .setNegativeButton(R.string.startup_dont_show_again) { _, _ ->
                             settings?.putBoolean(HINT_AUTOSTART_PERMISSIONS, false)
                         }
@@ -155,7 +155,7 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                             if (intent.resolveActivity(activity.packageManager) != null)
                                 activity.startActivity(intent)
                         }
-                        .setNeutralButton(android.R.string.ok) { _, _ -> }
+                        .setNeutralButton(R.string.startup_not_now) { _, _ -> }
                         .setNegativeButton(R.string.startup_dont_show_again) { _: DialogInterface, _: Int ->
                             settings?.putBoolean(HINT_BATTERY_OPTIMIZATIONS, false)
                         }
@@ -178,7 +178,7 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                             if (intent.resolveActivity(activity.packageManager) != null)
                                 activity.startActivity(intent)
                         }
-                        .setNeutralButton(android.R.string.ok) { _, _ -> }
+                        .setNeutralButton(R.string.startup_not_now) { _, _ -> }
                         .setNegativeButton(R.string.startup_dont_show_again) { _, _ ->
                             settings?.putBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, false)
                         }
@@ -200,7 +200,7 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                             else
                                 Logger.log.warning("No market app available, can't install OpenTasks")
                         }
-                        .setNeutralButton(android.R.string.ok) { _, _ -> }
+                        .setNeutralButton(R.string.startup_not_now) { _, _ -> }
                         .setNegativeButton(R.string.startup_dont_show_again) { _: DialogInterface, _: Int ->
                             settings?.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
                         }

@@ -32,12 +32,13 @@
     <string name="notification_channel_sync_status">Status messages</string>
 
     <!-- startup dialogs -->
-    <string name="startup_autostart_permission">%s auto-start permission</string>
-    <string name="startup_autostart_permission_message">Device firmware may prevent automatic synchronization. You may have to allow automatic synchronization manually.</string>
-    <string name="startup_battery_optimization">Battery Optimization</string>
-    <string name="startup_battery_optimization_message">Android may disable/reduce DAVdroid synchronization after a few days. To prevent this, turn off battery optimization.</string>
+    <string name="startup_autostart_permission">Automatic synchronization</string>
+    <string name="startup_autostart_permission_message">%s firmware often blocks automatic synchronization. In this case, allow automatic synchronization in your Android settings.</string>
+    <string name="startup_battery_optimization">Scheduled synchronization</string>
+    <string name="startup_battery_optimization_message">Your device will restrain DAVdroid synchronization. To enforce regular DAVdroid sync intervals, turn off \"battery optimization\".</string>
     <string name="startup_battery_optimization_disable">Turn off for DAVdroid</string>
     <string name="startup_dont_show_again">Don\'t show again</string>
+    <string name="startup_not_now">Not now</string>
     <string name="startup_donate">Open-Source Information</string>
     <string name="startup_donate_message">We\'re happy that you use DAVdroid, which is open-source software (GPLv3). Because developing DAVdroid is hard work and took us thousands of working hours, please consider a donation.</string>
     <string name="startup_donate_now">Show donation page</string>
