@@ -7,8 +7,6 @@
   <string name="please_wait">Chvíli strpení ...</string>
   <string name="send">Odeslat</string>
   <!--startup dialogs-->
-  <string name="startup_battery_optimization">Optimalizace využití baterie</string>
-  <string name="startup_battery_optimization_message">Android může po několika dnech vypnout/prodloužit interval synchronizování DAVdroid. Chcete-li tomuto zabránit, vypněte optimalizaci baterie.</string>
   <string name="startup_battery_optimization_disable">Vypnout pro DAVdroid</string>
   <string name="startup_dont_show_again">Již nezobrazovat</string>
   <string name="startup_donate">Open Source informace</string>

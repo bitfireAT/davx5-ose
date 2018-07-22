@@ -4,6 +4,7 @@
   <string name="app_name">DAVdroid</string>
   <string name="account_title_address_book">Livro de endereços DAVdroid</string>
   <string name="address_books_authority_title">Livros de endereços</string>
+  <string name="copied_to_clipboard">Copiado para a área de transferência</string>
   <string name="help">Ajuda</string>
   <string name="manage_accounts">Gerenciar contas</string>
   <string name="please_wait">Por favor, aguarde...</string>
@@ -15,12 +16,13 @@
   <string name="notification_channel_sync_io_errors">Erros de rede e E/S</string>
   <string name="notification_channel_sync_status">Mensagens de status</string>
   <!--startup dialogs-->
-  <string name="startup_autostart_permission">%s permissão de início automático</string>
-  <string name="startup_autostart_permission_message">O firmware do aparelho pode impedir a sincronização automática. Você pode ter que definir a sincronização automática de forma manual.</string>
-  <string name="startup_battery_optimization">Otimização da bateria</string>
-  <string name="startup_battery_optimization_message">O Android pode desativar/reduzir a sincronização do DAVdroid depois de alguns dias. Para evitar isso, desligue a otimização da bateria.</string>
+  <string name="startup_autostart_permission">Sincronização automática</string>
+  <string name="startup_autostart_permission_message">O firmware%s frequentemente bloqueia a sincronização automática. Nesse caso, ative a sincronização automática nas configurações do seu Android.</string>
+  <string name="startup_battery_optimization">Sincronização agendada</string>
+  <string name="startup_battery_optimization_message">Seu aparelho irá restringir a sincronização do DAVdroid. Para forçar a sincronização do DAVdroid em intervalos regulares, desligue a \"otimização da bateria\".</string>
   <string name="startup_battery_optimization_disable">Desligar para o DAVdroid</string>
   <string name="startup_dont_show_again">Não mostrar novamente</string>
+  <string name="startup_not_now">Não agora</string>
   <string name="startup_donate">Informação sobre Código Aberto</string>
   <string name="startup_donate_message">Estamos felizes que você usa o DAVdroid, um software de código aberto (GPLv3). O desenvolvimento do DAVdroid é trabalhoso e consome muitas horas de trabalho. Por esse motivo, considere fazer uma doação.</string>
   <string name="startup_donate_now">Mostrar a página de doações</string>
@@ -33,6 +35,10 @@
   <string name="startup_opentasks_reinstall_davdroid">Depois da instalação do OpenTasks, torna-se necessário REINSTALAR o DAVdroid e adicionar suas contas novamente (erro do Android).</string>
   <string name="startup_opentasks_not_installed_install">Instalar o OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_libraries">Bibliotecas</string>
+  <string name="about_version">Versão %1s (%2d)</string>
+  <string name="about_build_date">Compilado em %s</string>
+  <string name="about_flavor_info">Esta versão está disponível apenas para distribuição na Google Play.</string>
   <string name="about_license_info_no_warranty">Este programa é distribuído SEM NENHUMA GARANTIA. Ele é software livre e pode ser redistribuído sob algumas condições.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">Registro do arquivo do DAVdroid</string>
@@ -94,6 +100,7 @@
   <string name="account_delete">Excluir conta</string>
   <string name="account_delete_confirmation_title">Deseja excluir a conta?</string>
   <string name="account_delete_confirmation_text">Todas as cópias locais dos livros de endereços, calendários e listas de tarefas serão excluídas.</string>
+  <string name="account_select_collections_hint">Selecione as coleções a sincronizar</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -215,6 +222,9 @@
   <string name="delete_collection_confirm_warning">Esta coleção (%s) e todos os seus dados serão removidos do servidor.</string>
   <string name="delete_collection_deleting_collection">Excluindo coleção</string>
   <string name="collection_force_read_only">Forçar somente leitura</string>
+  <string name="collection_properties">Propriedades</string>
+  <string name="collection_properties_url">Endereço (URL):</string>
+  <string name="collection_properties_copy_url">Copiar URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Ocorreu um erro.</string>
   <string name="exception_httpexception">Ocorreu um erro de HTTP.</string>

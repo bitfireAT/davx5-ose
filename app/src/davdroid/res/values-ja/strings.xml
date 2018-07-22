@@ -15,10 +15,6 @@
   <string name="notification_channel_sync_io_errors">ネットワークおよび I/O エラー</string>
   <string name="notification_channel_sync_status">ステータスメッセージ</string>
   <!--startup dialogs-->
-  <string name="startup_autostart_permission">%s 自動開始アクセス許可</string>
-  <string name="startup_autostart_permission_message">デバイスのファームウェアにより自動同期を妨げる可能性があります。 手動で自動同期を許可する必要があります。</string>
-  <string name="startup_battery_optimization">バッテリー最適化</string>
-  <string name="startup_battery_optimization_message">Android は数日後に DAVdroid の同期を無効にする/減らすことがあります。これを防止するには、バッテリー最適化をオフにしてください。</string>
   <string name="startup_battery_optimization_disable">DAVdroid 用にオフにする</string>
   <string name="startup_dont_show_again">次回から表示しない</string>
   <string name="startup_donate">オープンソース情報</string>
@@ -33,6 +29,10 @@
   <string name="startup_opentasks_reinstall_davdroid">OpenTasks をインストールした後で、DAVdroidを再インストールして、再度アカウントを追加してください (Android のバグ)。</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks をインストール</string>
   <!--AboutActivity-->
+  <string name="about_libraries">ライブラリー</string>
+  <string name="about_version">バージョン %1s (%2d)</string>
+  <string name="about_build_date">コンパイル日時 %s</string>
+  <string name="about_flavor_info">このバージョンは Google Play での配信にのみ対応です。</string>
   <string name="about_license_info_no_warranty">このプログラムは完全に無保証で提供されます。これはフリーソフトウェアで、特定の条件下での再頒布を歓迎します。</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid ファイルログ</string>
@@ -94,6 +94,7 @@
   <string name="account_delete">アカウントを削除</string>
   <string name="account_delete_confirmation_title">アカウントを削除してもよろしいですか?</string>
   <string name="account_delete_confirmation_text">アドレス帳、カレンダー、タスクリストのローカルコピーがすべて削除されます。</string>
+  <string name="account_select_collections_hint">同期するコレクションを選択</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>

@@ -14,8 +14,6 @@
   <string name="notification_channel_sync_io_errors">Errori di Rete e di I/O</string>
   <string name="notification_channel_sync_status">Messaggi di stato</string>
   <!--startup dialogs-->
-  <string name="startup_battery_optimization">Ottimizzazione della batteria</string>
-  <string name="startup_battery_optimization_message">Android può ridurre o disabilitare la sincronizzazione di DAVdroid dopo alcuni giorni. Per prevenire questo comportamento disabilita l\'ottimizzazione della batteria</string>
   <string name="startup_battery_optimization_disable">Disabilita per DAVdroid</string>
   <string name="startup_dont_show_again">Non mostrare più</string>
   <string name="startup_donate">Informazioni sull\'Open-Source</string>

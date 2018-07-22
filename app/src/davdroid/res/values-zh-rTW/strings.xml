@@ -9,8 +9,6 @@
   <string name="please_wait">請稍待 ...</string>
   <string name="send">送出</string>
   <!--startup dialogs-->
-  <string name="startup_battery_optimization">電池最佳化</string>
-  <string name="startup_battery_optimization_message">Android 在數日之後可能會關閉或減少 DAVdroid 的同步。為了避免這發生，請關閉電池最佳化。</string>
   <string name="startup_battery_optimization_disable">關閉 DAVdroid 的電池最佳化</string>
   <string name="startup_dont_show_again">不要再顯示此訊息</string>
   <string name="startup_donate">開源資訊</string>

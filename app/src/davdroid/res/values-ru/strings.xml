@@ -4,6 +4,7 @@
   <string name="app_name">DAVdroid</string>
   <string name="account_title_address_book">Адресная книга DAVdroid</string>
   <string name="address_books_authority_title">Адресные книги</string>
+  <string name="copied_to_clipboard">Скопировано в буфер обмена</string>
   <string name="help">Помощь</string>
   <string name="manage_accounts">Управление аккаунтами</string>
   <string name="please_wait">Пожалуйста, подождите …</string>
@@ -15,10 +16,6 @@
   <string name="notification_channel_sync_io_errors">Ошибки сети и ввода/вывода</string>
   <string name="notification_channel_sync_status">Сообщения о состоянии</string>
   <!--startup dialogs-->
-  <string name="startup_autostart_permission">Разрешение автозапуска %s</string>
-  <string name="startup_autostart_permission_message">Прошивка устройства может препятствовать автоматической синхронизации. Возможно, придется разрешить автоматическую синхронизацию вручную.</string>
-  <string name="startup_battery_optimization">Оптимизация батареи</string>
-  <string name="startup_battery_optimization_message">Android может ограничить работу DAVdroid в фоновом режиме. Чтобы этого не произошло, необходимо отключить оптимизацию энергопотребления .</string>
   <string name="startup_battery_optimization_disable">Отключить для DAVdroid</string>
   <string name="startup_dont_show_again">Не показывать снова</string>
   <string name="startup_donate">Open-Source информация</string>
@@ -33,6 +30,10 @@
   <string name="startup_opentasks_reinstall_davdroid">После установки OpenTasks необходимо ПЕРЕУСТАНОВИТЬ DAVdroid и повторно добавить ваши аккаунты (проблема Android).</string>
   <string name="startup_opentasks_not_installed_install">Установить OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_libraries">Библиотеки</string>
+  <string name="about_version">Версия %1s (%2d)</string>
+  <string name="about_build_date">Скомпилировано %s</string>
+  <string name="about_flavor_info">Эта версия распространяется только через Google Play.</string>
   <string name="about_license_info_no_warranty">Эта программа поставляется БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ. Это свободное программное обеспечение и вы можете распространять его при соблюдении определенных условий.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">Файл журнала DAVdroid</string>
@@ -94,6 +95,7 @@
   <string name="account_delete">Удалить аккаунт</string>
   <string name="account_delete_confirmation_title">Вы действительно хотите удалить аккаунт?</string>
   <string name="account_delete_confirmation_text">Все локальные копии адресных книг, календарей и задач будут удалены.</string>
+  <string name="account_select_collections_hint">Выберите коллекции для синхронизации</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">WebСal</string>
@@ -217,6 +219,9 @@
   <string name="delete_collection_confirm_warning">Эта коллекция (%s) и все ее данные будут удалены с сервера.</string>
   <string name="delete_collection_deleting_collection">Удаление коллекции</string>
   <string name="collection_force_read_only">Только для чтения</string>
+  <string name="collection_properties">Свойства</string>
+  <string name="collection_properties_url">Адрес (URL):</string>
+  <string name="collection_properties_copy_url">Копировать URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Произошла ошибка.</string>
   <string name="exception_httpexception">Произошла ошибка HTTP</string>
