@@ -14,10 +14,6 @@
   <string name="notification_channel_sync_io_errors">Xarxa i errors E/S</string>
   <string name="notification_channel_sync_status">Estat dels misatges</string>
   <!--startup dialogs-->
-  <string name="startup_autostart_permission">%s permisos d\'inici automàtic</string>
-  <string name="startup_autostart_permission_message">El microprogramari del dispositiu pot impedir la sincronització automàtica. Hauries de permetre la sincronització automàtica manualment.</string>
-  <string name="startup_battery_optimization">Optimització de la bateria</string>
-  <string name="startup_battery_optimization_message">Android pot desactivar/reduir la sincronització de DAVdroid després d\'uns dies. Per impedir això, desactiva l\'optimització de la bateria.</string>
   <string name="startup_battery_optimization_disable">Desactiva per DAVdroid</string>
   <string name="startup_dont_show_again">No mostrar de nou</string>
   <string name="startup_donate">Informació de Codi Obert</string>

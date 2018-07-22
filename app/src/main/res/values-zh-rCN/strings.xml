@@ -10,8 +10,6 @@
   <string name="send">发送</string>
   <string name="notification_channel_debugging">调试</string>
   <!--startup dialogs-->
-  <string name="startup_battery_optimization">电池优化</string>
-  <string name="startup_battery_optimization_message">系统可能会在几天后减少或停用 DAVdroid 同步。为了避免这一情况，请禁用对 DAVdroid 的电池优化。</string>
   <string name="startup_battery_optimization_disable">禁用电池优化</string>
   <string name="startup_dont_show_again">不再显示</string>
   <string name="startup_donate">开源信息</string>

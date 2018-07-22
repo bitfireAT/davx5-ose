@@ -15,10 +15,6 @@
   <string name="notification_channel_sync_io_errors">أخطاء الشبكة و عمليات الإدخال/الإخراج</string>
   <string name="notification_channel_sync_status">رسائل الحالة</string>
   <!--startup dialogs-->
-  <string name="startup_autostart_permission">إذن البدء التلقائي %s</string>
-  <string name="startup_autostart_permission_message">البرنامج الثابت للجهاز قد يمنع المزامنة التلقائية.  قد يتطلب الأمر منك السماح بالمزامنة التلقائية يدوياً.</string>
-  <string name="startup_battery_optimization">تحسين البطارية</string>
-  <string name="startup_battery_optimization_message">قد يعطّل نظام آندرويد مزامنة DAVdroid أو يقللها بعد عدة أيام.  قم بتعطيل تحسين البطارية لمنع حدوث ذلك.</string>
   <string name="startup_battery_optimization_disable">التعطيل لـ DAVdroid</string>
   <string name="startup_dont_show_again">لاتعرضه مرة أخرى</string>
   <string name="startup_donate">معلومات المصدر المفتوح</string>

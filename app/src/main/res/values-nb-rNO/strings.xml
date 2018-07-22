@@ -9,8 +9,6 @@
   <string name="please_wait">Vent…</string>
   <string name="send">Send</string>
   <!--startup dialogs-->
-  <string name="startup_battery_optimization">Batterioptimisering</string>
-  <string name="startup_battery_optimization_message">Det kan hende Android skrur av/reduserer DAVdroid-synkronisering etter et par dager. For å forhindre dette, skru av batterioptimisering.</string>
   <string name="startup_battery_optimization_disable">Skru av for DAVdroid</string>
   <string name="startup_dont_show_again">Ikke vis igjen</string>
   <string name="startup_donate">Friprog-informasjon</string>

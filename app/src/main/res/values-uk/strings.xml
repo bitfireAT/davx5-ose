@@ -15,10 +15,6 @@
   <string name="notification_channel_sync_io_errors">Помилка мережі та вводу/виводу</string>
   <string name="notification_channel_sync_status">Повідомлення про стан</string>
   <!--startup dialogs-->
-  <string name="startup_autostart_permission">Дозвіл автозапуску %s</string>
-  <string name="startup_autostart_permission_message">Програмне забезпечення пристрою може запобігати автоматичні синхронізації. Можливо доведеться дозволити автоматичну синхронізацію вручну.</string>
-  <string name="startup_battery_optimization">Оптимізація енергоспоживання</string>
-  <string name="startup_battery_optimization_message">Android може вимкнути, чи призупинити синхронізацію DAVdroid через деякий час. Аби запобігти цьому, вимкніть оптимізацію енергоспоживання для додатку.</string>
   <string name="startup_battery_optimization_disable">Вимкнути для DAVdroid</string>
   <string name="startup_dont_show_again">Не показувати знову</string>
   <string name="startup_donate">Інформація Open-Source</string>
