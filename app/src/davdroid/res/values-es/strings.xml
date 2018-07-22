@@ -15,10 +15,6 @@
   <string name="notification_channel_sync_io_errors">Errores de Red y E/S</string>
   <string name="notification_channel_sync_status">Mensajes de estado</string>
   <!--startup dialogs-->
-  <string name="startup_autostart_permission">%s permisos de inicio automático</string>
-  <string name="startup_autostart_permission_message">El firmware del dispositivo podría prevenir sincronización automática. Podría necesitar permitir sincronización manualmente.</string>
-  <string name="startup_battery_optimization">Optimización de batería</string>
-  <string name="startup_battery_optimization_message">Android puede desactivar/reducir la sincronización de DAVdroid después de unos días. Para prevenir esto, desactiva la optimización.</string>
   <string name="startup_battery_optimization_disable">Apagar para DAVdroid</string>
   <string name="startup_dont_show_again">No mostrar de nuevo</string>
   <string name="startup_donate">Información de código abierto</string>

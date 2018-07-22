@@ -15,10 +15,6 @@
   <string name="notification_channel_sync_io_errors">Netværks- og I/O-fejl</string>
   <string name="notification_channel_sync_status">Status beskeder</string>
   <!--startup dialogs-->
-  <string name="startup_autostart_permission">%s tilladelse til at starte automatisk</string>
-  <string name="startup_autostart_permission_message">Enhedens firmware kan forbyde automatisk synkronisering. Du er muligvis nødt til at tillade automatisk synkronisering manuelt.</string>
-  <string name="startup_battery_optimization">Batteri optimering</string>
-  <string name="startup_battery_optimization_message">Android kan deaktivere/reducere DAVDroid synkronisering efter et par dage. For at undgå dette, slå batterioptimering fra.</string>
   <string name="startup_battery_optimization_disable">Deaktivere DAVdroid</string>
   <string name="startup_dont_show_again">Vis ikke igen</string>
   <string name="startup_donate">Open-Source information</string>

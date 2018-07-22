@@ -15,9 +15,6 @@
   <string name="notification_channel_sync_io_errors">Hálózati és I/O hibák</string>
   <string name="notification_channel_sync_status">Státuszüzenetek</string>
   <!--startup dialogs-->
-  <string name="startup_autostart_permission_message">Lehetséges,hogy az eszköz nem teszi lehetővé az automatikus szinkronizálást és az automatikus szinkronizálást lehetőségét kézzel kell beállítani.</string>
-  <string name="startup_battery_optimization">Akkumulátoroptimalizálás </string>
-  <string name="startup_battery_optimization_message">Az operációs rendszer a DAVdroid szinkronizálást pár nap után leállíthatja vagy visszafoghatja.  Ennek elkerülésére kapcsolja ki az akkumulátoroptimalizálást.</string>
   <string name="startup_battery_optimization_disable">Kikapcsolás a DAVdroid kapcsán</string>
   <string name="startup_dont_show_again">Ne jelenjen meg többet</string>
   <string name="startup_donate">A forrás nyíltságával kapcsolatos információk</string>

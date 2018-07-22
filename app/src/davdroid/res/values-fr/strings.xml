@@ -9,8 +9,6 @@
   <string name="please_wait">patientez ...</string>
   <string name="send">Envoyer</string>
   <!--startup dialogs-->
-  <string name="startup_battery_optimization">Optimisation de la batterie</string>
-  <string name="startup_battery_optimization_message">Android peut désactiver/réduire la synchronisation de DAVdroid après quelques jours. Pour éviter cela, désactivez l\'optimisation de la batterie.</string>
   <string name="startup_battery_optimization_disable">Désactiver pour DAVdroid</string>
   <string name="startup_dont_show_again">Ne plus afficher</string>
   <string name="startup_donate">Open-Source Information</string>
