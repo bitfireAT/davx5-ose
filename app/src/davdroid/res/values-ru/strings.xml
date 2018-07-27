@@ -16,8 +16,13 @@
   <string name="notification_channel_sync_io_errors">Ошибки сети и ввода/вывода</string>
   <string name="notification_channel_sync_status">Сообщения о состоянии</string>
   <!--startup dialogs-->
+  <string name="startup_autostart_permission">Автоматическая синхронизация</string>
+  <string name="startup_autostart_permission_message">%s ПО устройства часто блокирует автоматическую синхронизацию. В этом случае разрешите автоматическую синхронизацию в настройках Android.</string>
+  <string name="startup_battery_optimization">Синхронизация по расписанию</string>
+  <string name="startup_battery_optimization_message">Ваше устройство будет блокировать синхронизацию DAVdroid. Чтобы обеспечить регулярные интервалы синхронизации DAVdroid, отключите оптимизацию энергопотребления.</string>
   <string name="startup_battery_optimization_disable">Отключить для DAVdroid</string>
   <string name="startup_dont_show_again">Не показывать снова</string>
+  <string name="startup_not_now">Не сейчас</string>
   <string name="startup_donate">Open-Source информация</string>
   <string name="startup_donate_message">Мы рады, что вы используете DAVdroid, который является программным обеспечением с открытым исходным кодом (GPLv3). Поскольку разработка DAVdroid - тяжелая работа и заняла у нас нас очень много времени, пожалуйста, рассмотрите возможность поддержать проект.</string>
   <string name="startup_donate_now">Показать страницу пожертвования</string>
