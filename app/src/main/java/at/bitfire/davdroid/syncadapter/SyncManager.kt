@@ -648,6 +648,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         } else {
             contentIntent = Intent(context, DebugInfoActivity::class.java)
             contentIntent.putExtra(DebugInfoActivity.KEY_THROWABLE, e)
+
             contentIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account)
             contentIntent.putExtra(DebugInfoActivity.KEY_AUTHORITY, authority)
 
@@ -804,7 +805,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         var local: ResourceType? = null
         var remote: HttpUrl? = null
 
-        while (ex is ContextedException) {
+        if (ex is ContextedException) {
             @Suppress("UNCHECKED_CAST")
             // we want the innermost context value, which is the first one
             (ex.getFirstContextValue(Constants.EXCEPTION_CONTEXT_LOCAL_RESOURCE) as? ResourceType)?.let {
