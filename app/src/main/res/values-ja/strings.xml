@@ -4,6 +4,7 @@
   <string name="app_name">DAVdroid</string>
   <string name="account_title_address_book">DAVdroid アドレス帳</string>
   <string name="address_books_authority_title">アドレス帳</string>
+  <string name="copied_to_clipboard">クリップボードにコピーしました</string>
   <string name="help">ヘルプ</string>
   <string name="manage_accounts">アカウントの管理</string>
   <string name="please_wait">しばらくお待ちください …</string>
@@ -15,8 +16,13 @@
   <string name="notification_channel_sync_io_errors">ネットワークおよび I/O エラー</string>
   <string name="notification_channel_sync_status">ステータスメッセージ</string>
   <!--startup dialogs-->
+  <string name="startup_autostart_permission">自動同期</string>
+  <string name="startup_autostart_permission_message">%s ファームウェアは自動同期をブロックすることがよくあります。 この場合、Android の設定で自動同期を許可してください。</string>
+  <string name="startup_battery_optimization">スケジュール同期</string>
+  <string name="startup_battery_optimization_message">お使いのデバイスは DAVdroid の同期を制限します。 通常の DAVdroid 同期間隔を適用するには、「バッテリ最適化」をオフにしてください。</string>
   <string name="startup_battery_optimization_disable">DAVdroid 用にオフにする</string>
   <string name="startup_dont_show_again">次回から表示しない</string>
+  <string name="startup_not_now">後で</string>
   <string name="startup_donate">オープンソース情報</string>
   <string name="startup_donate_message">あなたがオープンソース ソフトウェア (GPLv3) の DAVdroid を使用していただくことに、私たちは満足しています。 DAVdroid の開発はハードワークで、何千もの作業時間がかかりました。寄付をご検討ください。</string>
   <string name="startup_donate_now">寄付ページを表示</string>
@@ -215,6 +221,9 @@
   <string name="delete_collection_confirm_warning">このコレクション (%s) とそのすべてのデータがサーバーから削除されます。</string>
   <string name="delete_collection_deleting_collection">コレクションの削除中</string>
   <string name="collection_force_read_only">強制的に読み取り専用</string>
+  <string name="collection_properties">プロパティ</string>
+  <string name="collection_properties_url">アドレス (URL):</string>
+  <string name="collection_properties_copy_url">URL をコピー</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">エラーが発生しました。</string>
   <string name="exception_httpexception">HTTP エラーが発生しました。</string>
