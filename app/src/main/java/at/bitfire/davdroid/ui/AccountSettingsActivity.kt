@@ -282,8 +282,15 @@ class AccountSettingsActivity: AppCompatActivity() {
                         // reset sync state of all calendars in this account to trigger a full sync
                         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
                             requireContext().contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
-                                AndroidCalendar.find(account, provider, LocalCalendar.Factory, null, null).forEach { calendar ->
-                                    calendar.lastSyncState = null
+                                try {
+                                    AndroidCalendar.find(account, provider, LocalCalendar.Factory, null, null).forEach { calendar ->
+                                        calendar.lastSyncState = null
+                                    }
+                                } finally {
+                                    if (Build.VERSION.SDK_INT >= 24)
+                                        provider.close()
+                                    else
+                                        provider.release()
                                 }
                             }
                         }
