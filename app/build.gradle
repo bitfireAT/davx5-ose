@@ -12,7 +12,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka-android'
 
 ext {
-    baseVersionName = '2.0-rc1'
+    baseVersionName = '2.0'
 }
 
 android {
@@ -22,7 +22,7 @@ android {
     defaultConfig {
         applicationId "at.bitfire.davdroid"
 
-        versionCode 240
+        versionCode 241
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "customCerts", "true"
 
