@@ -45,13 +45,6 @@ class CollectionInfoFragment : DialogFragment() {
         val view = requireActivity().layoutInflater.inflate(R.layout.collection_properties, null)
         view.url.text = info.url.toString()
 
-        view.url_copy.setOnClickListener {
-            val clipboard = requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val text = ClipData.newPlainText(info.displayName, info.url.toString())
-            clipboard.primaryClip = text
-            Toast.makeText(requireActivity(), R.string.copied_to_clipboard, Toast.LENGTH_LONG).show()
-        }
-
         return AlertDialog.Builder(requireActivity())
                 .setTitle(info.displayName)
                 .setView(view)
