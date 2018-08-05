@@ -9,7 +9,8 @@ do
 	target_cert4android=../cert4android/src/main/res/values-${android[$lang]}
 
 	#mkdir -p $target_app
-	#curl -n "https://www.transifex.com/api/2/project/davdroid/resource/app/translation/$lang?file" >$target_app/strings.xml
+	#curl -n "https://www.transifex.com/api/2/project/davdroid/resource/app/translation/$lang?file" |
+	#	sed 's/\.\.\./…/g' > $target_app/strings.xml
 
 	mkdir -p $target_cert4android
 	curl -n "https://www.transifex.com/api/2/project/davdroid/resource/cert4android/translation/$lang?file" >$target_cert4android/strings.xml

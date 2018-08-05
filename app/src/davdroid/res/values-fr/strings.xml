@@ -6,7 +6,7 @@
   <string name="address_books_authority_title">Carnets d\'adresses</string>
   <string name="help">Aide</string>
   <string name="manage_accounts">Gestion des comptes</string>
-  <string name="please_wait">patientez ...</string>
+  <string name="please_wait">patientez …</string>
   <string name="send">Envoyer</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization_disable">Désactiver pour DAVdroid</string>
@@ -113,7 +113,7 @@
   <string name="login_account_name_required">Nom du compte requis</string>
   <string name="login_account_not_created">Le compte n\'a pas pu être créé</string>
   <string name="login_configuration_detection">Détection de la configuration</string>
-  <string name="login_querying_server">Veuillez patienter, nous interrogeons le serveur ...</string>
+  <string name="login_querying_server">Veuillez patienter, nous interrogeons le serveur …</string>
   <string name="login_no_caldav_carddav">Aucun accès possible au service CalDAV ou CardDAV.</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Paramètres: %s</string>

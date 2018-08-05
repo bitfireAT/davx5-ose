@@ -4,7 +4,7 @@
   <string name="app_name">DAVdroid</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Spravovat účty</string>
-  <string name="please_wait">Chvíli strpení ...</string>
+  <string name="please_wait">Chvíli strpení …</string>
   <string name="send">Odeslat</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization_disable">Vypnout pro DAVdroid</string>
@@ -101,7 +101,7 @@
   <string name="login_account_name_required">Vyžadováno jméno účtu</string>
   <string name="login_account_not_created">Účet nelze vytvořit</string>
   <string name="login_configuration_detection">Vyhledání konfigurace</string>
-  <string name="login_querying_server">Chvíli strpení, probíhá dotazování serveru...</string>
+  <string name="login_querying_server">Chvíli strpení, probíhá dotazování serveru…</string>
   <string name="login_no_caldav_carddav">Nelze nalézt službu CalDAV nebo CardDAV.</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Nastavení: %s</string>

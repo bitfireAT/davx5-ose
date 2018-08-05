@@ -4,9 +4,10 @@
   <string name="app_name">DAVdroid</string>
   <string name="account_title_address_book">DAVdroid دفتر عناوين</string>
   <string name="address_books_authority_title">دفاتر العناوين</string>
+  <string name="copied_to_clipboard">تم النسخ إلى الحافظة</string>
   <string name="help">مساعدة</string>
   <string name="manage_accounts">إدارة الحسابات</string>
-  <string name="please_wait">يرجى الانتظار...</string>
+  <string name="please_wait">يرجى الانتظار…</string>
   <string name="send">إرسال</string>
   <string name="notification_channel_debugging">تصحيح العلل</string>
   <string name="notification_channel_general">رسائل هامة أخرى</string>
@@ -15,8 +16,13 @@
   <string name="notification_channel_sync_io_errors">أخطاء الشبكة و عمليات الإدخال/الإخراج</string>
   <string name="notification_channel_sync_status">رسائل الحالة</string>
   <!--startup dialogs-->
+  <string name="startup_autostart_permission">مزامنة تلقائية</string>
+  <string name="startup_autostart_permission_message">%s البرنامج الثابت للجهاز قد يمنع المزامنة التلقائية.  في هذه الحالة أعط الإذن بالمزامنة التلقائية في إعدادات النظام لديك.</string>
+  <string name="startup_battery_optimization">مزامنة مجدولة</string>
+  <string name="startup_battery_optimization_message">سيقوم جهازك بتقييد مزامنة DAVdroid .  قم بإطفاء \"تحسين البطارية\" لإجبار مدد منتظمة لمزامنة DAVdroid .</string>
   <string name="startup_battery_optimization_disable">التعطيل لـ DAVdroid</string>
   <string name="startup_dont_show_again">لاتعرضه مرة أخرى</string>
+  <string name="startup_not_now">ليس الآن</string>
   <string name="startup_donate">معلومات المصدر المفتوح</string>
   <string name="startup_donate_message">يسعدنا كونك تستخدم DAVdroid ، البرنامج ذو المصدر المفتوح (GPLv3). تطوير DAVdroid عمل مضنٍ أخذ منا آلاف ساعات العمل ، هلّا تبرعت لنا ؟</string>
   <string name="startup_donate_now">عرض صفحة التبرُّع</string>
@@ -29,6 +35,10 @@
   <string name="startup_opentasks_reinstall_davdroid">بعد تثبيت OpenTasks، لابد لك من إعادة تثبيت DAVdroid وإضافة حساباتك مجدداً (علة في آندرويد).</string>
   <string name="startup_opentasks_not_installed_install">تثبيت OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_libraries">المكتبات</string>
+  <string name="about_version">النسخة %1s (%2d)</string>
+  <string name="about_build_date">التجميع على %s</string>
+  <string name="about_flavor_info">هذا الإصدار صالح للتوزيع عبر Google Play فقط.</string>
   <string name="about_license_info_no_warranty">يقدَّم هذا البرنامج دون أدنى مسؤولية.  إنه برنامج حر، وندعوك لإعادة توزيعه حسب أحكام محددة.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">تسجيل ملفات DAVdroid</string>
@@ -90,6 +100,7 @@
   <string name="account_delete">حذف الحساب</string>
   <string name="account_delete_confirmation_title">هل تريد حذف الحساب فعلاً ؟</string>
   <string name="account_delete_confirmation_text">سيتم حذف كل النسخ المحليّة من دفاتر العناوين والتقاويم وقوائم المهام.</string>
+  <string name="account_select_collections_hint">إختر المجموعات لمزامنتها</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -128,8 +139,9 @@
   <string name="login_account_name_required">اسم الحساب مطلوب</string>
   <string name="login_account_not_created">لم نتمكن من إنشاء الحساب</string>
   <string name="login_configuration_detection">اكتشاف الضبط</string>
-  <string name="login_querying_server">يجري استعلام الخادم ... يرجى الانتظار</string>
+  <string name="login_querying_server">يجري استعلام الخادم … يرجى الانتظار</string>
   <string name="login_no_caldav_carddav">لم نجِد خدمة CalDAV أو CardDAV.</string>
+  <string name="login_view_logs">عرض التفاصيل</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">%s الإعدادات:</string>
   <string name="settings_authentication">التصديق</string>
@@ -214,6 +226,9 @@
   <string name="delete_collection_confirm_warning">ستتم إزالة هذه المجموعة (%s) وكل بياناتها من الخادم.</string>
   <string name="delete_collection_deleting_collection">حذف المجموعة جارٍ</string>
   <string name="collection_force_read_only">إجبار القراءة فقط</string>
+  <string name="collection_properties">خصائص</string>
+  <string name="collection_properties_url">العنوان (URL):</string>
+  <string name="collection_properties_copy_url">نسخ عنوان URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">حدث خطأ.</string>
   <string name="exception_httpexception">حدث خطأ HTTP.</string>

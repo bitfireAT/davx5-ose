@@ -4,7 +4,7 @@
   <string name="app_name">DAVdroid</string>
   <string name="help">Yardım</string>
   <string name="manage_accounts">Hesapları yönet</string>
-  <string name="please_wait">Lütfen bekle ...</string>
+  <string name="please_wait">Lütfen bekle …</string>
   <string name="send">Gönder</string>
   <!--startup dialogs-->
   <string name="startup_dont_show_again">Bir daha gösterme</string>
@@ -84,7 +84,7 @@
   <string name="login_account_name_required">Hesap adı zorunludur</string>
   <string name="login_account_not_created">Hesap yaratılamadı</string>
   <string name="login_configuration_detection">Konfigürasyon keşfi</string>
-  <string name="login_querying_server">Lütfen bekle, sunucu sorgulanıyor...</string>
+  <string name="login_querying_server">Lütfen bekle, sunucu sorgulanıyor…</string>
   <string name="login_no_caldav_carddav">CalDAV veya CardDAV servisi bulunamadı.</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Ayarlar: %s</string>
