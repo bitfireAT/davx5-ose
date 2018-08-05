@@ -8,20 +8,27 @@
 
 package at.bitfire.davdroid.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.app.LoaderManager
+import android.support.v4.content.AsyncTaskLoader
+import android.support.v4.content.Loader
 import android.support.v7.app.AppCompatActivity
 import android.text.Html
+import android.text.Spanned
 import android.view.*
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import com.mikepenz.aboutlibraries.LibsBuilder
 import kotlinx.android.synthetic.main.about_davdroid.*
 import kotlinx.android.synthetic.main.activity_about.*
+import org.apache.commons.io.IOUtils
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -84,7 +91,7 @@ class AboutActivity: AppCompatActivity() {
     }
 
 
-    class DavdroidFragment: Fragment() {
+    class DavdroidFragment: Fragment(), LoaderManager.LoaderCallbacks<Spanned> {
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
                 inflater.inflate(R.layout.about_davdroid, container, false)!!
@@ -98,7 +105,7 @@ class AboutActivity: AppCompatActivity() {
 
             if (false /* open-source version */) {
                 warranty.text = Html.fromHtml(getString(R.string.about_license_info_no_warranty))
-                license_text.text = Html.fromHtml(getString(R.string.gpl_v3))
+                loaderManager.initLoader(0, null, this)
             } else /* non-ose builds */ {
                 when (BuildConfig.FLAVOR) {
                     App.FLAVOR_GOOGLE_PLAY,
@@ -116,6 +123,33 @@ class AboutActivity: AppCompatActivity() {
                             .commit()
             }
         }
+
+        override fun onCreateLoader(id: Int, args: Bundle?) =
+                HtmlAssetLoader(requireActivity(), "gplv3.html")
+
+        override fun onLoadFinished(loader: Loader<Spanned>, license: Spanned?) {
+            Logger.log.info("LOAD FINISHED")
+            license_text.text = license
+        }
+
+        override fun onLoaderReset(loader: Loader<Spanned>) {
+        }
+
+    }
+
+    class HtmlAssetLoader(
+            context: Context,
+            val fileName: String
+    ): AsyncTaskLoader<Spanned>(context) {
+
+        override fun onStartLoading() {
+            forceLoad()
+        }
+
+        override fun loadInBackground(): Spanned =
+                context.resources.assets.open(fileName).use {
+                    Html.fromHtml(IOUtils.toString(it, Charsets.UTF_8))
+                }
 
     }
 
