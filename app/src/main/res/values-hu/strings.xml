@@ -6,7 +6,7 @@
   <string name="address_books_authority_title">Címjegyzékek</string>
   <string name="help">Súgó</string>
   <string name="manage_accounts">Fiókok kezelése</string>
-  <string name="please_wait">Kérjük, várjon ...</string>
+  <string name="please_wait">Kérjük, várjon …</string>
   <string name="send">Küldés</string>
   <string name="notification_channel_debugging">Hibakeresés</string>
   <string name="notification_channel_general">Egyéb fontos üzenetek</string>
@@ -128,7 +128,7 @@
   <string name="login_account_name_required">A fióknév megadása feltétlenül szükséges</string>
   <string name="login_account_not_created">A fiók létrehozása nem sikerült</string>
   <string name="login_configuration_detection">A konfiguráció felderítése</string>
-  <string name="login_querying_server">Kérjük, várjon, a szerver lekérdezése...</string>
+  <string name="login_querying_server">Kérjük, várjon, a szerver lekérdezése…</string>
   <string name="login_no_caldav_carddav">Nem található CalDAV vagy CardDAV szolgáltatás.</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Beállítások: %s</string>

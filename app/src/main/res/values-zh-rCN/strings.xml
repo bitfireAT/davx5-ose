@@ -4,24 +4,41 @@
   <string name="app_name">DAVdroid</string>
   <string name="account_title_address_book">DAVdroid 通讯录</string>
   <string name="address_books_authority_title">通讯录</string>
+  <string name="copied_to_clipboard">已复制到剪贴板</string>
   <string name="help">帮助</string>
   <string name="manage_accounts">管理账户</string>
-  <string name="please_wait">请稍等...</string>
+  <string name="please_wait">请稍等…</string>
   <string name="send">发送</string>
   <string name="notification_channel_debugging">调试</string>
+  <string name="notification_channel_general">其它重要消息</string>
+  <string name="notification_channel_sync">同步</string>
+  <string name="notification_channel_sync_errors">同步错误</string>
+  <string name="notification_channel_sync_io_errors">网络或 I/O 错误</string>
+  <string name="notification_channel_sync_status">状态消息</string>
   <!--startup dialogs-->
+  <string name="startup_autostart_permission">自动同步</string>
+  <string name="startup_autostart_permission_message">%s 的系统通常会禁止自动同步。在 Android 的系统设置中手工打开自动同步即可恢复。</string>
+  <string name="startup_battery_optimization">定时同步</string>
+  <string name="startup_battery_optimization_message">你的设备会限制 DAVdroid 的同步频率，如需恢复正常同步频率，请关闭电池优化设置。</string>
   <string name="startup_battery_optimization_disable">禁用电池优化</string>
   <string name="startup_dont_show_again">不再显示</string>
+  <string name="startup_not_now">暂不</string>
   <string name="startup_donate">开源信息</string>
   <string name="startup_donate_message">欢迎使用 DAVdroid，这是一款开源软件 (GPLv3)。开发 DAVdroid 的工作花费了数千小时，请您考虑捐助我们。</string>
   <string name="startup_donate_now">显示捐助页面</string>
   <string name="startup_donate_later">稍后提示</string>
   <string name="startup_google_play_accounts_removed">Play 商店 DRM 问题提醒</string>
   <string name="startup_google_play_accounts_removed_message">在某些情况下，Play 商店的 DRM 可能会导致所有 DAVdroid 账户在设备重启或升级 DAVdroid 后消失。如果你遇到了该问题，请从 Play 商店安装“DAVdroid JB Workaround”，否则请不要安装修复程序。</string>
+  <string name="startup_more_info">更多信息</string>
   <string name="startup_opentasks_not_installed">OpenTasks 未安装</string>
+  <string name="startup_opentasks_not_installed_message">同步任务需安装 OpenTasks 免费应用。（如只需同步通讯录、事件，则不用安装）</string>
   <string name="startup_opentasks_reinstall_davdroid">安装 OpenTasks 后，由于 Android 的限制，请重新安装 DAVdroid 并重新创建账户。</string>
   <string name="startup_opentasks_not_installed_install">安装 OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_libraries">程序库</string>
+  <string name="about_version">版本 %1s (%2d)</string>
+  <string name="about_build_date">编译于 %s</string>
+  <string name="about_flavor_info">此版本只允许在 Google Play 上发行。</string>
   <string name="about_license_info_no_warranty">本程序不附带任何担保。这是一款自由软件，你可以有条件地传播它。</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid 文件日志</string>
@@ -83,6 +100,7 @@
   <string name="account_delete">删除账户</string>
   <string name="account_delete_confirmation_title">真的要删除账户吗？</string>
   <string name="account_delete_confirmation_text">所有通讯录、日历和任务列表的本机存储将被删除。</string>
+  <string name="account_select_collections_hint">选择需要同步的集合</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -121,8 +139,9 @@
   <string name="login_account_name_required">请输入账户名</string>
   <string name="login_account_not_created">账户无法创建</string>
   <string name="login_configuration_detection">正在配置</string>
-  <string name="login_querying_server">正在与服务器通信，请稍等...</string>
+  <string name="login_querying_server">正在与服务器通信，请稍等…</string>
   <string name="login_no_caldav_carddav">找不到 CalDAV 或 CardDAV 服务。</string>
+  <string name="login_view_logs">显示详情</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">设置：%s</string>
   <string name="settings_authentication">认证</string>
@@ -202,6 +221,9 @@
   <string name="delete_collection_confirm_warning">这个集合 %s 及其所有数据将会从服务器删除。</string>
   <string name="delete_collection_deleting_collection">正在删除集合</string>
   <string name="collection_force_read_only">强制只读</string>
+  <string name="collection_properties">属性</string>
+  <string name="collection_properties_url">地址 (URL):</string>
+  <string name="collection_properties_copy_url">复制 URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">出现错误</string>
   <string name="exception_httpexception">出现 HTTP 错误</string>
@@ -217,6 +239,12 @@
   <string name="sync_error_permissions_text">需要额外权限</string>
   <string name="sync_error_opentasks_too_old">OpenTasks 版本太旧</string>
   <string name="sync_error_opentasks_required_version">最低版本 %1$s （当前 %2$s）</string>
+  <string name="sync_error_authentication_failed">认证失败（请检查登录凭据，如用户名密码）</string>
+  <string name="sync_error_io">网络或 I/O 错误 – %s</string>
+  <string name="sync_error_http_dav">HTTP 服务器错误 – %s</string>
+  <string name="sync_error_local_storage">本地存储错误 – %s</string>
+  <string name="sync_error_retry">重试</string>
+  <string name="sync_error_view_item">显示项目</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid: 连接安全性</string>
   <string name="trust_certificate_unknown_certificate_found">DAVdroid 遇到了未知证书。你是否要信任该证书？</string>
