@@ -121,7 +121,7 @@
   <string name="login_account_name_required">Wymagana nazwa konta</string>
   <string name="login_account_not_created">Konto nie mogło zostać stworzone</string>
   <string name="login_configuration_detection">Wykrywanie konfiguracji</string>
-  <string name="login_querying_server">Proszę czekać, odpytywanie serwera...</string>
+  <string name="login_querying_server">Proszę czekać, odpytywanie serwera…</string>
   <string name="login_no_caldav_carddav">Nie można znaleźć usługi CalDAV lub CardDAV.</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Ustawienia: %s</string>

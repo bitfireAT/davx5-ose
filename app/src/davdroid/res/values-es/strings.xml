@@ -6,7 +6,7 @@
   <string name="address_books_authority_title">Agendas</string>
   <string name="help">Ayuda</string>
   <string name="manage_accounts">Administrar cuentas</string>
-  <string name="please_wait">Por favor, espere...</string>
+  <string name="please_wait">Por favor, espere…</string>
   <string name="send">Enviar</string>
   <string name="notification_channel_debugging">Depuración</string>
   <string name="notification_channel_general">Otros mensajes importantes</string>
@@ -82,7 +82,7 @@
   <string name="app_settings_show_debug_info_details">Ver/compartir detalles de software y configuración</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Sincronizar ahora</string>
-  <string name="account_synchronizing_now">Sincronizando...</string>
+  <string name="account_synchronizing_now">Sincronizando…</string>
   <string name="account_settings">Ajustes de cuenta</string>
   <string name="account_rename">Renombrar cuenta</string>
   <string name="account_rename_new_name">Información local no guardada puede ser desechada. Se requiere resincronizar después de renombrar. Nuevo nombre de cuenta:</string>
@@ -128,7 +128,7 @@
   <string name="login_account_name_required">Nombre de cuenta requerido</string>
   <string name="login_account_not_created">La cuenta no pudo ser creada</string>
   <string name="login_configuration_detection">Detectar configuración</string>
-  <string name="login_querying_server">Por favor espera, consultando al servidor...</string>
+  <string name="login_querying_server">Por favor espera, consultando al servidor…</string>
   <string name="login_no_caldav_carddav">No se pudo encontrar el servicio CalDAV o CardDAV.</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Ajustes: %s</string>

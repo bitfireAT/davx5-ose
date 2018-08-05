@@ -6,7 +6,7 @@
   <string name="address_books_authority_title">Adresboeken</string>
   <string name="help">Help</string>
   <string name="manage_accounts">Beheer accounts</string>
-  <string name="please_wait">Een moment geduld...</string>
+  <string name="please_wait">Een moment geduld…</string>
   <string name="send">Verzenden</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization_disable">DAVdroid afsluiten</string>
@@ -73,7 +73,7 @@
   <string name="app_settings_show_debug_info_details">Bekijk/deel software configuratie details</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Synchroniseer nu</string>
-  <string name="account_synchronizing_now">Aan het synchronizeren...</string>
+  <string name="account_synchronizing_now">Aan het synchronizeren…</string>
   <string name="account_settings">Account instellingen</string>
   <string name="account_rename">Account hernoemen</string>
   <string name="account_rename_new_name">Niet opgeslagen lokale informatie mag verloren gaan. Synchronisatie is noodzakelijk na hernoemen. Nieuw account naam:</string>
@@ -112,7 +112,7 @@
   <string name="login_account_name_required">Accountnaam vereist</string>
   <string name="login_account_not_created">Account kon niet gemaakt worden.</string>
   <string name="login_configuration_detection">Configuratie detectie</string>
-  <string name="login_querying_server">Even geduld, verzoek naar server...</string>
+  <string name="login_querying_server">Even geduld, verzoek naar server…</string>
   <string name="login_no_caldav_carddav">Kon geen CalDAV of CardDAV service vinden.</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Instellingen: %s</string>

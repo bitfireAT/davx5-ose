@@ -124,7 +124,7 @@
   <string name="login_account_name_required">Richiesto il nome dell\'account</string>
   <string name="login_account_not_created">L\'account non può essere creato</string>
   <string name="login_configuration_detection">Rilevazione configurazione</string>
-  <string name="login_querying_server">Attendere, invio richiesta al server...</string>
+  <string name="login_querying_server">Attendere, invio richiesta al server…</string>
   <string name="login_no_caldav_carddav">Impossibile trovare servizi CalDAV o CardDAV.</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Impostazioni: %s</string>

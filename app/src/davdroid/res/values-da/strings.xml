@@ -6,7 +6,7 @@
   <string name="address_books_authority_title">Adressebøger</string>
   <string name="help">Hjælp</string>
   <string name="manage_accounts">Administrere konti</string>
-  <string name="please_wait">Vent...</string>
+  <string name="please_wait">Vent…</string>
   <string name="send">Send</string>
   <string name="notification_channel_debugging">Fejlsøgning</string>
   <string name="notification_channel_general">Andre vigtige beskeder</string>
@@ -128,7 +128,7 @@
   <string name="login_account_name_required">Kontonavn påkrævet</string>
   <string name="login_account_not_created">Konto kunne ikke oprettes</string>
   <string name="login_configuration_detection">Check konfiguration</string>
-  <string name="login_querying_server">Vent, forespørger serveren...</string>
+  <string name="login_querying_server">Vent, forespørger serveren…</string>
   <string name="login_no_caldav_carddav">Kunne ikke finde CalDAV- eller CardDAV-tjeneste.</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Indstillinger: %s</string>

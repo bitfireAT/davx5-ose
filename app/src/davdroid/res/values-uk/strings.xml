@@ -6,7 +6,7 @@
   <string name="address_books_authority_title">Адресні книги</string>
   <string name="help">Допомога</string>
   <string name="manage_accounts">Керування обліковими записами</string>
-  <string name="please_wait">Будь ласка, зачекайте...</string>
+  <string name="please_wait">Будь ласка, зачекайте…</string>
   <string name="send">Відправити</string>
   <string name="notification_channel_debugging">Зневадження</string>
   <string name="notification_channel_general">Інші важливі повідомлення</string>
@@ -128,7 +128,7 @@
   <string name="login_account_name_required">Потребує назви облікового запису</string>
   <string name="login_account_not_created">Обліковий запис не може бути створений</string>
   <string name="login_configuration_detection">Виявлення конфігурації</string>
-  <string name="login_querying_server">Будь ласка, зачекайте, запит до серверу...</string>
+  <string name="login_querying_server">Будь ласка, зачекайте, запит до серверу…</string>
   <string name="login_no_caldav_carddav">Не вдалося знайти  CalDAV чи CardDAV сервіс.</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Налаштування: %s</string>
