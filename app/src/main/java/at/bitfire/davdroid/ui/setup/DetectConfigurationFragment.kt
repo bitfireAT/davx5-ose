@@ -23,7 +23,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.setup.DavResourceFinder.Configuration
-import kotlin.concurrent.thread
+import java.lang.ref.WeakReference
 
 @Suppress("DEPRECATION")
 class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbacks<Configuration> {
@@ -41,7 +41,7 @@ class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbac
     }
 
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+    override fun onCreateDialog(savedInstancebState: Bundle?): Dialog {
         val progress = ProgressDialog(activity)
         progress.setTitle(R.string.login_configuration_detection)
         progress.setMessage(getString(R.string.login_querying_server))
@@ -122,21 +122,18 @@ class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbac
             private val credentials: LoginInfo
     ): AsyncTaskLoader<Configuration>(context) {
 
-        private var resourceFinder: DavResourceFinder? = null
+        private var workingThread: WeakReference<Thread>? = null
 
         override fun onStartLoading() = forceLoad()
 
         override fun cancelLoadInBackground() {
-            thread {
-                resourceFinder?.cancel()
-                resourceFinder = null
-            }
+            Logger.log.warning("Shutting down resource detection")
+            workingThread?.get()?.interrupt()
         }
 
         override fun loadInBackground(): Configuration {
-            val finder = DavResourceFinder(context, credentials)
-            resourceFinder = finder
-            return finder.findInitialConfiguration()
+            workingThread = WeakReference(Thread.currentThread())
+            return DavResourceFinder(context, credentials).findInitialConfiguration()
         }
 
     }
