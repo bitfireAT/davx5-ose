@@ -70,13 +70,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         style="@style/stepper_nav_bar">
 
         <Button
             android:id="@+id/back"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_gravity="center"
             android:text="@string/login_back"
             style="@style/stepper_nav_button"/>
 
@@ -84,10 +84,16 @@
             android:id="@+id/create_account"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_gravity="center"
             android:text="@string/login_create_account"
             android:enabled="false"
             style="@style/stepper_nav_button"/>
+
+        <ProgressBar
+            android:id="@+id/create_account_progress"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
