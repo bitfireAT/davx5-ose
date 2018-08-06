@@ -10,12 +10,14 @@ package at.bitfire.davdroid.ui.setup
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
+import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.support.design.widget.Snackbar
@@ -34,6 +36,7 @@ import at.bitfire.davdroid.ui.SettingsLoader
 import at.bitfire.davdroid.ui.setup.AccountDetailsFragment.CreateSettings
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
+import kotlinx.android.synthetic.main.login_account_details.*
 import kotlinx.android.synthetic.main.login_account_details.view.*
 import java.util.logging.Level
 
@@ -80,13 +83,18 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
             val name = v.account_name.text.toString()
             if (name.isEmpty())
                 v.account_name.error = getString(R.string.login_account_name_required)
-            else {
-                if (createAccount(name, args.getParcelable(KEY_CONFIG) as DavResourceFinder.Configuration)) {
-                    requireActivity().setResult(Activity.RESULT_OK)
-                    requireActivity().finish()
-                } else
-                    Snackbar.make(v, R.string.login_account_not_created, Snackbar.LENGTH_LONG).show()
-            }
+            else
+                settings?.let {
+                    val idx = view!!.contact_group_method.selectedItemPosition
+                    val groupMethodName = resources.getStringArray(R.array.settings_contact_group_method_values)[idx]
+
+                    v.create_account.visibility = View.GONE
+                    v.create_account_progress.visibility = View.VISIBLE
+
+                    CreateAccountTask(requireActivity(), it, name,
+                            args.getParcelable(KEY_CONFIG) as DavResourceFinder.Configuration,
+                            GroupMethod.valueOf(groupMethodName)).execute()
+                }
         }
 
         loaderManager.initLoader(0, null, this)
@@ -124,98 +132,120 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
     }
 
 
-    private fun createAccount(accountName: String, config: DavResourceFinder.Configuration): Boolean {
-        val account = Account(accountName, getString(R.string.account_type))
-        val settings = settings ?: return false
+    @SuppressLint("StaticFieldLeak")
+    class CreateAccountTask(
+            // no leak: we need the specific Activity to finish it after creating the account
+            val context: Activity,
+            val settings: ISettings,
 
-        // create Android account
-        val userData = AccountSettings.initialUserData(config.credentials)
-        Logger.log.log(Level.INFO, "Creating Android account with initial config", arrayOf(account, userData))
+            val accountName: String,
+            val config: DavResourceFinder.Configuration,
+            val groupMethod: GroupMethod
+    ): AsyncTask<Void, Void, Boolean>() {
 
-        val accountManager = AccountManager.get(activity)
-        if (!accountManager.addAccountExplicitly(account, config.credentials.password, userData))
-            return false
+        override fun doInBackground(vararg params: Void?): Boolean {
+            val account = Account(accountName, context.getString(R.string.account_type))
 
-        // add entries for account to service DB
-        Logger.log.log(Level.INFO, "Writing account configuration to database", config)
-        OpenHelper(requireActivity()).use { dbHelper ->
-            val db = dbHelper.writableDatabase
-            try {
-                val accountSettings = AccountSettings(requireActivity(), settings, account)
+            // create Android account
+            val userData = AccountSettings.initialUserData(config.credentials)
+            Logger.log.log(Level.INFO, "Creating Android account with initial config", arrayOf(account, userData))
 
-                val refreshIntent = Intent(activity, DavService::class.java)
-                refreshIntent.action = DavService.ACTION_REFRESH_COLLECTIONS
+            val accountManager = AccountManager.get(context)
+            if (!accountManager.addAccountExplicitly(account, config.credentials.password, userData))
+                return false
 
-                if (config.cardDAV != null) {
-                    // insert CardDAV service
-                    val id = insertService(db, accountName, Services.SERVICE_CARDDAV, config.cardDAV)
+            // add entries for account to service DB
+            Logger.log.log(Level.INFO, "Writing account configuration to database", config)
+            OpenHelper(context).use { dbHelper ->
+                val db = dbHelper.writableDatabase
+                try {
+                    val accountSettings = AccountSettings(context, settings, account)
 
-                    // start CardDAV service detection (refresh collections)
-                    refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
-                    requireActivity().startService(refreshIntent)
+                    val refreshIntent = Intent(context, DavService::class.java)
+                    refreshIntent.action = DavService.ACTION_REFRESH_COLLECTIONS
 
-                    // initial CardDAV account settings
-                    val idx = view!!.contact_group_method.selectedItemPosition
-                    val groupMethodName = resources.getStringArray(R.array.settings_contact_group_method_values)[idx]
-                    accountSettings.setGroupMethod(GroupMethod.valueOf(groupMethodName))
+                    if (config.cardDAV != null) {
+                        // insert CardDAV service
+                        val id = insertService(db, accountName, Services.SERVICE_CARDDAV, config.cardDAV)
 
-                    // contact sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_address_books.xml
-                    accountSettings.setSyncInterval(getString(R.string.address_books_authority), Constants.DEFAULT_SYNC_INTERVAL)
-                } else
-                    ContentResolver.setIsSyncable(account, getString(R.string.address_books_authority), 0)
+                        // start CardDAV service detection (refresh collections)
+                        refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
+                        context.startService(refreshIntent)
 
-                if (config.calDAV != null) {
-                    // insert CalDAV service
-                    val id = insertService(db, accountName, Services.SERVICE_CALDAV, config.calDAV)
+                        // initial CardDAV account settings
+                        accountSettings.setGroupMethod(groupMethod)
 
-                    // start CalDAV service detection (refresh collections)
-                    refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
-                    requireActivity().startService(refreshIntent)
+                        // contact sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_address_books.xml
+                        accountSettings.setSyncInterval(context.getString(R.string.address_books_authority), Constants.DEFAULT_SYNC_INTERVAL)
+                    } else
+                        ContentResolver.setIsSyncable(account, context.getString(R.string.address_books_authority), 0)
 
-                    // calendar sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_calendars.xml
-                    accountSettings.setSyncInterval(CalendarContract.AUTHORITY, Constants.DEFAULT_SYNC_INTERVAL)
+                    if (config.calDAV != null) {
+                        // insert CalDAV service
+                        val id = insertService(db, accountName, Services.SERVICE_CALDAV, config.calDAV)
 
-                    // enable task sync if OpenTasks is installed
-                    // further changes will be handled by PackageChangedReceiver
-                    if (LocalTaskList.tasksProviderAvailable(requireActivity())) {
-                        ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1)
-                        accountSettings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL)
-                    }
-                } else
-                    ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0)
+                        // start CalDAV service detection (refresh collections)
+                        refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
+                        context.startService(refreshIntent)
 
-            } catch(e: InvalidAccountException) {
-                Logger.log.log(Level.SEVERE, "Couldn't access account settings", e)
+                        // calendar sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_calendars.xml
+                        accountSettings.setSyncInterval(CalendarContract.AUTHORITY, Constants.DEFAULT_SYNC_INTERVAL)
+
+                        // enable task sync if OpenTasks is installed
+                        // further changes will be handled by PackageChangedReceiver
+                        if (LocalTaskList.tasksProviderAvailable(context)) {
+                            ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1)
+                            accountSettings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL)
+                        }
+                    } else
+                        ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0)
+
+                } catch(e: InvalidAccountException) {
+                    Logger.log.log(Level.SEVERE, "Couldn't access account settings", e)
+                    return false
+                }
+            }
+            return true
+        }
+
+        override fun onPostExecute(result: Boolean) {
+            if (result) {
+                context.setResult(Activity.RESULT_OK)
+                context.finish()
+            } else {
+                Snackbar.make(context.findViewById(android.R.id.content), R.string.login_account_not_created, Snackbar.LENGTH_LONG).show()
+
+                context.create_account.visibility = View.VISIBLE
+                context.create_account_progress.visibility = View.GONE
             }
         }
 
-        return true
-    }
+        private fun insertService(db: SQLiteDatabase, accountName: String, service: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
+            // insert service
+            val values = ContentValues(3)
+            values.put(Services.ACCOUNT_NAME, accountName)
+            values.put(Services.SERVICE, service)
+            info.principal?.let { values.put(Services.PRINCIPAL, it.toString()) }
+            val serviceID = db.insertWithOnConflict(Services._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE)
 
-    private fun insertService(db: SQLiteDatabase, accountName: String, service: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
-        // insert service
-        val values = ContentValues(3)
-        values.put(Services.ACCOUNT_NAME, accountName)
-        values.put(Services.SERVICE, service)
-        info.principal?.let { values.put(Services.PRINCIPAL, it.toString()) }
-        val serviceID = db.insertWithOnConflict(Services._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+            // insert home sets
+            for (homeSet in info.homeSets) {
+                val values = ContentValues(2)
+                values.put(HomeSets.SERVICE_ID, serviceID)
+                values.put(HomeSets.URL, homeSet.toString())
+                db.insertWithOnConflict(HomeSets._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+            }
 
-        // insert home sets
-        for (homeSet in info.homeSets) {
-            val values = ContentValues(2)
-            values.put(HomeSets.SERVICE_ID, serviceID)
-            values.put(HomeSets.URL, homeSet.toString())
-            db.insertWithOnConflict(HomeSets._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+            // insert collections
+            for (collection in info.collections.values) {
+                val values = collection.toDB()
+                values.put(Collections.SERVICE_ID, serviceID)
+                db.insertWithOnConflict(Collections._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+            }
+
+            return serviceID
         }
 
-        // insert collections
-        for (collection in info.collections.values) {
-            val values = collection.toDB()
-            values.put(Collections.SERVICE_ID, serviceID)
-            db.insertWithOnConflict(Collections._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE)
-        }
-
-        return serviceID
     }
 
 
