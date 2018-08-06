@@ -27,6 +27,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder
 import org.xbill.DNS.Lookup
 import org.xbill.DNS.Type
 import java.io.IOException
+import java.io.InterruptedIOException
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.*
@@ -57,12 +58,6 @@ class DavResourceFinder(
             .addAuthentication(null, loginInfo.credentials)
             .setForeground(true)
             .build()
-
-    fun cancel() {
-        log.warning("Shutting down resource detection")
-        httpClient.okHttpClient.dispatcher().executorService().shutdown()
-        httpClient.okHttpClient.connectionPool().evictAll()
-    }
 
     override fun close() {
         settings?.close()
@@ -106,6 +101,7 @@ class DavResourceFinder(
                         config.principal = getCurrentUserPrincipal(baseURL.resolve("/.well-known/" + service.wellKnownName)!!, service)
                     } catch(e: Exception) {
                         log.log(Level.FINE, "Well-known URL detection failed", e)
+                        rethrowIfInterrupted(e)
                     }
             }
         } else if (baseURI.scheme.equals("mailto", true)) {
@@ -124,6 +120,7 @@ class DavResourceFinder(
                     config.principal = discoverPrincipalUrl(it, service)
                 } catch(e: Exception) {
                     log.log(Level.FINE, "$service service discovery failed", e)
+                    rethrowIfInterrupted(e)
                 }
             }
 
@@ -144,6 +141,7 @@ class DavResourceFinder(
                 }
             } catch(e: Exception) {
                 log.log(Level.WARNING, "Couldn't query user email address", e)
+                rethrowIfInterrupted(e)
             }
 
         // return config or null if config doesn't contain useful information
@@ -181,6 +179,7 @@ class DavResourceFinder(
             }
         } catch(e: Exception) {
             log.log(Level.FINE, "PROPFIND/OPTIONS on user-given URL failed", e)
+            rethrowIfInterrupted(e)
         }
     }
 
@@ -350,6 +349,7 @@ class DavResourceFinder(
                 principal?.let { return it }
             } catch(e: Exception) {
                 log.log(Level.WARNING, "No resource found", e)
+                rethrowIfInterrupted(e)
             }
         return null
     }
@@ -378,6 +378,11 @@ class DavResourceFinder(
             }
         }
         return principal
+    }
+
+    private fun rethrowIfInterrupted(e: Exception) {
+        if (e is InterruptedIOException || e is InterruptedException)
+            throw e
     }
 
 
