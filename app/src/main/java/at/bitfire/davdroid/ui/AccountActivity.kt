@@ -11,6 +11,7 @@ package at.bitfire.davdroid.ui
 import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.LoaderManager
 import android.content.*
@@ -18,6 +19,7 @@ import android.content.pm.PackageManager
 import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
@@ -44,8 +46,8 @@ import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.ical4android.TaskProvider
 import kotlinx.android.synthetic.main.account_caldav_item.view.*
 import kotlinx.android.synthetic.main.activity_account.*
+import java.lang.ref.WeakReference
 import java.util.*
-import java.util.concurrent.Executors
 import java.util.logging.Level
 
 class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, PopupMenu.OnMenuItemClickListener, LoaderManager.LoaderCallbacks<AccountActivity.AccountInfo> {
@@ -72,8 +74,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
     lateinit var account: Account
     private var accountInfo: AccountInfo? = null
-
-    private val dbExecutor = Executors.newSingleThreadExecutor()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,11 +108,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
         // load CardDAV/CalDAV collections
         loaderManager.initLoader(0, null, this)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        dbExecutor.shutdown()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -201,24 +196,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         val info = adapter.getItem(position)
         val nowChecked = !info.selected
 
-        dbExecutor.execute {
-            OpenHelper(this).use { dbHelper ->
-                val db = dbHelper.writableDatabase
-                db.beginTransactionNonExclusive()
-
-                val values = ContentValues(1)
-                values.put(Collections.SYNC, if (nowChecked) 1 else 0)
-                db.update(Collections._TABLE, values, "${Collections.ID}=?", arrayOf(info.id.toString()))
-
-                db.setTransactionSuccessful()
-                db.endTransaction()
-            }
-
-            info.selected = nowChecked
-            runOnUiThread {
-                adapter.notifyDataSetChanged()
-            }
-        }
+        SelectCollectionTask(applicationContext, info, nowChecked, WeakReference(adapter), WeakReference(view)).execute()
     }
 
     private val onActionOverflowListener = { anchor: View, info: CollectionInfo ->
@@ -236,20 +214,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             when (item.itemId) {
                 R.id.force_read_only -> {
                     val nowChecked = !item.isChecked
-                    dbExecutor.execute {
-                        OpenHelper(this).use { dbHelper ->
-                            val db = dbHelper.writableDatabase
-                            db.beginTransactionNonExclusive()
-
-                            val values = ContentValues(1)
-                            values.put(Collections.FORCE_READ_ONLY, nowChecked)
-                            db.update(Collections._TABLE, values, "${Collections.ID}=?", arrayOf(info.id.toString()))
-
-                            db.setTransactionSuccessful()
-                            db.endTransaction()
-                            reload()
-                        }
-                    }
+                    SetReadOnlyTask(WeakReference(this), info.id!!, nowChecked).execute()
                 }
                 R.id.delete_collection ->
                     DeleteCollectionFragment.ConfirmDeleteCollectionFragment.newInstance(account, info).show(supportFragmentManager, null)
@@ -304,6 +269,69 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                     }
                 }
         }
+    }
+
+
+    /* TASKS */
+
+    @SuppressLint("StaticFieldLeak")
+    class SelectCollectionTask(
+            val applicationContext: Context,
+
+            val info: CollectionInfo,
+            val nowChecked: Boolean,
+            val adapter: WeakReference<ArrayAdapter<*>>,
+            val view: WeakReference<View>
+    ): AsyncTask<Void, Void, Void>() {
+
+        override fun onPreExecute() {
+            view.get()?.isEnabled = false
+        }
+
+        override fun doInBackground(vararg params: Void?): Void? {
+            val values = ContentValues(1)
+            values.put(Collections.SYNC, if (nowChecked) 1 else 0)
+
+            OpenHelper(applicationContext).use { dbHelper ->
+                Logger.log.info("Updating $info $nowChecked")
+                val db = dbHelper.writableDatabase
+                db.update(Collections._TABLE, values, "${Collections.ID}=?", arrayOf(info.id.toString()))
+            }
+
+            return null
+        }
+
+        override fun onPostExecute(result: Void?) {
+            info.selected = nowChecked
+            adapter.get()?.notifyDataSetChanged()
+            view.get()?.isEnabled = true
+        }
+
+    }
+
+    class SetReadOnlyTask(
+            val activity: WeakReference<AccountActivity>,
+            val id: Long,
+            val nowChecked: Boolean
+    ): AsyncTask<Void, Void, Void>() {
+
+        override fun doInBackground(vararg params: Void?): Void? {
+            activity.get()?.let { context ->
+                OpenHelper(context).use { dbHelper ->
+                    val values = ContentValues(1)
+                    values.put(Collections.FORCE_READ_ONLY, nowChecked)
+
+                    val db = dbHelper.writableDatabase
+                    db.update(Collections._TABLE, values, "${Collections.ID}=?", arrayOf(id.toString()))
+                }
+            }
+            return null
+        }
+
+        override fun onPostExecute(result: Void?) {
+            activity.get()?.reload()
+        }
+
     }
 
 
