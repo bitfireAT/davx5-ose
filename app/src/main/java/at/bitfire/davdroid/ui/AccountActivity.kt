@@ -293,7 +293,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             values.put(Collections.SYNC, if (nowChecked) 1 else 0)
 
             OpenHelper(applicationContext).use { dbHelper ->
-                Logger.log.info("Updating $info $nowChecked")
                 val db = dbHelper.writableDatabase
                 db.update(Collections._TABLE, values, "${Collections.ID}=?", arrayOf(info.id.toString()))
             }
