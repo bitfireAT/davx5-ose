@@ -38,6 +38,7 @@ import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import kotlinx.android.synthetic.main.login_account_details.*
 import kotlinx.android.synthetic.main.login_account_details.view.*
+import java.lang.ref.WeakReference
 import java.util.logging.Level
 
 class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSettings> {
@@ -91,7 +92,8 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
                     v.create_account.visibility = View.GONE
                     v.create_account_progress.visibility = View.VISIBLE
 
-                    CreateAccountTask(requireActivity(), it, name,
+                    CreateAccountTask(requireActivity().applicationContext, WeakReference(requireActivity()),
+                            it, name,
                             args.getParcelable(KEY_CONFIG) as DavResourceFinder.Configuration,
                             GroupMethod.valueOf(groupMethodName)).execute()
                 }
@@ -132,10 +134,10 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
     }
 
 
-    @SuppressLint("StaticFieldLeak")
+    @SuppressLint("StaticFieldLeak")    // we'll only keep the application Context
     class CreateAccountTask(
-            // no leak: we need the specific Activity to finish it after creating the account
-            val context: Activity,
+            val applicationContext: Context,
+            val activityRef: WeakReference<Activity>,
             val settings: ISettings,
 
             val accountName: String,
@@ -144,24 +146,24 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
     ): AsyncTask<Void, Void, Boolean>() {
 
         override fun doInBackground(vararg params: Void?): Boolean {
-            val account = Account(accountName, context.getString(R.string.account_type))
+            val account = Account(accountName, applicationContext.getString(R.string.account_type))
 
             // create Android account
             val userData = AccountSettings.initialUserData(config.credentials)
             Logger.log.log(Level.INFO, "Creating Android account with initial config", arrayOf(account, userData))
 
-            val accountManager = AccountManager.get(context)
+            val accountManager = AccountManager.get(applicationContext)
             if (!accountManager.addAccountExplicitly(account, config.credentials.password, userData))
                 return false
 
             // add entries for account to service DB
             Logger.log.log(Level.INFO, "Writing account configuration to database", config)
-            OpenHelper(context).use { dbHelper ->
+            OpenHelper(applicationContext).use { dbHelper ->
                 val db = dbHelper.writableDatabase
                 try {
-                    val accountSettings = AccountSettings(context, settings, account)
+                    val accountSettings = AccountSettings(applicationContext, settings, account)
 
-                    val refreshIntent = Intent(context, DavService::class.java)
+                    val refreshIntent = Intent(applicationContext, DavService::class.java)
                     refreshIntent.action = DavService.ACTION_REFRESH_COLLECTIONS
 
                     if (config.cardDAV != null) {
@@ -170,15 +172,15 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
 
                         // start CardDAV service detection (refresh collections)
                         refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
-                        context.startService(refreshIntent)
+                        applicationContext.startService(refreshIntent)
 
                         // initial CardDAV account settings
                         accountSettings.setGroupMethod(groupMethod)
 
                         // contact sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_address_books.xml
-                        accountSettings.setSyncInterval(context.getString(R.string.address_books_authority), Constants.DEFAULT_SYNC_INTERVAL)
+                        accountSettings.setSyncInterval(applicationContext.getString(R.string.address_books_authority), Constants.DEFAULT_SYNC_INTERVAL)
                     } else
-                        ContentResolver.setIsSyncable(account, context.getString(R.string.address_books_authority), 0)
+                        ContentResolver.setIsSyncable(account, applicationContext.getString(R.string.address_books_authority), 0)
 
                     if (config.calDAV != null) {
                         // insert CalDAV service
@@ -186,14 +188,14 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
 
                         // start CalDAV service detection (refresh collections)
                         refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
-                        context.startService(refreshIntent)
+                        applicationContext.startService(refreshIntent)
 
                         // calendar sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_calendars.xml
                         accountSettings.setSyncInterval(CalendarContract.AUTHORITY, Constants.DEFAULT_SYNC_INTERVAL)
 
                         // enable task sync if OpenTasks is installed
                         // further changes will be handled by PackageChangedReceiver
-                        if (LocalTaskList.tasksProviderAvailable(context)) {
+                        if (LocalTaskList.tasksProviderAvailable(applicationContext)) {
                             ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1)
                             accountSettings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL)
                         }
@@ -209,14 +211,16 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
         }
 
         override fun onPostExecute(result: Boolean) {
-            if (result) {
-                context.setResult(Activity.RESULT_OK)
-                context.finish()
-            } else {
-                Snackbar.make(context.findViewById(android.R.id.content), R.string.login_account_not_created, Snackbar.LENGTH_LONG).show()
+            activityRef.get()?.let { activity ->
+                if (result) {
+                    activity.setResult(Activity.RESULT_OK)
+                    activity.finish()
+                } else {
+                    Snackbar.make(activity.findViewById(android.R.id.content), R.string.login_account_not_created, Snackbar.LENGTH_LONG).show()
 
-                context.create_account.visibility = View.VISIBLE
-                context.create_account_progress.visibility = View.GONE
+                    activity.create_account.visibility = View.VISIBLE
+                    activity.create_account_progress.visibility = View.GONE
+                }
             }
         }
 
