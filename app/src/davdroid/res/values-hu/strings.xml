@@ -4,6 +4,7 @@
   <string name="app_name">DAVdroid</string>
   <string name="account_title_address_book">DAVdroid címjegyzék</string>
   <string name="address_books_authority_title">Címjegyzékek</string>
+  <string name="copied_to_clipboard">Vágólapra másolva</string>
   <string name="help">Súgó</string>
   <string name="manage_accounts">Fiókok kezelése</string>
   <string name="please_wait">Kérjük, várjon …</string>
@@ -15,8 +16,13 @@
   <string name="notification_channel_sync_io_errors">Hálózati és I/O hibák</string>
   <string name="notification_channel_sync_status">Státuszüzenetek</string>
   <!--startup dialogs-->
+  <string name="startup_autostart_permission">Automatikus szinkronizálás</string>
+  <string name="startup_autostart_permission_message">A(z) %s gyári szoftvere gyakran blokkolja az automatikus szinkronizálást. Ebben az esetben engedélyezze a szinkronizálást az Android beállítások között.</string>
+  <string name="startup_battery_optimization">Időzített szinkronizálás</string>
+  <string name="startup_battery_optimization_message">Az eszköz korlátozni fogja a DAVdroid szinkronizálást.  A szokásos DAVadroid szinkronizációs ciklus biztosítása érdekében vonja ki a DAVdroid-ot az „akkumulátorfigyelés” alól.</string>
   <string name="startup_battery_optimization_disable">Kikapcsolás a DAVdroid kapcsán</string>
   <string name="startup_dont_show_again">Ne jelenjen meg többet</string>
+  <string name="startup_not_now">Ne most</string>
   <string name="startup_donate">A forrás nyíltságával kapcsolatos információk</string>
   <string name="startup_donate_message">Örülünk, hogy használja a DAVdroidot.  A DAVdroid nyílt forráskódú (GPLv3) szoftver, de a fejlesztése kemény munkát jelent, már eddig több ezer munkaórát emésztett fel, ezért kérjük, fontolja meg, hogy támogassa munkánkat.</string>
   <string name="startup_donate_now">Támogatás küldése</string>
@@ -29,6 +35,10 @@
   <string name="startup_opentasks_reinstall_davdroid">Az OpenTasks telepítését követően újra kell telepíteni a DAVdroit alkalmazást és újra fel kell venni a fiókokat (Android hiba).</string>
   <string name="startup_opentasks_not_installed_install">Az OpenTasks telepítése</string>
   <!--AboutActivity-->
+  <string name="about_libraries">Könyvtárak</string>
+  <string name="about_version">Verziószám:%1s (%2d)</string>
+  <string name="about_build_date">Fordítás ideje: %s</string>
+  <string name="about_flavor_info">Ennek a verziónak a terjesztése csak a Play Áruházon keresztül engedélyezett.</string>
   <string name="about_license_info_no_warranty">Ehhez a program SEMMIFÉLE GARANCIA NEM JÁR.   Ez a program szabad szoftver, ami a bizonyos feltételek mellett szabadon terjeszthető.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid fájlalapú naplózás</string>
@@ -90,6 +100,7 @@
   <string name="account_delete">Fiók törlése</string>
   <string name="account_delete_confirmation_title">Valóban törölni akarja a fiókot?</string>
   <string name="account_delete_confirmation_text">Az összes címjegyzék, naptár és feladatlista helyi példányai törölve lesznek.</string>
+  <string name="account_select_collections_hint">Válassza ki a szinkronizálandó gyűjteményeket</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -130,6 +141,7 @@
   <string name="login_configuration_detection">A konfiguráció felderítése</string>
   <string name="login_querying_server">Kérjük, várjon, a szerver lekérdezése…</string>
   <string name="login_no_caldav_carddav">Nem található CalDAV vagy CardDAV szolgáltatás.</string>
+  <string name="login_view_logs">Részletek mutatása</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Beállítások: %s</string>
   <string name="settings_authentication">Authentikáció</string>
@@ -210,6 +222,9 @@
   <string name="delete_collection_confirm_warning">A gyűjtemény (%s) és a hozzá tartozó adatok törölve lesznek a szerverről.</string>
   <string name="delete_collection_deleting_collection">Gyűjtemény törlése</string>
   <string name="collection_force_read_only">Csak olvashatóvá tétel</string>
+  <string name="collection_properties">Tulajdonságok</string>
+  <string name="collection_properties_url">Cím (URL):</string>
+  <string name="collection_properties_copy_url">URL másolása</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Hiba történt.</string>
   <string name="exception_httpexception">HTTP hiba történt.</string>
