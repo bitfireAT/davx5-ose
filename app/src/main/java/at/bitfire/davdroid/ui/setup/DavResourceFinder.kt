@@ -65,9 +65,24 @@ class DavResourceFinder(
     }
 
 
+    /**
+     * Finds the initial configuration, i.e. runs the auto-detection process. Must not throw an
+     * exception, but return an empty Configuration with error logs instead.
+     */
     fun findInitialConfiguration(): Configuration {
-        val cardDavConfig = findInitialConfiguration(Service.CARDDAV)
-        val calDavConfig = findInitialConfiguration(Service.CALDAV)
+        var cardDavConfig: Configuration.ServiceInfo?
+        var calDavConfig: Configuration.ServiceInfo?
+
+        try {
+            cardDavConfig = findInitialConfiguration(Service.CARDDAV)
+            calDavConfig = findInitialConfiguration(Service.CALDAV)
+        } catch(e: Exception) {
+            log.log(Level.INFO, "Service detection failed", e)
+
+            // reset results so that an error message will be shown
+            cardDavConfig = null
+            calDavConfig = null
+        }
 
         return Configuration(
                 loginInfo.credentials,
@@ -380,6 +395,10 @@ class DavResourceFinder(
         return principal
     }
 
+    /**
+     * Re-throws the exception if it signals that the current thread was interrupted
+     * to stop the current operation.
+     */
     private fun rethrowIfInterrupted(e: Exception) {
         if (e is InterruptedIOException || e is InterruptedException)
             throw e
