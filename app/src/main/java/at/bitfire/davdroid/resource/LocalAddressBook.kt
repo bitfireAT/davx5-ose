@@ -67,7 +67,7 @@ class LocalAddressBook(
             return addressBook
         }
 
-        fun findAll(context: Context, provider: ContentProviderClient, mainAccount: Account?) = AccountManager.get(context)
+        fun findAll(context: Context, provider: ContentProviderClient?, mainAccount: Account?) = AccountManager.get(context)
                 .getAccountsByType(context.getString(R.string.account_type_address_book))
                 .map { LocalAddressBook(context, it, provider) }
                 .filter { mainAccount == null || it.mainAccount == mainAccount }

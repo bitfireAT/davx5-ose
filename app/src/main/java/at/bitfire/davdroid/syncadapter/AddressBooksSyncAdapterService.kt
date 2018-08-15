@@ -9,7 +9,6 @@ package at.bitfire.davdroid.syncadapter
 
 import android.Manifest
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.*
 import android.content.pm.PackageManager
 import android.database.DatabaseUtils
@@ -18,7 +17,6 @@ import android.os.Bundle
 import android.provider.ContactsContract
 import android.support.v4.content.ContextCompat
 import at.bitfire.davdroid.AccountSettings
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
@@ -49,10 +47,9 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
                 if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(accountSettings))
                     return
 
-                updateLocalAddressBooks(provider, account, syncResult)
+                updateLocalAddressBooks(account, syncResult)
 
-                val accountManager = AccountManager.get(context)
-                for (addressBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
+                for (addressBookAccount in LocalAddressBook.findAll(context, null, account).map { it.account }) {
                     Logger.log.log(Level.INFO, "Running sync for address book", addressBookAccount)
                     val syncExtras = Bundle(extras)
                     syncExtras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, true)
@@ -66,7 +63,7 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
             Logger.log.info("Address book sync complete")
         }
 
-        private fun updateLocalAddressBooks(provider: ContentProviderClient, account: Account, syncResult: SyncResult) {
+        private fun updateLocalAddressBooks(account: Account, syncResult: SyncResult) {
             ServiceDB.OpenHelper(context).use { dbHelper ->
                 val db = dbHelper.readableDatabase
 
