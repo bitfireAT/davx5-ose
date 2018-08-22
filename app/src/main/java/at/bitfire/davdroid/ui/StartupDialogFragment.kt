@@ -134,7 +134,7 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         .setMessage(getString(R.string.startup_autostart_permission_message, WordUtils.capitalize(Build.MANUFACTURER.toLowerCase())))
                         .setPositiveButton(R.string.startup_more_info) { _, _ ->
                             val intent = Intent(Intent.ACTION_VIEW, App.homepageUrl(requireActivity()).buildUpon()
-                                    .appendPath("faq").appendEncodedPath("automatic-synchronization-is-not-run-as-expected/").build())
+                                    .appendPath("faq").appendEncodedPath("synchronization-is-not-run-as-expected/").build())
                             if (intent.resolveActivity(activity.packageManager) != null)
                                 activity.startActivity(intent)
                         }
