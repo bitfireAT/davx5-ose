@@ -181,8 +181,11 @@ class DavService: Service() {
 
             /**
              * Checks if the given URL defines home sets and adds them to the home set list.
+             *
+             * @throws IOException
+             * @throws HttpException
+             * @throws DavException
              */
-            @Throws(IOException::class, HttpException::class, DavException::class)
             fun queryHomeSets(client: OkHttpClient, url: HttpUrl, recurse: Boolean = true) {
                 var related = setOf<HttpUrl>()
 
@@ -219,24 +222,38 @@ class DavService: Service() {
                 val dav = DavResource(client, url)
                 when (serviceType) {
                     Services.SERVICE_CARDDAV ->
-                        dav.propfind(0, AddressbookHomeSet.NAME, GroupMembership.NAME) { response, _ ->
-                            response[AddressbookHomeSet::class.java]?.let {
-                                for (href in it.hrefs)
-                                    dav.location.resolve(href)?.let { homeSets += UrlUtils.withTrailingSlash(it) }
-                            }
+                        try {
+                            dav.propfind(0, AddressbookHomeSet.NAME, GroupMembership.NAME) { response, _ ->
+                                response[AddressbookHomeSet::class.java]?.let { homeSet ->
+                                    for (href in homeSet.hrefs)
+                                        dav.location.resolve(href)?.let { homeSets += UrlUtils.withTrailingSlash(it) }
+                                }
 
-                            if (recurse)
-                                findRelated(dav.location, response)
+                                if (recurse)
+                                    findRelated(dav.location, response)
+                            }
+                        } catch (e: HttpException) {
+                            if (e.code/100 == 4)
+                                Logger.log.log(Level.INFO, "Ignoring Client Error 4xx while looking for addressbook home sets", e)
+                            else
+                                throw e
                         }
                     Services.SERVICE_CALDAV -> {
-                        dav.propfind(0, CalendarHomeSet.NAME, CalendarProxyReadFor.NAME, CalendarProxyWriteFor.NAME, GroupMembership.NAME) { response, _ ->
-                            response[CalendarHomeSet::class.java]?.let {
-                                for (href in it.hrefs)
-                                    dav.location.resolve(href)?.let { homeSets.add(UrlUtils.withTrailingSlash(it)) }
-                            }
+                        try {
+                            dav.propfind(0, CalendarHomeSet.NAME, CalendarProxyReadFor.NAME, CalendarProxyWriteFor.NAME, GroupMembership.NAME) { response, _ ->
+                                response[CalendarHomeSet::class.java]?.let { homeSet ->
+                                    for (href in homeSet.hrefs)
+                                        dav.location.resolve(href)?.let { homeSets.add(UrlUtils.withTrailingSlash(it)) }
+                                }
 
-                            if (recurse)
-                                findRelated(dav.location, response)
+                                if (recurse)
+                                    findRelated(dav.location, response)
+                            }
+                        } catch (e: HttpException) {
+                            if (e.code/100 == 4)
+                                Logger.log.log(Level.INFO, "Ignoring Client Error 4xx while looking for calendar home sets", e)
+                            else
+                                throw e
                         }
                     }
                 }
@@ -309,7 +326,7 @@ class DavService: Service() {
                                 }
                             } catch(e: HttpException) {
                                 if (e.code in arrayOf(403, 404, 410))
-                                // delete home set only if it was not accessible (40x)
+                                    // delete home set only if it was not accessible (40x)
                                     itHomeSets.remove()
                             }
                         }
