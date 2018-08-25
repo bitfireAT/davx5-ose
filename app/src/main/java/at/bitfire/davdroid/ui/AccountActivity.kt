@@ -210,6 +210,8 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                 isChecked = info.forceReadOnly
         }
 
+        popup.menu.findItem(R.id.delete_collection).isVisible = !info.readOnly
+
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.force_read_only -> {
@@ -617,6 +619,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                     if (info.readOnly || info.forceReadOnly) View.VISIBLE else View.GONE
 
             v.findViewById<ImageView>(R.id.action_overflow).setOnClickListener { view ->
+                @Suppress("ReplaceSingleLineLet")
                 (context as? AccountActivity)?.let {
                     it.onActionOverflowListener(view, info)
                 }
