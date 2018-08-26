@@ -191,8 +191,8 @@ class LocalAddressBook(
             account = future.result
         }
 
-        Constants.log.info("Address book read-only? = ${info.readOnly}")
-        readOnly = info.readOnly || info.forceReadOnly
+        Constants.log.info("Address book write permission? = ${info.privWriteContent}")
+        readOnly = !info.privWriteContent || info.forceReadOnly
 
         // make sure it will still be synchronized when contacts are updated
         ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)

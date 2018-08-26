@@ -34,7 +34,8 @@ data class CollectionInfo(
 
         var type: Type? = null,
 
-        var readOnly: Boolean = false,
+        var privWriteContent: Boolean = true,
+        var privUnbind: Boolean = true,
         var forceReadOnly: Boolean = false,
         var displayName: String? = null,
         var description: String? = null,
@@ -68,7 +69,8 @@ data class CollectionInfo(
         }
 
         dav[CurrentUserPrivilegeSet::class.java]?.let { privilegeSet ->
-            readOnly = !privilegeSet.mayWriteContent
+            privWriteContent = privilegeSet.mayWriteContent
+            privUnbind = privilegeSet.mayUnbind
         }
 
         dav[DisplayName::class.java]?.let {
@@ -110,7 +112,8 @@ data class CollectionInfo(
             null
         }
 
-        readOnly = values.getAsInteger(Collections.READ_ONLY) != 0
+        privWriteContent = values.getAsInteger(Collections.PRIV_WRITE_CONTENT) != 0
+        privUnbind = values.getAsInteger(Collections.PRIV_UNBIND) != 0
         forceReadOnly = values.getAsInteger(Collections.FORCE_READ_ONLY) != 0
         displayName = values.getAsString(Collections.DISPLAY_NAME)
         description = values.getAsString(Collections.DESCRIPTION)
@@ -132,7 +135,8 @@ data class CollectionInfo(
         type?.let { values.put(Collections.TYPE, it.name) }
 
         values.put(Collections.URL, url.toString())
-        values.put(Collections.READ_ONLY, if (readOnly) 1 else 0)
+        values.put(Collections.PRIV_WRITE_CONTENT, if (privWriteContent) 1 else 0)
+        values.put(Collections.PRIV_UNBIND, if (privUnbind) 1 else 0)
         values.put(Collections.FORCE_READ_ONLY, if (forceReadOnly) 1 else 0)
         values.put(Collections.DISPLAY_NAME, displayName)
         values.put(Collections.DESCRIPTION, description)
@@ -176,7 +180,9 @@ data class CollectionInfo(
 
         dest.writeString(type?.name)
 
-        dest.writeByte(if (readOnly) 1 else 0)
+        dest.writeByte(if (privWriteContent) 1 else 0)
+        dest.writeByte(if (privUnbind) 1 else 0)
+
         dest.writeByte(if (forceReadOnly) 1 else 0)
         dest.writeString(displayName)
         dest.writeString(description)
@@ -220,6 +226,8 @@ data class CollectionInfo(
                     parcel.readString()?.let { Type.valueOf(it) },
 
                     parcel.readByte() != 0.toByte(),
+                    parcel.readByte() != 0.toByte(),
+
                     parcel.readByte() != 0.toByte(),
                     parcel.readString(),
                     parcel.readString(),
