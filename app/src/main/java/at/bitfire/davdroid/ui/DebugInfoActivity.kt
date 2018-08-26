@@ -111,7 +111,9 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
     override fun onLoadFinished(loader: Loader<String>, data: String?) {
         data?.let {
             report = it
+
             text_report.text = it
+            text_report.setTextIsSelectable(true)
         }
     }
 
