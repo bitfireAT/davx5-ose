@@ -46,7 +46,8 @@ class ServiceDB {
         const val TYPE = "type"
         const val SERVICE_ID = "serviceID"
         const val URL = "url"
-        const val READ_ONLY = "readOnly"
+        const val PRIV_WRITE_CONTENT = "privWriteContent"
+        const val PRIV_UNBIND = "privUnbind"
         const val FORCE_READ_ONLY = "forceReadOnly"
         const val DISPLAY_NAME = "displayName"
         const val DESCRIPTION = "description"
@@ -75,7 +76,7 @@ class ServiceDB {
 
         companion object {
             const val DATABASE_NAME = "services.db"
-            const val DATABASE_VERSION = 4
+            const val DATABASE_VERSION = 5
         }
 
         override fun onConfigure(db: SQLiteDatabase) {
@@ -104,7 +105,8 @@ class ServiceDB {
                     "${Collections.SERVICE_ID} INTEGER NOT NULL REFERENCES ${Services._TABLE} ON DELETE CASCADE," +
                     "${Collections.TYPE} TEXT NOT NULL," +
                     "${Collections.URL} TEXT NOT NULL," +
-                    "${Collections.READ_ONLY} INTEGER DEFAULT 0 NOT NULL," +
+                    "${Collections.PRIV_WRITE_CONTENT} INTEGER DEFAULT 0 NOT NULL," +
+                    "${Collections.PRIV_UNBIND} INTEGER DEFAULT 0 NOT NULL," +
                     "${Collections.FORCE_READ_ONLY} INTEGER DEFAULT 0 NOT NULL," +
                     "${Collections.DISPLAY_NAME} TEXT NULL," +
                     "${Collections.DESCRIPTION} TEXT NULL," +
@@ -128,6 +130,17 @@ class ServiceDB {
                     Logger.log.log(Level.SEVERE, "Couldn't upgrade database", e)
                 }
             }
+        }
+
+        @Suppress("unused")
+        private fun upgrade_4_5(db: SQLiteDatabase) {
+            db.execSQL("ALTER TABLE ${Collections._TABLE} ADD COLUMN ${Collections.PRIV_WRITE_CONTENT} INTEGER DEFAULT 0 NOT NULL")
+            db.execSQL("UPDATE ${Collections._TABLE} SET ${Collections.PRIV_WRITE_CONTENT}=NOT readOnly")
+
+            db.execSQL("ALTER TABLE ${Collections._TABLE} ADD COLUMN ${Collections.PRIV_UNBIND} INTEGER DEFAULT 0 NOT NULL")
+            db.execSQL("UPDATE ${Collections._TABLE} SET ${Collections.PRIV_UNBIND}=NOT readOnly")
+
+            // there's no DROP COLUMN in SQLite, so just keep the "readOnly" column
         }
 
         @Suppress("unused")

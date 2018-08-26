@@ -161,7 +161,7 @@ class DavService: Service() {
                 val collections = mutableMapOf<HttpUrl, CollectionInfo>()
                 db.query(Collections._TABLE, null, "${Collections.SERVICE_ID}=?", arrayOf(service.toString()), null, null, null)?.use { cursor ->
                     while (cursor.moveToNext()) {
-                        val values = ContentValues()
+                        val values = ContentValues(cursor.columnCount)
                         DatabaseUtils.cursorRowToContentValues(cursor, values)
                         values.getAsString(Collections.URL)?.let { url ->
                             HttpUrl.parse(url)?.let { collections.put(it, CollectionInfo(values)) }
@@ -303,7 +303,7 @@ class DavService: Service() {
                         val selectedCollections = HashSet<HttpUrl>()
                         collections.values
                                 .filter { it.selected }
-                                .forEach { (url, _) -> selectedCollections.add(url) }
+                                .forEach { (url, _) -> selectedCollections += url }
 
                         // now refresh collections (taken from home sets)
                         val itHomeSets = homeSets.iterator()

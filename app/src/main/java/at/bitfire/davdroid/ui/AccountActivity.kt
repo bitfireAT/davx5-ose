@@ -204,13 +204,13 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         popup.inflate(R.menu.account_collection_operations)
 
         with(popup.menu.findItem(R.id.force_read_only)) {
-            if (info.readOnly)
-                isVisible = false
-            else
+            if (info.privWriteContent)
                 isChecked = info.forceReadOnly
+            else
+                isVisible = false
         }
 
-        popup.menu.findItem(R.id.delete_collection).isVisible = !info.readOnly
+        popup.menu.findItem(R.id.delete_collection).isVisible = info.privUnbind
 
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
@@ -616,7 +616,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             }
 
             v.findViewById<ImageView>(R.id.read_only).visibility =
-                    if (info.readOnly || info.forceReadOnly) View.VISIBLE else View.GONE
+                    if (!info.privWriteContent || info.forceReadOnly) View.VISIBLE else View.GONE
 
             v.findViewById<ImageView>(R.id.action_overflow).setOnClickListener { view ->
                 @Suppress("ReplaceSingleLineLet")
@@ -661,7 +661,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             }
 
             v.findViewById<ImageView>(R.id.read_only).visibility =
-                    if (info.readOnly || info.forceReadOnly) View.VISIBLE else View.GONE
+                    if (!info.privWriteContent || info.forceReadOnly) View.VISIBLE else View.GONE
 
             v.findViewById<ImageView>(R.id.events).visibility =
                     if (info.supportsVEVENT) View.VISIBLE else View.GONE

@@ -60,13 +60,12 @@ class LocalCalendar private constructor(
             if (withColor)
                 values.put(Calendars.CALENDAR_COLOR, info.color ?: Constants.DAVDROID_GREEN_RGBA)
 
-            if (info.readOnly || info.forceReadOnly)
-                values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ)
-            else {
+            if (info.privWriteContent && !info.forceReadOnly) {
                 values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER)
                 values.put(Calendars.CAN_MODIFY_TIME_ZONE, 1)
                 values.put(Calendars.CAN_ORGANIZER_RESPOND, 1)
-            }
+            } else
+                values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ)
 
             info.timeZone?.let { tzData ->
                 try {
