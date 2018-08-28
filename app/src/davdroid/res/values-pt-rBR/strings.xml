@@ -4,7 +4,6 @@
   <string name="app_name">DAVdroid</string>
   <string name="account_title_address_book">Livro de endereços DAVdroid</string>
   <string name="address_books_authority_title">Livros de endereços</string>
-  <string name="copied_to_clipboard">Copiado para a área de transferência</string>
   <string name="help">Ajuda</string>
   <string name="manage_accounts">Gerenciar contas</string>
   <string name="please_wait">Por favor, aguarde…</string>
