@@ -4,7 +4,6 @@
   <string name="app_name">DAVdroid</string>
   <string name="account_title_address_book">DAVdroid دفتر عناوين</string>
   <string name="address_books_authority_title">دفاتر العناوين</string>
-  <string name="copied_to_clipboard">تم النسخ إلى الحافظة</string>
   <string name="help">مساعدة</string>
   <string name="manage_accounts">إدارة الحسابات</string>
   <string name="please_wait">يرجى الانتظار…</string>
