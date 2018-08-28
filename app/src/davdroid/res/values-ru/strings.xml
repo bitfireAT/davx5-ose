@@ -4,7 +4,6 @@
   <string name="app_name">DAVdroid</string>
   <string name="account_title_address_book">Адресная книга DAVdroid</string>
   <string name="address_books_authority_title">Адресные книги</string>
-  <string name="copied_to_clipboard">Скопировано в буфер обмена</string>
   <string name="help">Помощь</string>
   <string name="manage_accounts">Управление аккаунтами</string>
   <string name="please_wait">Пожалуйста, подождите …</string>

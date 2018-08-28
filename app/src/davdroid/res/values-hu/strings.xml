@@ -4,7 +4,6 @@
   <string name="app_name">DAVdroid</string>
   <string name="account_title_address_book">DAVdroid címjegyzék</string>
   <string name="address_books_authority_title">Címjegyzékek</string>
-  <string name="copied_to_clipboard">Vágólapra másolva</string>
   <string name="help">Súgó</string>
   <string name="manage_accounts">Fiókok kezelése</string>
   <string name="please_wait">Kérjük, várjon …</string>

@@ -4,7 +4,6 @@
   <string name="app_name">DAVdroid</string>
   <string name="account_title_address_book">DAVdroid 通讯录</string>
   <string name="address_books_authority_title">通讯录</string>
-  <string name="copied_to_clipboard">已复制到剪贴板</string>
   <string name="help">帮助</string>
   <string name="manage_accounts">管理账户</string>
   <string name="please_wait">请稍等…</string>
