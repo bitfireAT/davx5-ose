@@ -28,6 +28,7 @@ import org.xbill.DNS.Lookup
 import org.xbill.DNS.Type
 import java.io.IOException
 import java.io.InterruptedIOException
+import java.net.SocketTimeoutException
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.*
@@ -70,16 +71,25 @@ class DavResourceFinder(
      * exception, but return an empty Configuration with error logs instead.
      */
     fun findInitialConfiguration(): Configuration {
-        var cardDavConfig: Configuration.ServiceInfo?
-        var calDavConfig: Configuration.ServiceInfo?
+        var cardDavConfig: Configuration.ServiceInfo? = null
+        var calDavConfig: Configuration.ServiceInfo? = null
 
         try {
-            cardDavConfig = findInitialConfiguration(Service.CARDDAV)
-            calDavConfig = findInitialConfiguration(Service.CALDAV)
-        } catch(e: Exception) {
-            log.log(Level.INFO, "Service detection failed", e)
+            try {
+                cardDavConfig = findInitialConfiguration(Service.CARDDAV)
+            } catch (e: Exception) {
+                log.log(Level.INFO, "CardDAV service detection failed", e)
+                rethrowIfInterrupted(e)
+            }
 
-            // reset results so that an error message will be shown
+            try {
+                calDavConfig = findInitialConfiguration(Service.CALDAV)
+            } catch (e: Exception) {
+                log.log(Level.INFO, "CalDAV service detection failed", e)
+                rethrowIfInterrupted(e)
+            }
+        } catch(e: Exception) {
+            // we have been interrupted; reset results so that an error message will be shown
             cardDavConfig = null
             calDavConfig = null
         }
@@ -400,7 +410,7 @@ class DavResourceFinder(
      * to stop the current operation.
      */
     private fun rethrowIfInterrupted(e: Exception) {
-        if (e is InterruptedIOException || e is InterruptedException)
+        if ((e is InterruptedIOException && e !is SocketTimeoutException) || e is InterruptedException)
             throw e
     }
 

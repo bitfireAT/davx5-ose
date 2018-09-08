@@ -12,7 +12,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka-android'
 
 ext {
-    baseVersionName = '2.0.3'
+    baseVersionName = '2.0.4'
 }
 
 android {
@@ -23,7 +23,7 @@ android {
         applicationId "at.bitfire.davdroid"
         resValue "string", "packageID", applicationId
 
-        versionCode 244
+        versionCode 245
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         minSdkVersion 19        // Android 4.4
