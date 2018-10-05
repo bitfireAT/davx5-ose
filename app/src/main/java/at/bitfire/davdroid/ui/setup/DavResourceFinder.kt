@@ -7,7 +7,10 @@
  */
 package at.bitfire.davdroid.ui.setup
 
+import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.content.Context
+import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import at.bitfire.dav4android.DavResource
@@ -443,7 +446,8 @@ class DavResourceFinder(
 
         override fun describeContents() = 0
 
-        override fun writeToParcel(dest: Parcel, flags: Int) {
+        @SuppressLint("NewApi")
+        override fun writeToParcel(dest: Parcel, flags: Int) { @TargetApi(Build.VERSION_CODES.N)
             fun writeServiceInfo(info: ServiceInfo?) {
                 if (info == null)
                     dest.writeByte(0)
