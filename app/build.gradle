@@ -18,12 +18,12 @@ android {
     defaultConfig {
         applicationId "at.bitfire.davdroid"
 
-        versionCode 245
+        versionCode 246
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "customCerts", "true"
 
         minSdkVersion 19        // Android 4.4
-        targetSdkVersion 28     // Android 8.1
+        targetSdkVersion 28     // Android 9.0
 
         // when using this, make sure that notification icons are real bitmaps
         vectorDrawables.useSupportLibrary = true
@@ -32,7 +32,7 @@ android {
     flavorDimensions "type"
     productFlavors {
         standard {
-            versionName "2.0.4-ose"
+            versionName "2.1-beta1-ose"
 
             buildConfigField "boolean", "customCerts", "true"
         }
