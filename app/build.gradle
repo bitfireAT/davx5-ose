@@ -12,7 +12,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka-android'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     buildToolsVersion '28.0.3'
 
     defaultConfig {
@@ -23,7 +23,7 @@ android {
         buildConfigField "boolean", "customCerts", "true"
 
         minSdkVersion 19        // Android 4.4
-        targetSdkVersion 27     // Android 8.1
+        targetSdkVersion 28     // Android 8.1
 
         // when using this, make sure that notification icons are real bitmaps
         vectorDrawables.useSupportLibrary = true
@@ -75,10 +75,10 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:cardview-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
-    implementation 'com.android.support:preference-v14:27.1.1'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:cardview-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:preference-v14:28.0.0'
 
     implementation 'com.github.yukuku:ambilwarna:2.0.1'
     implementation 'com.mikepenz:aboutlibraries:6.0.9'
