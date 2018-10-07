@@ -10,14 +10,9 @@ package at.bitfire.davdroid.ui
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
-import android.widget.Toast
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.CollectionInfo
 import kotlinx.android.synthetic.main.collection_properties.view.*
