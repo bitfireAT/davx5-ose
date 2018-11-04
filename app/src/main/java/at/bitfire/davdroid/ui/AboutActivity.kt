@@ -9,7 +9,6 @@
 package at.bitfire.davdroid.ui
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -61,9 +60,7 @@ class AboutActivity: AppCompatActivity() {
     }
 
     fun showWebsite(item: MenuItem) {
-        val intent = Intent(Intent.ACTION_VIEW, App.homepageUrl(this))
-        if (intent.resolveActivity(packageManager) != null)
-            startActivity(intent)
+        UiUtils.launchUri(this, App.homepageUrl(this))
     }
 
 

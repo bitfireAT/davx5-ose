@@ -136,6 +136,7 @@ class TasksSyncManager(
             tasks = Task.fromReader(reader)
         } catch (e: InvalidCalendarException) {
             Logger.log.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
+            // TODO show notification
             return
         }
 

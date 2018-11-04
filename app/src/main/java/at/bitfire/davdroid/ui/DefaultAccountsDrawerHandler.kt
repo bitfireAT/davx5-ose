@@ -36,27 +36,24 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
                 activity.startActivity(Intent(activity, AboutActivity::class.java))
             R.id.nav_app_settings ->
                 activity.startActivity(Intent(activity, AppSettingsActivity::class.java))
-            R.id.nav_beta_feedback -> {
-                val intent = Intent(Intent.ACTION_SENDTO, Uri.parse(BETA_FEEDBACK_URI))
-                if (activity.packageManager.resolveActivity(intent, 0) != null)
-                    activity.startActivity(intent)
-            }
+            R.id.nav_beta_feedback ->
+                UiUtils.launchUri(activity, Uri.parse(BETA_FEEDBACK_URI), Intent.ACTION_SENDTO)
             R.id.nav_twitter ->
-                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/davdroidapp")))
+                UiUtils.launchUri(activity, Uri.parse("https://twitter.com/davdroidapp"))
             R.id.nav_website ->
-                activity.startActivity(Intent(Intent.ACTION_VIEW, App.homepageUrl(activity)))
+                UiUtils.launchUri(activity, App.homepageUrl(activity))
             R.id.nav_manual ->
-                activity.startActivity(Intent(Intent.ACTION_VIEW, App.homepageUrl(activity)
-                        .buildUpon().appendEncodedPath("manual/").build()))
+                UiUtils.launchUri(activity, App.homepageUrl(activity)
+                        .buildUpon().appendEncodedPath("manual/").build())
             R.id.nav_faq ->
-                activity.startActivity(Intent(Intent.ACTION_VIEW, App.homepageUrl(activity)
-                        .buildUpon().appendEncodedPath("faq/").build()))
+                UiUtils.launchUri(activity, App.homepageUrl(activity)
+                        .buildUpon().appendEncodedPath("faq/").build())
             R.id.nav_forums ->
-                activity.startActivity(Intent(Intent.ACTION_VIEW, App.homepageUrl(activity)
-                        .buildUpon().appendEncodedPath("forums/").build()))
+                UiUtils.launchUri(activity, App.homepageUrl(activity)
+                        .buildUpon().appendEncodedPath("forums/").build())
             R.id.nav_donate ->
-                    activity.startActivity(Intent(Intent.ACTION_VIEW, App.homepageUrl(activity)
-                            .buildUpon().appendEncodedPath("donate/").build()))
+                UiUtils.launchUri(activity, App.homepageUrl(activity)
+                        .buildUpon().appendEncodedPath("donate/").build())
             else ->
                 return false
         }

@@ -8,13 +8,13 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.UiUtils
 import java.util.*
 
 /**
@@ -60,9 +60,9 @@ class LoginActivity: AppCompatActivity() {
 
 
     fun showHelp(item: MenuItem) {
-        startActivity(Intent(Intent.ACTION_VIEW, App.homepageUrl(this).buildUpon()
+        UiUtils.launchUri(this, App.homepageUrl(this).buildUpon()
                 .appendEncodedPath("tested-with/")
-                .build()))
+                .build())
     }
 
 }
