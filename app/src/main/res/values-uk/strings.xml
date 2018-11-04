@@ -15,8 +15,13 @@
   <string name="notification_channel_sync_io_errors">Помилка мережі та вводу/виводу</string>
   <string name="notification_channel_sync_status">Повідомлення про стан</string>
   <!--startup dialogs-->
+  <string name="startup_autostart_permission">Автоматична синхронізація</string>
+  <string name="startup_autostart_permission_message">%s прошивка часто блокує автоматичну синхронізацію. У цьому випадку дозвольте автоматичну синхронізацію в налаштуваннях Android.</string>
+  <string name="startup_battery_optimization">Запланована синхронізація</string>
+  <string name="startup_battery_optimization_message">Ваш пристрій буде обмежувати синхронізацію DAVdroid. Щоб забезпечити регулярні інтервали синхронізації DAVdroid, вимкніть \"оптимізація батареї\".</string>
   <string name="startup_battery_optimization_disable">Вимкнути для DAVdroid</string>
   <string name="startup_dont_show_again">Не показувати знову</string>
+  <string name="startup_not_now">Не зараз</string>
   <string name="startup_donate">Інформація Open-Source</string>
   <string name="startup_donate_message">Ми раді, що Ви використовуєте DAVdroid, який є програмним засобом з відкритим джерельним кодом (GPLv3). Розробка DAVdroid є досить складним завданням і потребує від нас тисячі годин роботи. Будь ласка, розгляньте можливість підтримати проект.</string>
   <string name="startup_donate_now">Показати сторінку пожертви</string>
@@ -29,6 +34,10 @@
   <string name="startup_opentasks_reinstall_davdroid">Після встановлення OpenTasks, необхідно перевстановити DAVdroid та додати облікові записи знову (Вада системи Android).</string>
   <string name="startup_opentasks_not_installed_install">Встановити OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_libraries">Бібліотеки</string>
+  <string name="about_version">Версія %1s (%2d)</string>
+  <string name="about_build_date">Складено на %s</string>
+  <string name="about_flavor_info">Ця версія доступна лише для розповсюдження через Google Play.</string>
   <string name="about_license_info_no_warranty">Цей програмний засіб постачається АБСОЛЮТНО БЕЗ БУДЬ-ЯКИХ ГАРАНТІЙ. Це вільне програмне забезпечення, і ви можете поширювати її, за деякими умовами.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">Файл звітування DAVdroid</string>
@@ -90,6 +99,7 @@
   <string name="account_delete">Видалити запис</string>
   <string name="account_delete_confirmation_title">Дійсно видалити обліковий запис?</string>
   <string name="account_delete_confirmation_text">Всі локальні копії адресних книг, календарів та завдань будуть вилучені.</string>
+  <string name="account_select_collections_hint">Виберіть колекції для синхронізації</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -130,6 +140,7 @@
   <string name="login_configuration_detection">Виявлення конфігурації</string>
   <string name="login_querying_server">Будь ласка, зачекайте, запит до серверу…</string>
   <string name="login_no_caldav_carddav">Не вдалося знайти  CalDAV чи CardDAV сервіс.</string>
+  <string name="login_view_logs">Показати деталі</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Налаштування: %s</string>
   <string name="settings_authentication">Автентифікація</string>
@@ -212,6 +223,9 @@
   <string name="delete_collection_confirm_warning">Колекція (%s) та всі пов\'язані данні будуть вилучені з даного серверу.</string>
   <string name="delete_collection_deleting_collection">Видалення колекції</string>
   <string name="collection_force_read_only">Примусово лише читання</string>
+  <string name="collection_properties">Властивості</string>
+  <string name="collection_properties_url">Адреса (URL):</string>
+  <string name="collection_properties_copy_url">Скопіювати URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Трапилась помилка.</string>
   <string name="exception_httpexception">Трапилась помилка HTTP.</string>

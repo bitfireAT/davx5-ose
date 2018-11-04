@@ -15,8 +15,13 @@
   <string name="notification_channel_sync_io_errors">Netværks- og I/O-fejl</string>
   <string name="notification_channel_sync_status">Status beskeder</string>
   <!--startup dialogs-->
+  <string name="startup_autostart_permission">Automatisk synkronisering</string>
+  <string name="startup_autostart_permission_message">%s firmware blokerer ofte automatisk synkronisering. Tillad automatisk synkronisering i Android opsætning.</string>
+  <string name="startup_battery_optimization">Planlagt synkronisering</string>
+  <string name="startup_battery_optimization_message">Enheden vil forhindre DAVdroid synkronisering. For at håndhæve regelmæssige DAVdroid synkroniseringsintervaller sluk for \"batterioptimering\".</string>
   <string name="startup_battery_optimization_disable">Deaktivere DAVdroid</string>
   <string name="startup_dont_show_again">Vis ikke igen</string>
+  <string name="startup_not_now">Ikke nu</string>
   <string name="startup_donate">Open-Source information</string>
   <string name="startup_donate_message">Det glæder os, at du bruger DAVdroid, som er open source-software (GPLv3). Det er hårdt arbejde at udvikle DAVdroid og taget tusindvis af arbejdstimer, så overvej at donere til projektet.</string>
   <string name="startup_donate_now">Vis donationsside</string>
@@ -29,6 +34,10 @@
   <string name="startup_opentasks_reinstall_davdroid">Efter at have installeret OpenTasks, vil du være nødt til at GENINSTALLERE DAVdroid og dine konti igen (en fejl i Android).</string>
   <string name="startup_opentasks_not_installed_install">Installere OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_libraries">Biblioteker</string>
+  <string name="about_version">Version %1s (%2d)</string>
+  <string name="about_build_date">Oversat den %s</string>
+  <string name="about_flavor_info">Denne version er kun berettiget til distribution via Google Play.</string>
   <string name="about_license_info_no_warranty">Dette program leveres ABSOLUT UDEN GARANTI. Det er fri software, og du er velkommen til at videredistribuere det under visse betingelse.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid fil-logning</string>
@@ -90,6 +99,7 @@
   <string name="account_delete">Slette konto</string>
   <string name="account_delete_confirmation_title">Slette konto?</string>
   <string name="account_delete_confirmation_text">Alle lokale kopier af addessebøger, kalendere og opgavelister vil blive slettet.</string>
+  <string name="account_select_collections_hint">Vælge samlinger der skal synkroniseres</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -130,6 +140,7 @@
   <string name="login_configuration_detection">Check konfiguration</string>
   <string name="login_querying_server">Vent, forespørger serveren…</string>
   <string name="login_no_caldav_carddav">Kunne ikke finde CalDAV- eller CardDAV-tjeneste.</string>
+  <string name="login_view_logs">Vis detaljer</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Indstillinger: %s</string>
   <string name="settings_authentication">Adgangsgodkendelse</string>
@@ -210,6 +221,9 @@
   <string name="delete_collection_confirm_warning">DAV-sættet (%s) og dets data vil blive fjernet fra serveren.</string>
   <string name="delete_collection_deleting_collection">Sletter CalDAV-sæt</string>
   <string name="collection_force_read_only">Sæt skrivebeskyttet</string>
+  <string name="collection_properties">Egenskaber</string>
+  <string name="collection_properties_url">Adresse (URL):</string>
+  <string name="collection_properties_copy_url">Kopiere URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Der er opstået en fejl.</string>
   <string name="exception_httpexception">Der er opstået en HTTP-fejl.</string>
