@@ -9,18 +9,18 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
-import android.app.LoaderManager
-import android.content.AsyncTaskLoader
 import android.content.Context
 import android.content.Intent
-import android.content.Loader
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.support.v4.app.NavUtils
-import android.support.v7.app.AppCompatActivity
+import androidx.core.app.NavUtils
+import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.AsyncTaskLoader
+import androidx.loader.content.Loader
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
@@ -43,7 +43,7 @@ class CreateCalendarActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        account = intent.extras.getParcelable(EXTRA_ACCOUNT)
+        account = intent.extras.getParcelable(EXTRA_ACCOUNT)!!
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -56,7 +56,7 @@ class CreateCalendarActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks
             }).show()
         }
 
-        loaderManager.initLoader(0, null, this)
+        LoaderManager.getInstance(this).initLoader(0, null, this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

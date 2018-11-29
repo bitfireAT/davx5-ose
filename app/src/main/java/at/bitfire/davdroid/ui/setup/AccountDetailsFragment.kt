@@ -20,13 +20,12 @@ import android.database.sqlite.SQLiteDatabase
 import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.CalendarContract
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.support.v4.app.LoaderManager
-import android.support.v4.content.Loader
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.Loader
 import at.bitfire.davdroid.*
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.ServiceDB.*
@@ -36,6 +35,7 @@ import at.bitfire.davdroid.ui.SettingsLoader
 import at.bitfire.davdroid.ui.setup.AccountDetailsFragment.CreateSettings
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.login_account_details.*
 import kotlinx.android.synthetic.main.login_account_details.view.*
 import java.lang.ref.WeakReference
@@ -99,7 +99,7 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
                 }
         }
 
-        loaderManager.initLoader(0, null, this)
+        LoaderManager.getInstance(this).initLoader(0, null, this)
 
         return v
     }

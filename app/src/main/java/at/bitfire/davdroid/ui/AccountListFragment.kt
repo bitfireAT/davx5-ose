@@ -11,12 +11,8 @@ package at.bitfire.davdroid.ui
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
-import android.app.ListFragment
-import android.app.LoaderManager
-import android.content.AsyncTaskLoader
 import android.content.Context
 import android.content.Intent
-import android.content.Loader
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,20 +20,24 @@ import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.fragment.app.ListFragment
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.AsyncTaskLoader
+import androidx.loader.content.Loader
 import at.bitfire.davdroid.R
 import kotlinx.android.synthetic.main.account_list_item.view.*
 
 class AccountListFragment: ListFragment(), LoaderManager.LoaderCallbacks<Array<Account>> {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        listAdapter = AccountListAdapter(activity)
+        listAdapter = AccountListAdapter(requireActivity())
 
         return inflater.inflate(R.layout.account_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loaderManager.initLoader(0, arguments, this)
+        LoaderManager.getInstance(this).initLoader(0, arguments, this)
 
         listView.choiceMode = AbsListView.CHOICE_MODE_SINGLE
         listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
@@ -52,7 +52,7 @@ class AccountListFragment: ListFragment(), LoaderManager.LoaderCallbacks<Array<A
     // loader
 
     override fun onCreateLoader(id: Int, args: Bundle?) =
-            AccountLoader(activity)
+            AccountLoader(requireActivity())
 
     override fun onLoadFinished(loader: Loader<Array<Account>>, accounts: Array<Account>) {
         val adapter = listAdapter as AccountListAdapter
@@ -102,7 +102,7 @@ class AccountListFragment: ListFragment(), LoaderManager.LoaderCallbacks<Array<A
     ): ArrayAdapter<Account>(context, R.layout.account_list_item) {
 
         override fun getView(position: Int, v: View?, parent: ViewGroup?): View {
-            val account = getItem(position)
+            val account = getItem(position)!!
 
             val v = v ?: LayoutInflater.from(context).inflate(R.layout.account_list_item, parent, false)
             v.account_name.text = account.name

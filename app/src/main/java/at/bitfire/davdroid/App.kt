@@ -17,7 +17,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.StrictMode
-import android.support.v7.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
 import kotlin.concurrent.thread

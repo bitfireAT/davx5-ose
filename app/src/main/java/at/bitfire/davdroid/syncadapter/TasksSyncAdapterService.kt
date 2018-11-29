@@ -15,8 +15,8 @@ import android.database.DatabaseUtils
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger

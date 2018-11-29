@@ -16,12 +16,11 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.os.Process
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.preference.EditTextPreference
-import android.support.v7.preference.Preference
-import android.support.v7.preference.PreferenceFragmentCompat
-import android.support.v7.preference.SwitchPreferenceCompat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.EditTextPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
@@ -30,6 +29,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.davdroid.settings.ISettingsObserver
 import at.bitfire.davdroid.settings.Settings
+import com.google.android.material.snackbar.Snackbar
 import java.net.URI
 import java.net.URISyntaxException
 

@@ -14,11 +14,11 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.LoaderManager
-import android.support.v4.content.AsyncTaskLoader
-import android.support.v4.content.Loader
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.AsyncTaskLoader
+import androidx.loader.content.Loader
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.DebugInfoActivity
@@ -52,17 +52,17 @@ class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbac
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loaderManager.initLoader(0, arguments, this)
+        LoaderManager.getInstance(this).initLoader(0, arguments, this)
     }
 
     override fun onCancel(dialog: DialogInterface?) {
         Logger.log.info("Cancelling resource detection")
-        loaderManager.getLoader<Configuration>(0)?.cancelLoad()
+        LoaderManager.getInstance(this).getLoader<Configuration>(0)?.cancelLoad()
     }
 
 
     override fun onCreateLoader(id: Int, args: Bundle?) =
-            ServerConfigurationLoader(requireActivity(), args!!.getParcelable(ARG_LOGIN_CREDENTIALS))
+            ServerConfigurationLoader(requireActivity(), args!!.getParcelable(ARG_LOGIN_CREDENTIALS)!!)
 
     override fun onLoadFinished(loader: Loader<Configuration>, data: Configuration?) {
         data?.let {

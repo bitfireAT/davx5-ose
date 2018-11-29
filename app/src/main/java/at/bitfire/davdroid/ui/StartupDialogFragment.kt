@@ -19,10 +19,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.LoaderManager
-import android.support.v4.content.Loader
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.Loader
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
@@ -104,7 +104,7 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loaderManager.initLoader(0, null, this)
+        LoaderManager.getInstance(this).initLoader(0, null, this)
     }
 
     override fun onCreateLoader(code: Int, args: Bundle?) =
@@ -124,7 +124,7 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
         isCancelable = false
 
         val activity = requireActivity()
-        val mode = Mode.valueOf(arguments!!.getString(ARGS_MODE))
+        val mode = Mode.valueOf(arguments!!.getString(ARGS_MODE)!!)
         return when (mode) {
             Mode.AUTOSTART_PERMISSIONS ->
                 AlertDialog.Builder(activity)

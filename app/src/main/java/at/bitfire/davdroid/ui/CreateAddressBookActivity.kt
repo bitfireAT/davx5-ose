@@ -9,17 +9,17 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
-import android.app.LoaderManager
-import android.content.AsyncTaskLoader
 import android.content.Context
 import android.content.Intent
-import android.content.Loader
 import android.os.Bundle
-import android.support.v4.app.NavUtils
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NavUtils
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.AsyncTaskLoader
+import androidx.loader.content.Loader
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
@@ -45,7 +45,7 @@ class CreateAddressBookActivity: AppCompatActivity(), LoaderManager.LoaderCallba
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setContentView(R.layout.activity_create_address_book)
 
-        loaderManager.initLoader(0, intent.extras, this)
+        LoaderManager.getInstance(this).initLoader(0, intent.extras, this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

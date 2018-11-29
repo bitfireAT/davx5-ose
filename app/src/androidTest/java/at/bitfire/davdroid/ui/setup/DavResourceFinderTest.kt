@@ -8,8 +8,8 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import android.support.test.InstrumentationRegistry.getTargetContext
-import android.support.test.filters.SmallTest
+import androidx.test.filters.SmallTest
+import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.property.AddressbookHomeSet
 import at.bitfire.dav4android.property.ResourceType
@@ -52,7 +52,7 @@ class DavResourceFinderTest {
         server.start()
 
         loginInfo = LoginInfo(URI.create("/"), Credentials("mock", "12345"))
-        finder = DavResourceFinder(getTargetContext(), loginInfo)
+        finder = DavResourceFinder(InstrumentationRegistry.getInstrumentation().targetContext, loginInfo)
 
         client = HttpClient.Builder()
                 .addAuthentication(null, loginInfo.credentials)

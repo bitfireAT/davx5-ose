@@ -13,10 +13,10 @@ import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.LoaderManager
-import android.support.v4.content.AsyncTaskLoader
-import android.support.v4.content.Loader
+import androidx.fragment.app.DialogFragment
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.AsyncTaskLoader
+import androidx.loader.content.Loader
 import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.XmlUtils
 import at.bitfire.davdroid.AccountSettings
@@ -57,10 +57,10 @@ class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
         super.onCreate(savedInstanceState)
 
         val args = requireNotNull(arguments)
-        account = args.getParcelable(ARG_ACCOUNT)
-        info = args.getParcelable(ARG_COLLECTION_INFO)
+        account = args.getParcelable(ARG_ACCOUNT)!!
+        info = args.getParcelable(ARG_COLLECTION_INFO)!!
 
-        loaderManager.initLoader(0, null, this)
+        LoaderManager.getInstance(this).initLoader(0, null, this)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

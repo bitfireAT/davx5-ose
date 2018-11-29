@@ -18,8 +18,8 @@ import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import android.os.Binder
 import android.os.Bundle
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.Response
 import at.bitfire.dav4android.UrlUtils

@@ -16,7 +16,7 @@
     android:gravity="center_horizontal"
     android:descendantFocusability="blocksDescendants">
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
             style="@style/account_list_card"
             android:layout_margin="8dp"
             android:layout_height="wrap_content"
@@ -46,5 +46,5 @@
                 tools:text="Account Name"/>
 
         </LinearLayout>
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

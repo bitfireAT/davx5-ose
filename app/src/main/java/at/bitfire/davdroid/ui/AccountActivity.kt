@@ -13,7 +13,6 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.app.LoaderManager
 import android.content.*
 import android.content.pm.PackageManager
 import android.database.DatabaseUtils
@@ -25,15 +24,17 @@ import android.os.Bundle
 import android.os.IBinder
 import android.provider.CalendarContract
 import android.provider.ContactsContract
-import android.support.design.widget.Snackbar
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.DialogFragment
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import android.view.*
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.AsyncTaskLoader
+import androidx.loader.content.Loader
 import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -44,6 +45,7 @@ import at.bitfire.davdroid.model.ServiceDB.Collections
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.ical4android.TaskProvider
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.account_caldav_item.view.*
 import kotlinx.android.synthetic.main.activity_account.*
 import java.lang.ref.WeakReference
@@ -107,7 +109,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         webcal_menu.setOnMenuItemClickListener(this)
 
         // load CardDAV/CalDAV collections
-        loaderManager.initLoader(0, null, this)
+        LoaderManager.getInstance(this).initLoader(0, null, this)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -355,7 +357,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             AccountLoader(this, account)
 
     fun reload() {
-        loaderManager.restartLoader(0, null, this)
+        LoaderManager.getInstance(this).restartLoader(0, null, this)
     }
 
     override fun onLoadFinished(loader: Loader<AccountInfo>, info: AccountInfo?) {
@@ -582,7 +584,10 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                             }
                         }
                     } finally {
-                        provider.release()
+                        if (Build.VERSION.SDK_INT >= 24)
+                            provider.close()
+                        else
+                            provider.release()
                     }
                 }
 
@@ -599,7 +604,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     ): ArrayAdapter<CollectionInfo>(context, R.layout.account_carddav_item) {
         override fun getView(position: Int, v: View?, parent: ViewGroup?): View {
             val v = v ?: LayoutInflater.from(context).inflate(R.layout.account_carddav_item, parent, false)
-            val info = getItem(position)
+            val info = getItem(position)!!
 
             val checked: CheckBox = v.findViewById(R.id.checked)
             checked.isChecked = info.selected
@@ -703,7 +708,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val oldAccount: Account = arguments!!.getParcelable(ARG_ACCOUNT)
+            val oldAccount: Account = arguments!!.getParcelable(ARG_ACCOUNT)!!
 
             val editText = EditText(activity)
             editText.setText(oldAccount.name)

@@ -14,7 +14,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Handler
 import android.os.IBinder
-import android.support.v4.content.AsyncTaskLoader
+import androidx.loader.content.AsyncTaskLoader
 import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.davdroid.settings.ISettingsObserver
 import at.bitfire.davdroid.settings.Settings

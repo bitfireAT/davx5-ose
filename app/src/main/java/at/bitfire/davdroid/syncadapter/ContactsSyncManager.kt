@@ -13,7 +13,7 @@ import android.content.*
 import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract.Groups
-import android.support.v4.app.NotificationCompat
+import androidx.core.app.NotificationCompat
 import at.bitfire.dav4android.DavAddressBook
 import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.DavResponseCallback

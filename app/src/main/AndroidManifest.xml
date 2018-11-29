@@ -106,7 +106,7 @@
             android:label="@string/debug_info_title">
         </activity>
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="@string/authority_log_provider"
             android:grantUriPermissions="true"
             android:exported="false">

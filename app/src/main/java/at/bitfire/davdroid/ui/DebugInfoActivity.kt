@@ -21,15 +21,15 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.provider.CalendarContract
 import android.provider.ContactsContract
-import android.support.v4.app.LoaderManager
-import android.support.v4.content.AsyncTaskLoader
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.FileProvider
-import android.support.v4.content.Loader
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.AsyncTaskLoader
+import androidx.loader.content.Loader
 import at.bitfire.dav4android.exception.HttpException
 import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.BuildConfig
@@ -66,7 +66,7 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_debug_info)
 
-        supportLoaderManager.initLoader(0, intent.extras, this)
+        LoaderManager.getInstance(this).initLoader(0, intent.extras, this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

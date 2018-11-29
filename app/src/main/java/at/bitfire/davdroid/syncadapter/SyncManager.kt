@@ -16,8 +16,8 @@ import android.os.Bundle
 import android.os.RemoteException
 import android.provider.CalendarContract
 import android.provider.ContactsContract
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import at.bitfire.dav4android.*
 import at.bitfire.dav4android.exception.*
 import at.bitfire.dav4android.property.GetCTag

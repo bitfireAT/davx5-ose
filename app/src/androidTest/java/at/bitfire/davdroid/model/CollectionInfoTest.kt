@@ -9,7 +9,7 @@
 package at.bitfire.davdroid.model
 
 import android.content.ContentValues
-import android.support.test.filters.SmallTest
+import androidx.test.filters.SmallTest
 import at.bitfire.dav4android.DavResource
 import at.bitfire.dav4android.property.ResourceType
 import at.bitfire.davdroid.HttpClient

@@ -8,7 +8,7 @@
 
 package at.bitfire.davdroid
 
-import android.support.test.InstrumentationRegistry.getInstrumentation
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import at.bitfire.cert4android.CustomCertManager
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -54,7 +54,7 @@ class CustomTlsSocketFactoryTest {
     @Test
     fun testSendClientCertificate() {
         var public: X509Certificate? = null
-        javaClass.classLoader.getResourceAsStream("sample.crt").use {
+        javaClass.classLoader!!.getResourceAsStream("sample.crt").use {
             public = CertificateFactory.getInstance("X509").generateCertificate(it) as? X509Certificate
         }
         assertNotNull(public)

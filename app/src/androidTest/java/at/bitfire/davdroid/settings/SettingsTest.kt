@@ -8,8 +8,7 @@
 
 package at.bitfire.davdroid.settings
 
-import android.support.test.InstrumentationRegistry
-import android.support.test.InstrumentationRegistry.getTargetContext
+import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.App
 import junit.framework.Assert.assertFalse
 import junit.framework.Assert.assertTrue
@@ -23,8 +22,7 @@ class SettingsTest {
 
     @Before
     fun init() {
-        InstrumentationRegistry.getContext().isRestricted
-        settings = Settings.getInstance(getTargetContext())!!
+        settings = Settings.getInstance(InstrumentationRegistry.getInstrumentation().targetContext)!!
     }
 
     @After

@@ -14,18 +14,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.SyncStatusObserver
 import android.os.Bundle
-import android.support.design.widget.NavigationView
-import android.support.design.widget.Snackbar
-import android.support.v4.app.LoaderManager
-import android.support.v4.content.Loader
-import android.support.v4.view.GravityCompat
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.Loader
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.ISettings
 import at.bitfire.davdroid.ui.setup.LoginActivity
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.accounts_content.*
 import kotlinx.android.synthetic.main.activity_accounts.*
 
@@ -65,7 +65,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         startService(settingsIntent)
 
         val args = Bundle(1)
-        supportLoaderManager.initLoader(0, args, this)
+        LoaderManager.getInstance(this).initLoader(0, args, this)
     }
 
     override fun onCreateLoader(code: Int, args: Bundle?) =
