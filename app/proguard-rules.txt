@@ -32,9 +32,9 @@
 -keep class org.threeten.bp.** { *; }     # keep ThreeTen (for time zone processing)
 
 # okhttp
+-dontwarn javax.annotation.**
 -dontwarn okio.**
--dontwarn javax.annotation.Nullable
--dontwarn javax.annotation.ParametersAreNonnullByDefault
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 -dontwarn org.conscrypt.**
 
 # dnsjava
