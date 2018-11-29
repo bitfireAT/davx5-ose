@@ -58,7 +58,7 @@ class HttpClient private constructor(
                 // add User-Agent to every request
                 .addNetworkInterceptor(UserAgentInterceptor)
 
-                .build()!!
+                .build()
     }
 
     override fun close() {
