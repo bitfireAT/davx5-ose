@@ -102,7 +102,7 @@ class AboutActivity: AppCompatActivity() {
 
             if (true /* open-source version */) {
                 warranty.text = Html.fromHtml(getString(R.string.about_license_info_no_warranty))
-                loaderManager.initLoader(0, null, this)
+                LoaderManager.getInstance(this).initLoader(0, null, this)
             }
         }
 

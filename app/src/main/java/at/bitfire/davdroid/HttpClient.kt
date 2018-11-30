@@ -124,7 +124,7 @@ class HttpClient private constructor(
 
         fun withDiskCache(): Builder {
             val context = context ?: throw IllegalArgumentException("Context is required to find the cache directory")
-            for (dir in arrayOf(context.externalCacheDir, context.cacheDir)) {
+            for (dir in arrayOf(context.externalCacheDir, context.cacheDir).filterNotNull()) {
                 if (dir.exists() && dir.canWrite()) {
                     val cacheDir = File(dir, "HttpClient")
                     cacheDir.mkdir()

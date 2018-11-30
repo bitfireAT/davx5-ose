@@ -26,7 +26,6 @@ import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.settings.Settings
 
-@Suppress("DEPRECATION")
 class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<Exception> {
 
     companion object {
@@ -46,6 +45,7 @@ class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
         LoaderManager.getInstance(this).initLoader(0, null, this)
     }
 
+    @Suppress("DEPRECATION")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val progress = ProgressDialog(context)
         progress.setTitle(R.string.delete_collection_deleting_collection)

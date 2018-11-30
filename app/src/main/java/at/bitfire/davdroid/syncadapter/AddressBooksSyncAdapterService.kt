@@ -145,6 +145,7 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
                         LocalAddressBook.create(context, contactsProvider, account, info)
                     }
                 } finally {
+                    @Suppress("DEPRECATION")
                     if (Build.VERSION.SDK_INT >= 24)
                         contactsProvider?.close()
                     else

@@ -65,8 +65,8 @@ class CalendarSyncManager(
                 var syncState: SyncState? = null
                 it.propfind(0, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                     if (relation == Response.HrefRelation.SELF) {
-                        response[SupportedReportSet::class.java]?.let {
-                            hasCollectionSync = it.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                        response[SupportedReportSet::class.java]?.let { supported ->
+                            hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
                         }
 
                         syncState = syncState(response)

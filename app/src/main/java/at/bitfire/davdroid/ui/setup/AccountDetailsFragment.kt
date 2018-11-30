@@ -136,13 +136,13 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
 
     @SuppressLint("StaticFieldLeak")    // we'll only keep the application Context
     class CreateAccountTask(
-            val applicationContext: Context,
-            val activityRef: WeakReference<Activity>,
-            val settings: ISettings,
+            private val applicationContext: Context,
+            private val activityRef: WeakReference<Activity>,
+            private val settings: ISettings,
 
-            val accountName: String,
-            val config: DavResourceFinder.Configuration,
-            val groupMethod: GroupMethod
+            private val accountName: String,
+            private val config: DavResourceFinder.Configuration,
+            private val groupMethod: GroupMethod
     ): AsyncTask<Void, Void, Boolean>() {
 
         override fun doInBackground(vararg params: Void?): Boolean {
@@ -226,25 +226,27 @@ class AccountDetailsFragment: Fragment(), LoaderManager.LoaderCallbacks<CreateSe
 
         private fun insertService(db: SQLiteDatabase, accountName: String, service: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
             // insert service
-            val values = ContentValues(3)
-            values.put(Services.ACCOUNT_NAME, accountName)
-            values.put(Services.SERVICE, service)
-            info.principal?.let { values.put(Services.PRINCIPAL, it.toString()) }
-            val serviceID = db.insertWithOnConflict(Services._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+            val serviceValues = ContentValues(3)
+            serviceValues.put(Services.ACCOUNT_NAME, accountName)
+            serviceValues.put(Services.SERVICE, service)
+            info.principal?.let {
+                serviceValues.put(Services.PRINCIPAL, it.toString())
+            }
+            val serviceID = db.insertWithOnConflict(Services._TABLE, null, serviceValues, SQLiteDatabase.CONFLICT_REPLACE)
 
             // insert home sets
             for (homeSet in info.homeSets) {
-                val values = ContentValues(2)
-                values.put(HomeSets.SERVICE_ID, serviceID)
-                values.put(HomeSets.URL, homeSet.toString())
-                db.insertWithOnConflict(HomeSets._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+                val homeSetValues = ContentValues(2)
+                homeSetValues.put(HomeSets.SERVICE_ID, serviceID)
+                homeSetValues.put(HomeSets.URL, homeSet.toString())
+                db.insertWithOnConflict(HomeSets._TABLE, null, homeSetValues, SQLiteDatabase.CONFLICT_REPLACE)
             }
 
             // insert collections
             for (collection in info.collections.values) {
-                val values = collection.toDB()
-                values.put(Collections.SERVICE_ID, serviceID)
-                db.insertWithOnConflict(Collections._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+                val collectionValues = collection.toDB()
+                collectionValues.put(Collections.SERVICE_ID, serviceID)
+                db.insertWithOnConflict(Collections._TABLE, null, collectionValues, SQLiteDatabase.CONFLICT_REPLACE)
             }
 
             return serviceID

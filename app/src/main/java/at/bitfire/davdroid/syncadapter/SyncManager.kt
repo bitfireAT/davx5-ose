@@ -312,9 +312,9 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     val body = prepareUpload(local)
 
                     var eTag: String? = null
-                    val processETag: (response: okhttp3.Response) -> Unit = {
-                        it.header("ETag")?.let {
-                            eTag = GetETag(it).eTag
+                    val processETag: (response: okhttp3.Response) -> Unit = { response ->
+                        response.header("ETag")?.let { getETag ->
+                            eTag = GetETag(getETag).eTag
                         }
                     }
                     try {

@@ -19,6 +19,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.StartupDialogFragment
 import java.util.logging.Level
 
+@Suppress("ObjectPropertyName")
 class ServiceDB {
 
     object Services {

@@ -25,7 +25,6 @@ import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.setup.DavResourceFinder.Configuration
 import java.lang.ref.WeakReference
 
-@Suppress("DEPRECATION")
 class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbacks<Configuration> {
 
     companion object {
@@ -41,6 +40,7 @@ class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbac
     }
 
 
+    @Suppress("DEPRECATION")
     override fun onCreateDialog(savedInstancebState: Bundle?): Dialog {
         val progress = ProgressDialog(activity)
         progress.setTitle(R.string.login_configuration_detection)

@@ -9,8 +9,8 @@
 package at.bitfire.davdroid.settings
 
 import at.bitfire.davdroid.App
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertFalse
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Test
 
 class DefaultsProviderTest {

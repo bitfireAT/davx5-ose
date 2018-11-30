@@ -53,7 +53,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawer_layout.setDrawerListener(toggle)
+        drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
@@ -72,7 +72,8 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
             SettingsLoader(this)
 
     override fun onLoadFinished(loader: Loader<Settings>, result: Settings?) {
-        val result = result ?: return
+        if (result == null)
+            return
 
         if (supportFragmentManager.findFragmentByTag(fragTagStartup) == null) {
             val ft = supportFragmentManager.beginTransaction()

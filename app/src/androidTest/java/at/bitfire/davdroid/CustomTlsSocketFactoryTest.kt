@@ -120,7 +120,7 @@ class CustomTlsSocketFactoryTest {
 
 
     private fun readResource(name: String): ByteArray {
-        this.javaClass.classLoader.getResourceAsStream(name).use {
+        javaClass.classLoader!!.getResourceAsStream(name).use {
             return IOUtils.toByteArray(it)
         }
     }

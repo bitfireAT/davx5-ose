@@ -10,6 +10,7 @@ package at.bitfire.davdroid.ui
 
 import android.Manifest
 import android.accounts.Account
+import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
@@ -90,8 +91,9 @@ class AccountSettingsActivity: AppCompatActivity() {
         }
 
         override fun onCreateLoader(id: Int, args: Bundle?) =
-                AccountSettingsLoader(requireActivity(), args!!.getParcelable(EXTRA_ACCOUNT))
+                AccountSettingsLoader(requireActivity(), args!!.getParcelable(EXTRA_ACCOUNT)!!)
 
+        @SuppressLint("Recycle")
         override fun onLoadFinished(loader: Loader<Pair<ISettings, AccountSettings>>, result: Pair<ISettings, AccountSettings>?) {
             val (settings, accountSettings) = result ?: return
 
@@ -128,7 +130,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                     prefCertAlias.isVisible = true
                     prefCertAlias.summary = credentials.certificateAlias
                     prefCertAlias.setOnPreferenceClickListener {
-                        KeyChain.choosePrivateKeyAlias(activity, { alias ->
+                        KeyChain.choosePrivateKeyAlias(requireActivity(), { alias ->
                             accountSettings.credentials(Credentials(certificateAlias = alias))
                             Handler(Looper.getMainLooper()).post {
                                 LoaderManager.getInstance(this).restartLoader(0, arguments, this)
@@ -287,6 +289,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                                         calendar.lastSyncState = null
                                     }
                                 } finally {
+                                    @Suppress("DEPRECATION")
                                     if (Build.VERSION.SDK_INT >= 24)
                                         provider.close()
                                     else

@@ -78,7 +78,12 @@ class LocalAddressBook(
             baos.write(info.url.hashCode())
             val hash = Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP or Base64.NO_PADDING)
 
-            val sb = StringBuilder(if (info.displayName.isNullOrEmpty()) DavUtils.lastSegmentOfUrl(info.url) else info.displayName)
+            val sb = StringBuilder(info.displayName.let {
+                if (it.isNullOrEmpty())
+                    DavUtils.lastSegmentOfUrl(info.url)
+                else
+                    it
+            })
             sb.append(" (${mainAccount.name} $hash)")
             return sb.toString()
         }
@@ -200,6 +205,7 @@ class LocalAddressBook(
 
     fun delete() {
         val accountManager = AccountManager.get(context)
+        @Suppress("DEPRECATION")
         if (Build.VERSION.SDK_INT >= 22)
             accountManager.removeAccount(account, null, null, null)
         else
@@ -243,14 +249,6 @@ class LocalAddressBook(
 
     fun findDirtyContacts() = queryContacts("${RawContacts.DIRTY}!=0", null)
     fun findDirtyGroups() = queryGroups("${Groups.DIRTY}!=0", null)
-
-    private fun queryContactsGroups(whereContacts: String?, whereArgsContacts: Array<String>?, whereGroups: String?, whereArgsGroups: Array<String>?): List<LocalAddress> {
-        val contacts = queryContacts(whereContacts, whereArgsContacts)
-        return if (includeGroups)
-            contacts + queryGroups(whereGroups, whereArgsGroups)
-        else
-            contacts
-    }
 
 
     /**

@@ -22,6 +22,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
 import kotlin.concurrent.thread
 
+@Suppress("unused")
 class App: Application() {
 
     companion object {

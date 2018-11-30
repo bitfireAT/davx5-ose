@@ -50,7 +50,6 @@ class LocalTask: AndroidTask, LocalResource<Task> {
 
     override fun buildTask(builder: ContentProviderOperation.Builder, update: Boolean) {
         super.buildTask(builder, update)
-        val task = requireNotNull(task)
 
         builder .withValue(Tasks._SYNC_ID, fileName)
                 .withValue(COLUMN_ETAG, eTag)

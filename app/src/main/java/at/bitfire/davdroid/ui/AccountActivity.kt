@@ -195,7 +195,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
         val list = parent as ListView
         val adapter = list.adapter as ArrayAdapter<CollectionInfo>
-        val info = adapter.getItem(position)
+        val info = adapter.getItem(position)!!
         val nowChecked = !info.selected
 
         SelectCollectionTask(applicationContext, info, nowChecked, WeakReference(adapter), WeakReference(view)).execute()
@@ -269,7 +269,11 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                         provider.delete(CalendarContract.Calendars.CONTENT_URI, "${CalendarContract.Calendars.NAME}=?", arrayOf(info.source))
                         reload()
                     } finally {
-                        provider.release()
+                        @Suppress("DEPRECATION")
+                        if (Build.VERSION.SDK_INT >= 24)
+                            provider.close()
+                        else
+                            provider.release()
                     }
                 }
         }
@@ -464,7 +468,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
             // bind to DavService to get notified when it's running
             if (davServiceConn == null) {
-                davServiceConn = object: ServiceConnection {
+                val serviceConn = object: ServiceConnection {
                     override fun onServiceConnected(name: ComponentName, service: IBinder) {
                         // get notified when DavService is running
                         davService = service as DavService.InfoBinder
@@ -477,7 +481,8 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                         davService = null
                     }
                 }
-                context.bindService(Intent(context, DavService::class.java), davServiceConn, Context.BIND_AUTO_CREATE)
+                if (context.bindService(Intent(context, DavService::class.java), serviceConn, Context.BIND_AUTO_CREATE))
+                    davServiceConn = serviceConn
             } else
                 forceLoad()
         }
@@ -559,6 +564,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             return false
         }
 
+        @SuppressLint("Recycle")
         private fun readCollections(db: SQLiteDatabase, service: Long): List<CollectionInfo>  {
             val collections = LinkedList<CollectionInfo>()
             db.query(Collections._TABLE, null, Collections.SERVICE_ID + "=?", arrayOf(service.toString()),
@@ -584,6 +590,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                             }
                         }
                     } finally {
+                        @Suppress("DEPRECATION")
                         if (Build.VERSION.SDK_INT >= 24)
                             provider.close()
                         else
@@ -602,8 +609,8 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     class AddressBookAdapter(
             context: Context
     ): ArrayAdapter<CollectionInfo>(context, R.layout.account_carddav_item) {
-        override fun getView(position: Int, v: View?, parent: ViewGroup?): View {
-            val v = v ?: LayoutInflater.from(context).inflate(R.layout.account_carddav_item, parent, false)
+        override fun getView(position: Int, _v: View?, parent: ViewGroup?): View {
+            val v = _v ?: LayoutInflater.from(context).inflate(R.layout.account_carddav_item, parent, false)
             val info = getItem(position)!!
 
             val checked: CheckBox = v.findViewById(R.id.checked)
@@ -637,9 +644,9 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     class CalendarAdapter(
             context: Context
     ): ArrayAdapter<CollectionInfo>(context, R.layout.account_caldav_item) {
-        override fun getView(position: Int, v: View?, parent: ViewGroup?): View {
-            val v = v ?: LayoutInflater.from(context).inflate(R.layout.account_caldav_item, parent, false)
-            val info = getItem(position)
+        override fun getView(position: Int, _v: View?, parent: ViewGroup?): View {
+            val v = _v ?: LayoutInflater.from(context).inflate(R.layout.account_caldav_item, parent, false)
+            val info = getItem(position)!!
 
             val enabled = info.selected || info.supportsVEVENT || info.supportsVTODO
             v.isEnabled = enabled
@@ -707,6 +714,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
         }
 
+        @SuppressLint("Recycle")
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val oldAccount: Account = arguments!!.getParcelable(ARG_ACCOUNT)!!
 
@@ -748,6 +756,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                                                     if (oldAccount == addressBook.mainAccount)
                                                         addressBook.mainAccount = Account(newName, oldAccount.type)
                                                 } finally {
+                                                    @Suppress("DEPRECATION")
                                                     if (Build.VERSION.SDK_INT >= 24)
                                                         provider.close()
                                                     else

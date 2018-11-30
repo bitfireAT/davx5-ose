@@ -53,7 +53,7 @@ class DefaultLoginCredentialsFragment: Fragment(), CompoundButton.OnCheckedChang
         }
 
         v.urlcert_select_cert.setOnClickListener {
-            KeyChain.choosePrivateKeyAlias(activity, { alias ->
+            KeyChain.choosePrivateKeyAlias(requireActivity(), { alias ->
                 Handler(Looper.getMainLooper()).post {
                     v.urlcert_cert_alias.text = alias
                     v.urlcert_cert_alias.error = null

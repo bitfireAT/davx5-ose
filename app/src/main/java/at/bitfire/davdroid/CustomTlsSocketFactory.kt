@@ -50,11 +50,11 @@ class CustomTlsSocketFactory(
                         /* set reasonable protocol versions */
                         // - enable all supported protocols (enables TLSv1.1 and TLSv1.2 on Android <5.0)
                         // - remove all SSL versions (especially SSLv3) because they're insecure now
-                        val _protocols = LinkedList<String>()
+                        val whichProtocols = LinkedList<String>()
                         for (protocol in socket.supportedProtocols.filterNot { it.contains("SSL", true) })
-                            _protocols += protocol
-                        Logger.log.info("Enabling (only) these TLS protocols: ${_protocols.joinToString(", ")}")
-                        protocols = _protocols.toTypedArray()
+                            whichProtocols += protocol
+                        Logger.log.info("Enabling (only) these TLS protocols: ${whichProtocols.joinToString(", ")}")
+                        protocols = whichProtocols.toTypedArray()
 
                         /* set up reasonable cipher suites */
                         val knownCiphers = arrayOf(
@@ -86,16 +86,16 @@ class CustomTlsSocketFactory(
                          * ciphers should be a server-side task */
 
                         // for the final set of enabled ciphers, take the ciphers enabled by default, ...
-                        val _cipherSuites = LinkedList<String>()
-                        _cipherSuites.addAll(socket.enabledCipherSuites)
-                        Logger.log.fine("Cipher suites enabled by default: ${_cipherSuites.joinToString(", ")}")
+                        val whichCiphers = LinkedList<String>()
+                        whichCiphers.addAll(socket.enabledCipherSuites)
+                        Logger.log.fine("Cipher suites enabled by default: ${whichCiphers.joinToString(", ")}")
                         // ... add explicitly allowed ciphers ...
-                        _cipherSuites.addAll(knownCiphers)
+                        whichCiphers.addAll(knownCiphers)
                         // ... and keep only those which are actually available
-                        _cipherSuites.retainAll(availableCiphers)
+                        whichCiphers.retainAll(availableCiphers)
 
-                        Logger.log.info("Enabling (only) these TLS ciphers: " + _cipherSuites.joinToString(", "))
-                        cipherSuites = _cipherSuites.toTypedArray()
+                        Logger.log.info("Enabling (only) these TLS ciphers: " + whichCiphers.joinToString(", "))
+                        cipherSuites = whichCiphers.toTypedArray()
                     } catch (e: IOException) {
                         Logger.log.severe("Couldn't determine default TLS settings")
                     }

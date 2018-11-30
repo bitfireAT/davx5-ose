@@ -10,9 +10,9 @@ package at.bitfire.davdroid.settings
 
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.App
-import junit.framework.Assert.assertFalse
-import junit.framework.Assert.assertTrue
 import org.junit.After
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 

@@ -61,23 +61,25 @@ class AppSettingsActivity: AppCompatActivity() {
         }
 
         var settings: ISettings? = null
-        var settingsSvc: ServiceConnection? = object: ServiceConnection {
-            override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-                settings = ISettings.Stub.asInterface(binder)
-                settings?.registerObserver(observer)
-                loadSettings()
-            }
-            override fun onServiceDisconnected(name: ComponentName) {
-                settings?.unregisterObserver(observer)
-                settings = null
-            }
-        }
+        var settingsSvc: ServiceConnection? = null
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
 
-            if (!activity!!.bindService(Intent(activity, Settings::class.java), settingsSvc, Context.BIND_AUTO_CREATE))
-                settingsSvc = null
+            val serviceConn = object: ServiceConnection {
+                override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+                    settings = ISettings.Stub.asInterface(binder)
+                    settings?.registerObserver(observer)
+                    loadSettings()
+                }
+
+                override fun onServiceDisconnected(name: ComponentName) {
+                    settings?.unregisterObserver(observer)
+                    settings = null
+                }
+            }
+            if (activity!!.bindService(Intent(activity, Settings::class.java), serviceConn, Context.BIND_AUTO_CREATE))
+                settingsSvc = serviceConn
         }
 
         override fun onDestroy() {

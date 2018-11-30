@@ -264,7 +264,7 @@ class DavResourceFinder(
      * @param dav       response whose properties are evaluated
      * @param config    structure where the results are stored into
      */
-    fun scanCalDavResponse(dav: Response, config: Configuration.ServiceInfo) {
+    private fun scanCalDavResponse(dav: Response, config: Configuration.ServiceInfo) {
         var principal: HttpUrl? = null
 
         // check for current-user-principal
@@ -482,8 +482,8 @@ class DavResourceFinder(
                     val size = source.readInt()
                     val map = HashMap<HttpUrl, CollectionInfo>(size)
                     (1..size).forEach {
-                        val url = HttpUrl.parse(source.readString())!!
-                        map[url] = source.readParcelable(Thread.currentThread().contextClassLoader)
+                        val url = HttpUrl.parse(source.readString()!!)!!
+                        map[url] = source.readParcelable(Thread.currentThread().contextClassLoader)!!
                     }
                     return map
                 }
@@ -494,7 +494,7 @@ class DavResourceFinder(
                     else
                         ServiceInfo(
                                 source.readString()?.let { HttpUrl.parse(it) },
-                                (1..source.readInt()).map { HttpUrl.parse(source.readString())!! }.toMutableSet(),
+                                (1..source.readInt()).map { HttpUrl.parse(source.readString()!!)!! }.toMutableSet(),
                                 readCollections()
                         )
                 }
@@ -503,7 +503,7 @@ class DavResourceFinder(
                         source.readSerializable() as Credentials,
                         readServiceInfo(),
                         readServiceInfo(),
-                        source.readString()
+                        source.readString()!!
                 )
             }
 

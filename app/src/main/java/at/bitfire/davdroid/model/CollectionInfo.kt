@@ -218,7 +218,7 @@ data class CollectionInfo(
             }
 
             return CollectionInfo(
-                    HttpUrl.parse(parcel.readString())!!,
+                    HttpUrl.parse(parcel.readString()!!)!!,
 
                     readOrNull(parcel) { parcel.readLong() },
                     readOrNull(parcel) { parcel.readLong() },

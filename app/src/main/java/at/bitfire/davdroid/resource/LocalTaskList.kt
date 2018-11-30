@@ -9,6 +9,7 @@
 package at.bitfire.davdroid.resource
 
 import android.accounts.Account
+import android.annotation.SuppressLint
 import android.content.ContentProviderClient
 import android.content.ContentResolver
 import android.content.ContentValues
@@ -53,6 +54,7 @@ class LocalTaskList private constructor(
             return create(account, provider, values)
         }
 
+        @SuppressLint("Recycle")
         @Throws(Exception::class)
         fun onRenameAccount(resolver: ContentResolver, oldName: String, newName: String) {
             var client: ContentProviderClient? = null
@@ -64,6 +66,7 @@ class LocalTaskList private constructor(
                     it.update(Tasks.getContentUri(TaskProvider.ProviderName.OpenTasks.authority), values, "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldName))
                 }
             } finally {
+                @Suppress("DEPRECATION")
                 if (Build.VERSION.SDK_INT >= 24)
                     client?.close()
                 else

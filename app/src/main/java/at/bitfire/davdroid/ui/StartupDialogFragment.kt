@@ -29,7 +29,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.ISettings
-import org.apache.commons.lang3.text.WordUtils
 import java.util.*
 import java.util.logging.Level
 
@@ -130,7 +129,7 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                 AlertDialog.Builder(activity)
                         .setIcon(R.drawable.ic_error_dark)
                         .setTitle(R.string.startup_autostart_permission)
-                        .setMessage(getString(R.string.startup_autostart_permission_message, WordUtils.capitalize(Build.MANUFACTURER.toLowerCase())))
+                        .setMessage(getString(R.string.startup_autostart_permission_message, Build.MANUFACTURER))
                         .setPositiveButton(R.string.startup_more_info) { _, _ ->
                             UiUtils.launchUri(requireActivity(), App.homepageUrl(requireActivity()).buildUpon()
                                     .appendPath("faq").appendEncodedPath("synchronization-is-not-run-as-expected/").build())

@@ -240,6 +240,7 @@ class AccountSettings(
     }
 
     @Suppress("unused")
+    @SuppressLint("Recycle")
     /**
      * There is a mistake in this method. [TaskContract.Tasks.SYNC_VERSION] is used to store the
      * SEQUENCE and should not be used for the eTag.
@@ -251,7 +252,7 @@ class AccountSettings(
             provider.client.query(TaskProvider.syncAdapterUri(provider.tasksUri(), account),
                     arrayOf(TaskContract.Tasks._ID, TaskContract.Tasks.SYNC1, TaskContract.Tasks.SYNC2),
                     "${TaskContract.Tasks.ACCOUNT_TYPE}=? AND ${TaskContract.Tasks.ACCOUNT_NAME}=?",
-                    arrayOf(account.type, account.name), null).use { cursor ->
+                    arrayOf(account.type, account.name), null)!!.use { cursor ->
                 while (cursor.moveToNext()) {
                     val id = cursor.getLong(0)
                     val eTag = cursor.getString(1)
@@ -271,12 +272,14 @@ class AccountSettings(
     }
 
     @Suppress("unused")
+    @SuppressLint("Recycle")
     private fun update_6_7() {
         // add calendar colors
         context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
             try {
                 AndroidCalendar.insertColors(provider, account)
             } finally {
+                @Suppress("DEPRECATION")
                 if (Build.VERSION.SDK_INT >= 24)
                     provider.close()
                 else
@@ -291,7 +294,7 @@ class AccountSettings(
     }
 
     @Suppress("unused")
-    @SuppressLint("ParcelClassLoader")
+    @SuppressLint("Recycle", "ParcelClassLoader")
     private fun update_5_6() {
         context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.let { provider ->
             val parcel = Parcel.obtain()
@@ -308,7 +311,7 @@ class AccountSettings(
                 else {
                     parcel.unmarshall(raw, 0, raw.size)
                     parcel.setDataPosition(0)
-                    val params = parcel.readBundle()
+                    val params = parcel.readBundle()!!
                     val url = params.getString("url")?.let { HttpUrl.parse(it) }
                     if (url == null)
                         Logger.log.info("No address book URL, ignoring account")
@@ -343,6 +346,7 @@ class AccountSettings(
                 throw ContactsStorageException("Couldn't migrate contacts to new address book", e)
             } finally {
                 parcel.recycle()
+                @Suppress("DEPRECATION")
                 if (Build.VERSION.SDK_INT >= 24)
                     provider.close()
                 else
@@ -371,6 +375,7 @@ class AccountSettings(
     }
 
     @Suppress("unused")
+    @SuppressLint("Recycle")
     private fun update_2_3() {
         // Don't show a warning for Android updates anymore
         accountManager.setUserData(account, "last_android_version", null)

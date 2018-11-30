@@ -130,12 +130,12 @@ class ContactsSyncManager(
             var syncState: SyncState? = null
             it.propfind(0, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
-                    response[SupportedAddressData::class.java]?.let {
-                        hasVCard4 = it.hasVCard4()
+                    response[SupportedAddressData::class.java]?.let { supported ->
+                        hasVCard4 = supported.hasVCard4()
                     }
 
-                    response[SupportedReportSet::class.java]?.let {
-                        hasCollectionSync = it.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                    response[SupportedReportSet::class.java]?.let { supported ->
+                        hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
                     }
 
                     syncState = syncState(response)
@@ -397,15 +397,15 @@ class ContactsSyncManager(
             if (local == null) {
                 if (newData.group) {
                     Logger.log.log(Level.INFO, "Creating local group", newData)
-                    useLocal(LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) {
-                        it.add()
-                        local = it
+                    useLocal(LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) { group ->
+                        group.add()
+                        local = group
                     }
                 } else {
                     Logger.log.log(Level.INFO, "Creating local contact", newData)
-                    useLocal(LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) {
-                        it.add()
-                        local = it
+                    useLocal(LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) { contact ->
+                        contact.add()
+                        local = contact
                     }
                 }
                 syncResult.stats.numInserts++
@@ -444,12 +444,6 @@ class ContactsSyncManager(
             val httpUrl = HttpUrl.parse(url)
             if (httpUrl == null) {
                 Logger.log.log(Level.SEVERE, "Invalid external resource URL", url)
-                return null
-            }
-
-            val host = httpUrl.host()
-            if (host == null) {
-                Logger.log.log(Level.SEVERE, "External resource URL doesn't specify a host name", url)
                 return null
             }
 

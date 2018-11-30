@@ -66,14 +66,17 @@ class DavService: Service() {
                 ACTION_REFRESH_COLLECTIONS ->
                     if (runningRefresh.add(id)) {
                         thread { refreshCollections(id) }
-                        refreshingStatusListeners.forEach { it.get()?.onDavRefreshStatusChanged(id, true) }
+                        refreshingStatusListeners.forEach { listener ->
+                            listener.get()?.onDavRefreshStatusChanged(id, true)
+                        }
                     }
 
                 ACTION_FORCE_SYNC -> {
-                    val authority = intent.data.authority
+                    val uri = intent.data!!
+                    val authority = uri.authority!!
                     val account = Account(
-                            intent.data.pathSegments[1],
-                            intent.data.pathSegments[0]
+                            uri.pathSegments[1],
+                            uri.pathSegments[0]
                     )
                     forceSync(authority, account)
                 }
@@ -194,16 +197,16 @@ class DavService: Service() {
                     dav[CalendarProxyReadFor::class.java]?.let {
                         for (href in it.hrefs) {
                             Logger.log.fine("Principal is a read-only proxy for $href, checking for home sets")
-                            root.resolve(href)?.let {
-                                related += it
+                            root.resolve(href)?.let { proxyReadFor ->
+                                related += proxyReadFor
                             }
                         }
                     }
                     dav[CalendarProxyWriteFor::class.java]?.let {
                         for (href in it.hrefs) {
                             Logger.log.fine("Principal is a read/write proxy for $href, checking for home sets")
-                            root.resolve(href)?.let {
-                                related += it
+                            root.resolve(href)?.let { proxyWriteFor ->
+                                related += proxyWriteFor
                             }
                         }
                     }
@@ -212,8 +215,8 @@ class DavService: Service() {
                     dav[GroupMembership::class.java]?.let {
                         for (href in it.hrefs) {
                             Logger.log.fine("Principal is member of group $href, checking for home sets")
-                            root.resolve(href)?.let {
-                                related += it
+                            root.resolve(href)?.let { groupMembership ->
+                                related += groupMembership
                             }
                         }
                     }
@@ -341,13 +344,13 @@ class DavService: Service() {
                                         if (!response.isSuccess())
                                             return@propfind
 
-                                        val info = CollectionInfo(response)
-                                        info.confirmed = true
+                                        val collectionInfo = CollectionInfo(response)
+                                        collectionInfo.confirmed = true
 
                                         // remove unusable collections
-                                        if ((serviceType == Services.SERVICE_CARDDAV && info.type != CollectionInfo.Type.ADDRESS_BOOK) ||
-                                            (serviceType == Services.SERVICE_CALDAV && !arrayOf(CollectionInfo.Type.CALENDAR, CollectionInfo.Type.WEBCAL).contains(info.type)) ||
-                                            (info.type == CollectionInfo.Type.WEBCAL && info.source == null))
+                                        if ((serviceType == Services.SERVICE_CARDDAV && collectionInfo.type != CollectionInfo.Type.ADDRESS_BOOK) ||
+                                            (serviceType == Services.SERVICE_CALDAV && !arrayOf(CollectionInfo.Type.CALENDAR, CollectionInfo.Type.WEBCAL).contains(collectionInfo.type)) ||
+                                            (collectionInfo.type == CollectionInfo.Type.WEBCAL && collectionInfo.source == null))
                                             itCollections.remove()
                                     }
                                 } catch(e: HttpException) {

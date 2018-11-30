@@ -31,7 +31,6 @@ import java.io.IOException
 import java.io.StringWriter
 import java.util.logging.Level
 
-@Suppress("DEPRECATION")
 class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<Exception> {
 
     companion object {
@@ -63,6 +62,7 @@ class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
         LoaderManager.getInstance(this).initLoader(0, null, this)
     }
 
+    @Suppress("DEPRECATION")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val progress = ProgressDialog(context)
         progress.setTitle(R.string.create_collection_creating)

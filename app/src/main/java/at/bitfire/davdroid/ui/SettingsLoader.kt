@@ -39,7 +39,7 @@ abstract class SettingsLoader<T>(
         if (settingsSvc != null)
             forceLoad()
         else {
-            settingsSvc = object: ServiceConnection {
+            val serviceConn = object: ServiceConnection {
                 override fun onServiceConnected(name: ComponentName?, binder: IBinder) {
                     settings = ISettings.Stub.asInterface(binder)
                     settings!!.registerObserver(settingsObserver)
@@ -51,7 +51,8 @@ abstract class SettingsLoader<T>(
                     settings = null
                 }
             }
-            context.bindService(Intent(context, Settings::class.java), settingsSvc, Context.BIND_AUTO_CREATE)
+            if (context.bindService(Intent(context, Settings::class.java), serviceConn, Context.BIND_AUTO_CREATE))
+                settingsSvc = serviceConn
         }
     }
 

@@ -88,7 +88,7 @@ class LocalCalendar private constructor(
         get() = displayName ?: id.toString()
 
     override var lastSyncState: SyncState?
-        get() = provider.query(calendarSyncURI(), arrayOf(COLUMN_SYNC_STATE), null, null, null)?.let { cursor ->
+        get() = provider.query(calendarSyncURI(), arrayOf(COLUMN_SYNC_STATE), null, null, null)?.use { cursor ->
                     if (cursor.moveToNext())
                         return SyncState.fromString(cursor.getString(0))
                     else
