@@ -7,12 +7,12 @@ before_script:
 cache:
   paths:
      - .gradle/
-     - apk/
 
 test:
   script:
-    - (cd /sdk/emulator; ./emulator @test -no-audio -no-window & wait-for-emulator.sh)
-    - ./gradlew check mergeAndroidReports
+#   - (cd /sdk/emulator; ./emulator @test -no-audio -no-window & wait-for-emulator.sh)
+#   - ./gradlew check mergeAndroidReports
+    - ./gradlew check
   artifacts:
     paths:
       - app/build/outputs/lint-results-debug.html
