@@ -112,6 +112,11 @@ class TasksSyncManager(
             useRemoteCollection {
                 it.multiget(bunch) { response, _ ->
                     useRemote(response) {
+                        if (!response.isSuccess()) {
+                            Logger.log.warning("Received non-successful multiget response for ${response.href}")
+                            return@useRemote
+                        }
+
                         val eTag = response[GetETag::class.java]?.eTag
                                 ?: throw DavException("Received multi-get response without ETag")
 
