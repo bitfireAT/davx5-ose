@@ -15,6 +15,9 @@
 # Kotlin
 -dontwarn kotlin.**
 
+# Apache Commons
+-dontwarn javax.script.**
+
 # ez-vcard
 -dontwarn ezvcard.io.json.**            # JSON serializer (for jCards) not used
 -dontwarn freemarker.**                 # freemarker templating library (for creating hCards) not used
