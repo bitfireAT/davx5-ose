@@ -7,14 +7,25 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="@string/app_settings_user_interface">
+    <PreferenceCategory android:title="@string/app_settings_debug">
+
+        <SwitchPreferenceCompat
+            android:key="log_to_external_storage"
+            android:title="@string/app_settings_log_to_external_storage"
+            android:icon="@drawable/ic_adb_dark"
+            android:summaryOn="@string/app_settings_log_to_external_storage_on"
+            android:summaryOff="@string/app_settings_log_to_external_storage_off"/>
 
         <Preference
-            android:key="reset_hints"
-            android:title="@string/app_settings_reset_hints"
-            android:summary="@string/app_settings_reset_hints_summary"/>
+            android:title="@string/app_settings_show_debug_info"
+            android:summary="@string/app_settings_show_debug_info_details"
+            android:icon="@drawable/ic_bug_report_dark">
+            <intent
+                android:targetPackage="at.bitfire.davdroid"
+                android:targetClass="at.bitfire.davdroid.ui.DebugInfoActivity"/>
+        </Preference>
 
     </PreferenceCategory>
 
@@ -55,22 +66,13 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/app_settings_debug">
-
-        <SwitchPreferenceCompat
-            android:key="log_to_external_storage"
-            android:title="@string/app_settings_log_to_external_storage"
-            android:summaryOn="@string/app_settings_log_to_external_storage_on"
-            android:summaryOff="@string/app_settings_log_to_external_storage_off"/>
+    <PreferenceCategory android:title="@string/app_settings_user_interface">
 
         <Preference
-            android:title="@string/app_settings_show_debug_info"
-            android:summary="@string/app_settings_show_debug_info_details">
-            <intent
-                android:targetPackage="at.bitfire.davdroid"
-                android:targetClass="at.bitfire.davdroid.ui.DebugInfoActivity"/>
-        </Preference>
+            android:key="reset_hints"
+            android:title="@string/app_settings_reset_hints"
+            android:summary="@string/app_settings_reset_hints_summary"/>
 
     </PreferenceCategory>
 
-</PreferenceScreen>
+</androidx.preference.PreferenceScreen>

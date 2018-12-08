@@ -7,7 +7,52 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:key="sync"
+        android:title="@string/settings_sync">
+
+        <ListPreference
+            android:key="sync_interval_contacts"
+            android:persistent="false"
+            android:title="@string/settings_sync_interval_contacts"
+            android:icon="@drawable/ic_contacts_dark"
+            android:entries="@array/settings_sync_interval_names"
+            android:entryValues="@array/settings_sync_interval_seconds"/>
+
+        <ListPreference
+            android:key="sync_interval_calendars"
+            android:persistent="false"
+            android:title="@string/settings_sync_interval_calendars"
+            android:icon="@drawable/ic_today_dark"
+            android:entries="@array/settings_sync_interval_names"
+            android:entryValues="@array/settings_sync_interval_seconds"/>
+
+        <ListPreference
+            android:key="sync_interval_tasks"
+            android:persistent="false"
+            android:title="@string/settings_sync_interval_tasks"
+            android:icon="@drawable/ic_playlist_add_check_dark"
+            android:entries="@array/settings_sync_interval_names"
+            android:entryValues="@array/settings_sync_interval_seconds"/>
+
+        <SwitchPreferenceCompat
+            android:key="sync_wifi_only"
+            android:persistent="false"
+            android:title="@string/settings_sync_wifi_only"
+            android:icon="@drawable/ic_network_wifi_dark"
+            android:summaryOn="@string/settings_sync_wifi_only_on"
+            android:summaryOff="@string/settings_sync_wifi_only_off" />
+
+        <EditTextPreference
+            android:key="sync_wifi_only_ssids"
+            android:dependency="sync_wifi_only"
+            android:persistent="false"
+            android:title="@string/settings_sync_wifi_only_ssids"
+            android:dialogMessage="@string/settings_sync_wifi_only_ssids_message"/>
+
+    </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/settings_authentication">
 
@@ -33,60 +78,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="sync"
-        android:title="@string/settings_sync">
-
-        <ListPreference
-            android:key="sync_interval_contacts"
-            android:persistent="false"
-            android:title="@string/settings_sync_interval_contacts"
-            android:entries="@array/settings_sync_interval_names"
-            android:entryValues="@array/settings_sync_interval_seconds"/>
-
-        <ListPreference
-            android:key="sync_interval_calendars"
-            android:persistent="false"
-            android:title="@string/settings_sync_interval_calendars"
-            android:entries="@array/settings_sync_interval_names"
-            android:entryValues="@array/settings_sync_interval_seconds"/>
-
-        <ListPreference
-            android:key="sync_interval_tasks"
-            android:persistent="false"
-            android:title="@string/settings_sync_interval_tasks"
-            android:entries="@array/settings_sync_interval_names"
-            android:entryValues="@array/settings_sync_interval_seconds"/>
-
-        <SwitchPreferenceCompat
-            android:key="sync_wifi_only"
-            android:persistent="false"
-            android:title="@string/settings_sync_wifi_only"
-            android:summaryOn="@string/settings_sync_wifi_only_on"
-            android:summaryOff="@string/settings_sync_wifi_only_off" />
-
-        <EditTextPreference
-            android:key="sync_wifi_only_ssids"
-            android:dependency="sync_wifi_only"
-            android:persistent="false"
-            android:title="@string/settings_sync_wifi_only_ssids"
-            android:dialogMessage="@string/settings_sync_wifi_only_ssids_message"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:key="carddav"
-        android:title="@string/settings_carddav">
-
-        <ListPreference
-            android:key="contact_group_method"
-            android:persistent="false"
-            android:title="@string/settings_contact_group_method"
-            android:entries="@array/settings_contact_group_method_entries"
-            android:entryValues="@array/settings_contact_group_method_values"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
         android:key="caldav"
         android:title="@string/settings_caldav">
 
@@ -94,6 +85,7 @@
             android:key="time_range_past_days"
             android:persistent="false"
             android:title="@string/settings_sync_time_range_past"
+            android:icon="@drawable/ic_date_range_dark"
             android:dialogMessage="@string/settings_sync_time_range_past_message"
             android:inputType="number"/>
 
@@ -113,4 +105,18 @@
 
     </PreferenceCategory>
 
-</PreferenceScreen>
+    <PreferenceCategory
+        android:key="carddav"
+        android:title="@string/settings_carddav">
+
+        <ListPreference
+            android:key="contact_group_method"
+            android:persistent="false"
+            android:title="@string/settings_contact_group_method"
+            android:icon="@drawable/ic_group_dark"
+            android:entries="@array/settings_contact_group_method_entries"
+            android:entryValues="@array/settings_contact_group_method_values"/>
+
+    </PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>
