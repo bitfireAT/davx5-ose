@@ -12,8 +12,10 @@ import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentResolver
+import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.os.Build
@@ -27,6 +29,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.content.pm.PackageInfoCompat
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.AsyncTaskLoader
 import androidx.loader.content.Loader
@@ -41,11 +44,10 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.ical4android.TaskProvider
 import kotlinx.android.synthetic.main.activity_debug_info.*
+import org.dmfs.tasks.contract.TaskContract
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
 import java.util.logging.Level
 
 class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<String> {
@@ -182,25 +184,47 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
 
             // software information
             try {
+                report.append("\nSOFTWARE INFORMATION\n")
                 val pm = context.packageManager
-                val installedFrom = pm.getInstallerPackageName(BuildConfig.APPLICATION_ID) ?: "APK (directly)"
-                var workaroundInstalled = false
-                try {
-                    workaroundInstalled = pm.getPackageInfo("${BuildConfig.APPLICATION_ID}.jbworkaround", 0) != null
-                } catch(e: PackageManager.NameNotFoundException) {
+                val appIDs = mutableSetOf(      // we always want info about these packages
+                        BuildConfig.APPLICATION_ID,                     // DAVdroid
+                        "${BuildConfig.APPLICATION_ID}.jbworkaround",   // DAVdroid JB Workaround
+                        "org.dmfs.tasks"                               // OpenTasks
+                )
+                // add info about contact, calendar, task provider
+                for (authority in arrayOf(ContactsContract.AUTHORITY, CalendarContract.AUTHORITY, TaskProvider.ProviderName.OpenTasks.authority))
+                    pm.resolveContentProvider(authority, 0)?.let { appIDs += it.packageName }
+                // add info about available contact, calendar, task apps
+                for (uri in arrayOf(ContactsContract.Contacts.CONTENT_URI, CalendarContract.Events.CONTENT_URI, TaskContract.Tasks.getContentUri(TaskProvider.ProviderName.OpenTasks.authority))) {
+                    val viewIntent = Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(uri, 1))
+                    for (info in pm.queryIntentActivities(viewIntent, 0))
+                        appIDs += info.activityInfo.packageName
                 }
-                val formatter = SimpleDateFormat.getDateInstance()
-                report.append("\nSOFTWARE INFORMATION\n" +
-                              "Package: ${BuildConfig.APPLICATION_ID}\n" +
-                              "Version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE}) from ${formatter.format(Date(BuildConfig.buildTime))}\n")
-                      .append("Installed from: $installedFrom\n")
-                      .append("JB Workaround installed: ${if (workaroundInstalled) "yes" else "no"}\n\n")
+
+                for (appID in appIDs)
+                    try {
+                        val info = pm.getPackageInfo(appID, 0)
+                        report  .append("* ").append(appID)
+                                .append(" ").append(info.versionName)
+                                .append(" (").append(PackageInfoCompat.getLongVersionCode(info)).append(")")
+                        pm.getInstallerPackageName(appID)?.let { installer ->
+                            report.append(" from ").append(installer)
+                        }
+                        info.applicationInfo?.let { applicationInfo ->
+                            if (!applicationInfo.enabled)
+                                report.append(" disabled!")
+                            if (applicationInfo.flags.and(ApplicationInfo.FLAG_EXTERNAL_STORAGE) != 0)
+                                report.append(" on external storage!")
+                        }
+                        report.append("\n")
+                    } catch(e: PackageManager.NameNotFoundException) {
+                    }
             } catch(e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't get software information", e)
             }
 
             // connectivity
-            report.append("CONNECTIVITY (at the moment)\n")
+            report.append("\nCONNECTIVITY (at the moment)\n")
             val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             connectivityManager.activeNetworkInfo?.let { networkInfo ->
                 val type = when (networkInfo.type) {
