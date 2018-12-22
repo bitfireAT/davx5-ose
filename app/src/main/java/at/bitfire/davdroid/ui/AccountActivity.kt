@@ -488,7 +488,10 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         }
 
         override fun onReset() {
-            ContentResolver.removeStatusChangeListener(syncStatusListener)
+            syncStatusListener?.let {
+                ContentResolver.removeStatusChangeListener(it)
+                syncStatusListener = null
+            }
 
             davService?.removeRefreshingStatusListener(this)
             davServiceConn?.let {
