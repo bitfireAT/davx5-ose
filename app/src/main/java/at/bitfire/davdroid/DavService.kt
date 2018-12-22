@@ -289,6 +289,10 @@ class DavService: Service() {
             try {
                 Logger.log.info("Refreshing $serviceType collections of service #$service")
 
+                // cancel previous notification
+                NotificationManagerCompat.from(this)
+                        .cancel(service.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS)
+
                 Settings.getInstance(this)?.use { settings ->
                     // create authenticating OkHttpClient (credentials taken from account settings)
                     HttpClient.Builder(this, settings, AccountSettings(this, settings, account))
