@@ -8,19 +8,36 @@
   <string name="manage_accounts">Gestion des comptes</string>
   <string name="please_wait">patientez …</string>
   <string name="send">Envoyer</string>
+  <string name="notification_channel_debugging">Débogage</string>
+  <string name="notification_channel_general">Autres messages importants</string>
+  <string name="notification_channel_sync">Syncronisation</string>
+  <string name="notification_channel_sync_errors">Erreurs de synchronisation</string>
+  <string name="notification_channel_sync_io_errors">Erreurs de réseau et d\'entrée / sortie</string>
+  <string name="notification_channel_sync_status">Messages d\'état</string>
   <!--startup dialogs-->
+  <string name="startup_autostart_permission">Synchronisation automatique</string>
+  <string name="startup_autostart_permission_message">%s le matériel bloque souvent la synchronisation automatique. Dans ce cas, autorisez la synchronisation automatique dans vos paramètres d\'Android.</string>
+  <string name="startup_battery_optimization">Synchronisation planifiée</string>
+  <string name="startup_battery_optimization_message">Votre appareil va restreindre la synchronisation DAVdroid. Pour forcer des intervalles de synchronisation DAVdroid plus réguliers, enlever l\'option \"optimisation de batterie\"</string>
   <string name="startup_battery_optimization_disable">Désactiver pour DAVdroid</string>
   <string name="startup_dont_show_again">Ne plus afficher</string>
+  <string name="startup_not_now">Pas maintenant</string>
   <string name="startup_donate">Open-Source Information</string>
-  <string name="startup_donate_message">Nous sommes heureux que vous utilisez DAVdroid, qui est un logiciel open-source (GPLv3). Parce que développer DAVdroid est un travail difficile et nous a pris de nombreuses heures, s\'il vous plaît envisager de faire un don.</string>
+  <string name="startup_donate_message">Nous sommes heureux que vous utilisiez DAVdroid, qui est un logiciel open-source (GPLv3). Parce que développer DAVdroid est un travail difficile, qui nous a pris de nombreuses heures, nous vous invitons à faire un don.</string>
   <string name="startup_donate_now">Faire un don</string>
   <string name="startup_donate_later">Plus tard</string>
   <string name="startup_google_play_accounts_removed">Erreur information Play Store DRM</string>
-  <string name="startup_google_play_accounts_removed_message">Dans certaines conditions, Play Store DRM peut provoquer la disparition de tous les comptes DAVdroid après un redémarrage ou après la mise à niveau de DAVdroid. Si vous êtes concerné par ce problème (et seulement alors), s\'il vous plaît installer \"DAVdroid JB Solution\" du Play Store.</string>
+  <string name="startup_google_play_accounts_removed_message">Dans certaines conditions, Play Store DRM peut provoquer la disparition de tous les comptes DAVdroid après un redémarrage ou après la mise à niveau de DAVdroid. Si vous êtes concerné par ce problème (et seulement dans ce cas), s\'il vous plaît installer \"DAVdroid JB Solution\" du Play Store.</string>
+  <string name="startup_more_info">Plus d\'informations</string>
   <string name="startup_opentasks_not_installed">L\'application OpenTasks n\'est pas installée</string>
+  <string name="startup_opentasks_not_installed_message">Pour synchroniser les tâches, l\'application gratuite OpenTasks est nécessaire (elle ne l\'est pas pour les contacts et les événements).</string>
   <string name="startup_opentasks_reinstall_davdroid">Après l\'installation OpenTasks, vous devez RE-INSTALLER DAVdroid et ajoutez vos comptes à nouveau (bug Android).</string>
   <string name="startup_opentasks_not_installed_install">Installer OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_libraries">Librairies</string>
+  <string name="about_version">Version %1s(%2d)</string>
+  <string name="about_build_date">Compilé sur %s</string>
+  <string name="about_flavor_info">Cette version ne peut être distribuée que sur Google Play.</string>
   <string name="about_license_info_no_warranty">Ce programme est fourni sans AUCUNE GARANTIE. C\'est un logiciel libre, et vous êtes en droit de le redistribuer sous certaines conditions.</string>
   <!--global settings-->
   <string name="logging_davdroid_file_logging">DAVdroid fichier de journalisation</string>
@@ -32,10 +49,12 @@
   <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
   <string name="navigation_drawer_subtitle">Adaptateur de synchronisation CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">A propos / Licence</string>
+  <string name="navigation_drawer_beta_feedback">Commentaire pour la version Beta</string>
   <string name="navigation_drawer_settings">Paramètres</string>
   <string name="navigation_drawer_news_updates">Actualités &amp; mises à jour</string>
   <string name="navigation_drawer_external_links">Liens externes</string>
   <string name="navigation_drawer_website">Site Web</string>
+  <string name="navigation_drawer_manual">Manuel</string>
   <string name="navigation_drawer_faq">Foire aux questions</string>
   <string name="navigation_drawer_forums">Aide/Forum</string>
   <string name="navigation_drawer_donate">Faire un don</string>
@@ -80,9 +99,12 @@
   <string name="account_delete">Supprimer le compte</string>
   <string name="account_delete_confirmation_title">Voulez-vous vraiment supprimer le compte?</string>
   <string name="account_delete_confirmation_text">Toutes les copies locales des carnets d\'adresses, des calendriers et des listes de tâches seront supprimées.</string>
+  <string name="account_select_collections_hint">Choisir la collection à synchroniser</string>
   <string name="account_carddav">CardDAV (les carnets d\'adresse) </string>
   <string name="account_caldav">CalDAV (les agendas) </string>
   <string name="account_webcal">WebCal (les anciens agenda)</string>
+  <string name="account_synchronize_this_collection">Synchronise cette collection</string>
+  <string name="account_read_only">En lecture seulement</string>
   <string name="account_calendar">calendrier</string>
   <string name="account_task_list">liste de tâche</string>
   <string name="account_refresh_address_book_list">Actualiser le carnet d\'adresses</string>
@@ -100,10 +122,13 @@
   <string name="login_password_required">Mot de passe requis</string>
   <string name="login_type_url">Connexion avec une URL et un nom d\'utilisateur</string>
   <string name="login_url_must_be_http_or_https">L\'URL doit commencer par http(s)://</string>
+  <string name="login_url_must_be_https">L\'URL doit commencer par https://</string>
   <string name="login_url_host_name_required">Nom d\'hôte requis</string>
   <string name="login_user_name">Nom d\'utilisateur</string>
   <string name="login_user_name_required">Nom d\'utilisateur requis</string>
   <string name="login_base_url">URL de base</string>
+  <string name="login_type_url_certificate">Se connecter avec l\'URL et le certificat client</string>
+  <string name="login_select_certificate">Choisir le certificat</string>
   <string name="login_login">Se connecter</string>
   <string name="login_back">Retour</string>
   <string name="login_create_account">Créer un compte</string>
@@ -115,6 +140,7 @@
   <string name="login_configuration_detection">Détection de la configuration</string>
   <string name="login_querying_server">Veuillez patienter, nous interrogeons le serveur …</string>
   <string name="login_no_caldav_carddav">Aucun accès possible au service CalDAV ou CardDAV.</string>
+  <string name="login_view_logs">Montrer les détails</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Paramètres: %s</string>
   <string name="settings_authentication">Authentification</string>
@@ -123,6 +149,7 @@
   <string name="settings_password">Mot de passe</string>
   <string name="settings_password_summary">Mettre à jour le mot de passe </string>
   <string name="settings_enter_password">Saisissez votre mot de passe :</string>
+  <string name="settings_certificate_alias">Alias ​​du certificat client</string>
   <string name="settings_sync">Synchronisation</string>
   <string name="settings_sync_interval_contacts">Intervalle de synchronisation des carnets d\'adresses</string>
   <string name="settings_sync_summary_manually">Manuellement</string>
@@ -155,6 +182,8 @@
     <item>Les groupes sont des VCards indépendantes</item>
     <item>Les groupes sont des catégories pour chacun des contacts</item>
   </string-array>
+  <string name="settings_contact_group_method_change">Changer la méthode de groupe</string>
+  <string name="settings_contact_group_method_change_reload_contacts">Cela demander de recharger tous les contacts. Les changements locaux non sauvegardés seront perdus.</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limite des événements passés</string>
   <string name="settings_sync_time_range_past_none">Tous les événements seront synchronisés</string>
@@ -191,6 +220,10 @@
   <string name="delete_collection_confirm_title">Êtes-vous sur?</string>
   <string name="delete_collection_confirm_warning">Cette collection (%s) et toutes ses données seront supprimées du serveur.</string>
   <string name="delete_collection_deleting_collection">Suppression de la collection</string>
+  <string name="collection_force_read_only">Forcer la lecture seulement</string>
+  <string name="collection_properties">Propriétés</string>
+  <string name="collection_properties_url">Adresse (URL) :</string>
+  <string name="collection_properties_copy_url">Copier l\'URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Une erreur est survenue.</string>
   <string name="exception_httpexception">Une erreur HTTP est survenue.</string>
@@ -198,8 +231,17 @@
   <string name="exception_show_details">Voir détails</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Infos de débogage</string>
+  <string name="sync_contacts_read_only_address_book">Carnet d\'adresse en lecture seulement</string>
   <string name="sync_error_permissions">Autorisations DAVdroid</string>
   <string name="sync_error_permissions_text">Autorisations supplémentaires demandées</string>
+  <string name="sync_error_opentasks_too_old">Version d\'OpenTask trop ancienne</string>
+  <string name="sync_error_opentasks_required_version">Version requise %1$s (actuellement %2$s)</string>
+  <string name="sync_error_authentication_failed">Echec d\'authentification (contrôler vos identifiants de connexion)</string>
+  <string name="sync_error_io">Erreur de réseau ou d\'entrée / sortie - %s</string>
+  <string name="sync_error_http_dav">Erreur de serveur HTTP - %s</string>
+  <string name="sync_error_local_storage">Erreur de stockage local - %s</string>
+  <string name="sync_error_retry">Essayez à nouveau</string>
+  <string name="sync_error_view_item">Voir l\'élément</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVdroid : Sécurité de la connexion</string>
   <string name="trust_certificate_unknown_certificate_found">DAVdroid a rencontré un certificat inconnu. Voulez-vous lui faire confiance?</string>
