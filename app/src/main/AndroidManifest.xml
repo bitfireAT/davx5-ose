@@ -57,7 +57,6 @@
         tools:ignore="UnusedAttribute">
 
         <service android:name=".DavService"/>
-        <service android:name=".settings.Settings"/>
 
         <activity
             android:name=".ui.AccountsActivity"
@@ -130,7 +129,6 @@
         <service
             android:name=".syncadapter.CalendarsSyncAdapterService"
             android:exported="true"
-            android:process=":sync"
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter"/>
@@ -143,7 +141,6 @@
         <service
             android:name=".syncadapter.TasksSyncAdapterService"
             android:exported="true"
-            android:process=":sync"
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter"/>
@@ -175,7 +172,6 @@
         <service
             android:name=".syncadapter.AddressBooksSyncAdapterService"
             android:exported="true"
-            android:process=":sync"
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter"/>
@@ -188,7 +184,6 @@
         <service
             android:name=".syncadapter.ContactsSyncAdapterService"
             android:exported="true"
-            android:process=":sync"
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter"/>

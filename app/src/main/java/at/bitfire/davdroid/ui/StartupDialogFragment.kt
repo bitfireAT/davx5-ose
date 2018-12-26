@@ -21,18 +21,16 @@ import android.os.Bundle
 import android.os.PowerManager
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import androidx.loader.app.LoaderManager
-import androidx.loader.content.Loader
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.settings.ISettings
+import at.bitfire.davdroid.settings.Settings
 import java.util.*
 import java.util.logging.Level
 
-class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISettings> {
+class StartupDialogFragment: DialogFragment() {
 
     enum class Mode {
         AUTOSTART_PERMISSIONS,
@@ -56,33 +54,34 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
 
         const val ARGS_MODE = "mode"
 
-        fun getStartupDialogs(context: Context, settings: ISettings): List<StartupDialogFragment> {
+        fun getStartupDialogs(context: Context): List<StartupDialogFragment> {
             val dialogs = LinkedList<StartupDialogFragment>()
+            val settings = Settings.getInstance(context)
 
-            if (System.currentTimeMillis() > settings.getLong(SETTING_NEXT_DONATION_POPUP, 0))
+            if (System.currentTimeMillis() > settings.getLong(SETTING_NEXT_DONATION_POPUP) ?: 0)
                 dialogs += StartupDialogFragment.instantiate(Mode.OSE_DONATE)
 
             // store-specific information
             /*if (BuildConfig.FLAVOR == App.FLAVOR_GOOGLE_PLAY) {
                 // Play store
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP &&         // only on Android <5
-                    settings.getBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, true))   // and only when "Don't show again" hasn't been clicked yet
+                    settings.getBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED) != false)   // and only when "Don't show again" hasn't been clicked yet
                     dialogs += StartupDialogFragment.instantiate(Mode.GOOGLE_PLAY_ACCOUNTS_REMOVED)
             }*/
 
             // battery optimization white-listing
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && settings.getBoolean(HINT_BATTERY_OPTIMIZATIONS, true)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && settings.getBoolean(HINT_BATTERY_OPTIMIZATIONS) != false) {
                 val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
                 if (!powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID))
                     dialogs.add(StartupDialogFragment.instantiate(Mode.BATTERY_OPTIMIZATIONS))
             }
 
             // vendor-specific auto-start information
-            if (autostartManufacturers.contains(Build.MANUFACTURER.toLowerCase()) && settings.getBoolean(HINT_AUTOSTART_PERMISSIONS, true))
+            if (autostartManufacturers.contains(Build.MANUFACTURER.toLowerCase()) && settings.getBoolean(HINT_AUTOSTART_PERMISSIONS) != false)
                 dialogs.add(StartupDialogFragment.instantiate(Mode.AUTOSTART_PERMISSIONS))
 
             // OpenTasks information
-            if (!LocalTaskList.tasksProviderAvailable(context) && settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED, true))
+            if (!LocalTaskList.tasksProviderAvailable(context) && settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED) != false)
                 dialogs.add(StartupDialogFragment.instantiate(Mode.OPENTASKS_NOT_INSTALLED))
 
             return dialogs.reversed()
@@ -98,30 +97,12 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
 
     }
 
-
-    var settings: ISettings? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        LoaderManager.getInstance(this).initLoader(0, null, this)
-    }
-
-    override fun onCreateLoader(code: Int, args: Bundle?) =
-            SettingsLoader(requireActivity())
-
-    override fun onLoadFinished(loader: Loader<ISettings>, result: ISettings?) {
-        settings = result
-    }
-
-    override fun onLoaderReset(loader: Loader<ISettings>) {
-        settings = null
-    }
-
-
+    
     @SuppressLint("BatteryLife")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         isCancelable = false
 
+        val settings = Settings.getInstance(requireActivity())
         val activity = requireActivity()
         val mode = Mode.valueOf(arguments!!.getString(ARGS_MODE)!!)
         return when (mode) {
@@ -136,7 +117,7 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         }
                         .setNeutralButton(R.string.startup_not_now) { _, _ -> }
                         .setNegativeButton(R.string.startup_dont_show_again) { _, _ ->
-                            settings?.putBoolean(HINT_AUTOSTART_PERMISSIONS, false)
+                            settings.putBoolean(HINT_AUTOSTART_PERMISSIONS, false)
                         }
                         .create()
 
@@ -151,7 +132,7 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         }
                         .setNeutralButton(R.string.startup_not_now) { _, _ -> }
                         .setNegativeButton(R.string.startup_dont_show_again) { _: DialogInterface, _: Int ->
-                            settings?.putBoolean(HINT_BATTERY_OPTIMIZATIONS, false)
+                            settings.putBoolean(HINT_BATTERY_OPTIMIZATIONS, false)
                         }
                         .create()
 
@@ -172,7 +153,7 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         }
                         .setNeutralButton(R.string.startup_not_now) { _, _ -> }
                         .setNegativeButton(R.string.startup_dont_show_again) { _, _ ->
-                            settings?.putBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, false)
+                            settings.putBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, false)
                         }
                         .create()
             }
@@ -191,7 +172,7 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                         }
                         .setNeutralButton(R.string.startup_not_now) { _, _ -> }
                         .setNegativeButton(R.string.startup_dont_show_again) { _: DialogInterface, _: Int ->
-                            settings?.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
+                            settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
                         }
                         .create()
             }
@@ -205,26 +186,14 @@ class StartupDialogFragment: DialogFragment(), LoaderManager.LoaderCallbacks<ISe
                                 UiUtils.launchUri(requireActivity(), App.homepageUrl(requireActivity()).buildUpon()
                                         .appendEncodedPath("donate/")
                                         .build())
-                                settings?.putLong(SETTING_NEXT_DONATION_POPUP, System.currentTimeMillis() + 30 * 86400000L) // 30 days
+                                settings.putLong(SETTING_NEXT_DONATION_POPUP, System.currentTimeMillis() + 30 * 86400000L) // 30 days
                             }
                             .setNegativeButton(R.string.startup_donate_later) { _, _ ->
-                                settings?.putLong(SETTING_NEXT_DONATION_POPUP, System.currentTimeMillis() + 14 * 86400000L) // 14 days
+                                settings.putLong(SETTING_NEXT_DONATION_POPUP, System.currentTimeMillis() + 14 * 86400000L) // 14 days
                             }
                             .create()
 
         }
-    }
-
-
-    class SettingsLoader(
-            context: Context
-    ): at.bitfire.davdroid.ui.SettingsLoader<ISettings?>(context) {
-
-        override fun loadInBackground(): ISettings? {
-            settings?.let { return it }
-            return null
-        }
-
     }
 
 }

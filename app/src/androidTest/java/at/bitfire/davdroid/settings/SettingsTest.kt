@@ -9,8 +9,6 @@
 package at.bitfire.davdroid.settings
 
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.davdroid.App
-import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -18,25 +16,19 @@ import org.junit.Test
 
 class SettingsTest {
 
-    lateinit var settings: Settings.Stub
+    lateinit var settings: Settings
 
     @Before
-    fun init() {
-        settings = Settings.getInstance(InstrumentationRegistry.getInstrumentation().targetContext)!!
+    fun initialize() {
+        settings = Settings.getInstance(InstrumentationRegistry.getInstrumentation().targetContext)
     }
-
-    @After
-    fun shutdown() {
-        settings.close()
-    }
-
 
     @Test
     fun testHas() {
         assertFalse(settings.has("notExisting"))
 
         // provided by DefaultsProvider
-        assertTrue(settings.has(App.OVERRIDE_PROXY))
+        assertTrue(settings.has(Settings.OVERRIDE_PROXY))
     }
 
 }

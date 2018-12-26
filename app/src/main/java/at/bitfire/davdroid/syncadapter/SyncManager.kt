@@ -30,7 +30,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.SyncState
 import at.bitfire.davdroid.resource.*
-import at.bitfire.davdroid.settings.ISettings
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.AccountSettingsActivity
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -54,7 +54,6 @@ import javax.net.ssl.SSLHandshakeException
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
         val context: Context,
-        val settings: ISettings,
         val account: Account,
         val accountSettings: AccountSettings,
         val extras: Bundle,
@@ -70,8 +69,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     companion object {
 
-        val MAX_PROCESSING_THREADS = Math.max(Runtime.getRuntime().availableProcessors(), 4)
-        val MAX_DOWNLOAD_THREADS = Math.max(Runtime.getRuntime().availableProcessors(), 4)
+        val MAX_PROCESSING_THREADS = Math.min(Runtime.getRuntime().availableProcessors()/2, 1)
+        val MAX_DOWNLOAD_THREADS = Math.max(Runtime.getRuntime().availableProcessors(), 2)
         const val MAX_MULTIGET_RESOURCES = 10
 
         fun cancelNotifications(manager: NotificationManagerCompat, authority: String, account: Account) =
@@ -90,7 +89,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     protected val notificationManager = NotificationManagerCompat.from(context)
     protected val notificationTag = notificationTag(authority, mainAccount)
 
-    protected val httpClient = HttpClient.Builder(context, settings, accountSettings).build()
+    protected val httpClient = HttpClient.Builder(context, accountSettings).build()
 
     protected lateinit var collectionURL: HttpUrl
     protected lateinit var davCollection: RemoteType

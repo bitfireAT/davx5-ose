@@ -8,11 +8,10 @@
 
 package at.bitfire.davdroid.settings
 
-import java.io.Closeable
-
-interface Provider: Closeable {
+interface SettingsProvider {
 
     fun forceReload()
+    fun close()
 
     fun has(key: String): Pair<Boolean, Boolean>
 
@@ -29,10 +28,5 @@ interface Provider: Closeable {
     fun putString(key: String, value: String?): Boolean
 
     fun remove(key: String): Boolean
-
-
-    interface Observer {
-        fun onReload()
-    }
 
 }

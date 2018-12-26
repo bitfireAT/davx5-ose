@@ -17,7 +17,8 @@ import at.bitfire.dav4android.Constants
 import at.bitfire.dav4android.UrlUtils
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.Credentials
-import at.bitfire.davdroid.settings.ISettings
+import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.Settings
 import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -67,7 +68,6 @@ class HttpClient private constructor(
 
     class Builder(
             val context: Context? = null,
-            val settings: ISettings? = null,
             accountSettings: AccountSettings? = null,
             val logger: java.util.logging.Logger = Logger.log
     ) {
@@ -89,32 +89,36 @@ class HttpClient private constructor(
                 orig.addInterceptor(loggingInterceptor)
             }
 
-            settings?.let {
+            context?.let {
+                val settings = Settings.getInstance(context)
+
                 // custom proxy support
                 try {
-                    if (settings.getBoolean(App.OVERRIDE_PROXY, false)) {
+                    if (settings.getBoolean(Settings.OVERRIDE_PROXY) == true) {
                         val address = InetSocketAddress(
-                                settings.getString(App.OVERRIDE_PROXY_HOST, App.OVERRIDE_PROXY_HOST_DEFAULT),
-                                settings.getInt(App.OVERRIDE_PROXY_PORT, App.OVERRIDE_PROXY_PORT_DEFAULT)
+                                settings.getString(Settings.OVERRIDE_PROXY_HOST)
+                                        ?: Settings.OVERRIDE_PROXY_HOST_DEFAULT,
+                                settings.getInt(Settings.OVERRIDE_PROXY_PORT)
+                                        ?: Settings.OVERRIDE_PROXY_PORT_DEFAULT
                         )
 
                         val proxy = Proxy(Proxy.Type.HTTP, address)
                         orig.proxy(proxy)
                         Logger.log.log(Level.INFO, "Using proxy", proxy)
                     }
-                } catch(e: Exception) {
+                } catch (e: Exception) {
                     Logger.log.log(Level.SEVERE, "Can't set proxy, ignoring", e)
                 }
 
-                context?.let {
-                    if (BuildConfig.customCerts)
-                        customCertManager(CustomCertManager(context, true, !settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false)))
+                //if (BuildConfig.customCerts)
+                    customCertManager(CustomCertManager(context, true,
+                            !(settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES)
+                                    ?: Settings.DISTRUST_SYSTEM_CERTIFICATES_DEFAULT)))
+            }
 
-                    // use account settings for authentication
-                    accountSettings?.let {
-                        addAuthentication(null, it.credentials())
-                    }
-                }
+            // use account settings for authentication
+            accountSettings?.let {
+                addAuthentication(null, it.credentials())
             }
         }
 
@@ -176,6 +180,8 @@ class HttpClient private constructor(
             var keyManager: KeyManager? = null
             try {
                 certificateAlias?.let { alias ->
+                    val context = requireNotNull(context)
+
                     // get client certificate and private key
                     val certs = KeyChain.getCertificateChain(context, alias) ?: return@let
                     val key = KeyChain.getPrivateKey(context, alias) ?: return@let

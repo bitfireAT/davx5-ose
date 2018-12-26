@@ -30,7 +30,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB.*
 import at.bitfire.davdroid.model.ServiceDB.Collections
-import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import okhttp3.HttpUrl
@@ -293,84 +293,81 @@ class DavService: Service() {
                 NotificationManagerCompat.from(this)
                         .cancel(service.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS)
 
-                Settings.getInstance(this)?.use { settings ->
-                    // create authenticating OkHttpClient (credentials taken from account settings)
-                    HttpClient.Builder(this, settings, AccountSettings(this, settings, account))
-                            .setForeground(true)
-                            .build().use { client ->
-                        val httpClient = client.okHttpClient
+                // create authenticating OkHttpClient (credentials taken from account settings)
+                HttpClient.Builder(this, AccountSettings(this, account))
+                        .setForeground(true)
+                        .build().use { client ->
+                    val httpClient = client.okHttpClient
 
-                        // refresh home set list (from principal)
-                        readPrincipal()?.let { principalUrl ->
-                            Logger.log.fine("Querying principal $principalUrl for home sets")
-                            queryHomeSets(httpClient, principalUrl)
+                    // refresh home set list (from principal)
+                    readPrincipal()?.let { principalUrl ->
+                        Logger.log.fine("Querying principal $principalUrl for home sets")
+                        queryHomeSets(httpClient, principalUrl)
+                    }
+
+                    // remember selected collections
+                    val selectedCollections = HashSet<HttpUrl>()
+                    collections.values
+                            .filter { it.selected }
+                            .forEach { (url, _) -> selectedCollections += url }
+
+                    // now refresh collections (taken from home sets)
+                    val itHomeSets = homeSets.iterator()
+                    while (itHomeSets.hasNext()) {
+                        val homeSetUrl = itHomeSets.next()
+                        Logger.log.fine("Listing home set $homeSetUrl")
+
+                        try {
+                            DavResource(httpClient, homeSetUrl).propfind(1, *CollectionInfo.DAV_PROPERTIES) { response, _ ->
+                                if (!response.isSuccess())
+                                    return@propfind
+
+                                val info = CollectionInfo(response)
+                                info.confirmed = true
+                                Logger.log.log(Level.FINE, "Found collection", info)
+
+                                if ((serviceType == Services.SERVICE_CARDDAV && info.type == CollectionInfo.Type.ADDRESS_BOOK) ||
+                                    (serviceType == Services.SERVICE_CALDAV && arrayOf(CollectionInfo.Type.CALENDAR, CollectionInfo.Type.WEBCAL).contains(info.type)))
+                                    collections[response.href] = info
+                            }
+                        } catch(e: HttpException) {
+                            if (e.code in arrayOf(403, 404, 410))
+                                // delete home set only if it was not accessible (40x)
+                                itHomeSets.remove()
                         }
+                    }
 
-                        // remember selected collections
-                        val selectedCollections = HashSet<HttpUrl>()
-                        collections.values
-                                .filter { it.selected }
-                                .forEach { (url, _) -> selectedCollections += url }
-
-                        // now refresh collections (taken from home sets)
-                        val itHomeSets = homeSets.iterator()
-                        while (itHomeSets.hasNext()) {
-                            val homeSetUrl = itHomeSets.next()
-                            Logger.log.fine("Listing home set $homeSetUrl")
-
+                    // check/refresh unconfirmed collections
+                    val itCollections = collections.entries.iterator()
+                    while (itCollections.hasNext()) {
+                        val (url, info) = itCollections.next()
+                        if (!info.confirmed)
                             try {
-                                DavResource(httpClient, homeSetUrl).propfind(1, *CollectionInfo.DAV_PROPERTIES) { response, _ ->
+                                DavResource(httpClient, url).propfind(0, *CollectionInfo.DAV_PROPERTIES) { response, _ ->
                                     if (!response.isSuccess())
                                         return@propfind
 
-                                    val info = CollectionInfo(response)
-                                    info.confirmed = true
-                                    Logger.log.log(Level.FINE, "Found collection", info)
+                                    val collectionInfo = CollectionInfo(response)
+                                    collectionInfo.confirmed = true
 
-                                    if ((serviceType == Services.SERVICE_CARDDAV && info.type == CollectionInfo.Type.ADDRESS_BOOK) ||
-                                        (serviceType == Services.SERVICE_CALDAV && arrayOf(CollectionInfo.Type.CALENDAR, CollectionInfo.Type.WEBCAL).contains(info.type)))
-                                        collections[response.href] = info
+                                    // remove unusable collections
+                                    if ((serviceType == Services.SERVICE_CARDDAV && collectionInfo.type != CollectionInfo.Type.ADDRESS_BOOK) ||
+                                        (serviceType == Services.SERVICE_CALDAV && !arrayOf(CollectionInfo.Type.CALENDAR, CollectionInfo.Type.WEBCAL).contains(collectionInfo.type)) ||
+                                        (collectionInfo.type == CollectionInfo.Type.WEBCAL && collectionInfo.source == null))
+                                        itCollections.remove()
                                 }
                             } catch(e: HttpException) {
                                 if (e.code in arrayOf(403, 404, 410))
-                                    // delete home set only if it was not accessible (40x)
-                                    itHomeSets.remove()
+                                // delete collection only if it was not accessible (40x)
+                                    itCollections.remove()
+                                else
+                                    throw e
                             }
-                        }
-
-                        // check/refresh unconfirmed collections
-                        val itCollections = collections.entries.iterator()
-                        while (itCollections.hasNext()) {
-                            val (url, info) = itCollections.next()
-                            if (!info.confirmed)
-                                try {
-                                    DavResource(httpClient, url).propfind(0, *CollectionInfo.DAV_PROPERTIES) { response, _ ->
-                                        if (!response.isSuccess())
-                                            return@propfind
-
-                                        val collectionInfo = CollectionInfo(response)
-                                        collectionInfo.confirmed = true
-
-                                        // remove unusable collections
-                                        if ((serviceType == Services.SERVICE_CARDDAV && collectionInfo.type != CollectionInfo.Type.ADDRESS_BOOK) ||
-                                            (serviceType == Services.SERVICE_CALDAV && !arrayOf(CollectionInfo.Type.CALENDAR, CollectionInfo.Type.WEBCAL).contains(collectionInfo.type)) ||
-                                            (collectionInfo.type == CollectionInfo.Type.WEBCAL && collectionInfo.source == null))
-                                            itCollections.remove()
-                                    }
-                                } catch(e: HttpException) {
-                                    if (e.code in arrayOf(403, 404, 410))
-                                    // delete collection only if it was not accessible (40x)
-                                        itCollections.remove()
-                                    else
-                                        throw e
-                                }
-                        }
-
-                        // restore selections
-                        for (url in selectedCollections)
-                            collections[url]?.let { it.selected = true }
                     }
 
+                    // restore selections
+                    for (url in selectedCollections)
+                        collections[url]?.let { it.selected = true }
                 }
 
                 db.beginTransactionNonExclusive()

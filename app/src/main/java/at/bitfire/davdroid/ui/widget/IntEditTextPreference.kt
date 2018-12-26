@@ -9,8 +9,8 @@
 package at.bitfire.davdroid.ui.widget
 
 import android.content.Context
-import androidx.preference.EditTextPreference
 import android.util.AttributeSet
+import androidx.preference.EditTextPreference
 
 class IntEditTextPreference(
         context: Context,

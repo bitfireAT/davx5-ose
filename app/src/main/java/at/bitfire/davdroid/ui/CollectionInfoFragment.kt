@@ -11,8 +11,8 @@ package at.bitfire.davdroid.ui
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.CollectionInfo
 import kotlinx.android.synthetic.main.collection_properties.view.*

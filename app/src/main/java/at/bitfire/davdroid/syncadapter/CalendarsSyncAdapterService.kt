@@ -12,13 +12,12 @@ import android.content.*
 import android.database.DatabaseUtils
 import android.os.Bundle
 import android.provider.CalendarContract
-import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.ServiceDB.Collections
 import at.bitfire.davdroid.resource.LocalCalendar
-import at.bitfire.davdroid.settings.ISettings
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.AndroidCalendar
 import okhttp3.HttpUrl
 import java.util.logging.Level
@@ -32,9 +31,9 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
             context: Context
     ): SyncAdapter(context) {
 
-        override fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+        override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
-                val accountSettings = AccountSettings(context, settings, account)
+                val accountSettings = AccountSettings(context, account)
 
                 /* don't run sync if
                    - sync conditions (e.g. "sync only in WiFi") are not met AND
@@ -52,7 +51,7 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
 
                 for (calendar in AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)) {
                     Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
-                    CalendarSyncManager(context, settings, account, accountSettings, extras, authority, syncResult, calendar).use {
+                    CalendarSyncManager(context, account, accountSettings, extras, authority, syncResult, calendar).use {
                         it.performSync()
                     }
                 }

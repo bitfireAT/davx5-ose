@@ -34,14 +34,13 @@ import androidx.loader.app.LoaderManager
 import androidx.loader.content.AsyncTaskLoader
 import androidx.loader.content.Loader
 import at.bitfire.dav4android.exception.HttpException
-import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.TaskProvider
 import kotlinx.android.synthetic.main.activity_debug_info.*
 import org.dmfs.tasks.contract.TaskContract
@@ -260,27 +259,24 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
                   .append("\n")
             // main accounts
             val accountManager = AccountManager.get(context)
-            Settings.getInstance(context)?.let { settings ->
-                for (acct in accountManager.getAccountsByType(context.getString(R.string.account_type))) {
-                    try {
-                        val accountSettings = AccountSettings(context, settings, acct)
-                        report.append("Account: ${acct.name}\n" +
-                                "  Address book sync. interval: ${syncStatus(accountSettings, context.getString(R.string.address_books_authority))}\n" +
-                                "  Calendar     sync. interval: ${syncStatus(accountSettings, CalendarContract.AUTHORITY)}\n" +
-                                "  OpenTasks    sync. interval: ${syncStatus(accountSettings, TaskProvider.ProviderName.OpenTasks.authority)}\n" +
-                                "  WiFi only: ").append(accountSettings.getSyncWifiOnly())
-                        accountSettings.getSyncWifiOnlySSIDs()?.let {
-                            report.append(", SSIDs: ${accountSettings.getSyncWifiOnlySSIDs()}")
-                        }
-                        report.append("\n  [CardDAV] Contact group method: ${accountSettings.getGroupMethod()}")
-                                .append("\n  [CalDAV] Time range (past days): ${accountSettings.getTimeRangePastDays()}")
-                                .append("\n           Manage calendar colors: ${accountSettings.getManageCalendarColors()}")
-                                .append("\n")
-                    } catch (e: InvalidAccountException) {
-                        report.append("$acct is invalid (unsupported settings version) or does not exist\n")
+            for (acct in accountManager.getAccountsByType(context.getString(R.string.account_type)))
+                try {
+                    val accountSettings = AccountSettings(context, acct)
+                    report.append("Account: ${acct.name}\n" +
+                            "  Address book sync. interval: ${syncStatus(accountSettings, context.getString(R.string.address_books_authority))}\n" +
+                            "  Calendar     sync. interval: ${syncStatus(accountSettings, CalendarContract.AUTHORITY)}\n" +
+                            "  OpenTasks    sync. interval: ${syncStatus(accountSettings, TaskProvider.ProviderName.OpenTasks.authority)}\n" +
+                            "  WiFi only: ").append(accountSettings.getSyncWifiOnly())
+                    accountSettings.getSyncWifiOnlySSIDs()?.let {
+                        report.append(", SSIDs: ${accountSettings.getSyncWifiOnlySSIDs()}")
                     }
+                    report.append("\n  [CardDAV] Contact group method: ${accountSettings.getGroupMethod()}")
+                            .append("\n  [CalDAV] Time range (past days): ${accountSettings.getTimeRangePastDays()}")
+                            .append("\n           Manage calendar colors: ${accountSettings.getManageCalendarColors()}")
+                            .append("\n")
+                } catch (e: InvalidAccountException) {
+                    report.append("$acct is invalid (unsupported settings version) or does not exist\n")
                 }
-            }
             // address book accounts
             for (acct in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)))
                 try {

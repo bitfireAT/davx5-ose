@@ -24,7 +24,6 @@ import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.log.StringHandler
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.Credentials
-import at.bitfire.davdroid.settings.Settings
 import okhttp3.HttpUrl
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder
 import org.xbill.DNS.Lookup
@@ -57,14 +56,12 @@ class DavResourceFinder(
         log.addHandler(logBuffer)
     }
 
-    private val settings = Settings.getInstance(context)
-    private val httpClient: HttpClient = HttpClient.Builder(context, settings, logger = log)
+    private val httpClient: HttpClient = HttpClient.Builder(context, logger = log)
             .addAuthentication(null, loginInfo.credentials)
             .setForeground(true)
             .build()
 
     override fun close() {
-        settings?.close()
         httpClient.close()
     }
 

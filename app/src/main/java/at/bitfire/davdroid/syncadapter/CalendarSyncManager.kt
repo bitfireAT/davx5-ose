@@ -18,14 +18,13 @@ import at.bitfire.dav4android.DavResponseCallback
 import at.bitfire.dav4android.Response
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.property.*
-import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.SyncState
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
-import at.bitfire.davdroid.settings.ISettings
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
 import okhttp3.HttpUrl
@@ -41,14 +40,13 @@ import java.util.logging.Level
  */
 class CalendarSyncManager(
         context: Context,
-        settings: ISettings,
         account: Account,
         accountSettings: AccountSettings,
         extras: Bundle,
         authority: String,
         syncResult: SyncResult,
         localCalendar: LocalCalendar
-): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(context, settings, account, accountSettings, extras, authority, syncResult, localCalendar) {
+): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(context, account, accountSettings, extras, authority, syncResult, localCalendar) {
 
     override fun prepare(): Boolean {
         collectionURL = HttpUrl.parse(localCollection.name ?: return false) ?: return false

@@ -14,8 +14,8 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.preference.PreferenceManager
-import at.bitfire.davdroid.App
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.ui.StartupDialogFragment
 import java.util.logging.Level
 
@@ -156,10 +156,10 @@ class ServiceDB {
                 db.query("settings", arrayOf("setting", "value"), null, null, null, null, null).use { cursor ->
                     while (cursor.moveToNext()) {
                         when (cursor.getString(0)) {
-                            "distrustSystemCerts" -> edit.putBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, cursor.getInt(1) != 0)
-                            "overrideProxy" -> edit.putBoolean(App.OVERRIDE_PROXY, cursor.getInt(1) != 0)
-                            "overrideProxyHost" -> edit.putString(App.OVERRIDE_PROXY_HOST, cursor.getString(1))
-                            "overrideProxyPort" -> edit.putInt(App.OVERRIDE_PROXY_PORT, cursor.getInt(1))
+                            "distrustSystemCerts" -> edit.putBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES, cursor.getInt(1) != 0)
+                            "overrideProxy" -> edit.putBoolean(Settings.OVERRIDE_PROXY, cursor.getInt(1) != 0)
+                            "overrideProxyHost" -> edit.putString(Settings.OVERRIDE_PROXY_HOST, cursor.getString(1))
+                            "overrideProxyPort" -> edit.putInt(Settings.OVERRIDE_PROXY_PORT, cursor.getInt(1))
 
                             StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED ->
                                 edit.putBoolean(StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, cursor.getInt(1) != 0)

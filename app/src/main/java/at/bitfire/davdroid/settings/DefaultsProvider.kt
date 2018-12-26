@@ -8,32 +8,31 @@
 
 package at.bitfire.davdroid.settings
 
-import at.bitfire.davdroid.App
+import android.content.Context
 
 open class DefaultsProvider(
         private val allowOverride: Boolean = true
-): Provider {
+): SettingsProvider {
 
     open val booleanDefaults = mapOf(
-            Pair(App.DISTRUST_SYSTEM_CERTIFICATES, false),
-            Pair(App.OVERRIDE_PROXY, false)
+            Pair(Settings.DISTRUST_SYSTEM_CERTIFICATES, Settings.DISTRUST_SYSTEM_CERTIFICATES_DEFAULT),
+            Pair(Settings.OVERRIDE_PROXY, Settings.OVERRIDE_PROXY_DEFAULT)
     )
 
     open val intDefaults = mapOf(
-            Pair(App.OVERRIDE_PROXY_PORT, App.OVERRIDE_PROXY_PORT_DEFAULT)
+            Pair(Settings.OVERRIDE_PROXY_PORT, Settings.OVERRIDE_PROXY_PORT_DEFAULT)
     )
 
     open val longDefaults = mapOf<String, Long>()
 
     open val stringDefaults = mapOf(
-            Pair(App.OVERRIDE_PROXY_HOST, App.OVERRIDE_PROXY_HOST_DEFAULT)
+            Pair(Settings.OVERRIDE_PROXY_HOST, Settings.OVERRIDE_PROXY_HOST_DEFAULT)
     )
 
-
-    override fun close() {
+    override fun forceReload() {
     }
 
-    override fun forceReload() {
+    override fun close() {
     }
 
 
@@ -70,5 +69,10 @@ open class DefaultsProvider(
     override fun putString(key: String, value: String?) = false
 
     override fun remove(key: String) = false
+
+
+    class Factory : ISettingsProviderFactory {
+        override fun getProviders(context: Context) = listOf(DefaultsProvider())
+    }
 
 }

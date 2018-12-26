@@ -16,8 +16,8 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.ServiceDB
 
 class SharedPreferencesProvider(
-        context: Context
-): Provider {
+        val context: Context
+): SettingsProvider, SharedPreferences.OnSharedPreferenceChangeListener {
 
     companion object {
         private const val META_VERSION = "version"
@@ -34,12 +34,19 @@ class SharedPreferencesProvider(
             firstCall(context)
             meta.edit().putInt(META_VERSION, CURRENT_VERSION).apply()
         }
-    }
 
-    override fun close() {
+        preferences.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun forceReload() {
+    }
+
+    override fun close() {
+        preferences.unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+        Settings.getInstance(context).onSettingsChanged()
     }
 
 
@@ -115,6 +122,11 @@ class SharedPreferencesProvider(
 
         // open ServiceDB to upgrade it and possibly migrate settings
         ServiceDB.OpenHelper(context).use { it.readableDatabase }
+    }
+
+
+    class Factory : ISettingsProviderFactory {
+        override fun getProviders(context: Context) = listOf(SharedPreferencesProvider(context))
     }
 
 }

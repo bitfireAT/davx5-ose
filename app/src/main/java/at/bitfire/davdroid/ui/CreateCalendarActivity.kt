@@ -13,11 +13,11 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import androidx.core.app.NavUtils
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NavUtils
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.AsyncTaskLoader
 import androidx.loader.content.Loader
@@ -29,8 +29,8 @@ import kotlinx.android.synthetic.main.activity_create_calendar.*
 import net.fortuna.ical4j.model.Calendar
 import okhttp3.HttpUrl
 import org.apache.commons.lang3.StringUtils
-import yuku.ambilwarna.AmbilWarnaDialog
 import java.util.*
+import yuku.ambilwarna.AmbilWarnaDialog
 
 class CreateCalendarActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<CreateCalendarActivity.AccountInfo> {
 

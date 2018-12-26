@@ -20,14 +20,13 @@ import at.bitfire.dav4android.DavResponseCallback
 import at.bitfire.dav4android.Response
 import at.bitfire.dav4android.exception.DavException
 import at.bitfire.dav4android.property.*
-import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.SyncState
 import at.bitfire.davdroid.resource.*
-import at.bitfire.davdroid.settings.ISettings
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.Contact
@@ -76,7 +75,6 @@ import java.util.logging.Level
  */
 class ContactsSyncManager(
         context: Context,
-        settings: ISettings,
         account: Account,
         accountSettings: AccountSettings,
         extras: Bundle,
@@ -84,7 +82,7 @@ class ContactsSyncManager(
         syncResult: SyncResult,
         val provider: ContentProviderClient,
         localAddressBook: LocalAddressBook
-): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(context, settings, account, accountSettings, extras, authority, syncResult, localAddressBook) {
+): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(context, account, accountSettings, extras, authority, syncResult, localAddressBook) {
 
     companion object {
         infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)

@@ -8,26 +8,16 @@
 
 package at.bitfire.davdroid.ui
 
-import android.app.ActivityManager
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
-import android.os.Process
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import at.bitfire.cert4android.CustomCertManager
-import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.settings.ISettings
-import at.bitfire.davdroid.settings.ISettingsObserver
 import at.bitfire.davdroid.settings.Settings
 import com.google.android.material.snackbar.Snackbar
 import java.net.URI
@@ -52,43 +42,11 @@ class AppSettingsActivity: AppCompatActivity() {
     }
 
 
-    class SettingsFragment: PreferenceFragmentCompat() {
-
-        val observer = object: ISettingsObserver.Stub() {
-            override fun onSettingsChanged() {
-                loadSettings()
-            }
-        }
-
-        var settings: ISettings? = null
-        var settingsSvc: ServiceConnection? = null
-
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-
-            val serviceConn = object: ServiceConnection {
-                override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-                    settings = ISettings.Stub.asInterface(binder)
-                    settings?.registerObserver(observer)
-                    loadSettings()
-                }
-
-                override fun onServiceDisconnected(name: ComponentName) {
-                    settings?.unregisterObserver(observer)
-                    settings = null
-                }
-            }
-            if (activity!!.bindService(Intent(activity, Settings::class.java), serviceConn, Context.BIND_AUTO_CREATE))
-                settingsSvc = serviceConn
-        }
-
-        override fun onDestroy() {
-            super.onDestroy()
-            settingsSvc?.let { activity!!.unbindService(it) }
-        }
+    class SettingsFragment: PreferenceFragmentCompat(), Settings.OnChangeListener {
 
         override fun onCreatePreferences(bundle: Bundle?, s: String?) {
             addPreferencesFromResource(R.xml.settings_app)
+            loadSettings()
 
             // UI settings
             val prefResetHints = findPreference("reset_hints")
@@ -98,7 +56,7 @@ class AppSettingsActivity: AppCompatActivity() {
             }
 
             // security settings
-            val prefDistrustSystemCerts = findPreference(App.DISTRUST_SYSTEM_CERTIFICATES)
+            val prefDistrustSystemCerts = findPreference(Settings.DISTRUST_SYSTEM_CERTIFICATES)
             prefDistrustSystemCerts.isVisible = BuildConfig.customCerts
             prefDistrustSystemCerts.isEnabled = true
 
@@ -114,23 +72,23 @@ class AppSettingsActivity: AppCompatActivity() {
         }
 
         private fun loadSettings() {
-            val settings = requireNotNull(settings)
-
+            val settings = Settings.getInstance(requireActivity())
+            
             // connection settings
-            val prefOverrideProxy = findPreference(App.OVERRIDE_PROXY) as SwitchPreferenceCompat
-            prefOverrideProxy.isChecked = settings.getBoolean(App.OVERRIDE_PROXY, false)
-            prefOverrideProxy.isEnabled = settings.isWritable(App.OVERRIDE_PROXY)
+            val prefOverrideProxy = findPreference(Settings.OVERRIDE_PROXY) as SwitchPreferenceCompat
+            prefOverrideProxy.isChecked = settings.getBoolean(Settings.OVERRIDE_PROXY) ?: Settings.OVERRIDE_PROXY_DEFAULT
+            prefOverrideProxy.isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY)
 
-            val prefProxyHost = findPreference(App.OVERRIDE_PROXY_HOST) as EditTextPreference
-            prefProxyHost.isEnabled = settings.isWritable(App.OVERRIDE_PROXY_HOST)
-            val proxyHost = settings.getString(App.OVERRIDE_PROXY_HOST, App.OVERRIDE_PROXY_HOST_DEFAULT)
+            val prefProxyHost = findPreference(Settings.OVERRIDE_PROXY_HOST) as EditTextPreference
+            prefProxyHost.isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY_HOST)
+            val proxyHost = settings.getString(Settings.OVERRIDE_PROXY_HOST) ?: Settings.OVERRIDE_PROXY_HOST_DEFAULT
             prefProxyHost.text = proxyHost
             prefProxyHost.summary = proxyHost
             prefProxyHost.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                 val host = newValue as String
                 try {
                     URI(null, host, null, null)
-                    settings.putString(App.OVERRIDE_PROXY_HOST, host)
+                    settings.putString(Settings.OVERRIDE_PROXY_HOST, host)
                     prefProxyHost.summary = host
                     true
                 } catch(e: URISyntaxException) {
@@ -139,16 +97,16 @@ class AppSettingsActivity: AppCompatActivity() {
                 }
             }
 
-            val prefProxyPort = findPreference(App.OVERRIDE_PROXY_PORT) as EditTextPreference
-            prefProxyHost.isEnabled = settings.isWritable(App.OVERRIDE_PROXY_PORT)
-            val proxyPort = settings.getInt(App.OVERRIDE_PROXY_PORT, App.OVERRIDE_PROXY_PORT_DEFAULT)
+            val prefProxyPort = findPreference(Settings.OVERRIDE_PROXY_PORT) as EditTextPreference
+            prefProxyHost.isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY_PORT)
+            val proxyPort = settings.getInt(Settings.OVERRIDE_PROXY_PORT) ?: Settings.OVERRIDE_PROXY_PORT_DEFAULT
             prefProxyPort.text = proxyPort.toString()
             prefProxyPort.summary = proxyPort.toString()
             prefProxyPort.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                 try {
                     val port = Integer.parseInt(newValue as String)
                     if (port in 1..65535) {
-                        settings.putInt(App.OVERRIDE_PROXY_PORT, port)
+                        settings.putInt(Settings.OVERRIDE_PROXY_PORT, port)
                         prefProxyPort.text = port.toString()
                         prefProxyPort.summary = port.toString()
                         true
@@ -160,32 +118,27 @@ class AppSettingsActivity: AppCompatActivity() {
             }
 
             // security settings
-            val prefDistrustSystemCerts = findPreference(App.DISTRUST_SYSTEM_CERTIFICATES) as SwitchPreferenceCompat
-            prefDistrustSystemCerts.isChecked = settings.getBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, false)
+            val prefDistrustSystemCerts = findPreference(Settings.DISTRUST_SYSTEM_CERTIFICATES) as SwitchPreferenceCompat
+            prefDistrustSystemCerts.isChecked = settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES) ?: Settings.DISTRUST_SYSTEM_CERTIFICATES_DEFAULT
 
             // debugging settings
             val prefLogToExternalStorage = findPreference(Logger.LOG_TO_EXTERNAL_STORAGE) as SwitchPreferenceCompat
             prefLogToExternalStorage.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                val context = activity!!
-                Logger.initialize(context)
-
-                // kill a potential :sync process, so that the new logger settings will be used
-                val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-                am.runningAppProcesses.forEach {
-                    if (it.pid != Process.myPid()) {
-                        Logger.log.info("Killing ${it.processName} process, pid = ${it.pid}")
-                        Process.killProcess(it.pid)
-                    }
-                }
                 true
             }
         }
 
+        override fun onSettingsChanged() {
+            loadSettings()
+        }
+
+
         private fun resetHints() {
-            settings?.remove(StartupDialogFragment.HINT_AUTOSTART_PERMISSIONS)
-            settings?.remove(StartupDialogFragment.HINT_BATTERY_OPTIMIZATIONS)
-            settings?.remove(StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED)
-            settings?.remove(StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED)
+            val settings = Settings.getInstance(requireActivity())
+            settings.remove(StartupDialogFragment.HINT_AUTOSTART_PERMISSIONS)
+            settings.remove(StartupDialogFragment.HINT_BATTERY_OPTIMIZATIONS)
+            settings.remove(StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED)
+            settings.remove(StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED)
             Snackbar.make(view!!, R.string.app_settings_reset_hints_success, Snackbar.LENGTH_LONG).show()
         }
 

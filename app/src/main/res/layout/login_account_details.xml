@@ -85,7 +85,6 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:text="@string/login_create_account"
-            android:enabled="false"
             style="@style/stepper_nav_button"/>
 
         <ProgressBar

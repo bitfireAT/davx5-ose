@@ -6,17 +6,12 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid.ui
+package at.bitfire.davdroid.settings
 
-import android.app.Activity
 import android.content.Context
-import android.view.Menu
-import android.view.MenuItem
 
-interface IAccountsDrawerHandler {
+interface ISettingsProviderFactory {
 
-    fun initMenu(context: Context, menu: Menu)
-
-    fun onNavigationItemSelected(activity: Activity, item: MenuItem): Boolean
+    fun getProviders(context: Context): List<SettingsProvider>
 
 }

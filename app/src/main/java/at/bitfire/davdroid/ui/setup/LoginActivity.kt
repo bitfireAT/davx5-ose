@@ -9,9 +9,9 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.UiUtils

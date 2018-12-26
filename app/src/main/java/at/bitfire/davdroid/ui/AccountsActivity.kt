@@ -10,7 +10,6 @@ package at.bitfire.davdroid.ui
 
 import android.accounts.AccountManager
 import android.content.ContentResolver
-import android.content.Context
 import android.content.Intent
 import android.content.SyncStatusObserver
 import android.os.Bundle
@@ -18,24 +17,24 @@ import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
-import androidx.loader.app.LoaderManager
-import androidx.loader.content.Loader
-import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.settings.ISettings
+import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.accounts_content.*
 import kotlinx.android.synthetic.main.activity_accounts.*
+import kotlinx.android.synthetic.main.activity_accounts.view.*
 
-class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<AccountsActivity.Settings>, SyncStatusObserver {
+class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, SyncStatusObserver {
 
     companion object {
         val accountsDrawerHandler = DefaultAccountsDrawerHandler()
 
-        private const val fragTagStartup = "startup"
+        const val fragTagStartup = "startup"
     }
+
+    private lateinit var settings: Settings
 
     private var syncStatusSnackbar: Snackbar? = null
     private var syncStatusObserver: Any? = null
@@ -43,14 +42,23 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_accounts)
+        settings = Settings.getInstance(this)
 
+        setContentView(R.layout.activity_accounts)
         setSupportActionBar(toolbar)
+
+        if (supportFragmentManager.findFragmentByTag(fragTagStartup) == null) {
+            val ft = supportFragmentManager.beginTransaction()
+            StartupDialogFragment.getStartupDialogs(this).forEach { ft.add(it, fragTagStartup) }
+            ft.commit()
+        }
 
         fab.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
         }
+        fab.show()
 
+        accountsDrawerHandler.initMenu(this, drawer_layout.nav_view.menu)
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
@@ -58,38 +66,6 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
         nav_view.setNavigationItemSelectedListener(this)
         nav_view.itemIconTintList = null
-
-        /* When the DAVdroid main activity is started, start a Settings service that stays in memory
-        for better performance. The service stops itself when memory is trimmed. */
-        val settingsIntent = Intent(this, Settings::class.java)
-        startService(settingsIntent)
-
-        val args = Bundle(1)
-        LoaderManager.getInstance(this).initLoader(0, args, this)
-    }
-
-    override fun onCreateLoader(code: Int, args: Bundle?) =
-            SettingsLoader(this)
-
-    override fun onLoadFinished(loader: Loader<Settings>, result: Settings?) {
-        if (result == null)
-            return
-
-        if (supportFragmentManager.findFragmentByTag(fragTagStartup) == null) {
-            val ft = supportFragmentManager.beginTransaction()
-            StartupDialogFragment.getStartupDialogs(this, result.settings).forEach { ft.add(it, fragTagStartup) }
-            ft.commit()
-        }
-
-        nav_view?.menu?.let {
-            accountsDrawerHandler.onSettingsChanged(result.settings, it)
-        }
-    }
-
-    override fun onLoaderReset(loader: Loader<Settings>) {
-        nav_view?.menu?.let {
-            accountsDrawerHandler.onSettingsChanged(null, it)
-        }
     }
 
     override fun onResume() {
@@ -137,29 +113,6 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         val processed = accountsDrawerHandler.onNavigationItemSelected(this, item)
         drawer_layout.closeDrawer(GravityCompat.START)
         return processed
-    }
-
-
-    class Settings(
-            val settings: ISettings
-    )
-
-    class SettingsLoader(
-            context: Context
-    ): at.bitfire.davdroid.ui.SettingsLoader<Settings>(context) {
-
-        override fun loadInBackground(): Settings? {
-            settings?.let {
-                val accountManager = AccountManager.get(context)
-                val accounts = accountManager.getAccountsByType(context.getString(R.string.account_type))
-
-                return Settings(
-                        it
-                )
-            }
-            return null
-        }
-
     }
 
 }

@@ -17,7 +17,6 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
@@ -25,7 +24,7 @@ import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.ServiceDB.Collections
 import at.bitfire.davdroid.model.ServiceDB.Services
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.settings.ISettings
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.TaskProvider
@@ -45,10 +44,10 @@ class TasksSyncAdapterService: SyncAdapterService() {
             context: Context
     ): SyncAdapter(context) {
 
-        override fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+        override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
                 val taskProvider = TaskProvider.fromProviderClient(context, provider)
-                val accountSettings = AccountSettings(context, settings, account)
+                val accountSettings = AccountSettings(context, account)
                 /* don't run sync if
                    - sync conditions (e.g. "sync only in WiFi") are not met AND
                    - this is is an automatic sync (i.e. manual syncs are run regardless of sync conditions)
@@ -60,7 +59,7 @@ class TasksSyncAdapterService: SyncAdapterService() {
 
                 for (taskList in AndroidTaskList.find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)) {
                     Logger.log.info("Synchronizing task list #${taskList.id} [${taskList.syncId}]")
-                    TasksSyncManager(context, settings, account, accountSettings, extras, authority, syncResult, taskList).use {
+                    TasksSyncManager(context, account, accountSettings, extras, authority, syncResult, taskList).use {
                         it.performSync()
                     }
                 }

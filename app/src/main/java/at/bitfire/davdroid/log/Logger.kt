@@ -14,9 +14,9 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Process
 import android.preference.PreferenceManager
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import android.util.Log
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppSettingsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -35,14 +35,14 @@ object Logger {
 
     private lateinit var preferences: SharedPreferences
 
-    fun initialize(context: Context) {
-        preferences = PreferenceManager.getDefaultSharedPreferences(context)
+    fun initialize(appContext: Context) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(appContext)
         preferences.registerOnSharedPreferenceChangeListener { _, s ->
             if (s == LOG_TO_EXTERNAL_STORAGE)
-                reinitialize(context.applicationContext)
+                reinitialize(appContext.applicationContext)
         }
 
-        reinitialize(context.applicationContext)
+        reinitialize(appContext)
     }
 
     private fun reinitialize(context: Context) {

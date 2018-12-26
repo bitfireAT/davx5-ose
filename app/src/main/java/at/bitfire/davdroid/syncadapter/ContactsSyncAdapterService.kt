@@ -15,10 +15,9 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import android.provider.ContactsContract
-import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.settings.ISettings
+import at.bitfire.davdroid.settings.AccountSettings
 import java.util.logging.Level
 
 class ContactsSyncAdapterService: SyncAdapterService() {
@@ -34,10 +33,10 @@ class ContactsSyncAdapterService: SyncAdapterService() {
             context: Context
     ): SyncAdapter(context) {
 
-        override fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+        override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
                 val addressBook = LocalAddressBook(context, account, provider)
-                val accountSettings = AccountSettings(context, settings, addressBook.mainAccount)
+                val accountSettings = AccountSettings(context, addressBook.mainAccount)
 
                 // handle group method change
                 val groupMethod = accountSettings.getGroupMethod().name
@@ -61,7 +60,7 @@ class ContactsSyncAdapterService: SyncAdapterService() {
                 Logger.log.info("Synchronizing address book: ${addressBook.url}")
                 Logger.log.info("Taking settings from: ${addressBook.mainAccount}")
 
-                ContactsSyncManager(context, settings, account, accountSettings, extras, authority, syncResult, provider, addressBook).use {
+                ContactsSyncManager(context, account, accountSettings, extras, authority, syncResult, provider, addressBook).use {
                     it.performSync()
                 }
             } catch(e: Exception) {

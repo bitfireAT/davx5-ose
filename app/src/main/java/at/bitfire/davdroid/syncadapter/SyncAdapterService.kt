@@ -21,11 +21,9 @@ import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import at.bitfire.davdroid.AccountSettings
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.settings.ISettings
-import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.AccountActivity
 import at.bitfire.davdroid.ui.AccountSettingsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -52,7 +50,7 @@ abstract class SyncAdapterService: Service() {
             context: Context
     ): AbstractThreadedSyncAdapter(context, false) {
 
-        abstract fun sync(settings: ISettings, account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult)
+        abstract fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult)
 
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             Logger.log.log(Level.INFO, "$authority sync of $account has been initiated", extras.keySet().joinToString(", "))
@@ -71,19 +69,8 @@ abstract class SyncAdapterService: Service() {
                 // required for dav4android (ServiceLoader)
                 Thread.currentThread().contextClassLoader = context.classLoader
 
-                // load app settings
-                Settings.getInstance(context).use { settings ->
-                    if (settings == null) {
-                        syncResult.databaseError = true
-                        Logger.log.severe("Couldn't connect to Settings service, aborting sync")
-                        return
-                    }
-
-                    //if (runSync) {
-                        SyncManager.cancelNotifications(NotificationManagerCompat.from(context), authority, account)
-                        sync(settings, account, extras, authority, provider, syncResult)
-                    //}
-                }
+                SyncManager.cancelNotifications(NotificationManagerCompat.from(context), authority, account)
+                sync(account, extras, authority, provider, syncResult)
             } finally {
                 synchronized(runningSyncs) {
                     runningSyncs.removeAll { it.get() == null || it.get() == currentSync }
