@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright © Ricki Hirner (bitfire web engineering).
-  ~ All rights reserved. This program and the accompanying materials
-  ~ are made available under the terms of the GNU Public License v3.0
-  ~ which accompanies this distribution, and is available at
-  ~ http://www.gnu.org/licenses/gpl.html
-  -->
-
 <resources>
 
-    <string name="define_ambilwarna" translatable="false" />
-    <string name="library_ambilwarna_author" translatable="false">Randy Sugianto</string>
-    <string name="library_ambilwarna_authorWebsite">https://github.com/yukuku</string>
-    <string name="library_ambilwarna_libraryName" translatable="false">AmbilWarna</string>
-    <string name="library_ambilwarna_libraryDescription">This is a small library for your application to enable the users to select an arbitrary color.</string>
-    <string name="library_ambilwarna_libraryWebsite" translatable="false">https://github.com/yukuku/ambilwarna</string>
-    <string name="library_ambilwarna_isOpenSource" translatable="false">true</string>
-    <string name="library_ambilwarna_licenseId">apache_2_0</string>
+    <string name="define_colorpicker" translatable="false" />
+    <string name="library_colorpicker_author" translatable="false">Jared Rummler, Daniel Nilsson</string>
+    <string name="library_colorpicker_authorWebsite">https://github.com/jaredrummler/</string>
+    <string name="library_colorpicker_libraryName" translatable="false">Color Picker</string>
+    <string name="library_colorpicker_libraryDescription">Yet another open source color picker for Android.</string>
+    <string name="library_colorpicker_libraryWebsite" translatable="false">https://github.com/jaredrummler/ColorPicker</string>
+    <string name="library_colorpicker_isOpenSource" translatable="false">true</string>
+    <string name="library_colorpicker_licenseId">apache_2_0</string>
 
     <string name="define_commons" translatable="false" />
     <string name="library_commons_author" translatable="false">Apache Software Foundation</string>

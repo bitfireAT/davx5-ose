@@ -25,14 +25,15 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.ical4android.DateUtils
+import com.jaredrummler.android.colorpicker.ColorPickerDialog
+import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
 import kotlinx.android.synthetic.main.activity_create_calendar.*
 import net.fortuna.ical4j.model.Calendar
 import okhttp3.HttpUrl
 import org.apache.commons.lang3.StringUtils
 import java.util.*
-import yuku.ambilwarna.AmbilWarnaDialog
 
-class CreateCalendarActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<CreateCalendarActivity.AccountInfo> {
+class CreateCalendarActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<CreateCalendarActivity.AccountInfo>, ColorPickerDialogListener {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
@@ -49,14 +50,21 @@ class CreateCalendarActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks
 
         setContentView(R.layout.activity_create_calendar)
         color.setOnClickListener { _ ->
-            AmbilWarnaDialog(this, (color.background as ColorDrawable).color, true, object: AmbilWarnaDialog.OnAmbilWarnaListener {
-                override fun onCancel(dialog: AmbilWarnaDialog) {}
-                override fun onOk(dialog: AmbilWarnaDialog, rgb: Int) =
-                        color.setBackgroundColor(rgb)
-            }).show()
+            ColorPickerDialog.newBuilder()
+                    .setShowAlphaSlider(false)
+                    .setColor((color.background as ColorDrawable).color)
+                    .show(this)
         }
 
         LoaderManager.getInstance(this).initLoader(0, null, this)
+    }
+
+    override fun onColorSelected(dialogId: Int, rgb: Int) {
+        color.setBackgroundColor(rgb)
+    }
+
+    override fun onDialogDismissed(dialogId: Int) {
+        // color selection dismissed
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
