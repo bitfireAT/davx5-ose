@@ -34,9 +34,8 @@ USED THIRD-PARTY LIBRARIES
 
 Those libraries are used by DAVx⁵ (alphabetically):
 
-* [Ambilwarna](https://github.com/yukuku/ambilwarna) – [Apache License, Version 2.0](https://github.com/yukuku/ambilwarna/blob/master/LICENSE)
+* [Color Picker](https://github.com/jaredrummler/ColorPicker) – [Apache License, Version 2.0](https://github.com/jaredrummler/ColorPicker/LICENSE)
 * [dnsjava](http://www.xbill.org/dnsjava/) – [BSD License](http://www.xbill.org/dnsjava/dnsjava-current/LICENSE)
 * [ez-vcard](https://github.com/mangstadt/ez-vcard) – [New BSD License](http://opensource.org/licenses/BSD-3-Clause)
 * [iCal4j](https://github.com/ical4j/ical4j) – [New BSD License](http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE)
 * [okhttp](https://square.github.io/okhttp) – [Apache License, Version 2.0](https://square.github.io/okhttp/#license)
-* [Project Lombok](http://projectlombok.org/) – [MIT License](http://opensource.org/licenses/mit-license.php)
