@@ -41,8 +41,6 @@
     <string name="startup_donate_message">We\'re happy that you use DAVx⁵, which is open-source software (GPLv3). Because developing DAVx⁵ is hard work and took us thousands of working hours, please consider a donation.</string>
     <string name="startup_donate_now">Show donation page</string>
     <string name="startup_donate_later">Maybe later</string>
-    <string name="startup_google_play_accounts_removed">Play Store DRM bug information</string>
-    <string name="startup_google_play_accounts_removed_message">Under certain conditions, Play Store DRM may cause all DAVx⁵ accounts to be gone after a reboot or after upgrading DAVx⁵. If you\'re affected by this problem (and only then), please install \"DAVx⁵ JB Workaround\" from Play Store.</string>
     <string name="startup_more_info">More information</string>
     <string name="startup_opentasks_not_installed">OpenTasks not installed</string>
     <string name="startup_opentasks_not_installed_message">To synchronize tasks, the free app OpenTasks is required. (Not required for contacts/events.)</string>
@@ -54,7 +52,7 @@
     <string name="about_version">Version %1s (%2d)</string>
     <string name="about_build_date">Compiled on %s</string>
     <string name="about_copyright" translatable="false">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering)</string>
-    <string name="about_flavor_info">This version is only eligible for distribution over Google Play.</string>
+    <string name="about_flavor_info">This version is only eligible for distribution over Google Play™.</string>
     <string name="about_license_info_no_warranty">This program comes with ABSOLUTELY NO WARRANTY. It is free software, and you are welcome to redistribute it under certain conditions.</string>
 
     <!-- global settings -->
