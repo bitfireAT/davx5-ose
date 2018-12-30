@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVdroid</string>
-  <string name="account_title_address_book">DAVdroid アドレス帳</string>
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">DAVx⁵ アドレス帳</string>
   <string name="address_books_authority_title">アドレス帳</string>
   <string name="help">ヘルプ</string>
   <string name="manage_accounts">アカウントの管理</string>
@@ -18,20 +18,20 @@
   <string name="startup_autostart_permission">自動同期</string>
   <string name="startup_autostart_permission_message">%s ファームウェアは自動同期をブロックすることがよくあります。 この場合、Android の設定で自動同期を許可してください。</string>
   <string name="startup_battery_optimization">スケジュール同期</string>
-  <string name="startup_battery_optimization_message">お使いのデバイスは DAVdroid の同期を制限します。 通常の DAVdroid 同期間隔を適用するには、「バッテリ最適化」をオフにしてください。</string>
-  <string name="startup_battery_optimization_disable">DAVdroid 用にオフにする</string>
+  <string name="startup_battery_optimization_message">お使いのデバイスは DAVx⁵ の同期を制限します。 通常の DAVx⁵ 同期間隔を適用するには、「バッテリ最適化」をオフにしてください。</string>
+  <string name="startup_battery_optimization_disable">DAVx⁵ 用にオフにする</string>
   <string name="startup_dont_show_again">次回から表示しない</string>
   <string name="startup_not_now">後で</string>
   <string name="startup_donate">オープンソース情報</string>
-  <string name="startup_donate_message">あなたがオープンソース ソフトウェア (GPLv3) の DAVdroid を使用していただくことに、私たちは満足しています。 DAVdroid の開発はハードワークで、何千もの作業時間がかかりました。寄付をご検討ください。</string>
+  <string name="startup_donate_message">あなたがオープンソース ソフトウェア (GPLv3) の DAVx⁵ を使用していただくことに、私たちは満足しています。 DAVx⁵ の開発はハードワークで、何千もの作業時間がかかりました。寄付をご検討ください。</string>
   <string name="startup_donate_now">寄付ページを表示</string>
   <string name="startup_donate_later">たぶん後で</string>
   <string name="startup_google_play_accounts_removed">Play ストア DRM バグ情報</string>
-  <string name="startup_google_play_accounts_removed_message">特定の条件下で、DAVdroid を再起動後またはアップグレードした後、Play ストア DRM によりすべての DAVdroid アカウントがなくなる可能性があります。この問題の影響を受けている場合 (のみ)、Play ストアから「DAVdroid JB 回避策」をインストールしてください。</string>
+  <string name="startup_google_play_accounts_removed_message">特定の条件下で、DAVx⁵ を再起動後またはアップグレードした後、Play ストア DRM によりすべての DAVx⁵ アカウントがなくなる可能性があります。この問題の影響を受けている場合 (のみ)、Play ストアから「DAVx⁵ JB 回避策」をインストールしてください。</string>
   <string name="startup_more_info">追加情報</string>
   <string name="startup_opentasks_not_installed">OpenTasks がインストールされていません</string>
   <string name="startup_opentasks_not_installed_message">タスクを同期するために、無料アプリのOpenTasksが必要です。 (連絡先/イベントには必要ありません)</string>
-  <string name="startup_opentasks_reinstall_davdroid">OpenTasks をインストールした後で、DAVdroidを再インストールして、再度アカウントを追加してください (Android のバグ)。</string>
+  <string name="startup_opentasks_reinstall_davx5">OpenTasks をインストールした後で、DAVx⁵を再インストールして、再度アカウントを追加してください (Android のバグ)。</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks をインストール</string>
   <!--AboutActivity-->
   <string name="about_libraries">ライブラリー</string>
@@ -40,7 +40,7 @@
   <string name="about_flavor_info">このバージョンは Google Play での配信にのみ対応です。</string>
   <string name="about_license_info_no_warranty">このプログラムは完全に無保証で提供されます。これはフリーソフトウェアで、特定の条件下での再頒布を歓迎します。</string>
   <!--global settings-->
-  <string name="logging_davdroid_file_logging">DAVdroid ファイルログ</string>
+  <string name="logging_davx5_file_logging">DAVx⁵ ファイルログ</string>
   <string name="logging_to_external_storage">外部ストレージにログ: %s</string>
   <string name="logging_couldnt_create_file">外部ログファイルを作成できませんでした: %s</string>
   <string name="logging_no_external_storage">外部ストレージが見つかりません</string>
@@ -58,7 +58,7 @@
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_forums">ヘルプ / フォーラム</string>
   <string name="navigation_drawer_donate">寄付</string>
-  <string name="account_list_empty">DAVdroid にようこそ!\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>
+  <string name="account_list_empty">DAVx⁵ にようこそ!\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>
   <string name="accounts_global_sync_disabled">システム全体の自動同期が無効です</string>
   <string name="accounts_global_sync_enable">有効</string>
   <!--DavService-->
@@ -192,8 +192,8 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">この日数より過去のイベントは無視されます (0 も可)。すべてのイベントを同期させるには、空白のままにしてください。</string>
   <string name="settings_manage_calendar_colors">カレンダーの色を管理</string>
-  <string name="settings_manage_calendar_colors_on">カレンダーの色は DAVdroid が管理します</string>
-  <string name="settings_manage_calendar_colors_off">カレンダーの色を DAVdroid が設定しません</string>
+  <string name="settings_manage_calendar_colors_on">カレンダーの色は DAVx⁵ が管理します</string>
+  <string name="settings_manage_calendar_colors_off">カレンダーの色を DAVx⁵ が設定しません</string>
   <string name="settings_event_colors">イベントカラーサポート</string>
   <string name="settings_event_colors_on">イベントカラーを同期</string>
   <string name="settings_event_colors_off">イベントカラーを同期しない</string>
@@ -234,7 +234,7 @@
   <plurals name="sync_contacts_local_contact_changes_discarded">
     <item quantity="other">%d ローカル連絡先の変更が破棄されました</item>
   </plurals>
-  <string name="sync_error_permissions">DAVdroid アクセス許可</string>
+  <string name="sync_error_permissions">DAVx⁵ アクセス許可</string>
   <string name="sync_error_permissions_text">追加のアクセス許可が必要です</string>
   <string name="sync_error_opentasks_too_old">OpenTasks が古すぎます</string>
   <string name="sync_error_opentasks_required_version">必要なバージョン: %1$s (現在 %2$s)</string>
@@ -245,6 +245,6 @@
   <string name="sync_error_retry">再試行</string>
   <string name="sync_error_view_item">アイテムを表示</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVdroid: 接続セキュリティ</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVdroidは、未知の証明書を検出しました。それを信頼しますか?</string>
+  <string name="certificate_notification_connection_security">DAVx⁵: 接続セキュリティ</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵は、未知の証明書を検出しました。それを信頼しますか?</string>
 </resources>

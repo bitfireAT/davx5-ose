@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVdroid</string>
-  <string name="account_title_address_book">DAVdroid címjegyzék</string>
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">DAVx⁵ címjegyzék</string>
   <string name="address_books_authority_title">Címjegyzékek</string>
   <string name="help">Súgó</string>
   <string name="manage_accounts">Fiókok kezelése</string>
@@ -18,20 +18,20 @@
   <string name="startup_autostart_permission">Automatikus szinkronizálás</string>
   <string name="startup_autostart_permission_message">A(z) %s gyári szoftvere gyakran blokkolja az automatikus szinkronizálást. Ebben az esetben engedélyezze a szinkronizálást az Android beállítások között.</string>
   <string name="startup_battery_optimization">Időzített szinkronizálás</string>
-  <string name="startup_battery_optimization_message">Az eszköz korlátozni fogja a DAVdroid szinkronizálást.  A szokásos DAVadroid szinkronizációs ciklus biztosítása érdekében vonja ki a DAVdroid-ot az „akkumulátorfigyelés” alól.</string>
-  <string name="startup_battery_optimization_disable">Kikapcsolás a DAVdroid kapcsán</string>
+  <string name="startup_battery_optimization_message">Az eszköz korlátozni fogja a DAVx⁵ szinkronizálást.  A szokásos DAVadroid szinkronizációs ciklus biztosítása érdekében vonja ki a DAVx⁵-ot az „akkumulátorfigyelés” alól.</string>
+  <string name="startup_battery_optimization_disable">Kikapcsolás a DAVx⁵ kapcsán</string>
   <string name="startup_dont_show_again">Ne jelenjen meg többet</string>
   <string name="startup_not_now">Ne most</string>
   <string name="startup_donate">A forrás nyíltságával kapcsolatos információk</string>
-  <string name="startup_donate_message">Örülünk, hogy használja a DAVdroidot.  A DAVdroid nyílt forráskódú (GPLv3) szoftver, de a fejlesztése kemény munkát jelent, már eddig több ezer munkaórát emésztett fel, ezért kérjük, fontolja meg, hogy támogassa munkánkat.</string>
+  <string name="startup_donate_message">Örülünk, hogy használja a DAVx⁵ot.  A DAVx⁵ nyílt forráskódú (GPLv3) szoftver, de a fejlesztése kemény munkát jelent, már eddig több ezer munkaórát emésztett fel, ezért kérjük, fontolja meg, hogy támogassa munkánkat.</string>
   <string name="startup_donate_now">Támogatás küldése</string>
   <string name="startup_donate_later">Talán később</string>
   <string name="startup_google_play_accounts_removed">Play Áruház DRM hibával kapcsolatos információ</string>
-  <string name="startup_google_play_accounts_removed_message">Bizonyos körülmények között  a Play Áruház DRM okozhatja azt, hogy az eszköz újraindítását vagy a DAVdroid frissítését követően a DAVdroid fiókok eltűnnek.  Amennyiben (és csak amennyiben) érinti Önt ez a probléma, telepítse a \"DAVdroid JB Workaround\" alkalmazást Play Áruházból.</string>
+  <string name="startup_google_play_accounts_removed_message">Bizonyos körülmények között  a Play Áruház DRM okozhatja azt, hogy az eszköz újraindítását vagy a DAVx⁵ frissítését követően a DAVx⁵ fiókok eltűnnek.  Amennyiben (és csak amennyiben) érinti Önt ez a probléma, telepítse a \"DAVx⁵ JB Workaround\" alkalmazást Play Áruházból.</string>
   <string name="startup_more_info">További információk</string>
   <string name="startup_opentasks_not_installed">Az OpenTasks nincs telepítve</string>
   <string name="startup_opentasks_not_installed_message">A feladatok szinkronizálásához az ingyenes OpenTasks alkalmazásra van szükség.  (A névjegyek és események szinkronizálásához erre nincs szükség.)</string>
-  <string name="startup_opentasks_reinstall_davdroid">Az OpenTasks telepítését követően újra kell telepíteni a DAVdroit alkalmazást és újra fel kell venni a fiókokat (Android hiba).</string>
+  <string name="startup_opentasks_reinstall_davx5">Az OpenTasks telepítését követően újra kell telepíteni a DAVdroit alkalmazást és újra fel kell venni a fiókokat (Android hiba).</string>
   <string name="startup_opentasks_not_installed_install">Az OpenTasks telepítése</string>
   <!--AboutActivity-->
   <string name="about_libraries">Könyvtárak</string>
@@ -40,7 +40,7 @@
   <string name="about_flavor_info">Ennek a verziónak a terjesztése csak a Play Áruházon keresztül engedélyezett.</string>
   <string name="about_license_info_no_warranty">Ehhez a program SEMMIFÉLE GARANCIA NEM JÁR.   Ez a program szabad szoftver, ami a bizonyos feltételek mellett szabadon terjeszthető.</string>
   <!--global settings-->
-  <string name="logging_davdroid_file_logging">DAVdroid fájlalapú naplózás</string>
+  <string name="logging_davx5_file_logging">DAVx⁵ fájlalapú naplózás</string>
   <string name="logging_to_external_storage">Naplózás külső tárhelyre: %s</string>
   <string name="logging_couldnt_create_file">Külső naplófájl létrehozása sikertelen: %s</string>
   <string name="logging_no_external_storage">A külső tárhely nem érhető el</string>
@@ -58,7 +58,7 @@
   <string name="navigation_drawer_faq">GYIK</string>
   <string name="navigation_drawer_forums">Segítség / Fórumok</string>
   <string name="navigation_drawer_donate">Támogatás</string>
-  <string name="account_list_empty">Üdvözöljük a DAVdroid felhasználók között!\n\nMost már felvehet CalDAV/CardDav fiókokat.</string>
+  <string name="account_list_empty">Üdvözöljük a DAVx⁵ felhasználók között!\n\nMost már felvehet CalDAV/CardDav fiókokat.</string>
   <string name="accounts_global_sync_disabled">A rendszerszintű automatikus szinkronizálás ki van kapcsolva</string>
   <string name="accounts_global_sync_enable">Bekapcsolás</string>
   <!--DavService-->
@@ -193,8 +193,8 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">Az ennyi napnál (lehet 0) régebbi események figyelmen kívül lesznek hagyva.  Hagyja üresen, ha minden múltbéli eseményt szinkronizálni akar.</string>
   <string name="settings_manage_calendar_colors">Naptárszínek kezelése</string>
-  <string name="settings_manage_calendar_colors_on">A naptárszíneket a DAVdroid kezeli</string>
-  <string name="settings_manage_calendar_colors_off">A naptárszíneket nem a DAVdroid kezeli</string>
+  <string name="settings_manage_calendar_colors_on">A naptárszíneket a DAVx⁵ kezeli</string>
+  <string name="settings_manage_calendar_colors_off">A naptárszíneket nem a DAVx⁵ kezeli</string>
   <string name="settings_event_colors">Eseményszínek támogatása</string>
   <string name="settings_event_colors_on">Eseményszínek szinkronlzálása</string>
   <string name="settings_event_colors_off">Az eseményszínek szinkronizálásának elhagyása</string>
@@ -236,7 +236,7 @@
     <item quantity="one">Helyi névjegyváltozás elvetve</item>
     <item quantity="other">%d helyi névjegyváltozás elvetve</item>
   </plurals>
-  <string name="sync_error_permissions">DAVdroid engedélyek </string>
+  <string name="sync_error_permissions">DAVx⁵ engedélyek </string>
   <string name="sync_error_permissions_text">További engedélyek szükségesek</string>
   <string name="sync_error_opentasks_too_old">Az OpenTask verzió nem megfelelő</string>
   <string name="sync_error_opentasks_required_version">Szükséges verzió: %1$s (jelenlegi verzió: %2$s)</string>
@@ -247,6 +247,6 @@
   <string name="sync_error_retry">Újbóli próbálkozás</string>
   <string name="sync_error_view_item">Elem megtekintése</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVdroid: kapcsolatbiztonság</string>
+  <string name="certificate_notification_connection_security">DAVx⁵: kapcsolatbiztonság</string>
   <string name="trust_certificate_unknown_certificate_found">Egy eddig ismeretlen tanúsítvány érkezett.  Megbízhatónak kívánja elfogadni?</string>
 </resources>

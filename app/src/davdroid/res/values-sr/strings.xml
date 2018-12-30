@@ -27,11 +27,11 @@
   <string name="startup_donate_now">Прикажи страницу за донације</string>
   <string name="startup_donate_later">Можда касније</string>
   <string name="startup_google_play_accounts_removed">Грешка ДРМ-а Плеј продавнице</string>
-  <string name="startup_google_play_accounts_removed_message">Под одређеним околностима ДРМ Плеј продавнице може да узрокује да сви налози ДАВдроида нестане након рестарта или ажурирања ДАВдроида. Ако и само ако имате овај проблем, инсталирајте „DAVdroid JB Workaround“ са Плеј продавнице.</string>
+  <string name="startup_google_play_accounts_removed_message">Под одређеним околностима ДРМ Плеј продавнице може да узрокује да сви налози ДАВдроида нестане након рестарта или ажурирања ДАВдроида. Ако и само ако имате овај проблем, инсталирајте „DAVx⁵ JB Workaround“ са Плеј продавнице.</string>
   <string name="startup_more_info">Још информација</string>
   <string name="startup_opentasks_not_installed">Отворени задаци нису инсталирани</string>
   <string name="startup_opentasks_not_installed_message">За синхронизацију листе задатака бесплатна апликација „Отворени задаци“ је потребна. (Није потребна за контакте/догађаје.)</string>
-  <string name="startup_opentasks_reinstall_davdroid">Након инсталирања Отворених задатака, морате поново да инсталирате ДАВдроид и поново додате ваше налоге (због грешке у Андроиду).</string>
+  <string name="startup_opentasks_reinstall_davx5">Након инсталирања Отворених задатака, морате поново да инсталирате ДАВдроид и поново додате ваше налоге (због грешке у Андроиду).</string>
   <string name="startup_opentasks_not_installed_install">Инсталирај Отворене задатке</string>
   <!--AboutActivity-->
   <string name="about_libraries">Библиотеке</string>
@@ -40,7 +40,7 @@
   <string name="about_flavor_info">Ово издање је доступно за дистрибуцију само преко Гугловог Плеја.</string>
   <string name="about_license_info_no_warranty">Овај програм НЕМА НИКАКВЕ ГАРАНЦИЈЕ. Бесплатан је софтвер којег можете слободно да делите под одређеним условима.</string>
   <!--global settings-->
-  <string name="logging_davdroid_file_logging">ДАВдроид евиденција</string>
+  <string name="logging_davx5_file_logging">ДАВдроид евиденција</string>
   <string name="logging_to_external_storage">Уписивање евиденције у спољашње складиште: %s</string>
   <string name="logging_couldnt_create_file">Не могох да направим спољашњи фајл записа: %s</string>
   <string name="logging_no_external_storage">Спољашње складиште није нађено</string>

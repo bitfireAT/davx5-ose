@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVdroid</string>
-  <string name="account_title_address_book">Carnet d\'adresses DAVdroid</string>
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">Carnet d\'adresses DAVx⁵</string>
   <string name="address_books_authority_title">Carnets d\'adresses</string>
   <string name="help">Aide</string>
   <string name="manage_accounts">Gestion des comptes</string>
@@ -18,20 +18,20 @@
   <string name="startup_autostart_permission">Synchronisation automatique</string>
   <string name="startup_autostart_permission_message">%s le matériel bloque souvent la synchronisation automatique. Dans ce cas, autorisez la synchronisation automatique dans vos paramètres d\'Android.</string>
   <string name="startup_battery_optimization">Synchronisation planifiée</string>
-  <string name="startup_battery_optimization_message">Votre appareil va restreindre la synchronisation DAVdroid. Pour forcer des intervalles de synchronisation DAVdroid plus réguliers, enlever l\'option \"optimisation de batterie\"</string>
-  <string name="startup_battery_optimization_disable">Désactiver pour DAVdroid</string>
+  <string name="startup_battery_optimization_message">Votre appareil va restreindre la synchronisation DAVx⁵. Pour forcer des intervalles de synchronisation DAVx⁵ plus réguliers, enlever l\'option \"optimisation de batterie\"</string>
+  <string name="startup_battery_optimization_disable">Désactiver pour DAVx⁵</string>
   <string name="startup_dont_show_again">Ne plus afficher</string>
   <string name="startup_not_now">Pas maintenant</string>
   <string name="startup_donate">Open-Source Information</string>
-  <string name="startup_donate_message">Nous sommes heureux que vous utilisiez DAVdroid, qui est un logiciel open-source (GPLv3). Parce que développer DAVdroid est un travail difficile, qui nous a pris de nombreuses heures, nous vous invitons à faire un don.</string>
+  <string name="startup_donate_message">Nous sommes heureux que vous utilisiez DAVx⁵, qui est un logiciel open-source (GPLv3). Parce que développer DAVx⁵ est un travail difficile, qui nous a pris de nombreuses heures, nous vous invitons à faire un don.</string>
   <string name="startup_donate_now">Faire un don</string>
   <string name="startup_donate_later">Plus tard</string>
   <string name="startup_google_play_accounts_removed">Erreur information Play Store DRM</string>
-  <string name="startup_google_play_accounts_removed_message">Dans certaines conditions, Play Store DRM peut provoquer la disparition de tous les comptes DAVdroid après un redémarrage ou après la mise à niveau de DAVdroid. Si vous êtes concerné par ce problème (et seulement dans ce cas), s\'il vous plaît installer \"DAVdroid JB Solution\" du Play Store.</string>
+  <string name="startup_google_play_accounts_removed_message">Dans certaines conditions, Play Store DRM peut provoquer la disparition de tous les comptes DAVx⁵ après un redémarrage ou après la mise à niveau de DAVx⁵. Si vous êtes concerné par ce problème (et seulement dans ce cas), s\'il vous plaît installer \"DAVx⁵ JB Solution\" du Play Store.</string>
   <string name="startup_more_info">Plus d\'informations</string>
   <string name="startup_opentasks_not_installed">L\'application OpenTasks n\'est pas installée</string>
   <string name="startup_opentasks_not_installed_message">Pour synchroniser les tâches, l\'application gratuite OpenTasks est nécessaire (elle ne l\'est pas pour les contacts et les événements).</string>
-  <string name="startup_opentasks_reinstall_davdroid">Après l\'installation OpenTasks, vous devez RE-INSTALLER DAVdroid et ajoutez vos comptes à nouveau (bug Android).</string>
+  <string name="startup_opentasks_reinstall_davx5">Après l\'installation OpenTasks, vous devez RE-INSTALLER DAVx⁵ et ajoutez vos comptes à nouveau (bug Android).</string>
   <string name="startup_opentasks_not_installed_install">Installer OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_libraries">Librairies</string>
@@ -40,7 +40,7 @@
   <string name="about_flavor_info">Cette version ne peut être distribuée que sur Google Play.</string>
   <string name="about_license_info_no_warranty">Ce programme est fourni sans AUCUNE GARANTIE. C\'est un logiciel libre, et vous êtes en droit de le redistribuer sous certaines conditions.</string>
   <!--global settings-->
-  <string name="logging_davdroid_file_logging">DAVdroid fichier de journalisation</string>
+  <string name="logging_davx5_file_logging">DAVx⁵ fichier de journalisation</string>
   <string name="logging_to_external_storage">Se connecter au stockage externe: %s</string>
   <string name="logging_couldnt_create_file">Impossible de créer le fichier journal externe: %s</string>
   <string name="logging_no_external_storage">Stockage externe introuvable</string>
@@ -58,7 +58,7 @@
   <string name="navigation_drawer_faq">Foire aux questions</string>
   <string name="navigation_drawer_forums">Aide/Forum</string>
   <string name="navigation_drawer_donate">Faire un don</string>
-  <string name="account_list_empty">Bienvenue sur DAVdroid!\n\nVous pouvez maintenant ajouter un compte CalDAV ou CardDAV.</string>
+  <string name="account_list_empty">Bienvenue sur DAVx⁵!\n\nVous pouvez maintenant ajouter un compte CalDAV ou CardDAV.</string>
   <string name="accounts_global_sync_disabled">La synchronisation automatique globale est désactivée</string>
   <string name="accounts_global_sync_enable">Activer</string>
   <!--DavService-->
@@ -193,8 +193,8 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">Les événements antérieurs à ce nombre de jours seront ignorés (peut être 0). Laissez vide pour synchroniser tous les événements.</string>
   <string name="settings_manage_calendar_colors">Choisir couleur du calendrier</string>
-  <string name="settings_manage_calendar_colors_on">Les couleurs de calendrier sont gérées par DAVdroid</string>
-  <string name="settings_manage_calendar_colors_off">Les couleurs de calendrier ne sont pas gérées par DAVdroid</string>
+  <string name="settings_manage_calendar_colors_on">Les couleurs de calendrier sont gérées par DAVx⁵</string>
+  <string name="settings_manage_calendar_colors_off">Les couleurs de calendrier ne sont pas gérées par DAVx⁵</string>
   <string name="settings_event_colors">Couleur associée aux événements</string>
   <string name="settings_event_colors_on">Synchroniser la couleur associée aux événements</string>
   <string name="settings_event_colors_off">Ne pas synchroniser la couleur associée aux événements</string>
@@ -232,7 +232,7 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Infos de débogage</string>
   <string name="sync_contacts_read_only_address_book">Carnet d\'adresse en lecture seulement</string>
-  <string name="sync_error_permissions">Autorisations DAVdroid</string>
+  <string name="sync_error_permissions">Autorisations DAVx⁵</string>
   <string name="sync_error_permissions_text">Autorisations supplémentaires demandées</string>
   <string name="sync_error_opentasks_too_old">Version d\'OpenTask trop ancienne</string>
   <string name="sync_error_opentasks_required_version">Version requise %1$s (actuellement %2$s)</string>
@@ -243,6 +243,6 @@
   <string name="sync_error_retry">Essayez à nouveau</string>
   <string name="sync_error_view_item">Voir l\'élément</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVdroid : Sécurité de la connexion</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVdroid a rencontré un certificat inconnu. Voulez-vous lui faire confiance?</string>
+  <string name="certificate_notification_connection_security">DAVx⁵ : Sécurité de la connexion</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ a rencontré un certificat inconnu. Voulez-vous lui faire confiance?</string>
 </resources>

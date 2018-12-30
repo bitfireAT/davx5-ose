@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVdroid</string>
-  <string name="account_title_address_book">DAVdroid 通讯录</string>
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">DAVx⁵ 通讯录</string>
   <string name="address_books_authority_title">通讯录</string>
   <string name="help">帮助</string>
   <string name="manage_accounts">管理账户</string>
@@ -18,20 +18,20 @@
   <string name="startup_autostart_permission">自动同步</string>
   <string name="startup_autostart_permission_message">%s 的系统通常会禁止自动同步。在 Android 的系统设置中手工打开自动同步即可恢复。</string>
   <string name="startup_battery_optimization">定时同步</string>
-  <string name="startup_battery_optimization_message">你的设备会限制 DAVdroid 的同步频率，如需恢复正常同步频率，请关闭电池优化设置。</string>
+  <string name="startup_battery_optimization_message">你的设备会限制 DAVx⁵ 的同步频率，如需恢复正常同步频率，请关闭电池优化设置。</string>
   <string name="startup_battery_optimization_disable">禁用电池优化</string>
   <string name="startup_dont_show_again">不再显示</string>
   <string name="startup_not_now">暂不</string>
   <string name="startup_donate">开源信息</string>
-  <string name="startup_donate_message">欢迎使用 DAVdroid，这是一款开源软件 (GPLv3)。开发 DAVdroid 的工作花费了数千小时，请您考虑捐助我们。</string>
+  <string name="startup_donate_message">欢迎使用 DAVx⁵，这是一款开源软件 (GPLv3)。开发 DAVx⁵ 的工作花费了数千小时，请您考虑捐助我们。</string>
   <string name="startup_donate_now">显示捐助页面</string>
   <string name="startup_donate_later">稍后提示</string>
   <string name="startup_google_play_accounts_removed">Play 商店 DRM 问题提醒</string>
-  <string name="startup_google_play_accounts_removed_message">在某些情况下，Play 商店的 DRM 可能会导致所有 DAVdroid 账户在设备重启或升级 DAVdroid 后消失。如果你遇到了该问题，请从 Play 商店安装“DAVdroid JB Workaround”，否则请不要安装修复程序。</string>
+  <string name="startup_google_play_accounts_removed_message">在某些情况下，Play 商店的 DRM 可能会导致所有 DAVx⁵ 账户在设备重启或升级 DAVx⁵ 后消失。如果你遇到了该问题，请从 Play 商店安装“DAVx⁵ JB Workaround”，否则请不要安装修复程序。</string>
   <string name="startup_more_info">更多信息</string>
   <string name="startup_opentasks_not_installed">OpenTasks 未安装</string>
   <string name="startup_opentasks_not_installed_message">同步任务需安装 OpenTasks 免费应用。（如只需同步通讯录、事件，则不用安装）</string>
-  <string name="startup_opentasks_reinstall_davdroid">安装 OpenTasks 后，由于 Android 的限制，请重新安装 DAVdroid 并重新创建账户。</string>
+  <string name="startup_opentasks_reinstall_davx5">安装 OpenTasks 后，由于 Android 的限制，请重新安装 DAVx⁵ 并重新创建账户。</string>
   <string name="startup_opentasks_not_installed_install">安装 OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_libraries">程序库</string>
@@ -40,7 +40,7 @@
   <string name="about_flavor_info">此版本只允许在 Google Play 上发行。</string>
   <string name="about_license_info_no_warranty">本程序不附带任何担保。这是一款自由软件，你可以有条件地传播它。</string>
   <!--global settings-->
-  <string name="logging_davdroid_file_logging">DAVdroid 文件日志</string>
+  <string name="logging_davx5_file_logging">DAVx⁵ 文件日志</string>
   <string name="logging_to_external_storage">记录日志到外部存储 %s</string>
   <string name="logging_couldnt_create_file">无法创建外部日志文件 %s</string>
   <string name="logging_no_external_storage">找不到外部存储</string>
@@ -58,7 +58,7 @@
   <string name="navigation_drawer_faq">常见问题</string>
   <string name="navigation_drawer_forums">帮助 / 论坛</string>
   <string name="navigation_drawer_donate">捐助</string>
-  <string name="account_list_empty">欢迎使用 DAVdroid！\n\n请开始增加 CalDAV/CardDAV 账户。</string>
+  <string name="account_list_empty">欢迎使用 DAVx⁵！\n\n请开始增加 CalDAV/CardDAV 账户。</string>
   <string name="accounts_global_sync_disabled">系统全局自动同步已禁用</string>
   <string name="accounts_global_sync_enable">启用</string>
   <!--DavService-->
@@ -192,8 +192,8 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">超过这个数字的天数的旧日程将会被忽略（可以为 0）。留空则同步所有日程。</string>
   <string name="settings_manage_calendar_colors">管理日历颜色</string>
-  <string name="settings_manage_calendar_colors_on">日历颜色由 DAVdroid 设置</string>
-  <string name="settings_manage_calendar_colors_off">日历颜色不由 DAVdroid 设置</string>
+  <string name="settings_manage_calendar_colors_on">日历颜色由 DAVx⁵ 设置</string>
+  <string name="settings_manage_calendar_colors_off">日历颜色不由 DAVx⁵ 设置</string>
   <string name="settings_event_colors">事件日历颜色支持</string>
   <string name="settings_event_colors_on">同步日历事件颜色</string>
   <string name="settings_event_colors_off">不同步日历事件颜色</string>
@@ -234,7 +234,7 @@
   <plurals name="sync_contacts_local_contact_changes_discarded">
     <item quantity="other">%d 本地联系人修改被撤销</item>
   </plurals>
-  <string name="sync_error_permissions">DAVdroid 权限</string>
+  <string name="sync_error_permissions">DAVx⁵ 权限</string>
   <string name="sync_error_permissions_text">需要额外权限</string>
   <string name="sync_error_opentasks_too_old">OpenTasks 版本太旧</string>
   <string name="sync_error_opentasks_required_version">最低版本 %1$s （当前 %2$s）</string>
@@ -245,6 +245,6 @@
   <string name="sync_error_retry">重试</string>
   <string name="sync_error_view_item">显示项目</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVdroid: 连接安全性</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVdroid 遇到了未知证书。你是否要信任该证书？</string>
+  <string name="certificate_notification_connection_security">DAVx⁵: 连接安全性</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ 遇到了未知证书。你是否要信任该证书？</string>
 </resources>
