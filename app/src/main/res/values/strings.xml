@@ -53,7 +53,7 @@
     <string name="about_version">Version %1s (%2d)</string>
     <string name="about_build_date">Compiled on %s</string>
     <string name="about_copyright" translatable="false">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering)</string>
-    <string name="about_flavor_info">This version is only eligible for distribution over Google Play™.</string>
+    <string name="about_flavor_info">This version is only eligible for distribution over Google Play.</string>
     <string name="about_license_info_no_warranty">This program comes with ABSOLUTELY NO WARRANTY. It is free software, and you are welcome to redistribute it under certain conditions.</string>
 
     <!-- global settings -->
