@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVdroid</string>
-  <string name="account_title_address_book">DAVdroid 通訊錄</string>
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">DAVx⁵ 通訊錄</string>
   <string name="address_books_authority_title">通訊錄</string>
   <string name="help">幫助</string>
   <string name="manage_accounts">管理帳號</string>
   <string name="please_wait">請稍待 …</string>
   <string name="send">送出</string>
   <!--startup dialogs-->
-  <string name="startup_battery_optimization_disable">關閉 DAVdroid 的電池最佳化</string>
+  <string name="startup_battery_optimization_disable">關閉 DAVx⁵ 的電池最佳化</string>
   <string name="startup_dont_show_again">不要再顯示此訊息</string>
   <string name="startup_donate">開源資訊</string>
-  <string name="startup_donate_message">很高興您使用 DAVdroid，這是個開源軟體 (GPLv3授權)。因為開發 DAVdroid 是艱難的工作，需要上千個小時，請考慮捐款支持我們。</string>
+  <string name="startup_donate_message">很高興您使用 DAVx⁵，這是個開源軟體 (GPLv3授權)。因為開發 DAVx⁵ 是艱難的工作，需要上千個小時，請考慮捐款支持我們。</string>
   <string name="startup_donate_now">開啟捐款頁面</string>
   <string name="startup_donate_later">下次再說</string>
   <string name="startup_google_play_accounts_removed">Play商店數位權利管理錯誤訊息</string>
-  <string name="startup_google_play_accounts_removed_message">在某些情況下，Play商店 的數位權利管理可能導致在重開機後或更新 DAVdroid 後，DAVdroid 全部帳號消失。如果您遇到此問題 (且只有在遇到此問題時)，請到 Play商店 安裝 \"DAVdroid JB Workaround\"。</string>
+  <string name="startup_google_play_accounts_removed_message">在某些情況下，Play商店 的數位權利管理可能導致在重開機後或更新 DAVx⁵ 後，DAVx⁵ 全部帳號消失。如果您遇到此問題 (且只有在遇到此問題時)，請到 Play商店 安裝 \"DAVx⁵ JB Workaround\"。</string>
   <string name="startup_opentasks_not_installed">OpenTasks 未安裝</string>
-  <string name="startup_opentasks_reinstall_davdroid">安裝 OpenTasks 後，您必須｢重新安裝｣ DAVdroid 並且重新加入要同步的帳號 (這是 Android 的設計問題)</string>
+  <string name="startup_opentasks_reinstall_davx5">安裝 OpenTasks 後，您必須｢重新安裝｣ DAVx⁵ 並且重新加入要同步的帳號 (這是 Android 的設計問題)</string>
   <string name="startup_opentasks_not_installed_install">安裝 OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_license_info_no_warranty">我們｢完全不保證｣本程式無瑕疵。這是個自由軟體，歡迎您在符合公用授權條款的情況下任意散布它。</string>
   <!--global settings-->
-  <string name="logging_davdroid_file_logging">DAVdroid 正在記錄除錯訊息</string>
+  <string name="logging_davx5_file_logging">DAVx⁵ 正在記錄除錯訊息</string>
   <string name="logging_to_external_storage">正在將除錯訊息存到外部檔案: %s</string>
   <string name="logging_couldnt_create_file">無法新增除錯訊息檔案: %s</string>
   <string name="logging_no_external_storage">找不到外部儲存空間</string>
@@ -38,7 +38,7 @@
   <string name="navigation_drawer_website">我們的網站</string>
   <string name="navigation_drawer_faq">常見問答</string>
   <string name="navigation_drawer_donate">贊助我們</string>
-  <string name="account_list_empty">歡迎使用 DAVdroid!\n\n您現在可以新增 CalDAV/CardDAV 帳號</string>
+  <string name="account_list_empty">歡迎使用 DAVx⁵!\n\n您現在可以新增 CalDAV/CardDAV 帳號</string>
   <string name="accounts_global_sync_enable">啟用</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">未發現遠端服務</string>
@@ -141,8 +141,8 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">這個天數之前的項目將被忽略 (可設為0)。留白，則所有項目都會同步。</string>
   <string name="settings_manage_calendar_colors">管理行事曆的顏色</string>
-  <string name="settings_manage_calendar_colors_on">行事曆顏色由 DAVdroid 管理</string>
-  <string name="settings_manage_calendar_colors_off">行事曆顏色不由 DAVdroid 管理</string>
+  <string name="settings_manage_calendar_colors_on">行事曆顏色由 DAVx⁵ 管理</string>
+  <string name="settings_manage_calendar_colors_off">行事曆顏色不由 DAVx⁵ 管理</string>
   <!--collection management-->
   <string name="create_addressbook">建立通訊錄</string>
   <string name="create_addressbook_display_name_hint">我的通訊錄</string>
@@ -171,9 +171,9 @@
   <string name="exception_show_details">顯示細節</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">除錯訊息</string>
-  <string name="sync_error_permissions">DAVdroid 權限</string>
+  <string name="sync_error_permissions">DAVx⁵ 權限</string>
   <string name="sync_error_permissions_text">需要額外的權限</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVdroid: 連線安全性</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVdroid 發現未知的憑證，您要信任它嗎?</string>
+  <string name="certificate_notification_connection_security">DAVx⁵: 連線安全性</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ 發現未知的憑證，您要信任它嗎?</string>
 </resources>

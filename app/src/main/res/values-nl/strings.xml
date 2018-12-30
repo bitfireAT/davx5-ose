@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVdroid</string>
-  <string name="account_title_address_book">DAVdroid Adresboek</string>
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">DAVx⁵ Adresboek</string>
   <string name="address_books_authority_title">Adresboeken</string>
   <string name="help">Help</string>
   <string name="manage_accounts">Beheer accounts</string>
   <string name="please_wait">Een moment geduld…</string>
   <string name="send">Verzenden</string>
   <!--startup dialogs-->
-  <string name="startup_battery_optimization_disable">DAVdroid afsluiten</string>
+  <string name="startup_battery_optimization_disable">DAVx⁵ afsluiten</string>
   <string name="startup_dont_show_again">Niet opnieuw weergeven</string>
   <string name="startup_donate">Open-Source informatie</string>
-  <string name="startup_donate_message">We zijn blij dat je DAVdroid gebruikt, wat open-source software (GPLv3) is. Omdat de ontwikkeling van DAVdroid hard werk is en duizenden uren in beslag neemt. overweeg alstublieft een donatie.</string>
+  <string name="startup_donate_message">We zijn blij dat je DAVx⁵ gebruikt, wat open-source software (GPLv3) is. Omdat de ontwikkeling van DAVx⁵ hard werk is en duizenden uren in beslag neemt. overweeg alstublieft een donatie.</string>
   <string name="startup_donate_now">Toon donatie pagina</string>
   <string name="startup_donate_later">Misschien later</string>
   <string name="startup_google_play_accounts_removed">Play Store DRM fout-informatie</string>
-  <string name="startup_google_play_accounts_removed_message">Onder bepaalde omstandigheden, kan Play Store DRM ervoor zorgen dat accounts kwijt zijn na een herstart of na een DAVdroid update. Als dit probleem zich bij je voordoet (en alleen dan), Installeer dan \"DAVdroid JB Workaround\" vanuit de Play Store</string>
+  <string name="startup_google_play_accounts_removed_message">Onder bepaalde omstandigheden, kan Play Store DRM ervoor zorgen dat accounts kwijt zijn na een herstart of na een DAVx⁵ update. Als dit probleem zich bij je voordoet (en alleen dan), Installeer dan \"DAVx⁵ JB Workaround\" vanuit de Play Store</string>
   <string name="startup_opentasks_not_installed">OpenTasks niet geinstalleerd</string>
-  <string name="startup_opentasks_reinstall_davdroid">Na installatie van OpenTasks dient u DAVdroid opnieuw te installeren en de accounts toe te voegen (Android bug).</string>
+  <string name="startup_opentasks_reinstall_davx5">Na installatie van OpenTasks dient u DAVx⁵ opnieuw te installeren en de accounts toe te voegen (Android bug).</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks installeren</string>
   <!--AboutActivity-->
   <string name="about_license_info_no_warranty">Dit programma kom met ABSOLUUT GEEN GARANTIE. Het is gratis software, en je bent welkom dit te herdistribueren onder bepaalde voorwaarden.</string>
   <!--global settings-->
-  <string name="logging_davdroid_file_logging">DAVDroid bestand loggen</string>
+  <string name="logging_davx5_file_logging">DAVDroid bestand loggen</string>
   <string name="logging_to_external_storage">Loggen naar externe opslag: %s</string>
   <string name="logging_couldnt_create_file">Kon extern log bestand niet verwijderen: %s</string>
   <string name="logging_no_external_storage">Externe opslag niet gevonden</string>
@@ -41,7 +41,7 @@
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_forums">Help / Forums</string>
   <string name="navigation_drawer_donate">Doneren</string>
-  <string name="account_list_empty">Welkom bij DAVdroid!\n\nJe kunt nu een CalDAV/CardDAv account toevoegen.</string>
+  <string name="account_list_empty">Welkom bij DAVx⁵!\n\nJe kunt nu een CalDAV/CardDAv account toevoegen.</string>
   <string name="accounts_global_sync_disabled">Systeembrede automatische synchronisatie is uitgeschakeld</string>
   <string name="accounts_global_sync_enable">Inschakelen</string>
   <!--DavService-->
@@ -157,8 +157,8 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">Afspraken ouder dan dit aantal dagen worden genegeerd (mag 0 zijn). Laat leeg om alle afspraken te synchronizeren.</string>
   <string name="settings_manage_calendar_colors">Agenda kleuren beheren</string>
-  <string name="settings_manage_calendar_colors_on">Agenda kleuren worden door DAVdroid beheerd.</string>
-  <string name="settings_manage_calendar_colors_off">Agenda kleuren worden niet door DAVdroid ingesteld</string>
+  <string name="settings_manage_calendar_colors_on">Agenda kleuren worden door DAVx⁵ beheerd.</string>
+  <string name="settings_manage_calendar_colors_off">Agenda kleuren worden niet door DAVx⁵ ingesteld</string>
   <string name="settings_event_colors">Evenement kleur ondersteuning</string>
   <string name="settings_event_colors_on">Evenement kleuren synchroniseren</string>
   <string name="settings_event_colors_off">Evenement kleuren niet synchroniseren</string>
@@ -191,11 +191,11 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Debug informatie</string>
   <string name="sync_contacts_read_only_address_book">Alleen-lezen adresboek</string>
-  <string name="sync_error_permissions">DAVdroid rechten</string>
+  <string name="sync_error_permissions">DAVx⁵ rechten</string>
   <string name="sync_error_permissions_text">Aanvullende rechten vereist</string>
   <string name="sync_error_retry">Opnieuw</string>
   <string name="sync_error_view_item">Bekijk item</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVdroid: Verbinding beveiliging</string>
+  <string name="certificate_notification_connection_security">DAVx⁵: Verbinding beveiliging</string>
   <string name="trust_certificate_unknown_certificate_found">Davdroid is benaderd door een onbekend certificaat. Vertrouwd u dit?</string>
 </resources>

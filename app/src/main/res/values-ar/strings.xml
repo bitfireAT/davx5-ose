@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVdroid</string>
-  <string name="account_title_address_book">DAVdroid دفتر عناوين</string>
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">DAVx⁵ دفتر عناوين</string>
   <string name="address_books_authority_title">دفاتر العناوين</string>
   <string name="help">مساعدة</string>
   <string name="manage_accounts">إدارة الحسابات</string>
@@ -18,20 +18,20 @@
   <string name="startup_autostart_permission">مزامنة تلقائية</string>
   <string name="startup_autostart_permission_message">%s البرنامج الثابت للجهاز قد يمنع المزامنة التلقائية.  في هذه الحالة أعط الإذن بالمزامنة التلقائية في إعدادات النظام لديك.</string>
   <string name="startup_battery_optimization">مزامنة مجدولة</string>
-  <string name="startup_battery_optimization_message">سيقوم جهازك بتقييد مزامنة DAVdroid .  قم بإطفاء \"تحسين البطارية\" لإجبار مدد منتظمة لمزامنة DAVdroid .</string>
-  <string name="startup_battery_optimization_disable">التعطيل لـ DAVdroid</string>
+  <string name="startup_battery_optimization_message">سيقوم جهازك بتقييد مزامنة DAVx⁵ .  قم بإطفاء \"تحسين البطارية\" لإجبار مدد منتظمة لمزامنة DAVx⁵ .</string>
+  <string name="startup_battery_optimization_disable">التعطيل لـ DAVx⁵</string>
   <string name="startup_dont_show_again">لاتعرضه مرة أخرى</string>
   <string name="startup_not_now">ليس الآن</string>
   <string name="startup_donate">معلومات المصدر المفتوح</string>
-  <string name="startup_donate_message">يسعدنا كونك تستخدم DAVdroid ، البرنامج ذو المصدر المفتوح (GPLv3). تطوير DAVdroid عمل مضنٍ أخذ منا آلاف ساعات العمل ، هلّا تبرعت لنا ؟</string>
+  <string name="startup_donate_message">يسعدنا كونك تستخدم DAVx⁵ ، البرنامج ذو المصدر المفتوح (GPLv3). تطوير DAVx⁵ عمل مضنٍ أخذ منا آلاف ساعات العمل ، هلّا تبرعت لنا ؟</string>
   <string name="startup_donate_now">عرض صفحة التبرُّع</string>
   <string name="startup_donate_later">ربما لاحقاً</string>
   <string name="startup_google_play_accounts_removed">معلومات علة DRM في متجر Play</string>
-  <string name="startup_google_play_accounts_removed_message">في ظروف معيّنة، DRM في متجر Play قد تتسبب في إتلاف جميع حسابات DAVdroid بعد إعادة تشغيل الجهاز أو حتى تحديث DAVdroid.  فضلاً ثبّت برنامج \"DAVdroid JB Workaround\" من متجر Play إذا تأثرت بهذه المشكلة (فقط في هذه الحالة).</string>
+  <string name="startup_google_play_accounts_removed_message">في ظروف معيّنة، DRM في متجر Play قد تتسبب في إتلاف جميع حسابات DAVx⁵ بعد إعادة تشغيل الجهاز أو حتى تحديث DAVx⁵.  فضلاً ثبّت برنامج \"DAVx⁵ JB Workaround\" من متجر Play إذا تأثرت بهذه المشكلة (فقط في هذه الحالة).</string>
   <string name="startup_more_info">المزيد من المعلومات</string>
   <string name="startup_opentasks_not_installed">OpenTasks غير مثبت</string>
   <string name="startup_opentasks_not_installed_message">تطبيق OpenTasks المجاني مطلوب لمزامنة المهام.  (غير مطلوب لمزامنة جهات الاتصال أو الأحداث)</string>
-  <string name="startup_opentasks_reinstall_davdroid">بعد تثبيت OpenTasks، لابد لك من إعادة تثبيت DAVdroid وإضافة حساباتك مجدداً (علة في آندرويد).</string>
+  <string name="startup_opentasks_reinstall_davx5">بعد تثبيت OpenTasks، لابد لك من إعادة تثبيت DAVx⁵ وإضافة حساباتك مجدداً (علة في آندرويد).</string>
   <string name="startup_opentasks_not_installed_install">تثبيت OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_libraries">المكتبات</string>
@@ -40,7 +40,7 @@
   <string name="about_flavor_info">هذا الإصدار صالح للتوزيع عبر Google Play فقط.</string>
   <string name="about_license_info_no_warranty">يقدَّم هذا البرنامج دون أدنى مسؤولية.  إنه برنامج حر، وندعوك لإعادة توزيعه حسب أحكام محددة.</string>
   <!--global settings-->
-  <string name="logging_davdroid_file_logging">تسجيل ملفات DAVdroid</string>
+  <string name="logging_davx5_file_logging">تسجيل ملفات DAVx⁵</string>
   <string name="logging_to_external_storage">التسجيل في التخزين الخارجي: %s</string>
   <string name="logging_couldnt_create_file">لا يمكن إنشاء ملف سجل خارجي: %s</string>
   <string name="logging_no_external_storage">لم نجِد أي تخزين خارجي</string>
@@ -58,7 +58,7 @@
   <string name="navigation_drawer_faq">الأسئلة الشائعة</string>
   <string name="navigation_drawer_forums">المساعدة / المنتدى</string>
   <string name="navigation_drawer_donate">تبرَّع</string>
-  <string name="account_list_empty">مرحباً بك في DAVdroid !\n\n يمكنك إضافة حساب CalDAV أو CardDAV الآن.</string>
+  <string name="account_list_empty">مرحباً بك في DAVx⁵ !\n\n يمكنك إضافة حساب CalDAV أو CardDAV الآن.</string>
   <string name="accounts_global_sync_disabled">تم تعطيل المزامنة التلقائية على مستوى النظام</string>
   <string name="accounts_global_sync_enable">تفعيل</string>
   <!--DavService-->
@@ -197,8 +197,8 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">الأحداث التي جرت بعد عدد الأيام هذا في الماضي سيتم تجاهلها (يمكن أن يكون 0).  أتركه فارغاً لمزامنة جميع الأحداث.</string>
   <string name="settings_manage_calendar_colors">إدارة ألوان التقاويم</string>
-  <string name="settings_manage_calendar_colors_on">ألوان التقاويم يديرها DAVdroid</string>
-  <string name="settings_manage_calendar_colors_off">ألوان التقاويم لا يقوم DAVdroid بضبطها</string>
+  <string name="settings_manage_calendar_colors_on">ألوان التقاويم يديرها DAVx⁵</string>
+  <string name="settings_manage_calendar_colors_off">ألوان التقاويم لا يقوم DAVx⁵ بضبطها</string>
   <string name="settings_event_colors">دعم ألوان الأحداث</string>
   <string name="settings_event_colors_on">زامن ألوان الأحداث</string>
   <string name="settings_event_colors_off">لا تزامن ألوان الأحداث</string>
@@ -244,7 +244,7 @@
     <item quantity="many">تم تجاهل تغيير في جهة الاتصال المحلية %d</item>
     <item quantity="other">تم تجاهل تغيير في جهة الاتصال المحلية %d</item>
   </plurals>
-  <string name="sync_error_permissions">أذونات DAVdroid</string>
+  <string name="sync_error_permissions">أذونات DAVx⁵</string>
   <string name="sync_error_permissions_text">مطلوب أذونات إضافية</string>
   <string name="sync_error_opentasks_too_old">OpenTasks قديم للغاية</string>
   <string name="sync_error_opentasks_required_version">الإصدار  المطلوب:%1$s (الموجود %2$s)</string>
@@ -255,6 +255,6 @@
   <string name="sync_error_retry">إعادة المحاولة</string>
   <string name="sync_error_view_item">عرض العنصر</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVdroid: أمن الاتصال</string>
-  <string name="trust_certificate_unknown_certificate_found">عثر DAVdroid على شهادة غير معروفة. هل تريد الوثوق بها؟</string>
+  <string name="certificate_notification_connection_security">DAVx⁵: أمن الاتصال</string>
+  <string name="trust_certificate_unknown_certificate_found">عثر DAVx⁵ على شهادة غير معروفة. هل تريد الوثوق بها؟</string>
 </resources>

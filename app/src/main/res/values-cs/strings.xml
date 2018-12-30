@@ -1,27 +1,27 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVdroid</string>
+  <string name="app_name">DAVx⁵</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Spravovat účty</string>
   <string name="please_wait">Chvíli strpení …</string>
   <string name="send">Odeslat</string>
   <!--startup dialogs-->
-  <string name="startup_battery_optimization_disable">Vypnout pro DAVdroid</string>
+  <string name="startup_battery_optimization_disable">Vypnout pro DAVx⁵</string>
   <string name="startup_dont_show_again">Již nezobrazovat</string>
   <string name="startup_donate">Open Source informace</string>
-  <string name="startup_donate_message">Jsme velice rádi že používáte DAVdroid, software s otevřeným zdrojovým kódem (GPLv3). Vývoj této aplikace je náročný a trval již několik tisíc hodin, velice nás potěší přispějete-li na jeho vývoj.</string>
+  <string name="startup_donate_message">Jsme velice rádi že používáte DAVx⁵, software s otevřeným zdrojovým kódem (GPLv3). Vývoj této aplikace je náročný a trval již několik tisíc hodin, velice nás potěší přispějete-li na jeho vývoj.</string>
   <string name="startup_donate_now">Zobrazit stránku pro obdarování</string>
   <string name="startup_donate_later">Možná později</string>
   <string name="startup_google_play_accounts_removed">Informace o chybě DRM Obchodu Play</string>
-  <string name="startup_google_play_accounts_removed_message">Za určitých podmínek může dojít po restartu nebo aktualizaci aplikace DAVdroid k vymazání účtů kvůli chybě DRM Obchodu Play. Pokud jste postiženi touto chybou (ale pouze v tomto případě), nainstalujte prosím z Obchodu Play aplikaci \"DAVdroid JB Workaround\".</string>
+  <string name="startup_google_play_accounts_removed_message">Za určitých podmínek může dojít po restartu nebo aktualizaci aplikace DAVx⁵ k vymazání účtů kvůli chybě DRM Obchodu Play. Pokud jste postiženi touto chybou (ale pouze v tomto případě), nainstalujte prosím z Obchodu Play aplikaci \"DAVx⁵ JB Workaround\".</string>
   <string name="startup_opentasks_not_installed">OpenTasks není nainstalován</string>
-  <string name="startup_opentasks_reinstall_davdroid">Po instalaci OpenTasks musíte PŘEINSTALOVAT DAVdroid a přidat znovu své účty (Android chyba).</string>
+  <string name="startup_opentasks_reinstall_davx5">Po instalaci OpenTasks musíte PŘEINSTALOVAT DAVx⁵ a přidat znovu své účty (Android chyba).</string>
   <string name="startup_opentasks_not_installed_install">Nainstalovat OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_license_info_no_warranty">Tento program je distribuován BEZ JAKÉKOLIV ZÁRUKY. Je to volně dostupný software a lze jej za určitých podmínek dále distribuovat.</string>
   <!--global settings-->
-  <string name="logging_davdroid_file_logging">DAVdroid logování do souboru</string>
+  <string name="logging_davx5_file_logging">DAVx⁵ logování do souboru</string>
   <string name="logging_to_external_storage">Logování do externího úložiště: %s</string>
   <string name="logging_couldnt_create_file">Nelze vytvořit externí soubor logu: %s</string>
   <string name="logging_no_external_storage">Externí úložiště nenalezeno</string>
@@ -36,7 +36,7 @@
   <string name="navigation_drawer_website">Webová stránka</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_donate">Obdarovat</string>
-  <string name="account_list_empty">Vítejte v aplikaci DAVdroid!\n\nNyní můžete přidat CalDAV/CardDAV účet.</string>
+  <string name="account_list_empty">Vítejte v aplikaci DAVx⁵!\n\nNyní můžete přidat CalDAV/CardDAV účet.</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Vyhledání služby selhalo</string>
   <string name="dav_service_refresh_couldnt_refresh">Nelze obnovit seznam sbírky</string>
@@ -141,8 +141,8 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">Události z minulosti starší než vyznačený počet dnů budou ignorovány (lze zadat 0). Ponechte prázdné pro synchronizaci všech událostí.</string>
   <string name="settings_manage_calendar_colors">Spravovat barvy kalendářů</string>
-  <string name="settings_manage_calendar_colors_on">Barvy kalendářů spravuje DAVdroid</string>
-  <string name="settings_manage_calendar_colors_off">Barvy kalendářů nespravuje DAVdroid</string>
+  <string name="settings_manage_calendar_colors_on">Barvy kalendářů spravuje DAVx⁵</string>
+  <string name="settings_manage_calendar_colors_off">Barvy kalendářů nespravuje DAVx⁵</string>
   <!--collection management-->
   <string name="create_addressbook">Vytvořit adresář</string>
   <string name="create_addressbook_display_name_hint">Můj adresář</string>
@@ -171,9 +171,9 @@
   <string name="exception_show_details">Zobrazit detaily</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Ladící informace</string>
-  <string name="sync_error_permissions">DAVdroid oprávnění</string>
+  <string name="sync_error_permissions">DAVx⁵ oprávnění</string>
   <string name="sync_error_permissions_text">Vyžadována dodatečná oprávnění</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVdroid: Zabezpečení připojení</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVdroid nalezl neznámý certifikát. Chcete mu důvěřovat?</string>
+  <string name="certificate_notification_connection_security">DAVx⁵: Zabezpečení připojení</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ nalezl neznámý certifikát. Chcete mu důvěřovat?</string>
 </resources>

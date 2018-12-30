@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVdroid</string>
-  <string name="account_title_address_book">Książka adresowa DAVdroid</string>
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">Książka adresowa DAVx⁵</string>
   <string name="address_books_authority_title">Książka adresowa</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Zadządzaj kontami</string>
@@ -10,21 +10,21 @@
   <string name="send">Wyślij</string>
   <string name="notification_channel_debugging">Debugowanie</string>
   <!--startup dialogs-->
-  <string name="startup_battery_optimization_disable">Wyłącz dla DAVdroid</string>
+  <string name="startup_battery_optimization_disable">Wyłącz dla DAVx⁵</string>
   <string name="startup_dont_show_again">Nie pokazuj ponownie</string>
   <string name="startup_donate">Informacje Open-Source</string>
-  <string name="startup_donate_message">Jesteśmy szczęśliwi, że używasz DAVdroid, który jest oprogramowaniem open-source (GPLv3). Ponieważ rozwijanie DAVdroid jest ciężką pracą i zajęło nam tysiące godzin pracy, prosimy o rozważenie darowizny.</string>
+  <string name="startup_donate_message">Jesteśmy szczęśliwi, że używasz DAVx⁵, który jest oprogramowaniem open-source (GPLv3). Ponieważ rozwijanie DAVx⁵ jest ciężką pracą i zajęło nam tysiące godzin pracy, prosimy o rozważenie darowizny.</string>
   <string name="startup_donate_now">Pokaż stronę darowizny</string>
   <string name="startup_donate_later">Może później</string>
   <string name="startup_google_play_accounts_removed">Informacje o błędzie DRM Sklepu Play</string>
-  <string name="startup_google_play_accounts_removed_message">Pod pewnymi warunkami, DRM Sklepu Play może powodować, że wszystkie konta DAVdroid mogą zostać usunięte po uruchomieniu lub po uaktualnieniu DAVdroid. Jeśli jesteś dotknięty tym problemem (i tylko wtedy) należy zainstalować \"DAVdroid JB Obejście\" ze Sklepu Play.</string>
+  <string name="startup_google_play_accounts_removed_message">Pod pewnymi warunkami, DRM Sklepu Play może powodować, że wszystkie konta DAVx⁵ mogą zostać usunięte po uruchomieniu lub po uaktualnieniu DAVx⁵. Jeśli jesteś dotknięty tym problemem (i tylko wtedy) należy zainstalować \"DAVx⁵ JB Obejście\" ze Sklepu Play.</string>
   <string name="startup_opentasks_not_installed">OpenTasks nie jest zainstalowany</string>
-  <string name="startup_opentasks_reinstall_davdroid">Po zainstalowaniu OpenTasks konieczne jest PRZEINSTALOWANIE DAVdroid i ponowne dodanie twoich kont (błąd Androida).</string>
+  <string name="startup_opentasks_reinstall_davx5">Po zainstalowaniu OpenTasks konieczne jest PRZEINSTALOWANIE DAVx⁵ i ponowne dodanie twoich kont (błąd Androida).</string>
   <string name="startup_opentasks_not_installed_install">Zainstaluj OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_license_info_no_warranty">Ten program jest ABSOLUTNIE BEZ GWARANCJI. To jest wolne oprogramowanie i mile widziane jest dalsze rozpowszechnianie go pod pewnymi warunkami.</string>
   <!--global settings-->
-  <string name="logging_davdroid_file_logging">Plik logów DAVdroid</string>
+  <string name="logging_davx5_file_logging">Plik logów DAVx⁵</string>
   <string name="logging_to_external_storage">Logowanie do zewnątrznej pamięci: %s</string>
   <string name="logging_couldnt_create_file">Nie można stworzyć zewnętrznego pliku logów: %s</string>
   <string name="logging_no_external_storage">Zewnętrzna pamięci nie została naleziona</string>
@@ -32,7 +32,7 @@
   <string name="navigation_drawer_open">Otwórz menu nawigacji</string>
   <string name="navigation_drawer_close">Zamknij menu nawigacji</string>
   <string name="navigation_drawer_subtitle">Adapter synchronizacji CalDAV/CardDAV</string>
-  <string name="navigation_drawer_about">O DAVdroid / Licencja</string>
+  <string name="navigation_drawer_about">O DAVx⁵ / Licencja</string>
   <string name="navigation_drawer_beta_feedback">Przekaż opinię</string>
   <string name="navigation_drawer_settings">Ustawienia</string>
   <string name="navigation_drawer_news_updates">Nowości &amp; aktualizacje</string>
@@ -42,7 +42,7 @@
   <string name="navigation_drawer_faq">Pytania i odpowiedzi</string>
   <string name="navigation_drawer_forums">Pomoc / Forum</string>
   <string name="navigation_drawer_donate">Dotacja</string>
-  <string name="account_list_empty">Witamy w DAVdroid!\n\nMożesz teraz dodać konto CalDAV/CardDAV.</string>
+  <string name="account_list_empty">Witamy w DAVx⁵!\n\nMożesz teraz dodać konto CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Automatyczna synchronizacja dla całego systemu jest wyłączona</string>
   <string name="accounts_global_sync_enable">Włącz</string>
   <!--DavService-->
@@ -173,8 +173,8 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">Wydarzenia, które są starsze niż podana liczba dni zostaną zignorowane (może być 0). Zostaw puste, aby synchronizować wszystkie wydarzenia.</string>
   <string name="settings_manage_calendar_colors">Zarządzaj kolorami kalendarza</string>
-  <string name="settings_manage_calendar_colors_on">Kolory kalendarza są zarządzane przez DAVdroid</string>
-  <string name="settings_manage_calendar_colors_off">Kolory kalendarze nie są ustawiane przez DAVdroid</string>
+  <string name="settings_manage_calendar_colors_on">Kolory kalendarza są zarządzane przez DAVx⁵</string>
+  <string name="settings_manage_calendar_colors_off">Kolory kalendarze nie są ustawiane przez DAVx⁵</string>
   <string name="settings_event_colors">Obsługa kolorów wydarzeń</string>
   <string name="settings_event_colors_on">Synchronizuj kolory zdarzeń</string>
   <string name="settings_event_colors_off">Nie synchronizuj kolorów zdarzeń</string>
@@ -215,11 +215,11 @@
     <item quantity="many">%d lokalne kontakty zostaną odrzucone</item>
     <item quantity="other">%d lokalne kontakty zostaną odrzucone</item>
   </plurals>
-  <string name="sync_error_permissions">Uprawnienia DAVdroid</string>
+  <string name="sync_error_permissions">Uprawnienia DAVx⁵</string>
   <string name="sync_error_permissions_text">Wymagane dodatkowe uprawnienia</string>
   <string name="sync_error_opentasks_too_old">OpenTask jest niekompatybilny</string>
   <string name="sync_error_opentasks_required_version">Wymagana wersja: %1$s (obecna %2$s)</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVdroid: Bezpieczeństwo połączenia</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVdroid napotkał nieznany certyfikat. Czy chcesz go dodać?</string>
+  <string name="certificate_notification_connection_security">DAVx⁵: Bezpieczeństwo połączenia</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ napotkał nieznany certyfikat. Czy chcesz go dodać?</string>
 </resources>

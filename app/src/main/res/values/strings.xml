@@ -10,18 +10,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- common strings -->
-    <string name="app_name">DAVdroid</string>
+    <string name="app_name">DAVx⁵</string>
     <string name="account_type" translatable="false">bitfire.at.davdroid</string>
     <string name="account_type_address_book" translatable="false">at.bitfire.davdroid.address_book</string>
-    <string name="account_title_address_book">DAVdroid Address book</string>
+    <string name="account_title_address_book">DAVx⁵ Address book</string>
     <string name="address_books_authority" translatable="false">at.bitfire.davdroid.addressbooks</string>
     <string name="address_books_authority_title">Address books</string>
     <string name="help">Help</string>
     <string name="manage_accounts">Manage accounts</string>
     <string name="please_wait">Please wait …</string>
     <string name="send">Send</string>
-    <string name="homepage_url" translatable="false">https://www.davdroid.com/</string>
-    <string name="beta_feedback_url" translatable="false">https://forums.bitfire.at/category/9/beta-test-discussion?pk_campaign=davdroid-app</string>
+    <string name="homepage_url" translatable="false">https://www.davx5.com/</string>
 
     <string name="notification_channel_debugging">Debugging</string>
     <string name="notification_channel_general">Other important messages</string>
@@ -34,20 +33,20 @@
     <string name="startup_autostart_permission">Automatic synchronization</string>
     <string name="startup_autostart_permission_message">%s firmware often blocks automatic synchronization. In this case, allow automatic synchronization in your Android settings.</string>
     <string name="startup_battery_optimization">Scheduled synchronization</string>
-    <string name="startup_battery_optimization_message">Your device will restrain DAVdroid synchronization. To enforce regular DAVdroid sync intervals, turn off \"battery optimization\".</string>
-    <string name="startup_battery_optimization_disable">Turn off for DAVdroid</string>
+    <string name="startup_battery_optimization_message">Your device will restrain DAVx⁵ synchronization. To enforce regular DAVx⁵ sync intervals, turn off \"battery optimization\".</string>
+    <string name="startup_battery_optimization_disable">Turn off for DAVx⁵</string>
     <string name="startup_dont_show_again">Don\'t show again</string>
     <string name="startup_not_now">Not now</string>
     <string name="startup_donate">Open-Source Information</string>
-    <string name="startup_donate_message">We\'re happy that you use DAVdroid, which is open-source software (GPLv3). Because developing DAVdroid is hard work and took us thousands of working hours, please consider a donation.</string>
+    <string name="startup_donate_message">We\'re happy that you use DAVx⁵, which is open-source software (GPLv3). Because developing DAVx⁵ is hard work and took us thousands of working hours, please consider a donation.</string>
     <string name="startup_donate_now">Show donation page</string>
     <string name="startup_donate_later">Maybe later</string>
     <string name="startup_google_play_accounts_removed">Play Store DRM bug information</string>
-    <string name="startup_google_play_accounts_removed_message">Under certain conditions, Play Store DRM may cause all DAVdroid accounts to be gone after a reboot or after upgrading DAVdroid. If you\'re affected by this problem (and only then), please install \"DAVdroid JB Workaround\" from Play Store.</string>
+    <string name="startup_google_play_accounts_removed_message">Under certain conditions, Play Store DRM may cause all DAVx⁵ accounts to be gone after a reboot or after upgrading DAVx⁵. If you\'re affected by this problem (and only then), please install \"DAVx⁵ JB Workaround\" from Play Store.</string>
     <string name="startup_more_info">More information</string>
     <string name="startup_opentasks_not_installed">OpenTasks not installed</string>
     <string name="startup_opentasks_not_installed_message">To synchronize tasks, the free app OpenTasks is required. (Not required for contacts/events.)</string>
-    <string name="startup_opentasks_reinstall_davdroid">After installing OpenTasks, you have to RE-INSTALL DAVdroid and add your accounts again (Android bug).</string>
+    <string name="startup_opentasks_reinstall_davx5">After installing OpenTasks, you have to RE-INSTALL DAVx⁵ and add your accounts again (Android bug).</string>
     <string name="startup_opentasks_not_installed_install">Install OpenTasks</string>
 
     <!-- AboutActivity -->
@@ -59,7 +58,7 @@
     <string name="about_license_info_no_warranty">This program comes with ABSOLUTELY NO WARRANTY. It is free software, and you are welcome to redistribute it under certain conditions.</string>
 
     <!-- global settings -->
-    <string name="logging_davdroid_file_logging">DAVdroid file logging</string>
+    <string name="logging_davx5_file_logging">DAVx⁵ file logging</string>
     <string name="logging_to_external_storage">Logging to external storage: %s</string>
     <string name="logging_couldnt_create_file">Couldn\'t create external log file: %s</string>
     <string name="logging_no_external_storage">External storage not found</string>
@@ -79,7 +78,7 @@
     <string name="navigation_drawer_forums">Help / Forums</string>
     <string name="navigation_drawer_donate">Donate</string>
 
-    <string name="account_list_empty">Welcome to DAVdroid!\n\nYou can add a CalDAV/CardDAV account now.</string>
+    <string name="account_list_empty">Welcome to DAVx⁵!\n\nYou can add a CalDAV/CardDAV account now.</string>
     <string name="accounts_global_sync_disabled">System-wide automatic synchronization is disabled</string>
     <string name="accounts_global_sync_enable">Enable</string>
 
@@ -229,8 +228,8 @@
     </plurals>
     <string name="settings_sync_time_range_past_message">Events which are more than this number of days in the past will be ignored (may be 0). Leave blank to synchronize all events.</string>
     <string name="settings_manage_calendar_colors">Manage calendar colors</string>
-    <string name="settings_manage_calendar_colors_on">Calendar colors are managed by DAVdroid</string>
-    <string name="settings_manage_calendar_colors_off">Calendar colors are not set by DAVdroid</string>
+    <string name="settings_manage_calendar_colors_on">Calendar colors are managed by DAVx⁵</string>
+    <string name="settings_manage_calendar_colors_off">Calendar colors are not set by DAVx⁵</string>
     <string name="settings_event_colors">Event color support</string>
     <string name="settings_event_colors_on">Sync event colors</string>
     <string name="settings_event_colors_off">Do not sync event colors</string>
@@ -269,14 +268,14 @@
     <string name="exception_show_details">Show details</string>
 
     <!-- sync adapters and DebugInfoActivity -->
-    <string name="authority_log_provider">at.bitfire.davdroid.log</string>
+    <string name="authority_log_provider" translatable="false">at.bitfire.davdroid.log</string>
     <string name="debug_info_title">Debug info</string>
     <string name="sync_contacts_read_only_address_book">Read-only address book</string>
     <plurals name="sync_contacts_local_contact_changes_discarded">
         <item quantity="one">Local contact change discarded</item>
         <item quantity="other">%d local contact changes discarded</item>
     </plurals>
-    <string name="sync_error_permissions">DAVdroid permissions</string>
+    <string name="sync_error_permissions">DAVx⁵ permissions</string>
     <string name="sync_error_permissions_text">Additional permissions required</string>
     <string name="sync_error_opentasks_too_old">OpenTasks too old</string>
     <string name="sync_error_opentasks_required_version">Required version: %1$s (currently %2$s)</string>
@@ -288,7 +287,7 @@
     <string name="sync_error_view_item">View item</string>
 
     <!-- cert4android -->
-    <string name="certificate_notification_connection_security">DAVdroid: Connection security</string>
-    <string name="trust_certificate_unknown_certificate_found">DAVdroid has encountered an unknown certificate. Do you want to trust it?</string>
+    <string name="certificate_notification_connection_security">DAVx⁵: Connection security</string>
+    <string name="trust_certificate_unknown_certificate_found">DAVx⁵ has encountered an unknown certificate. Do you want to trust it?</string>
 
 </resources>

@@ -1,25 +1,25 @@
 
-[![build status](https://gitlab.com/bitfireAT/davdroid/badges/master-ose/build.svg)](https://gitlab.com/bitfireAT/davdroid/commits/master-ose)
+[![build status](https://gitlab.com/bitfireAT/davx5/badges/master-ose/build.svg)](https://gitlab.com/bitfireAT/davx5/commits/master-ose)
 
 
-DAVdroid
+DAVx⁵
 ========
 
-Please see the [DAVdroid Web site](https://www.davdroid.com) for
-comprehensive information about DAVdroid.
+Please see the [DAVx⁵ Web site](https://www.davx5.com) for
+comprehensive information about DAVx⁵.
 
-DAVdroid is licensed under the [GPLv3 License](LICENSE).
+DAVx⁵ is licensed under the [GPLv3 License](LICENSE).
 
-News and updates: [@davdroidapp](https://twitter.com/davdroidapp) on Twitter
+News and updates: [@davx5app](https://twitter.com/davx5dapp) on Twitter
 
-Help and discussion: [DAVdroid forums](https://www.davdroid.com/forums/)
+Help and discussion: [DAVx⁵ forums](https://www.davx5.com/forums/)
 
-**If you want to support DAVdroid, please consider [donating to DAVdroid](https://www.davdroid.com/donate/)
-or [purchasing it](https://www.davdroid.com/download/).**
+**If you want to support DAVx⁵, please consider [donating to DAVx⁵](https://www.davx5.com/donate/)
+or [purchasing it](https://www.davx5.com/download/).**
 
-Generated KDoc: https://bitfireAT.gitlab.io/davdroid/dokka/app/
+Generated KDoc: https://bitfireAT.gitlab.io/davx5/dokka/app/
 
-Parts of DAVdroid have been outsourced into these libraries:
+Parts of DAVx⁵ have been outsourced into these libraries:
 
 * [cert4android](https://gitlab.com/bitfireAT/cert4android) – custom certificate management
 * [dav4android](https://gitlab.com/bitfireAT/dav4android) – WebDAV/CalDav/CardDAV framework
@@ -30,7 +30,7 @@ Parts of DAVdroid have been outsourced into these libraries:
 USED THIRD-PARTY LIBRARIES
 ==========================
 
-Those libraries are used by DAVdroid (alphabetically):
+Those libraries are used by DAVx⁵ (alphabetically):
 
 * [Ambilwarna](https://github.com/yukuku/ambilwarna) – [Apache License, Version 2.0](https://github.com/yukuku/ambilwarna/blob/master/LICENSE)
 * [dnsjava](http://www.xbill.org/dnsjava/) – [BSD License](http://www.xbill.org/dnsjava/dnsjava-current/LICENSE)
