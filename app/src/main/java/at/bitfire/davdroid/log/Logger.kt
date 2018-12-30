@@ -65,7 +65,7 @@ object Logger {
         if (logToFile) {
             val builder = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_DEBUG)
             builder .setSmallIcon(R.drawable.ic_sd_storage_notification)
-                    .setContentTitle(context.getString(R.string.logging_davdroid_file_logging))
+                    .setContentTitle(context.getString(R.string.logging_davx5_file_logging))
                     .setLocalOnly(true)
 
             val dir = context.getExternalFilesDir(null)

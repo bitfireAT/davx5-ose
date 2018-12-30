@@ -1,5 +1,5 @@
 
-[![build status](https://gitlab.com/bitfireAT/davx5/badges/master-ose/build.svg)](https://gitlab.com/bitfireAT/davx5/commits/master-ose)
+[![build status](https://gitlab.com/bitfireAT/davx5-ose/badges/master-ose/build.svg)](https://gitlab.com/bitfireAT/davx5-ose/commits/master-ose)
 
 
 DAVx⁵
@@ -17,7 +17,7 @@ Help and discussion: [DAVx⁵ forums](https://www.davx5.com/forums/)
 **If you want to support DAVx⁵, please consider [donating to DAVx⁵](https://www.davx5.com/donate/)
 or [purchasing it](https://www.davx5.com/download/).**
 
-Generated KDoc: https://bitfireAT.gitlab.io/davx5/dokka/app/
+Generated KDoc: https://bitfireAT.gitlab.io/davx5-ose/dokka/app/
 
 Parts of DAVx⁵ have been outsourced into these libraries:
 

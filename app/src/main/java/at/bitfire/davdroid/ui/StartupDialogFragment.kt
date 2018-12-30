@@ -126,7 +126,7 @@ class StartupDialogFragment: DialogFragment() {
             Mode.OPENTASKS_NOT_INSTALLED -> {
                 val builder = StringBuilder(getString(R.string.startup_opentasks_not_installed_message))
                 if (Build.VERSION.SDK_INT < 23)
-                    builder.append("\n\n").append(getString(R.string.startup_opentasks_reinstall_davdroid))
+                    builder.append("\n\n").append(getString(R.string.startup_opentasks_reinstall_davx5))
                 return AlertDialog.Builder(activity)
                         .setIcon(R.drawable.ic_playlist_add_check_dark)
                         .setTitle(R.string.startup_opentasks_not_installed)
