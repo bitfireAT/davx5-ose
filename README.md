@@ -2,6 +2,8 @@
 [![build status](https://gitlab.com/bitfireAT/davx5-ose/badges/master-ose/build.svg)](https://gitlab.com/bitfireAT/davx5-ose/commits/master-ose)
 
 
+![DAVx⁵ logo](app/src/main/res/mipmap-xxhdpi/ic_launcher.png)
+
 DAVx⁵
 ========
 
