@@ -21,7 +21,7 @@ import at.bitfire.davdroid.R
 class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
 
     companion object {
-        private const val BETA_FEEDBACK_URI = "mailto:support@davdroid.com?subject=${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME} feedback (${BuildConfig.VERSION_CODE})"
+        private const val BETA_FEEDBACK_URI = "mailto:support@davx5.com?subject=${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME} feedback (${BuildConfig.VERSION_CODE})"
     }
 
 
@@ -39,7 +39,7 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
             R.id.nav_beta_feedback ->
                 UiUtils.launchUri(activity, Uri.parse(BETA_FEEDBACK_URI), Intent.ACTION_SENDTO)
             R.id.nav_twitter ->
-                UiUtils.launchUri(activity, Uri.parse("https://twitter.com/davdroidapp"))
+                UiUtils.launchUri(activity, Uri.parse("https://twitter.com/" + activity.getString(R.string.twitter_handle)))
             R.id.nav_website ->
                 UiUtils.launchUri(activity, App.homepageUrl(activity))
             R.id.nav_manual ->
