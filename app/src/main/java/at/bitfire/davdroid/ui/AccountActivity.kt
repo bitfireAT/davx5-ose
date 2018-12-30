@@ -81,7 +81,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // account may be a DAVdroid address book account -> use main account in this case
+        // account may be a DAVx5 address book account -> use main account in this case
         account = LocalAddressBook.mainAccount(this,
                 requireNotNull(intent.getParcelableExtra(EXTRA_ACCOUNT)))
         title = account.name

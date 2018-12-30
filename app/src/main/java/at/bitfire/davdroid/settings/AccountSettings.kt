@@ -70,12 +70,12 @@ class AccountSettings(
         const val KEY_TIME_RANGE_PAST_DAYS = "time_range_past_days"
         const val DEFAULT_TIME_RANGE_PAST_DAYS = 90
 
-        /* Whether DAVdroid sets the local calendar color to the value from service DB at every sync
+        /* Whether DAVx5 sets the local calendar color to the value from service DB at every sync
            value = null (not existing)     true (default)
                    "0"                     false */
         const val KEY_MANAGE_CALENDAR_COLORS = "manage_calendar_colors"
 
-        /* Whether DAVdroid populates and uses CalendarContract.Colors
+        /* Whether DAVx5 populates and uses CalendarContract.Colors
            value = null (not existing)     false (default)
                    "1"                     true */
         const val KEY_EVENT_COLORS = "event_colors"

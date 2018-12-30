@@ -186,7 +186,7 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
                 report.append("\nSOFTWARE INFORMATION\n")
                 val pm = context.packageManager
                 val appIDs = mutableSetOf(      // we always want info about these packages
-                        BuildConfig.APPLICATION_ID,                     // DAVdroid
+                        BuildConfig.APPLICATION_ID,                     // DAVx5
                         "${BuildConfig.APPLICATION_ID}.jbworkaround",   // DAVdroid JB Workaround
                         "org.dmfs.tasks"                               // OpenTasks
                 )

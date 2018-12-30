@@ -27,7 +27,7 @@ class LocalContact: AndroidContact, LocalAddress {
 
     companion object {
         init {
-            Contact.productID = "+//IDN bitfire.at//DAVdroid/" + BuildConfig.VERSION_NAME + " ez-vcard/" + Ezvcard.VERSION
+            Contact.productID = "+//IDN bitfire.at//DAVx5/" + BuildConfig.VERSION_NAME + " ez-vcard/" + Ezvcard.VERSION
         }
 
         const val COLUMN_FLAGS = ContactsContract.RawContacts.SYNC4
@@ -214,7 +214,7 @@ class LocalContact: AndroidContact, LocalAddress {
 
     /**
      * Returns the IDs of all groups the contact was member of (cached memberships).
-     * Cached memberships are kept in sync with memberships by DAVdroid and are used to determine
+     * Cached memberships are kept in sync with memberships by DAVx5 and are used to determine
      * whether a membership has been deleted/added when a raw contact is dirty.
      * @return set of {@link GroupMembership#GROUP_ROW_ID} (may be empty)
      * @throws FileNotFoundException if the current contact can't be found

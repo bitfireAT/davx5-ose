@@ -21,6 +21,7 @@
     <string name="please_wait">Please wait …</string>
     <string name="send">Send</string>
     <string name="homepage_url" translatable="false">https://www.davx5.com/</string>
+    <string name="twitter_handle" translatable="false">davx5app</string>
 
     <string name="notification_channel_debugging">Debugging</string>
     <string name="notification_channel_general">Other important messages</string>

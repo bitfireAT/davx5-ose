@@ -58,10 +58,10 @@ import java.util.logging.Level
  *   to be checked whether its group memberships have changed. In this case, the respective
  *   groups have to be set to dirty. For instance, if contact A is in group G and H, and then
  *   group membership of G is removed, the contact will be set to dirty because of the changed
- *   [android.provider.ContactsContract.CommonDataKinds.GroupMembership]. DAVdroid will
+ *   [android.provider.ContactsContract.CommonDataKinds.GroupMembership]. DAVx5 will
  *   then have to check whether the group memberships have actually changed, and if so,
  *   all affected groups have to be set to dirty. To detect changes in group memberships,
- *   DAVdroid always mirrors all [android.provider.ContactsContract.CommonDataKinds.GroupMembership]
+ *   DAVx5 always mirrors all [android.provider.ContactsContract.CommonDataKinds.GroupMembership]
  *   data rows in respective [at.bitfire.vcard4android.CachedGroupMembership] rows.
  *   If the cached group memberships are not the same as the current group member ships, the
  *   difference set (in our example G, because its in the cached memberships, but not in the

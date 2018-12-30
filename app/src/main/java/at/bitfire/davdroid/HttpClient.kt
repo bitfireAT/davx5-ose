@@ -187,7 +187,7 @@ class HttpClient private constructor(
                     val key = KeyChain.getPrivateKey(context, alias) ?: return@let
                     logger.fine("Using client certificate $alias for authentication (chain length: ${certs.size})")
 
-                    // create Android KeyStore (performs key operations without revealing secret data to DAVdroid)
+                    // create Android KeyStore (performs key operations without revealing secret data to DAVx5)
                     val keyStore = KeyStore.getInstance("AndroidKeyStore")
                     keyStore.load(null)
 
@@ -223,11 +223,10 @@ class HttpClient private constructor(
 
 
     private object UserAgentInterceptor: Interceptor {
-
         // use Locale.US because numbers may be encoded as non-ASCII characters in other locales
         private val userAgentDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US)
         private val userAgentDate = userAgentDateFormat.format(Date(BuildConfig.buildTime))
-        private val userAgent = "DAVdroid/${BuildConfig.VERSION_NAME} ($userAgentDate; dav4android; okhttp/${Constants.okHttpVersion}) Android/${Build.VERSION.RELEASE}"
+        private val userAgent = "DAVx5/${BuildConfig.VERSION_NAME} ($userAgentDate; dav4android; okhttp/${Constants.okHttpVersion}) Android/${Build.VERSION.RELEASE}"
 
         override fun intercept(chain: Interceptor.Chain): Response {
             val locale = Locale.getDefault()

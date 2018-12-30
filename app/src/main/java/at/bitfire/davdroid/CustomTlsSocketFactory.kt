@@ -82,7 +82,7 @@ class CustomTlsSocketFactory(
 
                         /* For maximum security, preferredCiphers should *replace* enabled ciphers (thus
                          * disabling ciphers which are enabled by default, but have become unsecure), but for
-                         * the security level of DAVdroid and maximum compatibility, disabling of insecure
+                         * the security level of DAVx5 and maximum compatibility, disabling of insecure
                          * ciphers should be a server-side task */
 
                         // for the final set of enabled ciphers, take the ciphers enabled by default, ...
