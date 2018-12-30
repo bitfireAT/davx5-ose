@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="address_books_authority_title">دفترچه‌های آدرس</string>
+  <string name="help">راهنما</string>
+  <string name="manage_accounts">مدیریت حساب‌ها</string>
+  <string name="please_wait">کمی صبر کنید …</string>
+  <string name="send">ارسال</string>
+  <string name="notification_channel_debugging">عیب‌یابی</string>
+  <string name="notification_channel_general">سایر پیام‌های مهم</string>
+  <string name="notification_channel_sync">همگام‌سازی</string>
+  <string name="notification_channel_sync_errors">خطاهای همگام‌سازی</string>
+  <string name="notification_channel_sync_io_errors">خطاهای شبکه</string>
+  <!--startup dialogs-->
+  <!--AboutActivity-->
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <!--DavService-->
+  <!--AppSettingsActivity-->
+  <!--AccountActivity-->
+  <!--AddAccountActivity-->
+  <!--AccountSettingsActivity-->
+  <!--collection management-->
+  <string name="create_addressbook">ساخت دفترچه آدرس </string>
+  <string name="create_addressbook_display_name_hint">دفترچه آدرس  من</string>
+  <string name="create_calendar_display_name_hint">تقویم من</string>
+  <string name="create_collection_create">ساخته شدن</string>
+  <string name="delete_collection_confirm_title">آیا مطمءن هستین؟</string>
+  <!--ExceptionInfoFragment-->
+  <!--sync adapters and DebugInfoActivity-->
+  <!--cert4android-->
+</resources>
