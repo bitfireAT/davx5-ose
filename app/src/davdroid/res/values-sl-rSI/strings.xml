@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="address_books_authority_title">Seznami s stiki</string>
+  <string name="help">Pomoč</string>
+  <string name="manage_accounts">Urejanje prijav</string>
+  <string name="please_wait">Počakajte …</string>
+  <string name="send">Pošlji</string>
+  <!--startup dialogs-->
+  <string name="startup_dont_show_again">Ne pokaži več</string>
+  <string name="startup_donate">Odprtokodne informacije</string>
+  <string name="startup_donate_now">Pojdi na stran donacij</string>
+  <string name="startup_donate_later">Morda kasneje</string>
+  <string name="startup_google_play_accounts_removed">Napaka DRM trgovine Google Play</string>
+  <!--AboutActivity-->
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <!--DavService-->
+  <!--AppSettingsActivity-->
+  <!--AccountActivity-->
+  <!--AddAccountActivity-->
+  <!--AccountSettingsActivity-->
+  <!--collection management-->
+  <!--ExceptionInfoFragment-->
+  <!--sync adapters and DebugInfoActivity-->
+  <!--cert4android-->
+</resources>
