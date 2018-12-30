@@ -137,7 +137,6 @@ class AppSettingsActivity: AppCompatActivity() {
             val settings = Settings.getInstance(requireActivity())
             settings.remove(StartupDialogFragment.HINT_AUTOSTART_PERMISSIONS)
             settings.remove(StartupDialogFragment.HINT_BATTERY_OPTIMIZATIONS)
-            settings.remove(StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED)
             settings.remove(StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED)
             Snackbar.make(view!!, R.string.app_settings_reset_hints_success, Snackbar.LENGTH_LONG).show()
         }

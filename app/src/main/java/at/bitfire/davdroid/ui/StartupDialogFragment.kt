@@ -13,8 +13,6 @@ import android.annotation.TargetApi
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
-import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -28,14 +26,12 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.Settings
 import java.util.*
-import java.util.logging.Level
 
 class StartupDialogFragment: DialogFragment() {
 
     enum class Mode {
         AUTOSTART_PERMISSIONS,
         BATTERY_OPTIMIZATIONS,
-        GOOGLE_PLAY_ACCOUNTS_REMOVED,
         OPENTASKS_NOT_INSTALLED,
         OSE_DONATE
     }
@@ -49,7 +45,6 @@ class StartupDialogFragment: DialogFragment() {
         private val autostartManufacturers = arrayOf("huawei", "letv", "oneplus", "vivo", "xiaomi", "zte")
 
         const val HINT_BATTERY_OPTIMIZATIONS = "hint_BatteryOptimizations"
-        const val HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED = "hint_GooglePlayAccountsRemoved"
         const val HINT_OPENTASKS_NOT_INSTALLED = "hint_OpenTasksNotInstalled"
 
         const val ARGS_MODE = "mode"
@@ -60,14 +55,6 @@ class StartupDialogFragment: DialogFragment() {
 
             if (System.currentTimeMillis() > settings.getLong(SETTING_NEXT_DONATION_POPUP) ?: 0)
                 dialogs += StartupDialogFragment.instantiate(Mode.OSE_DONATE)
-
-            // store-specific information
-            /*if (BuildConfig.FLAVOR == App.FLAVOR_GOOGLE_PLAY) {
-                // Play store
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP &&         // only on Android <5
-                    settings.getBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED) != false)   // and only when "Don't show again" hasn't been clicked yet
-                    dialogs += StartupDialogFragment.instantiate(Mode.GOOGLE_PLAY_ACCOUNTS_REMOVED)
-            }*/
 
             // battery optimization white-listing
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && settings.getBoolean(HINT_BATTERY_OPTIMIZATIONS) != false) {
@@ -135,28 +122,6 @@ class StartupDialogFragment: DialogFragment() {
                             settings.putBoolean(HINT_BATTERY_OPTIMIZATIONS, false)
                         }
                         .create()
-
-            Mode.GOOGLE_PLAY_ACCOUNTS_REMOVED -> {
-                var icon: Drawable? = null
-                try {
-                    icon = activity.packageManager.getApplicationIcon("com.android.vending").current
-                } catch(e: PackageManager.NameNotFoundException) {
-                    Logger.log.log(Level.WARNING, "Can't load Play Store icon", e)
-                }
-                return AlertDialog.Builder(activity)
-                        .setIcon(icon)
-                        .setTitle(R.string.startup_google_play_accounts_removed)
-                        .setMessage(R.string.startup_google_play_accounts_removed_message)
-                        .setPositiveButton(R.string.startup_more_info) { _, _ ->
-                            UiUtils.launchUri(requireActivity(), App.homepageUrl(requireActivity()).buildUpon()
-                                    .appendPath("faq").appendEncodedPath("accounts-gone-after-reboot-or-update/").build())
-                        }
-                        .setNeutralButton(R.string.startup_not_now) { _, _ -> }
-                        .setNegativeButton(R.string.startup_dont_show_again) { _, _ ->
-                            settings.putBoolean(HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, false)
-                        }
-                        .create()
-            }
 
             Mode.OPENTASKS_NOT_INSTALLED -> {
                 val builder = StringBuilder(getString(R.string.startup_opentasks_not_installed_message))

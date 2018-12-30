@@ -161,8 +161,8 @@ class ServiceDB {
                             "overrideProxyHost" -> edit.putString(Settings.OVERRIDE_PROXY_HOST, cursor.getString(1))
                             "overrideProxyPort" -> edit.putInt(Settings.OVERRIDE_PROXY_PORT, cursor.getInt(1))
 
-                            StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED ->
-                                edit.putBoolean(StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, cursor.getInt(1) != 0)
+                            /*StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED ->
+                                edit.putBoolean(StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, cursor.getInt(1) != 0)*/
                             StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED ->
                                 edit.putBoolean(StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED, cursor.getInt(1) != 0)
                         }
