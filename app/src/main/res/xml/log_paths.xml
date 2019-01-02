@@ -8,6 +8,5 @@
   -->
 
 <paths>
-    <!-- debug info can be deleted after it has been used, so let's use a cache dir -->
-    <cache-path name="debug-info" path="debug-info/"/>
+    <files-path name="debug" path="debug/"/>
 </paths>

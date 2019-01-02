@@ -120,12 +120,6 @@ class AppSettingsActivity: AppCompatActivity() {
             // security settings
             val prefDistrustSystemCerts = findPreference(Settings.DISTRUST_SYSTEM_CERTIFICATES) as SwitchPreferenceCompat
             prefDistrustSystemCerts.isChecked = settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES) ?: Settings.DISTRUST_SYSTEM_CERTIFICATES_DEFAULT
-
-            // debugging settings
-            val prefLogToExternalStorage = findPreference(Logger.LOG_TO_EXTERNAL_STORAGE) as SwitchPreferenceCompat
-            prefLogToExternalStorage.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                true
-            }
         }
 
         override fun onSettingsChanged() {

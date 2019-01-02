@@ -57,10 +57,10 @@
     <string name="about_license_info_no_warranty">This program comes with ABSOLUTELY NO WARRANTY. It is free software, and you are welcome to redistribute it under certain conditions.</string>
 
     <!-- global settings -->
-    <string name="logging_davx5_file_logging">DAVx⁵ file logging</string>
-    <string name="logging_to_external_storage">Logging to external storage: %s</string>
-    <string name="logging_couldnt_create_file">Couldn\'t create external log file: %s</string>
-    <string name="logging_no_external_storage">External storage not found</string>
+    <string name="logging_couldnt_create_file">Couldn\'t create log file</string>
+    <string name="logging_notification_title">DAVx⁵ logging</string>
+    <string name="logging_notification_text">Now logging all DAVx⁵ activities</string>
+    <string name="logging_notification_share_log">Share log</string>
 
     <!-- AccountsActivity -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -87,10 +87,12 @@
 
     <!-- AppSettingsActivity -->
     <string name="app_settings">Settings</string>
-    <string name="app_settings_user_interface">User interface</string>
-    <string name="app_settings_reset_hints">Reset hints</string>
-    <string name="app_settings_reset_hints_summary">Re-enables hints which have been dismissed previously</string>
-    <string name="app_settings_reset_hints_success">All hints will be shown again</string>
+    <string name="app_settings_debug">Debugging</string>
+    <string name="app_settings_show_debug_info">Show debug info</string>
+    <string name="app_settings_show_debug_info_details">View/share software and configuration details</string>
+    <string name="app_settings_logging">Verbose logging</string>
+    <string name="app_settings_logging_on">Logging is active</string>
+    <string name="app_settings_logging_off">Logging is disabled</string>
     <string name="app_settings_connection">Connection</string>
     <string name="app_settings_override_proxy">Override proxy settings</string>
     <string name="app_settings_override_proxy_on">Use custom proxy settings</string>
@@ -104,12 +106,10 @@
     <string name="app_settings_reset_certificates">Reset (un)trusted certificates</string>
     <string name="app_settings_reset_certificates_summary">Resets trust of all custom certificates</string>
     <string name="app_settings_reset_certificates_success">All custom certificates have been cleared</string>
-    <string name="app_settings_debug">Debugging</string>
-    <string name="app_settings_log_to_external_storage">Log to external file</string>
-    <string name="app_settings_log_to_external_storage_on">Logging to external storage (if available)</string>
-    <string name="app_settings_log_to_external_storage_off">External file logging is disabled</string>
-    <string name="app_settings_show_debug_info">Show debug info</string>
-    <string name="app_settings_show_debug_info_details">View/share software and configuration details</string>
+    <string name="app_settings_user_interface">User interface</string>
+    <string name="app_settings_reset_hints">Reset hints</string>
+    <string name="app_settings_reset_hints_summary">Re-enables hints which have been dismissed previously</string>
+    <string name="app_settings_reset_hints_success">All hints will be shown again</string>
 
     <!-- AccountActivity -->
     <string name="account_synchronize_now">Synchronize now</string>
