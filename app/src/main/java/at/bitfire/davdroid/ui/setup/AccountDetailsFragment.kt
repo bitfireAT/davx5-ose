@@ -14,7 +14,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.os.AsyncTask
@@ -59,7 +58,7 @@ class AccountDetailsFragment: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = inflater.inflate(R.layout.login_account_details, container, false)
 
-        v.back.setOnClickListener { _ ->
+        v.back.setOnClickListener {
             requireFragmentManager().popBackStack()
         }
 
@@ -77,7 +76,7 @@ class AccountDetailsFragment: Fragment() {
         if (settings.has(AccountSettings.KEY_CONTACT_GROUP_METHOD))
             v.contact_group_method.isEnabled = false
 
-        v.create_account.setOnClickListener { _ ->
+        v.create_account.setOnClickListener {
             val name = v.account_name.text.toString()
             if (name.isEmpty())
                 v.account_name.error = getString(R.string.login_account_name_required)
@@ -88,7 +87,7 @@ class AccountDetailsFragment: Fragment() {
                 v.create_account.visibility = View.GONE
                 v.create_account_progress.visibility = View.VISIBLE
 
-                CreateAccountTask(requireActivity().applicationContext, WeakReference(requireActivity()),
+                CreateAccountTask(requireActivity(),
                         name,
                         args.getParcelable(KEY_CONFIG) as DavResourceFinder.Configuration,
                         GroupMethod.valueOf(groupMethodName)).execute()
@@ -111,15 +110,17 @@ class AccountDetailsFragment: Fragment() {
     }
 
 
-    @SuppressLint("StaticFieldLeak")    // we'll only keep the application Context
     class CreateAccountTask(
-            private val appContext: Context,
-            private val activityRef: WeakReference<Activity>,
+            activity: Activity,
 
             private val accountName: String,
             private val config: DavResourceFinder.Configuration,
             private val groupMethod: GroupMethod
     ): AsyncTask<Void, Void, Boolean>() {
+
+        @SuppressLint("StaticFieldLeak")    // we'll only keep the application Context
+        private val appContext = activity.applicationContext
+        private val activityRef = WeakReference(activity)
 
         override fun doInBackground(vararg params: Void?): Boolean {
             val account = Account(accountName, appContext.getString(R.string.account_type))

@@ -8,12 +8,14 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.app.PendingIntent
 import android.content.*
 import android.content.pm.PackageManager
 import android.database.DatabaseUtils
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -47,6 +49,11 @@ class TasksSyncAdapterService: SyncAdapterService() {
         override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
                 val taskProvider = TaskProvider.fromProviderClient(context, provider)
+
+                // make sure account can be seen by OpenTasks
+                if (Build.VERSION.SDK_INT >= 26)
+                    AccountManager.get(context).setAccountVisibility(account, taskProvider.name.packageName, AccountManager.VISIBILITY_VISIBLE)
+
                 val accountSettings = AccountSettings(context, account)
                 /* don't run sync if
                    - sync conditions (e.g. "sync only in WiFi") are not met AND
