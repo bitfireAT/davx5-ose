@@ -146,12 +146,12 @@ class AccountDetailsFragment: Fragment() {
                         // insert CardDAV service
                         val id = insertService(db, accountName, Services.SERVICE_CARDDAV, config.cardDAV)
 
+                        // initial CardDAV account settings
+                        accountSettings.setGroupMethod(groupMethod)
+
                         // start CardDAV service detection (refresh collections)
                         refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
                         appContext.startService(refreshIntent)
-
-                        // initial CardDAV account settings
-                        accountSettings.setGroupMethod(groupMethod)
 
                         // contact sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_address_books.xml
                         accountSettings.setSyncInterval(appContext.getString(R.string.address_books_authority), Constants.DEFAULT_SYNC_INTERVAL)

@@ -419,25 +419,21 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
         // ask for permissions
         val requiredPermissions = mutableSetOf<String>()
-        info?.carddav?.let { carddav ->
-            if (carddav.collections.any { it.type == CollectionInfo.Type.ADDRESS_BOOK }) {
-                requiredPermissions += Manifest.permission.READ_CONTACTS
-                requiredPermissions += Manifest.permission.WRITE_CONTACTS
-            }
+        if (info?.carddav != null) {
+            // if there is a CardDAV service, ask for contacts permissions
+            requiredPermissions += Manifest.permission.READ_CONTACTS
+            requiredPermissions += Manifest.permission.WRITE_CONTACTS
         }
 
-        info?.caldav?.let { caldav ->
-            if (caldav.collections.any { it.type == CollectionInfo.Type.CALENDAR }) {
-                requiredPermissions += Manifest.permission.READ_CALENDAR
-                requiredPermissions += Manifest.permission.WRITE_CALENDAR
+        if (info?.caldav != null) {
+            // if there is a CalDAV service, ask for calendar and tasks permissions
+            requiredPermissions += Manifest.permission.READ_CALENDAR
+            requiredPermissions += Manifest.permission.WRITE_CALENDAR
 
-                if (LocalTaskList.tasksProviderAvailable(this)) {
-                    requiredPermissions += TaskProvider.PERMISSION_READ_TASKS
-                    requiredPermissions += TaskProvider.PERMISSION_WRITE_TASKS
-                }
+            if (LocalTaskList.tasksProviderAvailable(this)) {
+                requiredPermissions += TaskProvider.PERMISSION_READ_TASKS
+                requiredPermissions += TaskProvider.PERMISSION_WRITE_TASKS
             }
-            if (caldav.collections.any { it.type == CollectionInfo.Type.WEBCAL })
-                requiredPermissions += Manifest.permission.READ_CALENDAR
         }
 
         val askPermissions = requiredPermissions.filter { ActivityCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED }
