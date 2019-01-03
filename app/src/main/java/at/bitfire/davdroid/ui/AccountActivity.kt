@@ -255,7 +255,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
                 val installIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=at.bitfire.icsdroid"))
                 if (packageManager.resolveActivity(installIntent, 0) != null)
-                    snack.setAction(R.string.account_install_icsdroid) {
+                    snack.setAction(R.string.account_install_icsx5) {
                         startActivity(installIntent)
                     }
 
