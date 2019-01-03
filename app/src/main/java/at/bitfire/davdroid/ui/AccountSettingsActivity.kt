@@ -105,7 +105,12 @@ class AccountSettingsActivity: AppCompatActivity() {
             settings.removeOnChangeListener(this)
         }
 
-        override fun onStatusChanged(which: Int) = reload()
+        override fun onStatusChanged(which: Int) {
+            Handler(Looper.getMainLooper()).post {
+                reload()
+            }
+        }
+
         override fun onSettingsChanged()  = reload()
 
         fun reload() {
