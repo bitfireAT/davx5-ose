@@ -181,7 +181,7 @@
     <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Every %d minutes + immediately on local changes</string>
     <string name="settings_sync_interval_calendars">Calendars sync. interval</string>
     <string name="settings_sync_interval_tasks">Tasks sync. interval</string>
-    <string-array name="settings_sync_interval_seconds">
+    <string-array name="settings_sync_interval_seconds" translatable="false">
         <item>-1</item>
         <item>900</item>
         <item>1800</item>
@@ -208,7 +208,7 @@
     <string name="settings_sync_wifi_only_ssids_message">Comma-separated names (SSIDs) of allowed WiFi networks (leave blank for all)</string>
     <string name="settings_carddav">CardDAV</string>
     <string name="settings_contact_group_method">Contact group method</string>
-    <string-array name="settings_contact_group_method_values">
+    <string-array name="settings_contact_group_method_values" translatable="false">
         <item>GROUP_VCARDS</item>
         <item>CATEGORIES</item>
     </string-array>
