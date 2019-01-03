@@ -12,18 +12,12 @@
   <string name="startup_donate_message">Açık kaynaklı yazılım (GPLv3) olan DAVx⁵\'i kullandığına çok mutluyuz. DAVx⁵\'i geliştirmek zor bir iş ve üzerinde binlerce saat çalıştığımızdan, lütfen bir bağışta bulunmayı düşün.</string>
   <string name="startup_donate_now">Bağış sayfasını göster</string>
   <string name="startup_donate_later">Belki sonra</string>
-  <string name="startup_google_play_accounts_removed">Play Store DRM hata bilgisi</string>
-  <string name="startup_google_play_accounts_removed_message">Bazı durumlarda Play Store DRM\'i, cihazı yeniden başlatınca veya DAVx⁵\'i yükseltince DAVx⁵ hesaplarının yokolmasına sebep olabiliyor. Bu sorundan etkileniyorsan (ve sadece bu durumda), lütfen Play Store\'daki \"DAVx⁵ JB Workaround\" uygulamasını kur.</string>
   <string name="startup_opentasks_not_installed">OpenTasks kurulu değil</string>
   <string name="startup_opentasks_reinstall_davx5">OpenTasks\'i kurduktan sonra, DAVx⁵\'i YENİDEN KURMAN ve hesaplarını yeniden eklemen gerek. (Android hatası).</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks kur</string>
   <!--AboutActivity-->
   <string name="about_license_info_no_warranty">Bu uygulama HİÇ BİR GARANTİ ile gelmemektedir. Bedava bir yazılımdır ve belli koşullar altında dağıtabilirsiniz.</string>
   <!--global settings-->
-  <string name="logging_davx5_file_logging">DAVx⁵ dosya jurnallemesi</string>
-  <string name="logging_to_external_storage">Harici depolamaya jurnalleniyor: %s</string>
-  <string name="logging_couldnt_create_file">Harici jurnal dosyası yaratılamadı: %s </string>
-  <string name="logging_no_external_storage">Harici depolama alanı bulunamadı</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Navigasyon çekmecesini aç</string>
   <string name="navigation_drawer_close">Navigasyon çekmecesini kapat</string>
@@ -41,17 +35,14 @@
   <string name="dav_service_refresh_couldnt_refresh">Kolleksiyon listesi yenilenemedi</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Ayarlar</string>
+  <string name="app_settings_debug">Hata ayıklama</string>
+  <string name="app_settings_show_debug_info">Hata ayıklama bilgilerini göster</string>
+  <string name="app_settings_show_debug_info_details">Yazılım ve konfigürasyon detaylarına bak/paylaş</string>
+  <string name="app_settings_security">Güvenlik</string>
   <string name="app_settings_user_interface">Kullanıcı arayüzü</string>
   <string name="app_settings_reset_hints">İpuçlarını sıfırla</string>
   <string name="app_settings_reset_hints_summary">Daha önceden azat edilen ipuçlarını yeniden etkinleştirir</string>
   <string name="app_settings_reset_hints_success">Tüm ipuçları artık gösterilecek</string>
-  <string name="app_settings_security">Güvenlik</string>
-  <string name="app_settings_debug">Hata ayıklama</string>
-  <string name="app_settings_log_to_external_storage">Harici dosyaya jurnalle</string>
-  <string name="app_settings_log_to_external_storage_on">Harici depolamaya jurnalleniyor (eğer uygunsa)</string>
-  <string name="app_settings_log_to_external_storage_off">Harici depolama mevcut değil</string>
-  <string name="app_settings_show_debug_info">Hata ayıklama bilgilerini göster</string>
-  <string name="app_settings_show_debug_info_details">Yazılım ve konfigürasyon detaylarına bak/paylaş</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Şimdi senkronize et</string>
   <string name="account_synchronizing_now">Senkronize ediyor</string>

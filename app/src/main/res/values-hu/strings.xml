@@ -26,8 +26,6 @@
   <string name="startup_donate_message">Örülünk, hogy használja a DAVx⁵ot.  A DAVx⁵ nyílt forráskódú (GPLv3) szoftver, de a fejlesztése kemény munkát jelent, már eddig több ezer munkaórát emésztett fel, ezért kérjük, fontolja meg, hogy támogassa munkánkat.</string>
   <string name="startup_donate_now">Támogatás küldése</string>
   <string name="startup_donate_later">Talán később</string>
-  <string name="startup_google_play_accounts_removed">Play Áruház DRM hibával kapcsolatos információ</string>
-  <string name="startup_google_play_accounts_removed_message">Bizonyos körülmények között  a Play Áruház DRM okozhatja azt, hogy az eszköz újraindítását vagy a DAVx⁵ frissítését követően a DAVx⁵ fiókok eltűnnek.  Amennyiben (és csak amennyiben) érinti Önt ez a probléma, telepítse a \"DAVx⁵ JB Workaround\" alkalmazást Play Áruházból.</string>
   <string name="startup_more_info">További információk</string>
   <string name="startup_opentasks_not_installed">Az OpenTasks nincs telepítve</string>
   <string name="startup_opentasks_not_installed_message">A feladatok szinkronizálásához az ingyenes OpenTasks alkalmazásra van szükség.  (A névjegyek és események szinkronizálásához erre nincs szükség.)</string>
@@ -37,13 +35,8 @@
   <string name="about_libraries">Könyvtárak</string>
   <string name="about_version">Verziószám:%1s (%2d)</string>
   <string name="about_build_date">Fordítás ideje: %s</string>
-  <string name="about_flavor_info">Ennek a verziónak a terjesztése csak a Play Áruházon keresztül engedélyezett.</string>
   <string name="about_license_info_no_warranty">Ehhez a program SEMMIFÉLE GARANCIA NEM JÁR.   Ez a program szabad szoftver, ami a bizonyos feltételek mellett szabadon terjeszthető.</string>
   <!--global settings-->
-  <string name="logging_davx5_file_logging">DAVx⁵ fájlalapú naplózás</string>
-  <string name="logging_to_external_storage">Naplózás külső tárhelyre: %s</string>
-  <string name="logging_couldnt_create_file">Külső naplófájl létrehozása sikertelen: %s</string>
-  <string name="logging_no_external_storage">A külső tárhely nem érhető el</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Navigációs fiók megnyitása</string>
   <string name="navigation_drawer_close">Navigációs fiók lezárása</string>
@@ -66,10 +59,9 @@
   <string name="dav_service_refresh_couldnt_refresh">Gyűjteménylista frissítése nem sikerült</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Beállítások</string>
-  <string name="app_settings_user_interface">Felhasználói felület</string>
-  <string name="app_settings_reset_hints">Tippek visszaállítása</string>
-  <string name="app_settings_reset_hints_summary">Újra jelenjen meg az összes tipp</string>
-  <string name="app_settings_reset_hints_success">Az összes tipp újra meg fog jelenni</string>
+  <string name="app_settings_debug">Hibakeresés</string>
+  <string name="app_settings_show_debug_info">Hibakeresési információ megtekintése</string>
+  <string name="app_settings_show_debug_info_details">Szoftver- és konfigurációs részletek megtekintése/megosztása</string>
   <string name="app_settings_connection">Kapcsolat</string>
   <string name="app_settings_override_proxy">Proxybeállítások felülírása</string>
   <string name="app_settings_override_proxy_on">Egyedi proxybeállítások</string>
@@ -83,12 +75,10 @@
   <string name="app_settings_reset_certificates">A tanúsítványok megbízhatóságának törlésére</string>
   <string name="app_settings_reset_certificates_summary">A tanúsítványok megbízhatóságával kapcsolatos beállítások törlésére</string>
   <string name="app_settings_reset_certificates_success">A tanúsítványok megbízhatóságával kapcsolatos beállítások törölve</string>
-  <string name="app_settings_debug">Hibakeresés</string>
-  <string name="app_settings_log_to_external_storage">Naplózás fájlba</string>
-  <string name="app_settings_log_to_external_storage_on">Naplózás külső tárhelyre (ha elérhető)</string>
-  <string name="app_settings_log_to_external_storage_off">Fájlalapú naplózás kikapcsolva</string>
-  <string name="app_settings_show_debug_info">Hibakeresési információ megtekintése</string>
-  <string name="app_settings_show_debug_info_details">Szoftver- és konfigurációs részletek megtekintése/megosztása</string>
+  <string name="app_settings_user_interface">Felhasználói felület</string>
+  <string name="app_settings_reset_hints">Tippek visszaállítása</string>
+  <string name="app_settings_reset_hints_summary">Újra jelenjen meg az összes tipp</string>
+  <string name="app_settings_reset_hints_success">Az összes tipp újra meg fog jelenni</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Szinkronizálás most</string>
   <string name="account_synchronizing_now">Szinkronizálás</string>
@@ -174,10 +164,6 @@
   <string name="settings_sync_wifi_only_ssids_message">A használható WiFi hálózatok nevei (SSID), vesszővel elválasztva (hagyja üresen, ha nem akar szűrést beállítani)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">A csoportok kezelésének módja</string>
-  <string-array name="settings_contact_group_method_values">
-    <item>GROUP_VCARDS</item>
-    <item>CATEGORIES</item>
-  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>Minden csoport egy különálló VCard</item>
     <item>A csoportok a kapcsolatonkéni kategóriák</item>

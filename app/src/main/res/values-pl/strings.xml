@@ -16,18 +16,12 @@
   <string name="startup_donate_message">Jesteśmy szczęśliwi, że używasz DAVx⁵, który jest oprogramowaniem open-source (GPLv3). Ponieważ rozwijanie DAVx⁵ jest ciężką pracą i zajęło nam tysiące godzin pracy, prosimy o rozważenie darowizny.</string>
   <string name="startup_donate_now">Pokaż stronę darowizny</string>
   <string name="startup_donate_later">Może później</string>
-  <string name="startup_google_play_accounts_removed">Informacje o błędzie DRM Sklepu Play</string>
-  <string name="startup_google_play_accounts_removed_message">Pod pewnymi warunkami, DRM Sklepu Play może powodować, że wszystkie konta DAVx⁵ mogą zostać usunięte po uruchomieniu lub po uaktualnieniu DAVx⁵. Jeśli jesteś dotknięty tym problemem (i tylko wtedy) należy zainstalować \"DAVx⁵ JB Obejście\" ze Sklepu Play.</string>
   <string name="startup_opentasks_not_installed">OpenTasks nie jest zainstalowany</string>
   <string name="startup_opentasks_reinstall_davx5">Po zainstalowaniu OpenTasks konieczne jest PRZEINSTALOWANIE DAVx⁵ i ponowne dodanie twoich kont (błąd Androida).</string>
   <string name="startup_opentasks_not_installed_install">Zainstaluj OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_license_info_no_warranty">Ten program jest ABSOLUTNIE BEZ GWARANCJI. To jest wolne oprogramowanie i mile widziane jest dalsze rozpowszechnianie go pod pewnymi warunkami.</string>
   <!--global settings-->
-  <string name="logging_davx5_file_logging">Plik logów DAVx⁵</string>
-  <string name="logging_to_external_storage">Logowanie do zewnątrznej pamięci: %s</string>
-  <string name="logging_couldnt_create_file">Nie można stworzyć zewnętrznego pliku logów: %s</string>
-  <string name="logging_no_external_storage">Zewnętrzna pamięci nie została naleziona</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Otwórz menu nawigacji</string>
   <string name="navigation_drawer_close">Zamknij menu nawigacji</string>
@@ -50,10 +44,9 @@
   <string name="dav_service_refresh_couldnt_refresh">Nie można odświeżyć listy kolekcji</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Ustawienia</string>
-  <string name="app_settings_user_interface">Interfejs użytkownika</string>
-  <string name="app_settings_reset_hints">Zresetuj podpowiedzi</string>
-  <string name="app_settings_reset_hints_summary">Ponownie włącz wskazówki, które zostały usunięte wcześniej</string>
-  <string name="app_settings_reset_hints_success">Wszystkie wskazówki pojawią się ponownie</string>
+  <string name="app_settings_debug">Debugowanie</string>
+  <string name="app_settings_show_debug_info">Pokaż informacje do debugowania</string>
+  <string name="app_settings_show_debug_info_details">Przejrzyj lub udostępnij informacje o programie i jego konfiguracji</string>
   <string name="app_settings_connection">Łączność</string>
   <string name="app_settings_override_proxy">Nadpisz ustawienia proxy</string>
   <string name="app_settings_override_proxy_on">Użyj niestandardowych ustawień proxy </string>
@@ -67,12 +60,10 @@
   <string name="app_settings_reset_certificates">Zresetuj (nie)zaufane certyfikaty</string>
   <string name="app_settings_reset_certificates_summary">Zresetuj wszystkie niestandardowe certyfikaty.</string>
   <string name="app_settings_reset_certificates_success">Wszystkie niestandardowe certyfikaty zostały wyczyszczone</string>
-  <string name="app_settings_debug">Debugowanie</string>
-  <string name="app_settings_log_to_external_storage">Loguj do zewnętrznego pliku</string>
-  <string name="app_settings_log_to_external_storage_on">Logowanie do zewnętrznej pamięci (jeśli jest dostępna)</string>
-  <string name="app_settings_log_to_external_storage_off">Logowanie do zewnętrznego pliku jest wyłączone</string>
-  <string name="app_settings_show_debug_info">Pokaż informacje do debugowania</string>
-  <string name="app_settings_show_debug_info_details">Przejrzyj lub udostępnij informacje o programie i jego konfiguracji</string>
+  <string name="app_settings_user_interface">Interfejs użytkownika</string>
+  <string name="app_settings_reset_hints">Zresetuj podpowiedzi</string>
+  <string name="app_settings_reset_hints_summary">Ponownie włącz wskazówki, które zostały usunięte wcześniej</string>
+  <string name="app_settings_reset_hints_success">Wszystkie wskazówki pojawią się ponownie</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Synchronizuj teraz</string>
   <string name="account_synchronizing_now">Synchronizcja w toku</string>
@@ -156,10 +147,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Nazwy oddzielone przecinkami (SSID) dozwolonych sieci WiFi (pozostaw puste dla wszystkich)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Metoda grupowania kontaktów</string>
-  <string-array name="settings_contact_group_method_values">
-    <item>GROUP_VCARDS</item>
-    <item>CATEGORIES</item>
-  </string-array>
   <string name="settings_contact_group_method_change">Zmień metodę grupową</string>
   <string name="settings_contact_group_method_change_reload_contacts">Wymaga to ponownego pobrania wszystkich kontaktów. Niezapisane zmiany z tego telefonu zostaną usunięte.</string>
   <string name="settings_caldav">CalDAV</string>

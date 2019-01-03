@@ -21,8 +21,6 @@
   <string name="startup_donate_message">Nos alegra que uses DAVx⁵, que es software de código abierto (GPLv3). Debido al duro trabajo que supone el desarrollo de DAVx⁵ y los cientos de horas de trabajo, por favor, considera hacer una donación.</string>
   <string name="startup_donate_now">Mostrar página de donación</string>
   <string name="startup_donate_later">Quizás luego</string>
-  <string name="startup_google_play_accounts_removed">Información de error de DRM de Play Store</string>
-  <string name="startup_google_play_accounts_removed_message">Bajo ciertas condiciones, el DRM de Play Store puede causar que todas las cuentas de DAVx⁵ se desconfiguren tras un reinicio o una actualización de DAVx⁵. Si esto le afecta (y sólo en ese caso), por favor, instale \"DAVx⁵ JB Workaround\" desde Play Store.</string>
   <string name="startup_more_info">Más información</string>
   <string name="startup_opentasks_not_installed">OpenTasks no está instalado</string>
   <string name="startup_opentasks_not_installed_message">Para sincronizar tareas, la aplicación libre OpenTasks es requerida. (No necesaria para contactos/eventos.)</string>
@@ -31,10 +29,6 @@
   <!--AboutActivity-->
   <string name="about_license_info_no_warranty">Este programa viene sin NINGÚN TIPO DE GARANTÍA. Es software libre, y cualquier contribución es bienvenida y redistribuida bajo ciertas condiciones.</string>
   <!--global settings-->
-  <string name="logging_davx5_file_logging">Archivo de registro de DAVx⁵</string>
-  <string name="logging_to_external_storage">Registrar en almacenamiento externo: %s</string>
-  <string name="logging_couldnt_create_file">No se puede crear el archivo de registro externo: %s</string>
-  <string name="logging_no_external_storage">Almacenamiento externo no encontrado</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Abrir panel de navegación</string>
   <string name="navigation_drawer_close">Cerrar panel de navegación</string>
@@ -57,10 +51,9 @@
   <string name="dav_service_refresh_couldnt_refresh">No se pudo refrescar lista de colección</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Ajustes</string>
-  <string name="app_settings_user_interface">Interfaz de usuario</string>
-  <string name="app_settings_reset_hints">Restablecer advertencias</string>
-  <string name="app_settings_reset_hints_summary">Habilita las advertencias que han sido rechazadas con anterioridad</string>
-  <string name="app_settings_reset_hints_success">Todas las advertencias se mostrarán nuevamente</string>
+  <string name="app_settings_debug">Depuración</string>
+  <string name="app_settings_show_debug_info">Mostrar la información de depuración</string>
+  <string name="app_settings_show_debug_info_details">Ver/compartir detalles de software y configuración</string>
   <string name="app_settings_connection">Conexión</string>
   <string name="app_settings_override_proxy">Anular ajustes del proxy</string>
   <string name="app_settings_override_proxy_on">Usar ajustes personalizados del proxy</string>
@@ -74,12 +67,10 @@
   <string name="app_settings_reset_certificates">Reiniciar certificados (in)validados</string>
   <string name="app_settings_reset_certificates_summary">Reinicia la validez de todos los certificados particulares</string>
   <string name="app_settings_reset_certificates_success">Todos los certificados particulares han sido limpiados</string>
-  <string name="app_settings_debug">Depuración</string>
-  <string name="app_settings_log_to_external_storage">Registrar en fichero externo</string>
-  <string name="app_settings_log_to_external_storage_on">Registro en almacenamiento externo (si está disponible)</string>
-  <string name="app_settings_log_to_external_storage_off">El archivo de registro externo está deshabilitado</string>
-  <string name="app_settings_show_debug_info">Mostrar la información de depuración</string>
-  <string name="app_settings_show_debug_info_details">Ver/compartir detalles de software y configuración</string>
+  <string name="app_settings_user_interface">Interfaz de usuario</string>
+  <string name="app_settings_reset_hints">Restablecer advertencias</string>
+  <string name="app_settings_reset_hints_summary">Habilita las advertencias que han sido rechazadas con anterioridad</string>
+  <string name="app_settings_reset_hints_success">Todas las advertencias se mostrarán nuevamente</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Sincronizar ahora</string>
   <string name="account_synchronizing_now">Sincronizando…</string>
@@ -154,10 +145,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Nombres separados por comas (SSIDs) de redes WiFi permitidas (deje vacío para todas)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Método de contacto de grupo</string>
-  <string-array name="settings_contact_group_method_values">
-    <item>GROUP_VCARDS</item>
-    <item>CATEGORIES</item>
-  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>Los groups tienen VCards separadas</item>
     <item>Los groups tienen una categoría por contacto</item>

@@ -20,13 +20,11 @@
   <string name="startup_donate_message">Som feliços de que utilitzis DAVx⁵, el qual és programari lliure (GPLv3). Desenvolupar DAVx⁵ ens porte moltes hores i molta feina, si us plau, considera fer una donació.</string>
   <string name="startup_donate_now">Mostra la pàgina de donació</string>
   <string name="startup_donate_later">Més tard</string>
-  <string name="startup_google_play_accounts_removed">Informació d\'errors DRM a Play Store</string>
   <string name="startup_more_info">Més informació</string>
   <string name="startup_opentasks_not_installed">OpenTasks no està instal·lada</string>
   <string name="startup_opentasks_not_installed_install">Instal·lar OpenTasks</string>
   <!--AboutActivity-->
   <!--global settings-->
-  <string name="logging_no_external_storage">Emmagatzematge extern no trobat</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_about">Quan a / Llicència</string>
   <string name="navigation_drawer_beta_feedback">Retroacció de la Beta</string>
@@ -42,10 +40,10 @@
   <!--DavService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Paràmetres</string>
+  <string name="app_settings_debug">Depurador</string>
+  <string name="app_settings_security">Seguretat</string>
   <string name="app_settings_user_interface">Interfície d’usuari</string>
   <string name="app_settings_reset_hints">Reiniciar pistes</string>
-  <string name="app_settings_security">Seguretat</string>
-  <string name="app_settings_debug">Depurador</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Sincronitza ara</string>
   <string name="account_synchronizing_now">Sincronitzant ara</string>

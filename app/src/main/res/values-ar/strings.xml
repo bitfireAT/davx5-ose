@@ -26,8 +26,6 @@
   <string name="startup_donate_message">يسعدنا كونك تستخدم DAVx⁵ ، البرنامج ذو المصدر المفتوح (GPLv3). تطوير DAVx⁵ عمل مضنٍ أخذ منا آلاف ساعات العمل ، هلّا تبرعت لنا ؟</string>
   <string name="startup_donate_now">عرض صفحة التبرُّع</string>
   <string name="startup_donate_later">ربما لاحقاً</string>
-  <string name="startup_google_play_accounts_removed">معلومات علة DRM في متجر Play</string>
-  <string name="startup_google_play_accounts_removed_message">في ظروف معيّنة، DRM في متجر Play قد تتسبب في إتلاف جميع حسابات DAVx⁵ بعد إعادة تشغيل الجهاز أو حتى تحديث DAVx⁵.  فضلاً ثبّت برنامج \"DAVx⁵ JB Workaround\" من متجر Play إذا تأثرت بهذه المشكلة (فقط في هذه الحالة).</string>
   <string name="startup_more_info">المزيد من المعلومات</string>
   <string name="startup_opentasks_not_installed">OpenTasks غير مثبت</string>
   <string name="startup_opentasks_not_installed_message">تطبيق OpenTasks المجاني مطلوب لمزامنة المهام.  (غير مطلوب لمزامنة جهات الاتصال أو الأحداث)</string>
@@ -37,13 +35,8 @@
   <string name="about_libraries">المكتبات</string>
   <string name="about_version">النسخة %1s (%2d)</string>
   <string name="about_build_date">التجميع على %s</string>
-  <string name="about_flavor_info">هذا الإصدار صالح للتوزيع عبر Google Play فقط.</string>
   <string name="about_license_info_no_warranty">يقدَّم هذا البرنامج دون أدنى مسؤولية.  إنه برنامج حر، وندعوك لإعادة توزيعه حسب أحكام محددة.</string>
   <!--global settings-->
-  <string name="logging_davx5_file_logging">تسجيل ملفات DAVx⁵</string>
-  <string name="logging_to_external_storage">التسجيل في التخزين الخارجي: %s</string>
-  <string name="logging_couldnt_create_file">لا يمكن إنشاء ملف سجل خارجي: %s</string>
-  <string name="logging_no_external_storage">لم نجِد أي تخزين خارجي</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">فتح درج التنقل</string>
   <string name="navigation_drawer_close">إغلاق درج التنقل</string>
@@ -66,10 +59,9 @@
   <string name="dav_service_refresh_couldnt_refresh">لم يتمكن التطبيق من تجديد قائمة المجموعة</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">الإعدادات</string>
-  <string name="app_settings_user_interface">واجهة المستخدم</string>
-  <string name="app_settings_reset_hints">إعادة ضبط التلميحات</string>
-  <string name="app_settings_reset_hints_summary">إعادة تفعيل التلميحات التي أُبعِدت سابقاً</string>
-  <string name="app_settings_reset_hints_success">كل التلميحات ستظهر مرة أخرى</string>
+  <string name="app_settings_debug">تصحيح العلل</string>
+  <string name="app_settings_show_debug_info">عرض معلومات التصحيح</string>
+  <string name="app_settings_show_debug_info_details">عرض/مشاركة تفاصيل البرنامج والضبط</string>
   <string name="app_settings_connection">الاتصال</string>
   <string name="app_settings_override_proxy">تجاوز إعدادات الوكيل</string>
   <string name="app_settings_override_proxy_on">إستخدم إعدادات وكيل مخصَّصة</string>
@@ -83,12 +75,10 @@
   <string name="app_settings_reset_certificates">إعادة ضبط الشهادات (غير)الموثوقة</string>
   <string name="app_settings_reset_certificates_summary">إعادة ضبط حالة الثقة لجميع الشهادات المخصصة</string>
   <string name="app_settings_reset_certificates_success">تمت إزالة جميع الشهادات المخصصة</string>
-  <string name="app_settings_debug">تصحيح العلل</string>
-  <string name="app_settings_log_to_external_storage">التسجيل إلى ملف خارجي</string>
-  <string name="app_settings_log_to_external_storage_on">التسجيل إلى التخزين الخارجي (حال توفره)</string>
-  <string name="app_settings_log_to_external_storage_off">تم تعطيل التسجيل إلى ملف خارجي</string>
-  <string name="app_settings_show_debug_info">عرض معلومات التصحيح</string>
-  <string name="app_settings_show_debug_info_details">عرض/مشاركة تفاصيل البرنامج والضبط</string>
+  <string name="app_settings_user_interface">واجهة المستخدم</string>
+  <string name="app_settings_reset_hints">إعادة ضبط التلميحات</string>
+  <string name="app_settings_reset_hints_summary">إعادة تفعيل التلميحات التي أُبعِدت سابقاً</string>
+  <string name="app_settings_reset_hints_success">كل التلميحات ستظهر مرة أخرى</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">زامن الآن</string>
   <string name="account_synchronizing_now">المزامنة جارية</string>
@@ -174,10 +164,6 @@
   <string name="settings_sync_wifi_only_ssids_message">أسماء (SSIDs) مفصولة بفواصل لشبكات WiFi المسموح الاتصال عبرها (اتركه فارغاً للسماح للكل)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">طريقة مجموعة عنوان الاتصال</string>
-  <string-array name="settings_contact_group_method_values">
-    <item>GROUP_VCARDS</item>
-    <item>CATEGORIES</item>
-  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>المجموعات هي عناصر VCard منفصلة</item>
     <item>المجموعات هي فئات حسب جهة الاتصال</item>

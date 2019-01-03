@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
+  <string name="account_title_address_book">DAVx⁵ کتابچه آدرس ها</string>
   <string name="address_books_authority_title">دفترچه‌های آدرس</string>
   <string name="help">راهنما</string>
   <string name="manage_accounts">مدیریت حساب‌ها</string>
@@ -12,11 +13,47 @@
   <string name="notification_channel_sync_errors">خطاهای همگام‌سازی</string>
   <string name="notification_channel_sync_io_errors">خطاهای شبکه</string>
   <!--startup dialogs-->
+  <string name="startup_battery_optimization_disable">خاموش کردن  DAVx⁵</string>
+  <string name="startup_dont_show_again">دوباره نمایش داده نشود</string>
+  <string name="startup_not_now">الان نه</string>
+  <string name="startup_donate">اطلاعات متن باز</string>
+  <string name="startup_donate_message">از اینکه از DAVx⁵ استفاده می کنید خوشحالیم. DAVx⁵یک نرم افزار منبع باز (GPLv3) است. از آنجا که توسعه DAVx⁵ کار سختی است و ما هزاران ساعت کار را انجام دادیم، لطفا کمک مالی را در نظر بگیرید</string>
+  <string name="startup_donate_now">نمایش صفحه کمک مالی</string>
+  <string name="startup_donate_later">شاید بعدا</string>
+  <string name="startup_more_info">اطلاعات بیشتر</string>
+  <string name="startup_opentasks_reinstall_davx5">پس از نصب OpenTasks، باید DAVx⁵  را دوباره نصب کنید و دوباره حساب خود را اضافه کنید (ایراد اندرویدی).</string>
   <!--AboutActivity-->
+  <string name="about_libraries">کتابخانه ها</string>
+  <string name="about_build_date">کامپایل شده روی %s</string>
+  <string name="about_flavor_info">این نسخه تنها برای پخش در Google Play واجد شرایط است</string>
+  <string name="about_license_info_no_warranty">این برنامه بدون هیچ گونه تغییری است. این نرم افزار رایگان است و شما می توانید آن را تحت شرایط خاصی توزیع کنید.</string>
   <!--global settings-->
   <!--AccountsActivity-->
+  <string name="navigation_drawer_open">باز کردن گزینه ها</string>
+  <string name="navigation_drawer_close">بستن گزینه ها</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV آداپتور همگام سازی</string>
+  <string name="navigation_drawer_about">درباره‌ی مجوز‌ها</string>
+  <string name="navigation_drawer_beta_feedback">بازخورد بتا</string>
+  <string name="navigation_drawer_settings">تنظیمات</string>
+  <string name="navigation_drawer_news_updates">خبر ها و بروزرسانی ها</string>
+  <string name="navigation_drawer_external_links">لینک های خارجی</string>
+  <string name="navigation_drawer_website">وب سایت</string>
+  <string name="navigation_drawer_manual">کتابچه راهنمای</string>
+  <string name="navigation_drawer_forums">راهنمای فرم ها</string>
+  <string name="navigation_drawer_donate">کمک مالی</string>
+  <string name="account_list_empty">به DAVx⁵ خوش آمدید! شما اکنون می توانید یک حساب CalDAV / CardDAV اضافه کنید.</string>
+  <string name="accounts_global_sync_disabled">هماهنگ سازی خودکار سیستم در حالت غیر فعال است</string>
+  <string name="accounts_global_sync_enable">فعال کردن</string>
   <!--DavService-->
+  <string name="dav_service_refresh_failed">تشخیص خدمات ناموفق بود</string>
   <!--AppSettingsActivity-->
+  <string name="app_settings">تنظیمات</string>
+  <string name="app_settings_connection">ارتباط</string>
+  <string name="app_settings_override_proxy">تنظیمات پروکسی را لغو کنید</string>
+  <string name="app_settings_override_proxy_on">از تنظیمات پروکسی سفارشی استفاده کنید</string>
+  <string name="app_settings_user_interface">رابط کاربری</string>
+  <string name="app_settings_reset_hints">نکات بازنشانی</string>
+  <string name="app_settings_reset_hints_summary">مجددا امکان نکات را که قبلا رد شده اند را فعال کنید</string>
   <!--AccountActivity-->
   <!--AddAccountActivity-->
   <!--AccountSettingsActivity-->

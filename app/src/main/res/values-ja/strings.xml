@@ -26,8 +26,6 @@
   <string name="startup_donate_message">あなたがオープンソース ソフトウェア (GPLv3) の DAVx⁵ を使用していただくことに、私たちは満足しています。 DAVx⁵ の開発はハードワークで、何千もの作業時間がかかりました。寄付をご検討ください。</string>
   <string name="startup_donate_now">寄付ページを表示</string>
   <string name="startup_donate_later">たぶん後で</string>
-  <string name="startup_google_play_accounts_removed">Play ストア DRM バグ情報</string>
-  <string name="startup_google_play_accounts_removed_message">特定の条件下で、DAVx⁵ を再起動後またはアップグレードした後、Play ストア DRM によりすべての DAVx⁵ アカウントがなくなる可能性があります。この問題の影響を受けている場合 (のみ)、Play ストアから「DAVx⁵ JB 回避策」をインストールしてください。</string>
   <string name="startup_more_info">追加情報</string>
   <string name="startup_opentasks_not_installed">OpenTasks がインストールされていません</string>
   <string name="startup_opentasks_not_installed_message">タスクを同期するために、無料アプリのOpenTasksが必要です。 (連絡先/イベントには必要ありません)</string>
@@ -37,13 +35,8 @@
   <string name="about_libraries">ライブラリー</string>
   <string name="about_version">バージョン %1s (%2d)</string>
   <string name="about_build_date">コンパイル日時 %s</string>
-  <string name="about_flavor_info">このバージョンは Google Play での配信にのみ対応です。</string>
   <string name="about_license_info_no_warranty">このプログラムは完全に無保証で提供されます。これはフリーソフトウェアで、特定の条件下での再頒布を歓迎します。</string>
   <!--global settings-->
-  <string name="logging_davx5_file_logging">DAVx⁵ ファイルログ</string>
-  <string name="logging_to_external_storage">外部ストレージにログ: %s</string>
-  <string name="logging_couldnt_create_file">外部ログファイルを作成できませんでした: %s</string>
-  <string name="logging_no_external_storage">外部ストレージが見つかりません</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">ナビゲーションドロワーを開く</string>
   <string name="navigation_drawer_close">ナビゲーションドロワーを閉じる</string>
@@ -66,10 +59,9 @@
   <string name="dav_service_refresh_couldnt_refresh">コレクション リストを更新できません</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">設定</string>
-  <string name="app_settings_user_interface">ユーザーインターフェイス</string>
-  <string name="app_settings_reset_hints">ヒントをリセット</string>
-  <string name="app_settings_reset_hints_summary">以前非表示にしたヒントを、再度有効にします</string>
-  <string name="app_settings_reset_hints_success">すべてのヒントが再度表示されます</string>
+  <string name="app_settings_debug">デバッグ</string>
+  <string name="app_settings_show_debug_info">デバッグ情報を表示</string>
+  <string name="app_settings_show_debug_info_details">ソフトウェアと設定の詳細を表示/共有</string>
   <string name="app_settings_connection">接続</string>
   <string name="app_settings_override_proxy">プロキシ設定を上書き</string>
   <string name="app_settings_override_proxy_on">カスタムのプロキシ設定を使用する</string>
@@ -83,12 +75,10 @@
   <string name="app_settings_reset_certificates">(未)信頼済証明書をリセット</string>
   <string name="app_settings_reset_certificates_summary">すべてのカスタム証明書の信頼をリセット</string>
   <string name="app_settings_reset_certificates_success">すべてのカスタム証明書をクリアしました</string>
-  <string name="app_settings_debug">デバッグ</string>
-  <string name="app_settings_log_to_external_storage">外部ファイルにログ出力</string>
-  <string name="app_settings_log_to_external_storage_on">(可能な場合) 外部ストレージにログ出力します</string>
-  <string name="app_settings_log_to_external_storage_off">外部ファイルログ出力は無効です</string>
-  <string name="app_settings_show_debug_info">デバッグ情報を表示</string>
-  <string name="app_settings_show_debug_info_details">ソフトウェアと設定の詳細を表示/共有</string>
+  <string name="app_settings_user_interface">ユーザーインターフェイス</string>
+  <string name="app_settings_reset_hints">ヒントをリセット</string>
+  <string name="app_settings_reset_hints_summary">以前非表示にしたヒントを、再度有効にします</string>
+  <string name="app_settings_reset_hints_success">すべてのヒントが再度表示されます</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">今すぐ同期</string>
   <string name="account_synchronizing_now">同期中</string>
@@ -174,10 +164,6 @@
   <string name="settings_sync_wifi_only_ssids_message">利用可能な WiFi ネットワークのカンマ区切りの名前 (SSID) (空白にするとすべて)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">連絡先グループ方法</string>
-  <string-array name="settings_contact_group_method_values">
-    <item>GROUP_VCARDS</item>
-    <item>CATEGORIES</item>
-  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>グループは個別の VCards</item>
     <item>グループは連絡先カテゴリーごと</item>
