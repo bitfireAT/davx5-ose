@@ -44,6 +44,7 @@ import at.bitfire.davdroid.model.ServiceDB.*
 import at.bitfire.davdroid.model.ServiceDB.Collections
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.TaskProvider
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.account_caldav_item.view.*
@@ -730,9 +731,19 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                         if (newName == oldAccount.name)
                             return@OnClickListener
 
+                        // remember sync intervals
+                        val oldSettings = AccountSettings(requireActivity(), oldAccount)
+                        val authorities = arrayOf(
+                                getString(R.string.address_books_authority),
+                                CalendarContract.AUTHORITY,
+                                TaskProvider.ProviderName.OpenTasks.authority
+                        )
+                        val syncIntervals = authorities.map { Pair(it, oldSettings.getSyncInterval(it)) }
+
                         val accountManager = AccountManager.get(activity)
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                            accountManager.renameAccount(oldAccount, newName, { _ ->
+                            accountManager.renameAccount(oldAccount, newName, {
+                                // account has now been renamed
                                 Logger.log.info("Updating account name references")
 
                                 // cancel maybe running synchronization
@@ -776,8 +787,20 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                                     Logger.log.log(Level.SEVERE, "Couldn't propagate new account name to tasks provider", e)
                                 }
 
+                                // retain sync intervals
+                                val newAccount = Account(newName, oldAccount.type)
+                                val newSettings = AccountSettings(requireActivity(), newAccount)
+                                for ((authority, interval) in syncIntervals) {
+                                    if (interval == null)
+                                        ContentResolver.setIsSyncable(newAccount, authority, 0)
+                                    else {
+                                        ContentResolver.setIsSyncable(newAccount, authority, 1)
+                                        newSettings.setSyncInterval(authority, interval)
+                                    }
+                                }
+
                                 // synchronize again
-                                requestSync(activity!!, Account(newName, oldAccount.type))
+                                requestSync(activity!!, newAccount)
                             }, null)
                         activity!!.finish()
                     })
