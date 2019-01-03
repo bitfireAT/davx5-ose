@@ -15,18 +15,12 @@
   <string name="startup_donate_message">Vi er glade for at du bruker DAVx⁵, som er fri programvare (GPLv3). Siden utvikling av DAVx⁵ er hardt arbeid og har tatt tusenvis av arbeidstimer, bes du overveie en donasjon.</string>
   <string name="startup_donate_now">Vis donasjonsside</string>
   <string name="startup_donate_later">Kanskje senere</string>
-  <string name="startup_google_play_accounts_removed">DRM-feilinformasjon på Play-butikken</string>
-  <string name="startup_google_play_accounts_removed_message">Under gitte forhold vil DRM fra Play-butikken forårsake at alle DAVx⁵-kontoer forsvinner etter omstart eller etter oppgradering av DAVx⁵. Hvis du rammes av dette problemet (og bare da), installer \"DAVx⁵ JB Workaround\" fra Play-butikken.</string>
   <string name="startup_opentasks_not_installed">OpenTasks er ikke installert</string>
   <string name="startup_opentasks_reinstall_davx5">Etter å ha installert OpenTasks, må du reinstallere Davdroid og legge til kontoene dine igjen (Android-feil).</string>
   <string name="startup_opentasks_not_installed_install">Installer OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_license_info_no_warranty">Dette programmet kommer uten NOEN FORM FOR GARANTI. Det er fri programvare, og du er velkommen til å redistribuere det under gitte forhold.</string>
   <!--global settings-->
-  <string name="logging_davx5_file_logging">DAVDroid fil-logging</string>
-  <string name="logging_to_external_storage">Logger til ekstern lagringsmedium: %s</string>
-  <string name="logging_couldnt_create_file">Kan ikke opprette ekstern loggfil: %s</string>
-  <string name="logging_no_external_storage">Fant ingen ekstern lagringsplass</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Åpne navigasjonsskuff</string>
   <string name="navigation_drawer_close">Lukk navigasjonsskuff</string>
@@ -48,10 +42,9 @@
   <string name="dav_service_refresh_couldnt_refresh">Kunne ikke gjenoppfriske innsamlingsliste</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Innstillinger</string>
-  <string name="app_settings_user_interface">Brukergrensesnitt</string>
-  <string name="app_settings_reset_hints">Tilbakestill hint</string>
-  <string name="app_settings_reset_hints_summary">Skrur på hint som har blitt avslått tidligere</string>
-  <string name="app_settings_reset_hints_success">Alle hint vil bli vist igjen</string>
+  <string name="app_settings_debug">Feilretting</string>
+  <string name="app_settings_show_debug_info">Vis feilrettingsinfo</string>
+  <string name="app_settings_show_debug_info_details">Vis/del programvare- og oppsettsdetaljer</string>
   <string name="app_settings_connection">Tilkobling</string>
   <string name="app_settings_override_proxy">Overstyr mellomtjenerinnstillinger</string>
   <string name="app_settings_override_proxy_on">Bruk egendefinerte mellomtjenerinnstillinger</string>
@@ -65,12 +58,10 @@
   <string name="app_settings_reset_certificates">Tilbakestill (ikke)tiltrodde sertifikater</string>
   <string name="app_settings_reset_certificates_summary">Tilbakestiller tillit til alle egendefinerte sertifikater</string>
   <string name="app_settings_reset_certificates_success">Alle egendefinerte sertifikater har blitt fjernet</string>
-  <string name="app_settings_debug">Feilretting</string>
-  <string name="app_settings_log_to_external_storage">Logg til ekstern fil</string>
-  <string name="app_settings_log_to_external_storage_on">Logger til eksternt lagringsmedium (hvis tilgjengelig)</string>
-  <string name="app_settings_log_to_external_storage_off">Ekstern fillogging har blitt skrudd av</string>
-  <string name="app_settings_show_debug_info">Vis feilrettingsinfo</string>
-  <string name="app_settings_show_debug_info_details">Vis/del programvare- og oppsettsdetaljer</string>
+  <string name="app_settings_user_interface">Brukergrensesnitt</string>
+  <string name="app_settings_reset_hints">Tilbakestill hint</string>
+  <string name="app_settings_reset_hints_summary">Skrur på hint som har blitt avslått tidligere</string>
+  <string name="app_settings_reset_hints_success">Alle hint vil bli vist igjen</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Synkroniser nå</string>
   <string name="account_synchronizing_now">Synkroniserer nå</string>
@@ -150,10 +141,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Kommainndelte navn (SSID-er) på tillatte Wi-Fi -nettverk (la stå tomt for alle)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Kontaktgruppemetode</string>
-  <string-array name="settings_contact_group_method_values">
-    <item>GROUP_VCARDS</item>
-    <item>CATEGORIES</item>
-  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>Grupper er egne vKort</item>
     <item>Grupper er kategorier per kontakt</item>

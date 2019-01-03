@@ -13,18 +13,12 @@
   <string name="startup_donate_message">Jsme velice rádi že používáte DAVx⁵, software s otevřeným zdrojovým kódem (GPLv3). Vývoj této aplikace je náročný a trval již několik tisíc hodin, velice nás potěší přispějete-li na jeho vývoj.</string>
   <string name="startup_donate_now">Zobrazit stránku pro obdarování</string>
   <string name="startup_donate_later">Možná později</string>
-  <string name="startup_google_play_accounts_removed">Informace o chybě DRM Obchodu Play</string>
-  <string name="startup_google_play_accounts_removed_message">Za určitých podmínek může dojít po restartu nebo aktualizaci aplikace DAVx⁵ k vymazání účtů kvůli chybě DRM Obchodu Play. Pokud jste postiženi touto chybou (ale pouze v tomto případě), nainstalujte prosím z Obchodu Play aplikaci \"DAVx⁵ JB Workaround\".</string>
   <string name="startup_opentasks_not_installed">OpenTasks není nainstalován</string>
   <string name="startup_opentasks_reinstall_davx5">Po instalaci OpenTasks musíte PŘEINSTALOVAT DAVx⁵ a přidat znovu své účty (Android chyba).</string>
   <string name="startup_opentasks_not_installed_install">Nainstalovat OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_license_info_no_warranty">Tento program je distribuován BEZ JAKÉKOLIV ZÁRUKY. Je to volně dostupný software a lze jej za určitých podmínek dále distribuovat.</string>
   <!--global settings-->
-  <string name="logging_davx5_file_logging">DAVx⁵ logování do souboru</string>
-  <string name="logging_to_external_storage">Logování do externího úložiště: %s</string>
-  <string name="logging_couldnt_create_file">Nelze vytvořit externí soubor logu: %s</string>
-  <string name="logging_no_external_storage">Externí úložiště nenalezeno</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Otevřít panel navigace</string>
   <string name="navigation_drawer_close">Zavřít panel navigace</string>
@@ -42,10 +36,9 @@
   <string name="dav_service_refresh_couldnt_refresh">Nelze obnovit seznam sbírky</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Nastavení</string>
-  <string name="app_settings_user_interface">Uživatelské prostředí</string>
-  <string name="app_settings_reset_hints">Resetovat nápovědu</string>
-  <string name="app_settings_reset_hints_summary">Znovu povolí vypnuté texty nápovědy</string>
-  <string name="app_settings_reset_hints_success">Budou zobrazovány všechny texty nápovědy</string>
+  <string name="app_settings_debug">Ladění</string>
+  <string name="app_settings_show_debug_info">Zobrazit ladící informace</string>
+  <string name="app_settings_show_debug_info_details">Zobrazit/sdílet software a detaily konfigurace</string>
   <string name="app_settings_connection">Připojení</string>
   <string name="app_settings_override_proxy">Přepsat proxy nastavení</string>
   <string name="app_settings_override_proxy_on">Použít vlastní proxy nastavení</string>
@@ -59,12 +52,10 @@
   <string name="app_settings_reset_certificates">Resetovat (ne)důvěryhodné certifikáty</string>
   <string name="app_settings_reset_certificates_summary">Resetovat důvěryhodnost všech vlastních certifikátů</string>
   <string name="app_settings_reset_certificates_success">Všechny vlastní certifikáty byly resetovány</string>
-  <string name="app_settings_debug">Ladění</string>
-  <string name="app_settings_log_to_external_storage">Logovat do externího souboru</string>
-  <string name="app_settings_log_to_external_storage_on">Logování do externího úložiště (pokud dostupné)</string>
-  <string name="app_settings_log_to_external_storage_off">Logování do externího souboru je vypnuto</string>
-  <string name="app_settings_show_debug_info">Zobrazit ladící informace</string>
-  <string name="app_settings_show_debug_info_details">Zobrazit/sdílet software a detaily konfigurace</string>
+  <string name="app_settings_user_interface">Uživatelské prostředí</string>
+  <string name="app_settings_reset_hints">Resetovat nápovědu</string>
+  <string name="app_settings_reset_hints_summary">Znovu povolí vypnuté texty nápovědy</string>
+  <string name="app_settings_reset_hints_success">Budou zobrazovány všechny texty nápovědy</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Synchronizovat nyní</string>
   <string name="account_synchronizing_now">Probíhá synchronizace</string>
@@ -122,10 +113,6 @@
   <string name="settings_sync_wifi_only_off">Druh připojení není brán v potaz</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Metoda seskupování kontaktů</string>
-  <string-array name="settings_contact_group_method_values">
-    <item>GROUP_VCARDS</item>
-    <item>CATEGORIES</item>
-  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>Skupiny jsou oddělené soubory VCard</item>
     <item>Skupiny jsou kategorie na kontakt</item>

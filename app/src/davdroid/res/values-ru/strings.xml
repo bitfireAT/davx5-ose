@@ -26,8 +26,6 @@
   <string name="startup_donate_message">Мы рады, что вы используете DAVx⁵, который является программным обеспечением с открытым исходным кодом (GPLv3). Поскольку разработка DAVx⁵ - тяжелая работа и заняла у нас нас очень много времени, пожалуйста, рассмотрите возможность поддержать проект.</string>
   <string name="startup_donate_now">Показать страницу пожертвований</string>
   <string name="startup_donate_later">Возможно, позже</string>
-  <string name="startup_google_play_accounts_removed">Информация об ошибке в Play Store DRM</string>
-  <string name="startup_google_play_accounts_removed_message">При определенных условиях Play Store DRM может стать причиной потери всех DAVx⁵ аккаунтов после перезагрузки устройства или после обновления DAVx⁵. Если Вы столкнулись с этой проблемой (и только в этом случае), установите \"DAVx⁵ JB Workaround\" из Play Store.</string>
   <string name="startup_more_info">Дополнительная информация</string>
   <string name="startup_opentasks_not_installed">OpenTasks не установлен</string>
   <string name="startup_opentasks_not_installed_message">Для синхронизации задач требуется бесплатное приложение OpenTasks. (Не требуется для контактов/событий.)</string>
@@ -37,13 +35,8 @@
   <string name="about_libraries">Библиотеки</string>
   <string name="about_version">Версия %1s (%2d)</string>
   <string name="about_build_date">Скомпилировано %s</string>
-  <string name="about_flavor_info">Эта версия распространяется только через Google Play.</string>
   <string name="about_license_info_no_warranty">Эта программа поставляется БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ. Это свободное программное обеспечение и вы можете распространять его при соблюдении определенных условий.</string>
   <!--global settings-->
-  <string name="logging_davx5_file_logging">Файл журнала DAVx⁵</string>
-  <string name="logging_to_external_storage">Сохранение логов во внешнем хранилище: %s</string>
-  <string name="logging_couldnt_create_file">Не удалось создать внешний файл журнала: %s</string>
-  <string name="logging_no_external_storage">Внешнее хранилище не найдено</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Открыть панель навигации</string>
   <string name="navigation_drawer_close">Закрыть панель навигации</string>
@@ -66,10 +59,9 @@
   <string name="dav_service_refresh_couldnt_refresh">Не удалось обновить список коллекций</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Настройки</string>
-  <string name="app_settings_user_interface">Интерфейс пользователя</string>
-  <string name="app_settings_reset_hints">Включить подсказки</string>
-  <string name="app_settings_reset_hints_summary">Включить подсказки, которые были отключены ранее</string>
-  <string name="app_settings_reset_hints_success">Все подсказки будут показаны снова</string>
+  <string name="app_settings_debug">Отладка</string>
+  <string name="app_settings_show_debug_info">Показать отладочную информацию</string>
+  <string name="app_settings_show_debug_info_details">Просмотреть/поделиться сведениями о ПО и конфигурации</string>
   <string name="app_settings_connection">Подключение</string>
   <string name="app_settings_override_proxy">Переопределить настройки прокси-сервера</string>
   <string name="app_settings_override_proxy_on">Использовать пользовательские настройки прокси-сервера</string>
@@ -83,12 +75,10 @@
   <string name="app_settings_reset_certificates">Сброс (не)доверенных сертификатов</string>
   <string name="app_settings_reset_certificates_summary">Отменить доверие ко всем пользовательским сертификатам</string>
   <string name="app_settings_reset_certificates_success">Все пользовательские сертификаты были удалены</string>
-  <string name="app_settings_debug">Отладка</string>
-  <string name="app_settings_log_to_external_storage">Сохранять лог во внешний файл</string>
-  <string name="app_settings_log_to_external_storage_on">Сохранение логов во внешнем хранилище (если доступно)</string>
-  <string name="app_settings_log_to_external_storage_off">Сохранение логов во внешний файл отключено</string>
-  <string name="app_settings_show_debug_info">Показать отладочную информацию</string>
-  <string name="app_settings_show_debug_info_details">Просмотреть/поделиться сведениями о ПО и конфигурации</string>
+  <string name="app_settings_user_interface">Интерфейс пользователя</string>
+  <string name="app_settings_reset_hints">Включить подсказки</string>
+  <string name="app_settings_reset_hints_summary">Включить подсказки, которые были отключены ранее</string>
+  <string name="app_settings_reset_hints_success">Все подсказки будут показаны снова</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Синхронизировать</string>
   <string name="account_synchronizing_now">Синхронизация</string>
@@ -174,10 +164,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Названия (SSID), разделенные запятыми разрешенных сетей Wi-Fi (оставьте пустым для всех)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Метод группировки контактов</string>
-  <string-array name="settings_contact_group_method_values">
-    <item>GROUP_VCARDS</item>
-    <item>CATEGORIES</item>
-  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>Группы являются отдельными vCards</item>
     <item>Группы являются категориями контактов</item>

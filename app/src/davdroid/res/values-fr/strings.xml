@@ -26,8 +26,6 @@
   <string name="startup_donate_message">Nous sommes heureux que vous utilisiez DAVx⁵, qui est un logiciel open-source (GPLv3). Parce que développer DAVx⁵ est un travail difficile, qui nous a pris de nombreuses heures, nous vous invitons à faire un don.</string>
   <string name="startup_donate_now">Faire un don</string>
   <string name="startup_donate_later">Plus tard</string>
-  <string name="startup_google_play_accounts_removed">Erreur information Play Store DRM</string>
-  <string name="startup_google_play_accounts_removed_message">Dans certaines conditions, Play Store DRM peut provoquer la disparition de tous les comptes DAVx⁵ après un redémarrage ou après la mise à niveau de DAVx⁵. Si vous êtes concerné par ce problème (et seulement dans ce cas), s\'il vous plaît installer \"DAVx⁵ JB Solution\" du Play Store.</string>
   <string name="startup_more_info">Plus d\'informations</string>
   <string name="startup_opentasks_not_installed">L\'application OpenTasks n\'est pas installée</string>
   <string name="startup_opentasks_not_installed_message">Pour synchroniser les tâches, l\'application gratuite OpenTasks est nécessaire (elle ne l\'est pas pour les contacts et les événements).</string>
@@ -37,13 +35,8 @@
   <string name="about_libraries">Librairies</string>
   <string name="about_version">Version %1s(%2d)</string>
   <string name="about_build_date">Compilé sur %s</string>
-  <string name="about_flavor_info">Cette version ne peut être distribuée que sur Google Play.</string>
   <string name="about_license_info_no_warranty">Ce programme est fourni sans AUCUNE GARANTIE. C\'est un logiciel libre, et vous êtes en droit de le redistribuer sous certaines conditions.</string>
   <!--global settings-->
-  <string name="logging_davx5_file_logging">DAVx⁵ fichier de journalisation</string>
-  <string name="logging_to_external_storage">Se connecter au stockage externe: %s</string>
-  <string name="logging_couldnt_create_file">Impossible de créer le fichier journal externe: %s</string>
-  <string name="logging_no_external_storage">Stockage externe introuvable</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Ouvrir le tiroir de navigation</string>
   <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
@@ -66,10 +59,9 @@
   <string name="dav_service_refresh_couldnt_refresh">Impossible d\'actualiser la liste de collection</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Paramètres</string>
-  <string name="app_settings_user_interface">Interface utilisateur</string>
-  <string name="app_settings_reset_hints">Réinitialiser les astuces</string>
-  <string name="app_settings_reset_hints_summary">Réactiver les astuces qui ont été vues précédemment</string>
-  <string name="app_settings_reset_hints_success">Toutes les astuces seront affichés à nouveau</string>
+  <string name="app_settings_debug">Débogage</string>
+  <string name="app_settings_show_debug_info">Afficher les infos de débogage</string>
+  <string name="app_settings_show_debug_info_details">Voir/partager l\'application et les détails de configuration</string>
   <string name="app_settings_connection">Connexion</string>
   <string name="app_settings_override_proxy">Ignorer les paramètres proxy</string>
   <string name="app_settings_override_proxy_on">Utiliser des paramètres proxy personnalisés</string>
@@ -83,12 +75,10 @@
   <string name="app_settings_reset_certificates">Réinitialiser les certificats de (non)confiance</string>
   <string name="app_settings_reset_certificates_summary">Réinitialiser la confiance de tous les certificats personnalisés</string>
   <string name="app_settings_reset_certificates_success">Tous les certificats personnalisés ont été effacés</string>
-  <string name="app_settings_debug">Débogage</string>
-  <string name="app_settings_log_to_external_storage">Journaliser dans un fichier externe</string>
-  <string name="app_settings_log_to_external_storage_on">Journaliser sur le stockage externe (si disponible)</string>
-  <string name="app_settings_log_to_external_storage_off">Le fichier externe n\'est pas disponible.</string>
-  <string name="app_settings_show_debug_info">Afficher les infos de débogage</string>
-  <string name="app_settings_show_debug_info_details">Voir/partager l\'application et les détails de configuration</string>
+  <string name="app_settings_user_interface">Interface utilisateur</string>
+  <string name="app_settings_reset_hints">Réinitialiser les astuces</string>
+  <string name="app_settings_reset_hints_summary">Réactiver les astuces qui ont été vues précédemment</string>
+  <string name="app_settings_reset_hints_success">Toutes les astuces seront affichés à nouveau</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Synchroniser maintenant</string>
   <string name="account_synchronizing_now">Synchronisation en cours</string>
@@ -174,10 +164,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Liste des points d\'accès WiFi (SSID) autorisés, séparés par des virgules. (Laissez vide pour tous)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Méthode pour les contacts de type groupe</string>
-  <string-array name="settings_contact_group_method_values">
-    <item>GROUP_VCARDS</item>
-    <item>CATEGORIES</item>
-  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>Les groupes sont des VCards indépendantes</item>
     <item>Les groupes sont des catégories pour chacun des contacts</item>

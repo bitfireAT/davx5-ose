@@ -26,8 +26,6 @@
   <string name="startup_donate_message">Ми раді, що Ви використовуєте DAVx⁵, який є програмним засобом з відкритим джерельним кодом (GPLv3). Розробка DAVx⁵ є досить складним завданням і потребує від нас тисячі годин роботи. Будь ласка, розгляньте можливість підтримати проект.</string>
   <string name="startup_donate_now">Показати сторінку пожертви</string>
   <string name="startup_donate_later">Можливо пізніше</string>
-  <string name="startup_google_play_accounts_removed">Інформація про ваду в Play Store DRM</string>
-  <string name="startup_google_play_accounts_removed_message">При деяких обставинах Play Store DRM може стати причиною втрати всіх облікових записів DAVx⁵ після перезавантаження пристрою чи оновлення DAVx⁵. Якщо ви зіткнулися із цим (і лише у цьому випадку), будь ласка, встановіть \"DAVx⁵ JB Workaround\" з Play Store.</string>
   <string name="startup_more_info">Додаткова інформація</string>
   <string name="startup_opentasks_not_installed">OpenTasks не встановлено</string>
   <string name="startup_opentasks_not_installed_message">Для синхронізації завдань необхідно встановити додаток OpenTasks. (Не має потреби для контактів/подій.)</string>
@@ -37,13 +35,8 @@
   <string name="about_libraries">Бібліотеки</string>
   <string name="about_version">Версія %1s (%2d)</string>
   <string name="about_build_date">Складено на %s</string>
-  <string name="about_flavor_info">Ця версія доступна лише для розповсюдження через Google Play.</string>
   <string name="about_license_info_no_warranty">Цей програмний засіб постачається АБСОЛЮТНО БЕЗ БУДЬ-ЯКИХ ГАРАНТІЙ. Це вільне програмне забезпечення, і ви можете поширювати її, за деякими умовами.</string>
   <!--global settings-->
-  <string name="logging_davx5_file_logging">Файл звітування DAVx⁵</string>
-  <string name="logging_to_external_storage">Звітування до зовнішнього сховища: %s</string>
-  <string name="logging_couldnt_create_file">Не вдалося створити файл зовнішнього звіту: %s</string>
-  <string name="logging_no_external_storage">Не знайдено зовнішнього сховища</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Відкрити панель навігації</string>
   <string name="navigation_drawer_close">Закрити панель навігації</string>
@@ -66,10 +59,9 @@
   <string name="dav_service_refresh_couldnt_refresh">Не вдалося оновити перелік колекції</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Налаштування</string>
-  <string name="app_settings_user_interface">Інтерфейс користувача</string>
-  <string name="app_settings_reset_hints">Скинути підказки</string>
-  <string name="app_settings_reset_hints_summary">Включення підказок, які раніше були вимкнуті</string>
-  <string name="app_settings_reset_hints_success">Всі підказки будуть показані знову</string>
+  <string name="app_settings_debug">Зневадження</string>
+  <string name="app_settings_show_debug_info">Показати інформацію зневадження</string>
+  <string name="app_settings_show_debug_info_details">Переглянути/поділитися програмним засобом та деталями конфігурації</string>
   <string name="app_settings_connection">З\'єднання</string>
   <string name="app_settings_override_proxy">Перевизначити налаштування проксі</string>
   <string name="app_settings_override_proxy_on">Власні налаштування проксі</string>
@@ -83,12 +75,10 @@
   <string name="app_settings_reset_certificates">Скидання (не)довірених сертифікатів</string>
   <string name="app_settings_reset_certificates_summary">Скинути довіру до всіх призначених користувачу сертифікатів</string>
   <string name="app_settings_reset_certificates_success">Всі сертифікати, що призначені користувачу очищено</string>
-  <string name="app_settings_debug">Зневадження</string>
-  <string name="app_settings_log_to_external_storage">Звіт до зовнішнього файлу</string>
-  <string name="app_settings_log_to_external_storage_on">Звітування до зовнішнього файлу (якщо доступно)</string>
-  <string name="app_settings_log_to_external_storage_off">Звітування у зовнішній файл вимкнено</string>
-  <string name="app_settings_show_debug_info">Показати інформацію зневадження</string>
-  <string name="app_settings_show_debug_info_details">Переглянути/поділитися програмним засобом та деталями конфігурації</string>
+  <string name="app_settings_user_interface">Інтерфейс користувача</string>
+  <string name="app_settings_reset_hints">Скинути підказки</string>
+  <string name="app_settings_reset_hints_summary">Включення підказок, які раніше були вимкнуті</string>
+  <string name="app_settings_reset_hints_success">Всі підказки будуть показані знову</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Синхронізувати зараз</string>
   <string name="account_synchronizing_now">Синхронізація</string>
@@ -174,10 +164,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Назви (SSID) дозволених Wi-Fi мереж, розділені комами (залиште порожнім для всіх)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Метод групування контактів</string>
-  <string-array name="settings_contact_group_method_values">
-    <item>GROUP_VCARDS</item>
-    <item>CATEGORIES</item>
-  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>Групи як окремі VCard</item>
     <item>Групи як категорії в середині контактів</item>

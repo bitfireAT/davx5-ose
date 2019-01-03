@@ -15,18 +15,12 @@
   <string name="startup_donate_message">很高興您使用 DAVx⁵，這是個開源軟體 (GPLv3授權)。因為開發 DAVx⁵ 是艱難的工作，需要上千個小時，請考慮捐款支持我們。</string>
   <string name="startup_donate_now">開啟捐款頁面</string>
   <string name="startup_donate_later">下次再說</string>
-  <string name="startup_google_play_accounts_removed">Play商店數位權利管理錯誤訊息</string>
-  <string name="startup_google_play_accounts_removed_message">在某些情況下，Play商店 的數位權利管理可能導致在重開機後或更新 DAVx⁵ 後，DAVx⁵ 全部帳號消失。如果您遇到此問題 (且只有在遇到此問題時)，請到 Play商店 安裝 \"DAVx⁵ JB Workaround\"。</string>
   <string name="startup_opentasks_not_installed">OpenTasks 未安裝</string>
   <string name="startup_opentasks_reinstall_davx5">安裝 OpenTasks 後，您必須｢重新安裝｣ DAVx⁵ 並且重新加入要同步的帳號 (這是 Android 的設計問題)</string>
   <string name="startup_opentasks_not_installed_install">安裝 OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_license_info_no_warranty">我們｢完全不保證｣本程式無瑕疵。這是個自由軟體，歡迎您在符合公用授權條款的情況下任意散布它。</string>
   <!--global settings-->
-  <string name="logging_davx5_file_logging">DAVx⁵ 正在記錄除錯訊息</string>
-  <string name="logging_to_external_storage">正在將除錯訊息存到外部檔案: %s</string>
-  <string name="logging_couldnt_create_file">無法新增除錯訊息檔案: %s</string>
-  <string name="logging_no_external_storage">找不到外部儲存空間</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">開啟瀏覽窗格</string>
   <string name="navigation_drawer_close">關閉瀏覽窗格</string>
@@ -45,10 +39,9 @@
   <string name="dav_service_refresh_couldnt_refresh">無法更新清單</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">設定</string>
-  <string name="app_settings_user_interface">使用介面</string>
-  <string name="app_settings_reset_hints">重新開啟提示</string>
-  <string name="app_settings_reset_hints_summary">重新啟用之前取消的提示</string>
-  <string name="app_settings_reset_hints_success">所有提示將再次顯示</string>
+  <string name="app_settings_debug">除錯</string>
+  <string name="app_settings_show_debug_info">顯示除錯訊息</string>
+  <string name="app_settings_show_debug_info_details">檢視/分享本軟體及設定檔細節</string>
   <string name="app_settings_connection">網路連線</string>
   <string name="app_settings_override_proxy">自訂代理伺服器</string>
   <string name="app_settings_override_proxy_on">正在使用自訂的代理伺服器設定值</string>
@@ -62,12 +55,10 @@
   <string name="app_settings_reset_certificates">重新開啟之前關閉的提示</string>
   <string name="app_settings_reset_certificates_summary">重設對所有自訂憑證的信任</string>
   <string name="app_settings_reset_certificates_success">所有自訂憑證已清除</string>
-  <string name="app_settings_debug">除錯</string>
-  <string name="app_settings_log_to_external_storage">將除錯訊息存到外部檔案</string>
-  <string name="app_settings_log_to_external_storage_on">除錯訊息將存到外部檔案 (如果發生)</string>
-  <string name="app_settings_log_to_external_storage_off">目前不將除錯訊息存到外部檔案</string>
-  <string name="app_settings_show_debug_info">顯示除錯訊息</string>
-  <string name="app_settings_show_debug_info_details">檢視/分享本軟體及設定檔細節</string>
+  <string name="app_settings_user_interface">使用介面</string>
+  <string name="app_settings_reset_hints">重新開啟提示</string>
+  <string name="app_settings_reset_hints_summary">重新啟用之前取消的提示</string>
+  <string name="app_settings_reset_hints_success">所有提示將再次顯示</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">立即同步</string>
   <string name="account_synchronizing_now">同步中</string>
@@ -125,10 +116,6 @@
   <string name="settings_sync_wifi_only_off">任何網路連線都可使用</string>
   <string name="settings_carddav">CardDAV（聯絡人檔案）</string>
   <string name="settings_contact_group_method">聯絡人群組的儲存格式</string>
-  <string-array name="settings_contact_group_method_values">
-    <item>GROUP_VCARDS</item>
-    <item>CATEGORIES</item>
-  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>群組存成額外的 VCard 檔案</item>
     <item>群組存成每個聯絡人的分類屬性</item>

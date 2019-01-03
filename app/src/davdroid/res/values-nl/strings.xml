@@ -15,18 +15,12 @@
   <string name="startup_donate_message">We zijn blij dat je DAVx⁵ gebruikt, wat open-source software (GPLv3) is. Omdat de ontwikkeling van DAVx⁵ hard werk is en duizenden uren in beslag neemt. overweeg alstublieft een donatie.</string>
   <string name="startup_donate_now">Toon donatie pagina</string>
   <string name="startup_donate_later">Misschien later</string>
-  <string name="startup_google_play_accounts_removed">Play Store DRM fout-informatie</string>
-  <string name="startup_google_play_accounts_removed_message">Onder bepaalde omstandigheden, kan Play Store DRM ervoor zorgen dat accounts kwijt zijn na een herstart of na een DAVx⁵ update. Als dit probleem zich bij je voordoet (en alleen dan), Installeer dan \"DAVx⁵ JB Workaround\" vanuit de Play Store</string>
   <string name="startup_opentasks_not_installed">OpenTasks niet geinstalleerd</string>
   <string name="startup_opentasks_reinstall_davx5">Na installatie van OpenTasks dient u DAVx⁵ opnieuw te installeren en de accounts toe te voegen (Android bug).</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks installeren</string>
   <!--AboutActivity-->
   <string name="about_license_info_no_warranty">Dit programma kom met ABSOLUUT GEEN GARANTIE. Het is gratis software, en je bent welkom dit te herdistribueren onder bepaalde voorwaarden.</string>
   <!--global settings-->
-  <string name="logging_davx5_file_logging">DAVDroid bestand loggen</string>
-  <string name="logging_to_external_storage">Loggen naar externe opslag: %s</string>
-  <string name="logging_couldnt_create_file">Kon extern log bestand niet verwijderen: %s</string>
-  <string name="logging_no_external_storage">Externe opslag niet gevonden</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Open navigatie drawer</string>
   <string name="navigation_drawer_close">Sluit navigatie drawer</string>
@@ -48,10 +42,9 @@
   <string name="dav_service_refresh_couldnt_refresh">Kon de collectie lijst niet vernieuwen</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Instellingen</string>
-  <string name="app_settings_user_interface">Gebruikers interface</string>
-  <string name="app_settings_reset_hints">Hints resetten </string>
-  <string name="app_settings_reset_hints_summary">Hints die al gezien zijn opnieuw weergeven</string>
-  <string name="app_settings_reset_hints_success">Alle hints worden opnieuw weergegeven</string>
+  <string name="app_settings_debug">Debuggen</string>
+  <string name="app_settings_show_debug_info">Debug info tonen</string>
+  <string name="app_settings_show_debug_info_details">Bekijk/deel software configuratie details</string>
   <string name="app_settings_connection">Verbinding</string>
   <string name="app_settings_override_proxy">Proxy instellingen overschrijven</string>
   <string name="app_settings_override_proxy_on">Eigen proxy instellingen gebruiken</string>
@@ -65,12 +58,10 @@
   <string name="app_settings_reset_certificates">Resetten (niet) vertrouwde certificaten</string>
   <string name="app_settings_reset_certificates_summary">Resetten alle bewerkte certificaten</string>
   <string name="app_settings_reset_certificates_success">Alle bewerkte certificaten zijn vrijgemaakt</string>
-  <string name="app_settings_debug">Debuggen</string>
-  <string name="app_settings_log_to_external_storage">Log naar extern bestand</string>
-  <string name="app_settings_log_to_external_storage_on">Loggen naar externe opslag (wanneer beschikbaar)</string>
-  <string name="app_settings_log_to_external_storage_off">Extern bestands loggen uitgeschakeld</string>
-  <string name="app_settings_show_debug_info">Debug info tonen</string>
-  <string name="app_settings_show_debug_info_details">Bekijk/deel software configuratie details</string>
+  <string name="app_settings_user_interface">Gebruikers interface</string>
+  <string name="app_settings_reset_hints">Hints resetten </string>
+  <string name="app_settings_reset_hints_summary">Hints die al gezien zijn opnieuw weergeven</string>
+  <string name="app_settings_reset_hints_success">Alle hints worden opnieuw weergegeven</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Synchroniseer nu</string>
   <string name="account_synchronizing_now">Aan het synchronizeren…</string>
@@ -136,10 +127,6 @@
   <string name="settings_sync_wifi_only_ssids_off">Alle WiFI verbindingen zullen worden gebruikt</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Contact groep methode</string>
-  <string-array name="settings_contact_group_method_values">
-    <item>GROUP_VCARDS</item>
-    <item>CATEGORIES</item>
-  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>Groepen zijn apparte VCards</item>
     <item>Groepen zijn per-contact categories</item>

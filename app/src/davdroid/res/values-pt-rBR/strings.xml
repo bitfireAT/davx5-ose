@@ -26,8 +26,6 @@
   <string name="startup_donate_message">Estamos felizes que você usa o DAVx⁵, um software de código aberto (GPLv3). O desenvolvimento do DAVx⁵ é trabalhoso e consome muitas horas de trabalho. Por esse motivo, considere fazer uma doação.</string>
   <string name="startup_donate_now">Mostrar a página de doações</string>
   <string name="startup_donate_later">Talvez depois</string>
-  <string name="startup_google_play_accounts_removed">Informação sobre o erro de DRM da Play Store</string>
-  <string name="startup_google_play_accounts_removed_message">Sob certas condições, o DRM da Play Store pode fazer com que todas as contas DAVx⁵ sejam perdidas depois de uma reinicialização ou atualização do DAVx⁵. Se você for afetado por esse problema, instale o \"DAVx⁵ JB Workaround\" a partir da Play Store.</string>
   <string name="startup_more_info">Mais informações</string>
   <string name="startup_opentasks_not_installed">O OpenTasks não está instalado</string>
   <string name="startup_opentasks_not_installed_message">Para sincronizar tarefas é necessário instalar o aplicativo livre OpenTasks. (Não é necessário para contatos/eventos)</string>
@@ -37,13 +35,13 @@
   <string name="about_libraries">Bibliotecas</string>
   <string name="about_version">Versão %1s (%2d)</string>
   <string name="about_build_date">Compilado em %s</string>
-  <string name="about_flavor_info">Esta versão está disponível apenas para distribuição na Google Play.</string>
+  <string name="about_flavor_info">Esta versão só é elegível para distribuição na Google Play.</string>
   <string name="about_license_info_no_warranty">Este programa é distribuído SEM NENHUMA GARANTIA. Ele é software livre e pode ser redistribuído sob algumas condições.</string>
   <!--global settings-->
-  <string name="logging_davx5_file_logging">Registro do arquivo do DAVx⁵</string>
-  <string name="logging_to_external_storage">Registrando no arquivo externo: %s</string>
-  <string name="logging_couldnt_create_file">Não foi possível criar o arquivo de registro externo: %s</string>
-  <string name="logging_no_external_storage">Armazenamento externo não encontrado</string>
+  <string name="logging_couldnt_create_file">Não foi possível criar o arquivo de log</string>
+  <string name="logging_notification_title">Log do DAVx⁵</string>
+  <string name="logging_notification_text">Agora registrando todas as atividades do DAVx⁵</string>
+  <string name="logging_notification_share_log">Compartilhar log</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Abrir a gaveta de navegação</string>
   <string name="navigation_drawer_close">Fechar gaveta de navegação</string>
@@ -66,10 +64,12 @@
   <string name="dav_service_refresh_couldnt_refresh">Não foi possível atualizar a lista da coleção</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Configurações</string>
-  <string name="app_settings_user_interface">Interface de usuário</string>
-  <string name="app_settings_reset_hints">Restaurar sugestões</string>
-  <string name="app_settings_reset_hints_summary">Restaura as sugestões que foram descartadas anteriormente</string>
-  <string name="app_settings_reset_hints_success">Todas as sugestões serão exibidas novamente</string>
+  <string name="app_settings_debug">Depuração</string>
+  <string name="app_settings_show_debug_info">Mostrar informações de depuração</string>
+  <string name="app_settings_show_debug_info_details">Exibe/compartilha o software e os detalhes da configuração</string>
+  <string name="app_settings_logging">Registro de atividades detalhado</string>
+  <string name="app_settings_logging_on">Registro de atividades ativo</string>
+  <string name="app_settings_logging_off">Registro de atividades desativado</string>
   <string name="app_settings_connection">Conexão</string>
   <string name="app_settings_override_proxy">Substituir as configurações de proxy</string>
   <string name="app_settings_override_proxy_on">Usar configurações de proxy personalizadas</string>
@@ -83,12 +83,10 @@
   <string name="app_settings_reset_certificates">Restaurar certificados não-confiáveis</string>
   <string name="app_settings_reset_certificates_summary">Restaura a confiança de todos os certificados personalizados</string>
   <string name="app_settings_reset_certificates_success">Todos os certificados personalizados foram restaurados</string>
-  <string name="app_settings_debug">Depuração</string>
-  <string name="app_settings_log_to_external_storage">Registrar em arquivo externo</string>
-  <string name="app_settings_log_to_external_storage_on">Registrando no armazenamento externo (se disponível)</string>
-  <string name="app_settings_log_to_external_storage_off">O registro em arquivo externo está desativado</string>
-  <string name="app_settings_show_debug_info">Mostrar informações de depuração</string>
-  <string name="app_settings_show_debug_info_details">Exibe/compartilha o software e os detalhes da configuração</string>
+  <string name="app_settings_user_interface">Interface de usuário</string>
+  <string name="app_settings_reset_hints">Restaurar sugestões</string>
+  <string name="app_settings_reset_hints_summary">Restaura as sugestões que foram descartadas anteriormente</string>
+  <string name="app_settings_reset_hints_success">Todas as sugestões serão exibidas novamente</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Sincronizar agora</string>
   <string name="account_synchronizing_now">Sincronizando</string>
@@ -174,10 +172,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Nomes separados por vírgula (SSIDs) das redes WiFi (deixe em branco para todas)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Método do grupo Contato</string>
-  <string-array name="settings_contact_group_method_values">
-    <item>GROUP_VCARDS</item>
-    <item>CATEGORIES</item>
-  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>Grupos são VCards separados</item>
     <item>Grupos são categorias por contato</item>

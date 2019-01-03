@@ -26,8 +26,6 @@
   <string name="startup_donate_message">Драго нам је да користите ДАВдроид, софтвер отвореног кôда (ГПЛв3). Развој ДАВдроида није баш лак посао и захтева хиљаде радних сати, стога вас молимо да размотрите донацију.</string>
   <string name="startup_donate_now">Прикажи страницу за донације</string>
   <string name="startup_donate_later">Можда касније</string>
-  <string name="startup_google_play_accounts_removed">Грешка ДРМ-а Плеј продавнице</string>
-  <string name="startup_google_play_accounts_removed_message">Под одређеним околностима ДРМ Плеј продавнице може да узрокује да сви налози ДАВдроида нестане након рестарта или ажурирања ДАВдроида. Ако и само ако имате овај проблем, инсталирајте „DAVx⁵ JB Workaround“ са Плеј продавнице.</string>
   <string name="startup_more_info">Још информација</string>
   <string name="startup_opentasks_not_installed">Отворени задаци нису инсталирани</string>
   <string name="startup_opentasks_not_installed_message">За синхронизацију листе задатака бесплатна апликација „Отворени задаци“ је потребна. (Није потребна за контакте/догађаје.)</string>
@@ -37,13 +35,8 @@
   <string name="about_libraries">Библиотеке</string>
   <string name="about_version">Издање %1s (%2d)</string>
   <string name="about_build_date">Компилован %s</string>
-  <string name="about_flavor_info">Ово издање је доступно за дистрибуцију само преко Гугловог Плеја.</string>
   <string name="about_license_info_no_warranty">Овај програм НЕМА НИКАКВЕ ГАРАНЦИЈЕ. Бесплатан је софтвер којег можете слободно да делите под одређеним условима.</string>
   <!--global settings-->
-  <string name="logging_davx5_file_logging">ДАВдроид евиденција</string>
-  <string name="logging_to_external_storage">Уписивање евиденције у спољашње складиште: %s</string>
-  <string name="logging_couldnt_create_file">Не могох да направим спољашњи фајл записа: %s</string>
-  <string name="logging_no_external_storage">Спољашње складиште није нађено</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Отвори навигациону фиоку</string>
   <string name="navigation_drawer_close">Затвори навигациону фиоку</string>
@@ -66,10 +59,9 @@
   <string name="dav_service_refresh_couldnt_refresh">Не могох да освежим списак збирки</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Поставке</string>
-  <string name="app_settings_user_interface">Корисничко сучеље</string>
-  <string name="app_settings_reset_hints">Ресетуј савете</string>
-  <string name="app_settings_reset_hints_summary">Поновно приказивање претходно одбачених савета</string>
-  <string name="app_settings_reset_hints_success">Сви савети ће поново бити приказани</string>
+  <string name="app_settings_debug">Тражење грешака</string>
+  <string name="app_settings_show_debug_info">Прикажи податке за исправљање грешака</string>
+  <string name="app_settings_show_debug_info_details">Приказ/дељење детаља софтвера и поставки</string>
   <string name="app_settings_connection">Повезивање</string>
   <string name="app_settings_override_proxy">Надјачај поставке проксија</string>
   <string name="app_settings_override_proxy_on">Користи прилагођене поставке проксија</string>
@@ -83,12 +75,10 @@
   <string name="app_settings_reset_certificates">Ресетуј (не)поуздане сертификате</string>
   <string name="app_settings_reset_certificates_summary">Ресетуј поуздање свих прилагођених сертификата</string>
   <string name="app_settings_reset_certificates_success">Сви прилагођени сертификати су уклоњени</string>
-  <string name="app_settings_debug">Тражење грешака</string>
-  <string name="app_settings_log_to_external_storage">Уписуј у спољашњи фајл</string>
-  <string name="app_settings_log_to_external_storage_on">Уписивање евиденције у спољашње складиште (ако је доступно)</string>
-  <string name="app_settings_log_to_external_storage_off">Уписивање евиденције у спољашње складиште је искључено</string>
-  <string name="app_settings_show_debug_info">Прикажи податке за исправљање грешака</string>
-  <string name="app_settings_show_debug_info_details">Приказ/дељење детаља софтвера и поставки</string>
+  <string name="app_settings_user_interface">Корисничко сучеље</string>
+  <string name="app_settings_reset_hints">Ресетуј савете</string>
+  <string name="app_settings_reset_hints_summary">Поновно приказивање претходно одбачених савета</string>
+  <string name="app_settings_reset_hints_success">Сви савети ће поново бити приказани</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Синхронизуј одмах</string>
   <string name="account_synchronizing_now">Синхронизујем</string>
@@ -174,10 +164,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Имена (ССИД) дозвољених мрежа. одвојена зарезом (оставите празно за све мреже)</string>
   <string name="settings_carddav">КардДАВ</string>
   <string name="settings_contact_group_method">Режим група контаката</string>
-  <string-array name="settings_contact_group_method_values">
-    <item>GROUP_VCARDS</item>
-    <item>CATEGORIES</item>
-  </string-array>
   <string-array name="settings_contact_group_method_entries">
     <item>Групе су одвојене В-карте</item>
     <item>Групе су категорије по контакту</item>
