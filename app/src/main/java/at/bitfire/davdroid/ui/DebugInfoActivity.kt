@@ -95,15 +95,14 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
                 writer.close()
 
                 builder.setStream(FileProvider.getUriForFile(this, getString(R.string.authority_debug_provider), reportFile))
+                builder.intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
             } catch(e: IOException) {
                 // creating an attachment failed, so send it inline
                 val text = "Couldn't create debug info file: " + Log.getStackTraceString(e) + "\n\n$it"
                 builder.setText(text)
             }
 
-            val sendIntent = builder.intent
-            sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            startActivity(Intent.createChooser(sendIntent, null))
+            builder.startChooser()
         }
     }
 

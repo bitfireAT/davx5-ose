@@ -84,6 +84,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
 
                 val prefIntent = Intent(context, AppSettingsActivity::class.java)
                 prefIntent.putExtra(AppSettingsActivity.EXTRA_SCROLL_TO, LOG_TO_FILE)
+                prefIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
                 builder .setContentText(logDir.path)
                         .setCategory(NotificationCompat.CATEGORY_STATUS)
@@ -100,10 +101,11 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
                 shareIntent.putExtra(Intent.EXTRA_SUBJECT, "DAVx⁵ logs")
                 shareIntent.putExtra(Intent.EXTRA_STREAM, logFileUri)
                 shareIntent.type = "text/plain"
-                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                val shareAction = NotificationCompat.Action.Builder(R.drawable.ic_share_action,
-                        context.getString(R.string.logging_notification_share_log),
-                        PendingIntent.getActivity(context, 0, shareIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+                val chooserIntent = Intent.createChooser(shareIntent, null)
+                val shareAction = NotificationCompat.Action.Builder(R.drawable.ic_share_action_notification,
+                        context.getString(R.string.logging_notification_send_log),
+                        PendingIntent.getActivity(context, 0, chooserIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                 builder.addAction(shareAction.build())
             } catch(e: IOException) {
                 log.log(Level.SEVERE, "Couldn't create log file", e)

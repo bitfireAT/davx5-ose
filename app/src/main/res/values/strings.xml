@@ -60,7 +60,7 @@
     <string name="logging_couldnt_create_file">Couldn\'t create log file</string>
     <string name="logging_notification_title">DAVx⁵ logging</string>
     <string name="logging_notification_text">Now logging all DAVx⁵ activities</string>
-    <string name="logging_notification_share_log">Share log</string>
+    <string name="logging_notification_send_log">Send log</string>
 
     <!-- AccountsActivity -->
     <string name="navigation_drawer_open">Open navigation drawer</string>

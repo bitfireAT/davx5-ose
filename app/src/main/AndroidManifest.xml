@@ -63,7 +63,8 @@
         <activity
             android:name=".ui.AppSettingsActivity"
             android:label="@string/app_settings"
-            android:parentActivityName=".ui.AccountsActivity"/>
+            android:parentActivityName=".ui.AccountsActivity"
+            android:exported="true"/>
 
         <activity
             android:name=".ui.setup.LoginActivity"

@@ -17,7 +17,6 @@ import androidx.preference.SwitchPreferenceCompat
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.Settings
 import com.google.android.material.snackbar.Snackbar
 import java.net.URI
@@ -68,7 +67,9 @@ class AppSettingsActivity: AppCompatActivity() {
                 false
             }
 
-            arguments?.getString(EXTRA_SCROLL_TO)?.let { scrollToPreference(it) }
+            arguments?.getString(EXTRA_SCROLL_TO)?.let { key ->
+                scrollToPreference(key)
+            }
         }
 
         private fun loadSettings() {

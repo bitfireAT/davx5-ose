@@ -653,7 +653,11 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         var viewItemAction: NotificationCompat.Action? = null
         if (e is UnauthorizedException) {
             contentIntent = Intent(context, AccountSettingsActivity::class.java)
-            contentIntent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
+            contentIntent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT,
+                    if (authority == ContactsContract.AUTHORITY)
+                        mainAccount
+                    else
+                        account)
         } else {
             contentIntent = Intent(context, DebugInfoActivity::class.java)
             contentIntent.putExtra(DebugInfoActivity.KEY_THROWABLE, e)
