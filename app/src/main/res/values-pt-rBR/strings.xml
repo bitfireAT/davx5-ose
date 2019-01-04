@@ -41,7 +41,6 @@
   <string name="logging_couldnt_create_file">Não foi possível criar o arquivo de log</string>
   <string name="logging_notification_title">Log do DAVx⁵</string>
   <string name="logging_notification_text">Agora registrando todas as atividades do DAVx⁵</string>
-  <string name="logging_notification_share_log">Compartilhar log</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Abrir a gaveta de navegação</string>
   <string name="navigation_drawer_close">Fechar gaveta de navegação</string>
@@ -110,7 +109,7 @@
   <string name="account_refresh_calendar_list">Atualizar lista de calendários</string>
   <string name="account_create_new_calendar">Criar novo calendário</string>
   <string name="account_no_webcal_handler_found">Não foi encontrado um aplicativo capaz de lidar com Webcal</string>
-  <string name="account_install_icsdroid">Instalar ICSdroid</string>
+  <string name="account_install_icsx5">Instalar ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Adicionar conta</string>
   <string name="login_type_email">Autenticação com endereço de e-mail</string>

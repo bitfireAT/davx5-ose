@@ -84,7 +84,6 @@
   <string name="account_refresh_calendar_list">Gjenoppfrisk kalenderliste</string>
   <string name="account_create_new_calendar">Opprett ny kalender</string>
   <string name="account_no_webcal_handler_found">Fant ingen programmer med støtte for Webcal</string>
-  <string name="account_install_icsdroid">Installer ICSdroid</string>
   <!--AddAccountActivity-->
   <string name="login_title">Legg til konto</string>
   <string name="login_type_email">Innlogging med e-postadresse</string>

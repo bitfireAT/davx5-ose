@@ -93,7 +93,6 @@
   <string name="account_refresh_calendar_list">Refrescar calendario</string>
   <string name="account_create_new_calendar">Crear nuevo calendario</string>
   <string name="account_no_webcal_handler_found">No se encontró aplicación para administrar Webcal</string>
-  <string name="account_install_icsdroid">Instale ICSdroid</string>
   <!--AddAccountActivity-->
   <string name="login_title">Añadir cuenta</string>
   <string name="login_type_email">Acceder con cuenta de correo</string>

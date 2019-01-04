@@ -86,7 +86,6 @@
   <string name="account_refresh_calendar_list">Odśwież listę kalendarzy</string>
   <string name="account_create_new_calendar">Stwórz nowy kalendarz</string>
   <string name="account_no_webcal_handler_found">Nie znaleziono aplikacji obsługującej Webcal</string>
-  <string name="account_install_icsdroid">Zainstaluj ICSdroid</string>
   <!--AddAccountActivity-->
   <string name="login_title">Dodaj konto</string>
   <string name="login_type_email">Logowanie za pomocą adresu e-mail</string>

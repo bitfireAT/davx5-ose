@@ -41,7 +41,7 @@
   <string name="logging_couldnt_create_file">Protokolldatei konnte nicht angelegt werden</string>
   <string name="logging_notification_title">DAVx⁵-Protokollierung</string>
   <string name="logging_notification_text">Alle DAVx⁵-Aktivitäten werden protokolliert</string>
-  <string name="logging_notification_share_log">Protokoll teilen</string>
+  <string name="logging_notification_send_log">Protokoll senden</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Hauptmenü anzeigen</string>
   <string name="navigation_drawer_close">Hauptmenü schließen</string>
@@ -110,7 +110,7 @@
   <string name="account_refresh_calendar_list">Kalender neu erkennen</string>
   <string name="account_create_new_calendar">Neuen Kalender erstellen</string>
   <string name="account_no_webcal_handler_found">Keine Webcal-App gefunden</string>
-  <string name="account_install_icsdroid">ICSdroid installieren</string>
+  <string name="account_install_icsx5">ICSx⁵ installieren</string>
   <!--AddAccountActivity-->
   <string name="login_title">Konto hinzufügen</string>
   <string name="login_type_email">Mit Email-Adresse anmelden</string>

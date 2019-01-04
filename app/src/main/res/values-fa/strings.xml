@@ -1,33 +1,43 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="account_title_address_book">DAVx⁵ کتابچه آدرس ها</string>
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">DAVx⁵ دفترچه آدرس</string>
   <string name="address_books_authority_title">دفترچه‌های آدرس</string>
   <string name="help">راهنما</string>
-  <string name="manage_accounts">مدیریت حساب‌ها</string>
-  <string name="please_wait">کمی صبر کنید …</string>
+  <string name="manage_accounts">مدیریت حساب ها</string>
+  <string name="please_wait">لطفا صبر کنید …</string>
   <string name="send">ارسال</string>
   <string name="notification_channel_debugging">عیب‌یابی</string>
   <string name="notification_channel_general">سایر پیام‌های مهم</string>
   <string name="notification_channel_sync">همگام‌سازی</string>
   <string name="notification_channel_sync_errors">خطاهای همگام‌سازی</string>
   <string name="notification_channel_sync_io_errors">خطاهای شبکه</string>
+  <string name="notification_channel_sync_status">وضعیت پیام ها</string>
   <!--startup dialogs-->
-  <string name="startup_battery_optimization_disable">خاموش کردن  DAVx⁵</string>
-  <string name="startup_dont_show_again">دوباره نمایش داده نشود</string>
+  <string name="startup_autostart_permission">همگام سازی خودکار</string>
+  <string name="startup_autostart_permission_message">%s سیستم عامل  همگام سازی خودکار را مسدود می کند. می توانید  همگام سازی خودکار را در تنظیمات اندروید خود انجام دهید.</string>
+  <string name="startup_battery_optimization">همگام‌سازی برنامه ریزی شده </string>
+  <string name="startup_battery_optimization_message">دستگاه شما هماهنگ سازی DAVx⁵ را محدود خواهد کرد. برای اجرای هماهنگ سازی منظم DAVx⁵، «بهینه سازی باتری» را خاموش کنید.</string>
+  <string name="startup_battery_optimization_disable"> DAVx⁵را خاموش کنید</string>
+  <string name="startup_dont_show_again">دیگر نمایش داده نشود</string>
   <string name="startup_not_now">الان نه</string>
-  <string name="startup_donate">اطلاعات متن باز</string>
-  <string name="startup_donate_message">از اینکه از DAVx⁵ استفاده می کنید خوشحالیم. DAVx⁵یک نرم افزار منبع باز (GPLv3) است. از آنجا که توسعه DAVx⁵ کار سختی است و ما هزاران ساعت کار را انجام دادیم، لطفا کمک مالی را در نظر بگیرید</string>
+  <string name="startup_donate">Open-Source اطلاعات</string>
+  <string name="startup_donate_message">از اینکه ازDAVx⁵  استفاده می کنید خوشحالیم.  DAVx⁵یک نرم افزار منبع باز (GPLv3) است. از آنجا که توسعهDAVx⁵  کار سختی است و ما هزاران ساعت کار را انجام دادیم، لطفا کمک مالی را در نظر بگیرید.</string>
   <string name="startup_donate_now">نمایش صفحه کمک مالی</string>
   <string name="startup_donate_later">شاید بعدا</string>
   <string name="startup_more_info">اطلاعات بیشتر</string>
-  <string name="startup_opentasks_reinstall_davx5">پس از نصب OpenTasks، باید DAVx⁵  را دوباره نصب کنید و دوباره حساب خود را اضافه کنید (ایراد اندرویدی).</string>
+  <string name="startup_opentasks_not_installed">مورد باز شده نصب نمی باشد</string>
+  <string name="startup_opentasks_not_installed_message">برای همگام سازی وظایف، برنامه OpenTasks رایگان مورد نیاز است. (برای مخاطبین / رویدادها لازم نیست)</string>
+  <string name="startup_opentasks_not_installed_install">نصب کردن</string>
   <!--AboutActivity-->
   <string name="about_libraries">کتابخانه ها</string>
+  <string name="about_version">نسخه %1s (%2d)</string>
   <string name="about_build_date">کامپایل شده روی %s</string>
-  <string name="about_flavor_info">این نسخه تنها برای پخش در Google Play واجد شرایط است</string>
+  <string name="about_flavor_info">این نسخه تنها برای پخش در Google Play واجد شرایط است.</string>
   <string name="about_license_info_no_warranty">این برنامه بدون هیچ گونه تغییری است. این نرم افزار رایگان است و شما می توانید آن را تحت شرایط خاصی توزیع کنید.</string>
   <!--global settings-->
+  <string name="logging_couldnt_create_file">فایل ورودی خارجی ایجاد نشد: %s</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">باز کردن گزینه ها</string>
   <string name="navigation_drawer_close">بستن گزینه ها</string>
@@ -39,31 +49,191 @@
   <string name="navigation_drawer_external_links">لینک های خارجی</string>
   <string name="navigation_drawer_website">وب سایت</string>
   <string name="navigation_drawer_manual">کتابچه راهنمای</string>
+  <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_forums">راهنمای فرم ها</string>
   <string name="navigation_drawer_donate">کمک مالی</string>
-  <string name="account_list_empty">به DAVx⁵ خوش آمدید! شما اکنون می توانید یک حساب CalDAV / CardDAV اضافه کنید.</string>
+  <string name="account_list_empty">به DAVx⁵ خوش آمدید!  شما اکنون می توانید یک حساب CalDAV / CardDAV اضافه کنید.</string>
   <string name="accounts_global_sync_disabled">هماهنگ سازی خودکار سیستم در حالت غیر فعال است</string>
   <string name="accounts_global_sync_enable">فعال کردن</string>
   <!--DavService-->
-  <string name="dav_service_refresh_failed">تشخیص خدمات ناموفق بود</string>
+  <string name="dav_service_refresh_failed"> تشخیص خدمات ناموفق بود</string>
+  <string name="dav_service_refresh_couldnt_refresh">لیست مجموعه های تجدید نشد</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">تنظیمات</string>
+  <string name="app_settings_debug">عیب یابی</string>
+  <string name="app_settings_show_debug_info">نمایش اشکال زدایی اطلاعات</string>
+  <string name="app_settings_show_debug_info_details">مشاهده / اشتراک گذاری نرم افزار و جزئیات پیکربندی</string>
   <string name="app_settings_connection">ارتباط</string>
   <string name="app_settings_override_proxy">تنظیمات پروکسی را لغو کنید</string>
   <string name="app_settings_override_proxy_on">از تنظیمات پروکسی سفارشی استفاده کنید</string>
-  <string name="app_settings_user_interface">رابط کاربری</string>
+  <string name="app_settings_override_proxy_off">از تنظیمات پروکسی به طور پیش فرض استفاده کنید</string>
+  <string name="app_settings_override_proxy_host">HTTP proxy host name</string>
+  <string name="app_settings_override_proxy_port">HTTP proxy port</string>
+  <string name="app_settings_security">امنیت</string>
+  <string name="app_settings_distrust_system_certs">گواهی سیستم عدم اطمینان</string>
+  <string name="app_settings_distrust_system_certs_on">سیستم و CA اضافه شده توسط کاربر قابل اعتماد نیست</string>
+  <string name="app_settings_distrust_system_certs_off">سیستم و CA اضافه شده توسط کاربر قابل اعتماد خواهد بود (توصیه می شود)</string>
+  <string name="app_settings_reset_certificates">دد (un) گواهی مورد اعتماد</string>
+  <string name="app_settings_reset_certificates_summary"> اعتبار همه گواهینامه های سفارشی را بازنشانی می کند</string>
+  <string name="app_settings_reset_certificates_success"> همه گواهینامه های سفارشی پاک شده اند</string>
+  <string name="app_settings_user_interface"> رابط کاربری</string>
   <string name="app_settings_reset_hints">نکات بازنشانی</string>
   <string name="app_settings_reset_hints_summary">مجددا امکان نکات را که قبلا رد شده اند را فعال کنید</string>
+  <string name="app_settings_reset_hints_success">تمام نکات دوباره نشان داده می شود</string>
   <!--AccountActivity-->
+  <string name="account_synchronize_now">همگام سازی </string>
+  <string name="account_synchronizing_now">در حال همگام سازی</string>
+  <string name="account_settings">تنظیمات حساب</string>
+  <string name="account_rename">تغییر نام حساب</string>
+  <string name="account_rename_new_name">داده های محلی ذخیره نشده ممکن است اخراج شوند بعد از تغییر نام مجدد هماهنگ سازی لازم است. نام حساب جدید:</string>
+  <string name="account_rename_rename">تغییر نام</string>
+  <string name="account_delete">حذف حساب</string>
+  <string name="account_delete_confirmation_title">حساب خذف شود؟</string>
+  <string name="account_delete_confirmation_text">تمام کدهای محلی کتاب آدرس، تقویم و لیست کار حذف خواهد شد.</string>
+  <string name="account_select_collections_hint"> مجموعه ها را برای همگام سازی انتخاب کنید</string>
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_synchronize_this_collection">همگام سازی این مجموعه</string>
+  <string name="account_read_only">فقط خواندن</string>
+  <string name="account_calendar">تقویم</string>
+  <string name="account_task_list">لیست وظایف</string>
+  <string name="account_refresh_address_book_list"> فهرست لیست کتاب آدرس را بازخوانی کنید</string>
+  <string name="account_create_new_address_book">کتاب آدرس جدید ایجاد کنید</string>
+  <string name="account_refresh_calendar_list"> لیست تقویم را بازخوانی کنید</string>
+  <string name="account_create_new_calendar">ساخت تقویم جدید</string>
+  <string name="account_no_webcal_handler_found">هیچ Webcal-capable برنامه ای پیدا نشد</string>
   <!--AddAccountActivity-->
+  <string name="login_title">افزودن حساب</string>
+  <string name="login_type_email">وارد شدن با آدرس ایمیل</string>
+  <string name="login_email_address">آدرس ایمیل</string>
+  <string name="login_email_address_error">آدرس ایمیل معتبر مورد نیاز است</string>
+  <string name="login_password">رمز عبور</string>
+  <string name="login_password_required">رمز عبور مورد نیاز است</string>
+  <string name="login_type_url">با URL و نام کاربری وارد شوید</string>
+  <string name="login_url_must_be_http_or_https">URL باید شروع شود http(s)://</string>
+  <string name="login_url_must_be_https">URL باید شروع شود https://</string>
+  <string name="login_url_host_name_required">Host نام مورد نیاز</string>
+  <string name="login_user_name">نام کاربر</string>
+  <string name="login_user_name_required">نام کاربری (ضروری است)</string>
+  <string name="login_base_url">Base URL</string>
+  <string name="login_type_url_certificate">با URL  و گواهی کلاینت وارد شوید</string>
+  <string name="login_select_certificate">گواهی انتخاب کنید</string>
+  <string name="login_login">وارد شدن</string>
+  <string name="login_back">بازگشت</string>
+  <string name="login_create_account">ساخت حساب کاربری</string>
+  <string name="login_account_name">نام حساب کاربری</string>
+  <string name="login_account_name_info">از آدرس ایمیل خود به عنوان نام حساب استفاده کنید زیرا آندروید از نام حساب به عنوان ORGANIZER برای رویدادهایی که ایجاد می کنید استفاده می کند. شما نمی توانید دو حساب با  نام یکی داشته باشید.</string>
+  <string name="login_account_contact_group_method">روش تماس با گروه:</string>
+  <string name="login_account_name_required">نام حساب کاربری مورد نیاز است</string>
+  <string name="login_account_not_created">حساب ایجاد نمی شود</string>
+  <string name="login_configuration_detection">تشخیص پیکربندی</string>
+  <string name="login_querying_server">لطفا صبر کنید، در حال جست وجوی سرور …</string>
+  <string name="login_no_caldav_carddav">نمی توانسرویس CalDAV یا CardDAV را یافت .</string>
+  <string name="login_view_logs">نمایش جزيیات</string>
   <!--AccountSettingsActivity-->
+  <string name="settings_title">تنظیمات: %s</string>
+  <string name="settings_authentication">احراز هویت</string>
+  <string name="settings_username">نام کاربر</string>
+  <string name="settings_enter_username">نام کاربر را وارد کنید:</string>
+  <string name="settings_password">رمز عبور</string>
+  <string name="settings_password_summary">به روز رسانی رمز عبور بر اساس سرور شما.</string>
+  <string name="settings_enter_password">رمز عبور خود را وارد کنید:</string>
+  <string name="settings_certificate_alias">گواهی نام مستعار کاربر</string>
+  <string name="settings_sync">هماهنگ سازی</string>
+  <string name="settings_sync_interval_contacts">همگام سازی مخاطبین</string>
+  <string name="settings_sync_summary_manually">فقط دستی</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">هر %d دقیقه + بلافاصله در تغییرات محلی</string>
+  <string name="settings_sync_interval_calendars">تقویم همگام سازی شد</string>
+  <string name="settings_sync_interval_tasks">تسک همگام سازی شد. </string>
+  <string-array name="settings_sync_interval_names">
+    <item>فقط به صورت دستی</item>
+    <item>هر 15 دقیقه</item>
+    <item>هر 30 دقیقه</item>
+    <item>هر ساعت</item>
+    <item>هر 2 ساعت</item>
+    <item>هر 4 ساعت</item>
+    <item>یکبار در روز</item>
+  </string-array>
+  <string name="settings_sync_wifi_only">فقط با wifi همگام سازی شود</string>
+  <string name="settings_sync_wifi_only_on">همگام سازی به اتصالات WiFi محدود شده است</string>
+  <string name="settings_sync_wifi_only_off">نوع اتصال در نظر گرفته نمی شود</string>
+  <string name="settings_sync_wifi_only_ssids">WiFi SSID محدودیت</string>
+  <string name="settings_sync_wifi_only_ssids_on">تنها همگام سازی خواهد شد %s</string>
+  <string name="settings_sync_wifi_only_ssids_off">تمامی اتصالات wifi استفاده خواهد شد</string>
+  <string name="settings_sync_wifi_only_ssids_message">نامهای جدا شده از علامت (SSID) از نامهای مجاز نامهای مجاز (SSID) از شبکههای مجاز Wi-Fi (برای همه خالی) شبکههای Wi-Fi (برای همه خالی)</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">روش تماس با گروه</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>گروه ها جدا شدند VCards</item>
+    <item>گروه ها در هر دسته تماس هستند</item>
+  </string-array>
+  <string name="settings_contact_group_method_change">تغییر روش گروه ها</string>
+  <string name="settings_contact_group_method_change_reload_contacts">این نیاز به بارگیری همه مخاطبین دارد. تغییرات محلی ذخیره نشده رد خواهد شد.</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">محدودیت زمانی رویداد گذشته</string>
+  <string name="settings_sync_time_range_past_none">تمامی رویداد ها همگام سازی خواهند شد</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">رخدادهایی که بیش از یک روز از گذشتنشان می‌گذرد نادیده گرفته می‌شوند</item>
+    <item quantity="other">رویدادهای بیش از٪ d روز گذشته نادیده گرفته خواهد شد</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">رویدادهایی که بیشتر از این تعداد روزهای گذشته هستند نادیده گرفته می شود (ممکن است 0 باشد). برای همگام سازی تمام رویدادها خالی بگذارید.</string>
+  <string name="settings_manage_calendar_colors">مدیریت رنگ های تقویم</string>
+  <string name="settings_manage_calendar_colors_on">رنگ های تقویم توسط DAVx⁵ مدیریت شود</string>
+  <string name="settings_manage_calendar_colors_off">رنگ های تقویم توسط DAVx⁵ مدیریت نشود
+    </string>
+  <string name="settings_event_colors">پشتیبانی رنگرویداد</string>
+  <string name="settings_event_colors_on">همگام کردن رنگ رویداد</string>
+  <string name="settings_event_colors_off">همگام نکردن رنگ رویداد</string>
+  <string name="settings_event_colors_off_confirm">غیرفعال کردن رنگ رویداد میتواند رنگهای رویداد همگام شده را حذف کند.</string>
   <!--collection management-->
-  <string name="create_addressbook">ساخت دفترچه آدرس </string>
-  <string name="create_addressbook_display_name_hint">دفترچه آدرس  من</string>
+  <string name="create_addressbook">ایجاد دفترچه آدرس</string>
+  <string name="create_addressbook_display_name_hint">دفترچه آدرس های من</string>
+  <string name="create_calendar">ایجاد شد CalDAV مجموعه</string>
   <string name="create_calendar_display_name_hint">تقویم من</string>
-  <string name="create_collection_create">ساخته شدن</string>
+  <string name="create_calendar_time_zone">زمان محلی:</string>
+  <string name="create_calendar_type">نوع مجموعه:</string>
+  <string name="create_calendar_type_only_events">تقویم (فقط رویدادها)</string>
+  <string name="create_calendar_type_only_tasks">لیست وظایف (فقط وظایف)</string>
+  <string name="create_calendar_type_events_and_tasks">ترکیب شد (رویدادها و وظایف)</string>
+  <string name="create_collection_color">تنطیم رنگی برای مجموعهr</string>
+  <string name="create_collection_creating">ایجاد مجموعه</string>
+  <string name="create_collection_display_name">نام نمایش داده شده (عنوان) این مجموعه:</string>
+  <string name="create_collection_display_name_required">عنوان مورد نیاز</string>
+  <string name="create_collection_description">توضیحات (اختیاری):</string>
+  <string name="create_collection_home_set">نشاندن در خانه:</string>
+  <string name="create_collection_create">ایجاد شد</string>
+  <string name="delete_collection">حذف مجموعه</string>
   <string name="delete_collection_confirm_title">آیا مطمءن هستین؟</string>
+  <string name="delete_collection_confirm_warning">این مجموعه (%s) و تمامی اطلاعاتش از سرور پاک می شود.</string>
+  <string name="delete_collection_deleting_collection">حذف مجموعه</string>
+  <string name="collection_force_read_only">اجبار read-only</string>
+  <string name="collection_properties">مشخصات</string>
+  <string name="collection_properties_url">آدرس (URL):</string>
+  <string name="collection_properties_copy_url">کپی URL</string>
   <!--ExceptionInfoFragment-->
+  <string name="exception">یک خطا رخ داده است.</string>
+  <string name="exception_httpexception">رخ داده است HTTPیک خظای.</string>
+  <string name="exception_ioexception">رخ داده است I/O یک خطای .</string>
+  <string name="exception_show_details">نمایش جزییات</string>
   <!--sync adapters and DebugInfoActivity-->
+  <string name="debug_info_title">Debug اظلاعات</string>
+  <string name="sync_contacts_read_only_address_book">فقط از کتابچه آدرس ها خوانده شود</string>
+  <plurals name="sync_contacts_local_contact_changes_discarded">
+    <item quantity="one">تغییر ارتباط لغو شد</item>
+    <item quantity="other">%d تغییر ارتباط لغو شد</item>
+  </plurals>
+  <string name="sync_error_permissions">DAVx⁵ دسترسی های</string>
+  <string name="sync_error_permissions_text">اجازه برای دسترسی های اضافی</string>
+  <string name="sync_error_opentasks_too_old">OpenTasks خیلی قدیمی</string>
+  <string name="sync_error_opentasks_required_version">ورژن مورد نیاز: %1$s (ورژن فعلی %2$s)</string>
+  <string name="sync_error_authentication_failed">تاییده‌ي با شکست مواجه شد (چک کردن اعتبار نامه‌ي ورودی)</string>
+  <string name="sync_error_io">خطاهای شبکه – %s</string>
+  <string name="sync_error_http_dav">HTTP server خطا در – %s</string>
+  <string name="sync_error_local_storage">خطا در ذخیره سازی – %s</string>
+  <string name="sync_error_retry">دوباره</string>
+  <string name="sync_error_view_item">نمایش بخش ها</string>
   <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVx⁵: اتصال امن</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ با یک گواهی ناشناخته مواجه شده است. آیا می خواهید به آن اعتماد کنید؟</string>
 </resources>
