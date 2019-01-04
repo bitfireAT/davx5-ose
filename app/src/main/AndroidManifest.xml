@@ -18,13 +18,6 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" android:maxSdkVersion="22"/>
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" android:maxSdkVersion="22"/>
 
-    <!--
-         for writing external log files; permission only required for SDK <= 18 because since then,
-         writing to app-private directory doesn't require extra permissions
-    -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="18"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18"/>
-
     <!-- other permissions -->
     <!-- android.permission-group.CONTACTS -->
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
