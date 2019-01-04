@@ -63,7 +63,6 @@
   <string name="account_create_new_address_book">Crear nova llibreta d’adreces</string>
   <string name="account_refresh_calendar_list">Actualitzar llista de calendaris</string>
   <string name="account_create_new_calendar">Crear nou calendari</string>
-  <string name="account_install_icsdroid">Instal·lar ICSdroid</string>
   <!--AddAccountActivity-->
   <string name="login_title">Afegir compte</string>
   <string name="login_type_email">Entra amb una adreça de correu electrònic</string>

@@ -102,7 +102,6 @@
   <string name="account_refresh_calendar_list">Opdatere kalenderliste</string>
   <string name="account_create_new_calendar">Oprette ny kalender</string>
   <string name="account_no_webcal_handler_found">Der er ikke fundet noget program der kan håndtere Webcal.</string>
-  <string name="account_install_icsdroid">Installere ICSdroid</string>
   <!--AddAccountActivity-->
   <string name="login_title">Tilføje konto</string>
   <string name="login_type_email">Logge ind med e-post adresse</string>

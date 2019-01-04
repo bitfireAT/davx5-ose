@@ -35,8 +35,12 @@
   <string name="about_libraries">Библиотеки</string>
   <string name="about_version">Версия %1s (%2d)</string>
   <string name="about_build_date">Скомпилировано %s</string>
+  <string name="about_flavor_info">Эта версия может распространяться только через Google Play.</string>
   <string name="about_license_info_no_warranty">Эта программа поставляется БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ. Это свободное программное обеспечение и вы можете распространять его при соблюдении определенных условий.</string>
   <!--global settings-->
+  <string name="logging_couldnt_create_file">Не удалось создать файл журнала</string>
+  <string name="logging_notification_title">Журналирование DAVx⁵</string>
+  <string name="logging_notification_text">Сейчас вся активность DAVx⁵ журналируется</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Открыть панель навигации</string>
   <string name="navigation_drawer_close">Закрыть панель навигации</string>
@@ -62,6 +66,9 @@
   <string name="app_settings_debug">Отладка</string>
   <string name="app_settings_show_debug_info">Показать отладочную информацию</string>
   <string name="app_settings_show_debug_info_details">Просмотреть/поделиться сведениями о ПО и конфигурации</string>
+  <string name="app_settings_logging">Детальное журналирование</string>
+  <string name="app_settings_logging_on">Журналирование активно</string>
+  <string name="app_settings_logging_off">Журналирование отключено</string>
   <string name="app_settings_connection">Подключение</string>
   <string name="app_settings_override_proxy">Переопределить настройки прокси-сервера</string>
   <string name="app_settings_override_proxy_on">Использовать пользовательские настройки прокси-сервера</string>
@@ -102,7 +109,7 @@
   <string name="account_refresh_calendar_list">Обновить список календарей</string>
   <string name="account_create_new_calendar">Создать новый календарь</string>
   <string name="account_no_webcal_handler_found">Не найдено приложение, поддерживающее WebCal</string>
-  <string name="account_install_icsdroid">Установить ICSdroid</string>
+  <string name="account_install_icsx5">Установить ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Добавить аккаунт</string>
   <string name="login_type_email">Вход с адресом электронной почты</string>

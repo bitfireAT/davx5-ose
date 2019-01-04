@@ -80,7 +80,6 @@
   <string name="account_refresh_calendar_list">Agenda\'s vernieuwen</string>
   <string name="account_create_new_calendar">Maak een nieuwe agenda</string>
   <string name="account_no_webcal_handler_found">Geen mogelijke Webcal app gevonden</string>
-  <string name="account_install_icsdroid">ICSdroid installeren</string>
   <!--AddAccountActivity-->
   <string name="login_title">Account toevoegen</string>
   <string name="login_type_email">Inloggen met e-mailadres</string>
