@@ -93,13 +93,13 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
                         .setOngoing(true)
 
                 // add "Share" action
-                val logFileUri = FileProvider.getUriForFile(context, context.getString(R.string.authority_log_provider), logFile)
+                val logFileUri = FileProvider.getUriForFile(context, context.getString(R.string.authority_debug_provider), logFile)
                 log.fine("Now logging to file: $logFile -> $logFileUri")
 
                 val shareIntent = Intent(Intent.ACTION_SEND)
-                shareIntent.setDataAndType(logFileUri, "text/plain")
                 shareIntent.putExtra(Intent.EXTRA_SUBJECT, "DAVx⁵ logs")
                 shareIntent.putExtra(Intent.EXTRA_STREAM, logFileUri)
+                shareIntent.type = "text/plain"
                 shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 val shareAction = NotificationCompat.Action.Builder(R.drawable.ic_share_action,
                         context.getString(R.string.logging_notification_share_log),

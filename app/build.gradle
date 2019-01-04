@@ -18,7 +18,7 @@ android {
     defaultConfig {
         applicationId "at.bitfire.davdroid"
 
-        versionCode 260
+        versionCode 261
         versionName '2.2'
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "customCerts", "true"

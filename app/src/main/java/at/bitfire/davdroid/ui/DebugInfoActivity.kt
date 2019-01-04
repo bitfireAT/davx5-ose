@@ -27,6 +27,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.pm.PackageInfoCompat
@@ -78,29 +79,30 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
 
     fun onShare(item: MenuItem) {
         report?.let {
-            val sendIntent = Intent()
-            sendIntent.action = Intent.ACTION_SEND
-            sendIntent.type = "text/plain"
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info")
+            val builder = ShareCompat.IntentBuilder.from(this)
+                    .setSubject("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info")
+                    .setType("text/plain")
 
             try {
-                val debugInfoDir = File(cacheDir, "debug-info")
-                debugInfoDir.mkdir()
+                val debugInfoDir = File(filesDir, "debug")
+                if (!(debugInfoDir.exists() && debugInfoDir.isDirectory) && !debugInfoDir.mkdir())
+                    throw IOException("Couldn't create debug directory")
 
-                val reportFile = File(debugInfoDir, "debug.txt")
+                val reportFile = File(debugInfoDir, "davx5-info.txt")
                 Logger.log.fine("Writing debug info to ${reportFile.absolutePath}")
                 val writer = FileWriter(reportFile)
                 writer.write(it)
                 writer.close()
 
-                sendIntent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, getString(R.string.authority_log_provider), reportFile))
-                sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-
+                builder.setStream(FileProvider.getUriForFile(this, getString(R.string.authority_debug_provider), reportFile))
             } catch(e: IOException) {
                 // creating an attachment failed, so send it inline
-                sendIntent.putExtra(Intent.EXTRA_TEXT, it)
+                val text = "Couldn't create debug info file: " + Log.getStackTraceString(e) + "\n\n$it"
+                builder.setText(text)
             }
 
+            val sendIntent = builder.intent
+            sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             startActivity(Intent.createChooser(sendIntent, null))
         }
     }

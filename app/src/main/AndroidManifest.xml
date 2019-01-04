@@ -99,12 +99,12 @@
         </activity>
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="@string/authority_log_provider"
+            android:authorities="@string/authority_debug_provider"
             android:grantUriPermissions="true"
             android:exported="false">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/log_paths" />
+                android:resource="@xml/debug_paths" />
         </provider>
 
         <!-- account type "DAVdroid" -->
