@@ -31,7 +31,7 @@
             <item
                 android:id="@+id/nav_twitter"
                 android:icon="@drawable/twitter"
-                android:title="\@davdroidapp"
+                android:title="\@davx5app"
                 tools:ignore="HardcodedText"/>
         </menu>
     </item>
