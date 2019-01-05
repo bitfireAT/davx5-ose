@@ -159,6 +159,7 @@
     <string name="login_account_name_info">Use your email address as account name because Android will use the account name as ORGANIZER field for events you create. You can\'t have two accounts with the same name.</string>
     <string name="login_account_contact_group_method">Contact group method:</string>
     <string name="login_account_name_required">Account name required</string>
+    <string name="login_account_name_already_taken">Account name already taken</string>
     <string name="login_account_not_created">Account could not be created</string>
 
     <string name="login_configuration_detection">Configuration detection</string>

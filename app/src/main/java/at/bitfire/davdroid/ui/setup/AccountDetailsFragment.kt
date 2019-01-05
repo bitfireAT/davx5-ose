@@ -81,6 +81,13 @@ class AccountDetailsFragment: Fragment() {
             if (name.isEmpty())
                 v.account_name.error = getString(R.string.login_account_name_required)
             else {
+                // check whether account name already exists
+                val am = AccountManager.get(requireActivity())
+                if (am.getAccountsByType(getString(R.string.account_type)).any { it.name == name }) {
+                    v.account_name.error = getString(R.string.login_account_name_already_taken)
+                    return@setOnClickListener
+                }
+
                 val idx = view!!.contact_group_method.selectedItemPosition
                 val groupMethodName = resources.getStringArray(R.array.settings_contact_group_method_values)[idx]
 
