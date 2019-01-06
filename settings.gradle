@@ -1,5 +1,7 @@
+
 include ':app'
 include ':cert4android'
-include ':dav4jvm'
 include ':ical4android'
 include ':vcard4android'
+
+includeBuild('dav4jvm')

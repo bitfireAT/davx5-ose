@@ -67,7 +67,7 @@ android {
 
 dependencies {
     implementation project(':cert4android')
-    implementation project(':dav4jvm')
+    implementation ':dav4jvm'
     implementation project(':ical4android')
     implementation project(':vcard4android')
 
