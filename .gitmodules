@@ -1,6 +1,6 @@
-[submodule "dav4android"]
-	path = dav4android
-	url = ../dav4android.git
+[submodule "dav4jvm"]
+	path = dav4jvm
+	url = ../dav4jvm.git
 [submodule "ical4android"]
 	path = ical4android
 	url = ../ical4android.git

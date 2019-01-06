@@ -18,7 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.fragment.app.Fragment
-import at.bitfire.dav4android.Constants
+import at.bitfire.dav4jvm.Constants
 import at.bitfire.davdroid.R
 import kotlinx.android.synthetic.main.login_credentials_fragment.view.*
 import java.net.IDN

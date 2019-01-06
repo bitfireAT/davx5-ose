@@ -34,7 +34,7 @@ import androidx.core.content.pm.PackageInfoCompat
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.AsyncTaskLoader
 import androidx.loader.content.Loader
-import at.bitfire.dav4android.exception.HttpException
+import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R

@@ -18,15 +18,13 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import at.bitfire.dav4android.*
-import at.bitfire.dav4android.exception.*
-import at.bitfire.dav4android.property.GetCTag
-import at.bitfire.dav4android.property.GetETag
-import at.bitfire.dav4android.property.SyncToken
+import at.bitfire.dav4jvm.*
+import at.bitfire.dav4jvm.exception.*
+import at.bitfire.dav4jvm.property.GetCTag
+import at.bitfire.dav4jvm.property.GetETag
+import at.bitfire.dav4jvm.property.SyncToken
 import at.bitfire.davdroid.*
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.SyncState
 import at.bitfire.davdroid.resource.*
@@ -454,7 +452,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 return@listRemote
 
             // ignore collections
-            if (response[at.bitfire.dav4android.property.ResourceType::class.java]?.types?.contains(at.bitfire.dav4android.property.ResourceType.COLLECTION) == true)
+            if (response[at.bitfire.dav4jvm.property.ResourceType::class.java]?.types?.contains(at.bitfire.dav4jvm.property.ResourceType.COLLECTION) == true)
                 return@listRemote
 
             val name = response.hrefName()

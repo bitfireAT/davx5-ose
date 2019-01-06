@@ -12,9 +12,9 @@ import android.content.Context
 import android.os.Build
 import android.security.KeyChain
 import at.bitfire.cert4android.CustomCertManager
-import at.bitfire.dav4android.BasicDigestAuthHandler
-import at.bitfire.dav4android.Constants
-import at.bitfire.dav4android.UrlUtils
+import at.bitfire.dav4jvm.BasicDigestAuthHandler
+import at.bitfire.dav4jvm.Constants
+import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
@@ -226,7 +226,7 @@ class HttpClient private constructor(
         // use Locale.US because numbers may be encoded as non-ASCII characters in other locales
         private val userAgentDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US)
         private val userAgentDate = userAgentDateFormat.format(Date(BuildConfig.buildTime))
-        private val userAgent = "DAVx5/${BuildConfig.VERSION_NAME} ($userAgentDate; dav4android; okhttp/${Constants.okHttpVersion}) Android/${Build.VERSION.RELEASE}"
+        private val userAgent = "DAVx5/${BuildConfig.VERSION_NAME} ($userAgentDate; dav4android; okhttp/${Constants.okhttpVersion}) Android/${Build.VERSION.RELEASE}"
 
         override fun intercept(chain: Interceptor.Chain): Response {
             val locale = Locale.getDefault()

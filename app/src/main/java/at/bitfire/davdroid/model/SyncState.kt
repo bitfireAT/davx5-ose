@@ -8,7 +8,7 @@
 
 package at.bitfire.davdroid.model
 
-import at.bitfire.dav4android.property.SyncToken
+import at.bitfire.dav4jvm.property.SyncToken
 import org.json.JSONException
 import org.json.JSONObject
 

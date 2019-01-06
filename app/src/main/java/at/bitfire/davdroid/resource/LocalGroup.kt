@@ -20,7 +20,7 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
-import at.bitfire.dav4android.Constants
+import at.bitfire.dav4jvm.Constants
 import at.bitfire.vcard4android.*
 import java.util.*
 

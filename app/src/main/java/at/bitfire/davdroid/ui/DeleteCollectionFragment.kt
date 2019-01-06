@@ -18,7 +18,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.AsyncTaskLoader
 import androidx.loader.content.Loader
-import at.bitfire.dav4android.DavResource
+import at.bitfire.dav4jvm.DavResource
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.CollectionInfo

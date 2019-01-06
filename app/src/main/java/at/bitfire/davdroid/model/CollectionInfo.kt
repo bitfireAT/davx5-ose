@@ -11,9 +11,9 @@ package at.bitfire.davdroid.model
 import android.content.ContentValues
 import android.os.Parcel
 import android.os.Parcelable
-import at.bitfire.dav4android.Response
-import at.bitfire.dav4android.UrlUtils
-import at.bitfire.dav4android.property.*
+import at.bitfire.dav4jvm.Response
+import at.bitfire.dav4jvm.UrlUtils
+import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.model.ServiceDB.Collections
 import okhttp3.HttpUrl
 
