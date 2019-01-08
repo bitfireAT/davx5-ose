@@ -41,6 +41,7 @@
   <string name="logging_couldnt_create_file">Не удалось создать файл журнала</string>
   <string name="logging_notification_title">Журналирование DAVx⁵</string>
   <string name="logging_notification_text">Сейчас вся активность DAVx⁵ журналируется</string>
+  <string name="logging_notification_send_log">Отправить журнал</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Открыть панель навигации</string>
   <string name="navigation_drawer_close">Закрыть панель навигации</string>
@@ -133,6 +134,7 @@
   <string name="login_account_name_info">Используйте ваш адрес адрес электронной почты в качестве имени аккаунта, поскольку Android будет использовать имя аккаунта в поле ORGANIZER для событий, которые вы создаете. У вас не может быть двух аккаунтов с тем же именем.</string>
   <string name="login_account_contact_group_method">Метод группировки контактов:</string>
   <string name="login_account_name_required">Требуется имя аккаунта</string>
+  <string name="login_account_name_already_taken">Имя аккаунта уже используется</string>
   <string name="login_account_not_created">Аккаунт не может быть создан</string>
   <string name="login_configuration_detection">Обнаружение конфигурации</string>
   <string name="login_querying_server">Ожидайте, выполняется запрос к серверу…</string>

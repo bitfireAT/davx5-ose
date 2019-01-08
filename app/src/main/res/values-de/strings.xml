@@ -134,6 +134,7 @@
   <string name="login_account_name_info">Verwenden Sie Ihre Email-Adresse als Kontonamen, da Android den Kontonamen als ORGANIZER einsetzt. Es kann allerdings keine zwei Konten mit dem gleichen Namen geben.</string>
   <string name="login_account_contact_group_method">Kontaktgruppen-Methode:</string>
   <string name="login_account_name_required">Kontoname wird benötigt</string>
+  <string name="login_account_name_already_taken">Kontoname bereits verwendet</string>
   <string name="login_account_not_created">Konto konnte nicht angelegt werden</string>
   <string name="login_configuration_detection">Ressourcen-Erkennung</string>
   <string name="login_querying_server">Server-Informationen werden abgerufen. Bitte warten …</string>
