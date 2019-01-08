@@ -41,6 +41,7 @@
   <string name="logging_couldnt_create_file">Não foi possível criar o arquivo de log</string>
   <string name="logging_notification_title">Log do DAVx⁵</string>
   <string name="logging_notification_text">Agora registrando todas as atividades do DAVx⁵</string>
+  <string name="logging_notification_send_log">Enviar log</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Abrir a gaveta de navegação</string>
   <string name="navigation_drawer_close">Fechar gaveta de navegação</string>
@@ -133,6 +134,7 @@
   <string name="login_account_name_info">Use seu endereço de e-mail como nome da conta porque o Android irá usar esse nome como campo AGENDA nos eventos que você criar. Não é possível ter duas contas com o mesmo nome.</string>
   <string name="login_account_contact_group_method">Método do grupo Contato:</string>
   <string name="login_account_name_required">É necessário um nome de conta</string>
+  <string name="login_account_name_already_taken">O nome da conta já foi utilizado</string>
   <string name="login_account_not_created">A conta não pôde ser criada</string>
   <string name="login_configuration_detection">Detecção de configuração</string>
   <string name="login_querying_server">Aguarde, procurando servidor…</string>
