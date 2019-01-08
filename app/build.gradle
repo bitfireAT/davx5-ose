@@ -25,6 +25,8 @@ android {
         minSdkVersion 19        // Android 4.4
         targetSdkVersion 28     // Android 9.0
 
+        buildConfigField "String", "userAgent", "\"DAVx5\""
+
         // when using this, make sure that notification icons are real bitmaps
         vectorDrawables.useSupportLibrary = true
     }
