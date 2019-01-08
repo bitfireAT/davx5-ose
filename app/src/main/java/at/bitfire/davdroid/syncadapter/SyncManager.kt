@@ -67,8 +67,10 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     companion object {
 
-        val MAX_PROCESSING_THREADS = Math.min(Runtime.getRuntime().availableProcessors()/2, 1)
-        val MAX_DOWNLOAD_THREADS = Math.max(Runtime.getRuntime().availableProcessors(), 2)
+        val MAX_PROCESSING_THREADS =    // nCPU/2 (rounded up for case of 1 CPU), but max. 4
+                Math.min((Runtime.getRuntime().availableProcessors()+1)/2, 4)
+        val MAX_DOWNLOAD_THREADS =      // one (if one CPU), 2 otherwise
+                Math.min(Runtime.getRuntime().availableProcessors(), 2)
         const val MAX_MULTIGET_RESOURCES = 10
 
         fun cancelNotifications(manager: NotificationManagerCompat, authority: String, account: Account) =
@@ -77,6 +79,10 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         private fun notificationTag(authority: String, account: Account) =
                 "$authority-${account.name}".hashCode().toString()
 
+    }
+
+    init {
+        Logger.log.info("SyncManager: using up to $MAX_PROCESSING_THREADS processing threads and $MAX_DOWNLOAD_THREADS download threads")
     }
 
     private val mainAccount = if (localCollection is LocalAddressBook)

@@ -67,7 +67,6 @@ android {
 
 dependencies {
     implementation project(':cert4android')
-    implementation ':dav4jvm'
     implementation project(':ical4android')
     implementation project(':vcard4android')
 
@@ -79,6 +78,9 @@ dependencies {
     implementation 'androidx.preference:preference:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
 
+    implementation(':dav4jvm') {
+        exclude group: 'org.ogce', module: 'xpp3'	// Android comes with its own XmlPullParser
+    }
     implementation 'com.jaredrummler:colorpicker:1.0.5'
     implementation 'com.mikepenz:aboutlibraries:6.2.0'
 
