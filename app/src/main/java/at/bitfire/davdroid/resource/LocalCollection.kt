@@ -8,6 +8,7 @@
 
 package at.bitfire.davdroid.resource
 
+import android.provider.CalendarContract.Events
 import at.bitfire.davdroid.model.SyncState
 
 interface LocalCollection<out T: LocalResource<*>> {
@@ -24,14 +25,23 @@ interface LocalCollection<out T: LocalResource<*>> {
 
 
     /**
-     * Marks all entries which are not dirty with the given flags only.
-     * @return number of marked entries
-     **/
+     * Sets the [LocalEvent.COLUMN_FLAGS] value for entries which are not dirty ([Events.DIRTY] is 0)
+     * and have an [Events.ORIGINAL_ID] of null.
+     *
+     * @param flags    value of flags to set (for instance, [LocalResource.FLAG_REMOTELY_PRESENT]])
+     *
+     * @return         number of marked entries
+     */
     fun markNotDirty(flags: Int): Int
 
     /**
-     * Removes all entries with are not dirty and are marked with exactly the given flags.
-     * @return number of removed entries
+     * Removes entries which are not dirty ([Events.DIRTY] is 0 and an [Events.ORIGINAL_ID] is null) with
+     * a given flag combination.
+     *
+     * @param flags    exact flags value to remove entries with (for instance, if this is [LocalResource.FLAG_REMOTELY_PRESENT]],
+     *                 all entries with exactly this flag will be removed)
+     *
+     * @return         number of removed entries
      */
     fun removeNotDirtyMarked(flags: Int): Int
 
