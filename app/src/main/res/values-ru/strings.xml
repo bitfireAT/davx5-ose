@@ -169,8 +169,11 @@
   <string name="settings_sync_wifi_only_off">Не учитывать тип соединения</string>
   <string name="settings_sync_wifi_only_ssids">Ограничение WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">Будет синхронизироваться только  %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Будет синхронизироваться только более %s (требуются активированные службы определения местоположения)</string>
   <string name="settings_sync_wifi_only_ssids_off">Все соединения WiFi будут использоваться</string>
   <string name="settings_sync_wifi_only_ssids_message">Названия (SSID), разделенные запятыми разрешенных сетей Wi-Fi (оставьте пустым для всех)</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">Для чтения имен WiFi требуются разрешение на геолокацию и постоянно активированные службы определения местоположения</string>
+  <string name="settings_more_info_faq">Дополнительная информация (FAQ)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Метод группировки контактов</string>
   <string-array name="settings_contact_group_method_entries">

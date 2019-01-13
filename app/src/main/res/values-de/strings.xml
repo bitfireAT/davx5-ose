@@ -169,8 +169,11 @@
   <string name="settings_sync_wifi_only_off">Verbindungstyp wird nicht beachtet</string>
   <string name="settings_sync_wifi_only_ssids">WLAN-SSID-Beschränkung</string>
   <string name="settings_sync_wifi_only_ssids_on">Synchronisierung nur über %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Synchronisierung nur über %s (benötigt aktive Standortdienste)</string>
   <string name="settings_sync_wifi_only_ssids_off">Alle WLAN-Verbindungen werden verwendet</string>
   <string name="settings_sync_wifi_only_ssids_message">Erlaubte WLAN-Namen (SSIDs, mit Beistrich getrennt, leer lassen für alle)</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">Zum Auslesen von WLAN-Namen sind die Standort-Berechtigung und die ständige Aktivierung der Standortdienste notwendig.</string>
+  <string name="settings_more_info_faq">Mehr Info (FAQ)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Kontaktgruppen-Methode</string>
   <string-array name="settings_contact_group_method_entries">
