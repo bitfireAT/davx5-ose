@@ -2,7 +2,7 @@
 [![build status](https://gitlab.com/bitfireAT/davx5-ose/badges/master-ose/build.svg)](https://gitlab.com/bitfireAT/davx5-ose/commits/master-ose)
 
 
-![DAVx⁵ logo](app/src/main/res/mipmap-xxhdpi/ic_launcher.png)
+![DAVx⁵ logo](app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
 
 DAVx⁵
 ========
@@ -12,19 +12,19 @@ comprehensive information about DAVx⁵.
 
 DAVx⁵ is licensed under the [GPLv3 License](LICENSE).
 
-News and updates: [@davx5app](https://twitter.com/davx5dapp) on Twitter
+News and updates: [@davx5app](https://twitter.com/davx5app) on Twitter
 
-Help and discussion: [DAVx⁵ forums](https://www.davx5.com/forums/)
+Help and discussion: [DAVx⁵ forums](https://www.davx5.com/forums)
 
-**If you want to support DAVx⁵, please consider [donating to DAVx⁵](https://www.davx5.com/donate/)
-or [purchasing it](https://www.davx5.com/download/).**
+**If you want to support DAVx⁵, please consider [donating to DAVx⁵](https://www.davx5.com/donate)
+or [purchasing it](https://www.davx5.com/download).**
 
 Generated KDoc: https://bitfireAT.gitlab.io/davx5-ose/dokka/app/
 
 Parts of DAVx⁵ have been outsourced into these libraries:
 
 * [cert4android](https://gitlab.com/bitfireAT/cert4android) – custom certificate management
-* [dav4android](https://gitlab.com/bitfireAT/dav4android) – WebDAV/CalDav/CardDAV framework
+* [dav4jvm](https://gitlab.com/bitfireAT/dav4jvm) – WebDAV/CalDav/CardDAV framework
 * [ical4android](https://gitlab.com/bitfireAT/ical4android) – iCalendar processing and Calendar Provider access
 * [vcard4android](https://gitlab.com/bitfireAT/vcard4android) – VCard processing and Contacts Provider access
 
