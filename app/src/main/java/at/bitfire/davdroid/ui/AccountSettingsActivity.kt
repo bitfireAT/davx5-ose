@@ -168,15 +168,19 @@ class AccountSettingsActivity: AppCompatActivity() {
 
             (findPreference("sync_interval_contacts") as ListPreference).let {
                 if (syncIntervalContacts != null) {
+                    it.isEnabled = true
                     it.isVisible = true
                     it.value = syncIntervalContacts.toString()
                     if (syncIntervalContacts == AccountSettings.SYNC_INTERVAL_MANUALLY)
                         it.setSummary(R.string.settings_sync_summary_manually)
                     else
                         it.summary = getString(R.string.settings_sync_summary_periodically, syncIntervalContacts / 60)
-                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                        accountSettings.setSyncInterval(getString(R.string.address_books_authority), (newValue as String).toLong())
-                        reload()
+                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
+                        Handler(Looper.myLooper()).post {
+                            pref.isEnabled = false
+                            accountSettings.setSyncInterval(getString(R.string.address_books_authority), (newValue as String).toLong())
+                            reload()
+                        }
                         false
                     }
                 } else
@@ -185,15 +189,19 @@ class AccountSettingsActivity: AppCompatActivity() {
 
             (findPreference("sync_interval_calendars") as ListPreference).let {
                 if (syncIntervalCalendars != null) {
+                    it.isEnabled = true
                     it.isVisible = true
                     it.value = syncIntervalCalendars.toString()
                     if (syncIntervalCalendars == AccountSettings.SYNC_INTERVAL_MANUALLY)
                         it.setSummary(R.string.settings_sync_summary_manually)
                     else
                         it.summary = getString(R.string.settings_sync_summary_periodically, syncIntervalCalendars / 60)
-                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                        accountSettings.setSyncInterval(CalendarContract.AUTHORITY, (newValue as String).toLong())
-                        reload()
+                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
+                        Handler(Looper.myLooper()).post {
+                            pref.isEnabled = false
+                            accountSettings.setSyncInterval(CalendarContract.AUTHORITY, (newValue as String).toLong())
+                            reload()
+                        }
                         false
                     }
                 } else
@@ -202,15 +210,19 @@ class AccountSettingsActivity: AppCompatActivity() {
 
             (findPreference("sync_interval_tasks") as ListPreference).let {
                 if (syncIntervalTasks != null) {
+                    it.isEnabled = true
                     it.isVisible = true
                     it.value = syncIntervalTasks.toString()
                     if (syncIntervalTasks == AccountSettings.SYNC_INTERVAL_MANUALLY)
                         it.setSummary(R.string.settings_sync_summary_manually)
                     else
                         it.summary = getString(R.string.settings_sync_summary_periodically, syncIntervalTasks / 60)
-                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                        accountSettings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, (newValue as String).toLong())
-                        reload()
+                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
+                        Handler(Looper.myLooper()).post {
+                            pref.isEnabled = false
+                            accountSettings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, (newValue as String).toLong())
+                            reload()
+                        }
                         false
                     }
                 } else
