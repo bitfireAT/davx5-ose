@@ -393,7 +393,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                         .setPositiveButton(android.R.string.ok) { _, _ -> }
                         .setNeutralButton(R.string.settings_more_info_faq) { _, _ ->
                             val faqUrl = App.homepageUrl(requireActivity()).buildUpon()
-                                    .appendEncodedPath("faq/wifi-ssid-restriction-location-permission")
+                                    .appendPath("faq").appendPath("wifi-ssid-restriction-location-permission")
                                     .build()
                             val intent = Intent(Intent.ACTION_VIEW, faqUrl)
                             startActivity(Intent.createChooser(intent, null))

@@ -100,7 +100,7 @@ class StartupDialogFragment: DialogFragment() {
                         .setMessage(getString(R.string.startup_autostart_permission_message, Build.MANUFACTURER))
                         .setPositiveButton(R.string.startup_more_info) { _, _ ->
                             UiUtils.launchUri(requireActivity(), App.homepageUrl(requireActivity()).buildUpon()
-                                    .appendPath("faq").appendEncodedPath("synchronization-is-not-run-as-expected/").build())
+                                    .appendPath("faq").appendPath("synchronization-is-not-run-as-expected").build())
                         }
                         .setNeutralButton(R.string.startup_not_now) { _, _ -> }
                         .setNegativeButton(R.string.startup_dont_show_again) { _, _ ->
@@ -149,7 +149,7 @@ class StartupDialogFragment: DialogFragment() {
                             .setMessage(R.string.startup_donate_message)
                             .setPositiveButton(R.string.startup_donate_now) { _, _ ->
                                 UiUtils.launchUri(requireActivity(), App.homepageUrl(requireActivity()).buildUpon()
-                                        .appendEncodedPath("donate/")
+                                        .appendPath("donate")
                                         .build())
                                 settings.putLong(SETTING_NEXT_DONATION_POPUP, System.currentTimeMillis() + 30 * 86400000L) // 30 days
                             }

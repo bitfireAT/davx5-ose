@@ -44,16 +44,17 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
                 UiUtils.launchUri(activity, App.homepageUrl(activity))
             R.id.nav_manual ->
                 UiUtils.launchUri(activity, App.homepageUrl(activity)
-                        .buildUpon().appendEncodedPath("manual/").build())
+                        .buildUpon().appendPath("manual").build())
             R.id.nav_faq ->
                 UiUtils.launchUri(activity, App.homepageUrl(activity)
-                        .buildUpon().appendEncodedPath("faq/").build())
+                        .buildUpon().appendPath("faq").build())
             R.id.nav_forums ->
                 UiUtils.launchUri(activity, App.homepageUrl(activity)
-                        .buildUpon().appendEncodedPath("forums/").build())
+                        .buildUpon().appendPath("forums").build())
             R.id.nav_donate ->
-                UiUtils.launchUri(activity, App.homepageUrl(activity)
-                        .buildUpon().appendEncodedPath("donate/").build())
+                //if (BuildConfig.FLAVOR != App.FLAVOR_GOOGLE_PLAY)
+                    UiUtils.launchUri(activity, App.homepageUrl(activity)
+                            .buildUpon().appendPath("donate").build())
             else ->
                 return false
         }
