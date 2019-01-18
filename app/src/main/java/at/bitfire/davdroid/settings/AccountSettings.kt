@@ -32,6 +32,7 @@ import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.ical4android.TaskProvider
+import at.bitfire.ical4android.TaskProvider.ProviderName.OpenTasks
 import at.bitfire.vcard4android.ContactsStorageException
 import at.bitfire.vcard4android.GroupMethod
 import okhttp3.HttpUrl
@@ -52,7 +53,7 @@ class AccountSettings(
 
     companion object {
 
-        const val CURRENT_VERSION = 8
+        const val CURRENT_VERSION = 9
         const val KEY_SETTINGS_VERSION = "version"
 
         const val KEY_USERNAME = "user_name"
@@ -236,6 +237,27 @@ class AccountSettings(
                 accountManager.setUserData(account, KEY_SETTINGS_VERSION, toVersion.toString())
             } catch (e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't update account settings", e)
+            }
+        }
+    }
+
+
+    @Suppress("unused")
+    @SuppressLint("Recycle")
+    /**
+     * It seems that somehow some non-CalDAV accounts got OpenTasks syncable, which caused battery problems.
+     * Disable it on those accounts for the future.
+     */
+    private fun update_8_9() {
+        ServiceDB.OpenHelper(context).use { dbHelper ->
+            val db = dbHelper.readableDatabase
+            db.query(ServiceDB.Services._TABLE, null, "${ServiceDB.Services.ACCOUNT_NAME}=? AND ${ServiceDB.Services.SERVICE}=?",
+                    arrayOf(account.name, ServiceDB.Services.SERVICE_CALDAV), null, null, null).use { result ->
+                val hasCalDAV = result.count >= 1
+                if (!hasCalDAV && ContentResolver.getIsSyncable(account, OpenTasks.authority) != 0) {
+                    Logger.log.info("Disabling OpenTasks sync for $account")
+                    ContentResolver.setIsSyncable(account, OpenTasks.authority, 0)
+                }
             }
         }
     }
