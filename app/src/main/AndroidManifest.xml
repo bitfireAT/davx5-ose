@@ -101,7 +101,7 @@
                 android:resource="@xml/debug_paths" />
         </provider>
 
-        <!-- account type "DAVdroid" -->
+        <!-- account type "DAVx⁵" -->
         <service
             android:name=".syncadapter.AccountAuthenticatorService"
             android:exported="false">
@@ -138,7 +138,7 @@
                 android:resource="@xml/sync_tasks"/>
         </service>
 
-        <!-- account type "DAVdroid Address book" -->
+        <!-- account type "DAVx⁵ Address book" -->
         <service
             android:name=".syncadapter.NullAuthenticatorService"
             android:exported="false">

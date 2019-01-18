@@ -1,8 +1,8 @@
 
-# ProGuard usage for DAVdroid:
+# ProGuard usage for DAVx⁵:
 #       shrinking        yes (main reason for using ProGuard)
 #       optimization     yes
-#       obfuscation      no (DAVdroid is open-source)
+#       obfuscation      no (DAVx⁵ is open-source)
 #       preverification  no
 
 -dontobfuscate
@@ -43,5 +43,5 @@
 # dnsjava
 -dontwarn sun.net.spi.nameservice.**   # not available on Android
 
-# DAVdroid + libs
--keep class at.bitfire.** { *; }       # all DAVdroid code is required
+# DAVx⁵ + libs
+-keep class at.bitfire.** { *; }       # all DAVx⁵ code is required
