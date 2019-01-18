@@ -32,7 +32,7 @@ import at.bitfire.davdroid.model.ServiceDB.*
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.ical4android.TaskProvider.ProviderName.OpenTasks
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.login_account_details.*
@@ -180,11 +180,13 @@ class AccountDetailsFragment: Fragment() {
                         // enable task sync if OpenTasks is installed
                         // further changes will be handled by PackageChangedReceiver
                         if (LocalTaskList.tasksProviderAvailable(appContext)) {
-                            ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1)
-                            accountSettings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL)
+                            ContentResolver.setIsSyncable(account, OpenTasks.authority, 1)
+                            accountSettings.setSyncInterval(OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL)
                         }
-                    } else
+                    } else {
                         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0)
+                        ContentResolver.setIsSyncable(account, OpenTasks.authority, 0)
+                    }
 
                 } catch(e: InvalidAccountException) {
                     Logger.log.log(Level.SEVERE, "Couldn't access account settings", e)

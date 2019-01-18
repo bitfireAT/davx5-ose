@@ -18,10 +18,7 @@ import android.content.pm.PackageManager
 import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
-import android.os.AsyncTask
-import android.os.Build
-import android.os.Bundle
-import android.os.IBinder
+import android.os.*
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.view.*
@@ -819,7 +816,9 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             accountManager.removeAccount(account, this, { future ->
                 try {
                     if (future.result.getBoolean(AccountManager.KEY_BOOLEAN_RESULT))
-                        finish()
+                        Handler(Looper.getMainLooper()).post {
+                            finish()
+                        }
                 } catch(e: Exception) {
                     Logger.log.log(Level.SEVERE, "Couldn't remove account", e)
                 }
@@ -828,7 +827,9 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             accountManager.removeAccount(account, { future ->
                 try {
                     if (future.result)
-                        finish()
+                        Handler(Looper.getMainLooper()).post {
+                            finish()
+                        }
                 } catch (e: Exception) {
                     Logger.log.log(Level.SEVERE, "Couldn't remove account", e)
                 }

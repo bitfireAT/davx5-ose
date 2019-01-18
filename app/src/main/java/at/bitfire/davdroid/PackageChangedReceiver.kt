@@ -20,6 +20,7 @@ import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.ServiceDB.Services
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.ical4android.TaskProvider
+import at.bitfire.ical4android.TaskProvider.ProviderName.OpenTasks
 
 class PackageChangedReceiver: BroadcastReceiver() {
 
@@ -46,10 +47,9 @@ class PackageChangedReceiver: BroadcastReceiver() {
                         val account = Account(cursor.getString(0), context.getString(R.string.account_type))
 
                         if (tasksInstalled) {
-                            if (ContentResolver.getIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority) <= 0) {
-                                ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1)
-                                ContentResolver.setSyncAutomatically(account, TaskProvider.ProviderName.OpenTasks.authority, true)
-                                ContentResolver.addPeriodicSync(account, TaskProvider.ProviderName.OpenTasks.authority, Bundle(), Constants.DEFAULT_SYNC_INTERVAL)
+                            if (ContentResolver.getIsSyncable(account, OpenTasks.authority) <= 0) {
+                                ContentResolver.setIsSyncable(account, OpenTasks.authority, 1)
+                                ContentResolver.addPeriodicSync(account, OpenTasks.authority, Bundle(), Constants.DEFAULT_SYNC_INTERVAL)
                             }
                         } else
                             ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0)
