@@ -28,7 +28,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -254,15 +253,12 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
                                        Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR,
                                        TaskProvider.PERMISSION_READ_TASKS, TaskProvider.PERMISSION_WRITE_TASKS,
                                        Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                report.append(permission).append(": ")
-                if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
-                    report.append("granted")
-                else {
-                    report.append("denied")
-                    if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission))
-                        report.append(" & won't ask again")
-                }
-                report.append("\n")
+                report  .append(permission).append(": ")
+                        .append(if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
+                            "granted"
+                        else
+                            "denied")
+                        .append("\n")
             }
             // system-wide sync settings
             report.append("System-wide synchronization: ")
