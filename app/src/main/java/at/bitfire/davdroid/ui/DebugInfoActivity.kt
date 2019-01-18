@@ -11,6 +11,7 @@ package at.bitfire.davdroid.ui
 import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
@@ -27,6 +28,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -123,9 +125,9 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
 
 
     class ReportLoader(
-            context: Context,
+            val activity: Activity,
             val extras: Bundle?
-    ): AsyncTaskLoader<String>(context) {
+    ): AsyncTaskLoader<String>(activity) {
 
         var result: String? = null
 
@@ -250,10 +252,18 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
             // permissions
             for (permission in arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS,
                                        Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR,
-                                       TaskProvider.PERMISSION_READ_TASKS, TaskProvider.PERMISSION_WRITE_TASKS))
-                report.append(permission).append(" permission: ")
-                      .append(if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) "granted" else "denied")
-                      .append("\n")
+                                       TaskProvider.PERMISSION_READ_TASKS, TaskProvider.PERMISSION_WRITE_TASKS,
+                                       Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                report.append(permission).append(": ")
+                if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
+                    report.append("granted")
+                else {
+                    report.append("denied")
+                    if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission))
+                        report.append(" & won't ask again")
+                }
+                report.append("\n")
+            }
             // system-wide sync settings
             report.append("System-wide synchronization: ")
                   .append(if (ContentResolver.getMasterSyncAutomatically()) "automatically" else "manually")
@@ -274,6 +284,7 @@ class DebugInfoActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<Stri
                     report.append("\n  [CardDAV] Contact group method: ${accountSettings.getGroupMethod()}")
                             .append("\n  [CalDAV] Time range (past days): ${accountSettings.getTimeRangePastDays()}")
                             .append("\n           Manage calendar colors: ${accountSettings.getManageCalendarColors()}")
+                            .append("\n           Use event colors: ${accountSettings.getEventColors()}")
                             .append("\n")
                 } catch (e: InvalidAccountException) {
                     report.append("$acct is invalid (unsupported settings version) or does not exist\n")
