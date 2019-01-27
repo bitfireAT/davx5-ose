@@ -10,9 +10,9 @@ package at.bitfire.davdroid.ui.setup
 
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.dav4android.DavResource
-import at.bitfire.dav4android.property.AddressbookHomeSet
-import at.bitfire.dav4android.property.ResourceType
+import at.bitfire.dav4jvm.DavResource
+import at.bitfire.dav4jvm.property.AddressbookHomeSet
+import at.bitfire.dav4jvm.property.ResourceType
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.Credentials

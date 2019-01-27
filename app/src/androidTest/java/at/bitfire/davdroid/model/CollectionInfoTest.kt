@@ -10,8 +10,8 @@ package at.bitfire.davdroid.model
 
 import android.content.ContentValues
 import androidx.test.filters.SmallTest
-import at.bitfire.dav4android.DavResource
-import at.bitfire.dav4android.property.ResourceType
+import at.bitfire.dav4jvm.DavResource
+import at.bitfire.dav4jvm.property.ResourceType
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.model.ServiceDB.Collections
 import okhttp3.HttpUrl
