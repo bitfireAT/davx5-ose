@@ -24,6 +24,7 @@ object NotificationUtils {
     const val NOTIFY_EXTERNAL_FILE_LOGGING = 1
     const val NOTIFY_REFRESH_COLLECTIONS = 2
     const val NOTIFY_SYNC_ERROR = 10
+    const val NOTIFY_INVALID_RESOURCE = 11
     const val NOTIFY_OPENTASKS = 20
     const val NOTIFY_PERMISSIONS = 21
     const val NOTIFY_LICENSE = 100
@@ -34,6 +35,7 @@ object NotificationUtils {
 
     private const val CHANNEL_SYNC = "sync"
     const val CHANNEL_SYNC_ERRORS = "syncProblems"
+    const val CHANNEL_SYNC_WARNINGS = "syncWarnings"
     const val CHANNEL_SYNC_IO_ERRORS = "syncIoErrors"
     const val CHANNEL_SYNC_STATUS = "syncStatus"
 
@@ -43,26 +45,33 @@ object NotificationUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-            val syncChannelGroup = NotificationChannelGroup(CHANNEL_SYNC, context.getString(R.string.notification_channel_sync))
-            nm.createNotificationChannelGroup(syncChannelGroup)
-            val syncChannels = arrayOf(
-                NotificationChannel(CHANNEL_SYNC_ERRORS, context.getString(R.string.notification_channel_sync_errors), NotificationManager.IMPORTANCE_DEFAULT),
-                NotificationChannel(CHANNEL_SYNC_IO_ERRORS, context.getString(R.string.notification_channel_sync_io_errors), NotificationManager.IMPORTANCE_MIN),
-                NotificationChannel(CHANNEL_SYNC_STATUS, context.getString(R.string.notification_channel_sync_status), NotificationManager.IMPORTANCE_MIN)
-            )
-            syncChannels.forEach {
-                it.group = CHANNEL_SYNC
-            }
+            nm.createNotificationChannelGroup(NotificationChannelGroup(CHANNEL_SYNC, context.getString(R.string.notification_channel_sync)))
 
             nm.createNotificationChannels(listOf(
                     NotificationChannel(CHANNEL_DEBUG, context.getString(R.string.notification_channel_debugging), NotificationManager.IMPORTANCE_HIGH),
                     NotificationChannel(CHANNEL_GENERAL, context.getString(R.string.notification_channel_general), NotificationManager.IMPORTANCE_DEFAULT),
-                    *syncChannels
+
+                    NotificationChannel(CHANNEL_SYNC_ERRORS, context.getString(R.string.notification_channel_sync_errors), NotificationManager.IMPORTANCE_DEFAULT).apply {
+                        description = context.getString(R.string.notification_channel_sync_errors_desc)
+                        group = CHANNEL_SYNC
+                    },
+                    NotificationChannel(CHANNEL_SYNC_WARNINGS, context.getString(R.string.notification_channel_sync_warnings), NotificationManager.IMPORTANCE_LOW).apply {
+                        description = context.getString(R.string.notification_channel_sync_warnings_desc)
+                        group = CHANNEL_SYNC
+                    },
+                    NotificationChannel(CHANNEL_SYNC_IO_ERRORS, context.getString(R.string.notification_channel_sync_io_errors), NotificationManager.IMPORTANCE_MIN).apply {
+                        description = context.getString(R.string.notification_channel_sync_io_errors_desc)
+                        group = CHANNEL_SYNC
+                    },
+                    NotificationChannel(CHANNEL_SYNC_STATUS, context.getString(R.string.notification_channel_sync_status), NotificationManager.IMPORTANCE_MIN).apply {
+                        description = context.getString(R.string.notification_channel_sync_status_desc)
+                        group = CHANNEL_SYNC
+                    }
             ))
         }
     }
 
-    fun newBuilder(context: Context, channel: String = CHANNEL_GENERAL): NotificationCompat.Builder {
+    fun newBuilder(context: Context, channel: String): NotificationCompat.Builder {
         val builder = NotificationCompat.Builder(context, channel)
                 .setColor(context.resources.getColor(R.color.primaryColor))
 

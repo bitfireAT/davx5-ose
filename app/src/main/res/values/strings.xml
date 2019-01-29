@@ -27,8 +27,13 @@
     <string name="notification_channel_general">Other important messages</string>
     <string name="notification_channel_sync">Synchronization</string>
     <string name="notification_channel_sync_errors">Synchronization errors</string>
+    <string name="notification_channel_sync_errors_desc">Important errors which stop synchronization like unexpected server replies</string>
+    <string name="notification_channel_sync_warnings">Synchronization warnings</string>
+    <string name="notification_channel_sync_warnings_desc">Non-fatal synchronization problems like certain invalid files</string>
     <string name="notification_channel_sync_io_errors">Network and I/O errors</string>
+    <string name="notification_channel_sync_io_errors_desc">Timeouts, connection problems, etc. (often temporary)</string>
     <string name="notification_channel_sync_status">Status messages</string>
+    <string name="notification_channel_sync_status_desc">Informational status messages like number of dismissed changes of read-only collections</string>
 
     <!-- startup dialogs -->
     <string name="startup_autostart_permission">Automatic synchronization</string>
@@ -107,6 +112,8 @@
     <string name="app_settings_reset_certificates_summary">Resets trust of all custom certificates</string>
     <string name="app_settings_reset_certificates_success">All custom certificates have been cleared</string>
     <string name="app_settings_user_interface">User interface</string>
+    <string name="app_settings_notification_settings">Notification settings</string>
+    <string name="app_settings_notification_settings_summary">Manage notification channels and their settings</string>
     <string name="app_settings_reset_hints">Reset hints</string>
     <string name="app_settings_reset_hints_summary">Re-enables hints which have been dismissed previously</string>
     <string name="app_settings_reset_hints_success">All hints will be shown again</string>
@@ -288,6 +295,10 @@
     <string name="sync_error_local_storage">Local storage error – %s</string>
     <string name="sync_error_retry">Retry</string>
     <string name="sync_error_view_item">View item</string>
+    <string name="sync_invalid_contact">Received invalid contact from server</string>
+    <string name="sync_invalid_event">Received invalid event from server</string>
+    <string name="sync_invalid_task">Received invalid task from server</string>
+    <string name="sync_invalid_resources_ignoring">Ignoring one or more invalid resources</string>
 
     <!-- cert4android -->
     <string name="certificate_notification_connection_security">DAVx⁵: Connection security</string>

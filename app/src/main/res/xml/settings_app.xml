@@ -69,6 +69,12 @@
     <PreferenceCategory android:title="@string/app_settings_user_interface">
 
         <Preference
+            android:key="notification_settings"
+            android:icon="@drawable/ic_notifications_dark"
+            android:title="@string/app_settings_notification_settings"
+            android:summary="@string/app_settings_notification_settings_summary"/>
+
+        <Preference
             android:key="reset_hints"
             android:title="@string/app_settings_reset_hints"
             android:summary="@string/app_settings_reset_hints_summary"/>

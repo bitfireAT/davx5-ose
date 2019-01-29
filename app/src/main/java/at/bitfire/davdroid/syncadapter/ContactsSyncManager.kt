@@ -32,6 +32,7 @@ import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import ezvcard.VCardVersion
+import ezvcard.io.CannotParseException
 import okhttp3.HttpUrl
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -355,18 +356,24 @@ class ContactsSyncManager(
         Logger.log.info("Processing CardDAV resource $fileName")
 
         // TODO catch and show notification on CannotParseException
-        val contacts = Contact.fromReader(reader, downloader)
+        val contacts = try {
+            Contact.fromReader(reader, downloader)
+        } catch (e: CannotParseException) {
+            Logger.log.log(Level.SEVERE, "Received invalid vCard, ignoring", e)
+            notifyInvalidResource(e, fileName)
+            return
+        }
 
         if (contacts.isEmpty()) {
-            Logger.log.warning("Received VCard without data, ignoring")
+            Logger.log.warning("Received vCard without data, ignoring")
             return
         } else if (contacts.size > 1)
-            Logger.log.warning("Received multiple VCards, using first one")
+            Logger.log.warning("Received multiple vCards, using first one")
 
         val newData = contacts.first()
 
         if (groupMethod == GroupMethod.CATEGORIES && newData.group) {
-            Logger.log.warning("Received group VCard although group method is CATEGORIES. Saving as regular contact")
+            Logger.log.warning("Received group vCard although group method is CATEGORIES. Saving as regular contact")
             newData.group = false
         }
 
@@ -475,5 +482,8 @@ class ContactsSyncManager(
             return null
         }
     }
+
+    override fun notifyInvalidResourceTitle(): String =
+            context.getString(R.string.sync_invalid_contact)
 
 }

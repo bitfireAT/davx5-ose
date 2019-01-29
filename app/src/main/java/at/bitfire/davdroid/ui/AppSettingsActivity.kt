@@ -8,6 +8,8 @@
 
 package at.bitfire.davdroid.ui
 
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.EditTextPreference
@@ -48,23 +50,34 @@ class AppSettingsActivity: AppCompatActivity() {
             loadSettings()
 
             // UI settings
-            val prefResetHints = findPreference("reset_hints")
-            prefResetHints.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            findPreference("notification_settings").apply {
+                if (Build.VERSION.SDK_INT >= 26)
+                    onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                        startActivity(Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                            putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, BuildConfig.APPLICATION_ID)
+                        })
+                        false
+                    }
+                else
+                    isVisible = false
+            }
+            findPreference("reset_hints").onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 resetHints()
                 false
             }
 
             // security settings
-            val prefDistrustSystemCerts = findPreference(Settings.DISTRUST_SYSTEM_CERTIFICATES)
-            prefDistrustSystemCerts.isVisible = BuildConfig.customCerts
-            prefDistrustSystemCerts.isEnabled = true
-
-            val prefResetCertificates = findPreference("reset_certificates")
-            prefResetCertificates.isVisible = BuildConfig.customCerts
-            prefResetCertificates.isEnabled = true
-            prefResetCertificates.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                resetCertificates()
-                false
+            findPreference(Settings.DISTRUST_SYSTEM_CERTIFICATES).apply {
+                isVisible = BuildConfig.customCerts
+                isEnabled = true
+            }
+            findPreference("reset_certificates").apply {
+                isVisible = BuildConfig.customCerts
+                isEnabled = true
+                onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                    resetCertificates()
+                    false
+                }
             }
 
             arguments?.getString(EXTRA_SCROLL_TO)?.let { key ->
@@ -76,51 +89,54 @@ class AppSettingsActivity: AppCompatActivity() {
             val settings = Settings.getInstance(requireActivity())
             
             // connection settings
-            val prefOverrideProxy = findPreference(Settings.OVERRIDE_PROXY) as SwitchPreferenceCompat
-            prefOverrideProxy.isChecked = settings.getBoolean(Settings.OVERRIDE_PROXY) ?: Settings.OVERRIDE_PROXY_DEFAULT
-            prefOverrideProxy.isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY)
+            (findPreference(Settings.OVERRIDE_PROXY) as SwitchPreferenceCompat).apply {
+                isChecked = settings.getBoolean(Settings.OVERRIDE_PROXY) ?: Settings.OVERRIDE_PROXY_DEFAULT
+                isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY)
+            }
 
-            val prefProxyHost = findPreference(Settings.OVERRIDE_PROXY_HOST) as EditTextPreference
-            prefProxyHost.isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY_HOST)
-            val proxyHost = settings.getString(Settings.OVERRIDE_PROXY_HOST) ?: Settings.OVERRIDE_PROXY_HOST_DEFAULT
-            prefProxyHost.text = proxyHost
-            prefProxyHost.summary = proxyHost
-            prefProxyHost.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                val host = newValue as String
-                try {
-                    URI(null, host, null, null)
-                    settings.putString(Settings.OVERRIDE_PROXY_HOST, host)
-                    prefProxyHost.summary = host
-                    true
-                } catch(e: URISyntaxException) {
-                    Snackbar.make(view!!, e.localizedMessage, Snackbar.LENGTH_LONG).show()
-                    false
+            (findPreference(Settings.OVERRIDE_PROXY_HOST) as EditTextPreference).apply {
+                isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY_HOST)
+                val proxyHost = settings.getString(Settings.OVERRIDE_PROXY_HOST) ?: Settings.OVERRIDE_PROXY_HOST_DEFAULT
+                text = proxyHost
+                summary = proxyHost
+                onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    val host = newValue as String
+                    try {
+                        URI(null, host, null, null)
+                        settings.putString(Settings.OVERRIDE_PROXY_HOST, host)
+                        summary = host
+                        true
+                    } catch(e: URISyntaxException) {
+                        Snackbar.make(view!!, e.localizedMessage, Snackbar.LENGTH_LONG).show()
+                        false
+                    }
                 }
             }
 
-            val prefProxyPort = findPreference(Settings.OVERRIDE_PROXY_PORT) as EditTextPreference
-            prefProxyHost.isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY_PORT)
-            val proxyPort = settings.getInt(Settings.OVERRIDE_PROXY_PORT) ?: Settings.OVERRIDE_PROXY_PORT_DEFAULT
-            prefProxyPort.text = proxyPort.toString()
-            prefProxyPort.summary = proxyPort.toString()
-            prefProxyPort.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                try {
-                    val port = Integer.parseInt(newValue as String)
-                    if (port in 1..65535) {
-                        settings.putInt(Settings.OVERRIDE_PROXY_PORT, port)
-                        prefProxyPort.text = port.toString()
-                        prefProxyPort.summary = port.toString()
-                        true
-                    } else
+            (findPreference(Settings.OVERRIDE_PROXY_PORT) as EditTextPreference).apply {
+                isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY_PORT)
+                val proxyPort = settings.getInt(Settings.OVERRIDE_PROXY_PORT) ?: Settings.OVERRIDE_PROXY_PORT_DEFAULT
+                text = proxyPort.toString()
+                summary = proxyPort.toString()
+                onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    try {
+                        val port = Integer.parseInt(newValue as String)
+                        if (port in 1..65535) {
+                            settings.putInt(Settings.OVERRIDE_PROXY_PORT, port)
+                            text = port.toString()
+                            summary = port.toString()
+                            true
+                        } else
+                            false
+                    } catch(e: NumberFormatException) {
                         false
-                } catch(e: NumberFormatException) {
-                    false
+                    }
                 }
             }
 
             // security settings
-            val prefDistrustSystemCerts = findPreference(Settings.DISTRUST_SYSTEM_CERTIFICATES) as SwitchPreferenceCompat
-            prefDistrustSystemCerts.isChecked = settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES) ?: Settings.DISTRUST_SYSTEM_CERTIFICATES_DEFAULT
+            (findPreference(Settings.DISTRUST_SYSTEM_CERTIFICATES) as SwitchPreferenceCompat)
+                    .isChecked = settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES) ?: Settings.DISTRUST_SYSTEM_CERTIFICATES_DEFAULT
         }
 
         override fun onSettingsChanged() {

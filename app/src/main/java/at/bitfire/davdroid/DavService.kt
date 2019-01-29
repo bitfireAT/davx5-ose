@@ -388,7 +388,7 @@ class DavService: Service() {
                 debugIntent.putExtra(DebugInfoActivity.KEY_THROWABLE, e)
                 debugIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account)
 
-                val notify = NotificationUtils.newBuilder(this)
+                val notify = NotificationUtils.newBuilder(this, NotificationUtils.CHANNEL_GENERAL)
                         .setSmallIcon(R.drawable.ic_sync_error_notification)
                         .setContentTitle(getString(R.string.dav_service_refresh_failed))
                         .setContentText(getString(R.string.dav_service_refresh_couldnt_refresh))

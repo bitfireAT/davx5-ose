@@ -663,22 +663,9 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     else
                         account)
         } else {
-            contentIntent = Intent(context, DebugInfoActivity::class.java)
-            contentIntent.putExtra(DebugInfoActivity.KEY_THROWABLE, e)
-
-            contentIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account)
-            contentIntent.putExtra(DebugInfoActivity.KEY_AUTHORITY, authority)
-
-            // use current local/remote resource
-            if (local != null) {
-                // pass local resource info to debug info
-                contentIntent.putExtra(DebugInfoActivity.KEY_LOCAL_RESOURCE, local.toString())
-
-                // generate "view item" action
+            contentIntent = buildDebugInfoIntent(e, local, remote)
+            if (local != null)
                 viewItemAction = buildViewItemAction(local)
-            }
-            if (remote != null)
-                contentIntent.putExtra(DebugInfoActivity.KEY_REMOTE_RESOURCE, remote.toString())
         }
 
         // to make the PendingIntent unique
@@ -709,6 +696,19 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
         notificationManager.notify(notificationTag, NotificationUtils.NOTIFY_SYNC_ERROR, builder.build())
     }
+
+    private fun buildDebugInfoIntent(e: Throwable, local: ResourceType?, remote: HttpUrl?) =
+            Intent(context, DebugInfoActivity::class.java).apply {
+                putExtra(DebugInfoActivity.KEY_ACCOUNT, account)
+                putExtra(DebugInfoActivity.KEY_AUTHORITY, authority)
+                putExtra(DebugInfoActivity.KEY_THROWABLE, e)
+
+                // pass current local/remote resource
+                if (local != null)
+                    putExtra(DebugInfoActivity.KEY_LOCAL_RESOURCE, local.toString())
+                if (remote != null)
+                    putExtra(DebugInfoActivity.KEY_REMOTE_RESOURCE, remote.toString())
+            }
 
     private fun buildRetryAction(): NotificationCompat.Action {
         val retryIntent = Intent(context, DavService::class.java)
@@ -757,6 +757,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             null
     }
 
+
     fun checkResults(results: MutableCollection<Future<*>>) {
         val iter = results.iterator()
         while (iter.hasNext()) {
@@ -771,6 +772,23 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             }
         }
     }
+
+    protected fun notifyInvalidResource(e: Throwable, fileName: String) {
+        val intent = buildDebugInfoIntent(e, null, collectionURL.resolve(fileName))
+
+        val builder = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_SYNC_WARNINGS)
+        builder .setSmallIcon(R.drawable.ic_warning_notify)
+                .setContentTitle(notifyInvalidResourceTitle())
+                .setContentText(context.getString(R.string.sync_invalid_resources_ignoring))
+                .setSubText(mainAccount.name)
+                .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
+                .priority = NotificationCompat.PRIORITY_LOW
+        notificationManager.notify(notificationTag, NotificationUtils.NOTIFY_INVALID_RESOURCE, builder.build())
+    }
+
+    protected abstract fun notifyInvalidResourceTitle(): String
 
     protected fun<T: ResourceType?, R> useLocal(local: T, body: (T) -> R): R {
         try {

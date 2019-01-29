@@ -22,6 +22,7 @@ import at.bitfire.dav4jvm.property.GetCTag
 import at.bitfire.dav4jvm.property.GetETag
 import at.bitfire.dav4jvm.property.SyncToken
 import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.SyncState
 import at.bitfire.davdroid.resource.LocalResource
@@ -139,7 +140,7 @@ class TasksSyncManager(
             tasks = Task.fromReader(reader)
         } catch (e: InvalidCalendarException) {
             Logger.log.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
-            // TODO show notification
+            notifyInvalidResource(e, fileName)
             return
         }
 
@@ -164,5 +165,8 @@ class TasksSyncManager(
         } else
             Logger.log.info("Received VCALENDAR with not exactly one VTODO; ignoring $fileName")
     }
+
+    override fun notifyInvalidResourceTitle(): String =
+            context.getString(R.string.sync_invalid_task)
 
 }

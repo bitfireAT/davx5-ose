@@ -19,6 +19,7 @@ import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.SyncState
 import at.bitfire.davdroid.resource.LocalCalendar
@@ -184,5 +185,8 @@ class CalendarSyncManager(
         } else
             Logger.log.info("Received VCALENDAR with not exactly one VEVENT with UID and without RECURRENCE-ID; ignoring $fileName")
     }
+
+    override fun notifyInvalidResourceTitle(): String =
+            context.getString(R.string.sync_invalid_event)
 
 }
