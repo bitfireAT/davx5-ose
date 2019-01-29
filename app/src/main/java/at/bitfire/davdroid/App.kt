@@ -18,6 +18,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.StrictMode
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.content.res.AppCompatResources
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
 import kotlin.concurrent.thread
@@ -28,11 +29,7 @@ class App: Application() {
     companion object {
 
         fun getLauncherBitmap(context: Context): Bitmap? {
-            val drawableLogo = if (android.os.Build.VERSION.SDK_INT >= 21)
-                    context.getDrawable(R.mipmap.ic_launcher)
-                else
-                    @Suppress("deprecation")
-                    context.resources.getDrawable(R.mipmap.ic_launcher)
+            val drawableLogo = AppCompatResources.getDrawable(context, R.mipmap.ic_launcher)
             return if (drawableLogo is BitmapDrawable)
                 drawableLogo.bitmap
             else

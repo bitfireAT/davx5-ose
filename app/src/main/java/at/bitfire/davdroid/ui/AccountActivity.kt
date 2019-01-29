@@ -25,6 +25,7 @@ import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -85,11 +86,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         title = account.name
 
         setContentView(R.layout.activity_account)
-
-        val icMenu = if (Build.VERSION.SDK_INT >= 21)
-            getDrawable(R.drawable.ic_menu_light)
-        else
-            resources.getDrawable(R.drawable.ic_menu_light)
+        val icMenu = AppCompatResources.getDrawable(this, R.drawable.ic_menu_light)
 
         // CardDAV toolbar
         carddav_menu.overflowIcon = icMenu
