@@ -32,7 +32,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
 
     private const val LOG_TO_FILE = "log_to_file"
 
-    val log = java.util.logging.Logger.getLogger("davdroid")!!
+    val log = java.util.logging.Logger.getLogger("davx5")!!
 
     private lateinit var context: Context
     private lateinit var preferences: SharedPreferences
