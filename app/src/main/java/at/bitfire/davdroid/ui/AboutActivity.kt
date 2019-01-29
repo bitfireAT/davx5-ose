@@ -10,10 +10,10 @@ package at.bitfire.davdroid.ui
 
 import android.content.Context
 import android.os.Bundle
-import android.text.Html
 import android.text.Spanned
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
@@ -98,10 +98,10 @@ class AboutActivity: AppCompatActivity() {
             app_version.text = getString(R.string.about_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
             build_time.text = getString(R.string.about_build_date, SimpleDateFormat.getDateInstance().format(BuildConfig.buildTime))
 
-            pixels.text = Html.fromHtml(pixelsHtml)
+            pixels.text = HtmlCompat.fromHtml(pixelsHtml, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
             if (true /* open-source version */) {
-                warranty.text = Html.fromHtml(getString(R.string.about_license_info_no_warranty))
+                warranty.setText(R.string.about_license_info_no_warranty)
                 LoaderManager.getInstance(this).initLoader(0, null, this)
             }
         }
@@ -130,7 +130,7 @@ class AboutActivity: AppCompatActivity() {
 
         override fun loadInBackground(): Spanned =
                 context.resources.assets.open(fileName).use {
-                    Html.fromHtml(IOUtils.toString(it, Charsets.UTF_8))
+                    HtmlCompat.fromHtml(IOUtils.toString(it, Charsets.UTF_8), HtmlCompat.FROM_HTML_MODE_LEGACY)
                 }
 
     }
