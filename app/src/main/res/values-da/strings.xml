@@ -35,8 +35,13 @@
   <string name="about_libraries">Biblioteker</string>
   <string name="about_version">Version %1s (%2d)</string>
   <string name="about_build_date">Oversat den %s</string>
+  <string name="about_flavor_info">Denne version er kun berettiget til distribution via Google Play.</string>
   <string name="about_license_info_no_warranty">Dette program leveres ABSOLUT UDEN GARANTI. Det er fri software, og du er velkommen til at videredistribuere det under visse betingelse.</string>
   <!--global settings-->
+  <string name="logging_couldnt_create_file">Kan ikke oprette log fil</string>
+  <string name="logging_notification_title">DAVx⁵ logning</string>
+  <string name="logging_notification_text">Logger nu alle DAVx⁵ aktiviteter</string>
+  <string name="logging_notification_send_log">Sende log</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Åbn navigationsvindue</string>
   <string name="navigation_drawer_close">Luk navigationsvindue</string>
@@ -62,6 +67,9 @@
   <string name="app_settings_debug">Fejlsøgning</string>
   <string name="app_settings_show_debug_info">Vis fejlsøgnings information</string>
   <string name="app_settings_show_debug_info_details">Vis/del software og opsætningsoplysninger</string>
+  <string name="app_settings_logging">Uddybende logning</string>
+  <string name="app_settings_logging_on">Logning er aktiv</string>
+  <string name="app_settings_logging_off">Logning er deaktiveret</string>
   <string name="app_settings_connection">Forbindelse</string>
   <string name="app_settings_override_proxy">Tilsidesæt proxyindstillinger</string>
   <string name="app_settings_override_proxy_on">Brug brugerdefinerede proxyindstillinger</string>
@@ -102,6 +110,7 @@
   <string name="account_refresh_calendar_list">Opdatere kalenderliste</string>
   <string name="account_create_new_calendar">Oprette ny kalender</string>
   <string name="account_no_webcal_handler_found">Der er ikke fundet noget program der kan håndtere Webcal.</string>
+  <string name="account_install_icsx5">Installere ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Tilføje konto</string>
   <string name="login_type_email">Logge ind med e-post adresse</string>
@@ -122,9 +131,10 @@
   <string name="login_back">Tilbage</string>
   <string name="login_create_account">Oprette konto</string>
   <string name="login_account_name">Kontonavn</string>
-  <string name="login_account_name_info">Brug emailadressen som kontonavn, for Android vil bruge kontonavnet til ORGANIZER-feltet for aktiviteter, som du opretter. Du kan ikke have to konti med samme navn.</string>
+  <string name="login_account_name_info">Brug e-post adresse som kontonavn da Android bruger kontonavn til ORGANIZER-felt for oprettede aktiviteter. Man kan ikke have to konti med samme navn.</string>
   <string name="login_account_contact_group_method">Gruppering af kontakter:</string>
   <string name="login_account_name_required">Kontonavn påkrævet</string>
+  <string name="login_account_name_already_taken">Konto navn er taget</string>
   <string name="login_account_not_created">Konto kunne ikke oprettes</string>
   <string name="login_configuration_detection">Check konfiguration</string>
   <string name="login_querying_server">Vent, forespørger serveren…</string>
@@ -159,8 +169,11 @@
   <string name="settings_sync_wifi_only_off">Forbindelsestypen har ingen betydning</string>
   <string name="settings_sync_wifi_only_ssids">WiFi SSID-begrænsning</string>
   <string name="settings_sync_wifi_only_ssids_on">Synkroniserer kun over %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Vil kun synkronisere over %s (aktiv placering tjenester påkrævet)</string>
   <string name="settings_sync_wifi_only_ssids_off">Alle WiFi-forbindelser vil blive anvendt</string>
   <string name="settings_sync_wifi_only_ssids_message">Kommaseparerede navne (SSID\'er) over tilladte WiFi-netværk (efterlad blank for at bruge alle)</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">For at læse trådløse navne, er placering tilladelse og permanent aktiveret placering tjeneste påkrævet.</string>
+  <string name="settings_more_info_faq">Mere information (OSS)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Gruppering af kontakter</string>
   <string-array name="settings_contact_group_method_entries">

@@ -11,7 +11,7 @@
   <string name="notification_channel_debugging">تصحيح العلل</string>
   <string name="notification_channel_general">رسائل هامة أخرى</string>
   <string name="notification_channel_sync">مزامنة</string>
-  <string name="notification_channel_sync_errors">إخطاء المزامنة</string>
+  <string name="notification_channel_sync_errors">أخطاء المزامنة</string>
   <string name="notification_channel_sync_io_errors">أخطاء الشبكة و عمليات الإدخال/الإخراج</string>
   <string name="notification_channel_sync_status">رسائل الحالة</string>
   <!--startup dialogs-->
@@ -35,8 +35,13 @@
   <string name="about_libraries">المكتبات</string>
   <string name="about_version">النسخة %1s (%2d)</string>
   <string name="about_build_date">التجميع على %s</string>
+  <string name="about_flavor_info">هذا الإصدار صالح للتوزيع عبر Google Play فقط.</string>
   <string name="about_license_info_no_warranty">يقدَّم هذا البرنامج دون أدنى مسؤولية.  إنه برنامج حر، وندعوك لإعادة توزيعه حسب أحكام محددة.</string>
   <!--global settings-->
+  <string name="logging_couldnt_create_file">لا يمكن إنشاء ملف سجل</string>
+  <string name="logging_notification_title">سجلات DAVx⁵</string>
+  <string name="logging_notification_text">يجري الآن تسجيل جميع نشاطات DAVx⁵</string>
+  <string name="logging_notification_send_log">إرسال السجل</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">فتح درج التنقل</string>
   <string name="navigation_drawer_close">إغلاق درج التنقل</string>
@@ -62,6 +67,9 @@
   <string name="app_settings_debug">تصحيح العلل</string>
   <string name="app_settings_show_debug_info">عرض معلومات التصحيح</string>
   <string name="app_settings_show_debug_info_details">عرض/مشاركة تفاصيل البرنامج والضبط</string>
+  <string name="app_settings_logging">التسجيل المفصّل</string>
+  <string name="app_settings_logging_on">التسجيل مفعَّل</string>
+  <string name="app_settings_logging_off">التسجيل معطَّل</string>
   <string name="app_settings_connection">الاتصال</string>
   <string name="app_settings_override_proxy">تجاوز إعدادات الوكيل</string>
   <string name="app_settings_override_proxy_on">إستخدم إعدادات وكيل مخصَّصة</string>
@@ -102,6 +110,7 @@
   <string name="account_refresh_calendar_list">تجديد قائمة التقويم</string>
   <string name="account_create_new_calendar">إنشاء تقويم جديد</string>
   <string name="account_no_webcal_handler_found">لم نجِد تطبيقاً قادراً على استخدام Webcal</string>
+  <string name="account_install_icsx5">تثبيت ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">إضافة حساب</string>
   <string name="login_type_email">تسجيل الدخول بعنوان البريد</string>
@@ -125,6 +134,7 @@
   <string name="login_account_name_info">استخدم عنوان بريدك الإلكتروني اسماً للحساب لأن آندرويد يستخدم اسم الحساب في حقل المنظّم ORGANIZER للأحداث التي تنشئها.  لايمكن أن تمتلك حسابين بالاسم نفسه.</string>
   <string name="login_account_contact_group_method">طريقة مجموعة جهة الاتصال:</string>
   <string name="login_account_name_required">اسم الحساب مطلوب</string>
+  <string name="login_account_name_already_taken">اسم الحساب مأخوذ بالفعل</string>
   <string name="login_account_not_created">لم نتمكن من إنشاء الحساب</string>
   <string name="login_configuration_detection">اكتشاف الضبط</string>
   <string name="login_querying_server">يجري استعلام الخادم … يرجى الانتظار</string>
@@ -159,8 +169,11 @@
   <string name="settings_sync_wifi_only_off">نوع الاتصال غير مأخوذ في الاعتبار</string>
   <string name="settings_sync_wifi_only_ssids">تقييد SSID لـ WiFi</string>
   <string name="settings_sync_wifi_only_ssids_on">ستتم المزامنة فقط عبر %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">ستتم المزامنة عبر %sفقط (يتطلب تفعيل خدمات الموقع الجغرافي)</string>
   <string name="settings_sync_wifi_only_ssids_off">سيتم استخدام جميع اتصالات WiFi</string>
   <string name="settings_sync_wifi_only_ssids_message">أسماء (SSIDs) مفصولة بفواصل لشبكات WiFi المسموح الاتصال عبرها (اتركه فارغاً للسماح للكل)</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">الإذن لمعرفة الموقع الجغرافي والتفعيل الدائم لخدمات الموقع مطلوبان من أجل قراءة أسماء شبكات وايفاي</string>
+  <string name="settings_more_info_faq">المزيد من المعلومات (الأسئلة الشائعة)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">طريقة مجموعة عنوان الاتصال</string>
   <string-array name="settings_contact_group_method_entries">
