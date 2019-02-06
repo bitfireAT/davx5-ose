@@ -1,7 +1,4 @@
 
-[![build status](https://gitlab.com/bitfireAT/davx5-ose/badges/master-ose/build.svg)](https://gitlab.com/bitfireAT/davx5-ose/commits/master-ose)
-
-
 ![DAVx⁵ logo](app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
 
 DAVx⁵
@@ -26,7 +23,7 @@ Parts of DAVx⁵ have been outsourced into these libraries:
 * [cert4android](https://gitlab.com/bitfireAT/cert4android) – custom certificate management
 * [dav4jvm](https://gitlab.com/bitfireAT/dav4jvm) – WebDAV/CalDav/CardDAV framework
 * [ical4android](https://gitlab.com/bitfireAT/ical4android) – iCalendar processing and Calendar Provider access
-* [vcard4android](https://gitlab.com/bitfireAT/vcard4android) – VCard processing and Contacts Provider access
+* [vcard4android](https://gitlab.com/bitfireAT/vcard4android) – vCard processing and Contacts Provider access
 
 
 USED THIRD-PARTY LIBRARIES
