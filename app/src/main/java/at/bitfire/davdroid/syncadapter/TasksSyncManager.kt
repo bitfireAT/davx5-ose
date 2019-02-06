@@ -149,12 +149,12 @@ class TasksSyncManager(
             // update local task, if it exists
             useLocal(localCollection.findByName(fileName)) { local ->
                 if (local != null) {
-                    Logger.log.info("Updating $fileName in local task list")
+                    Logger.log.log(Level.INFO, "Updating $fileName in local task list", newData)
                     local.eTag = eTag
                     local.update(newData)
                     syncResult.stats.numUpdates++
                 } else {
-                    Logger.log.info("Adding $fileName to local task list")
+                    Logger.log.log(Level.INFO, "Adding $fileName to local task list", newData)
                     useLocal(LocalTask(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) {
                         it.add()
                     }
