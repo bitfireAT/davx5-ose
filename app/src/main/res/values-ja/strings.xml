@@ -33,7 +33,7 @@
   <string name="startup_opentasks_not_installed_install">OpenTasks をインストール</string>
   <!--AboutActivity-->
   <string name="about_libraries">ライブラリー</string>
-  <string name="about_version">バージョン %1s (%2d)</string>
+  <string name="about_version">バージョン %1$s (%2$d)</string>
   <string name="about_build_date">コンパイル日時 %s</string>
   <string name="about_license_info_no_warranty">このプログラムは完全に無保証で提供されます。これはフリーソフトウェアで、特定の条件下での再頒布を歓迎します。</string>
   <!--global settings-->

@@ -28,7 +28,7 @@
   <string name="startup_more_info">Περισσότερες πληροφορίες</string>
   <!--AboutActivity-->
   <string name="about_libraries">Βιβλιοθήκες</string>
-  <string name="about_version">Έκδοση %1s(%2d)</string>
+  <string name="about_version">Έκδοση %1$s (%2$d)</string>
   <string name="about_flavor_info">Αυτή η έκδοση είναι κατάλληλη μόνο για διανομή μέσω του Google Play.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Αδυναμία δημιουργίας αρχείου ιστορικού</string>

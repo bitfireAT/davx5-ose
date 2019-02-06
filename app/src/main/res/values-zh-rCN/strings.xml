@@ -33,7 +33,7 @@
   <string name="startup_opentasks_not_installed_install">安装 OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_libraries">程序库</string>
-  <string name="about_version">版本 %1s (%2d)</string>
+  <string name="about_version">版本 %1$s (%2$d)</string>
   <string name="about_build_date">编译于 %s</string>
   <string name="about_flavor_info">此版本只允许在 Google Play 上发行。</string>
   <string name="about_license_info_no_warranty">本程序不附带任何担保。这是一款自由软件，你可以有条件地传播它。</string>
