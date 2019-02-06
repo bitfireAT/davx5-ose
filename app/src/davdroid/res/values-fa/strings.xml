@@ -32,7 +32,7 @@
   <string name="startup_opentasks_not_installed_install">نصب کردن</string>
   <!--AboutActivity-->
   <string name="about_libraries">کتابخانه ها</string>
-  <string name="about_version">نسخه %1s (%2d)</string>
+  <string name="about_version">نسخه %1$s (%2$d)</string>
   <string name="about_build_date">کامپایل شده روی %s</string>
   <string name="about_flavor_info">این نسخه تنها برای پخش در Google Play واجد شرایط است.</string>
   <string name="about_license_info_no_warranty">این برنامه بدون هیچ گونه تغییری است. این نرم افزار رایگان است و شما می توانید آن را تحت شرایط خاصی توزیع کنید.</string>

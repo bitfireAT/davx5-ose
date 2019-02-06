@@ -33,7 +33,7 @@
   <string name="startup_opentasks_not_installed_install">Installere OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_libraries">Biblioteker</string>
-  <string name="about_version">Version %1s (%2d)</string>
+  <string name="about_version">Version %1$s (%2$d)</string>
   <string name="about_build_date">Oversat den %s</string>
   <string name="about_flavor_info">Denne version er kun berettiget til distribution via Google Play.</string>
   <string name="about_license_info_no_warranty">Dette program leveres ABSOLUT UDEN GARANTI. Det er fri software, og du er velkommen til at videredistribuere det under visse betingelse.</string>

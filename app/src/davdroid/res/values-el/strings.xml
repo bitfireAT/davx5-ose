@@ -1,0 +1,152 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">Βιβλίο διευθύνσεων DAVx⁵</string>
+  <string name="address_books_authority_title">Βιβλία διευθύνσεων</string>
+  <string name="help">Βοήθεια</string>
+  <string name="manage_accounts">Διαχείριση λογαριασμών</string>
+  <string name="please_wait">Παρακαλώ περιμένετε …</string>
+  <string name="send">Αποστολή</string>
+  <string name="notification_channel_debugging">Αποσφαλμάτωση</string>
+  <string name="notification_channel_general">Άλλα σημαντικά μηνύματα</string>
+  <string name="notification_channel_sync">Συγχρονισμός</string>
+  <string name="notification_channel_sync_errors">Σφάλματα συγχρονισμού</string>
+  <string name="notification_channel_sync_io_errors">Σφάλματα δικτύου και I/O</string>
+  <string name="notification_channel_sync_status">Μηνύματα κατάστασης</string>
+  <!--startup dialogs-->
+  <string name="startup_autostart_permission">Αυτόματος συγχρονισμός</string>
+  <string name="startup_battery_optimization">Προγραμματισμένος συγχρονισμός</string>
+  <string name="startup_battery_optimization_message">Η συσκευή σας θα περιορίσει τον συγχρονισμό DAVx⁵. Για να επιβάλλετε τακτικά διαστήματα συγχρονισμού DAVx⁵, απενεργοποιήστε τη \"βελτιστοποίηση της μπαταρίας\".</string>
+  <string name="startup_battery_optimization_disable">Απενεργοποίηση για DAVx⁵</string>
+  <string name="startup_dont_show_again">Να μην εμφανίζεται ξανά</string>
+  <string name="startup_not_now">Όχι τώρα</string>
+  <string name="startup_donate">Πληροφορίες ανοικτού κώδικα</string>
+  <string name="startup_donate_message">Είμαστε ευτυχείς που χρησιμοποιείτε το DAVx⁵, το οποίο είναι λογισμικό ανοιχτού κώδικα (GPLv3). Επειδή η ανάπτυξη του DAVx⁵ είναι σκληρή δουλειά και μας πήρε ήδη χιλιάδες ώρες εργασίας, παρακαλούμε σκεφτείτε να κάνετε μια δωρεά.</string>
+  <string name="startup_donate_now">Εμφάνιση σελίδας δωρεών</string>
+  <string name="startup_donate_later">Μπορεί αργότερα</string>
+  <string name="startup_more_info">Περισσότερες πληροφορίες</string>
+  <!--AboutActivity-->
+  <string name="about_libraries">Βιβλιοθήκες</string>
+  <string name="about_version">Έκδοση %1$s (%2$d)</string>
+  <string name="about_flavor_info">Αυτή η έκδοση είναι κατάλληλη μόνο για διανομή μέσω του Google Play.</string>
+  <!--global settings-->
+  <string name="logging_couldnt_create_file">Αδυναμία δημιουργίας αρχείου ιστορικού</string>
+  <string name="logging_notification_send_log">Αποστολή ιστορικού</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_about">Περί / άδεια χρήσης</string>
+  <string name="navigation_drawer_settings">Ρυθμίσεις</string>
+  <string name="navigation_drawer_news_updates">Νέα &amp; ενημερώσεις</string>
+  <string name="navigation_drawer_external_links">Εξωτερικοί σύνδεσμοι</string>
+  <string name="navigation_drawer_website">Ιστότοπος</string>
+  <string name="navigation_drawer_manual">Χειροκίνητα</string>
+  <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_forums">Βοήθεια / Φόρουμ</string>
+  <string name="navigation_drawer_donate">Δωρεά</string>
+  <string name="accounts_global_sync_enable">Ενεργοποίηση</string>
+  <!--DavService-->
+  <!--AppSettingsActivity-->
+  <string name="app_settings">Ρυθμίσεις</string>
+  <string name="app_settings_debug">Αποσφαλμάτωση</string>
+  <string name="app_settings_connection">Σύνδεση</string>
+  <string name="app_settings_override_proxy">Παράκαμψη ρυθμίσεων διαμεσολαβητή</string>
+  <string name="app_settings_override_proxy_on">Χρήση προσαρμοσμένων ρυθμίσεων διαμεσολαβητή</string>
+  <string name="app_settings_override_proxy_off">Χρήση προεπιλογμένων ρυθμίσεων συστήματος του διαμεσολαβητή</string>
+  <string name="app_settings_override_proxy_host">Όνομα συστήματος διαμεσολαβητή HTTP</string>
+  <string name="app_settings_override_proxy_port">Πόρτα διαμεσολαβητή HTTP</string>
+  <string name="app_settings_security">Ασφάλεια</string>
+  <string name="app_settings_reset_certificates_summary">Επαναφέρει την εμπιστοσύνη όλων των προσαρμοσμένων πιστοποιητικών</string>
+  <string name="app_settings_reset_certificates_success">Έχουν απαλειφθεί όλα τα προσαρμοσμένα πιστοποιητικά</string>
+  <string name="app_settings_user_interface">Διεπαφή χρήστη</string>
+  <!--AccountActivity-->
+  <string name="account_synchronize_now">Συγχρονισμός τώρα</string>
+  <string name="account_synchronizing_now">Γίνεται συγχρονισμός τώρα</string>
+  <string name="account_settings">Ρυθμίσεις λογαριασμού</string>
+  <string name="account_rename">Μετονομασία λογαριασμού</string>
+  <string name="account_rename_rename">Μετονομασία</string>
+  <string name="account_delete">Διαγραφή λογαριασμού</string>
+  <string name="account_delete_confirmation_title">Θέλετε να διαγράψετε τον λογαριασμό;</string>
+  <string name="account_delete_confirmation_text">Όλα τα τοπικά αντίγραφα των βιβλίων διευθύνσεων, ημερολογίων και λιστών εργασιών θα διαγραφούν.</string>
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_read_only">μόνο για ανάγνωση</string>
+  <string name="account_calendar">ημερολόγιο</string>
+  <string name="account_task_list">λίστα εργασιών</string>
+  <string name="account_refresh_address_book_list">Ανανέωση λίστας βιβλίου διευθύνσεων</string>
+  <string name="account_create_new_address_book">Δημιουργία νέου βιβλίου διευθύνσεων</string>
+  <string name="account_refresh_calendar_list">Ανανέωση λίστας ημερολογίου</string>
+  <string name="account_create_new_calendar">Δημιουργία νέου ημερολογίου</string>
+  <string name="account_install_icsx5">Εγκατάσταση ICSx⁵</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">Προσθήκη λογαριασμού</string>
+  <string name="login_type_email">Είσοδος με την διεύθυνση email</string>
+  <string name="login_email_address">Διεύθυνση email</string>
+  <string name="login_email_address_error">Απαιτείται έγκυρη διεύθυνση email</string>
+  <string name="login_password">Συνθηματικό</string>
+  <string name="login_password_required">Απαιτείται συνθηματικό</string>
+  <string name="login_type_url">Είσοδος με την URL και το όνομα χρήστη</string>
+  <string name="login_url_must_be_http_or_https">Η URL πρέπει να ξεκινά με http(s)://</string>
+  <string name="login_url_host_name_required">Απαιτείται όνομα συστήματος</string>
+  <string name="login_user_name">Όνομα χρήστη</string>
+  <string name="login_user_name_required">Απαιτείται όνομα χρήστη</string>
+  <string name="login_base_url">Βασική URL</string>
+  <string name="login_select_certificate">Επιλογή πιστοποιητικού</string>
+  <string name="login_login">Είσοδος</string>
+  <string name="login_back">Πίσω</string>
+  <string name="login_create_account">Δημιουργία λογαριασμού</string>
+  <string name="login_account_name">Όνομα λογαριασμού</string>
+  <string name="login_account_name_required">Απαιτείται όνομα λογαριασμού</string>
+  <string name="login_account_name_already_taken">Το όνομα λογαριασμού έχει ήδη ληφθεί</string>
+  <string name="login_account_not_created">Αδυναμία δημιουργίας λογαριασμού</string>
+  <string name="login_no_caldav_carddav">Αδυναμία εύρεσης υπηρεσίας CalDAV ή CardDAV.</string>
+  <string name="login_view_logs">Εμφάνιση λεπτομερειών</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">Ρυθμίσεις: %s</string>
+  <string name="settings_authentication">Πιστοποίηση</string>
+  <string name="settings_username">Όνομα χρήστη</string>
+  <string name="settings_enter_username">Εισάγετε όνομα χρήστη:</string>
+  <string name="settings_password">Συνθηματικό</string>
+  <string name="settings_password_summary">Ενημερώστε το συνθηματικό σύμφωνα με τον διακομιστή σας.</string>
+  <string name="settings_enter_password">Εισάγετε το συνθηματικό σας:</string>
+  <string name="settings_sync">Συγχρονισμός</string>
+  <string name="settings_sync_summary_manually">Μόνο χειροκίνητα</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Μόνο χειροκίνητα</item>
+    <item>Κάθε 15 λεπτά</item>
+    <item>Κάθε 30 λεπτά</item>
+    <item>Κάθε ώρα</item>
+    <item>Κάθε 2 ώρες</item>
+    <item>Κάθε 4 ώρες</item>
+    <item>Μια φορά την ημέρα</item>
+  </string-array>
+  <string name="settings_more_info_faq">Περισσότερες πληροφορίες (FAQ)</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past_none">Όλα τα συμβάντα θα συγχρονίσουν</string>
+  <!--collection management-->
+  <string name="create_addressbook">Δημιουργία βιβλίου διευθύνσεων</string>
+  <string name="create_addressbook_display_name_hint">Το βιβλίο διευθύνσεών μου</string>
+  <string name="create_calendar_display_name_hint">Το ημερολόγιό μου</string>
+  <string name="create_calendar_time_zone">Ζώνη ώρας:</string>
+  <string name="create_collection_display_name_required">Απαιτείται η ώρα</string>
+  <string name="create_collection_description">Περιγραφή (προαιρετικό):</string>
+  <string name="create_collection_create">Δημιουργία</string>
+  <string name="delete_collection_confirm_title">Είστε σίγουρος;</string>
+  <string name="collection_properties">Ιδιότητες</string>
+  <string name="collection_properties_url">Διεύθυνση (URL):</string>
+  <string name="collection_properties_copy_url">Αντιγραφή URL</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">Παρουσιάστηκε σφάλμα.</string>
+  <string name="exception_httpexception">Παρουσιάστηκε σφάλμα HTTP.</string>
+  <string name="exception_ioexception">Παρουσιάστηκε σφάλμα I/O.</string>
+  <string name="exception_show_details">Εμφάνιση λεπτομερειών</string>
+  <!--sync adapters and DebugInfoActivity-->
+  <string name="debug_info_title">Πληροφορίες αποσφαλμάτωσης</string>
+  <string name="sync_contacts_read_only_address_book">Βιβλίο διευθύνσεων μόνο για ανάγνωση</string>
+  <string name="sync_error_permissions">Δικαιώματα DAVx⁵</string>
+  <string name="sync_error_http_dav">Σφάλμα διακομιστής HTTP – %s</string>
+  <string name="sync_error_retry">Επανάληψη</string>
+  <string name="sync_error_view_item">Προβολή αντικειμένου</string>
+  <!--cert4android-->
+</resources>

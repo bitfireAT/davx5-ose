@@ -1,0 +1,250 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">DAVx⁵ libreta de enderezos</string>
+  <string name="address_books_authority_title">Libretas de enderezos</string>
+  <string name="help">Axuda</string>
+  <string name="manage_accounts">Xestionar contas</string>
+  <string name="please_wait">Por favor agarde …</string>
+  <string name="send">Enviar</string>
+  <string name="notification_channel_debugging">Depurando</string>
+  <string name="notification_channel_general">Outras mensaxes importantes</string>
+  <string name="notification_channel_sync">Sincronización</string>
+  <string name="notification_channel_sync_errors">Fallos de sincronización</string>
+  <string name="notification_channel_sync_io_errors">Fallos de rede e I/O</string>
+  <string name="notification_channel_sync_status">Mensaxes de estado</string>
+  <!--startup dialogs-->
+  <string name="startup_autostart_permission">Sincronización automática</string>
+  <string name="startup_autostart_permission_message">O firmware %s soe bloquear a sincronización automática. En este caso, permita a sincronización automática nos axustes de Android.</string>
+  <string name="startup_battery_optimization">Sincronización programada</string>
+  <string name="startup_battery_optimization_message">O seu dispositivo restrinxirá a sincronización de DAVx⁵. Para forzar un intervalo regular de sincronización de DAVx⁵, desactive a \"optimización de batería\".</string>
+  <string name="startup_battery_optimization_disable">Desactivar para DAVx⁵</string>
+  <string name="startup_dont_show_again">Non mostrar de novo</string>
+  <string name="startup_not_now">Non agora</string>
+  <string name="startup_donate">Información Código Aberto</string>
+  <string name="startup_donate_message">Alegrámonos de que utilice DAVx⁵, que é software de código aberto (GPLv3). Desenvolver DAVx⁵ require un importante esforzo e toma miles de horas de traballo, por favor considere facer unha doazón.</string>
+  <string name="startup_donate_now">Mostrar páxina de doazón</string>
+  <string name="startup_donate_later">Quizáis máis tarde</string>
+  <string name="startup_more_info">Máis información</string>
+  <string name="startup_opentasks_not_installed">OpenTasks non instalado</string>
+  <string name="startup_opentasks_not_installed_message">Para sincronizar tarefas precisa a app gratuíta OpenTasks. (Non requerida para contactos/eventos.)</string>
+  <string name="startup_opentasks_reinstall_davx5">Tras instalar OpenTasks, debe REINSTALAR DAVx⁵ e engadir as súas contas novamente (tara de Android).</string>
+  <string name="startup_opentasks_not_installed_install">Instalar OpenTasks</string>
+  <!--AboutActivity-->
+  <string name="about_libraries">Bibliotecas</string>
+  <string name="about_version">Versión  %1$s (%2$d)</string>
+  <string name="about_build_date">Compilada en %s</string>
+  <string name="about_flavor_info">Esta versión só está dispoñible para distribución en Google Play.</string>
+  <string name="about_license_info_no_warranty">Este programa non proporciona NINGUNHA GARANTÍA. É software libre, e convidámolo a redistribuílo baixo certas condicións.</string>
+  <!--global settings-->
+  <string name="logging_couldnt_create_file">Non se creou ficheiro de rexistro</string>
+  <string name="logging_notification_title">Rexistro DAVx⁵</string>
+  <string name="logging_notification_text">Está a rexistrar todas as actividades DAVx⁵</string>
+  <string name="logging_notification_send_log">Enviar rexistro</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Abrir cado de navegación</string>
+  <string name="navigation_drawer_close">Pechar cadro de navegación</string>
+  <string name="navigation_drawer_subtitle">Adaptador de sincr. CalDAV/CardDAV</string>
+  <string name="navigation_drawer_about">Acerca de / Licenza</string>
+  <string name="navigation_drawer_beta_feedback">Comente sobre Beta</string>
+  <string name="navigation_drawer_settings">Axustes</string>
+  <string name="navigation_drawer_news_updates">Novas &amp; actualizacións</string>
+  <string name="navigation_drawer_external_links">Ligazóns externas</string>
+  <string name="navigation_drawer_website">Sitio web</string>
+  <string name="navigation_drawer_manual">Manual</string>
+  <string name="navigation_drawer_faq">PMF</string>
+  <string name="navigation_drawer_forums">Axuda / Foros</string>
+  <string name="navigation_drawer_donate">Doar</string>
+  <string name="account_list_empty">Ben vida a DAVx⁵!\n\nXa pode engadir unha conta CalDAV/CardDAV</string>
+  <string name="accounts_global_sync_disabled">A sincronización global automática do sistema está desactivada</string>
+  <string name="accounts_global_sync_enable">Activar</string>
+  <!--DavService-->
+  <string name="dav_service_refresh_failed">Fallou a detección do servizo</string>
+  <string name="dav_service_refresh_couldnt_refresh">Non se actualizou a lista da colección</string>
+  <!--AppSettingsActivity-->
+  <string name="app_settings">Axustes</string>
+  <string name="app_settings_debug">Depurando</string>
+  <string name="app_settings_show_debug_info">Mostrar info de depuración</string>
+  <string name="app_settings_show_debug_info_details">Ver/compartir detalles do software e configuración</string>
+  <string name="app_settings_logging">Rexistro polo miúdo</string>
+  <string name="app_settings_logging_on">O rexistro está activo</string>
+  <string name="app_settings_logging_off">O rexistro está desactivado</string>
+  <string name="app_settings_connection">Conexión</string>
+  <string name="app_settings_override_proxy">Sobrescribir os axustes do proxy</string>
+  <string name="app_settings_override_proxy_on">Utilizar axustes de proxy personalizados</string>
+  <string name="app_settings_override_proxy_off">Utilizar axustes proxy por omisión do sistema</string>
+  <string name="app_settings_override_proxy_host">Nome servidor proxy HTTP</string>
+  <string name="app_settings_override_proxy_port">Porto proxy HTTP</string>
+  <string name="app_settings_security">Seguridade</string>
+  <string name="app_settings_distrust_system_certs">Non confiar en certificados do sistema</string>
+  <string name="app_settings_distrust_system_certs_on">Non se confiará nos CAs do sistema ou engadidos por usuaria</string>
+  <string name="app_settings_distrust_system_certs_off">Confiarase nos CAs do sistema e engadidos por usuaria (recomendado)</string>
+  <string name="app_settings_reset_certificates">Restablecer certificados repudiados</string>
+  <string name="app_settings_reset_certificates_summary">Restablece a confianza en todos os certificados personalizados</string>
+  <string name="app_settings_reset_certificates_success">Todos os certificados personalizados foron admitidos</string>
+  <string name="app_settings_user_interface">Interface de usuaria</string>
+  <string name="app_settings_reset_hints">Restablecer consellos</string>
+  <string name="app_settings_reset_hints_summary">Restablece todos os consellos que foran desbotados anteriormente</string>
+  <string name="app_settings_reset_hints_success">Mostraranse todos os consellos de novo</string>
+  <!--AccountActivity-->
+  <string name="account_synchronize_now">Sincronizar agora</string>
+  <string name="account_synchronizing_now">Sincronizando</string>
+  <string name="account_settings">Axustes da conta</string>
+  <string name="account_rename">Renomear conta</string>
+  <string name="account_rename_new_name">Os datos locais non gardados perderanse. A resincronización é precisa tras renomear. Novo nome da conta:</string>
+  <string name="account_rename_rename">Renomear</string>
+  <string name="account_delete">Eliminar conta</string>
+  <string name="account_delete_confirmation_title">Desexa eliminar a conta?</string>
+  <string name="account_delete_confirmation_text">Todas as copias locais de libretas de enderezos, calendarios e tarefas eliminaranse.</string>
+  <string name="account_select_collections_hint">Escoller as coleccións a sincronizar</string>
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_synchronize_this_collection">sincronizar esta colección</string>
+  <string name="account_read_only">só lectura</string>
+  <string name="account_calendar">calendario</string>
+  <string name="account_task_list">lista de tarefas</string>
+  <string name="account_refresh_address_book_list">Actualizar lista de libreta de enderezos</string>
+  <string name="account_create_new_address_book">Crear nova libreta de enderezos</string>
+  <string name="account_refresh_calendar_list">Actualizar lista de calenderio</string>
+  <string name="account_create_new_calendar">Crear novo calendario</string>
+  <string name="account_no_webcal_handler_found">Non se atopou app para Webcal</string>
+  <string name="account_install_icsx5">Instalar ICSx⁵</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">Engadir conta</string>
+  <string name="login_type_email">Conectar con enderezo de correo-e</string>
+  <string name="login_email_address">Enderezo de correo-e</string>
+  <string name="login_email_address_error">Requíre un enderezo de correo válido</string>
+  <string name="login_password">Contrasinal</string>
+  <string name="login_password_required">Require contrasinal</string>
+  <string name="login_type_url">Conectar con URL e nome de usuaria</string>
+  <string name="login_url_must_be_http_or_https">URL debe comezar con http(s)://</string>
+  <string name="login_url_must_be_https">URL debe comezar con  https://</string>
+  <string name="login_url_host_name_required">Require nome de servidor</string>
+  <string name="login_user_name">Nome de usuaria</string>
+  <string name="login_user_name_required">Require nome de usuaria</string>
+  <string name="login_base_url">URL base</string>
+  <string name="login_type_url_certificate">Conectar con URL e certificado cliente</string>
+  <string name="login_select_certificate">Escoller certificado</string>
+  <string name="login_login">Conectar</string>
+  <string name="login_back">Atrás</string>
+  <string name="login_create_account">Crear conta</string>
+  <string name="login_account_name">Nome da conta</string>
+  <string name="login_account_name_info">Utilice o seu enderezo de correo electrónico como nome de conta xa que Android utilizará o nome da conta como campo ORGANIZADOR para os eventos que cree. Non poderá ter dúas contas co mesmo nome.</string>
+  <string name="login_account_contact_group_method">Método para agrupar contacto:</string>
+  <string name="login_account_name_required">Nome de conta requerido</string>
+  <string name="login_account_name_already_taken">O nome de conta xa está a ser utilizado</string>
+  <string name="login_account_not_created">Non se creou a conta</string>
+  <string name="login_configuration_detection">Detección da configuración</string>
+  <string name="login_querying_server">Agarde por favor, consultando o servidor…</string>
+  <string name="login_no_caldav_carddav">Non se atopou servizo CalDAV ou CardDAV.</string>
+  <string name="login_view_logs">Mostrar detalles</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">Axustes: %s</string>
+  <string name="settings_authentication">Autenticación</string>
+  <string name="settings_username">Nome de usuaria</string>
+  <string name="settings_enter_username">Introduza nome de usuaria:</string>
+  <string name="settings_password">Contrasinal</string>
+  <string name="settings_password_summary">Actualizar o contrasinal de acordo ao seu servidor.</string>
+  <string name="settings_enter_password">Introducir contrasinal:</string>
+  <string name="settings_certificate_alias">Alcume do certificado cliente</string>
+  <string name="settings_sync">Sincronización</string>
+  <string name="settings_sync_interval_contacts">Intervalo de sincr. contactos</string>
+  <string name="settings_sync_summary_manually">Só manual</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Cada %d minutos + tras cambios locais</string>
+  <string name="settings_sync_interval_calendars">Intervalo de sincr. calendarios</string>
+  <string name="settings_sync_interval_tasks">Intervalo sincr. de tarefas</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Só manual</item>
+    <item>Cada 15 minutos</item>
+    <item>Cada 30 minutos</item>
+    <item>Cada hora</item>
+    <item>Cada 2 horas</item>
+    <item>Cada 4 horas</item>
+    <item>Unha vez ao día</item>
+  </string-array>
+  <string name="settings_sync_wifi_only">Sincronizar só con WiFi</string>
+  <string name="settings_sync_wifi_only_on">Sincronización restrinxida a conexións WiFi</string>
+  <string name="settings_sync_wifi_only_off">Non se terá en conta o tipo de conexión</string>
+  <string name="settings_sync_wifi_only_ssids">Restrición SSID WiFi</string>
+  <string name="settings_sync_wifi_only_ssids_on">Sincr. só en %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Só se sincronizará baixo %s (require servizos de localización activos)</string>
+  <string name="settings_sync_wifi_only_ssids_off">Utilizaranse todas as conexións WiFi</string>
+  <string name="settings_sync_wifi_only_ssids_message">Nome das rede WiFi permitidas (SSIDs) separados por vírgulas (en branco para todas)</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">Para ler os nomes WiFi,  requírese o permiso de Localización e que os servizos de localización estén sempre activados.</string>
+  <string name="settings_more_info_faq">Máis información (PMF)</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Método para agrupar contacto</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Grupos son VCards separados</item>
+    <item>Grupos son categorías por contacto</item>
+  </string-array>
+  <string name="settings_contact_group_method_change">Cambiar método para agrupar</string>
+  <string name="settings_contact_group_method_change_reload_contacts">Esto precisa recargar todos os contactos. Perderanse os cambios locais non gardados.</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Límite temporal para eventos pasados</string>
+  <string name="settings_sync_time_range_past_none">Sincronizaranse todos os eventos</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Eventos anteriores a un día serán ignorados</item>
+    <item quantity="other">Eventos anteriores a %d días serán ignorados</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Eventos anteriores a máis dos días indicados serán ignorados (podería ser 0). Deixar en branco para sincronizar todos os eventos.</string>
+  <string name="settings_manage_calendar_colors">Xestionar cores dos calendarios</string>
+  <string name="settings_manage_calendar_colors_on">As cores dos calendarios son xestionadas por DAVx⁵</string>
+  <string name="settings_manage_calendar_colors_off">As cores do calendario non son establecidas por DAVx⁵</string>
+  <string name="settings_event_colors">Soporte para cor de eventos</string>
+  <string name="settings_event_colors_on">Sincr. cores de eventos</string>
+  <string name="settings_event_colors_off">Non sincr. cores de eventos</string>
+  <string name="settings_event_colors_off_confirm">Apagando as cores nos eventos podería eliminar as cores de eventos xa sincronizados.</string>
+  <!--collection management-->
+  <string name="create_addressbook">Crear libreta de enderezos</string>
+  <string name="create_addressbook_display_name_hint">A miña libreta de enderezos</string>
+  <string name="create_calendar">Crear colección CalDAV</string>
+  <string name="create_calendar_display_name_hint">O meu calendario</string>
+  <string name="create_calendar_time_zone">Fuso horario:</string>
+  <string name="create_calendar_type">Tipo de colección:</string>
+  <string name="create_calendar_type_only_events">Calendario (só eventos)</string>
+  <string name="create_calendar_type_only_tasks">Lista de tarefas (só tarefas)</string>
+  <string name="create_calendar_type_events_and_tasks">Combinado (eventos e tarefas)</string>
+  <string name="create_collection_color">Establecer cor da colección</string>
+  <string name="create_collection_creating">Creando colección</string>
+  <string name="create_collection_display_name">Mostrar nome (título) de esta colección:</string>
+  <string name="create_collection_display_name_required">Requírese o título</string>
+  <string name="create_collection_description">Descrición (optativo):</string>
+  <string name="create_collection_home_set">Estableza enderezo:</string>
+  <string name="create_collection_create">Crear</string>
+  <string name="delete_collection">Eliminar colección</string>
+  <string name="delete_collection_confirm_title">Quere eliminar?</string>
+  <string name="delete_collection_confirm_warning">Esta colección (%s) e todos os seus datos serán eliminados do servidor.</string>
+  <string name="delete_collection_deleting_collection">Eliminando colección</string>
+  <string name="collection_force_read_only">Forzar só lectura</string>
+  <string name="collection_properties">Propiedades</string>
+  <string name="collection_properties_url">Enderezo (URL):</string>
+  <string name="collection_properties_copy_url">Copiar URL</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">Algo fallou.</string>
+  <string name="exception_httpexception">Houbo un fallo HTTP.</string>
+  <string name="exception_ioexception">Houbo un fallo I/O.</string>
+  <string name="exception_show_details">Mostrar detalles</string>
+  <!--sync adapters and DebugInfoActivity-->
+  <string name="debug_info_title">Info depuración</string>
+  <string name="sync_contacts_read_only_address_book">Libreta de enderezos de só lectura</string>
+  <plurals name="sync_contacts_local_contact_changes_discarded">
+    <item quantity="one">Descartado o cambio no contacto local</item>
+    <item quantity="other">Descartados %d cambios en contactos locais</item>
+  </plurals>
+  <string name="sync_error_permissions">Permisos DAVx⁵</string>
+  <string name="sync_error_permissions_text">Precísanse permisos adicionais</string>
+  <string name="sync_error_opentasks_too_old">OpenTask demasiado antigo</string>
+  <string name="sync_error_opentasks_required_version">Require versión: %1$s (actual %2$s)</string>
+  <string name="sync_error_authentication_failed">Fallo na autenticación (verifique credenciais)</string>
+  <string name="sync_error_io">Fallo de Rede ou I/O – %s</string>
+  <string name="sync_error_http_dav">Fallo servidor HTTP – %s</string>
+  <string name="sync_error_local_storage">Fallo almacenamento local – %s</string>
+  <string name="sync_error_retry">Reintentar</string>
+  <string name="sync_error_view_item">Ver elemento</string>
+  <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVx⁵: seguridade da conexión</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ atopou un certificado descoñecido. Quere confiar nel?</string>
+</resources>
