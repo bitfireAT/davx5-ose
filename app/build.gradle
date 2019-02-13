@@ -18,7 +18,7 @@ android {
     defaultConfig {
         applicationId "at.bitfire.davdroid"
 
-        versionCode 267
+        versionCode 272
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "customCerts", "true"
 
@@ -34,7 +34,7 @@ android {
     flavorDimensions "distribution"
     productFlavors {
         standard {
-            versionName "2.2.3.1-ose"
+            versionName "2.3-ose"
         }
     }
 
