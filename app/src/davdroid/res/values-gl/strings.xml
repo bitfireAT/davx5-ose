@@ -12,8 +12,13 @@
   <string name="notification_channel_general">Outras mensaxes importantes</string>
   <string name="notification_channel_sync">Sincronización</string>
   <string name="notification_channel_sync_errors">Fallos de sincronización</string>
+  <string name="notification_channel_sync_errors_desc">Fallos importantes que deteñen a sincronización como respostas non agardadas do servidor</string>
+  <string name="notification_channel_sync_warnings">Avisos sobre a sincronización</string>
+  <string name="notification_channel_sync_warnings_desc">Problemas non-fatais de sincronización como certos ficheiros non válidos</string>
   <string name="notification_channel_sync_io_errors">Fallos de rede e I/O</string>
+  <string name="notification_channel_sync_io_errors_desc">Caducidades, problemas de conexión, etc. (soen ser temporais)</string>
   <string name="notification_channel_sync_status">Mensaxes de estado</string>
+  <string name="notification_channel_sync_status_desc">Mensaxes informativos de estado como número de cambios desbotados nas coleccións de só lectura</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Sincronización automática</string>
   <string name="startup_autostart_permission_message">O firmware %s soe bloquear a sincronización automática. En este caso, permita a sincronización automática nos axustes de Android.</string>
@@ -84,6 +89,8 @@
   <string name="app_settings_reset_certificates_summary">Restablece a confianza en todos os certificados personalizados</string>
   <string name="app_settings_reset_certificates_success">Todos os certificados personalizados foron admitidos</string>
   <string name="app_settings_user_interface">Interface de usuaria</string>
+  <string name="app_settings_notification_settings">Axustes das notificación</string>
+  <string name="app_settings_notification_settings_summary">Xestione as canles de notificación e os seus axustes</string>
   <string name="app_settings_reset_hints">Restablecer consellos</string>
   <string name="app_settings_reset_hints_summary">Restablece todos os consellos que foran desbotados anteriormente</string>
   <string name="app_settings_reset_hints_success">Mostraranse todos os consellos de novo</string>
@@ -244,6 +251,10 @@
   <string name="sync_error_local_storage">Fallo almacenamento local – %s</string>
   <string name="sync_error_retry">Reintentar</string>
   <string name="sync_error_view_item">Ver elemento</string>
+  <string name="sync_invalid_contact">Recibido contacto non válido desde o servidor</string>
+  <string name="sync_invalid_event">Recibido evento non válido desde o servidor</string>
+  <string name="sync_invalid_task">Recibida tarefa non válida desde o servidor</string>
+  <string name="sync_invalid_resources_ignoring">Ignorando un ou varios recursos non válidos</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: seguridade da conexión</string>
   <string name="trust_certificate_unknown_certificate_found">DAVx⁵ atopou un certificado descoñecido. Quere confiar nel?</string>

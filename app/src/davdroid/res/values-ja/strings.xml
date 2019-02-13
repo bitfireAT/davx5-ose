@@ -12,8 +12,13 @@
   <string name="notification_channel_general">他の重要なメッセージ</string>
   <string name="notification_channel_sync">同期</string>
   <string name="notification_channel_sync_errors">同期エラー</string>
+  <string name="notification_channel_sync_errors_desc">予期しないサーバーの応答のような、同期を停止させる重要なエラー</string>
+  <string name="notification_channel_sync_warnings">同期の警告</string>
+  <string name="notification_channel_sync_warnings_desc">特定の無効なファイルのような、致命的ではない同期の問題</string>
   <string name="notification_channel_sync_io_errors">ネットワークおよび I/O エラー</string>
+  <string name="notification_channel_sync_io_errors_desc">タイムアウト、接続の問題など (多くの場合、一時的なもの)</string>
   <string name="notification_channel_sync_status">ステータスメッセージ</string>
+  <string name="notification_channel_sync_status_desc">読み取り専用コレクションの却下された変更数のような、情報ステータスメッセージ</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">自動同期</string>
   <string name="startup_autostart_permission_message">%s ファームウェアは自動同期をブロックすることがよくあります。 この場合、Android の設定で自動同期を許可してください。</string>
@@ -35,8 +40,13 @@
   <string name="about_libraries">ライブラリー</string>
   <string name="about_version">バージョン %1$s (%2$d)</string>
   <string name="about_build_date">コンパイル日時 %s</string>
+  <string name="about_flavor_info">このバージョンは Google Play での配信にのみ対応しています。</string>
   <string name="about_license_info_no_warranty">このプログラムは完全に無保証で提供されます。これはフリーソフトウェアで、特定の条件下での再頒布を歓迎します。</string>
   <!--global settings-->
+  <string name="logging_couldnt_create_file">ログファイルを作成できませんでした</string>
+  <string name="logging_notification_title">DAVx⁵ ログ</string>
+  <string name="logging_notification_text">すべての DAVx⁵ アクティビティのログを取得します</string>
+  <string name="logging_notification_send_log">ログを送信</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">ナビゲーションドロワーを開く</string>
   <string name="navigation_drawer_close">ナビゲーションドロワーを閉じる</string>
@@ -62,6 +72,9 @@
   <string name="app_settings_debug">デバッグ</string>
   <string name="app_settings_show_debug_info">デバッグ情報を表示</string>
   <string name="app_settings_show_debug_info_details">ソフトウェアと設定の詳細を表示/共有</string>
+  <string name="app_settings_logging">詳細ログ</string>
+  <string name="app_settings_logging_on">ログ取得は有効です</string>
+  <string name="app_settings_logging_off">ログ取得は無効です</string>
   <string name="app_settings_connection">接続</string>
   <string name="app_settings_override_proxy">プロキシ設定を上書き</string>
   <string name="app_settings_override_proxy_on">カスタムのプロキシ設定を使用する</string>
@@ -76,6 +89,8 @@
   <string name="app_settings_reset_certificates_summary">すべてのカスタム証明書の信頼をリセット</string>
   <string name="app_settings_reset_certificates_success">すべてのカスタム証明書をクリアしました</string>
   <string name="app_settings_user_interface">ユーザーインターフェイス</string>
+  <string name="app_settings_notification_settings">通知設定</string>
+  <string name="app_settings_notification_settings_summary">通知チャネルとその設定を管理します</string>
   <string name="app_settings_reset_hints">ヒントをリセット</string>
   <string name="app_settings_reset_hints_summary">以前非表示にしたヒントを、再度有効にします</string>
   <string name="app_settings_reset_hints_success">すべてのヒントが再度表示されます</string>
@@ -102,6 +117,7 @@
   <string name="account_refresh_calendar_list">カレンダーリストを更新</string>
   <string name="account_create_new_calendar">新しいカレンダーを作成</string>
   <string name="account_no_webcal_handler_found">Webcal に対応するアプリが見つかりません</string>
+  <string name="account_install_icsx5">ICSx⁵ をインストール</string>
   <!--AddAccountActivity-->
   <string name="login_title">アカウントを追加</string>
   <string name="login_type_email">メールアドレスでログイン</string>
@@ -125,6 +141,7 @@
   <string name="login_account_name_info">Android はあなたが作成した予定の ORGANIZER フィールドとしてアカウント名を使用するので、アカウント名としてメールアドレスを使用してください。同じ名前のアカウントを 2 つ持つことはできません。</string>
   <string name="login_account_contact_group_method">連絡先グループ方法:</string>
   <string name="login_account_name_required">アカウント名が必要です</string>
+  <string name="login_account_name_already_taken">アカウント名はすでに取得されています</string>
   <string name="login_account_not_created">アカウントを作成できません</string>
   <string name="login_configuration_detection">設定の検出</string>
   <string name="login_querying_server">しばらくお待ちください。サーバーに問い合わせ中…</string>
@@ -159,8 +176,11 @@
   <string name="settings_sync_wifi_only_off">接続の種類は考慮されません</string>
   <string name="settings_sync_wifi_only_ssids">WiFi SSID 制限</string>
   <string name="settings_sync_wifi_only_ssids_on">%s でのみ同期します</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">%s でのみ同期します (有効な位置サービスが必要です)</string>
   <string name="settings_sync_wifi_only_ssids_off">すべての WiFi 接続が使用されます</string>
   <string name="settings_sync_wifi_only_ssids_message">利用可能な WiFi ネットワークのカンマ区切りの名前 (SSID) (空白にするとすべて)</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">WiFi 名を読み取るため、位置情報のアクセス許可と恒久的に有効化された位置情報サービスが必要です。</string>
+  <string name="settings_more_info_faq">詳細情報 (FAQ)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">連絡先グループ方法</string>
   <string-array name="settings_contact_group_method_entries">
@@ -229,6 +249,10 @@
   <string name="sync_error_local_storage">内蔵ストレージエラー – %s</string>
   <string name="sync_error_retry">再試行</string>
   <string name="sync_error_view_item">アイテムを表示</string>
+  <string name="sync_invalid_contact">サーバーから無効な連絡先を受信しました</string>
+  <string name="sync_invalid_event">サーバーから無効なイベントを受信しました</string>
+  <string name="sync_invalid_task">サーバーから無効なタスクを受信しました</string>
+  <string name="sync_invalid_resources_ignoring">1 または複数の無効なリソースを無視します</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: 接続セキュリティ</string>
   <string name="trust_certificate_unknown_certificate_found">DAVx⁵は、未知の証明書を検出しました。それを信頼しますか?</string>

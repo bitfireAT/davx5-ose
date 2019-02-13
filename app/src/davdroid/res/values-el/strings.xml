@@ -26,10 +26,15 @@
   <string name="startup_donate_now">Εμφάνιση σελίδας δωρεών</string>
   <string name="startup_donate_later">Μπορεί αργότερα</string>
   <string name="startup_more_info">Περισσότερες πληροφορίες</string>
+  <string name="startup_opentasks_not_installed">Η εφαρμογή OpenTasks δεν είναι εγκατεστημένη</string>
+  <string name="startup_opentasks_not_installed_message">Για να συγχρονίσετε εργασίες, απαιτείται η δωρεάν εφαρμογή OpenTasks. (Δεν απαιτείται για επαφές/συμβάντα.)</string>
+  <string name="startup_opentasks_reinstall_davx5">Μετά την εγκατάσταση της εφαρμογής OpenTasks, πρέπει να εγκαταστήσετε εκ νέου το DAVx⁵ και να προσθέσετε ξανά τους λογαριασμούς σας (σφάλμα του Android).</string>
+  <string name="startup_opentasks_not_installed_install">Εγκατάσταση εφαρμογής OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_libraries">Βιβλιοθήκες</string>
   <string name="about_version">Έκδοση %1$s (%2$d)</string>
   <string name="about_flavor_info">Αυτή η έκδοση είναι κατάλληλη μόνο για διανομή μέσω του Google Play.</string>
+  <string name="about_license_info_no_warranty">Αυτό το πρόγραμμα συνοδεύεται χωρις ΚΑΜΙΑ ΕΓΓΥΗΣΗ. Είναι ελεύθερο λογισμικό και είστε ευπρόσδεκτοι να το αναδιανείμετε υπό ορισμένες προϋποθέσεις.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Αδυναμία δημιουργίας αρχείου ιστορικού</string>
   <string name="logging_notification_send_log">Αποστολή ιστορικού</string>
@@ -43,12 +48,15 @@
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_forums">Βοήθεια / Φόρουμ</string>
   <string name="navigation_drawer_donate">Δωρεά</string>
+  <string name="account_list_empty">Καλώς ήρθατε στο DAVx⁵!\n\nΜπορείτε να προσθέσετε τώρα έναν λογαριασμό CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_enable">Ενεργοποίηση</string>
   <!--DavService-->
+  <string name="dav_service_refresh_failed">Αποτυχία ανίχνευσης υπηρεσίας</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Ρυθμίσεις</string>
   <string name="app_settings_debug">Αποσφαλμάτωση</string>
   <string name="app_settings_show_debug_info">Προβολή πληροφοριών αποσφαλμάτωσης</string>
+  <string name="app_settings_show_debug_info_details">Προβολή/διαμοιρασμός λογισμικού και λεπτομερειών διαμόρφωσης</string>
   <string name="app_settings_connection">Σύνδεση</string>
   <string name="app_settings_override_proxy">Παράκαμψη ρυθμίσεων διαμεσολαβητή</string>
   <string name="app_settings_override_proxy_on">Χρήση προσαρμοσμένων ρυθμίσεων διαμεσολαβητή</string>
@@ -98,9 +106,12 @@
   <string name="login_back">Πίσω</string>
   <string name="login_create_account">Δημιουργία λογαριασμού</string>
   <string name="login_account_name">Όνομα λογαριασμού</string>
+  <string name="login_account_name_info">Χρησιμοποιήστε τη διεύθυνση ηλεκτρονικού ταχυδρομείου ως όνομα λογαριασμού, επειδή το Android θα χρησιμοποιεί το όνομα του λογαριασμού ως πεδίο ORGANIZER για τα συμβάντα που δημιουργείτε. Δεν μπορείτε να έχετε δύο λογαριασμούς με το ίδιο όνομα.</string>
   <string name="login_account_name_required">Απαιτείται όνομα λογαριασμού</string>
   <string name="login_account_name_already_taken">Το όνομα λογαριασμού έχει ήδη ληφθεί</string>
   <string name="login_account_not_created">Αδυναμία δημιουργίας λογαριασμού</string>
+  <string name="login_configuration_detection">Ανίχνευση ρυθμίσεων</string>
+  <string name="login_querying_server">Περιμένετε, γίνεται ερώτημα στο διακομιστή…</string>
   <string name="login_no_caldav_carddav">Αδυναμία εύρεσης υπηρεσίας CalDAV ή CardDAV.</string>
   <string name="login_view_logs">Εμφάνιση λεπτομερειών</string>
   <!--AccountSettingsActivity-->
@@ -123,10 +134,15 @@
     <item>Μια φορά την ημέρα</item>
   </string-array>
   <string name="settings_sync_wifi_only">Συγχρονισμός μόνο μέσω WiFi</string>
+  <string name="settings_sync_wifi_only_ssids_off">Θα χρησιμοποιηθούν όλες οι συνδέσεις WiFi</string>
   <string name="settings_more_info_faq">Περισσότερες πληροφορίες (FAQ)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past_none">Όλα τα συμβάντα θα συγχρονίσουν</string>
+  <string name="settings_sync_time_range_past_message">Τα συμβάντα που υπερβαίνουν αυτόν τον αριθμό ημερών στο παρελθόν θα αγνοηθούν (μπορεί να είναι 0). Αφήστε κενό για συγχρονισμό όλων των συμβάντων.</string>
+  <string name="settings_manage_calendar_colors">Διαχείριση χρωμάτων ημερολογίου</string>
+  <string name="settings_manage_calendar_colors_on">Τα χρώματα του ημερολογίου διαχειρίζονται από το DAVx⁵</string>
+  <string name="settings_manage_calendar_colors_off">Τα χρώματα του ημερολογίου δεν ορίστηκαν από το DAVx⁵</string>
   <!--collection management-->
   <string name="create_addressbook">Δημιουργία βιβλίου διευθύνσεων</string>
   <string name="create_addressbook_display_name_hint">Το βιβλίο διευθύνσεών μου</string>
@@ -148,8 +164,15 @@
   <string name="debug_info_title">Πληροφορίες αποσφαλμάτωσης</string>
   <string name="sync_contacts_read_only_address_book">Βιβλίο διευθύνσεων μόνο για ανάγνωση</string>
   <string name="sync_error_permissions">Δικαιώματα DAVx⁵</string>
+  <string name="sync_error_permissions_text">Απαιτούνται πρόσθετα δικαιώματα</string>
+  <string name="sync_error_opentasks_too_old">Πολύ παλιά εφαρμογή OpenTasks</string>
+  <string name="sync_error_opentasks_required_version">Απαιτούμενη έκδοση: %1$s (τρέχουσα %2$s)</string>
+  <string name="sync_error_authentication_failed">Ο έλεγχος ταυτότητας απέτυχε (ελέγξτε τα διαπιστευτήρια σύνδεσης)</string>
+  <string name="sync_error_io">Σφάλμα δικτύου ή I/O – %s</string>
   <string name="sync_error_http_dav">Σφάλμα διακομιστής HTTP – %s</string>
+  <string name="sync_error_local_storage">Σφάλμα τοπικού αποθηκευτικού χώρου – %s</string>
   <string name="sync_error_retry">Επανάληψη</string>
   <string name="sync_error_view_item">Προβολή αντικειμένου</string>
   <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVx⁵: Ασφάλεια σύνδεσης</string>
 </resources>

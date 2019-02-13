@@ -12,11 +12,21 @@
   <string name="notification_channel_general">Otros mensajes importantes</string>
   <string name="notification_channel_sync">Sincronización</string>
   <string name="notification_channel_sync_errors">Errores de sincronización</string>
+  <string name="notification_channel_sync_errors_desc">Errores importantes que detienen la sincronización como respuestas inesperadas del servidor</string>
+  <string name="notification_channel_sync_warnings">Advertencias de sincronización</string>
+  <string name="notification_channel_sync_warnings_desc">Problemas de sincronización no-fatales como ciertos archivos inválidos</string>
   <string name="notification_channel_sync_io_errors">Errores de Red y E/S</string>
+  <string name="notification_channel_sync_io_errors_desc">Timeouts, problemas de conección, etc. (muchas veces temporal)</string>
   <string name="notification_channel_sync_status">Mensajes de estado</string>
+  <string name="notification_channel_sync_status_desc">Mensajes informativos de estado como el número de cambios perdidos en colecciones de solo lectura</string>
   <!--startup dialogs-->
+  <string name="startup_autostart_permission">Sincronización automática</string>
+  <string name="startup_autostart_permission_message">El firmware de %s muchas veces bloquea la sincronización automática. En este caso, permita la sincronización automática en sus ajustes de Android.</string>
+  <string name="startup_battery_optimization">Sincronización programada</string>
+  <string name="startup_battery_optimization_message">Su dispositivo restringirá la sincronización de DAVx⁵. Para hacer cumplir los intervalos de sincronización regulares de DAVx⁵, apague la \"optimización de batería\".</string>
   <string name="startup_battery_optimization_disable">Apagar para DAVx⁵</string>
   <string name="startup_dont_show_again">No mostrar de nuevo</string>
+  <string name="startup_not_now">Ahora no</string>
   <string name="startup_donate">Información de código abierto</string>
   <string name="startup_donate_message">Nos alegra que uses DAVx⁵, que es software de código abierto (GPLv3). Debido al duro trabajo que supone el desarrollo de DAVx⁵ y los cientos de horas de trabajo, por favor, considera hacer una donación.</string>
   <string name="startup_donate_now">Mostrar página de donación</string>
@@ -27,8 +37,16 @@
   <string name="startup_opentasks_reinstall_davx5">Tras instalar OpenTasks, tendrás que re-instalar DAVx⁵ y añadir tus cuentas de nuevo (por un error de Android).</string>
   <string name="startup_opentasks_not_installed_install">Instalar OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_libraries">Bibliotecas</string>
+  <string name="about_version">Versión %1$s (%2$d)</string>
+  <string name="about_build_date">Compilada en %s</string>
+  <string name="about_flavor_info">Esta versión sólo está disponible para distribución en Google Play. </string>
   <string name="about_license_info_no_warranty">Este programa viene sin NINGÚN TIPO DE GARANTÍA. Es software libre, y cualquier contribución es bienvenida y redistribuida bajo ciertas condiciones.</string>
   <!--global settings-->
+  <string name="logging_couldnt_create_file">No se puede crear el fichero del registro.</string>
+  <string name="logging_notification_title">Registro DAVx⁵</string>
+  <string name="logging_notification_text">Ahora registrando todas las actividades de DAVx⁵</string>
+  <string name="logging_notification_send_log">Enviar registro</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Abrir panel de navegación</string>
   <string name="navigation_drawer_close">Cerrar panel de navegación</string>
@@ -54,6 +72,9 @@
   <string name="app_settings_debug">Depuración</string>
   <string name="app_settings_show_debug_info">Mostrar la información de depuración</string>
   <string name="app_settings_show_debug_info_details">Ver/compartir detalles de software y configuración</string>
+  <string name="app_settings_logging">Registro extendido</string>
+  <string name="app_settings_logging_on">El registro está activo</string>
+  <string name="app_settings_logging_off">El registro está deshabilitado</string>
   <string name="app_settings_connection">Conexión</string>
   <string name="app_settings_override_proxy">Anular ajustes del proxy</string>
   <string name="app_settings_override_proxy_on">Usar ajustes personalizados del proxy</string>
@@ -68,6 +89,8 @@
   <string name="app_settings_reset_certificates_summary">Reinicia la validez de todos los certificados particulares</string>
   <string name="app_settings_reset_certificates_success">Todos los certificados particulares han sido limpiados</string>
   <string name="app_settings_user_interface">Interfaz de usuario</string>
+  <string name="app_settings_notification_settings">Ajustes de notificación</string>
+  <string name="app_settings_notification_settings_summary">Administrar notificación de canales y sus ajustes</string>
   <string name="app_settings_reset_hints">Restablecer advertencias</string>
   <string name="app_settings_reset_hints_summary">Habilita las advertencias que han sido rechazadas con anterioridad</string>
   <string name="app_settings_reset_hints_success">Todas las advertencias se mostrarán nuevamente</string>
@@ -81,6 +104,7 @@
   <string name="account_delete">Eliminar cuenta</string>
   <string name="account_delete_confirmation_title">¿Seguro que deseas eliminar la cuenta?</string>
   <string name="account_delete_confirmation_text">Todas las copias locales de tus contactos, calendarios y tareas serán eliminadas.</string>
+  <string name="account_select_collections_hint">Seleccionar colecciones para sincronizar</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -93,6 +117,7 @@
   <string name="account_refresh_calendar_list">Refrescar calendario</string>
   <string name="account_create_new_calendar">Crear nuevo calendario</string>
   <string name="account_no_webcal_handler_found">No se encontró aplicación para administrar Webcal</string>
+  <string name="account_install_icsx5">Instalar ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Añadir cuenta</string>
   <string name="login_type_email">Acceder con cuenta de correo</string>
@@ -116,10 +141,12 @@
   <string name="login_account_name_info">Usa tu dirección de correo como nombre de cuenta puesto que Android usará el nombre de la cuenta como campo de \"organizador\" en los eventos que cree. No puedes tener dos cuentas con el mismo nombre.</string>
   <string name="login_account_contact_group_method">Método de contacto de grupo:</string>
   <string name="login_account_name_required">Nombre de cuenta requerido</string>
+  <string name="login_account_name_already_taken">El nombre de la cuenta ya está siendo utilizado</string>
   <string name="login_account_not_created">La cuenta no pudo ser creada</string>
   <string name="login_configuration_detection">Detectar configuración</string>
   <string name="login_querying_server">Por favor espera, consultando al servidor…</string>
   <string name="login_no_caldav_carddav">No se pudo encontrar el servicio CalDAV o CardDAV.</string>
+  <string name="login_view_logs">Mostrar detalles</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Ajustes: %s</string>
   <string name="settings_authentication">Autenticación</string>
@@ -135,13 +162,25 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Cada %d minutos + inmediatamente con cambios locales</string>
   <string name="settings_sync_interval_calendars">Intervalo de sincronización de calendarios</string>
   <string name="settings_sync_interval_tasks">Intervalo de sincronizacion de Tasks</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Solo manualmente</item>
+    <item>Cada 15 minutos</item>
+    <item>Cada 30 minutos</item>
+    <item>Cada hora</item>
+    <item>Cada 2 horas</item>
+    <item>Cada 4 horas</item>
+    <item>Una vez al dia</item>
+  </string-array>
   <string name="settings_sync_wifi_only">Sincronizar sólo sobre WiFi</string>
   <string name="settings_sync_wifi_only_on">La sincronización está restringida a conexiones WiFi</string>
   <string name="settings_sync_wifi_only_off">Tipo de conexión no tenido en cuenta</string>
   <string name="settings_sync_wifi_only_ssids">Restricción WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">Solo se sincronizará a través de %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Solo sincronizará sobre %s (requiere servicios de ubicación activos)</string>
   <string name="settings_sync_wifi_only_ssids_off">Todas las conexiones WiFi serán usadas</string>
   <string name="settings_sync_wifi_only_ssids_message">Nombres separados por comas (SSIDs) de redes WiFi permitidas (deje vacío para todas)</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">Para leer nombres de WiFi, los permisos de Ubicación y servicios de ubicación permanente son necesarios.</string>
+  <string name="settings_more_info_faq">Más información (preguntas frecuentes)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Método de contacto de grupo</string>
   <string-array name="settings_contact_group_method_entries">
@@ -187,6 +226,9 @@
   <string name="delete_collection_confirm_warning">Esta colección (%s) y toda su información será eliminada del servidor.</string>
   <string name="delete_collection_deleting_collection">Eliminando colección</string>
   <string name="collection_force_read_only">Forzar solo-lectura</string>
+  <string name="collection_properties">Propiedades</string>
+  <string name="collection_properties_url">Dirección (URL):</string>
+  <string name="collection_properties_copy_url">Copiar URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Ocurrió un error.</string>
   <string name="exception_httpexception">Ha ocurrido un error HTTP.</string>
@@ -209,6 +251,10 @@
   <string name="sync_error_local_storage">Error de almacenamiento local – %s</string>
   <string name="sync_error_retry">Reintentar</string>
   <string name="sync_error_view_item">Ver item</string>
+  <string name="sync_invalid_contact">Contacto inválido recibido del servidor</string>
+  <string name="sync_invalid_event">Evento inválido recibido del servidor</string>
+  <string name="sync_invalid_task">Tarea inválida recibidas del servidor</string>
+  <string name="sync_invalid_resources_ignoring">Ignorando uno o más recursos inválidos</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: Seguridad de conexión</string>
   <string name="trust_certificate_unknown_certificate_found">DAVx⁵ ha encontrado un certificado desconocido. ¿Quieres que sea válido?</string>
