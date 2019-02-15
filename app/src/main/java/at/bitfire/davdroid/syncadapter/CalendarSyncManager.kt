@@ -160,7 +160,7 @@ class CalendarSyncManager(
             events = Event.fromReader(reader)
         } catch (e: InvalidCalendarException) {
             Logger.log.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
-            // TODO show notification
+            notifyInvalidResource(e, fileName)
             return
         }
 

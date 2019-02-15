@@ -355,7 +355,6 @@ class ContactsSyncManager(
     private fun processVCard(fileName: String, eTag: String, reader: Reader, downloader: Contact.Downloader) {
         Logger.log.info("Processing CardDAV resource $fileName")
 
-        // TODO catch and show notification on CannotParseException
         val contacts = try {
             Contact.fromReader(reader, downloader)
         } catch (e: CannotParseException) {
