@@ -89,7 +89,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
     implementation 'commons-io:commons-io:2.6'
     implementation 'dnsjava:dnsjava:2.1.8'
-    implementation 'org.apache.commons:commons-lang3:3.8.1'
+    //implementation 'org.apache.commons:commons-lang3:3.8.1'
     implementation 'org.apache.commons:commons-collections4:4.2'
 
     // for tests

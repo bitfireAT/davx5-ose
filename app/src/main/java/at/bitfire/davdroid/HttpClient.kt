@@ -11,6 +11,7 @@ package at.bitfire.davdroid
 import android.content.Context
 import android.os.Build
 import android.security.KeyChain
+import at.bitfire.cert4android.CertTlsSocketFactory
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.dav4jvm.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.Constants
@@ -213,7 +214,7 @@ class HttpClient private constructor(
                 logger.log(Level.SEVERE, "Couldn't set up client certificate authentication", e)
             }
 
-            orig.sslSocketFactory(CustomTlsSocketFactory(keyManager, trustManager), trustManager)
+            orig.sslSocketFactory(CertTlsSocketFactory(keyManager, trustManager), trustManager)
             orig.hostnameVerifier(hostnameVerifier)
 
             return HttpClient(orig.build(), certManager)
