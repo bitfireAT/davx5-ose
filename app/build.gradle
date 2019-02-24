@@ -31,6 +31,11 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     flavorDimensions "distribution"
     productFlavors {
         standard {
@@ -72,7 +77,7 @@ dependencies {
     implementation project(':ical4android')
     implementation project(':vcard4android')
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.cardview:cardview:1.0.0'
@@ -83,14 +88,13 @@ dependencies {
     implementation(':dav4jvm') {
         exclude group: 'org.ogce', module: 'xpp3'	// Android comes with its own XmlPullParser
     }
-    implementation 'com.jaredrummler:colorpicker:1.0.5'
-    implementation 'com.mikepenz:aboutlibraries:6.2.0'
+    implementation 'com.jaredrummler:colorpicker:1.1.0'
+    implementation 'com.mikepenz:aboutlibraries:6.2.3'
 
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
     implementation 'commons-io:commons-io:2.6'
     implementation 'dnsjava:dnsjava:2.1.8'
-    //implementation 'org.apache.commons:commons-lang3:3.8.1'
-    implementation 'org.apache.commons:commons-collections4:4.2'
+    implementation 'org.apache.commons:commons-collections4:4.3'
 
     // for tests
     androidTestImplementation 'androidx.test:runner:1.1.1'
