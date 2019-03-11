@@ -7,18 +7,26 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="10dp">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="model"
+            type="at.bitfire.davdroid.ui.DebugInfoActivity.ReportModel"/>
+    </data>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:typeface="monospace"
-        android:fontFamily="monospace"
-        android:text="@string/please_wait"
-        android:id="@+id/text_report"/>
+    <ScrollView android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp">
 
-</ScrollView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:typeface="monospace"
+            android:fontFamily="monospace"
+            android:text="@{model.report ?? @string/please_wait}"
+            android:textIsSelectable="true"
+            android:id="@+id/text_report"/>
+
+    </ScrollView>
+</layout>
