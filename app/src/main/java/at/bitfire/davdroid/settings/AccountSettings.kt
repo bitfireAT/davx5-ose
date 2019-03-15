@@ -535,7 +535,7 @@ class AccountSettings(
            - KEY_LAST_ANDROID_VERSION ("last_android_version") has been added
         */
 
-        // move previous address book info to ContactsContract.SyncState
+        // move previous address book model to ContactsContract.SyncState
         val provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY) ?:
             throw ContactsStorageException("Couldn't access Contacts provider")
 

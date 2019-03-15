@@ -8,132 +8,117 @@
 
 package at.bitfire.davdroid.ui.setup
 
+import android.app.AlertDialog
+import android.app.Application
 import android.app.Dialog
-import android.app.ProgressDialog
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import androidx.loader.app.LoaderManager
-import androidx.loader.content.AsyncTaskLoader
-import androidx.loader.content.Loader
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.*
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.DebugInfoActivity
-import at.bitfire.davdroid.ui.setup.DavResourceFinder.Configuration
 import java.lang.ref.WeakReference
+import java.util.logging.Level
+import kotlin.concurrent.thread
 
-class DetectConfigurationFragment: DialogFragment(), LoaderManager.LoaderCallbacks<Configuration> {
+class DetectConfigurationFragment: Fragment() {
 
-    companion object {
-        const val ARG_LOGIN_CREDENTIALS = "credentials"
-
-        fun newInstance(credentials: LoginInfo): DetectConfigurationFragment {
-            val frag = DetectConfigurationFragment()
-            val args = Bundle(1)
-            args.putParcelable(ARG_LOGIN_CREDENTIALS, credentials)
-            frag.arguments = args
-            return frag
-        }
-    }
-
-
-    @Suppress("DEPRECATION")
-    override fun onCreateDialog(savedInstancebState: Bundle?): Dialog {
-        val progress = ProgressDialog(activity)
-        progress.setTitle(R.string.login_configuration_detection)
-        progress.setMessage(getString(R.string.login_querying_server))
-        progress.isIndeterminate = true
-        progress.setCanceledOnTouchOutside(false)
-        return progress
-    }
+    private lateinit var loginModel: LoginModel
+    private lateinit var model: DetectConfigurationModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LoaderManager.getInstance(this).initLoader(0, arguments, this)
-    }
+        loginModel = ViewModelProviders.of(requireActivity()).get(LoginModel::class.java)
+        model = ViewModelProviders.of(this).get(DetectConfigurationModel::class.java)
 
-    override fun onCancel(dialog: DialogInterface?) {
-        Logger.log.info("Cancelling resource detection")
-        LoaderManager.getInstance(this).getLoader<Configuration>(0)?.cancelLoad()
-    }
+        model.detectConfiguration(loginModel).observe(this, Observer<DavResourceFinder.Configuration> { result ->
+            // save result for next step
+            loginModel.configuration = result
 
+            // remove "Detecting configuration" fragment, it shouldn't come back
+            requireFragmentManager().popBackStack()
 
-    override fun onCreateLoader(id: Int, args: Bundle?) =
-            ServerConfigurationLoader(requireActivity(), args!!.getParcelable(ARG_LOGIN_CREDENTIALS)!!)
-
-    override fun onLoadFinished(loader: Loader<Configuration>, data: Configuration?) {
-        data?.let {
-            if (it.calDAV == null && it.cardDAV == null)
-                // no service found: show error message
+            if (result.calDAV != null || result.cardDAV != null)
                 requireFragmentManager().beginTransaction()
-                        .add(NothingDetectedFragment.newInstance(it.logs), null)
-                        .commit()
-            else
-                // service found: continue
-                requireFragmentManager().beginTransaction()
-                        .replace(android.R.id.content, AccountDetailsFragment.newInstance(data))
+                        .replace(android.R.id.content, AccountDetailsFragment())
                         .addToBackStack(null)
                         .commit()
-        }
-
-        dismiss()
+            else
+                requireFragmentManager().beginTransaction()
+                        .add(NothingDetectedFragment(), null)
+                        .commit()
+        })
     }
 
-    override fun onLoaderReset(loader: Loader<Configuration>) {}
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+            inflater.inflate(R.layout.detect_configuration, container, false)!!
+
+
+    private class DetectConfigurationModel(
+            application: Application
+    ): AndroidViewModel(application) {
+
+        private var detectionThread: WeakReference<Thread>? = null
+        private var result = MutableLiveData<DavResourceFinder.Configuration>()
+
+        fun detectConfiguration(loginModel: LoginModel): LiveData<DavResourceFinder.Configuration> {
+            synchronized(result) {
+                if (detectionThread != null)
+                    // detection already running
+                    return result
+            }
+
+            thread {
+                synchronized(result) {
+                    detectionThread = WeakReference(Thread.currentThread())
+                }
+
+                try {
+                    DavResourceFinder(getApplication(), loginModel).use { finder ->
+                        result.postValue(finder.findInitialConfiguration())
+                    }
+                } catch(e: Exception) {
+                    // exception, shouldn't happen
+                    Logger.log.log(Level.SEVERE, "Internal resource detection error", e)
+                }
+            }
+            return result
+        }
+
+        override fun onCleared() {
+            synchronized(result) {
+                detectionThread?.get()?.let { thread ->
+                    Logger.log.info("Aborting resource detection")
+                    thread.interrupt()
+                }
+                detectionThread = null
+            }
+        }
+    }
 
 
     class NothingDetectedFragment: DialogFragment() {
 
-        companion object {
-            const val KEY_LOGS = "logs"
-
-            fun newInstance(logs: String): NothingDetectedFragment {
-                val args = Bundle()
-                args.putString(KEY_LOGS, logs)
-                val fragment = NothingDetectedFragment()
-                fragment.arguments = args
-                return fragment
-            }
-        }
-
-        override fun onCreateDialog(savedInstanceState: Bundle?) =
-                AlertDialog.Builder(requireActivity())
-                        .setTitle(R.string.login_configuration_detection)
-                        .setIcon(R.drawable.ic_error_dark)
-                        .setMessage(R.string.login_no_caldav_carddav)
-                        .setNeutralButton(R.string.login_view_logs) { _, _ ->
-                            val intent = Intent(activity, DebugInfoActivity::class.java)
-                            intent.putExtra(DebugInfoActivity.KEY_LOGS, arguments!!.getString(KEY_LOGS))
-                            startActivity(intent)
-                        }
-                        .setPositiveButton(android.R.string.ok) { _, _ ->
-                            // dismiss
-                        }
-                        .create()!!
-
-    }
-
-
-    class ServerConfigurationLoader(
-            context: Context,
-            private val credentials: LoginInfo
-    ): AsyncTaskLoader<Configuration>(context) {
-
-        private var workingThread: WeakReference<Thread>? = null
-
-        override fun onStartLoading() = forceLoad()
-
-        override fun cancelLoadInBackground() {
-            Logger.log.warning("Shutting down resource detection")
-            workingThread?.get()?.interrupt()
-        }
-
-        override fun loadInBackground(): Configuration {
-            workingThread = WeakReference(Thread.currentThread())
-            return DavResourceFinder(context, credentials).findInitialConfiguration()
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val model = ViewModelProviders.of(requireActivity()).get(LoginModel::class.java)
+            return AlertDialog.Builder(requireActivity())
+                    .setTitle(R.string.login_configuration_detection)
+                    .setIcon(R.drawable.ic_error_dark)
+                    .setMessage(R.string.login_no_caldav_carddav)
+                    .setNeutralButton(R.string.login_view_logs) { _, _ ->
+                        val intent = Intent(activity, DebugInfoActivity::class.java)
+                        intent.putExtra(DebugInfoActivity.KEY_LOGS, model.configuration?.logs)
+                        startActivity(intent)
+                    }
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        // just dismiss
+                    }
+                    .create()!!
         }
 
     }

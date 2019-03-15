@@ -24,6 +24,7 @@
             android:layout_height="wrap_content"
             android:typeface="monospace"
             android:fontFamily="monospace"
+            android:textSize="12sp"
             android:text="@{model.report ?? @string/please_wait}"
             android:textIsSelectable="true"
             android:id="@+id/text_report"/>

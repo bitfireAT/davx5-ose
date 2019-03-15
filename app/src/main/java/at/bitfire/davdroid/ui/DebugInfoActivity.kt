@@ -33,8 +33,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ObservableField
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProviders
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.BuildConfig
@@ -71,11 +71,11 @@ class DebugInfoActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         model = ViewModelProviders.of(this).get(ReportModel::class.java)
-        if (savedInstanceState == null)
-            model.generateReport(intent.extras)
+        model.initialize(intent.extras)
 
         val binding = DataBindingUtil.setContentView<ActivityDebugInfoBinding>(this, R.layout.activity_debug_info)
         binding.model = model
+        binding.lifecycleOwner = this
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -85,9 +85,9 @@ class DebugInfoActivity: AppCompatActivity() {
 
 
     fun onShare(item: MenuItem) {
-        model.report.get()?.let { report ->
+        model.report.value?.let { report ->
             val builder = ShareCompat.IntentBuilder.from(this)
-                    .setSubject("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info")
+                    .setSubject("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug model")
                     .setType("text/plain")
 
             try {
@@ -95,8 +95,8 @@ class DebugInfoActivity: AppCompatActivity() {
                 if (!(debugInfoDir.exists() && debugInfoDir.isDirectory) && !debugInfoDir.mkdir())
                     throw IOException("Couldn't create debug directory")
 
-                val reportFile = File(debugInfoDir, "davx5-info.txt")
-                Logger.log.fine("Writing debug info to ${reportFile.absolutePath}")
+                val reportFile = File(debugInfoDir, "davx5-model.txt")
+                Logger.log.fine("Writing debug model to ${reportFile.absolutePath}")
                 val writer = FileWriter(reportFile)
                 writer.write(report)
                 writer.close()
@@ -105,7 +105,7 @@ class DebugInfoActivity: AppCompatActivity() {
                 builder.intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
             } catch(e: IOException) {
                 // creating an attachment failed, so send it inline
-                val text = "Couldn't create debug info file: " + Log.getStackTraceString(e) + "\n\n$report"
+                val text = "Couldn't create debug model file: " + Log.getStackTraceString(e) + "\n\n$report"
                 builder.setText(text)
             }
 
@@ -116,10 +116,16 @@ class DebugInfoActivity: AppCompatActivity() {
 
     class ReportModel(application: Application): AndroidViewModel(application) {
 
-        val report = ObservableField<String>()
+        private var initialized = false
+        val report = MutableLiveData<String>()
 
-        fun generateReport(extras: Bundle?) {
-            Logger.log.info("Generating debug info report")
+        fun initialize(extras: Bundle?) {
+            if (initialized)
+                return
+
+            Logger.log.info("Generating debug model report")
+            initialized = true
+
             thread {
                 val context = getApplication<Application>()
                 val text = StringBuilder("--- BEGIN DEBUG INFO ---\n")
@@ -170,15 +176,15 @@ class DebugInfoActivity: AppCompatActivity() {
                 try {
                     text.append("\nSOFTWARE INFORMATION\n")
                     val pm = context.packageManager
-                    val appIDs = mutableSetOf(      // we always want info about these packages
+                    val appIDs = mutableSetOf(      // we always want model about these packages
                             BuildConfig.APPLICATION_ID,                     // DAVx5
                             "${BuildConfig.APPLICATION_ID}.jbworkaround",   // DAVdroid JB Workaround
                             "org.dmfs.tasks"                               // OpenTasks
                     )
-                    // add info about contact, calendar, task provider
+                    // add model about contact, calendar, task provider
                     for (authority in arrayOf(ContactsContract.AUTHORITY, CalendarContract.AUTHORITY, TaskProvider.ProviderName.OpenTasks.authority))
                         pm.resolveContentProvider(authority, 0)?.let { appIDs += it.packageName }
-                    // add info about available contact, calendar, task apps
+                    // add model about available contact, calendar, task apps
                     for (uri in arrayOf(ContactsContract.Contacts.CONTENT_URI, CalendarContract.Events.CONTENT_URI, TaskContract.Tasks.getContentUri(TaskProvider.ProviderName.OpenTasks.authority))) {
                         val viewIntent = Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(uri, 1))
                         for (info in pm.queryIntentActivities(viewIntent, 0))
@@ -298,7 +304,7 @@ class DebugInfoActivity: AppCompatActivity() {
                 }
 
                 text.append("--- END DEBUG INFO ---\n")
-                report.set(text.toString())
+                report.postValue(text.toString())
             }
         }
 

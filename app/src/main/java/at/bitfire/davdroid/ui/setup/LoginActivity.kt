@@ -14,7 +14,9 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.UiUtils
+import com.mikepenz.aboutlibraries.detector.Detect
 import java.util.*
 
 /**
@@ -57,7 +59,6 @@ class LoginActivity: AppCompatActivity() {
         menuInflater.inflate(R.menu.activity_login, menu)
         return true
     }
-
 
     fun showHelp(item: MenuItem) {
         UiUtils.launchUri(this, App.homepageUrl(this).buildUpon()

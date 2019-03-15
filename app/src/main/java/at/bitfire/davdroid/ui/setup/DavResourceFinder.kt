@@ -7,12 +7,7 @@
  */
 package at.bitfire.davdroid.ui.setup
 
-import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.content.Context
-import android.os.Build
-import android.os.Parcel
-import android.os.Parcelable
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
@@ -23,7 +18,6 @@ import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.log.StringHandler
 import at.bitfire.davdroid.model.CollectionInfo
-import at.bitfire.davdroid.model.Credentials
 import okhttp3.HttpUrl
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder
 import org.xbill.DNS.Lookup
@@ -39,7 +33,7 @@ import java.util.logging.Logger
 
 class DavResourceFinder(
         val context: Context,
-        private val loginInfo: LoginInfo
+        private val loginModel: LoginModel
 ): AutoCloseable {
 
     enum class Service(val wellKnownName: String) {
@@ -57,7 +51,7 @@ class DavResourceFinder(
     }
 
     private val httpClient: HttpClient = HttpClient.Builder(context, logger = log)
-            .addAuthentication(null, loginInfo.credentials)
+            .addAuthentication(null, loginModel.credentials!!)
             .setForeground(true)
             .build()
 
@@ -95,7 +89,6 @@ class DavResourceFinder(
         }
 
         return Configuration(
-                loginInfo.credentials,
                 cardDavConfig, calDavConfig,
                 logBuffer.toString()
         )
@@ -103,7 +96,7 @@ class DavResourceFinder(
 
     private fun findInitialConfiguration(service: Service): Configuration.ServiceInfo? {
         // user-given base URI (either mailto: URI or http(s):// URL)
-        val baseURI = loginInfo.uri
+        val baseURI = loginModel.baseURI!!
 
         // domain for service discovery
         var discoveryFQDN: String? = null
@@ -418,13 +411,11 @@ class DavResourceFinder(
     // data classes
 
     class Configuration(
-            val credentials: Credentials,
-
             val cardDAV: ServiceInfo?,
             val calDAV: ServiceInfo?,
 
             val logs: String
-    ): Parcelable {
+    ) {
 
         data class ServiceInfo(
                 var principal: HttpUrl? = null,
@@ -438,74 +429,6 @@ class DavResourceFinder(
             val builder = ReflectionToStringBuilder(this)
             builder.setExcludeFieldNames("logs")
             return builder.toString()
-        }
-
-
-        override fun describeContents() = 0
-
-        @SuppressLint("NewApi")
-        override fun writeToParcel(dest: Parcel, flags: Int) { @TargetApi(Build.VERSION_CODES.N)
-            fun writeServiceInfo(info: ServiceInfo?) {
-                if (info == null)
-                    dest.writeByte(0)
-                else {
-                    dest.writeByte(1)
-                    dest.writeString(info.principal?.toString())
-
-                    dest.writeInt(info.homeSets.size)
-                    info.homeSets.forEach { dest.writeString(it.toString()) }
-
-                    dest.writeInt(info.collections.size)
-                    info.collections.forEach { url, collectionInfo ->
-                        dest.writeString(url.toString())
-                        dest.writeParcelable(collectionInfo, 0)
-                    }
-
-                    dest.writeString(info.email)
-                }
-            }
-
-            dest.writeSerializable(credentials)
-            writeServiceInfo(cardDAV)
-            writeServiceInfo(calDAV)
-            dest.writeString(logs)
-        }
-
-
-        companion object CREATOR : Parcelable.Creator<Configuration> {
-
-            override fun createFromParcel(source: Parcel): Configuration {
-                fun readCollections(): MutableMap<HttpUrl, CollectionInfo> {
-                    val size = source.readInt()
-                    val map = HashMap<HttpUrl, CollectionInfo>(size)
-                    (1..size).forEach {
-                        val url = HttpUrl.parse(source.readString()!!)!!
-                        map[url] = source.readParcelable(Thread.currentThread().contextClassLoader)!!
-                    }
-                    return map
-                }
-
-                fun readServiceInfo(): ServiceInfo? {
-                    return if (source.readByte() == 0.toByte())
-                        null
-                    else
-                        ServiceInfo(
-                                source.readString()?.let { HttpUrl.parse(it) },
-                                (1..source.readInt()).map { HttpUrl.parse(source.readString()!!)!! }.toMutableSet(),
-                                readCollections()
-                        )
-                }
-
-                return Configuration(
-                        source.readSerializable() as Credentials,
-                        readServiceInfo(),
-                        readServiceInfo(),
-                        source.readString()!!
-                )
-            }
-
-            override fun newArray(size: Int) = arrayOfNulls<Configuration>(size)
-
         }
 
     }

@@ -44,14 +44,14 @@ class DavResourceFinderTest {
 
     lateinit var finder: DavResourceFinder
     lateinit var client: HttpClient
-    lateinit var loginInfo: LoginInfo
+    lateinit var loginInfo: LoginModel
 
     @Before
     fun initServerAndClient() {
         server.setDispatcher(TestDispatcher())
         server.start()
 
-        loginInfo = LoginInfo(URI.create("/"), Credentials("mock", "12345"))
+        loginInfo = LoginModel(URI.create("/"), Credentials("mock", "12345"))
         finder = DavResourceFinder(InstrumentationRegistry.getInstrumentation().targetContext, loginInfo)
 
         client = HttpClient.Builder()

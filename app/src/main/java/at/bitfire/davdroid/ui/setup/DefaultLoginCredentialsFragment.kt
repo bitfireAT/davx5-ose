@@ -8,7 +8,7 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import android.net.Uri
+import android.net.MailTo
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,189 +16,133 @@ import android.security.KeyChain
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import androidx.fragment.app.Fragment
-import at.bitfire.dav4jvm.Constants
+import androidx.lifecycle.ViewModelProviders
 import at.bitfire.davdroid.R
-import kotlinx.android.synthetic.main.login_credentials_fragment.view.*
-import java.net.IDN
+import at.bitfire.davdroid.databinding.LoginCredentialsFragmentBinding
+import at.bitfire.davdroid.model.Credentials
 import java.net.URI
 import java.net.URISyntaxException
-import java.util.logging.Level
 
-class DefaultLoginCredentialsFragment: Fragment(), CompoundButton.OnCheckedChangeListener {
+class DefaultLoginCredentialsFragment: Fragment() {
+
+    private lateinit var model: DefaultLoginCredentialsModel
+    private lateinit var loginModel: LoginModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val v = inflater.inflate(R.layout.login_credentials_fragment, container, false)
+        model = ViewModelProviders.of(this).get(DefaultLoginCredentialsModel::class.java)
+        loginModel = ViewModelProviders.of(requireActivity()).get(LoginModel::class.java)
 
-        if (savedInstanceState == null) {
-            // first call
-            activity?.intent?.let {
-                // we've got initial login data
-                val url = it.getStringExtra(LoginActivity.EXTRA_URL)
-                val username = it.getStringExtra(LoginActivity.EXTRA_USERNAME)
-                val password = it.getStringExtra(LoginActivity.EXTRA_PASSWORD)
+        val v = LoginCredentialsFragmentBinding.inflate(inflater, container, false)
+        v.lifecycleOwner = this
+        v.model = model
 
-                if (url != null) {
-                    v.login_type_urlpwd.isChecked = true
-                    v.urlpwd_base_url.setText(url)
-                    v.urlpwd_user_name.setText(username)
-                    v.urlpwd_password.setText(password)
-                } else {
-                    v.login_type_email.isChecked = true
-                    v.email_address.setText(username)
-                    v.email_password.setText(password)
-                }
-            }
-        }
+        // initialize model on first call
+        if (savedInstanceState == null)
+            activity?.intent?.let { model.initialize(it) }
 
-        v.urlcert_select_cert.setOnClickListener {
+        v.selectCertificate.setOnClickListener {
             KeyChain.choosePrivateKeyAlias(requireActivity(), { alias ->
                 Handler(Looper.getMainLooper()).post {
-                    v.urlcert_cert_alias.text = alias
-                    v.urlcert_cert_alias.error = null
+                    model.certificateAlias.value = alias
                 }
-            }, null, null, null, -1, view!!.urlcert_cert_alias.text.toString())
+            }, null, null, null, -1, model.certificateAlias.value)
         }
 
         v.login.setOnClickListener {
-            validateLoginData()?.let { info ->
-                DetectConfigurationFragment.newInstance(info).show(fragmentManager, null)
-            }
+            if (validate())
+                requireFragmentManager().beginTransaction()
+                        .replace(android.R.id.content, DetectConfigurationFragment(), null)
+                        .addToBackStack(null)
+                        .commit()
         }
 
-        // initialize to Login by email
-        onCheckedChanged(v)
-
-        v.login_type_email.setOnCheckedChangeListener(this)
-        v.login_type_urlpwd.setOnCheckedChangeListener(this)
-        v.login_type_urlcert.setOnCheckedChangeListener(this)
-
-        return v
+        return v.root
     }
 
-    override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
-        onCheckedChanged(view!!)
-    }
+    private fun validate(): Boolean {
+        var valid = false
 
-    private fun onCheckedChanged(v: View) {
-        v.login_type_email_details.visibility = if (v.login_type_email.isChecked) View.VISIBLE else View.GONE
-        v.login_type_urlpwd_details.visibility = if (v.login_type_urlpwd.isChecked) View.VISIBLE else View.GONE
-        v.login_type_urlcert_details.visibility = if (v.login_type_urlcert.isChecked) View.VISIBLE else View.GONE
-    }
-
-    private fun validateLoginData(): LoginInfo? {
-        val view = requireNotNull(view)
-        when {
-            // Login with email address
-            view.login_type_email.isChecked -> {
-                var uri: URI? = null
-                var valid = true
-
-                val email = view.email_address.text.toString()
-                if (!email.matches(Regex(".+@.+"))) {
-                    view.email_address.error = getString(R.string.login_email_address_error)
-                    valid = false
-                } else
-                    try {
-                        uri = URI("mailto", email, null)
-                    } catch (e: URISyntaxException) {
-                        view.email_address.error = e.localizedMessage
-                        valid = false
-                    }
-
-                val password = view.email_password.text.toString()
-                if (password.isEmpty()) {
-                    view.email_password.error = getString(R.string.login_password_required)
-                    valid = false
-                }
-
-                return if (valid && uri != null)
-                    LoginInfo(uri, email, password)
-                else
-                    null
-
-            }
-
-            // Login with URL and user name
-            view.login_type_urlpwd.isChecked -> {
-                var valid = true
-
-                val baseUrl = Uri.parse(view.urlpwd_base_url.text.toString())
-                val uri = validateBaseUrl(baseUrl, false) { message ->
-                    view.urlpwd_base_url.error = message
-                    valid = false
-                }
-
-                val userName = view.urlpwd_user_name.text.toString()
-                if (userName.isBlank()) {
-                    view.urlpwd_user_name.error = getString(R.string.login_user_name_required)
-                    valid = false
-                }
-
-                val password = view.urlpwd_password.text.toString()
-                if (password.isEmpty()) {
-                    view.urlpwd_password.error = getString(R.string.login_password_required)
-                    valid = false
-                }
-
-                return if (valid && uri != null)
-                    LoginInfo(uri, userName, password)
-                else
-                    null
-            }
-
-            // Login with URL and client certificate
-            view.login_type_urlcert.isChecked -> {
-                var valid = true
-
-                val baseUrl = Uri.parse(view.urlcert_base_url.text.toString())
-                val uri = validateBaseUrl(baseUrl, true) { message ->
-                    view.urlcert_base_url.error = message
-                    valid = false
-                }
-
-                val alias = view.urlcert_cert_alias.text.toString()
-                if (alias.isEmpty()) {
-                    view.urlcert_cert_alias.error = ""
-                    valid = false
-                }
-
-                if (valid && uri != null)
-                    return LoginInfo(uri, certificateAlias = alias)
-            }
-        }
-
-        return null
-    }
-
-    private fun validateBaseUrl(baseUrl: Uri, httpsRequired: Boolean, reportError: (String) -> Unit): URI? {
-        var uri: URI? = null
-        val scheme = baseUrl.scheme
-        if ((!httpsRequired && scheme.equals("http", true)) || scheme.equals("https", true)) {
-            var host = baseUrl.host
-            if (host.isNullOrBlank())
-                reportError(getString(R.string.login_url_host_name_required))
-            else
-                try {
-                    host = IDN.toASCII(host)
-                } catch (e: IllegalArgumentException) {
-                    Constants.log.log(Level.WARNING, "Host name not conforming to RFC 3490", e)
-                }
-
-            val path = baseUrl.encodedPath
-            val port = baseUrl.port
+        fun validateUrl() {
+            model.baseUrlError.value = null
             try {
-                uri = URI(baseUrl.scheme, null, host, port, path, null, null)
-            } catch (e: URISyntaxException) {
-                reportError(e.localizedMessage)
+                val uri = URI(model.baseUrl.value.orEmpty())
+                if (uri.scheme.equals("http", true) || uri.scheme.equals("https", true)) {
+                    valid = true
+                    loginModel.baseURI = uri
+                } else
+                    model.baseUrlError.value = getString(R.string.login_url_must_be_http_or_https)
+            } catch (e: Exception) {
+                model.baseUrlError.value = e.localizedMessage
             }
-        } else
-            reportError(getString(if (httpsRequired)
-                    R.string.login_url_must_be_https
-                else
-                    R.string.login_url_must_be_http_or_https))
-        return uri
+        }
+
+        fun validatePassword(): String? {
+            model.passwordError.value = null
+            val password = model.password.value
+            if (password.isNullOrEmpty()) {
+                valid = false
+                model.passwordError.value = getString(R.string.login_password_required)
+            }
+            return password
+        }
+
+        when {
+            model.loginWithEmailAddress.value == true -> {
+                // login with email address
+                model.emailAddressError.value = null
+                val email = model.emailAddress.value.orEmpty()
+                if (email.matches(Regex(".+@.+"))) {
+                    // already looks like an email address
+                    try {
+                        loginModel.baseURI = URI(MailTo.MAILTO_SCHEME, email, null)
+                        valid = true
+                    } catch (e: URISyntaxException) {
+                        model.emailAddressError.value = e.localizedMessage
+                    }
+                } else {
+                    valid = false
+                    model.emailAddressError.value = getString(R.string.login_email_address_error)
+                }
+
+                val password = validatePassword()
+
+                if (valid)
+                    loginModel.credentials = Credentials(email, password, null)
+            }
+
+            model.loginWithUrlAndUsername.value == true -> {
+                validateUrl()
+
+                model.usernameError.value = null
+                val username = model.username.value
+                if (username.isNullOrEmpty()) {
+                    valid = false
+                    model.usernameError.value = getString(R.string.login_user_name_required)
+                }
+
+                val password = validatePassword()
+
+                if (valid)
+                    loginModel.credentials = Credentials(username, password, null)
+            }
+
+            model.loginWithUrlAndCertificate.value == true -> {
+                validateUrl()
+
+                model.certificateAliasError.value = null
+                val alias = model.certificateAlias.value
+                if (alias.isNullOrBlank()) {
+                    valid = false
+                    model.certificateAliasError.value = ""      // error icon without text
+                }
+
+                if (valid)
+                    loginModel.credentials = Credentials(null, null, alias)
+            }
+        }
+
+        return valid
     }
 
 }

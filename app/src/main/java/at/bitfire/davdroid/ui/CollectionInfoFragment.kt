@@ -21,7 +21,7 @@ class CollectionInfoFragment : DialogFragment() {
 
     companion object {
 
-        private const val ARGS_INFO = "info"
+        private const val ARGS_INFO = "model"
 
         fun newInstance(info: CollectionInfo): CollectionInfoFragment {
             val frag = CollectionInfoFragment()

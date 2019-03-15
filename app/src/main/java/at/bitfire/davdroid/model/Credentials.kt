@@ -8,13 +8,11 @@
 
 package at.bitfire.davdroid.model
 
-import java.io.Serializable
-
 class Credentials(
         val userName: String? = null,
         val password: String? = null,
         val certificateAlias: String? = null
-): Serializable {
+) {
 
     enum class Type {
         UsernamePassword,
