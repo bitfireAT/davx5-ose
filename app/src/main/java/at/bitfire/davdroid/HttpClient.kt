@@ -47,8 +47,11 @@ class HttpClient private constructor(
 ): AutoCloseable {
 
     companion object {
+        /** max. size of disk cache (10 MB) */
+        const val DISK_CACHE_MAX_SIZE: Long = 10*1024*1024
+
         /** [OkHttpClient] singleton to build all clients from */
-        val sharedClient = OkHttpClient.Builder()
+        val sharedClient: OkHttpClient = OkHttpClient.Builder()
                 // set timeouts
                 .connectTimeout(15, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
@@ -63,7 +66,9 @@ class HttpClient private constructor(
                 .build()
     }
 
+
     override fun close() {
+        okHttpClient.cache()?.close()
         certManager?.close()
     }
 
@@ -74,6 +79,7 @@ class HttpClient private constructor(
     ) {
         private var certManager: CustomCertManager? = null
         private var certificateAlias: String? = null
+        private var cache: Cache? = null
 
         private val orig = sharedClient.newBuilder()
 
@@ -134,7 +140,7 @@ class HttpClient private constructor(
                     val cacheDir = File(dir, "HttpClient")
                     cacheDir.mkdir()
                     Logger.log.fine("Using disk cache: $cacheDir")
-                    orig.cache(Cache(cacheDir, 10*1024*1024))
+                    orig.cache(Cache(cacheDir, DISK_CACHE_MAX_SIZE))
                     break
                 }
             }
