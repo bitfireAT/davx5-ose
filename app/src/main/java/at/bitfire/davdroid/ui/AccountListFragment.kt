@@ -11,6 +11,7 @@ package at.bitfire.davdroid.ui
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -21,23 +22,30 @@ import android.widget.AbsListView
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.ListFragment
-import androidx.loader.app.LoaderManager
-import androidx.loader.content.AsyncTaskLoader
-import androidx.loader.content.Loader
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import at.bitfire.davdroid.R
 import kotlinx.android.synthetic.main.account_list_item.view.*
 
-class AccountListFragment: ListFragment(), LoaderManager.LoaderCallbacks<Array<Account>> {
+class AccountListFragment: ListFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         listAdapter = AccountListAdapter(requireActivity())
+
+        val model = ViewModelProviders.of(this).get(Model::class.java)
+        model.accounts.observe(this, Observer { accounts ->
+            val adapter = listAdapter as AccountListAdapter
+            adapter.clear()
+            adapter.addAll(*accounts)
+        })
 
         return inflater.inflate(R.layout.account_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        LoaderManager.getInstance(this).initLoader(0, arguments, this)
 
         listView.choiceMode = AbsListView.CHOICE_MODE_SINGLE
         listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
@@ -46,52 +54,6 @@ class AccountListFragment: ListFragment(), LoaderManager.LoaderCallbacks<Array<A
             intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
             startActivity(intent)
         }
-    }
-
-
-    // loader
-
-    override fun onCreateLoader(id: Int, args: Bundle?) =
-            AccountLoader(requireActivity())
-
-    override fun onLoadFinished(loader: Loader<Array<Account>>, accounts: Array<Account>) {
-        val adapter = listAdapter as AccountListAdapter
-        adapter.clear()
-        adapter.addAll(*accounts)
-    }
-
-    override fun onLoaderReset(loader: Loader<Array<Account>>) {
-        (listAdapter as AccountListAdapter).clear()
-    }
-
-    class AccountLoader(
-            context: Context
-    ): AsyncTaskLoader<Array<Account>>(context) {
-
-        private val accountManager = AccountManager.get(context)!!
-        private var listener: OnAccountsUpdateListener? = null
-
-        override fun onStartLoading() {
-            if (listener == null) {
-                listener = OnAccountsUpdateListener { onContentChanged() }
-                accountManager.addOnAccountsUpdatedListener(listener, null, false)
-            }
-
-            forceLoad()
-        }
-
-        override fun onReset() {
-            listener?.let {
-                try {
-                    accountManager.removeOnAccountsUpdatedListener(it)
-                } catch(ignored: IllegalArgumentException) {}
-                listener = null
-            }
-        }
-
-        override fun loadInBackground(): Array<Account> =
-            AccountManager.get(context).getAccountsByType(context.getString(R.string.account_type))
-
     }
 
 
@@ -109,6 +71,31 @@ class AccountListFragment: ListFragment(), LoaderManager.LoaderCallbacks<Array<A
 
             return v
         }
+    }
+
+
+    class Model(
+            application: Application
+    ): AndroidViewModel(application), OnAccountsUpdateListener {
+
+        val accounts = MutableLiveData<Array<out Account>>()
+
+        private val accountManager = AccountManager.get(getApplication())!!
+        init {
+            accountManager.addOnAccountsUpdatedListener(this, null, true)
+        }
+
+        override fun onCleared() {
+            accountManager.removeOnAccountsUpdatedListener(this)
+        }
+
+        override fun onAccountsUpdated(newAccounts: Array<out Account>) {
+            val context = getApplication<Application>()
+            accounts.postValue(
+                    AccountManager.get(context).getAccountsByType(context.getString(R.string.account_type))
+            )
+        }
+
     }
 
 }
