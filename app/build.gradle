@@ -25,6 +25,7 @@ android {
 
         minSdkVersion 19        // Android 4.4
         targetSdkVersion 28     // Android 9.0
+        multiDexEnabled true    // >64k methods for Android 4.4
 
         buildConfigField "String", "userAgent", "\"DAVx5\""
 
@@ -80,6 +81,7 @@ dependencies {
     implementation project(':ical4android')
     implementation project(':vcard4android')
 
+    implementation 'androidx.multidex:multidex:2.0.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     implementation 'androidx.appcompat:appcompat:1.0.2'

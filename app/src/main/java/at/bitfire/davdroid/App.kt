@@ -19,12 +19,13 @@ import android.os.Build
 import android.os.StrictMode
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.multidex.MultiDexApplication
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
 import kotlin.concurrent.thread
 
 @Suppress("unused")
-class App: Application() {
+class App: MultiDexApplication() {
 
     companion object {
 
