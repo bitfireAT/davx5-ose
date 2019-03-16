@@ -59,7 +59,7 @@ class DetectConfigurationFragment: Fragment() {
             inflater.inflate(R.layout.detect_configuration, container, false)!!
 
 
-    private class DetectConfigurationModel(
+    class DetectConfigurationModel(
             application: Application
     ): AndroidViewModel(application) {
 
