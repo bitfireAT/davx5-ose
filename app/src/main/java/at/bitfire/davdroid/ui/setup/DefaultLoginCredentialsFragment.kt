@@ -90,19 +90,19 @@ class DefaultLoginCredentialsFragment: Fragment() {
         when {
             model.loginWithEmailAddress.value == true -> {
                 // login with email address
-                model.emailAddressError.value = null
-                val email = model.emailAddress.value.orEmpty()
+                model.usernameError.value = null
+                val email = model.username.value.orEmpty()
                 if (email.matches(Regex(".+@.+"))) {
                     // already looks like an email address
                     try {
                         loginModel.baseURI = URI(MailTo.MAILTO_SCHEME, email, null)
                         valid = true
                     } catch (e: URISyntaxException) {
-                        model.emailAddressError.value = e.localizedMessage
+                        model.usernameError.value = e.localizedMessage
                     }
                 } else {
                     valid = false
-                    model.emailAddressError.value = getString(R.string.login_email_address_error)
+                    model.usernameError.value = getString(R.string.login_email_address_error)
                 }
 
                 val password = validatePassword()
