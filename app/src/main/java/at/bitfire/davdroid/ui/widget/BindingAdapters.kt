@@ -11,7 +11,6 @@ object BindingAdapters {
     @JvmStatic
     fun setError(textView: TextView, error: String?) {
         textView.error = error
-        textView.requestFocus()
     }
 
     @BindingAdapter("html")
