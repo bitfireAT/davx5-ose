@@ -8,7 +8,7 @@
 
 package at.bitfire.davdroid.ui
 
-import android.content.Context
+import android.app.Application
 import android.os.Bundle
 import android.text.Spanned
 import android.view.*
@@ -17,19 +17,20 @@ import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import androidx.loader.app.LoaderManager
-import androidx.loader.content.AsyncTaskLoader
-import androidx.loader.content.Loader
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import com.mikepenz.aboutlibraries.LibsBuilder
-import kotlinx.android.synthetic.main.about_davdroid.*
+import kotlinx.android.synthetic.main.about.*
 import kotlinx.android.synthetic.main.activity_about.*
 import org.apache.commons.io.IOUtils
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.concurrent.thread
 
 class AboutActivity: AppCompatActivity() {
 
@@ -44,7 +45,6 @@ class AboutActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_about)
 
         setSupportActionBar(toolbar)
@@ -83,15 +83,15 @@ class AboutActivity: AppCompatActivity() {
                             .withFields(R.string::class.java.fields)
                             .withLicenseShown(true)
                             .supportFragment()
-                    else -> DavdroidFragment()
+                    else -> AppFragment()
                 }!!
     }
 
 
-    class DavdroidFragment: Fragment(), LoaderManager.LoaderCallbacks<Spanned> {
+    class AppFragment: Fragment() {
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-                inflater.inflate(R.layout.about_davdroid, container, false)!!
+                inflater.inflate(R.layout.about, container, false)!!
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             app_name.text = getString(R.string.app_name)
@@ -102,36 +102,30 @@ class AboutActivity: AppCompatActivity() {
 
             if (true /* open-source version */) {
                 warranty.setText(R.string.about_license_info_no_warranty)
-                LoaderManager.getInstance(this).initLoader(0, null, this)
+
+                val model = ViewModelProviders.of(this).get(LicenseModel::class.java)
+                model.htmlText.observe(this, Observer { spanned ->
+                    license_text.text = spanned
+                })
             }
-        }
-
-        override fun onCreateLoader(id: Int, args: Bundle?) =
-                HtmlAssetLoader(requireActivity(), "gplv3.html")
-
-        override fun onLoadFinished(loader: Loader<Spanned>, license: Spanned?) {
-            Logger.log.info("LOAD FINISHED")
-            license_text.text = license
-        }
-
-        override fun onLoaderReset(loader: Loader<Spanned>) {
         }
 
     }
 
-    class HtmlAssetLoader(
-            context: Context,
-            val fileName: String
-    ): AsyncTaskLoader<Spanned>(context) {
+    class LicenseModel(
+            application: Application
+    ): AndroidViewModel(application) {
 
-        override fun onStartLoading() {
-            forceLoad()
-        }
+        val htmlText = MutableLiveData<Spanned>()
 
-        override fun loadInBackground(): Spanned =
-                context.resources.assets.open(fileName).use {
-                    HtmlCompat.fromHtml(IOUtils.toString(it, Charsets.UTF_8), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        init {
+            thread {
+                getApplication<Application>().resources.assets.open("gplv3.html").use {
+                    val spanned = HtmlCompat.fromHtml(IOUtils.toString(it, Charsets.UTF_8), HtmlCompat.FROM_HTML_MODE_LEGACY)
+                    htmlText.postValue(spanned)
                 }
+            }
+        }
 
     }
 
