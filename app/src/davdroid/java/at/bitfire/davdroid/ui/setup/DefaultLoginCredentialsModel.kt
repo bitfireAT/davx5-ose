@@ -15,9 +15,7 @@ class DefaultLoginCredentialsModel: ViewModel() {
     val baseUrl = MutableLiveData<String>()
     val baseUrlError = MutableLiveData<String>()
 
-    val emailAddress = MutableLiveData<String>()
-    val emailAddressError = MutableLiveData<String>()
-
+    /** user name or email address */
     val username = MutableLiveData<String>()
     val usernameError = MutableLiveData<String>()
 
@@ -45,7 +43,7 @@ class DefaultLoginCredentialsModel: ViewModel() {
             baseUrl.value = givenUrl
         } else {
             loginWithEmailAddress.value = true
-            emailAddress.value = givenUsername
+            username.value = givenUsername
         }
         password.value = givenPassword
 
