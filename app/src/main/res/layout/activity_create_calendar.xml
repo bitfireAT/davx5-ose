@@ -7,118 +7,143 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout android:orientation="vertical"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:padding="@dimen/activity_margin">
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="model"
+            type="at.bitfire.davdroid.ui.CreateCalendarActivity.Model"/>
+    </data>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/create_calendar"
-            android:textAppearance="@style/TextView.Heading"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/activity_margin">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/create_collection_home_set"/>
-        <Spinner
-            android:id="@+id/home_sets"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:labelFor="@id/display_name"
-            android:text="@string/create_collection_display_name"/>
-        <EditText
-            android:id="@+id/display_name"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:hint="@string/create_calendar_display_name_hint"/>
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:labelFor="@id/description"
-            android:text="@string/create_collection_description"/>
-        <EditText
-            android:id="@+id/description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:inputType="textAutoCorrect"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/display_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/create_collection_display_name"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/color">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@={model.displayName}"
+                    app:error="@{model.displayNameError}" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <View
                 android:id="@+id/color"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="8dp"
-                android:background="@color/secondaryColor"/>
+                android:layout_marginLeft="8dp"
+                android:background="@{model.color, default=@color/primaryColor}"
+                android:contentDescription="@string/create_collection_color"
+                app:layout_constraintStart_toEndOf="@id/display_name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/display_name"
+                app:layout_constraintBottom_toBottomOf="@id/display_name"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/create_collection_description"
+                app:helperText="@string/create_collection_optional"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/display_name">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@={model.description}" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
+                android:id="@+id/homesets_title"
+                android:labelFor="@id/homeset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/create_collection_color"/>
+                android:text="@string/create_collection_home_set"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/description"
+                app:layout_constraintStart_toStartOf="parent" />
+            <Spinner
+                android:id="@+id/homeset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adapter="@{model.homeSets}"
+                android:selectedItemPosition="@={model.idxHomeSet}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/homesets_title" />
 
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/create_calendar_time_zone"/>
-        <Spinner
-            android:id="@+id/time_zone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/create_calendar_type"
-            android:textAppearance="@style/TextView.Heading"/>
-
-        <RadioGroup
-            android:id="@+id/type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <RadioButton
-                android:id="@+id/type_events"
+            <TextView
+                android:id="@+id/timezone_title"
+                android:labelFor="@id/timezone"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="@string/create_calendar_time_zone"
+                app:layout_constraintTop_toBottomOf="@id/homeset"
+                app:layout_constraintStart_toStartOf="parent" />
+            <AutoCompleteTextView
+                android:id="@+id/timezone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/create_calendar_type_only_events"/>
+                android:text="@={model.timezone}"
+                app:error="@{model.timezoneError}"
+                app:layout_constraintTop_toBottomOf="@+id/timezone_title"
+                app:layout_constraintStart_toStartOf="parent"/>
 
-            <RadioButton
-                android:id="@+id/type_tasks"
+            <TextView
+                android:id="@+id/type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/create_calendar_type"
+                app:error="@{model.typeError}"
+                app:layout_constraintTop_toBottomOf="@id/timezone"
+                app:layout_constraintStart_toStartOf="parent"/>
+            <com.google.android.flexbox.FlexboxLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/create_calendar_type_only_tasks"/>
+                app:flexWrap="wrap"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/type">
 
-            <RadioButton
-                android:id="@+id/type_events_and_tasks"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/create_calendar_type_events_and_tasks"/>
+                <CheckBox
+                    android:id="@+id/support_vevent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:checked="@={model.supportVEVENT}"
+                    android:text="@string/create_calendar_type_vevent"/>
+                <CheckBox
+                    android:id="@+id/support_vtodo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:checked="@={model.supportVTODO}"
+                    android:text="@string/create_calendar_type_vtodo"/>
+                <CheckBox
+                    android:id="@+id/support_vjournal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:checked="@={model.supportVJOURNAL}"
+                    android:text="@string/create_calendar_type_vjournal"/>
 
-        </RadioGroup>
+            </com.google.android.flexbox.FlexboxLayout>
 
-    </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-</ScrollView>
+        </ScrollView>
+</layout>

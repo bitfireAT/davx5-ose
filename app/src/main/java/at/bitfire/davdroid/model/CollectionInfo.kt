@@ -46,6 +46,7 @@ data class CollectionInfo(
         var timeZone: String? = null,
         var supportsVEVENT: Boolean = false,
         var supportsVTODO: Boolean = false,
+        var supportsVJOURNAL: Boolean = false,
         var selected: Boolean = false,
 
         // subscriptions
@@ -195,6 +196,7 @@ data class CollectionInfo(
         dest.writeString(timeZone)
         dest.writeByte(if (supportsVEVENT) 1 else 0)
         dest.writeByte(if (supportsVTODO) 1 else 0)
+        dest.writeByte(if (supportsVJOURNAL) 1 else 0)
         dest.writeByte(if (selected) 1 else 0)
 
         dest.writeString(source)
@@ -238,6 +240,7 @@ data class CollectionInfo(
                     readOrNull(parcel) { parcel.readInt() },
 
                     parcel.readString(),
+                    parcel.readByte() != 0.toByte(),
                     parcel.readByte() != 0.toByte(),
                     parcel.readByte() != 0.toByte(),
                     parcel.readByte() != 0.toByte(),
