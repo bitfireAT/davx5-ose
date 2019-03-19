@@ -171,6 +171,11 @@ class CreateCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<
                                         attribute(null, "name", "VTODO")
                                         endTag(XmlUtils.NS_CALDAV, "comp")
                                     }
+                                    if (info.supportsVJOURNAL) {
+                                        startTag(XmlUtils.NS_CALDAV, "comp")
+                                        attribute(null, "name", "VJOURNAL")
+                                        endTag(XmlUtils.NS_CALDAV, "comp")
+                                    }
                                     endTag(XmlUtils.NS_CALDAV, "supported-calendar-component-set")
                                 }
     
