@@ -216,7 +216,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                     SetReadOnlyTask(WeakReference(this), info.id!!, nowChecked).execute()
                 }
                 R.id.delete_collection ->
-                    DeleteCollectionFragment.ConfirmDeleteCollectionFragment.newInstance(account, info).show(supportFragmentManager, null)
+                    DeleteCollectionFragment.newInstance(account, info).show(supportFragmentManager, null)
                 R.id.properties ->
                     CollectionInfoFragment.newInstance(info).show(supportFragmentManager, null)
             }
