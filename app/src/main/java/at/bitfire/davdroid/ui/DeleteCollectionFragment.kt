@@ -9,137 +9,120 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
-import android.app.Dialog
-import android.app.ProgressDialog
-import android.content.Context
+import android.app.Application
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import androidx.loader.app.LoaderManager
-import androidx.loader.content.AsyncTaskLoader
-import androidx.loader.content.Loader
+import androidx.lifecycle.*
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.davdroid.HttpClient
-import at.bitfire.davdroid.R
+import at.bitfire.davdroid.databinding.DeleteCollectionBinding
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.settings.AccountSettings
+import kotlin.concurrent.thread
 
-class DeleteCollectionFragment: DialogFragment(), LoaderManager.LoaderCallbacks<Exception> {
+class DeleteCollectionFragment: DialogFragment() {
 
     companion object {
         const val ARG_ACCOUNT = "account"
         const val ARG_COLLECTION_INFO = "collectionInfo"
+
+        fun newInstance(account: Account, collectionInfo: CollectionInfo): DialogFragment {
+            val frag = DeleteCollectionFragment()
+            val args = Bundle(2)
+            args.putParcelable(ARG_ACCOUNT, account)
+            args.putParcelable(ARG_COLLECTION_INFO, collectionInfo)
+            frag.arguments = args
+            return frag
+        }
     }
 
-    private lateinit var account: Account
-    private lateinit var collectionInfo: CollectionInfo
+    private lateinit var model: DeleteCollectionModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        model = ViewModelProviders.of(this).get(DeleteCollectionModel::class.java)
 
-        account = arguments!!.getParcelable(ARG_ACCOUNT)!!
-        collectionInfo = arguments!!.getParcelable(ARG_COLLECTION_INFO)!!
-
-        LoaderManager.getInstance(this).initLoader(0, null, this)
+        model.account = arguments?.getParcelable(ARG_ACCOUNT) as? Account
+        model.collectionInfo = arguments?.getParcelable(ARG_COLLECTION_INFO) as? CollectionInfo
     }
 
-    @Suppress("DEPRECATION")
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val progress = ProgressDialog(context)
-        progress.setTitle(R.string.delete_collection_deleting_collection)
-        progress.setMessage(getString(R.string.please_wait))
-        progress.isIndeterminate = true
-        progress.setCanceledOnTouchOutside(false)
-        isCancelable = false
-        return progress
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val binding = DeleteCollectionBinding.inflate(layoutInflater, null, false)
+        binding.lifecycleOwner = this
+        binding.model = model
+
+        binding.ok.setOnClickListener {
+            isCancelable = false
+            binding.progress.visibility = View.VISIBLE
+            binding.controls.visibility = View.GONE
+
+            model.deleteCollection().observe(this, Observer { exception ->
+                if (exception == null)
+                    // reload collection list
+                    (activity as? AccountActivity)?.reload()
+                else
+                    requireFragmentManager().beginTransaction()
+                            .add(ExceptionInfoFragment.newInstance(exception, model.account), null)
+                            .commit()
+                dismiss()
+            })
+        }
+
+        binding.cancel.setOnClickListener {
+            dismiss()
+        }
+
+        return binding.root
     }
 
 
-    override fun onCreateLoader(id: Int, args: Bundle?) =
-            DeleteCollectionLoader(activity!!, account, collectionInfo)
+    class DeleteCollectionModel(
+            application: Application
+    ): AndroidViewModel(application) {
 
-    override fun onLoadFinished(loader: Loader<Exception>, exception: Exception?) {
-        dismiss()
+        var account: Account? = null
+        var collectionInfo: CollectionInfo? = null
 
-        if (exception != null)
-            requireFragmentManager().beginTransaction()
-                    .add(ExceptionInfoFragment.newInstance(exception, account), null)
-                    .commit()
-        else
-            (activity as? AccountActivity)?.reload()
-    }
+        val confirmation = MutableLiveData<Boolean>()
+        val result = MutableLiveData<Exception>()
 
-    override fun onLoaderReset(loader: Loader<Exception>) {}
+        fun deleteCollection(): LiveData<Exception> {
+            thread {
+                val account = requireNotNull(account)
+                val collectionInfo = requireNotNull(collectionInfo)
 
+                val context = getApplication<Application>()
+                HttpClient.Builder(context, AccountSettings(context, account))
+                        .setForeground(true)
+                        .build().use { httpClient ->
+                            try {
+                                val collection = DavResource(httpClient.okHttpClient, collectionInfo.url)
 
-    class DeleteCollectionLoader(
-            context: Context,
-            val account: Account,
-            val collectionInfo: CollectionInfo
-    ): AsyncTaskLoader<Exception>(context) {
+                                // delete collection from server
+                                collection.delete(null) {}
 
-        override fun onStartLoading() = forceLoad()
+                                // delete collection locally
+                                ServiceDB.OpenHelper(context).use { dbHelper ->
+                                    val db = dbHelper.writableDatabase
+                                    db.delete(ServiceDB.Collections._TABLE, "${ServiceDB.Collections.ID}=?", arrayOf(collectionInfo.id.toString()))
+                                }
 
-        override fun loadInBackground(): Exception? {
-            HttpClient.Builder(context, AccountSettings(context, account))
-                    .setForeground(true)
-                    .build().use { httpClient ->
-                try {
-                    val collection = DavResource(httpClient.okHttpClient, collectionInfo.url)
+                                // return success
+                                result.postValue(null)
 
-                    // delete collection from server
-                    collection.delete(null) {}
-
-                    // delete collection locally
-                    ServiceDB.OpenHelper(context).use { dbHelper ->
-                        val db = dbHelper.writableDatabase
-                        db.delete(ServiceDB.Collections._TABLE, "${ServiceDB.Collections.ID}=?", arrayOf(collectionInfo.id.toString()))
-                    }
-                } catch(e: Exception) {
-                    return e
-                }
+                            } catch(e: Exception) {
+                                // return error
+                                result.postValue(e)
+                            }
+                        }
             }
-            return null
-        }
-    }
-
-
-    class ConfirmDeleteCollectionFragment: DialogFragment() {
-
-        companion object {
-
-            fun newInstance(account: Account, collectionInfo: CollectionInfo): DialogFragment {
-                val frag = ConfirmDeleteCollectionFragment()
-                val args = Bundle(2)
-                args.putParcelable(ARG_ACCOUNT, account)
-                args.putParcelable(ARG_COLLECTION_INFO, collectionInfo)
-                frag.arguments = args
-                return frag
-            }
-
+            return result
         }
 
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val collectionInfo = arguments!!.getParcelable(ARG_COLLECTION_INFO) as CollectionInfo
-            val name = if (collectionInfo.displayName.isNullOrBlank())
-                collectionInfo.url.toString()
-            else
-                collectionInfo.displayName
-
-            return AlertDialog.Builder(activity!!)
-                    .setTitle(R.string.delete_collection_confirm_title)
-                    .setMessage(getString(R.string.delete_collection_confirm_warning, name))
-                    .setPositiveButton(android.R.string.yes) { _, _ ->
-                        val frag = DeleteCollectionFragment()
-                        frag.arguments = arguments
-                        frag.show(fragmentManager, null)
-                    }
-                    .setNegativeButton(android.R.string.no) { _, _ ->
-                        dismiss()
-                    }
-                    .create()
-        }
     }
 
 }

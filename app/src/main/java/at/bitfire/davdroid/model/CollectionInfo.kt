@@ -14,7 +14,9 @@ import android.os.Parcelable
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.property.*
+import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.model.ServiceDB.Collections
+import at.bitfire.ical4android.MiscUtils
 import okhttp3.HttpUrl
 
 /**
@@ -151,6 +153,8 @@ data class CollectionInfo(
         values.put(Collections.SYNC, if (selected) 1 else 0)
         return values
     }
+
+    fun title() = displayName ?: DavUtils.lastSegmentOfUrl(url)
 
 
     private fun getAsBooleanOrNull(values: ContentValues, field: String): Boolean? {
