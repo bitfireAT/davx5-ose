@@ -11,6 +11,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_horizontal">
 
     <LinearLayout
@@ -20,10 +21,12 @@
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/icon"
             android:layout_width="128dp"
             android:layout_height="128dp"
-            android:src="@mipmap/ic_launcher"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/ic_launcher_foreground"
             android:layout_marginBottom="16dp"/>
 
         <TextView
