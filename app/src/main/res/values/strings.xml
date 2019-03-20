@@ -18,7 +18,6 @@
     <string name="address_books_authority_title">Address books</string>
     <string name="help">Help</string>
     <string name="manage_accounts">Manage accounts</string>
-    <string name="please_wait">Please wait …</string>
     <string name="send">Send</string>
     <string name="homepage_url" translatable="false">https://www.davx5.com/</string>
     <string name="twitter_handle" translatable="false">davx5app</string>
@@ -266,8 +265,8 @@
     <string name="create_collection_create">Create</string>
     <string name="delete_collection">Delete collection</string>
     <string name="delete_collection_confirm_title">Are you sure?</string>
-    <string name="delete_collection_confirm_warning">This collection (%s) and all its data will be removed from the server.</string>
-    <string name="delete_collection_data_shall_be_deleted">These data shall be deleted permanently.</string>
+    <string name="delete_collection_confirm_warning">This collection (%s) and all its data will be removed permanently.</string>
+    <string name="delete_collection_data_shall_be_deleted">These data shall be deleted from the server.</string>
     <string name="delete_collection_deleting_collection">Deleting collection</string>
     <string name="collection_force_read_only">Force read-only</string>
     <string name="collection_properties">Properties</string>

@@ -9,43 +9,48 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
-import android.content.Context
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ArrayAdapter
+import android.widget.SpinnerAdapter
+import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
-import androidx.loader.app.LoaderManager
-import androidx.loader.content.AsyncTaskLoader
-import androidx.loader.content.Loader
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProviders
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.databinding.ActivityCreateAddressBookBinding
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
-import kotlinx.android.synthetic.main.activity_create_address_book.*
 import okhttp3.HttpUrl
 import org.apache.commons.lang3.StringUtils
 import java.util.*
+import kotlin.concurrent.thread
 
-class CreateAddressBookActivity: AppCompatActivity(), LoaderManager.LoaderCallbacks<CreateAddressBookActivity.AccountInfo> {
+class CreateAddressBookActivity: AppCompatActivity() {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
     }
 
-    private lateinit var account: Account
-
+    private lateinit var model: Model
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        account = intent.getParcelableExtra(EXTRA_ACCOUNT)
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        setContentView(R.layout.activity_create_address_book)
 
-        LoaderManager.getInstance(this).initLoader(0, intent.extras, this)
+        model = ViewModelProviders.of(this).get(Model::class.java)
+        (intent?.getParcelableExtra(EXTRA_ACCOUNT) as? Account)?.let {
+            model.initialize(it)
+        }
+
+        val binding = DataBindingUtil.setContentView<ActivityCreateAddressBookBinding>(this, R.layout.activity_create_address_book)
+        binding.lifecycleOwner = this
+        binding.model = model
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -56,77 +61,83 @@ class CreateAddressBookActivity: AppCompatActivity(), LoaderManager.LoaderCallba
     override fun onOptionsItemSelected(item: MenuItem) =
             if (item.itemId == android.R.id.home) {
                 val intent = Intent(this, AccountActivity::class.java)
-                intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+                intent.putExtra(AccountActivity.EXTRA_ACCOUNT, model.account)
                 NavUtils.navigateUpTo(this, intent)
                 true
             } else
                 false
 
     fun onCreateCollection(item: MenuItem) {
-        val homeSet = home_sets.selectedItem as String
-
         var ok = true
-        HttpUrl.parse(homeSet)?.let {
-            val info = CollectionInfo(it.resolve(UUID.randomUUID().toString() + "/")!!)
-            info.displayName = display_name.text.toString()
-            if (info.displayName.isNullOrBlank()) {
-                display_name.error = getString(R.string.create_collection_display_name_required)
+
+        val parent = model.homeSets.value?.getItem(model.idxHomeSet.value!!) as String? ?: return
+        HttpUrl.parse(parent)?.let { parentUrl ->
+            val info = CollectionInfo(parentUrl.resolve(UUID.randomUUID().toString() + "/")!!)
+
+            val displayName = model.displayName.value
+            if (displayName.isNullOrBlank()) {
+                model.displayNameError.value = getString(R.string.create_collection_display_name_required)
                 ok = false
+            } else {
+                info.displayName = displayName
+                model.displayNameError.value = null
             }
 
-            info.description = StringUtils.trimToNull(description.text.toString())
+            info.description = StringUtils.trimToNull(model.description.value)
 
             if (ok) {
                 info.type = CollectionInfo.Type.ADDRESS_BOOK
-                CreateCollectionFragment.newInstance(account, info).show(supportFragmentManager, null)
+                CreateCollectionFragment.newInstance(model.account!!, info).show(supportFragmentManager, null)
             }
         }
     }
 
 
-    override fun onCreateLoader(id: Int, args: Bundle?) = AccountInfoLoader(this, account)
+    class Model(
+            application: Application
+    ) : AndroidViewModel(application) {
 
-    override fun onLoadFinished(loader: Loader<AccountInfo>, info: AccountInfo?) {
-        info?.let {
-            home_sets.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, it.homeSets)
-        }
-    }
+        var account: Account? = null
 
-    override fun onLoaderReset(loader: Loader<AccountInfo>) {
-    }
+        val displayName = MutableLiveData<String>()
+        val displayNameError = MutableLiveData<String>()
 
-    class AccountInfo {
-        val homeSets = LinkedList<String>()
-    }
+        val description = MutableLiveData<String>()
 
-    class AccountInfoLoader(
-            context: Context,
-            val account: Account
-    ): AsyncTaskLoader<AccountInfo>(context) {
+        val homeSets = MutableLiveData<SpinnerAdapter>()
+        val idxHomeSet = MutableLiveData<Int>()
 
-        override fun onStartLoading() = forceLoad()
+        @MainThread
+        fun initialize(account: Account) {
+            if (this.account != null)
+                return
+            this.account = account
 
-        override fun loadInBackground(): AccountInfo? {
-            val info = AccountInfo()
-            ServiceDB.OpenHelper(context).use { dbHelper ->
-                // find DAV service and home sets
-                val db = dbHelper.readableDatabase
-                db.query(ServiceDB.Services._TABLE, arrayOf(ServiceDB.Services.ID),
-                        "${ServiceDB.Services.ACCOUNT_NAME}=? AND ${ServiceDB.Services.SERVICE}=?",
-                        arrayOf(account.name, ServiceDB.Services.SERVICE_CARDDAV), null, null, null).use { cursor ->
-                    if (!cursor.moveToNext())
-                        return null
-                    val strServiceID = cursor.getString(0)
-
-                    db.query(ServiceDB.HomeSets._TABLE, arrayOf(ServiceDB.HomeSets.URL),
-                            "${ServiceDB.HomeSets.SERVICE_ID}=?", arrayOf(strServiceID), null, null, null).use { c ->
-                        while (c.moveToNext())
-                            info.homeSets += c.getString(0)
+            thread {
+                // load account info
+                ServiceDB.OpenHelper(getApplication()).use { dbHelper ->
+                    val adapter = HomesetAdapter(getApplication())
+                    val db = dbHelper.readableDatabase
+                    db.query(ServiceDB.Services._TABLE, arrayOf(ServiceDB.Services.ID),
+                            "${ServiceDB.Services.ACCOUNT_NAME}=? AND ${ServiceDB.Services.SERVICE}=?",
+                            arrayOf(account.name, ServiceDB.Services.SERVICE_CARDDAV), null, null, null).use { cursor ->
+                        if (cursor.moveToNext()) {
+                            val strServiceID = cursor.getString(0)
+                            db.query(ServiceDB.HomeSets._TABLE, arrayOf(ServiceDB.HomeSets.URL),
+                                    "${ServiceDB.HomeSets.SERVICE_ID}=?", arrayOf(strServiceID), null, null, null).use { c ->
+                                while (c.moveToNext())
+                                    adapter.add(c.getString(0))
+                            }
+                        }
+                    }
+                    if (!adapter.isEmpty) {
+                        homeSets.postValue(adapter)
+                        idxHomeSet.postValue(0)
                     }
                 }
             }
-            return info
         }
+
     }
 
 }

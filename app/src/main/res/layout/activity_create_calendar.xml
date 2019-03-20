@@ -47,7 +47,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_marginLeft="8dp"
-                android:background="@{model.color, default=@color/primaryColor}"
+                android:background="@{model.color}"
                 android:contentDescription="@string/create_collection_color"
                 app:layout_constraintStart_toEndOf="@id/display_name"
                 app:layout_constraintEnd_toEndOf="parent"

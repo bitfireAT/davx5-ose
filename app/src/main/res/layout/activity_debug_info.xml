@@ -7,27 +7,45 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <data>
+        <import type="android.view.View"/>
         <variable
             name="model"
             type="at.bitfire.davdroid.ui.DebugInfoActivity.ReportModel"/>
     </data>
 
-    <ScrollView android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="10dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_margin="@dimen/activity_margin">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <ProgressBar
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:typeface="monospace"
-            android:fontFamily="monospace"
-            android:textSize="12sp"
-            android:text="@{model.report ?? @string/please_wait}"
-            android:textIsSelectable="true"
-            android:id="@+id/text_report"/>
+            android:indeterminate="true"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:visibility="@{model.report == null ? View.VISIBLE : View.GONE}"
+            tools:visibility="visible"/>
 
-    </ScrollView>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:typeface="monospace"
+                android:fontFamily="monospace"
+                android:textSize="12sp"
+                android:text="@{model.report}"
+                android:textIsSelectable="true"
+                android:id="@+id/text_report"/>
+
+        </ScrollView>
+
+    </LinearLayout>
+
 </layout>

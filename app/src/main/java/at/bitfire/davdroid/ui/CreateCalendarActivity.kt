@@ -14,15 +14,12 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.SpinnerAdapter
-import android.widget.TextView
+import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.databinding.DataBindingUtil
@@ -106,7 +103,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
     fun onCreateCollection(item: MenuItem) {
         var ok = true
 
-        val parent = model.homeSets.value?.getItem(model.idxHomeSet.value!!) as String
+        val parent = model.homeSets.value?.getItem(model.idxHomeSet.value!!) as String? ?: return
         HttpUrl.parse(parent)?.let { parentUrl ->
             val info = CollectionInfo(parentUrl.resolve(UUID.randomUUID().toString() + "/")!!)
 
@@ -152,35 +149,6 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
             if (ok)
                 CreateCollectionFragment.newInstance(model.account!!, info).show(supportFragmentManager, null)
         }
-    }
-
-    class HomesetAdapter(
-            context: Context
-    ): ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, android.R.id.text1) {
-
-        init {
-            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        }
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val data = getItem(position)!!
-            val v = super.getView(position, convertView, parent)
-            v.findViewById<TextView>(android.R.id.text1).apply {
-                setSingleLine()
-                ellipsize = TextUtils.TruncateAt.START
-            }
-            return v
-        }
-
-        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val data = getItem(position)!!
-            val v = super.getDropDownView(position, convertView, parent)
-            v.findViewById<TextView>(android.R.id.text1).apply {
-                ellipsize = TextUtils.TruncateAt.START
-            }
-            return v
-        }
-
     }
 
     class TimeZoneAdapter(
@@ -245,12 +213,11 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         val supportVTODO = MutableLiveData<Boolean>()
         val supportVJOURNAL = MutableLiveData<Boolean>()
 
+        @MainThread
         fun initialize(account: Account) {
-            synchronized(this) {
-                if (this.account != null)
-                    return
-                this.account = account
-            }
+            if (this.account != null)
+                return
+            this.account = account
 
             color.value = Constants.DAVDROID_GREEN_RGBA
 
@@ -277,8 +244,10 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
                             }
                         }
                     }
-                    homeSets.postValue(adapter)
-                    idxHomeSet.postValue(0)
+                    if (!adapter.isEmpty) {
+                        homeSets.postValue(adapter)
+                        idxHomeSet.postValue(0)
+                    }
                 }
             }
         }
