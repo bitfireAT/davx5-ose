@@ -9,8 +9,10 @@
 package at.bitfire.davdroid.ui
 
 import android.app.Application
+import android.os.Build
 import android.os.Bundle
 import android.text.Spanned
+import android.util.DisplayMetrics
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
@@ -72,18 +74,18 @@ class AboutActivity: AppCompatActivity() {
 
         override fun getPageTitle(position: Int): String =
                 when (position) {
-                    1 -> getString(R.string.about_libraries)
-                    else -> getString(R.string.app_name)
+                    0 -> getString(R.string.app_name)
+                    else -> getString(R.string.about_libraries)
                 }
 
         override fun getItem(position: Int) =
                 when (position) {
-                    1 -> LibsBuilder()
+                    0 -> AppFragment()
+                    else -> LibsBuilder()
                             .withAutoDetect(false)
                             .withFields(R.string::class.java.fields)
                             .withLicenseShown(true)
                             .supportFragment()
-                    else -> AppFragment()
                 }!!
     }
 
@@ -97,6 +99,9 @@ class AboutActivity: AppCompatActivity() {
             app_name.text = getString(R.string.app_name)
             app_version.text = getString(R.string.about_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
             build_time.text = getString(R.string.about_build_date, SimpleDateFormat.getDateInstance().format(BuildConfig.buildTime))
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                icon.setImageDrawable(resources.getDrawableForDensity(R.mipmap.ic_launcher, DisplayMetrics.DENSITY_XXXHIGH))
 
             pixels.text = HtmlCompat.fromHtml(pixelsHtml, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
