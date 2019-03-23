@@ -24,8 +24,7 @@
             android:theme="?attr/actionBarTheme"
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"/>
+            android:layout_height="?attr/actionBarSize"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
