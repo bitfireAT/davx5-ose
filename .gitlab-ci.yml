@@ -10,9 +10,8 @@ cache:
 
 test:
   script:
-#   - (cd /sdk/emulator; ./emulator @test -no-audio -no-window & wait-for-emulator.sh)
-#   - ./gradlew check mergeAndroidReports
-    - ./gradlew check
+   - (cd /sdk/emulator; ./emulator @test -no-audio -no-window & wait-for-emulator.sh)
+   - ./gradlew app:check app:connectedCheck
   artifacts:
     paths:
       - app/build/outputs/lint-results-debug.html
