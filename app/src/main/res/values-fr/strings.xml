@@ -12,8 +12,13 @@
   <string name="notification_channel_general">Autres messages importants</string>
   <string name="notification_channel_sync">Syncronisation</string>
   <string name="notification_channel_sync_errors">Erreurs de synchronisation</string>
+  <string name="notification_channel_sync_errors_desc">Erreurs importantes qui bloquent la synchronisation, telles que des réponses inattendues du serveur</string>
+  <string name="notification_channel_sync_warnings">Avertissements de synchronisation</string>
+  <string name="notification_channel_sync_warnings_desc">Problèmes de synchronisation non fatals tels que certains fichiers non valides</string>
   <string name="notification_channel_sync_io_errors">Erreurs de réseau et d\'entrée / sortie</string>
+  <string name="notification_channel_sync_io_errors_desc">Délais d\'attente, problèmes de connexion, etc. (souvent temporaires)</string>
   <string name="notification_channel_sync_status">Messages d\'état</string>
+  <string name="notification_channel_sync_status_desc">Messages d\'état informatifs tels que le nombre de modifications rejetées des collections en lecture seule</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Synchronisation automatique</string>
   <string name="startup_autostart_permission_message">%s le matériel bloque souvent la synchronisation automatique. Dans ce cas, autorisez la synchronisation automatique dans vos paramètres d\'Android.</string>
@@ -84,6 +89,8 @@
   <string name="app_settings_reset_certificates_summary">Réinitialiser la confiance de tous les certificats personnalisés</string>
   <string name="app_settings_reset_certificates_success">Tous les certificats personnalisés ont été effacés</string>
   <string name="app_settings_user_interface">Interface utilisateur</string>
+  <string name="app_settings_notification_settings">Paramètres de notification</string>
+  <string name="app_settings_notification_settings_summary">Gérer les canaux de notification et leurs paramètres</string>
   <string name="app_settings_reset_hints">Réinitialiser les astuces</string>
   <string name="app_settings_reset_hints_summary">Réactiver les astuces qui ont été vues précédemment</string>
   <string name="app_settings_reset_hints_success">Toutes les astuces seront affichés à nouveau</string>
@@ -169,8 +176,11 @@
   <string name="settings_sync_wifi_only_off">Le type de connexion n\'est pas pris en charge</string>
   <string name="settings_sync_wifi_only_ssids">Restriction WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">Synchronisation possible seulement en %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Ne synchronise que sur %s (nécessite des services de localisation actifs)</string>
   <string name="settings_sync_wifi_only_ssids_off">Toutes les connexions WiFi seront utilisées</string>
   <string name="settings_sync_wifi_only_ssids_message">Liste des points d\'accès WiFi (SSID) autorisés, séparés par des virgules. (Laissez vide pour tous)</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">Pour lire les noms WiFi, vous devez disposer des services de localisation et des sites activés en permanence.</string>
+  <string name="settings_more_info_faq">Plus d\'informations (FAQ)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Méthode pour les contacts de type groupe</string>
   <string-array name="settings_contact_group_method_entries">
@@ -197,19 +207,9 @@
   <!--collection management-->
   <string name="create_addressbook">Créer un carnet d\'adresses</string>
   <string name="create_addressbook_display_name_hint">Mon carnet d\'adresses</string>
-  <string name="create_calendar">Créer une collection CalDAV</string>
-  <string name="create_calendar_display_name_hint">Mon calendrier</string>
-  <string name="create_calendar_time_zone">Fuseau horaire:</string>
-  <string name="create_calendar_type">Type de collection:</string>
-  <string name="create_calendar_type_only_events">Calendrier (événements seulement)</string>
-  <string name="create_calendar_type_only_tasks">Liste de tâches (tâches seulement)</string>
   <string name="create_calendar_type_events_and_tasks">Fusionner (événements et tâches)</string>
-  <string name="create_collection_color">Choisir une couleur pour la collection</string>
   <string name="create_collection_creating">Création collection</string>
-  <string name="create_collection_display_name">Le nom affiché (titre) pour cette collection:</string>
   <string name="create_collection_display_name_required">Titre requis</string>
-  <string name="create_collection_description">Description (facultatif)</string>
-  <string name="create_collection_home_set">Accueil:</string>
   <string name="create_collection_create">Créer</string>
   <string name="delete_collection">Supprimer la collection</string>
   <string name="delete_collection_confirm_title">Êtes-vous sur?</string>
@@ -241,6 +241,10 @@
   <string name="sync_error_local_storage">Erreur de stockage local - %s</string>
   <string name="sync_error_retry">Essayez à nouveau</string>
   <string name="sync_error_view_item">Voir l\'élément</string>
+  <string name="sync_invalid_contact">Reçu un contact invalide du serveur</string>
+  <string name="sync_invalid_event">Reçu un événement invalide du serveur</string>
+  <string name="sync_invalid_task">Reçu une tâche invalide du serveur</string>
+  <string name="sync_invalid_resources_ignoring">Ignorer une ou plusieurs ressources non valides</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵ : Sécurité de la connexion</string>
   <string name="trust_certificate_unknown_certificate_found">DAVx⁵ a rencontré un certificat inconnu. Voulez-vous lui faire confiance?</string>

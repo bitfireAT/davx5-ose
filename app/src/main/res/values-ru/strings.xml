@@ -12,8 +12,13 @@
   <string name="notification_channel_general">Другие важные сообщения</string>
   <string name="notification_channel_sync">Синхронизация</string>
   <string name="notification_channel_sync_errors">Ошибки синхронизации</string>
+  <string name="notification_channel_sync_errors_desc">Важные ошибки, которые останавливают синхронизацию, например, неожиданные ответы сервера.</string>
+  <string name="notification_channel_sync_warnings">Предупреждения синхронизации</string>
+  <string name="notification_channel_sync_warnings_desc">Некритичные проблемы с синхронизацией, такие как некоторые неверные файлы</string>
   <string name="notification_channel_sync_io_errors">Ошибки сети и ввода/вывода</string>
+  <string name="notification_channel_sync_io_errors_desc">Таймауты, проблемы с подключением и т. д. (часто временные)</string>
   <string name="notification_channel_sync_status">Сообщения о состоянии</string>
+  <string name="notification_channel_sync_status_desc">Информационные сообщения о состоянии, такие как количество отклоненных изменений в коллекциях, доступных только для чтения.</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Автоматическая синхронизация</string>
   <string name="startup_autostart_permission_message">%s ПО устройства часто блокирует автоматическую синхронизацию. В этом случае разрешите автоматическую синхронизацию в настройках Android.</string>
@@ -23,7 +28,7 @@
   <string name="startup_dont_show_again">Не показывать снова</string>
   <string name="startup_not_now">Не сейчас</string>
   <string name="startup_donate">Open-Source информация</string>
-  <string name="startup_donate_message">Мы рады, что вы используете DAVx⁵, который является программным обеспечением с открытым исходным кодом (GPLv3). Поскольку разработка DAVx⁵ - тяжелая работа и заняла у нас нас очень много времени, пожалуйста, рассмотрите возможность поддержать проект.</string>
+  <string name="startup_donate_message">Мы рады, что вы используете приложение DAVx⁵, являющееся программным обеспечением с открытым исходным кодом (GPLv3). Поскольку разработка DAVx⁵ - это тяжелая работа, на которую мы потратили очень много времени, пожалуйста, рассмотрите возможность поддержать проект.</string>
   <string name="startup_donate_now">Показать страницу пожертвований</string>
   <string name="startup_donate_later">Возможно, позже</string>
   <string name="startup_more_info">Дополнительная информация</string>
@@ -84,6 +89,8 @@
   <string name="app_settings_reset_certificates_summary">Отменить доверие ко всем пользовательским сертификатам</string>
   <string name="app_settings_reset_certificates_success">Все пользовательские сертификаты были удалены</string>
   <string name="app_settings_user_interface">Интерфейс пользователя</string>
+  <string name="app_settings_notification_settings">Настройки уведомлений</string>
+  <string name="app_settings_notification_settings_summary">Управление каналами уведомлений и их настройками</string>
   <string name="app_settings_reset_hints">Включить подсказки</string>
   <string name="app_settings_reset_hints_summary">Включить подсказки, которые были отключены ранее</string>
   <string name="app_settings_reset_hints_success">Все подсказки будут показаны снова</string>
@@ -202,19 +209,9 @@
   <!--collection management-->
   <string name="create_addressbook">Создать адресную книгу</string>
   <string name="create_addressbook_display_name_hint">Моя адресная книга</string>
-  <string name="create_calendar">Создать коллекцию CalDAV</string>
-  <string name="create_calendar_display_name_hint">Мой календарь</string>
-  <string name="create_calendar_time_zone">Часовой пояс:</string>
-  <string name="create_calendar_type">Тип коллекции:</string>
-  <string name="create_calendar_type_only_events">Календарь (только события)</string>
-  <string name="create_calendar_type_only_tasks">Список задач (только задачи)</string>
   <string name="create_calendar_type_events_and_tasks">Совмещенный (события и задачи)</string>
-  <string name="create_collection_color">Установить цвет коллекции</string>
   <string name="create_collection_creating">Создание коллекции</string>
-  <string name="create_collection_display_name">Отображаемое имя (название) этой коллекции:</string>
   <string name="create_collection_display_name_required">Требуется название</string>
-  <string name="create_collection_description">Описание (необязательно):</string>
-  <string name="create_collection_home_set">Адрес каталога:</string>
   <string name="create_collection_create">Создать</string>
   <string name="delete_collection">Удалить коллекцию</string>
   <string name="delete_collection_confirm_title">Вы уверены?</string>
@@ -248,6 +245,10 @@
   <string name="sync_error_local_storage">Ошибка локального хранилища – %s</string>
   <string name="sync_error_retry">Повторить</string>
   <string name="sync_error_view_item">Просмотр элемента</string>
+  <string name="sync_invalid_contact">Получен неверный контакт с сервера</string>
+  <string name="sync_invalid_event">Получено недействительное событие от сервера</string>
+  <string name="sync_invalid_task">Получена недействительная задача от сервера</string>
+  <string name="sync_invalid_resources_ignoring">Игнорирование одного или нескольких недействительных ресурсов</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: безопасность подключения</string>
   <string name="trust_certificate_unknown_certificate_found">DAVx⁵ обнаружил неизвестный сертификат. Вы хотите доверять ему?</string>

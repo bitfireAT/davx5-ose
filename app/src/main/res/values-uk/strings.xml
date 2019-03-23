@@ -12,8 +12,13 @@
   <string name="notification_channel_general">Інші важливі повідомлення</string>
   <string name="notification_channel_sync">Синхронізація</string>
   <string name="notification_channel_sync_errors">Помилки синхронізації</string>
+  <string name="notification_channel_sync_errors_desc">Важливі помилки, що заважають синхронізації, наприклад несподівані</string>
+  <string name="notification_channel_sync_warnings">Попередження синхронізації</string>
+  <string name="notification_channel_sync_warnings_desc">Не критичні проблеми синхронізації, наприклад деякі файли хибні</string>
   <string name="notification_channel_sync_io_errors">Помилка мережі та вводу/виводу</string>
+  <string name="notification_channel_sync_io_errors_desc">Спливання часу відклику, проблеми зв\'язку, і т.п. (часто тимчасові)</string>
   <string name="notification_channel_sync_status">Повідомлення про стан</string>
+  <string name="notification_channel_sync_status_desc">Повідомлення інформаційного характеру, наприклад кількість відхилених змін до колекцій які можна тільки читати</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Автоматична синхронізація</string>
   <string name="startup_autostart_permission_message">%s прошивка часто блокує автоматичну синхронізацію. У цьому випадку дозвольте автоматичну синхронізацію в налаштуваннях Android.</string>
@@ -35,8 +40,13 @@
   <string name="about_libraries">Бібліотеки</string>
   <string name="about_version">Версія %1$s (%2$d)</string>
   <string name="about_build_date">Складено на %s</string>
+  <string name="about_flavor_info">Цю версію прийнятно розповсюджувати тільки через Google Play.</string>
   <string name="about_license_info_no_warranty">Цей програмний засіб постачається АБСОЛЮТНО БЕЗ БУДЬ-ЯКИХ ГАРАНТІЙ. Це вільне програмне забезпечення, і ви можете поширювати її, за деякими умовами.</string>
   <!--global settings-->
+  <string name="logging_couldnt_create_file">Не вдалося створити файл звіту</string>
+  <string name="logging_notification_title">Звітування DAVx⁵</string>
+  <string name="logging_notification_text">Тепер звітування DAVx⁵ активно</string>
+  <string name="logging_notification_send_log">Відправити звіт</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Відкрити панель навігації</string>
   <string name="navigation_drawer_close">Закрити панель навігації</string>
@@ -62,6 +72,9 @@
   <string name="app_settings_debug">Зневадження</string>
   <string name="app_settings_show_debug_info">Показати інформацію зневадження</string>
   <string name="app_settings_show_debug_info_details">Переглянути/поділитися програмним засобом та деталями конфігурації</string>
+  <string name="app_settings_logging">Детальний журнал</string>
+  <string name="app_settings_logging_on">Звітування активно</string>
+  <string name="app_settings_logging_off">Звітування призупинено</string>
   <string name="app_settings_connection">З\'єднання</string>
   <string name="app_settings_override_proxy">Перевизначити налаштування проксі</string>
   <string name="app_settings_override_proxy_on">Власні налаштування проксі</string>
@@ -76,6 +89,8 @@
   <string name="app_settings_reset_certificates_summary">Скинути довіру до всіх призначених користувачу сертифікатів</string>
   <string name="app_settings_reset_certificates_success">Всі сертифікати, що призначені користувачу очищено</string>
   <string name="app_settings_user_interface">Інтерфейс користувача</string>
+  <string name="app_settings_notification_settings">Налаштування сповіщення</string>
+  <string name="app_settings_notification_settings_summary">Керування каналами інформування та їх налаштуванням</string>
   <string name="app_settings_reset_hints">Скинути підказки</string>
   <string name="app_settings_reset_hints_summary">Включення підказок, які раніше були вимкнуті</string>
   <string name="app_settings_reset_hints_success">Всі підказки будуть показані знову</string>
@@ -102,6 +117,7 @@
   <string name="account_refresh_calendar_list">Оновити перелік каленарів</string>
   <string name="account_create_new_calendar">Створити новий календар</string>
   <string name="account_no_webcal_handler_found">Не знайдено додатку з підтримкою Webcal</string>
+  <string name="account_install_icsx5">Встановити ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Додати запис</string>
   <string name="login_type_email">Увійти за допомогою електронної пошти</string>
@@ -125,6 +141,7 @@
   <string name="login_account_name_info">Використовуйте вашу електронну адресу як ім\'я облікового запису, так як Android буде використовувати ім\'я облікового запису в полі ORGANIZER для подій, які ви створюватимете. Ви не можете мати два облікових записи з однаковими іменами.</string>
   <string name="login_account_contact_group_method">Метод групування контактів:</string>
   <string name="login_account_name_required">Потребує назви облікового запису</string>
+  <string name="login_account_name_already_taken">Ім\'я запису вже зайняте</string>
   <string name="login_account_not_created">Обліковий запис не може бути створений</string>
   <string name="login_configuration_detection">Виявлення конфігурації</string>
   <string name="login_querying_server">Будь ласка, зачекайте, запит до серверу…</string>
@@ -159,8 +176,11 @@
   <string name="settings_sync_wifi_only_off">Не враховувати тип з\'єднання</string>
   <string name="settings_sync_wifi_only_ssids">Обмеження WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">Синхронізувати лише через %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Синхронізація відбуватиметься тільки через %s (вимагає ввімкнені служби локації)</string>
   <string name="settings_sync_wifi_only_ssids_off">Може використовуватись всі Wi-Fi з\'єднання</string>
   <string name="settings_sync_wifi_only_ssids_message">Назви (SSID) дозволених Wi-Fi мереж, розділені комами (залиште порожнім для всіх)</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">Для читання назв WiFi, потрібен дозвіл до локації, та ввімкнені сервіси локації.</string>
+  <string name="settings_more_info_faq">Більше інформації (FAQ)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Метод групування контактів</string>
   <string-array name="settings_contact_group_method_entries">
@@ -189,19 +209,9 @@
   <!--collection management-->
   <string name="create_addressbook">Створити адресну книгу</string>
   <string name="create_addressbook_display_name_hint">Моя адресна книга</string>
-  <string name="create_calendar">Створити CalDAV колекцію</string>
-  <string name="create_calendar_display_name_hint">Мій календар</string>
-  <string name="create_calendar_time_zone">Часова зона:</string>
-  <string name="create_calendar_type">Тип колекції:</string>
-  <string name="create_calendar_type_only_events">Календар (лише події)</string>
-  <string name="create_calendar_type_only_tasks">Список завдань (лише завдання)</string>
   <string name="create_calendar_type_events_and_tasks">Об\'єднаний (події та завдання)</string>
-  <string name="create_collection_color">Встановити колір колекції</string>
   <string name="create_collection_creating">Створення колекції</string>
-  <string name="create_collection_display_name">Ім\'я, що показуватиметься (назва ) для колекції</string>
   <string name="create_collection_display_name_required">Потребує назву</string>
-  <string name="create_collection_description">Опис (за бажанням):</string>
-  <string name="create_collection_home_set">Головна тека:</string>
   <string name="create_collection_create">Створити</string>
   <string name="delete_collection">Видалити колекцію</string>
   <string name="delete_collection_confirm_title">Ви впевнені?</string>
@@ -235,6 +245,10 @@
   <string name="sync_error_local_storage">Помилка локального сховища — %s</string>
   <string name="sync_error_retry">Повторити</string>
   <string name="sync_error_view_item">Перегляд елементу</string>
+  <string name="sync_invalid_contact">Отримано помилковий контакт від сервера</string>
+  <string name="sync_invalid_event">Отримано помилкову подію від сервера</string>
+  <string name="sync_invalid_task">Отримано помилкове завдання від сервера</string>
+  <string name="sync_invalid_resources_ignoring">Ігнорування одного або більше хибних джерел</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: Безпека з\'єднання</string>
   <string name="trust_certificate_unknown_certificate_found">DAVx⁵ зіткнувся з невідомим сертифікатом. Чи довіряти йому?</string>

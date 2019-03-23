@@ -133,19 +133,9 @@
   <!--collection management-->
   <string name="create_addressbook">建立通訊錄</string>
   <string name="create_addressbook_display_name_hint">我的通訊錄</string>
-  <string name="create_calendar">建立行事曆</string>
-  <string name="create_calendar_display_name_hint">我的行事曆</string>
-  <string name="create_calendar_time_zone">時區: </string>
-  <string name="create_calendar_type">類型</string>
-  <string name="create_calendar_type_only_events">行事曆 (只有事件)</string>
-  <string name="create_calendar_type_only_tasks">工作清單 (只有任務)</string>
   <string name="create_calendar_type_events_and_tasks">合併 (事件和任務)</string>
-  <string name="create_collection_color">設定顏色</string>
   <string name="create_collection_creating">建立新行事曆或工作清單</string>
-  <string name="create_collection_display_name">顯示這份清單的名稱 (標題): </string>
   <string name="create_collection_display_name_required">必須輸入標題</string>
-  <string name="create_collection_description">描述 (可留白): </string>
-  <string name="create_collection_home_set">Home set: </string>
   <string name="create_collection_create">建立</string>
   <string name="delete_collection">刪除行事曆或工作清單</string>
   <string name="delete_collection_confirm_title">您確定嗎? </string>

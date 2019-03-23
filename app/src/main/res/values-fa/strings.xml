@@ -189,19 +189,9 @@
   <!--collection management-->
   <string name="create_addressbook">ایجاد دفترچه آدرس</string>
   <string name="create_addressbook_display_name_hint">دفترچه آدرس های من</string>
-  <string name="create_calendar">ایجاد شد CalDAV مجموعه</string>
-  <string name="create_calendar_display_name_hint">تقویم من</string>
-  <string name="create_calendar_time_zone">زمان محلی:</string>
-  <string name="create_calendar_type">نوع مجموعه:</string>
-  <string name="create_calendar_type_only_events">تقویم (فقط رویدادها)</string>
-  <string name="create_calendar_type_only_tasks">لیست وظایف (فقط وظایف)</string>
   <string name="create_calendar_type_events_and_tasks">ترکیب شد (رویدادها و وظایف)</string>
-  <string name="create_collection_color">تنطیم رنگی برای مجموعهr</string>
   <string name="create_collection_creating">ایجاد مجموعه</string>
-  <string name="create_collection_display_name">نام نمایش داده شده (عنوان) این مجموعه:</string>
   <string name="create_collection_display_name_required">عنوان مورد نیاز</string>
-  <string name="create_collection_description">توضیحات (اختیاری):</string>
-  <string name="create_collection_home_set">نشاندن در خانه:</string>
   <string name="create_collection_create">ایجاد شد</string>
   <string name="delete_collection">حذف مجموعه</string>
   <string name="delete_collection_confirm_title">آیا مطمءن هستین؟</string>

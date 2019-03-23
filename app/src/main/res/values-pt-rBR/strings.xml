@@ -12,8 +12,13 @@
   <string name="notification_channel_general">Outras mensagens importantes</string>
   <string name="notification_channel_sync">Sincronização</string>
   <string name="notification_channel_sync_errors">Erros de sincronização</string>
+  <string name="notification_channel_sync_errors_desc">Erros importantes que interrompem a sincronização, como respostas inesperadas do servidor</string>
+  <string name="notification_channel_sync_warnings">Avisos de sincronização</string>
+  <string name="notification_channel_sync_warnings_desc">Problemas de sincronização não graves, como determinados arquivos inválidos</string>
   <string name="notification_channel_sync_io_errors">Erros de rede e E/S</string>
+  <string name="notification_channel_sync_io_errors_desc">Tempos de espera, problemas de conexão, etc. (geralmente temporários)</string>
   <string name="notification_channel_sync_status">Mensagens de status</string>
+  <string name="notification_channel_sync_status_desc">Mensagens de status informativas, como o número de alterações dispensadas de coleções somente leitura</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Sincronização automática</string>
   <string name="startup_autostart_permission_message">O firmware%s frequentemente bloqueia a sincronização automática. Nesse caso, ative a sincronização automática nas configurações do seu Android.</string>
@@ -84,6 +89,8 @@
   <string name="app_settings_reset_certificates_summary">Restaura a confiança de todos os certificados personalizados</string>
   <string name="app_settings_reset_certificates_success">Todos os certificados personalizados foram restaurados</string>
   <string name="app_settings_user_interface">Interface de usuário</string>
+  <string name="app_settings_notification_settings">Configurações das notificações</string>
+  <string name="app_settings_notification_settings_summary">Gerenciar os canais de notificação e suas configurações</string>
   <string name="app_settings_reset_hints">Restaurar sugestões</string>
   <string name="app_settings_reset_hints_summary">Restaura as sugestões que foram descartadas anteriormente</string>
   <string name="app_settings_reset_hints_success">Todas as sugestões serão exibidas novamente</string>
@@ -200,19 +207,9 @@
   <!--collection management-->
   <string name="create_addressbook">Criar livro de endereços</string>
   <string name="create_addressbook_display_name_hint">Meu livro de endereços</string>
-  <string name="create_calendar">Criar coleção CalDAV</string>
-  <string name="create_calendar_display_name_hint">Meu calendário</string>
-  <string name="create_calendar_time_zone">Fuso horário:</string>
-  <string name="create_calendar_type">Tipo de coleção:</string>
-  <string name="create_calendar_type_only_events">Calendário (apenas eventos)</string>
-  <string name="create_calendar_type_only_tasks">Lista de tarefas (apenas tarefas)</string>
   <string name="create_calendar_type_events_and_tasks">Combinado (eventos e tarefas)</string>
-  <string name="create_collection_color">Definir a cor da coleção</string>
   <string name="create_collection_creating">Criando a coleção</string>
-  <string name="create_collection_display_name">Mostrar o nome (título) desta coleção:</string>
   <string name="create_collection_display_name_required">É necessário um título</string>
-  <string name="create_collection_description">Descrição (opcional):</string>
-  <string name="create_collection_home_set">Indique o endereço:</string>
   <string name="create_collection_create">Criar</string>
   <string name="delete_collection">Excluir coleção</string>
   <string name="delete_collection_confirm_title">Tem certeza?</string>
@@ -244,6 +241,10 @@
   <string name="sync_error_local_storage">Erro de armazenamento local – %s</string>
   <string name="sync_error_retry">Repetir</string>
   <string name="sync_error_view_item">Ver item</string>
+  <string name="sync_invalid_contact">Contato inválido recebido do servidor</string>
+  <string name="sync_invalid_event">Evento inválido recebido do servidor</string>
+  <string name="sync_invalid_task">Tarefa inválida recebida do servidor</string>
+  <string name="sync_invalid_resources_ignoring">Ignorando um ou mais recursos inválidos</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: Segurança da conexão</string>
   <string name="trust_certificate_unknown_certificate_found">O DAVx⁵ encontrou um certificado desconhecido. Deseja torná-lo confiável?</string>

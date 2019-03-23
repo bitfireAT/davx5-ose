@@ -164,19 +164,9 @@
   <!--collection management-->
   <string name="create_addressbook">Opprett adressebok</string>
   <string name="create_addressbook_display_name_hint">Min adressebok</string>
-  <string name="create_calendar">Opprett CalDAV-samling</string>
-  <string name="create_calendar_display_name_hint">Min kalender</string>
-  <string name="create_calendar_time_zone">Tidssone</string>
-  <string name="create_calendar_type">Samlingstype:</string>
-  <string name="create_calendar_type_only_events">Kalender (bare hendelser)</string>
-  <string name="create_calendar_type_only_tasks">Gjøremålsliste (bare gjøremål)</string>
   <string name="create_calendar_type_events_and_tasks">Kombinert (hendelser og gjøremål)</string>
-  <string name="create_collection_color">Velg en samlingsfarge</string>
   <string name="create_collection_creating">Oppretter samling</string>
-  <string name="create_collection_display_name">Vis navn (tittel) for denne samlingen:</string>
   <string name="create_collection_display_name_required">Tittel kreves</string>
-  <string name="create_collection_description">Beskrivelse (valgfri):</string>
-  <string name="create_collection_home_set">Hjemmemappe:</string>
   <string name="create_collection_create">Opprett</string>
   <string name="delete_collection">Slett samling</string>
   <string name="delete_collection_confirm_title">Er du sikker?</string>

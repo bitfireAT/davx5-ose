@@ -12,8 +12,13 @@
   <string name="notification_channel_general">Andre vigtige beskeder</string>
   <string name="notification_channel_sync">Synkronisering</string>
   <string name="notification_channel_sync_errors">Synkroniserings-fejl</string>
+  <string name="notification_channel_sync_errors_desc">Vigtige fejl, der stopper synkronisering, som ikke forventet server svar</string>
+  <string name="notification_channel_sync_warnings">Synkronisering  advarsler</string>
+  <string name="notification_channel_sync_warnings_desc">Ikke kritisk synkroniserig problem som bestemte ugyldige filer</string>
   <string name="notification_channel_sync_io_errors">Netværks- og I/O-fejl</string>
+  <string name="notification_channel_sync_io_errors_desc">Tidsudløb, forbindelse problemer m.m. (ofte midlertidig)</string>
   <string name="notification_channel_sync_status">Status beskeder</string>
+  <string name="notification_channel_sync_status_desc">Informerende status beskeder som antal afviste ændringer af skrivbeskyttet samlinger</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Automatisk synkronisering</string>
   <string name="startup_autostart_permission_message">%s firmware blokerer ofte automatisk synkronisering. Tillad automatisk synkronisering i Android opsætning.</string>
@@ -84,6 +89,8 @@
   <string name="app_settings_reset_certificates_summary">Nulstiller tilliden til brugerdefinerede certifikater</string>
   <string name="app_settings_reset_certificates_success">Alle brugerdefinerede certifikater er blevet rydet</string>
   <string name="app_settings_user_interface">Brugerflade</string>
+  <string name="app_settings_notification_settings">Påmindelse opsætning</string>
+  <string name="app_settings_notification_settings_summary">Håndtere påmindelse kanaler og deres opsætning</string>
   <string name="app_settings_reset_hints">Nulstil vejledende pop op</string>
   <string name="app_settings_reset_hints_summary">Genaktivere tidligere lukket pop op</string>
   <string name="app_settings_reset_hints_success">Al vejledning vil blive vist igen</string>
@@ -200,19 +207,9 @@
   <!--collection management-->
   <string name="create_addressbook">Opret adressebog</string>
   <string name="create_addressbook_display_name_hint">Min adressebog</string>
-  <string name="create_calendar">Opret CalDAV-sæt</string>
-  <string name="create_calendar_display_name_hint">Min kalender</string>
-  <string name="create_calendar_time_zone">Tidszone:</string>
-  <string name="create_calendar_type">Type af sæt:</string>
-  <string name="create_calendar_type_only_events">Kalender (kun begivenheder)</string>
-  <string name="create_calendar_type_only_tasks">Opgaveliste (kun opgaver)</string>
   <string name="create_calendar_type_events_and_tasks">Kombineret (begivenheder og opgaver)</string>
-  <string name="create_collection_color">Sæt en farve på sættet</string>
   <string name="create_collection_creating">Opretter sæt</string>
-  <string name="create_collection_display_name">Navn (titel) på dette sæt:</string>
   <string name="create_collection_display_name_required">En titel er påkrævet</string>
-  <string name="create_collection_description">Beskrivelse (valgfri):</string>
-  <string name="create_collection_home_set">Home set:</string>
   <string name="create_collection_create">Opret</string>
   <string name="delete_collection">Slet sæt</string>
   <string name="delete_collection_confirm_title">Er du sikker?</string>
@@ -244,6 +241,10 @@
   <string name="sync_error_local_storage">Lokal lagringsfejl - %s</string>
   <string name="sync_error_retry">Gentag</string>
   <string name="sync_error_view_item">Vis element</string>
+  <string name="sync_invalid_contact">Modtaget ugyldig kontakt fra server</string>
+  <string name="sync_invalid_event">Modtaget ugyldig begivenhed fra server</string>
+  <string name="sync_invalid_task">Modtaget ugyldig opgave fra server</string>
+  <string name="sync_invalid_resources_ignoring">Ignorere en eller flere ugyldige kilder</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: Forbindelsessikkerhed</string>
   <string name="trust_certificate_unknown_certificate_found">DAVx⁵ er stødt på et ukendt certifikat. Vil du stole på det? </string>

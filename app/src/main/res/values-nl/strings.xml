@@ -151,19 +151,9 @@
   <!--collection management-->
   <string name="create_addressbook">Maak adresboek</string>
   <string name="create_addressbook_display_name_hint">Mijn adresboek</string>
-  <string name="create_calendar">Maak CalDAV collectie</string>
-  <string name="create_calendar_display_name_hint">Mijn agenda</string>
-  <string name="create_calendar_time_zone">Tijdzone:</string>
-  <string name="create_calendar_type">Collectie type:</string>
-  <string name="create_calendar_type_only_events">Agenda (alleen afspraken)</string>
-  <string name="create_calendar_type_only_tasks">Takenlijst (alleen taken)</string>
   <string name="create_calendar_type_events_and_tasks">Gecombineerd (afspraken en taken)</string>
-  <string name="create_collection_color">Stel een collectie kleur in</string>
   <string name="create_collection_creating">Collectie aan het maken</string>
-  <string name="create_collection_display_name">Weergave naam (titel) van deze collectie:</string>
   <string name="create_collection_display_name_required">Titel is vereist</string>
-  <string name="create_collection_description">Beschrijving (optioneel):</string>
-  <string name="create_collection_home_set">Begin map:</string>
   <string name="create_collection_create">Maak</string>
   <string name="delete_collection">Verwijder collectie</string>
   <string name="delete_collection_confirm_title">Weet je het zeker?</string>

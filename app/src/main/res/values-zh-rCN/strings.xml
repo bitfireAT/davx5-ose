@@ -12,8 +12,13 @@
   <string name="notification_channel_general">其它重要消息</string>
   <string name="notification_channel_sync">同步</string>
   <string name="notification_channel_sync_errors">同步错误</string>
+  <string name="notification_channel_sync_errors_desc">导致同步停止的重要错误，如异常的服务器响应</string>
+  <string name="notification_channel_sync_warnings">同步警告</string>
+  <string name="notification_channel_sync_warnings_desc">不重要的同步问题，如某文件无效</string>
   <string name="notification_channel_sync_io_errors">网络或 I/O 错误</string>
+  <string name="notification_channel_sync_io_errors_desc">超时、连接异常等问题（通常是临时错误）</string>
   <string name="notification_channel_sync_status">状态消息</string>
+  <string name="notification_channel_sync_status_desc">提示性状态信息，如只读集合中被忽略的更改数量</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">自动同步</string>
   <string name="startup_autostart_permission_message">%s 的系统通常会禁止自动同步。在 Android 的系统设置中手工打开自动同步即可恢复。</string>
@@ -84,6 +89,8 @@
   <string name="app_settings_reset_certificates_summary">重设所有自定义证书的信任状态</string>
   <string name="app_settings_reset_certificates_success">所有自定义证书已清除</string>
   <string name="app_settings_user_interface">用户界面</string>
+  <string name="app_settings_notification_settings">通知设置</string>
+  <string name="app_settings_notification_settings_summary">管理通知渠道等设置</string>
   <string name="app_settings_reset_hints">重设提示</string>
   <string name="app_settings_reset_hints_summary">重新显示之前忽略过的提示</string>
   <string name="app_settings_reset_hints_success">所有提示将会再次显示</string>
@@ -169,8 +176,11 @@
   <string name="settings_sync_wifi_only_off">同步不受数据连接类型限制</string>
   <string name="settings_sync_wifi_only_ssids">WiFi SSID 限制</string>
   <string name="settings_sync_wifi_only_ssids_on">只使用 %s 网络同步</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">将只在 %s 上同步（需要生效的位置服务）</string>
   <string name="settings_sync_wifi_only_ssids_off">任意 WiFi 网络均可同步</string>
   <string name="settings_sync_wifi_only_ssids_message">请用半角逗号分隔允许同步的 WiFi 网络名（SSID），留空则允许任意网络</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">读取 WiFi 网络名称需要位置权限，以及永久生效的位置服务。</string>
+  <string name="settings_more_info_faq">更多信息（常见问题）</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">联系人分组方式</string>
   <string-array name="settings_contact_group_method_entries">
@@ -196,19 +206,9 @@
   <!--collection management-->
   <string name="create_addressbook">创建通讯录</string>
   <string name="create_addressbook_display_name_hint">我的通讯录</string>
-  <string name="create_calendar">创建 CalDAV 集合</string>
-  <string name="create_calendar_display_name_hint">我的日历</string>
-  <string name="create_calendar_time_zone">时区</string>
-  <string name="create_calendar_type">集合类型</string>
-  <string name="create_calendar_type_only_events">日历（只有日程）</string>
-  <string name="create_calendar_type_only_tasks">任务列表（只有任务）</string>
   <string name="create_calendar_type_events_and_tasks">混合（日程和任务）</string>
-  <string name="create_collection_color">设置集合颜色</string>
   <string name="create_collection_creating">正在创建集合</string>
-  <string name="create_collection_display_name">集合显示名称（标题）</string>
   <string name="create_collection_display_name_required">请输入标题</string>
-  <string name="create_collection_description">简介（可选）</string>
-  <string name="create_collection_home_set">主集合</string>
   <string name="create_collection_create">创建</string>
   <string name="delete_collection">删除集合</string>
   <string name="delete_collection_confirm_title">你确定吗？</string>
@@ -239,6 +239,10 @@
   <string name="sync_error_local_storage">本地存储错误 – %s</string>
   <string name="sync_error_retry">重试</string>
   <string name="sync_error_view_item">显示项目</string>
+  <string name="sync_invalid_contact">从服务器收到无效的通讯录</string>
+  <string name="sync_invalid_event">从服务器收到无效的日历事件</string>
+  <string name="sync_invalid_task">从服务器收到无效的任务项</string>
+  <string name="sync_invalid_resources_ignoring">正在忽略若干无效资源</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: 连接安全性</string>
   <string name="trust_certificate_unknown_certificate_found">DAVx⁵ 遇到了未知证书。你是否要信任该证书？</string>

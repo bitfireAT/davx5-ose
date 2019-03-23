@@ -108,20 +108,9 @@
   <!--collection management-->
   <string name="create_addressbook">Rehber yarat</string>
   <string name="create_addressbook_display_name_hint">Benim Rehberim</string>
-  <string name="create_calendar">CalDav koleksiyonu yarat</string>
-  <string name="create_calendar_display_name_hint">Benim Takvimim</string>
-  <string name="create_calendar_time_zone">Saat dilimi:</string>
-  <string name="create_calendar_type">Koleksiyon Tipi:</string>
-  <string name="create_calendar_type_only_events">Takvim (sadece olaylar)</string>
-  <string name="create_calendar_type_only_tasks">İşler listesi (sadece işler)
-</string>
   <string name="create_calendar_type_events_and_tasks">Birleşik (olaylar ve işler)</string>
-  <string name="create_collection_color">Bir koleksiyon rengi tanımla</string>
   <string name="create_collection_creating">Koleksiyon yaratılıyor</string>
-  <string name="create_collection_display_name">Bu koleksiyonun gösterilen adı (başlığı):</string>
   <string name="create_collection_display_name_required">Başlık zorunlu</string>
-  <string name="create_collection_description">Açıklama (isteğe bağlı):</string>
-  <string name="create_collection_home_set">Ev seti:</string>
   <string name="create_collection_create">Yarat</string>
   <string name="delete_collection">Koleksiyonu sil</string>
   <string name="delete_collection_confirm_title">Emin misin?</string>

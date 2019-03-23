@@ -12,7 +12,11 @@
   <string name="notification_channel_general">Andere wichtige Mitteilungen</string>
   <string name="notification_channel_sync">Synchronisierung</string>
   <string name="notification_channel_sync_errors">Synchronisierungsfehler</string>
+  <string name="notification_channel_sync_errors_desc">Fehler, die zum Abbruch der Synchronisation führen, wie beispielsweise unerwartete Serverantworten</string>
+  <string name="notification_channel_sync_warnings">Synchronisierungswarnungen</string>
+  <string name="notification_channel_sync_warnings_desc">Nicht fatale Synchronisierungsprobleme wie bestimmte ungültige Dateien</string>
   <string name="notification_channel_sync_io_errors">Netzwerk- und E/A-Fehler</string>
+  <string name="notification_channel_sync_io_errors_desc">Zeitüberschreitungen, Verbindungsprobleme, usw. (oft vorübergehend)</string>
   <string name="notification_channel_sync_status">Status-Mitteilungen</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Automatische Synchronisierung</string>
@@ -84,6 +88,7 @@
   <string name="app_settings_reset_certificates_summary">Setzt angenommene/abgelehnte Zertifikate zurück</string>
   <string name="app_settings_reset_certificates_success">Alle Informationen über angenommene/abgelehnte Zertifikate wurden zurückgesetzt</string>
   <string name="app_settings_user_interface">Oberfläche</string>
+  <string name="app_settings_notification_settings">Benachrichtigungseinstellungen</string>
   <string name="app_settings_reset_hints">Hinweise zurücksetzen</string>
   <string name="app_settings_reset_hints_summary">Hinweise, die deaktiviert wurden, wieder anzeigen</string>
   <string name="app_settings_reset_hints_success">Alle Hinweise werden wieder angezeigt</string>
@@ -113,9 +118,9 @@
   <string name="account_install_icsx5">ICSx⁵ installieren</string>
   <!--AddAccountActivity-->
   <string name="login_title">Konto hinzufügen</string>
-  <string name="login_type_email">Mit Email-Adresse anmelden</string>
-  <string name="login_email_address">Email-Adresse</string>
-  <string name="login_email_address_error">Gültige Email-Adresse benötigt</string>
+  <string name="login_type_email">Mit E-Mail-Adresse anmelden</string>
+  <string name="login_email_address">E-Mail-Adresse</string>
+  <string name="login_email_address_error">Gültige E-Mail-Adresse benötigt</string>
   <string name="login_password">Passwort</string>
   <string name="login_password_required">Passwort wird benötigt</string>
   <string name="login_type_url">Mit URL und Benutzername anmelden</string>
@@ -131,7 +136,7 @@
   <string name="login_back">Zurück</string>
   <string name="login_create_account">Konto anlegen</string>
   <string name="login_account_name">Kontoname</string>
-  <string name="login_account_name_info">Verwenden Sie Ihre Email-Adresse als Kontonamen, da Android den Kontonamen als ORGANIZER einsetzt. Es kann allerdings keine zwei Konten mit dem gleichen Namen geben.</string>
+  <string name="login_account_name_info">Verwenden Sie Ihre E-Mail-Adresse als Kontonamen, da Android den Kontonamen als ORGANIZER einsetzt. Es kann allerdings keine zwei Konten mit dem gleichen Namen geben.</string>
   <string name="login_account_contact_group_method">Kontaktgruppen-Methode:</string>
   <string name="login_account_name_required">Kontoname wird benötigt</string>
   <string name="login_account_name_already_taken">Kontoname bereits verwendet</string>
@@ -156,13 +161,13 @@
   <string name="settings_sync_interval_calendars">Häufigkeit der Kalender-Synchronisierung</string>
   <string name="settings_sync_interval_tasks">Häufigkeit der Aufgaben-Synchronisierung</string>
   <string-array name="settings_sync_interval_names">
-    <item>nur manuell</item>
-    <item>alle 15 Minuten</item>
-    <item>alle halben Stunden</item>
-    <item>jede Stunde</item>
-    <item>alle 2 Stunden</item>
-    <item>alle 4 Stunden</item>
-    <item>einmal am Tag</item>
+    <item>Nur manuell</item>
+    <item>Alle 15 Minuten</item>
+    <item>Alle 30 Minuten</item>
+    <item>Jede Stunde</item>
+    <item>Alle 2 Stunden</item>
+    <item>Alle 4 Stunden</item>
+    <item>Einmal am Tag</item>
   </string-array>
   <string name="settings_sync_wifi_only">Nur über WLAN synchronisieren</string>
   <string name="settings_sync_wifi_only_on">Synchronisierung nur bei aktiver WLAN-Verbindung</string>
@@ -200,19 +205,9 @@
   <!--collection management-->
   <string name="create_addressbook">Adressbuch erstellen</string>
   <string name="create_addressbook_display_name_hint">Meine Adressen</string>
-  <string name="create_calendar">CalDAV-Ordner erstellen</string>
-  <string name="create_calendar_display_name_hint">Mein neuer Ordner</string>
-  <string name="create_calendar_time_zone">Zeitzone:</string>
-  <string name="create_calendar_type">Ordnertyp:</string>
-  <string name="create_calendar_type_only_events">Kalender (nur Termine)</string>
-  <string name="create_calendar_type_only_tasks">Aufgabenliste (nur Aufgaben)</string>
   <string name="create_calendar_type_events_and_tasks">Kombiniert (Termine und Aufgaben)</string>
-  <string name="create_collection_color">Ordnerfarbe wählen</string>
   <string name="create_collection_creating">Ordner wird angelegt</string>
-  <string name="create_collection_display_name">Anzeigename (Titel) dieses Ordners:</string>
   <string name="create_collection_display_name_required">Ein Titel wird benötigt</string>
-  <string name="create_collection_description">Beschreibung (optional):</string>
-  <string name="create_collection_home_set">Übergeordneter Ordner:</string>
   <string name="create_collection_create">Erstellen</string>
   <string name="delete_collection">Ordner löschen</string>
   <string name="delete_collection_confirm_title">Sind Sie sicher?</string>
@@ -244,6 +239,9 @@
   <string name="sync_error_local_storage">Lokaler Speicherfehler – %s</string>
   <string name="sync_error_retry">Wiederholen</string>
   <string name="sync_error_view_item">Untersuchen</string>
+  <string name="sync_invalid_contact">Ungültigen Kontakt vom Server erhalten</string>
+  <string name="sync_invalid_event">Ungültigen Termin vom Server erhalten</string>
+  <string name="sync_invalid_task">Ungültige Aufgabe vom Server erhalten</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: Verbindungssicherheit</string>
   <string name="trust_certificate_unknown_certificate_found">DAVx⁵ ist auf ein unbekanntes Zertifikat gestoßen. Ist dieses vertrauenswürdig?</string>
