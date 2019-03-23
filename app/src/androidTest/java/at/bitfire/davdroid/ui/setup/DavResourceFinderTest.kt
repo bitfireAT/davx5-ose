@@ -8,6 +8,7 @@
 
 package at.bitfire.davdroid.ui.setup
 
+import android.app.Application
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.dav4jvm.DavResource
@@ -44,18 +45,21 @@ class DavResourceFinderTest {
 
     lateinit var finder: DavResourceFinder
     lateinit var client: HttpClient
-    lateinit var loginInfo: LoginModel
+    lateinit var loginModel: LoginModel
 
     @Before
     fun initServerAndClient() {
         server.setDispatcher(TestDispatcher())
         server.start()
 
-        loginInfo = LoginModel(URI.create("/"), Credentials("mock", "12345"))
-        finder = DavResourceFinder(InstrumentationRegistry.getInstrumentation().targetContext, loginInfo)
+        val application = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
+        loginModel = LoginModel(application)
+        loginModel.baseURI = URI.create("/")
+        loginModel.credentials = Credentials("mock", "12345")
 
+        finder = DavResourceFinder(InstrumentationRegistry.getInstrumentation().targetContext, loginModel)
         client = HttpClient.Builder()
-                .addAuthentication(null, loginInfo.credentials)
+                .addAuthentication(null, loginModel.credentials!!)
                 .build()
     }
 
