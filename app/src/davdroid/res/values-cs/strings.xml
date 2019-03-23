@@ -133,19 +133,9 @@
   <!--collection management-->
   <string name="create_addressbook">Vytvořit adresář</string>
   <string name="create_addressbook_display_name_hint">Můj adresář</string>
-  <string name="create_calendar">Vytvořit CalDAV sbírku</string>
-  <string name="create_calendar_display_name_hint">Můj kalendář</string>
-  <string name="create_calendar_time_zone">Časová zóna:</string>
-  <string name="create_calendar_type">Typ sbírky:</string>
-  <string name="create_calendar_type_only_events">Kalendář (pouze události)</string>
-  <string name="create_calendar_type_only_tasks">Seznam úkolů (pouze úkoly)</string>
   <string name="create_calendar_type_events_and_tasks">Kombinovaná (události a úkoly)</string>
-  <string name="create_collection_color">Nastavit barvu sbírky</string>
   <string name="create_collection_creating">Vytváření sbírky</string>
-  <string name="create_collection_display_name">Zobrazit jméno (nadpis) této sbírky:</string>
   <string name="create_collection_display_name_required">Nadpis je vyžadován</string>
-  <string name="create_collection_description">Popis (volitelný):</string>
-  <string name="create_collection_home_set">Domácí sbírka:</string>
   <string name="create_collection_create">Vytvořit</string>
   <string name="delete_collection">Smazat sbírku</string>
   <string name="delete_collection_confirm_title">Jste si jisti?</string>

@@ -206,19 +206,9 @@
   <!--collection management-->
   <string name="create_addressbook">创建通讯录</string>
   <string name="create_addressbook_display_name_hint">我的通讯录</string>
-  <string name="create_calendar">创建 CalDAV 集合</string>
-  <string name="create_calendar_display_name_hint">我的日历</string>
-  <string name="create_calendar_time_zone">时区</string>
-  <string name="create_calendar_type">集合类型</string>
-  <string name="create_calendar_type_only_events">日历（只有日程）</string>
-  <string name="create_calendar_type_only_tasks">任务列表（只有任务）</string>
   <string name="create_calendar_type_events_and_tasks">混合（日程和任务）</string>
-  <string name="create_collection_color">设置集合颜色</string>
   <string name="create_collection_creating">正在创建集合</string>
-  <string name="create_collection_display_name">集合显示名称（标题）</string>
   <string name="create_collection_display_name_required">请输入标题</string>
-  <string name="create_collection_description">简介（可选）</string>
-  <string name="create_collection_home_set">主集合</string>
   <string name="create_collection_create">创建</string>
   <string name="delete_collection">删除集合</string>
   <string name="delete_collection_confirm_title">你确定吗？</string>

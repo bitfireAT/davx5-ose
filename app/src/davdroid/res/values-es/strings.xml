@@ -207,19 +207,9 @@
   <!--collection management-->
   <string name="create_addressbook">Crear nueva agenda</string>
   <string name="create_addressbook_display_name_hint">Agendas</string>
-  <string name="create_calendar">Crear colección CalDAV</string>
-  <string name="create_calendar_display_name_hint">Mi calendario</string>
-  <string name="create_calendar_time_zone">Zona horaria:</string>
-  <string name="create_calendar_type">Tipo de colección:</string>
-  <string name="create_calendar_type_only_events">Calendario (sólo eventos)</string>
-  <string name="create_calendar_type_only_tasks">Lista de tareas (sólo tareas)</string>
   <string name="create_calendar_type_events_and_tasks">Combinado (eventos y tareas)</string>
-  <string name="create_collection_color">Establecer un color</string>
   <string name="create_collection_creating">Crear colección</string>
-  <string name="create_collection_display_name">Nombre mostrado (título):</string>
   <string name="create_collection_display_name_required">Título requerido</string>
-  <string name="create_collection_description">Descripción (opcional):</string>
-  <string name="create_collection_home_set">Establecer localización:</string>
   <string name="create_collection_create">Crear</string>
   <string name="delete_collection">Eliminar colección</string>
   <string name="delete_collection_confirm_title">¿Estás seguro/a?</string>

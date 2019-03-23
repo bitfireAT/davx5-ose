@@ -167,19 +167,9 @@
   <!--collection management-->
   <string name="create_addressbook">Crea rubrica</string>
   <string name="create_addressbook_display_name_hint">La mia rubrica</string>
-  <string name="create_calendar">Crea raccolta CalDAV</string>
-  <string name="create_calendar_display_name_hint">Mio calendario</string>
-  <string name="create_calendar_time_zone">Fuso orario:</string>
-  <string name="create_calendar_type">Tipo di raccolta:</string>
-  <string name="create_calendar_type_only_events">Calendario (solo eventi)</string>
-  <string name="create_calendar_type_only_tasks">Elenco attività (solo attività)</string>
   <string name="create_calendar_type_events_and_tasks">Combinato (eventi e attività)</string>
-  <string name="create_collection_color">Imposta colore della raccolta</string>
   <string name="create_collection_creating">Crea una raccolta</string>
-  <string name="create_collection_display_name">Mostra il nome (titolo) di questa raccolta:</string>
   <string name="create_collection_display_name_required">Il titolo è richiesto</string>
-  <string name="create_collection_description">Descrizione (opzionale):</string>
-  <string name="create_collection_home_set">Imposta la home:</string>
   <string name="create_collection_create">Crea</string>
   <string name="delete_collection">Elimina raccolta</string>
   <string name="delete_collection_confirm_title">Sei sicuro?</string>

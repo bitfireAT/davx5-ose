@@ -187,19 +187,9 @@
   <!--collection management-->
   <string name="create_addressbook">Címjegyzék létrehozása</string>
   <string name="create_addressbook_display_name_hint">Új címjegyzék</string>
-  <string name="create_calendar">CalDAV gyűjtemény létrehozása</string>
-  <string name="create_calendar_display_name_hint">Új naptár</string>
-  <string name="create_calendar_time_zone">Időzóna:</string>
-  <string name="create_calendar_type">Gyűjtemény típusa:</string>
-  <string name="create_calendar_type_only_events">Naptár (csak események)</string>
-  <string name="create_calendar_type_only_tasks">Feladatlista (csak feladatok)</string>
   <string name="create_calendar_type_events_and_tasks">Kombinált (események és feladatok)</string>
-  <string name="create_collection_color">A gyűjtemény színének kiválasztása</string>
   <string name="create_collection_creating">Gyűjtemény létrehozása</string>
-  <string name="create_collection_display_name">A gyűjtemény megnevezése (címe)</string>
   <string name="create_collection_display_name_required">A cím megadása feltétlenül szükséges</string>
-  <string name="create_collection_description">Leírás (opcionális):</string>
-  <string name="create_collection_home_set">Gyűjtemények tárolója:</string>
   <string name="create_collection_create">Létrehozás</string>
   <string name="delete_collection">Gyűjtemény törlése</string>
   <string name="delete_collection_confirm_title">Biztos?</string>

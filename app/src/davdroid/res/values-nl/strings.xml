@@ -31,6 +31,7 @@
   <string name="navigation_drawer_news_updates">Nieuws &amp; updates</string>
   <string name="navigation_drawer_external_links">Externe links</string>
   <string name="navigation_drawer_website">Website</string>
+  <string name="navigation_drawer_manual">Manueel</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_forums">Help / Forums</string>
   <string name="navigation_drawer_donate">Doneren</string>
@@ -75,6 +76,7 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_calendar">calendar</string>
   <string name="account_refresh_address_book_list">Adresboeken vernieuwen</string>
   <string name="account_create_new_address_book">Maak een nieuw adresboek</string>
   <string name="account_refresh_calendar_list">Agenda\'s vernieuwen</string>
@@ -93,6 +95,7 @@
   <string name="login_user_name">Gebruikersnaam</string>
   <string name="login_user_name_required">Gebruikersnaam vereist</string>
   <string name="login_base_url">Basis URL</string>
+  <string name="login_select_certificate">Certificaat selecteren</string>
   <string name="login_login">Login</string>
   <string name="login_back">Terug</string>
   <string name="login_create_account">Maak een account</string>
@@ -112,6 +115,7 @@
   <string name="settings_password">Wachtwoord</string>
   <string name="settings_password_summary">Gebruik het zelfde wachtwoord als op de server.</string>
   <string name="settings_enter_password">Wachtwoord invoeren:</string>
+  <string name="settings_certificate_alias">Client certificaat alias </string>
   <string name="settings_sync">Synchronisatie</string>
   <string name="settings_sync_interval_contacts">Contacten verversen</string>
   <string name="settings_sync_summary_manually">Alleen handmatig</string>
@@ -147,19 +151,9 @@
   <!--collection management-->
   <string name="create_addressbook">Maak adresboek</string>
   <string name="create_addressbook_display_name_hint">Mijn adresboek</string>
-  <string name="create_calendar">Maak CalDAV collectie</string>
-  <string name="create_calendar_display_name_hint">Mijn agenda</string>
-  <string name="create_calendar_time_zone">Tijdzone:</string>
-  <string name="create_calendar_type">Collectie type:</string>
-  <string name="create_calendar_type_only_events">Agenda (alleen afspraken)</string>
-  <string name="create_calendar_type_only_tasks">Takenlijst (alleen taken)</string>
   <string name="create_calendar_type_events_and_tasks">Gecombineerd (afspraken en taken)</string>
-  <string name="create_collection_color">Stel een collectie kleur in</string>
   <string name="create_collection_creating">Collectie aan het maken</string>
-  <string name="create_collection_display_name">Weergave naam (titel) van deze collectie:</string>
   <string name="create_collection_display_name_required">Titel is vereist</string>
-  <string name="create_collection_description">Beschrijving (optioneel):</string>
-  <string name="create_collection_home_set">Begin map:</string>
   <string name="create_collection_create">Maak</string>
   <string name="delete_collection">Verwijder collectie</string>
   <string name="delete_collection_confirm_title">Weet je het zeker?</string>
@@ -175,6 +169,8 @@
   <string name="sync_contacts_read_only_address_book">Alleen-lezen adresboek</string>
   <string name="sync_error_permissions">DAVx⁵ rechten</string>
   <string name="sync_error_permissions_text">Aanvullende rechten vereist</string>
+  <string name="sync_error_retry">Opnieuw</string>
+  <string name="sync_error_view_item">Bekijk item</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: Verbinding beveiliging</string>
   <string name="trust_certificate_unknown_certificate_found">Davdroid is benaderd door een onbekend certificaat. Vertrouwd u dit?</string>

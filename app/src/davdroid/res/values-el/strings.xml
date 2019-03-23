@@ -12,10 +12,16 @@
   <string name="notification_channel_general">Άλλα σημαντικά μηνύματα</string>
   <string name="notification_channel_sync">Συγχρονισμός</string>
   <string name="notification_channel_sync_errors">Σφάλματα συγχρονισμού</string>
+  <string name="notification_channel_sync_errors_desc">Σημαντικά σφάλματα τα οποία σταματούν τον συγχρονισμό, όπως οι απροσδόκητες απαντήσεις του διακομιστή</string>
+  <string name="notification_channel_sync_warnings">Προειδοποιήσεις συγχρονισμού</string>
+  <string name="notification_channel_sync_warnings_desc">Μη μοιραία προβλήματα συγχρονισμού όπως ορισμένα μη έγκυρα αρχεία</string>
   <string name="notification_channel_sync_io_errors">Σφάλματα δικτύου και I/O</string>
+  <string name="notification_channel_sync_io_errors_desc">Χρονικά όρια, προβλήματα σύνδεσης, κλπ. (συχνά προσωρινά)</string>
   <string name="notification_channel_sync_status">Μηνύματα κατάστασης</string>
+  <string name="notification_channel_sync_status_desc">Μηνύματα κατάστασης πληροφοριών, όπως ο αριθμός απορριφθεισών αλλαγών σε συλλογές μόνο για ανάγνωση</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Αυτόματος συγχρονισμός</string>
+  <string name="startup_autostart_permission_message">%s το firmware συχνά αποκλείει τον αυτόματο συγχρονισμό. Σε αυτήν την περίπτωση, επιτρέψτε τον αυτόματο συγχρονισμό στις ρυθμίσεις Android.</string>
   <string name="startup_battery_optimization">Προγραμματισμένος συγχρονισμός</string>
   <string name="startup_battery_optimization_message">Η συσκευή σας θα περιορίσει τον συγχρονισμό DAVx⁵. Για να επιβάλλετε τακτικά διαστήματα συγχρονισμού DAVx⁵, απενεργοποιήστε τη \"βελτιστοποίηση της μπαταρίας\".</string>
   <string name="startup_battery_optimization_disable">Απενεργοποίηση για DAVx⁵</string>
@@ -33,13 +39,20 @@
   <!--AboutActivity-->
   <string name="about_libraries">Βιβλιοθήκες</string>
   <string name="about_version">Έκδοση %1$s (%2$d)</string>
+  <string name="about_build_date">Μεταγλωττισμένο σε %s</string>
   <string name="about_flavor_info">Αυτή η έκδοση είναι κατάλληλη μόνο για διανομή μέσω του Google Play.</string>
   <string name="about_license_info_no_warranty">Αυτό το πρόγραμμα συνοδεύεται χωρις ΚΑΜΙΑ ΕΓΓΥΗΣΗ. Είναι ελεύθερο λογισμικό και είστε ευπρόσδεκτοι να το αναδιανείμετε υπό ορισμένες προϋποθέσεις.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Αδυναμία δημιουργίας αρχείου ιστορικού</string>
+  <string name="logging_notification_title">Καταγραφές DAVx⁵</string>
+  <string name="logging_notification_text">Τώρα γίνεται η καταγραφή όλων των δραστηριοτήτων του DAVx⁵</string>
   <string name="logging_notification_send_log">Αποστολή ιστορικού</string>
   <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Άνοιγμα συρταριού πλοήγησης</string>
+  <string name="navigation_drawer_close">Κλείσιμο συρταριού πλοήγησης</string>
+  <string name="navigation_drawer_subtitle">Προσαρμογέας συγχρονισμού CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Περί / άδεια χρήσης</string>
+  <string name="navigation_drawer_beta_feedback">Ανατροφοδότηση beta</string>
   <string name="navigation_drawer_settings">Ρυθμίσεις</string>
   <string name="navigation_drawer_news_updates">Νέα &amp; ενημερώσεις</string>
   <string name="navigation_drawer_external_links">Εξωτερικοί σύνδεσμοι</string>
@@ -49,14 +62,19 @@
   <string name="navigation_drawer_forums">Βοήθεια / Φόρουμ</string>
   <string name="navigation_drawer_donate">Δωρεά</string>
   <string name="account_list_empty">Καλώς ήρθατε στο DAVx⁵!\n\nΜπορείτε να προσθέσετε τώρα έναν λογαριασμό CalDAV/CardDAV.</string>
+  <string name="accounts_global_sync_disabled">Ο αυτόματος συγχρονισμός σε όλο το σύστημα είναι απενεργοποιημένος</string>
   <string name="accounts_global_sync_enable">Ενεργοποίηση</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Αποτυχία ανίχνευσης υπηρεσίας</string>
+  <string name="dav_service_refresh_couldnt_refresh">Αδυναμία ανανέωσης της λίστας συλλογής</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Ρυθμίσεις</string>
   <string name="app_settings_debug">Αποσφαλμάτωση</string>
   <string name="app_settings_show_debug_info">Προβολή πληροφοριών αποσφαλμάτωσης</string>
   <string name="app_settings_show_debug_info_details">Προβολή/διαμοιρασμός λογισμικού και λεπτομερειών διαμόρφωσης</string>
+  <string name="app_settings_logging">Λεπτομερής καταγραφή</string>
+  <string name="app_settings_logging_on">Η καταγραφή είναι ενεργή</string>
+  <string name="app_settings_logging_off">Η καταγραφή είναι απενεργοποιημένη</string>
   <string name="app_settings_connection">Σύνδεση</string>
   <string name="app_settings_override_proxy">Παράκαμψη ρυθμίσεων διαμεσολαβητή</string>
   <string name="app_settings_override_proxy_on">Χρήση προσαρμοσμένων ρυθμίσεων διαμεσολαβητή</string>
@@ -67,18 +85,26 @@
   <string name="app_settings_reset_certificates_summary">Επαναφέρει την εμπιστοσύνη όλων των προσαρμοσμένων πιστοποιητικών</string>
   <string name="app_settings_reset_certificates_success">Έχουν απαλειφθεί όλα τα προσαρμοσμένα πιστοποιητικά</string>
   <string name="app_settings_user_interface">Διεπαφή χρήστη</string>
+  <string name="app_settings_notification_settings">Ρυθμίσεις ειδοποιήσεων</string>
+  <string name="app_settings_notification_settings_summary">Διαχείριση καναλιών ειδοποιήσεων και των ρυθμίσεών τους</string>
+  <string name="app_settings_reset_hints">Επαναφορά συμβουλών</string>
+  <string name="app_settings_reset_hints_summary">Ενεργοποιεί ξανά τις συμβουλές που έχουν απορριφθεί προηγουμένως</string>
+  <string name="app_settings_reset_hints_success">Όλες οι συμβουλές θα εμφανιστούν ξανά</string>
   <!--AccountActivity-->
   <string name="account_synchronize_now">Συγχρονισμός τώρα</string>
   <string name="account_synchronizing_now">Γίνεται συγχρονισμός τώρα</string>
   <string name="account_settings">Ρυθμίσεις λογαριασμού</string>
   <string name="account_rename">Μετονομασία λογαριασμού</string>
+  <string name="account_rename_new_name">Τα μη αποθηκευμένα τοπικά δεδομένα ενδέχεται να απορριφθούν. Απαιτείται εκ νέου συγχρονισμός μετά τη μετονομασία. Νέο όνομα λογαριασμού:</string>
   <string name="account_rename_rename">Μετονομασία</string>
   <string name="account_delete">Διαγραφή λογαριασμού</string>
   <string name="account_delete_confirmation_title">Θέλετε να διαγράψετε τον λογαριασμό;</string>
   <string name="account_delete_confirmation_text">Όλα τα τοπικά αντίγραφα των βιβλίων διευθύνσεων, ημερολογίων και λιστών εργασιών θα διαγραφούν.</string>
+  <string name="account_select_collections_hint">Επιλογή συλλογών προς συγχρονισμό</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_synchronize_this_collection">συγχρονισμός αυτής της συλλογής</string>
   <string name="account_read_only">μόνο για ανάγνωση</string>
   <string name="account_calendar">ημερολόγιο</string>
   <string name="account_task_list">λίστα εργασιών</string>
@@ -86,6 +112,7 @@
   <string name="account_create_new_address_book">Δημιουργία νέου βιβλίου διευθύνσεων</string>
   <string name="account_refresh_calendar_list">Ανανέωση λίστας ημερολογίου</string>
   <string name="account_create_new_calendar">Δημιουργία νέου ημερολογίου</string>
+  <string name="account_no_webcal_handler_found">Δεν βρέθηκε εφαρμογή με δυνατότητα Webcal</string>
   <string name="account_install_icsx5">Εγκατάσταση ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Προσθήκη λογαριασμού</string>
@@ -101,12 +128,14 @@
   <string name="login_user_name">Όνομα χρήστη</string>
   <string name="login_user_name_required">Απαιτείται όνομα χρήστη</string>
   <string name="login_base_url">Βασική URL</string>
+  <string name="login_type_url_certificate">Σύνδεση με URL και πιστοποιητικό πελάτη</string>
   <string name="login_select_certificate">Επιλογή πιστοποιητικού</string>
   <string name="login_login">Είσοδος</string>
   <string name="login_back">Πίσω</string>
   <string name="login_create_account">Δημιουργία λογαριασμού</string>
   <string name="login_account_name">Όνομα λογαριασμού</string>
   <string name="login_account_name_info">Χρησιμοποιήστε τη διεύθυνση ηλεκτρονικού ταχυδρομείου ως όνομα λογαριασμού, επειδή το Android θα χρησιμοποιεί το όνομα του λογαριασμού ως πεδίο ORGANIZER για τα συμβάντα που δημιουργείτε. Δεν μπορείτε να έχετε δύο λογαριασμούς με το ίδιο όνομα.</string>
+  <string name="login_account_contact_group_method">Μέθοδος ομάδας επαφών:</string>
   <string name="login_account_name_required">Απαιτείται όνομα λογαριασμού</string>
   <string name="login_account_name_already_taken">Το όνομα λογαριασμού έχει ήδη ληφθεί</string>
   <string name="login_account_not_created">Αδυναμία δημιουργίας λογαριασμού</string>
@@ -122,8 +151,13 @@
   <string name="settings_password">Συνθηματικό</string>
   <string name="settings_password_summary">Ενημερώστε το συνθηματικό σύμφωνα με τον διακομιστή σας.</string>
   <string name="settings_enter_password">Εισάγετε το συνθηματικό σας:</string>
+  <string name="settings_certificate_alias">Ψευδώνυμα πιστοποιητικού πελάτη</string>
   <string name="settings_sync">Συγχρονισμός</string>
+  <string name="settings_sync_interval_contacts">Μεσοδιάστημα συγχρονισμού επαφών</string>
   <string name="settings_sync_summary_manually">Μόνο χειροκίνητα</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Κάθε %d λεπτά + αμέσως στις τοπικές αλλαγές</string>
+  <string name="settings_sync_interval_calendars">Μεσοδιάστημα συγχρονισμού ημερολογίων</string>
+  <string name="settings_sync_interval_tasks">Μεσοδιάστημα συγχρονισμού εργασιών</string>
   <string-array name="settings_sync_interval_names">
     <item>Μόνο χειροκίνητα</item>
     <item>Κάθε 15 λεπτά</item>
@@ -134,24 +168,48 @@
     <item>Μια φορά την ημέρα</item>
   </string-array>
   <string name="settings_sync_wifi_only">Συγχρονισμός μόνο μέσω WiFi</string>
+  <string name="settings_sync_wifi_only_on">Ο συγχρονισμός περιορίζεται στις συνδέσεις WiFi</string>
+  <string name="settings_sync_wifi_only_off">Ο τύπος σύνδεσης δεν λαμβάνεται υπόψη</string>
+  <string name="settings_sync_wifi_only_ssids">Περιορισμός WiFi SSID</string>
+  <string name="settings_sync_wifi_only_ssids_on">Θα γίνεται συγχρονισμός μόνο μέσω %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Θα συγχρονίζεται μόνο μέσω %s (απαιτεί ενεργές υπηρεσίες τοποθεσίας)</string>
   <string name="settings_sync_wifi_only_ssids_off">Θα χρησιμοποιηθούν όλες οι συνδέσεις WiFi</string>
+  <string name="settings_sync_wifi_only_ssids_message">Ονόματα που χωρίζονται με κόμμα (SSIDs) των επιτρεπόμενων δικτύων WiFi (αφήστε κενό για όλους)</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">Για να διαβάσετε ονόματα WiFi, απαιτείται η άδεια θέσης και οι μόνιμα ενεργοποιημένες υπηρεσίες τοποθεσίας.</string>
   <string name="settings_more_info_faq">Περισσότερες πληροφορίες (FAQ)</string>
   <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Αλλαγή μεθόδου ομάδας</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Οι ομάδες είναι ξεχωριστές VCards</item>
+    <item>Οι ομάδες είναι κατηγορίες ανά επαφή</item>
+  </string-array>
+  <string name="settings_contact_group_method_change">Αλλαγή μεθόδου ομάδας</string>
+  <string name="settings_contact_group_method_change_reload_contacts">Αυτό απαιτεί επαναφόρτωση όλων των επαφών. Οι μη αποθηκευμένες τοπικές αλλαγές θα απορριφθούν.</string>
   <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Προθεσμία παρελθόντος συμβάντος</string>
   <string name="settings_sync_time_range_past_none">Όλα τα συμβάντα θα συγχρονίσουν</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Τα συμβάντα πέραν μιας ημέρας θα αγνοηθούν</item>
+    <item quantity="other">Τα συμβάντα πέραν των %d ημερών θα αγνοηθούν </item>
+  </plurals>
   <string name="settings_sync_time_range_past_message">Τα συμβάντα που υπερβαίνουν αυτόν τον αριθμό ημερών στο παρελθόν θα αγνοηθούν (μπορεί να είναι 0). Αφήστε κενό για συγχρονισμό όλων των συμβάντων.</string>
   <string name="settings_manage_calendar_colors">Διαχείριση χρωμάτων ημερολογίου</string>
   <string name="settings_manage_calendar_colors_on">Τα χρώματα του ημερολογίου διαχειρίζονται από το DAVx⁵</string>
   <string name="settings_manage_calendar_colors_off">Τα χρώματα του ημερολογίου δεν ορίστηκαν από το DAVx⁵</string>
+  <string name="settings_event_colors">Υποστήριξη χρώματος στα συμβάντα</string>
+  <string name="settings_event_colors_off_confirm">Η απενεργοποίηση των χρωμάτων στα συμβάντα ενδέχεται να αφαιρέσει τα χρώματα ήδη συγχρονισμένων συμβάντων.</string>
   <!--collection management-->
   <string name="create_addressbook">Δημιουργία βιβλίου διευθύνσεων</string>
   <string name="create_addressbook_display_name_hint">Το βιβλίο διευθύνσεών μου</string>
-  <string name="create_calendar_display_name_hint">Το ημερολόγιό μου</string>
-  <string name="create_calendar_time_zone">Ζώνη ώρας:</string>
+  <string name="create_calendar_type_events_and_tasks">Συνδυασμός (συμβάντα και εργασίες)</string>
+  <string name="create_collection_creating">Δημιουργία συλλογής</string>
   <string name="create_collection_display_name_required">Απαιτείται η ώρα</string>
-  <string name="create_collection_description">Περιγραφή (προαιρετικό):</string>
   <string name="create_collection_create">Δημιουργία</string>
+  <string name="delete_collection">Διαγραφή συλλογής</string>
   <string name="delete_collection_confirm_title">Είστε σίγουρος;</string>
+  <string name="delete_collection_confirm_warning">Αυτή η συλλογή (%s) και όλα τα δεδομένα της θα αφαιρεθούν από τον διακομιστή.</string>
+  <string name="delete_collection_deleting_collection">Διαγραφή συλλογής</string>
+  <string name="collection_force_read_only">Εξαναγκασμός μόνο για ανάγνωση</string>
   <string name="collection_properties">Ιδιότητες</string>
   <string name="collection_properties_url">Διεύθυνση (URL):</string>
   <string name="collection_properties_copy_url">Αντιγραφή URL</string>
@@ -163,6 +221,10 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Πληροφορίες αποσφαλμάτωσης</string>
   <string name="sync_contacts_read_only_address_book">Βιβλίο διευθύνσεων μόνο για ανάγνωση</string>
+  <plurals name="sync_contacts_local_contact_changes_discarded">
+    <item quantity="one">Απορρίφθηκε τοπική αλλαγή επαφής</item>
+    <item quantity="other">Απορρίφθηκαν %d τοπικές αλλαγές επαφών</item>
+  </plurals>
   <string name="sync_error_permissions">Δικαιώματα DAVx⁵</string>
   <string name="sync_error_permissions_text">Απαιτούνται πρόσθετα δικαιώματα</string>
   <string name="sync_error_opentasks_too_old">Πολύ παλιά εφαρμογή OpenTasks</string>
@@ -173,6 +235,11 @@
   <string name="sync_error_local_storage">Σφάλμα τοπικού αποθηκευτικού χώρου – %s</string>
   <string name="sync_error_retry">Επανάληψη</string>
   <string name="sync_error_view_item">Προβολή αντικειμένου</string>
+  <string name="sync_invalid_contact">Ελήφθη μη έγκυρη επαφή από το διακομιστή</string>
+  <string name="sync_invalid_event">Ελήφθη μη έγκυρο συμβάν από το διακομιστή</string>
+  <string name="sync_invalid_task">Έλαβε μη έγκυρη εργασία από το διακομιστή</string>
+  <string name="sync_invalid_resources_ignoring">Αγνόηση ενός ή περισσοτέρων μη έγκυρων πόρων</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: Ασφάλεια σύνδεσης</string>
+  <string name="trust_certificate_unknown_certificate_found">Το DAVx⁵ εντόπισε ένα άγνωστο πιστοποιητικό. Θέλετε να το εμπιστεύεστε;</string>
 </resources>

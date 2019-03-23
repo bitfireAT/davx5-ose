@@ -204,19 +204,9 @@
   <!--collection management-->
   <string name="create_addressbook">إنشاء دفتر عناوين</string>
   <string name="create_addressbook_display_name_hint">دفتر عناويني</string>
-  <string name="create_calendar">إنشاء مجموعة CalDAV</string>
-  <string name="create_calendar_display_name_hint">تقويمي</string>
-  <string name="create_calendar_time_zone">المنطقة الزمنية:</string>
-  <string name="create_calendar_type">نوع المجموعة:</string>
-  <string name="create_calendar_type_only_events">التقويم (أحداث فقط)</string>
-  <string name="create_calendar_type_only_tasks">قائمة مهام (مهام فقط)</string>
   <string name="create_calendar_type_events_and_tasks">مجمّعة (أحداث ومهام)</string>
-  <string name="create_collection_color">أضبط لوناً للمجموعة</string>
   <string name="create_collection_creating">إنشاء المجموعة جارٍ</string>
-  <string name="create_collection_display_name">اسم العرض (العنوان) لهذه المجموعة:</string>
   <string name="create_collection_display_name_required">العنوان مطلوب</string>
-  <string name="create_collection_description">الوصف (اختياري):</string>
-  <string name="create_collection_home_set">المجموعة الابتدائية:</string>
   <string name="create_collection_create">إنشاء</string>
   <string name="delete_collection">حذف المجموعة</string>
   <string name="delete_collection_confirm_title">هل أنت متأكد؟</string>

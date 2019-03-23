@@ -207,19 +207,9 @@
   <!--collection management-->
   <string name="create_addressbook">Créer un carnet d\'adresses</string>
   <string name="create_addressbook_display_name_hint">Mon carnet d\'adresses</string>
-  <string name="create_calendar">Créer une collection CalDAV</string>
-  <string name="create_calendar_display_name_hint">Mon calendrier</string>
-  <string name="create_calendar_time_zone">Fuseau horaire:</string>
-  <string name="create_calendar_type">Type de collection:</string>
-  <string name="create_calendar_type_only_events">Calendrier (événements seulement)</string>
-  <string name="create_calendar_type_only_tasks">Liste de tâches (tâches seulement)</string>
   <string name="create_calendar_type_events_and_tasks">Fusionner (événements et tâches)</string>
-  <string name="create_collection_color">Choisir une couleur pour la collection</string>
   <string name="create_collection_creating">Création collection</string>
-  <string name="create_collection_display_name">Le nom affiché (titre) pour cette collection:</string>
   <string name="create_collection_display_name_required">Titre requis</string>
-  <string name="create_collection_description">Description (facultatif)</string>
-  <string name="create_collection_home_set">Accueil:</string>
   <string name="create_collection_create">Créer</string>
   <string name="delete_collection">Supprimer la collection</string>
   <string name="delete_collection_confirm_title">Êtes-vous sur?</string>

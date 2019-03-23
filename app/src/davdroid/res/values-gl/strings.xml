@@ -207,19 +207,9 @@
   <!--collection management-->
   <string name="create_addressbook">Crear libreta de enderezos</string>
   <string name="create_addressbook_display_name_hint">A miña libreta de enderezos</string>
-  <string name="create_calendar">Crear colección CalDAV</string>
-  <string name="create_calendar_display_name_hint">O meu calendario</string>
-  <string name="create_calendar_time_zone">Fuso horario:</string>
-  <string name="create_calendar_type">Tipo de colección:</string>
-  <string name="create_calendar_type_only_events">Calendario (só eventos)</string>
-  <string name="create_calendar_type_only_tasks">Lista de tarefas (só tarefas)</string>
   <string name="create_calendar_type_events_and_tasks">Combinado (eventos e tarefas)</string>
-  <string name="create_collection_color">Establecer cor da colección</string>
   <string name="create_collection_creating">Creando colección</string>
-  <string name="create_collection_display_name">Mostrar nome (título) de esta colección:</string>
   <string name="create_collection_display_name_required">Requírese o título</string>
-  <string name="create_collection_description">Descrición (optativo):</string>
-  <string name="create_collection_home_set">Estableza enderezo:</string>
   <string name="create_collection_create">Crear</string>
   <string name="delete_collection">Eliminar colección</string>
   <string name="delete_collection_confirm_title">Quere eliminar?</string>

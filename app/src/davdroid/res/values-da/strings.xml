@@ -207,19 +207,9 @@
   <!--collection management-->
   <string name="create_addressbook">Opret adressebog</string>
   <string name="create_addressbook_display_name_hint">Min adressebog</string>
-  <string name="create_calendar">Opret CalDAV-sæt</string>
-  <string name="create_calendar_display_name_hint">Min kalender</string>
-  <string name="create_calendar_time_zone">Tidszone:</string>
-  <string name="create_calendar_type">Type af sæt:</string>
-  <string name="create_calendar_type_only_events">Kalender (kun begivenheder)</string>
-  <string name="create_calendar_type_only_tasks">Opgaveliste (kun opgaver)</string>
   <string name="create_calendar_type_events_and_tasks">Kombineret (begivenheder og opgaver)</string>
-  <string name="create_collection_color">Sæt en farve på sættet</string>
   <string name="create_collection_creating">Opretter sæt</string>
-  <string name="create_collection_display_name">Navn (titel) på dette sæt:</string>
   <string name="create_collection_display_name_required">En titel er påkrævet</string>
-  <string name="create_collection_description">Beskrivelse (valgfri):</string>
-  <string name="create_collection_home_set">Home set:</string>
   <string name="create_collection_create">Opret</string>
   <string name="delete_collection">Slet sæt</string>
   <string name="delete_collection_confirm_title">Er du sikker?</string>

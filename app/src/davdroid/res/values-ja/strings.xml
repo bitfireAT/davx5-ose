@@ -206,19 +206,9 @@
   <!--collection management-->
   <string name="create_addressbook">アドレス帳を作成</string>
   <string name="create_addressbook_display_name_hint">マイ アドレス帳</string>
-  <string name="create_calendar">CalDAV コレクションを作成</string>
-  <string name="create_calendar_display_name_hint">マイ カレンダー</string>
-  <string name="create_calendar_time_zone">タイムゾーン:</string>
-  <string name="create_calendar_type">コレクションの種類:</string>
-  <string name="create_calendar_type_only_events">カレンダー (イベントのみ)</string>
-  <string name="create_calendar_type_only_tasks">タスクリスト (タスクのみ)</string>
   <string name="create_calendar_type_events_and_tasks">組み合わせ (イベントとタスク)</string>
-  <string name="create_collection_color">コレクションの色を設定</string>
   <string name="create_collection_creating">コレクションの作成中</string>
-  <string name="create_collection_display_name">このコレクションの表示名 (タイトル):</string>
   <string name="create_collection_display_name_required">タイトルが必要です</string>
-  <string name="create_collection_description">説明 (オプション):</string>
-  <string name="create_collection_home_set">ホーム セット:</string>
   <string name="create_collection_create">作成</string>
   <string name="delete_collection">コレクションを削除</string>
   <string name="delete_collection_confirm_title">よろしいですか?</string>

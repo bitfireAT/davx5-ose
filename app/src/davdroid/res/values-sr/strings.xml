@@ -188,19 +188,9 @@
   <!--collection management-->
   <string name="create_addressbook">Направи адресар</string>
   <string name="create_addressbook_display_name_hint">Мој адресар</string>
-  <string name="create_calendar">Направи КалДАВ збирку</string>
-  <string name="create_calendar_display_name_hint">Мој календар</string>
-  <string name="create_calendar_time_zone">Временска зона:</string>
-  <string name="create_calendar_type">Тип збирке:</string>
-  <string name="create_calendar_type_only_events">Календар (само догађаји)</string>
-  <string name="create_calendar_type_only_tasks">Листе задатака (само задаци)</string>
   <string name="create_calendar_type_events_and_tasks">Комбиновано (догађаји и задаци)</string>
-  <string name="create_collection_color">Боја збирке</string>
   <string name="create_collection_creating">Правим збирку</string>
-  <string name="create_collection_display_name">Назив (наслов) ове збирке:</string>
   <string name="create_collection_display_name_required">Наслов је обавезан</string>
-  <string name="create_collection_description">Опис (необавезан):</string>
-  <string name="create_collection_home_set">Домаћа фасцикла:</string>
   <string name="create_collection_create">Направи</string>
   <string name="delete_collection">Обриши збирку</string>
   <string name="delete_collection_confirm_title">Да ли сте сигурни?</string>
