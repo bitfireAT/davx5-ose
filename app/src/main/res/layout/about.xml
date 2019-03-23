@@ -26,7 +26,7 @@
             android:layout_width="128dp"
             android:layout_height="128dp"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/ic_launcher_foreground"
+            app:srcCompat="@mipmap/ic_launcher"
             android:layout_marginBottom="16dp"/>
 
         <TextView
