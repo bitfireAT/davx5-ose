@@ -53,7 +53,8 @@ data class CollectionInfo(
         var source: String? = null,
 
         // non-persistent properties
-        var confirmed: Boolean = false
+        var confirmed: Boolean = false,
+        var uiEnabled: Boolean = true
 ): Parcelable {
 
     enum class Type {

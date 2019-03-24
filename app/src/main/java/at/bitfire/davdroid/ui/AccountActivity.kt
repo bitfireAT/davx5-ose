@@ -11,8 +11,7 @@ package at.bitfire.davdroid.ui
 import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.annotation.SuppressLint
-import android.app.Dialog
+import android.app.Application
 import android.content.*
 import android.content.pm.PackageManager
 import android.database.DatabaseUtils
@@ -22,94 +21,123 @@ import android.os.*
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.view.*
-import android.widget.*
+import android.widget.CheckBox
+import android.widget.ImageView
+import android.widget.PopupMenu
+import android.widget.TextView
+import androidx.annotation.MainThread
+import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.DialogFragment
-import androidx.loader.app.LoaderManager
-import androidx.loader.content.AsyncTaskLoader
-import androidx.loader.content.Loader
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import at.bitfire.davdroid.DavService
+import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.closeCompat
+import at.bitfire.davdroid.databinding.ActivityAccountBinding
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.model.ServiceDB.*
-import at.bitfire.davdroid.model.ServiceDB.Collections
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.TaskProvider
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.account_caldav_item.view.*
-import kotlinx.android.synthetic.main.activity_account.*
-import java.lang.ref.WeakReference
-import java.util.*
+import java.util.concurrent.Executors
 import java.util.logging.Level
 
-class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, PopupMenu.OnMenuItemClickListener, LoaderManager.LoaderCallbacks<AccountActivity.AccountInfo> {
+class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, PopupMenu.OnMenuItemClickListener {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
-
-        private fun requestSync(context: Context, account: Account) {
-            val authorities = arrayOf(
-                    context.getString(R.string.address_books_authority),
-                    CalendarContract.AUTHORITY,
-                    TaskProvider.ProviderName.OpenTasks.authority
-            )
-
-            for (authority in authorities) {
-                val extras = Bundle(2)
-                extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)        // manual sync
-                extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)     // run immediately (don't queue)
-                ContentResolver.requestSync(account, authority, extras)
-            }
-        }
-
     }
 
-    lateinit var account: Account
-    private var accountInfo: AccountInfo? = null
+    private lateinit var model: Model
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // account may be a DAVx5 address book account -> use main account in this case
-        account = LocalAddressBook.mainAccount(this,
-                requireNotNull(intent.getParcelableExtra(EXTRA_ACCOUNT)))
-        title = account.name
+        model = ViewModelProviders.of(this).get(Model::class.java)
 
-        setContentView(R.layout.activity_account)
+        val binding = DataBindingUtil.setContentView<ActivityAccountBinding>(this, R.layout.activity_account)
+        binding.lifecycleOwner = this
+        binding.model = model
+
+        // account may be a DAVx5 address book account -> use main account in this case
+        model.initialize(LocalAddressBook.mainAccount(this,
+                requireNotNull(intent.getParcelableExtra(EXTRA_ACCOUNT))))
+        title = model.account.name
+
         val icMenu = AppCompatResources.getDrawable(this, R.drawable.ic_menu_light)
 
-        // CardDAV toolbar
-        carddav_menu.overflowIcon = icMenu
-        carddav_menu.inflateMenu(R.menu.carddav_actions)
-        carddav_menu.setOnMenuItemClickListener(this)
+        // CardDAV
+        binding.carddavMenu.apply {
+            overflowIcon = icMenu
+            inflateMenu(R.menu.carddav_actions)
+            setOnMenuItemClickListener(this@AccountActivity)
 
-        // CalDAV toolbar
-        caldav_menu.overflowIcon = icMenu
-        caldav_menu.inflateMenu(R.menu.caldav_actions)
-        caldav_menu.setOnMenuItemClickListener(this)
+            model.hasAddressBookHomeSets.observe(this@AccountActivity, Observer { hasHomeSets ->
+                menu.findItem(R.id.create_address_book).isEnabled = hasHomeSets
+            })
+        }
+        binding.addressBooks.apply {
+            layoutManager = LinearLayoutManager(this@AccountActivity)
+            adapter = AddressBookAdapter(this@AccountActivity, model)
+        }
 
-        // Webcal toolbar
-        webcal_menu.overflowIcon = icMenu
-        webcal_menu.inflateMenu(R.menu.webcal_actions)
-        webcal_menu.setOnMenuItemClickListener(this)
+        // CalDAV
+        binding.caldavMenu.apply {
+            overflowIcon = icMenu
+            inflateMenu(R.menu.caldav_actions)
+            setOnMenuItemClickListener(this@AccountActivity)
 
-        // load CardDAV/CalDAV collections
-        LoaderManager.getInstance(this).initLoader(0, null, this)
+            model.hasCalendarHomeSets.observe(this@AccountActivity, Observer { hasHomeSets ->
+                menu.findItem(R.id.create_calendar).isEnabled = hasHomeSets
+            })
+        }
+        binding.calendars.apply {
+            layoutManager = LinearLayoutManager(this@AccountActivity)
+            adapter = CalendarAdapter(this@AccountActivity, model)
+        }
+
+        // Webcal
+        binding.webcalMenu.apply {
+            overflowIcon = icMenu
+            inflateMenu(R.menu.webcal_actions)
+            setOnMenuItemClickListener(this@AccountActivity)
+        }
+        binding.webcals.apply {
+            layoutManager = LinearLayoutManager(this@AccountActivity)
+            adapter = WebcalAdapter(this@AccountActivity, model)
+        }
+
+        model.requiredPermissions.observe(this, Observer { permissions ->
+            val askPermissions = permissions.filter { ActivityCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED }
+            if (askPermissions.isNotEmpty())
+                ActivityCompat.requestPermissions(this, askPermissions.toTypedArray(), 0)
+        })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        reload()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (grantResults.any { it == PackageManager.PERMISSION_GRANTED })
-            // we've got additional permissions; try to load everything again
+            // we've got additional permissions; load everything again
+            // (especially Webcal subscriptions, whose status could not be determined without calendar permission)
             reload()
     }
 
@@ -131,11 +159,11 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                 requestSync()
             R.id.settings -> {
                 val intent = Intent(this, AccountSettingsActivity::class.java)
-                intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
+                intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, model.account)
                 startActivity(intent)
             }
             R.id.rename_account ->
-                RenameAccountFragment.newInstance(account).show(supportFragmentManager, null)
+                RenameAccountFragment.newInstance(model.account).show(supportFragmentManager, null)
             R.id.delete_account -> {
                 AlertDialog.Builder(this)
                         .setIcon(R.drawable.ic_error_dark)
@@ -156,45 +184,33 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.refresh_address_books ->
-                accountInfo?.carddav?.let { carddav ->
+                model.cardDavServiceId.value?.let { id ->
                     val intent = Intent(this, DavService::class.java)
                     intent.action = DavService.ACTION_REFRESH_COLLECTIONS
-                    intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, carddav.id)
+                    intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
                     startService(intent)
                 }
             R.id.create_address_book -> {
                 val intent = Intent(this, CreateAddressBookActivity::class.java)
-                intent.putExtra(CreateAddressBookActivity.EXTRA_ACCOUNT, account)
+                intent.putExtra(CreateAddressBookActivity.EXTRA_ACCOUNT, model.account)
                 startActivity(intent)
             }
             R.id.refresh_calendars ->
-                accountInfo?.caldav?.let { caldav ->
+                model.calDavServiceId.value?.let { id ->
                     val intent = Intent(this, DavService::class.java)
                     intent.action = DavService.ACTION_REFRESH_COLLECTIONS
-                    intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, caldav.id)
+                    intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
                     startService(intent)
                 }
             R.id.create_calendar -> {
                 val intent = Intent(this, CreateCalendarActivity::class.java)
-                intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, account)
+                intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, model.account)
                 startActivity(intent)
             }
         }
         return false
     }
 
-
-    private val onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, _ ->
-        if (!view.isEnabled)
-            return@OnItemClickListener
-
-        val list = parent as ListView
-        val adapter = list.adapter as ArrayAdapter<CollectionInfo>
-        val info = adapter.getItem(position)!!
-        val nowChecked = !info.selected
-
-        SelectCollectionTask(applicationContext, info, nowChecked, WeakReference(adapter), WeakReference(view)).execute()
-    }
 
     private val onActionOverflowListener = { anchor: View, info: CollectionInfo ->
         val popup = PopupMenu(this, anchor, Gravity.RIGHT)
@@ -213,10 +229,12 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             when (item.itemId) {
                 R.id.force_read_only -> {
                     val nowChecked = !item.isChecked
-                    SetReadOnlyTask(WeakReference(this), info.id!!, nowChecked).execute()
+                    model.updateCollectionReadOnly(info, nowChecked) {
+                        reload()
+                    }
                 }
                 R.id.delete_collection ->
-                    DeleteCollectionFragment.newInstance(account, info).show(supportFragmentManager, null)
+                    DeleteCollectionFragment.newInstance(model.account, info).show(supportFragmentManager, null)
                 R.id.properties ->
                     CollectionInfoFragment.newInstance(info).show(supportFragmentManager, null)
             }
@@ -224,449 +242,149 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         }
         popup.show()
 
-        // long click was handled
+        // click was handled
         true
     }
 
-    private val webcalOnItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
-        val info = parent.getItemAtPosition(position) as CollectionInfo
-        var uri = Uri.parse(info.source)
-
-        val nowChecked = !info.selected
-        if (nowChecked) {
-            // subscribe to Webcal feed
-            when {
-                uri.scheme.equals("http", true) -> uri = uri.buildUpon().scheme("webcal").build()
-                uri.scheme.equals("https", true) -> uri = uri.buildUpon().scheme("webcals").build()
-            }
-
-            val intent = Intent(Intent.ACTION_VIEW, uri)
-            info.displayName?.let { intent.putExtra("title", it) }
-            info.color?.let { intent.putExtra("color", it) }
-            if (packageManager.resolveActivity(intent, 0) != null)
-                startActivity(intent)
-            else {
-                val snack = Snackbar.make(parent, R.string.account_no_webcal_handler_found, Snackbar.LENGTH_LONG)
-
-                val installIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=at.bitfire.icsdroid"))
-                if (packageManager.resolveActivity(installIntent, 0) != null)
-                    snack.setAction(R.string.account_install_icsx5) {
-                        startActivity(installIntent)
-                    }
-
-                snack.show()
-            }
-        } else {
-            // unsubscribe from Webcal feed
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED)
-                contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
-                    try {
-                        provider.delete(CalendarContract.Calendars.CONTENT_URI, "${CalendarContract.Calendars.NAME}=?", arrayOf(info.source))
-                        reload()
-                    } finally {
-                        @Suppress("DEPRECATION")
-                        if (Build.VERSION.SDK_INT >= 24)
-                            provider.close()
-                        else
-                            provider.release()
-                    }
-                }
-        }
-    }
-
-
-    /* TASKS */
-
-    @SuppressLint("StaticFieldLeak")
-    class SelectCollectionTask(
-            val applicationContext: Context,
-
-            val info: CollectionInfo,
-            val nowChecked: Boolean,
-            val adapter: WeakReference<ArrayAdapter<*>>,
-            val view: WeakReference<View>
-    ): AsyncTask<Void, Void, Void>() {
-
-        override fun onPreExecute() {
-            view.get()?.isEnabled = false
-        }
-
-        override fun doInBackground(vararg params: Void?): Void? {
-            val values = ContentValues(1)
-            values.put(Collections.SYNC, if (nowChecked) 1 else 0)
-
-            OpenHelper(applicationContext).use { dbHelper ->
-                val db = dbHelper.writableDatabase
-                db.update(Collections._TABLE, values, "${Collections.ID}=?", arrayOf(info.id.toString()))
-            }
-
-            return null
-        }
-
-        override fun onPostExecute(result: Void?) {
-            info.selected = nowChecked
-            adapter.get()?.notifyDataSetChanged()
-            view.get()?.isEnabled = true
-        }
-
-    }
-
-    class SetReadOnlyTask(
-            val activity: WeakReference<AccountActivity>,
-            val id: Long,
-            val nowChecked: Boolean
-    ): AsyncTask<Void, Void, Void>() {
-
-        override fun doInBackground(vararg params: Void?): Void? {
-            activity.get()?.let { context ->
-                OpenHelper(context).use { dbHelper ->
-                    val values = ContentValues(1)
-                    values.put(Collections.FORCE_READ_ONLY, nowChecked)
-
-                    val db = dbHelper.writableDatabase
-                    db.update(Collections._TABLE, values, "${Collections.ID}=?", arrayOf(id.toString()))
-                }
-            }
-            return null
-        }
-
-        override fun onPostExecute(result: Void?) {
-            activity.get()?.reload()
-        }
-
-    }
-
-
-    /* LOADERS AND LOADED DATA */
-
-    class AccountInfo {
-        var carddav: ServiceInfo? = null
-        var caldav: ServiceInfo? = null
-
-        class ServiceInfo {
-            var id: Long? = null
-            var refreshing = false
-
-            var hasHomeSets = false
-            var collections = listOf<CollectionInfo>()
-        }
-    }
-
-    override fun onCreateLoader(id: Int, args: Bundle?) =
-            AccountLoader(this, account)
-
     fun reload() {
-        LoaderManager.getInstance(this).restartLoader(0, null, this)
-    }
-
-    override fun onLoadFinished(loader: Loader<AccountInfo>, info: AccountInfo?) {
-        accountInfo = info
-
-        if (info?.caldav?.collections?.any { it.selected } != true &&
-            info?.carddav?.collections?.any { it.selected} != true)
-            select_collections_hint.visibility = View.VISIBLE
-
-        carddav.visibility = info?.carddav?.let { carddav ->
-            carddav_refreshing.visibility = if (carddav.refreshing) View.VISIBLE else View.GONE
-
-            address_books.isEnabled = !carddav.refreshing
-            address_books.alpha = if (carddav.refreshing) 0.5f else 1f
-
-            carddav_menu.menu.findItem(R.id.create_address_book).isEnabled = carddav.hasHomeSets
-
-            val adapter = AddressBookAdapter(this)
-            adapter.addAll(carddav.collections)
-            address_books.adapter = adapter
-            address_books.onItemClickListener = onItemClickListener
-
-            View.VISIBLE
-        } ?: View.GONE
-
-        caldav.visibility = info?.caldav?.let { caldav ->
-            caldav_refreshing.visibility = if (caldav.refreshing) View.VISIBLE else View.GONE
-
-            calendars.isEnabled = !caldav.refreshing
-            calendars.alpha = if (caldav.refreshing) 0.5f else 1f
-
-            caldav_menu.menu.findItem(R.id.create_calendar).isEnabled = caldav.hasHomeSets
-
-            val adapter = CalendarAdapter(this)
-            adapter.addAll(caldav.collections.filter { it.type == CollectionInfo.Type.CALENDAR })
-            calendars.adapter = adapter
-            calendars.onItemClickListener = onItemClickListener
-
-            View.VISIBLE
-        } ?: View.GONE
-
-        webcal.visibility = info?.caldav?.let {
-            val collections = it.collections.filter { it.type == CollectionInfo.Type.WEBCAL }
-
-            val adapter = CalendarAdapter(this)
-            adapter.addAll(collections)
-            webcals.adapter = adapter
-            webcals.onItemClickListener = webcalOnItemClickListener
-
-            if (collections.isNotEmpty())
-                View.VISIBLE
-            else
-                View.GONE
-        } ?: View.GONE
-
-        // ask for permissions
-        val requiredPermissions = mutableSetOf<String>()
-        if (info?.carddav != null) {
-            // if there is a CardDAV service, ask for contacts permissions
-            requiredPermissions += Manifest.permission.READ_CONTACTS
-            requiredPermissions += Manifest.permission.WRITE_CONTACTS
-        }
-
-        if (info?.caldav != null) {
-            // if there is a CalDAV service, ask for calendar and tasks permissions
-            requiredPermissions += Manifest.permission.READ_CALENDAR
-            requiredPermissions += Manifest.permission.WRITE_CALENDAR
-
-            if (LocalTaskList.tasksProviderAvailable(this)) {
-                requiredPermissions += TaskProvider.PERMISSION_READ_TASKS
-                requiredPermissions += TaskProvider.PERMISSION_WRITE_TASKS
-            }
-        }
-
-        val askPermissions = requiredPermissions.filter { ActivityCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED }
-        if (askPermissions.isNotEmpty())
-            ActivityCompat.requestPermissions(this, askPermissions.toTypedArray(), 0)
-    }
-
-    override fun onLoaderReset(loader: Loader<AccountInfo>) {
-        address_books?.adapter = null
-        calendars?.adapter = null
-    }
-
-
-    class AccountLoader(
-            context: Context,
-            val account: Account
-    ): AsyncTaskLoader<AccountInfo>(context), DavService.RefreshingStatusListener, SyncStatusObserver {
-
-        private var syncStatusListener: Any? = null
-
-        private var davServiceConn: ServiceConnection? = null
-        private var davService: DavService.InfoBinder? = null
-
-        override fun onStartLoading() {
-            // get notified when sync status changes
-            if (syncStatusListener == null)
-                syncStatusListener = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this)
-
-            // bind to DavService to get notified when it's running
-            if (davServiceConn == null) {
-                val serviceConn = object: ServiceConnection {
-                    override fun onServiceConnected(name: ComponentName, service: IBinder) {
-                        // get notified when DavService is running
-                        davService = service as DavService.InfoBinder
-                        service.addRefreshingStatusListener(this@AccountLoader, false)
-
-                        onContentChanged()
-                    }
-
-                    override fun onServiceDisconnected(name: ComponentName) {
-                        davService = null
-                    }
-                }
-                if (context.bindService(Intent(context, DavService::class.java), serviceConn, Context.BIND_AUTO_CREATE))
-                    davServiceConn = serviceConn
-            } else
-                forceLoad()
-        }
-
-        override fun onReset() {
-            syncStatusListener?.let {
-                ContentResolver.removeStatusChangeListener(it)
-                syncStatusListener = null
-            }
-
-            davService?.removeRefreshingStatusListener(this)
-            davServiceConn?.let {
-                context.unbindService(it)
-                davServiceConn = null
-            }
-        }
-
-        override fun onDavRefreshStatusChanged(id: Long, refreshing: Boolean) =
-                onContentChanged()
-
-        override fun onStatusChanged(which: Int) =
-                onContentChanged()
-
-        override fun loadInBackground(): AccountInfo {
-            val info = AccountInfo()
-
-            OpenHelper(context).use { dbHelper ->
-                val db = dbHelper.readableDatabase
-                db.query(
-                        Services._TABLE,
-                        arrayOf(Services.ID, Services.SERVICE),
-                        "${Services.ACCOUNT_NAME}=?", arrayOf(account.name),
-                        null, null, null).use { cursor ->
-                    while (cursor.moveToNext()) {
-                        val id = cursor.getLong(0)
-                        when (cursor.getString(1)) {
-                            Services.SERVICE_CARDDAV -> {
-                                val carddav = AccountInfo.ServiceInfo()
-                                info.carddav = carddav
-                                carddav.id = id
-                                carddav.refreshing =
-                                        davService?.isRefreshing(id) ?: false ||
-                                        ContentResolver.isSyncActive(account, context.getString(R.string.address_books_authority))
-
-                                val accountManager = AccountManager.get(context)
-                                for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
-                                    val addressBook = LocalAddressBook(context, addrBookAccount, null)
-                                    try {
-                                        if (account == addressBook.mainAccount)
-                                            carddav.refreshing = carddav.refreshing || ContentResolver.isSyncActive(addrBookAccount, ContactsContract.AUTHORITY)
-                                    } catch(e: Exception) {
-                                    }
-                                }
-
-                                carddav.hasHomeSets = hasHomeSets(db, id)
-                                carddav.collections = readCollections(db, id)
-                            }
-                            Services.SERVICE_CALDAV -> {
-                                val caldav = AccountInfo.ServiceInfo()
-                                info.caldav = caldav
-                                caldav.id = id
-                                caldav.refreshing =
-                                        davService?.isRefreshing(id) ?: false ||
-                                        ContentResolver.isSyncActive(account, CalendarContract.AUTHORITY) ||
-                                        ContentResolver.isSyncActive(account, TaskProvider.ProviderName.OpenTasks.authority)
-                                caldav.hasHomeSets = hasHomeSets(db, id)
-                                caldav.collections = readCollections(db, id)
-                            }
-                        }
-                    }
-                }
-            }
-
-            return info
-        }
-
-        private fun hasHomeSets(db: SQLiteDatabase, service: Long): Boolean {
-            db.query(ServiceDB.HomeSets._TABLE, null, "${ServiceDB.HomeSets.SERVICE_ID}=?",
-                    arrayOf(service.toString()), null, null, null)?.use { cursor ->
-                return cursor.count > 0
-            }
-            return false
-        }
-
-        @SuppressLint("Recycle")
-        private fun readCollections(db: SQLiteDatabase, service: Long): List<CollectionInfo>  {
-            val collections = LinkedList<CollectionInfo>()
-            db.query(Collections._TABLE, null, Collections.SERVICE_ID + "=?", arrayOf(service.toString()),
-                    null, null, "${Collections.SUPPORTS_VEVENT} DESC,${Collections.DISPLAY_NAME}").use { cursor ->
-                while (cursor.moveToNext()) {
-                    val values = ContentValues(cursor.columnCount)
-                    DatabaseUtils.cursorRowToContentValues(cursor, values)
-                    collections.add(CollectionInfo(values))
-                }
-            }
-
-            // Webcal: check whether calendar is already subscribed by ICSdroid
-            // (or any other app that stores the URL in Calendars.NAME)
-            val webcalCollections = collections.filter { it.type == CollectionInfo.Type.WEBCAL }
-            if (webcalCollections.isNotEmpty() && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
-                context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
-                    try {
-                        for (info in webcalCollections) {
-                            provider.query(CalendarContract.Calendars.CONTENT_URI, null,
-                                    "${CalendarContract.Calendars.NAME}=?", arrayOf(info.source), null)?.use { cursor ->
-                                if (cursor.moveToNext())
-                                    info.selected = true
-                            }
-                        }
-                    } finally {
-                        @Suppress("DEPRECATION")
-                        if (Build.VERSION.SDK_INT >= 24)
-                            provider.close()
-                        else
-                            provider.release()
-                    }
-                }
-
-            return collections
-        }
-
+        model.reload()
     }
 
 
     /* LIST ADAPTERS */
 
     class AddressBookAdapter(
-            context: Context
-    ): ArrayAdapter<CollectionInfo>(context, R.layout.account_carddav_item) {
-        override fun getView(position: Int, _v: View?, parent: ViewGroup?): View {
-            val v = _v ?: LayoutInflater.from(context).inflate(R.layout.account_carddav_item, parent, false)
-            val info = getItem(position)!!
+            val activity: AccountActivity,
+            val model: Model
+    ): RecyclerView.Adapter<AddressBookAdapter.AddressBookViewHolder>() {
 
-            val checked: CheckBox = v.findViewById(R.id.checked)
-            checked.isChecked = info.selected
+        class AddressBookViewHolder(view: View): RecyclerView.ViewHolder(view)
 
-            var tv: TextView = v.findViewById(R.id.title)
-            tv.text = if (!info.displayName.isNullOrBlank()) info.displayName else info.url.toString()
+        init {
+            model.addressBooks.observe(activity, Observer {
+                notifyDataSetChanged()
+            })
+        }
 
-            tv = v.findViewById(R.id.description)
-            if (info.description.isNullOrBlank())
-                tv.visibility = View.GONE
-            else {
-                tv.visibility = View.VISIBLE
-                tv.text = info.description
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+                AddressBookViewHolder(
+                        LayoutInflater.from(parent.context).inflate(R.layout.account_carddav_item, parent, false)
+                )
+
+        override fun getItemCount() = model.addressBooks.value?.size ?: 0
+
+        override fun onBindViewHolder(holder: AddressBookViewHolder, position: Int) {
+            val info = model.addressBooks.value?.get(position) ?: return
+            val v = holder.itemView
+
+            if (info.uiEnabled)
+                v.setOnClickListener {
+                    info.uiEnabled = false
+                    notifyItemChanged(position)
+
+                    val nowChecked = !info.selected
+                    model.updateCollectionSelected(info, nowChecked) {
+                        info.selected = nowChecked
+                        v.findViewById<CheckBox>(R.id.checked).isChecked = nowChecked
+
+                        info.uiEnabled = true
+                        notifyItemChanged(position)
+                    }
+                }
+            else
+                v.setOnClickListener(null)
+
+            v.findViewById<CheckBox>(R.id.checked).apply {
+                isEnabled = info.uiEnabled
+                isChecked = info.selected
             }
 
-            v.findViewById<ImageView>(R.id.read_only).visibility =
-                    if (!info.privWriteContent || info.forceReadOnly) View.VISIBLE else View.GONE
+            v.findViewById<TextView>(R.id.title).text =
+                    if (!info.displayName.isNullOrBlank()) info.displayName else info.url.toString()
 
-            v.findViewById<ImageView>(R.id.action_overflow).setOnClickListener { view ->
-                @Suppress("ReplaceSingleLineLet")
-                (context as? AccountActivity)?.let {
-                    it.onActionOverflowListener(view, info)
+            v.findViewById<TextView>(R.id.description).apply {
+                if (info.description.isNullOrBlank())
+                    visibility = View.GONE
+                else {
+                    text = info.description
+                    visibility = View.VISIBLE
                 }
             }
 
-            return v
+            v.findViewById<View>(R.id.read_only).visibility =
+                    if (!info.privWriteContent || info.forceReadOnly) View.VISIBLE else View.GONE
+
+            v.findViewById<ImageView>(R.id.action_overflow).apply {
+                if (info.uiEnabled)
+                    setOnClickListener { view ->
+                        activity.onActionOverflowListener(view, info)
+                    }
+                else
+                    setOnClickListener(null)
+            }
         }
+
     }
 
-    class CalendarAdapter(
-            context: Context
-    ): ArrayAdapter<CollectionInfo>(context, R.layout.account_caldav_item) {
-        override fun getView(position: Int, _v: View?, parent: ViewGroup?): View {
-            val v = _v ?: LayoutInflater.from(context).inflate(R.layout.account_caldav_item, parent, false)
-            val info = getItem(position)!!
+    open class CalendarAdapter(
+            val activity: AccountActivity,
+            val model: Model
+    ): RecyclerView.Adapter<CalendarAdapter.CalendarViewHolder>() {
 
-            val enabled = info.selected || info.supportsVEVENT || info.supportsVTODO
-            v.isEnabled = enabled
-            v.checked.isEnabled = enabled
+        open fun data() = model.calendars
 
-            val checked: CheckBox = v.findViewById(R.id.checked)
-            checked.isChecked = info.selected
+        class CalendarViewHolder(view: View): RecyclerView.ViewHolder(view)
 
-            val vColor: View = v.findViewById(R.id.color)
-            vColor.visibility = info.color?.let {
-                vColor.setBackgroundColor(it)
-                View.VISIBLE
-            } ?: View.INVISIBLE
+        init {
+            data().observe(activity, Observer {
+                notifyDataSetChanged()
+            })
+        }
 
-            var tv: TextView = v.findViewById(R.id.title)
-            tv.text = if (!info.displayName.isNullOrBlank()) info.displayName else info.url.toString()
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+                CalendarViewHolder(
+                        LayoutInflater.from(parent.context).inflate(R.layout.account_caldav_item, parent, false)
+                )
 
-            tv = v.findViewById(R.id.description)
-            if (info.description.isNullOrBlank())
-                tv.visibility = View.GONE
-            else {
-                tv.visibility = View.VISIBLE
-                tv.text = info.description
+        override fun getItemCount() = data().value?.size ?: 0
+
+        override fun onBindViewHolder(holder: CalendarViewHolder, position: Int) {
+            val info = data().value?.get(position) ?: return
+            val v = holder.itemView
+
+            val enabled = (info.selected || info.supportsVEVENT || info.supportsVTODO) && info.uiEnabled
+            if (enabled)
+                v.setOnClickListener {
+                    onClickListener(it, position, info)
+                }
+            else
+                v.setOnClickListener(null)
+            v.findViewById<CheckBox>(R.id.checked).apply {
+                isEnabled = enabled
+                isChecked = info.selected
             }
 
-            v.findViewById<ImageView>(R.id.read_only).visibility =
+            v.findViewById<View>(R.id.color).apply {
+                if (info.color != null) {
+                    setBackgroundColor(info.color!!)
+                    visibility = View.VISIBLE
+                } else
+                    visibility = View.INVISIBLE
+            }
+
+            v.findViewById<TextView>(R.id.title).text =
+                    if (!info.displayName.isNullOrBlank()) info.displayName else info.url.toString()
+
+            v.findViewById<TextView>(R.id.description).apply {
+                if (info.description.isNullOrBlank())
+                    visibility = View.GONE
+                else {
+                    text = info.description
+                    visibility = View.VISIBLE
+                }
+            }
+
+            v.findViewById<View>(R.id.read_only).visibility =
                     if (!info.privWriteContent || info.forceReadOnly) View.VISIBLE else View.GONE
 
             v.findViewById<ImageView>(R.id.events).visibility =
@@ -677,130 +395,84 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
             val overflow = v.findViewById<ImageView>(R.id.action_overflow)
             if (info.type == CollectionInfo.Type.WEBCAL)
-                overflow.visibility = View.GONE
-            else
-                overflow.setOnClickListener { view ->
-                    (context as? AccountActivity)?.let {
-                        it.onActionOverflowListener(view, info)
+                overflow.visibility = View.INVISIBLE
+            else {
+                if (info.uiEnabled)
+                    overflow.setOnClickListener { view ->
+                        activity.onActionOverflowListener(view, info)
                     }
-                }
-
-            return v
+                else
+                    overflow.setOnClickListener(null)
+            }
         }
+
+        open fun onClickListener(parent: View, position: Int, info: CollectionInfo)
+        {
+            info.uiEnabled = false
+            notifyItemChanged(position)
+
+            val nowChecked = !info.selected
+            model.updateCollectionSelected(info, nowChecked) {
+                info.selected = nowChecked
+                parent.findViewById<CheckBox>(R.id.checked).isChecked = nowChecked
+
+                info.uiEnabled = true
+                notifyItemChanged(position)
+            }
+        }
+
     }
 
+    class WebcalAdapter(
+            activity: AccountActivity,
+            model: Model
+    ): CalendarAdapter(activity, model) {
 
-    /* DIALOG FRAGMENTS */
+        override fun data() = model.webcals
 
-    class RenameAccountFragment: DialogFragment() {
+        override fun onClickListener(parent: View, position: Int, info: CollectionInfo) {
+            val nowChecked = !info.selected
+            var uri = Uri.parse(info.source)
 
-        companion object {
+            if (nowChecked) {
+                // subscribe to Webcal feed
+                when {
+                    uri.scheme.equals("http", true) -> uri = uri.buildUpon().scheme("webcal").build()
+                    uri.scheme.equals("https", true) -> uri = uri.buildUpon().scheme("webcals").build()
+                }
 
-            const val ARG_ACCOUNT = "account"
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                info.displayName?.let { intent.putExtra("title", it) }
+                info.color?.let { intent.putExtra("color", it) }
 
-            fun newInstance(account: Account): RenameAccountFragment {
-                val fragment = RenameAccountFragment()
-                val args = Bundle(1)
-                args.putParcelable(ARG_ACCOUNT, account)
-                fragment.arguments = args
-                return fragment
+                if (activity.packageManager.resolveActivity(intent, 0) != null)
+                    activity.startActivity(intent)
+                else {
+                    val snack = Snackbar.make(parent, R.string.account_no_webcal_handler_found, Snackbar.LENGTH_LONG)
+
+                    val installIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=at.bitfire.icsdroid"))
+                    if (activity.packageManager.resolveActivity(installIntent, 0) != null)
+                        snack.setAction(R.string.account_install_icsx5) {
+                            activity.startActivityForResult(installIntent, 0)
+                        }
+
+                    snack.show()
+                }
+            } else {
+                // unsubscribe from Webcal feed
+                if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED)
+                    activity.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
+                        try {
+                            provider.delete(CalendarContract.Calendars.CONTENT_URI, "${CalendarContract.Calendars.NAME}=?", arrayOf(info.source))
+                            activity.reload()
+                        } finally {
+                            provider.closeCompat()
+                        }
+                    }
+
             }
-
         }
 
-        @SuppressLint("Recycle")
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val oldAccount: Account = arguments!!.getParcelable(ARG_ACCOUNT)!!
-
-            val editText = EditText(activity)
-            editText.setText(oldAccount.name)
-
-            return AlertDialog.Builder(activity!!)
-                    .setTitle(R.string.account_rename)
-                    .setMessage(R.string.account_rename_new_name)
-                    .setView(editText)
-                    .setPositiveButton(R.string.account_rename_rename, DialogInterface.OnClickListener { _, _ ->
-                        val newName = editText.text.toString()
-
-                        if (newName == oldAccount.name)
-                            return@OnClickListener
-
-                        // remember sync intervals
-                        val oldSettings = AccountSettings(requireActivity(), oldAccount)
-                        val authorities = arrayOf(
-                                getString(R.string.address_books_authority),
-                                CalendarContract.AUTHORITY,
-                                TaskProvider.ProviderName.OpenTasks.authority
-                        )
-                        val syncIntervals = authorities.map { Pair(it, oldSettings.getSyncInterval(it)) }
-
-                        val accountManager = AccountManager.get(activity)
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                            accountManager.renameAccount(oldAccount, newName, {
-                                // account has now been renamed
-                                Logger.log.info("Updating account name references")
-
-                                // cancel maybe running synchronization
-                                ContentResolver.cancelSync(oldAccount, null)
-                                for (addrBookAccount in accountManager.getAccountsByType(getString(R.string.account_type_address_book)))
-                                    ContentResolver.cancelSync(addrBookAccount, null)
-
-                                // update account name references in database
-                                OpenHelper(requireActivity()).use { dbHelper ->
-                                    ServiceDB.onRenameAccount(dbHelper.writableDatabase, oldAccount.name, newName)
-                                }
-
-                                // update main account of address book accounts
-                                if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED)
-                                    try {
-                                        requireActivity().contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.let { provider ->
-                                            for (addrBookAccount in accountManager.getAccountsByType(getString(R.string.account_type_address_book)))
-                                                try {
-                                                    val addressBook = LocalAddressBook(requireActivity(), addrBookAccount, provider)
-                                                    if (oldAccount == addressBook.mainAccount)
-                                                        addressBook.mainAccount = Account(newName, oldAccount.type)
-                                                } finally {
-                                                    @Suppress("DEPRECATION")
-                                                    if (Build.VERSION.SDK_INT >= 24)
-                                                        provider.close()
-                                                    else
-                                                        provider.release()
-                                                }
-                                        }
-                                    } catch(e: Exception) {
-                                        Logger.log.log(Level.SEVERE, "Couldn't update address book accounts", e)
-                                    }
-
-                                // calendar provider doesn't allow changing account_name of Events
-                                // (all events will have to be downloaded again)
-
-                                // update account_name of local tasks
-                                try {
-                                    LocalTaskList.onRenameAccount(activity!!.contentResolver, oldAccount.name, newName)
-                                } catch(e: Exception) {
-                                    Logger.log.log(Level.SEVERE, "Couldn't propagate new account name to tasks provider", e)
-                                }
-
-                                // retain sync intervals
-                                val newAccount = Account(newName, oldAccount.type)
-                                val newSettings = AccountSettings(requireActivity(), newAccount)
-                                for ((authority, interval) in syncIntervals) {
-                                    if (interval == null)
-                                        ContentResolver.setIsSyncable(newAccount, authority, 0)
-                                    else {
-                                        ContentResolver.setIsSyncable(newAccount, authority, 1)
-                                        newSettings.setSyncInterval(authority, interval)
-                                    }
-                                }
-
-                                // synchronize again
-                                requestSync(activity!!, newAccount)
-                            }, null)
-                        activity!!.finish()
-                    })
-                    .setNegativeButton(android.R.string.cancel) { _, _ -> }
-                    .create()
-        }
     }
 
 
@@ -810,7 +482,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         val accountManager = AccountManager.get(this)
 
         if (Build.VERSION.SDK_INT >= 22)
-            accountManager.removeAccount(account, this, { future ->
+            accountManager.removeAccount(model.account, this, { future ->
                 try {
                     if (future.result.getBoolean(AccountManager.KEY_BOOLEAN_RESULT))
                         Handler(Looper.getMainLooper()).post {
@@ -821,7 +493,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                 }
             }, null)
         else
-            accountManager.removeAccount(account, { future ->
+            accountManager.removeAccount(model.account, { future ->
                 try {
                     if (future.result)
                         Handler(Looper.getMainLooper()).post {
@@ -834,8 +506,235 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     }
 
     private fun requestSync() {
-        requestSync(this, account)
+        DavUtils.requestSync(this, model.account)
         Snackbar.make(findViewById(R.id.parent), R.string.account_synchronizing_now, Snackbar.LENGTH_LONG).show()
+    }
+
+
+    /* MODEL */
+
+    class Model(
+            val context: Application
+    ): AndroidViewModel(context), SyncStatusObserver, DavService.RefreshingStatusListener {
+
+        private var initialized = false
+        lateinit var account: Account
+
+        val cardDavServiceId = MutableLiveData<Long>()
+        val cardDavRefreshing = MutableLiveData<Boolean>()
+        val addressBooks = MutableLiveData<List<CollectionInfo>>()
+        val addressBooksSelected = MutableLiveData<Boolean>()
+        val hasAddressBookHomeSets = MutableLiveData<Boolean>()
+
+        val calDavServiceId = MutableLiveData<Long>()
+        val calDavRefreshing = MutableLiveData<Boolean>()
+        val calendars = MutableLiveData<List<CollectionInfo>>()
+        val calendarsSelected = MutableLiveData<Boolean>()
+        val hasCalendarHomeSets = MutableLiveData<Boolean>()
+
+        val webcals = MutableLiveData<List<CollectionInfo>>()
+
+        val requiredPermissions = MutableLiveData<List<String>>()
+
+        var syncStatusListener: Any? = null
+
+        @Volatile
+        private var davService: DavService.InfoBinder? = null
+        private var davServiceConn: ServiceConnection? = null
+
+        private val executor = Executors.newSingleThreadExecutor()
+
+        @MainThread
+        fun initialize(account: Account) {
+            if (initialized)
+                return
+            this.account = account
+
+            // observe Account sync status
+            syncStatusListener = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this)
+
+            // observe DavService status
+            val svcConn = object: ServiceConnection {
+                override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                    val svc = service as DavService.InfoBinder
+                    davService = svc
+                    svc.addRefreshingStatusListener(this@Model, true)
+                }
+                override fun onServiceDisconnected(name: ComponentName?) {
+                    davService = null
+                }
+            }
+            if (context.bindService(Intent(context, DavService::class.java), svcConn, Context.BIND_AUTO_CREATE))
+                davServiceConn = svcConn
+        }
+
+        override fun onCleared() {
+            davServiceConn?.let { context.unbindService(it) }
+            ContentResolver.removeStatusChangeListener(syncStatusListener)
+        }
+
+        fun reload() {
+            executor.submit {
+                val neededPermissions = mutableListOf<String>()
+
+                OpenHelper(context).use { dbHelper ->
+                    val db = dbHelper.readableDatabase
+                    db.query(
+                            Services._TABLE,
+                            arrayOf(Services.ID, Services.SERVICE),
+                            "${Services.ACCOUNT_NAME}=?", arrayOf(account.name),
+                            null, null, null).use { cursor ->
+                        while (cursor.moveToNext()) {
+                            val id = cursor.getLong(0)
+                            when (cursor.getString(1)) {
+                                Services.SERVICE_CARDDAV -> {
+                                    cardDavServiceId.postValue(id)
+                                    hasAddressBookHomeSets.postValue(hasHomeSets(db, id))
+
+                                    val collections = readCollections(db, id)
+                                    if (collections.isNotEmpty())
+                                        neededPermissions.addAll(arrayOf(
+                                                Manifest.permission.READ_CONTACTS,
+                                                Manifest.permission.WRITE_CONTACTS
+                                        ))
+
+                                    addressBooks.postValue(collections)
+                                }
+                                Services.SERVICE_CALDAV -> {
+                                    calDavServiceId.postValue(id)
+                                    hasCalendarHomeSets.postValue(hasHomeSets(db, id))
+
+                                    val collections = readCollections(db, id)
+                                    if (collections.isNotEmpty()) {
+                                        neededPermissions.addAll(arrayOf(
+                                                Manifest.permission.READ_CALENDAR,
+                                                Manifest.permission.WRITE_CALENDAR
+                                        ))
+
+                                        if (LocalTaskList.tasksProviderAvailable(context)) {
+                                            neededPermissions.addAll(arrayOf(
+                                                    TaskProvider.PERMISSION_READ_TASKS,
+                                                    TaskProvider.PERMISSION_WRITE_TASKS
+                                            ))
+                                        }
+                                    }
+
+                                    calendars.postValue(collections.filter { it.type == CollectionInfo.Type.CALENDAR })
+
+                                    val webcalCollections = collections.filter { it.type == CollectionInfo.Type.WEBCAL }
+                                    // check whether Webcal subscriptions are subscribed by ICSx5
+                                    webcalCollections.forEach { it.selected = false }
+                                    if (webcalCollections.isNotEmpty() && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
+                                        context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
+                                            try {
+                                                for (info in webcalCollections) {
+                                                    provider.query(CalendarContract.Calendars.CONTENT_URI, null,
+                                                            "${CalendarContract.Calendars.NAME}=?", arrayOf(info.source), null)?.use { cursor ->
+                                                        if (cursor.moveToNext())
+                                                            info.selected = true
+                                                    }
+                                                }
+                                            } finally {
+                                                provider.closeCompat()
+                                            }
+                                        }
+                                    webcals.postValue(webcalCollections)
+                                }
+                            }
+                        }
+                    }
+
+                    requiredPermissions.postValue(neededPermissions)
+                }
+            }
+        }
+
+        private fun readCollections(db: SQLiteDatabase, service: Long): List<CollectionInfo>  {
+            val collections = mutableListOf<CollectionInfo>()
+            db.query(Collections._TABLE, null, Collections.SERVICE_ID + "=?", arrayOf(service.toString()),
+                    null, null, Collections.DISPLAY_NAME).use { cursor ->
+                while (cursor.moveToNext()) {
+                    val values = ContentValues(cursor.columnCount)
+                    DatabaseUtils.cursorRowToContentValues(cursor, values)
+                    collections.add(CollectionInfo(values))
+                }
+            }
+            return collections
+        }
+
+        private fun hasHomeSets(db: SQLiteDatabase, service: Long): Boolean {
+            db.query(ServiceDB.HomeSets._TABLE, null, "${ServiceDB.HomeSets.SERVICE_ID}=?",
+                    arrayOf(service.toString()), null, null, null)?.use { cursor ->
+                return cursor.count > 0
+            }
+            return false
+        }
+
+        override fun onStatusChanged(which: Int) {
+            updateRefreshing()
+        }
+
+        override fun onDavRefreshStatusChanged(id: Long, refreshing: Boolean) {
+            if (id == cardDavServiceId.value || id == calDavServiceId.value)
+                updateRefreshing()
+        }
+
+        override fun onDavRefreshFinished(id: Long) {
+            if (id == cardDavServiceId.value || id == calDavServiceId.value)
+                reload()
+        }
+
+        private fun updateRefreshing() {
+            // address books authority for current account syncing?
+            var contactsSyncActive = ContentResolver.isSyncActive(account, context.getString(R.string.address_books_authority))
+            // any contacts provider authority for address book accounts of current main account syncing?
+            val accountManager = AccountManager.get(context)
+            for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
+                val addressBook = LocalAddressBook(context, addrBookAccount, null)
+                try {
+                    if (account == addressBook.mainAccount)
+                        if (ContentResolver.isSyncActive(addrBookAccount, ContactsContract.AUTHORITY))
+                            contactsSyncActive = true
+                } catch(e: Exception) {
+                }
+            }
+            val svcCardDavRefreshing = cardDavServiceId.value?.let { id -> davService?.isRefreshing(id) } ?: false
+            cardDavRefreshing.postValue(contactsSyncActive || svcCardDavRefreshing)
+
+            val calendarSyncActive = ContentResolver.isSyncActive(account, context.getString(R.string.address_books_authority))
+            val tasksSyncActive = ContentResolver.isSyncActive(account, TaskProvider.ProviderName.OpenTasks.authority)
+            val svcCalDavRefreshing = calDavServiceId.value?.let { id -> davService?.isRefreshing(id) } ?: false
+            calDavRefreshing.postValue(calendarSyncActive || tasksSyncActive || svcCalDavRefreshing)
+        }
+
+        fun updateCollectionSelected(info: CollectionInfo, selected: Boolean, @UiThread onSuccess: () -> Unit) {
+            executor.submit {
+                val values = ContentValues(1)
+                values.put(Collections.SYNC, if (selected) 1 else 0)
+
+                OpenHelper(context).use { dbHelper ->
+                    val db = dbHelper.writableDatabase
+                    db.update(Collections._TABLE, values, "${Collections.ID}=?", arrayOf(info.id!!.toString()))
+                }
+
+                Handler(Looper.getMainLooper()).post(onSuccess)
+            }
+        }
+
+        fun updateCollectionReadOnly(info: CollectionInfo, readOnly: Boolean, @UiThread onSuccess: () -> Unit) {
+            executor.submit {
+                val values = ContentValues(1)
+                values.put(Collections.FORCE_READ_ONLY, if (readOnly) 1 else 0)
+
+                OpenHelper(context).use { dbHelper ->
+                    val db = dbHelper.writableDatabase
+                    db.update(Collections._TABLE, values, "${Collections.ID}=?", arrayOf(info.id!!.toString()))
+                }
+
+                Handler(Looper.getMainLooper()).post(onSuccess)
+            }
+        }
+
     }
 
 }

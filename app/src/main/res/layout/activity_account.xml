@@ -7,143 +7,146 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/parent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout android:orientation="vertical"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:padding="@dimen/activity_margin"
-                  android:animateLayoutChanges="true">
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="model"
+            type="at.bitfire.davdroid.ui.AccountActivity.Model"/>
+    </data>
 
-        <TextView
-            android:id="@+id/select_collections_hint"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:drawableLeft="@drawable/ic_touch_app_dark_compat"
-            android:drawableStart="@drawable/ic_touch_app_dark_compat"
-            android:drawablePadding="8dp"
-            android:gravity="center_vertical"
-            android:visibility="gone"
-            android:text="@string/account_select_collections_hint"/>
+    <androidx.core.widget.NestedScrollView android:id="@+id/parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/carddav"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            app:cardUseCompatPadding="true"
-            app:cardElevation="8dp">
+        <LinearLayout android:orientation="vertical"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:padding="@dimen/activity_margin"
+                      android:animateLayoutChanges="true">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/select_collections_hint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginBottom="8dp"
+                android:drawableLeft="@drawable/ic_touch_app_dark_compat"
+                android:drawableStart="@drawable/ic_touch_app_dark_compat"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:visibility="@{safeUnbox(model.addressBooksSelected) || safeUnbox(model.calendarsSelected) ? View.GONE : View.VISIBLE}"
+                tools:visibility="visible"
+                android:text="@string/account_select_collections_hint"/>
 
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/carddav_menu"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:theme="@style/toolbar_theme"
-                    style="@style/toolbar_style"
-                    app:navigationIcon="@drawable/ic_people_light"
-                    app:title="@string/account_carddav"
-                    android:elevation="2dp" tools:ignore="UnusedAttribute"/>
-
-                <ProgressBar
-                    android:id="@+id/carddav_refreshing"
-                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:indeterminate="true"/>
-
-                <at.bitfire.davdroid.ui.widget.MaximizedListView
-                    android:id="@+id/address_books"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:choiceMode="singleChoice"/>
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/caldav"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardUseCompatPadding="true"
-            app:cardElevation="8dp">
-
-            <LinearLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginBottom="8dp"
+                android:visibility="@{model.cardDavServiceId != null ? View.VISIBLE : View.GONE}"
+                app:cardUseCompatPadding="true"
+                app:cardElevation="8dp">
 
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/caldav_menu"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/toolbar_theme"
-                    style="@style/toolbar_style"
-                    app:navigationIcon="@drawable/ic_event_light"
-                    app:title="@string/account_caldav"
-                    android:elevation="2dp" tools:ignore="UnusedAttribute"/>
+                    android:orientation="vertical">
 
-                <ProgressBar
-                    android:id="@+id/caldav_refreshing"
-                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:indeterminate="true"/>
+                    <androidx.appcompat.widget.Toolbar
+                        android:id="@+id/carddav_menu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:theme="@style/toolbar_theme"
+                        style="@style/toolbar_style"
+                        app:navigationIcon="@drawable/ic_people_light"
+                        app:title="@string/account_carddav"
+                        android:elevation="2dp" tools:ignore="UnusedAttribute"/>
 
-                <at.bitfire.davdroid.ui.widget.MaximizedListView
-                    android:id="@+id/calendars"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:choiceMode="multipleChoice"
-                    android:descendantFocusability="beforeDescendants"/>
+                    <ProgressBar
+                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:indeterminate="true"
+                        android:visibility="@{safeUnbox(model.cardDavRefreshing) ? View.VISIBLE : View.GONE}"/>
 
-            </LinearLayout>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/address_books"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
 
-        </androidx.cardview.widget.CardView>
+                </LinearLayout>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/webcal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardUseCompatPadding="true"
-            app:cardElevation="8dp">
+            </androidx.cardview.widget.CardView>
 
-            <LinearLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:visibility="@{model.calDavServiceId != null ? View.VISIBLE : View.GONE}"
+                app:cardUseCompatPadding="true"
+                app:cardElevation="8dp">
 
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/webcal_menu"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/toolbar_theme"
-                    style="@style/toolbar_style"
-                    app:navigationIcon="@drawable/ic_event_light"
-                    app:title="@string/account_webcal"
-                    android:elevation="2dp" tools:ignore="UnusedAttribute"/>
+                    android:orientation="vertical">
 
-                <at.bitfire.davdroid.ui.widget.MaximizedListView
-                    android:id="@+id/webcals"
+                    <androidx.appcompat.widget.Toolbar
+                        android:id="@+id/caldav_menu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:theme="@style/toolbar_theme"
+                        style="@style/toolbar_style"
+                        app:navigationIcon="@drawable/ic_event_light"
+                        app:title="@string/account_caldav"
+                        android:elevation="2dp" tools:ignore="UnusedAttribute"/>
+
+                    <ProgressBar
+                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:indeterminate="true"
+                        android:visibility="@{safeUnbox(model.calDavRefreshing) ? View.VISIBLE : View.GONE}"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/calendars"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{model.webcals.size > 0 ? View.VISIBLE : View.GONE}"
+                app:cardUseCompatPadding="true"
+                app:cardElevation="8dp">
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:choiceMode="multipleChoice"
-                    android:descendantFocusability="beforeDescendants"/>
+                    android:orientation="vertical">
 
-            </LinearLayout>
+                    <androidx.appcompat.widget.Toolbar
+                        android:id="@+id/webcal_menu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:theme="@style/toolbar_theme"
+                        style="@style/toolbar_style"
+                        app:navigationIcon="@drawable/ic_event_light"
+                        app:title="@string/account_webcal"
+                        android:elevation="2dp" tools:ignore="UnusedAttribute"/>
 
-        </androidx.cardview.widget.CardView>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/webcals"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
 
-    </LinearLayout>
-</ScrollView>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>

@@ -8,11 +8,17 @@
 
 package at.bitfire.davdroid
 
+import android.accounts.Account
 import android.annotation.TargetApi
+import android.content.ContentProviderClient
+import android.content.ContentResolver
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
+import android.os.Bundle
+import android.provider.CalendarContract
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.ical4android.TaskProvider
 import okhttp3.HttpUrl
 import org.xbill.DNS.*
 import java.util.*
@@ -27,6 +33,7 @@ object DavUtils {
         val color = colorWithAlpha and 0xFFFFFF
         return String.format("#%06X%02X", color, alpha)
     }
+
 
     fun lastSegmentOfUrl(url: HttpUrl): String {
         // the list returned by HttpUrl.pathSegments() is unmodifiable, so we have to create a copy
@@ -79,4 +86,19 @@ object DavUtils {
         return paths
     }
 
+
+    fun requestSync(context: Context, account: Account) {
+        val authorities = arrayOf(
+                context.getString(R.string.address_books_authority),
+                CalendarContract.AUTHORITY,
+                TaskProvider.ProviderName.OpenTasks.authority
+        )
+
+        for (authority in authorities) {
+            val extras = Bundle(2)
+            extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)        // manual sync
+            extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)     // run immediately (don't queue)
+            ContentResolver.requestSync(account, authority, extras)
+        }
+    }
 }

@@ -65,10 +65,10 @@ class DavService: Service() {
             when (intent.action) {
                 ACTION_REFRESH_COLLECTIONS ->
                     if (runningRefresh.add(id)) {
-                        thread { refreshCollections(id) }
                         refreshingStatusListeners.forEach { listener ->
                             listener.get()?.onDavRefreshStatusChanged(id, true)
                         }
+                        thread { refreshCollections(id) }
                     }
 
                 ACTION_FORCE_SYNC -> {
@@ -93,6 +93,7 @@ class DavService: Service() {
 
     interface RefreshingStatusListener {
         fun onDavRefreshStatusChanged(id: Long, refreshing: Boolean)
+        fun onDavRefreshFinished(id: Long)
     }
 
     private val binder = InfoBinder()
@@ -100,9 +101,9 @@ class DavService: Service() {
     inner class InfoBinder: Binder() {
         fun isRefreshing(id: Long) = runningRefresh.contains(id)
 
-        fun addRefreshingStatusListener(listener: RefreshingStatusListener, callImmediate: Boolean) {
+        fun addRefreshingStatusListener(listener: RefreshingStatusListener, callImmediateIfRunning: Boolean) {
             refreshingStatusListeners += WeakReference<RefreshingStatusListener>(listener)
-            if (callImmediate)
+            if (callImmediateIfRunning)
                 runningRefresh.forEach { id -> listener.onDavRefreshStatusChanged(id, true) }
         }
 
@@ -400,7 +401,10 @@ class DavService: Service() {
                         .notify(service.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS, notify)
             } finally {
                 runningRefresh.remove(service)
-                refreshingStatusListeners.forEach { it.get()?.onDavRefreshStatusChanged(service, false) }
+                refreshingStatusListeners.mapNotNull { it.get() }.forEach {
+                    it.onDavRefreshStatusChanged(service, false)
+                    it.onDavRefreshFinished(service)
+                }
             }
         }
 

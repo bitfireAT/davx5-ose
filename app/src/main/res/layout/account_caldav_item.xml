@@ -89,7 +89,10 @@
             android:id="@+id/action_overflow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingLeft="0dp"
             android:paddingRight="0dp"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
             style="@style/Widget.AppCompat.ActionButton.Overflow"/>
 
     </LinearLayout>
