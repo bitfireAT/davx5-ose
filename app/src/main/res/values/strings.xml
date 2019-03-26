@@ -282,10 +282,6 @@
     <string name="authority_debug_provider" translatable="false">at.bitfire.davdroid.debug</string>
     <string name="debug_info_title">Debug info</string>
     <string name="sync_contacts_read_only_address_book">Read-only address book</string>
-    <plurals name="sync_contacts_local_contact_changes_discarded">
-        <item quantity="one">Local contact change discarded</item>
-        <item quantity="other">%d local contact changes discarded</item>
-    </plurals>
     <string name="sync_error_permissions">DAVx⁵ permissions</string>
     <string name="sync_error_permissions_text">Additional permissions required</string>
     <string name="sync_error_opentasks_too_old">OpenTasks too old</string>

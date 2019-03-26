@@ -9,7 +9,6 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.annotation.TargetApi
 import android.content.*
 import android.os.Build
 import android.os.Bundle
@@ -57,6 +56,8 @@ class LocalAddressBook(
 
             val addressBook = LocalAddressBook(context, account, provider)
             ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
+
+            addressBook.readOnly = !info.privWriteContent || info.forceReadOnly
 
             // initialize Contacts Provider Settings
             val values = ContentValues(2)
@@ -147,7 +148,7 @@ class LocalAddressBook(
                 ?: throw IllegalStateException("Address book has no URL")
         set(url) = AccountManager.get(context).setUserData(account, USER_DATA_URL, url)
 
-    var readOnly: Boolean
+    override var readOnly: Boolean
         get() = AccountManager.get(context).getUserData(account, USER_DATA_READ_ONLY) != null
         set(readOnly) = AccountManager.get(context).setUserData(account, USER_DATA_READ_ONLY, if (readOnly) "1" else null)
 
@@ -188,7 +189,6 @@ class LocalAddressBook(
     fun update(info: CollectionInfo) {
         val newAccountName = accountName(mainAccount, info)
 
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         if (account.name != newAccountName && Build.VERSION.SDK_INT >= 21) {
             // no need to re-assign contacts to new account, because they will be deleted by contacts provider in any case
             val accountManager = AccountManager.get(context)
@@ -196,8 +196,8 @@ class LocalAddressBook(
             account = future.result
         }
 
-        Constants.log.info("Address book write permission? = ${info.privWriteContent}")
         readOnly = !info.privWriteContent || info.forceReadOnly
+        Constants.log.info("Address book read-only = $readOnly")
 
         // make sure it will still be synchronized when contacts are updated
         ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)

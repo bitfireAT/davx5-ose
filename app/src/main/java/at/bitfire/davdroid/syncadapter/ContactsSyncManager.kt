@@ -13,7 +13,6 @@ import android.content.*
 import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract.Groups
-import androidx.core.app.NotificationCompat
 import at.bitfire.dav4jvm.DavAddressBook
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.DavResponseCallback
@@ -27,7 +26,6 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.SyncState
 import at.bitfire.davdroid.resource.*
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
@@ -90,7 +88,6 @@ class ContactsSyncManager(
     }
 
     private val readOnly = localAddressBook.readOnly
-    private var numDiscarded = 0
 
     private var hasVCard4 = false
     private val groupMethod = accountSettings.getGroupMethod()
@@ -158,17 +155,13 @@ class ContactsSyncManager(
             for (group in localCollection.findDeletedGroups()) {
                 Logger.log.warning("Restoring locally deleted group (read-only address book!)")
                 useLocal(group) { it.resetDeleted() }
-                numDiscarded++
             }
 
             for (contact in localCollection.findDeletedContacts()) {
                 Logger.log.warning("Restoring locally deleted contact (read-only address book!)")
                 useLocal(contact) { it.resetDeleted() }
-                numDiscarded++
             }
 
-            if (numDiscarded > 0)
-                notifyDiscardedChange()
             return false
         } else
             // mirror deletions to remote collection (DELETE)
@@ -180,17 +173,12 @@ class ContactsSyncManager(
             for (group in localCollection.findDirtyGroups()) {
                 Logger.log.warning("Resetting locally modified group to ETag=null (read-only address book!)")
                 useLocal(group) { it.clearDirty(null) }
-                numDiscarded++
             }
 
             for (contact in localCollection.findDirtyContacts()) {
                 Logger.log.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
                 useLocal(contact) { it.clearDirty(null) }
-                numDiscarded++
             }
-
-            if (numDiscarded > 0)
-                notifyDiscardedChange()
 
         } else {
             if (groupMethod == GroupMethod.CATEGORIES) {
@@ -238,20 +226,6 @@ class ContactsSyncManager(
 
         // generate UID/file name for newly created contacts
         return super.uploadDirty()
-    }
-
-    private fun notifyDiscardedChange() {
-        val notification = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_SYNC_STATUS)
-                .setSmallIcon(R.drawable.ic_delete_notification)
-                .setContentTitle(context.getString(R.string.sync_contacts_read_only_address_book))
-                .setContentText(context.resources.getQuantityString(R.plurals.sync_contacts_local_contact_changes_discarded, numDiscarded, numDiscarded))
-                .setNumber(numDiscarded)
-                .setSubText(account.name)
-                .setCategory(NotificationCompat.CATEGORY_STATUS)
-                .setPriority(NotificationCompat.PRIORITY_MIN)
-                .setLocalOnly(true)
-                .build()
-        notificationManager.notify("discarded_${account.name}", 0, notification)
     }
 
     override fun prepareUpload(resource: LocalAddress): RequestBody = useLocal(resource) {
