@@ -21,7 +21,7 @@
     <color name="secondaryLightColor">#ff9e40</color>
     <color name="secondaryDarkColor">#c43c00</color>
     <color name="primaryTextColor">#000000</color>
-    <color name="secondaryTextColor">@color/grey500</color>
+    <color name="secondaryTextColor">@color/grey700</color>
 
 
     <!-- app theme -->
