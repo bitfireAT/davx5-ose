@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Carnets d\'adresses</string>
   <string name="help">Aide</string>
   <string name="manage_accounts">Gestion des comptes</string>
-  <string name="please_wait">patientez …</string>
   <string name="send">Envoyer</string>
   <string name="notification_channel_debugging">Débogage</string>
   <string name="notification_channel_general">Autres messages importants</string>
@@ -17,8 +16,6 @@
   <string name="notification_channel_sync_warnings_desc">Problèmes de synchronisation non fatals tels que certains fichiers non valides</string>
   <string name="notification_channel_sync_io_errors">Erreurs de réseau et d\'entrée / sortie</string>
   <string name="notification_channel_sync_io_errors_desc">Délais d\'attente, problèmes de connexion, etc. (souvent temporaires)</string>
-  <string name="notification_channel_sync_status">Messages d\'état</string>
-  <string name="notification_channel_sync_status_desc">Messages d\'état informatifs tels que le nombre de modifications rejetées des collections en lecture seule</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Synchronisation automatique</string>
   <string name="startup_autostart_permission_message">%s le matériel bloque souvent la synchronisation automatique. Dans ce cas, autorisez la synchronisation automatique dans vos paramètres d\'Android.</string>
@@ -104,7 +101,6 @@
   <string name="account_delete">Supprimer le compte</string>
   <string name="account_delete_confirmation_title">Voulez-vous vraiment supprimer le compte?</string>
   <string name="account_delete_confirmation_text">Toutes les copies locales des carnets d\'adresses, des calendriers et des listes de tâches seront supprimées.</string>
-  <string name="account_select_collections_hint">Choisir la collection à synchroniser</string>
   <string name="account_carddav">CardDAV (les carnets d\'adresse) </string>
   <string name="account_caldav">CalDAV (les agendas) </string>
   <string name="account_webcal">WebCal (les anciens agenda)</string>
@@ -213,7 +209,6 @@
   <string name="create_collection_create">Créer</string>
   <string name="delete_collection">Supprimer la collection</string>
   <string name="delete_collection_confirm_title">Êtes-vous sur?</string>
-  <string name="delete_collection_confirm_warning">Cette collection (%s) et toutes ses données seront supprimées du serveur.</string>
   <string name="delete_collection_deleting_collection">Suppression de la collection</string>
   <string name="collection_force_read_only">Forcer la lecture seulement</string>
   <string name="collection_properties">Propriétés</string>
@@ -227,10 +222,6 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Infos de débogage</string>
   <string name="sync_contacts_read_only_address_book">Carnet d\'adresse en lecture seulement</string>
-  <plurals name="sync_contacts_local_contact_changes_discarded">
-    <item quantity="one">Un changement de contact local a été rejeté</item>
-    <item quantity="other">%d changements des contacts locaux ont été rejetés</item>
-  </plurals>
   <string name="sync_error_permissions">Autorisations DAVx⁵</string>
   <string name="sync_error_permissions_text">Autorisations supplémentaires demandées</string>
   <string name="sync_error_opentasks_too_old">Version d\'OpenTask trop ancienne</string>

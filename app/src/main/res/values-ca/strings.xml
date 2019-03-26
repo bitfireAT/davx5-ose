@@ -6,13 +6,11 @@
   <string name="address_books_authority_title">Llibreta d’adreces</string>
   <string name="help">Ajuda</string>
   <string name="manage_accounts">Gestiona comptes</string>
-  <string name="please_wait">Esperi si us plau…</string>
   <string name="send">Enviar</string>
   <string name="notification_channel_debugging">Depurador</string>
   <string name="notification_channel_general">Altres missatges importants</string>
   <string name="notification_channel_sync">Sincronització</string>
   <string name="notification_channel_sync_io_errors">Xarxa i errors E/S</string>
-  <string name="notification_channel_sync_status">Estat dels misatges</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization_disable">Desactiva per DAVx⁵</string>
   <string name="startup_dont_show_again">No mostrar de nou</string>

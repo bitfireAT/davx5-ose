@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">アドレス帳</string>
   <string name="help">ヘルプ</string>
   <string name="manage_accounts">アカウントの管理</string>
-  <string name="please_wait">しばらくお待ちください …</string>
   <string name="send">送信</string>
   <string name="notification_channel_debugging">デバッグ中</string>
   <string name="notification_channel_general">他の重要なメッセージ</string>
@@ -17,8 +16,6 @@
   <string name="notification_channel_sync_warnings_desc">特定の無効なファイルのような、致命的ではない同期の問題</string>
   <string name="notification_channel_sync_io_errors">ネットワークおよび I/O エラー</string>
   <string name="notification_channel_sync_io_errors_desc">タイムアウト、接続の問題など (多くの場合、一時的なもの)</string>
-  <string name="notification_channel_sync_status">ステータスメッセージ</string>
-  <string name="notification_channel_sync_status_desc">読み取り専用コレクションの却下された変更数のような、情報ステータスメッセージ</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">自動同期</string>
   <string name="startup_autostart_permission_message">%s ファームウェアは自動同期をブロックすることがよくあります。 この場合、Android の設定で自動同期を許可してください。</string>
@@ -104,7 +101,6 @@
   <string name="account_delete">アカウントを削除</string>
   <string name="account_delete_confirmation_title">アカウントを削除してもよろしいですか?</string>
   <string name="account_delete_confirmation_text">アドレス帳、カレンダー、タスクリストのローカルコピーがすべて削除されます。</string>
-  <string name="account_select_collections_hint">同期するコレクションを選択</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -212,7 +208,6 @@
   <string name="create_collection_create">作成</string>
   <string name="delete_collection">コレクションを削除</string>
   <string name="delete_collection_confirm_title">よろしいですか?</string>
-  <string name="delete_collection_confirm_warning">このコレクション (%s) とそのすべてのデータがサーバーから削除されます。</string>
   <string name="delete_collection_deleting_collection">コレクションの削除中</string>
   <string name="collection_force_read_only">強制的に読み取り専用</string>
   <string name="collection_properties">プロパティ</string>
@@ -226,9 +221,6 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">デバッグ情報</string>
   <string name="sync_contacts_read_only_address_book">読み取り専用のアドレス帳</string>
-  <plurals name="sync_contacts_local_contact_changes_discarded">
-    <item quantity="other">%d ローカル連絡先の変更が破棄されました</item>
-  </plurals>
   <string name="sync_error_permissions">DAVx⁵ アクセス許可</string>
   <string name="sync_error_permissions_text">追加のアクセス許可が必要です</string>
   <string name="sync_error_opentasks_too_old">OpenTasks が古すぎます</string>

@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Адресні книги</string>
   <string name="help">Допомога</string>
   <string name="manage_accounts">Керування обліковими записами</string>
-  <string name="please_wait">Будь ласка, зачекайте…</string>
   <string name="send">Відправити</string>
   <string name="notification_channel_debugging">Зневадження</string>
   <string name="notification_channel_general">Інші важливі повідомлення</string>
@@ -17,8 +16,6 @@
   <string name="notification_channel_sync_warnings_desc">Не критичні проблеми синхронізації, наприклад деякі файли хибні</string>
   <string name="notification_channel_sync_io_errors">Помилка мережі та вводу/виводу</string>
   <string name="notification_channel_sync_io_errors_desc">Спливання часу відклику, проблеми зв\'язку, і т.п. (часто тимчасові)</string>
-  <string name="notification_channel_sync_status">Повідомлення про стан</string>
-  <string name="notification_channel_sync_status_desc">Повідомлення інформаційного характеру, наприклад кількість відхилених змін до колекцій які можна тільки читати</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Автоматична синхронізація</string>
   <string name="startup_autostart_permission_message">%s прошивка часто блокує автоматичну синхронізацію. У цьому випадку дозвольте автоматичну синхронізацію в налаштуваннях Android.</string>
@@ -104,7 +101,6 @@
   <string name="account_delete">Видалити запис</string>
   <string name="account_delete_confirmation_title">Дійсно видалити обліковий запис?</string>
   <string name="account_delete_confirmation_text">Всі локальні копії адресних книг, календарів та завдань будуть вилучені.</string>
-  <string name="account_select_collections_hint">Виберіть колекції для синхронізації</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -215,7 +211,6 @@
   <string name="create_collection_create">Створити</string>
   <string name="delete_collection">Видалити колекцію</string>
   <string name="delete_collection_confirm_title">Ви впевнені?</string>
-  <string name="delete_collection_confirm_warning">Колекція (%s) та всі пов\'язані данні будуть вилучені з даного серверу.</string>
   <string name="delete_collection_deleting_collection">Видалення колекції</string>
   <string name="collection_force_read_only">Примусово лише читання</string>
   <string name="collection_properties">Властивості</string>
@@ -229,12 +224,6 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Інформація зневадження</string>
   <string name="sync_contacts_read_only_address_book">Адресна книга лише для читання</string>
-  <plurals name="sync_contacts_local_contact_changes_discarded">
-    <item quantity="one">Локальну зміну контакту відхилено</item>
-    <item quantity="few">%d локальні зміни контакту відхилено</item>
-    <item quantity="many">%d локальних змін контакту відхилено</item>
-    <item quantity="other">%d локальних змін контакту відхилено</item>
-  </plurals>
   <string name="sync_error_permissions">Дозволи DAVx⁵</string>
   <string name="sync_error_permissions_text">Потребує додаткові дозволи</string>
   <string name="sync_error_opentasks_too_old">OpenTasks застарів</string>

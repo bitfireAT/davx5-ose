@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Książka adresowa</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Zadządzaj kontami</string>
-  <string name="please_wait">Proszę czekać</string>
   <string name="send">Wyślij</string>
   <string name="notification_channel_debugging">Debugowanie</string>
   <!--startup dialogs-->
@@ -174,7 +173,6 @@
   <string name="create_collection_create">Stwórz</string>
   <string name="delete_collection">Usuń kolekcję</string>
   <string name="delete_collection_confirm_title">Czy jesteś pewien?</string>
-  <string name="delete_collection_confirm_warning">Kolekcja (%s) i jej wszystkie dane zostaną usunięte z serwera.</string>
   <string name="delete_collection_deleting_collection">Usuwanie kolekcji</string>
   <string name="collection_force_read_only">Wymuś tylko do odczytu</string>
   <!--ExceptionInfoFragment-->
@@ -185,12 +183,6 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Informacje debugowe</string>
   <string name="sync_contacts_read_only_address_book">Książka adresowa tylko do odczytu</string>
-  <plurals name="sync_contacts_local_contact_changes_discarded">
-    <item quantity="one">Lokalny kontakt zostanie odrzucony</item>
-    <item quantity="few">%d lokalne kontakty zostaną odrzucone</item>
-    <item quantity="many">%d lokalne kontakty zostaną odrzucone</item>
-    <item quantity="other">%d lokalne kontakty zostaną odrzucone</item>
-  </plurals>
   <string name="sync_error_permissions">Uprawnienia DAVx⁵</string>
   <string name="sync_error_permissions_text">Wymagane dodatkowe uprawnienia</string>
   <string name="sync_error_opentasks_too_old">OpenTask jest niekompatybilny</string>

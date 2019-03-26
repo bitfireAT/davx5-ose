@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">通訊錄</string>
   <string name="help">幫助</string>
   <string name="manage_accounts">管理帳號</string>
-  <string name="please_wait">請稍待 …</string>
   <string name="send">送出</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization_disable">關閉 DAVx⁵ 的電池最佳化</string>
@@ -139,7 +138,6 @@
   <string name="create_collection_create">建立</string>
   <string name="delete_collection">刪除行事曆或工作清單</string>
   <string name="delete_collection_confirm_title">您確定嗎? </string>
-  <string name="delete_collection_confirm_warning">這本行事曆或工作清單 (%s) 和它的所有資料將從伺服器上刪除。</string>
   <string name="delete_collection_deleting_collection">正在刪除</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">發生錯誤</string>

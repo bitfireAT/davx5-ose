@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Adressbücher</string>
   <string name="help">Hilfe</string>
   <string name="manage_accounts">Konten verwalten</string>
-  <string name="please_wait">Bitte warten …</string>
   <string name="send">Senden</string>
   <string name="notification_channel_debugging">Fehlersuche</string>
   <string name="notification_channel_general">Andere wichtige Mitteilungen</string>
@@ -17,7 +16,6 @@
   <string name="notification_channel_sync_warnings_desc">Nicht fatale Synchronisierungsprobleme wie bestimmte ungültige Dateien</string>
   <string name="notification_channel_sync_io_errors">Netzwerk- und E/A-Fehler</string>
   <string name="notification_channel_sync_io_errors_desc">Zeitüberschreitungen, Verbindungsprobleme, usw. (oft vorübergehend)</string>
-  <string name="notification_channel_sync_status">Status-Mitteilungen</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Automatische Synchronisierung</string>
   <string name="startup_autostart_permission_message">%s-Firmware verhindert oftmals das automatische Synchronisieren. In diesem Fall müssen Sie das automatische Synchronisieren in den Android-Einstellung erlauben.</string>
@@ -89,6 +87,7 @@
   <string name="app_settings_reset_certificates_success">Alle Informationen über angenommene/abgelehnte Zertifikate wurden zurückgesetzt</string>
   <string name="app_settings_user_interface">Oberfläche</string>
   <string name="app_settings_notification_settings">Benachrichtigungseinstellungen</string>
+  <string name="app_settings_notification_settings_summary">Benachrichtigungskanäle und -einstellungen verwalten</string>
   <string name="app_settings_reset_hints">Hinweise zurücksetzen</string>
   <string name="app_settings_reset_hints_summary">Hinweise, die deaktiviert wurden, wieder anzeigen</string>
   <string name="app_settings_reset_hints_success">Alle Hinweise werden wieder angezeigt</string>
@@ -102,7 +101,6 @@
   <string name="account_delete">Konto löschen</string>
   <string name="account_delete_confirmation_title">Konto wirklich löschen?</string>
   <string name="account_delete_confirmation_text">Alle Adressbücher, Kalender und Aufgabenlisten werden vom Gerät (nicht am Server) gelöscht.</string>
-  <string name="account_select_collections_hint">Ordner zur Synchronisierung auswählen</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -205,13 +203,26 @@
   <!--collection management-->
   <string name="create_addressbook">Adressbuch erstellen</string>
   <string name="create_addressbook_display_name_hint">Meine Adressen</string>
+  <string name="create_calendar">Kalender anlegen</string>
+  <string name="create_calendar_time_zone">Zeitzone</string>
+  <string name="create_calendar_time_zone_required">Zeitzone benötigt</string>
+  <string name="create_calendar_type">Mögliche Kalendereinträge</string>
+  <string name="create_calendar_type_vevent">Termine</string>
+  <string name="create_calendar_type_vtodo">Aufgaben</string>
+  <string name="create_calendar_type_vjournal">Notizen / Journal</string>
   <string name="create_calendar_type_events_and_tasks">Kombiniert (Termine und Aufgaben)</string>
+  <string name="create_collection_color">Farbe</string>
   <string name="create_collection_creating">Ordner wird angelegt</string>
+  <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_display_name_required">Ein Titel wird benötigt</string>
+  <string name="create_collection_description">Beschreibung</string>
+  <string name="create_collection_optional">optional</string>
+  <string name="create_collection_home_set">Speicherort</string>
   <string name="create_collection_create">Erstellen</string>
   <string name="delete_collection">Ordner löschen</string>
   <string name="delete_collection_confirm_title">Sind Sie sicher?</string>
-  <string name="delete_collection_confirm_warning">Dieser Ordner (%s) wird samt allen Inhalten vom Server gelöscht.</string>
+  <string name="delete_collection_confirm_warning">Dieser Ordner (%s) und alle enthaltenen Daten werden dauerhaft gelöscht.</string>
+  <string name="delete_collection_data_shall_be_deleted">Diese Daten sollen vom Server gelöscht werden.</string>
   <string name="delete_collection_deleting_collection">Ordner wird gelöscht</string>
   <string name="collection_force_read_only">Schreibschutz erzwingen</string>
   <string name="collection_properties">Eigenschaften</string>
@@ -225,10 +236,6 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Informationen zur Fehlersuche</string>
   <string name="sync_contacts_read_only_address_book">Schreibgeschütztes Adressbuch</string>
-  <plurals name="sync_contacts_local_contact_changes_discarded">
-    <item quantity="one">Lokale Kontakt-Änderung verworfen</item>
-    <item quantity="other">%d lokale Kontakt-Änderungen verworfen</item>
-  </plurals>
   <string name="sync_error_permissions">DAVx⁵-Berechtigungen</string>
   <string name="sync_error_permissions_text">Zusätzliche Berechtigungen benötigt</string>
   <string name="sync_error_opentasks_too_old">OpenTasks zu alt</string>
@@ -242,6 +249,7 @@
   <string name="sync_invalid_contact">Ungültigen Kontakt vom Server erhalten</string>
   <string name="sync_invalid_event">Ungültigen Termin vom Server erhalten</string>
   <string name="sync_invalid_task">Ungültige Aufgabe vom Server erhalten</string>
+  <string name="sync_invalid_resources_ignoring">Eine/mehrere ungültige Ressourcen ignoriert</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: Verbindungssicherheit</string>
   <string name="trust_certificate_unknown_certificate_found">DAVx⁵ ist auf ein unbekanntes Zertifikat gestoßen. Ist dieses vertrauenswürdig?</string>

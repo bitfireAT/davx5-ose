@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Βιβλία διευθύνσεων</string>
   <string name="help">Βοήθεια</string>
   <string name="manage_accounts">Διαχείριση λογαριασμών</string>
-  <string name="please_wait">Παρακαλώ περιμένετε …</string>
   <string name="send">Αποστολή</string>
   <string name="notification_channel_debugging">Αποσφαλμάτωση</string>
   <string name="notification_channel_general">Άλλα σημαντικά μηνύματα</string>
@@ -17,8 +16,6 @@
   <string name="notification_channel_sync_warnings_desc">Μη μοιραία προβλήματα συγχρονισμού όπως ορισμένα μη έγκυρα αρχεία</string>
   <string name="notification_channel_sync_io_errors">Σφάλματα δικτύου και I/O</string>
   <string name="notification_channel_sync_io_errors_desc">Χρονικά όρια, προβλήματα σύνδεσης, κλπ. (συχνά προσωρινά)</string>
-  <string name="notification_channel_sync_status">Μηνύματα κατάστασης</string>
-  <string name="notification_channel_sync_status_desc">Μηνύματα κατάστασης πληροφοριών, όπως ο αριθμός απορριφθεισών αλλαγών σε συλλογές μόνο για ανάγνωση</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Αυτόματος συγχρονισμός</string>
   <string name="startup_autostart_permission_message">%s το firmware συχνά αποκλείει τον αυτόματο συγχρονισμό. Σε αυτήν την περίπτωση, επιτρέψτε τον αυτόματο συγχρονισμό στις ρυθμίσεις Android.</string>
@@ -100,7 +97,6 @@
   <string name="account_delete">Διαγραφή λογαριασμού</string>
   <string name="account_delete_confirmation_title">Θέλετε να διαγράψετε τον λογαριασμό;</string>
   <string name="account_delete_confirmation_text">Όλα τα τοπικά αντίγραφα των βιβλίων διευθύνσεων, ημερολογίων και λιστών εργασιών θα διαγραφούν.</string>
-  <string name="account_select_collections_hint">Επιλογή συλλογών προς συγχρονισμό</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -207,7 +203,6 @@
   <string name="create_collection_create">Δημιουργία</string>
   <string name="delete_collection">Διαγραφή συλλογής</string>
   <string name="delete_collection_confirm_title">Είστε σίγουρος;</string>
-  <string name="delete_collection_confirm_warning">Αυτή η συλλογή (%s) και όλα τα δεδομένα της θα αφαιρεθούν από τον διακομιστή.</string>
   <string name="delete_collection_deleting_collection">Διαγραφή συλλογής</string>
   <string name="collection_force_read_only">Εξαναγκασμός μόνο για ανάγνωση</string>
   <string name="collection_properties">Ιδιότητες</string>
@@ -221,10 +216,6 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Πληροφορίες αποσφαλμάτωσης</string>
   <string name="sync_contacts_read_only_address_book">Βιβλίο διευθύνσεων μόνο για ανάγνωση</string>
-  <plurals name="sync_contacts_local_contact_changes_discarded">
-    <item quantity="one">Απορρίφθηκε τοπική αλλαγή επαφής</item>
-    <item quantity="other">Απορρίφθηκαν %d τοπικές αλλαγές επαφών</item>
-  </plurals>
   <string name="sync_error_permissions">Δικαιώματα DAVx⁵</string>
   <string name="sync_error_permissions_text">Απαιτούνται πρόσθετα δικαιώματα</string>
   <string name="sync_error_opentasks_too_old">Πολύ παλιά εφαρμογή OpenTasks</string>

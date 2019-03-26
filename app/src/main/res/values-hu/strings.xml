@@ -6,14 +6,12 @@
   <string name="address_books_authority_title">Címjegyzékek</string>
   <string name="help">Súgó</string>
   <string name="manage_accounts">Fiókok kezelése</string>
-  <string name="please_wait">Kérjük, várjon …</string>
   <string name="send">Küldés</string>
   <string name="notification_channel_debugging">Hibakeresés</string>
   <string name="notification_channel_general">Egyéb fontos üzenetek</string>
   <string name="notification_channel_sync">Szinkronizáció</string>
   <string name="notification_channel_sync_errors">Szinkronizációs hibák</string>
   <string name="notification_channel_sync_io_errors">Hálózati és I/O hibák</string>
-  <string name="notification_channel_sync_status">Státuszüzenetek</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Automatikus szinkronizálás</string>
   <string name="startup_autostart_permission_message">A(z) %s gyári szoftvere gyakran blokkolja az automatikus szinkronizálást. Ebben az esetben engedélyezze a szinkronizálást az Android beállítások között.</string>
@@ -89,7 +87,6 @@
   <string name="account_delete">Fiók törlése</string>
   <string name="account_delete_confirmation_title">Valóban törölni akarja a fiókot?</string>
   <string name="account_delete_confirmation_text">Az összes címjegyzék, naptár és feladatlista helyi példányai törölve lesznek.</string>
-  <string name="account_select_collections_hint">Válassza ki a szinkronizálandó gyűjteményeket</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -193,7 +190,6 @@
   <string name="create_collection_create">Létrehozás</string>
   <string name="delete_collection">Gyűjtemény törlése</string>
   <string name="delete_collection_confirm_title">Biztos?</string>
-  <string name="delete_collection_confirm_warning">A gyűjtemény (%s) és a hozzá tartozó adatok törölve lesznek a szerverről.</string>
   <string name="delete_collection_deleting_collection">Gyűjtemény törlése</string>
   <string name="collection_force_read_only">Csak olvashatóvá tétel</string>
   <string name="collection_properties">Tulajdonságok</string>
@@ -207,10 +203,6 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Hibakeresési információ</string>
   <string name="sync_contacts_read_only_address_book">Csak olvasható címjegyzék</string>
-  <plurals name="sync_contacts_local_contact_changes_discarded">
-    <item quantity="one">Helyi névjegyváltozás elvetve</item>
-    <item quantity="other">%d helyi névjegyváltozás elvetve</item>
-  </plurals>
   <string name="sync_error_permissions">DAVx⁵ engedélyek </string>
   <string name="sync_error_permissions_text">További engedélyek szükségesek</string>
   <string name="sync_error_opentasks_too_old">Az OpenTask verzió nem megfelelő</string>

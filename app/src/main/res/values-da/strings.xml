@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Adressebøger</string>
   <string name="help">Hjælp</string>
   <string name="manage_accounts">Administrere konti</string>
-  <string name="please_wait">Vent…</string>
   <string name="send">Send</string>
   <string name="notification_channel_debugging">Fejlsøgning</string>
   <string name="notification_channel_general">Andre vigtige beskeder</string>
@@ -17,8 +16,6 @@
   <string name="notification_channel_sync_warnings_desc">Ikke kritisk synkroniserig problem som bestemte ugyldige filer</string>
   <string name="notification_channel_sync_io_errors">Netværks- og I/O-fejl</string>
   <string name="notification_channel_sync_io_errors_desc">Tidsudløb, forbindelse problemer m.m. (ofte midlertidig)</string>
-  <string name="notification_channel_sync_status">Status beskeder</string>
-  <string name="notification_channel_sync_status_desc">Informerende status beskeder som antal afviste ændringer af skrivbeskyttet samlinger</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Automatisk synkronisering</string>
   <string name="startup_autostart_permission_message">%s firmware blokerer ofte automatisk synkronisering. Tillad automatisk synkronisering i Android opsætning.</string>
@@ -104,7 +101,6 @@
   <string name="account_delete">Slette konto</string>
   <string name="account_delete_confirmation_title">Slette konto?</string>
   <string name="account_delete_confirmation_text">Alle lokale kopier af addessebøger, kalendere og opgavelister vil blive slettet.</string>
-  <string name="account_select_collections_hint">Vælge samlinger der skal synkroniseres</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -207,13 +203,26 @@
   <!--collection management-->
   <string name="create_addressbook">Opret adressebog</string>
   <string name="create_addressbook_display_name_hint">Min adressebog</string>
+  <string name="create_calendar">Opret kalender</string>
+  <string name="create_calendar_time_zone">Tid zone</string>
+  <string name="create_calendar_time_zone_required">Tid zone påkrævet</string>
+  <string name="create_calendar_type">Mulige kalenderposte</string>
+  <string name="create_calendar_type_vevent">Begivenheder</string>
+  <string name="create_calendar_type_vtodo">Opgaver</string>
+  <string name="create_calendar_type_vjournal">Notater / journal</string>
   <string name="create_calendar_type_events_and_tasks">Kombineret (begivenheder og opgaver)</string>
+  <string name="create_collection_color">Farve</string>
   <string name="create_collection_creating">Opretter sæt</string>
+  <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_display_name_required">En titel er påkrævet</string>
+  <string name="create_collection_description">Beskrivelse</string>
+  <string name="create_collection_optional">Valgfri</string>
+  <string name="create_collection_home_set">Lager placering</string>
   <string name="create_collection_create">Opret</string>
   <string name="delete_collection">Slet sæt</string>
   <string name="delete_collection_confirm_title">Er du sikker?</string>
-  <string name="delete_collection_confirm_warning">DAV-sættet (%s) og dets data vil blive fjernet fra serveren.</string>
+  <string name="delete_collection_confirm_warning">Denne samling (%s) og alle dens data vil blive fjernet helt.</string>
+  <string name="delete_collection_data_shall_be_deleted">Disse data vil blive slettet fra serveren.</string>
   <string name="delete_collection_deleting_collection">Sletter CalDAV-sæt</string>
   <string name="collection_force_read_only">Sæt skrivebeskyttet</string>
   <string name="collection_properties">Egenskaber</string>
@@ -227,10 +236,6 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Debug-info</string>
   <string name="sync_contacts_read_only_address_book">Skrivebeskyttet adressebog</string>
-  <plurals name="sync_contacts_local_contact_changes_discarded">
-    <item quantity="one">Lokal ændring slettet</item>
-    <item quantity="other">%d lokale ændringer slettet</item>
-  </plurals>
   <string name="sync_error_permissions">DAVx⁵-rettigheder</string>
   <string name="sync_error_permissions_text">Yderligere adgang påkrævet</string>
   <string name="sync_error_opentasks_too_old">OpenTasks-version for gammel</string>
