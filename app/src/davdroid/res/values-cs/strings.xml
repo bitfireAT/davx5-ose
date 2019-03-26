@@ -4,7 +4,6 @@
   <string name="app_name">DAVx⁵</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Spravovat účty</string>
-  <string name="please_wait">Chvíli strpení …</string>
   <string name="send">Odeslat</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization_disable">Vypnout pro DAVx⁵</string>
@@ -139,7 +138,6 @@
   <string name="create_collection_create">Vytvořit</string>
   <string name="delete_collection">Smazat sbírku</string>
   <string name="delete_collection_confirm_title">Jste si jisti?</string>
-  <string name="delete_collection_confirm_warning">Tato sbírka (%s) a všechna její data budou odstraněna ze serveru.</string>
   <string name="delete_collection_deleting_collection">Mazání sbírky</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Došlo k chybě.</string>

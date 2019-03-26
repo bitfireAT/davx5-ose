@@ -6,14 +6,12 @@
   <string name="address_books_authority_title">دفترچه‌های آدرس</string>
   <string name="help">راهنما</string>
   <string name="manage_accounts">مدیریت حساب ها</string>
-  <string name="please_wait">لطفا صبر کنید …</string>
   <string name="send">ارسال</string>
   <string name="notification_channel_debugging">عیب‌یابی</string>
   <string name="notification_channel_general">سایر پیام‌های مهم</string>
   <string name="notification_channel_sync">همگام‌سازی</string>
   <string name="notification_channel_sync_errors">خطاهای همگام‌سازی</string>
   <string name="notification_channel_sync_io_errors">خطاهای شبکه</string>
-  <string name="notification_channel_sync_status">وضعیت پیام ها</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">همگام سازی خودکار</string>
   <string name="startup_autostart_permission_message">%s سیستم عامل  همگام سازی خودکار را مسدود می کند. می توانید  همگام سازی خودکار را در تنظیمات اندروید خود انجام دهید.</string>
@@ -90,7 +88,6 @@
   <string name="account_delete">حذف حساب</string>
   <string name="account_delete_confirmation_title">حساب خذف شود؟</string>
   <string name="account_delete_confirmation_text">تمام کدهای محلی کتاب آدرس، تقویم و لیست کار حذف خواهد شد.</string>
-  <string name="account_select_collections_hint"> مجموعه ها را برای همگام سازی انتخاب کنید</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -195,7 +192,6 @@
   <string name="create_collection_create">ایجاد شد</string>
   <string name="delete_collection">حذف مجموعه</string>
   <string name="delete_collection_confirm_title">آیا مطمءن هستین؟</string>
-  <string name="delete_collection_confirm_warning">این مجموعه (%s) و تمامی اطلاعاتش از سرور پاک می شود.</string>
   <string name="delete_collection_deleting_collection">حذف مجموعه</string>
   <string name="collection_force_read_only">اجبار read-only</string>
   <string name="collection_properties">مشخصات</string>
@@ -209,10 +205,6 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Debug اظلاعات</string>
   <string name="sync_contacts_read_only_address_book">فقط از کتابچه آدرس ها خوانده شود</string>
-  <plurals name="sync_contacts_local_contact_changes_discarded">
-    <item quantity="one">تغییر ارتباط لغو شد</item>
-    <item quantity="other">%d تغییر ارتباط لغو شد</item>
-  </plurals>
   <string name="sync_error_permissions">DAVx⁵ دسترسی های</string>
   <string name="sync_error_permissions_text">اجازه برای دسترسی های اضافی</string>
   <string name="sync_error_opentasks_too_old">OpenTasks خیلی قدیمی</string>

@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Agendas</string>
   <string name="help">Ayuda</string>
   <string name="manage_accounts">Administrar cuentas</string>
-  <string name="please_wait">Por favor, espere…</string>
   <string name="send">Enviar</string>
   <string name="notification_channel_debugging">Depuración</string>
   <string name="notification_channel_general">Otros mensajes importantes</string>
@@ -17,8 +16,6 @@
   <string name="notification_channel_sync_warnings_desc">Problemas de sincronización no-fatales como ciertos archivos inválidos</string>
   <string name="notification_channel_sync_io_errors">Errores de Red y E/S</string>
   <string name="notification_channel_sync_io_errors_desc">Timeouts, problemas de conección, etc. (muchas veces temporal)</string>
-  <string name="notification_channel_sync_status">Mensajes de estado</string>
-  <string name="notification_channel_sync_status_desc">Mensajes informativos de estado como el número de cambios perdidos en colecciones de solo lectura</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Sincronización automática</string>
   <string name="startup_autostart_permission_message">El firmware de %s muchas veces bloquea la sincronización automática. En este caso, permita la sincronización automática en sus ajustes de Android.</string>
@@ -104,7 +101,6 @@
   <string name="account_delete">Eliminar cuenta</string>
   <string name="account_delete_confirmation_title">¿Seguro que deseas eliminar la cuenta?</string>
   <string name="account_delete_confirmation_text">Todas las copias locales de tus contactos, calendarios y tareas serán eliminadas.</string>
-  <string name="account_select_collections_hint">Seleccionar colecciones para sincronizar</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -213,7 +209,6 @@
   <string name="create_collection_create">Crear</string>
   <string name="delete_collection">Eliminar colección</string>
   <string name="delete_collection_confirm_title">¿Estás seguro/a?</string>
-  <string name="delete_collection_confirm_warning">Esta colección (%s) y toda su información será eliminada del servidor.</string>
   <string name="delete_collection_deleting_collection">Eliminando colección</string>
   <string name="collection_force_read_only">Forzar solo-lectura</string>
   <string name="collection_properties">Propiedades</string>
@@ -227,10 +222,6 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Información de depuración</string>
   <string name="sync_contacts_read_only_address_book">Libro de direcciones solo-lectura</string>
-  <plurals name="sync_contacts_local_contact_changes_discarded">
-    <item quantity="one">Cambio de contacto local descartado</item>
-    <item quantity="other">%d cambios de contactos locales descartados</item>
-  </plurals>
   <string name="sync_error_permissions">Permisos de DAVx⁵</string>
   <string name="sync_error_permissions_text">Permisos adicionales requeridos</string>
   <string name="sync_error_opentasks_too_old">OpenTasks muy viejo</string>

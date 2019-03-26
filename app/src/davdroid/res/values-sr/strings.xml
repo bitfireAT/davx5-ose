@@ -6,14 +6,12 @@
   <string name="address_books_authority_title">Адресари</string>
   <string name="help">Помоћ</string>
   <string name="manage_accounts">Управљај налозима</string>
-  <string name="please_wait">Сачекајте…</string>
   <string name="send">Пошаљи</string>
   <string name="notification_channel_debugging">Тражење грешака</string>
   <string name="notification_channel_general">Остале важне поруке</string>
   <string name="notification_channel_sync">Синхронизација</string>
   <string name="notification_channel_sync_errors">Грешке синхронизације</string>
   <string name="notification_channel_sync_io_errors">Мрежне и У/И грешке</string>
-  <string name="notification_channel_sync_status">Поруке стања</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Аутоматска синхронизација</string>
   <string name="startup_autostart_permission_message">%s фирмвер често спречава аутоматску синхронизацију. У овом случају, дозволите аутоматску синхронизацију у поставкама Андроида.</string>
@@ -89,7 +87,6 @@
   <string name="account_delete">Обриши налог</string>
   <string name="account_delete_confirmation_title">Заиста обрисати налог?</string>
   <string name="account_delete_confirmation_text">Све локалне копије адресара, календара и листи задатака ће бити обрисане.</string>
-  <string name="account_select_collections_hint">Изаберите збирке за синхронизовање</string>
   <string name="account_carddav">КардДАВ</string>
   <string name="account_caldav">КалДАВ</string>
   <string name="account_webcal">Вебкал</string>
@@ -194,7 +191,6 @@
   <string name="create_collection_create">Направи</string>
   <string name="delete_collection">Обриши збирку</string>
   <string name="delete_collection_confirm_title">Да ли сте сигурни?</string>
-  <string name="delete_collection_confirm_warning">Ова збирка (%s) и сви њени подаци ће бити уклоњени са сервера.</string>
   <string name="delete_collection_deleting_collection">Бришем збирку</string>
   <string name="collection_force_read_only">Присили само-за-читање</string>
   <string name="collection_properties">Својства</string>
@@ -208,11 +204,6 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Подаци за исправљање грешака</string>
   <string name="sync_contacts_read_only_address_book">Адресар само-за-читање</string>
-  <plurals name="sync_contacts_local_contact_changes_discarded">
-    <item quantity="one">Измена локалног контакта одбачена</item>
-    <item quantity="few">%d измене локалног контакта одбачене</item>
-    <item quantity="other">%d измена локалног контакта одбачено</item>
-  </plurals>
   <string name="sync_error_permissions">ДАВдроид дозволе</string>
   <string name="sync_error_permissions_text">Потребне су додатне доволе</string>
   <string name="sync_error_opentasks_too_old">Отворени задаци застарели</string>

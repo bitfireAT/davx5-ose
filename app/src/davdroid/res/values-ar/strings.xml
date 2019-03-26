@@ -6,14 +6,12 @@
   <string name="address_books_authority_title">دفاتر العناوين</string>
   <string name="help">مساعدة</string>
   <string name="manage_accounts">إدارة الحسابات</string>
-  <string name="please_wait">يرجى الانتظار…</string>
   <string name="send">إرسال</string>
   <string name="notification_channel_debugging">تصحيح العلل</string>
   <string name="notification_channel_general">رسائل هامة أخرى</string>
   <string name="notification_channel_sync">مزامنة</string>
   <string name="notification_channel_sync_errors">أخطاء المزامنة</string>
   <string name="notification_channel_sync_io_errors">أخطاء الشبكة و عمليات الإدخال/الإخراج</string>
-  <string name="notification_channel_sync_status">رسائل الحالة</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">مزامنة تلقائية</string>
   <string name="startup_autostart_permission_message">%s البرنامج الثابت للجهاز قد يمنع المزامنة التلقائية.  في هذه الحالة أعط الإذن بالمزامنة التلقائية في إعدادات النظام لديك.</string>
@@ -97,7 +95,6 @@
   <string name="account_delete">حذف الحساب</string>
   <string name="account_delete_confirmation_title">هل تريد حذف الحساب فعلاً ؟</string>
   <string name="account_delete_confirmation_text">سيتم حذف كل النسخ المحليّة من دفاتر العناوين والتقاويم وقوائم المهام.</string>
-  <string name="account_select_collections_hint">إختر المجموعات لمزامنتها</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -210,7 +207,6 @@
   <string name="create_collection_create">إنشاء</string>
   <string name="delete_collection">حذف المجموعة</string>
   <string name="delete_collection_confirm_title">هل أنت متأكد؟</string>
-  <string name="delete_collection_confirm_warning">ستتم إزالة هذه المجموعة (%s) وكل بياناتها من الخادم.</string>
   <string name="delete_collection_deleting_collection">حذف المجموعة جارٍ</string>
   <string name="collection_force_read_only">إجبار القراءة فقط</string>
   <string name="collection_properties">خصائص</string>
@@ -224,14 +220,6 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">معلومات تصحيح العلل</string>
   <string name="sync_contacts_read_only_address_book">دفتر عناوين للقراءة فقط</string>
-  <plurals name="sync_contacts_local_contact_changes_discarded">
-    <item quantity="zero">تم تجاهل تغيير في جهة الاتصال المحلية %d</item>
-    <item quantity="one">تم تجاهل تغيير في جهة الاتصال المحلية</item>
-    <item quantity="two">تم تجاهل تغيير في جهة الاتصال المحلية %d</item>
-    <item quantity="few">تم تجاهل تغيير في جهة الاتصال المحلية %d</item>
-    <item quantity="many">تم تجاهل تغيير في جهة الاتصال المحلية %d</item>
-    <item quantity="other">تم تجاهل تغيير في جهة الاتصال المحلية %d</item>
-  </plurals>
   <string name="sync_error_permissions">أذونات DAVx⁵</string>
   <string name="sync_error_permissions_text">مطلوب أذونات إضافية</string>
   <string name="sync_error_opentasks_too_old">OpenTasks قديم للغاية</string>

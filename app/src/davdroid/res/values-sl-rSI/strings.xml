@@ -4,7 +4,6 @@
   <string name="address_books_authority_title">Seznami s stiki</string>
   <string name="help">Pomoč</string>
   <string name="manage_accounts">Urejanje prijav</string>
-  <string name="please_wait">Počakajte …</string>
   <string name="send">Pošlji</string>
   <!--startup dialogs-->
   <string name="startup_dont_show_again">Ne pokaži več</string>

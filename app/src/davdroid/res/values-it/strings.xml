@@ -6,13 +6,11 @@
   <string name="address_books_authority_title">Rubriche</string>
   <string name="help">Aiuto</string>
   <string name="manage_accounts">Gestione account</string>
-  <string name="please_wait">Attendere prego …</string>
   <string name="send">Invia</string>
   <string name="notification_channel_general">Altri messaggi importanti</string>
   <string name="notification_channel_sync">Sincronizzazione</string>
   <string name="notification_channel_sync_errors">Errori di sincronizzazione</string>
   <string name="notification_channel_sync_io_errors">Errori di Rete e di I/O</string>
-  <string name="notification_channel_sync_status">Messaggi di stato</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization_disable">Disabilita per DAVx⁵</string>
   <string name="startup_dont_show_again">Non mostrare più</string>
@@ -173,7 +171,6 @@
   <string name="create_collection_create">Crea</string>
   <string name="delete_collection">Elimina raccolta</string>
   <string name="delete_collection_confirm_title">Sei sicuro?</string>
-  <string name="delete_collection_confirm_warning">Questa raccolta (%s) e tutti i suoi dati saranno rimossi dal server.</string>
   <string name="delete_collection_deleting_collection">Cancellazione della raccolta</string>
   <string name="collection_force_read_only">Forza sola lettura</string>
   <!--ExceptionInfoFragment-->

@@ -4,7 +4,6 @@
   <string name="app_name">DAVx⁵</string>
   <string name="help">Yardım</string>
   <string name="manage_accounts">Hesapları yönet</string>
-  <string name="please_wait">Lütfen bekle …</string>
   <string name="send">Gönder</string>
   <!--startup dialogs-->
   <string name="startup_dont_show_again">Bir daha gösterme</string>
@@ -114,7 +113,6 @@
   <string name="create_collection_create">Yarat</string>
   <string name="delete_collection">Koleksiyonu sil</string>
   <string name="delete_collection_confirm_title">Emin misin?</string>
-  <string name="delete_collection_confirm_warning">Bu koleksiyon (%s) ve tüm verisi sunucudan silinecek.</string>
   <string name="delete_collection_deleting_collection">Koleksiyon siliniyor</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Bir hata oluştu.</string>

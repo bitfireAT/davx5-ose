@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Адресные книги</string>
   <string name="help">Помощь</string>
   <string name="manage_accounts">Управление аккаунтами</string>
-  <string name="please_wait">Пожалуйста, подождите …</string>
   <string name="send">Отправить</string>
   <string name="notification_channel_debugging">Отладка</string>
   <string name="notification_channel_general">Другие важные сообщения</string>
@@ -17,8 +16,6 @@
   <string name="notification_channel_sync_warnings_desc">Некритичные проблемы с синхронизацией, такие как некоторые неверные файлы</string>
   <string name="notification_channel_sync_io_errors">Ошибки сети и ввода/вывода</string>
   <string name="notification_channel_sync_io_errors_desc">Таймауты, проблемы с подключением и т. д. (часто временные)</string>
-  <string name="notification_channel_sync_status">Сообщения о состоянии</string>
-  <string name="notification_channel_sync_status_desc">Информационные сообщения о состоянии, такие как количество отклоненных изменений в коллекциях, доступных только для чтения.</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Автоматическая синхронизация</string>
   <string name="startup_autostart_permission_message">%s ПО устройства часто блокирует автоматическую синхронизацию. В этом случае разрешите автоматическую синхронизацию в настройках Android.</string>
@@ -104,7 +101,6 @@
   <string name="account_delete">Удалить аккаунт</string>
   <string name="account_delete_confirmation_title">Вы действительно хотите удалить аккаунт?</string>
   <string name="account_delete_confirmation_text">Все локальные копии адресных книг, календарей и задач будут удалены.</string>
-  <string name="account_select_collections_hint">Выберите коллекции для синхронизации</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">WebСal</string>
@@ -215,7 +211,6 @@
   <string name="create_collection_create">Создать</string>
   <string name="delete_collection">Удалить коллекцию</string>
   <string name="delete_collection_confirm_title">Вы уверены?</string>
-  <string name="delete_collection_confirm_warning">Эта коллекция (%s) и все ее данные будут удалены с сервера.</string>
   <string name="delete_collection_deleting_collection">Удаление коллекции</string>
   <string name="collection_force_read_only">Только для чтения</string>
   <string name="collection_properties">Свойства</string>
@@ -229,12 +224,6 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>
   <string name="sync_contacts_read_only_address_book">Адресная книга только для чтения</string>
-  <plurals name="sync_contacts_local_contact_changes_discarded">
-    <item quantity="one">Локальное изменение контакта отменено</item>
-    <item quantity="few">%d локальных изменений контакта отменены</item>
-    <item quantity="many">%d локальных изменений контакта отменены</item>
-    <item quantity="other">%d локальных изменений контакта отменены</item>
-  </plurals>
   <string name="sync_error_permissions">Разрешения DAVx⁵</string>
   <string name="sync_error_permissions_text">Требуются дополнительные разрешения</string>
   <string name="sync_error_opentasks_too_old">OpenTasks устарел</string>

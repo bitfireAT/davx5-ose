@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Adresboeken</string>
   <string name="help">Help</string>
   <string name="manage_accounts">Beheer accounts</string>
-  <string name="please_wait">Een moment geduld…</string>
   <string name="send">Verzenden</string>
   <!--startup dialogs-->
   <string name="startup_battery_optimization_disable">DAVx⁵ afsluiten</string>
@@ -157,7 +156,6 @@
   <string name="create_collection_create">Maak</string>
   <string name="delete_collection">Verwijder collectie</string>
   <string name="delete_collection_confirm_title">Weet je het zeker?</string>
-  <string name="delete_collection_confirm_warning">Deze collectie (%s) en alle data zal verwijderd worden van de server.</string>
   <string name="delete_collection_deleting_collection">Collectie aan het verwijderen</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Er is een fout opgetreden.</string>

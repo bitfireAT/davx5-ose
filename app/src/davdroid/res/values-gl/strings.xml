@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Libretas de enderezos</string>
   <string name="help">Axuda</string>
   <string name="manage_accounts">Xestionar contas</string>
-  <string name="please_wait">Por favor agarde …</string>
   <string name="send">Enviar</string>
   <string name="notification_channel_debugging">Depurando</string>
   <string name="notification_channel_general">Outras mensaxes importantes</string>
@@ -17,8 +16,6 @@
   <string name="notification_channel_sync_warnings_desc">Problemas non-fatais de sincronización como certos ficheiros non válidos</string>
   <string name="notification_channel_sync_io_errors">Fallos de rede e I/O</string>
   <string name="notification_channel_sync_io_errors_desc">Caducidades, problemas de conexión, etc. (soen ser temporais)</string>
-  <string name="notification_channel_sync_status">Mensaxes de estado</string>
-  <string name="notification_channel_sync_status_desc">Mensaxes informativos de estado como número de cambios desbotados nas coleccións de só lectura</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Sincronización automática</string>
   <string name="startup_autostart_permission_message">O firmware %s soe bloquear a sincronización automática. En este caso, permita a sincronización automática nos axustes de Android.</string>
@@ -104,7 +101,6 @@
   <string name="account_delete">Eliminar conta</string>
   <string name="account_delete_confirmation_title">Desexa eliminar a conta?</string>
   <string name="account_delete_confirmation_text">Todas as copias locais de libretas de enderezos, calendarios e tarefas eliminaranse.</string>
-  <string name="account_select_collections_hint">Escoller as coleccións a sincronizar</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -213,7 +209,6 @@
   <string name="create_collection_create">Crear</string>
   <string name="delete_collection">Eliminar colección</string>
   <string name="delete_collection_confirm_title">Quere eliminar?</string>
-  <string name="delete_collection_confirm_warning">Esta colección (%s) e todos os seus datos serán eliminados do servidor.</string>
   <string name="delete_collection_deleting_collection">Eliminando colección</string>
   <string name="collection_force_read_only">Forzar só lectura</string>
   <string name="collection_properties">Propiedades</string>
@@ -227,10 +222,6 @@
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Info depuración</string>
   <string name="sync_contacts_read_only_address_book">Libreta de enderezos de só lectura</string>
-  <plurals name="sync_contacts_local_contact_changes_discarded">
-    <item quantity="one">Descartado o cambio no contacto local</item>
-    <item quantity="other">Descartados %d cambios en contactos locais</item>
-  </plurals>
   <string name="sync_error_permissions">Permisos DAVx⁵</string>
   <string name="sync_error_permissions_text">Precísanse permisos adicionais</string>
   <string name="sync_error_opentasks_too_old">OpenTask demasiado antigo</string>
