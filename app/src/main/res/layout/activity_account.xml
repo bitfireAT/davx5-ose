@@ -28,19 +28,6 @@
                       android:padding="@dimen/activity_margin"
                       android:animateLayoutChanges="true">
 
-            <TextView
-                android:id="@+id/select_collections_hint"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:drawableLeft="@drawable/ic_touch_app_dark_compat"
-                android:drawableStart="@drawable/ic_touch_app_dark_compat"
-                android:drawablePadding="8dp"
-                android:gravity="center_vertical"
-                android:visibility="@{safeUnbox(model.addressBooksSelected) || safeUnbox(model.calendarsSelected) ? View.GONE : View.VISIBLE}"
-                tools:visibility="visible"
-                android:text="@string/account_select_collections_hint"/>
-
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

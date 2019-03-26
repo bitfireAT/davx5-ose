@@ -523,13 +523,11 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         val cardDavServiceId = MutableLiveData<Long>()
         val cardDavRefreshing = MutableLiveData<Boolean>()
         val addressBooks = MutableLiveData<List<CollectionInfo>>()
-        val addressBooksSelected = MutableLiveData<Boolean>()
         val hasAddressBookHomeSets = MutableLiveData<Boolean>()
 
         val calDavServiceId = MutableLiveData<Long>()
         val calDavRefreshing = MutableLiveData<Boolean>()
         val calendars = MutableLiveData<List<CollectionInfo>>()
-        val calendarsSelected = MutableLiveData<Boolean>()
         val hasCalendarHomeSets = MutableLiveData<Boolean>()
 
         val webcals = MutableLiveData<List<CollectionInfo>>()
