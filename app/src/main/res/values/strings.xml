@@ -31,8 +31,6 @@
     <string name="notification_channel_sync_warnings_desc">Non-fatal synchronization problems like certain invalid files</string>
     <string name="notification_channel_sync_io_errors">Network and I/O errors</string>
     <string name="notification_channel_sync_io_errors_desc">Timeouts, connection problems, etc. (often temporary)</string>
-    <string name="notification_channel_sync_status">Status messages</string>
-    <string name="notification_channel_sync_status_desc">Informational status messages like number of dismissed changes of read-only collections</string>
 
     <!-- startup dialogs -->
     <string name="startup_autostart_permission">Automatic synchronization</string>
