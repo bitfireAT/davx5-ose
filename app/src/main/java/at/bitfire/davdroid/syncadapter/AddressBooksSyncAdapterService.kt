@@ -12,10 +12,10 @@ import android.accounts.Account
 import android.content.*
 import android.content.pm.PackageManager
 import android.database.DatabaseUtils
-import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
+import at.bitfire.davdroid.closeCompat
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.ServiceDB
@@ -144,11 +144,7 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
                         LocalAddressBook.create(context, contactsProvider, account, info)
                     }
                 } finally {
-                    @Suppress("DEPRECATION")
-                    if (Build.VERSION.SDK_INT >= 24)
-                        contactsProvider?.close()
-                    else
-                        contactsProvider?.release()
+                    contactsProvider?.closeCompat()
                 }
             }
         }

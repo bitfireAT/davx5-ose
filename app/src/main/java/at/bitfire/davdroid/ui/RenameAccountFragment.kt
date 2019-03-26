@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.closeCompat
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.ServiceDB
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -46,10 +47,10 @@ class RenameAccountFragment: DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val oldAccount: Account = arguments!!.getParcelable(ARG_ACCOUNT)!!
 
-        val editText = EditText(activity)
+        val editText = EditText(requireActivity())
         editText.setText(oldAccount.name)
 
-        return AlertDialog.Builder(activity!!)
+        return AlertDialog.Builder(requireActivity())
                 .setTitle(R.string.account_rename)
                 .setMessage(R.string.account_rename_new_name)
                 .setView(editText)
@@ -94,11 +95,7 @@ class RenameAccountFragment: DialogFragment() {
                                                 if (oldAccount == addressBook.mainAccount)
                                                     addressBook.mainAccount = Account(newName, oldAccount.type)
                                             } finally {
-                                                @Suppress("DEPRECATION")
-                                                if (Build.VERSION.SDK_INT >= 24)
-                                                    provider.close()
-                                                else
-                                                    provider.release()
+                                                provider.closeCompat()
                                             }
                                     }
                                 } catch(e: Exception) {

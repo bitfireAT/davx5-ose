@@ -29,6 +29,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.preference.*
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.closeCompat
 import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.settings.AccountSettings
@@ -321,11 +322,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                                         calendar.lastSyncState = null
                                     }
                                 } finally {
-                                    @Suppress("DEPRECATION")
-                                    if (Build.VERSION.SDK_INT >= 24)
-                                        provider.close()
-                                    else
-                                        provider.release()
+                                    provider.closeCompat()
                                 }
                             }
                         }

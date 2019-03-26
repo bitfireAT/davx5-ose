@@ -18,6 +18,7 @@ import android.net.Uri
 import android.os.Build
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.closeCompat
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
 import at.bitfire.davdroid.model.SyncState
@@ -70,11 +71,7 @@ class LocalTaskList private constructor(
                     it.update(Tasks.getContentUri(TaskProvider.ProviderName.OpenTasks.authority), values, "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldName))
                 }
             } finally {
-                @Suppress("DEPRECATION")
-                if (Build.VERSION.SDK_INT >= 24)
-                    client?.close()
-                else
-                    client?.release()
+                client?.closeCompat()
             }
         }
 

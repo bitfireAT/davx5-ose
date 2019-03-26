@@ -11,7 +11,6 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.annotation.SuppressLint
 import android.content.*
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import android.os.RemoteException
@@ -302,11 +301,7 @@ class AccountSettings(
             try {
                 AndroidCalendar.insertColors(provider, account)
             } finally {
-                @Suppress("DEPRECATION")
-                if (Build.VERSION.SDK_INT >= 24)
-                    provider.close()
-                else
-                    provider.release()
+                provider.closeCompat()
             }
         }
 
@@ -369,11 +364,7 @@ class AccountSettings(
                 throw ContactsStorageException("Couldn't migrate contacts to new address book", e)
             } finally {
                 parcel.recycle()
-                @Suppress("DEPRECATION")
-                if (Build.VERSION.SDK_INT >= 24)
-                    provider.close()
-                else
-                    provider.release()
+                provider.closeCompat()
             }
         }
 
@@ -441,11 +432,7 @@ class AccountSettings(
                 } catch (e: ContactsStorageException) {
                     Logger.log.log(Level.SEVERE, "Couldn't migrate address book", e)
                 } finally {
-                    if (Build.VERSION.SDK_INT >= 24)
-                        client.close()
-                    else
-                        @Suppress("deprecation")
-                        client.release()
+                    client.closeCompat()
                 }
             }
 
@@ -465,11 +452,7 @@ class AccountSettings(
                 } catch (e: CalendarStorageException) {
                     Logger.log.log(Level.SEVERE, "Couldn't migrate calendars", e)
                 } finally {
-                    if (Build.VERSION.SDK_INT >= 24)
-                        client.close()
-                    else
-                        @Suppress("deprecation")
-                        client.release()
+                    client.closeCompat()
                 }
             }
 
@@ -557,11 +540,7 @@ class AccountSettings(
                 addr.lastSyncState = SyncState(SyncState.Type.CTAG, cTag)
             accountManager.setUserData(account, "addressbook_ctag", null)
         } finally {
-            if (Build.VERSION.SDK_INT >= 24)
-                provider.close()
-            else
-                @Suppress("deprecation")
-                provider.release()
+            provider.closeCompat()
         }
     }
 
