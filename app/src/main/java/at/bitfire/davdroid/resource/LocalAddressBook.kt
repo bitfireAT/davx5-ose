@@ -57,13 +57,12 @@ class LocalAddressBook(
             val addressBook = LocalAddressBook(context, account, provider)
             ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
 
-            addressBook.readOnly = !info.privWriteContent || info.forceReadOnly
-
             // initialize Contacts Provider Settings
             val values = ContentValues(2)
             values.put(ContactsContract.Settings.SHOULD_SYNC, 1)
             values.put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
             addressBook.settings = values
+            addressBook.readOnly = !info.privWriteContent || info.forceReadOnly
 
             return addressBook
         }
@@ -196,8 +195,23 @@ class LocalAddressBook(
             account = future.result
         }
 
-        readOnly = !info.privWriteContent || info.forceReadOnly
-        Constants.log.info("Address book read-only = $readOnly")
+        val nowReadOnly = !info.privWriteContent || info.forceReadOnly
+        if (nowReadOnly != readOnly) {
+            Constants.log.info("Address book now read-only = $nowReadOnly, updating contacts")
+
+            // update address book itself
+            readOnly = nowReadOnly
+
+            // update raw contacts
+            val rawContactValues = ContentValues(1)
+            rawContactValues.put(RawContacts.RAW_CONTACT_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+            provider!!.update(rawContactsSyncUri(), rawContactValues, null, null)
+
+            // update data rows
+            val dataValues = ContentValues(1)
+            dataValues.put(ContactsContract.Data.IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+            provider.update(syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
+        }
 
         // make sure it will still be synchronized when contacts are updated
         ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
