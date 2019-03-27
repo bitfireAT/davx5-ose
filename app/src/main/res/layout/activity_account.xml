@@ -64,7 +64,6 @@
                         android:layout_height="wrap_content"/>
 
                 </LinearLayout>
-
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView

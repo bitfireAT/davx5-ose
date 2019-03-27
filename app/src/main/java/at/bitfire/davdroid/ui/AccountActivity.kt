@@ -212,7 +212,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     }
 
 
-    private val onActionOverflowListener = { anchor: View, info: CollectionInfo ->
+    private val onActionOverflowListener = { anchor: View, info: CollectionInfo, adapter: RecyclerView.Adapter<*>, position: Int ->
         val popup = PopupMenu(this, anchor, Gravity.RIGHT)
         popup.inflate(R.menu.account_collection_operations)
 
@@ -228,9 +228,14 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.force_read_only -> {
-                    val nowChecked = !item.isChecked
-                    model.updateCollectionReadOnly(info, nowChecked) {
-                        reload()
+                    info.uiEnabled = false
+                    adapter.notifyItemChanged(position)
+
+                    val nowForceReadOnly = !info.forceReadOnly
+                    model.updateCollectionReadOnly(info, nowForceReadOnly) {
+                        info.forceReadOnly = nowForceReadOnly
+                        info.uiEnabled = true
+                        adapter.notifyItemChanged(position)
                     }
                 }
                 R.id.delete_collection ->
@@ -317,7 +322,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             v.findViewById<ImageView>(R.id.action_overflow).apply {
                 if (info.uiEnabled)
                     setOnClickListener { view ->
-                        activity.onActionOverflowListener(view, info)
+                        activity.onActionOverflowListener(view, info, this@AddressBookAdapter, position)
                     }
                 else
                     setOnClickListener(null)
@@ -399,7 +404,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             else {
                 if (info.uiEnabled)
                     overflow.setOnClickListener { view ->
-                        activity.onActionOverflowListener(view, info)
+                        activity.onActionOverflowListener(view, info, this@CalendarAdapter, position)
                     }
                 else
                     overflow.setOnClickListener(null)
