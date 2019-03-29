@@ -202,9 +202,18 @@
   <!--collection management-->
   <string name="create_addressbook">创建通讯录</string>
   <string name="create_addressbook_display_name_hint">我的通讯录</string>
+  <string name="create_calendar">创建日历</string>
+  <string name="create_calendar_time_zone">时区</string>
+  <string name="create_calendar_type_vevent">事件</string>
+  <string name="create_calendar_type_vtodo">任务</string>
   <string name="create_calendar_type_events_and_tasks">混合（日程和任务）</string>
+  <string name="create_collection_color">颜色</string>
   <string name="create_collection_creating">正在创建集合</string>
+  <string name="create_collection_display_name">标题</string>
   <string name="create_collection_display_name_required">请输入标题</string>
+  <string name="create_collection_description">描述</string>
+  <string name="create_collection_optional">可选</string>
+  <string name="create_collection_home_set">存储位置</string>
   <string name="create_collection_create">创建</string>
   <string name="delete_collection">删除集合</string>
   <string name="delete_collection_confirm_title">你确定吗？</string>
