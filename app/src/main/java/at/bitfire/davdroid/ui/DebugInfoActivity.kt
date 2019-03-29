@@ -42,7 +42,7 @@ import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityDebugInfoBinding
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.ServiceDB
+import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.TaskProvider
@@ -287,11 +287,9 @@ class DebugInfoActivity: AppCompatActivity() {
                     }
                 text.append("\n")
 
-                ServiceDB.OpenHelper(context).use { dbHelper ->
-                    text.append("SQLITE DUMP\n")
-                    dbHelper.dump(text)
-                    text.append("\n")
-                }
+                text.append("SQLITE DUMP\n")
+                AppDatabase.getInstance(context).dump(text)
+                text.append("\n")
 
                 try {
                     text.append(

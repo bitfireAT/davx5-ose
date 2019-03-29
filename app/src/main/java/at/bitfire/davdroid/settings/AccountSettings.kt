@@ -10,7 +10,10 @@ package at.bitfire.davdroid.settings
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.annotation.SuppressLint
-import android.content.*
+import android.content.ContentResolver
+import android.content.ContentUris
+import android.content.ContentValues
+import android.content.Context
 import android.os.Bundle
 import android.os.Parcel
 import android.os.RemoteException
@@ -18,18 +21,12 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import at.bitfire.davdroid.*
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.CollectionInfo
+import at.bitfire.davdroid.model.AppDatabase
+import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.Credentials
-import at.bitfire.davdroid.model.ServiceDB
-import at.bitfire.davdroid.model.ServiceDB.*
-import at.bitfire.davdroid.model.ServiceDB.Collections
-import at.bitfire.davdroid.model.SyncState
+import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.LocalCalendar
-import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.ical4android.AndroidCalendar
-import at.bitfire.ical4android.AndroidTaskList
-import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName.OpenTasks
 import at.bitfire.vcard4android.ContactsStorageException
@@ -37,7 +34,6 @@ import at.bitfire.vcard4android.GroupMethod
 import okhttp3.HttpUrl
 import org.apache.commons.lang3.StringUtils
 import org.dmfs.tasks.contract.TaskContract
-import java.util.*
 import java.util.logging.Level
 
 /**
@@ -241,34 +237,28 @@ class AccountSettings(
     }
 
 
-    @Suppress("unused")
-    @SuppressLint("Recycle")
+    @Suppress("unused","FunctionName")
     /**
      * It seems that somehow some non-CalDAV accounts got OpenTasks syncable, which caused battery problems.
      * Disable it on those accounts for the future.
      */
     private fun update_8_9() {
-        ServiceDB.OpenHelper(context).use { dbHelper ->
-            val db = dbHelper.readableDatabase
-            db.query(ServiceDB.Services._TABLE, null, "${ServiceDB.Services.ACCOUNT_NAME}=? AND ${ServiceDB.Services.SERVICE}=?",
-                    arrayOf(account.name, ServiceDB.Services.SERVICE_CALDAV), null, null, null).use { result ->
-                val hasCalDAV = result.count >= 1
-                if (!hasCalDAV && ContentResolver.getIsSyncable(account, OpenTasks.authority) != 0) {
-                    Logger.log.info("Disabling OpenTasks sync for $account")
-                    ContentResolver.setIsSyncable(account, OpenTasks.authority, 0)
-                }
-            }
+        val db = AppDatabase.getInstance(context)
+        val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
+        if (!hasCalDAV && ContentResolver.getIsSyncable(account, OpenTasks.authority) != 0) {
+            Logger.log.info("Disabling OpenTasks sync for $account")
+            ContentResolver.setIsSyncable(account, OpenTasks.authority, 0)
         }
     }
 
-    @Suppress("unused")
+    @Suppress("unused","FunctionName")
     @SuppressLint("Recycle")
     /**
      * There is a mistake in this method. [TaskContract.Tasks.SYNC_VERSION] is used to store the
      * SEQUENCE and should not be used for the eTag.
      */
     private fun update_7_8() {
-        TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)?.let { provider ->
+        TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)?.use { provider ->
             // ETag is now in sync_version instead of sync1
             // UID  is now in _uid         instead of sync2
             provider.client.query(TaskProvider.syncAdapterUri(provider.tasksUri(), account),
@@ -335,9 +325,7 @@ class AccountSettings(
                         Logger.log.info("No address book URL, ignoring account")
                     else {
                         // create new address book
-                        val info = CollectionInfo(url)
-                        info.type = CollectionInfo.Type.ADDRESS_BOOK
-                        info.displayName = account.name
+                        val info = Collection(url = url, type = Collection.TYPE_ADDRESSBOOK, displayName = account.name)
                         Logger.log.log(Level.INFO, "Creating new address book account", url)
                         val addressBookAccount = Account(LocalAddressBook.accountName(account, info), context.getString(R.string.account_type_address_book))
                         if (!accountManager.addAccountExplicitly(addressBookAccount, null, LocalAddressBook.initialUserData(account, info.url.toString())))
@@ -388,160 +376,6 @@ class AccountSettings(
         setGroupMethod(GroupMethod.CATEGORIES)
     }
 
-    @Suppress("unused")
-    @SuppressLint("Recycle")
-    private fun update_2_3() {
-        // Don't show a warning for Android updates anymore
-        accountManager.setUserData(account, "last_android_version", null)
-
-        var serviceCardDAV: Long? = null
-        var serviceCalDAV: Long? = null
-
-        ServiceDB.OpenHelper(context).use { dbHelper ->
-            val db = dbHelper.writableDatabase
-            // we have to create the WebDAV Service database only from the old address book, calendar and task list URLs
-
-            // CardDAV: migrate address books
-            context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.let { client ->
-                try {
-                    val addrBook = LocalAddressBook(context, account, client)
-                    val url = addrBook.url
-                    Logger.log.fine("Migrating address book $url")
-
-                    // insert CardDAV service
-                    val values = ContentValues(3)
-                    values.put(Services.ACCOUNT_NAME, account.name)
-                    values.put(Services.SERVICE, Services.SERVICE_CARDDAV)
-                    serviceCardDAV = db.insert(Services._TABLE, null, values)
-
-                    // insert address book
-                    values.clear()
-                    values.put(Collections.SERVICE_ID, serviceCardDAV)
-                    values.put(Collections.URL, url)
-                    values.put(Collections.SYNC, 1)
-                    db.insert(Collections._TABLE, null, values)
-
-                    // insert home set
-                    HttpUrl.parse(url)?.let {
-                        val homeSet = it.resolve("../")
-                        values.clear()
-                        values.put(HomeSets.SERVICE_ID, serviceCardDAV)
-                        values.put(HomeSets.URL, homeSet.toString())
-                        db.insert(HomeSets._TABLE, null, values)
-                    }
-                } catch (e: ContactsStorageException) {
-                    Logger.log.log(Level.SEVERE, "Couldn't migrate address book", e)
-                } finally {
-                    client.closeCompat()
-                }
-            }
-
-            // CalDAV: migrate calendars + task lists
-            val collections = HashSet<String>()
-            val homeSets = HashSet<HttpUrl>()
-
-            context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { client ->
-                try {
-                    val calendars = AndroidCalendar.find(account, client, LocalCalendar.Factory, null, null)
-                    for (calendar in calendars)
-                        calendar.name?.let { url ->
-                            Logger.log.fine("Migrating calendar $url")
-                            collections.add(url)
-                            HttpUrl.parse(url)?.resolve("../")?.let { homeSets.add(it) }
-                        }
-                } catch (e: CalendarStorageException) {
-                    Logger.log.log(Level.SEVERE, "Couldn't migrate calendars", e)
-                } finally {
-                    client.closeCompat()
-                }
-            }
-
-            AndroidTaskList.acquireTaskProvider(context)?.use { provider ->
-                try {
-                    val taskLists = AndroidTaskList.find(account, provider, LocalTaskList.Factory, null, null)
-                    for (taskList in taskLists)
-                        taskList.syncId?.let { url ->
-                            Logger.log.fine("Migrating task list $url")
-                            collections.add(url)
-                            HttpUrl.parse(url)?.resolve("../")?.let { homeSets.add(it) }
-                        }
-                } catch (e: CalendarStorageException) {
-                    Logger.log.log(Level.SEVERE, "Couldn't migrate task lists", e)
-                }
-            }
-
-            if (!collections.isEmpty()) {
-                // insert CalDAV service
-                val values = ContentValues(3)
-                values.put(Services.ACCOUNT_NAME, account.name)
-                values.put(Services.SERVICE, Services.SERVICE_CALDAV)
-                serviceCalDAV = db.insert(Services._TABLE, null, values)
-
-                // insert collections
-                for (url in collections) {
-                    values.clear()
-                    values.put(Collections.SERVICE_ID, serviceCalDAV)
-                    values.put(Collections.URL, url)
-                    values.put(Collections.SYNC, 1)
-                    db.insert(Collections._TABLE, null, values)
-                }
-
-                // insert home sets
-                for (homeSet in homeSets) {
-                    values.clear()
-                    values.put(HomeSets.SERVICE_ID, serviceCalDAV)
-                    values.put(HomeSets.URL, homeSet.toString())
-                    db.insert(HomeSets._TABLE, null, values)
-                }
-            }
-        }
-
-        // initiate service detection (refresh) to get display names, colors etc.
-        val refresh = Intent(context, DavService::class.java)
-        refresh.action = DavService.ACTION_REFRESH_COLLECTIONS
-        serviceCardDAV?.let {
-            refresh.putExtra(DavService.EXTRA_DAV_SERVICE_ID, it)
-            context.startService(refresh)
-        }
-        serviceCalDAV?.let {
-            refresh.putExtra(DavService.EXTRA_DAV_SERVICE_ID, it)
-            context.startService(refresh)
-        }
-    }
-
-    @Suppress("unused")
-    @SuppressLint("Recycle")
-    private fun update_1_2() {
-        /* - KEY_ADDRESSBOOK_URL ("addressbook_url"),
-           - KEY_ADDRESSBOOK_CTAG ("addressbook_ctag"),
-           - KEY_ADDRESSBOOK_VCARD_VERSION ("addressbook_vcard_version") are not used anymore (now stored in ContactsContract.SyncState)
-           - KEY_LAST_ANDROID_VERSION ("last_android_version") has been added
-        */
-
-        // move previous address book model to ContactsContract.SyncState
-        val provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY) ?:
-            throw ContactsStorageException("Couldn't access Contacts provider")
-
-        try {
-            val addr = LocalAddressBook(context, account, provider)
-
-            // until now, ContactsContract.settings.UNGROUPED_VISIBLE was not set explicitly
-            val values = ContentValues()
-            values.put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
-            addr.settings = values
-
-            val url = accountManager.getUserData(account, "addressbook_url")
-            if (!url.isNullOrEmpty())
-                addr.url = url
-            accountManager.setUserData(account, "addressbook_url", null)
-
-            val cTag = accountManager.getUserData (account, "addressbook_ctag")
-            if (!cTag.isNullOrEmpty())
-                addr.lastSyncState = SyncState(SyncState.Type.CTAG, cTag)
-            accountManager.setUserData(account, "addressbook_ctag", null)
-        } finally {
-            provider.closeCompat()
-        }
-    }
+    // updates from AccountSettings version 2 and below are not supported anymore
 
 }

@@ -14,7 +14,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.SpinnerAdapter
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
@@ -24,9 +23,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProviders
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityCreateAddressBookBinding
-import at.bitfire.davdroid.model.CollectionInfo
-import at.bitfire.davdroid.model.ServiceDB
-import okhttp3.HttpUrl
+import at.bitfire.davdroid.model.AppDatabase
+import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.model.Service
 import org.apache.commons.lang3.StringUtils
 import java.util.*
 import kotlin.concurrent.thread
@@ -70,25 +69,29 @@ class CreateAddressBookActivity: AppCompatActivity() {
     fun onCreateCollection(item: MenuItem) {
         var ok = true
 
-        val parent = model.homeSets.value?.getItem(model.idxHomeSet.value!!) as String? ?: return
-        HttpUrl.parse(parent)?.let { parentUrl ->
-            val info = CollectionInfo(parentUrl.resolve(UUID.randomUUID().toString() + "/")!!)
+        val args = Bundle()
 
-            val displayName = model.displayName.value
-            if (displayName.isNullOrBlank()) {
-                model.displayNameError.value = getString(R.string.create_collection_display_name_required)
-                ok = false
-            } else {
-                info.displayName = displayName
-                model.displayNameError.value = null
-            }
+        val parent = model.homeSets.value?.getItem(model.idxHomeSet.value!!) ?: return
+        args.putString(CreateCollectionFragment.ARG_URL, parent.url.resolve(UUID.randomUUID().toString() + "/").toString())
 
-            info.description = StringUtils.trimToNull(model.description.value)
+        val displayName = model.displayName.value
+        if (displayName.isNullOrBlank()) {
+            model.displayNameError.value = getString(R.string.create_collection_display_name_required)
+            ok = false
+        } else {
+            args.putString(CreateCollectionFragment.ARG_DISPLAY_NAME, displayName)
+            model.displayNameError.value = null
+        }
 
-            if (ok) {
-                info.type = CollectionInfo.Type.ADDRESS_BOOK
-                CreateCollectionFragment.newInstance(model.account!!, info).show(supportFragmentManager, null)
-            }
+        StringUtils.trimToNull(model.description.value)?.let {
+            args.putString(CreateCollectionFragment.ARG_DESCRIPTION, it)
+        }
+
+        if (ok) {
+            args.putString(CreateCollectionFragment.ARG_TYPE, Collection.TYPE_ADDRESSBOOK)
+            val frag = CreateCollectionFragment()
+            frag.arguments = args
+            frag.show(supportFragmentManager, null)
         }
     }
 
@@ -104,7 +107,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
         val description = MutableLiveData<String>()
 
-        val homeSets = MutableLiveData<SpinnerAdapter>()
+        val homeSets = MutableLiveData<HomeSetAdapter>()
         val idxHomeSet = MutableLiveData<Int>()
 
         @MainThread
@@ -115,25 +118,17 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
             thread {
                 // load account info
-                ServiceDB.OpenHelper(getApplication()).use { dbHelper ->
-                    val adapter = HomesetAdapter(getApplication())
-                    val db = dbHelper.readableDatabase
-                    db.query(ServiceDB.Services._TABLE, arrayOf(ServiceDB.Services.ID),
-                            "${ServiceDB.Services.ACCOUNT_NAME}=? AND ${ServiceDB.Services.SERVICE}=?",
-                            arrayOf(account.name, ServiceDB.Services.SERVICE_CARDDAV), null, null, null).use { cursor ->
-                        if (cursor.moveToNext()) {
-                            val strServiceID = cursor.getString(0)
-                            db.query(ServiceDB.HomeSets._TABLE, arrayOf(ServiceDB.HomeSets.URL),
-                                    "${ServiceDB.HomeSets.SERVICE_ID}=?", arrayOf(strServiceID), null, null, null).use { c ->
-                                while (c.moveToNext())
-                                    adapter.add(c.getString(0))
-                            }
-                        }
-                    }
-                    if (!adapter.isEmpty) {
-                        homeSets.postValue(adapter)
-                        idxHomeSet.postValue(0)
-                    }
+                val adapter = HomeSetAdapter(getApplication())
+
+                val db = AppDatabase.getInstance(getApplication())
+                db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)?.let { service ->
+                    val homeSets = db.homeSetDao().getByService(service.id)
+                    adapter.addAll(homeSets)
+                }
+
+                if (!adapter.isEmpty) {
+                    homeSets.postValue(adapter)
+                    idxHomeSet.postValue(0)
                 }
             }
         }

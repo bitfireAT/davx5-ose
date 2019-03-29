@@ -14,8 +14,6 @@ import android.accounts.AccountManager
 import android.app.Application
 import android.content.*
 import android.content.pm.PackageManager
-import android.database.DatabaseUtils
-import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.os.*
 import android.provider.CalendarContract
@@ -41,9 +39,9 @@ import androidx.recyclerview.widget.RecyclerView
 import at.bitfire.davdroid.*
 import at.bitfire.davdroid.databinding.ActivityAccountBinding
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.CollectionInfo
-import at.bitfire.davdroid.model.ServiceDB
-import at.bitfire.davdroid.model.ServiceDB.*
+import at.bitfire.davdroid.model.AppDatabase
+import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.ical4android.TaskProvider
@@ -222,7 +220,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     }
 
 
-    private val onActionOverflowListener = { anchor: View, info: CollectionInfo, adapter: RecyclerView.Adapter<*>, position: Int ->
+    private val onActionOverflowListener = { anchor: View, info: Collection, adapter: RecyclerView.Adapter<*>, position: Int ->
         val popup = PopupMenu(this, anchor, Gravity.RIGHT)
         popup.inflate(R.menu.account_collection_operations)
 
@@ -249,9 +247,9 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                     }
                 }
                 R.id.delete_collection ->
-                    DeleteCollectionFragment.newInstance(model.account, info).show(supportFragmentManager, null)
+                    DeleteCollectionFragment.newInstance(model.account, info.id).show(supportFragmentManager, null)
                 R.id.properties ->
-                    CollectionInfoFragment.newInstance(info).show(supportFragmentManager, null)
+                    CollectionInfoFragment.newInstance(info.id).show(supportFragmentManager, null)
             }
             true
         }
@@ -297,9 +295,9 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                     info.uiEnabled = false
                     notifyItemChanged(position)
 
-                    val nowChecked = !info.selected
+                    val nowChecked = !info.sync
                     model.updateCollectionSelected(info, nowChecked) {
-                        info.selected = nowChecked
+                        info.sync = nowChecked
                         v.findViewById<CheckBox>(R.id.checked).isChecked = nowChecked
 
                         info.uiEnabled = true
@@ -311,7 +309,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
             v.findViewById<CheckBox>(R.id.checked).apply {
                 isEnabled = info.uiEnabled
-                isChecked = info.selected
+                isChecked = info.sync
             }
 
             v.findViewById<TextView>(R.id.title).text =
@@ -367,7 +365,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             val info = data().value?.get(position) ?: return
             val v = holder.itemView
 
-            val enabled = (info.selected || info.supportsVEVENT || info.supportsVTODO) && info.uiEnabled
+            val enabled = (info.sync || info.supportsVEVENT != false || info.supportsVTODO != false) && info.uiEnabled
             if (enabled)
                 v.setOnClickListener {
                     onClickListener(it, position, info)
@@ -376,7 +374,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                 v.setOnClickListener(null)
             v.findViewById<CheckBox>(R.id.checked).apply {
                 isEnabled = enabled
-                isChecked = info.selected
+                isChecked = info.sync
             }
 
             v.findViewById<View>(R.id.color).apply {
@@ -403,13 +401,13 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                     if (!info.privWriteContent || info.forceReadOnly) View.VISIBLE else View.GONE
 
             v.findViewById<ImageView>(R.id.events).visibility =
-                    if (info.supportsVEVENT) View.VISIBLE else View.GONE
+                    if (info.supportsVEVENT != false) View.VISIBLE else View.GONE
 
             v.findViewById<ImageView>(R.id.tasks).visibility =
-                    if (info.supportsVTODO) View.VISIBLE else View.GONE
+                    if (info.supportsVTODO != false) View.VISIBLE else View.GONE
 
             val overflow = v.findViewById<ImageView>(R.id.action_overflow)
-            if (info.type == CollectionInfo.Type.WEBCAL)
+            if (info.type == Collection.TYPE_WEBCAL)
                 overflow.visibility = View.INVISIBLE
             else {
                 if (info.uiEnabled)
@@ -421,14 +419,14 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             }
         }
 
-        open fun onClickListener(parent: View, position: Int, info: CollectionInfo)
+        open fun onClickListener(parent: View, position: Int, info: Collection)
         {
             info.uiEnabled = false
             notifyItemChanged(position)
 
-            val nowChecked = !info.selected
+            val nowChecked = !info.sync
             model.updateCollectionSelected(info, nowChecked) {
-                info.selected = nowChecked
+                info.sync = nowChecked
                 parent.findViewById<CheckBox>(R.id.checked).isChecked = nowChecked
 
                 info.uiEnabled = true
@@ -445,8 +443,8 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
         override fun data() = model.webcals
 
-        override fun onClickListener(parent: View, position: Int, info: CollectionInfo) {
-            val nowChecked = !info.selected
+        override fun onClickListener(parent: View, position: Int, info: Collection) {
+            val nowChecked = !info.sync
             var uri = Uri.parse(info.source)
 
             if (nowChecked) {
@@ -537,15 +535,15 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
         val cardDavServiceId = MutableLiveData<Long>()
         val cardDavRefreshing = MutableLiveData<Boolean>()
-        val addressBooks = MutableLiveData<List<CollectionInfo>>()
+        val addressBooks = MutableLiveData<List<Collection>>()
         val hasAddressBookHomeSets = MutableLiveData<Boolean>()
 
         val calDavServiceId = MutableLiveData<Long>()
         val calDavRefreshing = MutableLiveData<Boolean>()
-        val calendars = MutableLiveData<List<CollectionInfo>>()
+        val calendars = MutableLiveData<List<Collection>>()
         val hasCalendarHomeSets = MutableLiveData<Boolean>()
 
-        val webcals = MutableLiveData<List<CollectionInfo>>()
+        val webcals = MutableLiveData<List<Collection>>()
 
         val requiredPermissions = MutableLiveData<List<String>>()
 
@@ -593,97 +591,59 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             executor.submit {
                 val neededPermissions = mutableListOf<String>()
 
-                OpenHelper(context).use { dbHelper ->
-                    val db = dbHelper.readableDatabase
-                    db.query(
-                            Services._TABLE,
-                            arrayOf(Services.ID, Services.SERVICE),
-                            "${Services.ACCOUNT_NAME}=?", arrayOf(account.name),
-                            null, null, null).use { cursor ->
-                        while (cursor.moveToNext()) {
-                            val id = cursor.getLong(0)
-                            when (cursor.getString(1)) {
-                                Services.SERVICE_CARDDAV -> {
-                                    cardDavServiceId.postValue(id)
-                                    hasAddressBookHomeSets.postValue(hasHomeSets(db, id))
-
-                                    val collections = readCollections(db, id)
-                                    if (collections.isNotEmpty())
-                                        neededPermissions.addAll(arrayOf(
-                                                Manifest.permission.READ_CONTACTS,
-                                                Manifest.permission.WRITE_CONTACTS
-                                        ))
-
-                                    addressBooks.postValue(collections)
+                val db = AppDatabase.getInstance(context)
+                val collectionDao = db.collectionDao()
+                for (service in db.serviceDao().getByAccount(account.name)) {
+                    when (service.type) {
+                        Service.TYPE_CARDDAV -> {
+                            cardDavServiceId.postValue(service.id)
+                            val collections = collectionDao.getByService(service.id)
+                            if (collections.isNotEmpty())
+                                neededPermissions.addAll(arrayOf(
+                                        Manifest.permission.READ_CONTACTS,
+                                        Manifest.permission.WRITE_CONTACTS
+                                ))
+                            addressBooks.postValue(collections)
+                        }
+                        Service.TYPE_CALDAV -> {
+                            calDavServiceId.postValue(service.id)
+                            val collections = collectionDao.getByService(service.id)
+                            if (collections.isNotEmpty()) {
+                                neededPermissions.addAll(arrayOf(
+                                        Manifest.permission.READ_CALENDAR,
+                                        Manifest.permission.WRITE_CALENDAR
+                                ))
+                                if (LocalTaskList.tasksProviderAvailable(context)) {
+                                    neededPermissions.addAll(arrayOf(
+                                            TaskProvider.PERMISSION_READ_TASKS,
+                                            TaskProvider.PERMISSION_WRITE_TASKS
+                                    ))
                                 }
-                                Services.SERVICE_CALDAV -> {
-                                    calDavServiceId.postValue(id)
-                                    hasCalendarHomeSets.postValue(hasHomeSets(db, id))
 
-                                    val collections = readCollections(db, id)
-                                    if (collections.isNotEmpty()) {
-                                        neededPermissions.addAll(arrayOf(
-                                                Manifest.permission.READ_CALENDAR,
-                                                Manifest.permission.WRITE_CALENDAR
-                                        ))
+                                calendars.postValue(collections.filter { it.type == Collection.TYPE_CALENDAR })
 
-                                        if (LocalTaskList.tasksProviderAvailable(context)) {
-                                            neededPermissions.addAll(arrayOf(
-                                                    TaskProvider.PERMISSION_READ_TASKS,
-                                                    TaskProvider.PERMISSION_WRITE_TASKS
-                                            ))
+                                val webcalCollections = collections.filter { it.type == Collection.TYPE_WEBCAL }
+                                if (webcalCollections.isNotEmpty() && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
+                                    context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
+                                        try {
+                                            for (info in webcalCollections) {
+                                                provider.query(CalendarContract.Calendars.CONTENT_URI, null,
+                                                        "${CalendarContract.Calendars.NAME}=?", arrayOf(info.source), null)?.use { cursor ->
+                                                    if (cursor.moveToNext())
+                                                        info.sync = true
+                                                }
+                                            }
+                                        } finally {
+                                            provider.closeCompat()
                                         }
                                     }
-
-                                    calendars.postValue(collections.filter { it.type == CollectionInfo.Type.CALENDAR })
-
-                                    val webcalCollections = collections.filter { it.type == CollectionInfo.Type.WEBCAL }
-                                    // check whether Webcal subscriptions are subscribed by ICSx5
-                                    webcalCollections.forEach { it.selected = false }
-                                    if (webcalCollections.isNotEmpty() && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
-                                        context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
-                                            try {
-                                                for (info in webcalCollections) {
-                                                    provider.query(CalendarContract.Calendars.CONTENT_URI, null,
-                                                            "${CalendarContract.Calendars.NAME}=?", arrayOf(info.source), null)?.use { cursor ->
-                                                        if (cursor.moveToNext())
-                                                            info.selected = true
-                                                    }
-                                                }
-                                            } finally {
-                                                provider.closeCompat()
-                                            }
-                                        }
-                                    webcals.postValue(webcalCollections)
-                                }
+                                webcals.postValue(webcalCollections)
                             }
                         }
                     }
-
-                    requiredPermissions.postValue(neededPermissions)
                 }
+                requiredPermissions.postValue(neededPermissions)
             }
-        }
-
-        private fun readCollections(db: SQLiteDatabase, service: Long): List<CollectionInfo>  {
-            val collections = mutableListOf<CollectionInfo>()
-            db.query(Collections._TABLE, null, Collections.SERVICE_ID + "=?", arrayOf(service.toString()),
-                    null, null, Collections.DISPLAY_NAME).use { cursor ->
-                while (cursor.moveToNext()) {
-                    val values = ContentValues(cursor.columnCount)
-                    DatabaseUtils.cursorRowToContentValues(cursor, values)
-                    collections.add(CollectionInfo(values))
-                }
-            }
-            return collections
-        }
-
-        private fun hasHomeSets(db: SQLiteDatabase, service: Long): Boolean {
-            db.query(ServiceDB.HomeSets._TABLE, null, "${ServiceDB.HomeSets.SERVICE_ID}=?",
-                    arrayOf(service.toString()), null, null, null)?.use { cursor ->
-                return cursor.count > 0
-            }
-            return false
         }
 
         override fun onStatusChanged(which: Int) {
@@ -723,30 +683,18 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             calDavRefreshing.postValue(calendarSyncActive || tasksSyncActive || svcCalDavRefreshing)
         }
 
-        fun updateCollectionSelected(info: CollectionInfo, selected: Boolean, @UiThread onSuccess: () -> Unit) {
+        fun updateCollectionSelected(info: Collection, selected: Boolean, @UiThread onSuccess: () -> Unit) {
             executor.submit {
-                val values = ContentValues(1)
-                values.put(Collections.SYNC, if (selected) 1 else 0)
-
-                OpenHelper(context).use { dbHelper ->
-                    val db = dbHelper.writableDatabase
-                    db.update(Collections._TABLE, values, "${Collections.ID}=?", arrayOf(info.id!!.toString()))
-                }
-
+                info.sync = true
+                AppDatabase.getInstance(context).collectionDao().update(info)
                 Handler(Looper.getMainLooper()).post(onSuccess)
             }
         }
 
-        fun updateCollectionReadOnly(info: CollectionInfo, readOnly: Boolean, @UiThread onSuccess: () -> Unit) {
+        fun updateCollectionReadOnly(info: Collection, readOnly: Boolean, @UiThread onSuccess: () -> Unit) {
             executor.submit {
-                val values = ContentValues(1)
-                values.put(Collections.FORCE_READ_ONLY, if (readOnly) 1 else 0)
-
-                OpenHelper(context).use { dbHelper ->
-                    val db = dbHelper.writableDatabase
-                    db.update(Collections._TABLE, values, "${Collections.ID}=?", arrayOf(info.id!!.toString()))
-                }
-
+                info.forceReadOnly = true
+                AppDatabase.getInstance(context).collectionDao().update(info)
                 Handler(Looper.getMainLooper()).post(onSuccess)
             }
         }

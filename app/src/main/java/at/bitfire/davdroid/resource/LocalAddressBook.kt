@@ -21,7 +21,7 @@ import android.util.Base64
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.CollectionInfo
+import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.SyncState
 import at.bitfire.vcard4android.*
 import java.io.ByteArrayOutputStream
@@ -47,7 +47,7 @@ class LocalAddressBook(
         const val USER_DATA_URL = "url"
         const val USER_DATA_READ_ONLY = "read_only"
 
-        fun create(context: Context, provider: ContentProviderClient, mainAccount: Account, info: CollectionInfo): LocalAddressBook {
+        fun create(context: Context, provider: ContentProviderClient, mainAccount: Account, info: Collection): LocalAddressBook {
             val accountManager = AccountManager.get(context)
 
             val account = Account(accountName(mainAccount, info), context.getString(R.string.account_type_address_book))
@@ -73,7 +73,7 @@ class LocalAddressBook(
                 .filter { mainAccount == null || it.mainAccount == mainAccount }
                 .toList()
 
-        fun accountName(mainAccount: Account, info: CollectionInfo): String {
+        fun accountName(mainAccount: Account, info: Collection): String {
             val baos = ByteArrayOutputStream()
             baos.write(info.url.hashCode())
             val hash = Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP or Base64.NO_PADDING)
@@ -185,7 +185,7 @@ class LocalAddressBook(
         return number
     }
 
-    fun update(info: CollectionInfo) {
+    fun update(info: Collection) {
         val newAccountName = accountName(mainAccount, info)
 
         if (account.name != newAccountName && Build.VERSION.SDK_INT >= 21) {

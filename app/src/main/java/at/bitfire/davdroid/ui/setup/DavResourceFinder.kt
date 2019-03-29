@@ -17,7 +17,7 @@ import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.log.StringHandler
-import at.bitfire.davdroid.model.CollectionInfo
+import at.bitfire.davdroid.model.Collection
 import okhttp3.HttpUrl
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder
 import org.xbill.DNS.Lookup
@@ -220,7 +220,7 @@ class DavResourceFinder(
         // Is it an address book and/or principal?
         dav[ResourceType::class.java]?.let {
             if (it.types.contains(ResourceType.ADDRESSBOOK)) {
-                val info = CollectionInfo(dav)
+                val info = Collection.fromDavResponse(dav)!!
                 log.info("Found address book at ${info.url}")
                 config.collections[info.url] = info
             }
@@ -265,7 +265,7 @@ class DavResourceFinder(
         // Is it a calendar book and/or principal?
         dav[ResourceType::class.java]?.let {
             if (it.types.contains(ResourceType.CALENDAR)) {
-                val info = CollectionInfo(dav)
+                val info = Collection.fromDavResponse(dav)!!
                 log.info("Found calendar at ${info.url}")
                 config.collections[info.url] = info
             }
@@ -420,7 +420,7 @@ class DavResourceFinder(
         data class ServiceInfo(
                 var principal: HttpUrl? = null,
                 val homeSets: MutableSet<HttpUrl> = HashSet(),
-                val collections: MutableMap<HttpUrl, CollectionInfo> = HashMap(),
+                val collections: MutableMap<HttpUrl, Collection> = HashMap(),
 
                 var email: String? = null
         )

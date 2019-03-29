@@ -12,9 +12,7 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.app.Application
 import android.content.ContentResolver
-import android.content.ContentValues
 import android.content.Intent
-import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.view.LayoutInflater
@@ -28,9 +26,10 @@ import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.LoginAccountDetailsBinding
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Credentials
-import at.bitfire.davdroid.model.ServiceDB
-import at.bitfire.davdroid.model.ServiceDB.*
+import at.bitfire.davdroid.model.HomeSet
+import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
@@ -145,90 +144,81 @@ class AccountDetailsFragment: Fragment() {
 
                 // add entries for account to service DB
                 Logger.log.log(Level.INFO, "Writing account configuration to database", config)
-                ServiceDB.OpenHelper(context).use { dbHelper ->
-                    val db = dbHelper.writableDatabase
-                    try {
-                        val accountSettings = AccountSettings(context, account)
+                val db = AppDatabase.getInstance(context)
+                try {
+                    val accountSettings = AccountSettings(context, account)
 
-                        val refreshIntent = Intent(context, DavService::class.java)
-                        refreshIntent.action = DavService.ACTION_REFRESH_COLLECTIONS
+                    val refreshIntent = Intent(context, DavService::class.java)
+                    refreshIntent.action = DavService.ACTION_REFRESH_COLLECTIONS
 
-                        if (config.cardDAV != null) {
-                            // insert CardDAV service
-                            val id = insertService(db, name, Services.SERVICE_CARDDAV, config.cardDAV)
+                    if (config.cardDAV != null) {
+                        // insert CardDAV service
 
-                            // initial CardDAV account settings
-                            accountSettings.setGroupMethod(groupMethod)
+                        val id = insertService(db, name, Service.TYPE_CARDDAV, config.cardDAV)
 
-                            // start CardDAV service detection (refresh collections)
-                            refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
-                            context.startService(refreshIntent)
+                        // initial CardDAV account settings
+                        accountSettings.setGroupMethod(groupMethod)
 
-                            // contact sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_address_books.xml
-                            accountSettings.setSyncInterval(context.getString(R.string.address_books_authority), Constants.DEFAULT_SYNC_INTERVAL)
-                        } else
-                            ContentResolver.setIsSyncable(account, context.getString(R.string.address_books_authority), 0)
+                        // start CardDAV service detection (refresh collections)
+                        refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
+                        context.startService(refreshIntent)
 
-                        if (config.calDAV != null) {
-                            // insert CalDAV service
-                            val id = insertService(db, name, Services.SERVICE_CALDAV, config.calDAV)
+                        // contact sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_address_books.xml
+                        accountSettings.setSyncInterval(context.getString(R.string.address_books_authority), Constants.DEFAULT_SYNC_INTERVAL)
+                    } else
+                        ContentResolver.setIsSyncable(account, context.getString(R.string.address_books_authority), 0)
 
-                            // start CalDAV service detection (refresh collections)
-                            refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
-                            context.startService(refreshIntent)
+                    if (config.calDAV != null) {
+                        // insert CalDAV service
+                        val id = insertService(db, name, Service.TYPE_CALDAV, config.calDAV)
 
-                            // calendar sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_calendars.xml
-                            accountSettings.setSyncInterval(CalendarContract.AUTHORITY, Constants.DEFAULT_SYNC_INTERVAL)
+                        // start CalDAV service detection (refresh collections)
+                        refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
+                        context.startService(refreshIntent)
 
-                            // enable task sync if OpenTasks is installed
-                            // further changes will be handled by PackageChangedReceiver
-                            if (LocalTaskList.tasksProviderAvailable(context)) {
-                                ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1)
-                                accountSettings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL)
-                            }
-                        } else {
-                            ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0)
-                            ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0)
+                        // calendar sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_calendars.xml
+                        accountSettings.setSyncInterval(CalendarContract.AUTHORITY, Constants.DEFAULT_SYNC_INTERVAL)
+
+                        // enable task sync if OpenTasks is installed
+                        // further changes will be handled by PackageChangedReceiver
+                        if (LocalTaskList.tasksProviderAvailable(context)) {
+                            ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1)
+                            accountSettings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL)
                         }
-
-                    } catch(e: InvalidAccountException) {
-                        Logger.log.log(Level.SEVERE, "Couldn't access account settings", e)
-                        result.postValue(false)
-                        return@thread
+                    } else {
+                        ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0)
+                        ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0)
                     }
-                }
 
+                } catch(e: InvalidAccountException) {
+                    Logger.log.log(Level.SEVERE, "Couldn't access account settings", e)
+                    result.postValue(false)
+                    return@thread
+                }
                 result.postValue(true)
             }
             return result
         }
 
-        private fun insertService(db: SQLiteDatabase, accountName: String, service: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
+        private fun insertService(db: AppDatabase, accountName: String, type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
             // insert service
-            val serviceValues = ContentValues(3)
-            serviceValues.put(Services.ACCOUNT_NAME, accountName)
-            serviceValues.put(Services.SERVICE, service)
-            info.principal?.let {
-                serviceValues.put(Services.PRINCIPAL, it.toString())
-            }
-            val serviceID = db.insertWithOnConflict(Services._TABLE, null, serviceValues, SQLiteDatabase.CONFLICT_REPLACE)
+            val service = Service(0, accountName, type, info.principal)
+            val serviceId = db.serviceDao().insertOrReplace(service)
 
             // insert home sets
+            val homeSetDao = db.homeSetDao()
             for (homeSet in info.homeSets) {
-                val homeSetValues = ContentValues(2)
-                homeSetValues.put(HomeSets.SERVICE_ID, serviceID)
-                homeSetValues.put(HomeSets.URL, homeSet.toString())
-                db.insertWithOnConflict(HomeSets._TABLE, null, homeSetValues, SQLiteDatabase.CONFLICT_REPLACE)
+                homeSetDao.insertOrReplace(HomeSet(0, serviceId, homeSet))
             }
 
             // insert collections
+            val collectionDao = db.collectionDao()
             for (collection in info.collections.values) {
-                val collectionValues = collection.toDB()
-                collectionValues.put(Collections.SERVICE_ID, serviceID)
-                db.insertWithOnConflict(Collections._TABLE, null, collectionValues, SQLiteDatabase.CONFLICT_REPLACE)
+                collection.serviceId = serviceId
+                collectionDao.insertOrReplace(collection)
             }
 
-            return serviceID
+            return serviceId
         }
 
     }

@@ -13,7 +13,7 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.ServiceDB
+import at.bitfire.davdroid.model.AppDatabase
 
 class SharedPreferencesProvider(
         val context: Context
@@ -121,7 +121,7 @@ class SharedPreferencesProvider(
         edit.apply()
 
         // open ServiceDB to upgrade it and possibly migrate settings
-        ServiceDB.OpenHelper(context).use { it.readableDatabase }
+        AppDatabase.getInstance(context)
     }
 
 

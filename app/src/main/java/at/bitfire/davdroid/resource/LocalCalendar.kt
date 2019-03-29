@@ -19,7 +19,7 @@ import android.provider.CalendarContract.*
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.CollectionInfo
+import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.SyncState
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidCalendarFactory
@@ -38,7 +38,7 @@ class LocalCalendar private constructor(
 
         private const val COLUMN_SYNC_STATE = Calendars.CAL_SYNC1
 
-        fun create(account: Account, provider: ContentProviderClient, info: CollectionInfo): Uri {
+        fun create(account: Account, provider: ContentProviderClient, info: Collection): Uri {
             val values = valuesFromCollectionInfo(info, true)
 
             // ACCOUNT_NAME and ACCOUNT_TYPE are required (see docs)! If it's missing, other apps will crash.
@@ -52,7 +52,7 @@ class LocalCalendar private constructor(
             return create(account, provider, values)
         }
 
-        private fun valuesFromCollectionInfo(info: CollectionInfo, withColor: Boolean): ContentValues {
+        private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
             val values = ContentValues()
             values.put(Calendars.NAME, info.url.toString())
             values.put(Calendars.CALENDAR_DISPLAY_NAME, if (info.displayName.isNullOrBlank()) DavUtils.lastSegmentOfUrl(info.url) else info.displayName)
@@ -67,7 +67,7 @@ class LocalCalendar private constructor(
             } else
                 values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ)
 
-            info.timeZone?.let { tzData ->
+            info.timezone?.let { tzData ->
                 try {
                     val timeZone = DateUtils.parseVTimeZone(tzData)
                     timeZone.timeZoneId?.let { tzId ->
@@ -101,7 +101,7 @@ class LocalCalendar private constructor(
         }
 
 
-    fun update(info: CollectionInfo, updateColor: Boolean) =
+    fun update(info: Collection, updateColor: Boolean) =
             update(valuesFromCollectionInfo(info, updateColor))
 
 

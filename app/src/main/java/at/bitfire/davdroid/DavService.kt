@@ -10,38 +10,34 @@ package at.bitfire.davdroid
 
 import android.accounts.Account
 import android.app.PendingIntent
-import android.app.Service
 import android.content.ContentResolver
-import android.content.ContentValues
 import android.content.Intent
-import android.database.DatabaseUtils
-import android.database.sqlite.SQLiteDatabase
 import android.os.Binder
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.room.Transaction
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
-import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.CollectionInfo
-import at.bitfire.davdroid.model.ServiceDB.*
-import at.bitfire.davdroid.model.ServiceDB.Collections
+import at.bitfire.davdroid.model.AppDatabase
+import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.model.HomeSet
+import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
-import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level
 import kotlin.concurrent.thread
 
-class DavService: Service() {
+class DavService: android.app.Service() {
 
     companion object {
         const val ACTION_REFRESH_COLLECTIONS = "refreshCollections"
@@ -52,6 +48,16 @@ class DavService: Service() {
             contents://<authority>/<account.type>/<account name>
          **/
         const val ACTION_FORCE_SYNC = "forceSync"
+
+        val DAV_COLLECTION_PROPERTIES = arrayOf(
+                ResourceType.NAME,
+                CurrentUserPrivilegeSet.NAME,
+                DisplayName.NAME,
+                AddressbookDescription.NAME, SupportedAddressData.NAME,
+                CalendarDescription.NAME, CalendarColor.NAME, SupportedCalendarComponentSet.NAME,
+                Source.NAME
+        )
+
     }
 
     private val runningRefresh = HashSet<Long>()
@@ -133,278 +139,232 @@ class DavService: Service() {
         ContentResolver.requestSync(account, authority, extras)
     }
 
-    private fun refreshCollections(service: Long) {
-        OpenHelper(this@DavService).use { dbHelper ->
-            val db = dbHelper.writableDatabase
+    private fun refreshCollections(serviceId: Long) {
+        val db = AppDatabase.getInstance(this)
+        val homeSetDao = db.homeSetDao()
+        val collectionDao = db.collectionDao()
 
-            val serviceType by lazy {
-                db.query(Services._TABLE, arrayOf(Services.SERVICE), "${Services.ID}=?", arrayOf(service.toString()), null, null, null)?.use { cursor ->
-                    if (cursor.moveToNext())
-                        return@lazy cursor.getString(0)
-                } ?: throw IllegalArgumentException("Service not found")
-            }
+        val service = db.serviceDao().getById(serviceId) ?: throw IllegalArgumentException("Service not found")
+        val account = Account(service.accountName, getString(R.string.account_type))
 
-            val account by lazy {
-                db.query(Services._TABLE, arrayOf(Services.ACCOUNT_NAME), "${Services.ID}=?", arrayOf(service.toString()), null, null, null)?.use { cursor ->
-                    if (cursor.moveToNext())
-                        return@lazy Account(cursor.getString(0), getString(R.string.account_type))
-                }
-                throw IllegalArgumentException("Account not found")
-            }
+        val oldHomeSets = homeSetDao.getByService(serviceId)
+        val oldCollections = collectionDao.getByService(serviceId)
 
-            val homeSets by lazy {
-                val homeSets = mutableSetOf<HttpUrl>()
-                db.query(HomeSets._TABLE, arrayOf(HomeSets.URL), "${HomeSets.SERVICE_ID}=?", arrayOf(service.toString()), null, null, null)?.use { cursor ->
-                    while (cursor.moveToNext())
-                        HttpUrl.parse(cursor.getString(0))?.let { homeSets += it }
-                }
-                homeSets
-            }
+        val homeSets = oldHomeSets.toMutableList()
 
-            val collections by lazy {
-                val collections = mutableMapOf<HttpUrl, CollectionInfo>()
-                db.query(Collections._TABLE, null, "${Collections.SERVICE_ID}=?", arrayOf(service.toString()), null, null, null)?.use { cursor ->
-                    while (cursor.moveToNext()) {
-                        val values = ContentValues(cursor.columnCount)
-                        DatabaseUtils.cursorRowToContentValues(cursor, values)
-                        values.getAsString(Collections.URL)?.let { url ->
-                            HttpUrl.parse(url)?.let { collections.put(it, CollectionInfo(values)) }
+        val collections = mutableMapOf<HttpUrl, Collection>()
+        oldCollections.forEach {
+            collections[it.url] = it
+        }
+
+        /**
+         * Checks if the given URL defines home sets and adds them to the home set list.
+         *
+         * @throws IOException
+         * @throws HttpException
+         * @throws DavException
+         */
+        fun queryHomeSets(client: OkHttpClient, url: HttpUrl, recurse: Boolean = true) {
+            val related = mutableSetOf<HttpUrl>()
+
+            fun findRelated(root: HttpUrl, dav: Response) {
+                // refresh home sets: calendar-proxy-read/write-for
+                dav[CalendarProxyReadFor::class.java]?.let {
+                    for (href in it.hrefs) {
+                        Logger.log.fine("Principal is a read-only proxy for $href, checking for home sets")
+                        root.resolve(href)?.let { proxyReadFor ->
+                            related += proxyReadFor
                         }
                     }
                 }
-                collections
-            }
-
-            fun readPrincipal(): HttpUrl? {
-                db.query(Services._TABLE, arrayOf(Services.PRINCIPAL), "${Services.ID}=?", arrayOf(service.toString()), null, null, null)?.use { cursor ->
-                    if (cursor.moveToNext())
-                        cursor.getString(0)?.let { return HttpUrl.parse(it) }
+                dav[CalendarProxyWriteFor::class.java]?.let {
+                    for (href in it.hrefs) {
+                        Logger.log.fine("Principal is a read/write proxy for $href, checking for home sets")
+                        root.resolve(href)?.let { proxyWriteFor ->
+                            related += proxyWriteFor
+                        }
+                    }
                 }
-                return null
+
+                // refresh home sets: direct group memberships
+                dav[GroupMembership::class.java]?.let {
+                    for (href in it.hrefs) {
+                        Logger.log.fine("Principal is member of group $href, checking for home sets")
+                        root.resolve(href)?.let { groupMembership ->
+                            related += groupMembership
+                        }
+                    }
+                }
             }
 
-            /**
-             * Checks if the given URL defines home sets and adds them to the home set list.
-             *
-             * @throws IOException
-             * @throws HttpException
-             * @throws DavException
-             */
-            fun queryHomeSets(client: OkHttpClient, url: HttpUrl, recurse: Boolean = true) {
-                var related = setOf<HttpUrl>()
-
-                fun findRelated(root: HttpUrl, dav: Response) {
-                    // refresh home sets: calendar-proxy-read/write-for
-                    dav[CalendarProxyReadFor::class.java]?.let {
-                        for (href in it.hrefs) {
-                            Logger.log.fine("Principal is a read-only proxy for $href, checking for home sets")
-                            root.resolve(href)?.let { proxyReadFor ->
-                                related += proxyReadFor
+            val dav = DavResource(client, url)
+            when (service.type) {
+                Service.TYPE_CARDDAV ->
+                    try {
+                        dav.propfind(0, AddressbookHomeSet.NAME, GroupMembership.NAME) { response, _ ->
+                            response[AddressbookHomeSet::class.java]?.let { homeSet ->
+                                for (href in homeSet.hrefs)
+                                    dav.location.resolve(href)?.let {
+                                        homeSets += HomeSet(0, serviceId, UrlUtils.withTrailingSlash(it))
+                                    }
                             }
-                        }
-                    }
-                    dav[CalendarProxyWriteFor::class.java]?.let {
-                        for (href in it.hrefs) {
-                            Logger.log.fine("Principal is a read/write proxy for $href, checking for home sets")
-                            root.resolve(href)?.let { proxyWriteFor ->
-                                related += proxyWriteFor
-                            }
-                        }
-                    }
 
-                    // refresh home sets: direct group memberships
-                    dav[GroupMembership::class.java]?.let {
-                        for (href in it.hrefs) {
-                            Logger.log.fine("Principal is member of group $href, checking for home sets")
-                            root.resolve(href)?.let { groupMembership ->
-                                related += groupMembership
-                            }
+                            if (recurse)
+                                findRelated(dav.location, response)
                         }
+                    } catch (e: HttpException) {
+                        if (e.code/100 == 4)
+                            Logger.log.log(Level.INFO, "Ignoring Client Error 4xx while looking for addressbook home sets", e)
+                        else
+                            throw e
+                    }
+                Service.TYPE_CALDAV -> {
+                    try {
+                        dav.propfind(0, CalendarHomeSet.NAME, CalendarProxyReadFor.NAME, CalendarProxyWriteFor.NAME, GroupMembership.NAME) { response, _ ->
+                            response[CalendarHomeSet::class.java]?.let { homeSet ->
+                                for (href in homeSet.hrefs)
+                                    dav.location.resolve(href)?.let {
+                                        homeSets += HomeSet(0, serviceId, UrlUtils.withTrailingSlash(it))
+                                    }
+                            }
+
+                            if (recurse)
+                                findRelated(dav.location, response)
+                        }
+                    } catch (e: HttpException) {
+                        if (e.code/100 == 4)
+                            Logger.log.log(Level.INFO, "Ignoring Client Error 4xx while looking for calendar home sets", e)
+                        else
+                            throw e
+                    }
+                }
+            }
+
+            for (resource in related)
+                queryHomeSets(client, resource, false)
+        }
+
+        @Transaction
+        fun saveResults() {
+            homeSetDao.deleteByService(serviceId)
+            homeSetDao.insert(homeSets.onEach { it.serviceId = serviceId })
+
+            collectionDao.deleteByService(serviceId)
+            val records = collections.values.toList()
+            collectionDao.insert(records.onEach { it.serviceId = serviceId })
+        }
+
+        try {
+            Logger.log.info("Refreshing ${service.type} collections of service #$service")
+
+            // cancel previous notification
+            NotificationManagerCompat.from(this)
+                    .cancel(service.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS)
+
+            // create authenticating OkHttpClient (credentials taken from account settings)
+            HttpClient.Builder(this, AccountSettings(this, account))
+                    .setForeground(true)
+                    .build().use { client ->
+                val httpClient = client.okHttpClient
+
+                // refresh home set list (from principal)
+                service.principal?.let { principalUrl ->
+                    Logger.log.fine("Querying principal $principalUrl for home sets")
+                    queryHomeSets(httpClient, principalUrl)
+                }
+
+                // remember selected collections
+                val selectedCollections = HashSet<HttpUrl>()
+                collections.forEach { (url, collection) ->
+                    if (collection.sync)
+                        selectedCollections += url
+                }
+
+                // now refresh collections (taken from home sets)
+                val itHomeSets = homeSets.iterator()
+                while (itHomeSets.hasNext()) {
+                    val homeSetUrl = itHomeSets.next().url
+                    Logger.log.fine("Listing home set $homeSetUrl")
+
+                    try {
+                        DavResource(httpClient, homeSetUrl).propfind(1, *DAV_COLLECTION_PROPERTIES) { response, _ ->
+                            if (!response.isSuccess())
+                                return@propfind
+
+                            val info = Collection.fromDavResponse(response) ?: return@propfind
+                            info.confirmed = true
+                            Logger.log.log(Level.FINE, "Found collection", info)
+
+                            if ((service.type == Service.TYPE_CARDDAV && info.type == Collection.TYPE_ADDRESSBOOK) ||
+                                (service.type == Service.TYPE_CALDAV && arrayOf(Collection.TYPE_CALENDAR, Collection.TYPE_WEBCAL).contains(info.type)))
+                                collections[response.href] = info
+                        }
+                    } catch(e: HttpException) {
+                        if (e.code in arrayOf(403, 404, 410))
+                            // delete home set only if it was not accessible (40x)
+                            itHomeSets.remove()
                     }
                 }
 
-                val dav = DavResource(client, url)
-                when (serviceType) {
-                    Services.SERVICE_CARDDAV ->
+                // check/refresh unconfirmed collections
+                val itCollections = collections.entries.iterator()
+                while (itCollections.hasNext()) {
+                    val (url, info) = itCollections.next()
+                    if (!info.confirmed)
                         try {
-                            dav.propfind(0, AddressbookHomeSet.NAME, GroupMembership.NAME) { response, _ ->
-                                response[AddressbookHomeSet::class.java]?.let { homeSet ->
-                                    for (href in homeSet.hrefs)
-                                        dav.location.resolve(href)?.let { homeSets += UrlUtils.withTrailingSlash(it) }
-                                }
-
-                                if (recurse)
-                                    findRelated(dav.location, response)
-                            }
-                        } catch (e: HttpException) {
-                            if (e.code/100 == 4)
-                                Logger.log.log(Level.INFO, "Ignoring Client Error 4xx while looking for addressbook home sets", e)
-                            else
-                                throw e
-                        }
-                    Services.SERVICE_CALDAV -> {
-                        try {
-                            dav.propfind(0, CalendarHomeSet.NAME, CalendarProxyReadFor.NAME, CalendarProxyWriteFor.NAME, GroupMembership.NAME) { response, _ ->
-                                response[CalendarHomeSet::class.java]?.let { homeSet ->
-                                    for (href in homeSet.hrefs)
-                                        dav.location.resolve(href)?.let { homeSets.add(UrlUtils.withTrailingSlash(it)) }
-                                }
-
-                                if (recurse)
-                                    findRelated(dav.location, response)
-                            }
-                        } catch (e: HttpException) {
-                            if (e.code/100 == 4)
-                                Logger.log.log(Level.INFO, "Ignoring Client Error 4xx while looking for calendar home sets", e)
-                            else
-                                throw e
-                        }
-                    }
-                }
-
-                for (resource in related)
-                    queryHomeSets(client, resource, false)
-            }
-
-            fun saveHomeSets() {
-                db.delete(HomeSets._TABLE, "${HomeSets.SERVICE_ID}=?", arrayOf(service.toString()))
-                for (homeSet in homeSets) {
-                    val values = ContentValues(2)
-                    values.put(HomeSets.SERVICE_ID, service)
-                    values.put(HomeSets.URL, homeSet.toString())
-                    db.insertOrThrow(HomeSets._TABLE, null, values)
-                }
-            }
-
-            fun saveCollections() {
-                db.delete(Collections._TABLE, "${HomeSets.SERVICE_ID}=?", arrayOf(service.toString()))
-                for ((_,collection) in collections) {
-                    val values = collection.toDB()
-                    Logger.log.log(Level.FINE, "Saving collection", values)
-                    values.put(Collections.SERVICE_ID, service)
-                    db.insertWithOnConflict(Collections._TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE)
-                }
-            }
-
-
-            try {
-                Logger.log.info("Refreshing $serviceType collections of service #$service")
-
-                // cancel previous notification
-                NotificationManagerCompat.from(this)
-                        .cancel(service.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS)
-
-                // create authenticating OkHttpClient (credentials taken from account settings)
-                HttpClient.Builder(this, AccountSettings(this, account))
-                        .setForeground(true)
-                        .build().use { client ->
-                    val httpClient = client.okHttpClient
-
-                    // refresh home set list (from principal)
-                    readPrincipal()?.let { principalUrl ->
-                        Logger.log.fine("Querying principal $principalUrl for home sets")
-                        queryHomeSets(httpClient, principalUrl)
-                    }
-
-                    // remember selected collections
-                    val selectedCollections = HashSet<HttpUrl>()
-                    collections.values
-                            .filter { it.selected }
-                            .forEach { (url, _) -> selectedCollections += url }
-
-                    // now refresh collections (taken from home sets)
-                    val itHomeSets = homeSets.iterator()
-                    while (itHomeSets.hasNext()) {
-                        val homeSetUrl = itHomeSets.next()
-                        Logger.log.fine("Listing home set $homeSetUrl")
-
-                        try {
-                            DavResource(httpClient, homeSetUrl).propfind(1, *CollectionInfo.DAV_PROPERTIES) { response, _ ->
+                            DavResource(httpClient, url).propfind(0, *DAV_COLLECTION_PROPERTIES) { response, _ ->
                                 if (!response.isSuccess())
                                     return@propfind
 
-                                val info = CollectionInfo(response)
-                                info.confirmed = true
-                                Logger.log.log(Level.FINE, "Found collection", info)
+                                val collection = Collection.fromDavResponse(response) ?: return@propfind
+                                collection.confirmed = true
 
-                                if ((serviceType == Services.SERVICE_CARDDAV && info.type == CollectionInfo.Type.ADDRESS_BOOK) ||
-                                    (serviceType == Services.SERVICE_CALDAV && arrayOf(CollectionInfo.Type.CALENDAR, CollectionInfo.Type.WEBCAL).contains(info.type)))
-                                    collections[response.href] = info
+                                // remove unusable collections
+                                if ((service.type == Service.TYPE_CARDDAV && collection.type != Collection.TYPE_ADDRESSBOOK) ||
+                                    (service.type == Service.TYPE_CALDAV && !arrayOf(Collection.TYPE_CALENDAR, Collection.TYPE_WEBCAL).contains(collection.type)) ||
+                                    (collection.type == Collection.TYPE_WEBCAL && collection.source == null))
+                                    itCollections.remove()
                             }
                         } catch(e: HttpException) {
                             if (e.code in arrayOf(403, 404, 410))
-                                // delete home set only if it was not accessible (40x)
-                                itHomeSets.remove()
+                            // delete collection only if it was not accessible (40x)
+                                itCollections.remove()
+                            else
+                                throw e
                         }
-                    }
-
-                    // check/refresh unconfirmed collections
-                    val itCollections = collections.entries.iterator()
-                    while (itCollections.hasNext()) {
-                        val (url, info) = itCollections.next()
-                        if (!info.confirmed)
-                            try {
-                                DavResource(httpClient, url).propfind(0, *CollectionInfo.DAV_PROPERTIES) { response, _ ->
-                                    if (!response.isSuccess())
-                                        return@propfind
-
-                                    val collectionInfo = CollectionInfo(response)
-                                    collectionInfo.confirmed = true
-
-                                    // remove unusable collections
-                                    if ((serviceType == Services.SERVICE_CARDDAV && collectionInfo.type != CollectionInfo.Type.ADDRESS_BOOK) ||
-                                        (serviceType == Services.SERVICE_CALDAV && !arrayOf(CollectionInfo.Type.CALENDAR, CollectionInfo.Type.WEBCAL).contains(collectionInfo.type)) ||
-                                        (collectionInfo.type == CollectionInfo.Type.WEBCAL && collectionInfo.source == null))
-                                        itCollections.remove()
-                                }
-                            } catch(e: HttpException) {
-                                if (e.code in arrayOf(403, 404, 410))
-                                // delete collection only if it was not accessible (40x)
-                                    itCollections.remove()
-                                else
-                                    throw e
-                            }
-                    }
-
-                    // restore selections
-                    for (url in selectedCollections)
-                        collections[url]?.let { it.selected = true }
                 }
 
-                db.beginTransactionNonExclusive()
-                try {
-                    saveHomeSets()
-                    saveCollections()
-                    db.setTransactionSuccessful()
-                } finally {
-                    db.endTransaction()
-                }
+                // restore selections
+                for (url in selectedCollections)
+                    collections[url]?.let { it.sync = true }
+            }
 
-            } catch(e: InvalidAccountException) {
-                Logger.log.log(Level.SEVERE, "Invalid account", e)
-            } catch(e: Exception) {
-                Logger.log.log(Level.SEVERE, "Couldn't refresh collection list", e)
+            saveResults()
 
-                val debugIntent = Intent(this, DebugInfoActivity::class.java)
-                debugIntent.putExtra(DebugInfoActivity.KEY_THROWABLE, e)
-                debugIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account)
+        } catch(e: InvalidAccountException) {
+            Logger.log.log(Level.SEVERE, "Invalid account", e)
+        } catch(e: Exception) {
+            Logger.log.log(Level.SEVERE, "Couldn't refresh collection list", e)
 
-                val notify = NotificationUtils.newBuilder(this, NotificationUtils.CHANNEL_GENERAL)
-                        .setSmallIcon(R.drawable.ic_sync_error_notification)
-                        .setContentTitle(getString(R.string.dav_service_refresh_failed))
-                        .setContentText(getString(R.string.dav_service_refresh_couldnt_refresh))
-                        .setContentIntent(PendingIntent.getActivity(this, 0, debugIntent, PendingIntent.FLAG_UPDATE_CURRENT))
-                        .setSubText(account.name)
-                        .setCategory(NotificationCompat.CATEGORY_ERROR)
-                        .build()
-                NotificationManagerCompat.from(this)
-                        .notify(service.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS, notify)
-            } finally {
-                runningRefresh.remove(service)
-                refreshingStatusListeners.mapNotNull { it.get() }.forEach {
-                    it.onDavRefreshStatusChanged(service, false)
-                    it.onDavRefreshFinished(service)
-                }
+            val debugIntent = Intent(this, DebugInfoActivity::class.java)
+            debugIntent.putExtra(DebugInfoActivity.KEY_THROWABLE, e)
+            debugIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account)
+
+            val notify = NotificationUtils.newBuilder(this, NotificationUtils.CHANNEL_GENERAL)
+                    .setSmallIcon(R.drawable.ic_sync_error_notification)
+                    .setContentTitle(getString(R.string.dav_service_refresh_failed))
+                    .setContentText(getString(R.string.dav_service_refresh_couldnt_refresh))
+                    .setContentIntent(PendingIntent.getActivity(this, 0, debugIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                    .setSubText(account.name)
+                    .setCategory(NotificationCompat.CATEGORY_ERROR)
+                    .build()
+            NotificationManagerCompat.from(this)
+                    .notify(serviceId.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS, notify)
+        } finally {
+            runningRefresh.remove(serviceId)
+            refreshingStatusListeners.mapNotNull { it.get() }.forEach {
+                it.onDavRefreshStatusChanged(serviceId, false)
+                it.onDavRefreshFinished(serviceId)
             }
         }
 

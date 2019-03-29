@@ -8,42 +8,71 @@
 
 package at.bitfire.davdroid.ui
 
-import android.annotation.SuppressLint
-import android.app.Dialog
+import android.app.Application
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.annotation.UiThread
 import androidx.fragment.app.DialogFragment
-import at.bitfire.davdroid.R
-import at.bitfire.davdroid.model.CollectionInfo
-import kotlinx.android.synthetic.main.collection_properties.view.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProviders
+import at.bitfire.davdroid.databinding.CollectionPropertiesBinding
+import at.bitfire.davdroid.model.AppDatabase
+import at.bitfire.davdroid.model.Collection
+import kotlin.concurrent.thread
 
 class CollectionInfoFragment : DialogFragment() {
 
     companion object {
 
-        private const val ARGS_INFO = "model"
+        private const val ARGS_COLLECTION_ID = "collectionId"
 
-        fun newInstance(info: CollectionInfo): CollectionInfoFragment {
+        fun newInstance(collectionId: Long): CollectionInfoFragment {
             val frag = CollectionInfoFragment()
             val args = Bundle(1)
-            args.putParcelable(ARGS_INFO, info)
+            args.putLong(ARGS_COLLECTION_ID, collectionId)
             frag.arguments = args
             return frag
         }
 
     }
 
-    @SuppressLint("InflateParams")
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val info = arguments!![ARGS_INFO] as CollectionInfo
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val model = ViewModelProviders.of(this).get(Model::class.java)
+        arguments?.getLong(ARGS_COLLECTION_ID)?.let { id ->
+            model.initialize(id)
+        }
 
-        val view = requireActivity().layoutInflater.inflate(R.layout.collection_properties, null)
-        view.url.text = info.url.toString()
+        val view = CollectionPropertiesBinding.inflate(inflater, container, false)
+        view.lifecycleOwner = this
+        view.model = model
 
-        return AlertDialog.Builder(requireActivity())
-                .setTitle(info.displayName)
-                .setView(view)
-                .create()
+        return view.root
+    }
+
+
+    class Model(
+            application: Application
+    ): AndroidViewModel(application) {
+
+        var collection = MutableLiveData<Collection>()
+
+        private var initialized = false
+
+        @UiThread
+        fun initialize(collectionId: Long) {
+            if (initialized)
+                return
+            initialized = true
+
+            thread {
+                val db = AppDatabase.getInstance(getApplication())
+                collection.postValue(db.collectionDao().get(collectionId))
+            }
+        }
+
     }
 
 }

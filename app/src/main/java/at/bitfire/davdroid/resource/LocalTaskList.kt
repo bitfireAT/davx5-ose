@@ -20,7 +20,7 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.closeCompat
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.CollectionInfo
+import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.SyncState
 import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.AndroidTaskListFactory
@@ -51,7 +51,7 @@ class LocalTaskList private constructor(
                 return false
         }
 
-        fun create(account: Account, provider: TaskProvider, info: CollectionInfo): Uri {
+        fun create(account: Account, provider: TaskProvider, info: Collection): Uri {
             val values = valuesFromCollectionInfo(info, true)
             values.put(TaskLists.OWNER, account.name)
             values.put(TaskLists.SYNC_ENABLED, 1)
@@ -75,7 +75,7 @@ class LocalTaskList private constructor(
             }
         }
 
-        private fun valuesFromCollectionInfo(info: CollectionInfo, withColor: Boolean): ContentValues {
+        private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
             val values = ContentValues(3)
             values.put(TaskLists._SYNC_ID, info.url.toString())
             values.put(TaskLists.LIST_NAME, if (info.displayName.isNullOrBlank()) DavUtils.lastSegmentOfUrl(info.url) else info.displayName)
@@ -113,7 +113,7 @@ class LocalTaskList private constructor(
         }
 
 
-    fun update(info: CollectionInfo, updateColor: Boolean) =
+    fun update(info: Collection, updateColor: Boolean) =
             update(valuesFromCollectionInfo(info, updateColor))
 
 

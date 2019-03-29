@@ -14,40 +14,35 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.ServiceDB
-import at.bitfire.davdroid.model.ServiceDB.Services
+import at.bitfire.davdroid.model.AppDatabase
+import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName.OpenTasks
+import kotlin.concurrent.thread
 
 class PackageChangedReceiver: BroadcastReceiver() {
 
     companion object {
 
+        @WorkerThread
         fun updateTaskSync(context: Context) {
             val tasksInstalled = LocalTaskList.tasksProviderAvailable(context)
             Logger.log.info("Tasks provider available = $tasksInstalled")
 
             // check all accounts and (de)activate OpenTasks if a CalDAV service is defined
-            ServiceDB.OpenHelper(context).use { dbHelper ->
-                val db = dbHelper.readableDatabase
-
-                db.query(Services._TABLE, arrayOf(Services.ACCOUNT_NAME),
-                        "${Services.SERVICE}=?", arrayOf(Services.SERVICE_CALDAV), null, null, null)?.use { cursor ->
-                    while (cursor.moveToNext()) {
-                        val account = Account(cursor.getString(0), context.getString(R.string.account_type))
-
-                        if (tasksInstalled) {
-                            if (ContentResolver.getIsSyncable(account, OpenTasks.authority) <= 0) {
-                                ContentResolver.setIsSyncable(account, OpenTasks.authority, 1)
-                                ContentResolver.addPeriodicSync(account, OpenTasks.authority, Bundle(), Constants.DEFAULT_SYNC_INTERVAL)
-                            }
-                        } else
-                            ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0)
-
+            val db = AppDatabase.getInstance(context)
+            db.serviceDao().getByType(Service.TYPE_CALDAV).forEach { service ->
+                val account = Account(service.accountName, context.getString(R.string.account_type))
+                if (tasksInstalled) {
+                    if (ContentResolver.getIsSyncable(account, OpenTasks.authority) <= 0) {
+                        ContentResolver.setIsSyncable(account, OpenTasks.authority, 1)
+                        ContentResolver.addPeriodicSync(account, OpenTasks.authority, Bundle(), Constants.DEFAULT_SYNC_INTERVAL)
                     }
-                }
+                } else
+                    ContentResolver.setIsSyncable(account, OpenTasks.authority, 0)
+
             }
         }
 
@@ -55,7 +50,9 @@ class PackageChangedReceiver: BroadcastReceiver() {
 
 
     override fun onReceive(context: Context, intent: Intent) {
-        updateTaskSync(context)
+        thread {
+            updateTaskSync(context)
+        }
     }
 
 }

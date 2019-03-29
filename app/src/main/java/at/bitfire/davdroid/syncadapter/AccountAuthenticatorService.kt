@@ -11,15 +11,15 @@ import android.accounts.*
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.database.DatabaseUtils
 import android.os.Bundle
+import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.ServiceDB
+import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.ui.setup.LoginActivity
-import java.util.*
 import java.util.logging.Level
+import kotlin.concurrent.thread
 
 
 /**
@@ -32,38 +32,33 @@ class AccountAuthenticatorService: Service(), OnAccountsUpdateListener {
 
     companion object {
 
+        @WorkerThread
         fun cleanupAccounts(context: Context) {
             Logger.log.info("Cleaning up orphaned accounts")
 
-            ServiceDB.OpenHelper(context).use { dbHelper ->
-                val db = dbHelper.writableDatabase
+            val accountManager = AccountManager.get(context)
+            val accountNames = accountManager.getAccountsByType(context.getString(R.string.account_type))
+                    .map { it.name }
 
-                val sqlAccountNames = LinkedList<String>()
-                val accountNames = HashSet<String>()
-                val accountManager = AccountManager.get(context)
-                for (account in accountManager.getAccountsByType(context.getString(R.string.account_type))) {
-                    sqlAccountNames.add(DatabaseUtils.sqlEscapeString(account.name))
-                    accountNames += account.name
-                }
-
-                // delete orphaned address book accounts
-                accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
-                        .map { LocalAddressBook(context, it, null) }
-                        .forEach {
-                            try {
-                                if (!accountNames.contains(it.mainAccount.name))
-                                    it.delete()
-                            } catch(e: Exception) {
-                                Logger.log.log(Level.SEVERE, "Couldn't delete address book account", e)
-                            }
+            // delete orphaned address book accounts
+            accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
+                    .map { LocalAddressBook(context, it, null) }
+                    .forEach {
+                        try {
+                            if (!accountNames.contains(it.mainAccount.name))
+                                it.delete()
+                        } catch(e: Exception) {
+                            Logger.log.log(Level.SEVERE, "Couldn't delete address book account", e)
                         }
+                    }
 
-                // delete orphaned services in DB
-                if (sqlAccountNames.isEmpty())
-                    db.delete(ServiceDB.Services._TABLE, null, null)
-                else
-                    db.delete(ServiceDB.Services._TABLE, "${ServiceDB.Services.ACCOUNT_NAME} NOT IN (${sqlAccountNames.joinToString(",")})", null)
-            }
+            // delete orphaned services in DB
+            val db = AppDatabase.getInstance(context)
+            val serviceDao = db.serviceDao()
+            if (accountNames.isEmpty())
+                serviceDao.deleteAll()
+            else
+                serviceDao.deleteExceptAccounts(accountNames.toTypedArray())
         }
 
     }
@@ -89,7 +84,9 @@ class AccountAuthenticatorService: Service(), OnAccountsUpdateListener {
 
 
     override fun onAccountsUpdated(accounts: Array<out Account>?) {
-        cleanupAccounts(this)
+        thread {
+            cleanupAccounts(this)
+        }
     }
 
 

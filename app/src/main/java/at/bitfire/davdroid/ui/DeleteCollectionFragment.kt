@@ -14,13 +14,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.MainThread
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.*
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.databinding.DeleteCollectionBinding
-import at.bitfire.davdroid.model.CollectionInfo
-import at.bitfire.davdroid.model.ServiceDB
+import at.bitfire.davdroid.model.AppDatabase
+import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.settings.AccountSettings
 import kotlin.concurrent.thread
 
@@ -28,13 +29,13 @@ class DeleteCollectionFragment: DialogFragment() {
 
     companion object {
         const val ARG_ACCOUNT = "account"
-        const val ARG_COLLECTION_INFO = "collectionInfo"
+        const val ARG_COLLECTION_ID = "collectionId"
 
-        fun newInstance(account: Account, collectionInfo: CollectionInfo): DialogFragment {
+        fun newInstance(account: Account, collectionId: Long): DialogFragment {
             val frag = DeleteCollectionFragment()
             val args = Bundle(2)
             args.putParcelable(ARG_ACCOUNT, account)
-            args.putParcelable(ARG_COLLECTION_INFO, collectionInfo)
+            args.putLong(ARG_COLLECTION_ID, collectionId)
             frag.arguments = args
             return frag
         }
@@ -45,9 +46,10 @@ class DeleteCollectionFragment: DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         model = ViewModelProviders.of(this).get(DeleteCollectionModel::class.java)
-
-        model.account = arguments?.getParcelable(ARG_ACCOUNT) as? Account
-        model.collectionInfo = arguments?.getParcelable(ARG_COLLECTION_INFO) as? CollectionInfo
+        model.initialize(
+                arguments!!.getParcelable(ARG_ACCOUNT) as Account,
+                arguments!!.getLong(ARG_COLLECTION_ID)
+        )
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -85,15 +87,28 @@ class DeleteCollectionFragment: DialogFragment() {
     ): AndroidViewModel(application) {
 
         var account: Account? = null
-        var collectionInfo: CollectionInfo? = null
+        var collectionInfo: Collection? = null
+
+        val db = AppDatabase.getInstance(application)
 
         val confirmation = MutableLiveData<Boolean>()
         val result = MutableLiveData<Exception>()
 
+        @MainThread
+        fun initialize(account: Account, collectionId: Long) {
+            if (this.account == null)
+                this.account = account
+
+            if (collectionInfo == null)
+                thread {
+                    collectionInfo = db.collectionDao().get(collectionId)
+                }
+        }
+
         fun deleteCollection(): LiveData<Exception> {
             thread {
-                val account = requireNotNull(account)
-                val collectionInfo = requireNotNull(collectionInfo)
+                val account = account ?: return@thread
+                val collectionInfo = collectionInfo ?: return@thread
 
                 val context = getApplication<Application>()
                 HttpClient.Builder(context, AccountSettings(context, account))
@@ -106,10 +121,7 @@ class DeleteCollectionFragment: DialogFragment() {
                                 collection.delete(null) {}
 
                                 // delete collection locally
-                                ServiceDB.OpenHelper(context).use { dbHelper ->
-                                    val db = dbHelper.writableDatabase
-                                    db.delete(ServiceDB.Collections._TABLE, "${ServiceDB.Collections.ID}=?", arrayOf(collectionInfo.id.toString()))
-                                }
+                                db.collectionDao().delete(collectionInfo)
 
                                 // return success
                                 result.postValue(null)

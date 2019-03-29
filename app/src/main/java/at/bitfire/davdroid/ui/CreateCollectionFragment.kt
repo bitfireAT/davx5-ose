@@ -22,9 +22,10 @@ import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.CollectionInfo
-import at.bitfire.davdroid.model.ServiceDB
+import at.bitfire.davdroid.model.AppDatabase
+import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.settings.AccountSettings
+import okhttp3.HttpUrl
 import java.io.IOException
 import java.io.StringWriter
 import java.util.logging.Level
@@ -35,27 +36,41 @@ class CreateCollectionFragment: DialogFragment() {
     companion object {
 
         const val ARG_ACCOUNT = "account"
-        const val ARG_COLLECTION_INFO = "collectionInfo"
 
-        fun newInstance(account: Account, info: CollectionInfo): CreateCollectionFragment {
-            val frag = CreateCollectionFragment()
-            val args = Bundle(2)
-            args.putParcelable(ARG_ACCOUNT, account)
-            args.putParcelable(ARG_COLLECTION_INFO, info)
-            frag.arguments = args
-            return frag
-        }
+        const val ARG_TYPE = "type"
+        const val ARG_URL = "url"
+        const val ARG_DISPLAY_NAME = "displayName"
+        const val ARG_DESCRIPTION = "description"
 
+        // CalDAV only
+        const val ARG_COLOR = "color"
+        const val ARG_TIMEZONE = "timezone"
+        const val ARG_SUPPORTS_VEVENT = "supportsVEVENT"
+        const val ARG_SUPPORTS_VTODO = "supportsVTODO"
+        const val ARG_SUPPORTS_VJOURNAL = "supportsVJOURNAL"
     }
 
     private lateinit var model: Model
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val args = arguments ?: throw IllegalArgumentException()
 
         model = ViewModelProviders.of(this).get(Model::class.java)
-        model.account = arguments?.getParcelable(ARG_ACCOUNT) ?: throw IllegalArgumentException()
-        model.info = arguments?.getParcelable(ARG_COLLECTION_INFO) ?: throw IllegalArgumentException()
+        model.account = args.getParcelable(ARG_ACCOUNT) ?: throw IllegalArgumentException("Account required")
+
+        model.collection = Collection(
+                type = args.getString(ARG_TYPE) ?: throw IllegalArgumentException("Type required"),
+                url = HttpUrl.parse(args.getString(ARG_URL) ?: throw IllegalArgumentException("URL required"))!!,
+                displayName = args.getString(ARG_DISPLAY_NAME),
+                description = args.getString(ARG_DESCRIPTION),
+
+                color = args.ifDefined(ARG_COLOR) { it.getInt(ARG_COLOR) },
+                timezone = args.getString(ARG_TIMEZONE),
+                supportsVEVENT = args.ifDefined(ARG_SUPPORTS_VEVENT) { it.getBoolean(ARG_SUPPORTS_VEVENT) },
+                supportsVTODO = args.ifDefined(ARG_SUPPORTS_VTODO) { it.getBoolean(ARG_SUPPORTS_VTODO) },
+                supportsVJOURNAL = args.ifDefined(ARG_SUPPORTS_VJOURNAL) { it.getBoolean(ARG_SUPPORTS_VJOURNAL) }
+        )
 
         model.createCollection().observe(this, Observer { exception ->
             if (exception != null)
@@ -66,6 +81,12 @@ class CreateCollectionFragment: DialogFragment() {
                 requireActivity().finish()
         })
     }
+
+    private fun<T> Bundle.ifDefined(name: String, getter: (Bundle) -> T): T? =
+            if (containsKey(name))
+                getter(this)
+            else
+                null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = inflater.inflate(R.layout.create_collection, container, false)
@@ -79,7 +100,7 @@ class CreateCollectionFragment: DialogFragment() {
     ): AndroidViewModel(application) {
 
         lateinit var account: Account
-        lateinit var info: CollectionInfo
+        lateinit var collection: Collection
 
         val result = MutableLiveData<Exception>()
 
@@ -89,33 +110,16 @@ class CreateCollectionFragment: DialogFragment() {
                         .setForeground(true)
                         .build().use { httpClient ->
                     try {
-                        val collection = DavResource(httpClient.okHttpClient, info.url)
+                        val dav = DavResource(httpClient.okHttpClient, collection.url)
 
                         // create collection on remote server
-                        collection.mkCol(generateXml()) {}
+                        dav.mkCol(generateXml()) {}
 
                         // no HTTP error -> create collection locally
-                        ServiceDB.OpenHelper(getApplication()).use { dbHelper ->
-                            val db = dbHelper.writableDatabase
-
-                            // 1. find service ID
-                            val serviceType = when (info.type) {
-                                CollectionInfo.Type.ADDRESS_BOOK -> ServiceDB.Services.SERVICE_CARDDAV
-                                CollectionInfo.Type.CALENDAR -> ServiceDB.Services.SERVICE_CALDAV
-                                else -> throw IllegalArgumentException("Collection must be an address book or calendar")
-                            }
-                            db.query(ServiceDB.Services._TABLE, arrayOf(ServiceDB.Services.ID),
-                                    "${ServiceDB.Services.ACCOUNT_NAME}=? AND ${ServiceDB.Services.SERVICE}=?",
-                                    arrayOf(account.name, serviceType), null, null, null).use { c ->
-
-                                assert(c.moveToNext())
-                                val serviceID = c.getLong(0)
-
-                                // 2. add collection to service
-                                val values = info.toDB()
-                                values.put(ServiceDB.Collections.SERVICE_ID, serviceID)
-                                db.insert(ServiceDB.Collections._TABLE, null, values)
-                            }
+                        val db = AppDatabase.getInstance(getApplication())
+                        db.serviceDao().getByAccountAndType(account.name, collection.type)?.let { service ->
+                            collection.serviceId = service.id
+                            db.collectionDao().insert(collection)
                         }
 
                         // post success
@@ -146,23 +150,23 @@ class CreateCollectionFragment: DialogFragment() {
                     startTag(XmlUtils.NS_WEBDAV, "resourcetype")
                     startTag(XmlUtils.NS_WEBDAV, "collection")
                     endTag(XmlUtils.NS_WEBDAV, "collection")
-                    if (info.type == CollectionInfo.Type.ADDRESS_BOOK) {
+                    if (collection.type == Collection.TYPE_ADDRESSBOOK) {
                         startTag(XmlUtils.NS_CARDDAV, "addressbook")
                         endTag(XmlUtils.NS_CARDDAV, "addressbook")
-                    } else if (info.type == CollectionInfo.Type.CALENDAR) {
+                    } else if (collection.type == Collection.TYPE_CALENDAR) {
                         startTag(XmlUtils.NS_CALDAV, "calendar")
                         endTag(XmlUtils.NS_CALDAV, "calendar")
                     }
                     endTag(XmlUtils.NS_WEBDAV, "resourcetype")
-                    info.displayName?.let {
+                    collection.displayName?.let {
                         startTag(XmlUtils.NS_WEBDAV, "displayname")
                         text(it)
                         endTag(XmlUtils.NS_WEBDAV, "displayname")
                     }
 
                     // addressbook-specific properties
-                    if (info.type == CollectionInfo.Type.ADDRESS_BOOK) {
-                        info.description?.let {
+                    if (collection.type == Collection.TYPE_ADDRESSBOOK) {
+                        collection.description?.let {
                             startTag(XmlUtils.NS_CARDDAV, "addressbook-description")
                             text(it)
                             endTag(XmlUtils.NS_CARDDAV, "addressbook-description")
@@ -170,42 +174,45 @@ class CreateCollectionFragment: DialogFragment() {
                     }
 
                     // calendar-specific properties
-                    if (info.type == CollectionInfo.Type.CALENDAR) {
-                        info.description?.let {
+                    if (collection.type == Collection.TYPE_CALENDAR) {
+                        collection.description?.let {
                             startTag(XmlUtils.NS_CALDAV, "calendar-description")
                             text(it)
                             endTag(XmlUtils.NS_CALDAV, "calendar-description")
                         }
 
-                        info.color?.let {
+                        collection.color?.let {
                             startTag(XmlUtils.NS_APPLE_ICAL, "calendar-color")
                             text(DavUtils.ARGBtoCalDAVColor(it))
                             endTag(XmlUtils.NS_APPLE_ICAL, "calendar-color")
                         }
 
-                        info.timeZone?.let {
+                        collection.timezone?.let {
                             startTag(XmlUtils.NS_CALDAV, "calendar-timezone")
                             cdsect(it)
                             endTag(XmlUtils.NS_CALDAV, "calendar-timezone")
                         }
 
-                        startTag(XmlUtils.NS_CALDAV, "supported-calendar-component-set")
-                        if (info.supportsVEVENT) {
-                            startTag(XmlUtils.NS_CALDAV, "comp")
-                            attribute(null, "name", "VEVENT")
-                            endTag(XmlUtils.NS_CALDAV, "comp")
+                        if (collection.supportsVEVENT != null || collection.supportsVTODO != null || collection.supportsVJOURNAL != null) {
+                            // only if there's at least one explicitly supported calendar component set, otherwise don't include the property
+                            startTag(XmlUtils.NS_CALDAV, "supported-calendar-component-set")
+                            if (collection.supportsVEVENT != false) {
+                                startTag(XmlUtils.NS_CALDAV, "comp")
+                                attribute(null, "name", "VEVENT")
+                                endTag(XmlUtils.NS_CALDAV, "comp")
+                            }
+                            if (collection.supportsVTODO != false) {
+                                startTag(XmlUtils.NS_CALDAV, "comp")
+                                attribute(null, "name", "VTODO")
+                                endTag(XmlUtils.NS_CALDAV, "comp")
+                            }
+                            if (collection.supportsVJOURNAL != false) {
+                                startTag(XmlUtils.NS_CALDAV, "comp")
+                                attribute(null, "name", "VJOURNAL")
+                                endTag(XmlUtils.NS_CALDAV, "comp")
+                            }
+                            endTag(XmlUtils.NS_CALDAV, "supported-calendar-component-set")
                         }
-                        if (info.supportsVTODO) {
-                            startTag(XmlUtils.NS_CALDAV, "comp")
-                            attribute(null, "name", "VTODO")
-                            endTag(XmlUtils.NS_CALDAV, "comp")
-                        }
-                        if (info.supportsVJOURNAL) {
-                            startTag(XmlUtils.NS_CALDAV, "comp")
-                            attribute(null, "name", "VJOURNAL")
-                            endTag(XmlUtils.NS_CALDAV, "comp")
-                        }
-                        endTag(XmlUtils.NS_CALDAV, "supported-calendar-component-set")
                     }
 
                     endTag(XmlUtils.NS_WEBDAV, "prop")

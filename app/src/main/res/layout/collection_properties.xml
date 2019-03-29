@@ -7,32 +7,48 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout>
 
-    <LinearLayout
+    <data>
+        <variable
+            name="model"
+            type="at.bitfire.davdroid.ui.CollectionInfoFragment.Model"/>
+    </data>
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="10dp">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/url_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="@string/collection_properties_url"
-            android:labelFor="@id/url" />
-
-        <TextView
-            android:id="@+id/url"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="monospace"
-            android:textSize="12sp"
-            android:textIsSelectable="true"/>
+            android:orientation="vertical"
+            android:padding="10dp">
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{model.collection.title()}"
+                style="@style/TextView.Heading" />
 
-</ScrollView>
+            <TextView
+                android:id="@+id/url_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="@string/collection_properties_url"
+                android:labelFor="@id/url" />
+
+            <TextView
+                android:id="@+id/url"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textSize="12sp"
+                android:textIsSelectable="true"
+                android:text="@{model.collection.url.toString()}"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+</layout>

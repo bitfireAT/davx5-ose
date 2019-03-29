@@ -8,14 +8,16 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
-import android.content.*
-import android.database.DatabaseUtils
+import android.content.ContentProviderClient
+import android.content.ContentResolver
+import android.content.Context
+import android.content.SyncResult
 import android.os.Bundle
 import android.provider.CalendarContract
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.CollectionInfo
-import at.bitfire.davdroid.model.ServiceDB
-import at.bitfire.davdroid.model.ServiceDB.Collections
+import at.bitfire.davdroid.model.AppDatabase
+import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.AndroidCalendar
@@ -62,64 +64,37 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
         }
 
         private fun updateLocalCalendars(provider: ContentProviderClient, account: Account, settings: AccountSettings) {
-            ServiceDB.OpenHelper(context).use { dbHelper ->
-                val db = dbHelper.readableDatabase
+            val db = AppDatabase.getInstance(context)
+            val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
 
-                fun getService() =
-                        db.query(ServiceDB.Services._TABLE, arrayOf(ServiceDB.Services.ID),
-                                "${ServiceDB.Services.ACCOUNT_NAME}=? AND ${ServiceDB.Services.SERVICE}=?",
-                                arrayOf(account.name, ServiceDB.Services.SERVICE_CALDAV), null, null, null)?.use { c ->
-                            if (c.moveToNext())
-                                c.getLong(0)
-                            else
-                                null
-                        }
-
-                fun remoteCalendars(service: Long?): MutableMap<HttpUrl, CollectionInfo> {
-                    val collections = mutableMapOf<HttpUrl, CollectionInfo>()
-                    service?.let {
-                        db.query(Collections._TABLE, null,
-                                "${Collections.SERVICE_ID}=? AND ${Collections.SUPPORTS_VEVENT}!=0 AND ${Collections.SYNC}",
-                                arrayOf(service.toString()), null, null, null).use { cursor ->
-                            while (cursor.moveToNext()) {
-                                val values = ContentValues(cursor.columnCount)
-                                DatabaseUtils.cursorRowToContentValues(cursor, values)
-                                val info = CollectionInfo(values)
-                                collections[info.url] = info
-                            }
-                        }
-                    }
-                    return collections
+            val remoteCalendars = mutableMapOf<HttpUrl, Collection>()
+            if (service != null)
+                for (collection in db.collectionDao().getSyncCalendars(service.id)) {
+                    remoteCalendars[collection.url] = collection
                 }
 
-                // enumerate remote and local calendars
-                val service = getService()
-                val remote = remoteCalendars(service)
-
-                // delete/update local calendars
-                val updateColors = settings.getManageCalendarColors()
-
-                for (calendar in AndroidCalendar.find(account, provider, LocalCalendar.Factory, null, null))
-                    calendar.name?.let {
-                        val url = HttpUrl.parse(it)!!
-                        val info = remote[url]
-                        if (info == null) {
-                            Logger.log.log(Level.INFO, "Deleting obsolete local calendar", url)
-                            calendar.delete()
-                        } else {
-                            // remote CollectionInfo found for this local collection, update data
-                            Logger.log.log(Level.FINE, "Updating local calendar $url", info)
-                            calendar.update(info, updateColors)
-                            // we already have a local calendar for this remote collection, don't take into consideration anymore
-                            remote -= url
-                        }
+            // delete/update local calendars
+            val updateColors = settings.getManageCalendarColors()
+            for (calendar in AndroidCalendar.find(account, provider, LocalCalendar.Factory, null, null))
+                calendar.name?.let {
+                    val url = HttpUrl.parse(it)!!
+                    val info = remoteCalendars[url]
+                    if (info == null) {
+                        Logger.log.log(Level.INFO, "Deleting obsolete local calendar", url)
+                        calendar.delete()
+                    } else {
+                        // remote CollectionInfo found for this local collection, update data
+                        Logger.log.log(Level.FINE, "Updating local calendar $url", info)
+                        calendar.update(info, updateColors)
+                        // we already have a local calendar for this remote collection, don't take into consideration anymore
+                        remoteCalendars -= url
                     }
-
-                // create new local calendars
-                for ((_, info) in remote) {
-                    Logger.log.log(Level.INFO, "Adding local calendar", info)
-                    LocalCalendar.create(account, provider, info)
                 }
+
+            // create new local calendars
+            for ((_, info) in remoteCalendars) {
+                Logger.log.log(Level.INFO, "Adding local calendar", info)
+                LocalCalendar.create(account, provider, info)
             }
         }
 

@@ -9,11 +9,13 @@
 package at.bitfire.davdroid.settings
 
 import android.content.Context
+import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.log.Logger
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level
 
+@WorkerThread
 class Settings(
         appContext: Context
 ) {

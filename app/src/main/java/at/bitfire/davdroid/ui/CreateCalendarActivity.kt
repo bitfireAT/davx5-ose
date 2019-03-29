@@ -18,26 +18,24 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Filter
-import android.widget.SpinnerAdapter
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityCreateCalendarBinding
-import at.bitfire.davdroid.model.CollectionInfo
-import at.bitfire.davdroid.model.ServiceDB
+import at.bitfire.davdroid.model.AppDatabase
+import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.model.Service
 import at.bitfire.ical4android.DateUtils
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
 import kotlinx.android.synthetic.main.activity_create_calendar.*
 import net.fortuna.ical4j.model.Calendar
-import okhttp3.HttpUrl
 import org.apache.commons.lang3.StringUtils
 import java.util.*
 import kotlin.concurrent.thread
@@ -55,14 +53,9 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         model = ViewModelProviders.of(this).get(Model::class.java)
-        (intent?.extras?.getParcelable(EXTRA_ACCOUNT) as? Account)?.let {
+        (intent?.getParcelableExtra(EXTRA_ACCOUNT) as? Account)?.let {
             model.initialize(it)
         }
-        model.homeSets.observe(this, Observer {
-            if (it.isEmpty)
-                // no known homesets, we don't know where to create the calendar
-                finish()
-        })
 
         val binding = DataBindingUtil.setContentView<ActivityCreateCalendarBinding>(this, R.layout.activity_create_calendar)
         binding.lifecycleOwner = this
@@ -103,51 +96,63 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
     fun onCreateCollection(item: MenuItem) {
         var ok = true
 
-        val parent = model.homeSets.value?.getItem(model.idxHomeSet.value!!) as String? ?: return
-        HttpUrl.parse(parent)?.let { parentUrl ->
-            val info = CollectionInfo(parentUrl.resolve(UUID.randomUUID().toString() + "/")!!)
+        val args = Bundle()
 
-            val displayName = model.displayName.value
-            if (displayName.isNullOrBlank()) {
-                model.displayNameError.value = getString(R.string.create_collection_display_name_required)
-                ok = false
-            } else {
-                info.displayName = displayName
-                model.displayNameError.value = null
+        val parent = model.homeSets.value?.getItem(model.idxHomeSet.value!!) ?: return
+        args.putString(CreateCollectionFragment.ARG_URL, parent.url.resolve(UUID.randomUUID().toString() + "/").toString())
+
+        val displayName = model.displayName.value
+        if (displayName.isNullOrBlank()) {
+            model.displayNameError.value = getString(R.string.create_collection_display_name_required)
+            ok = false
+        } else {
+            args.putString(CreateCollectionFragment.ARG_DISPLAY_NAME, displayName)
+            model.displayNameError.value = null
+        }
+
+        StringUtils.trimToNull(model.description.value)?.let {
+            args.putString(CreateCollectionFragment.ARG_DESCRIPTION, it)
+        }
+
+        model.color.value?.let {
+            args.putInt(CreateCollectionFragment.ARG_COLOR, it)
+        }
+
+        val tzId = model.timezone.value
+        if (tzId.isNullOrBlank()) {
+            model.timezoneError.value = getString(R.string.create_calendar_time_zone_required)
+            ok = false
+        } else {
+            DateUtils.tzRegistry.getTimeZone(tzId)?.let { tz ->
+                val cal = Calendar()
+                cal.components += tz.vTimeZone
+                args.putString(CreateCollectionFragment.ARG_TIMEZONE, cal.toString())
             }
+            model.timezoneError.value = null
+        }
 
-            info.description = StringUtils.trimToNull(model.description.value)
-            info.color = model.color.value
+        val supportsVEVENT = model.supportVEVENT.value ?: false
+        val supportsVTODO = model.supportVTODO.value ?: false
+        val supportsVJOURNAL = model.supportVJOURNAL.value ?: false
+        if (!supportsVEVENT && !supportsVTODO && !supportsVJOURNAL) {
+            ok = false
+            model.typeError.value = ""
+        } else
+            model.typeError.value = null
 
-            val tzId = model.timezone.value
-            if (tzId.isNullOrBlank()) {
-                model.timezoneError.value = getString(R.string.create_calendar_time_zone_required)
-                ok = false
-            } else {
-                DateUtils.tzRegistry.getTimeZone(tzId)?.let { tz ->
-                    val cal = Calendar()
-                    cal.components += tz.vTimeZone
-                    info.timeZone = cal.toString()
-                }
-                model.timezoneError.value = null
-            }
+        if (!supportsVEVENT || !supportsVTODO || !supportsVJOURNAL) {
+            // only if there's at least one component set not supported; don't include
+            // information about supported components otherwise (means: everything supported)
+            args.putBoolean(CreateCollectionFragment.ARG_SUPPORTS_VEVENT, supportsVEVENT)
+            args.putBoolean(CreateCollectionFragment.ARG_SUPPORTS_VTODO, supportsVTODO)
+            args.putBoolean(CreateCollectionFragment.ARG_SUPPORTS_VJOURNAL, supportsVJOURNAL)
+        }
 
-            val supportsVEVENT = model.supportVEVENT.value ?: false
-            val supportsVTODO = model.supportVTODO.value ?: false
-            val supportsVJOURNAL = model.supportVJOURNAL.value ?: false
-            if (!supportsVEVENT && !supportsVTODO && !supportsVJOURNAL) {
-                ok = false
-                model.typeError.value = ""
-            } else
-                model.typeError.value = null
-
-            info.type = CollectionInfo.Type.CALENDAR
-            info.supportsVEVENT = supportsVEVENT
-            info.supportsVTODO = supportsVTODO
-            info.supportsVJOURNAL = supportsVJOURNAL
-
-            if (ok)
-                CreateCollectionFragment.newInstance(model.account!!, info).show(supportFragmentManager, null)
+        if (ok) {
+            val frag = CreateCollectionFragment()
+            args.putParcelable(CreateCollectionFragment.ARG_ACCOUNT, model.account)
+            args.putString(CreateCollectionFragment.ARG_TYPE, Collection.TYPE_CALENDAR)
+            frag.show(supportFragmentManager, null)
         }
     }
 
@@ -186,13 +191,6 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
             application: Application
     ): AndroidViewModel(application) {
 
-        class TimeZoneInfo(
-                val id: String,
-                val displayName: String
-        ) {
-            override fun toString() = id
-        }
-
         var account: Account? = null
 
         val displayName = MutableLiveData<String>()
@@ -201,7 +199,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         val description = MutableLiveData<String>()
         val color = MutableLiveData<Int>()
 
-        val homeSets = MutableLiveData<SpinnerAdapter>()
+        val homeSets = MutableLiveData<HomeSetAdapter>()
         val idxHomeSet = MutableLiveData<Int>()
 
         val timezones = TimeZoneAdapter(application)
@@ -229,25 +227,17 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
 
             thread {
                 // load account info
-                ServiceDB.OpenHelper(getApplication()).use { dbHelper ->
-                    val adapter = HomesetAdapter(getApplication())
-                    val db = dbHelper.readableDatabase
-                    db.query(ServiceDB.Services._TABLE, arrayOf(ServiceDB.Services.ID),
-                            "${ServiceDB.Services.ACCOUNT_NAME}=? AND ${ServiceDB.Services.SERVICE}=?",
-                            arrayOf(account.name, ServiceDB.Services.SERVICE_CALDAV), null, null, null).use { cursor ->
-                        if (cursor.moveToNext()) {
-                            val strServiceID = cursor.getString(0)
-                            db.query(ServiceDB.HomeSets._TABLE, arrayOf(ServiceDB.HomeSets.URL),
-                                    "${ServiceDB.HomeSets.SERVICE_ID}=?", arrayOf(strServiceID), null, null, null).use { c ->
-                                while (c.moveToNext())
-                                    adapter.add(c.getString(0))
-                            }
-                        }
-                    }
-                    if (!adapter.isEmpty) {
-                        homeSets.postValue(adapter)
-                        idxHomeSet.postValue(0)
-                    }
+                val adapter = HomeSetAdapter(getApplication())
+
+                val db = AppDatabase.getInstance(getApplication())
+                db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)?.let { service ->
+                    val homeSets = db.homeSetDao().getByService(service.id)
+                    adapter.addAll(homeSets)
+                }
+
+                if (!adapter.isEmpty) {
+                    homeSets.postValue(adapter)
+                    idxHomeSet.postValue(0)
                 }
             }
         }
