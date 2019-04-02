@@ -116,6 +116,9 @@
     <string name="app_settings_reset_hints_success">All hints will be shown again</string>
 
     <!-- AccountActivity -->
+    <string name="account_missing_permissions">Permissions potentially missing</string>
+    <string name="account_missing_permissions_fix">Fix</string>
+    <string name="account_missing_permissions_explanation">Required permissions: contacts, calendars, (tasks)</string>
     <string name="account_synchronize_now">Synchronize now</string>
     <string name="account_synchronizing_now">Synchronizing now</string>
     <string name="account_settings">Account settings</string>

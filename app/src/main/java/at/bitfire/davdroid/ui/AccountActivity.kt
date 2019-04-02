@@ -20,11 +20,9 @@ import android.net.Uri
 import android.os.*
 import android.provider.CalendarContract
 import android.provider.ContactsContract
+import android.provider.Settings
 import android.view.*
-import android.widget.CheckBox
-import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.TextView
+import android.widget.*
 import androidx.annotation.MainThread
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
@@ -40,10 +38,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import at.bitfire.davdroid.DavService
-import at.bitfire.davdroid.DavUtils
-import at.bitfire.davdroid.R
-import at.bitfire.davdroid.closeCompat
+import at.bitfire.davdroid.*
 import at.bitfire.davdroid.databinding.ActivityAccountBinding
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.CollectionInfo
@@ -60,17 +55,19 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
+
+        const val REQUEST_CODE_RELOAD = 0
     }
 
     private lateinit var model: Model
-
+    private lateinit var binding: ActivityAccountBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         model = ViewModelProviders.of(this).get(Model::class.java)
 
-        val binding = DataBindingUtil.setContentView<ActivityAccountBinding>(this, R.layout.activity_account)
+        binding = DataBindingUtil.setContentView<ActivityAccountBinding>(this, R.layout.activity_account)
         binding.lifecycleOwner = this
         binding.model = model
 
@@ -129,15 +126,28 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         })
     }
 
-    override fun onResume() {
-        super.onResume()
-        reload()
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (grantResults.any { it == PackageManager.PERMISSION_GRANTED })
             // we've got additional permissions; load everything again
             // (especially Webcal subscriptions, whose status could not be determined without calendar permission)
+            reload()
+        else if (grantResults.any { it == PackageManager.PERMISSION_DENIED }) {
+            if (permissions.map { ActivityCompat.shouldShowRequestPermissionRationale(this, it) }.any())
+                Snackbar
+                    .make(binding.root, R.string.account_missing_permissions, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.account_missing_permissions_fix) {
+                        Toast.makeText(this, R.string.account_missing_permissions_explanation, Toast.LENGTH_LONG)
+                                .show()
+                        val settingsIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", BuildConfig.APPLICATION_ID, null))
+                        startActivityForResult(settingsIntent, REQUEST_CODE_RELOAD)
+                    }
+                    .show()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_RELOAD)
             reload()
     }
 
@@ -458,7 +468,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                     val installIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=at.bitfire.icsdroid"))
                     if (activity.packageManager.resolveActivity(installIntent, 0) != null)
                         snack.setAction(R.string.account_install_icsx5) {
-                            activity.startActivityForResult(installIntent, 0)
+                            activity.startActivityForResult(installIntent, REQUEST_CODE_RELOAD)
                         }
 
                     snack.show()
@@ -512,7 +522,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
     private fun requestSync() {
         DavUtils.requestSync(this, model.account)
-        Snackbar.make(findViewById(R.id.parent), R.string.account_synchronizing_now, Snackbar.LENGTH_LONG).show()
+        Snackbar.make(binding.root, R.string.account_synchronizing_now, Snackbar.LENGTH_LONG).show()
     }
 
 
@@ -569,6 +579,9 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             }
             if (context.bindService(Intent(context, DavService::class.java), svcConn, Context.BIND_AUTO_CREATE))
                 davServiceConn = svcConn
+
+            reload()
+            updateRefreshing()
         }
 
         override fun onCleared() {
