@@ -26,7 +26,7 @@
   <string name="startup_not_now">Ikke nu</string>
   <string name="startup_donate">Open-Source information</string>
   <string name="startup_donate_message">Det glæder os, at du bruger DAVx⁵, som er open source-software (GPLv3). Det er hårdt arbejde at udvikle DAVx⁵ og taget tusindvis af arbejdstimer, så overvej at donere til projektet.</string>
-  <string name="startup_donate_now">Vis donationsside</string>
+  <string name="startup_donate_now">Vis donation side</string>
   <string name="startup_donate_later">Måske senere</string>
   <string name="startup_more_info">Mere information</string>
   <string name="startup_opentasks_not_installed">OpenTasks ikke installeret</string>
@@ -45,7 +45,7 @@
   <string name="logging_notification_text">Logger nu alle DAVx⁵ aktiviteter</string>
   <string name="logging_notification_send_log">Sende log</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Åbn navigationsvindue</string>
+  <string name="navigation_drawer_open">Åbne navigationsvindue</string>
   <string name="navigation_drawer_close">Luk navigationsvindue</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV synkroniseringsadapter</string>
   <string name="navigation_drawer_about">Om / licens</string>
@@ -82,7 +82,7 @@
   <string name="app_settings_distrust_system_certs">Stol ikke på systemcertifikater</string>
   <string name="app_settings_distrust_system_certs_on">System og brugertilføjede CA\'er vil ikke blive betroet</string>
   <string name="app_settings_distrust_system_certs_off">System og brugertilføjede CA\'er vil blive betroet (anbefalet)</string>
-  <string name="app_settings_reset_certificates">Nulstil (ikke-)betroede certifikater</string>
+  <string name="app_settings_reset_certificates">Nulstille betroede / ikke betroede certifikater</string>
   <string name="app_settings_reset_certificates_summary">Nulstiller tilliden til brugerdefinerede certifikater</string>
   <string name="app_settings_reset_certificates_success">Alle brugerdefinerede certifikater er blevet rydet</string>
   <string name="app_settings_user_interface">Brugerflade</string>
