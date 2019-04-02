@@ -92,6 +92,9 @@
   <string name="app_settings_reset_hints_summary">Hinweise, die deaktiviert wurden, wieder anzeigen</string>
   <string name="app_settings_reset_hints_success">Alle Hinweise werden wieder angezeigt</string>
   <!--AccountActivity-->
+  <string name="account_missing_permissions">Möglicherweise fehlen Berechtigungen</string>
+  <string name="account_missing_permissions_fix">Beheben</string>
+  <string name="account_missing_permissions_explanation">Benötigte Rechte: Kontakte, Kalender, (Aufgaben)</string>
   <string name="account_synchronize_now">Jetzt synchronisieren</string>
   <string name="account_synchronizing_now">Synchronisation gestartet</string>
   <string name="account_settings">Konto-Einstellungen</string>

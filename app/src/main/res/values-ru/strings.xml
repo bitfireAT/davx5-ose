@@ -73,15 +73,15 @@
   <string name="app_settings_logging_on">Журналирование активно</string>
   <string name="app_settings_logging_off">Журналирование отключено</string>
   <string name="app_settings_connection">Подключение</string>
-  <string name="app_settings_override_proxy">Переопределить настройки прокси-сервера</string>
-  <string name="app_settings_override_proxy_on">Использовать пользовательские настройки прокси-сервера</string>
-  <string name="app_settings_override_proxy_off">Использовать системные настройки прокси-сервера</string>
-  <string name="app_settings_override_proxy_host">Имя хоста HTTP прокси-сервера</string>
-  <string name="app_settings_override_proxy_port">Порт HTTP прокси-сервера</string>
+  <string name="app_settings_override_proxy">Переопределить настройки прокси</string>
+  <string name="app_settings_override_proxy_on">Использовать пользовательские настройки прокси</string>
+  <string name="app_settings_override_proxy_off">Использовать системные настройки прокси</string>
+  <string name="app_settings_override_proxy_host">Имя хоста HTTP прокси</string>
+  <string name="app_settings_override_proxy_port">Порт HTTP прокси</string>
   <string name="app_settings_security">Безопасность</string>
-  <string name="app_settings_distrust_system_certs">Не доверять системным сертификатам</string>
-  <string name="app_settings_distrust_system_certs_on">Не доверять системным и добавленным пользователем CA</string>
-  <string name="app_settings_distrust_system_certs_off">Доверять системным и добавленным пользователем CA (рекомендуется)</string>
+  <string name="app_settings_distrust_system_certs">Доверие системным сертификатам</string>
+  <string name="app_settings_distrust_system_certs_on">Не доверять системным и пользовательским CA</string>
+  <string name="app_settings_distrust_system_certs_off">Доверять системным и пользовательским CA (рекомендуется)</string>
   <string name="app_settings_reset_certificates">Сброс (не)доверенных сертификатов</string>
   <string name="app_settings_reset_certificates_summary">Отменить доверие ко всем пользовательским сертификатам</string>
   <string name="app_settings_reset_certificates_success">Все пользовательские сертификаты были удалены</string>
@@ -196,8 +196,8 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">События старше указанного количества дней будут игнорироваться (может быть 0). Оставьте пустым для синхронизации всех событий.</string>
   <string name="settings_manage_calendar_colors">Управление цветами календаря</string>
-  <string name="settings_manage_calendar_colors_on">Цвета календаря устанавливаются DAVx⁵</string>
-  <string name="settings_manage_calendar_colors_off">Цвета календаря не устанавливаются DAVx⁵</string>
+  <string name="settings_manage_calendar_colors_on">Цвета календаря управляются DAVx⁵</string>
+  <string name="settings_manage_calendar_colors_off">Цвета календаря не управляются DAVx⁵</string>
   <string name="settings_event_colors">Поддержка цвета событий</string>
   <string name="settings_event_colors_on">Синхронизация цветов событий</string>
   <string name="settings_event_colors_off">Не синхронизировать цвета событий</string>
@@ -205,12 +205,26 @@
   <!--collection management-->
   <string name="create_addressbook">Создать адресную книгу</string>
   <string name="create_addressbook_display_name_hint">Моя адресная книга</string>
+  <string name="create_calendar">Создать календарь</string>
+  <string name="create_calendar_time_zone">Часовой пояс</string>
+  <string name="create_calendar_time_zone_required">Требуется часовой пояс</string>
+  <string name="create_calendar_type">Возможные записи календаря</string>
+  <string name="create_calendar_type_vevent">События</string>
+  <string name="create_calendar_type_vtodo">Задачи</string>
+  <string name="create_calendar_type_vjournal">Заметки / журнал</string>
   <string name="create_calendar_type_events_and_tasks">Совмещенный (события и задачи)</string>
+  <string name="create_collection_color">Цвет</string>
   <string name="create_collection_creating">Создание коллекции</string>
+  <string name="create_collection_display_name">Название</string>
   <string name="create_collection_display_name_required">Требуется название</string>
+  <string name="create_collection_description">Описание</string>
+  <string name="create_collection_optional">опционально</string>
+  <string name="create_collection_home_set">Место хранения</string>
   <string name="create_collection_create">Создать</string>
   <string name="delete_collection">Удалить коллекцию</string>
   <string name="delete_collection_confirm_title">Вы уверены?</string>
+  <string name="delete_collection_confirm_warning">Эта коллекция (%s) и все ее данные будут удалены навсегда.</string>
+  <string name="delete_collection_data_shall_be_deleted">Эти данные должны быть удалены с сервера.</string>
   <string name="delete_collection_deleting_collection">Удаление коллекции</string>
   <string name="collection_force_read_only">Только для чтения</string>
   <string name="collection_properties">Свойства</string>
@@ -240,5 +254,5 @@
   <string name="sync_invalid_resources_ignoring">Игнорирование одного или нескольких недействительных ресурсов</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: безопасность подключения</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ обнаружил неизвестный сертификат. Вы хотите доверять ему?</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ обнаружил неизвестный сертификат. Вы хотите ему доверять?</string>
 </resources>
