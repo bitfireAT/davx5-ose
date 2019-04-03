@@ -30,7 +30,7 @@ abstract class AppDatabase: RoomDatabase() {
         fun getInstance(context: Context): AppDatabase {
             INSTANCE?.let { return it }
 
-            val db = Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "services.db")
+            val db = Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "services.database")
                     .fallbackToDestructiveMigrationFrom(1, 2)
                     .fallbackToDestructiveMigrationOnDowngrade()
                     .addMigrations(Migration5_6)

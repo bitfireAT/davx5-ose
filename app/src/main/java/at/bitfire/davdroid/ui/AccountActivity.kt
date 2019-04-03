@@ -14,6 +14,7 @@ import android.accounts.AccountManager
 import android.app.Application
 import android.content.*
 import android.content.pm.PackageManager
+import android.database.ContentObserver
 import android.net.Uri
 import android.os.*
 import android.provider.CalendarContract
@@ -22,21 +23,20 @@ import android.provider.Settings
 import android.view.*
 import android.widget.*
 import androidx.annotation.MainThread
-import androidx.annotation.UiThread
+import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import at.bitfire.davdroid.*
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityAccountBinding
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
@@ -46,8 +46,10 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.ical4android.TaskProvider
 import com.google.android.material.snackbar.Snackbar
+import java.util.*
 import java.util.concurrent.Executors
 import java.util.logging.Level
+import kotlin.concurrent.thread
 
 class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, PopupMenu.OnMenuItemClickListener {
 
@@ -70,8 +72,9 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         binding.model = model
 
         // account may be a DAVx5 address book account -> use main account in this case
-        model.initialize(LocalAddressBook.mainAccount(this,
-                requireNotNull(intent.getParcelableExtra(EXTRA_ACCOUNT))))
+        val account = LocalAddressBook.mainAccount(this,
+                requireNotNull(intent.getParcelableExtra(EXTRA_ACCOUNT)))
+        model.initialize(account)
         title = model.account.name
 
         val icMenu = AppCompatResources.getDrawable(this, R.drawable.ic_menu_light)
@@ -118,6 +121,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         }
 
         model.requiredPermissions.observe(this, Observer { permissions ->
+            Logger.log.fine("Required permissions: $permissions")
             val askPermissions = permissions.filter { ActivityCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED }
             if (askPermissions.isNotEmpty())
                 ActivityCompat.requestPermissions(this, askPermissions.toTypedArray(), 0)
@@ -236,15 +240,10 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.force_read_only -> {
-                    info.uiEnabled = false
+                    //info.uiEnabled = false
                     adapter.notifyItemChanged(position)
 
-                    val nowForceReadOnly = !info.forceReadOnly
-                    model.updateCollectionReadOnly(info, nowForceReadOnly) {
-                        info.forceReadOnly = nowForceReadOnly
-                        info.uiEnabled = true
-                        adapter.notifyItemChanged(position)
-                    }
+                    model.updateCollectionReadOnly(info, !info.forceReadOnly)
                 }
                 R.id.delete_collection ->
                     DeleteCollectionFragment.newInstance(model.account, info.id).show(supportFragmentManager, null)
@@ -260,7 +259,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     }
 
     fun reload() {
-        model.reload()
+        // TODO handle new permissions
     }
 
 
@@ -290,25 +289,11 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             val info = model.addressBooks.value?.get(position) ?: return
             val v = holder.itemView
 
-            if (info.uiEnabled)
-                v.setOnClickListener {
-                    info.uiEnabled = false
-                    notifyItemChanged(position)
-
-                    val nowChecked = !info.sync
-                    model.updateCollectionSelected(info, nowChecked) {
-                        info.sync = nowChecked
-                        v.findViewById<CheckBox>(R.id.checked).isChecked = nowChecked
-
-                        info.uiEnabled = true
-                        notifyItemChanged(position)
-                    }
-                }
-            else
-                v.setOnClickListener(null)
+            v.setOnClickListener {
+                model.updateCollectionSelected(info, !info.sync)
+            }
 
             v.findViewById<CheckBox>(R.id.checked).apply {
-                isEnabled = info.uiEnabled
                 isChecked = info.sync
             }
 
@@ -328,12 +313,9 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                     if (!info.privWriteContent || info.forceReadOnly) View.VISIBLE else View.GONE
 
             v.findViewById<ImageView>(R.id.action_overflow).apply {
-                if (info.uiEnabled)
-                    setOnClickListener { view ->
-                        activity.onActionOverflowListener(view, info, this@AddressBookAdapter, position)
-                    }
-                else
-                    setOnClickListener(null)
+                setOnClickListener { view ->
+                    activity.onActionOverflowListener(view, info, this@AddressBookAdapter, position)
+                }
             }
         }
 
@@ -365,7 +347,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             val info = data().value?.get(position) ?: return
             val v = holder.itemView
 
-            val enabled = (info.sync || info.supportsVEVENT != false || info.supportsVTODO != false) && info.uiEnabled
+            val enabled = info.sync || info.supportsVEVENT != false || info.supportsVTODO != false
             if (enabled)
                 v.setOnClickListener {
                     onClickListener(it, position, info)
@@ -410,28 +392,14 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             if (info.type == Collection.TYPE_WEBCAL)
                 overflow.visibility = View.INVISIBLE
             else {
-                if (info.uiEnabled)
-                    overflow.setOnClickListener { view ->
-                        activity.onActionOverflowListener(view, info, this@CalendarAdapter, position)
-                    }
-                else
-                    overflow.setOnClickListener(null)
+                overflow.setOnClickListener { view ->
+                    activity.onActionOverflowListener(view, info, this@CalendarAdapter, position)
+                }
             }
         }
 
-        open fun onClickListener(parent: View, position: Int, info: Collection)
-        {
-            info.uiEnabled = false
-            notifyItemChanged(position)
-
-            val nowChecked = !info.sync
-            model.updateCollectionSelected(info, nowChecked) {
-                info.sync = nowChecked
-                parent.findViewById<CheckBox>(R.id.checked).isChecked = nowChecked
-
-                info.uiEnabled = true
-                notifyItemChanged(position)
-            }
+        open fun onClickListener(parent: View, position: Int, info: Collection) {
+            model.updateCollectionSelected(info, !info.sync)
         }
 
     }
@@ -473,16 +441,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                 }
             } else {
                 // unsubscribe from Webcal feed
-                if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED)
-                    activity.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
-                        try {
-                            provider.delete(CalendarContract.Calendars.CONTENT_URI, "${CalendarContract.Calendars.NAME}=?", arrayOf(info.source))
-                            activity.reload()
-                        } finally {
-                            provider.closeCompat()
-                        }
-                    }
-
+                // TODO model.webcals.unsubscribe(info)
             }
         }
 
@@ -530,24 +489,56 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             val context: Application
     ): AndroidViewModel(context), SyncStatusObserver, DavService.RefreshingStatusListener {
 
-        private var initialized = false
         lateinit var account: Account
+        val accountName = MutableLiveData<String>()
 
-        val cardDavServiceId = MutableLiveData<Long>()
-        val cardDavRefreshing = MutableLiveData<Boolean>()
-        val addressBooks = MutableLiveData<List<Collection>>()
-        val hasAddressBookHomeSets = MutableLiveData<Boolean>()
+        val subscribedWebcals = MutableLiveData<Set<String>>()
+        var calendarProvider: ContentProviderClient? = null
+        var calendarObserver: ContentObserver? = null
 
-        val calDavServiceId = MutableLiveData<Long>()
-        val calDavRefreshing = MutableLiveData<Boolean>()
-        val calendars = MutableLiveData<List<Collection>>()
-        val hasCalendarHomeSets = MutableLiveData<Boolean>()
+        val database = AppDatabase.getInstance(context)
+        val services: LiveData<List<Service>> = Transformations.switchMap(accountName) { name ->
+            database.serviceDao().observeByAccount(name)
+        }
 
-        val webcals = MutableLiveData<List<Collection>>()
+        private fun transformServiceToHasHomesets(liveServiceId: LiveData<Long>): LiveData<Boolean> =
+                Transformations.switchMap(liveServiceId) { serviceId ->
+                    serviceId?.let {
+                        Transformations.map(database.homeSetDao().observeByService(serviceId)) {
+                            it.isNotEmpty()
+                        }
+                    }
+                }
 
-        val requiredPermissions = MutableLiveData<List<String>>()
+        private fun transformServiceToCollections(liveServiceId: LiveData<Long>, type: String): LiveData<List<Collection>> =
+                Transformations.switchMap(liveServiceId) { serviceId ->
+                    serviceId?.let {
+                        database.collectionDao().observeByServiceAndType(serviceId, type)
+                    }
+                }
+
+        val cardDavServiceId: LiveData<Long> = Transformations.map(services) { services ->
+            services.firstOrNull { it.type == Service.TYPE_CARDDAV }?.id
+        }
+
+        val hasAddressBookHomeSets: LiveData<Boolean> = transformServiceToHasHomesets(cardDavServiceId)
+        val addressBooks = transformServiceToCollections(cardDavServiceId, Collection.TYPE_ADDRESSBOOK)
+
+        val calDavServiceId: LiveData<Long> = Transformations.map(services) { services ->
+            services.firstOrNull { it.type == Service.TYPE_CALDAV }?.id
+        }
+        val hasCalendarHomeSets = transformServiceToHasHomesets(calDavServiceId)
+        val calendars = transformServiceToCollections(calDavServiceId, Collection.TYPE_CALENDAR)
+        val webcals = WebcalSource(
+                subscribedWebcals,
+                transformServiceToCollections(calDavServiceId, Collection.TYPE_WEBCAL)
+        )
+
+        val requiredPermissions = PermissionCalculator(context, addressBooks, calDavServiceId, webcals)
 
         var syncStatusListener: Any? = null
+        val cardDavRefreshing = MutableLiveData<Boolean>()
+        val calDavRefreshing = MutableLiveData<Boolean>()
 
         @Volatile
         private var davService: DavService.InfoBinder? = null
@@ -555,11 +546,42 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
         private val executor = Executors.newSingleThreadExecutor()
 
+
         @MainThread
         fun initialize(account: Account) {
-            if (initialized)
+            if (accountName.value != null)
                 return
+
             this.account = account
+            accountName.value = account.name
+
+            thread {
+                initializeAsync()
+            }
+        }
+
+        @WorkerThread
+        private fun initializeAsync() {
+            if (checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
+                calendarProvider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)
+
+                object: ContentObserver(null) {
+                    override fun onChange(selfChange: Boolean) {
+                        calendarProvider?.query(CalendarContract.Calendars.CONTENT_URI, arrayOf(CalendarContract.Calendars.NAME),
+                                "${CalendarContract.Calendars.NAME} LIKE 'http%'", null, null)?.use { cursor ->
+                            val result = mutableSetOf<String>()
+                            while (cursor.moveToNext())
+                                result += cursor.getString(0)
+                            subscribedWebcals.postValue(result)
+                        }
+                    }
+                }.let { observer ->
+                    calendarObserver = observer
+                    context.contentResolver.registerContentObserver(CalendarContract.Calendars.CONTENT_URI, false, observer)
+                    observer.onChange(true)
+                }
+
+            }
 
             // observe Account sync status
             syncStatusListener = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this)
@@ -578,72 +600,19 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             if (context.bindService(Intent(context, DavService::class.java), svcConn, Context.BIND_AUTO_CREATE))
                 davServiceConn = svcConn
 
-            reload()
             updateRefreshing()
         }
 
         override fun onCleared() {
+            calendarObserver?.let { context.contentResolver.unregisterContentObserver(it) }
+            calendarProvider?.closeCompat()
+
             davServiceConn?.let { context.unbindService(it) }
             ContentResolver.removeStatusChangeListener(syncStatusListener)
         }
 
-        fun reload() {
-            executor.submit {
-                val neededPermissions = mutableListOf<String>()
-
-                val db = AppDatabase.getInstance(context)
-                val collectionDao = db.collectionDao()
-                for (service in db.serviceDao().getByAccount(account.name)) {
-                    when (service.type) {
-                        Service.TYPE_CARDDAV -> {
-                            cardDavServiceId.postValue(service.id)
-                            val collections = collectionDao.getByService(service.id)
-                            if (collections.isNotEmpty())
-                                neededPermissions.addAll(arrayOf(
-                                        Manifest.permission.READ_CONTACTS,
-                                        Manifest.permission.WRITE_CONTACTS
-                                ))
-                            addressBooks.postValue(collections)
-                        }
-                        Service.TYPE_CALDAV -> {
-                            calDavServiceId.postValue(service.id)
-                            val collections = collectionDao.getByService(service.id)
-                            if (collections.isNotEmpty()) {
-                                neededPermissions.addAll(arrayOf(
-                                        Manifest.permission.READ_CALENDAR,
-                                        Manifest.permission.WRITE_CALENDAR
-                                ))
-                                if (LocalTaskList.tasksProviderAvailable(context)) {
-                                    neededPermissions.addAll(arrayOf(
-                                            TaskProvider.PERMISSION_READ_TASKS,
-                                            TaskProvider.PERMISSION_WRITE_TASKS
-                                    ))
-                                }
-
-                                calendars.postValue(collections.filter { it.type == Collection.TYPE_CALENDAR })
-
-                                val webcalCollections = collections.filter { it.type == Collection.TYPE_WEBCAL }
-                                if (webcalCollections.isNotEmpty() && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
-                                    context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
-                                        try {
-                                            for (info in webcalCollections) {
-                                                provider.query(CalendarContract.Calendars.CONTENT_URI, null,
-                                                        "${CalendarContract.Calendars.NAME}=?", arrayOf(info.source), null)?.use { cursor ->
-                                                    if (cursor.moveToNext())
-                                                        info.sync = true
-                                                }
-                                            }
-                                        } finally {
-                                            provider.closeCompat()
-                                        }
-                                    }
-                                webcals.postValue(webcalCollections)
-                            }
-                        }
-                    }
-                }
-                requiredPermissions.postValue(neededPermissions)
-            }
+        fun onPermissionsUpdated() {
+            // TODO
         }
 
         override fun onStatusChanged(which: Int) {
@@ -653,11 +622,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         override fun onDavRefreshStatusChanged(id: Long, refreshing: Boolean) {
             if (id == cardDavServiceId.value || id == calDavServiceId.value)
                 updateRefreshing()
-        }
-
-        override fun onDavRefreshFinished(id: Long) {
-            if (id == cardDavServiceId.value || id == calDavServiceId.value)
-                reload()
         }
 
         private fun updateRefreshing() {
@@ -671,7 +635,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                     if (account == addressBook.mainAccount)
                         if (ContentResolver.isSyncActive(addrBookAccount, ContactsContract.AUTHORITY))
                             contactsSyncActive = true
-                } catch(e: Exception) {
+                } catch (e: Exception) {
                 }
             }
             val svcCardDavRefreshing = cardDavServiceId.value?.let { id -> davService?.isRefreshing(id) } ?: false
@@ -683,21 +647,130 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             calDavRefreshing.postValue(calendarSyncActive || tasksSyncActive || svcCalDavRefreshing)
         }
 
-        fun updateCollectionSelected(info: Collection, selected: Boolean, @UiThread onSuccess: () -> Unit) {
+        fun updateCollectionSelected(info: Collection, selected: Boolean) {
             executor.submit {
-                info.sync = true
+                info.sync = selected
                 AppDatabase.getInstance(context).collectionDao().update(info)
-                Handler(Looper.getMainLooper()).post(onSuccess)
             }
         }
 
-        fun updateCollectionReadOnly(info: Collection, readOnly: Boolean, @UiThread onSuccess: () -> Unit) {
+        fun updateCollectionReadOnly(info: Collection, readOnly: Boolean) {
             executor.submit {
-                info.forceReadOnly = true
+                info.forceReadOnly = readOnly
                 AppDatabase.getInstance(context).collectionDao().update(info)
-                Handler(Looper.getMainLooper()).post(onSuccess)
             }
         }
+
+    }
+
+    class PermissionCalculator(
+            context: Context,
+            addressBooks: LiveData<List<Collection>>,
+            calDavServiceId: LiveData<Long>,
+            webcals: LiveData<List<Collection>>
+    ): MediatorLiveData<Set<String>>() {
+
+        companion object {
+            val contactPermissions = arrayOf(
+                    Manifest.permission.READ_CONTACTS,
+                    Manifest.permission.WRITE_CONTACTS
+            )
+            val calendarPermissions = arrayOf(
+                    Manifest.permission.READ_CALENDAR,
+                    Manifest.permission.WRITE_CALENDAR
+            )
+            val taskPermissions = arrayOf(
+                    TaskProvider.PERMISSION_READ_TASKS,
+                    TaskProvider.PERMISSION_WRITE_TASKS
+            )
+        }
+
+        private val permissions = mutableSetOf<String>()
+
+        init {
+            addSource(addressBooks) { collections ->
+                val oldPermissions = HashSet(permissions)
+
+                if (collections.any { it.sync })
+                    permissions.addAll(contactPermissions)
+                else
+                    permissions.removeAll(contactPermissions)
+
+                if (permissions != oldPermissions)
+                    value = permissions
+            }
+
+            addSource(calDavServiceId) { serviceId ->
+                val oldPermissions = HashSet(permissions)
+
+                permissions.removeAll(calendarPermissions)
+                if (serviceId != null) {
+                    permissions.addAll(calendarPermissions)
+
+                    if (LocalTaskList.tasksProviderAvailable(context))
+                        permissions.addAll(taskPermissions)
+                }
+
+                if (permissions != oldPermissions)
+                    value = permissions
+            }
+
+            addSource(webcals) { collections ->
+                val oldPermissions = HashSet(permissions)
+
+                if (collections.isNotEmpty())
+                    // we need calendar permissions to see which Webcals are subscribed by ICSx5
+                    permissions.addAll(calendarPermissions)
+
+                if (permissions != oldPermissions)
+                    value = permissions
+            }
+        }
+    }
+
+
+    class WebcalSource(
+            subscribedWebcals: LiveData<Set<String>>,
+            webcals: LiveData<List<Collection>>
+    ): MediatorLiveData<List<Collection>>() {
+
+        private var activeSubscriptions: Set<String>? = null
+        private var unprocessedWebcals: List<Collection>? = null
+
+        init {
+            addSource(webcals) {
+                unprocessedWebcals = it
+                processWebcals()
+            }
+            addSource(subscribedWebcals) {
+                activeSubscriptions = it
+                processWebcals()
+            }
+        }
+
+        private fun processWebcals() {
+            val result = unprocessedWebcals?.map { webcal ->
+                webcal.sync = activeSubscriptions?.contains(webcal.source.toString()) ?: false
+                webcal
+            } ?: return
+            value = result
+        }
+
+        // TODO
+        /*fun unsubscribe(collection: Collection) {
+            thread {
+                // delete subscription
+                if (model.provider?.delete(CalendarContract.Calendars.CONTENT_URI, "${CalendarContract.Calendars.NAME}=?", arrayOf(collection.source)) == 1) {
+                    // update LiveData
+                    value?.let { webcals ->
+                        for (webcal in webcals)
+                            if (webcal.source == collection.source)
+                                webcal.sync = false
+                        postValue(webcals)
+                    }
+                }
+            }
+        }*/
 
     }
 

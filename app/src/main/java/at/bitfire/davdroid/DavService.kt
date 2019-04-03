@@ -99,7 +99,6 @@ class DavService: android.app.Service() {
 
     interface RefreshingStatusListener {
         fun onDavRefreshStatusChanged(id: Long, refreshing: Boolean)
-        fun onDavRefreshFinished(id: Long)
     }
 
     private val binder = InfoBinder()
@@ -147,13 +146,12 @@ class DavService: android.app.Service() {
         val service = db.serviceDao().getById(serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, getString(R.string.account_type))
 
-        val oldHomeSets = homeSetDao.getByService(serviceId)
-        val oldCollections = collectionDao.getByService(serviceId)
-
-        val homeSets = oldHomeSets.toMutableList()
+        val homeSets = homeSetDao.getByService(serviceId)
+                .map { it.url }
+                .toMutableSet()
 
         val collections = mutableMapOf<HttpUrl, Collection>()
-        oldCollections.forEach {
+        collectionDao.getByService(serviceId).forEach {
             collections[it.url] = it
         }
 
@@ -205,7 +203,7 @@ class DavService: android.app.Service() {
                             response[AddressbookHomeSet::class.java]?.let { homeSet ->
                                 for (href in homeSet.hrefs)
                                     dav.location.resolve(href)?.let {
-                                        homeSets += HomeSet(0, serviceId, UrlUtils.withTrailingSlash(it))
+                                        homeSets += UrlUtils.withTrailingSlash(it)
                                     }
                             }
 
@@ -224,7 +222,7 @@ class DavService: android.app.Service() {
                             response[CalendarHomeSet::class.java]?.let { homeSet ->
                                 for (href in homeSet.hrefs)
                                     dav.location.resolve(href)?.let {
-                                        homeSets += HomeSet(0, serviceId, UrlUtils.withTrailingSlash(it))
+                                        homeSets += UrlUtils.withTrailingSlash(it)
                                     }
                             }
 
@@ -247,7 +245,7 @@ class DavService: android.app.Service() {
         @Transaction
         fun saveResults() {
             homeSetDao.deleteByService(serviceId)
-            homeSetDao.insert(homeSets.onEach { it.serviceId = serviceId })
+            homeSetDao.insert(homeSets.map { HomeSet(0, serviceId, it) })
 
             collectionDao.deleteByService(serviceId)
             val records = collections.values.toList()
@@ -283,7 +281,7 @@ class DavService: android.app.Service() {
                 // now refresh collections (taken from home sets)
                 val itHomeSets = homeSets.iterator()
                 while (itHomeSets.hasNext()) {
-                    val homeSetUrl = itHomeSets.next().url
+                    val homeSetUrl = itHomeSets.next()
                     Logger.log.fine("Listing home set $homeSetUrl")
 
                     try {
@@ -364,7 +362,6 @@ class DavService: android.app.Service() {
             runningRefresh.remove(serviceId)
             refreshingStatusListeners.mapNotNull { it.get() }.forEach {
                 it.onDavRefreshStatusChanged(serviceId, false)
-                it.onDavRefreshFinished(serviceId)
             }
         }
 

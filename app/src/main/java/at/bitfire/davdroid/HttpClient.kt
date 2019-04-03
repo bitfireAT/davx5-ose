@@ -189,10 +189,10 @@ class HttpClient private constructor(
                 certificateAlias?.let { alias ->
                     val context = requireNotNull(context)
 
-                    // get client certificate and private key
+                    // get provider certificate and private key
                     val certs = KeyChain.getCertificateChain(context, alias) ?: return@let
                     val key = KeyChain.getPrivateKey(context, alias) ?: return@let
-                    logger.fine("Using client certificate $alias for authentication (chain length: ${certs.size})")
+                    logger.fine("Using provider certificate $alias for authentication (chain length: ${certs.size})")
 
                     // create Android KeyStore (performs key operations without revealing secret data to DAVx5)
                     val keyStore = KeyStore.getInstance("AndroidKeyStore")
@@ -217,7 +217,7 @@ class HttpClient private constructor(
                     }
                 }
             } catch (e: Exception) {
-                logger.log(Level.SEVERE, "Couldn't set up client certificate authentication", e)
+                logger.log(Level.SEVERE, "Couldn't set up provider certificate authentication", e)
             }
 
             orig.sslSocketFactory(CertTlsSocketFactory(keyManager, trustManager), trustManager)

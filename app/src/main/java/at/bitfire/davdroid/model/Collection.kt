@@ -140,9 +140,6 @@ data class Collection(
     @Ignore
     var confirmed: Boolean = false
 
-    @Ignore
-    var uiEnabled: Boolean = true
-
 
     fun title() = displayName ?: DavUtils.lastSegmentOfUrl(url)
 

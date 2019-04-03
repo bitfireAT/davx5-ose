@@ -1,12 +1,19 @@
 package at.bitfire.davdroid.model
 
-import androidx.room.*
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 
 @Dao
 interface ServiceDao {
 
     @Query("SELECT * FROM service WHERE accountName=:accountName")
     fun getByAccount(accountName: String): List<Service>
+
+    @Query("SELECT * FROM service WHERE accountName=:accountName")
+    fun observeByAccount(accountName: String): LiveData<List<Service>>
 
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     fun getByAccountAndType(accountName: String, type: String): Service?
