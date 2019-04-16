@@ -21,7 +21,10 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.provider.Settings
 import android.view.*
-import android.widget.*
+import android.widget.CheckBox
+import android.widget.ImageView
+import android.widget.PopupMenu
+import android.widget.TextView
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AlertDialog
@@ -32,7 +35,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import at.bitfire.davdroid.*
@@ -46,7 +48,6 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.ical4android.TaskProvider
 import com.google.android.material.snackbar.Snackbar
-import java.util.*
 import java.util.concurrent.Executors
 import java.util.logging.Level
 import kotlin.concurrent.thread
@@ -56,11 +57,18 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     companion object {
         const val EXTRA_ACCOUNT = "account"
 
-        const val REQUEST_CODE_RELOAD = 0
+        const val REQUEST_CODE_PERMISSIONS_UPDATED = 0
     }
 
     private lateinit var model: Model
     private lateinit var binding: ActivityAccountBinding
+
+
+    private val openAppSettings = { _: View ->
+        val appSettings = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", BuildConfig.APPLICATION_ID, null))
+        if (appSettings.resolveActivity(packageManager) != null)
+            startActivityForResult(appSettings, REQUEST_CODE_PERMISSIONS_UPDATED)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +86,19 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         title = model.account.name
 
         val icMenu = AppCompatResources.getDrawable(this, R.drawable.ic_menu_light)
+
+        // permissions
+        model.askForContactsPermissions.observe(this, Observer { needsContactPermissions ->
+            if (needsContactPermissions)
+                ActivityCompat.requestPermissions(this, ContactsPermissionsCalculator.permissions, 0)
+        })
+        binding.contactPermissions.setOnClickListener(openAppSettings)
+
+        model.askForCalendarPermissions.observe(this, Observer { permissions ->
+            if (permissions.isNotEmpty())
+                ActivityCompat.requestPermissions(this, permissions.toTypedArray(), 0)
+        })
+        binding.calendarPermissions.setOnClickListener(openAppSettings)
 
         // CardDAV
         binding.carddavMenu.apply {
@@ -119,38 +140,15 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             layoutManager = LinearLayoutManager(this@AccountActivity)
             adapter = WebcalAdapter(this@AccountActivity, model)
         }
-
-        model.requiredPermissions.observe(this, Observer { permissions ->
-            Logger.log.fine("Required permissions: $permissions")
-            val askPermissions = permissions.filter { ActivityCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED }
-            if (askPermissions.isNotEmpty())
-                ActivityCompat.requestPermissions(this, askPermissions.toTypedArray(), 0)
-        })
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (grantResults.any { it == PackageManager.PERMISSION_GRANTED })
-            // we've got additional permissions; load everything again
-            // (especially Webcal subscriptions, whose status could not be determined without calendar permission)
-            reload()
-        else if (grantResults.any { it == PackageManager.PERMISSION_DENIED }) {
-            if (permissions.map { ActivityCompat.shouldShowRequestPermissionRationale(this, it) }.any())
-                Snackbar
-                    .make(binding.root, R.string.account_missing_permissions, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.account_missing_permissions_fix) {
-                        Toast.makeText(this, R.string.account_missing_permissions_explanation, Toast.LENGTH_LONG)
-                                .show()
-                        val settingsIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", BuildConfig.APPLICATION_ID, null))
-                        startActivityForResult(settingsIntent, REQUEST_CODE_RELOAD)
-                    }
-                    .show()
-        }
-    }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) =
+            model.onPermissionsUpdated()
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_RELOAD)
-            reload()
+        if (requestCode == REQUEST_CODE_PERMISSIONS_UPDATED)
+            model.onPermissionsUpdated()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -256,10 +254,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
         // click was handled
         true
-    }
-
-    fun reload() {
-        // TODO handle new permissions
     }
 
 
@@ -434,14 +428,14 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                     val installIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=at.bitfire.icsdroid"))
                     if (activity.packageManager.resolveActivity(installIntent, 0) != null)
                         snack.setAction(R.string.account_install_icsx5) {
-                            activity.startActivityForResult(installIntent, REQUEST_CODE_RELOAD)
+                            activity.startActivityForResult(installIntent, REQUEST_CODE_PERMISSIONS_UPDATED)
                         }
 
                     snack.show()
                 }
             } else {
                 // unsubscribe from Webcal feed
-                // TODO model.webcals.unsubscribe(info)
+                model.unsubscribeWebcal(info)
             }
         }
 
@@ -523,6 +517,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
         val hasAddressBookHomeSets: LiveData<Boolean> = transformServiceToHasHomesets(cardDavServiceId)
         val addressBooks = transformServiceToCollections(cardDavServiceId, Collection.TYPE_ADDRESSBOOK)
+        val askForContactsPermissions = ContactsPermissionsCalculator(context, addressBooks)
 
         val calDavServiceId: LiveData<Long> = Transformations.map(services) { services ->
             services.firstOrNull { it.type == Service.TYPE_CALDAV }?.id
@@ -533,8 +528,7 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
                 subscribedWebcals,
                 transformServiceToCollections(calDavServiceId, Collection.TYPE_WEBCAL)
         )
-
-        val requiredPermissions = PermissionCalculator(context, addressBooks, calDavServiceId, webcals)
+        val askForCalendarPermissions = CalendarPermissionsCalculator(context, calDavServiceId)
 
         var syncStatusListener: Any? = null
         val cardDavRefreshing = MutableLiveData<Boolean>()
@@ -612,7 +606,8 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         }
 
         fun onPermissionsUpdated() {
-            // TODO
+            askForContactsPermissions.recalculate()
+            askForCalendarPermissions.recalculate()
         }
 
         override fun onStatusChanged(which: Int) {
@@ -647,6 +642,10 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             calDavRefreshing.postValue(calendarSyncActive || tasksSyncActive || svcCalDavRefreshing)
         }
 
+
+        fun unsubscribeWebcal(collection: Collection) =
+                calendarProvider?.delete(CalendarContract.Calendars.CONTENT_URI, "${CalendarContract.Calendars.NAME}=?", arrayOf(collection.source))
+
         fun updateCollectionSelected(info: Collection, selected: Boolean) {
             executor.submit {
                 info.sync = selected
@@ -663,21 +662,51 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
 
     }
 
-    class PermissionCalculator(
-            context: Context,
-            addressBooks: LiveData<List<Collection>>,
-            calDavServiceId: LiveData<Long>,
-            webcals: LiveData<List<Collection>>
-    ): MediatorLiveData<Set<String>>() {
+    class ContactsPermissionsCalculator(
+            val context: Context,
+            val addressBooks: LiveData<List<Collection>>
+    ): MediatorLiveData<Boolean>() {
 
         companion object {
-            val contactPermissions = arrayOf(
+            val permissions = arrayOf(
                     Manifest.permission.READ_CONTACTS,
                     Manifest.permission.WRITE_CONTACTS
             )
+        }
+
+        init {
+            addSource(addressBooks) {
+                recalculate(it)
+            }
+        }
+
+        fun recalculate() = addressBooks.value?.let { recalculate(it) }
+
+        private fun recalculate(addressbooks: List<Collection>) {
+            // permissions required?
+            val required = addressbooks.any { it.sync }
+
+            val ask = if (required)
+                // if permissions required: any (not yet) granted permission?
+                permissions.any { ActivityCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }
+            else
+                false
+
+            if (value != ask)
+                value = ask
+        }
+
+    }
+
+    class CalendarPermissionsCalculator(
+            val context: Context,
+            val serviceId: LiveData<Long>
+    ): MediatorLiveData<List<String>>() {
+
+        companion object {
             val calendarPermissions = arrayOf(
-                    Manifest.permission.READ_CALENDAR,
-                    Manifest.permission.WRITE_CALENDAR
+                Manifest.permission.READ_CALENDAR,
+                Manifest.permission.WRITE_CALENDAR
             )
             val taskPermissions = arrayOf(
                     TaskProvider.PERMISSION_READ_TASKS,
@@ -685,49 +714,28 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             )
         }
 
-        private val permissions = mutableSetOf<String>()
-
         init {
-            addSource(addressBooks) { collections ->
-                val oldPermissions = HashSet(permissions)
-
-                if (collections.any { it.sync })
-                    permissions.addAll(contactPermissions)
-                else
-                    permissions.removeAll(contactPermissions)
-
-                if (permissions != oldPermissions)
-                    value = permissions
-            }
-
-            addSource(calDavServiceId) { serviceId ->
-                val oldPermissions = HashSet(permissions)
-
-                permissions.removeAll(calendarPermissions)
-                if (serviceId != null) {
-                    permissions.addAll(calendarPermissions)
-
-                    if (LocalTaskList.tasksProviderAvailable(context))
-                        permissions.addAll(taskPermissions)
-                }
-
-                if (permissions != oldPermissions)
-                    value = permissions
-            }
-
-            addSource(webcals) { collections ->
-                val oldPermissions = HashSet(permissions)
-
-                if (collections.isNotEmpty())
-                    // we need calendar permissions to see which Webcals are subscribed by ICSx5
-                    permissions.addAll(calendarPermissions)
-
-                if (permissions != oldPermissions)
-                    value = permissions
+            addSource(serviceId) {
+                recalculate()
             }
         }
-    }
 
+        fun recalculate() {
+            val permissions = mutableListOf<String>()
+
+            // As soon as there is a CalDAV service, we need calendar (and task) permissions
+            permissions.addAll(calendarPermissions)
+            if (LocalTaskList.tasksProviderAvailable(context))
+                permissions.addAll(taskPermissions)
+
+            // only ask for permissions which are not granted yet
+            val ask = permissions.filter { ActivityCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }
+
+            if (value != ask)
+                value = ask
+        }
+
+    }
 
     class WebcalSource(
             subscribedWebcals: LiveData<Set<String>>,
@@ -755,22 +763,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
             } ?: return
             value = result
         }
-
-        // TODO
-        /*fun unsubscribe(collection: Collection) {
-            thread {
-                // delete subscription
-                if (model.provider?.delete(CalendarContract.Calendars.CONTENT_URI, "${CalendarContract.Calendars.NAME}=?", arrayOf(collection.source)) == 1) {
-                    // update LiveData
-                    value?.let { webcals ->
-                        for (webcal in webcals)
-                            if (webcal.source == collection.source)
-                                webcal.sync = false
-                        postValue(webcals)
-                    }
-                }
-            }
-        }*/
 
     }
 

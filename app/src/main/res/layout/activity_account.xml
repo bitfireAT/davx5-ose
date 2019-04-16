@@ -58,6 +58,23 @@
                         android:indeterminate="true"
                         android:visibility="@{safeUnbox(model.cardDavRefreshing) ? View.VISIBLE : View.GONE}"/>
 
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/contact_permissions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        app:cardElevation="8dp"
+                        app:contentPadding="8dp"
+                        android:visibility="@{safeUnbox(model.askForContactsPermissions) ? View.VISIBLE : View.GONE}"
+                        android:focusable="true">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:drawableLeft="@drawable/ic_error_dark"
+                            android:drawablePadding="8dp"
+                            android:text="@string/account_contact_permissions_required"/>
+                    </androidx.cardview.widget.CardView>
+
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/address_books"
                         android:layout_width="match_parent"
@@ -94,6 +111,23 @@
                         android:layout_height="wrap_content"
                         android:indeterminate="true"
                         android:visibility="@{safeUnbox(model.calDavRefreshing) ? View.VISIBLE : View.GONE}"/>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/calendar_permissions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        app:cardElevation="8dp"
+                        app:contentPadding="8dp"
+                        android:visibility="@{model.askForCalendarPermissions.isEmpty() ? View.GONE : View.VISIBLE}"
+                        android:focusable="true">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:drawableLeft="@drawable/ic_error_dark"
+                            android:drawablePadding="8dp"
+                            android:text="@string/account_calendar_permissions_required"/>
+                    </androidx.cardview.widget.CardView>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/calendars"

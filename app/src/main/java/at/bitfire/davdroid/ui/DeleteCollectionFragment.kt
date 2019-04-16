@@ -63,10 +63,7 @@ class DeleteCollectionFragment: DialogFragment() {
             binding.controls.visibility = View.GONE
 
             model.deleteCollection().observe(this, Observer { exception ->
-                if (exception == null)
-                    // reload collection list
-                    (activity as? AccountActivity)?.reload()
-                else
+                if (exception != null)
                     requireFragmentManager().beginTransaction()
                             .add(ExceptionInfoFragment.newInstance(exception, model.account), null)
                             .commit()
