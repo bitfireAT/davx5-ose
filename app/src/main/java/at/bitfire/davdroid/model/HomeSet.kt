@@ -1,6 +1,9 @@
 package at.bitfire.davdroid.model
 
-import androidx.room.*
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
 import okhttp3.HttpUrl
 
 @Entity(tableName = "homeset",

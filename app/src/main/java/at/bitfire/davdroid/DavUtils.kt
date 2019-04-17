@@ -10,7 +10,6 @@ package at.bitfire.davdroid
 
 import android.accounts.Account
 import android.annotation.TargetApi
-import android.content.ContentProviderClient
 import android.content.ContentResolver
 import android.content.Context
 import android.net.ConnectivityManager

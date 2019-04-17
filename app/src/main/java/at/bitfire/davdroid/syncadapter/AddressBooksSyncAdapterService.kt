@@ -45,15 +45,14 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
                 if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(accountSettings))
                     return
 
-                updateLocalAddressBooks(account, syncResult)
-
-                for (addressBookAccount in LocalAddressBook.findAll(context, null, account).map { it.account }) {
-                    Logger.log.log(Level.INFO, "Running sync for address book", addressBookAccount)
-                    val syncExtras = Bundle(extras)
-                    syncExtras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, true)
-                    syncExtras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_BACKOFF, true)
-                    ContentResolver.requestSync(addressBookAccount, ContactsContract.AUTHORITY, syncExtras)
-                }
+                if (updateLocalAddressBooks(account, syncResult))
+                    for (addressBookAccount in LocalAddressBook.findAll(context, null, account).map { it.account }) {
+                        Logger.log.log(Level.INFO, "Running sync for address book", addressBookAccount)
+                        val syncExtras = Bundle(extras)
+                        syncExtras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, true)
+                        syncExtras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_BACKOFF, true)
+                        ContentResolver.requestSync(addressBookAccount, ContactsContract.AUTHORITY, syncExtras)
+                    }
             } catch (e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't sync address books", e)
             }
@@ -61,21 +60,19 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
             Logger.log.info("Address book sync complete")
         }
 
-        private fun updateLocalAddressBooks(account: Account, syncResult: SyncResult) {
+        private fun updateLocalAddressBooks(account: Account, syncResult: SyncResult): Boolean {
             val db = AppDatabase.getInstance(context)
             val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)
 
             val remoteAddressBooks = mutableMapOf<HttpUrl, Collection>()
             if (service != null)
-                for (collection in db.collectionDao().getByService(service.id)) {
+                for (collection in db.collectionDao().getByServiceAndSync(service.id))
                     remoteAddressBooks[collection.url] = collection
-                }
 
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-                if (remoteAddressBooks.isEmpty()) {
+                if (remoteAddressBooks.isEmpty())
                     Logger.log.info("No contacts permission, but no address book selected for synchronization")
-                    return
-                } else {
+                else {
                     // no contacts permission, but address books should be synchronized -> show notification
                     val intent = Intent(context, AccountActivity::class.java)
                     intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
@@ -83,6 +80,7 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
 
                     notifyPermissions(intent)
                 }
+                return false
             }
 
             val contactsProvider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
@@ -90,7 +88,7 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
                 if (contactsProvider == null) {
                     Logger.log.severe("Couldn't access contacts provider")
                     syncResult.databaseError = true
-                    return
+                    return false
                 }
 
                 // delete/update local address books
@@ -121,6 +119,8 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
             } finally {
                 contactsProvider?.closeCompat()
             }
+
+            return true
         }
 
     }

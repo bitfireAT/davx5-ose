@@ -94,6 +94,7 @@ data class Collection(
             var timezone: String? = null
             var supportsVEVENT: Boolean? = null
             var supportsVTODO: Boolean? = null
+            var supportsVJOURNAL: Boolean? = null
             var source: String? = null
             when (type) {
                 Collection.TYPE_ADDRESSBOOK -> {
@@ -107,9 +108,11 @@ data class Collection(
                     if (type == Collection.TYPE_CALENDAR) {
                         supportsVEVENT = true
                         supportsVTODO = true
+                        supportsVJOURNAL = true
                         dav[SupportedCalendarComponentSet::class.java]?.let {
                             supportsVEVENT = it.supportsEvents
                             supportsVTODO = it.supportsTasks
+                            supportsVJOURNAL = it.supportsJournal
                         }
                     } else { // Type.WEBCAL
                         dav[Source::class.java]?.let { source = it.hrefs.firstOrNull() }
@@ -129,6 +132,7 @@ data class Collection(
                     timezone = timezone,
                     supportsVEVENT = supportsVEVENT,
                     supportsVTODO = supportsVTODO,
+                    supportsVJOURNAL = supportsVJOURNAL,
                     source = source
             )
         }

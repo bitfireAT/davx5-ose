@@ -13,7 +13,6 @@ import androidx.test.filters.SmallTest
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.ResourceType
 import at.bitfire.davdroid.HttpClient
-import at.bitfire.davdroid.model.ServiceDB.Collections
 import okhttp3.HttpUrl
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -22,7 +21,7 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
-class CollectionInfoTest {
+class CollectionTest {
 
     private lateinit var httpClient: HttpClient
     private val server = MockWebServer()
@@ -40,7 +39,7 @@ class CollectionInfoTest {
 
     @Test
     @SmallTest
-    fun testFromDavResource() {
+    fun testFromDavResponseAddressBook() {
         // r/w address book
         server.enqueue(MockResponse()
                 .setResponseCode(207)
@@ -55,17 +54,24 @@ class CollectionInfoTest {
                         "</response>" +
                         "</multistatus>"))
 
-        var info: CollectionInfo? = null
+        lateinit var info: Collection
         DavResource(httpClient.okHttpClient, server.url("/"))
                 .propfind(0, ResourceType.NAME) { response, _ ->
-            info = CollectionInfo(response)
+            info = Collection.fromDavResponse(response) ?: throw IllegalArgumentException()
         }
-        assertEquals(CollectionInfo.Type.ADDRESS_BOOK, info?.type)
-        assertTrue(info!!.privWriteContent)
-        assertTrue(info!!.privUnbind)
-        assertEquals("My Contacts", info?.displayName)
-        assertEquals("My Contacts Description", info?.description)
+        assertEquals(Collection.TYPE_ADDRESSBOOK, info.type)
+        assertTrue(info.privWriteContent)
+        assertTrue(info.privUnbind)
+        assertNull(info.supportsVEVENT)
+        assertNull(info.supportsVTODO)
+        assertNull(info.supportsVJOURNAL)
+        assertEquals("My Contacts", info.displayName)
+        assertEquals("My Contacts Description", info.description)
+    }
 
+    @Test
+    @SmallTest
+    fun testFromDavResponseCalendar() {
         // read-only calendar, no display name
         server.enqueue(MockResponse()
                 .setResponseCode(207)
@@ -82,53 +88,21 @@ class CollectionInfoTest {
                         "</response>" +
                         "</multistatus>"))
 
-        info = null
+        lateinit var info: Collection
         DavResource(httpClient.okHttpClient, server.url("/"))
                 .propfind(0, ResourceType.NAME) { response, _ ->
-            info = CollectionInfo(response)
-        }
-        assertEquals(CollectionInfo.Type.CALENDAR, info?.type)
-        assertFalse(info!!.privWriteContent)
-        assertFalse(info!!.privUnbind)
-        assertNull(info?.displayName)
-        assertEquals("My Calendar", info?.description)
-        assertEquals(0xFFFF0000.toInt(), info?.color)
-        assertEquals("tzdata", info?.timeZone)
-        assertTrue(info!!.supportsVEVENT)
-        assertTrue(info!!.supportsVTODO)
-    }
-
-    @Test
-    fun testFromDB() {
-        val values = ContentValues()
-        values.put(Collections.ID, 1)
-        values.put(Collections.SERVICE_ID, 1)
-        values.put(Collections.TYPE, CollectionInfo.Type.CALENDAR.name)
-        values.put(Collections.URL, "http://example.com")
-        values.put(Collections.PRIV_WRITE_CONTENT, 0)
-        values.put(Collections.PRIV_UNBIND, 0)
-        values.put(Collections.DISPLAY_NAME, "display name")
-        values.put(Collections.DESCRIPTION, "description")
-        values.put(Collections.COLOR, 0xFFFF0000)
-        values.put(Collections.TIME_ZONE, "tzdata")
-        values.put(Collections.SUPPORTS_VEVENT, 1)
-        values.put(Collections.SUPPORTS_VTODO, 1)
-        values.put(Collections.SYNC, 1)
-
-        val info = CollectionInfo(values)
-        assertEquals(CollectionInfo.Type.CALENDAR, info.type)
-        assertEquals(1.toLong(), info.id)
-        assertEquals(1.toLong(), info.serviceID)
-        assertEquals(HttpUrl.parse("http://example.com/"), info.url)
+                    info = Collection.fromDavResponse(response) ?: throw IllegalArgumentException()
+                }
+        assertEquals(Collection.TYPE_CALENDAR, info.type)
         assertFalse(info.privWriteContent)
         assertFalse(info.privUnbind)
-        assertEquals("display name", info.displayName)
-        assertEquals("description", info.description)
+        assertNull(info.displayName)
+        assertEquals("My Calendar", info.description)
         assertEquals(0xFFFF0000.toInt(), info.color)
-        assertEquals("tzdata", info.timeZone)
-        assertTrue(info.supportsVEVENT)
-        assertTrue(info.supportsVTODO)
-        assertTrue(info.selected)
+        assertEquals("tzdata", info.timezone)
+        assertTrue(info.supportsVEVENT!!)
+        assertTrue(info.supportsVTODO!!)
+        assertTrue(info.supportsVJOURNAL!!)
     }
 
 }

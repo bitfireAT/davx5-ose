@@ -12,6 +12,9 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId")
     fun getByService(serviceId: Long): List<Collection>
 
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync")
+    fun getByServiceAndSync(serviceId: Long): List<Collection>
+
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type")
     fun observeByServiceAndType(serviceId: Long, type: String): LiveData<List<Collection>>
 

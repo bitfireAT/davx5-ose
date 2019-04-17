@@ -10,14 +10,8 @@ package at.bitfire.davdroid.ui.setup
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.Credentials
-import java.lang.ref.WeakReference
 import java.net.URI
-import java.util.logging.Level
-import kotlin.concurrent.thread
 
 class LoginModel(
         application: Application
