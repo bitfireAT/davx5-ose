@@ -52,7 +52,7 @@ class AccountDetailsFragment: Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = LoginAccountDetailsBinding.inflate(inflater, container, false)
-        v.lifecycleOwner = this
+        v.lifecycleOwner = viewLifecycleOwner
         v.details = model
 
         val config = loginModel.configuration ?: throw IllegalStateException()

@@ -8,14 +8,11 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.model.Credentials
 import java.net.URI
 
-class LoginModel(
-        application: Application
-): AndroidViewModel(application) {
+class LoginModel: ViewModel() {
 
     var baseURI: URI? = null
     var credentials: Credentials? = null

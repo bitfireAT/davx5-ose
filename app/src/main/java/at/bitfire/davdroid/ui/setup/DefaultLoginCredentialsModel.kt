@@ -1,6 +1,7 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.content.Intent
+import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
@@ -29,9 +30,11 @@ class DefaultLoginCredentialsModel: ViewModel() {
         loginWithEmailAddress.value = true
     }
 
+    @MainThread
     fun initialize(intent: Intent) {
         if (initialized)
             return
+        initialized = true
 
         // we've got initial login data
         val givenUrl = intent.getStringExtra(LoginActivity.EXTRA_URL)
@@ -46,8 +49,6 @@ class DefaultLoginCredentialsModel: ViewModel() {
             username.value = givenUsername
         }
         password.value = givenPassword
-
-        initialized = true
     }
 
 }

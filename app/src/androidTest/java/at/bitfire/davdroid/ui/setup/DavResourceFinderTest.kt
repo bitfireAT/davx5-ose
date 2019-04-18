@@ -53,7 +53,7 @@ class DavResourceFinderTest {
         server.start()
 
         val application = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
-        loginModel = LoginModel(application)
+        loginModel = LoginModel()
         loginModel.baseURI = URI.create("/")
         loginModel.credentials = Credentials("mock", "12345")
 

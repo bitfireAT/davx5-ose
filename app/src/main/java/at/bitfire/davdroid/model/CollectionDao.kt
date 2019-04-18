@@ -9,19 +9,19 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE id=:id")
     fun get(id: Long): Collection?
 
-    @Query("SELECT * FROM collection WHERE serviceId=:serviceId")
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId ORDER BY displayName, url")
     fun getByService(serviceId: Long): List<Collection>
 
-    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync")
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync ORDER BY displayName, url")
     fun getByServiceAndSync(serviceId: Long): List<Collection>
 
-    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type")
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type ORDER BY displayName, url")
     fun observeByServiceAndType(serviceId: Long, type: String): LiveData<List<Collection>>
 
-    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND supportsVEVENT AND sync")
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND supportsVEVENT AND sync ORDER BY displayName, url")
     fun getSyncCalendars(serviceId: Long): List<Collection>
 
-    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND supportsVTODO AND sync")
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND supportsVTODO AND sync ORDER BY displayName, url")
     fun getSyncTaskLists(serviceId: Long): List<Collection>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
