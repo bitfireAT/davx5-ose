@@ -28,6 +28,13 @@
                       android:padding="@dimen/activity_margin"
                       android:animateLayoutChanges="true">
 
+            <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:visibility="@{(model.calDavServiceId == null &amp;&amp; model.cardDavServiceId == null) ? View.VISIBLE : View.GONE}"/>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

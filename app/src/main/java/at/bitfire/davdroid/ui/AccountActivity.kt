@@ -545,7 +545,6 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
         fun initialize(account: Account) {
             if (accountName.value != null)
                 return
-
             this.account = account
             accountName.value = account.name
 

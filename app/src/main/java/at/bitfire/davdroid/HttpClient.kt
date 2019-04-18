@@ -11,7 +11,6 @@ package at.bitfire.davdroid
 import android.content.Context
 import android.os.Build
 import android.security.KeyChain
-import at.bitfire.cert4android.CertTlsSocketFactory
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.dav4jvm.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.Constants
@@ -36,10 +35,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
-import javax.net.ssl.KeyManager
-import javax.net.ssl.TrustManagerFactory
-import javax.net.ssl.X509ExtendedKeyManager
-import javax.net.ssl.X509TrustManager
+import javax.net.ssl.*
 
 class HttpClient private constructor(
         val okHttpClient: OkHttpClient,
@@ -220,7 +216,12 @@ class HttpClient private constructor(
                 logger.log(Level.SEVERE, "Couldn't set up provider certificate authentication", e)
             }
 
-            orig.sslSocketFactory(CertTlsSocketFactory(keyManager, trustManager), trustManager)
+            val sslContext = SSLContext.getInstance("TLS")
+            sslContext.init(
+                    if (keyManager != null) arrayOf(keyManager) else null,
+                    arrayOf(trustManager),
+                    null)
+            orig.sslSocketFactory(sslContext.socketFactory, trustManager)
             orig.hostnameVerifier(hostnameVerifier)
 
             return HttpClient(orig.build(), certManager)
@@ -233,7 +234,8 @@ class HttpClient private constructor(
         // use Locale.US because numbers may be encoded as non-ASCII characters in other locales
         private val userAgentDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US)
         private val userAgentDate = userAgentDateFormat.format(Date(BuildConfig.buildTime))
-        private val userAgent = "${BuildConfig.userAgent}/${BuildConfig.VERSION_NAME} ($userAgentDate; dav4jvm; okhttp/${Constants.okhttpVersion}) Android/${Build.VERSION.RELEASE}"
+        private val userAgent = "${BuildConfig.userAgent}/${BuildConfig.VERSION_NAME} ($userAgentDate; dav4jvm; " +
+                "okhttp/${Constants.okhttpVersion}) Android/${Build.VERSION.RELEASE}"
 
         override fun intercept(chain: Interceptor.Chain): Response {
             val locale = Locale.getDefault()

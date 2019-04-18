@@ -103,9 +103,9 @@ dependencies {
     implementation(':dav4jvm') {
         exclude group: 'org.ogce', module: 'xpp3'	// Android comes with its own XmlPullParser
     }
+
     implementation 'com.jaredrummler:colorpicker:1.1.0'
     implementation 'com.mikepenz:aboutlibraries:6.2.3'
-
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.2'
     implementation 'commons-io:commons-io:2.6'
     implementation 'dnsjava:dnsjava:2.1.8'
