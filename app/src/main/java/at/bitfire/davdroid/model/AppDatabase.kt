@@ -9,7 +9,9 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import at.bitfire.davdroid.log.Logger
 
+@Suppress("ClassName")
 @Database(entities = [
     Service::class,
     HomeSet::class,
@@ -30,10 +32,15 @@ abstract class AppDatabase: RoomDatabase() {
         fun getInstance(context: Context): AppDatabase {
             INSTANCE?.let { return it }
 
-            val db = Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "services.database")
-                    .fallbackToDestructiveMigrationFrom(1, 2)
-                    .fallbackToDestructiveMigrationOnDowngrade()
-                    .addMigrations(Migration5_6)
+            val db = Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "services.db")
+                    .addMigrations(
+                            Migration1_2,
+                            Migration2_3,
+                            Migration3_4,
+                            Migration4_5,
+                            Migration5_6
+                    )
+                    .fallbackToDestructiveMigration()   // as a last fallback, recreate database instead of crashing
                     .build()
             INSTANCE = db
 
@@ -164,6 +171,46 @@ abstract class AppDatabase: RoomDatabase() {
         }
     }
 
-    // updates from app database version 2 and below are not supported anymore
+    object Migration2_3: Migration(2, 3) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // We don't have access to the context in a Room migration now, so
+            // we will just drop those settings from old DAVx5 versions.
+            Logger.log.warning("Dropping settings distrustSystemCerts and overrideProxy*")
+
+            /*val edit = PreferenceManager.getDefaultSharedPreferences(context).edit()
+            try {
+                db.query("settings", arrayOf("setting", "value"), null, null, null, null, null).use { cursor ->
+                    while (cursor.moveToNext()) {
+                        when (cursor.getString(0)) {
+                            "distrustSystemCerts" -> edit.putBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, cursor.getInt(1) != 0)
+                            "overrideProxy" -> edit.putBoolean(App.OVERRIDE_PROXY, cursor.getInt(1) != 0)
+                            "overrideProxyHost" -> edit.putString(App.OVERRIDE_PROXY_HOST, cursor.getString(1))
+                            "overrideProxyPort" -> edit.putInt(App.OVERRIDE_PROXY_PORT, cursor.getInt(1))
+
+                            StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED ->
+                                edit.putBoolean(StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, cursor.getInt(1) != 0)
+                            StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED ->
+                                edit.putBoolean(StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED, cursor.getInt(1) != 0)
+                        }
+                    }
+                }
+                db.execSQL("DROP TABLE settings")
+            } finally {
+                edit.apply()
+            }*/
+        }
+    }
+
+    object Migration1_2: Migration(1, 2) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE collections ADD COLUMN type TEXT NOT NULL DEFAULT ''")
+            db.execSQL("ALTER TABLE collections ADD COLUMN source TEXT DEFAULT NULL")
+            db.execSQL("UPDATE collections SET type=(" +
+                        "SELECT CASE service WHEN ? THEN ? ELSE ? END " +
+                        "FROM services WHERE _id=collections.serviceID" +
+                    ")",
+                    arrayOf("caldav", "CALENDAR", "ADDRESS_BOOK"))
+        }
+    }
 
 }
