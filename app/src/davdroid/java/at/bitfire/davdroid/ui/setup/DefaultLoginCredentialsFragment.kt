@@ -34,7 +34,7 @@ class DefaultLoginCredentialsFragment: Fragment() {
         loginModel = ViewModelProviders.of(requireActivity()).get(LoginModel::class.java)
 
         val v = LoginCredentialsFragmentBinding.inflate(inflater, container, false)
-        v.lifecycleOwner = this
+        v.lifecycleOwner = viewLifecycleOwner
         v.model = model
 
         // initialize model on first call
