@@ -662,8 +662,8 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     }
 
     class ContactsPermissionsCalculator(
-            val context: Context,
-            val addressBooks: LiveData<List<Collection>>
+            private val context: Context,
+            private val addressBooks: LiveData<List<Collection>>
     ): MediatorLiveData<Boolean>() {
 
         companion object {
@@ -698,8 +698,8 @@ class AccountActivity: AppCompatActivity(), Toolbar.OnMenuItemClickListener, Pop
     }
 
     class CalendarPermissionsCalculator(
-            val context: Context,
-            val serviceId: LiveData<Long>
+            private val context: Context,
+            private val serviceId: LiveData<Long>
     ): MediatorLiveData<List<String>>() {
 
         companion object {
