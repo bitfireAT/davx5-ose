@@ -10,22 +10,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/sync_now"
-          android:icon="@drawable/ic_sync_action"
-          android:title="@string/account_synchronize_now"
-          app:showAsAction="always"/>
+    <group android:orderInCategory="100">
 
-    <item android:id="@+id/settings"
-          android:icon="@drawable/ic_settings_action"
-          android:title="@string/account_settings"
-          app:showAsAction="ifRoom"/>
+        <item android:id="@+id/settings"
+              android:icon="@drawable/ic_settings_action"
+              android:title="@string/account_settings"
+              app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/rename_account"
-          android:title="@string/account_rename"
-          app:showAsAction="never"/>
+        <item android:id="@+id/rename_account"
+              android:title="@string/account_rename"
+              app:showAsAction="never"/>
 
-    <item android:id="@+id/delete_account"
-          android:title="@string/account_delete"
-          app:showAsAction="never"/>
+        <item android:id="@+id/delete_account"
+              android:title="@string/account_delete"
+              app:showAsAction="never"/>
+
+    </group>
 
 </menu>

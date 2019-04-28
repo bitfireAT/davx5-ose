@@ -145,6 +145,8 @@ data class Collection(
     var confirmed: Boolean = false
 
 
+    // calculated properties
     fun title() = displayName ?: DavUtils.lastSegmentOfUrl(url)
+    fun readOnly() = forceReadOnly || !privWriteContent
 
 }

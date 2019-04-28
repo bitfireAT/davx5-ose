@@ -7,12 +7,15 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/refresh_address_books"
-          android:title="@string/account_refresh_address_book_list"/>
+    <item android:id="@+id/refresh"
+        android:title="@string/account_refresh_address_book_list"
+        app:showAsAction="never"/>
 
     <item android:id="@+id/create_address_book"
-          android:title="@string/account_create_new_address_book"/>
+        android:title="@string/account_create_new_address_book"
+        app:showAsAction="never"/>
 
 </menu>

@@ -27,6 +27,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.account.AccountActivity2
 import kotlinx.android.synthetic.main.account_list_item.view.*
 
 class AccountListFragment: ListFragment() {
@@ -50,8 +51,8 @@ class AccountListFragment: ListFragment() {
         listView.choiceMode = AbsListView.CHOICE_MODE_SINGLE
         listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
             val account = listAdapter!!.getItem(position) as Account
-            val intent = Intent(activity, AccountActivity::class.java)
-            intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+            val intent = Intent(activity, AccountActivity2::class.java)
+            intent.putExtra(AccountActivity2.EXTRA_ACCOUNT, account)
             startActivity(intent)
         }
     }

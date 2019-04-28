@@ -19,13 +19,13 @@
               android:gravity="center_vertical">
 
     <CheckBox
+        android:id="@+id/sync"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="4dp"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:clickable="false"
-        android:id="@+id/checked"/>
+        android:clickable="false" />
 
     <LinearLayout android:layout_width="0dp"
                   android:layout_weight="1"

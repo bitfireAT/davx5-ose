@@ -88,6 +88,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
         }
 
         if (ok) {
+            args.putParcelable(CreateCollectionFragment.ARG_ACCOUNT, model.account)
             args.putString(CreateCollectionFragment.ARG_TYPE, Collection.TYPE_ADDRESSBOOK)
             val frag = CreateCollectionFragment()
             frag.arguments = args

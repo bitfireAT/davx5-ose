@@ -1,6 +1,7 @@
 package at.bitfire.davdroid.model
 
 import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import androidx.room.*
 
 @Dao
@@ -12,11 +13,20 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId ORDER BY displayName, url")
     fun getByService(serviceId: Long): List<Collection>
 
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId ORDER BY displayName, url")
+    fun pageByService(serviceId: Long): DataSource.Factory<Int, Collection>
+
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync ORDER BY displayName, url")
     fun getByServiceAndSync(serviceId: Long): List<Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type ORDER BY displayName, url")
     fun observeByServiceAndType(serviceId: Long, type: String): LiveData<List<Collection>>
+
+    /*@Query("SELECT COUNT(*) FROM collection WHERE serviceId=:serviceId AND type=:type AND sync")
+    fun observeHasSyncByServiceAndType(serviceId: Long, type: String): LiveData<Boolean>*/
+
+    @Query("SELECT COUNT(*) FROM collection WHERE serviceId=:serviceId AND sync")
+    fun observeHasSyncByService(serviceId: Long): LiveData<Boolean>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND supportsVEVENT AND sync ORDER BY displayName, url")
     fun getSyncCalendars(serviceId: Long): List<Collection>

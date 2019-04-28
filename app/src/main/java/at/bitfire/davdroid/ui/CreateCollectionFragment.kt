@@ -73,11 +73,12 @@ class CreateCollectionFragment: DialogFragment() {
         )
 
         model.createCollection().observe(this, Observer { exception ->
-            if (exception != null)
+            if (exception != null) {
+                dismiss()
                 requireFragmentManager().beginTransaction()
                         .add(ExceptionInfoFragment.newInstance(exception, model.account), null)
                         .commit()
-            else
+            } else
                 requireActivity().finish()
         })
     }
@@ -133,7 +134,7 @@ class CreateCollectionFragment: DialogFragment() {
             return result
         }
 
-        fun generateXml(): String {
+        private fun generateXml(): String {
             val writer = StringWriter()
             try {
                 val serializer = XmlUtils.newSerializer()
