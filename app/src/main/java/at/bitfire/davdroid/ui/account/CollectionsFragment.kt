@@ -7,8 +7,10 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.view.*
-import android.widget.PopupMenu
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.paging.PagedList
@@ -57,12 +59,12 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         val adapter = createAdapter()
         view.list.layoutManager = LinearLayoutManager(requireActivity())
         view.list.adapter = adapter
-        model.collections.observe(viewLifecycleOwner, Observer { addressBooks ->
-            adapter.submitList(addressBooks)
+        model.collections.observe(viewLifecycleOwner, Observer { data ->
+            adapter.submitList(data)
         })
     }
 
-    protected abstract fun createAdapter(): CollectionAdapter<*>
+    protected abstract fun createAdapter(): CollectionAdapter
 
     override fun onOptionsItemSelected(item: MenuItem) =
             when (item.itemId) {
@@ -79,6 +81,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     }
 
 
+
     abstract class CollectionViewHolder(
             parent: ViewGroup,
             itemLayout: Int,
@@ -93,9 +96,9 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         }
     }
 
-    abstract class CollectionAdapter<T: CollectionViewHolder>(
+    abstract class CollectionAdapter(
             protected val accountModel: AccountActivity2.Model
-    ): PagedListAdapter<Collection, T>(DIFF_CALLBACK) {
+    ): PagedListAdapter<Collection, CollectionViewHolder>(DIFF_CALLBACK) {
 
         companion object {
             private val DIFF_CALLBACK = object: DiffUtil.ItemCallback<Collection>() {
@@ -107,7 +110,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             }
         }
 
-        override fun onBindViewHolder(holder: T, position: Int) {
+        override fun onBindViewHolder(holder: CollectionViewHolder, position: Int) {
             getItem(position)?.let { item ->
                 holder.bindTo(item)
             }

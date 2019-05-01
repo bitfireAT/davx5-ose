@@ -115,8 +115,9 @@
     <string name="app_settings_reset_hints_success">All hints will be shown again</string>
 
     <!-- AccountActivity -->
-    <string name="account_contact_permissions_required">Contact permissions are required to synchronize address books.</string>
-    <string name="account_calendar_permissions_required">Calendar/task permissions are required to synchronize with the CalDAV service.</string>
+    <string name="account_carddav">CardDAV</string>
+    <string name="account_caldav">CalDAV</string>
+    <string name="account_webcal">Webcal</string>
     <string name="account_synchronize_now">Synchronize now</string>
     <string name="account_synchronizing_now">Synchronizing now</string>
     <string name="account_settings">Account settings</string>
@@ -126,9 +127,6 @@
     <string name="account_delete">Delete account</string>
     <string name="account_delete_confirmation_title">Really delete account?</string>
     <string name="account_delete_confirmation_text">All local copies of address books, calendars and task lists will be deleted.</string>
-    <string name="account_carddav">CardDAV</string>
-    <string name="account_caldav">CalDAV</string>
-    <string name="account_webcal">Webcal</string>
     <string name="account_synchronize_this_collection">synchronize this collection</string>
     <string name="account_read_only">read-only</string>
     <string name="account_calendar">calendar</string>

@@ -15,14 +15,17 @@
         <item android:id="@+id/settings"
               android:icon="@drawable/ic_settings_action"
               android:title="@string/account_settings"
+              android:onClick="openAccountSettings"
               app:showAsAction="ifRoom"/>
 
         <item android:id="@+id/rename_account"
               android:title="@string/account_rename"
+              android:onClick="renameAccount"
               app:showAsAction="never"/>
 
         <item android:id="@+id/delete_account"
               android:title="@string/account_delete"
+              android:onClick="deleteAccount"
               app:showAsAction="never"/>
 
     </group>

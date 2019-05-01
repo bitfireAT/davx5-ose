@@ -2,30 +2,39 @@ package at.bitfire.davdroid.ui.account
 
 import android.Manifest
 import android.accounts.Account
+import android.accounts.AccountManager
+import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Menu
+import android.view.MenuItem
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.lifecycle.*
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.Service
+import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.ical4android.TaskProvider
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_account2.*
 import java.util.concurrent.Executors
+import java.util.logging.Level
 import kotlin.concurrent.thread
 
-class AccountActivity2 : AppCompatActivity() {
+class AccountActivity2: AppCompatActivity() {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
@@ -43,10 +52,17 @@ class AccountActivity2 : AppCompatActivity() {
         }
 
         setContentView(R.layout.activity_account2)
-        model.cardDavService.observe(this, Observer { cardDavService ->
-            tab_layout.setupWithViewPager(view_pager)
-            view_pager.adapter = TabsAdapter(supportFragmentManager,
-                    cardDavService, model.calDavService.value)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        tab_layout.setupWithViewPager(view_pager)
+        val tabsAdapter = TabsAdapter(this)
+        view_pager.adapter = tabsAdapter
+        model.cardDavService.observe(this, Observer {
+            tabsAdapter.cardDavSvcId = it
+        })
+        model.calDavService.observe(this, Observer {
+            tabsAdapter.calDavSvcId = it
         })
 
         model.askForPermissions.observe(this, Observer { permissions ->
@@ -65,29 +81,104 @@ class AccountActivity2 : AppCompatActivity() {
         return true
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (grantResults.contains(PackageManager.PERMISSION_GRANTED))
-            model.gotPermission()
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        val itemRename = menu.findItem(R.id.rename_account)
+        // renameAccount is available for API level 21+
+        itemRename.isVisible = Build.VERSION.SDK_INT >= 21
+        return super.onPrepareOptionsMenu(menu)
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (grantResults.contains(PackageManager.PERMISSION_GRANTED))
+            model.gotPermissions()
+    }
+
+
+    // menu actions
+
+    fun renameAccount(menuItem: MenuItem) {
+        if (Build.VERSION.SDK_INT >= 21)
+            RenameAccountFragment.newInstance(model.account).show(supportFragmentManager, null)
+    }
+
+    fun deleteAccount(menuItem: MenuItem) {
+        AlertDialog.Builder(this)
+                .setIcon(R.drawable.ic_error_dark)
+                .setTitle(R.string.account_delete_confirmation_title)
+                .setMessage(R.string.account_delete_confirmation_text)
+                .setNegativeButton(android.R.string.no, null)
+                .setPositiveButton(android.R.string.yes) { _, _ ->
+                    deleteAccount()
+                }
+                .show()
+    }
+
+    private fun deleteAccount() {
+        val accountManager = AccountManager.get(this)
+
+        if (Build.VERSION.SDK_INT >= 22)
+            accountManager.removeAccount(model.account, this, { future ->
+                try {
+                    if (future.result.getBoolean(AccountManager.KEY_BOOLEAN_RESULT))
+                        Handler(Looper.getMainLooper()).post {
+                            finish()
+                        }
+                } catch(e: Exception) {
+                    Logger.log.log(Level.SEVERE, "Couldn't remove account", e)
+                }
+            }, null)
+        else
+            accountManager.removeAccount(model.account, { future ->
+                try {
+                    if (future.result)
+                        Handler(Looper.getMainLooper()).post {
+                            finish()
+                        }
+                } catch (e: Exception) {
+                    Logger.log.log(Level.SEVERE, "Couldn't remove account", e)
+                }
+            }, null)
+    }
+
+
+    // adapter
+
     class TabsAdapter(
-            fm: FragmentManager,
-            private val cardDavService: Long?,
-            private val calDavService: Long?
-    ): FragmentPagerAdapter(fm) {
+            val activity: AppCompatActivity
+    ): FragmentPagerAdapter(activity.supportFragmentManager) {
+        
+        var cardDavSvcId: Long? = null
+            set(value) {
+                field = value
+                recalculate()
+            }
+        var calDavSvcId: Long? = null
+            set(value) {
+                field = value
+                recalculate()
+            }
 
         private var idxContacts: Int? = null
         private var idxEventsTasks: Int? = null
         private var idxWebcals: Int? = null
 
-        init {
+        private fun recalculate() {
             var currentIndex = 0
-            if (cardDavService != null)
-                idxContacts = currentIndex++
-            if (calDavService != null) {
+
+            idxContacts = if (cardDavSvcId != null)
+                currentIndex++
+            else
+                null
+
+            if (calDavSvcId != null) {
                 idxEventsTasks = currentIndex++
                 idxWebcals = currentIndex
+            } else {
+                idxEventsTasks = null
+                idxWebcals = null
             }
+
+            notifyDataSetChanged()
         }
 
         override fun getCount() =
@@ -100,14 +191,14 @@ class AccountActivity2 : AppCompatActivity() {
                 idxContacts -> {
                     val frag = AddressBooksFragment()
                     val args = Bundle(1)
-                    args.putLong(CollectionsFragment.EXTRA_SERVICE_ID, cardDavService!!)
+                    args.putLong(CollectionsFragment.EXTRA_SERVICE_ID, cardDavSvcId!!)
                     frag.arguments = args
                     return frag
                 }
                 idxEventsTasks -> {
                     val frag = CalendarsFragment()
                     val args = Bundle(1)
-                    args.putLong(CollectionsFragment.EXTRA_SERVICE_ID, calDavService!!)
+                    args.putLong(CollectionsFragment.EXTRA_SERVICE_ID, calDavSvcId!!)
                     frag.arguments = args
                     return frag
                 }
@@ -117,15 +208,18 @@ class AccountActivity2 : AppCompatActivity() {
             throw IllegalArgumentException()
         }
 
-        override fun getPageTitle(position: Int) =
+        override fun getPageTitle(position: Int): String =
                 when (position) {
-                    idxContacts -> "Address books"
-                    idxEventsTasks -> "Calendars"
-                    idxWebcals -> "Webcal"
+                    idxContacts -> activity.getString(R.string.account_carddav)
+                    idxEventsTasks -> activity.getString(R.string.account_caldav)
+                    idxWebcals -> activity.getString(R.string.account_webcal)
                     else -> throw IllegalArgumentException()
                 }
+
     }
 
+
+    // model
 
     class Model(application: Application): AndroidViewModel(application) {
 
@@ -136,13 +230,16 @@ class AccountActivity2 : AppCompatActivity() {
         private val db = AppDatabase.getInstance(application)
         private val executor = Executors.newSingleThreadExecutor()
 
-        var calDavService = MutableLiveData<Long>()
         val cardDavService = MutableLiveData<Long>()
+        val calDavService = MutableLiveData<Long>()
 
-        val hasActiveAddressBooks: LiveData<Boolean> = Transformations.switchMap(cardDavService) { cardDavId ->
+        private val needContactPermissions: LiveData<Boolean> = Transformations.switchMap(cardDavService) { cardDavId ->
             db.collectionDao().observeHasSyncByService(cardDavId)
         }
-        val askForPermissions = PermissionCalculator(application, calDavService, hasActiveAddressBooks)
+        private val needCalendarPermissions: LiveData<Boolean> = Transformations.map(calDavService) { calDavId ->
+            calDavId != null
+        }
+        val askForPermissions = PermissionCalculator(application, needContactPermissions, needCalendarPermissions)
 
 
         @MainThread
@@ -154,12 +251,13 @@ class AccountActivity2 : AppCompatActivity() {
             this.account = account
 
             thread {
-                calDavService.postValue(db.serviceDao().getIdByAccountAndType(account.name, Service.TYPE_CARDDAV))
                 cardDavService.postValue(db.serviceDao().getIdByAccountAndType(account.name, Service.TYPE_CARDDAV))
+                calDavService.postValue(db.serviceDao().getIdByAccountAndType(account.name, Service.TYPE_CALDAV))
+                //servicesLoaded.postValue(null)
             }
         }
 
-        fun gotPermission() {
+        fun gotPermissions() {
             askForPermissions.calculate()
         }
 
@@ -179,8 +277,8 @@ class AccountActivity2 : AppCompatActivity() {
 
     class PermissionCalculator(
             val context: Context,
-            calDavService: LiveData<Long>,
-            hasActiveAddressBooks: LiveData<Boolean>
+            needContactPermissions: LiveData<Boolean>,
+            needCalendarPermissions: LiveData<Boolean>
     ): MediatorLiveData<List<String>>() {
 
         companion object {
@@ -189,39 +287,49 @@ class AccountActivity2 : AppCompatActivity() {
                     Manifest.permission.WRITE_CONTACTS
             )
             val calendarPermissions = arrayOf(
-                Manifest.permission.READ_CALENDAR,
-                Manifest.permission.WRITE_CALENDAR
+                    Manifest.permission.READ_CALENDAR,
+                    Manifest.permission.WRITE_CALENDAR
+            )
+            val taskPermissions = arrayOf(
+                    TaskProvider.PERMISSION_READ_TASKS,
+                    TaskProvider.PERMISSION_WRITE_TASKS
             )
         }
 
-        var needCalendarAccess: Boolean? = null
-        var needContactsAccess: Boolean? = null
+        private var usesContacts: Boolean? = null
+        private var usesCalendars: Boolean? = null
 
         init {
-            addSource(calDavService, Observer {
-                needCalendarAccess = it != null
+            addSource(needContactPermissions, Observer {
+                usesContacts = it
                 calculate()
             })
-            addSource(hasActiveAddressBooks, Observer {
-                needContactsAccess = it
+            addSource(needCalendarPermissions, Observer {
+                usesCalendars = it
                 calculate()
             })
         }
 
         fun calculate() {
-            val calendar = needCalendarAccess ?: return
-            val contacts = needContactsAccess ?: return
+            val contacts = usesContacts ?: return
+            val calendar = usesCalendars ?: return
 
             val required = mutableListOf<String>()
             if (contacts)
                 required.addAll(contactPermissions)
-            if (calendar)
-                required.addAll(calendarPermissions)
 
-            val askFor = required.filter { permission ->
-                ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_DENIED
+            if (calendar) {
+                required.addAll(calendarPermissions)
+                if (LocalTaskList.tasksProviderAvailable(context))
+                    required.addAll(taskPermissions)
             }
-            postValue(askFor)
+
+            // only ask for permissions which are not granted
+            val askFor = required.filter {
+                ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_DENIED
+            }
+            if (value != askFor)
+                value = askFor
         }
 
     }

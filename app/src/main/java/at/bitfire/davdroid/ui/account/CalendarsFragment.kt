@@ -28,8 +28,7 @@ class CalendarsFragment: CollectionsFragment() {
         return false
     }
 
-    override fun createAdapter(): CollectionAdapter<*> =
-            CalendarAdapter(accountModel)
+    override fun createAdapter(): CollectionAdapter = CalendarAdapter(accountModel)
 
 
     class CalendarViewHolder(
@@ -66,7 +65,7 @@ class CalendarsFragment: CollectionsFragment() {
 
     class CalendarAdapter(
             accountModel: AccountActivity2.Model
-    ): CollectionAdapter<CalendarViewHolder>(accountModel) {
+    ): CollectionAdapter(accountModel) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
                 CalendarViewHolder(parent, accountModel)

@@ -1,4 +1,4 @@
-package at.bitfire.davdroid.ui
+package at.bitfire.davdroid.ui.account
 
 import android.Manifest
 import android.accounts.Account
@@ -41,7 +41,7 @@ class RenameAccountFragment: DialogFragment() {
 
     companion object {
 
-        const val ARG_ACCOUNT = "account"
+        private const val ARG_ACCOUNT = "account"
 
         fun newInstance(account: Account): RenameAccountFragment {
             val fragment = RenameAccountFragment()

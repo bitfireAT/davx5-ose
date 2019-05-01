@@ -30,8 +30,7 @@ class AddressBooksFragment: CollectionsFragment() {
         return false
     }
 
-    override fun createAdapter(): CollectionAdapter<*> =
-            AddressBookAdapter(accountModel)
+    override fun createAdapter() = AddressBookAdapter(accountModel)
 
 
     class AddressBookViewHolder(
@@ -89,10 +88,10 @@ class AddressBooksFragment: CollectionsFragment() {
 
     class AddressBookAdapter(
             accountModel: AccountActivity2.Model
-    ): CollectionAdapter<AddressBookViewHolder>(accountModel) {
+    ): CollectionAdapter(accountModel) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-                AddressBookViewHolder(parent, accountModel)
+            AddressBookViewHolder(parent, accountModel)
 
     }
 

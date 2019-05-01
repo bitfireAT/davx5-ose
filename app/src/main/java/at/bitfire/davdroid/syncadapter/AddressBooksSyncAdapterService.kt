@@ -21,7 +21,7 @@ import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.AccountActivity
+import at.bitfire.davdroid.ui.account.AccountActivity2
 import okhttp3.HttpUrl
 import java.util.logging.Level
 
@@ -74,8 +74,8 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
                     Logger.log.info("No contacts permission, but no address book selected for synchronization")
                 else {
                     // no contacts permission, but address books should be synchronized -> show notification
-                    val intent = Intent(context, AccountActivity::class.java)
-                    intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+                    val intent = Intent(context, AccountActivity2::class.java)
+                    intent.putExtra(AccountActivity2.EXTRA_ACCOUNT, account)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
                     notifyPermissions(intent)

@@ -24,9 +24,9 @@ import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.AccountActivity
 import at.bitfire.davdroid.ui.AccountSettingsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.account.AccountActivity2
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level
@@ -84,8 +84,8 @@ abstract class SyncAdapterService: Service() {
             Logger.log.log(Level.WARNING, "Security exception when opening content provider for $authority")
             syncResult.databaseError = true
 
-            val intent = Intent(context, AccountActivity::class.java)
-            intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+            val intent = Intent(context, AccountActivity2::class.java)
+            intent.putExtra(AccountActivity2.EXTRA_ACCOUNT, account)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
             notifyPermissions(intent)
@@ -106,7 +106,7 @@ abstract class SyncAdapterService: Service() {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 &&
                         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         val intent = Intent(context, AccountSettingsActivity::class.java)
-                        intent.putExtra(AccountActivity.EXTRA_ACCOUNT, settings.account)
+                        intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, settings.account)
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
                         notifyPermissions(intent)
