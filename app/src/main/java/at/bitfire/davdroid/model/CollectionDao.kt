@@ -49,8 +49,4 @@ interface CollectionDao {
     @Delete
     fun delete(collection: Collection)
 
-    @Query("DELETE FROM collection WHERE serviceId=:serviceId")
-    fun deleteByService(serviceId: Long)
-
-
 }

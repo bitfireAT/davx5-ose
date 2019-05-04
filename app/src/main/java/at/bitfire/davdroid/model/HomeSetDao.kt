@@ -1,10 +1,7 @@
 package at.bitfire.davdroid.model
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface HomeSetDao {
@@ -21,7 +18,7 @@ interface HomeSetDao {
     @Insert
     fun insert(homeSets: List<HomeSet>)
 
-    @Query("DELETE FROM homeset WHERE serviceId=:serviceId")
-    fun deleteByService(serviceId: Long)
+    @Delete
+    fun delete(homeSet: HomeSet)
 
 }

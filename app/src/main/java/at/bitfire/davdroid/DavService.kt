@@ -243,13 +243,52 @@ class DavService: android.app.Service() {
         }
 
         @Transaction
-        fun saveResults() {
-            homeSetDao.deleteByService(serviceId)
-            homeSetDao.insert(homeSets.map { HomeSet(0, serviceId, it) })
+        fun saveHomesets() {
+            val oldHomesets = homeSetDao.getByService(serviceId)
+            oldHomesets.forEach { oldHomeset ->
+                val url = oldHomeset.url
+                if (homeSets.contains(url))
+                    // URL is the same in oldHomesets and newHomesets, remove from "homesets" (which will be added later)
+                    homeSets.remove(url)
+                else
+                    // URL is not in newHomesets, delete from database
+                    homeSetDao.delete(oldHomeset)
+            }
+            // insert new homesets
+            homeSetDao.insert(homeSets.map { url ->
+                HomeSet(0, serviceId, url)
+            })
+        }
 
-            collectionDao.deleteByService(serviceId)
-            val records = collections.values.toList()
-            collectionDao.insert(records.onEach { it.serviceId = serviceId })
+        @Transaction
+        fun saveCollections() {
+            val oldCollections = collectionDao.getByService(serviceId)
+            oldCollections.forEach { oldCollection ->
+                val url = oldCollection.url
+                val matchingNewCollection = collections[url]
+                if (matchingNewCollection != null) {
+                    // old URL exists in newCollections, update database if content has been changed
+                    matchingNewCollection.id = oldCollection.id
+                    matchingNewCollection.serviceId = oldCollection.serviceId
+                    if (matchingNewCollection == oldCollection) {
+                        collectionDao.update(matchingNewCollection)
+                        // remove from "collections" (which will be added later)
+                        collections.remove(url)
+                    }
+                } else
+                    // URL is not in newCollections, delete from database
+                    collectionDao.delete(oldCollection)
+            }
+            // insert new collections
+            collections.forEach { (_, collection) ->
+                collection.serviceId = serviceId
+            }
+            collectionDao.insert(collections.values.toList())
+        }
+
+        fun saveResults() {
+            saveHomesets()
+            saveCollections()
         }
 
         try {
