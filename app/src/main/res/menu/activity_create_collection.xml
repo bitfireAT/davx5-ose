@@ -10,7 +10,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/create_calendar"
+    <item android:id="@+id/create"
           android:title="@string/create_collection_create"
           android:onClick="onCreateCollection"
           app:showAsAction="always"/>

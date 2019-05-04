@@ -4,7 +4,6 @@ import android.content.Intent
 import android.view.*
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.ui.CreateCalendarActivity
 import kotlinx.android.synthetic.main.account_caldav_item.view.*
@@ -18,7 +17,7 @@ class CalendarsFragment: CollectionsFragment() {
         if (super.onOptionsItemSelected(item))
             return true
 
-        if (item.itemId == R.id.create_calendar) {
+        if (item.itemId == R.id.create) {
             val intent = Intent(requireActivity(), CreateCalendarActivity::class.java)
             intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, accountModel.account)
             startActivity(intent)
@@ -37,8 +36,6 @@ class CalendarsFragment: CollectionsFragment() {
     ): CollectionViewHolder(parent, R.layout.account_caldav_item, accountModel) {
 
         override fun bindTo(item: Collection) {
-            super.bindTo(item)
-
             val v = itemView
             v.color.setBackgroundColor(item.color ?: Constants.DAVDROID_GREEN_RGBA)
 
@@ -56,9 +53,10 @@ class CalendarsFragment: CollectionsFragment() {
             v.events.visibility = if (item.supportsVEVENT == true) View.VISIBLE else View.GONE
             v.tasks.visibility = if (item.supportsVTODO == true) View.VISIBLE else View.GONE
 
-            v.action_overflow.setOnClickListener {
-                Logger.log.info("Action click")
+            itemView.setOnClickListener {
+                accountModel.toggleSync(item)
             }
+            v.action_overflow.setOnClickListener(CollectionPopupListener(accountModel, item))
         }
 
     }

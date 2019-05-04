@@ -2,13 +2,9 @@ package at.bitfire.davdroid.ui.account
 
 import android.content.Intent
 import android.view.*
-import android.widget.PopupMenu
-import androidx.appcompat.app.AppCompatActivity
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.Collection
-import at.bitfire.davdroid.ui.CollectionInfoFragment
 import at.bitfire.davdroid.ui.CreateAddressBookActivity
-import at.bitfire.davdroid.ui.DeleteCollectionFragment
 import kotlinx.android.synthetic.main.account_carddav_item.view.*
 
 class AddressBooksFragment: CollectionsFragment() {
@@ -38,11 +34,7 @@ class AddressBooksFragment: CollectionsFragment() {
             accountModel: AccountActivity2.Model
     ): CollectionViewHolder(parent, R.layout.account_carddav_item, accountModel) {
 
-        private val fragmentManager = (parent.context as AppCompatActivity).supportFragmentManager
-
         override fun bindTo(item: Collection) {
-            super.bindTo(item)
-
             val v = itemView
             v.sync.isChecked = item.sync
             v.title.text = item.title()
@@ -56,34 +48,11 @@ class AddressBooksFragment: CollectionsFragment() {
 
             v.read_only.visibility = if (item.readOnly()) View.VISIBLE else View.GONE
 
-            v.action_overflow.setOnClickListener { anchor ->
-                val popup = PopupMenu(v.context, anchor, Gravity.RIGHT)
-                popup.inflate(R.menu.account_collection_operations)
-
-                with(popup.menu.findItem(R.id.force_read_only)) {
-                    if (item.privWriteContent)
-                        isChecked = item.forceReadOnly
-                    else
-                        isVisible = false
-                }
-                popup.menu.findItem(R.id.delete_collection).isVisible = item.privUnbind
-
-                popup.setOnMenuItemClickListener { menuItem ->
-                    when (menuItem.itemId) {
-                        R.id.force_read_only -> {
-                            accountModel.toggleReadOnly(item)
-                        }
-                        R.id.properties ->
-                            CollectionInfoFragment.newInstance(item.id).show(fragmentManager, null)
-                        R.id.delete_collection ->
-                            DeleteCollectionFragment.newInstance(accountModel.account, item.id).show(fragmentManager, null)
-                    }
-                    true
-                }
-                popup.show()
+            itemView.setOnClickListener {
+                accountModel.toggleSync(item)
             }
+            v.action_overflow.setOnClickListener(CollectionPopupListener(accountModel, item))
         }
-
     }
 
     class AddressBookAdapter(

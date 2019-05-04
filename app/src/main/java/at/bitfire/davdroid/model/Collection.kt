@@ -47,7 +47,7 @@ data class Collection(
     var supportsVJOURNAL: Boolean? = null,
 
     /** Webcal subscription source URL */
-    var source: String? = null,
+    var source: HttpUrl? = null,
 
     /** whether this collection has been selected for synchronization */
     var sync: Boolean = false
@@ -95,7 +95,7 @@ data class Collection(
             var supportsVEVENT: Boolean? = null
             var supportsVTODO: Boolean? = null
             var supportsVJOURNAL: Boolean? = null
-            var source: String? = null
+            var source: HttpUrl? = null
             when (type) {
                 Collection.TYPE_ADDRESSBOOK -> {
                     dav[AddressbookDescription::class.java]?.let { description = it.description }
@@ -115,7 +115,7 @@ data class Collection(
                             supportsVJOURNAL = it.supportsJournal
                         }
                     } else { // Type.WEBCAL
-                        dav[Source::class.java]?.let { source = it.hrefs.firstOrNull() }
+                        dav[Source::class.java]?.let { source = it.hrefs.firstOrNull()?.let { HttpUrl.parse(it) } }
                         supportsVEVENT = true
                     }
                 }

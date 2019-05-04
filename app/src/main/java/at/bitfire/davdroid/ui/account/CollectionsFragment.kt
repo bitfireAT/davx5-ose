@@ -7,10 +7,9 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.PopupMenu
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.paging.PagedList
@@ -24,12 +23,15 @@ import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.ui.CollectionInfoFragment
+import at.bitfire.davdroid.ui.DeleteCollectionFragment
 import kotlinx.android.synthetic.main.account_addressbooks.view.*
 
 abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     companion object {
         const val EXTRA_SERVICE_ID = "serviceId"
+        const val EXTRA_COLLECTION_TYPE = "collectionType"
     }
 
     lateinit var accountModel: AccountActivity2.Model
@@ -40,7 +42,10 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
         accountModel = ViewModelProviders.of(requireActivity()).get(AccountActivity2.Model::class.java)
         model = ViewModelProviders.of(this).get(Model::class.java)
-        model.initialize(arguments?.getLong(EXTRA_SERVICE_ID) ?: throw IllegalArgumentException())
+        model.initialize(
+                arguments?.getLong(EXTRA_SERVICE_ID) ?: throw IllegalArgumentException("EXTRA_SERVICE_ID required"),
+                arguments?.getString(EXTRA_COLLECTION_TYPE) ?: throw IllegalArgumentException("EXTRA_COLLECTION_TYPE required")
+        )
 
         setHasOptionsMenu(true)
     }
@@ -89,11 +94,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     ): RecyclerView.ViewHolder(
             LayoutInflater.from(parent.context).inflate(itemLayout, parent, false)
     ) {
-        open fun bindTo(item: Collection) {
-            itemView.setOnClickListener {
-                accountModel.toggleSync(item)
-            }
-        }
+        abstract fun bindTo(item: Collection)
     }
 
     abstract class CollectionAdapter(
@@ -118,15 +119,58 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
     }
 
+    class CollectionPopupListener(
+            private val accountModel: AccountActivity2.Model,
+            private val item: Collection
+    ): View.OnClickListener {
+
+        override fun onClick(anchor: View) {
+            val fragmentManager = (anchor.context as AppCompatActivity).supportFragmentManager
+            val popup = PopupMenu(anchor.context, anchor, Gravity.RIGHT)
+            popup.inflate(R.menu.account_collection_operations)
+
+            with(popup.menu.findItem(R.id.force_read_only)) {
+                if (item.type == Collection.TYPE_WEBCAL)
+                    // Webcal collections are always read-only
+                    isVisible = false
+                else {
+                    // non-Webcal collection
+                    if (item.privWriteContent)
+                        isChecked = item.forceReadOnly
+                    else
+                        isVisible = false
+                }
+            }
+            popup.menu.findItem(R.id.delete_collection).isVisible = item.privUnbind
+
+            popup.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.force_read_only -> {
+                        accountModel.toggleReadOnly(item)
+                    }
+                    R.id.properties ->
+                        CollectionInfoFragment.newInstance(item.id).show(fragmentManager, null)
+                    R.id.delete_collection ->
+                        DeleteCollectionFragment.newInstance(accountModel.account, item.id).show(fragmentManager, null)
+                }
+                true
+            }
+            popup.show()
+        }
+
+    }
+
 
     class Model(application: Application): AndroidViewModel(application), DavService.RefreshingStatusListener {
 
         private val db = AppDatabase.getInstance(application)
+
         val serviceId = MutableLiveData<Long>()
+        lateinit var collectionType: String
 
         val collections: LiveData<PagedList<Collection>> =
                 Transformations.switchMap(serviceId) { service ->
-                    db.collectionDao().pageByService(service).toLiveData(25)
+                    db.collectionDao().pageByServiceAndType(service, collectionType).toLiveData(25)
                 }
 
         // observe DavService refresh status
@@ -145,7 +189,8 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         }
         val isRefreshing = MutableLiveData<Boolean>()
 
-        fun initialize(id: Long) {
+        fun initialize(id: Long, collectionType: String) {
+            this.collectionType = collectionType
             if (serviceId.value == null)
                 serviceId.value = id
 

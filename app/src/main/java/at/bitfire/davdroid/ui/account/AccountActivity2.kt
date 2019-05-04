@@ -6,6 +6,7 @@ import android.accounts.AccountManager
 import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -18,7 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentPagerAdapter
+import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.*
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
@@ -27,6 +28,7 @@ import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.ui.AccountSettingsActivity
 import at.bitfire.ical4android.TaskProvider
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_account2.*
@@ -96,6 +98,12 @@ class AccountActivity2: AppCompatActivity() {
 
     // menu actions
 
+    fun openAccountSettings(menuItem: MenuItem) {
+        val intent = Intent(this, AccountSettingsActivity::class.java)
+        intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, model.account)
+        startActivity(intent, null)
+    }
+
     fun renameAccount(menuItem: MenuItem) {
         if (Build.VERSION.SDK_INT >= 21)
             RenameAccountFragment.newInstance(model.account).show(supportFragmentManager, null)
@@ -145,7 +153,7 @@ class AccountActivity2: AppCompatActivity() {
 
     class TabsAdapter(
             val activity: AppCompatActivity
-    ): FragmentPagerAdapter(activity.supportFragmentManager) {
+    ): FragmentStatePagerAdapter(activity.supportFragmentManager) {
         
         var cardDavSvcId: Long? = null
             set(value) {
@@ -158,61 +166,67 @@ class AccountActivity2: AppCompatActivity() {
                 recalculate()
             }
 
-        private var idxContacts: Int? = null
-        private var idxEventsTasks: Int? = null
-        private var idxWebcals: Int? = null
+        private var idxCardDav: Int? = null
+        private var idxCalDav: Int? = null
+        private var idxWebcal: Int? = null
 
         private fun recalculate() {
             var currentIndex = 0
 
-            idxContacts = if (cardDavSvcId != null)
+            idxCardDav = if (cardDavSvcId != null)
                 currentIndex++
             else
                 null
 
             if (calDavSvcId != null) {
-                idxEventsTasks = currentIndex++
-                idxWebcals = currentIndex
+                idxCalDav = currentIndex++
+                idxWebcal = currentIndex
             } else {
-                idxEventsTasks = null
-                idxWebcals = null
+                idxCalDav = null
+                idxWebcal = null
             }
 
             notifyDataSetChanged()
         }
 
         override fun getCount() =
-                (if (idxContacts != null) 1 else 0) +
-                (if (idxEventsTasks != null) 1 else 0) +
-                (if (idxWebcals != null) 1 else 0)
+                (if (idxCardDav != null) 1 else 0) +
+                (if (idxCalDav != null) 1 else 0) +
+                (if (idxWebcal != null) 1 else 0)
 
         override fun getItem(position: Int): Fragment {
+            val args = Bundle(1)
             when (position) {
-                idxContacts -> {
+                idxCardDav -> {
                     val frag = AddressBooksFragment()
-                    val args = Bundle(1)
                     args.putLong(CollectionsFragment.EXTRA_SERVICE_ID, cardDavSvcId!!)
+                    args.putString(CollectionsFragment.EXTRA_COLLECTION_TYPE, Collection.TYPE_ADDRESSBOOK)
                     frag.arguments = args
                     return frag
                 }
-                idxEventsTasks -> {
+                idxCalDav -> {
                     val frag = CalendarsFragment()
-                    val args = Bundle(1)
                     args.putLong(CollectionsFragment.EXTRA_SERVICE_ID, calDavSvcId!!)
+                    args.putString(CollectionsFragment.EXTRA_COLLECTION_TYPE, Collection.TYPE_CALENDAR)
                     frag.arguments = args
                     return frag
                 }
-                idxWebcals ->
-                    return Fragment()
+                idxWebcal -> {
+                    val frag = WebcalFragment()
+                    args.putLong(CollectionsFragment.EXTRA_SERVICE_ID, calDavSvcId!!)
+                    args.putString(CollectionsFragment.EXTRA_COLLECTION_TYPE, Collection.TYPE_WEBCAL)
+                    frag.arguments = args
+                    return frag
+                }
             }
             throw IllegalArgumentException()
         }
 
         override fun getPageTitle(position: Int): String =
                 when (position) {
-                    idxContacts -> activity.getString(R.string.account_carddav)
-                    idxEventsTasks -> activity.getString(R.string.account_caldav)
-                    idxWebcals -> activity.getString(R.string.account_webcal)
+                    idxCardDav -> activity.getString(R.string.account_carddav)
+                    idxCalDav -> activity.getString(R.string.account_caldav)
+                    idxWebcal -> activity.getString(R.string.account_webcal)
                     else -> throw IllegalArgumentException()
                 }
 
