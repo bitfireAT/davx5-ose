@@ -267,7 +267,6 @@ class AccountActivity: AppCompatActivity() {
             thread {
                 cardDavService.postValue(db.serviceDao().getIdByAccountAndType(account.name, Service.TYPE_CARDDAV))
                 calDavService.postValue(db.serviceDao().getIdByAccountAndType(account.name, Service.TYPE_CALDAV))
-                //servicesLoaded.postValue(null)
             }
         }
 
