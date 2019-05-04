@@ -32,7 +32,7 @@ class CalendarsFragment: CollectionsFragment() {
 
     class CalendarViewHolder(
             parent: ViewGroup,
-            accountModel: AccountActivity2.Model
+            accountModel: AccountActivity.Model
     ): CollectionViewHolder(parent, R.layout.account_caldav_item, accountModel) {
 
         override fun bindTo(item: Collection) {
@@ -62,7 +62,7 @@ class CalendarsFragment: CollectionsFragment() {
     }
 
     class CalendarAdapter(
-            accountModel: AccountActivity2.Model
+            accountModel: AccountActivity.Model
     ): CollectionAdapter(accountModel) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =

@@ -31,7 +31,7 @@ class AddressBooksFragment: CollectionsFragment() {
 
     class AddressBookViewHolder(
             parent: ViewGroup,
-            accountModel: AccountActivity2.Model
+            accountModel: AccountActivity.Model
     ): CollectionViewHolder(parent, R.layout.account_carddav_item, accountModel) {
 
         override fun bindTo(item: Collection) {
@@ -56,7 +56,7 @@ class AddressBooksFragment: CollectionsFragment() {
     }
 
     class AddressBookAdapter(
-            accountModel: AccountActivity2.Model
+            accountModel: AccountActivity.Model
     ): CollectionAdapter(accountModel) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =

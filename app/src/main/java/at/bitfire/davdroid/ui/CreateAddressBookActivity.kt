@@ -26,7 +26,7 @@ import at.bitfire.davdroid.databinding.ActivityCreateAddressBookBinding
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.Service
-import at.bitfire.davdroid.ui.account.AccountActivity2
+import at.bitfire.davdroid.ui.account.AccountActivity
 import org.apache.commons.lang3.StringUtils
 import java.util.*
 import kotlin.concurrent.thread
@@ -60,8 +60,8 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem) =
             if (item.itemId == android.R.id.home) {
-                val intent = Intent(this, AccountActivity2::class.java)
-                intent.putExtra(AccountActivity2.EXTRA_ACCOUNT, model.account)
+                val intent = Intent(this, AccountActivity::class.java)
+                intent.putExtra(AccountActivity.EXTRA_ACCOUNT, model.account)
                 NavUtils.navigateUpTo(this, intent)
                 true
             } else

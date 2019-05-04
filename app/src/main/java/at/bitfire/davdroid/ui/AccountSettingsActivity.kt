@@ -34,7 +34,7 @@ import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
-import at.bitfire.davdroid.ui.account.AccountActivity2
+import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
@@ -65,8 +65,8 @@ class AccountSettingsActivity: AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem) =
             if (item.itemId == android.R.id.home) {
-                val intent = Intent(this, AccountActivity2::class.java)
-                intent.putExtra(AccountActivity2.EXTRA_ACCOUNT, account)
+                val intent = Intent(this, AccountActivity::class.java)
+                intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
                 NavUtils.navigateUpTo(this, intent)
                 true
             } else

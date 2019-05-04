@@ -34,13 +34,13 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         const val EXTRA_COLLECTION_TYPE = "collectionType"
     }
 
-    lateinit var accountModel: AccountActivity2.Model
+    lateinit var accountModel: AccountActivity.Model
     lateinit var model: Model
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        accountModel = ViewModelProviders.of(requireActivity()).get(AccountActivity2.Model::class.java)
+        accountModel = ViewModelProviders.of(requireActivity()).get(AccountActivity.Model::class.java)
         model = ViewModelProviders.of(this).get(Model::class.java)
         model.initialize(
                 arguments?.getLong(EXTRA_SERVICE_ID) ?: throw IllegalArgumentException("EXTRA_SERVICE_ID required"),
@@ -90,7 +90,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     abstract class CollectionViewHolder(
             parent: ViewGroup,
             itemLayout: Int,
-            protected val accountModel: AccountActivity2.Model
+            protected val accountModel: AccountActivity.Model
     ): RecyclerView.ViewHolder(
             LayoutInflater.from(parent.context).inflate(itemLayout, parent, false)
     ) {
@@ -98,7 +98,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     }
 
     abstract class CollectionAdapter(
-            protected val accountModel: AccountActivity2.Model
+            protected val accountModel: AccountActivity.Model
     ): PagedListAdapter<Collection, CollectionViewHolder>(DIFF_CALLBACK) {
 
         companion object {
@@ -120,7 +120,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     }
 
     class CollectionPopupListener(
-            private val accountModel: AccountActivity2.Model,
+            private val accountModel: AccountActivity.Model,
             private val item: Collection
     ): View.OnClickListener {
 

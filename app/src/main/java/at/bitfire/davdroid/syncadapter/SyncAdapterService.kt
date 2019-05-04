@@ -26,7 +26,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.AccountSettingsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.ui.account.AccountActivity2
+import at.bitfire.davdroid.ui.account.AccountActivity
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level
@@ -84,8 +84,8 @@ abstract class SyncAdapterService: Service() {
             Logger.log.log(Level.WARNING, "Security exception when opening content provider for $authority")
             syncResult.databaseError = true
 
-            val intent = Intent(context, AccountActivity2::class.java)
-            intent.putExtra(AccountActivity2.EXTRA_ACCOUNT, account)
+            val intent = Intent(context, AccountActivity::class.java)
+            intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
             notifyPermissions(intent)

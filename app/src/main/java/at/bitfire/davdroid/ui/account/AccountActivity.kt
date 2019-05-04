@@ -31,12 +31,12 @@ import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.ui.AccountSettingsActivity
 import at.bitfire.ical4android.TaskProvider
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_account2.*
+import kotlinx.android.synthetic.main.activity_account.*
 import java.util.concurrent.Executors
 import java.util.logging.Level
 import kotlin.concurrent.thread
 
-class AccountActivity2: AppCompatActivity() {
+class AccountActivity: AppCompatActivity() {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
@@ -53,7 +53,7 @@ class AccountActivity2: AppCompatActivity() {
             model.initialize(account)
         }
 
-        setContentView(R.layout.activity_account2)
+        setContentView(R.layout.activity_account)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 

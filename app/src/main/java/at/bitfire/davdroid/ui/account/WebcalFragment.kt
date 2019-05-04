@@ -57,7 +57,7 @@ class WebcalFragment: CollectionsFragment() {
 
     class CalendarViewHolder(
             private val parent: ViewGroup,
-            accountModel: AccountActivity2.Model,
+            accountModel: AccountActivity.Model,
             private val webcalModel: WebcalModel
     ): CollectionViewHolder(parent, R.layout.account_caldav_item, accountModel) {
 
@@ -121,7 +121,7 @@ class WebcalFragment: CollectionsFragment() {
     }
 
     class WebcalAdapter(
-            accountModel: AccountActivity2.Model,
+            accountModel: AccountActivity.Model,
             private val webcalModel: WebcalModel
     ): CollectionAdapter(accountModel) {
 

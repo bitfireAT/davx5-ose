@@ -31,7 +31,7 @@ import at.bitfire.davdroid.databinding.ActivityCreateCalendarBinding
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.Service
-import at.bitfire.davdroid.ui.account.AccountActivity2
+import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.ical4android.DateUtils
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
@@ -87,8 +87,8 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
 
     override fun onOptionsItemSelected(item: MenuItem) =
             if (item.itemId == android.R.id.home) {
-                val intent = Intent(this, AccountActivity2::class.java)
-                intent.putExtra(AccountActivity2.EXTRA_ACCOUNT, model.account)
+                val intent = Intent(this, AccountActivity::class.java)
+                intent.putExtra(AccountActivity.EXTRA_ACCOUNT, model.account)
                 NavUtils.navigateUpTo(this, intent)
                 true
             } else
