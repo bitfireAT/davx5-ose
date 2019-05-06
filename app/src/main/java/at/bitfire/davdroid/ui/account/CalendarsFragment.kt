@@ -10,6 +10,8 @@ import kotlinx.android.synthetic.main.account_caldav_item.view.*
 
 class CalendarsFragment: CollectionsFragment() {
 
+    override val noCollectionsStringId = R.string.account_no_calendars
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
             inflater.inflate(R.menu.caldav_actions, menu)
 

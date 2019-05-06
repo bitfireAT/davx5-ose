@@ -34,8 +34,8 @@ import kotlin.concurrent.thread
 class CreateCollectionFragment: DialogFragment() {
 
     companion object {
-
         const val ARG_ACCOUNT = "account"
+        const val ARG_SERVICE_TYPE = "serviceType"
 
         const val ARG_TYPE = "type"
         const val ARG_URL = "url"
@@ -57,11 +57,12 @@ class CreateCollectionFragment: DialogFragment() {
         val args = arguments ?: throw IllegalArgumentException()
 
         model = ViewModelProviders.of(this).get(Model::class.java)
-        model.account = args.getParcelable(ARG_ACCOUNT) ?: throw IllegalArgumentException("Account required")
+        model.account = args.getParcelable(ARG_ACCOUNT) ?: throw IllegalArgumentException("ARG_ACCOUNT required")
+        model.serviceType = args.getString(ARG_SERVICE_TYPE) ?: throw java.lang.IllegalArgumentException("ARG_SERVICE_TYPE required")
 
         model.collection = Collection(
-                type = args.getString(ARG_TYPE) ?: throw IllegalArgumentException("Type required"),
-                url = HttpUrl.parse(args.getString(ARG_URL) ?: throw IllegalArgumentException("URL required"))!!,
+                type = args.getString(ARG_TYPE) ?: throw IllegalArgumentException("ARG_TYPE required"),
+                url = HttpUrl.parse(args.getString(ARG_URL) ?: throw IllegalArgumentException("ARG_URL required"))!!,
                 displayName = args.getString(ARG_DISPLAY_NAME),
                 description = args.getString(ARG_DESCRIPTION),
 
@@ -73,13 +74,14 @@ class CreateCollectionFragment: DialogFragment() {
         )
 
         model.createCollection().observe(this, Observer { exception ->
-            if (exception != null) {
+            if (exception == null)
+                requireActivity().finish()
+            else {
                 dismiss()
                 requireFragmentManager().beginTransaction()
                         .add(ExceptionInfoFragment.newInstance(exception, model.account), null)
                         .commit()
-            } else
-                requireActivity().finish()
+            }
         })
     }
 
@@ -101,6 +103,7 @@ class CreateCollectionFragment: DialogFragment() {
     ): AndroidViewModel(application) {
 
         lateinit var account: Account
+        lateinit var serviceType: String
         lateinit var collection: Collection
 
         val result = MutableLiveData<Exception>()
@@ -118,7 +121,7 @@ class CreateCollectionFragment: DialogFragment() {
 
                         // no HTTP error -> create collection locally
                         val db = AppDatabase.getInstance(getApplication())
-                        db.serviceDao().getByAccountAndType(account.name, collection.type)?.let { service ->
+                        db.serviceDao().getByAccountAndType(account.name, serviceType)?.let { service ->
                             collection.serviceId = service.id
                             db.collectionDao().insert(collection)
                         }

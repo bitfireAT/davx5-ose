@@ -21,11 +21,12 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.ui.CollectionInfoFragment
 import at.bitfire.davdroid.ui.DeleteCollectionFragment
-import kotlinx.android.synthetic.main.account_addressbooks.view.*
+import kotlinx.android.synthetic.main.account_collections.view.*
 
 abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
@@ -36,6 +37,8 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
     lateinit var accountModel: AccountActivity.Model
     lateinit var model: Model
+
+    abstract val noCollectionsStringId: Int
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,8 +53,8 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-            inflater.inflate(R.layout.account_addressbooks, container, false)!!
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+            inflater.inflate(R.layout.account_collections, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,7 +69,17 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         view.list.adapter = adapter
         model.collections.observe(viewLifecycleOwner, Observer { data ->
             adapter.submitList(data)
+
+            if (data.isEmpty()) {
+                view.list.visibility = View.GONE
+                view.empty.visibility = View.VISIBLE
+            } else {
+                view.list.visibility = View.VISIBLE
+                view.empty.visibility = View.GONE
+            }
         })
+
+        view.no_collections.setText(noCollectionsStringId)
     }
 
     protected abstract fun createAdapter(): CollectionAdapter

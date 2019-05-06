@@ -36,6 +36,8 @@ import java.util.logging.Level
 
 class WebcalFragment: CollectionsFragment() {
 
+    override val noCollectionsStringId = R.string.account_no_webcals
+
     lateinit var webcalModel: WebcalModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +49,7 @@ class WebcalFragment: CollectionsFragment() {
                 requestPermissions(arrayOf(Manifest.permission.READ_CALENDAR), 0)
         })
         webcalModel.subscribedUrls.observe(this, Observer { urls ->
-            Logger.log.log(Level.FINE, "Got calendar list", urls.keys)
+            Logger.log.log(Level.FINE, "Got Android calendar list", urls.keys)
         })
 
         webcalModel.initialize(arguments?.getLong(EXTRA_SERVICE_ID) ?: throw IllegalArgumentException("EXTRA_SERVICE_ID required"))

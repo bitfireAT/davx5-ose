@@ -270,11 +270,11 @@ class DavService: android.app.Service() {
                     // old URL exists in newCollections, update database if content has been changed
                     matchingNewCollection.id = oldCollection.id
                     matchingNewCollection.serviceId = oldCollection.serviceId
-                    if (matchingNewCollection == oldCollection) {
+                    if (matchingNewCollection != oldCollection)
                         collectionDao.update(matchingNewCollection)
-                        // remove from "collections" (which will be added later)
-                        collections.remove(url)
-                    }
+
+                    // remove from "collections" (which will be added later)
+                    collections.remove(url)
                 } else
                     // URL is not in newCollections, delete from database
                     collectionDao.delete(oldCollection)

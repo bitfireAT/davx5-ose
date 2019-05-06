@@ -1,6 +1,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.content.Intent
+import android.os.Bundle
 import android.view.*
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.Collection
@@ -8,6 +9,8 @@ import at.bitfire.davdroid.ui.CreateAddressBookActivity
 import kotlinx.android.synthetic.main.account_carddav_item.view.*
 
 class AddressBooksFragment: CollectionsFragment() {
+
+    override val noCollectionsStringId = R.string.account_no_address_books
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
             inflater.inflate(R.menu.carddav_actions, menu)

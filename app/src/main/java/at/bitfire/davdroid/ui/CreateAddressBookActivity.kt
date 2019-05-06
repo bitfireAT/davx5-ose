@@ -71,6 +71,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
         var ok = true
 
         val args = Bundle()
+        args.putString(CreateCollectionFragment.ARG_SERVICE_TYPE, Service.TYPE_CARDDAV)
 
         val parent = model.homeSets.value?.getItem(model.idxHomeSet.value!!) ?: return
         args.putString(CreateCollectionFragment.ARG_URL, parent.url.resolve(UUID.randomUUID().toString() + "/").toString())
