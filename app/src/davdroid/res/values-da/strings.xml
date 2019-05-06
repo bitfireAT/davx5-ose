@@ -92,6 +92,9 @@
   <string name="app_settings_reset_hints_summary">Genaktivere tidligere lukket pop op</string>
   <string name="app_settings_reset_hints_success">Al vejledning vil blive vist igen</string>
   <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_now">Synkronisere</string>
   <string name="account_synchronizing_now">Synkroniserer</string>
   <string name="account_settings">Opsætning af konti</string>
@@ -101,9 +104,6 @@
   <string name="account_delete">Slette konto</string>
   <string name="account_delete_confirmation_title">Slette konto?</string>
   <string name="account_delete_confirmation_text">Alle lokale kopier af addessebøger, kalendere og opgavelister vil blive slettet.</string>
-  <string name="account_carddav">CardDAV</string>
-  <string name="account_caldav">CalDAV</string>
-  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_this_collection">synkronisere samling</string>
   <string name="account_read_only">skrivebeskyttet</string>
   <string name="account_calendar">kalender</string>

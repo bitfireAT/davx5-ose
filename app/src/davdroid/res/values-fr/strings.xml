@@ -92,6 +92,9 @@
   <string name="app_settings_reset_hints_summary">Réactiver les astuces qui ont été vues précédemment</string>
   <string name="app_settings_reset_hints_success">Toutes les astuces seront affichés à nouveau</string>
   <!--AccountActivity-->
+  <string name="account_carddav">CardDAV (les carnets d\'adresse) </string>
+  <string name="account_caldav">CalDAV (les agendas) </string>
+  <string name="account_webcal">WebCal (les anciens agenda)</string>
   <string name="account_synchronize_now">Synchroniser maintenant</string>
   <string name="account_synchronizing_now">Synchronisation en cours</string>
   <string name="account_settings">Paramètres du compte</string>
@@ -101,16 +104,13 @@
   <string name="account_delete">Supprimer le compte</string>
   <string name="account_delete_confirmation_title">Voulez-vous vraiment supprimer le compte?</string>
   <string name="account_delete_confirmation_text">Toutes les copies locales des carnets d\'adresses, des calendriers et des listes de tâches seront supprimées.</string>
-  <string name="account_carddav">CardDAV (les carnets d\'adresse) </string>
-  <string name="account_caldav">CalDAV (les agendas) </string>
-  <string name="account_webcal">WebCal (les anciens agenda)</string>
   <string name="account_synchronize_this_collection">Synchronise cette collection</string>
   <string name="account_read_only">En lecture seulement</string>
   <string name="account_calendar">calendrier</string>
   <string name="account_task_list">liste de tâche</string>
-  <string name="account_refresh_address_book_list">Actualiser le carnet d\'adresses</string>
+  <string name="account_refresh_address_book_list">Actualiser la liste des carnets d\'adresses</string>
   <string name="account_create_new_address_book">Créer un nouveau carnet d\'adresses</string>
-  <string name="account_refresh_calendar_list">Actualiser le calendrier</string>
+  <string name="account_refresh_calendar_list">Actualiser la liste des calendriers</string>
   <string name="account_create_new_calendar">Créer un nouveau calendrier</string>
   <string name="account_no_webcal_handler_found">Aucune application compatible WebCal</string>
   <string name="account_install_icsx5">Installer ICSx⁵</string>
@@ -203,12 +203,26 @@
   <!--collection management-->
   <string name="create_addressbook">Créer un carnet d\'adresses</string>
   <string name="create_addressbook_display_name_hint">Mon carnet d\'adresses</string>
+  <string name="create_calendar">Créer un calendrier</string>
+  <string name="create_calendar_time_zone">Fuseau horaire</string>
+  <string name="create_calendar_time_zone_required">Fuseau horaire requis</string>
+  <string name="create_calendar_type">Entrées possibles de calendrier</string>
+  <string name="create_calendar_type_vevent">Événements</string>
+  <string name="create_calendar_type_vtodo">Tâches</string>
+  <string name="create_calendar_type_vjournal">Notes / journal</string>
   <string name="create_calendar_type_events_and_tasks">Fusionner (événements et tâches)</string>
+  <string name="create_collection_color">Couleur</string>
   <string name="create_collection_creating">Création collection</string>
+  <string name="create_collection_display_name">Titre</string>
   <string name="create_collection_display_name_required">Titre requis</string>
+  <string name="create_collection_description">Description</string>
+  <string name="create_collection_optional">facultatif</string>
+  <string name="create_collection_home_set">Emplacement de stockage</string>
   <string name="create_collection_create">Créer</string>
   <string name="delete_collection">Supprimer la collection</string>
   <string name="delete_collection_confirm_title">Êtes-vous sur?</string>
+  <string name="delete_collection_confirm_warning">Cette collection (%s)  et toutes ses données seront supprimées définitivement.</string>
+  <string name="delete_collection_data_shall_be_deleted">Ces données sont supprimées du serveur.</string>
   <string name="delete_collection_deleting_collection">Suppression de la collection</string>
   <string name="collection_force_read_only">Forcer la lecture seulement</string>
   <string name="collection_properties">Propriétés</string>

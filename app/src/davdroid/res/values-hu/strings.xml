@@ -11,7 +11,11 @@
   <string name="notification_channel_general">Egyéb fontos üzenetek</string>
   <string name="notification_channel_sync">Szinkronizáció</string>
   <string name="notification_channel_sync_errors">Szinkronizációs hibák</string>
+  <string name="notification_channel_sync_errors_desc">Fontos hibák amelyek miatt a szinkronizáció megszakad, például váratlan szerverválaszok</string>
+  <string name="notification_channel_sync_warnings">Szinkronizációs figyelmeztetések</string>
+  <string name="notification_channel_sync_warnings_desc">Nem kritikus szinkronizációs hibák, például bizonyos fajta hibás fájlok</string>
   <string name="notification_channel_sync_io_errors">Hálózati és I/O hibák</string>
+  <string name="notification_channel_sync_io_errors_desc">Időtúllépésék, kapcsolódási problémák, stb. (gyakran átmeneti problémák)</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Automatikus szinkronizálás</string>
   <string name="startup_autostart_permission_message">A(z) %s gyári szoftvere gyakran blokkolja az automatikus szinkronizálást. Ebben az esetben engedélyezze a szinkronizálást az Android beállítások között.</string>
@@ -33,8 +37,13 @@
   <string name="about_libraries">Könyvtárak</string>
   <string name="about_version">Verziószám:%1$s (%2$d)</string>
   <string name="about_build_date">Fordítás ideje: %s</string>
+  <string name="about_flavor_info">Ez a verzió csak a Google Play Áruházon keresztül terjeszthető</string>
   <string name="about_license_info_no_warranty">Ehhez a program SEMMIFÉLE GARANCIA NEM JÁR.   Ez a program szabad szoftver, ami a bizonyos feltételek mellett szabadon terjeszthető.</string>
   <!--global settings-->
+  <string name="logging_couldnt_create_file">A naplófájl létrehozása nem sikerült</string>
+  <string name="logging_notification_title">DAVx⁵ naplózás</string>
+  <string name="logging_notification_text">Mostantól DAVx⁵ minden művelete naplózásra kerül</string>
+  <string name="logging_notification_send_log">Naplófájl küldése</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Navigációs fiók megnyitása</string>
   <string name="navigation_drawer_close">Navigációs fiók lezárása</string>
@@ -60,6 +69,9 @@
   <string name="app_settings_debug">Hibakeresés</string>
   <string name="app_settings_show_debug_info">Hibakeresési információ megtekintése</string>
   <string name="app_settings_show_debug_info_details">Szoftver- és konfigurációs részletek megtekintése/megosztása</string>
+  <string name="app_settings_logging">Részletes naplózás</string>
+  <string name="app_settings_logging_on">Naplózás bekapcsolva</string>
+  <string name="app_settings_logging_off">Naplózás kikapcsolva</string>
   <string name="app_settings_connection">Kapcsolat</string>
   <string name="app_settings_override_proxy">Proxybeállítások felülírása</string>
   <string name="app_settings_override_proxy_on">Egyedi proxybeállítások</string>
@@ -74,10 +86,15 @@
   <string name="app_settings_reset_certificates_summary">A tanúsítványok megbízhatóságával kapcsolatos beállítások törlésére</string>
   <string name="app_settings_reset_certificates_success">A tanúsítványok megbízhatóságával kapcsolatos beállítások törölve</string>
   <string name="app_settings_user_interface">Felhasználói felület</string>
+  <string name="app_settings_notification_settings">Értesítési beállíások</string>
+  <string name="app_settings_notification_settings_summary">Az értesítési csatornák és azok beállításának kezelése</string>
   <string name="app_settings_reset_hints">Tippek visszaállítása</string>
   <string name="app_settings_reset_hints_summary">Újra jelenjen meg az összes tipp</string>
   <string name="app_settings_reset_hints_success">Az összes tipp újra meg fog jelenni</string>
   <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_now">Szinkronizálás most</string>
   <string name="account_synchronizing_now">Szinkronizálás</string>
   <string name="account_settings">Fiókbeállítások</string>
@@ -87,9 +104,6 @@
   <string name="account_delete">Fiók törlése</string>
   <string name="account_delete_confirmation_title">Valóban törölni akarja a fiókot?</string>
   <string name="account_delete_confirmation_text">Az összes címjegyzék, naptár és feladatlista helyi példányai törölve lesznek.</string>
-  <string name="account_carddav">CardDAV</string>
-  <string name="account_caldav">CalDAV</string>
-  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_this_collection">a gyűjtemény szinkronizálása</string>
   <string name="account_read_only">csak olvasható</string>
   <string name="account_calendar">naptár</string>
@@ -99,6 +113,7 @@
   <string name="account_refresh_calendar_list">Naptárlista frissítése</string>
   <string name="account_create_new_calendar">Új naptár létrehozása</string>
   <string name="account_no_webcal_handler_found">Nem található Webcal-képes alkalmazás</string>
+  <string name="account_install_icsx5">ICSx⁵ telepítése</string>
   <!--AddAccountActivity-->
   <string name="login_title">Fiók hozzáadása</string>
   <string name="login_type_email">Bejelentkezés email cím segítségével</string>
@@ -122,6 +137,7 @@
   <string name="login_account_name_info">Használja az email címet fióknévként, mert később a létrehozandó események szervezőjeként (ORGANIZER mező) az Android ezt fogja használni. Két fiókot nem lehet azonos néven létrehozni.</string>
   <string name="login_account_contact_group_method">A csoportok kezelésének módja:</string>
   <string name="login_account_name_required">A fióknév megadása feltétlenül szükséges</string>
+  <string name="login_account_name_already_taken">A fióknév már használatban van</string>
   <string name="login_account_not_created">A fiók létrehozása nem sikerült</string>
   <string name="login_configuration_detection">A konfiguráció felderítése</string>
   <string name="login_querying_server">Kérjük, várjon, a szerver lekérdezése…</string>
@@ -156,8 +172,11 @@
   <string name="settings_sync_wifi_only_off">Szinkronizálás a kapcsolat típusától függetlenül</string>
   <string name="settings_sync_wifi_only_ssids">WiFi SSID szűrés</string>
   <string name="settings_sync_wifi_only_ssids_on">Az alábbi hálózatok használhatók: %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Szinkroniázálás csak a megadott hálózaton (%s) keresztül (bekapcsolt helymeghatározási szolgáltatást igényel)</string>
   <string name="settings_sync_wifi_only_ssids_off">Minden hálózat használható</string>
   <string name="settings_sync_wifi_only_ssids_message">A használható WiFi hálózatok nevei (SSID), vesszővel elválasztva (hagyja üresen, ha nem akar szűrést beállítani)</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">A WiFi hálózatok nevének elérése Helyadatok alkalmazásengedélyt és folyamatosan bekapcsolt helymeghatározási szolgáltatást igényel.</string>
+  <string name="settings_more_info_faq">További információk (GYIK)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">A csoportok kezelésének módja</string>
   <string-array name="settings_contact_group_method_entries">
@@ -184,12 +203,26 @@
   <!--collection management-->
   <string name="create_addressbook">Címjegyzék létrehozása</string>
   <string name="create_addressbook_display_name_hint">Új címjegyzék</string>
+  <string name="create_calendar">Naptár létrehozása</string>
+  <string name="create_calendar_time_zone">Időzóna</string>
+  <string name="create_calendar_time_zone_required">Az időzóna megadása kötelező</string>
+  <string name="create_calendar_type">Lehetséges naptárbejegyzések</string>
+  <string name="create_calendar_type_vevent">Események</string>
+  <string name="create_calendar_type_vtodo">Feladatok</string>
+  <string name="create_calendar_type_vjournal">Jegyzetek/napló</string>
   <string name="create_calendar_type_events_and_tasks">Kombinált (események és feladatok)</string>
+  <string name="create_collection_color">Szín</string>
   <string name="create_collection_creating">Gyűjtemény létrehozása</string>
+  <string name="create_collection_display_name">Cím</string>
   <string name="create_collection_display_name_required">A cím megadása feltétlenül szükséges</string>
+  <string name="create_collection_description">Leírás</string>
+  <string name="create_collection_optional">opcionális</string>
+  <string name="create_collection_home_set">Tárhely</string>
   <string name="create_collection_create">Létrehozás</string>
   <string name="delete_collection">Gyűjtemény törlése</string>
   <string name="delete_collection_confirm_title">Biztos?</string>
+  <string name="delete_collection_confirm_warning">A gyűjtemény (%s) és a hozzá tartozó adatok véglegesen törölve lesznek a szerverről.</string>
+  <string name="delete_collection_data_shall_be_deleted">Az adatok törölve lesznek a szerverről.</string>
   <string name="delete_collection_deleting_collection">Gyűjtemény törlése</string>
   <string name="collection_force_read_only">Csak olvashatóvá tétel</string>
   <string name="collection_properties">Tulajdonságok</string>
@@ -213,6 +246,10 @@
   <string name="sync_error_local_storage">Tárhelyhiba - %s</string>
   <string name="sync_error_retry">Újbóli próbálkozás</string>
   <string name="sync_error_view_item">Elem megtekintése</string>
+  <string name="sync_invalid_contact">A szerver érvénytelen névjegyet küldött</string>
+  <string name="sync_invalid_event">A szerver érvénytelen eseményt küldött</string>
+  <string name="sync_invalid_task">A szerver érvénytelen feladatot küldött</string>
+  <string name="sync_invalid_resources_ignoring">Egy vagy több érvénytelen erőforrás kihagyva</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: kapcsolatbiztonság</string>
   <string name="trust_certificate_unknown_certificate_found">Egy eddig ismeretlen tanúsítvány érkezett.  Megbízhatónak kívánja elfogadni?</string>

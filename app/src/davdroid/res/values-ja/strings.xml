@@ -92,6 +92,9 @@
   <string name="app_settings_reset_hints_summary">以前非表示にしたヒントを、再度有効にします</string>
   <string name="app_settings_reset_hints_success">すべてのヒントが再度表示されます</string>
   <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_now">今すぐ同期</string>
   <string name="account_synchronizing_now">同期中</string>
   <string name="account_settings">アカウント設定</string>
@@ -101,9 +104,6 @@
   <string name="account_delete">アカウントを削除</string>
   <string name="account_delete_confirmation_title">アカウントを削除してもよろしいですか?</string>
   <string name="account_delete_confirmation_text">アドレス帳、カレンダー、タスクリストのローカルコピーがすべて削除されます。</string>
-  <string name="account_carddav">CardDAV</string>
-  <string name="account_caldav">CalDAV</string>
-  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_this_collection">このコレクションを同期</string>
   <string name="account_read_only">読み取り専用</string>
   <string name="account_calendar">カレンダー</string>

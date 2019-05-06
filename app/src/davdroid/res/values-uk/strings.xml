@@ -92,6 +92,9 @@
   <string name="app_settings_reset_hints_summary">Включення підказок, які раніше були вимкнуті</string>
   <string name="app_settings_reset_hints_success">Всі підказки будуть показані знову</string>
   <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_now">Синхронізувати зараз</string>
   <string name="account_synchronizing_now">Синхронізація</string>
   <string name="account_settings">Налаштування облікового запису</string>
@@ -101,9 +104,6 @@
   <string name="account_delete">Видалити запис</string>
   <string name="account_delete_confirmation_title">Дійсно видалити обліковий запис?</string>
   <string name="account_delete_confirmation_text">Всі локальні копії адресних книг, календарів та завдань будуть вилучені.</string>
-  <string name="account_carddav">CardDAV</string>
-  <string name="account_caldav">CalDAV</string>
-  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_this_collection">синхронізувати дану колекцію</string>
   <string name="account_read_only">лише читання</string>
   <string name="account_calendar">календар</string>
@@ -205,9 +205,19 @@
   <!--collection management-->
   <string name="create_addressbook">Створити адресну книгу</string>
   <string name="create_addressbook_display_name_hint">Моя адресна книга</string>
+  <string name="create_calendar">Створити календар</string>
+  <string name="create_calendar_time_zone">Часовий пояс</string>
+  <string name="create_calendar_time_zone_required">Потребує часовий пояс</string>
+  <string name="create_calendar_type_vevent">Події</string>
+  <string name="create_calendar_type_vtodo">Завдання</string>
+  <string name="create_calendar_type_vjournal">Нотатки/Журнал</string>
   <string name="create_calendar_type_events_and_tasks">Об\'єднаний (події та завдання)</string>
+  <string name="create_collection_color">Колір</string>
   <string name="create_collection_creating">Створення колекції</string>
+  <string name="create_collection_display_name">Заголовок</string>
   <string name="create_collection_display_name_required">Потребує назву</string>
+  <string name="create_collection_description">Опис</string>
+  <string name="create_collection_home_set">Розташування сховища</string>
   <string name="create_collection_create">Створити</string>
   <string name="delete_collection">Видалити колекцію</string>
   <string name="delete_collection_confirm_title">Ви впевнені?</string>
