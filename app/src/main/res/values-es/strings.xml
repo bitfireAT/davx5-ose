@@ -92,6 +92,9 @@
   <string name="app_settings_reset_hints_summary">Habilita las advertencias que han sido rechazadas con anterioridad</string>
   <string name="app_settings_reset_hints_success">Todas las advertencias se mostrarán nuevamente</string>
   <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_now">Sincronizar ahora</string>
   <string name="account_synchronizing_now">Sincronizando…</string>
   <string name="account_settings">Ajustes de cuenta</string>
@@ -101,9 +104,6 @@
   <string name="account_delete">Eliminar cuenta</string>
   <string name="account_delete_confirmation_title">¿Seguro que deseas eliminar la cuenta?</string>
   <string name="account_delete_confirmation_text">Todas las copias locales de tus contactos, calendarios y tareas serán eliminadas.</string>
-  <string name="account_carddav">CardDAV</string>
-  <string name="account_caldav">CalDAV</string>
-  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_this_collection">sincronizar ésta colección</string>
   <string name="account_read_only">solo lectura</string>
   <string name="account_calendar">calendario</string>

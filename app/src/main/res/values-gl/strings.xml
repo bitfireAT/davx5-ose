@@ -92,6 +92,9 @@
   <string name="app_settings_reset_hints_summary">Restablece todos os consellos que foran desbotados anteriormente</string>
   <string name="app_settings_reset_hints_success">Mostraranse todos os consellos de novo</string>
   <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_now">Sincronizar agora</string>
   <string name="account_synchronizing_now">Sincronizando</string>
   <string name="account_settings">Axustes da conta</string>
@@ -101,9 +104,6 @@
   <string name="account_delete">Eliminar conta</string>
   <string name="account_delete_confirmation_title">Desexa eliminar a conta?</string>
   <string name="account_delete_confirmation_text">Todas as copias locais de libretas de enderezos, calendarios e tarefas eliminaranse.</string>
-  <string name="account_carddav">CardDAV</string>
-  <string name="account_caldav">CalDAV</string>
-  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_this_collection">sincronizar esta colección</string>
   <string name="account_read_only">só lectura</string>
   <string name="account_calendar">calendario</string>
@@ -203,12 +203,26 @@
   <!--collection management-->
   <string name="create_addressbook">Crear libreta de enderezos</string>
   <string name="create_addressbook_display_name_hint">A miña libreta de enderezos</string>
+  <string name="create_calendar">Crear calendario</string>
+  <string name="create_calendar_time_zone">Fuso horario</string>
+  <string name="create_calendar_time_zone_required">Requírese o fuso horario</string>
+  <string name="create_calendar_type">Entradas posibles no calendario</string>
+  <string name="create_calendar_type_vevent">Eventos</string>
+  <string name="create_calendar_type_vtodo">Tarefas</string>
+  <string name="create_calendar_type_vjournal">Notas / diario</string>
   <string name="create_calendar_type_events_and_tasks">Combinado (eventos e tarefas)</string>
+  <string name="create_collection_color">Cor</string>
   <string name="create_collection_creating">Creando colección</string>
+  <string name="create_collection_display_name">Título</string>
   <string name="create_collection_display_name_required">Requírese o título</string>
+  <string name="create_collection_description">Descrición</string>
+  <string name="create_collection_optional">optativo</string>
+  <string name="create_collection_home_set">Localización do almacenamento</string>
   <string name="create_collection_create">Crear</string>
   <string name="delete_collection">Eliminar colección</string>
   <string name="delete_collection_confirm_title">Quere eliminar?</string>
+  <string name="delete_collection_confirm_warning">Esta colección (%s) e todos os seus datos eliminaranse definitivamente.</string>
+  <string name="delete_collection_data_shall_be_deleted">Estos datos vanse eliminar do servidor.</string>
   <string name="delete_collection_deleting_collection">Eliminando colección</string>
   <string name="collection_force_read_only">Forzar só lectura</string>
   <string name="collection_properties">Propiedades</string>

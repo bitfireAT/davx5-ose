@@ -62,6 +62,9 @@
   <string name="app_settings_reset_hints_summary">Skrur på hint som har blitt avslått tidligere</string>
   <string name="app_settings_reset_hints_success">Alle hint vil bli vist igjen</string>
   <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_now">Synkroniser nå</string>
   <string name="account_synchronizing_now">Synkroniserer nå</string>
   <string name="account_settings">Kontoinnstillinger</string>
@@ -71,9 +74,6 @@
   <string name="account_delete">Slett konto</string>
   <string name="account_delete_confirmation_title">Vil du virkeling slette kontoen?</string>
   <string name="account_delete_confirmation_text">Alle lokale kopier av adressebøker, kalendere og gjøremålslister vil bli slettet.</string>
-  <string name="account_carddav">CardDAV</string>
-  <string name="account_caldav">CalDAV</string>
-  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_this_collection">synkroniser denne samlingen</string>
   <string name="account_read_only">kun lesbar</string>
   <string name="account_calendar">kalender</string>

@@ -92,6 +92,9 @@
   <string name="app_settings_reset_hints_summary">Restaura as sugestões que foram descartadas anteriormente</string>
   <string name="app_settings_reset_hints_success">Todas as sugestões serão exibidas novamente</string>
   <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_now">Sincronizar agora</string>
   <string name="account_synchronizing_now">Sincronizando</string>
   <string name="account_settings">Configurações da conta</string>
@@ -101,9 +104,6 @@
   <string name="account_delete">Excluir conta</string>
   <string name="account_delete_confirmation_title">Deseja excluir a conta?</string>
   <string name="account_delete_confirmation_text">Todas as cópias locais dos livros de endereços, calendários e listas de tarefas serão excluídas.</string>
-  <string name="account_carddav">CardDAV</string>
-  <string name="account_caldav">CalDAV</string>
-  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_this_collection">sincronizar esta coleção</string>
   <string name="account_read_only">Somente leitura</string>
   <string name="account_calendar">calendário</string>

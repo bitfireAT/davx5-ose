@@ -63,6 +63,9 @@
   <string name="app_settings_reset_hints_summary">Hints die al gezien zijn opnieuw weergeven</string>
   <string name="app_settings_reset_hints_success">Alle hints worden opnieuw weergegeven</string>
   <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_now">Synchroniseer nu</string>
   <string name="account_synchronizing_now">Aan het synchronizeren…</string>
   <string name="account_settings">Account instellingen</string>
@@ -72,9 +75,6 @@
   <string name="account_delete">Account verwijderen</string>
   <string name="account_delete_confirmation_title">Account echt verwijderen?</string>
   <string name="account_delete_confirmation_text">Alle lokale kopieën van adresboeken, agenda\'s en taken worden verwijderd.</string>
-  <string name="account_carddav">CardDAV</string>
-  <string name="account_caldav">CalDAV</string>
-  <string name="account_webcal">Webcal</string>
   <string name="account_calendar">calendar</string>
   <string name="account_refresh_address_book_list">Adresboeken vernieuwen</string>
   <string name="account_create_new_address_book">Maak een nieuw adresboek</string>

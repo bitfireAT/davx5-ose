@@ -64,6 +64,9 @@
   <string name="app_settings_reset_hints_summary">Ponownie włącz wskazówki, które zostały usunięte wcześniej</string>
   <string name="app_settings_reset_hints_success">Wszystkie wskazówki pojawią się ponownie</string>
   <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_now">Synchronizuj teraz</string>
   <string name="account_synchronizing_now">Synchronizcja w toku</string>
   <string name="account_settings">Ustawienia konta</string>
@@ -73,9 +76,6 @@
   <string name="account_delete">Usuń konto</string>
   <string name="account_delete_confirmation_title">Naprawdę chcesz usunąć konto?</string>
   <string name="account_delete_confirmation_text">Wszystkie lokalne kopie książek adresowych, kalendarzy i list zadań zostaną usunięte.</string>
-  <string name="account_carddav">CardDAV</string>
-  <string name="account_caldav">CalDAV</string>
-  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_this_collection">Synchronizuj kolekcję</string>
   <string name="account_read_only">tylko do odczytu</string>
   <string name="account_calendar">kalendarz</string>

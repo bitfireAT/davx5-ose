@@ -92,9 +92,13 @@
   <string name="app_settings_reset_hints_summary">Hinweise, die deaktiviert wurden, wieder anzeigen</string>
   <string name="app_settings_reset_hints_success">Alle Hinweise werden wieder angezeigt</string>
   <!--AccountActivity-->
-  <string name="account_missing_permissions">Möglicherweise fehlen Berechtigungen</string>
-  <string name="account_missing_permissions_fix">Beheben</string>
-  <string name="account_missing_permissions_explanation">Benötigte Rechte: Kontakte, Kalender, (Aufgaben)</string>
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_no_address_books">(Noch) keine Adressbücher vorhanden</string>
+  <string name="account_no_calendars">(Noch) keine Kalender vorhanden</string>
+  <string name="account_no_webcals">(Noch) keine Kalender-Abos vorhanden</string>
+  <string name="account_swipe_down">Nach unten wischen, um neue Einträge am Server zu suchen.</string>
   <string name="account_synchronize_now">Jetzt synchronisieren</string>
   <string name="account_synchronizing_now">Synchronisation gestartet</string>
   <string name="account_settings">Konto-Einstellungen</string>
@@ -104,9 +108,6 @@
   <string name="account_delete">Konto löschen</string>
   <string name="account_delete_confirmation_title">Konto wirklich löschen?</string>
   <string name="account_delete_confirmation_text">Alle Adressbücher, Kalender und Aufgabenlisten werden vom Gerät (nicht am Server) gelöscht.</string>
-  <string name="account_carddav">CardDAV</string>
-  <string name="account_caldav">CalDAV</string>
-  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_this_collection">diesen Ordner synchronisieren</string>
   <string name="account_read_only">schreibgeschützt</string>
   <string name="account_calendar">Kalender</string>

@@ -78,6 +78,9 @@
   <string name="app_settings_reset_hints_summary">Поновно приказивање претходно одбачених савета</string>
   <string name="app_settings_reset_hints_success">Сви савети ће поново бити приказани</string>
   <!--AccountActivity-->
+  <string name="account_carddav">КардДАВ</string>
+  <string name="account_caldav">КалДАВ</string>
+  <string name="account_webcal">Вебкал</string>
   <string name="account_synchronize_now">Синхронизуј одмах</string>
   <string name="account_synchronizing_now">Синхронизујем</string>
   <string name="account_settings">Поставке налога</string>
@@ -87,9 +90,6 @@
   <string name="account_delete">Обриши налог</string>
   <string name="account_delete_confirmation_title">Заиста обрисати налог?</string>
   <string name="account_delete_confirmation_text">Све локалне копије адресара, календара и листи задатака ће бити обрисане.</string>
-  <string name="account_carddav">КардДАВ</string>
-  <string name="account_caldav">КалДАВ</string>
-  <string name="account_webcal">Вебкал</string>
   <string name="account_synchronize_this_collection">синхронизуј ову збирку</string>
   <string name="account_read_only">само-за-читање</string>
   <string name="account_calendar">календар</string>

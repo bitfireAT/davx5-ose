@@ -88,6 +88,9 @@
   <string name="app_settings_reset_hints_summary">Ενεργοποιεί ξανά τις συμβουλές που έχουν απορριφθεί προηγουμένως</string>
   <string name="app_settings_reset_hints_success">Όλες οι συμβουλές θα εμφανιστούν ξανά</string>
   <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_now">Συγχρονισμός τώρα</string>
   <string name="account_synchronizing_now">Γίνεται συγχρονισμός τώρα</string>
   <string name="account_settings">Ρυθμίσεις λογαριασμού</string>
@@ -97,9 +100,6 @@
   <string name="account_delete">Διαγραφή λογαριασμού</string>
   <string name="account_delete_confirmation_title">Θέλετε να διαγράψετε τον λογαριασμό;</string>
   <string name="account_delete_confirmation_text">Όλα τα τοπικά αντίγραφα των βιβλίων διευθύνσεων, ημερολογίων και λιστών εργασιών θα διαγραφούν.</string>
-  <string name="account_carddav">CardDAV</string>
-  <string name="account_caldav">CalDAV</string>
-  <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_this_collection">συγχρονισμός αυτής της συλλογής</string>
   <string name="account_read_only">μόνο για ανάγνωση</string>
   <string name="account_calendar">ημερολόγιο</string>
