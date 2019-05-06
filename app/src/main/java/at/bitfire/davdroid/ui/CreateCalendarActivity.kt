@@ -151,9 +151,10 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         }
 
         if (ok) {
-            val frag = CreateCollectionFragment()
             args.putParcelable(CreateCollectionFragment.ARG_ACCOUNT, model.account)
             args.putString(CreateCollectionFragment.ARG_TYPE, Collection.TYPE_CALENDAR)
+            val frag = CreateCollectionFragment()
+            frag.arguments = args
             frag.show(supportFragmentManager, null)
         }
     }

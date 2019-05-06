@@ -12,7 +12,7 @@
     <data>
         <variable
             name="model"
-            type="at.bitfire.davdroid.ui.CollectionInfoFragment.Model"/>
+            type="at.bitfire.davdroid.ui.account.CollectionInfoFragment.Model"/>
     </data>
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"

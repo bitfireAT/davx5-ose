@@ -22,9 +22,6 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync ORDER BY displayName, url")
     fun getByServiceAndSync(serviceId: Long): List<Collection>
 
-    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type ORDER BY displayName, url")
-    fun observeByServiceAndType(serviceId: Long, type: String): LiveData<List<Collection>>
-
     @Query("SELECT COUNT(*) FROM collection WHERE serviceId=:serviceId AND sync")
     fun observeHasSyncByService(serviceId: Long): LiveData<Boolean>
 

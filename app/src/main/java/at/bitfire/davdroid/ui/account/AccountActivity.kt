@@ -53,6 +53,7 @@ class AccountActivity: AppCompatActivity() {
             model.initialize(account)
         }
 
+        title = model.account.name
         setContentView(R.layout.activity_account)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -248,7 +249,10 @@ class AccountActivity: AppCompatActivity() {
         val calDavService = MutableLiveData<Long>()
 
         private val needContactPermissions: LiveData<Boolean> = Transformations.switchMap(cardDavService) { cardDavId ->
-            db.collectionDao().observeHasSyncByService(cardDavId)
+            if (cardDavId != null)
+                db.collectionDao().observeHasSyncByService(cardDavId)
+            else
+                MutableLiveData<Boolean>().apply { value = false }
         }
         private val needCalendarPermissions: LiveData<Boolean> = Transformations.map(calDavService) { calDavId ->
             calDavId != null

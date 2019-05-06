@@ -21,10 +21,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
-import at.bitfire.davdroid.ui.CollectionInfoFragment
 import at.bitfire.davdroid.ui.DeleteCollectionFragment
 import kotlinx.android.synthetic.main.account_collections.view.*
 

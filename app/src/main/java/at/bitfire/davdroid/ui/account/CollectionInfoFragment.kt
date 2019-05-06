@@ -6,7 +6,7 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid.ui
+package at.bitfire.davdroid.ui.account
 
 import android.app.Application
 import android.os.Bundle
@@ -23,7 +23,7 @@ import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import kotlin.concurrent.thread
 
-class CollectionInfoFragment : DialogFragment() {
+class CollectionInfoFragment: DialogFragment() {
 
     companion object {
 

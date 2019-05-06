@@ -9,12 +9,6 @@ import androidx.room.Query
 @Dao
 interface ServiceDao {
 
-    @Query("SELECT * FROM service WHERE accountName=:accountName")
-    fun getByAccount(accountName: String): List<Service>
-
-    @Query("SELECT * FROM service WHERE accountName=:accountName")
-    fun observeByAccount(accountName: String): LiveData<List<Service>>
-
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     fun getByAccountAndType(accountName: String, type: String): Service?
 
@@ -22,7 +16,7 @@ interface ServiceDao {
     fun getIdByAccountAndType(accountName: String, type: String): Long?
 
     @Query("SELECT * FROM service WHERE id=:id")
-    fun getById(id: Long): Service?
+    fun get(id: Long): Service?
 
     @Query("SELECT * FROM service WHERE type=:type")
     fun getByType(type: String): List<Service>

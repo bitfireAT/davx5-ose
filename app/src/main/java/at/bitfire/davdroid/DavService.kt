@@ -143,7 +143,7 @@ class DavService: android.app.Service() {
         val homeSetDao = db.homeSetDao()
         val collectionDao = db.collectionDao()
 
-        val service = db.serviceDao().getById(serviceId) ?: throw IllegalArgumentException("Service not found")
+        val service = db.serviceDao().get(serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, getString(R.string.account_type))
 
         val homeSets = homeSetDao.getByService(serviceId)
