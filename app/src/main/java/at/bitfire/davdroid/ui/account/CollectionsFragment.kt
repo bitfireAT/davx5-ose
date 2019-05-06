@@ -1,14 +1,14 @@
 package at.bitfire.davdroid.ui.account
 
 import android.app.Application
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.os.Bundle
 import android.os.IBinder
+import android.provider.CalendarContract
+import android.provider.ContactsContract
 import android.view.*
 import android.widget.PopupMenu
+import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
@@ -23,8 +23,11 @@ import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.ui.DeleteCollectionFragment
+import at.bitfire.ical4android.TaskProvider
 import kotlinx.android.synthetic.main.account_collections.view.*
+import java.util.concurrent.Executors
 
 abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
@@ -44,6 +47,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         accountModel = ViewModelProviders.of(requireActivity()).get(AccountActivity.Model::class.java)
         model = ViewModelProviders.of(this).get(Model::class.java)
         model.initialize(
+                accountModel,
                 arguments?.getLong(EXTRA_SERVICE_ID) ?: throw IllegalArgumentException("EXTRA_SERVICE_ID required"),
                 arguments?.getString(EXTRA_COLLECTION_TYPE) ?: throw IllegalArgumentException("EXTRA_COLLECTION_TYPE required")
         )
@@ -61,6 +65,25 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             view.swipe_refresh.isRefreshing = nowRefreshing
         })
         view.swipe_refresh.setOnRefreshListener(this)
+
+        val updateProgress = Observer<Boolean> {
+            val progress = view.progress
+            if (model.isSyncActive.value == true) {
+                progress.isIndeterminate = true
+                progress.alpha = 1.0f
+                progress.visibility = View.VISIBLE
+            } else {
+                if (model.isSyncPending.value == true) {
+                    progress.visibility = View.VISIBLE
+                    progress.alpha = 0.2f
+                    progress.isIndeterminate = false
+                    progress.progress = 100
+                } else
+                    progress.visibility = View.INVISIBLE
+            }
+        }
+        model.isSyncPending.observe(viewLifecycleOwner, updateProgress)
+        model.isSyncActive.observe(viewLifecycleOwner, updateProgress)
 
         val adapter = createAdapter()
         view.list.layoutManager = LinearLayoutManager(requireActivity())
@@ -172,10 +195,12 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     }
 
 
-    class Model(application: Application): AndroidViewModel(application), DavService.RefreshingStatusListener {
+    class Model(application: Application): AndroidViewModel(application), DavService.RefreshingStatusListener, SyncStatusObserver {
 
         private val db = AppDatabase.getInstance(application)
+        private val executor = Executors.newSingleThreadExecutor()
 
+        lateinit var accountModel: AccountActivity.Model
         val serviceId = MutableLiveData<Long>()
         lateinit var collectionType: String
 
@@ -188,7 +213,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         @Volatile
         private var davService: DavService.InfoBinder? = null
         private var davServiceConn: ServiceConnection? = null
-        val svcConn = object: ServiceConnection {
+        private val svcConn = object: ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                 val svc = service as DavService.InfoBinder
                 davService = svc
@@ -200,7 +225,14 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         }
         val isRefreshing = MutableLiveData<Boolean>()
 
-        fun initialize(id: Long, collectionType: String) {
+        // observe whether sync is active
+        private var syncStatusHandle: Any? = null
+        val isSyncActive = MutableLiveData<Boolean>()
+        val isSyncPending = MutableLiveData<Boolean>()
+
+
+        fun initialize(accountModel: AccountActivity.Model, id: Long, collectionType: String) {
+            this.accountModel = accountModel
             this.collectionType = collectionType
             if (serviceId.value == null)
                 serviceId.value = id
@@ -208,9 +240,16 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             val context = getApplication<Application>()
             if (context.bindService(Intent(context, DavService::class.java), svcConn, Context.BIND_AUTO_CREATE))
                 davServiceConn = svcConn
+
+            executor.submit {
+                syncStatusHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_PENDING + ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this)
+                checkSyncStatus()
+            }
         }
 
         override fun onCleared() {
+            syncStatusHandle?.let { ContentResolver.removeStatusChangeListener(it) }
+
             davService?.removeRefreshingStatusListener(this)
             davServiceConn?.let {
                 getApplication<Application>().unbindService(it)
@@ -226,9 +265,43 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             context.startService(intent)
         }
 
+        @WorkerThread
         override fun onDavRefreshStatusChanged(id: Long, refreshing: Boolean) {
             if (id == serviceId.value)
                 isRefreshing.postValue(refreshing)
+        }
+
+        override fun onStatusChanged(which: Int) {
+            executor.submit {
+                checkSyncStatus()
+            }
+        }
+
+        private fun checkSyncStatus() {
+            val context = getApplication<Application>()
+            if (collectionType == Collection.TYPE_ADDRESSBOOK) {
+                val mainAuthority = context.getString(R.string.address_books_authority)
+                val mainSyncActive = ContentResolver.isSyncActive(accountModel.account, mainAuthority)
+                val mainSyncPending = ContentResolver.isSyncPending(accountModel.account, mainAuthority)
+
+                val accounts = LocalAddressBook.findAll(context, null, accountModel.account)
+                val syncActive = accounts.any { ContentResolver.isSyncActive(it.account, ContactsContract.AUTHORITY) }
+                val syncPending = accounts.any { ContentResolver.isSyncPending(it.account, ContactsContract.AUTHORITY) }
+
+                isSyncActive.postValue(mainSyncActive || syncActive)
+                isSyncPending.postValue(mainSyncPending || syncPending)
+            } else {
+                val authorities = arrayOf(
+                        CalendarContract.AUTHORITY,
+                        TaskProvider.ProviderName.OpenTasks.authority
+                )
+                isSyncActive.postValue(authorities.any {
+                    ContentResolver.isSyncActive(accountModel.account, it)
+                })
+                isSyncPending.postValue(authorities.any {
+                    ContentResolver.isSyncPending(accountModel.account, it)
+                })
+            }
         }
 
     }
