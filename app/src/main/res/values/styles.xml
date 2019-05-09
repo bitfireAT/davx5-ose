@@ -40,7 +40,7 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
-    <color name="actionBarButton">#8a000000</color>
+    <color name="actionBarButton">#FF000000</color>
 
     <style name="AppTheme.Dialog.Alert" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/secondaryColor</item>

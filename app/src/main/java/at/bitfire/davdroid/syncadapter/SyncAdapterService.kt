@@ -125,7 +125,7 @@ abstract class SyncAdapterService: Service() {
 
         protected fun notifyPermissions(intent: Intent) {
             val notify = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_SYNC_ERRORS)
-                    .setSmallIcon(R.drawable.ic_sync_error_notification)
+                    .setSmallIcon(R.drawable.ic_sync_problem_notify)
                     .setContentTitle(context.getString(R.string.sync_error_permissions))
                     .setContentText(context.getString(R.string.sync_error_permissions_text))
                     .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))

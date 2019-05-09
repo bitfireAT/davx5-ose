@@ -72,7 +72,7 @@ class TasksSyncAdapterService: SyncAdapterService() {
                 val nm = NotificationManagerCompat.from(context)
                 val message = context.getString(R.string.sync_error_opentasks_required_version, e.provider.minVersionName, e.installedVersionName)
                 val notify = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_SYNC_ERRORS)
-                        .setSmallIcon(R.drawable.ic_sync_error_notification)
+                        .setSmallIcon(R.drawable.ic_sync_problem_notify)
                         .setContentTitle(context.getString(R.string.sync_error_opentasks_too_old))
                         .setContentText(message)
                         .setStyle(NotificationCompat.BigTextStyle().bigText(message))

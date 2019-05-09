@@ -13,7 +13,8 @@
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:theme="?attr/actionBarTheme">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -42,6 +43,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:tooltipText="@string/account_synchronize_now"
-        app:srcCompat="@drawable/ic_sync_action" />
+        app:srcCompat="@drawable/ic_sync_white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

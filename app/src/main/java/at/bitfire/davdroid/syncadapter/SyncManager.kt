@@ -682,7 +682,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
 
         val builder = NotificationUtils.newBuilder(context, channel)
-        builder .setSmallIcon(R.drawable.ic_sync_error_notification)
+        builder .setSmallIcon(R.drawable.ic_sync_problem_notify)
                 .setContentTitle(localCollection.title)
                 .setContentText(message)
                 .setStyle(NotificationCompat.BigTextStyle(builder).bigText(message))

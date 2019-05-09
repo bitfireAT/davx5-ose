@@ -71,7 +71,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
         // log to external file according to preferences
         if (logToFile) {
             val builder = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_DEBUG)
-            builder .setSmallIcon(R.drawable.ic_sd_storage_notification)
+            builder .setSmallIcon(R.drawable.ic_sd_card_notify)
                     .setContentTitle(context.getString(R.string.logging_notification_title))
 
             val logDir = debugDir(context) ?: return
@@ -103,7 +103,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
                 shareIntent.type = "text/plain"
                 shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
                 val chooserIntent = Intent.createChooser(shareIntent, null)
-                val shareAction = NotificationCompat.Action.Builder(R.drawable.ic_share_action_notification,
+                val shareAction = NotificationCompat.Action.Builder(R.drawable.ic_share_notify,
                         context.getString(R.string.logging_notification_send_log),
                         PendingIntent.getActivity(context, 0, chooserIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                 builder.addAction(shareAction.build())
