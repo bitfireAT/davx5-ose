@@ -88,6 +88,7 @@ class DebugInfoActivity: AppCompatActivity() {
         model.report.value?.let { report ->
             val builder = ShareCompat.IntentBuilder.from(this)
                     .setSubject("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info")
+                    .setText(getString(R.string.debug_info_logs_attached))
                     .setType("text/plain")
 
             try {

@@ -282,6 +282,7 @@
     <!-- sync adapters and DebugInfoActivity -->
     <string name="authority_debug_provider" translatable="false">at.bitfire.davdroid.debug</string>
     <string name="debug_info_title">Debug info</string>
+    <string name="debug_info_logs_attached">Logs are attached to this message (requires attachment support of the receiving app).</string>
     <string name="sync_contacts_read_only_address_book">Read-only address book</string>
     <string name="sync_error_permissions">DAVx⁵ permissions</string>
     <string name="sync_error_permissions_text">Additional permissions required</string>
