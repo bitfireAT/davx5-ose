@@ -95,6 +95,10 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_no_address_books">Der er endnu ingen adressebog.</string>
+  <string name="account_no_calendars">Der er endnu ingen kalender.</string>
+  <string name="account_no_webcals">Der er endnu ingen kalender abonnementer.</string>
+  <string name="account_swipe_down">Træk ned for at genopfriske listen fra serveren.</string>
   <string name="account_synchronize_now">Synkronisere</string>
   <string name="account_synchronizing_now">Synkroniserer</string>
   <string name="account_settings">Opsætning af konti</string>

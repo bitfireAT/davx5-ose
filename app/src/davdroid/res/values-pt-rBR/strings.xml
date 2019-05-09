@@ -95,6 +95,10 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_no_address_books">Não há livros de endereços (ainda).</string>
+  <string name="account_no_calendars">Não há calendários (ainda).</string>
+  <string name="account_no_webcals">Não há assinaturas de calendário (ainda).</string>
+  <string name="account_swipe_down">Deslize para baixo para atualizar a lista do servidor.</string>
   <string name="account_synchronize_now">Sincronizar agora</string>
   <string name="account_synchronizing_now">Sincronizando</string>
   <string name="account_settings">Configurações da conta</string>
