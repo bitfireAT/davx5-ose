@@ -247,8 +247,10 @@ class WebcalFragment: CollectionsFragment() {
                 val subscriptions = mutableMapOf<HttpUrl, Long>()
                 provider.query(Calendars.CONTENT_URI, arrayOf(Calendars._ID, Calendars.NAME),null, null, null)?.use { cursor ->
                     while (cursor.moveToNext())
-                        HttpUrl.parse(cursor.getString(1))?.let { url ->
-                            subscriptions[url] = cursor.getLong(0)
+                        cursor.getString(1)?.let { rawName ->
+                            HttpUrl.parse(rawName)?.let { url ->
+                                subscriptions[url] = cursor.getLong(0)
+                            }
                         }
                 }
 
