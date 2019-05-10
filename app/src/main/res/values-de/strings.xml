@@ -239,6 +239,7 @@
   <string name="exception_show_details">Details anzeigen</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Informationen zur Fehlersuche</string>
+  <string name="debug_info_logs_attached">Das Protokoll liegt als Anhang bei (benötigt Unterstützung für Anhänge in der empfangenden App).</string>
   <string name="sync_contacts_read_only_address_book">Schreibgeschütztes Adressbuch</string>
   <string name="sync_error_permissions">DAVx⁵-Berechtigungen</string>
   <string name="sync_error_permissions_text">Zusätzliche Berechtigungen benötigt</string>

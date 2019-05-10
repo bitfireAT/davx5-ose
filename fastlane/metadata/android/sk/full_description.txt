@@ -1,0 +1,5 @@
+DAVx⁵ (bývalý DAVdroid) je aplikácia na správu a synchronizáciu CalDAV/CardDAV pre Android  ktorá sa natívne integruje s Android aplikáciami kalendár/kontakt.
+
+Používajte s vašim vlastným serverom alebo s poskytovateľom server-hostingu ktorému dôverujete a majte svoje kontakty, udalosti a úlohy pod kontrolou.
+
+Ďalšie informácie a zoznam testovaných serverov/služieb nájdete na webovom sídle.

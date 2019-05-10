@@ -1,0 +1,1 @@
+CalDAV/CardDAV synchronizácia a klient

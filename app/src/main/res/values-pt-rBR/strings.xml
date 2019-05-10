@@ -239,6 +239,7 @@
   <string name="exception_show_details">Mostrar detalhes</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Informações de depuração</string>
+  <string name="debug_info_logs_attached">Os registros são anexados a esta mensagem (requer que o aplicativo de recebimento tenha suporte a anexos).</string>
   <string name="sync_contacts_read_only_address_book">Livro de endereços somente leitura</string>
   <string name="sync_error_permissions">Permissões do DAVx⁵</string>
   <string name="sync_error_permissions_text">É necessário permissões adicionais</string>
