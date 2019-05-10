@@ -1,0 +1,262 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">DAVx⁵ adresár</string>
+  <string name="address_books_authority_title">Adresáre</string>
+  <string name="help">Pomoc</string>
+  <string name="manage_accounts">Spravovať používateľské účty</string>
+  <string name="send">Poslať</string>
+  <string name="notification_channel_debugging">Ladenie</string>
+  <string name="notification_channel_general">Ďalšie dôležité správy</string>
+  <string name="notification_channel_sync">Synchronizácia</string>
+  <string name="notification_channel_sync_errors">Chyby synchronizácie</string>
+  <string name="notification_channel_sync_errors_desc">Významné chyby ktoré spôsobia koniec synchronizácie ako napríklad neočakávané odozvy servera</string>
+  <string name="notification_channel_sync_warnings">Varovania synchronizácie</string>
+  <string name="notification_channel_sync_warnings_desc">Nefatálne synchronizačné chyby ako napríklad neplatné súbory</string>
+  <string name="notification_channel_sync_io_errors">Sieťové a V/V chyby</string>
+  <string name="notification_channel_sync_io_errors_desc">Vypršanie času, problémy spojenia, atď. (často dočasné)</string>
+  <!--startup dialogs-->
+  <string name="startup_autostart_permission">Automatická sychnronizácia</string>
+  <string name="startup_autostart_permission_message">%s firmware často blokuje automatickú synchronizáciu. V takom prípade povoľte automatickú synchronizáciu v nastavení Androidu.</string>
+  <string name="startup_battery_optimization">Naplánovaná synchronizácia</string>
+  <string name="startup_battery_optimization_message">Vaše zariadenie bráni DAVx⁵ synchronizácii. Na vynútenie pravidelných DAVx⁵ synchronizačných intervalov vypnite \"režim úspory energie\".</string>
+  <string name="startup_battery_optimization_disable">Pre DAVx⁵ vypnúť</string>
+  <string name="startup_dont_show_again">Opätovne neukazovať</string>
+  <string name="startup_not_now">Teraz nie</string>
+  <string name="startup_donate">Open-Source informácie</string>
+  <string name="startup_donate_message">Sme radi že používate DAVx⁵, čo je open-source softvér (GPLv3). Pretože vývoj DAVx⁵ je náročný a stojí nás tisícky hodín práce, zvážte prosím, dar.</string>
+  <string name="startup_donate_now">Zobraziť darovaciu stránku</string>
+  <string name="startup_donate_later">Snáď neskôr</string>
+  <string name="startup_more_info">Viac informácii</string>
+  <string name="startup_opentasks_not_installed">OpenTasks nie je nainštalovaný</string>
+  <string name="startup_opentasks_not_installed_message">Na synchronizáciu úloh sa vyžaduje slobodná aplikácia OpenTask (Nie je potrebná pre kontakty/udalosti).</string>
+  <string name="startup_opentasks_reinstall_davx5">Po inštalácii OpenTask je potrebné PREINŠTALOVAŤ DAVx⁵ a znovu pridať vaše používateľské účty (Chyba Androidu).</string>
+  <string name="startup_opentasks_not_installed_install">Nainštalovať OpenTasks</string>
+  <!--AboutActivity-->
+  <string name="about_libraries">Knižnice</string>
+  <string name="about_version">Verzia %1$s (%2$d)</string>
+  <string name="about_build_date">Preložené na %s</string>
+  <string name="about_flavor_info">Túto verziu je možné šíriť iba prostredníctvom Google Play.</string>
+  <string name="about_license_info_no_warranty">Tento program sa poskytuje BEZ AKEJKOĽVEK ZÁRUKY. Je to slobodný softvér a môžete ho ďalej šíriť pri splnení určitých podmienok.</string>
+  <!--global settings-->
+  <string name="logging_couldnt_create_file">Nie je možné vytvoriť súbor protokolu</string>
+  <string name="logging_notification_title">DAVx⁵ protokol</string>
+  <string name="logging_notification_text">Odteraz sa protokolujú všetky DAVx⁵ aktivity</string>
+  <string name="logging_notification_send_log">Poslať protokol</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Otvoriť navigačnú zásuvku</string>
+  <string name="navigation_drawer_close">Zatvoriť navigačnú zásuvku</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adaptér</string>
+  <string name="navigation_drawer_about">O programe / Licencia</string>
+  <string name="navigation_drawer_beta_feedback">Odozva na beta-verziu</string>
+  <string name="navigation_drawer_settings">Nastavenia</string>
+  <string name="navigation_drawer_news_updates">Novinky &amp; aktualizácie</string>
+  <string name="navigation_drawer_external_links">Externé odkazy</string>
+  <string name="navigation_drawer_website">Webové sídlo</string>
+  <string name="navigation_drawer_manual">Manuál</string>
+  <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_forums">Pomoc / Fóra</string>
+  <string name="navigation_drawer_donate">Darovať</string>
+  <string name="account_list_empty">Vitajte v programe DAVx⁵!\n\nTeraz môžete pridať používateľský účet pre CalDAV/CardDAV .</string>
+  <string name="accounts_global_sync_disabled">Automatická synchronizácia platná pre celý systém je zakázaná</string>
+  <string name="accounts_global_sync_enable">Povoliť</string>
+  <!--DavService-->
+  <string name="dav_service_refresh_failed">Zisťovanie služby zlyhalo</string>
+  <string name="dav_service_refresh_couldnt_refresh">Nie je možné obnoviť zoznam kolekcií</string>
+  <!--AppSettingsActivity-->
+  <string name="app_settings">Nastavenia</string>
+  <string name="app_settings_debug">Ladenie</string>
+  <string name="app_settings_show_debug_info">Zobraziť ladiace informácie</string>
+  <string name="app_settings_show_debug_info_details">Zobraziť/zdieľať softvér a konfiguračné detaily</string>
+  <string name="app_settings_logging">Zvýšené protokolovanie</string>
+  <string name="app_settings_logging_on">Protokolovanie je aktívne</string>
+  <string name="app_settings_logging_off">Protokolovanie je zakázané</string>
+  <string name="app_settings_connection">Spojenie</string>
+  <string name="app_settings_override_proxy">Prepísať nastavenie proxy</string>
+  <string name="app_settings_override_proxy_on">Použiť užívateľské nastavenie proxy</string>
+  <string name="app_settings_override_proxy_off">Použiť nastavenie proxy platné pre systém</string>
+  <string name="app_settings_override_proxy_host">Meno hostiteľa HTTP proxy </string>
+  <string name="app_settings_override_proxy_port">Číslo portu HTTP proxy</string>
+  <string name="app_settings_security">Zabezpečenie</string>
+  <string name="app_settings_distrust_system_certs">Nedôverovať systémovým certifikátom</string>
+  <string name="app_settings_distrust_system_certs_on">Nebude sa dôverovať systémovým a požívateľom pridaným certifikátom</string>
+  <string name="app_settings_distrust_system_certs_off">Bude sa dôverovať systémovým a používateľom pridaným certifikátom (doporučuje sa)</string>
+  <string name="app_settings_reset_certificates">Vynulovanie ne(dôveryhodných) certifikátov</string>
+  <string name="app_settings_reset_certificates_summary">Vynuluje dôveru pre všetky užívateľské certifikáty</string>
+  <string name="app_settings_reset_certificates_success">Všetky užívateľské certifikáty boli vyčistené</string>
+  <string name="app_settings_user_interface">Používateľské rozhranie</string>
+  <string name="app_settings_notification_settings">Nastavenia notifikácií</string>
+  <string name="app_settings_notification_settings_summary">Spravovať notifikačné kanály a ich nastavenia</string>
+  <string name="app_settings_reset_hints">Vynulovať náznaky</string>
+  <string name="app_settings_reset_hints_summary">Znovu povolí náznaky odstránené skôr</string>
+  <string name="app_settings_reset_hints_success">Všetky náznaky budú zobrazené znovu</string>
+  <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_no_address_books">Neexistujú žiadne adresáre (zatiaľ)</string>
+  <string name="account_no_calendars">Neexistujú žiadne kalendáre (zatiaľ)</string>
+  <string name="account_no_webcals">Neexistujú žiadne odbery pre kalendár (zatiaľ)</string>
+  <string name="account_swipe_down">Potiahnite nadol aby ste znovu načítali zoznam zo serveru</string>
+  <string name="account_synchronize_now">Teraz synchronizovať</string>
+  <string name="account_synchronizing_now">Práve sa synchronizuje</string>
+  <string name="account_settings">Nastavenia používateľského účtu</string>
+  <string name="account_rename">Premenovať používateľský účet</string>
+  <string name="account_rename_new_name">Neuložené miestne dáta môžu byť zabudnuté. Po premenovaní je potrebná opätovná synchronizácia. Nové meno účtu:</string>
+  <string name="account_rename_rename">Premenovať</string>
+  <string name="account_delete">Odstrániť účet</string>
+  <string name="account_delete_confirmation_title">Skutočne si želáte odstrániť účet?</string>
+  <string name="account_delete_confirmation_text">Všetky miestne kópie adresárov, kalendárov a zoznamov úloh budú vymazané.</string>
+  <string name="account_synchronize_this_collection">synchronizovať túto zbierku</string>
+  <string name="account_read_only">len na čítanie</string>
+  <string name="account_calendar">kalendár</string>
+  <string name="account_task_list">zoznam úloh</string>
+  <string name="account_refresh_address_book_list">Obnoviť zoznam adresárov</string>
+  <string name="account_create_new_address_book">Vytvoriť nový adresár</string>
+  <string name="account_refresh_calendar_list">Obnoviť zoznam kalendárov</string>
+  <string name="account_create_new_calendar">Vytvoriť nový kalendár</string>
+  <string name="account_no_webcal_handler_found">Nenašla sa žiadna aplikácia schopná používať Webcal</string>
+  <string name="account_install_icsx5">Nainštalovať ICSx⁵</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">Pridať účet</string>
+  <string name="login_type_email">Prihlásiť sa e-mailovou adresou</string>
+  <string name="login_email_address">E-mailová adresa</string>
+  <string name="login_email_address_error">Vyžaduje sa platná e-mailová adresa</string>
+  <string name="login_password">Heslo</string>
+  <string name="login_password_required">Vyžaduje sa heslo</string>
+  <string name="login_type_url">Prihlásiť sa s použitím URL a používateľského mena</string>
+  <string name="login_url_must_be_http_or_https">URL musí začínať s http(s)://</string>
+  <string name="login_url_must_be_https">URL musí začínať s https://</string>
+  <string name="login_url_host_name_required">Vyžaduje sa meno hostiteľského počítača</string>
+  <string name="login_user_name">Používateľské meno</string>
+  <string name="login_user_name_required">Vyžaduje sa používateľské meno</string>
+  <string name="login_base_url">Základné URL</string>
+  <string name="login_type_url_certificate">Prihlásiť sa s použitím URL a klientského certifikátu</string>
+  <string name="login_select_certificate">Zvoliť certifikát</string>
+  <string name="login_login">Prihlásiť sa</string>
+  <string name="login_back">Naspäť</string>
+  <string name="login_create_account">Vytvoriť používateľský účet</string>
+  <string name="login_account_name">Meno používateľského účtu</string>
+  <string name="login_account_name_info">Použite vašu e-mailovú adresu ako meno používateľského účtu pretože Android používa meno účtu v poli ORGANIZÁTOR pre udalosti ktoré vytvoríte. Nie je možné mať dva používateľské účty s rovnakým menom.</string>
+  <string name="login_account_contact_group_method">Spôsob práce so skupinami</string>
+  <string name="login_account_name_required">Vyžaduje sa meno používateľského účtu</string>
+  <string name="login_account_name_already_taken">Meno účtu sa už používa</string>
+  <string name="login_account_not_created">Nie je možné vytvoriť používateľský účet</string>
+  <string name="login_configuration_detection">Zisťuje sa konfigurácia</string>
+  <string name="login_querying_server">Čakajte, prosím, zasiela sa dopyt na server…</string>
+  <string name="login_no_caldav_carddav">Nie je možné nájsť služby CalDAV ani CardDAV.</string>
+  <string name="login_view_logs">Zobraziť podrobnosti</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">Nastavenia: %s</string>
+  <string name="settings_authentication">Overenie</string>
+  <string name="settings_username">Meno používateľa</string>
+  <string name="settings_enter_username">Zadajte meno používateľa:</string>
+  <string name="settings_password">Heslo</string>
+  <string name="settings_password_summary">Aktualizujte heslo podľa vášho servera.</string>
+  <string name="settings_enter_password">Zadajte vaše heslo:</string>
+  <string name="settings_certificate_alias">Alias pre klientský certifikát</string>
+  <string name="settings_sync">Synchronizácia</string>
+  <string name="settings_sync_interval_contacts">Synchr. interval pre kontakty</string>
+  <string name="settings_sync_summary_manually">Iba manuálne</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Každú %d minút + okamžite pri miestnych zmenách</string>
+  <string name="settings_sync_interval_calendars">Synchr. interval pre kalendáre</string>
+  <string name="settings_sync_interval_tasks">Synchr. interval pre úlohy</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Iba manuálne</item>
+    <item>Každých 15 minút</item>
+    <item>Každých 30 minút</item>
+    <item>Každú hodinu</item>
+    <item>Každé 2 hodiny</item>
+    <item>Každé 4 hodiny</item>
+    <item>Raz za deň</item>
+  </string-array>
+  <string name="settings_sync_wifi_only">Synchronizovať iba cez WiFi</string>
+  <string name="settings_sync_wifi_only_on">Synchronizácia je obmedzená na WiFi pripojenie</string>
+  <string name="settings_sync_wifi_only_off">Typ pripojenia sa neberie do úvahy</string>
+  <string name="settings_sync_wifi_only_ssids">Obmedzenie na WiFi SSID</string>
+  <string name="settings_sync_wifi_only_ssids_on">Synchronizuje sa iba cez %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Synchronizuje sa iba cez %s (miestne lokalizačné služby musia byť aktívne)</string>
+  <string name="settings_sync_wifi_only_ssids_off">Použije sa akékoľvek WiFi pripojenie</string>
+  <string name="settings_sync_wifi_only_ssids_message">Čiarkou oddelený zoznam mien (SSID) povolených WiFi sietí (ponechať prázdne pre všetky)</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">Aby bolo možné čítať mená WiFi, musia byť dostupné povolenia pre lokalizáciu a trvalo aktivované lokalizačné služby</string>
+  <string name="settings_more_info_faq">Viac informácií (FAQ)</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Spôsob práce so skupinami kontaktov</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Skupiny sú samostatné VCards</item>
+    <item>Skupiny sú kategórie kontaktu</item>
+  </string-array>
+  <string name="settings_contact_group_method_change">Zmena spôsobu práce so skupinami</string>
+  <string name="settings_contact_group_method_change_reload_contacts">Bude nutné znovu načítať všetky kontakty. Neuložené miestne zmeny budú stratené.</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Uplynul časový limit pre udalosť</string>
+  <string name="settings_sync_time_range_past_none">Budú sa synchronizovať všetky udalosti</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Udalosti staršie ako jeden deň budú ignorované</item>
+    <item quantity="few">Udalosti staršie ako %d dni budú ignorované</item>
+    <item quantity="many">Udalosti staršie ako %d dní budú ignorované</item>
+    <item quantity="other">Udalosti staršie ako %d dní budú ignorované</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Udalosti ktoré sú staršie ako tento počet dní budú ignorované (0 je povolená). Ponechajte prázdne aby ste synchronizovali všetky udalosti.</string>
+  <string name="settings_manage_calendar_colors">Spravovať farby kalendára</string>
+  <string name="settings_manage_calendar_colors_on">Farby kalendára sú spravované DAVx⁵</string>
+  <string name="settings_manage_calendar_colors_off">Farby kalendáre nie sú nastavované DAVx⁵</string>
+  <string name="settings_event_colors">Podpora farieb pre udalosť</string>
+  <string name="settings_event_colors_on">Farby synchronizácie udalostí</string>
+  <string name="settings_event_colors_off">Nesynchronizovať farby udalostí</string>
+  <string name="settings_event_colors_off_confirm">Vypnutie farieb udalostí môže odstrániť už synchronizované farby udalostí.</string>
+  <!--collection management-->
+  <string name="create_addressbook">Vytvoriť adresár</string>
+  <string name="create_addressbook_display_name_hint">Môj adresár</string>
+  <string name="create_calendar">Vytvoriť kalendár</string>
+  <string name="create_calendar_time_zone">Časová zóna</string>
+  <string name="create_calendar_time_zone_required">Vyžaduje sa časová zóna</string>
+  <string name="create_calendar_type">Možné kalendárové položky</string>
+  <string name="create_calendar_type_vevent">Udalosti</string>
+  <string name="create_calendar_type_vtodo">Úlohy</string>
+  <string name="create_calendar_type_vjournal">Poznámky / denník</string>
+  <string name="create_calendar_type_events_and_tasks">Kombinované (udalosti a úlohy)</string>
+  <string name="create_collection_color">Farba</string>
+  <string name="create_collection_creating">Vytvára sa kolekcia</string>
+  <string name="create_collection_display_name">Názov</string>
+  <string name="create_collection_display_name_required">Vyžaduje sa názov</string>
+  <string name="create_collection_description">Popis</string>
+  <string name="create_collection_optional">voliteľné</string>
+  <string name="create_collection_home_set">Umiestnenie úložiska</string>
+  <string name="create_collection_create">Vytvoriť</string>
+  <string name="delete_collection">Zmazať kolekciu</string>
+  <string name="delete_collection_confirm_title">Ste si istý?</string>
+  <string name="delete_collection_confirm_warning">Kolekcia (%s) a všetky jej údaje budú natrvalo zmazané.</string>
+  <string name="delete_collection_data_shall_be_deleted">Tieto data budú zmazané zo servera.</string>
+  <string name="delete_collection_deleting_collection">Maže sa kolekcia</string>
+  <string name="collection_force_read_only">Vyžiadať len na čítanie</string>
+  <string name="collection_properties">Vlastnosti</string>
+  <string name="collection_properties_url">Adresa (URL):</string>
+  <string name="collection_properties_copy_url">Kopírovať URL</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">Vyskytla sa chyba.</string>
+  <string name="exception_httpexception">Vyskytla sa HTTP chyba.</string>
+  <string name="exception_ioexception">Vyskytla sa V/V chyba.</string>
+  <string name="exception_show_details">Zobraziť detaily</string>
+  <!--sync adapters and DebugInfoActivity-->
+  <string name="debug_info_title">Ladiace informácie</string>
+  <string name="sync_contacts_read_only_address_book">Adresár len na čítanie</string>
+  <string name="sync_error_permissions">Oprávnenia DAVx⁵ </string>
+  <string name="sync_error_permissions_text">Vyžadujú sa dodatočné oprávnenia</string>
+  <string name="sync_error_opentasks_too_old">OpenTask je príliš starý</string>
+  <string name="sync_error_opentasks_required_version">Vyžaduje sa verzia: %1$s (aktuálna %2$s)</string>
+  <string name="sync_error_authentication_failed">Overenie zlyhalo  (skontroluje prihlasovacie údaje)</string>
+  <string name="sync_error_io">Sieťová alebo V/V chyba – %s</string>
+  <string name="sync_error_http_dav">Chyba HTTP servera – %s</string>
+  <string name="sync_error_local_storage">Chyba miestneho úložiska – %s</string>
+  <string name="sync_error_retry">Opakovať</string>
+  <string name="sync_error_view_item">Zobraziť položku</string>
+  <string name="sync_invalid_contact">Kontakt prijatý zo servera je neplatný</string>
+  <string name="sync_invalid_event">Udalosť prijatá zo servera nie je platná</string>
+  <string name="sync_invalid_task">Úloha prijatá zo servera nie je platná</string>
+  <string name="sync_invalid_resources_ignoring">Ignoruje sa jeden alebo viac neplatných zdrojov</string>
+  <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVx⁵: Zabezpečenie spojenia</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ zistil neznámy certifikát. Prajete si dôverovať mu?</string>
+</resources>
