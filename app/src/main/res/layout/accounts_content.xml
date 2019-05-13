@@ -35,7 +35,7 @@
         android:layout_height="match_parent"
         tools:layout="@layout/account_list"
         app:layout_scrollFlags="scroll"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

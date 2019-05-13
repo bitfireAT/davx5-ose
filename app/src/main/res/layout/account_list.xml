@@ -13,7 +13,7 @@
     android:orientation="vertical">
 
     <ListView
-        android:id="@id/android:list"
+        android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp"
@@ -22,7 +22,7 @@
         android:cacheColorHint="@android:color/transparent"/>
 
     <TextView
-        android:id="@id/android:empty"
+        android:id="@android:id/empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="16dp"

@@ -19,7 +19,7 @@ android {
     defaultConfig {
         applicationId "at.bitfire.davdroid"
 
-        versionCode 286
+        versionCode 287
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "customCerts", "true"
 
@@ -43,7 +43,7 @@ android {
     flavorDimensions "distribution"
     productFlavors {
         standard {
-            versionName "2.5-beta2-ose"
+            versionName "2.5-ose"
         }
     }
 
@@ -61,7 +61,6 @@ android {
         disable 'GoogleAppIndexingWarning'      // we don't need Google indexing, thanks
         disable 'ImpliedQuantity', 'MissingQuantity'		// quantities from Transifex may vary
         disable 'MissingTranslation', 'ExtraTranslation'	// translations from Transifex are not always up to date
-        disable "OnClick"     // doesn't recognize Kotlin onClick methods
         disable 'RtlEnabled'
         disable 'RtlHardcoded'
         disable 'Typos'
