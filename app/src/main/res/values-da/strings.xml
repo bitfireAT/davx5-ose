@@ -239,6 +239,7 @@
   <string name="exception_show_details">Vis detaljer</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Debug-info</string>
+  <string name="debug_info_logs_attached">Logfiler er vedhæftet denne besked (kræver understøttelse af vedhæftning hos modtagende program).</string>
   <string name="sync_contacts_read_only_address_book">Skrivebeskyttet adressebog</string>
   <string name="sync_error_permissions">DAVx⁵-rettigheder</string>
   <string name="sync_error_permissions_text">Yderligere adgang påkrævet</string>
