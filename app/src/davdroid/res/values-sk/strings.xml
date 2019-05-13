@@ -241,6 +241,7 @@
   <string name="exception_show_details">Zobraziť detaily</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Ladiace informácie</string>
+  <string name="debug_info_logs_attached">Protokoly sú pripojené k tejto správe (vyžaduje podporu prílohy v prijímacej aplikácii).</string>
   <string name="sync_contacts_read_only_address_book">Adresár len na čítanie</string>
   <string name="sync_error_permissions">Oprávnenia DAVx⁵ </string>
   <string name="sync_error_permissions_text">Vyžadujú sa dodatočné oprávnenia</string>
