@@ -65,6 +65,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         model.isRefreshing.observe(viewLifecycleOwner, Observer { nowRefreshing ->
             view.swipe_refresh.isRefreshing = nowRefreshing
         })
+        view.swipe_refresh.setColorSchemeResources(R.color.secondaryColor)
         view.swipe_refresh.setOnRefreshListener(this)
 
         val updateProgress = Observer<Boolean> {
