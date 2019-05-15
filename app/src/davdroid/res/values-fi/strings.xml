@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <!--startup dialogs-->
+  <!--AboutActivity-->
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <!--DavService-->
+  <!--AppSettingsActivity-->
+  <!--AccountActivity-->
+  <!--AddAccountActivity-->
+  <!--AccountSettingsActivity-->
+  <!--collection management-->
+  <!--ExceptionInfoFragment-->
+  <!--sync adapters and DebugInfoActivity-->
+  <!--cert4android-->
+</resources>
