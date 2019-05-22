@@ -19,10 +19,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
-import okhttp3.Cache
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Response
+import okhttp3.*
 import okhttp3.internal.tls.OkHostnameVerifier
 import okhttp3.logging.HttpLoggingInterceptor
 import java.io.File
@@ -212,6 +209,10 @@ class HttpClient private constructor(
                                 key.takeIf { forAlias == alias }
                     }
                 }
+
+                // HTTP/2 doesn't support client certificates (yet)
+                // see https://tools.ietf.org/html/draft-ietf-httpbis-http2-secondary-certs-04
+                orig.protocols(listOf(Protocol.HTTP_1_1))
             } catch (e: Exception) {
                 logger.log(Level.SEVERE, "Couldn't set up provider certificate authentication", e)
             }
