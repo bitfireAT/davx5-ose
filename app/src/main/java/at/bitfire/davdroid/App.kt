@@ -20,11 +20,13 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.multidex.MultiDexApplication
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import java.util.logging.Level
 import kotlin.concurrent.thread
 
 @Suppress("unused")
-class App: MultiDexApplication() {
+class App: MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
     companion object {
 
@@ -49,6 +51,9 @@ class App: MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
         Logger.initialize(this)
+
+        //if (BuildConfig.FLAVOR == FLAVOR_STANDARD)
+            Thread.setDefaultUncaughtExceptionHandler(this)
 
         if (BuildConfig.DEBUG)
             StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder()
@@ -77,6 +82,17 @@ class App: MultiDexApplication() {
             // check whether a tasks app is currently installed
             PackageChangedReceiver.updateTaskSync(this)
         }
+    }
+
+    override fun uncaughtException(t: Thread, e: Throwable) {
+        Logger.log.log(Level.SEVERE, "Unhandled exception!", e)
+
+        val intent = Intent(this, DebugInfoActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.putExtra(DebugInfoActivity.KEY_THROWABLE, e)
+        startActivity(intent)
+
+        System.exit(1)
     }
 
 }

@@ -60,7 +60,6 @@ class DebugInfoActivity: AppCompatActivity() {
         const val KEY_LOGS = "logs"
         const val KEY_ACCOUNT = "account"
         const val KEY_AUTHORITY = "authority"
-        const val KEY_PHASE = "phase"
         const val KEY_LOCAL_RESOURCE = "localResource"
         const val KEY_REMOTE_RESOURCE = "remoteResource"
     }
@@ -132,11 +131,8 @@ class DebugInfoActivity: AppCompatActivity() {
                 val text = StringBuilder("--- BEGIN DEBUG INFO ---\n")
 
                 // begin with most specific information
-                extras?.getInt(KEY_PHASE, -1).takeIf { it != -1 }?.let {
-                    text.append("SYNCHRONIZATION INFO\nSynchronization phase: $it\n")
-                }
                 extras?.getParcelable<Account>(KEY_ACCOUNT)?.let {
-                    text.append("Account name: ${it.name}\n")
+                    text.append("SYNCHRONIZATION INFO\nAccount name: ${it.name}\n")
                 }
                 extras?.getString(KEY_AUTHORITY)?.let {
                     text.append("Authority: $it\n")
