@@ -40,13 +40,17 @@
                     android:text="@string/login_create_account"
                     android:layout_marginBottom="14dp"/>
 
-                <EditText
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/login_account_name"
-                    android:text="@={details.name}"
-                    app:error="@{details.nameError}"
-                    android:inputType="textEmailAddress"/>
+                    android:hint="@string/login_account_name">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@={details.name}"
+                        app:error="@{details.nameError}"
+                        android:inputType="textEmailAddress"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
                     android:id="@+id/account_email_hint"
