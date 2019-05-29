@@ -8,8 +8,8 @@
 
 buildscript {
     ext.versions = [
-        kotlin: '1.3.30',
-        dokka: '0.9.17',
+        kotlin: '1.3.31',
+        dokka: '0.9.18',
         conscrypt: '2.1.0'
     ]
 
