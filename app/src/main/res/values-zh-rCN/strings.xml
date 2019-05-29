@@ -95,6 +95,10 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_no_address_books">暂无通讯录。</string>
+  <string name="account_no_calendars">暂无日历。</string>
+  <string name="account_no_webcals">暂无日历订阅。</string>
+  <string name="account_swipe_down">下拉可从服务器获取最新列表。</string>
   <string name="account_synchronize_now"> 立即同步</string>
   <string name="account_synchronizing_now">正在同步</string>
   <string name="account_settings">账户设置</string>
@@ -204,8 +208,11 @@
   <string name="create_addressbook_display_name_hint">我的通讯录</string>
   <string name="create_calendar">创建日历</string>
   <string name="create_calendar_time_zone">时区</string>
+  <string name="create_calendar_time_zone_required">请选择时区</string>
+  <string name="create_calendar_type">可能使用的日历类型</string>
   <string name="create_calendar_type_vevent">事件</string>
   <string name="create_calendar_type_vtodo">任务</string>
+  <string name="create_calendar_type_vjournal">笔记 / 日志</string>
   <string name="create_calendar_type_events_and_tasks">混合（日程和任务）</string>
   <string name="create_collection_color">颜色</string>
   <string name="create_collection_creating">正在创建集合</string>
@@ -217,6 +224,8 @@
   <string name="create_collection_create">创建</string>
   <string name="delete_collection">删除集合</string>
   <string name="delete_collection_confirm_title">你确定吗？</string>
+  <string name="delete_collection_confirm_warning">该集合 %s 及其所有数据将会被永久删除。</string>
+  <string name="delete_collection_data_shall_be_deleted">这些数据将会被从远程服务器删除。</string>
   <string name="delete_collection_deleting_collection">正在删除集合</string>
   <string name="collection_force_read_only">强制只读</string>
   <string name="collection_properties">属性</string>
@@ -229,6 +238,7 @@
   <string name="exception_show_details">显示详情</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">调试信息</string>
+  <string name="debug_info_logs_attached">日志数据将作为附件与该信息一并发送（需要分享目标应用支持附件功能）。</string>
   <string name="sync_contacts_read_only_address_book">只读通讯录</string>
   <string name="sync_error_permissions">DAVx⁵ 权限</string>
   <string name="sync_error_permissions_text">需要额外权限</string>

@@ -25,8 +25,8 @@
   <string name="startup_dont_show_again">Не показывать снова</string>
   <string name="startup_not_now">Не сейчас</string>
   <string name="startup_donate">Open-Source информация</string>
-  <string name="startup_donate_message">Мы рады, что вы используете приложение DAVx⁵, являющееся программным обеспечением с открытым исходным кодом (GPLv3). Поскольку разработка DAVx⁵ - это тяжелая работа, на которую мы потратили очень много времени, пожалуйста, рассмотрите возможность поддержать проект.</string>
-  <string name="startup_donate_now">Показать страницу пожертвований</string>
+  <string name="startup_donate_message">Мы рады, что вы используете приложение DAVx⁵, которое является программным обеспечением с открытым исходным кодом (GPLv3). Поскольку разработка DAVx⁵ - это трудоемкая работа, на которую мы потратили очень много времени, пожалуйста, рассмотрите возможность поддержать проект.</string>
+  <string name="startup_donate_now">Поддержать проект</string>
   <string name="startup_donate_later">Возможно, позже</string>
   <string name="startup_more_info">Дополнительная информация</string>
   <string name="startup_opentasks_not_installed">OpenTasks не установлен</string>
@@ -95,6 +95,10 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">WebСal</string>
+  <string name="account_no_address_books">Нет адресных книг (пока).</string>
+  <string name="account_no_calendars">Нет календарей (пока).</string>
+  <string name="account_no_webcals">Нет подписок на календарь (пока).</string>
+  <string name="account_swipe_down">Проведите вниз, чтобы обновить список с сервера.</string>
   <string name="account_synchronize_now">Синхронизировать</string>
   <string name="account_synchronizing_now">Синхронизация</string>
   <string name="account_settings">Настройки аккаунта</string>
@@ -237,6 +241,7 @@
   <string name="exception_show_details">Показать детали</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>
+  <string name="debug_info_logs_attached">К этому сообщению будут добавлены журналы (требуется поддержка вложений принимающего приложения).</string>
   <string name="sync_contacts_read_only_address_book">Адресная книга только для чтения</string>
   <string name="sync_error_permissions">Разрешения DAVx⁵</string>
   <string name="sync_error_permissions_text">Требуются дополнительные разрешения</string>
