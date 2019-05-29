@@ -48,7 +48,7 @@
   <string name="navigation_drawer_open">Ouvrir le tiroir de navigation</string>
   <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
   <string name="navigation_drawer_subtitle">Adaptateur de synchronisation CalDAV/CardDAV</string>
-  <string name="navigation_drawer_about">A propos / Licence</string>
+  <string name="navigation_drawer_about">À propos / Licence</string>
   <string name="navigation_drawer_beta_feedback">Commentaire pour la version Beta</string>
   <string name="navigation_drawer_settings">Paramètres</string>
   <string name="navigation_drawer_news_updates">Actualités &amp; mises à jour</string>
@@ -95,6 +95,10 @@
   <string name="account_carddav">CardDAV (les carnets d\'adresse) </string>
   <string name="account_caldav">CalDAV (les agendas) </string>
   <string name="account_webcal">WebCal (les anciens agenda)</string>
+  <string name="account_no_address_books">Il n\'y a pas (encore) de carnet d\'adresses.</string>
+  <string name="account_no_calendars">Il n\'y a pas (encore) de calendriers.</string>
+  <string name="account_no_webcals">Il n\'y a pas (encore) d\'abonnement à des calendriers.</string>
+  <string name="account_swipe_down">Glisser vers le bas pour rafraîchir la liste à partir du serveur.</string>
   <string name="account_synchronize_now">Synchroniser maintenant</string>
   <string name="account_synchronizing_now">Synchronisation en cours</string>
   <string name="account_settings">Paramètres du compte</string>
@@ -235,6 +239,7 @@
   <string name="exception_show_details">Voir détails</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Infos de débogage</string>
+  <string name="debug_info_logs_attached">Les logs seront joints à ce message (nécessite la prise en charge de pièce jointe par l\'application destinataire).</string>
   <string name="sync_contacts_read_only_address_book">Carnet d\'adresse en lecture seulement</string>
   <string name="sync_error_permissions">Autorisations DAVx⁵</string>
   <string name="sync_error_permissions_text">Autorisations supplémentaires demandées</string>
