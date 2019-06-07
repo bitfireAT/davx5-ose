@@ -115,7 +115,12 @@ data class Collection(
                             supportsVJOURNAL = it.supportsJournal
                         }
                     } else { // Type.WEBCAL
-                        dav[Source::class.java]?.let { source = it.hrefs.firstOrNull()?.let { HttpUrl.parse(it) } }
+                        dav[Source::class.java]?.let { source = it.hrefs.firstOrNull()?.let { rawHref ->
+                            val href = rawHref
+                                    .replace("^webcal://".toRegex(), "http://")
+                                    .replace("^webcals://".toRegex(), "https://")
+                            HttpUrl.parse(href)
+                        } }
                         supportsVEVENT = true
                     }
                 }

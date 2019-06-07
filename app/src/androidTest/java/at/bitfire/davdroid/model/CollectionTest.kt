@@ -105,4 +105,31 @@ class CollectionTest {
         assertTrue(info.supportsVJOURNAL!!)
     }
 
+    @Test
+    @SmallTest
+    fun testFromDavResponseWebcal() {
+        // Webcal subscription
+        server.enqueue(MockResponse()
+                .setResponseCode(207)
+                .setBody("<multistatus xmlns='DAV:' xmlns:CS='http://calendarserver.org/ns/'>" +
+                        "<response>" +
+                        "   <href>/webcal1</href>" +
+                        "   <propstat><prop>" +
+                        "       <displayname>Sample Subscription</displayname>" +
+                        "       <resourcetype><collection/><CS:subscribed/></resourcetype>" +
+                        "       <CS:source><href>webcals://example.com/1.ics</href></CS:source>" +
+                        "   </prop></propstat>" +
+                        "</response>" +
+                        "</multistatus>"))
+
+        lateinit var info: Collection
+        DavResource(httpClient.okHttpClient, server.url("/"))
+                .propfind(0, ResourceType.NAME) { response, _ ->
+                    info = Collection.fromDavResponse(response) ?: throw IllegalArgumentException()
+                }
+        assertEquals(Collection.TYPE_WEBCAL, info.type)
+        assertEquals("Sample Subscription", info.displayName)
+        assertEquals(HttpUrl.get("https://example.com/1.ics"), info.source)
+    }
+
 }
