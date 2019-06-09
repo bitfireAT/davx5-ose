@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">DAVx⁵ Helbide liburua</string>
+  <string name="address_books_authority_title">Helbide liburuak</string>
+  <string name="help">Laguntza</string>
+  <string name="manage_accounts">Kudeatu kontuak</string>
+  <string name="send">Bidali</string>
+  <string name="notification_channel_debugging">Arazten</string>
+  <string name="notification_channel_sync">Sinkronizazioa</string>
+  <string name="notification_channel_sync_errors">Sinkronizazio akatsak</string>
+  <string name="notification_channel_sync_io_errors">Sare eta S/I erroreak</string>
+  <!--startup dialogs-->
+  <string name="startup_autostart_permission">Sinkronizazio automatikoa</string>
+  <string name="startup_dont_show_again">Ez erakutsi berriro</string>
+  <string name="startup_not_now">Orain ez</string>
+  <string name="startup_donate">Kode-Ireki Informazioa</string>
+  <string name="startup_donate_now">Erakutsi dohaintza orrialdea</string>
+  <string name="startup_donate_later">Agian geroago</string>
+  <string name="startup_more_info">Informazio gehiago</string>
+  <string name="startup_opentasks_not_installed">OpenTask ez dago instalatuta</string>
+  <string name="startup_opentasks_not_installed_install">Instalatu OpenTasks</string>
+  <!--AboutActivity-->
+  <string name="about_libraries">Liburutegiak</string>
+  <string name="about_version">%1$s (%2$d) bertsioa</string>
+  <string name="about_build_date">%s(e)an konpilatuta</string>
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_about">Honi buruz / Lizentzia</string>
+  <string name="navigation_drawer_settings">Ezarpenak</string>
+  <string name="navigation_drawer_external_links">Kanpo loturak</string>
+  <string name="navigation_drawer_website">Webgunea</string>
+  <string name="navigation_drawer_forums">Laguntza / Foroak</string>
+  <string name="navigation_drawer_donate">Dohaintza egin</string>
+  <string name="accounts_global_sync_enable">Gaitu</string>
+  <!--DavService-->
+  <!--AppSettingsActivity-->
+  <string name="app_settings">Ezarpenak</string>
+  <string name="app_settings_debug">Arazketa</string>
+  <string name="app_settings_show_debug_info">Erakutsi arazte informazioa</string>
+  <string name="app_settings_connection">Konexioa</string>
+  <string name="app_settings_override_proxy_host">HTTP proxy hostalari izena</string>
+  <string name="app_settings_override_proxy_port">HTTP proxy portua</string>
+  <string name="app_settings_security">Segurtasuna</string>
+  <string name="app_settings_user_interface">Erabiltzaile interfazea</string>
+  <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_synchronize_now">Sinkronizatu orain</string>
+  <string name="account_synchronizing_now">Sinkronizatzen orain</string>
+  <string name="account_settings">Kontuaren ezarpenak</string>
+  <string name="account_rename">Berrizendatu kontua</string>
+  <string name="account_rename_rename">Berrizendatu</string>
+  <string name="account_delete">Ezabatu kontua</string>
+  <string name="account_calendar">egutegia</string>
+  <string name="account_task_list">zeregin zerrenda</string>
+  <string name="account_refresh_address_book_list">Freskatu helbide liburuen zerrenda</string>
+  <string name="account_create_new_address_book">Sortu helbide liburu berria</string>
+  <string name="account_refresh_calendar_list">Freskatu egutegi zerrenda</string>
+  <string name="account_create_new_calendar">Sortu egutegi berria</string>
+  <string name="account_install_icsx5">Instalatu ICSx⁵</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">Gehitu kontua</string>
+  <string name="login_type_email">Saioa hasi helbide elektronikoarekin</string>
+  <string name="login_email_address">Helbide elektornikoa</string>
+  <string name="login_password">Pasahitza</string>
+  <string name="login_password_required">Pasahitza beharrezkoa</string>
+  <string name="login_type_url">Saioa hasi URL eta erabiltzaile izenarekin</string>
+  <string name="login_url_host_name_required">Hostalari izena beharrezkoa</string>
+  <string name="login_user_name">Erabiltzaile izena</string>
+  <string name="login_user_name_required">Erabiltzaile izena beharrezkoa</string>
+  <string name="login_base_url">Oinarri URL</string>
+  <string name="login_type_url_certificate">Saioa hasi URL eta bezero ziurtagiriarekin</string>
+  <string name="login_select_certificate">Aukeratu ziurtagiria</string>
+  <string name="login_login">Saioa hasi</string>
+  <string name="login_create_account">Sortu kontua</string>
+  <string name="login_account_name">Kontuaren izena</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">Ezarpenak: %s</string>
+  <string name="settings_authentication">Autentifikazioa</string>
+  <string name="settings_username">Erabiltzaile izena</string>
+  <string name="settings_enter_username">Sartu erabiltzaile izena:</string>
+  <string name="settings_password">Pasahitza</string>
+  <string name="settings_enter_password">Sartu zure pasahitza:</string>
+  <string name="settings_sync">Sinkronizazioa</string>
+  <string name="settings_sync_wifi_only">Sinkronizatu soilik WiFi bidez</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_manage_calendar_colors">Kudeatu egutegi koloreak</string>
+  <string name="settings_event_colors_on">Sinkronizatu gertaera koloreak</string>
+  <!--collection management-->
+  <string name="create_addressbook">Sortu helbide liburua</string>
+  <string name="create_addressbook_display_name_hint">Nire Helbide Liburua</string>
+  <string name="create_calendar">Sortu egutegia</string>
+  <string name="create_calendar_type_vevent">Gertaerak</string>
+  <string name="create_calendar_type_vtodo">Zereginak</string>
+  <string name="create_collection_color">Kolorea</string>
+  <string name="create_collection_display_name">Izenburua</string>
+  <string name="create_collection_description">Deskribapena</string>
+  <string name="create_collection_optional">aukerazkoa</string>
+  <string name="create_collection_home_set">Biltegiratze kokapena</string>
+  <string name="create_collection_create">Sortu</string>
+  <string name="delete_collection_confirm_title">Ziur zaude?</string>
+  <string name="collection_properties">Propietateak</string>
+  <string name="collection_properties_copy_url">Kopiatu URL</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception_httpexception">HTTP errore bat gertatu da.</string>
+  <!--sync adapters and DebugInfoActivity-->
+  <string name="sync_error_permissions">DAVx⁵ baimenak</string>
+  <string name="sync_error_io">Sare edo S/I errorea – %s</string>
+  <string name="sync_error_retry">Saiatu berriz</string>
+  <string name="sync_error_view_item">Ikusi elementua</string>
+  <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVx⁵: Konexio segurtasuna</string>
+</resources>
