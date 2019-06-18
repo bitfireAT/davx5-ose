@@ -46,6 +46,7 @@ import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.TaskProvider
+import org.apache.commons.lang3.exception.ExceptionUtils
 import org.dmfs.tasks.contract.TaskContract
 import java.io.File
 import java.io.FileWriter
@@ -161,7 +162,8 @@ class DebugInfoActivity: AppCompatActivity() {
                 }
 
                 throwable?.let {
-                    text.append("\nEXCEPTION:\n${Log.getStackTraceString(throwable)}")
+                    // Log.getStackTraceString(e) returns "" in case of UnknownHostException
+                    text.append("\nEXCEPTION:\n${ExceptionUtils.getStackTrace(throwable)}")
                 }
 
                 // logs (for instance, from failed resource detection)
