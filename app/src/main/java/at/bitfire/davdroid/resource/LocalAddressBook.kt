@@ -51,8 +51,17 @@ class LocalAddressBook(
             val accountManager = AccountManager.get(context)
 
             val account = Account(accountName(mainAccount, info), context.getString(R.string.account_type_address_book))
-            if (!accountManager.addAccountExplicitly(account, null, initialUserData(mainAccount, info.url.toString())))
+            val userData = initialUserData(mainAccount, info.url.toString())
+            Logger.log.log(Level.INFO, "Creating local address book $account", userData)
+            if (!accountManager.addAccountExplicitly(account, null, userData))
                 throw IllegalStateException("Couldn't create address book account")
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
+                // Android < 7 seems to lose the initial user data sometimes, so set it a second time
+                // https://forums.bitfire.at/post/11644
+                userData.keySet().forEach { key ->
+                    accountManager.setUserData(account, key, userData.getString(key))
+                }
 
             val addressBook = LocalAddressBook(context, account, provider)
             ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
@@ -130,7 +139,7 @@ class LocalAddressBook(
                 if (name != null && type != null)
                     return Account(name, type)
                 else
-                    throw IllegalStateException("Address book doesn't exist anymore")
+                    throw IllegalStateException("No main account assigned to address book account")
             }
         }
         set(newMainAccount) {
