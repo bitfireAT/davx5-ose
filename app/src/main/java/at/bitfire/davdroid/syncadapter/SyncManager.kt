@@ -48,6 +48,7 @@ import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import javax.net.ssl.SSLHandshakeException
+import kotlin.math.min
 
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
@@ -68,9 +69,9 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     companion object {
 
         val MAX_PROCESSING_THREADS =    // nCPU/2 (rounded up for case of 1 CPU), but max. 4
-                Math.min((Runtime.getRuntime().availableProcessors()+1)/2, 4)
+                min((Runtime.getRuntime().availableProcessors()+1)/2, 4)
         val MAX_DOWNLOAD_THREADS =      // one (if one CPU), 2 otherwise
-                Math.min(Runtime.getRuntime().availableProcessors(), 2)
+                min(Runtime.getRuntime().availableProcessors(), 2)
         const val MAX_MULTIGET_RESOURCES = 10
 
         fun cancelNotifications(manager: NotificationManagerCompat, authority: String, account: Account) =
