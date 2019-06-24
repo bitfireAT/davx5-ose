@@ -1,4 +1,3 @@
-
 ![DAVx⁵ logo](app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
 
 DAVx⁵
@@ -11,7 +10,7 @@ DAVx⁵ is licensed under the [GPLv3 License](LICENSE).
 
 News and updates: [@davx5app](https://twitter.com/davx5app) on Twitter
 
-Help, discussion, feature requests, bug reports: [DAVx⁵ forums](https://www.davx5.com/forums)
+Help, discussion, feature requests, bug reports and "issues": [DAVx⁵ forums](https://www.davx5.com/forums)
 
 **If you want to support DAVx⁵, please consider [donating to DAVx⁵](https://www.davx5.com/donate)
 or [purchasing it](https://www.davx5.com/download).**
