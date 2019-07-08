@@ -95,6 +95,7 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_swipe_down">Потягніть донизу, аби оновити список з серверу.</string>
   <string name="account_synchronize_now">Синхронізувати зараз</string>
   <string name="account_synchronizing_now">Синхронізація</string>
   <string name="account_settings">Налаштування облікового запису</string>
