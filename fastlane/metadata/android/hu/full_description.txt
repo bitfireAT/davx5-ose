@@ -1,4 +1,4 @@
-DAVx⁵ (korábban DAVdroid) egy CalDAV/CardDAV kezelő és szinkronizáló Android alkalmazás, amely rendszerszinten integrálódik a naptár- és névjegy-alkalmazásokkal.
+DAVx⁵ egy CalDAV/CardDAV kezelő és szinkronizáló Android alkalmazás, amely rendszerszinten integrálódik a naptár- és névjegy-alkalmazásokkal.
 
 Használhatja saját szerverével vagy megbízhatónak tartott szolgáltatókkal, hogy a névjegyek, naptárbejegyzések és feladatok feletti kontrollja megmaradjon.
 

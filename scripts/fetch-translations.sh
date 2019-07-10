@@ -12,7 +12,7 @@ function fetch_txt {
 	FILE=$3
 
 	TRANSLATIONS=`mktemp`
-	curl -sn $1 >$TRANSLATIONS
+	curl --compressed -sn $1 >$TRANSLATIONS
 	diff --ignore-trailing-space -aq $TRANSLATIONS $BASE_DIR/fastlane/metadata/android/en-US/$FILE
 	if [[ $? -ne 0 ]]; then
 		# translations are not the same as en-us
@@ -31,7 +31,7 @@ do
 
 	echo -e '\tapp strings'
 	mkdir -p $target_app
-	curl -sn "https://www.transifex.com/api/2/project/davx5/resource/app/translation/$lang?file" |
+	curl --compressed -sn "https://www.transifex.com/api/2/project/davx5/resource/app/translation/$lang?file" |
 		sed 's/\.\.\./…/g' > $target_app/strings.xml
 
 	echo -e '\tcert4android'

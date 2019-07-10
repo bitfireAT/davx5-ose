@@ -1,4 +1,4 @@
-DAVx⁵（原名 DAVdroid）是一款 Android 的 CalDAV/CardDAV 管理同步应用，与 Android 的日历、通讯录软件原生集成。
+DAVx⁵ 是一款 Android 的 CalDAV/CardDAV 管理同步应用，与 Android 的日历、通讯录软件原生集成。
 
 通过该应用，可在自己的服务器或信任的托管商上保存通讯录、时间和任务数据，保证可控。
 
