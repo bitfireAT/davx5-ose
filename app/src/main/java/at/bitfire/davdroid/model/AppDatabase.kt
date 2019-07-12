@@ -16,7 +16,7 @@ import at.bitfire.davdroid.log.Logger
     Service::class,
     HomeSet::class,
     Collection::class
-], version = 6)
+], version = 7)
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
 
@@ -38,7 +38,8 @@ abstract class AppDatabase: RoomDatabase() {
                             Migration2_3,
                             Migration3_4,
                             Migration4_5,
-                            Migration5_6
+                            Migration5_6,
+                            Migration6_7
                     )
                     .fallbackToDestructiveMigration()   // as a last fallback, recreate database instead of crashing
                     .build()
@@ -98,6 +99,12 @@ abstract class AppDatabase: RoomDatabase() {
 
 
     // migrations
+
+    object Migration6_7: Migration(6, 7) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE homeset ADD COLUMN displayName TEXT DEFAULT NULL")
+        }
+    }
 
     object Migration5_6: Migration(5, 6) {
         override fun migrate(db: SupportSQLiteDatabase) {

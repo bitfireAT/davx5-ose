@@ -23,10 +23,8 @@ import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.AppDatabase
+import at.bitfire.davdroid.model.*
 import at.bitfire.davdroid.model.Collection
-import at.bitfire.davdroid.model.HomeSet
-import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -146,14 +144,8 @@ class DavService: android.app.Service() {
         val service = db.serviceDao().get(serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, getString(R.string.account_type))
 
-        val homeSets = homeSetDao.getByService(serviceId)
-                .map { it.url }
-                .toMutableSet()
-
-        val collections = mutableMapOf<HttpUrl, Collection>()
-        collectionDao.getByService(serviceId).forEach {
-            collections[it.url] = it
-        }
+        val homeSets = homeSetDao.getByService(serviceId).associateBy { it.url }.toMutableMap()
+        val collections = collectionDao.getByService(serviceId).associateBy { it.url }.toMutableMap()
 
         /**
          * Checks if the given URL defines home sets and adds them to the home set list.
@@ -199,11 +191,12 @@ class DavService: android.app.Service() {
             when (service.type) {
                 Service.TYPE_CARDDAV ->
                     try {
-                        dav.propfind(0, AddressbookHomeSet.NAME, GroupMembership.NAME) { response, _ ->
+                        dav.propfind(0, DisplayName.NAME, AddressbookHomeSet.NAME, GroupMembership.NAME) { response, _ ->
                             response[AddressbookHomeSet::class.java]?.let { homeSet ->
                                 for (href in homeSet.hrefs)
                                     dav.location.resolve(href)?.let {
-                                        homeSets += UrlUtils.withTrailingSlash(it)
+                                        val foundUrl = UrlUtils.withTrailingSlash(it)
+                                        homeSets[foundUrl] = HomeSet(0, service.id, foundUrl, response[DisplayName::class.java]?.displayName)
                                     }
                             }
 
@@ -218,11 +211,12 @@ class DavService: android.app.Service() {
                     }
                 Service.TYPE_CALDAV -> {
                     try {
-                        dav.propfind(0, CalendarHomeSet.NAME, CalendarProxyReadFor.NAME, CalendarProxyWriteFor.NAME, GroupMembership.NAME) { response, _ ->
+                        dav.propfind(0, DisplayName.NAME, CalendarHomeSet.NAME, CalendarProxyReadFor.NAME, CalendarProxyWriteFor.NAME, GroupMembership.NAME) { response, _ ->
                             response[CalendarHomeSet::class.java]?.let { homeSet ->
                                 for (href in homeSet.hrefs)
                                     dav.location.resolve(href)?.let {
-                                        homeSets += UrlUtils.withTrailingSlash(it)
+                                        val foundUrl = UrlUtils.withTrailingSlash(it)
+                                        homeSets[foundUrl] = HomeSet(0, service.id, foundUrl, response[DisplayName::class.java]?.displayName)
                                     }
                             }
 
@@ -244,46 +238,18 @@ class DavService: android.app.Service() {
 
         @Transaction
         fun saveHomesets() {
-            val oldHomesets = homeSetDao.getByService(serviceId)
-            oldHomesets.forEach { oldHomeset ->
-                val url = oldHomeset.url
-                if (homeSets.contains(url))
-                    // URL is the same in oldHomesets and newHomesets, remove from "homesets" (which will be added later)
-                    homeSets.remove(url)
-                else
-                    // URL is not in newHomesets, delete from database
-                    homeSetDao.delete(oldHomeset)
-            }
-            // insert new homesets
-            homeSetDao.insert(homeSets.map { url ->
-                HomeSet(0, serviceId, url)
-            })
+            DaoTools(homeSetDao).syncAll(
+                    homeSetDao.getByService(serviceId),
+                    homeSets
+            ) { it.url }
         }
 
         @Transaction
         fun saveCollections() {
-            val oldCollections = collectionDao.getByService(serviceId)
-            oldCollections.forEach { oldCollection ->
-                val url = oldCollection.url
-                val matchingNewCollection = collections[url]
-                if (matchingNewCollection != null) {
-                    // old URL exists in newCollections, update database if content has been changed
-                    matchingNewCollection.id = oldCollection.id
-                    matchingNewCollection.serviceId = oldCollection.serviceId
-                    if (matchingNewCollection != oldCollection)
-                        collectionDao.update(matchingNewCollection)
-
-                    // remove from "collections" (which will be added later)
-                    collections.remove(url)
-                } else
-                    // URL is not in newCollections, delete from database
-                    collectionDao.delete(oldCollection)
-            }
-            // insert new collections
-            collections.forEach { (_, collection) ->
-                collection.serviceId = serviceId
-            }
-            collectionDao.insert(collections.values.toList())
+            DaoTools(collectionDao).syncAll(
+                    collectionDao.getByService(serviceId),
+                    collections
+            ) { it.url }
         }
 
         fun saveResults() {
@@ -320,15 +286,16 @@ class DavService: android.app.Service() {
                 // now refresh collections (taken from home sets)
                 val itHomeSets = homeSets.iterator()
                 while (itHomeSets.hasNext()) {
-                    val homeSetUrl = itHomeSets.next()
-                    Logger.log.fine("Listing home set $homeSetUrl")
+                    val homeSet = itHomeSets.next()
+                    Logger.log.fine("Listing home set ${homeSet.key}")
 
                     try {
-                        DavResource(httpClient, homeSetUrl).propfind(1, *DAV_COLLECTION_PROPERTIES) { response, _ ->
+                        DavResource(httpClient, homeSet.key).propfind(1, *DAV_COLLECTION_PROPERTIES) { response, _ ->
                             if (!response.isSuccess())
                                 return@propfind
 
                             val info = Collection.fromDavResponse(response) ?: return@propfind
+                            info.serviceId = serviceId
                             info.confirmed = true
                             Logger.log.log(Level.FINE, "Found collection", info)
 

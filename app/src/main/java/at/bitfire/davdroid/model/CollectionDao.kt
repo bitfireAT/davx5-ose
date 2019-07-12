@@ -5,7 +5,7 @@ import androidx.paging.DataSource
 import androidx.room.*
 
 @Dao
-interface CollectionDao {
+interface CollectionDao: SyncableDao<Collection> {
 
     @Query("SELECT * FROM collection WHERE id=:id")
     fun get(id: Long): Collection?
@@ -36,14 +36,5 @@ interface CollectionDao {
 
     @Insert
     fun insert(collection: Collection)
-
-    @Insert
-    fun insert(collections: List<Collection>)
-
-    @Update
-    fun update(collection: Collection)
-
-    @Delete
-    fun delete(collection: Collection)
 
 }

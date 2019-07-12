@@ -17,8 +17,10 @@ import okhttp3.HttpUrl
 )
 data class HomeSet(
     @PrimaryKey(autoGenerate = true)
-    var id: Long,
+    override var id: Long,
 
     var serviceId: Long,
-    var url: HttpUrl
-)
+    var url: HttpUrl,
+
+    var displayName: String? = null
+): IdEntity()

@@ -17,7 +17,7 @@ import okhttp3.HttpUrl
 )
 data class Collection(
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0,
+    override var id: Long = 0,
 
     var serviceId: Long = 0,
 
@@ -52,7 +52,7 @@ data class Collection(
     /** whether this collection has been selected for synchronization */
     var sync: Boolean = false
 
-) {
+): IdEntity() {
 
     companion object {
 
