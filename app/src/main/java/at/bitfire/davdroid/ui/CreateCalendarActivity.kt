@@ -234,7 +234,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
 
                 val db = AppDatabase.getInstance(getApplication())
                 db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)?.let { service ->
-                    val homeSets = db.homeSetDao().getByService(service.id)
+                    val homeSets = db.homeSetDao().getBindableByService(service.id)
                     adapter.addAll(homeSets)
                 }
 

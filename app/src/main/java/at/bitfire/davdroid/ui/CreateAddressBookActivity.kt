@@ -125,7 +125,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
                 val db = AppDatabase.getInstance(getApplication())
                 db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)?.let { service ->
-                    val homeSets = db.homeSetDao().getByService(service.id)
+                    val homeSets = db.homeSetDao().getBindableByService(service.id)
                     adapter.addAll(homeSets)
                 }
 

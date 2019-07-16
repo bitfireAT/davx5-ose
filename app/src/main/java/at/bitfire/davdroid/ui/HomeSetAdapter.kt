@@ -33,23 +33,10 @@ class HomeSetAdapter(
                 ellipsize = TextUtils.TruncateAt.START
             }
         }
-
         return v
     }
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup) =
             getView(position, convertView, parent)
-
-    /*: View {
-        val data = getItem(position)!!
-        val v = convertView ?: LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_2, null, false)
-        v.findViewById<TextView>(android.R.id.text1).apply {
-            text = data.url.toString()
-            setSingleLine()
-            ellipsize = TextUtils.TruncateAt.START
-        }
-        v.findViewById<TextView>(android.R.id.text2).text = data.displayName
-        return v
-    }*/
 
 }

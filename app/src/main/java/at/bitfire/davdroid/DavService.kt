@@ -196,7 +196,7 @@ class DavService: android.app.Service() {
                                 for (href in homeSet.hrefs)
                                     dav.location.resolve(href)?.let {
                                         val foundUrl = UrlUtils.withTrailingSlash(it)
-                                        homeSets[foundUrl] = HomeSet(0, service.id, foundUrl, response[DisplayName::class.java]?.displayName)
+                                        homeSets[foundUrl] = HomeSet(0, service.id, foundUrl)
                                     }
                             }
 
@@ -216,7 +216,7 @@ class DavService: android.app.Service() {
                                 for (href in homeSet.hrefs)
                                     dav.location.resolve(href)?.let {
                                         val foundUrl = UrlUtils.withTrailingSlash(it)
-                                        homeSets[foundUrl] = HomeSet(0, service.id, foundUrl, response[DisplayName::class.java]?.displayName)
+                                        homeSets[foundUrl] = HomeSet(0, service.id, foundUrl)
                                     }
                             }
 
@@ -283,25 +283,32 @@ class DavService: android.app.Service() {
                         selectedCollections += url
                 }
 
-                // now refresh collections (taken from home sets)
+                // now refresh homesets and their member collections
                 val itHomeSets = homeSets.iterator()
                 while (itHomeSets.hasNext()) {
                     val homeSet = itHomeSets.next()
                     Logger.log.fine("Listing home set ${homeSet.key}")
 
                     try {
-                        DavResource(httpClient, homeSet.key).propfind(1, *DAV_COLLECTION_PROPERTIES) { response, _ ->
+                        DavResource(httpClient, homeSet.key).propfind(1, *DAV_COLLECTION_PROPERTIES) { response, relation ->
                             if (!response.isSuccess())
                                 return@propfind
 
-                            val info = Collection.fromDavResponse(response) ?: return@propfind
-                            info.serviceId = serviceId
-                            info.confirmed = true
-                            Logger.log.log(Level.FINE, "Found collection", info)
+                            if (relation == Response.HrefRelation.SELF) {
+                                // this response is about the homeset itself
+                                homeSet.value.displayName = response[DisplayName::class.java]?.displayName
+                                homeSet.value.privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind ?: true
 
-                            if ((service.type == Service.TYPE_CARDDAV && info.type == Collection.TYPE_ADDRESSBOOK) ||
-                                (service.type == Service.TYPE_CALDAV && arrayOf(Collection.TYPE_CALENDAR, Collection.TYPE_WEBCAL).contains(info.type)))
-                                collections[response.href] = info
+                            } else {
+                                val info = Collection.fromDavResponse(response) ?: return@propfind
+                                info.serviceId = serviceId
+                                info.confirmed = true
+                                Logger.log.log(Level.FINE, "Found collection", info)
+
+                                if ((service.type == Service.TYPE_CARDDAV && info.type == Collection.TYPE_ADDRESSBOOK) ||
+                                    (service.type == Service.TYPE_CALDAV && arrayOf(Collection.TYPE_CALENDAR, Collection.TYPE_WEBCAL).contains(info.type)))
+                                    collections[response.href] = info
+                            }
                         }
                     } catch(e: HttpException) {
                         if (e.code in arrayOf(403, 404, 410))

@@ -22,5 +22,7 @@ data class HomeSet(
     var serviceId: Long,
     var url: HttpUrl,
 
+    var privBind: Boolean = true,
+
     var displayName: String? = null
 ): IdEntity()
