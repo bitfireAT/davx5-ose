@@ -178,8 +178,8 @@ class HttpClient private constructor(
                     ?: OkHostnameVerifier.INSTANCE
 
             var keyManager: KeyManager? = null
-            try {
-                certificateAlias?.let { alias ->
+            certificateAlias?.let { alias ->
+                try {
                     val context = requireNotNull(context)
 
                     // get provider certificate and private key
@@ -208,13 +208,13 @@ class HttpClient private constructor(
                         override fun getPrivateKey(forAlias: String?) =
                                 key.takeIf { forAlias == alias }
                     }
-                }
 
-                // HTTP/2 doesn't support client certificates (yet)
-                // see https://tools.ietf.org/html/draft-ietf-httpbis-http2-secondary-certs-04
-                orig.protocols(listOf(Protocol.HTTP_1_1))
-            } catch (e: Exception) {
-                logger.log(Level.SEVERE, "Couldn't set up provider certificate authentication", e)
+                    // HTTP/2 doesn't support client certificates (yet)
+                    // see https://tools.ietf.org/html/draft-ietf-httpbis-http2-secondary-certs-04
+                    orig.protocols(listOf(Protocol.HTTP_1_1))
+                } catch (e: Exception) {
+                    logger.log(Level.SEVERE, "Couldn't set up provider certificate authentication", e)
+                }
             }
 
             val sslContext = SSLContext.getInstance("TLS")
