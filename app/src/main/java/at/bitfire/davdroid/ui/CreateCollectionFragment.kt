@@ -70,7 +70,9 @@ class CreateCollectionFragment: DialogFragment() {
                 timezone = args.getString(ARG_TIMEZONE),
                 supportsVEVENT = args.ifDefined(ARG_SUPPORTS_VEVENT) { it.getBoolean(ARG_SUPPORTS_VEVENT) },
                 supportsVTODO = args.ifDefined(ARG_SUPPORTS_VTODO) { it.getBoolean(ARG_SUPPORTS_VTODO) },
-                supportsVJOURNAL = args.ifDefined(ARG_SUPPORTS_VJOURNAL) { it.getBoolean(ARG_SUPPORTS_VJOURNAL) }
+                supportsVJOURNAL = args.ifDefined(ARG_SUPPORTS_VJOURNAL) { it.getBoolean(ARG_SUPPORTS_VJOURNAL) },
+
+                sync = true     /* by default, sync collections which just have been created */
         )
 
         model.createCollection().observe(this, Observer { exception ->
