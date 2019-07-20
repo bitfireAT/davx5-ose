@@ -95,6 +95,9 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_no_address_books">Немає адресних книг (поки що).</string>
+  <string name="account_no_calendars">Немає жодного календаря. (поки що)</string>
+  <string name="account_no_webcals">Немає підписок на календар (поки що).</string>
   <string name="account_swipe_down">Потягніть донизу, аби оновити список з серверу.</string>
   <string name="account_synchronize_now">Синхронізувати зараз</string>
   <string name="account_synchronizing_now">Синхронізація</string>
@@ -209,6 +212,7 @@
   <string name="create_calendar">Створити календар</string>
   <string name="create_calendar_time_zone">Часовий пояс</string>
   <string name="create_calendar_time_zone_required">Потребує часовий пояс</string>
+  <string name="create_calendar_type">Можливі записи календаря</string>
   <string name="create_calendar_type_vevent">Події</string>
   <string name="create_calendar_type_vtodo">Завдання</string>
   <string name="create_calendar_type_vjournal">Нотатки/Журнал</string>
@@ -218,10 +222,13 @@
   <string name="create_collection_display_name">Заголовок</string>
   <string name="create_collection_display_name_required">Потребує назву</string>
   <string name="create_collection_description">Опис</string>
+  <string name="create_collection_optional">необов\'язково</string>
   <string name="create_collection_home_set">Розташування сховища</string>
   <string name="create_collection_create">Створити</string>
   <string name="delete_collection">Видалити колекцію</string>
   <string name="delete_collection_confirm_title">Ви впевнені?</string>
+  <string name="delete_collection_confirm_warning">Ця колекція (%s) і всі його дані будуть видалені назавжди.</string>
+  <string name="delete_collection_data_shall_be_deleted">Ці дані видаляються з сервера.</string>
   <string name="delete_collection_deleting_collection">Видалення колекції</string>
   <string name="collection_force_read_only">Примусово лише читання</string>
   <string name="collection_properties">Властивості</string>
@@ -234,6 +241,7 @@
   <string name="exception_show_details">Показати подробиці</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Інформація зневадження</string>
+  <string name="debug_info_logs_attached">Журнали прикріплені до цього повідомлення (потрібна підтримка вкладеного додатка).</string>
   <string name="sync_contacts_read_only_address_book">Адресна книга лише для читання</string>
   <string name="sync_error_permissions">Дозволи DAVx⁵</string>
   <string name="sync_error_permissions_text">Потребує додаткові дозволи</string>

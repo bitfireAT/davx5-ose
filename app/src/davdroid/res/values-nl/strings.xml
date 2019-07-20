@@ -7,19 +7,43 @@
   <string name="help">Help</string>
   <string name="manage_accounts">Beheer accounts</string>
   <string name="send">Verzenden</string>
+  <string name="notification_channel_debugging">Debuggen</string>
+  <string name="notification_channel_general">Andere belangrijke berichten</string>
+  <string name="notification_channel_sync">Synchroniseren</string>
+  <string name="notification_channel_sync_errors">Synchronisatie fouten</string>
+  <string name="notification_channel_sync_errors_desc">Belangrijke fouten die de synchronisatie stoppen zoals onverwachte server antwoorden</string>
+  <string name="notification_channel_sync_warnings">Synchronisatie waarschuwingen</string>
+  <string name="notification_channel_sync_warnings_desc">Niet-fatale synchronisatie problemen zoals bepaalde invalid files</string>
+  <string name="notification_channel_sync_io_errors">Network en I/O errors</string>
+  <string name="notification_channel_sync_io_errors_desc">Timeouts, connectie problemen, etc. (vaak tijdelijk).</string>
   <!--startup dialogs-->
-  <string name="startup_battery_optimization_disable">DAVx⁵ afsluiten</string>
+  <string name="startup_autostart_permission">Automatische synchronisatie</string>
+  <string name="startup_autostart_permission_message">meestal blokkeerd %s firmware de automatische synchronisatie. Als dat het geval is kan je automatische synchronisatie in je Android settings toestaan om het probleem te verhelpen.</string>
+  <string name="startup_battery_optimization">Geplande synchronisatie</string>
+  <string name="startup_battery_optimization_message">Uw apparaat limiteerd/blokkeerd DAVx⁵ synchronisatie. Zet de \"battery optimisation\" uit om normale DAVx⁵ synchronisatie intervallen (geforceerd) aan te zetten.</string>
+  <string name="startup_battery_optimization_disable">Zet deze optie uit voor DAVx⁵</string>
   <string name="startup_dont_show_again">Niet opnieuw weergeven</string>
+  <string name="startup_not_now">Niet nu</string>
   <string name="startup_donate">Open-Source informatie</string>
   <string name="startup_donate_message">We zijn blij dat je DAVx⁵ gebruikt, wat open-source software (GPLv3) is. Omdat de ontwikkeling van DAVx⁵ hard werk is en duizenden uren in beslag neemt. overweeg alstublieft een donatie.</string>
   <string name="startup_donate_now">Toon donatie pagina</string>
   <string name="startup_donate_later">Misschien later</string>
+  <string name="startup_more_info">Meer informatie</string>
   <string name="startup_opentasks_not_installed">OpenTasks niet geinstalleerd</string>
+  <string name="startup_opentasks_not_installed_message">De gratisch app OpenTasks is benodigd om taken te synchroniseren. (Niet nodig voor het syncen van contacts/events.)</string>
   <string name="startup_opentasks_reinstall_davx5">Na installatie van OpenTasks dient u DAVx⁵ opnieuw te installeren en de accounts toe te voegen (Android bug).</string>
   <string name="startup_opentasks_not_installed_install">OpenTasks installeren</string>
   <!--AboutActivity-->
+  <string name="about_libraries">Libraries</string>
+  <string name="about_version">Versie%1$s(%2$d)</string>
+  <string name="about_build_date">Gecompileerd op %s</string>
+  <string name="about_flavor_info">Deze versie is enkel beschikbaar over Google Play</string>
   <string name="about_license_info_no_warranty">Dit programma kom met ABSOLUUT GEEN GARANTIE. Het is gratis software, en je bent welkom dit te herdistribueren onder bepaalde voorwaarden.</string>
   <!--global settings-->
+  <string name="logging_couldnt_create_file">Kon de log file niet creëren.</string>
+  <string name="logging_notification_title">DAVx⁵ logged</string>
+  <string name="logging_notification_text">Op dit moment worden alle DAVx⁵ activiteiten gelogd</string>
+  <string name="logging_notification_send_log">Verstuur het log</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Open navigatie drawer</string>
   <string name="navigation_drawer_close">Sluit navigatie drawer</string>
@@ -45,6 +69,9 @@
   <string name="app_settings_debug">Debuggen</string>
   <string name="app_settings_show_debug_info">Debug info tonen</string>
   <string name="app_settings_show_debug_info_details">Bekijk/deel software configuratie details</string>
+  <string name="app_settings_logging">Uitvoerig/expliciet loggen.</string>
+  <string name="app_settings_logging_on">Loggen is actief</string>
+  <string name="app_settings_logging_off">Loggen is geactiveerd</string>
   <string name="app_settings_connection">Verbinding</string>
   <string name="app_settings_override_proxy">Proxy instellingen overschrijven</string>
   <string name="app_settings_override_proxy_on">Eigen proxy instellingen gebruiken</string>
@@ -59,6 +86,8 @@
   <string name="app_settings_reset_certificates_summary">Resetten alle bewerkte certificaten</string>
   <string name="app_settings_reset_certificates_success">Alle bewerkte certificaten zijn vrijgemaakt</string>
   <string name="app_settings_user_interface">Gebruikers interface</string>
+  <string name="app_settings_notification_settings">Notificatie settings</string>
+  <string name="app_settings_notification_settings_summary">Beheer de notificatie kanalen en hun settings</string>
   <string name="app_settings_reset_hints">Hints resetten </string>
   <string name="app_settings_reset_hints_summary">Hints die al gezien zijn opnieuw weergeven</string>
   <string name="app_settings_reset_hints_success">Alle hints worden opnieuw weergegeven</string>
@@ -66,6 +95,10 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_no_address_books">Er zijn (nog) geen adress boeken.</string>
+  <string name="account_no_calendars">Er zijn (nog) geen calenders.</string>
+  <string name="account_no_webcals">Er zijn (nog) geen calender subscriptions.</string>
+  <string name="account_swipe_down">Swipe naar beneden om de lijst van de server te refreshen.</string>
   <string name="account_synchronize_now">Synchroniseer nu</string>
   <string name="account_synchronizing_now">Aan het synchronizeren…</string>
   <string name="account_settings">Account instellingen</string>
@@ -75,12 +108,16 @@
   <string name="account_delete">Account verwijderen</string>
   <string name="account_delete_confirmation_title">Account echt verwijderen?</string>
   <string name="account_delete_confirmation_text">Alle lokale kopieën van adresboeken, agenda\'s en taken worden verwijderd.</string>
+  <string name="account_synchronize_this_collection">synchroniseer deze collectie</string>
+  <string name="account_read_only">read-only</string>
   <string name="account_calendar">calendar</string>
+  <string name="account_task_list">taken lijst</string>
   <string name="account_refresh_address_book_list">Adresboeken vernieuwen</string>
   <string name="account_create_new_address_book">Maak een nieuw adresboek</string>
   <string name="account_refresh_calendar_list">Agenda\'s vernieuwen</string>
   <string name="account_create_new_calendar">Maak een nieuwe agenda</string>
   <string name="account_no_webcal_handler_found">Geen mogelijke Webcal app gevonden</string>
+  <string name="account_install_icsx5">Installeer ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Account toevoegen</string>
   <string name="login_type_email">Inloggen met e-mailadres</string>
@@ -90,10 +127,12 @@
   <string name="login_password_required">Wachtwoord vereist</string>
   <string name="login_type_url">Inloggen met URL en gebruikersnaam</string>
   <string name="login_url_must_be_http_or_https">URL moet met http(s):// beginnen</string>
+  <string name="login_url_must_be_https">De URL moet met https:// beginnen ouwe</string>
   <string name="login_url_host_name_required">Hostnaam vereist</string>
   <string name="login_user_name">Gebruikersnaam</string>
   <string name="login_user_name_required">Gebruikersnaam vereist</string>
   <string name="login_base_url">Basis URL</string>
+  <string name="login_type_url_certificate">Login met URL en client certificaat</string>
   <string name="login_select_certificate">Certificaat selecteren</string>
   <string name="login_login">Login</string>
   <string name="login_back">Terug</string>
@@ -102,10 +141,12 @@
   <string name="login_account_name_info">Gebruik je email adres als account naam want Android zal je account naam gebruiken als ORGANIZER veld voor gemaakte afspraken. Je kunt geen 2 accounts met dezelfde naam hebben,</string>
   <string name="login_account_contact_group_method">Contact groep methode:</string>
   <string name="login_account_name_required">Accountnaam vereist</string>
+  <string name="login_account_name_already_taken">Account name is al in gebruik</string>
   <string name="login_account_not_created">Account kon niet gemaakt worden.</string>
   <string name="login_configuration_detection">Configuratie detectie</string>
   <string name="login_querying_server">Even geduld, verzoek naar server…</string>
   <string name="login_no_caldav_carddav">Kon geen CalDAV of CardDAV service vinden.</string>
+  <string name="login_view_logs">Toon details</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Instellingen: %s</string>
   <string name="settings_authentication">Authenticatie</string>
@@ -121,18 +162,33 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Elke %d minuten + meteen na wijziging</string>
   <string name="settings_sync_interval_calendars">Agenda\'s verversen</string>
   <string name="settings_sync_interval_tasks">Taak sync. tussentijd</string>
+  <string-array name="settings_sync_interval_names">
+    <item> Enkel handmatig </item>
+    <item> Iedere 15 minuten </item>
+    <item> Iedere 30 minuten</item>
+    <item>Ieder uur</item>
+    <item>Iedere 2 uur</item>
+    <item>Iedere 4 uur</item>
+    <item>Eenmaal daags</item>
+  </string-array>
   <string name="settings_sync_wifi_only">Sync alleen tijdens WiFi</string>
   <string name="settings_sync_wifi_only_on">Synchronisatie is voorbehouden tijdens WiFi verbindingen</string>
   <string name="settings_sync_wifi_only_off">Verbinding type is niet overwogen</string>
   <string name="settings_sync_wifi_only_ssids">WiFi SSID beperking</string>
   <string name="settings_sync_wifi_only_ssids_on">Zal alleen synchroniseren over %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Synced alleen over %s(vereist actieve locatie services)</string>
   <string name="settings_sync_wifi_only_ssids_off">Alle WiFI verbindingen zullen worden gebruikt</string>
+  <string name="settings_sync_wifi_only_ssids_message">Comma gescheiden namen (SSIDs) van toegestane WIFI netwerken (laat blank voor alle WIFI Netwrken)</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">Om WIFI namen te lezen, zijn de locatie toestemming en permanent toegestane locatie services vereist.</string>
+  <string name="settings_more_info_faq">Meer informatie (vaak gestelde vragen)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Contact groep methode</string>
   <string-array name="settings_contact_group_method_entries">
     <item>Groepen zijn apparte VCards</item>
     <item>Groepen zijn per-contact categories</item>
   </string-array>
+  <string name="settings_contact_group_method_change">Verander de groepering methode</string>
+  <string name="settings_contact_group_method_change_reload_contacts">Dit vereist het herladen van alle contacten. Onopgeslagen locale veranderingen worden dismissed.</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tijdslimiet verleden afspraken</string>
   <string name="settings_sync_time_range_past_none">Alle afspraken worden gesynchronizeerd</string>
@@ -147,16 +203,35 @@
   <string name="settings_event_colors">Evenement kleur ondersteuning</string>
   <string name="settings_event_colors_on">Evenement kleuren synchroniseren</string>
   <string name="settings_event_colors_off">Evenement kleuren niet synchroniseren</string>
+  <string name="settings_event_colors_off_confirm">Het uitzetten van event colors kan er voor zorgen dat reeds gesynchroniseerde event colors verwijdered worden.</string>
   <!--collection management-->
   <string name="create_addressbook">Maak adresboek</string>
   <string name="create_addressbook_display_name_hint">Mijn adresboek</string>
+  <string name="create_calendar">Creeër calendar</string>
+  <string name="create_calendar_time_zone">Tijdzone</string>
+  <string name="create_calendar_time_zone_required">Tijdzone benodigd</string>
+  <string name="create_calendar_type">Mogelijke calender entries</string>
+  <string name="create_calendar_type_vevent">Evenementen</string>
+  <string name="create_calendar_type_vtodo">Taken</string>
+  <string name="create_calendar_type_vjournal">Notes/Dagboek</string>
   <string name="create_calendar_type_events_and_tasks">Gecombineerd (afspraken en taken)</string>
+  <string name="create_collection_color">Kleur</string>
   <string name="create_collection_creating">Collectie aan het maken</string>
+  <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_display_name_required">Titel is vereist</string>
+  <string name="create_collection_description">Omschrijving</string>
+  <string name="create_collection_optional">Optioneel</string>
+  <string name="create_collection_home_set">Opslag locatie</string>
   <string name="create_collection_create">Maak</string>
   <string name="delete_collection">Verwijder collectie</string>
   <string name="delete_collection_confirm_title">Weet je het zeker?</string>
+  <string name="delete_collection_confirm_warning">Deze collectie (%s) en alle bijbehorende data zal permanent verwijderd worden.</string>
+  <string name="delete_collection_data_shall_be_deleted">Deze data zal verwijderd worden van de server</string>
   <string name="delete_collection_deleting_collection">Collectie aan het verwijderen</string>
+  <string name="collection_force_read_only">Forceer read-only</string>
+  <string name="collection_properties">Eigenschappen</string>
+  <string name="collection_properties_url">Address (URL):</string>
+  <string name="collection_properties_copy_url">kopieer URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Er is een fout opgetreden.</string>
   <string name="exception_httpexception">Er is een HTTP fout opgetreden.</string>
@@ -164,11 +239,22 @@
   <string name="exception_show_details">Toon details</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Debug informatie</string>
+  <string name="debug_info_logs_attached">Logs worden toegevoegd aan dit bericht (vereist bijlage support van de ontvangende app).</string>
   <string name="sync_contacts_read_only_address_book">Alleen-lezen adresboek</string>
   <string name="sync_error_permissions">DAVx⁵ rechten</string>
   <string name="sync_error_permissions_text">Aanvullende rechten vereist</string>
+  <string name="sync_error_opentasks_too_old">OpenTasks te oud</string>
+  <string name="sync_error_opentasks_required_version">Vereiste verzie: %1$s(momenteel %2$s)</string>
+  <string name="sync_error_authentication_failed">Inloggen mislukt (check je login credentials)</string>
+  <string name="sync_error_io">Netwerk of I/O error - %s</string>
+  <string name="sync_error_http_dav">HTTP server fout - %s</string>
+  <string name="sync_error_local_storage">Lokale opslag fout - %s</string>
   <string name="sync_error_retry">Opnieuw</string>
   <string name="sync_error_view_item">Bekijk item</string>
+  <string name="sync_invalid_contact">Ongeldig contact ontvangen van server</string>
+  <string name="sync_invalid_event">Ongeldig event onvangen van server</string>
+  <string name="sync_invalid_task">Ongeldige taak ontvangen van server</string>
+  <string name="sync_invalid_resources_ignoring">Ik negeer nu een of meer invalid resources</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: Verbinding beveiliging</string>
   <string name="trust_certificate_unknown_certificate_found">Davdroid is benaderd door een onbekend certificaat. Vertrouwd u dit?</string>
