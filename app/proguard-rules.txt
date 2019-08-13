@@ -15,6 +15,9 @@
 # Kotlin
 -dontwarn kotlin.**
 
+# https://github.com/material-components/material-components-android/issues/387
+-keep class com.google.android.material.tabs.** {*;}
+
 # Apache Commons
 -dontwarn javax.script.**
 
