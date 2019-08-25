@@ -95,6 +95,10 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_no_address_books">No hay libretas de direciones (todavía).</string>
+  <string name="account_no_calendars">No hay calendarios (todavía). </string>
+  <string name="account_no_webcals">No hay suscripciones a calendarios (todavía).</string>
+  <string name="account_swipe_down">Desliza hacia abajo para actualizar la lista desde el servidor. </string>
   <string name="account_synchronize_now">Sincronizar ahora</string>
   <string name="account_synchronizing_now">Sincronizando…</string>
   <string name="account_settings">Ajustes de cuenta</string>
@@ -203,12 +207,26 @@
   <!--collection management-->
   <string name="create_addressbook">Crear nueva agenda</string>
   <string name="create_addressbook_display_name_hint">Agendas</string>
+  <string name="create_calendar">Crear calendario</string>
+  <string name="create_calendar_time_zone">Huso horario</string>
+  <string name="create_calendar_time_zone_required">El huso horario es necesario</string>
+  <string name="create_calendar_type">Posibles entradas de calendario</string>
+  <string name="create_calendar_type_vevent">Eventos</string>
+  <string name="create_calendar_type_vtodo">Tareas</string>
+  <string name="create_calendar_type_vjournal">Notas / jornal</string>
   <string name="create_calendar_type_events_and_tasks">Combinado (eventos y tareas)</string>
+  <string name="create_collection_color">Color</string>
   <string name="create_collection_creating">Crear colección</string>
+  <string name="create_collection_display_name">Título </string>
   <string name="create_collection_display_name_required">Título requerido</string>
+  <string name="create_collection_description">Descripción </string>
+  <string name="create_collection_optional">opcional</string>
+  <string name="create_collection_home_set">Ubicación del almacenamiento</string>
   <string name="create_collection_create">Crear</string>
   <string name="delete_collection">Eliminar colección</string>
   <string name="delete_collection_confirm_title">¿Estás seguro/a?</string>
+  <string name="delete_collection_confirm_warning">Esta colección (%s) y todos sus datos serán eliminados permanentemente. </string>
+  <string name="delete_collection_data_shall_be_deleted">Estos datos se eliminarán del servidor.</string>
   <string name="delete_collection_deleting_collection">Eliminando colección</string>
   <string name="collection_force_read_only">Forzar solo-lectura</string>
   <string name="collection_properties">Propiedades</string>
@@ -221,6 +239,7 @@
   <string name="exception_show_details">Mostrar detalles</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Información de depuración</string>
+  <string name="debug_info_logs_attached">Los registros van adjuntos a este mensaje (requiere suporte de adjuntos en la app que los recibe).</string>
   <string name="sync_contacts_read_only_address_book">Libro de direcciones solo-lectura</string>
   <string name="sync_error_permissions">Permisos de DAVx⁵</string>
   <string name="sync_error_permissions_text">Permisos adicionales requeridos</string>
