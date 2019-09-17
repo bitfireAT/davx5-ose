@@ -50,7 +50,7 @@ class AppSettingsActivity: AppCompatActivity() {
             loadSettings()
 
             // UI settings
-            findPreference("notification_settings").apply {
+            findPreference<Preference>("notification_settings")!!.apply {
                 if (Build.VERSION.SDK_INT >= 26)
                     onPreferenceClickListener = Preference.OnPreferenceClickListener {
                         startActivity(Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
@@ -61,17 +61,17 @@ class AppSettingsActivity: AppCompatActivity() {
                 else
                     isVisible = false
             }
-            findPreference("reset_hints").onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            findPreference<Preference>("reset_hints")!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 resetHints()
                 false
             }
 
             // security settings
-            findPreference(Settings.DISTRUST_SYSTEM_CERTIFICATES).apply {
+            findPreference<SwitchPreferenceCompat>(Settings.DISTRUST_SYSTEM_CERTIFICATES)!!.apply {
                 isVisible = BuildConfig.customCerts
                 isEnabled = true
             }
-            findPreference("reset_certificates").apply {
+            findPreference<Preference>("reset_certificates")!!.apply {
                 isVisible = BuildConfig.customCerts
                 isEnabled = true
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {
@@ -89,12 +89,12 @@ class AppSettingsActivity: AppCompatActivity() {
             val settings = Settings.getInstance(requireActivity())
             
             // connection settings
-            (findPreference(Settings.OVERRIDE_PROXY) as SwitchPreferenceCompat).apply {
+            findPreference<SwitchPreferenceCompat>(Settings.OVERRIDE_PROXY)!!.apply {
                 isChecked = settings.getBoolean(Settings.OVERRIDE_PROXY) ?: Settings.OVERRIDE_PROXY_DEFAULT
                 isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY)
             }
 
-            (findPreference(Settings.OVERRIDE_PROXY_HOST) as EditTextPreference).apply {
+            findPreference<EditTextPreference>(Settings.OVERRIDE_PROXY_HOST)!!.apply {
                 isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY_HOST)
                 val proxyHost = settings.getString(Settings.OVERRIDE_PROXY_HOST) ?: Settings.OVERRIDE_PROXY_HOST_DEFAULT
                 text = proxyHost
@@ -113,7 +113,7 @@ class AppSettingsActivity: AppCompatActivity() {
                 }
             }
 
-            (findPreference(Settings.OVERRIDE_PROXY_PORT) as EditTextPreference).apply {
+            findPreference<EditTextPreference>(Settings.OVERRIDE_PROXY_PORT)!!.apply {
                 isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY_PORT)
                 val proxyPort = settings.getInt(Settings.OVERRIDE_PROXY_PORT) ?: Settings.OVERRIDE_PROXY_PORT_DEFAULT
                 text = proxyPort.toString()
@@ -135,7 +135,7 @@ class AppSettingsActivity: AppCompatActivity() {
             }
 
             // security settings
-            (findPreference(Settings.DISTRUST_SYSTEM_CERTIFICATES) as SwitchPreferenceCompat)
+            findPreference<SwitchPreferenceCompat>(Settings.DISTRUST_SYSTEM_CERTIFICATES)!!
                     .isChecked = settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES) ?: Settings.DISTRUST_SYSTEM_CERTIFICATES_DEFAULT
         }
 

@@ -119,9 +119,9 @@ class AccountSettingsActivity: AppCompatActivity() {
             val accountSettings = AccountSettings(requireActivity(), account)
 
             // preference group: authentication
-            val prefUserName = findPreference("username") as EditTextPreference
-            val prefPassword = findPreference("password") as EditTextPreference
-            val prefCertAlias = findPreference("certificate_alias") as Preference
+            val prefUserName = findPreference<EditTextPreference>("username")!!
+            val prefPassword = findPreference<EditTextPreference>("password")!!
+            val prefCertAlias = findPreference<Preference>("certificate_alias")!!
 
             val credentials = accountSettings.credentials()
             when (credentials.type) {
@@ -168,7 +168,7 @@ class AccountSettingsActivity: AppCompatActivity() {
             val syncIntervalCalendars = accountSettings.getSyncInterval(CalendarContract.AUTHORITY)
             val syncIntervalTasks = accountSettings.getSyncInterval(TaskProvider.ProviderName.OpenTasks.authority)
 
-            (findPreference("sync_interval_contacts") as ListPreference).let {
+            findPreference<ListPreference>("sync_interval_contacts")!!.let {
                 if (syncIntervalContacts != null) {
                     it.isEnabled = true
                     it.isVisible = true
@@ -189,7 +189,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                     it.isVisible = false
             }
 
-            (findPreference("sync_interval_calendars") as ListPreference).let {
+            findPreference<ListPreference>("sync_interval_calendars")!!.let {
                 if (syncIntervalCalendars != null) {
                     it.isEnabled = true
                     it.isVisible = true
@@ -210,7 +210,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                     it.isVisible = false
             }
 
-            (findPreference("sync_interval_tasks") as ListPreference).let {
+            findPreference<ListPreference>("sync_interval_tasks")!!.let {
                 if (syncIntervalTasks != null) {
                     it.isEnabled = true
                     it.isVisible = true
@@ -231,7 +231,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                     it.isVisible = false
             }
 
-            val prefWifiOnly = findPreference("sync_wifi_only") as SwitchPreferenceCompat
+            val prefWifiOnly = findPreference<SwitchPreferenceCompat>("sync_wifi_only")!!
             prefWifiOnly.isEnabled = !settings.has(AccountSettings.KEY_WIFI_ONLY)
             prefWifiOnly.isChecked = accountSettings.getSyncWifiOnly()
             prefWifiOnly.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, wifiOnly ->
@@ -240,7 +240,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                 false
             }
 
-            val prefWifiOnlySSIDs = findPreference("sync_wifi_only_ssids") as EditTextPreference
+            val prefWifiOnlySSIDs = findPreference<EditTextPreference>("sync_wifi_only_ssids")!!
             val onlySSIDs = accountSettings.getSyncWifiOnlySSIDs()?.joinToString(", ")
             prefWifiOnlySSIDs.text = onlySSIDs
             if (onlySSIDs != null)
@@ -262,7 +262,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                     requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 0)
 
             // preference group: CardDAV
-            (findPreference("contact_group_method") as ListPreference).let {
+            findPreference<ListPreference>("contact_group_method")!!.let {
                 if (syncIntervalContacts != null) {
                     it.isVisible = true
                     it.value = accountSettings.getGroupMethod().name
@@ -296,7 +296,7 @@ class AccountSettingsActivity: AppCompatActivity() {
             }
 
             // preference group: CalDAV
-            (findPreference("time_range_past_days") as EditTextPreference).let {
+            findPreference<EditTextPreference>("time_range_past_days")!!.let {
                 if (syncIntervalCalendars != null) {
                     it.isVisible = true
                     val pastDays = accountSettings.getTimeRangePastDays()
@@ -335,7 +335,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                     it.isVisible = false
             }
 
-            (findPreference("manage_calendar_colors") as SwitchPreferenceCompat).let {
+            findPreference<SwitchPreferenceCompat>("manage_calendar_colors")!!.let {
                 if (syncIntervalCalendars != null || syncIntervalTasks != null) {
                     it.isVisible = true
                     it.isEnabled = !settings.has(AccountSettings.KEY_MANAGE_CALENDAR_COLORS)
@@ -349,7 +349,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                     it.isVisible = false
             }
 
-            (findPreference("event_colors") as SwitchPreferenceCompat).let {
+            findPreference<SwitchPreferenceCompat>("event_colors")!!.let {
                 if (syncIntervalCalendars != null) {
                     it.isVisible = true
                     it.isEnabled = !settings.has(AccountSettings.KEY_EVENT_COLORS)
