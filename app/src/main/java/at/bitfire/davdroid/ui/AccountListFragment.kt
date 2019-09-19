@@ -64,7 +64,7 @@ class AccountListFragment: ListFragment() {
             context: Context
     ): ArrayAdapter<Account>(context, R.layout.account_list_item) {
 
-        override fun getView(position: Int, _v: View?, parent: ViewGroup?): View {
+        override fun getView(position: Int, _v: View?, parent: ViewGroup): View {
             val account = getItem(position)!!
 
             val v = _v ?: LayoutInflater.from(context).inflate(R.layout.account_list_item, parent, false)

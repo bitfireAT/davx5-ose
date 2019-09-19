@@ -47,7 +47,7 @@ class DeleteCollectionFragment: DialogFragment() {
         super.onCreate(savedInstanceState)
         model = ViewModelProviders.of(this).get(DeleteCollectionModel::class.java)
         model.initialize(
-                arguments!!.getParcelable(ARG_ACCOUNT) as Account,
+                arguments!!.getParcelable(ARG_ACCOUNT)!!,
                 arguments!!.getLong(ARG_COLLECTION_ID)
         )
     }
