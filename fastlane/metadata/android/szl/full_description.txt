@@ -1,0 +1,5 @@
+DAVx⁵ to je aplikacyjo zarzōndzanio i synchrōnizacyje CalDAV/CardDAV dlo Androida, co natywnie integruje sie ze aplikacyjami kalyndorza/kōntaktōw Androida.
+
+Używej to ze swojim włosnym serwerym abo ze zaufanym hostym, żeby trzimać swoje kōntakty, zdarzynia i zadania pod kōntrolōm.
+
+Po wiyncyj informacyji i lista przetestowanych serwerōw/serwisōw, wejzdrzij na strōna internetowo.
