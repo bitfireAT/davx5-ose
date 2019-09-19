@@ -69,9 +69,9 @@ data class Collection(
             val url = UrlUtils.withTrailingSlash(dav.href)
             val type: String = dav[ResourceType::class.java]?.let { resourceType ->
                 when {
-                    resourceType.types.contains(ResourceType.ADDRESSBOOK) -> Collection.TYPE_ADDRESSBOOK
-                    resourceType.types.contains(ResourceType.CALENDAR)    -> Collection.TYPE_CALENDAR
-                    resourceType.types.contains(ResourceType.SUBSCRIBED)  -> Collection.TYPE_WEBCAL
+                    resourceType.types.contains(ResourceType.ADDRESSBOOK) -> TYPE_ADDRESSBOOK
+                    resourceType.types.contains(ResourceType.CALENDAR)    -> TYPE_CALENDAR
+                    resourceType.types.contains(ResourceType.SUBSCRIBED)  -> TYPE_WEBCAL
                     else -> null
                 }
             } ?: return null
@@ -97,15 +97,15 @@ data class Collection(
             var supportsVJOURNAL: Boolean? = null
             var source: HttpUrl? = null
             when (type) {
-                Collection.TYPE_ADDRESSBOOK -> {
+                TYPE_ADDRESSBOOK -> {
                     dav[AddressbookDescription::class.java]?.let { description = it.description }
                 }
-                Collection.TYPE_CALENDAR, Collection.TYPE_WEBCAL -> {
+                TYPE_CALENDAR, TYPE_WEBCAL -> {
                     dav[CalendarDescription::class.java]?.let { description = it.description }
                     dav[CalendarColor::class.java]?.let { color = it.color }
                     dav[CalendarTimezone::class.java]?.let { timezone = it.vTimeZone }
 
-                    if (type == Collection.TYPE_CALENDAR) {
+                    if (type == TYPE_CALENDAR) {
                         supportsVEVENT = true
                         supportsVTODO = true
                         supportsVJOURNAL = true

@@ -317,14 +317,14 @@ class AccountActivity: AppCompatActivity() {
         private var usesCalendars: Boolean? = null
 
         init {
-            addSource(needContactPermissions, Observer {
+            addSource(needContactPermissions) {
                 usesContacts = it
                 calculate()
-            })
-            addSource(needCalendarPermissions, Observer {
+            }
+            addSource(needCalendarPermissions) {
                 usesCalendars = it
                 calculate()
-            })
+            }
         }
 
         fun calculate() {

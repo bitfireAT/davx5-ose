@@ -60,16 +60,16 @@ class StartupDialogFragment: DialogFragment() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && settings.getBoolean(HINT_BATTERY_OPTIMIZATIONS) != false) {
                 val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
                 if (!powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID))
-                    dialogs.add(StartupDialogFragment.instantiate(Mode.BATTERY_OPTIMIZATIONS))
+                    dialogs.add(instantiate(Mode.BATTERY_OPTIMIZATIONS))
             }
 
             // vendor-specific auto-start information
             if (autostartManufacturers.contains(Build.MANUFACTURER.toLowerCase()) && settings.getBoolean(HINT_AUTOSTART_PERMISSIONS) != false)
-                dialogs.add(StartupDialogFragment.instantiate(Mode.AUTOSTART_PERMISSIONS))
+                dialogs.add(instantiate(Mode.AUTOSTART_PERMISSIONS))
 
             // OpenTasks information
             if (!LocalTaskList.tasksProviderAvailable(context) && settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED) != false)
-                dialogs.add(StartupDialogFragment.instantiate(Mode.OPENTASKS_NOT_INSTALLED))
+                dialogs.add(instantiate(Mode.OPENTASKS_NOT_INSTALLED))
 
             return dialogs.reversed()
         }
@@ -91,8 +91,7 @@ class StartupDialogFragment: DialogFragment() {
 
         val settings = Settings.getInstance(requireActivity())
         val activity = requireActivity()
-        val mode = Mode.valueOf(arguments!!.getString(ARGS_MODE)!!)
-        return when (mode) {
+        return when (Mode.valueOf(arguments!!.getString(ARGS_MODE)!!)) {
             Mode.AUTOSTART_PERMISSIONS ->
                 AlertDialog.Builder(activity)
                         .setIcon(R.drawable.ic_error_dark)

@@ -93,7 +93,7 @@ class LocalContact: AndroidContact, LocalAddress {
 
     override fun updateFlags(flags: Int) {
         val values = ContentValues(1)
-        values.put(LocalContact.COLUMN_FLAGS, flags)
+        values.put(COLUMN_FLAGS, flags)
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
         this.flags = flags

@@ -76,7 +76,7 @@ class SharedPreferencesProvider(
 
 
     override fun isWritable(key: String) =
-            Pair(true, true)
+            Pair(first = true, second = true)
 
     private fun<T> putValue(key: String, value: T?, writer: (SharedPreferences.Editor, T) -> Unit): Boolean {
         return if (value == null)

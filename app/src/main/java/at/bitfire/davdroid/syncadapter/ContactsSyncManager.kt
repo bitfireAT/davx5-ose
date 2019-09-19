@@ -150,23 +150,22 @@ class ContactsSyncManager(
             else
                 SyncAlgorithm.PROPFIND_REPORT
 
-    override fun processLocallyDeleted(): Boolean {
-        if (readOnly) {
-            for (group in localCollection.findDeletedGroups()) {
-                Logger.log.warning("Restoring locally deleted group (read-only address book!)")
-                useLocal(group) { it.resetDeleted() }
-            }
+    override fun processLocallyDeleted() =
+            if (readOnly) {
+                for (group in localCollection.findDeletedGroups()) {
+                    Logger.log.warning("Restoring locally deleted group (read-only address book!)")
+                    useLocal(group) { it.resetDeleted() }
+                }
 
-            for (contact in localCollection.findDeletedContacts()) {
-                Logger.log.warning("Restoring locally deleted contact (read-only address book!)")
-                useLocal(contact) { it.resetDeleted() }
-            }
+                for (contact in localCollection.findDeletedContacts()) {
+                    Logger.log.warning("Restoring locally deleted contact (read-only address book!)")
+                    useLocal(contact) { it.resetDeleted() }
+                }
 
-            return false
-        } else
-            // mirror deletions to remote collection (DELETE)
-            return super.processLocallyDeleted()
-    }
+                false
+            } else
+                // mirror deletions to remote collection (DELETE)
+                super.processLocallyDeleted()
 
     override fun uploadDirty(): Boolean {
         if (readOnly) {

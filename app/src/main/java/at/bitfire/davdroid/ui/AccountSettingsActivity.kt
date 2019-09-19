@@ -115,7 +115,7 @@ class AccountSettingsActivity: AppCompatActivity() {
 
         override fun onSettingsChanged()  = reload()
 
-        fun reload() {
+        private fun reload() {
             val accountSettings = AccountSettings(requireActivity(), account)
 
             // preference group: authentication

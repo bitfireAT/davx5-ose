@@ -202,9 +202,9 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         private val db = AppDatabase.getInstance(application)
         private val executor = Executors.newSingleThreadExecutor()
 
-        lateinit var accountModel: AccountActivity.Model
+        private lateinit var accountModel: AccountActivity.Model
         val serviceId = MutableLiveData<Long>()
-        lateinit var collectionType: String
+        private lateinit var collectionType: String
 
         val collections: LiveData<PagedList<Collection>> =
                 Transformations.switchMap(serviceId) { service ->

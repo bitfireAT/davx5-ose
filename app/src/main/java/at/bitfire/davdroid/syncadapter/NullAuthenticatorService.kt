@@ -26,7 +26,7 @@ class NullAuthenticatorService: Service() {
     }
 
     override fun onBind(intent: Intent?) =
-            accountAuthenticator.iBinder.takeIf { intent?.action == android.accounts.AccountManager.ACTION_AUTHENTICATOR_INTENT }
+            accountAuthenticator.iBinder.takeIf { intent?.action == AccountManager.ACTION_AUTHENTICATOR_INTENT }
 
 
     private class AccountAuthenticator(

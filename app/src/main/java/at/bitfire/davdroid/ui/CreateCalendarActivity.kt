@@ -62,7 +62,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         binding.lifecycleOwner = this
         binding.model = model
 
-        binding.color.setOnClickListener { _ ->
+        binding.color.setOnClickListener {
             ColorPickerDialog.newBuilder()
                     .setShowAlphaSlider(false)
                     .setColor((color.background as ColorDrawable).color)
@@ -163,7 +163,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
             context: Context
     ): ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, android.R.id.text1) {
 
-        val tz = TimeZone.getAvailableIDs()
+        val tz = TimeZone.getAvailableIDs()!!
 
         override fun getFilter(): Filter {
             return object: Filter() {

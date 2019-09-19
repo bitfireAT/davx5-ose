@@ -12,6 +12,7 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.net.Uri
 
+@Suppress("ImplicitNullableNothingType")
 class AddressBookProvider: ContentProvider() {
 
     override fun onCreate() = false

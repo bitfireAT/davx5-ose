@@ -150,9 +150,9 @@ class DavService: android.app.Service() {
         /**
          * Checks if the given URL defines home sets and adds them to the home set list.
          *
-         * @throws IOException
+         * @throws java.io.IOException
          * @throws HttpException
-         * @throws DavException
+         * @throws at.bitfire.dav4jvm.exception.DavException
          */
         fun queryHomeSets(client: OkHttpClient, url: HttpUrl, recurse: Boolean = true) {
             val related = mutableSetOf<HttpUrl>()

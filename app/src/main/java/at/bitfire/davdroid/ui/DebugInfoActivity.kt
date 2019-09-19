@@ -142,13 +142,13 @@ class DebugInfoActivity: AppCompatActivity() {
                 // exception details
                 val throwable = extras?.getSerializable(KEY_THROWABLE) as Throwable?
                 if (throwable is HttpException) {
-                    throwable.request?.let {
-                        text.append("\nHTTP REQUEST:\n$it\n")
+                    throwable.request?.let { request ->
+                        text.append("\nHTTP REQUEST:\n$request\n")
                         throwable.requestBody?.let { text.append(it) }
                         text.append("\n\n")
                     }
-                    throwable.response?.let {
-                        text.append("HTTP RESPONSE:\n$it\n")
+                    throwable.response?.let { response ->
+                        text.append("HTTP RESPONSE:\n$response\n")
                         throwable.responseBody?.let { text.append(it) }
                         text.append("\n\n")
                     }

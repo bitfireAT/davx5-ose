@@ -51,14 +51,18 @@ object DavUtils {
                get the active DNS servers). */
             val connectivity = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val activeLink = connectivity.getLinkProperties(connectivity.activeNetwork)
-            val simpleResolvers = activeLink.dnsServers.map {
-                Logger.log.fine("Using DNS server ${it.hostAddress}")
-                val resolver = SimpleResolver()
-                resolver.setAddress(it)
-                resolver
-            }
-            val resolver = ExtendedResolver(simpleResolvers.toTypedArray())
-            lookup.setResolver(resolver)
+            if (activeLink != null) {
+                // get DNS servers of active network link and set them for dnsjava so that it can send SRV queries
+                val simpleResolvers = activeLink.dnsServers.map {
+                    Logger.log.fine("Using DNS server ${it.hostAddress}")
+                    val resolver = SimpleResolver()
+                    resolver.setAddress(it)
+                    resolver
+                }
+                val resolver = ExtendedResolver(simpleResolvers.toTypedArray())
+                lookup.setResolver(resolver)
+            } else
+                Logger.log.severe("Couldn't determine DNS servers, dnsjava queries (SRV/TXT records) won't work")
         }
     }
 

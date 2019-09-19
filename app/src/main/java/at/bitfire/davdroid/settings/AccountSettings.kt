@@ -258,7 +258,7 @@ class AccountSettings(
      * SEQUENCE and should not be used for the eTag.
      */
     private fun update_7_8() {
-        TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)?.use { provider ->
+        TaskProvider.acquire(context, OpenTasks)?.use { provider ->
             // ETag is now in sync_version instead of sync1
             // UID  is now in _uid         instead of sync2
             provider.client.query(TaskProvider.syncAdapterUri(provider.tasksUri(), account),

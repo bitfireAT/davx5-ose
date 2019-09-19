@@ -38,7 +38,7 @@ class WebcalFragment: CollectionsFragment() {
 
     override val noCollectionsStringId = R.string.account_no_webcals
 
-    lateinit var webcalModel: WebcalModel
+    private lateinit var webcalModel: WebcalModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -339,7 +339,7 @@ class LocalAddressBook(
 
         val values = ContentValues(1)
         values.put(Groups.TITLE, title)
-        val uri = provider.insert(syncAdapterURI(Groups.CONTENT_URI), values)
+        val uri = provider.insert(syncAdapterURI(Groups.CONTENT_URI), values) ?: throw RemoteException("Couldn't create contact group")
         return ContentUris.parseId(uri)
     }
 

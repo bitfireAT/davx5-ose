@@ -14,7 +14,6 @@ import android.content.ContentProviderOperation
 import android.content.ContentUris
 import android.content.ContentValues
 import android.net.Uri
-import android.provider.CalendarContract
 import android.provider.CalendarContract.*
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.DavUtils
@@ -79,7 +78,7 @@ class LocalCalendar private constructor(
             }
             values.put(Calendars.ALLOWED_REMINDERS, "${Reminders.METHOD_ALERT},${Reminders.METHOD_EMAIL}")
             values.put(Calendars.ALLOWED_AVAILABILITY, "${Reminders.AVAILABILITY_TENTATIVE},${Reminders.AVAILABILITY_FREE},${Reminders.AVAILABILITY_BUSY}")
-            values.put(Calendars.ALLOWED_ATTENDEE_TYPES, "${CalendarContract.Attendees.TYPE_OPTIONAL},${CalendarContract.Attendees.TYPE_REQUIRED},${CalendarContract.Attendees.TYPE_RESOURCE}")
+            values.put(Calendars.ALLOWED_ATTENDEE_TYPES, "${Attendees.TYPE_OPTIONAL},${Attendees.TYPE_REQUIRED},${Attendees.TYPE_RESOURCE}")
             return values
         }
     }

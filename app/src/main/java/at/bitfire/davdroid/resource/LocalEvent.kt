@@ -10,7 +10,6 @@ package at.bitfire.davdroid.resource
 
 import android.content.ContentProviderOperation
 import android.content.ContentValues
-import android.provider.CalendarContract
 import android.provider.CalendarContract.Events
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.ical4android.*
@@ -24,9 +23,9 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
             ICalendar.prodId = ProdId("+//IDN bitfire.at//${BuildConfig.userAgent}/${BuildConfig.VERSION_NAME} ical4j/" + Constants.ical4jVersion)
         }
 
-        const val COLUMN_ETAG = CalendarContract.Events.SYNC_DATA1
-        const val COLUMN_FLAGS = CalendarContract.Events.SYNC_DATA2
-        const val COLUMN_SEQUENCE = CalendarContract.Events.SYNC_DATA3
+        const val COLUMN_ETAG = Events.SYNC_DATA1
+        const val COLUMN_FLAGS = Events.SYNC_DATA2
+        const val COLUMN_SEQUENCE = Events.SYNC_DATA3
     }
 
     override var fileName: String? = null
@@ -72,9 +71,9 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
 
         builder .withValue(Events.UID_2445, event.uid)
                 .withValue(COLUMN_SEQUENCE, eventToBuild.sequence)
-                .withValue(CalendarContract.Events.DIRTY, 0)
-                .withValue(CalendarContract.Events.DELETED, 0)
-                .withValue(LocalEvent.COLUMN_FLAGS, flags)
+                .withValue(Events.DIRTY, 0)
+                .withValue(Events.DELETED, 0)
+                .withValue(COLUMN_FLAGS, flags)
 
         if (buildException)
             builder .withValue(Events.ORIGINAL_SYNC_ID, fileName)
@@ -106,7 +105,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
 
     override fun clearDirty(eTag: String?) {
         val values = ContentValues(2)
-        values.put(CalendarContract.Events.DIRTY, 0)
+        values.put(Events.DIRTY, 0)
         values.put(COLUMN_ETAG, eTag)
         values.put(COLUMN_SEQUENCE, event!!.sequence)
         calendar.provider.update(eventSyncURI(), values, null, null)

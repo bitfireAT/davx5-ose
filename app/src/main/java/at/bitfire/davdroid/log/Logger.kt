@@ -13,12 +13,12 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.FileProvider
+import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppSettingsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -32,7 +32,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
 
     private const val LOG_TO_FILE = "log_to_file"
 
-    val log = java.util.logging.Logger.getLogger("davx5")!!
+    val log = java.util.logging.Logger.getLogger("davx5")
 
     private lateinit var context: Context
     private lateinit var preferences: SharedPreferences
