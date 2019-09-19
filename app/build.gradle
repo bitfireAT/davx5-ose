@@ -13,13 +13,13 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'org.jetbrains.dokka-android'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     buildToolsVersion '29.0.1'
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
 
-        versionCode 299
+        versionCode 301
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "customCerts", "true"
 
@@ -43,7 +43,7 @@ android {
     flavorDimensions "distribution"
     productFlavors {
         standard {
-            versionName "2.5.4.1-ose"
+            versionName "2.5.5-beta1-ose"
         }
     }
 
