@@ -1,0 +1,171 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">DAVx⁵ адресен указател</string>
+  <string name="address_books_authority_title">Адресни указатели</string>
+  <string name="help">Помощ</string>
+  <string name="manage_accounts">Управление на регистрациите</string>
+  <string name="send">Изпрати</string>
+  <string name="notification_channel_general">Други важни съобщения</string>
+  <string name="notification_channel_sync">Синхронизиране</string>
+  <string name="notification_channel_sync_errors">Грешки при синхронизирането</string>
+  <string name="notification_channel_sync_io_errors">Грешки с входа/изхода и мрежата.</string>
+  <!--startup dialogs-->
+  <string name="startup_autostart_permission">Автоматична синхронизация</string>
+  <string name="startup_battery_optimization">Планувана синхронизация</string>
+  <string name="startup_battery_optimization_disable">Изключи за DAVx⁵</string>
+  <string name="startup_dont_show_again">Не показвай отново</string>
+  <string name="startup_not_now">Не сега</string>
+  <string name="startup_donate">Информация за отворения код</string>
+  <string name="startup_donate_message">Радваме се, че изполваш DAVx⁵ – софтуер с отворен код (GPLv3).  Тъй като разработването на DAVx⁵ е много трудоемка работа, моля да направите дарение.</string>
+  <!--AboutActivity-->
+  <string name="about_flavor_info">Тази версия може да се разпространява само чрез Google Play.</string>
+  <!--global settings-->
+  <string name="logging_couldnt_create_file">Не можах да създада файл с протокола</string>
+  <string name="logging_notification_send_log">Изпрати протокола</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_about">Относно / Лиценз</string>
+  <string name="navigation_drawer_settings">Настройки</string>
+  <string name="navigation_drawer_news_updates">Новини и нови версии</string>
+  <string name="navigation_drawer_website">Интернет страница</string>
+  <string name="navigation_drawer_manual">Упътване</string>
+  <string name="navigation_drawer_faq">Често задавани въпроси</string>
+  <string name="navigation_drawer_forums">Помощ и форум</string>
+  <string name="navigation_drawer_donate">Дарения</string>
+  <string name="accounts_global_sync_enable">Включи</string>
+  <!--DavService-->
+  <!--AppSettingsActivity-->
+  <string name="app_settings">Настройки</string>
+  <string name="app_settings_show_debug_info_details">Покажи/сподели детайли за софтуера и настройките</string>
+  <string name="app_settings_logging">Подробно протоколиране</string>
+  <string name="app_settings_logging_on">Протоколирането е включено</string>
+  <string name="app_settings_logging_off">Протоколирането е изключено</string>
+  <string name="app_settings_connection">Връзка</string>
+  <string name="app_settings_override_proxy">Промени прокси настройките</string>
+  <string name="app_settings_override_proxy_on">Изполвай долупосочените прокси настройки</string>
+  <string name="app_settings_override_proxy_off">Изпозвай прокси настройките на системата</string>
+  <string name="app_settings_override_proxy_host">Име на HTTP прокси сървъра</string>
+  <string name="app_settings_override_proxy_port">Порт на HTTP  прокси</string>
+  <string name="app_settings_security">Защита</string>
+  <string name="app_settings_distrust_system_certs">Загуби доверието в системните сертификати</string>
+  <string name="app_settings_distrust_system_certs_on">Издатели на сертификати познати на системата или добавени от потребителя няма да бъдат доверени</string>
+  <string name="app_settings_distrust_system_certs_off">Издателите на сертификатите познати на системата или добавени от потребителя ще бъдат доверени (препоръчително)</string>
+  <string name="app_settings_notification_settings">Настройки за съобщенията</string>
+  <string name="app_settings_reset_hints_success">Всички подсказки ще се покажат отново</string>
+  <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_no_address_books">Няма адресни указатели (все още)</string>
+  <string name="account_no_calendars">Няма календари (все още)</string>
+  <string name="account_no_webcals">Няма абонаменти за календари (все още)</string>
+  <string name="account_swipe_down">Дръпни надолу за да освежиш списъка от сървъра.</string>
+  <string name="account_synchronize_now">Синхронизирай сега</string>
+  <string name="account_synchronizing_now">Сега се синхронизира</string>
+  <string name="account_settings">Настройки на регистрацията</string>
+  <string name="account_rename">Преименовай регистрацията</string>
+  <string name="account_rename_new_name">Данните, който не са синхронизирани със сървъра, може да се изпарят.  След преименоването е нужно ново синхронизаране.  Ново име на регистрацията:</string>
+  <string name="account_rename_rename">Преименоване</string>
+  <string name="account_delete">Изтриване на регистрация</string>
+  <string name="account_delete_confirmation_title">Наистина ли да изтрия регистрацията?</string>
+  <string name="account_delete_confirmation_text">Всички местни копия на адресни указатели, календари и списъци със задачи ще бъдат изтрити.</string>
+  <string name="account_read_only">само за четене</string>
+  <string name="account_calendar">календар</string>
+  <string name="account_task_list">списък със задачи</string>
+  <string name="account_refresh_address_book_list">Опресни списъка с адресни указатели</string>
+  <string name="account_create_new_address_book">Създай нов адресен указател</string>
+  <string name="account_refresh_calendar_list">Опресни списъка с календари</string>
+  <string name="account_create_new_calendar">Създай нов календар</string>
+  <string name="account_install_icsx5">Инсталирай ICSx⁵</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">Добави регистрация</string>
+  <string name="login_type_email">Вход с електронен адрес</string>
+  <string name="login_email_address">Електронен адрес</string>
+  <string name="login_email_address_error">Нужен е действителен електронен адрес</string>
+  <string name="login_password">Парола</string>
+  <string name="login_password_required">Трябва парола</string>
+  <string name="login_type_url">Вход с URL и потребителско име</string>
+  <string name="login_url_must_be_http_or_https">Адресът трябва да започва с http(s)://</string>
+  <string name="login_url_must_be_https">Адресът трябва да започва с https://</string>
+  <string name="login_url_host_name_required">Нужен е адрес на сървър</string>
+  <string name="login_user_name">Потребителско име</string>
+  <string name="login_user_name_required">Нужно е потребителско име</string>
+  <string name="login_base_url">Основен адрес (URL)</string>
+  <string name="login_type_url_certificate">Влез с URL и сертификат</string>
+  <string name="login_back">Назад</string>
+  <string name="login_create_account">Създай регистрация</string>
+  <string name="login_account_name">Име на регистрация</string>
+  <string name="login_account_name_required">Изисква се име на регистрацията</string>
+  <string name="login_account_name_already_taken">Това име на регистрация вече се използва</string>
+  <string name="login_account_not_created">Регистрацията не можеше да бъде създадена</string>
+  <string name="login_querying_server">Изчакай, разпитвам сървъра…</string>
+  <string name="login_no_caldav_carddav">Не бяха открити CalDAV или CardDAV услуги.</string>
+  <string name="login_view_logs">Покажи подробности</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">Настройки: %s</string>
+  <string name="settings_username">Потребителско име</string>
+  <string name="settings_enter_username">Въведи потребитеско име:</string>
+  <string name="settings_password">Парола</string>
+  <string name="settings_password_summary">Промени паролата съгласно твоя сървър.</string>
+  <string name="settings_enter_password">Въведи парола:</string>
+  <string name="settings_sync">Синхронизация</string>
+  <string name="settings_sync_interval_contacts">Период за синхронизиране на контактите</string>
+  <string name="settings_sync_summary_manually">Само изрично</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Всяка %dминута и веднага при местна промяна</string>
+  <string name="settings_sync_interval_calendars">Период за синхронизиране на календари</string>
+  <string name="settings_sync_interval_tasks">Период за синхронизиране на задачи</string>
+  <string name="settings_sync_wifi_only">Синхронизирай само през WiFi</string>
+  <string name="settings_sync_wifi_only_on">Синхронизация се прави само при WiFi връзки</string>
+  <string name="settings_sync_wifi_only_ssids">WiFi SSID ограничения</string>
+  <string name="settings_sync_wifi_only_ssids_on">Ще синхронизира само през %s</string>
+  <string name="settings_sync_wifi_only_ssids_off">Всички WiFi връзки ще бъдат използвани</string>
+  <string name="settings_sync_wifi_only_ssids_message">Списък на разделени със запетайка имена на мрежи (SSID WiFi) (остави празно за всички мрежи)</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Метод за управление на групи от контакти</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Групите са отделни VCard контакти</item>
+    <item>Групите са категории във всеки контакт</item>
+  </string-array>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past_none">Всички събития ще се синхронизират</string>
+  <string name="settings_manage_calendar_colors">Управлявай цвета на календарите</string>
+  <string name="settings_manage_calendar_colors_on">Цветовете на календарите се управляват от DAVx⁵</string>
+  <string name="settings_manage_calendar_colors_off">Цветовете на календарите не се задават от DAVx⁵</string>
+  <string name="settings_event_colors">Поддръжка на цветове за събития</string>
+  <string name="settings_event_colors_on">Синхронизирай цветовете на събитията</string>
+  <string name="settings_event_colors_off">Не синхронизирай цветовете на събитията</string>
+  <!--collection management-->
+  <string name="create_addressbook">Създай адресен указател</string>
+  <string name="create_addressbook_display_name_hint">Моят адресен указател</string>
+  <string name="create_calendar">Създай календар</string>
+  <string name="create_calendar_time_zone">Часова зона</string>
+  <string name="create_calendar_time_zone_required">Изисква се часова зона</string>
+  <string name="create_calendar_type_vevent">Събития</string>
+  <string name="create_calendar_type_vtodo">Задачи</string>
+  <string name="create_calendar_type_vjournal">Бележки / журнал</string>
+  <string name="create_calendar_type_events_and_tasks">Комбинирано (събития и задачи)</string>
+  <string name="create_collection_color">Цвят</string>
+  <string name="create_collection_create">Създай</string>
+  <string name="delete_collection_confirm_title">Сигурен ли си?</string>
+  <string name="collection_properties">Свойства</string>
+  <string name="collection_properties_url">Адрес (URL)</string>
+  <string name="collection_properties_copy_url">Копирай адреса</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">Възникна грешка</string>
+  <string name="exception_httpexception">Възникна HTTP грешка</string>
+  <string name="exception_ioexception">Възникна входно-изходна грешка</string>
+  <string name="exception_show_details">Покажи подробности</string>
+  <!--sync adapters and DebugInfoActivity-->
+  <string name="debug_info_logs_attached">Протоколът е закачен към това съобщение (изисква от получаващото приложение поддръжка за прикачени файлове).</string>
+  <string name="sync_contacts_read_only_address_book">Адресен указател само за четене</string>
+  <string name="sync_error_permissions">DAVx⁵ права</string>
+  <string name="sync_error_permissions_text">Необходими са допълнителни права</string>
+  <string name="sync_error_opentasks_too_old">OpenTasks е прекалено стара</string>
+  <string name="sync_error_opentasks_required_version">Изисква се версия: %1$s, а е налична %2$s.</string>
+  <string name="sync_error_http_dav">Грешка с HTTP сървъра – %s</string>
+  <string name="sync_error_retry">Опитай отново</string>
+  <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVx⁵: Защита на връзката</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ се натъкна на непознат сертификат.  Ще му се довериш ли?</string>
+</resources>

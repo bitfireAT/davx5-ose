@@ -1,0 +1,262 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">Ksiōnżka adresowo DAVx⁵</string>
+  <string name="address_books_authority_title">Ksiōnżka adresowo</string>
+  <string name="help">Pōmoc</string>
+  <string name="manage_accounts">Zarzōndzej kōntami</string>
+  <string name="send">Wyślij</string>
+  <string name="notification_channel_debugging">Debugowanie</string>
+  <string name="notification_channel_general">Inksze ważne wiadōmości</string>
+  <string name="notification_channel_sync">Synchrōnizacyjo</string>
+  <string name="notification_channel_sync_errors">Błyndy synchrōnizacyje</string>
+  <string name="notification_channel_sync_errors_desc">Ważne błyndy, co zastawiajōm synchrōnizacyjo, jak niyôczekowane ôdpowiedzi serwera</string>
+  <string name="notification_channel_sync_warnings">Ôstrzeżynia synchrōnizacyje</string>
+  <string name="notification_channel_sync_warnings_desc">Niyôstudne problymy synchrōnizacyje, jak niykere niynoleżne zbiory</string>
+  <string name="notification_channel_sync_io_errors">Błyndy necu i wchodu/wychodu</string>
+  <string name="notification_channel_sync_io_errors_desc">Braki ôdpowiedzi, problymy połōnczynio, itp. (z wiynksza tymczasowe)</string>
+  <!--startup dialogs-->
+  <string name="startup_autostart_permission">Autōmatyczno synchrōnizacyjo</string>
+  <string name="startup_autostart_permission_message">Firmware %s czynsto blokuje autōmatyczno synchrōnizacyjo. W tym przipadku przizwōl na autōmatyczno synchrōnizacyjo we sztelōnkach Androida.</string>
+  <string name="startup_battery_optimization">Zaplanowano synchrōnizacyjo</string>
+  <string name="startup_battery_optimization_message">Twoja maszina strzimie synchrōnizacyjo DAVx⁵. Żeby wymusić regularne interwały synchrōnizacyje DAVx⁵, zastow ôptymalizacyjo bateryje.</string>
+  <string name="startup_battery_optimization_disable">Zastow dlo DAVx⁵</string>
+  <string name="startup_dont_show_again">Niy pokazuj zaś</string>
+  <string name="startup_not_now">Niy teroz</string>
+  <string name="startup_donate">Informacyje Open-Source</string>
+  <string name="startup_donate_message">Sōm my radzi, że używosz DAVx⁵, co mo ôtwarte zdrzōdło (GPLv3). Bez to, że tworzynie DAVx⁵ to je ciynżko robota i wziōnło nōm tysiōnce godzin roboty, proszymy ô rozwożynie przesłanio nōm dowki.</string>
+  <string name="startup_donate_now">Pokoż strōna dowki</string>
+  <string name="startup_donate_later">Możno niyskorzij</string>
+  <string name="startup_more_info">Wiyncyj informacyji</string>
+  <string name="startup_opentasks_not_installed">OpenTasks niyzainstalowany</string>
+  <string name="startup_opentasks_not_installed_message">Żeby synchrōnizować zadania, potrzebno je darmowo aplikacyjo OpenTasks (niywymogano do kōntaktōw/zdarzyń).</string>
+  <string name="startup_opentasks_reinstall_davx5">Po zainstalowaniu OpenTasks potrzebne je PRZEINSTALOWANIE DAVx⁵ i przidanie na nowo twojich kōnt (feler Androida).</string>
+  <string name="startup_opentasks_not_installed_install">Zainstaluj OpenTasks</string>
+  <!--AboutActivity-->
+  <string name="about_libraries">Bibliotyki</string>
+  <string name="about_version">Wersyjo %1$s (%2$d)</string>
+  <string name="about_build_date">Skōmpilowano %s</string>
+  <string name="about_flavor_info">Ta wersyjo je do dystrybucyje ino na Google Play.</string>
+  <string name="about_license_info_no_warranty">Tyn program przichodzi BEZ ŻODNYJ GWARANCYJE. To je wolne ôprogramowanie i możesz je rozkludzać pod ôkryślōnymi warōnkami.</string>
+  <!--global settings-->
+  <string name="logging_couldnt_create_file">Niy szło stworzić zbioru dziynnika</string>
+  <string name="logging_notification_title">Dziynnik DAVx⁵</string>
+  <string name="logging_notification_text">Zapisowanie wszyjskich ôperacyji DAVx⁵</string>
+  <string name="logging_notification_send_log">Wyślij dziynnik</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Ôtwōrz myni nawigacyje</string>
+  <string name="navigation_drawer_close">Zawrzij myni nawigacyje</string>
+  <string name="navigation_drawer_subtitle">Adapter synchrōnizacyje CalDAV/CardDAV</string>
+  <string name="navigation_drawer_about">Ô DAVx⁵ / Licyncyjo</string>
+  <string name="navigation_drawer_beta_feedback">Przekoż ôpinijo</string>
+  <string name="navigation_drawer_settings">Sztelōnki</string>
+  <string name="navigation_drawer_news_updates">Nowości i aktualizacyje</string>
+  <string name="navigation_drawer_external_links">Zewnyntrzne linki</string>
+  <string name="navigation_drawer_website">Strōna WWW</string>
+  <string name="navigation_drawer_manual">Ryncznie</string>
+  <string name="navigation_drawer_faq">Pytania i ôdpowiedzi</string>
+  <string name="navigation_drawer_forums">Pōmoc / Forum</string>
+  <string name="navigation_drawer_donate">Dowka</string>
+  <string name="account_list_empty">Witōmy w DAVx⁵!\n\nMożesz teroz przidać kōnto CalDAV/CardDAV.</string>
+  <string name="accounts_global_sync_disabled">Autōmatyczno synchrōnizacyjo dlo cołkigo systymu je zastawiōno</string>
+  <string name="accounts_global_sync_enable">Włōncz</string>
+  <!--DavService-->
+  <string name="dav_service_refresh_failed">Niy szło ôdświyżyć serwisu</string>
+  <string name="dav_service_refresh_couldnt_refresh">Niy szło ôdświyżyć listy kolekcyje</string>
+  <!--AppSettingsActivity-->
+  <string name="app_settings">Sztelōnki</string>
+  <string name="app_settings_debug">Debugowanie</string>
+  <string name="app_settings_show_debug_info">Pokoż informacyje do debugowanio</string>
+  <string name="app_settings_show_debug_info_details">Przejzdrzij abo udostympnij informacyje ô programie i jego kōnfiguracyji</string>
+  <string name="app_settings_logging">Rozwlykłe zapisowanie</string>
+  <string name="app_settings_logging_on">Zapisowanie je aktywne</string>
+  <string name="app_settings_logging_off">Zapisowanie je zastawiōne</string>
+  <string name="app_settings_connection">Łōnczność</string>
+  <string name="app_settings_override_proxy">Nadpisz sztelōnki proxy</string>
+  <string name="app_settings_override_proxy_on">Użyj niysztandardowych sztelōnkōw proxy</string>
+  <string name="app_settings_override_proxy_off">Użyj systymowych sztelōnkōw proxy</string>
+  <string name="app_settings_override_proxy_host">Miano hosta proxy HTTP</string>
+  <string name="app_settings_override_proxy_port">Port proxy HTTP</string>
+  <string name="app_settings_security">Bezpieczyństwo</string>
+  <string name="app_settings_distrust_system_certs">Skasuj certyfikaty systymowe</string>
+  <string name="app_settings_distrust_system_certs_on">CA systymowe i używocza niy bydōm przidane</string>
+  <string name="app_settings_distrust_system_certs_off">CA systymowe i używocza bydōm przidane (rekōmyndowane)</string>
+  <string name="app_settings_reset_certificates">Zresetuj (niy)zaufane certyfikaty</string>
+  <string name="app_settings_reset_certificates_summary">Zresetuj wszyjske niysztandardowe certyfikaty.</string>
+  <string name="app_settings_reset_certificates_success">Wszyjske niysztandardowe certyfikaty były wysnożōne</string>
+  <string name="app_settings_user_interface">Interfejs używocza</string>
+  <string name="app_settings_notification_settings">Sztelōnki powiadōmiyń</string>
+  <string name="app_settings_notification_settings_summary">Zarzōndzej kanałami powiadōmiyń i jejich sztelōnkami</string>
+  <string name="app_settings_reset_hints">Zresetuj podpowiedzi</string>
+  <string name="app_settings_reset_hints_summary">Włōncz zaś skazōwki, co wcześnij były wychrōniōne</string>
+  <string name="app_settings_reset_hints_success">Wszyjske skazōwki pokożōm sie zaś</string>
+  <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_no_address_books">Niy ma (jeszcze) żodnych ksiōnżek adresowych.</string>
+  <string name="account_no_calendars">Niy ma (jeszcze) żodnych kalyndorzōw.</string>
+  <string name="account_no_webcals">Niy ma (jeszcze) żodnych subskrypcyji kalyndorzōw.</string>
+  <string name="account_swipe_down">Przeciōng w dōł, żeby ôdświyżyć lista ze serwera.</string>
+  <string name="account_synchronize_now">Synchrōnizuj teroz</string>
+  <string name="account_synchronizing_now">Synchronizacyjo trwo</string>
+  <string name="account_settings">Sztelōnki kōnta</string>
+  <string name="account_rename">Przemianuj kōnto</string>
+  <string name="account_rename_new_name">Niyspamiyntane dane lokalne mogōm być skasowane. Synchrōnizacyjo na nowo je wymogano po przemianowaniu. Nowe miano kōnta:</string>
+  <string name="account_rename_rename">Przemianuj</string>
+  <string name="account_delete">Skasuj kōnto</string>
+  <string name="account_delete_confirmation_title">Naprowda chcesz skasować kōnto?</string>
+  <string name="account_delete_confirmation_text">Wszyjske lokalne kopije ksiōnżek adresowych, kalyndorzōw i list zadań bydōm skasowane.</string>
+  <string name="account_synchronize_this_collection">Synchrōnizuj kolekcyjo</string>
+  <string name="account_read_only">ino do ôdczytu</string>
+  <string name="account_calendar">kalyndorz</string>
+  <string name="account_task_list">lista zadań</string>
+  <string name="account_refresh_address_book_list">Ôdświyż lista ksiōnżek adresowych</string>
+  <string name="account_create_new_address_book">Stwōrz nowo ksiōnżka adresowo</string>
+  <string name="account_refresh_calendar_list">Ôdświyż wykoz kalyndorzōw</string>
+  <string name="account_create_new_calendar">Stwōrz nowy kalyndorz</string>
+  <string name="account_no_webcal_handler_found">Niy szło znojś aplikacyje, co ôbsuguje Webcal</string>
+  <string name="account_install_icsx5">Zainstaluj ICSx⁵</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">Przidej kōnto</string>
+  <string name="login_type_email">Logowanie ze pōmocōm adresy e-mail</string>
+  <string name="login_email_address">Adresa e-mail</string>
+  <string name="login_email_address_error">Wymogano noleżno adresa e-mail</string>
+  <string name="login_password">Hasło</string>
+  <string name="login_password_required">Wymogane hasło</string>
+  <string name="login_type_url">Logowanie ze pōmocōm adresy URL i miana używocza</string>
+  <string name="login_url_must_be_http_or_https">URL musi zaczynać sie ôd http(s)://</string>
+  <string name="login_url_must_be_https">Adresa URL musi zaczynać sie ôd https://</string>
+  <string name="login_url_host_name_required">Wymogane miano hosta</string>
+  <string name="login_user_name">Miano używocza</string>
+  <string name="login_user_name_required">Wymogane miano używocza</string>
+  <string name="login_base_url">Bazowy URL</string>
+  <string name="login_type_url_certificate">Logowanie ze pōmocōm adresy URL i certyfikatu klijynta</string>
+  <string name="login_select_certificate">Ôbier certyfikat</string>
+  <string name="login_login">Wloguj</string>
+  <string name="login_back">Wrōć</string>
+  <string name="login_create_account">Stwōrz kōnto</string>
+  <string name="login_account_name">Miano kōnta</string>
+  <string name="login_account_name_info">Użyj swojij adresy e-mail za miano kōnta, bo Android bydzie używoł miana kōnta za pola ÔRGANIZATŌR dlo zdarzyń, co je stworzisz. Niy możesz posiadać dwōch kōnt ze takim samym mianym.</string>
+  <string name="login_account_contact_group_method">Spusōb grupowanio kōntaktōw:</string>
+  <string name="login_account_name_required">Wymogane miano kōnta</string>
+  <string name="login_account_name_already_taken">Miano kōnta je już zajynte</string>
+  <string name="login_account_not_created">Kōnto niy mogło być stworzōne</string>
+  <string name="login_configuration_detection">Wykrywanie kōnfiguracyje</string>
+  <string name="login_querying_server">Czekej, ôdpytowanie serwera…</string>
+  <string name="login_no_caldav_carddav">Niy idzie znojść usugi CalDAV abo CardDAV.</string>
+  <string name="login_view_logs">Pokoż informacyje</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">Sztelōnki: %s</string>
+  <string name="settings_authentication">Autoryzowanie</string>
+  <string name="settings_username">Miano używocza</string>
+  <string name="settings_enter_username">Wpisz miano używocza:</string>
+  <string name="settings_password">Hasło</string>
+  <string name="settings_password_summary">Zaktualizuj hasło zgodnie ze serwerym.</string>
+  <string name="settings_enter_password">Wpisz hasło:</string>
+  <string name="settings_certificate_alias">Alias certyfikatu klijynta</string>
+  <string name="settings_sync">Synchrōnizacyjo</string>
+  <string name="settings_sync_interval_contacts">Frekwyncyjo synchrōnizacyje kōntaktōw</string>
+  <string name="settings_sync_summary_manually">Ino ryncznie</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Co %d minut jak tyż zaroz przi zmianach lokalnych</string>
+  <string name="settings_sync_interval_calendars">Frekwyncyjo synchrōnizacyje kalyndorzōw</string>
+  <string name="settings_sync_interval_tasks">Frekwyncyjo synchrōnizacyje list zadań</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Ino ryncznie</item>
+    <item>Co 15 minut</item>
+    <item>Co 30 minut</item>
+    <item>Co godzina</item>
+    <item>Co 2 godziny</item>
+    <item>Co 4 godziny</item>
+    <item>Roz dziynnie</item>
+  </string-array>
+  <string name="settings_sync_wifi_only">Synchrōnizuj ino bez WiFi</string>
+  <string name="settings_sync_wifi_only_on">Synchrōnizacyjo je ôgraniczōno do połōnczyń WiFi</string>
+  <string name="settings_sync_wifi_only_off">Zorta połōnczynio niy mo znaczynio</string>
+  <string name="settings_sync_wifi_only_ssids">Ôgraniczynia WiFi SSID</string>
+  <string name="settings_sync_wifi_only_ssids_on">Bydzie synchrōnizować ino bez %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Bydzie synchrōnizować ino bez %s (wymogo aktywnych serwisōw lokalizacyje)</string>
+  <string name="settings_sync_wifi_only_ssids_off">Wszyjske połōnczynia WiFi bydōm używane</string>
+  <string name="settings_sync_wifi_only_ssids_message">Ôddzielōne kōmami miana (SSID) przizwolōnych necōw WiFi (ôstow prōzne dlo wszyjskich)</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">Żeby czytać miana WiFi, potrzebne je uprawniynie Lokalizacyje i permanynt aktywowane serwisy lokalizacyje.</string>
+  <string name="settings_more_info_faq">Wiyncyj informacyji (FAQ)</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Spusōb grupy kōntaktōw</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Grupy to sōm ôddzielne VCards</item>
+    <item>Grupy to sōm kategoryje co kōntakt</item>
+  </string-array>
+  <string name="settings_contact_group_method_change">Zmiyń spusōb grupowy</string>
+  <string name="settings_contact_group_method_change_reload_contacts">Wymogo to pobranio wszyjskich kōntaktōw na nowo. Niyspamiyntane zmiany z tego telefōnu bydōm skasowane.</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Limit czasowy przeszłych zdarzyń</string>
+  <string name="settings_sync_time_range_past_none">Wszyjske zdarzynia bydōm zsynchrōnizowane</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Zdarzynia starsze aniżeli jedyn dziyń bydōm zignorowane.</item>
+    <item quantity="few">Zdarzynia starsze aniżeli %d dni bydōm zignorowane.</item>
+    <item quantity="other">Zdarzynia starsze aniżeli %d dni bydōm zignorowane.</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Zdarzynia, co sōm starsze aniżeli podano wielość dni, bydōm zignorowane (może być 0). Ôstow prōzne, coby synchrōnizować wszyjske zdarzynia.</string>
+  <string name="settings_manage_calendar_colors">Zarzōndzej farbami kalyndorza</string>
+  <string name="settings_manage_calendar_colors_on">Farby kalyndorza sōm zarzōndzane ôd DAVx⁵</string>
+  <string name="settings_manage_calendar_colors_off">Farby kalyndorza niy sōm sztelowane ôd DAVx⁵</string>
+  <string name="settings_event_colors">Sparcie farbōw zdarzyń</string>
+  <string name="settings_event_colors_on">Synchrōnizuj farby zdarzyń</string>
+  <string name="settings_event_colors_off">Niy synchrōnizuj farbōw zdarzyń</string>
+  <string name="settings_event_colors_off_confirm">Zastawiynie farbōw zdarzyń może skasować już zsynchrōnizowane farby zdarzyń.</string>
+  <!--collection management-->
+  <string name="create_addressbook">Stwōrz ksiōnżka adresowo</string>
+  <string name="create_addressbook_display_name_hint">Moja ksiōnżka adresowo</string>
+  <string name="create_calendar">Stwōrz kalyndorz</string>
+  <string name="create_calendar_time_zone">Strefa czasowo</string>
+  <string name="create_calendar_time_zone_required">Wymogano strefa czasowo</string>
+  <string name="create_calendar_type">Możliwe wpisy kalyndorza</string>
+  <string name="create_calendar_type_vevent">Zdarzynia</string>
+  <string name="create_calendar_type_vtodo">Zadania</string>
+  <string name="create_calendar_type_vjournal">Zopiski / dziynnik</string>
+  <string name="create_calendar_type_events_and_tasks">Połōnczōne (zdarzynia i zadania)</string>
+  <string name="create_collection_color">Farba</string>
+  <string name="create_collection_creating">Tworzynie kolekcyje</string>
+  <string name="create_collection_display_name">Tytuł</string>
+  <string name="create_collection_display_name_required">Tytuł je wymogany</string>
+  <string name="create_collection_description">Ôpis</string>
+  <string name="create_collection_optional">ôpcyjōnalne</string>
+  <string name="create_collection_home_set">Położynie przechowowanio</string>
+  <string name="create_collection_create">Stwōrz</string>
+  <string name="delete_collection">Skasuj kolekcyjo</string>
+  <string name="delete_collection_confirm_title">Je żeś zicher?</string>
+  <string name="delete_collection_confirm_warning">Ta kolekcyjo (%s) i wszyjske jeji dane bydōm doimyntnie skasowane.</string>
+  <string name="delete_collection_data_shall_be_deleted">Te dane bydōm skasowane ze serwera.</string>
+  <string name="delete_collection_deleting_collection">Kasowanie kolekcyje</string>
+  <string name="collection_force_read_only">Wymuś ino do ôdczytu</string>
+  <string name="collection_properties">Włosności</string>
+  <string name="collection_properties_url">Adresa (URL):</string>
+  <string name="collection_properties_copy_url">Skopiuj URL</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">Trefiōł sie błōnd.</string>
+  <string name="exception_httpexception">Trefiōł sie błōnd HTTP.</string>
+  <string name="exception_ioexception">Trefiōł sie błōnd I/O.</string>
+  <string name="exception_show_details">Pokoż informacyje</string>
+  <!--sync adapters and DebugInfoActivity-->
+  <string name="debug_info_title">Informacyje debugowe</string>
+  <string name="debug_info_logs_attached">Logi sōm przidane do tyj wiadōmości (wymogo sparcio przidowkōw aplikacyje, co ôdbiyro)</string>
+  <string name="sync_contacts_read_only_address_book">Ksiōnżka adresowo ino do ôdczytu</string>
+  <string name="sync_error_permissions">Uprawniynia DAVx⁵</string>
+  <string name="sync_error_permissions_text">Wymogane ekstra uprawniynia</string>
+  <string name="sync_error_opentasks_too_old">OpenTask je za stary</string>
+  <string name="sync_error_opentasks_required_version">Wymogano wersyjo: %1$s (teroźno %2$s)</string>
+  <string name="sync_error_authentication_failed">Autoryzacyjo sie niy podarziła (dej pozōr na dane logowanio)</string>
+  <string name="sync_error_io">Feler necu abo I/O – %s</string>
+  <string name="sync_error_http_dav">Feler serwera HTTP – %s</string>
+  <string name="sync_error_local_storage">Feler lokalnego przechowowanio – %s</string>
+  <string name="sync_error_retry">Sprōbuj zaś</string>
+  <string name="sync_error_view_item">Pokoż elymynt</string>
+  <string name="sync_invalid_contact">Dostany kōntakt ze serwera je niynoleżny</string>
+  <string name="sync_invalid_event">Dostane zdarzynie ze serwera je niynoleżne</string>
+  <string name="sync_invalid_task">Dostane zadanie ze serwera je niynoleżne</string>
+  <string name="sync_invalid_resources_ignoring">Ignorowanie jednego abo wiyncyj niynoleżnych zasobōw</string>
+  <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVx⁵: Bezpieczyństwo połōnczynio</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ trefiōł niyznōmy certyfikat. Chcesz go przidać?</string>
+</resources>
