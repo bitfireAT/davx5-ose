@@ -97,7 +97,7 @@
   <string name="account_webcal">Webcal</string>
   <string name="account_no_address_books">No existen libretas de enderezos (aínda).</string>
   <string name="account_no_calendars">Non existen calendarios (aínda).</string>
-  <string name="account_no_webcals">Non ten subscricións a caladerio (aínda).</string>
+  <string name="account_no_webcals">Non ten subscricións a calendario (aínda).</string>
   <string name="account_swipe_down">Arrastre hacia abaixo para actualizar a lista desde o servidor.</string>
   <string name="account_synchronize_now">Sincronizar agora</string>
   <string name="account_synchronizing_now">Sincronizando</string>
@@ -114,7 +114,7 @@
   <string name="account_task_list">lista de tarefas</string>
   <string name="account_refresh_address_book_list">Actualizar lista de libreta de enderezos</string>
   <string name="account_create_new_address_book">Crear nova libreta de enderezos</string>
-  <string name="account_refresh_calendar_list">Actualizar lista de calenderio</string>
+  <string name="account_refresh_calendar_list">Actualizar lista de calendario</string>
   <string name="account_create_new_calendar">Crear novo calendario</string>
   <string name="account_no_webcal_handler_found">Non se atopou app para Webcal</string>
   <string name="account_install_icsx5">Instalar ICSx⁵</string>
