@@ -10,6 +10,7 @@
   <string name="notification_channel_general">Други важни съобщения</string>
   <string name="notification_channel_sync">Синхронизиране</string>
   <string name="notification_channel_sync_errors">Грешки при синхронизирането</string>
+  <string name="notification_channel_sync_warnings">Предупреждения от синхронизирането</string>
   <string name="notification_channel_sync_io_errors">Грешки с входа/изхода и мрежата.</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Автоматична синхронизация</string>
@@ -35,6 +36,7 @@
   <string name="navigation_drawer_donate">Дарения</string>
   <string name="accounts_global_sync_enable">Включи</string>
   <!--DavService-->
+  <string name="dav_service_refresh_couldnt_refresh">Не можах да опресня списъка на ресурсите</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Настройки</string>
   <string name="app_settings_show_debug_info_details">Покажи/сподели детайли за софтуера и настройките</string>
@@ -93,6 +95,7 @@
   <string name="login_user_name_required">Нужно е потребителско име</string>
   <string name="login_base_url">Основен адрес (URL)</string>
   <string name="login_type_url_certificate">Влез с URL и сертификат</string>
+  <string name="login_select_certificate">Избери сертификат</string>
   <string name="login_back">Назад</string>
   <string name="login_create_account">Създай регистрация</string>
   <string name="login_account_name">Име на регистрация</string>
@@ -115,26 +118,46 @@
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Всяка %dминута и веднага при местна промяна</string>
   <string name="settings_sync_interval_calendars">Период за синхронизиране на календари</string>
   <string name="settings_sync_interval_tasks">Период за синхронизиране на задачи</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Само изрично</item>
+    <item>Всеки 15 минути</item>
+    <item>На половин час</item>
+    <item>Всеки час</item>
+    <item>На два часа</item>
+    <item>На четири часа</item>
+    <item>Ежедневно</item>
+  </string-array>
   <string name="settings_sync_wifi_only">Синхронизирай само през WiFi</string>
   <string name="settings_sync_wifi_only_on">Синхронизация се прави само при WiFi връзки</string>
   <string name="settings_sync_wifi_only_ssids">WiFi SSID ограничения</string>
   <string name="settings_sync_wifi_only_ssids_on">Ще синхронизира само през %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Ще синхронизира само пред %s(изисква услуга за местоположението)</string>
   <string name="settings_sync_wifi_only_ssids_off">Всички WiFi връзки ще бъдат използвани</string>
   <string name="settings_sync_wifi_only_ssids_message">Списък на разделени със запетайка имена на мрежи (SSID WiFi) (остави празно за всички мрежи)</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">За да се четат имената на WiFi мрежите са необходими право да се чете местоположението и постоянно включена услуга за местоположението.</string>
+  <string name="settings_more_info_faq">Повече информация (често задавани въпроси)</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Метод за управление на групи от контакти</string>
   <string-array name="settings_contact_group_method_entries">
     <item>Групите са отделни VCard контакти</item>
     <item>Групите са категории във всеки контакт</item>
   </string-array>
+  <string name="settings_contact_group_method_change_reload_contacts">Това изисква презареждане на всички контакти. Местни промени, които не са съхранени, че се изпарят.</string>
   <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Ограничения за събития от миналото</string>
   <string name="settings_sync_time_range_past_none">Всички събития ще се синхронизират</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Събития минали преди повече от ден ще бъдат пренебреграти.</item>
+    <item quantity="other">Събития минали преди повече от %dдни ще бъдат пренебрегнати.</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Събития преди повече от този брой дни в миналото ще бъдат пренебрегнати (може да бъде 0).  Остави празно за да се синхронизират всички събития.</string>
   <string name="settings_manage_calendar_colors">Управлявай цвета на календарите</string>
   <string name="settings_manage_calendar_colors_on">Цветовете на календарите се управляват от DAVx⁵</string>
   <string name="settings_manage_calendar_colors_off">Цветовете на календарите не се задават от DAVx⁵</string>
   <string name="settings_event_colors">Поддръжка на цветове за събития</string>
   <string name="settings_event_colors_on">Синхронизирай цветовете на събитията</string>
   <string name="settings_event_colors_off">Не синхронизирай цветовете на събитията</string>
+  <string name="settings_event_colors_off_confirm">Изключването на цветове за събитията може да изтрие вече синхронизирани цветове на събития.</string>
   <!--collection management-->
   <string name="create_addressbook">Създай адресен указател</string>
   <string name="create_addressbook_display_name_hint">Моят адресен указател</string>
@@ -146,8 +169,16 @@
   <string name="create_calendar_type_vjournal">Бележки / журнал</string>
   <string name="create_calendar_type_events_and_tasks">Комбинирано (събития и задачи)</string>
   <string name="create_collection_color">Цвят</string>
+  <string name="create_collection_creating">Създаване на ресурс</string>
+  <string name="create_collection_display_name">Заглавие</string>
+  <string name="create_collection_display_name_required">Изисква се заглавие</string>
+  <string name="create_collection_description">Описание</string>
+  <string name="create_collection_home_set">Място на съхранение</string>
   <string name="create_collection_create">Създай</string>
+  <string name="delete_collection">Изтрий ресурс</string>
   <string name="delete_collection_confirm_title">Сигурен ли си?</string>
+  <string name="delete_collection_data_shall_be_deleted">Изтрий тези данни от сървъра</string>
+  <string name="delete_collection_deleting_collection">Изтриване на ресурс</string>
   <string name="collection_properties">Свойства</string>
   <string name="collection_properties_url">Адрес (URL)</string>
   <string name="collection_properties_copy_url">Копирай адреса</string>
@@ -165,6 +196,7 @@
   <string name="sync_error_opentasks_required_version">Изисква се версия: %1$s, а е налична %2$s.</string>
   <string name="sync_error_http_dav">Грешка с HTTP сървъра – %s</string>
   <string name="sync_error_retry">Опитай отново</string>
+  <string name="sync_invalid_contact">Получих развален контакт от сървъра</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: Защита на връзката</string>
   <string name="trust_certificate_unknown_certificate_found">DAVx⁵ се натъкна на непознат сертификат.  Ще му се довериш ли?</string>
