@@ -100,10 +100,7 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
-    implementation(':dav4jvm') {
-        exclude group: 'org.ogce', module: 'xpp3'	// Android comes with its own XmlPullParser
-    }
-
+    implementation 'com.gitlab.bitfireAT:dav4jvm:ee66e8e50b'
     implementation 'com.jaredrummler:colorpicker:1.1.0'
     implementation 'com.mikepenz:aboutlibraries:6.2.3'
     implementation "com.squareup.okhttp3:okhttp:${versions.okhttp}"

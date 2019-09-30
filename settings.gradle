@@ -3,5 +3,3 @@ include ':app'
 include ':cert4android'
 include ':ical4android'
 include ':vcard4android'
-
-includeBuild('dav4jvm')

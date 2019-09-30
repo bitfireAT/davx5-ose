@@ -1,6 +1,3 @@
-[submodule "dav4jvm"]
-	path = dav4jvm
-	url = https://gitlab.com/bitfireAT/dav4jvm.git
 [submodule "ical4android"]
 	path = ical4android
 	url = https://gitlab.com/bitfireAT/ical4android.git
