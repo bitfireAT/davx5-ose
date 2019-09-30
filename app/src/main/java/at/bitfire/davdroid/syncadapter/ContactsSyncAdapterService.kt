@@ -54,6 +54,10 @@ class ContactsSyncAdapterService: SyncAdapterService() {
                 }
                 accountSettings.accountManager.setUserData(account, PREVIOUS_GROUP_METHOD, groupMethod)
 
+                /* don't run sync if
+                   - sync conditions (e.g. "sync only in WiFi") are not met AND
+                   - this is is an automatic sync (i.e. manual syncs are run regardless of sync conditions)
+                 */
                 if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(accountSettings))
                     return
 

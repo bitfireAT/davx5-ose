@@ -254,12 +254,17 @@ class AccountSettingsActivity: AppCompatActivity() {
                 false
             }
 
-            // getting the WiFi name requires location permission (and active location services) since Android 8.1
-            // see https://issuetracker.google.com/issues/70633700
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 &&
-                accountSettings.getSyncWifiOnly() && onlySSIDs != null &&
-                ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-                    requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 0)
+            // Android 8.1+: getting the WiFi name requires location permission (and active location services)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 && accountSettings.getSyncWifiOnly() && onlySSIDs != null) {
+                val requiredPermissions = mutableListOf(Manifest.permission.ACCESS_FINE_LOCATION)
+
+                // Android 10+: getting the Wifi name in the background (while syncing) requires extra permission
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                    requiredPermissions += Manifest.permission.ACCESS_BACKGROUND_LOCATION
+
+                if (requiredPermissions.any { ContextCompat.checkSelfPermission(requireActivity(), it) != PackageManager.PERMISSION_GRANTED })
+                    requestPermissions(requiredPermissions.toTypedArray(), 0)
+            }
 
             // preference group: CardDAV
             findPreference<ListPreference>("contact_group_method")!!.let {
@@ -379,7 +384,7 @@ class AccountSettingsActivity: AppCompatActivity() {
         override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-            if (permissions.first() == Manifest.permission.ACCESS_COARSE_LOCATION && grantResults.first() == PackageManager.PERMISSION_DENIED) {
+            if (grantResults.any { it == PackageManager.PERMISSION_DENIED }) {
                 // location permission denied, reset SSID restriction
                 AccountSettings(requireActivity(), account).setSyncWifiOnlySSIDs(null)
                 reload()

@@ -27,8 +27,12 @@
     <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
 
     <!-- android.permission-group.LOCATION -->
-    <!-- required since Android 8.1 to get the WiFi name (for "sync in Wifi only" feature) -->
-    <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- getting the WiFi name (for "sync in Wifi only") requires
+      - coarse location (Android 8.1)
+      - fine location (Android 10)  -->
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!-- required since Android 10 to get the WiFi name while in background (= while syncing) -->
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
 
     <!-- ical4android declares task access permissions -->
 

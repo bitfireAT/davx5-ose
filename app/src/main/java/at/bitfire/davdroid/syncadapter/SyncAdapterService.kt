@@ -15,6 +15,7 @@ import android.app.Service
 import android.content.*
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
@@ -93,18 +94,35 @@ abstract class SyncAdapterService: Service() {
 
         protected fun checkSyncConditions(settings: AccountSettings): Boolean {
             if (settings.getSyncWifiOnly()) {
+                // WiFi required
                 val connectivityManager = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-                val network = connectivityManager.activeNetworkInfo
-                if (network == null || network.type != ConnectivityManager.TYPE_WIFI || !network.isConnected) {
+
+                // check for connected WiFi network
+                var wifiAvailable = false
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    connectivityManager.allNetworks.forEach { network ->
+                        connectivityManager.getNetworkCapabilities(network)?.let { capabilities ->
+                            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) &&
+                                capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED))
+                                wifiAvailable = true
+                        }
+                    }
+                } else {
+                    val network = connectivityManager.activeNetworkInfo
+                    if (network?.isConnected == true && network.type == ConnectivityManager.TYPE_WIFI)
+                        wifiAvailable = true
+                }
+                if (!wifiAvailable) {
                     Logger.log.info("Not on connected WiFi, stopping")
                     return false
                 }
+                // if execution reaches this point, we're on a connected WiFi
 
                 settings.getSyncWifiOnlySSIDs()?.let { onlySSIDs ->
                     // getting the WiFi name requires location permission (and active location services) since Android 8.1
                     // see https://issuetracker.google.com/issues/70633700
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 &&
-                        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         val intent = Intent(context, AccountSettingsActivity::class.java)
                         intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, settings.account)
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
