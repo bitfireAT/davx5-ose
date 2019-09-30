@@ -1,7 +1,6 @@
 package at.bitfire.davdroid.model
 
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import androidx.test.platform.app.InstrumentationRegistry
 import okhttp3.HttpUrl
 import org.junit.After
@@ -51,7 +50,7 @@ class DaoToolsTest {
         val created = HomeSet(id=4, serviceId=service.id, url=HttpUrl.get("https://example.com/4"))
         newItems[created.url] = created
 
-        DaoTools(homeSetDao).syncAll(oldItems, newItems) { it.url }
+        DaoTools(homeSetDao).syncAll(oldItems, newItems, { it.url })
 
         val afterSync = homeSetDao.getByService(service.id)
         assertEquals(afterSync.size, 3)

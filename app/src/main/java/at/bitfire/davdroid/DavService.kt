@@ -240,16 +240,18 @@ class DavService: android.app.Service() {
         fun saveHomesets() {
             DaoTools(homeSetDao).syncAll(
                     homeSetDao.getByService(serviceId),
-                    homeSets
-            ) { it.url }
+                    homeSets,
+                    { it.url })
         }
 
         @Transaction
         fun saveCollections() {
             DaoTools(collectionDao).syncAll(
                     collectionDao.getByService(serviceId),
-                    collections
-            ) { it.url }
+                    collections, { it.url }) { new, old ->
+                new.forceReadOnly = old.forceReadOnly
+                new.sync = old.sync
+            }
         }
 
         fun saveResults() {
@@ -274,13 +276,6 @@ class DavService: android.app.Service() {
                 service.principal?.let { principalUrl ->
                     Logger.log.fine("Querying principal $principalUrl for home sets")
                     queryHomeSets(httpClient, principalUrl)
-                }
-
-                // remember selected collections
-                val selectedCollections = HashSet<HttpUrl>()
-                collections.forEach { (url, collection) ->
-                    if (collection.sync)
-                        selectedCollections += url
                 }
 
                 // now refresh homesets and their member collections
@@ -344,10 +339,6 @@ class DavService: android.app.Service() {
                                 throw e
                         }
                 }
-
-                // restore selections
-                for (url in selectedCollections)
-                    collections[url]?.let { it.sync = true }
             }
 
             saveResults()

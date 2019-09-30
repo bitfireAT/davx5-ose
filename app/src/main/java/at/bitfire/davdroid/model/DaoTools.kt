@@ -5,7 +5,16 @@ import java.util.logging.Level
 
 class DaoTools<T: IdEntity>(dao: SyncableDao<T>): SyncableDao<T> by dao {
 
-    fun <K> syncAll(allOld: List<T>, allNew: Map<K,T>, selectKey: (T) -> K) {
+    /**
+     * Synchronizes a list of "old" elements with a list of "new" elements so that the list
+     * only contain equal elements.
+     *
+     * @param allOld      list of old elements
+     * @param allNew      map of new elements (stored in key map)
+     * @param selectKey   generates a unique key from the element (will be called on old elements)
+     * @param prepareNew  prepares new elements (can be used to take over properties of old elements)
+     */
+    fun <K> syncAll(allOld: List<T>, allNew: Map<K,T>, selectKey: (T) -> K, prepareNew: (new: T, old: T) -> Unit = { _, _ -> }) {
         Logger.log.log(Level.FINE, "Syncing tables", arrayOf(allOld, allNew))
         val remainingNew = allNew.toMutableMap()
         allOld.forEach { old ->
@@ -14,6 +23,8 @@ class DaoTools<T: IdEntity>(dao: SyncableDao<T>): SyncableDao<T> by dao {
             if (matchingNew != null) {
                 // keep this old item, but maybe update it
                 matchingNew.id = old.id     // identity is proven by key
+                prepareNew(matchingNew, old)
+
                 if (matchingNew != old)
                     update(matchingNew)
 
