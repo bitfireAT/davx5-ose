@@ -12,8 +12,10 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.UiUtils
 import java.util.*
 
@@ -42,15 +44,25 @@ class LoginActivity: AppCompatActivity() {
         const val EXTRA_PASSWORD = "password"
     }
 
+    private val loginFragmentLoader = ServiceLoader.load(ILoginCredentialsFragment::class.java)!!
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (savedInstanceState == null)
+        if (savedInstanceState == null) {
             // first call, add first login fragment
-            supportFragmentManager.beginTransaction()
-                    .replace(android.R.id.content, DefaultLoginCredentialsFragment())
-                    .commit()
+            var fragment: Fragment? = null
+            for (factory in loginFragmentLoader)
+                fragment = fragment ?: factory.getFragment(intent)
+
+            if (fragment != null) {
+                supportFragmentManager.beginTransaction()
+                        .replace(android.R.id.content, fragment)
+                        .commit()
+            } else
+                Logger.log.severe("Couldn't create LoginFragment")
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -8,6 +8,7 @@
 
 package at.bitfire.davdroid.ui.setup
 
+import android.content.Intent
 import android.net.MailTo
 import android.os.Bundle
 import android.os.Handler
@@ -143,6 +144,13 @@ class DefaultLoginCredentialsFragment: Fragment() {
         }
 
         return valid
+    }
+
+
+    class Factory: ILoginCredentialsFragment {
+
+        override fun getFragment(intent: Intent) = DefaultLoginCredentialsFragment()
+
     }
 
 }
