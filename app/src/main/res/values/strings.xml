@@ -77,7 +77,7 @@
     <string name="navigation_drawer_faq">FAQ</string>
     <string name="navigation_drawer_forums">Help / Forums</string>
     <string name="navigation_drawer_donate">Donate</string>
-
+    <string name="account_list_no_internet">No Internet connectivity. Android will not run synchronization.</string>
     <string name="account_list_empty">Welcome to DAVx⁵!\n\nYou can add a CalDAV/CardDAV account now.</string>
     <string name="accounts_global_sync_disabled">System-wide automatic synchronization is disabled</string>
     <string name="accounts_global_sync_enable">Enable</string>

@@ -14,6 +14,11 @@ import android.accounts.OnAccountsUpdateListener
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +33,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.AccountActivity
+import kotlinx.android.synthetic.main.account_list.*
 import kotlinx.android.synthetic.main.account_list_item.view.*
 
 class AccountListFragment: ListFragment() {
@@ -40,6 +46,10 @@ class AccountListFragment: ListFragment() {
             val adapter = listAdapter as AccountListAdapter
             adapter.clear()
             adapter.addAll(*accounts)
+        })
+
+        model.networkAvailable.observe(this, Observer { networkAvailable ->
+            no_network_info.visibility = if (networkAvailable) View.GONE else View.VISIBLE
         })
 
         return inflater.inflate(R.layout.account_list, container, false)
@@ -81,13 +91,48 @@ class AccountListFragment: ListFragment() {
 
         val accounts = MutableLiveData<Array<out Account>>()
 
+        val networkAvailable = MutableLiveData<Boolean>()
+        private var networkObserver: ConnectivityManager.NetworkCallback? = null
+
         private val accountManager = AccountManager.get(getApplication())!!
+        private val connectivityManager = application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         init {
             accountManager.addOnAccountsUpdatedListener(this, null, true)
+
+            if (Build.VERSION.SDK_INT >= 21) {
+                networkAvailable.postValue(false)
+
+                val networkRequest = NetworkRequest.Builder()
+                        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                        .build()
+                networkObserver = object: ConnectivityManager.NetworkCallback() {
+                    val availableNetworks = hashSetOf<Network>()
+
+                    override fun onAvailable(network: Network) {
+                        availableNetworks += network
+                        update()
+                    }
+
+                    override fun onLost(network: Network) {
+                        availableNetworks -= network
+                        update()
+                    }
+
+                    private fun update() {
+                        networkAvailable.postValue(availableNetworks.isNotEmpty())
+                    }
+                }
+                connectivityManager.registerNetworkCallback(networkRequest, networkObserver)
+            }
         }
 
         override fun onCleared() {
             accountManager.removeOnAccountsUpdatedListener(this)
+
+            if (Build.VERSION.SDK_INT >= 21)
+                networkObserver?.let {
+                    connectivityManager.unregisterNetworkCallback(it)
+                }
         }
 
         override fun onAccountsUpdated(newAccounts: Array<out Account>) {
