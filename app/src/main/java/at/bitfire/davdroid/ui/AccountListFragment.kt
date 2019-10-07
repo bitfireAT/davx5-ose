@@ -99,11 +99,13 @@ class AccountListFragment: ListFragment() {
         init {
             accountManager.addOnAccountsUpdatedListener(this, null, true)
 
-            if (Build.VERSION.SDK_INT >= 21) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 networkAvailable.postValue(false)
 
+                // check for working (e.g. WiFi after captive portal login) Internet connection
                 val networkRequest = NetworkRequest.Builder()
                         .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                        .addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
                         .build()
                 networkObserver = object: ConnectivityManager.NetworkCallback() {
                     val availableNetworks = hashSetOf<Network>()
