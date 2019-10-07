@@ -58,6 +58,7 @@
   <string name="navigation_drawer_faq">Perguntas fequentes</string>
   <string name="navigation_drawer_forums">Ajuda / Fóruns</string>
   <string name="navigation_drawer_donate">Doações</string>
+  <string name="account_list_no_internet">Sem conexão com a Internet. O Android não executará a sincronização.</string>
   <string name="account_list_empty">Bem-vindo ao DAVx⁵!\n\nVocê pode adicionar uma conta CalDAV/CardDAV agora.</string>
   <string name="accounts_global_sync_disabled">A sincronização automática pelo sistema está desativada</string>
   <string name="accounts_global_sync_enable">Ativar</string>

@@ -10,32 +10,52 @@
   <string name="notification_channel_general">Други важни съобщения</string>
   <string name="notification_channel_sync">Синхронизиране</string>
   <string name="notification_channel_sync_errors">Грешки при синхронизирането</string>
+  <string name="notification_channel_sync_errors_desc">Важни грешки, които спират синхронизирането, като неочаквани отговори от сървъра</string>
   <string name="notification_channel_sync_warnings">Предупреждения от синхронизирането</string>
   <string name="notification_channel_sync_io_errors">Грешки с входа/изхода и мрежата.</string>
+  <string name="notification_channel_sync_io_errors_desc">Проточване на времето, проблеми с връзката, и т.н. (обикновенно временни)</string>
   <!--startup dialogs-->
   <string name="startup_autostart_permission">Автоматична синхронизация</string>
   <string name="startup_battery_optimization">Планувана синхронизация</string>
+  <string name="startup_battery_optimization_message">Устройството ти ще възпрепятства DAVx⁵ да синхронизира.  За да се извършва редовна, периодична синхронизация, изключи “оптимизация на батерията”.</string>
   <string name="startup_battery_optimization_disable">Изключи за DAVx⁵</string>
   <string name="startup_dont_show_again">Не показвай отново</string>
   <string name="startup_not_now">Не сега</string>
   <string name="startup_donate">Информация за отворения код</string>
   <string name="startup_donate_message">Радваме се, че изполваш DAVx⁵ – софтуер с отворен код (GPLv3).  Тъй като разработването на DAVx⁵ е много трудоемка работа, моля да направите дарение.</string>
+  <string name="startup_donate_now">Покажи страницата за дарения</string>
+  <string name="startup_donate_later">Може би по-късно</string>
+  <string name="startup_more_info">Повече информация</string>
+  <string name="startup_opentasks_not_installed">OpenTasks не е инсталирана.</string>
+  <string name="startup_opentasks_not_installed_message">За да синхронизираш задачи е нужна програмата OpenTasks.  Тя не е необходима за синхронизиране на контакти или събития.</string>
+  <string name="startup_opentasks_reinstall_davx5">След като инсталирате OpenTasks трябва да инсталирате отново DAVx⁵ и да добавите своите регистрации (грешката е в Андроид).</string>
+  <string name="startup_opentasks_not_installed_install">Инсталирай OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_libraries">Библиотеки</string>
+  <string name="about_version">Версия %1$s (%2$d)</string>
+  <string name="about_build_date">Компилирана на %s</string>
   <string name="about_flavor_info">Тази версия може да се разпространява само чрез Google Play.</string>
+  <string name="about_license_info_no_warranty">Тази програма няма абсолютно никаква гаранция.  Тя е свободен софтуер и можеш да я разпространяваш при определени условия.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Не можах да създада файл с протокола</string>
+  <string name="logging_notification_title">DAVx⁵ протоколиране</string>
+  <string name="logging_notification_text">Сега действията на DAVx⁵ се протоколират</string>
   <string name="logging_notification_send_log">Изпрати протокола</string>
   <!--AccountsActivity-->
+  <string name="navigation_drawer_subtitle">Адаптор за CalDAV/CardDAV синхронизиране</string>
   <string name="navigation_drawer_about">Относно / Лиценз</string>
   <string name="navigation_drawer_settings">Настройки</string>
   <string name="navigation_drawer_news_updates">Новини и нови версии</string>
+  <string name="navigation_drawer_external_links">Външни препратки</string>
   <string name="navigation_drawer_website">Интернет страница</string>
   <string name="navigation_drawer_manual">Упътване</string>
   <string name="navigation_drawer_faq">Често задавани въпроси</string>
   <string name="navigation_drawer_forums">Помощ и форум</string>
   <string name="navigation_drawer_donate">Дарения</string>
+  <string name="account_list_empty">Добре дошъл при  DAVx⁵!\n\nМоже да добавиш CalDAV/CardDAV регистрация сега.</string>
   <string name="accounts_global_sync_enable">Включи</string>
   <!--DavService-->
+  <string name="dav_service_refresh_failed">Откриването на услугите се провали</string>
   <string name="dav_service_refresh_couldnt_refresh">Не можах да опресня списъка на ресурсите</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Настройки</string>
@@ -54,6 +74,7 @@
   <string name="app_settings_distrust_system_certs_on">Издатели на сертификати познати на системата или добавени от потребителя няма да бъдат доверени</string>
   <string name="app_settings_distrust_system_certs_off">Издателите на сертификатите познати на системата или добавени от потребителя ще бъдат доверени (препоръчително)</string>
   <string name="app_settings_notification_settings">Настройки за съобщенията</string>
+  <string name="app_settings_notification_settings_summary">Управлявление на каналите за съобщения и техните настройки</string>
   <string name="app_settings_reset_hints_success">Всички подсказки ще се покажат отново</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
@@ -72,6 +93,7 @@
   <string name="account_delete">Изтриване на регистрация</string>
   <string name="account_delete_confirmation_title">Наистина ли да изтрия регистрацията?</string>
   <string name="account_delete_confirmation_text">Всички местни копия на адресни указатели, календари и списъци със задачи ще бъдат изтрити.</string>
+  <string name="account_synchronize_this_collection">синхронизирай този ресурс</string>
   <string name="account_read_only">само за четене</string>
   <string name="account_calendar">календар</string>
   <string name="account_task_list">списък със задачи</string>
@@ -99,9 +121,11 @@
   <string name="login_back">Назад</string>
   <string name="login_create_account">Създай регистрация</string>
   <string name="login_account_name">Име на регистрация</string>
+  <string name="login_account_contact_group_method">Метод за съхранение на групи от контакти:</string>
   <string name="login_account_name_required">Изисква се име на регистрацията</string>
   <string name="login_account_name_already_taken">Това име на регистрация вече се използва</string>
   <string name="login_account_not_created">Регистрацията не можеше да бъде създадена</string>
+  <string name="login_configuration_detection">Откриване на настройките</string>
   <string name="login_querying_server">Изчакай, разпитвам сървъра…</string>
   <string name="login_no_caldav_carddav">Не бяха открити CalDAV или CardDAV услуги.</string>
   <string name="login_view_logs">Покажи подробности</string>
@@ -129,6 +153,7 @@
   </string-array>
   <string name="settings_sync_wifi_only">Синхронизирай само през WiFi</string>
   <string name="settings_sync_wifi_only_on">Синхронизация се прави само при WiFi връзки</string>
+  <string name="settings_sync_wifi_only_off">Вида на връзката не е от значение</string>
   <string name="settings_sync_wifi_only_ssids">WiFi SSID ограничения</string>
   <string name="settings_sync_wifi_only_ssids_on">Ще синхронизира само през %s</string>
   <string name="settings_sync_wifi_only_ssids_on_location_services">Ще синхронизира само пред %s(изисква услуга за местоположението)</string>
@@ -137,11 +162,12 @@
   <string name="settings_sync_wifi_only_ssids_location_permission">За да се четат имената на WiFi мрежите са необходими право да се чете местоположението и постоянно включена услуга за местоположението.</string>
   <string name="settings_more_info_faq">Повече информация (често задавани въпроси)</string>
   <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Метод за управление на групи от контакти</string>
+  <string name="settings_contact_group_method">Метод за съхранение на групи от контакти</string>
   <string-array name="settings_contact_group_method_entries">
     <item>Групите са отделни VCard контакти</item>
     <item>Групите са категории във всеки контакт</item>
   </string-array>
+  <string name="settings_contact_group_method_change">Метод за съхранение на групи от контакти</string>
   <string name="settings_contact_group_method_change_reload_contacts">Това изисква презареждане на всички контакти. Местни промени, които не са съхранени, че се изпарят.</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Ограничения за събития от миналото</string>
@@ -164,6 +190,7 @@
   <string name="create_calendar">Създай календар</string>
   <string name="create_calendar_time_zone">Часова зона</string>
   <string name="create_calendar_time_zone_required">Изисква се часова зона</string>
+  <string name="create_calendar_type">Възможни компоненти в календара</string>
   <string name="create_calendar_type_vevent">Събития</string>
   <string name="create_calendar_type_vtodo">Задачи</string>
   <string name="create_calendar_type_vjournal">Бележки / журнал</string>
@@ -177,8 +204,10 @@
   <string name="create_collection_create">Създай</string>
   <string name="delete_collection">Изтрий ресурс</string>
   <string name="delete_collection_confirm_title">Сигурен ли си?</string>
+  <string name="delete_collection_confirm_warning">Този ресурс (%s) и всичките данни в него ще бъдат изтрити.</string>
   <string name="delete_collection_data_shall_be_deleted">Изтрий тези данни от сървъра</string>
   <string name="delete_collection_deleting_collection">Изтриване на ресурс</string>
+  <string name="collection_force_read_only">Направи само за четене</string>
   <string name="collection_properties">Свойства</string>
   <string name="collection_properties_url">Адрес (URL)</string>
   <string name="collection_properties_copy_url">Копирай адреса</string>
@@ -194,9 +223,15 @@
   <string name="sync_error_permissions_text">Необходими са допълнителни права</string>
   <string name="sync_error_opentasks_too_old">OpenTasks е прекалено стара</string>
   <string name="sync_error_opentasks_required_version">Изисква се версия: %1$s, а е налична %2$s.</string>
+  <string name="sync_error_authentication_failed">Регистрирането се провали, провери потребителското име и паролата.</string>
+  <string name="sync_error_io">Грешка с входа/изхода или мрежата – %s</string>
   <string name="sync_error_http_dav">Грешка с HTTP сървъра – %s</string>
+  <string name="sync_error_local_storage">Грешка при съхраняването на място – %s</string>
   <string name="sync_error_retry">Опитай отново</string>
   <string name="sync_invalid_contact">Получих развален контакт от сървъра</string>
+  <string name="sync_invalid_event">Получих сбъркан файл със събитие от сървъра</string>
+  <string name="sync_invalid_task">Получих сбъркан файл със задача от сървъра</string>
+  <string name="sync_invalid_resources_ignoring">Пренебрегване на сбъркани данни</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: Защита на връзката</string>
   <string name="trust_certificate_unknown_certificate_found">DAVx⁵ се натъкна на непознат сертификат.  Ще му се довериш ли?</string>
