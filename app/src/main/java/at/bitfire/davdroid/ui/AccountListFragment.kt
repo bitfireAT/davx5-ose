@@ -12,8 +12,10 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.app.Application
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -92,14 +94,29 @@ class AccountListFragment: ListFragment() {
         val accounts = MutableLiveData<Array<out Account>>()
 
         val networkAvailable = MutableLiveData<Boolean>()
-        private var networkObserver: ConnectivityManager.NetworkCallback? = null
+        private var networkCallback: ConnectivityManager.NetworkCallback? = null
+        private var networkReceiver: BroadcastReceiver? = null
 
         private val accountManager = AccountManager.get(getApplication())!!
         private val connectivityManager = application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         init {
             accountManager.addOnAccountsUpdatedListener(this, null, true)
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {    // API level <26
+                networkReceiver = object: BroadcastReceiver() {
+                    init {
+                        update()
+                    }
+
+                    override fun onReceive(context: Context?, intent: Intent?) = update()
+
+                    private fun update() {
+                        networkAvailable.postValue(connectivityManager.allNetworkInfo.any { it.isConnected })
+                    }
+                }
+                application.registerReceiver(networkReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+
+            } else {    // API level >= 26
                 networkAvailable.postValue(false)
 
                 // check for working (e.g. WiFi after captive portal login) Internet connection
@@ -107,7 +124,7 @@ class AccountListFragment: ListFragment() {
                         .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
                         .addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
                         .build()
-                networkObserver = object: ConnectivityManager.NetworkCallback() {
+                val callback = object: ConnectivityManager.NetworkCallback() {
                     val availableNetworks = hashSetOf<Network>()
 
                     override fun onAvailable(network: Network) {
@@ -124,15 +141,21 @@ class AccountListFragment: ListFragment() {
                         networkAvailable.postValue(availableNetworks.isNotEmpty())
                     }
                 }
-                connectivityManager.registerNetworkCallback(networkRequest, networkObserver)
+                connectivityManager.registerNetworkCallback(networkRequest, callback)
+                networkCallback = callback
             }
         }
 
         override fun onCleared() {
             accountManager.removeOnAccountsUpdatedListener(this)
 
-            if (Build.VERSION.SDK_INT >= 21)
-                networkObserver?.let {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+                networkReceiver?.let {
+                    getApplication<Application>().unregisterReceiver(it)
+                }
+
+            else
+                networkCallback?.let {
                     connectivityManager.unregisterNetworkCallback(it)
                 }
         }
