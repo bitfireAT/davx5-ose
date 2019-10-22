@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.CookieManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
@@ -61,7 +60,7 @@ class NextcloudLoginFlowFragment: Fragment() {
                 val serverUrl = HttpUrl.get(match.groupValues[1])
                 val davPath = requireActivity().intent.getStringExtra(EXTRA_DAV_PATH)
                 loginModel.baseURI = if (davPath != null)
-                    serverUrl.resolve(davPath)!!.uri()
+                    HttpUrl.get(serverUrl.toString() + davPath).uri()
                 else
                     serverUrl.uri()
 
