@@ -44,9 +44,8 @@ class DefaultLoginCredentialsModel: ViewModel() {
         if (givenUrl != null) {
             loginWithUrlAndUsername.value = true
             baseUrl.value = givenUrl
-        } else {
+        } else
             loginWithEmailAddress.value = true
-        }
         username.value = givenUsername
         password.value = givenPassword
     }
