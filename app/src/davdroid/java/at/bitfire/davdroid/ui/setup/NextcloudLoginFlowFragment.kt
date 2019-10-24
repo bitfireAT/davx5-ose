@@ -14,12 +14,18 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.Credentials
 import okhttp3.HttpUrl
+import java.net.URI
 import java.util.logging.Level
 
 class NextcloudLoginFlowFragment: Fragment() {
 
     companion object {
+
+        /** Set this to 1 to indicate that Login Flow shall be used. */
         const val EXTRA_LOGIN_FLOW = "loginFlow"
+
+        /** Path to DAV endpoint (e.g. `/remote.php/dav`). Will be appended to the
+         *  server URL returned by Login Flow without further processing. */
         const val EXTRA_DAV_PATH = "davPath"
     }
 
@@ -57,12 +63,12 @@ class NextcloudLoginFlowFragment: Fragment() {
         if (match != null) {
             // determine DAV URL from root URL
             try {
-                val serverUrl = HttpUrl.get(match.groupValues[1])
+                val serverUrl = match.groupValues[1]
                 val davPath = requireActivity().intent.getStringExtra(EXTRA_DAV_PATH)
                 loginModel.baseURI = if (davPath != null)
-                    HttpUrl.get(serverUrl.toString() + davPath).uri()
+                    HttpUrl.get(serverUrl + davPath).uri()
                 else
-                    serverUrl.uri()
+                    URI.create(serverUrl)
 
                 loginModel.credentials = Credentials(
                         userName = match.groupValues[2],
