@@ -58,6 +58,7 @@
   <string name="navigation_drawer_faq">OSS</string>
   <string name="navigation_drawer_forums">Hjælp / fora</string>
   <string name="navigation_drawer_donate">Donation</string>
+  <string name="account_list_no_internet">Ingen internetforbindelse. Android kører ikke synkronisering.</string>
   <string name="account_list_empty">Velkommen til DAVx⁵!\n\nDu kan nu tilføje en CalDAV/CardDAV konto.</string>
   <string name="accounts_global_sync_disabled">Automatisk synkronisering på tværs af systemet er deaktiveret</string>
   <string name="accounts_global_sync_enable">Aktivere</string>
