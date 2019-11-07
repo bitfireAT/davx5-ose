@@ -1,4 +1,5 @@
-image: registry.gitlab.com/bitfireat/davx5-ose:latest
+# https://gitlab.com/bitfireAT/docker-android-emulator
+image: registry.gitlab.com/bitfireat/docker-android-emulator:latest
 
 before_script:
   - git submodule update --init --recursive
@@ -10,7 +11,7 @@ cache:
 
 test:
   script:
-   - (cd /sdk/emulator; ./emulator @test -no-audio -no-window & wait-for-emulator.sh)
+   - start-emulator.sh
    - ./gradlew app:check app:connectedCheck
   artifacts:
     paths:
