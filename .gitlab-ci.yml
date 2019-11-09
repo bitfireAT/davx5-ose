@@ -1,4 +1,3 @@
-# https://gitlab.com/bitfireAT/docker-android-emulator
 image: registry.gitlab.com/bitfireat/docker-android-emulator:latest
 
 before_script:
@@ -10,6 +9,8 @@ cache:
      - .gradle/
 
 test:
+  tags:
+    - privileged
   script:
    - start-emulator.sh
    - ./gradlew app:check app:connectedCheck
