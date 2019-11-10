@@ -67,10 +67,16 @@ class DefaultLoginCredentialsFragment: Fragment() {
         fun validateUrl() {
             model.baseUrlError.value = null
             try {
-                val uri = URI(model.baseUrl.value.orEmpty())
+                val originalUrl = model.baseUrl.value.orEmpty()
+                val uri = URI(originalUrl)
                 if (uri.scheme.equals("http", true) || uri.scheme.equals("https", true)) {
+                    // http:// or https:// scheme → OK
                     valid = true
                     loginModel.baseURI = uri
+                } else if (uri.scheme == null) {
+                    // empty URL scheme, assume https://
+                    model.baseUrl.value = "https://$originalUrl"
+                    validateUrl()
                 } else
                     model.baseUrlError.value = getString(R.string.login_url_must_be_http_or_https)
             } catch (e: Exception) {
