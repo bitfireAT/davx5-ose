@@ -130,6 +130,7 @@ class TasksSyncManager(
     }
 
     override fun postProcess() {
+        localCollection.commitRelations()
     }
 
     // helpers
