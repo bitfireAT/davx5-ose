@@ -113,16 +113,16 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.1.0'
     implementation 'androidx.paging:paging-runtime-ktx:2.1.0'
     implementation 'androidx.preference:preference:1.1.0'
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha03'
     implementation 'com.google.android:flexbox:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0-alpha10'
+    implementation 'com.google.android.material:material:1.1.0-beta02'
 
-    def room_version = '2.1.0'
+    def room_version = '2.2.1'
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
-    implementation 'com.gitlab.bitfireAT:dav4jvm:ee66e8e50b'
+    implementation 'com.gitlab.bitfireAT:dav4jvm:214d9178'
     implementation 'com.jaredrummler:colorpicker:1.1.0'
     implementation 'com.mikepenz:aboutlibraries:6.2.3'
     implementation "com.squareup.okhttp3:okhttp:${versions.okhttp}"
