@@ -58,6 +58,7 @@
   <string name="navigation_drawer_faq">PMF</string>
   <string name="navigation_drawer_forums">Axuda / Foros</string>
   <string name="navigation_drawer_donate">Doar</string>
+  <string name="account_list_no_internet">Sen conexión a internet. Android non sincronizará.</string>
   <string name="account_list_empty">Ben vida a DAVx⁵!\n\nXa pode engadir unha conta CalDAV/CardDAV</string>
   <string name="accounts_global_sync_disabled">A sincronización global automática do sistema está desactivada</string>
   <string name="accounts_global_sync_enable">Activar</string>
