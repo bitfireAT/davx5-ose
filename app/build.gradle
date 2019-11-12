@@ -73,6 +73,28 @@ android {
     defaultConfig {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    dokka.configuration {
+        sourceLink { url = "https://gitlab.com/bitfireAT/davx5-ose/tree/master-ose/" }
+        jdkVersion = 7
+
+        externalDocumentationLink {
+            url = new URL("https://bitfireat.gitlab.io/cert4android/dokka/cert4android/")
+            packageListUrl = new URL("https://bitfireat.gitlab.io/cert4android/dokka/cert4android/package-list")
+        }
+        externalDocumentationLink {
+            url = new URL("https://bitfireat.gitlab.io/dav4jvm/dokka/dav4jvm/")
+            packageListUrl = new URL("https://bitfireat.gitlab.io/dav4jvm/dokka/dav4jvm/package-list")
+        }
+        externalDocumentationLink {
+            url = new URL("https://bitfireat.gitlab.io/ical4android/dokka/ical4android/")
+            packageListUrl = new URL("https://bitfireat.gitlab.io/ical4android/dokka/ical4android/package-list")
+        }
+        externalDocumentationLink {
+            url = new URL("https://bitfireat.gitlab.io/vcard4android/dokka/vcard4android/")
+            packageListUrl = new URL("https://bitfireat.gitlab.io/vcard4android/dokka/vcard4android/package-list")
+        }
+    }
 }
 
 dependencies {
