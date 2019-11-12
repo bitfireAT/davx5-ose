@@ -25,7 +25,7 @@
   <string name="startup_dont_show_again">Не показывать снова</string>
   <string name="startup_not_now">Не сейчас</string>
   <string name="startup_donate">Open-Source информация</string>
-  <string name="startup_donate_message">Мы рады, что вы используете приложение DAVx⁵, которое является программным обеспечением с открытым исходным кодом (GPLv3). Поскольку разработка DAVx⁵ - это трудоемкая работа, на которую мы потратили очень много времени, пожалуйста, рассмотрите возможность поддержать проект.</string>
+  <string name="startup_donate_message">Мы гордимся тем, что вы пользуетесь приложением с открытым исходным кодом DAVx⁵. Разрабатывая DAVx⁵ мы потратили очень много времени, поэтому, пожалуйста, подумайте о возможности поддержать проект.</string>
   <string name="startup_donate_now">Поддержать проект</string>
   <string name="startup_donate_later">Возможно, позже</string>
   <string name="startup_more_info">Дополнительная информация</string>
@@ -191,8 +191,8 @@
   <string name="settings_contact_group_method_change">Изменить метод группировки</string>
   <string name="settings_contact_group_method_change_reload_contacts">Вам потребуется перезагрузить все контакты. Несохраненные локальные изменения будут отброшены.</string>
   <string name="settings_caldav">CalDAV</string>
-  <string name="settings_sync_time_range_past">Ограничение по времени прошедшего события</string>
-  <string name="settings_sync_time_range_past_none">Все события будут синхронизироваться</string>
+  <string name="settings_sync_time_range_past">Ограничение по времени для прошедших событий</string>
+  <string name="settings_sync_time_range_past_none">Будут синхронизироваться все события</string>
   <plurals name="settings_sync_time_range_past_days">
     <item quantity="one">События старше одного дня будут игнорироваться</item>
     <item quantity="few">События старше %d дней будут игнорироваться</item>
