@@ -26,7 +26,9 @@ import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.ical4android.AndroidCalendar
+import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName.OpenTasks
 import at.bitfire.vcard4android.ContactsStorageException
@@ -48,7 +50,7 @@ class AccountSettings(
 
     companion object {
 
-        const val CURRENT_VERSION = 9
+        const val CURRENT_VERSION = 10
         const val KEY_SETTINGS_VERSION = "version"
 
         const val KEY_USERNAME = "user_name"
@@ -236,6 +238,20 @@ class AccountSettings(
         }
     }
 
+
+    @Suppress("unused","FunctionName")
+    /**
+     * Task synchronization now handles alarms, categories, relations and unknown properties.
+     * Setting task ETags to null will cause them to be downloaded (and parsed) again.
+     **/
+    private fun update_9_10() {
+        TaskProvider.acquire(context, OpenTasks)?.use { provider ->
+            val tasksUri = TaskProvider.syncAdapterUri(provider.tasksUri(), account)
+            val emptyETag = ContentValues(1)
+            emptyETag.putNull(LocalTask.COLUMN_ETAG)
+            provider.client.update(tasksUri, emptyETag, "${TaskContract.Tasks._DIRTY}=0 AND ${TaskContract.Tasks._DELETED}=0", null)
+        }
+    }
 
     @Suppress("unused","FunctionName")
     /**
