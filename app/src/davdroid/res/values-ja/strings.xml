@@ -58,6 +58,7 @@
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_forums">ヘルプ / フォーラム</string>
   <string name="navigation_drawer_donate">寄付</string>
+  <string name="account_list_no_internet">インターネット接続がありません。 Android は同期を実行しません。</string>
   <string name="account_list_empty">DAVx⁵ にようこそ!\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>
   <string name="accounts_global_sync_disabled">システム全体の自動同期が無効です</string>
   <string name="accounts_global_sync_enable">有効</string>
@@ -95,6 +96,10 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_no_address_books">アドレス帳は (まだ) ありません。</string>
+  <string name="account_no_calendars">カレンダーは (まだ) ありません。</string>
+  <string name="account_no_webcals">カレンダーのサブスクリプションは (まだ) ありません。</string>
+  <string name="account_swipe_down">下にスワイプすると、サーバーからリストを更新します。</string>
   <string name="account_synchronize_now">今すぐ同期</string>
   <string name="account_synchronizing_now">同期中</string>
   <string name="account_settings">アカウント設定</string>
@@ -202,12 +207,26 @@
   <!--collection management-->
   <string name="create_addressbook">アドレス帳を作成</string>
   <string name="create_addressbook_display_name_hint">マイ アドレス帳</string>
+  <string name="create_calendar">カレンダーを作成</string>
+  <string name="create_calendar_time_zone">タイムゾーン</string>
+  <string name="create_calendar_time_zone_required">タイムゾーンが必要です</string>
+  <string name="create_calendar_type">可能なカレンダーエントリー</string>
+  <string name="create_calendar_type_vevent">イベント</string>
+  <string name="create_calendar_type_vtodo">タスク</string>
+  <string name="create_calendar_type_vjournal">メモ / 日誌</string>
   <string name="create_calendar_type_events_and_tasks">組み合わせ (イベントとタスク)</string>
+  <string name="create_collection_color">色</string>
   <string name="create_collection_creating">コレクションの作成中</string>
+  <string name="create_collection_display_name">タイトル</string>
   <string name="create_collection_display_name_required">タイトルが必要です</string>
+  <string name="create_collection_description">説明</string>
+  <string name="create_collection_optional">オプション</string>
+  <string name="create_collection_home_set">ストレージの場所</string>
   <string name="create_collection_create">作成</string>
   <string name="delete_collection">コレクションを削除</string>
   <string name="delete_collection_confirm_title">よろしいですか?</string>
+  <string name="delete_collection_confirm_warning">このコレクション (%s) とそのすべてのデータが完全に削除されます。</string>
+  <string name="delete_collection_data_shall_be_deleted">これらのデータがサーバーから削除されます。</string>
   <string name="delete_collection_deleting_collection">コレクションの削除中</string>
   <string name="collection_force_read_only">強制的に読み取り専用</string>
   <string name="collection_properties">プロパティ</string>
@@ -220,6 +239,7 @@
   <string name="exception_show_details">詳細を表示</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">デバッグ情報</string>
+  <string name="debug_info_logs_attached">このメッセージにはログが添付されます (受信アプリで添付ファイルのサポートが必要です)。</string>
   <string name="sync_contacts_read_only_address_book">読み取り専用のアドレス帳</string>
   <string name="sync_error_permissions">DAVx⁵ アクセス許可</string>
   <string name="sync_error_permissions_text">追加のアクセス許可が必要です</string>
