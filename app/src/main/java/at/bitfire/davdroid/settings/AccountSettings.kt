@@ -14,11 +14,13 @@ import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Parcel
 import android.os.RemoteException
 import android.provider.CalendarContract
 import android.provider.ContactsContract
+import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.*
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
@@ -28,7 +30,6 @@ import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.ical4android.AndroidCalendar
-import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName.OpenTasks
 import at.bitfire.vcard4android.ContactsStorageException
@@ -243,6 +244,8 @@ class AccountSettings(
     /**
      * Task synchronization now handles alarms, categories, relations and unknown properties.
      * Setting task ETags to null will cause them to be downloaded (and parsed) again.
+     *
+     * Also update the allowed reminder types for calendars.
      **/
     private fun update_9_10() {
         TaskProvider.acquire(context, OpenTasks)?.use { provider ->
@@ -251,6 +254,13 @@ class AccountSettings(
             emptyETag.putNull(LocalTask.COLUMN_ETAG)
             provider.client.update(tasksUri, emptyETag, "${TaskContract.Tasks._DIRTY}=0 AND ${TaskContract.Tasks._DELETED}=0", null)
         }
+
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED)
+            context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
+                provider.update(AndroidCalendar.syncAdapterURI(CalendarContract.Calendars.CONTENT_URI, account),
+                        AndroidCalendar.calendarBaseValues, null, null)
+                provider.closeCompat()
+            }
     }
 
     @Suppress("unused","FunctionName")

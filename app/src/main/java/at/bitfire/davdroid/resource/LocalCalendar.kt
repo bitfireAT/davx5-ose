@@ -14,7 +14,8 @@ import android.content.ContentProviderOperation
 import android.content.ContentUris
 import android.content.ContentValues
 import android.net.Uri
-import android.provider.CalendarContract.*
+import android.provider.CalendarContract.Calendars
+import android.provider.CalendarContract.Events
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.log.Logger
@@ -76,9 +77,10 @@ class LocalCalendar private constructor(
                     Logger.log.log(Level.WARNING, "Couldn't parse calendar default time zone", e)
                 }
             }
-            values.put(Calendars.ALLOWED_REMINDERS, "${Reminders.METHOD_ALERT},${Reminders.METHOD_EMAIL}")
-            values.put(Calendars.ALLOWED_AVAILABILITY, "${Reminders.AVAILABILITY_TENTATIVE},${Reminders.AVAILABILITY_FREE},${Reminders.AVAILABILITY_BUSY}")
-            values.put(Calendars.ALLOWED_ATTENDEE_TYPES, "${Attendees.TYPE_OPTIONAL},${Attendees.TYPE_REQUIRED},${Attendees.TYPE_RESOURCE}")
+
+            // add base values for Calendars
+            values.putAll(calendarBaseValues)
+
             return values
         }
     }
