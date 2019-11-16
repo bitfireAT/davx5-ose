@@ -75,7 +75,10 @@ android {
     }
 
     dokka.configuration {
-        sourceLink { url = "https://gitlab.com/bitfireAT/davx5-ose/tree/master-ose/" }
+        sourceLink {
+            url = "https://gitlab.com/bitfireAT/davx5-ose/tree/master-ose/"
+            lineSuffix = "#L"
+        }
         jdkVersion = 7
 
         externalDocumentationLink {
