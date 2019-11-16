@@ -18,9 +18,40 @@ interface LocalCollection<out T: LocalResource<*>> {
 
     var lastSyncState: SyncState?
 
+    /**
+     * Finds local resources of this collection which have been marked as *deleted* by the user
+     * or an app acting on their behalf.
+     *
+     * @return list of resources marked as *deleted*
+     */
     fun findDeleted(): List<T>
+
+    /**
+     * Finds local resources of this collection which have been marked as *dirty*, i.e. resources
+     * which have been modified by the user or an app acting on their behalf.
+     *
+     * @return list of resources marked as *dirty*
+     */
     fun findDirty(): List<T>
 
+    /**
+     * Finds local resources of this collection which do not have a file name and/or UID, but
+     * need one for synchronization.
+     *
+     * For instance, exceptions of recurring events are local resources but do not need their
+     * own file name/UID because they're sent with the same UID as the main event.
+     *
+     * @return list of resources which need file name and UID for synchronization, but don't have both of them
+     */
+    fun findDirtyWithoutNameOrUid(): List<T>
+
+    /**
+     * Finds a local resource of this collection with a given file name. (File names are assigned
+     * by the sync adapter.)
+     *
+     * @param name file name to look for
+     * @return resource with the given name, or null if none
+     */
     fun findByName(name: String): T?
 
 

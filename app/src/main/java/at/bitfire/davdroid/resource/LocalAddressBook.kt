@@ -177,7 +177,7 @@ class LocalAddressBook(
         if (includeGroups) {
             values.clear()
             values.put(LocalGroup.COLUMN_FLAGS, flags)
-            number += provider.update(groupsSyncUri(), values, "${Groups.DIRTY}=0", null)
+            number += provider.update(groupsSyncUri(), values, "NOT ${Groups.DIRTY}", null)
         }
 
         return number
@@ -185,11 +185,11 @@ class LocalAddressBook(
 
     override fun removeNotDirtyMarked(flags: Int): Int {
         var number = provider!!.delete(rawContactsSyncUri(),
-                "${RawContacts.DIRTY}=0 AND ${LocalContact.COLUMN_FLAGS}=?", arrayOf(flags.toString()))
+                "NOT ${RawContacts.DIRTY} AND ${LocalContact.COLUMN_FLAGS}=?", arrayOf(flags.toString()))
 
         if (includeGroups)
             number += provider.delete(groupsSyncUri(),
-                    "${Groups.DIRTY}=0 AND ${LocalGroup.COLUMN_FLAGS}=?", arrayOf(flags.toString()))
+                    "NOT ${Groups.DIRTY} AND ${LocalGroup.COLUMN_FLAGS}=?", arrayOf(flags.toString()))
 
         return number
     }
@@ -257,8 +257,8 @@ class LocalAddressBook(
             else
                 findDeletedContacts()
 
-    fun findDeletedContacts() = queryContacts("${RawContacts.DELETED}!=0", null)
-    fun findDeletedGroups() = queryGroups("${Groups.DELETED}!=0", null)
+    fun findDeletedContacts() = queryContacts(RawContacts.DELETED, null)
+    fun findDeletedGroups() = queryGroups(Groups.DELETED, null)
 
     /**
      * Returns an array of local contacts/groups which have been changed locally (DIRTY != 0).
@@ -269,9 +269,20 @@ class LocalAddressBook(
                 findDirtyContacts() + findDirtyGroups()
             else
                 findDirtyContacts()
+    fun findDirtyContacts() = queryContacts(RawContacts.DIRTY, null)
+    fun findDirtyGroups() = queryGroups(Groups.DIRTY, null)
 
-    fun findDirtyContacts() = queryContacts("${RawContacts.DIRTY}!=0", null)
-    fun findDirtyGroups() = queryGroups("${Groups.DIRTY}!=0", null)
+    override fun findDirtyWithoutNameOrUid() =
+            if (includeGroups)
+                findDirtyContactsWithoutNameOrUid() + findDirtyGroupsWithoutNameOrUid()
+            else
+                findDirtyContactsWithoutNameOrUid()
+    private fun findDirtyContactsWithoutNameOrUid() = queryContacts(
+            "${RawContacts.DIRTY} AND (${AndroidContact.COLUMN_FILENAME} IS NULL OR ${AndroidContact.COLUMN_UID} IS NULL)",
+            null)
+    private fun findDirtyGroupsWithoutNameOrUid() = queryGroups(
+            "${Groups.DIRTY} AND (${AndroidGroup.COLUMN_FILENAME} IS NULL OR ${AndroidGroup.COLUMN_UID} IS NULL)",
+            null)
 
 
     /**

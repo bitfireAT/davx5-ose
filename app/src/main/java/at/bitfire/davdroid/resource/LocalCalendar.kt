@@ -107,13 +107,13 @@ class LocalCalendar private constructor(
 
 
     override fun findDeleted() =
-            queryEvents("${Events.DELETED}!=0 AND ${Events.ORIGINAL_ID} IS NULL", null)
+            queryEvents("${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null)
 
     override fun findDirty(): List<LocalEvent> {
         val dirty = LinkedList<LocalEvent>()
 
         // get dirty events which are required to have an increased SEQUENCE value
-        for (localEvent in queryEvents("${Events.DIRTY}!=0 AND ${Events.ORIGINAL_ID} IS NULL", null)) {
+        for (localEvent in queryEvents("${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null)) {
             val event = localEvent.event!!
             val sequence = event.sequence
             if (event.sequence == null)      // sequence has not been assigned yet (i.e. this event was just locally created)
@@ -126,6 +126,10 @@ class LocalCalendar private constructor(
         return dirty
     }
 
+    override fun findDirtyWithoutNameOrUid() =
+            queryEvents("${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL AND " +
+                    "(${Events._SYNC_ID} IS NULL OR ${Events.UID_2445} IS NULL)", null)
+
     override fun findByName(name: String) =
             queryEvents("${Events._SYNC_ID}=?", arrayOf(name)).firstOrNull()
 
@@ -134,13 +138,13 @@ class LocalCalendar private constructor(
         val values = ContentValues(1)
         values.put(LocalEvent.COLUMN_FLAGS, flags)
         return provider.update(eventsSyncURI(), values,
-                "${Events.CALENDAR_ID}=? AND ${Events.DIRTY}=0 AND ${Events.ORIGINAL_ID} IS NULL",
+                "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL",
                 arrayOf(id.toString()))
     }
 
     override fun removeNotDirtyMarked(flags: Int) =
             provider.delete(eventsSyncURI(),
-                    "${Events.CALENDAR_ID}=? AND ${Events.DIRTY}=0 AND ${Events.ORIGINAL_ID} IS NULL AND ${LocalEvent.COLUMN_FLAGS}=?",
+                    "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL AND ${LocalEvent.COLUMN_FLAGS}=?",
                     arrayOf(id.toString(), flags.toString()))
 
 
@@ -150,7 +154,7 @@ class LocalCalendar private constructor(
         provider.query(
                 syncAdapterURI(Events.CONTENT_URI),
                 arrayOf(Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE),
-                "${Events.CALENDAR_ID}=? AND ${Events.DELETED}!=0 AND ${Events.ORIGINAL_ID} IS NOT NULL",
+                "${Events.CALENDAR_ID}=? AND ${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NOT NULL",
                 arrayOf(id.toString()), null)?.use { cursor ->
             while (cursor.moveToNext()) {
                 Logger.log.fine("Found deleted exception, removing and re-scheduling original event (if available)")
@@ -190,7 +194,7 @@ class LocalCalendar private constructor(
         provider.query(
                 syncAdapterURI(Events.CONTENT_URI),
                 arrayOf(Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE),
-                "${Events.CALENDAR_ID}=? AND ${Events.DIRTY}!=0 AND ${Events.ORIGINAL_ID} IS NOT NULL",
+                "${Events.CALENDAR_ID}=? AND ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NOT NULL",
                 arrayOf(id.toString()), null)?.use { cursor ->
             while (cursor.moveToNext()) {
                 Logger.log.fine("Found dirty exception, increasing SEQUENCE to re-schedule")

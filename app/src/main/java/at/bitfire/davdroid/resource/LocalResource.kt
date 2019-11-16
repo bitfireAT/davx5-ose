@@ -28,13 +28,33 @@ interface LocalResource<in TData: Any> {
      */
     val id: Long?
 
+    /**
+     * Remote file name for the resource, for instance `mycontact.vcf`.
+     */
     val fileName: String?
     var eTag: String?
     val flags: Int
 
+    /**
+     * Generates a new UID and file name and assigns them to this resource. Typically used
+     * before uploading a resource which has just been created locally.
+     */
     fun assignNameAndUID()
+
+    /**
+     * Unsets the /dirty/ field of the resource. Typically used after successfully uploading a
+     * locally modified resource.
+     *
+     * @param eTag ETag of the uploaded resource as returned by the server (null if the server didn't return one)
+     */
     fun clearDirty(eTag: String?)
+
+    /**
+     * Sets (local) flags of the resource. At the moment, the only allowed values are
+     * 0 and [FLAG_REMOTELY_PRESENT].
+     */
     fun updateFlags(flags: Int)
+
 
     /**
      * Adds the data object to the content provider and ensures that the dirty flag is clear.

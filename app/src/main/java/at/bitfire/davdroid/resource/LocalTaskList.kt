@@ -117,10 +117,10 @@ class LocalTaskList private constructor(
             update(valuesFromCollectionInfo(info, updateColor))
 
 
-    override fun findDeleted() = queryTasks("${Tasks._DELETED}!=0", null)
+    override fun findDeleted() = queryTasks(Tasks._DELETED, null)
 
     override fun findDirty(): List<LocalTask> {
-        val tasks = queryTasks("${Tasks._DIRTY}!=0", null)
+        val tasks = queryTasks(Tasks._DIRTY, null)
         for (localTask in tasks) {
             val task = requireNotNull(localTask.task)
             val sequence = task.sequence
@@ -131,6 +131,9 @@ class LocalTaskList private constructor(
         }
         return tasks
     }
+
+    override fun findDirtyWithoutNameOrUid() =
+            queryTasks("${Tasks._DIRTY} AND (${Tasks._SYNC_ID} IS NULL OR ${Tasks._UID} IS NULL)", null)
 
     override fun findByName(name: String) =
             queryTasks("${Tasks._SYNC_ID}=?", arrayOf(name)).firstOrNull()
@@ -146,7 +149,7 @@ class LocalTaskList private constructor(
 
     override fun removeNotDirtyMarked(flags: Int) =
             provider.client.delete(tasksSyncUri(),
-                    "${Tasks.LIST_ID}=? AND ${Tasks._DIRTY}=0 AND ${LocalTask.COLUMN_FLAGS}=?",
+                    "${Tasks.LIST_ID}=? AND NOT ${Tasks._DIRTY} AND ${LocalTask.COLUMN_FLAGS}=?",
                     arrayOf(id.toString(), flags.toString()))
 
 

@@ -300,15 +300,17 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     protected open fun uploadDirty(): Boolean {
         var numUploaded = 0
 
-        // upload dirty contacts
+        // make sure all resources have file name and UID before uploading them
+        for (local in localCollection.findDirtyWithoutNameOrUid())
+            useLocal(local) {
+                Logger.log.fine("Generating file name/UID for local resource #${local.id}")
+                local.assignNameAndUID()
+            }
+
+        // upload dirty resources
         for (local in localCollection.findDirty())
             useLocal(local) {
                 abortIfCancelled()
-
-                if (local.fileName == null) {
-                    Logger.log.fine("Generating file name/UID for local record #${local.id}")
-                    local.assignNameAndUID()
-                }
 
                 val fileName = local.fileName!!
                 useRemote(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build())) { remote ->
