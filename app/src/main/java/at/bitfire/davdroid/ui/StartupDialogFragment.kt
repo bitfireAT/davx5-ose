@@ -68,8 +68,9 @@ class StartupDialogFragment: DialogFragment() {
                 dialogs.add(instantiate(Mode.AUTOSTART_PERMISSIONS))
 
             // OpenTasks information
-            if (!LocalTaskList.tasksProviderAvailable(context) && settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED) != false)
-                dialogs.add(instantiate(Mode.OPENTASKS_NOT_INSTALLED))
+            if (true /* don't show in other flavors */)
+                if (!LocalTaskList.tasksProviderAvailable(context) && settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED) != false)
+                    dialogs.add(instantiate(Mode.OPENTASKS_NOT_INSTALLED))
 
             return dialogs.reversed()
         }
