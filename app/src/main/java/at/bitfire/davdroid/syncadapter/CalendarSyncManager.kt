@@ -157,7 +157,7 @@ class CalendarSyncManager(
     private fun processVEvent(fileName: String, eTag: String, reader: Reader) {
         val events: List<Event>
         try {
-            events = Event.fromReader(reader)
+            events = Event.eventsFromReader(reader)
         } catch (e: InvalidCalendarException) {
             Logger.log.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             notifyInvalidResource(e, fileName)

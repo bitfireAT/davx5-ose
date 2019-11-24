@@ -140,7 +140,7 @@ class TasksSyncManager(
     private fun processVTodo(fileName: String, eTag: String, reader: Reader) {
         val tasks: List<Task>
         try {
-            tasks = Task.fromReader(reader)
+            tasks = Task.tasksFromReader(reader)
         } catch (e: InvalidCalendarException) {
             Logger.log.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             notifyInvalidResource(e, fileName)
