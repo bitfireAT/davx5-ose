@@ -28,6 +28,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -243,12 +244,38 @@ class DebugInfoActivity: AppCompatActivity() {
                     text.append("Power saving disabled: ")
                             .append(if (powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) "yes" else "no")
                             .append("\n")
+                // notifications
+                val nm = NotificationManagerCompat.from(context)
+                text.append("Notifications (")
+                text.append(if (nm.areNotificationsEnabled())
+                    "not blocked"
+                else
+                    "BLOCKED!")
+                text.append("):\n")
+                if (Build.VERSION.SDK_INT >= 26) {
+                    val channelsWithoutGroup = nm.notificationChannels.toMutableSet()
+                    for (group in nm.notificationChannelGroups) {
+                        text.append("  [group] ${group.id}")
+                        if (Build.VERSION.SDK_INT >= 28)
+                            text.append(" isBlocked=${group.isBlocked}")
+                        text.append("\n")
+
+                        for (channel in group.channels) {
+                            text.append("    ${channel.id}: importance=${channel.importance}\n")
+                            channelsWithoutGroup -= channel
+                        }
+                    }
+                    for (channel in channelsWithoutGroup)
+                        text.append("  ${channel.id}: importance=${channel.importance}\n")
+                }
                 // permissions
+                text.append("Permissions:\n")
                 for (permission in arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS,
                         Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR,
                         TaskProvider.PERMISSION_READ_TASKS, TaskProvider.PERMISSION_WRITE_TASKS,
                         Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                    text  .append(permission).append(": ")
+                    val shortPermission = permission.replace(Regex("^.+\\.permission\\."), "")
+                    text    .append("  $shortPermission: ")
                             .append(if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
                                 "granted"
                             else
@@ -258,8 +285,10 @@ class DebugInfoActivity: AppCompatActivity() {
                 // system-wide sync settings
                 text.append("System-wide synchronization: ")
                         .append(if (ContentResolver.getMasterSyncAutomatically()) "automatically" else "manually")
-                        .append("\n")
+                        .append("\n\n")
+
                 // main accounts
+                text.append("ACCOUNTS\n")
                 val accountManager = AccountManager.get(context)
                 for (acct in accountManager.getAccountsByType(context.getString(R.string.account_type)))
                     try {
