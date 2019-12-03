@@ -7,7 +7,7 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<layout>
+<layout xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable
@@ -29,12 +29,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{model.collection.title()}"
-                style="@style/TextView.Heading" />
+                tools:text="Collection Title"
+                style="@style/TextAppearance.MaterialComponents.Headline5" />
 
             <TextView
                 android:id="@+id/url_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:layout_marginBottom="4dp"
                 android:text="@string/collection_properties_url"
                 android:labelFor="@id/url" />
@@ -46,7 +48,8 @@
                 android:fontFamily="monospace"
                 android:textSize="12sp"
                 android:textIsSelectable="true"
-                android:text="@{model.collection.url.toString()}"/>
+                android:text="@{model.collection.url.toString()}"
+                tools:text="https://example.com/dav/url/user/12345/calendars/1234-1234-9834-31234-12/"/>
 
         </LinearLayout>
 

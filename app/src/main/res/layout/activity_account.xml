@@ -37,6 +37,7 @@
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
         android:id="@+id/sync"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

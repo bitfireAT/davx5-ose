@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
   <string name="account_title_address_book">DAVx⁵ Helbide liburua</string>

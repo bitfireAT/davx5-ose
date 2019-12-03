@@ -9,14 +9,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        style="@style/Base.TextAppearance.AppCompat.Large"
+        style="@style/TextAppearance.MaterialComponents.Headline5"
         android:text="@string/login_configuration_detection"/>
 
     <ProgressBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="true"
-        style="?android:attr/progressBarStyleHorizontal"/>
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
 
     <TextView
         android:layout_width="match_parent"

@@ -36,7 +36,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/login_type_headline"
+                    style="@style/TextAppearance.MaterialComponents.Headline5"
                     android:text="@string/login_create_account"
                     android:layout_marginBottom="14dp"/>
 

@@ -6,7 +6,7 @@
   ~ http://www.gnu.org/licenses/gpl.html
   -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <!-- colors -->
 
@@ -33,18 +33,10 @@
         <item name="colorSecondary">@color/secondaryColor</item>
         <item name="colorAccent">@color/secondaryColor</item>
 
-        <item name="android:textColorPrimary">@drawable/text_color</item>
-        <!-- <item name="android:textColorSecondary">@color/secondaryTextColor</item> -->
-
-        <!-- <item name="alertDialogTheme">@style/AppTheme.Dialog.Alert</item> -->
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="colorOnSecondary">@android:color/white</item>
     </style>
 
     <color name="actionBarButton">#FF000000</color>
-
-    <!-- <style name="AppTheme.Dialog.Alert" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/secondaryColor</item>
-    </style> -->
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -53,16 +45,9 @@
 
     <style name="AppThemeExt" parent="AppTheme" />
 
-    <!-- preference-v14 uses this color for categories text on API <21 -->
-    <color name="preference_fallback_accent_color"
-        tools:override="true">@color/secondaryColor</color>
-
 
     <!-- AddAccountActivity -->
 
-    <style name="login_type_headline">
-        <item name="android:textSize">22sp</item>
-    </style>
     <style name="account_list_card">
         <item name="android:layout_width">match_parent</item>
     </style>
@@ -89,14 +74,6 @@
     <style name="toolbar_style" parent="Widget.AppCompat.Toolbar">
         <item name="android:background">@color/primaryDarkColor</item>
         <item name="titleTextColor">@android:color/white</item>
-    </style>
-
-
-    <!-- text content -->
-
-    <style name="TextView.Heading" parent="AppTheme">
-        <item name="android:textSize">22sp</item>
-        <item name="android:textColor">@color/secondaryColor</item>
     </style>
 
 </resources>

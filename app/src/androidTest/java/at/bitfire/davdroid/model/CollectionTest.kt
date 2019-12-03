@@ -8,7 +8,6 @@
 
 package at.bitfire.davdroid.model
 
-import android.content.ContentValues
 import androidx.test.filters.SmallTest
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.ResourceType
