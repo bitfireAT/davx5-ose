@@ -3,7 +3,6 @@ package at.bitfire.davdroid.ui.account
 import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
 import android.content.Intent
@@ -30,6 +29,7 @@ import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.ui.AccountSettingsActivity
 import at.bitfire.ical4android.TaskProvider
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_account.*
 import java.util.concurrent.Executors
@@ -111,7 +111,7 @@ class AccountActivity: AppCompatActivity() {
     }
 
     fun deleteAccount(menuItem: MenuItem) {
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
                 .setIcon(R.drawable.ic_error_dark)
                 .setTitle(R.string.account_delete_confirmation_title)
                 .setMessage(R.string.account_delete_confirmation_text)

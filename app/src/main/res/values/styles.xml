@@ -21,30 +21,30 @@
     <color name="secondaryLightColor">#ff9e40</color>
     <color name="secondaryDarkColor">#c43c00</color>
     <color name="primaryTextColor">#000000</color>
-    <color name="secondaryTextColor">@color/grey700</color>
 
 
     <!-- app theme -->
 
-    <style name="AppBaseTheme" parent="Theme.AppCompat.Light" />
+    <style name="AppBaseTheme" parent="Theme.MaterialComponents.Light" />
 
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorSecondary">@color/secondaryColor</item>
         <item name="colorAccent">@color/secondaryColor</item>
 
         <item name="android:textColorPrimary">@drawable/text_color</item>
-        <item name="android:textColorSecondary">@color/secondaryTextColor</item>
+        <!-- <item name="android:textColorSecondary">@color/secondaryTextColor</item> -->
 
-        <item name="alertDialogTheme">@style/AppTheme.Dialog.Alert</item>
+        <!-- <item name="alertDialogTheme">@style/AppTheme.Dialog.Alert</item> -->
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <color name="actionBarButton">#FF000000</color>
 
-    <style name="AppTheme.Dialog.Alert" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <!-- <style name="AppTheme.Dialog.Alert" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/secondaryColor</item>
-    </style>
+    </style> -->
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -72,19 +72,6 @@
 
     <style name="stepper_nav_bar">
         <item name="cardElevation">4dp</item>
-    </style>
-
-    <style name="stepper_nav_button">
-        <item name="android:layout_margin">8dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">?android:attr/selectableItemBackground</item>
-        <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingLeft">4dp</item>
-        <item name="android:paddingRight">4dp</item>
-        <item name="android:paddingBottom">8dp</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textColor">@color/buttontext</item>
     </style>
 
 

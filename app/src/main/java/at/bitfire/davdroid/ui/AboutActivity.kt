@@ -68,7 +68,7 @@ class AboutActivity: AppCompatActivity() {
 
     private inner class TabsAdapter(
             fm: FragmentManager
-    ): FragmentPagerAdapter(fm) {
+    ): FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
         override fun getCount() = 2
 
@@ -86,7 +86,7 @@ class AboutActivity: AppCompatActivity() {
                             .withFields(R.string::class.java.fields)
                             .withLicenseShown(true)
                             .supportFragment()
-                }!!
+                }
     }
 
 

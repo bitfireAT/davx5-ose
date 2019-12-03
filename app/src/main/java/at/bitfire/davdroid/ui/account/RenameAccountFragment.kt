@@ -17,7 +17,6 @@ import android.provider.ContactsContract
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.AndroidViewModel
@@ -33,6 +32,7 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.TaskProvider
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.util.logging.Level
 import kotlin.concurrent.thread
 
@@ -71,7 +71,7 @@ class RenameAccountFragment: DialogFragment() {
             this@RenameAccountFragment.requireActivity().finish()
         })
 
-        return AlertDialog.Builder(requireActivity())
+        return MaterialAlertDialogBuilder(requireActivity())
                 .setTitle(R.string.account_rename)
                 .setMessage(R.string.account_rename_new_name)
                 .setView(layout)

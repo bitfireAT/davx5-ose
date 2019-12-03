@@ -12,10 +12,10 @@ import android.accounts.Account
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.IOException
 
 class ExceptionInfoFragment: DialogFragment() {
@@ -45,7 +45,7 @@ class ExceptionInfoFragment: DialogFragment() {
             else -> R.string.exception
         }
 
-        val dialog = AlertDialog.Builder(requireActivity())
+        val dialog = MaterialAlertDialogBuilder(requireActivity())
                 .setIcon(R.drawable.ic_error_dark)
                 .setTitle(title)
                 .setMessage(exception::class.java.name + "\n" + exception.localizedMessage)

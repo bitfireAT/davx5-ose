@@ -8,7 +8,6 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import android.app.AlertDialog
 import android.app.Application
 import android.app.Dialog
 import android.content.Intent
@@ -22,6 +21,7 @@ import androidx.lifecycle.*
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.DebugInfoActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.lang.ref.WeakReference
 import java.util.logging.Level
 import kotlin.concurrent.thread
@@ -106,7 +106,7 @@ class DetectConfigurationFragment: Fragment() {
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val model = ViewModelProviders.of(requireActivity()).get(LoginModel::class.java)
-            return AlertDialog.Builder(requireActivity())
+            return MaterialAlertDialogBuilder(requireActivity())
                     .setTitle(R.string.login_configuration_detection)
                     .setIcon(R.drawable.ic_error_dark)
                     .setMessage(R.string.login_no_caldav_carddav)
