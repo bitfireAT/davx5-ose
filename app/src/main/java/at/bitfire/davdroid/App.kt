@@ -53,10 +53,8 @@ class App: MultiDexApplication(), Thread.UncaughtExceptionHandler {
         super.onCreate()
         Logger.initialize(this)
 
-        //if (BuildConfig.FLAVOR == FLAVOR_STANDARD)
-            Thread.setDefaultUncaughtExceptionHandler(this)
-
         if (BuildConfig.DEBUG)
+            // debug builds
             StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder()
                     .detectActivityLeaks()
                     .detectFileUriExposure()
@@ -65,6 +63,9 @@ class App: MultiDexApplication(), Thread.UncaughtExceptionHandler {
                     .detectLeakedSqlLiteObjects()
                     .penaltyLog()
                     .build())
+        else // if (BuildConfig.FLAVOR == FLAVOR_STANDARD)
+            // handle uncaught exceptions in non-debug standard flavor
+            Thread.setDefaultUncaughtExceptionHandler(this)
 
         if (Build.VERSION.SDK_INT <= 21)
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
