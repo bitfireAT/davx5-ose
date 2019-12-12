@@ -40,6 +40,36 @@ abstract class SyncAdapterService: Service() {
          *  is terminated and the `finally` block which cleans up [runningSyncs] is not
          *  executed. */
         private val runningSyncs = mutableListOf<WeakReference<Pair<String, Account>>>()
+
+        /**
+         * Specifies a list (comma-separated IDs) of collections which are requested to be
+         * synchronized before the other collections. For instance, if some calendars of a CalDAV
+         * account are visible in the calendar app and others are hidden, the visible calendars can
+         * be synchronized first, so that the "Refresh" action in the calendar app is more responsive.
+         *
+         * In case of calendar sync, the extra value is a list of comma-separated Android calendar IDs.
+         * In case of task sync, the extra value is a list of comma-separated OpenTask task list IDs.
+         */
+        const val SYNC_EXTRAS_PRIORITY_COLLECTIONS = "priority_collections"
+
+        /**
+         * Returns the list of priority collections (see [SYNC_EXTRAS_PRIORITY_COLLECTIONS]).
+         *
+         * @param extras sync extras
+         * @return list of priority collection IDs (may be empty)
+         */
+        fun priorityCollections(extras: Bundle): List<Long> {
+            val priority = LinkedList<Long>()
+            try {
+                extras.getString(SYNC_EXTRAS_PRIORITY_COLLECTIONS)
+                        ?.split(',')
+                        ?.map { it.toLong() }
+                        ?.let { priority.addAll(it) }
+            } catch (e: NumberFormatException) {
+                Logger.log.warning("Invalid format of ${SYNC_EXTRAS_PRIORITY_COLLECTIONS}")
+            }
+            return priority
+        }
     }
 
     protected abstract fun syncAdapter(): AbstractThreadedSyncAdapter

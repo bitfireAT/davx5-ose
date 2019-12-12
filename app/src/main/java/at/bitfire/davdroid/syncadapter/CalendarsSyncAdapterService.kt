@@ -51,7 +51,11 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
 
                 updateLocalCalendars(provider, account, accountSettings)
 
-                for (calendar in AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)) {
+                val priorityCalendars = priorityCollections(extras)
+                val calendars = AndroidCalendar
+                        .find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)
+                        .sortedByDescending { priorityCalendars.contains(it.id) }
+                for (calendar in calendars) {
                     Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
                     CalendarSyncManager(context, account, accountSettings, extras, authority, syncResult, calendar).use {
                         it.performSync()

@@ -62,7 +62,11 @@ class TasksSyncAdapterService: SyncAdapterService() {
 
                 updateLocalTaskLists(taskProvider, account, accountSettings)
 
-                for (taskList in AndroidTaskList.find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)) {
+                val priorityTaskLists = priorityCollections(extras)
+                val taskLists = AndroidTaskList
+                        .find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)
+                        .sortedByDescending { priorityTaskLists.contains(it.id) }
+                for (taskList in taskLists) {
                     Logger.log.info("Synchronizing task list #${taskList.id} [${taskList.syncId}]")
                     TasksSyncManager(context, account, accountSettings, extras, authority, syncResult, taskList).use {
                         it.performSync()
