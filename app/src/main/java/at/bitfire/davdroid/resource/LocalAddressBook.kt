@@ -47,6 +47,20 @@ class LocalAddressBook(
         const val USER_DATA_URL = "url"
         const val USER_DATA_READ_ONLY = "read_only"
 
+        private fun verifyUserData(context: Context, account: Account, userData: Bundle): Boolean {
+            val accountManager = AccountManager.get(context)
+            var r = true
+            userData.keySet().forEach { key ->
+                val stored = accountManager.getUserData(account, key)
+                val expected = userData.getString(key)
+                if (stored != expected) {
+                    Logger.log.warning("Stored user data \"${stored}\" differs from expected data \"${expected}\" for ${key}")
+                    r = false
+                }
+            }
+            return r
+        }
+
         fun create(context: Context, provider: ContentProviderClient, mainAccount: Account, info: Collection): LocalAddressBook {
             val accountManager = AccountManager.get(context)
 
@@ -56,10 +70,12 @@ class LocalAddressBook(
             if (!accountManager.addAccountExplicitly(account, null, userData))
                 throw IllegalStateException("Couldn't create address book account")
 
-            // Android sometimes seems to lose the initial user data, so set it a second time
-            userData.keySet().forEach { key ->
-                accountManager.setUserData(account, key, userData.getString(key))
-            }
+            if (!verifyUserData(context, account, userData))
+                // Android  seems to lose the initial user data sometimes, so set it a second time if that happens
+                // https://forums.bitfire.at/post/11644
+                userData.keySet().forEach { key ->
+                    accountManager.setUserData(account, key, userData.getString(key))
+                }
 
             val addressBook = LocalAddressBook(context, account, provider)
             ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
