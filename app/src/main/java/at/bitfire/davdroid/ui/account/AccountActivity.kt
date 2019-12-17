@@ -154,7 +154,7 @@ class AccountActivity: AppCompatActivity() {
 
     class TabsAdapter(
             val activity: AppCompatActivity
-    ): FragmentStatePagerAdapter(activity.supportFragmentManager) {
+    ): FragmentStatePagerAdapter(activity.supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
         
         var cardDavSvcId: Long? = null
             set(value) {

@@ -25,15 +25,13 @@
 
     <!-- app theme -->
 
-    <style name="AppBaseTheme" parent="Theme.MaterialComponents.Light" />
-
-    <style name="AppTheme" parent="AppBaseTheme">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light">
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorOnPrimary">@android:color/black</item>
         <item name="colorSecondary">@color/secondaryColor</item>
-        <item name="colorAccent">@color/secondaryColor</item>
-
         <item name="colorOnSecondary">@android:color/white</item>
+        <item name="colorAccent">@color/secondaryColor</item>
     </style>
 
     <color name="actionBarButton">#FF000000</color>
@@ -42,8 +40,6 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
-    <style name="AppThemeExt" parent="AppTheme" />
 
 
     <!-- AddAccountActivity -->
@@ -63,17 +59,5 @@
     <!-- widgets -->
 
     <color name="cardview_background">@color/secondaryLightColor</color>
-
-    <style name="tablayout" parent="Widget.Design.TabLayout">
-        <item name="android:background">@color/primaryDarkColor</item>
-    </style>
-
-    <style name="toolbar_theme">
-        <item name="android:textColorSecondary">@android:color/white</item>
-    </style>
-    <style name="toolbar_style" parent="Widget.AppCompat.Toolbar">
-        <item name="android:background">@color/primaryDarkColor</item>
-        <item name="titleTextColor">@android:color/white</item>
-    </style>
 
 </resources>
