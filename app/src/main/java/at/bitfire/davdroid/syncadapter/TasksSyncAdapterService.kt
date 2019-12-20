@@ -62,7 +62,7 @@ class TasksSyncAdapterService: SyncAdapterService() {
 
                 updateLocalTaskLists(taskProvider, account, accountSettings)
 
-                val priorityTaskLists = extras.getLongArray(SYNC_EXTRAS_PRIORITY_COLLECTIONS) ?: longArrayOf()
+                val priorityTaskLists = priorityCollections(extras)
                 val taskLists = AndroidTaskList
                         .find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)
                         .sortedByDescending { priorityTaskLists.contains(it.id) }

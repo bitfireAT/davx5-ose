@@ -51,7 +51,7 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
 
                 updateLocalCalendars(provider, account, accountSettings)
 
-                val priorityCalendars = extras.getLongArray(SYNC_EXTRAS_PRIORITY_COLLECTIONS) ?: longArrayOf()
+                val priorityCalendars = priorityCollections(extras)
                 val calendars = AndroidCalendar
                         .find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)
                         .sortedByDescending { priorityCalendars.contains(it.id) }

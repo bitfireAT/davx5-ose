@@ -42,15 +42,15 @@ abstract class SyncAdapterService: Service() {
         private val runningSyncs = mutableListOf<WeakReference<Pair<String, Account>>>()
 
         /**
-         * Specifies an array of collections which are requested to be synchronized before
+         * Specifies an list of IDs which are requested to be synchronized before
          * the other collections. For instance, if some calendars of a CalDAV
          * account are visible in the calendar app and others are hidden, the visible calendars can
          * be synchronized first, so that the "Refresh" action in the calendar app is more responsive.
          *
-         * Extra type: Array<Long>
+         * Extra type: String (comma-separated list of IDs)
          *
-         * In case of calendar sync, the extra value is an array of Android calendar IDs.
-         * In case of task sync, the extra value is an array of OpenTask task list IDs.
+         * In case of calendar sync, the extra value is a list of Android calendar IDs.
+         * In case of task sync, the extra value is an a list of OpenTask task list IDs.
          */
         const val SYNC_EXTRAS_PRIORITY_COLLECTIONS = "priority_collections"
     }
@@ -63,6 +63,22 @@ abstract class SyncAdapterService: Service() {
     abstract class SyncAdapter(
             context: Context
     ): AbstractThreadedSyncAdapter(context, false) {
+
+        companion object {
+            fun priorityCollections(extras: Bundle): Set<Long> {
+                val ids = mutableSetOf<Long>()
+                extras.getString(SYNC_EXTRAS_PRIORITY_COLLECTIONS)?.let { rawIds ->
+                    for (rawId in rawIds.split(','))
+                        try {
+                            ids += rawId.toLong()
+                        } catch (e: NumberFormatException) {
+                            Logger.log.log(Level.WARNING, "Couldn't parse SYNC_EXTRAS_PRIORITY_COLLECTIONS", e)
+                        }
+                }
+                return ids
+            }
+        }
+
 
         abstract fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult)
 
