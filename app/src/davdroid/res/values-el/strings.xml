@@ -58,6 +58,7 @@
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_forums">Βοήθεια / Φόρουμ</string>
   <string name="navigation_drawer_donate">Δωρεά</string>
+  <string name="account_list_no_internet">Δεν υπάρχει σύνδεση στο Διαδίκτυο. Το Android δεν θα πραγματοποιήσει συγχρονισμό.</string>
   <string name="account_list_empty">Καλώς ήρθατε στο DAVx⁵!\n\nΜπορείτε να προσθέσετε τώρα έναν λογαριασμό CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Ο αυτόματος συγχρονισμός σε όλο το σύστημα είναι απενεργοποιημένος</string>
   <string name="accounts_global_sync_enable">Ενεργοποίηση</string>
