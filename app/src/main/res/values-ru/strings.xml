@@ -25,7 +25,7 @@
   <string name="startup_dont_show_again">Не показывать снова</string>
   <string name="startup_not_now">Не сейчас</string>
   <string name="startup_donate">Open-Source информация</string>
-  <string name="startup_donate_message">Мы гордимся тем, что вы пользуетесь приложением с открытым исходным кодом DAVx⁵. Разрабатывая DAVx⁵ мы потратили очень много времени, поэтому, пожалуйста, подумайте о возможности поддержать проект.</string>
+  <string name="startup_donate_message">Мы гордимся, что вы используете приложение с открытым исходным кодом DAVx⁵. Разрабатывая DAVx⁵ мы потратили очень много сил и времени, и будем рады, если вы рассмотрите возможность поддержать проект.</string>
   <string name="startup_donate_now">Поддержать проект</string>
   <string name="startup_donate_later">Возможно, позже</string>
   <string name="startup_more_info">Дополнительная информация</string>
