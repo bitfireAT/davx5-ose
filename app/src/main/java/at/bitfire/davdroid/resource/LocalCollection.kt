@@ -76,4 +76,10 @@ interface LocalCollection<out T: LocalResource<*>> {
      */
     fun removeNotDirtyMarked(flags: Int): Int
 
+
+    /**
+     * Forgets the ETags of all members so that they will be reloaded from the server during sync.
+     */
+    fun forgetETags()
+
 }

@@ -6,7 +6,7 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid.ui
+package at.bitfire.davdroid.ui.account
 
 import android.Manifest
 import android.accounts.Account
@@ -33,14 +33,14 @@ import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
-import at.bitfire.davdroid.ui.account.AccountActivity
+import at.bitfire.davdroid.syncadapter.SyncAdapterService
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.apache.commons.lang3.StringUtils
 
-class AccountSettingsActivity: AppCompatActivity() {
+class SettingsActivity: AppCompatActivity() {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
@@ -52,7 +52,7 @@ class AccountSettingsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        account = intent.getParcelableExtra(EXTRA_ACCOUNT)
+        account = intent.getParcelableExtra(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
         title = getString(R.string.settings_title, account.name)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -277,22 +277,15 @@ class AccountSettingsActivity: AppCompatActivity() {
                     else {
                         it.isEnabled = true
                         it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, groupMethod ->
-                            MaterialAlertDialogBuilder(requireActivity())
-                                    .setIcon(R.drawable.ic_error_dark)
-                                    .setTitle(R.string.settings_contact_group_method_change)
-                                    .setMessage(R.string.settings_contact_group_method_change_reload_contacts)
-                                    .setPositiveButton(android.R.string.ok) { _, _ ->
-                                        // change group method
-                                        accountSettings.setGroupMethod(GroupMethod.valueOf(groupMethod as String))
-                                        reload()
+                            // change group method
+                            accountSettings.setGroupMethod(GroupMethod.valueOf(groupMethod as String))
+                            reload()
 
-                                        // reload all contacts
-                                        val args = Bundle(1)
-                                        args.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)
-                                        ContentResolver.requestSync(account, getString(R.string.address_books_authority), args)
-                                    }
-                                    .setNegativeButton(android.R.string.cancel, null)
-                                    .show()
+                            // reload all contacts
+                            val args = Bundle(1)
+                            args.putBoolean(SyncAdapterService.SYNC_EXTRAS_RELOAD_ALL, true)
+                            ContentResolver.requestSync(account, getString(R.string.address_books_authority), args)
+
                             false
                         }
                     }
@@ -340,6 +333,33 @@ class AccountSettingsActivity: AppCompatActivity() {
                     it.isVisible = false
             }
 
+            findPreference<EditTextPreference>(getString(R.string.settings_key_default_alarm))!!.let {
+                val defaultAlarm = accountSettings.getDefaultAlarm()
+                if (defaultAlarm != null) {
+                    it.text = defaultAlarm.toString()
+                    it.summary = resources.getQuantityString(R.plurals.settings_default_alarm_on, defaultAlarm, defaultAlarm)
+                } else {
+                    it.text = null
+                    it.summary = getString(R.string.settings_default_alarm_off)
+                }
+                it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    val minBefore = try {
+                        (newValue as String).toInt()
+                    } catch (e: java.lang.NumberFormatException) {
+                        null
+                    }
+                    accountSettings.setDefaultAlarm(minBefore)
+
+                    // reload all events
+                    val args = Bundle(1)
+                    args.putBoolean(SyncAdapterService.SYNC_EXTRAS_RELOAD_ALL, true)
+                    ContentResolver.requestSync(account, CalendarContract.AUTHORITY, args)
+
+                    reload()
+                    false
+                }
+            }
+
             findPreference<SwitchPreferenceCompat>("manage_calendar_colors")!!.let {
                 if (syncIntervalCalendars != null || syncIntervalTasks != null) {
                     it.isVisible = true
@@ -360,20 +380,14 @@ class AccountSettingsActivity: AppCompatActivity() {
                     it.isEnabled = !settings.has(AccountSettings.KEY_EVENT_COLORS)
                     it.isChecked = accountSettings.getEventColors()
                     it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                        if (newValue as Boolean) {
-                            accountSettings.setEventColors(true)
-                            reload()
-                        } else
-                            MaterialAlertDialogBuilder(requireActivity())
-                                    .setIcon(R.drawable.ic_error_dark)
-                                    .setTitle(R.string.settings_event_colors)
-                                    .setMessage(R.string.settings_event_colors_off_confirm)
-                                    .setNegativeButton(android.R.string.cancel, null)
-                                    .setPositiveButton(android.R.string.ok) { _, _ ->
-                                        accountSettings.setEventColors(false)
-                                        reload()
-                                    }
-                                    .show()
+                        accountSettings.setEventColors(newValue as Boolean)
+                        reload()
+
+                        // reload all events
+                        val args = Bundle(1)
+                        args.putBoolean(SyncAdapterService.SYNC_EXTRAS_RELOAD_ALL, true)
+                        ContentResolver.requestSync(account, CalendarContract.AUTHORITY, args)
+
                         false
                     }
                 } else

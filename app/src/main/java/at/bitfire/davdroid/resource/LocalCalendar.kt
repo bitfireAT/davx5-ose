@@ -147,6 +147,13 @@ class LocalCalendar private constructor(
                     "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL AND ${LocalEvent.COLUMN_FLAGS}=?",
                     arrayOf(id.toString(), flags.toString()))
 
+    override fun forgetETags() {
+        val values = ContentValues(1)
+        values.putNull(LocalEvent.COLUMN_ETAG)
+        provider.update(eventsSyncURI(), values, "${Events.CALENDAR_ID}=?",
+                arrayOf(id.toString()))
+    }
+
 
     fun processDirtyExceptions() {
         // process deleted exceptions

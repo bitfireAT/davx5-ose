@@ -284,6 +284,17 @@ class LocalAddressBook(
             "${Groups.DIRTY} AND (${AndroidGroup.COLUMN_FILENAME} IS NULL OR ${AndroidGroup.COLUMN_UID} IS NULL)",
             null)
 
+    override fun forgetETags() {
+        if (includeGroups) {
+            val values = ContentValues(1)
+            values.putNull(AndroidGroup.COLUMN_ETAG)
+            provider!!.update(groupsSyncUri(), values, null, null)
+        }
+        val values = ContentValues(1)
+        values.putNull(AndroidContact.COLUMN_ETAG)
+        provider!!.update(rawContactsSyncUri(), values, null, null)
+    }
+
 
     /**
      * Queries all contacts with DIRTY flag and checks whether their data checksum has changed, i.e.

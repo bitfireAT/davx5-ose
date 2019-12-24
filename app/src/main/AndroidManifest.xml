@@ -86,7 +86,7 @@
             android:name=".ui.account.AccountActivity"
             android:parentActivityName=".ui.AccountsActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".ui.AccountSettingsActivity"/>
+        <activity android:name=".ui.account.SettingsActivity"/>
         <activity android:name=".ui.CreateAddressBookActivity"
             android:label="@string/create_addressbook"/>
         <activity android:name=".ui.CreateCalendarActivity"

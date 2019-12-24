@@ -152,6 +152,13 @@ class LocalTaskList private constructor(
                     "${Tasks.LIST_ID}=? AND NOT ${Tasks._DIRTY} AND ${LocalTask.COLUMN_FLAGS}=?",
                     arrayOf(id.toString(), flags.toString()))
 
+    override fun forgetETags() {
+        val values = ContentValues(1)
+        values.putNull(LocalEvent.COLUMN_ETAG)
+        provider.client.update(tasksSyncUri(), values, "${Tasks.LIST_ID}=?",
+                arrayOf(id.toString()))
+    }
+
 
     object Factory: AndroidTaskListFactory<LocalTaskList> {
 

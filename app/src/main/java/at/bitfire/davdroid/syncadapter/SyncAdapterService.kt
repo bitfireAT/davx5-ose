@@ -25,7 +25,7 @@ import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.AccountSettingsActivity
+import at.bitfire.davdroid.ui.account.SettingsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.account.AccountActivity
 import java.lang.ref.WeakReference
@@ -53,6 +53,15 @@ abstract class SyncAdapterService: Service() {
          * In case of task sync, the extra value is an a list of OpenTask task list IDs.
          */
         const val SYNC_EXTRAS_PRIORITY_COLLECTIONS = "priority_collections"
+
+        /**
+         * Requests a full re-synchronization of all entries. For instance, if this extra is
+         * set on an address book sync, all contacts will be downloaded again and updated in the
+         * local storage.
+         *
+         * Useful if settings which modify parsing/local behavior have been changed.
+         */
+        const val SYNC_EXTRAS_RELOAD_ALL = "reload_all"
     }
 
     protected abstract fun syncAdapter(): AbstractThreadedSyncAdapter
@@ -152,8 +161,8 @@ abstract class SyncAdapterService: Service() {
                     // see https://issuetracker.google.com/issues/70633700
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 &&
                         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        val intent = Intent(context, AccountSettingsActivity::class.java)
-                        intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, settings.account)
+                        val intent = Intent(context, SettingsActivity::class.java)
+                        intent.putExtra(SettingsActivity.EXTRA_ACCOUNT, settings.account)
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
                         notifyPermissions(intent)

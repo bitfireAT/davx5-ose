@@ -61,13 +61,21 @@ class AccountSettings(
         const val WIFI_ONLY_DEFAULT = false
         const val KEY_WIFI_ONLY_SSIDS = "wifi_only_ssids"   // restrict sync to specific WiFi SSIDs
 
-        /** Time range limitation to the past [in days]
-        value = null            default value (DEFAULT_TIME_RANGE_PAST_DAYS)
-        < 0 (-1)          no limit
-        >= 0              entries more than n days in the past won't be synchronized
+        /** Time range limitation to the past [in days]. Values:
+         *
+         * - null: default value (DEFAULT_TIME_RANGE_PAST_DAYS)
+         * - <0 (typically -1): no limit
+         * - n>0: entries more than n days in the past won't be synchronized
          */
         const val KEY_TIME_RANGE_PAST_DAYS = "time_range_past_days"
         const val DEFAULT_TIME_RANGE_PAST_DAYS = 90
+
+        /**
+         * Whether a default alarm shall be assigned to received events/tasks which don't have an alarm.
+         * Value can be null (no default alarm) or an integer (default alarm shall be created this
+         * number of minutes before the event/task).
+         */
+        const val KEY_DEFAULT_ALARM = "default_alarm"
 
         /* Whether DAVx5 sets the local calendar color to the value from service DB at every sync
            value = null (not existing)     true (default)
@@ -179,14 +187,25 @@ class AccountSettings(
     fun getTimeRangePastDays(): Int? {
         val strDays = accountManager.getUserData(account, KEY_TIME_RANGE_PAST_DAYS)
         return if (strDays != null) {
-            val days = Integer.valueOf(strDays)
-            if (days < 0) null else days
+            val days = strDays.toInt()
+            if (days < 0)
+                null
+            else
+                days
         } else
             DEFAULT_TIME_RANGE_PAST_DAYS
     }
 
     fun setTimeRangePastDays(days: Int?) =
             accountManager.setUserData(account, KEY_TIME_RANGE_PAST_DAYS, (days ?: -1).toString())
+
+    fun getDefaultAlarm() = if (settings.has(KEY_DEFAULT_ALARM))
+        settings.getInt(KEY_DEFAULT_ALARM)
+    else
+        accountManager.getUserData(account, KEY_DEFAULT_ALARM)?.toInt()
+    fun setDefaultAlarm(minBefore: Int?) {
+        accountManager.setUserData(account, KEY_DEFAULT_ALARM, minBefore?.toString())
+    }
 
     fun getManageCalendarColors() = if (settings.has(KEY_MANAGE_CALENDAR_COLORS))
         settings.getBoolean(KEY_MANAGE_CALENDAR_COLORS) ?: false

@@ -29,7 +29,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.SyncState
 import at.bitfire.davdroid.resource.*
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.AccountSettingsActivity
+import at.bitfire.davdroid.ui.account.SettingsActivity
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.ical4android.CalendarStorageException
@@ -126,6 +126,15 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             val modificationsSent = processLocallyDeleted() ||
                     uploadDirty()
             abortIfCancelled()
+
+            if (extras.containsKey(SyncAdapterService.SYNC_EXTRAS_RELOAD_ALL)) {
+                Logger.log.info("Forcing re-synchronization of all entries")
+
+                // forget sync state of collection
+                localCollection.lastSyncState = null
+                // forget sync state of members
+                localCollection.forgetETags()
+            }
 
             if (modificationsSent || syncRequired(remoteSyncState))
                 when (syncAlgorithm()) {
@@ -378,6 +387,9 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * sync algorithm is required
      */
     protected open fun syncRequired(state: SyncState?): Boolean {
+        if (extras.containsKey(SyncAdapterService.SYNC_EXTRAS_RELOAD_ALL))
+            return true
+
         if (syncAlgorithm() == SyncAlgorithm.PROPFIND_REPORT && extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL)) {
             Logger.log.info("Manual sync in PROPFIND/REPORT mode, forcing sync")
             return true
@@ -659,8 +671,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         val contentIntent: Intent
         var viewItemAction: NotificationCompat.Action? = null
         if (e is UnauthorizedException) {
-            contentIntent = Intent(context, AccountSettingsActivity::class.java)
-            contentIntent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT,
+            contentIntent = Intent(context, SettingsActivity::class.java)
+            contentIntent.putExtra(SettingsActivity.EXTRA_ACCOUNT,
                     if (authority == ContactsContract.AUTHORITY)
                         mainAccount
                     else

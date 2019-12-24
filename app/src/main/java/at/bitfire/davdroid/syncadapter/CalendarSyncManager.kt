@@ -28,6 +28,8 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
+import net.fortuna.ical4j.model.Dur
+import net.fortuna.ical4j.model.component.VAlarm
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import java.io.ByteArrayOutputStream
@@ -165,18 +167,26 @@ class CalendarSyncManager(
         }
 
         if (events.size == 1) {
-            val newData = events.first()
+            val event = events.first()
 
-            // delete local event, if it exists
+            // set default reminder, if requested
+            val defaultAlarmMinBefore = accountSettings.getDefaultAlarm()
+            if (defaultAlarmMinBefore != null && event.alarms.isEmpty()) {
+                val alarm = VAlarm(Dur(0, 0, -defaultAlarmMinBefore, 0))
+                Logger.log.log(Level.FINE, "${event.uid}: Adding default alarm", alarm)
+                event.alarms += alarm
+            }
+
+            // update local event, if it exists
             useLocal(localCollection.findByName(fileName)) { local ->
                 if (local != null) {
-                    Logger.log.log(Level.INFO, "Updating $fileName in local calendar", newData)
+                    Logger.log.log(Level.INFO, "Updating $fileName in local calendar", event)
                     local.eTag = eTag
-                    local.update(newData)
+                    local.update(event)
                     syncResult.stats.numUpdates++
                 } else {
-                    Logger.log.log(Level.INFO, "Adding $fileName to local calendar", newData)
-                    useLocal(LocalEvent(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) {
+                    Logger.log.log(Level.INFO, "Adding $fileName to local calendar", event)
+                    useLocal(LocalEvent(localCollection, event, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) {
                         it.add()
                     }
                     syncResult.stats.numInserts++

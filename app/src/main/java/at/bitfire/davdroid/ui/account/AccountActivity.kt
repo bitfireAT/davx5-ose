@@ -27,7 +27,6 @@ import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.ui.AccountSettingsActivity
 import at.bitfire.ical4android.TaskProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -100,8 +99,8 @@ class AccountActivity: AppCompatActivity() {
     // menu actions
 
     fun openAccountSettings(menuItem: MenuItem) {
-        val intent = Intent(this, AccountSettingsActivity::class.java)
-        intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, model.account)
+        val intent = Intent(this, SettingsActivity::class.java)
+        intent.putExtra(SettingsActivity.EXTRA_ACCOUNT, model.account)
         startActivity(intent, null)
     }
 
