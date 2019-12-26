@@ -28,13 +28,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.preference.*
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.closeCompat
 import at.bitfire.davdroid.model.Credentials
-import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.syncadapter.SyncAdapterService
-import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -279,10 +276,9 @@ class SettingsActivity: AppCompatActivity() {
                         it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, groupMethod ->
                             // change group method
                             accountSettings.setGroupMethod(GroupMethod.valueOf(groupMethod as String))
-                            reload()
-
                             resyncContacts()
 
+                            reload()
                             false
                         }
                     }
@@ -309,19 +305,7 @@ class SettingsActivity: AppCompatActivity() {
                             -1
                         }
                         accountSettings.setTimeRangePastDays(if (days < 0) null else days)
-
-                        // reset sync state of all calendars in this account to trigger a full sync
-                        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
-                            requireContext().contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
-                                try {
-                                    AndroidCalendar.find(account, provider, LocalCalendar.Factory, null, null).forEach { calendar ->
-                                        calendar.lastSyncState = null
-                                    }
-                                } finally {
-                                    provider.closeCompat()
-                                }
-                            }
-                        }
+                        resyncCalendars(false)
 
                         reload()
                         false
@@ -346,7 +330,6 @@ class SettingsActivity: AppCompatActivity() {
                         null
                     }
                     accountSettings.setDefaultAlarm(minBefore)
-
                     resyncCalendars()
 
                     reload()
@@ -375,10 +358,9 @@ class SettingsActivity: AppCompatActivity() {
                     it.isChecked = accountSettings.getEventColors()
                     it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                         accountSettings.setEventColors(newValue as Boolean)
-                        reload()
-
                         resyncCalendars()
 
+                        reload()
                         false
                     }
                 } else
@@ -418,9 +400,16 @@ class SettingsActivity: AppCompatActivity() {
             ContentResolver.requestSync(account, getString(R.string.address_books_authority), args)
         }
 
-        private fun resyncCalendars() {
+        /**
+         * Initiates calendar re-synchronization.
+         * @param fullResync whether sync shall download all events again
+         * (_true_: sets [SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC],
+         * _false_: sets [ContentResolver.SYNC_EXTRAS_MANUAL])
+         */
+        private fun resyncCalendars(fullResync: Boolean = true) {
             val args = Bundle(1)
-            args.putBoolean(SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC, true)
+            args.putBoolean(if (fullResync) SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC
+                    else ContentResolver.SYNC_EXTRAS_MANUAL, true)
             ContentResolver.requestSync(account, CalendarContract.AUTHORITY, args)
         }
 
