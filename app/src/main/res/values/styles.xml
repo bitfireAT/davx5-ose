@@ -32,6 +32,7 @@
         <item name="colorSecondary">@color/secondaryColor</item>
         <item name="colorOnSecondary">@android:color/white</item>
         <item name="colorAccent">@color/secondaryColor</item>
+        <item name="colorSurface">@color/grey200</item>
     </style>
 
     <color name="actionBarButton">#FF000000</color>
