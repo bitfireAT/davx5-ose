@@ -238,8 +238,8 @@
     <string name="settings_key_default_alarm" translatable="false">default_alarm</string>
     <string name="settings_default_alarm">Default alarm</string>
     <plurals name="settings_default_alarm_on">
-        <item quantity="one">Default alarm one minute before event/task</item>
-        <item quantity="other">Default alarm %d minutes before event/task</item>
+        <item quantity="one">Default alarm one minute before event</item>
+        <item quantity="other">Default alarm %d minutes before event</item>
     </plurals>
     <string name="settings_default_alarm_off">No default alarms are created</string>
     <string name="settings_default_alarm_message">If a default alarm shall be created for events/tasks without alarm: the desired number of minutes before the event/task. Leave blank to disable default alarms.</string>

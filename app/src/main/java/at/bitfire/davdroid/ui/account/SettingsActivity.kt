@@ -281,10 +281,7 @@ class SettingsActivity: AppCompatActivity() {
                             accountSettings.setGroupMethod(GroupMethod.valueOf(groupMethod as String))
                             reload()
 
-                            // reload all contacts
-                            val args = Bundle(1)
-                            args.putBoolean(SyncAdapterService.SYNC_EXTRAS_RELOAD_ALL, true)
-                            ContentResolver.requestSync(account, getString(R.string.address_books_authority), args)
+                            resyncContacts()
 
                             false
                         }
@@ -350,10 +347,7 @@ class SettingsActivity: AppCompatActivity() {
                     }
                     accountSettings.setDefaultAlarm(minBefore)
 
-                    // reload all events
-                    val args = Bundle(1)
-                    args.putBoolean(SyncAdapterService.SYNC_EXTRAS_RELOAD_ALL, true)
-                    ContentResolver.requestSync(account, CalendarContract.AUTHORITY, args)
+                    resyncCalendars()
 
                     reload()
                     false
@@ -383,10 +377,7 @@ class SettingsActivity: AppCompatActivity() {
                         accountSettings.setEventColors(newValue as Boolean)
                         reload()
 
-                        // reload all events
-                        val args = Bundle(1)
-                        args.putBoolean(SyncAdapterService.SYNC_EXTRAS_RELOAD_ALL, true)
-                        ContentResolver.requestSync(account, CalendarContract.AUTHORITY, args)
+                        resyncCalendars()
 
                         false
                     }
@@ -417,6 +408,20 @@ class SettingsActivity: AppCompatActivity() {
                         }
                         .show()
             }
+        }
+
+
+        private fun resyncContacts() {
+            // resync all contacts
+            val args = Bundle(1)
+            args.putBoolean(SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC, true)
+            ContentResolver.requestSync(account, getString(R.string.address_books_authority), args)
+        }
+
+        private fun resyncCalendars() {
+            val args = Bundle(1)
+            args.putBoolean(SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC, true)
+            ContentResolver.requestSync(account, CalendarContract.AUTHORITY, args)
         }
 
     }

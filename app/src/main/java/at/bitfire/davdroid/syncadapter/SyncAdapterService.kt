@@ -61,7 +61,7 @@ abstract class SyncAdapterService: Service() {
          *
          * Useful if settings which modify parsing/local behavior have been changed.
          */
-        const val SYNC_EXTRAS_RELOAD_ALL = "reload_all"
+        const val SYNC_EXTRAS_FULL_RESYNC = "full_resync"
     }
 
     protected abstract fun syncAdapter(): AbstractThreadedSyncAdapter

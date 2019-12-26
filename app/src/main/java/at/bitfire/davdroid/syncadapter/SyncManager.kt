@@ -127,7 +127,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     uploadDirty()
             abortIfCancelled()
 
-            if (extras.containsKey(SyncAdapterService.SYNC_EXTRAS_RELOAD_ALL)) {
+            if (extras.containsKey(SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC)) {
                 Logger.log.info("Forcing re-synchronization of all entries")
 
                 // forget sync state of collection
@@ -387,7 +387,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * sync algorithm is required
      */
     protected open fun syncRequired(state: SyncState?): Boolean {
-        if (extras.containsKey(SyncAdapterService.SYNC_EXTRAS_RELOAD_ALL))
+        if (extras.containsKey(SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC))
             return true
 
         if (syncAlgorithm() == SyncAlgorithm.PROPFIND_REPORT && extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL)) {
