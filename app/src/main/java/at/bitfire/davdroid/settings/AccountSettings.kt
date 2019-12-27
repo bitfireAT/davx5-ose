@@ -199,13 +199,10 @@ class AccountSettings(
     fun setTimeRangePastDays(days: Int?) =
             accountManager.setUserData(account, KEY_TIME_RANGE_PAST_DAYS, (days ?: -1).toString())
 
-    fun getDefaultAlarm() = if (settings.has(KEY_DEFAULT_ALARM))
-        settings.getInt(KEY_DEFAULT_ALARM)
-    else
-        accountManager.getUserData(account, KEY_DEFAULT_ALARM)?.toInt()
-    fun setDefaultAlarm(minBefore: Int?) {
-        accountManager.setUserData(account, KEY_DEFAULT_ALARM, minBefore?.toString())
-    }
+    fun getDefaultAlarm() =
+            accountManager.getUserData(account, KEY_DEFAULT_ALARM)?.toInt()
+    fun setDefaultAlarm(minBefore: Int?) =
+            accountManager.setUserData(account, KEY_DEFAULT_ALARM, minBefore?.toString())
 
     fun getManageCalendarColors() = if (settings.has(KEY_MANAGE_CALENDAR_COLORS))
         settings.getBoolean(KEY_MANAGE_CALENDAR_COLORS) ?: false
