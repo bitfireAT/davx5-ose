@@ -183,6 +183,11 @@ class Settings(
 
 
     interface OnChangeListener {
+        /**
+         * Will be called when something has changed in a [SettingsProvider].
+         * Runs in worker thread!
+         */
+        @WorkerThread
         fun onSettingsChanged()
     }
 

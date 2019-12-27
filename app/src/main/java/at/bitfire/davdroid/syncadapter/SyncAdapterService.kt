@@ -55,8 +55,18 @@ abstract class SyncAdapterService: Service() {
         const val SYNC_EXTRAS_PRIORITY_COLLECTIONS = "priority_collections"
 
         /**
+         * Requests a re-synchronization of all entries. For instance, if this extra is
+         * set for a calendar sync, all remote events will be listed and checked for remote
+         * changes again.
+         *
+         * Useful if settings which modify the remote resource list (like the CalDAV setting
+         * "sync events n days in the past") have been changed.
+         */
+        const val SYNC_EXTRAS_RESYNC = "resync"
+
+        /**
          * Requests a full re-synchronization of all entries. For instance, if this extra is
-         * set on an address book sync, all contacts will be downloaded again and updated in the
+         * set for an address book sync, all contacts will be downloaded again and updated in the
          * local storage.
          *
          * Useful if settings which modify parsing/local behavior have been changed.

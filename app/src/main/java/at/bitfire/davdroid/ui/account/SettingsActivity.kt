@@ -10,14 +10,13 @@ package at.bitfire.davdroid.ui.account
 
 import android.Manifest
 import android.accounts.Account
+import android.app.Application
 import android.content.ContentResolver
 import android.content.Intent
 import android.content.SyncStatusObserver
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.provider.CalendarContract
 import android.security.KeyChain
 import android.view.MenuItem
@@ -25,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.*
 import androidx.preference.*
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
@@ -70,301 +70,282 @@ class SettingsActivity: AppCompatActivity() {
                 false
 
 
-    class AccountSettingsFragment: PreferenceFragmentCompat(), SyncStatusObserver, Settings.OnChangeListener {
+    class AccountSettingsFragment: PreferenceFragmentCompat() {
         private lateinit var settings: Settings
-
         lateinit var account: Account
-        private var statusChangeListener: Any? = null
+
+        private lateinit var model: Model
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             settings = Settings.getInstance(requireActivity())
             account = arguments!!.getParcelable(EXTRA_ACCOUNT)!!
+
+            model = ViewModelProviders.of(this).get(Model::class.java)
+            model.initialize(account)
+
+            initSettings()
         }
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             addPreferencesFromResource(R.xml.settings_account)
         }
 
-        override fun onResume() {
-            super.onResume()
+        private fun initSettings() {
+            //val accountSettings = AccountSettings(requireActivity(), account)
 
-            statusChangeListener = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this)
-            settings.addOnChangeListener(this)
-
-            reload()
-        }
-
-        override fun onPause() {
-            super.onPause()
-            statusChangeListener?.let {
-                ContentResolver.removeStatusChangeListener(it)
-                statusChangeListener = null
+            // preference group: sync
+            findPreference<ListPreference>(getString(R.string.settings_sync_interval_contacts_key))!!.let {
+                model.syncIntervalContacts.observe(this, Observer { interval ->
+                    if (interval != null) {
+                        it.isEnabled = true
+                        it.isVisible = true
+                        it.value = interval.toString()
+                        if (interval == AccountSettings.SYNC_INTERVAL_MANUALLY)
+                            it.setSummary(R.string.settings_sync_summary_manually)
+                        else
+                            it.summary = getString(R.string.settings_sync_summary_periodically, interval / 60)
+                        it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
+                            pref.isEnabled = false
+                            model.updateSyncInterval(getString(R.string.address_books_authority), (newValue as String).toLong())
+                            false
+                        }
+                    } else
+                        it.isVisible = false
+                })
             }
-            settings.removeOnChangeListener(this)
-        }
-
-        override fun onStatusChanged(which: Int) {
-            Handler(Looper.getMainLooper()).post {
-                reload()
+            findPreference<ListPreference>(getString(R.string.settings_sync_interval_calendars_key))!!.let {
+                model.syncIntervalCalendars.observe(this, Observer { interval ->
+                    if (interval != null) {
+                        it.isEnabled = true
+                        it.isVisible = true
+                        it.value = interval.toString()
+                        if (interval == AccountSettings.SYNC_INTERVAL_MANUALLY)
+                            it.setSummary(R.string.settings_sync_summary_manually)
+                        else
+                            it.summary = getString(R.string.settings_sync_summary_periodically, interval / 60)
+                        it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
+                            pref.isEnabled = false
+                            model.updateSyncInterval(CalendarContract.AUTHORITY, (newValue as String).toLong())
+                            false
+                        }
+                    } else
+                        it.isVisible = false
+                })
             }
-        }
+            findPreference<ListPreference>(getString(R.string.settings_sync_interval_tasks_key))!!.let {
+                model.syncIntervalTasks.observe(this, Observer { interval ->
+                    if (interval != null) {
+                        it.isEnabled = true
+                        it.isVisible = true
+                        it.value = interval.toString()
+                        if (interval == AccountSettings.SYNC_INTERVAL_MANUALLY)
+                            it.setSummary(R.string.settings_sync_summary_manually)
+                        else
+                            it.summary = getString(R.string.settings_sync_summary_periodically, interval / 60)
+                        it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
+                            pref.isEnabled = false
+                            model.updateSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, (newValue as String).toLong())
+                            false
+                        }
+                    } else
+                        it.isVisible = false
+                })
+            }
 
-        override fun onSettingsChanged()  = reload()
+            findPreference<SwitchPreferenceCompat>(getString(R.string.settings_sync_wifi_only_key))!!.let {
+                model.syncWifiOnly.observe(this, Observer { wifiOnly ->
+                    it.isEnabled = !settings.has(AccountSettings.KEY_WIFI_ONLY)
+                    it.isChecked = wifiOnly
+                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, wifiOnly ->
+                        model.updateSyncWifiOnly(wifiOnly as Boolean)
+                        false
+                    }
+                })
+            }
 
-        private fun reload() {
-            val accountSettings = AccountSettings(requireActivity(), account)
+            findPreference<EditTextPreference>("sync_wifi_only_ssids")!!.let {
+                model.syncWifiOnlySSIDs.observe(this, Observer { onlySSIDs ->
+                    if (onlySSIDs != null) {
+                        it.text = onlySSIDs.joinToString(", ")
+                        it.summary = getString(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1)
+                                R.string.settings_sync_wifi_only_ssids_on_location_services
+                                else R.string.settings_sync_wifi_only_ssids_on, onlySSIDs.joinToString(", "))
+                    } else {
+                        it.text = ""
+                        it.setSummary(R.string.settings_sync_wifi_only_ssids_off)
+                    }
+                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                        val newOnlySSIDs = (newValue as String)
+                                .split(',')
+                                .mapNotNull { StringUtils.trimToNull(it) }
+                                .distinct()
+                        model.updateSyncWifiOnlySSIDs(newOnlySSIDs)
+                        false
+                    }
+                })
+            }
+
+            model.askForPermissions.observe(this, Observer { permissions ->
+                if (permissions.any { ContextCompat.checkSelfPermission(requireActivity(), it) != PackageManager.PERMISSION_GRANTED }) {
+                    if (permissions.any { shouldShowRequestPermissionRationale(it) })
+                        // show rationale before requesting permissions
+                        MaterialAlertDialogBuilder(requireActivity())
+                                .setIcon(R.drawable.ic_network_wifi_dark)
+                                .setTitle(R.string.settings_sync_wifi_only_ssids)
+                                .setMessage(R.string.settings_sync_wifi_only_ssids_location_permission)
+                                .setPositiveButton(android.R.string.ok) { _, _ ->
+                                    requestPermissions(permissions.toTypedArray(), 0)
+                                }
+                                .setNeutralButton(R.string.settings_more_info_faq) { _, _ ->
+                                    val faqUrl = App.homepageUrl(requireActivity()).buildUpon()
+                                            .appendPath("faq").appendPath("wifi-ssid-restriction-location-permission")
+                                            .build()
+                                    val intent = Intent(Intent.ACTION_VIEW, faqUrl)
+                                    startActivity(Intent.createChooser(intent, null))
+                                }
+                                .show()
+                    else
+                        // request permissions without rationale
+                        requestPermissions(permissions.toTypedArray(), 0)
+                }
+            })
 
             // preference group: authentication
             val prefUserName = findPreference<EditTextPreference>("username")!!
             val prefPassword = findPreference<EditTextPreference>("password")!!
             val prefCertAlias = findPreference<Preference>("certificate_alias")!!
-
-            val credentials = accountSettings.credentials()
-            when (credentials.type) {
-                Credentials.Type.UsernamePassword -> {
-                    prefUserName.isVisible = true
-                    prefUserName.summary = credentials.userName
-                    prefUserName.text = credentials.userName
-                    prefUserName.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                        accountSettings.credentials(Credentials(newValue as String, credentials.password))
-                        reload()
-                        false
-                    }
-
-                    prefPassword.isVisible = true
-                    prefPassword.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                        accountSettings.credentials(Credentials(credentials.userName, newValue as String))
-                        reload()
-                        false
-                    }
-
-                    prefCertAlias.isVisible = false
-                }
-                Credentials.Type.ClientCertificate -> {
-                    prefUserName.isVisible = false
-                    prefPassword.isVisible = false
-
-                    prefCertAlias.isVisible = true
-                    prefCertAlias.summary = credentials.certificateAlias
-                    prefCertAlias.setOnPreferenceClickListener {
-                        KeyChain.choosePrivateKeyAlias(requireActivity(), { alias ->
-                            accountSettings.credentials(Credentials(certificateAlias = alias))
-                            Handler(Looper.getMainLooper()).post {
-                                reload()
-                            }
-                        }, null, null, null, -1, credentials.certificateAlias)
-                        true
-                    }
-                }
-            }
-
-            // preference group: sync
-            // those are null if the respective sync type is not available for this account:
-            val syncIntervalContacts = accountSettings.getSyncInterval(getString(R.string.address_books_authority))
-            val syncIntervalCalendars = accountSettings.getSyncInterval(CalendarContract.AUTHORITY)
-            val syncIntervalTasks = accountSettings.getSyncInterval(TaskProvider.ProviderName.OpenTasks.authority)
-
-            findPreference<ListPreference>("sync_interval_contacts")!!.let {
-                if (syncIntervalContacts != null) {
-                    it.isEnabled = true
-                    it.isVisible = true
-                    it.value = syncIntervalContacts.toString()
-                    if (syncIntervalContacts == AccountSettings.SYNC_INTERVAL_MANUALLY)
-                        it.setSummary(R.string.settings_sync_summary_manually)
-                    else
-                        it.summary = getString(R.string.settings_sync_summary_periodically, syncIntervalContacts / 60)
-                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
-                        Handler(Looper.myLooper()).post {
-                            pref.isEnabled = false
-                            accountSettings.setSyncInterval(getString(R.string.address_books_authority), (newValue as String).toLong())
-                            reload()
-                        }
-                        false
-                    }
-                } else
-                    it.isVisible = false
-            }
-
-            findPreference<ListPreference>("sync_interval_calendars")!!.let {
-                if (syncIntervalCalendars != null) {
-                    it.isEnabled = true
-                    it.isVisible = true
-                    it.value = syncIntervalCalendars.toString()
-                    if (syncIntervalCalendars == AccountSettings.SYNC_INTERVAL_MANUALLY)
-                        it.setSummary(R.string.settings_sync_summary_manually)
-                    else
-                        it.summary = getString(R.string.settings_sync_summary_periodically, syncIntervalCalendars / 60)
-                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
-                        Handler(Looper.myLooper()).post {
-                            pref.isEnabled = false
-                            accountSettings.setSyncInterval(CalendarContract.AUTHORITY, (newValue as String).toLong())
-                            reload()
-                        }
-                        false
-                    }
-                } else
-                    it.isVisible = false
-            }
-
-            findPreference<ListPreference>("sync_interval_tasks")!!.let {
-                if (syncIntervalTasks != null) {
-                    it.isEnabled = true
-                    it.isVisible = true
-                    it.value = syncIntervalTasks.toString()
-                    if (syncIntervalTasks == AccountSettings.SYNC_INTERVAL_MANUALLY)
-                        it.setSummary(R.string.settings_sync_summary_manually)
-                    else
-                        it.summary = getString(R.string.settings_sync_summary_periodically, syncIntervalTasks / 60)
-                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
-                        Handler(Looper.myLooper()).post {
-                            pref.isEnabled = false
-                            accountSettings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, (newValue as String).toLong())
-                            reload()
-                        }
-                        false
-                    }
-                } else
-                    it.isVisible = false
-            }
-
-            val prefWifiOnly = findPreference<SwitchPreferenceCompat>("sync_wifi_only")!!
-            prefWifiOnly.isEnabled = !settings.has(AccountSettings.KEY_WIFI_ONLY)
-            prefWifiOnly.isChecked = accountSettings.getSyncWifiOnly()
-            prefWifiOnly.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, wifiOnly ->
-                accountSettings.setSyncWiFiOnly(wifiOnly as Boolean)
-                reload()
-                false
-            }
-
-            val prefWifiOnlySSIDs = findPreference<EditTextPreference>("sync_wifi_only_ssids")!!
-            val onlySSIDs = accountSettings.getSyncWifiOnlySSIDs()?.joinToString(", ")
-            prefWifiOnlySSIDs.text = onlySSIDs
-            if (onlySSIDs != null)
-                prefWifiOnlySSIDs.summary = getString(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1)
-                    R.string.settings_sync_wifi_only_ssids_on_location_services else R.string.settings_sync_wifi_only_ssids_on, onlySSIDs)
-            else
-                prefWifiOnlySSIDs.setSummary(R.string.settings_sync_wifi_only_ssids_off)
-            prefWifiOnlySSIDs.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                accountSettings.setSyncWifiOnlySSIDs((newValue as String).split(',').mapNotNull { StringUtils.trimToNull(it) }.distinct())
-                reload()
-                false
-            }
-
-            // Android 8.1+: getting the WiFi name requires location permission (and active location services)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 && accountSettings.getSyncWifiOnly() && onlySSIDs != null) {
-                val requiredPermissions = mutableListOf(Manifest.permission.ACCESS_FINE_LOCATION)
-
-                // Android 10+: getting the Wifi name in the background (while syncing) requires extra permission
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                    requiredPermissions += Manifest.permission.ACCESS_BACKGROUND_LOCATION
-
-                if (requiredPermissions.any { ContextCompat.checkSelfPermission(requireActivity(), it) != PackageManager.PERMISSION_GRANTED })
-                    requestPermissions(requiredPermissions.toTypedArray(), 0)
-            }
-
-            // preference group: CardDAV
-            findPreference<ListPreference>("contact_group_method")!!.let {
-                if (syncIntervalContacts != null) {
-                    it.isVisible = true
-                    it.value = accountSettings.getGroupMethod().name
-                    it.summary = it.entry
-                    if (settings.has(AccountSettings.KEY_CONTACT_GROUP_METHOD))
-                        it.isEnabled = false
-                    else {
-                        it.isEnabled = true
-                        it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, groupMethod ->
-                            // change group method
-                            accountSettings.setGroupMethod(GroupMethod.valueOf(groupMethod as String))
-                            resyncContacts()
-
-                            reload()
+            model.credentials.observe(this, Observer { credentials ->
+                when (credentials.type) {
+                    Credentials.Type.UsernamePassword -> {
+                        prefUserName.isVisible = true
+                        prefUserName.summary = credentials.userName
+                        prefUserName.text = credentials.userName
+                        prefUserName.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                            model.updateCredentials(Credentials(newValue as String, credentials.password))
                             false
                         }
+
+                        prefPassword.isVisible = true
+                        prefPassword.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                            model.updateCredentials(Credentials(credentials.userName, newValue as String))
+                            false
+                        }
+
+                        prefCertAlias.isVisible = false
                     }
-                } else
-                    it.isVisible = false
-            }
+                    Credentials.Type.ClientCertificate -> {
+                        prefUserName.isVisible = false
+                        prefPassword.isVisible = false
+
+                        prefCertAlias.isVisible = true
+                        prefCertAlias.summary = credentials.certificateAlias
+                        prefCertAlias.setOnPreferenceClickListener {
+                            KeyChain.choosePrivateKeyAlias(requireActivity(), { alias ->
+                                model.updateCredentials(Credentials(certificateAlias = alias))
+                            }, null, null, null, -1, credentials.certificateAlias)
+                            true
+                        }
+                    }
+                }
+            })
 
             // preference group: CalDAV
-            findPreference<EditTextPreference>("time_range_past_days")!!.let {
-                if (syncIntervalCalendars != null) {
-                    it.isVisible = true
-                    val pastDays = accountSettings.getTimeRangePastDays()
-                    if (pastDays != null) {
-                        it.text = pastDays.toString()
-                        it.summary = resources.getQuantityString(R.plurals.settings_sync_time_range_past_days, pastDays, pastDays)
-                    } else {
-                        it.text = null
-                        it.setSummary(R.string.settings_sync_time_range_past_none)
-                    }
-                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                        val days = try {
-                            (newValue as String).toInt()
-                        } catch(e: NumberFormatException) {
-                            -1
+            findPreference<EditTextPreference>(getString(R.string.settings_sync_time_range_past_key))!!.let {
+                model.timeRangePastDays.observe(this, Observer { pastDays ->
+                    if (model.syncIntervalCalendars.value != null) {
+                        it.isVisible = true
+                        if (pastDays != null) {
+                            it.text = pastDays.toString()
+                            it.summary = resources.getQuantityString(R.plurals.settings_sync_time_range_past_days, pastDays, pastDays)
+                        } else {
+                            it.text = null
+                            it.setSummary(R.string.settings_sync_time_range_past_none)
                         }
-                        accountSettings.setTimeRangePastDays(if (days < 0) null else days)
-                        resyncCalendars(false)
-
-                        reload()
-                        false
-                    }
-                } else
-                    it.isVisible = false
+                        it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                            val days = try {
+                                (newValue as String).toInt()
+                            } catch(e: NumberFormatException) {
+                                -1
+                            }
+                            model.updateTimeRangePastDays(if (days < 0) null else days)
+                            false
+                        }
+                    } else
+                        it.isVisible = false
+                })
             }
 
             findPreference<EditTextPreference>(getString(R.string.settings_key_default_alarm))!!.let {
-                val defaultAlarm = accountSettings.getDefaultAlarm()
-                if (defaultAlarm != null) {
-                    it.text = defaultAlarm.toString()
-                    it.summary = resources.getQuantityString(R.plurals.settings_default_alarm_on, defaultAlarm, defaultAlarm)
-                } else {
-                    it.text = null
-                    it.summary = getString(R.string.settings_default_alarm_off)
-                }
-                it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                    val minBefore = try {
-                        (newValue as String).toInt()
-                    } catch (e: java.lang.NumberFormatException) {
-                        null
+                model.defaultAlarmMinBefore.observe(this, Observer { minBefore ->
+                    if (minBefore != null) {
+                        it.text = minBefore.toString()
+                        it.summary = resources.getQuantityString(R.plurals.settings_default_alarm_on, minBefore, minBefore)
+                    } else {
+                        it.text = null
+                        it.summary = getString(R.string.settings_default_alarm_off)
                     }
-                    accountSettings.setDefaultAlarm(minBefore)
-                    resyncCalendars()
-
-                    reload()
-                    false
-                }
-            }
-
-            findPreference<SwitchPreferenceCompat>("manage_calendar_colors")!!.let {
-                if (syncIntervalCalendars != null || syncIntervalTasks != null) {
-                    it.isVisible = true
-                    it.isEnabled = !settings.has(AccountSettings.KEY_MANAGE_CALENDAR_COLORS)
-                    it.isChecked = accountSettings.getManageCalendarColors()
                     it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                        accountSettings.setManageCalendarColors(newValue as Boolean)
-                        reload()
+                        val minBefore = try {
+                            (newValue as String).toInt()
+                        } catch (e: java.lang.NumberFormatException) {
+                            null
+                        }
+                        model.updateDefaultAlarm(minBefore)
                         false
                     }
-                } else
-                    it.isVisible = false
+                })
             }
 
-            findPreference<SwitchPreferenceCompat>("event_colors")!!.let {
-                if (syncIntervalCalendars != null) {
-                    it.isVisible = true
-                    it.isEnabled = !settings.has(AccountSettings.KEY_EVENT_COLORS)
-                    it.isChecked = accountSettings.getEventColors()
-                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                        accountSettings.setEventColors(newValue as Boolean)
-                        resyncCalendars()
+            findPreference<SwitchPreferenceCompat>(getString(R.string.settings_manage_calendar_colors_key))!!.let {
+                model.manageCalendarColors.observe(this, Observer { manageCalendarColors ->
+                    if (model.syncIntervalCalendars.value != null || model.syncIntervalTasks.value != null) {
+                        it.isVisible = true
+                        it.isEnabled = !settings.has(AccountSettings.KEY_MANAGE_CALENDAR_COLORS)
+                        it.isChecked = manageCalendarColors
+                        it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                            model.updateManageCalendarColors(newValue as Boolean)
+                            false
+                        }
+                    } else
+                        it.isVisible = false
+                })
+            }
 
-                        reload()
-                        false
-                    }
-                } else
+            findPreference<SwitchPreferenceCompat>(getString(R.string.settings_event_colors_key))!!.let {
+                model.eventColors.observe(this, Observer { eventColors ->
+                    if (model.syncIntervalCalendars.value != null) {
+                        it.isVisible = true
+                        it.isEnabled = !settings.has(AccountSettings.KEY_EVENT_COLORS)
+                        it.isChecked = eventColors
+                        it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                            model.updateEventColors(newValue as Boolean)
+                            false
+                        }
+                    } else
+                        it.isVisible = false
+                })
+            }
+
+            // preference group: CardDAV
+            findPreference<ListPreference>(getString(R.string.settings_contact_group_method_key))!!.let {
+                model.contactGroupMethod.observe(this, Observer { groupMethod ->
+                    if (model.syncIntervalContacts.value != null) {
+                        it.isVisible = true
+                        it.value = groupMethod.name
+                        it.summary = it.entry
+                        if (settings.has(AccountSettings.KEY_CONTACT_GROUP_METHOD))
+                            it.isEnabled = false
+                        else {
+                            it.isEnabled = true
+                            it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, groupMethod ->
+                                model.updateContactGroupMethod(GroupMethod.valueOf(groupMethod as String))
+                                false
+                            }
+                        }
+                    } else
                     it.isVisible = false
+                })
             }
         }
 
@@ -373,8 +354,7 @@ class SettingsActivity: AppCompatActivity() {
 
             if (grantResults.any { it == PackageManager.PERMISSION_DENIED }) {
                 // location permission denied, reset SSID restriction
-                AccountSettings(requireActivity(), account).setSyncWifiOnlySSIDs(null)
-                reload()
+                model.updateSyncWifiOnlySSIDs(null)
 
                 MaterialAlertDialogBuilder(requireActivity())
                         .setIcon(R.drawable.ic_network_wifi_dark)
@@ -392,25 +372,190 @@ class SettingsActivity: AppCompatActivity() {
             }
         }
 
+    }
 
-        private fun resyncContacts() {
-            // resync all contacts
-            val args = Bundle(1)
-            args.putBoolean(SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC, true)
-            ContentResolver.requestSync(account, getString(R.string.address_books_authority), args)
+
+    class Model(app: Application): AndroidViewModel(app), SyncStatusObserver, Settings.OnChangeListener {
+
+        private var account: Account? = null
+        private var accountSettings: AccountSettings? = null
+
+        private val settings = Settings.getInstance(app)
+        private var statusChangeListener: Any? = null
+
+        // settings
+        val syncIntervalContacts = MutableLiveData<Long>()
+        val syncIntervalCalendars = MutableLiveData<Long>()
+        val syncIntervalTasks = MutableLiveData<Long>()
+        val syncWifiOnly = MutableLiveData<Boolean>()
+        val syncWifiOnlySSIDs = MutableLiveData<List<String>>()
+
+        val credentials = MutableLiveData<Credentials>()
+
+        val timeRangePastDays = MutableLiveData<Int>()
+        val defaultAlarmMinBefore = MutableLiveData<Int>()
+        val manageCalendarColors = MutableLiveData<Boolean>()
+        val eventColors = MutableLiveData<Boolean>()
+
+        val contactGroupMethod = MutableLiveData<GroupMethod>()
+
+        // derived values
+        val askForPermissions = object: MediatorLiveData<List<String>>() {
+            init {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                    addSource(syncWifiOnly) { calculate() }
+                    addSource(syncWifiOnlySSIDs) { calculate() }
+                }
+            }
+            private fun calculate() {
+                val wifiOnly = syncWifiOnly.value ?: return
+                val wifiOnlySSIDs = syncWifiOnlySSIDs.value ?: return
+
+                val permissions = mutableListOf<String>()
+                if (wifiOnly && wifiOnlySSIDs.isNotEmpty()) {
+                    // Android 8.1+: getting the WiFi name requires location permission (and active location services)
+                    permissions += Manifest.permission.ACCESS_FINE_LOCATION
+
+                    // Android 10+: getting the Wifi name in the background (= while syncing) requires extra permission
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                        permissions += Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                }
+
+                if (permissions != value)
+                    postValue(permissions)
+            }
+        }
+
+
+        fun initialize(account: Account) {
+            if (this.account != null)
+                // already initialized
+                return
+
+            this.account = account
+            accountSettings = AccountSettings(getApplication(), account)
+
+            settings.addOnChangeListener(this)
+            statusChangeListener = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this)
+
+            reload()
+        }
+
+        override fun onCleared() {
+            super.onCleared()
+
+            statusChangeListener?.let {
+                ContentResolver.removeStatusChangeListener(it)
+            }
+            settings.removeOnChangeListener(this)
+        }
+
+        override fun onStatusChanged(which: Int) {
+            reload()
+        }
+
+        override fun onSettingsChanged() {
+            reload()
+        }
+
+        private fun reload() {
+            val accountSettings = accountSettings ?: return
+            val context = getApplication<Application>()
+
+            syncIntervalContacts.postValue(accountSettings.getSyncInterval(context.getString(R.string.address_books_authority)))
+            syncIntervalCalendars.postValue(accountSettings.getSyncInterval(CalendarContract.AUTHORITY))
+            syncIntervalTasks.postValue(accountSettings.getSyncInterval(TaskProvider.ProviderName.OpenTasks.authority))
+            syncWifiOnly.postValue(accountSettings.getSyncWifiOnly())
+            syncWifiOnlySSIDs.postValue(accountSettings.getSyncWifiOnlySSIDs())
+
+            credentials.postValue(accountSettings.credentials())
+
+            timeRangePastDays.postValue(accountSettings.getTimeRangePastDays())
+            defaultAlarmMinBefore.postValue(accountSettings.getDefaultAlarm())
+            manageCalendarColors.postValue(accountSettings.getManageCalendarColors())
+            eventColors.postValue(accountSettings.getEventColors())
+
+            contactGroupMethod.postValue(accountSettings.getGroupMethod())
+        }
+
+
+        fun updateSyncInterval(authority: String, syncInterval: Long) {
+            accountSettings?.setSyncInterval(authority, syncInterval)
+            reload()
+        }
+
+        fun updateSyncWifiOnly(wifiOnly: Boolean) {
+            accountSettings?.setSyncWiFiOnly(wifiOnly)
+            reload()
+        }
+
+        fun updateSyncWifiOnlySSIDs(ssids: List<String>?) {
+            accountSettings?.setSyncWifiOnlySSIDs(ssids)
+            reload()
+        }
+
+        fun updateCredentials(credentials: Credentials) {
+            accountSettings?.credentials(credentials)
+            reload()
+        }
+
+        fun updateTimeRangePastDays(days: Int?) {
+            accountSettings?.setTimeRangePastDays(days)
+            reload()
+
+            resyncCalendars(fullResync = false, tasks = false)
+        }
+
+        fun updateDefaultAlarm(minBefore: Int?) {
+            accountSettings?.setDefaultAlarm(minBefore)
+            reload()
+
+            resyncCalendars(fullResync = true, tasks = false)
+        }
+
+        fun updateManageCalendarColors(manage: Boolean) {
+            accountSettings?.setManageCalendarColors(manage)
+            reload()
+
+            resyncCalendars(fullResync = false, tasks = true)
+        }
+
+        fun updateEventColors(manageColors: Boolean) {
+            accountSettings?.setEventColors(manageColors)
+            reload()
+
+            resyncCalendars(fullResync = true, tasks = false)
+        }
+
+        fun updateContactGroupMethod(groupMethod: GroupMethod) {
+            accountSettings?.setGroupMethod(groupMethod)
+            reload()
+
+            resync(getApplication<Application>().getString(R.string.address_books_authority), fullResync = true)
         }
 
         /**
          * Initiates calendar re-synchronization.
+         *
          * @param fullResync whether sync shall download all events again
          * (_true_: sets [SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC],
          * _false_: sets [ContentResolver.SYNC_EXTRAS_MANUAL])
+         * @param tasks whether tasks shall be synchronized, too (false: only events, true: events and tasks)
          */
-        private fun resyncCalendars(fullResync: Boolean = true) {
+        private fun resyncCalendars(fullResync: Boolean, tasks: Boolean) {
+            resync(CalendarContract.AUTHORITY, fullResync)
+            if (tasks)
+                resync(TaskProvider.ProviderName.OpenTasks.authority, fullResync)
+        }
+
+        private fun resync(authority: String, fullResync: Boolean) {
             val args = Bundle(1)
-            args.putBoolean(if (fullResync) SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC
-                    else ContentResolver.SYNC_EXTRAS_MANUAL, true)
-            ContentResolver.requestSync(account, CalendarContract.AUTHORITY, args)
+            args.putBoolean(if (fullResync)
+                    SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC
+                else
+                    SyncAdapterService.SYNC_EXTRAS_RESYNC, true)
+
+            ContentResolver.requestSync(account, authority, args)
         }
 
     }

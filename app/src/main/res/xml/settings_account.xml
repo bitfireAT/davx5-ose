@@ -14,7 +14,7 @@
         android:title="@string/settings_sync">
 
         <ListPreference
-            android:key="sync_interval_contacts"
+            android:key="@string/settings_sync_interval_contacts_key"
             android:persistent="false"
             android:title="@string/settings_sync_interval_contacts"
             android:icon="@drawable/ic_contacts_dark"
@@ -22,7 +22,7 @@
             android:entryValues="@array/settings_sync_interval_seconds"/>
 
         <ListPreference
-            android:key="sync_interval_calendars"
+            android:key="@string/settings_sync_interval_calendars_key"
             android:persistent="false"
             android:title="@string/settings_sync_interval_calendars"
             android:icon="@drawable/ic_today_dark"
@@ -30,7 +30,7 @@
             android:entryValues="@array/settings_sync_interval_seconds"/>
 
         <ListPreference
-            android:key="sync_interval_tasks"
+            android:key="@string/settings_sync_interval_tasks_key"
             android:persistent="false"
             android:title="@string/settings_sync_interval_tasks"
             android:icon="@drawable/ic_playlist_add_check_dark"
@@ -38,7 +38,7 @@
             android:entryValues="@array/settings_sync_interval_seconds"/>
 
         <SwitchPreferenceCompat
-            android:key="sync_wifi_only"
+            android:key="@string/settings_sync_wifi_only_key"
             android:persistent="false"
             android:title="@string/settings_sync_wifi_only"
             android:icon="@drawable/ic_network_wifi_dark"
@@ -46,7 +46,7 @@
             android:summaryOff="@string/settings_sync_wifi_only_off" />
 
         <EditTextPreference
-            android:key="sync_wifi_only_ssids"
+            android:key="@string/settings_sync_wifi_only_ssids_key"
             android:dependency="sync_wifi_only"
             android:persistent="false"
             android:title="@string/settings_sync_wifi_only_ssids"
@@ -57,13 +57,13 @@
     <PreferenceCategory android:title="@string/settings_authentication">
 
         <EditTextPreference
-            android:key="username"
+            android:key="@string/settings_username_key"
             android:title="@string/settings_username"
             android:persistent="false"
             android:dialogTitle="@string/settings_enter_username"/>
 
         <EditTextPreference
-            android:key="password"
+            android:key="@string/settings_password_key"
             android:title="@string/settings_password"
             android:persistent="false"
             android:inputType="textPassword"
@@ -71,7 +71,7 @@
             android:dialogTitle="@string/settings_enter_password"/>
 
         <Preference
-            android:key="certificate_alias"
+            android:key="@string/settings_certificate_alias_key"
             android:title="@string/settings_certificate_alias"
             android:persistent="false"/>
 
@@ -82,7 +82,7 @@
         android:title="@string/settings_caldav">
 
         <EditTextPreference
-            android:key="time_range_past_days"
+            android:key="@string/settings_sync_time_range_past_key"
             android:persistent="false"
             android:title="@string/settings_sync_time_range_past"
             android:icon="@drawable/ic_date_range_dark"
@@ -97,14 +97,14 @@
             android:inputType="number"/>
 
         <SwitchPreferenceCompat
-            android:key="manage_calendar_colors"
+            android:key="@string/settings_manage_calendar_colors_key"
             android:persistent="false"
             android:title="@string/settings_manage_calendar_colors"
             android:summaryOn="@string/settings_manage_calendar_colors_on"
             android:summaryOff="@string/settings_manage_calendar_colors_off"/>
 
         <SwitchPreferenceCompat
-            android:key="event_colors"
+            android:key="@string/settings_event_colors_key"
             android:persistent="false"
             android:title="@string/settings_event_colors"
             android:summaryOn="@string/settings_event_colors_on"
@@ -117,7 +117,7 @@
         android:title="@string/settings_carddav">
 
         <ListPreference
-            android:key="contact_group_method"
+            android:key="@string/settings_contact_group_method_key"
             android:persistent="false"
             android:title="@string/settings_contact_group_method"
             android:icon="@drawable/ic_group_dark"

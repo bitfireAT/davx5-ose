@@ -10,7 +10,10 @@ package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
 import android.app.PendingIntent
-import android.content.*
+import android.content.ContentUris
+import android.content.Context
+import android.content.Intent
+import android.content.SyncResult
 import android.net.Uri
 import android.os.Bundle
 import android.os.RemoteException
@@ -29,9 +32,9 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.SyncState
 import at.bitfire.davdroid.resource.*
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.account.SettingsActivity
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.account.SettingsActivity
 import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.ContactsStorageException
@@ -130,9 +133,11 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             if (extras.containsKey(SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC)) {
                 Logger.log.info("Forcing re-synchronization of all entries")
 
-                // forget sync state of collection
+                // forget sync state of collection (→ initial sync in case of SyncAlgorithm.COLLECTION_SYNC)
                 localCollection.lastSyncState = null
-                // forget sync state of members
+                remoteSyncState = null
+
+                // forget sync state of members (→ download all members again and update them locally)
                 localCollection.forgetETags()
             }
 
@@ -162,9 +167,9 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                         localCollection.lastSyncState = remoteSyncState
                     }
                     SyncAlgorithm.COLLECTION_SYNC -> {
-                        var initialSync = false
-
                         var syncState = localCollection.lastSyncState?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }
+
+                        var initialSync = false
                         if (syncState == null) {
                             Logger.log.info("Starting initial sync")
                             initialSync = true
@@ -381,19 +386,18 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * [uploadDirty] were true), a sync is always required and this method
      * should *not* be evaluated.
      *
+     * Will return _true_ if [SyncAdapterService.SYNC_EXTRAS_RESYNC] and/or
+     * [SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC] is set in [extras].
+     *
      * @param state remote sync state to compare local sync state with
      *
      * @return whether data has been changed on the server, i.e. whether running the
      * sync algorithm is required
      */
     protected open fun syncRequired(state: SyncState?): Boolean {
-        if (extras.containsKey(SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC))
+        if (extras.containsKey(SyncAdapterService.SYNC_EXTRAS_RESYNC) ||
+            extras.containsKey(SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC))
             return true
-
-        if (syncAlgorithm() == SyncAlgorithm.PROPFIND_REPORT && extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL)) {
-            Logger.log.info("Manual sync in PROPFIND/REPORT mode, forcing sync")
-            return true
-        }
 
         val localState = localCollection.lastSyncState
         Logger.log.info("Local sync state = $localState, remote sync state = $state")
