@@ -236,13 +236,13 @@
     </plurals>
     <string name="settings_sync_time_range_past_message">Events which are more than this number of days in the past will be ignored (may be 0). Leave blank to synchronize all events.</string>
     <string name="settings_key_default_alarm" translatable="false">default_alarm</string>
-    <string name="settings_default_alarm">Default alarm</string>
+    <string name="settings_default_alarm">Default reminder</string>
     <plurals name="settings_default_alarm_on">
-        <item quantity="one">Default alarm one minute before event</item>
-        <item quantity="other">Default alarm %d minutes before event</item>
+        <item quantity="one">Default reminder one minute before event</item>
+        <item quantity="other">Default reminder %d minutes before event</item>
     </plurals>
-    <string name="settings_default_alarm_off">No default alarms are created</string>
-    <string name="settings_default_alarm_message">If a default alarm shall be created for events/tasks without alarm: the desired number of minutes before the event/task. Leave blank to disable default alarms.</string>
+    <string name="settings_default_alarm_off">No default reminders are created</string>
+    <string name="settings_default_alarm_message">If a default reminder shall be created for events without reminder: the desired number of minutes before the event. Leave blank to disable default reminders.</string>
     <string name="settings_manage_calendar_colors">Manage calendar colors</string>
     <string name="settings_manage_calendar_colors_on">Calendar colors are managed by DAVx⁵</string>
     <string name="settings_manage_calendar_colors_off">Calendar colors are not set by DAVx⁵</string>
