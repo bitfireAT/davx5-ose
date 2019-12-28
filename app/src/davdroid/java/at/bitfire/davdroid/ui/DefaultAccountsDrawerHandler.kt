@@ -55,6 +55,9 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
                 if (BuildConfig.FLAVOR != App.FLAVOR_GOOGLE_PLAY)
                     UiUtils.launchUri(activity, App.homepageUrl(activity)
                             .buildUpon().appendPath("donate").build())
+            R.id.nav_privacy ->
+                UiUtils.launchUri(activity, App.homepageUrl(activity)
+                        .buildUpon().appendPath("privacy").build())
             else ->
                 return false
         }
