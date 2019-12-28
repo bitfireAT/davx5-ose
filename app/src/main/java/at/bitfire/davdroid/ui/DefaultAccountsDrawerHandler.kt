@@ -14,6 +14,7 @@ import android.content.Intent
 import android.net.Uri
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
@@ -37,27 +38,30 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
             R.id.nav_app_settings ->
                 activity.startActivity(Intent(activity, AppSettingsActivity::class.java))
             R.id.nav_beta_feedback ->
-                UiUtils.launchUri(activity, Uri.parse(BETA_FEEDBACK_URI), Intent.ACTION_SENDTO)
+                if (!UiUtils.launchUri(activity, Uri.parse(BETA_FEEDBACK_URI), Intent.ACTION_SENDTO, false))
+                    Toast.makeText(activity, R.string.install_email_client, Toast.LENGTH_LONG).show()
             R.id.nav_twitter ->
-                UiUtils.launchUri(activity, Uri.parse("https://twitter.com/" + activity.getString(R.string.twitter_handle)))
+                UiUtils.launchUri(activity,
+                        Uri.parse("https://twitter.com/" + activity.getString(R.string.twitter_handle)))
             R.id.nav_website ->
-                UiUtils.launchUri(activity, App.homepageUrl(activity))
+                UiUtils.launchUri(activity,
+                        App.homepageUrl(activity))
             R.id.nav_manual ->
-                UiUtils.launchUri(activity, App.homepageUrl(activity)
-                        .buildUpon().appendPath("manual").build())
+                UiUtils.launchUri(activity,
+                        App.homepageUrl(activity).buildUpon().appendPath("manual").build())
             R.id.nav_faq ->
-                UiUtils.launchUri(activity, App.homepageUrl(activity)
-                        .buildUpon().appendPath("faq").build())
+                UiUtils.launchUri(activity,
+                        App.homepageUrl(activity).buildUpon().appendPath("faq").build())
             R.id.nav_forums ->
-                UiUtils.launchUri(activity, App.homepageUrl(activity)
-                        .buildUpon().appendPath("forums").build())
+                UiUtils.launchUri(activity,
+                        App.homepageUrl(activity).buildUpon().appendPath("forums").build())
             R.id.nav_donate ->
                 //if (BuildConfig.FLAVOR != App.FLAVOR_GOOGLE_PLAY)
-                    UiUtils.launchUri(activity, App.homepageUrl(activity)
-                            .buildUpon().appendPath("donate").build())
+                    UiUtils.launchUri(activity,
+                            App.homepageUrl(activity).buildUpon().appendPath("donate").build())
             R.id.nav_privacy ->
-                UiUtils.launchUri(activity, App.homepageUrl(activity)
-                        .buildUpon().appendPath("privacy").build())
+                UiUtils.launchUri(activity,
+                        App.homepageUrl(activity).buildUpon().appendPath("privacy").build())
             else ->
                 return false
         }

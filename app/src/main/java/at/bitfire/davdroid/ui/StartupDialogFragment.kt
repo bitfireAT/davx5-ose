@@ -132,7 +132,7 @@ class StartupDialogFragment: DialogFragment() {
                         .setTitle(R.string.startup_opentasks_not_installed)
                         .setMessage(builder.toString())
                         .setPositiveButton(R.string.startup_opentasks_not_installed_install) { _, _ ->
-                            if (!UiUtils.launchUri(requireActivity(), Uri.parse("market://details?id=org.dmfs.tasks")))
+                            if (!UiUtils.launchUri(requireActivity(), Uri.parse("market://details?id=org.dmfs.tasks"), toastInstallBrowser = false))
                                 Logger.log.warning("No market app available, can't install OpenTasks")
                         }
                         .setNeutralButton(R.string.startup_not_now) { _, _ -> }

@@ -71,9 +71,8 @@ class LoginActivity: AppCompatActivity() {
     }
 
     fun showHelp(item: MenuItem) {
-        UiUtils.launchUri(this, App.homepageUrl(this).buildUpon()
-                .appendPath("tested-with")
-                .build())
+        UiUtils.launchUri(this,
+                App.homepageUrl(this).buildUpon().appendPath("tested-with").build())
     }
 
 }
