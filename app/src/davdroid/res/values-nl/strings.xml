@@ -149,13 +149,6 @@
   <string name="login_view_logs">Toon details</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Instellingen: %s</string>
-  <string name="settings_authentication">Authenticatie</string>
-  <string name="settings_username">Gebruikersnaam</string>
-  <string name="settings_enter_username">Gebruikersnaam invoeren:</string>
-  <string name="settings_password">Wachtwoord</string>
-  <string name="settings_password_summary">Gebruik het zelfde wachtwoord als op de server.</string>
-  <string name="settings_enter_password">Wachtwoord invoeren:</string>
-  <string name="settings_certificate_alias">Client certificaat alias </string>
   <string name="settings_sync">Synchronisatie</string>
   <string name="settings_sync_interval_contacts">Contacten verversen</string>
   <string name="settings_sync_summary_manually">Alleen handmatig</string>
@@ -181,14 +174,13 @@
   <string name="settings_sync_wifi_only_ssids_message">Comma gescheiden namen (SSIDs) van toegestane WIFI netwerken (laat blank voor alle WIFI Netwrken)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">Om WIFI namen te lezen, zijn de locatie toestemming en permanent toegestane locatie services vereist.</string>
   <string name="settings_more_info_faq">Meer informatie (vaak gestelde vragen)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Contact groep methode</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>Groepen zijn apparte VCards</item>
-    <item>Groepen zijn per-contact categories</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">Verander de groepering methode</string>
-  <string name="settings_contact_group_method_change_reload_contacts">Dit vereist het herladen van alle contacten. Onopgeslagen locale veranderingen worden dismissed.</string>
+  <string name="settings_authentication">Authenticatie</string>
+  <string name="settings_username">Gebruikersnaam</string>
+  <string name="settings_enter_username">Gebruikersnaam invoeren:</string>
+  <string name="settings_password">Wachtwoord</string>
+  <string name="settings_password_summary">Gebruik het zelfde wachtwoord als op de server.</string>
+  <string name="settings_enter_password">Wachtwoord invoeren:</string>
+  <string name="settings_certificate_alias">Client certificaat alias </string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tijdslimiet verleden afspraken</string>
   <string name="settings_sync_time_range_past_none">Alle afspraken worden gesynchronizeerd</string>
@@ -203,7 +195,9 @@
   <string name="settings_event_colors">Evenement kleur ondersteuning</string>
   <string name="settings_event_colors_on">Evenement kleuren synchroniseren</string>
   <string name="settings_event_colors_off">Evenement kleuren niet synchroniseren</string>
-  <string name="settings_event_colors_off_confirm">Het uitzetten van event colors kan er voor zorgen dat reeds gesynchroniseerde event colors verwijdered worden.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Contact groep methode</string>
+  <string name="settings_contact_group_method_change">Verander de groepering methode</string>
   <!--collection management-->
   <string name="create_addressbook">Maak adresboek</string>
   <string name="create_addressbook_display_name_hint">Mijn adresboek</string>

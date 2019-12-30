@@ -150,13 +150,6 @@
   <string name="login_view_logs">Mostrar detalles</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Axustes: %s</string>
-  <string name="settings_authentication">Autenticación</string>
-  <string name="settings_username">Nome de usuaria</string>
-  <string name="settings_enter_username">Introduza nome de usuaria:</string>
-  <string name="settings_password">Contrasinal</string>
-  <string name="settings_password_summary">Actualizar o contrasinal de acordo ao seu servidor.</string>
-  <string name="settings_enter_password">Introducir contrasinal:</string>
-  <string name="settings_certificate_alias">Alcume do certificado cliente</string>
   <string name="settings_sync">Sincronización</string>
   <string name="settings_sync_interval_contacts">Intervalo de sincr. contactos</string>
   <string name="settings_sync_summary_manually">Só manual</string>
@@ -182,14 +175,13 @@
   <string name="settings_sync_wifi_only_ssids_message">Nome das rede WiFi permitidas (SSIDs) separados por vírgulas (en branco para todas)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">Para ler os nomes WiFi,  requírese o permiso de Localización e que os servizos de localización estén sempre activados.</string>
   <string name="settings_more_info_faq">Máis información (PMF)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Método para agrupar contacto</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>Grupos son VCards separados</item>
-    <item>Grupos son categorías por contacto</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">Cambiar método para agrupar</string>
-  <string name="settings_contact_group_method_change_reload_contacts">Esto precisa recargar todos os contactos. Perderanse os cambios locais non gardados.</string>
+  <string name="settings_authentication">Autenticación</string>
+  <string name="settings_username">Nome de usuaria</string>
+  <string name="settings_enter_username">Introduza nome de usuaria:</string>
+  <string name="settings_password">Contrasinal</string>
+  <string name="settings_password_summary">Actualizar o contrasinal de acordo ao seu servidor.</string>
+  <string name="settings_enter_password">Introducir contrasinal:</string>
+  <string name="settings_certificate_alias">Alcume do certificado cliente</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Límite temporal para eventos pasados</string>
   <string name="settings_sync_time_range_past_none">Sincronizaranse todos os eventos</string>
@@ -204,7 +196,9 @@
   <string name="settings_event_colors">Soporte para cor de eventos</string>
   <string name="settings_event_colors_on">Sincr. cores de eventos</string>
   <string name="settings_event_colors_off">Non sincr. cores de eventos</string>
-  <string name="settings_event_colors_off_confirm">Apagando as cores nos eventos podería eliminar as cores de eventos xa sincronizados.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Método para agrupar contacto</string>
+  <string name="settings_contact_group_method_change">Cambiar método para agrupar</string>
   <!--collection management-->
   <string name="create_addressbook">Crear libreta de enderezos</string>
   <string name="create_addressbook_display_name_hint">A miña libreta de enderezos</string>

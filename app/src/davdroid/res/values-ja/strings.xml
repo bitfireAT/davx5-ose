@@ -150,13 +150,6 @@
   <string name="login_view_logs">詳細を表示</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">設定: %s</string>
-  <string name="settings_authentication">認証</string>
-  <string name="settings_username">ユーザー名</string>
-  <string name="settings_enter_username">ユーザー名を入力:</string>
-  <string name="settings_password">パスワード</string>
-  <string name="settings_password_summary">ご利用のサーバーに従ってパスワードを更新します。</string>
-  <string name="settings_enter_password">パスワードを入力:</string>
-  <string name="settings_certificate_alias">クライアント証明書の別名</string>
   <string name="settings_sync">同期</string>
   <string name="settings_sync_interval_contacts">連絡先同期間隔</string>
   <string name="settings_sync_summary_manually">手動のみ</string>
@@ -182,14 +175,13 @@
   <string name="settings_sync_wifi_only_ssids_message">利用可能な WiFi ネットワークのカンマ区切りの名前 (SSID) (空白にするとすべて)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">WiFi 名を読み取るため、位置情報のアクセス許可と恒久的に有効化された位置情報サービスが必要です。</string>
   <string name="settings_more_info_faq">詳細情報 (FAQ)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">連絡先グループ方法</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>グループは個別の VCards</item>
-    <item>グループは連絡先カテゴリーごと</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">グループ方法を変更</string>
-  <string name="settings_contact_group_method_change_reload_contacts">これはすべての連絡先を再読み込みする必要があります。 保存していないローカルの変更は破棄されます。</string>
+  <string name="settings_authentication">認証</string>
+  <string name="settings_username">ユーザー名</string>
+  <string name="settings_enter_username">ユーザー名を入力:</string>
+  <string name="settings_password">パスワード</string>
+  <string name="settings_password_summary">ご利用のサーバーに従ってパスワードを更新します。</string>
+  <string name="settings_enter_password">パスワードを入力:</string>
+  <string name="settings_certificate_alias">クライアント証明書の別名</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">過去イベントの時間限度</string>
   <string name="settings_sync_time_range_past_none">すべてのイベントが同期されます</string>
@@ -203,7 +195,9 @@
   <string name="settings_event_colors">イベントカラーサポート</string>
   <string name="settings_event_colors_on">イベントカラーを同期</string>
   <string name="settings_event_colors_off">イベントカラーを同期しない</string>
-  <string name="settings_event_colors_off_confirm">イベントカラーをオフにすると、すでに同期しているイベントカラーが削除されることがあります。</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">連絡先グループ方法</string>
+  <string name="settings_contact_group_method_change">グループ方法を変更</string>
   <!--collection management-->
   <string name="create_addressbook">アドレス帳を作成</string>
   <string name="create_addressbook_display_name_hint">マイ アドレス帳</string>

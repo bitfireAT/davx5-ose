@@ -78,12 +78,6 @@
   <string name="login_no_caldav_carddav">CalDAV veya CardDAV servisi bulunamadı.</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Ayarlar: %s</string>
-  <string name="settings_authentication">Doğrulama</string>
-  <string name="settings_username">Kullanıcı adı</string>
-  <string name="settings_enter_username">Kullanıcı adı girin:</string>
-  <string name="settings_password">Parola</string>
-  <string name="settings_password_summary">Parolayı sunucunuza göre güncelleyin.</string>
-  <string name="settings_enter_password">Parola girin:</string>
   <string name="settings_sync">Senkronizasyon</string>
   <string name="settings_sync_interval_contacts">Kişiler senk. aralığı</string>
   <string name="settings_sync_summary_manually">Sadece elle</string>
@@ -93,6 +87,12 @@
   <string name="settings_sync_wifi_only">Sadece WiFi üzerinden senkronize et</string>
   <string name="settings_sync_wifi_only_on">Senkronizasyon WiFi bağlantıları ile kısıtlıdır</string>
   <string name="settings_sync_wifi_only_off">Bağlantı tipi göz önünde bulundurulmaz</string>
+  <string name="settings_authentication">Doğrulama</string>
+  <string name="settings_username">Kullanıcı adı</string>
+  <string name="settings_enter_username">Kullanıcı adı girin:</string>
+  <string name="settings_password">Parola</string>
+  <string name="settings_password_summary">Parolayı sunucunuza göre güncelleyin.</string>
+  <string name="settings_enter_password">Parola girin:</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Geçmiş olay zaman sınırı</string>
   <string name="settings_sync_time_range_past_none">Tüm olaylar senkronize edilecek</string>

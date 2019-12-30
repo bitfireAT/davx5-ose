@@ -149,13 +149,6 @@
   <string name="login_view_logs">Pokoż informacyje</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Sztelōnki: %s</string>
-  <string name="settings_authentication">Autoryzowanie</string>
-  <string name="settings_username">Miano używocza</string>
-  <string name="settings_enter_username">Wpisz miano używocza:</string>
-  <string name="settings_password">Hasło</string>
-  <string name="settings_password_summary">Zaktualizuj hasło zgodnie ze serwerym.</string>
-  <string name="settings_enter_password">Wpisz hasło:</string>
-  <string name="settings_certificate_alias">Alias certyfikatu klijynta</string>
   <string name="settings_sync">Synchrōnizacyjo</string>
   <string name="settings_sync_interval_contacts">Frekwyncyjo synchrōnizacyje kōntaktōw</string>
   <string name="settings_sync_summary_manually">Ino ryncznie</string>
@@ -181,14 +174,13 @@
   <string name="settings_sync_wifi_only_ssids_message">Ôddzielōne kōmami miana (SSID) przizwolōnych necōw WiFi (ôstow prōzne dlo wszyjskich)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">Żeby czytać miana WiFi, potrzebne je uprawniynie Lokalizacyje i permanynt aktywowane serwisy lokalizacyje.</string>
   <string name="settings_more_info_faq">Wiyncyj informacyji (FAQ)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Spusōb grupy kōntaktōw</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>Grupy to sōm ôddzielne VCards</item>
-    <item>Grupy to sōm kategoryje co kōntakt</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">Zmiyń spusōb grupowy</string>
-  <string name="settings_contact_group_method_change_reload_contacts">Wymogo to pobranio wszyjskich kōntaktōw na nowo. Niyspamiyntane zmiany z tego telefōnu bydōm skasowane.</string>
+  <string name="settings_authentication">Autoryzowanie</string>
+  <string name="settings_username">Miano używocza</string>
+  <string name="settings_enter_username">Wpisz miano używocza:</string>
+  <string name="settings_password">Hasło</string>
+  <string name="settings_password_summary">Zaktualizuj hasło zgodnie ze serwerym.</string>
+  <string name="settings_enter_password">Wpisz hasło:</string>
+  <string name="settings_certificate_alias">Alias certyfikatu klijynta</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limit czasowy przeszłych zdarzyń</string>
   <string name="settings_sync_time_range_past_none">Wszyjske zdarzynia bydōm zsynchrōnizowane</string>
@@ -204,7 +196,9 @@
   <string name="settings_event_colors">Sparcie farbōw zdarzyń</string>
   <string name="settings_event_colors_on">Synchrōnizuj farby zdarzyń</string>
   <string name="settings_event_colors_off">Niy synchrōnizuj farbōw zdarzyń</string>
-  <string name="settings_event_colors_off_confirm">Zastawiynie farbōw zdarzyń może skasować już zsynchrōnizowane farby zdarzyń.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Spusōb grupy kōntaktōw</string>
+  <string name="settings_contact_group_method_change">Zmiyń spusōb grupowy</string>
   <!--collection management-->
   <string name="create_addressbook">Stwōrz ksiōnżka adresowo</string>
   <string name="create_addressbook_display_name_hint">Moja ksiōnżka adresowo</string>

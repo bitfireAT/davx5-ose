@@ -149,13 +149,6 @@
   <string name="login_view_logs">Zobraziť podrobnosti</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Nastavenia: %s</string>
-  <string name="settings_authentication">Overenie</string>
-  <string name="settings_username">Meno používateľa</string>
-  <string name="settings_enter_username">Zadajte meno používateľa:</string>
-  <string name="settings_password">Heslo</string>
-  <string name="settings_password_summary">Aktualizujte heslo podľa vášho servera.</string>
-  <string name="settings_enter_password">Zadajte vaše heslo:</string>
-  <string name="settings_certificate_alias">Alias pre klientský certifikát</string>
   <string name="settings_sync">Synchronizácia</string>
   <string name="settings_sync_interval_contacts">Synchr. interval pre kontakty</string>
   <string name="settings_sync_summary_manually">Iba manuálne</string>
@@ -181,14 +174,13 @@
   <string name="settings_sync_wifi_only_ssids_message">Čiarkou oddelený zoznam mien (SSID) povolených WiFi sietí (ponechať prázdne pre všetky)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">Aby bolo možné čítať mená WiFi, musia byť dostupné povolenia pre lokalizáciu a trvalo aktivované lokalizačné služby</string>
   <string name="settings_more_info_faq">Viac informácií (FAQ)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Spôsob práce so skupinami kontaktov</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>Skupiny sú samostatné VCards</item>
-    <item>Skupiny sú kategórie kontaktu</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">Zmena spôsobu práce so skupinami</string>
-  <string name="settings_contact_group_method_change_reload_contacts">Bude nutné znovu načítať všetky kontakty. Neuložené miestne zmeny budú stratené.</string>
+  <string name="settings_authentication">Overenie</string>
+  <string name="settings_username">Meno používateľa</string>
+  <string name="settings_enter_username">Zadajte meno používateľa:</string>
+  <string name="settings_password">Heslo</string>
+  <string name="settings_password_summary">Aktualizujte heslo podľa vášho servera.</string>
+  <string name="settings_enter_password">Zadajte vaše heslo:</string>
+  <string name="settings_certificate_alias">Alias pre klientský certifikát</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Uplynul časový limit pre udalosť</string>
   <string name="settings_sync_time_range_past_none">Budú sa synchronizovať všetky udalosti</string>
@@ -205,7 +197,9 @@
   <string name="settings_event_colors">Podpora farieb pre udalosť</string>
   <string name="settings_event_colors_on">Farby synchronizácie udalostí</string>
   <string name="settings_event_colors_off">Nesynchronizovať farby udalostí</string>
-  <string name="settings_event_colors_off_confirm">Vypnutie farieb udalostí môže odstrániť už synchronizované farby udalostí.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Spôsob práce so skupinami kontaktov</string>
+  <string name="settings_contact_group_method_change">Zmena spôsobu práce so skupinami</string>
   <!--collection management-->
   <string name="create_addressbook">Vytvoriť adresár</string>
   <string name="create_addressbook_display_name_hint">Môj adresár</string>

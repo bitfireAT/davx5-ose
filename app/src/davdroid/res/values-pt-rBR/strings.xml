@@ -50,6 +50,8 @@
   <string name="navigation_drawer_subtitle">Sincronização de CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Sobre / Licença</string>
   <string name="navigation_drawer_beta_feedback">Comentários sobre a versão beta</string>
+  <string name="install_email_client">Instale um cliente de e-mail</string>
+  <string name="install_browser">Instale um navegador Web</string>
   <string name="navigation_drawer_settings">Configurações</string>
   <string name="navigation_drawer_news_updates">Novidades e atualizações</string>
   <string name="navigation_drawer_external_links">Links externos</string>
@@ -58,6 +60,7 @@
   <string name="navigation_drawer_faq">Perguntas fequentes</string>
   <string name="navigation_drawer_forums">Ajuda / Fóruns</string>
   <string name="navigation_drawer_donate">Doações</string>
+  <string name="navigation_drawer_privacy_policy">Política de privacidade</string>
   <string name="account_list_no_internet">Sem conexão com a Internet. O Android não executará a sincronização.</string>
   <string name="account_list_empty">Bem-vindo ao DAVx⁵!\n\nVocê pode adicionar uma conta CalDAV/CardDAV agora.</string>
   <string name="accounts_global_sync_disabled">A sincronização automática pelo sistema está desativada</string>
@@ -150,13 +153,6 @@
   <string name="login_view_logs">Mostrar detalhes</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Configurações: %s</string>
-  <string name="settings_authentication">Autenticação</string>
-  <string name="settings_username">Nome do usuário</string>
-  <string name="settings_enter_username">Digite o nome do usuário:</string>
-  <string name="settings_password">Senha</string>
-  <string name="settings_password_summary">Atualize a senha de acordo com seu servidor</string>
-  <string name="settings_enter_password">Digite sua senha:</string>
-  <string name="settings_certificate_alias">Nome do certificado do cliente</string>
   <string name="settings_sync">Sincronização</string>
   <string name="settings_sync_interval_contacts">Intervalo sinc. de contatos</string>
   <string name="settings_sync_summary_manually">Apenas manualmente</string>
@@ -182,14 +178,13 @@
   <string name="settings_sync_wifi_only_ssids_message">Nomes separados por vírgula (SSIDs) das redes WiFi (deixe em branco para todas)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">Para ler nomes de Wi-Fi, a permissão de localização e os serviços de localização permanentemente ativados são obrigatórios.</string>
   <string name="settings_more_info_faq">Mais informações</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Método do grupo Contato</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>Grupos são VCards separados</item>
-    <item>Grupos são categorias por contato</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">Alterar a forma de agrupamento</string>
-  <string name="settings_contact_group_method_change_reload_contacts">É necessário recarregar todos os contatos. As alterações locais que não foram salvas serão descartadas.</string>
+  <string name="settings_authentication">Autenticação</string>
+  <string name="settings_username">Nome do usuário</string>
+  <string name="settings_enter_username">Digite o nome do usuário:</string>
+  <string name="settings_password">Senha</string>
+  <string name="settings_password_summary">Atualize a senha de acordo com seu servidor</string>
+  <string name="settings_enter_password">Digite sua senha:</string>
+  <string name="settings_certificate_alias">Nome do certificado do cliente</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limite de tempo para eventos passados</string>
   <string name="settings_sync_time_range_past_none">Todos os eventos serão sincronizados</string>
@@ -198,13 +193,26 @@
     <item quantity="other">Eventos que ocorreram a mais de %d dias serão ignorados</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Os eventos que ocorreram antes desse número de dias serão ignorados (pode ser 0). Deixe em branco para sincronizar todos os eventos.</string>
+  <string name="settings_default_alarm">Lembrete padrão</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Lembrete padrão um minuto antes do evento</item>
+    <item quantity="other">Lembrete padrão %d minutos antes do evento</item>
+  </plurals>
+  <string name="settings_default_alarm_off">Nenhum lembrete padrão está criado</string>
+  <string name="settings_default_alarm_message">Se lembretes padrão devem ser criados para eventos sem lembrete: o número desejado de minutos antes do evento. Deixe em branco para desativar os lembretes padrão.</string>
   <string name="settings_manage_calendar_colors">Gerenciar cores dos calendários</string>
   <string name="settings_manage_calendar_colors_on">Cores dos calendários definidas pelo DAVx⁵</string>
   <string name="settings_manage_calendar_colors_off">Cores dos calendários não definidas pelo DAVx⁵</string>
   <string name="settings_event_colors">Suporte para cor de evento</string>
   <string name="settings_event_colors_on">Sincronizar cores de eventos</string>
   <string name="settings_event_colors_off">Não sincronizar cores de eventos</string>
-  <string name="settings_event_colors_off_confirm">Desativar as cores de eventos poderá remover as que já foram sincronizadas</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Método do grupo Contato</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Grupos são vCards separados</item>
+    <item>Grupos são categorias por contato</item>
+  </string-array>
+  <string name="settings_contact_group_method_change">Alterar a forma de agrupamento</string>
   <!--collection management-->
   <string name="create_addressbook">Criar livro de endereços</string>
   <string name="create_addressbook_display_name_hint">Meu livro de endereços</string>

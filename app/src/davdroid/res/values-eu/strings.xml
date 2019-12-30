@@ -79,16 +79,16 @@
   <string name="login_account_name">Kontuaren izena</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Ezarpenak: %s</string>
+  <string name="settings_sync">Sinkronizazioa</string>
+  <string name="settings_sync_wifi_only">Sinkronizatu soilik WiFi bidez</string>
   <string name="settings_authentication">Autentifikazioa</string>
   <string name="settings_username">Erabiltzaile izena</string>
   <string name="settings_enter_username">Sartu erabiltzaile izena:</string>
   <string name="settings_password">Pasahitza</string>
   <string name="settings_enter_password">Sartu zure pasahitza:</string>
-  <string name="settings_sync">Sinkronizazioa</string>
-  <string name="settings_sync_wifi_only">Sinkronizatu soilik WiFi bidez</string>
-  <string name="settings_carddav">CardDAV</string>
   <string name="settings_manage_calendar_colors">Kudeatu egutegi koloreak</string>
   <string name="settings_event_colors_on">Sinkronizatu gertaera koloreak</string>
+  <string name="settings_carddav">CardDAV</string>
   <!--collection management-->
   <string name="create_addressbook">Sortu helbide liburua</string>
   <string name="create_addressbook_display_name_hint">Nire Helbide Liburua</string>

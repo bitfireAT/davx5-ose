@@ -129,13 +129,6 @@
   <string name="login_view_logs">Прикажи детаље</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Поставке: %s</string>
-  <string name="settings_authentication">Аутентификација</string>
-  <string name="settings_username">Корисничко име</string>
-  <string name="settings_enter_username">Унесите корисничко име:</string>
-  <string name="settings_password">Лозинка</string>
-  <string name="settings_password_summary">Ажурирајте лозинку за ваш сервер.</string>
-  <string name="settings_enter_password">Унесите лозинку:</string>
-  <string name="settings_certificate_alias">Псеудоним сертификата клијента</string>
   <string name="settings_sync">Синхронизација</string>
   <string name="settings_sync_interval_contacts">Интервал синх. контаката</string>
   <string name="settings_sync_summary_manually">Само ручно</string>
@@ -158,14 +151,13 @@
   <string name="settings_sync_wifi_only_ssids_on">Синхронизовање само преко %s</string>
   <string name="settings_sync_wifi_only_ssids_off">Коришћење свих бежичних мрежа</string>
   <string name="settings_sync_wifi_only_ssids_message">Имена (ССИД) дозвољених мрежа. одвојена зарезом (оставите празно за све мреже)</string>
-  <string name="settings_carddav">КардДАВ</string>
-  <string name="settings_contact_group_method">Режим група контаката</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>Групе су одвојене В-карте</item>
-    <item>Групе су категорије по контакту</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">Измени режим група</string>
-  <string name="settings_contact_group_method_change_reload_contacts">Ово захтева поновно учитавање свих контаката. Несачуване локалне измене ће бити одбачене.</string>
+  <string name="settings_authentication">Аутентификација</string>
+  <string name="settings_username">Корисничко име</string>
+  <string name="settings_enter_username">Унесите корисничко име:</string>
+  <string name="settings_password">Лозинка</string>
+  <string name="settings_password_summary">Ажурирајте лозинку за ваш сервер.</string>
+  <string name="settings_enter_password">Унесите лозинку:</string>
+  <string name="settings_certificate_alias">Псеудоним сертификата клијента</string>
   <string name="settings_caldav">КалДАВ</string>
   <string name="settings_sync_time_range_past">Ограничење догађаја у прошлости</string>
   <string name="settings_sync_time_range_past_none">Сви догађаји се синхронизују</string>
@@ -181,7 +173,9 @@
   <string name="settings_event_colors">Подршка за боју догађаја</string>
   <string name="settings_event_colors_on">Синхронизуј боје догађаја</string>
   <string name="settings_event_colors_off">Не синхронизуј боје догађаја</string>
-  <string name="settings_event_colors_off_confirm">Искључивање боје догађаја може да уклони већ синхронизоване боје догађаја.</string>
+  <string name="settings_carddav">КардДАВ</string>
+  <string name="settings_contact_group_method">Режим група контаката</string>
+  <string name="settings_contact_group_method_change">Измени режим група</string>
   <!--collection management-->
   <string name="create_addressbook">Направи адресар</string>
   <string name="create_addressbook_display_name_hint">Мој адресар</string>

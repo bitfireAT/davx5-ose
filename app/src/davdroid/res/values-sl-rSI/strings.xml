@@ -149,13 +149,6 @@
   <string name="login_view_logs">Pokaži podrobnosti</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Nastavitve: %s</string>
-  <string name="settings_authentication">Avtentikacija</string>
-  <string name="settings_username">Uporabniško ime</string>
-  <string name="settings_enter_username">Vnesi uporabniško ime:</string>
-  <string name="settings_password">Geslo</string>
-  <string name="settings_password_summary">Posodobi geslo ustrezajoč strežniku.</string>
-  <string name="settings_enter_password">Vnesi vaše geslo:</string>
-  <string name="settings_certificate_alias">Alias certifikata klienta</string>
   <string name="settings_sync">Sinhronizacija</string>
   <string name="settings_sync_interval_contacts">Kontakti interval sinhronizacije</string>
   <string name="settings_sync_summary_manually">Samo ročno</string>
@@ -181,14 +174,13 @@
   <string name="settings_sync_wifi_only_ssids_message">Z vejico ločena imena (SSID) dovoljenih WiFi omrežij (pusti prazno za vse)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">Za branje WiFi imen morajo biti vključena dovoljenja aplikacije za lokacijo in stalno aktivirano določanje lokacije.</string>
   <string name="settings_more_info_faq">Več informacij (pogosta vprašanja)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Metoda skupine kontaktov</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>Skupine so ločene VCards</item>
-    <item>Skupine so kategorije na osnovi kontakta</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">Spremeni metodo skupine</string>
-  <string name="settings_contact_group_method_change_reload_contacts">Za to bo potrebno ponovno naložiti kontakte. Neshranjene lokalne spremembe bodo izbrisane.</string>
+  <string name="settings_authentication">Avtentikacija</string>
+  <string name="settings_username">Uporabniško ime</string>
+  <string name="settings_enter_username">Vnesi uporabniško ime:</string>
+  <string name="settings_password">Geslo</string>
+  <string name="settings_password_summary">Posodobi geslo ustrezajoč strežniku.</string>
+  <string name="settings_enter_password">Vnesi vaše geslo:</string>
+  <string name="settings_certificate_alias">Alias certifikata klienta</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Pretekli dogodek časovna omejitev</string>
   <string name="settings_sync_time_range_past_none">Vsi dogodki bodo sinhronizirani</string>
@@ -205,7 +197,9 @@
   <string name="settings_event_colors">Podpora barva dogodka</string>
   <string name="settings_event_colors_on">Sinhroniziraj barve dogodkov</string>
   <string name="settings_event_colors_off">Ne sinhroniziraj barve dogodkov</string>
-  <string name="settings_event_colors_off_confirm">Izključitev barve dogodkov lahko odstrani že sinhronizirane barve dogodkov.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Metoda skupine kontaktov</string>
+  <string name="settings_contact_group_method_change">Spremeni metodo skupine</string>
   <!--collection management-->
   <string name="create_addressbook">Ustvari imenik</string>
   <string name="create_addressbook_display_name_hint">Moj imenik</string>
