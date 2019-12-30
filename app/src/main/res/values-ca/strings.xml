@@ -82,11 +82,6 @@
   <string name="login_account_name">Nom del compte</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Paràmetres: %s</string>
-  <string name="settings_authentication">Autentificació</string>
-  <string name="settings_username">Nom d\'usuari/a</string>
-  <string name="settings_enter_username">Escriu el nom d\'usuari/a:</string>
-  <string name="settings_password">Contrasenya</string>
-  <string name="settings_enter_password">Escriu la teva contrasenya</string>
   <string name="settings_sync">Sincronització</string>
   <string name="settings_sync_summary_manually">Només a mà</string>
   <string-array name="settings_sync_interval_names">
@@ -99,8 +94,13 @@
     <item>Una vegada al dia</item>
   </string-array>
   <string name="settings_sync_wifi_only">Sincronitzar només amb WI-FI</string>
-  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_authentication">Autentificació</string>
+  <string name="settings_username">Nom d\'usuari/a</string>
+  <string name="settings_enter_username">Escriu el nom d\'usuari/a:</string>
+  <string name="settings_password">Contrasenya</string>
+  <string name="settings_enter_password">Escriu la teva contrasenya</string>
   <string name="settings_caldav">CalDAV</string>
+  <string name="settings_carddav">CardDAV</string>
   <!--collection management-->
   <!--ExceptionInfoFragment-->
   <!--sync adapters and DebugInfoActivity-->

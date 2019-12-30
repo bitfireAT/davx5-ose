@@ -14,17 +14,17 @@
   <string name="login_type_email">Login com seu enderço de email</string>
   <string name="login_type_url">Login com URL e nome do usuário</string>
   <!--AccountSettingsActivity-->
+  <string name="settings_sync">Sincronização</string>
+  <string name="settings_sync_interval_contacts">Intervalo de sincronização dos contatos</string>
+  <string name="settings_sync_summary_manually">Manualmente apenas</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">A cada %d minutos + imediatamente em alterações locais</string>
+  <string name="settings_sync_interval_calendars">Intervalo de sincronização do calendário</string>
   <string name="settings_authentication">Autenticação</string>
   <string name="settings_username">Nome de usuário</string>
   <string name="settings_enter_username">Informe o nome de usuário:</string>
   <string name="settings_password">Senha</string>
   <string name="settings_password_summary">Atualize sua denha de acordo com a do seu servidor.</string>
   <string name="settings_enter_password">Informe sua senha:</string>
-  <string name="settings_sync">Sincronização</string>
-  <string name="settings_sync_interval_contacts">Intervalo de sincronização dos contatos</string>
-  <string name="settings_sync_summary_manually">Manualmente apenas</string>
-  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">A cada %d minutos + imediatamente em alterações locais</string>
-  <string name="settings_sync_interval_calendars">Intervalo de sincronização do calendário</string>
   <!--collection management-->
   <!--ExceptionInfoFragment-->
   <!--sync adapters and DebugInfoActivity-->

@@ -145,13 +145,6 @@
   <string name="login_view_logs">Részletek mutatása</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Beállítások: %s</string>
-  <string name="settings_authentication">Authentikáció</string>
-  <string name="settings_username">Felhasználónév</string>
-  <string name="settings_enter_username">Adja meg a felhasználónevet:</string>
-  <string name="settings_password">Jelszó</string>
-  <string name="settings_password_summary">Adja meg a szerveren érvényes új jelszót.</string>
-  <string name="settings_enter_password">Adja meg a jelszót:</string>
-  <string name="settings_certificate_alias">Tanúsítvány alternatív megnevezése</string>
   <string name="settings_sync">Szinkronizálás</string>
   <string name="settings_sync_interval_contacts">Névjegyszinkronizálás sűrűsége</string>
   <string name="settings_sync_summary_manually">Manuális</string>
@@ -177,14 +170,13 @@
   <string name="settings_sync_wifi_only_ssids_message">A használható WiFi hálózatok nevei (SSID), vesszővel elválasztva (hagyja üresen, ha nem akar szűrést beállítani)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">A WiFi hálózatok nevének elérése Helyadatok alkalmazásengedélyt és folyamatosan bekapcsolt helymeghatározási szolgáltatást igényel.</string>
   <string name="settings_more_info_faq">További információk (GYIK)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">A csoportok kezelésének módja</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>Minden csoport egy különálló VCard</item>
-    <item>A csoportok a kapcsolatonkéni kategóriák</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">A csoportok kezelésének megváltoztatása</string>
-  <string name="settings_contact_group_method_change_reload_contacts">Az összes névjegyet újra be kell olvasni.  Az el nem mentett helyi változások törlődni fognak.</string>
+  <string name="settings_authentication">Authentikáció</string>
+  <string name="settings_username">Felhasználónév</string>
+  <string name="settings_enter_username">Adja meg a felhasználónevet:</string>
+  <string name="settings_password">Jelszó</string>
+  <string name="settings_password_summary">Adja meg a szerveren érvényes új jelszót.</string>
+  <string name="settings_enter_password">Adja meg a jelszót:</string>
+  <string name="settings_certificate_alias">Tanúsítvány alternatív megnevezése</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Múltbéli események időkorlátja</string>
   <string name="settings_sync_time_range_past_none">Minden esemény szinkronizálása</string>
@@ -199,7 +191,9 @@
   <string name="settings_event_colors">Eseményszínek támogatása</string>
   <string name="settings_event_colors_on">Eseményszínek szinkronlzálása</string>
   <string name="settings_event_colors_off">Az eseményszínek szinkronizálásának elhagyása</string>
-  <string name="settings_event_colors_off_confirm">A szinkronizálás kikapcsolása a már szinkronizált eseményszíneket törölheti.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">A csoportok kezelésének módja</string>
+  <string name="settings_contact_group_method_change">A csoportok kezelésének megváltoztatása</string>
   <!--collection management-->
   <string name="create_addressbook">Címjegyzék létrehozása</string>
   <string name="create_addressbook_display_name_hint">Új címjegyzék</string>

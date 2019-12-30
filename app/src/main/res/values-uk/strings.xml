@@ -150,13 +150,6 @@
   <string name="login_view_logs">Показати деталі</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Налаштування: %s</string>
-  <string name="settings_authentication">Автентифікація</string>
-  <string name="settings_username">Ім\'я користувача</string>
-  <string name="settings_enter_username">Введіть ім\'я користувача:</string>
-  <string name="settings_password">Пароль</string>
-  <string name="settings_password_summary">Оновити пароль, згідно налаштувань Вашого сервера.</string>
-  <string name="settings_enter_password">Введіть Ваш пароль:</string>
-  <string name="settings_certificate_alias">Прив\'язка сертифікату клієнта</string>
   <string name="settings_sync">Синхронізація</string>
   <string name="settings_sync_interval_contacts">Інтервал синхронізації контактів</string>
   <string name="settings_sync_summary_manually">Лише вручну</string>
@@ -182,14 +175,13 @@
   <string name="settings_sync_wifi_only_ssids_message">Назви (SSID) дозволених Wi-Fi мереж, розділені комами (залиште порожнім для всіх)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">Для читання назв WiFi, потрібен дозвіл до локації, та ввімкнені сервіси локації.</string>
   <string name="settings_more_info_faq">Більше інформації (FAQ)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Метод групування контактів</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>Групи як окремі VCard</item>
-    <item>Групи як категорії в середині контактів</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">Змінити метод групування</string>
-  <string name="settings_contact_group_method_change_reload_contacts">Це потребує перезавантаження всіх контактів. Незбережені локальні зміни буде відхилено.</string>
+  <string name="settings_authentication">Автентифікація</string>
+  <string name="settings_username">Ім\'я користувача</string>
+  <string name="settings_enter_username">Введіть ім\'я користувача:</string>
+  <string name="settings_password">Пароль</string>
+  <string name="settings_password_summary">Оновити пароль, згідно налаштувань Вашого сервера.</string>
+  <string name="settings_enter_password">Введіть Ваш пароль:</string>
+  <string name="settings_certificate_alias">Прив\'язка сертифікату клієнта</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Інтервал синхронізації</string>
   <string name="settings_sync_time_range_past_none">Всі події будуть синхронізовані</string>
@@ -206,7 +198,9 @@
   <string name="settings_event_colors">Підтримка кольорів подій</string>
   <string name="settings_event_colors_on">Синхронізувати кольори подій</string>
   <string name="settings_event_colors_off">Не синхронізувати кольори подій</string>
-  <string name="settings_event_colors_off_confirm">Вимикання кольорів подій може видалити вже синхронізовані кольори подій.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Метод групування контактів</string>
+  <string name="settings_contact_group_method_change">Змінити метод групування</string>
   <!--collection management-->
   <string name="create_addressbook">Створити адресну книгу</string>
   <string name="create_addressbook_display_name_hint">Моя адресна книга</string>

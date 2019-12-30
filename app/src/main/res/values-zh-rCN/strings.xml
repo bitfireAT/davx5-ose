@@ -149,13 +149,6 @@
   <string name="login_view_logs">显示详情</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">设置：%s</string>
-  <string name="settings_authentication">认证</string>
-  <string name="settings_username">用户名</string>
-  <string name="settings_enter_username">输入用户名</string>
-  <string name="settings_password">密码</string>
-  <string name="settings_password_summary">修改服务器密码</string>
-  <string name="settings_enter_password">输入密码</string>
-  <string name="settings_certificate_alias">客户端证书别名</string>
   <string name="settings_sync">同步</string>
   <string name="settings_sync_interval_contacts">通讯录自动同步间隔</string>
   <string name="settings_sync_summary_manually">手动同步</string>
@@ -181,14 +174,13 @@
   <string name="settings_sync_wifi_only_ssids_message">请用半角逗号分隔允许同步的 WiFi 网络名（SSID），留空则允许任意网络</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">读取 WiFi 网络名称需要位置权限，以及永久生效的位置服务。</string>
   <string name="settings_more_info_faq">更多信息（常见问题）</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">联系人分组方式</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>按 VCard 文件分组</item>
-    <item>按联系人分类分组</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">修改分组方式</string>
-  <string name="settings_contact_group_method_change_reload_contacts">本次操作需要重新载入所有联系人，未同步的本地修改会被撤销。</string>
+  <string name="settings_authentication">认证</string>
+  <string name="settings_username">用户名</string>
+  <string name="settings_enter_username">输入用户名</string>
+  <string name="settings_password">密码</string>
+  <string name="settings_password_summary">修改服务器密码</string>
+  <string name="settings_enter_password">输入密码</string>
+  <string name="settings_certificate_alias">客户端证书别名</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">旧日程时间限制</string>
   <string name="settings_sync_time_range_past_none">同步所有日程</string>
@@ -202,7 +194,9 @@
   <string name="settings_event_colors">事件日历颜色支持</string>
   <string name="settings_event_colors_on">同步日历事件颜色</string>
   <string name="settings_event_colors_off">不同步日历事件颜色</string>
-  <string name="settings_event_colors_off_confirm">关闭事件颜色功能将删除已同步的日历颜色。</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">联系人分组方式</string>
+  <string name="settings_contact_group_method_change">修改分组方式</string>
   <!--collection management-->
   <string name="create_addressbook">创建通讯录</string>
   <string name="create_addressbook_display_name_hint">我的通讯录</string>

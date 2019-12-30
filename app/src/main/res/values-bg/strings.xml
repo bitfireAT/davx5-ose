@@ -131,11 +131,6 @@
   <string name="login_view_logs">Покажи подробности</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Настройки: %s</string>
-  <string name="settings_username">Потребителско име</string>
-  <string name="settings_enter_username">Въведи потребитеско име:</string>
-  <string name="settings_password">Парола</string>
-  <string name="settings_password_summary">Промени паролата съгласно твоя сървър.</string>
-  <string name="settings_enter_password">Въведи парола:</string>
   <string name="settings_sync">Синхронизация</string>
   <string name="settings_sync_interval_contacts">Период за синхронизиране на контактите</string>
   <string name="settings_sync_summary_manually">Само изрично</string>
@@ -161,14 +156,11 @@
   <string name="settings_sync_wifi_only_ssids_message">Списък на разделени със запетайка имена на мрежи (SSID WiFi) (остави празно за всички мрежи)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">За да се четат имената на WiFi мрежите са необходими право да се чете местоположението и постоянно включена услуга за местоположението.</string>
   <string name="settings_more_info_faq">Повече информация (често задавани въпроси)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Метод за съхранение на групи от контакти</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>Групите са отделни VCard контакти</item>
-    <item>Групите са категории във всеки контакт</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">Метод за съхранение на групи от контакти</string>
-  <string name="settings_contact_group_method_change_reload_contacts">Това изисква презареждане на всички контакти. Местни промени, които не са съхранени, че се изпарят.</string>
+  <string name="settings_username">Потребителско име</string>
+  <string name="settings_enter_username">Въведи потребитеско име:</string>
+  <string name="settings_password">Парола</string>
+  <string name="settings_password_summary">Промени паролата съгласно твоя сървър.</string>
+  <string name="settings_enter_password">Въведи парола:</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Ограничения за събития от миналото</string>
   <string name="settings_sync_time_range_past_none">Всички събития ще се синхронизират</string>
@@ -183,7 +175,9 @@
   <string name="settings_event_colors">Поддръжка на цветове за събития</string>
   <string name="settings_event_colors_on">Синхронизирай цветовете на събитията</string>
   <string name="settings_event_colors_off">Не синхронизирай цветовете на събитията</string>
-  <string name="settings_event_colors_off_confirm">Изключването на цветове за събитията може да изтрие вече синхронизирани цветове на събития.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Метод за съхранение на групи от контакти</string>
+  <string name="settings_contact_group_method_change">Метод за съхранение на групи от контакти</string>
   <!--collection management-->
   <string name="create_addressbook">Създай адресен указател</string>
   <string name="create_addressbook_display_name_hint">Моят адресен указател</string>

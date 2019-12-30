@@ -150,13 +150,6 @@
   <string name="login_view_logs">Εμφάνιση λεπτομερειών</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Ρυθμίσεις: %s</string>
-  <string name="settings_authentication">Πιστοποίηση</string>
-  <string name="settings_username">Όνομα χρήστη</string>
-  <string name="settings_enter_username">Εισάγετε όνομα χρήστη:</string>
-  <string name="settings_password">Συνθηματικό</string>
-  <string name="settings_password_summary">Ενημερώστε το συνθηματικό σύμφωνα με τον διακομιστή σας.</string>
-  <string name="settings_enter_password">Εισάγετε το συνθηματικό σας:</string>
-  <string name="settings_certificate_alias">Ψευδώνυμα πιστοποιητικού πελάτη</string>
   <string name="settings_sync">Συγχρονισμός</string>
   <string name="settings_sync_interval_contacts">Μεσοδιάστημα συγχρονισμού επαφών</string>
   <string name="settings_sync_summary_manually">Μόνο χειροκίνητα</string>
@@ -182,14 +175,13 @@
   <string name="settings_sync_wifi_only_ssids_message">Ονόματα που χωρίζονται με κόμμα (SSIDs) των επιτρεπόμενων δικτύων WiFi (αφήστε κενό για όλους)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">Για να διαβάσετε ονόματα WiFi, απαιτείται η άδεια θέσης και οι μόνιμα ενεργοποιημένες υπηρεσίες τοποθεσίας.</string>
   <string name="settings_more_info_faq">Περισσότερες πληροφορίες (FAQ)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Αλλαγή μεθόδου ομάδας</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>Οι ομάδες είναι ξεχωριστές VCards</item>
-    <item>Οι ομάδες είναι κατηγορίες ανά επαφή</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">Αλλαγή μεθόδου ομάδας</string>
-  <string name="settings_contact_group_method_change_reload_contacts">Αυτό απαιτεί επαναφόρτωση όλων των επαφών. Οι μη αποθηκευμένες τοπικές αλλαγές θα απορριφθούν.</string>
+  <string name="settings_authentication">Πιστοποίηση</string>
+  <string name="settings_username">Όνομα χρήστη</string>
+  <string name="settings_enter_username">Εισάγετε όνομα χρήστη:</string>
+  <string name="settings_password">Συνθηματικό</string>
+  <string name="settings_password_summary">Ενημερώστε το συνθηματικό σύμφωνα με τον διακομιστή σας.</string>
+  <string name="settings_enter_password">Εισάγετε το συνθηματικό σας:</string>
+  <string name="settings_certificate_alias">Ψευδώνυμα πιστοποιητικού πελάτη</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Προθεσμία παρελθόντος συμβάντος</string>
   <string name="settings_sync_time_range_past_none">Όλα τα συμβάντα θα συγχρονίσουν</string>
@@ -204,7 +196,9 @@
   <string name="settings_event_colors">Υποστήριξη χρώματος στα συμβάντα</string>
   <string name="settings_event_colors_on">Συγχρονισμός χρωμάτων συμβάντων</string>
   <string name="settings_event_colors_off">Να μην γίνει συγχρονισμός χρωμάτων συμβάντων</string>
-  <string name="settings_event_colors_off_confirm">Η απενεργοποίηση των χρωμάτων στα συμβάντα ενδέχεται να αφαιρέσει τα χρώματα ήδη συγχρονισμένων συμβάντων.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Αλλαγή μεθόδου ομάδας</string>
+  <string name="settings_contact_group_method_change">Αλλαγή μεθόδου ομάδας</string>
   <!--collection management-->
   <string name="create_addressbook">Δημιουργία βιβλίου διευθύνσεων</string>
   <string name="create_addressbook_display_name_hint">Το βιβλίο διευθύνσεών μου</string>

@@ -149,13 +149,6 @@
   <string name="login_view_logs">نمایش جزيیات</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">تنظیمات: %s</string>
-  <string name="settings_authentication">احراز هویت</string>
-  <string name="settings_username">نام کاربر</string>
-  <string name="settings_enter_username">نام کاربر را وارد کنید:</string>
-  <string name="settings_password">رمز عبور</string>
-  <string name="settings_password_summary">به روز رسانی رمز عبور بر اساس سرور شما.</string>
-  <string name="settings_enter_password">رمز عبور خود را وارد کنید:</string>
-  <string name="settings_certificate_alias">گواهی نام مستعار کاربر</string>
   <string name="settings_sync">هماهنگ سازی</string>
   <string name="settings_sync_interval_contacts">همگام سازی مخاطبین</string>
   <string name="settings_sync_summary_manually">فقط دستی</string>
@@ -181,14 +174,13 @@
   <string name="settings_sync_wifi_only_ssids_message">نامهای جدا شده از علامت (SSID) از نامهای مجاز نامهای مجاز (SSID) از شبکههای مجاز Wi-Fi (برای همه خالی) شبکههای Wi-Fi (برای همه خالی)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">برای خواندن نامهای وای فای دسترسی مکان لازم است و باید خدمات مکان بطور دائم فعال باشد</string>
   <string name="settings_more_info_faq">اطلاعات بیشتر(FAQ)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">روش تماس با گروه</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>گروه ها جدا شدند VCards</item>
-    <item>گروه ها در هر دسته تماس هستند</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">تغییر روش گروه ها</string>
-  <string name="settings_contact_group_method_change_reload_contacts">این نیاز به بارگیری همه مخاطبین دارد. تغییرات محلی ذخیره نشده رد خواهد شد.</string>
+  <string name="settings_authentication">احراز هویت</string>
+  <string name="settings_username">نام کاربر</string>
+  <string name="settings_enter_username">نام کاربر را وارد کنید:</string>
+  <string name="settings_password">رمز عبور</string>
+  <string name="settings_password_summary">به روز رسانی رمز عبور بر اساس سرور شما.</string>
+  <string name="settings_enter_password">رمز عبور خود را وارد کنید:</string>
+  <string name="settings_certificate_alias">گواهی نام مستعار کاربر</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">محدودیت زمانی رویداد گذشته</string>
   <string name="settings_sync_time_range_past_none">تمامی رویداد ها همگام سازی خواهند شد</string>
@@ -204,7 +196,9 @@
   <string name="settings_event_colors">پشتیبانی رنگرویداد</string>
   <string name="settings_event_colors_on">همگام کردن رنگ رویداد</string>
   <string name="settings_event_colors_off">همگام نکردن رنگ رویداد</string>
-  <string name="settings_event_colors_off_confirm">غیرفعال کردن رنگ رویداد میتواند رنگهای رویداد همگام شده را حذف کند.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">روش تماس با گروه</string>
+  <string name="settings_contact_group_method_change">تغییر روش گروه ها</string>
   <!--collection management-->
   <string name="create_addressbook">ایجاد دفترچه آدرس</string>
   <string name="create_addressbook_display_name_hint">دفترچه آدرس های من</string>

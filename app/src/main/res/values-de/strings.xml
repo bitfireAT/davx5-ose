@@ -50,6 +50,8 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV-Sync-Adapter</string>
   <string name="navigation_drawer_about">Über / Lizenz</string>
   <string name="navigation_drawer_beta_feedback">Beta-Rückmeldung</string>
+  <string name="install_email_client">Bitte installieren Sie eine Email-Anwendung</string>
+  <string name="install_browser">Bitte installieren Sie einen Web-Browser</string>
   <string name="navigation_drawer_settings">Einstellungen</string>
   <string name="navigation_drawer_news_updates">Aktuelles</string>
   <string name="navigation_drawer_external_links">Externe Links</string>
@@ -58,6 +60,7 @@
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_forums">Hilfe / Forum</string>
   <string name="navigation_drawer_donate">Spenden</string>
+  <string name="navigation_drawer_privacy_policy">Datenschutzerklärung</string>
   <string name="account_list_no_internet">Keine Internet-Verbindung. Android wird die Synchronisierung daher nicht starten.</string>
   <string name="account_list_empty">Herzlich willkommen!\n\nSie können jetzt ein CalDAV/CardDAV-Konto hinzufügen.</string>
   <string name="accounts_global_sync_disabled">Systemweite automatische Synchronisierung ist nicht aktiv</string>
@@ -150,13 +153,6 @@
   <string name="login_view_logs">Details anzeigen</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Einstellungen: %s</string>
-  <string name="settings_authentication">Anmeldeinformationen</string>
-  <string name="settings_username">Benutzername</string>
-  <string name="settings_enter_username">Benutzername eingeben:</string>
-  <string name="settings_password">Passwort</string>
-  <string name="settings_password_summary">Aktualisieren Sie Ihr Passwort gemäß den Server-Einstellungen.</string>
-  <string name="settings_enter_password">Passwort eingeben:</string>
-  <string name="settings_certificate_alias">Client-Zertifikat (Alias)</string>
   <string name="settings_sync">Synchronisierung</string>
   <string name="settings_sync_interval_contacts">Häufigkeit der Kontakte-Synchronisierung</string>
   <string name="settings_sync_summary_manually">Nur manuell</string>
@@ -182,14 +178,13 @@
   <string name="settings_sync_wifi_only_ssids_message">Erlaubte WLAN-Namen (SSIDs, mit Beistrich getrennt, leer lassen für alle)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">Zum Auslesen von WLAN-Namen sind die Standort-Berechtigung und die ständige Aktivierung der Standortdienste notwendig.</string>
   <string name="settings_more_info_faq">Mehr Info (FAQ)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Kontaktgruppen-Methode</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>Gruppen sind eigene VCards</item>
-    <item>Gruppen sind Kategorien der Kontakte</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">Gruppen-Methode ändern</string>
-  <string name="settings_contact_group_method_change_reload_contacts">Dazu müssen alle Kontakte neu geladen werden. Ungesicherte lokale Änderungen werden verworfen.</string>
+  <string name="settings_authentication">Anmeldeinformationen</string>
+  <string name="settings_username">Benutzername</string>
+  <string name="settings_enter_username">Benutzername eingeben:</string>
+  <string name="settings_password">Passwort</string>
+  <string name="settings_password_summary">Aktualisieren Sie Ihr Passwort gemäß den Server-Einstellungen.</string>
+  <string name="settings_enter_password">Passwort eingeben:</string>
+  <string name="settings_certificate_alias">Client-Zertifikat (Alias)</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Abrufbeschränkung vergangener Termine</string>
   <string name="settings_sync_time_range_past_none">Alle Termine werden synchronisiert</string>
@@ -198,13 +193,26 @@
     <item quantity="other">Termine, die mehr als %d Tage in der Vergangenheit liegen, werden ignoriert</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Termine, die mehr als diese Anzahl von Tagen in der Vergangenheit liegen, werden ignoriert (kann 0 sein). Feld leer lassen, um alle Termine zu synchronisieren.</string>
+  <string name="settings_default_alarm">Standard-Erinnerung</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Standard-Erinnerung eine Minute vor dem Ereignis</item>
+    <item quantity="other">Standard-Erinnerung %d Minuten vor dem Ereignis</item>
+  </plurals>
+  <string name="settings_default_alarm_off">Keine Standard-Erinnerungen</string>
+  <string name="settings_default_alarm_message">Wenn Standard-Erinnerungen für Termine ohne Erinnerung erzeugt werden sollen: gewünschte Anzahl der Minuten vor dem Ereignis. Leer lassen, um Standard-Erinnerungen zu deaktivieren.</string>
   <string name="settings_manage_calendar_colors">Kalenderfarben verwalten</string>
   <string name="settings_manage_calendar_colors_on">Kalenderfarben werden von DAVx⁵ verwaltet</string>
   <string name="settings_manage_calendar_colors_off">DAVx⁵ setzt keine Kalenderfarben</string>
   <string name="settings_event_colors">Unterstützung für Terminfarben</string>
   <string name="settings_event_colors_on">Terminfarben werden synchronisiert</string>
   <string name="settings_event_colors_off">Terminfarben werden nicht synchronisiert</string>
-  <string name="settings_event_colors_off_confirm">Die Deaktivierung der Terminfarben kann bereits synchronisierte Terminfarben löschen!</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Kontaktgruppen-Methode</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Gruppen sind eigene vCards</item>
+    <item>Gruppen sind Kategorien der Kontakte</item>
+  </string-array>
+  <string name="settings_contact_group_method_change">Gruppen-Methode ändern</string>
   <!--collection management-->
   <string name="create_addressbook">Adressbuch erstellen</string>
   <string name="create_addressbook_display_name_hint">Meine Adressen</string>

@@ -150,13 +150,6 @@
   <string name="login_view_logs">Vis detaljer</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Indstillinger: %s</string>
-  <string name="settings_authentication">Adgangsgodkendelse</string>
-  <string name="settings_username">Brugernavn</string>
-  <string name="settings_enter_username">Indtaste brugernavn:</string>
-  <string name="settings_password">Adgangskode</string>
-  <string name="settings_password_summary">Opdater adgangskoden, så den svarer til din server.</string>
-  <string name="settings_enter_password">Indtast adgangskode:</string>
-  <string name="settings_certificate_alias">Alias for klientcertifikat</string>
   <string name="settings_sync">Synkronisering</string>
   <string name="settings_sync_interval_contacts">Synkroniseringsinterval for kontakter</string>
   <string name="settings_sync_summary_manually">Kun manuelt</string>
@@ -182,14 +175,13 @@
   <string name="settings_sync_wifi_only_ssids_message">Kommaseparerede navne (SSID\'er) over tilladte WiFi-netværk (efterlad blank for at bruge alle)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">For at læse trådløse navne, er placering tilladelse og permanent aktiveret placering tjeneste påkrævet.</string>
   <string name="settings_more_info_faq">Mere information (OSS)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Gruppering af kontakter</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>Grupper er særskilte VCards</item>
-    <item>Grupper er kategorier pr. kontakt</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">Skift grupperingsmetode</string>
-  <string name="settings_contact_group_method_change_reload_contacts">Dette kræver, at alle kontakter genindlæses. Lokale ændringer, der ikke er gemt, vil blive slettet.</string>
+  <string name="settings_authentication">Adgangsgodkendelse</string>
+  <string name="settings_username">Brugernavn</string>
+  <string name="settings_enter_username">Indtaste brugernavn:</string>
+  <string name="settings_password">Adgangskode</string>
+  <string name="settings_password_summary">Opdater adgangskoden, så den svarer til din server.</string>
+  <string name="settings_enter_password">Indtast adgangskode:</string>
+  <string name="settings_certificate_alias">Alias for klientcertifikat</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tidsafgrænsning for tidligere begivenheder</string>
   <string name="settings_sync_time_range_past_none">Alle begivenheder vil blive synkroniseret</string>
@@ -204,7 +196,9 @@
   <string name="settings_event_colors">Farver for begivenheder</string>
   <string name="settings_event_colors_on">Synkroniser farver for begivenheder</string>
   <string name="settings_event_colors_off">Synkroniser ikke farver for begivenheder</string>
-  <string name="settings_event_colors_off_confirm">Fjernes farver for begivenheder kan det fjerne farver, der allerede er synkroniseret.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Gruppering af kontakter</string>
+  <string name="settings_contact_group_method_change">Skift grupperingsmetode</string>
   <!--collection management-->
   <string name="create_addressbook">Opret adressebog</string>
   <string name="create_addressbook_display_name_hint">Min adressebog</string>

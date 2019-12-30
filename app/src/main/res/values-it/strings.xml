@@ -149,13 +149,6 @@
   <string name="login_view_logs">Visualizza dettagli</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Impostazioni: %s</string>
-  <string name="settings_authentication">Autenticazione</string>
-  <string name="settings_username">Nome utente</string>
-  <string name="settings_enter_username">Inserisci nome utente:</string>
-  <string name="settings_password">Password</string>
-  <string name="settings_password_summary">Aggiorna la password come sul tuo server.</string>
-  <string name="settings_enter_password">Inserisci la tua password:</string>
-  <string name="settings_certificate_alias">Alias certificato cliente</string>
   <string name="settings_sync">Sincronizzazione</string>
   <string name="settings_sync_interval_contacts">Intervallo sincr. Contatti</string>
   <string name="settings_sync_summary_manually">Solo manualmente</string>
@@ -181,14 +174,13 @@
   <string name="settings_sync_wifi_only_ssids_message">Nomi (SSID) delle reti WiFi autorizzate separati da virgola (lascia vuoto per autorizzarle tutte)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">Per leggere i nomi WiFi, sono richiesti i permessi di Localizzazione e i servizi di localizzazione attivati sempre.</string>
   <string name="settings_more_info_faq">Maggiori informazioni (FAQ)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Organizzazione dei gruppi di contatto</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>I gruppi sono VCards separate</item>
-    <item>I gruppi sono categorie per ogni contatto</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">Cambia il metodo del gruppo</string>
-  <string name="settings_contact_group_method_change_reload_contacts">Questo prevede di ricaricare tutti i contatti. Variazioni locali non salvate verranno perse.</string>
+  <string name="settings_authentication">Autenticazione</string>
+  <string name="settings_username">Nome utente</string>
+  <string name="settings_enter_username">Inserisci nome utente:</string>
+  <string name="settings_password">Password</string>
+  <string name="settings_password_summary">Aggiorna la password come sul tuo server.</string>
+  <string name="settings_enter_password">Inserisci la tua password:</string>
+  <string name="settings_certificate_alias">Alias certificato cliente</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limite di tempo per gli eventi trascorsi</string>
   <string name="settings_sync_time_range_past_none">Verranno sincronizzati tutti gli eventi</string>
@@ -203,6 +195,9 @@
   <string name="settings_event_colors">Supporto colore dell\'evento</string>
   <string name="settings_event_colors_on">Sincronizza colori eventi</string>
   <string name="settings_event_colors_off">Non sincronizza colori eventi</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Organizzazione dei gruppi di contatto</string>
+  <string name="settings_contact_group_method_change">Cambia il metodo del gruppo</string>
   <!--collection management-->
   <string name="create_addressbook">Crea rubrica</string>
   <string name="create_addressbook_display_name_hint">La mia rubrica</string>

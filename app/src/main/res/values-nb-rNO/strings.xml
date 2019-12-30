@@ -143,12 +143,6 @@
   <string name="login_view_logs">Vis fler detaljer</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Innstillinger: %s</string>
-  <string name="settings_authentication">Identitetsbekreftelse</string>
-  <string name="settings_username">Brukernavn</string>
-  <string name="settings_enter_username">Skriv inn brukernavn:</string>
-  <string name="settings_password">Passord</string>
-  <string name="settings_password_summary">Oppdater passordet i henhold til din tjener.</string>
-  <string name="settings_enter_password">Skriv inn passordet ditt:</string>
   <string name="settings_sync">Synkronisering</string>
   <string name="settings_sync_interval_contacts">Intervall for kontaktsynkronisering</string>
   <string name="settings_sync_summary_manually">Åpne manuelt</string>
@@ -173,14 +167,12 @@
   <string name="settings_sync_wifi_only_ssids_off">Alle Wi-Fi -tilkoblinger vil bli brukt</string>
   <string name="settings_sync_wifi_only_ssids_message">Kommainndelte navn (SSID-er) på tillatte Wi-Fi -nettverk (la stå tomt for alle)</string>
   <string name="settings_more_info_faq">Mer informasjon (FAQ)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Kontaktgruppemetode</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>Grupper er egne vKort</item>
-    <item>Grupper er kategorier per kontakt</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">Endre gruppemetode</string>
-  <string name="settings_contact_group_method_change_reload_contacts">Dette krever ny innlasting av alle kontakter. Ulagrede lokale endringer vil bli forkastet.</string>
+  <string name="settings_authentication">Identitetsbekreftelse</string>
+  <string name="settings_username">Brukernavn</string>
+  <string name="settings_enter_username">Skriv inn brukernavn:</string>
+  <string name="settings_password">Passord</string>
+  <string name="settings_password_summary">Oppdater passordet i henhold til din tjener.</string>
+  <string name="settings_enter_password">Skriv inn passordet ditt:</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tidsgrense for tidligere hendelser</string>
   <string name="settings_sync_time_range_past_none">Alle gjøremål vil bli synkronisert</string>
@@ -195,7 +187,9 @@
   <string name="settings_event_colors">Støtte for fargelegging av hendelser</string>
   <string name="settings_event_colors_on">Synkroniser hendelsesfarger</string>
   <string name="settings_event_colors_off">Ikke synkroniser hendelsesfarger</string>
-  <string name="settings_event_colors_off_confirm">Det kan hende at det å skru av hendelsesfarger vil fjerne allerede synkroniserte hendelsesfarger.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Kontaktgruppemetode</string>
+  <string name="settings_contact_group_method_change">Endre gruppemetode</string>
   <!--collection management-->
   <string name="create_addressbook">Opprett adressebok</string>
   <string name="create_addressbook_display_name_hint">Min adressebok</string>

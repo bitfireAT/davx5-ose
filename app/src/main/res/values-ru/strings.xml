@@ -25,7 +25,7 @@
   <string name="startup_dont_show_again">Не показывать снова</string>
   <string name="startup_not_now">Не сейчас</string>
   <string name="startup_donate">Open-Source информация</string>
-  <string name="startup_donate_message">Мы гордимся, что вы используете приложение с открытым исходным кодом DAVx⁵. Разрабатывая DAVx⁵ мы потратили очень много сил и времени, и будем рады, если вы рассмотрите возможность поддержать проект.</string>
+  <string name="startup_donate_message">Мы гордимся, что вы используете приложение с открытым исходным кодом DAVx⁵. Его разработка и поддержка отнимает очень много сил и времени. Мы будем счастливы, если вы поддержите наш проект.</string>
   <string name="startup_donate_now">Поддержать проект</string>
   <string name="startup_donate_later">Возможно, позже</string>
   <string name="startup_more_info">Дополнительная информация</string>
@@ -121,21 +121,21 @@
   <string name="account_install_icsx5">Установить ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Добавить аккаунт</string>
-  <string name="login_type_email">Вход с адресом электронной почты</string>
+  <string name="login_type_email">Войти по email</string>
   <string name="login_email_address">Адрес электронной почты</string>
   <string name="login_email_address_error">Требуется действующий адрес электронной почты</string>
   <string name="login_password">Пароль</string>
   <string name="login_password_required">Требуется пароль</string>
-  <string name="login_type_url">Вход с URL и именем пользователя</string>
+  <string name="login_type_url">Войти по URL-адресу и имени пользователя</string>
   <string name="login_url_must_be_http_or_https">URL должен начинаться с http(s)://</string>
   <string name="login_url_must_be_https">URL-адрес должен начинаться с https://</string>
   <string name="login_url_host_name_required">Требуется имя хоста</string>
   <string name="login_user_name">Имя пользователя</string>
   <string name="login_user_name_required">Требуется Имя пользователя</string>
   <string name="login_base_url">Базовый URL</string>
-  <string name="login_type_url_certificate">Войти с URL-адресом и сертификатом клиента</string>
+  <string name="login_type_url_certificate">Войти по URL-адресу и клиентскому сертификату</string>
   <string name="login_select_certificate">Выберите сертификат</string>
-  <string name="login_login">Вход</string>
+  <string name="login_login">Войти</string>
   <string name="login_back">Назад</string>
   <string name="login_create_account">Создать аккаунт</string>
   <string name="login_account_name">Имя аккаунта</string>
@@ -150,13 +150,6 @@
   <string name="login_view_logs">Показать детали</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Настройки: %s</string>
-  <string name="settings_authentication">Аутентификация</string>
-  <string name="settings_username">Имя пользователя</string>
-  <string name="settings_enter_username">Введите имя пользователя:</string>
-  <string name="settings_password">Пароль</string>
-  <string name="settings_password_summary">Обновить пароль</string>
-  <string name="settings_enter_password">Введите свой пароль:</string>
-  <string name="settings_certificate_alias">Псевдоним сертификата клиента</string>
   <string name="settings_sync">Синхронизация</string>
   <string name="settings_sync_interval_contacts">Интервал синхронизации контактов</string>
   <string name="settings_sync_summary_manually">Вручную</string>
@@ -182,14 +175,13 @@
   <string name="settings_sync_wifi_only_ssids_message">Названия (SSID), разделенные запятыми разрешенных сетей Wi-Fi (оставьте пустым для всех)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">Для чтения имен WiFi требуются разрешение на геолокацию и постоянно активированные службы определения местоположения</string>
   <string name="settings_more_info_faq">Дополнительная информация (FAQ)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Метод группировки контактов</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>Группы являются отдельными vCards</item>
-    <item>Группы являются категориями контактов</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">Изменить метод группировки</string>
-  <string name="settings_contact_group_method_change_reload_contacts">Вам потребуется перезагрузить все контакты. Несохраненные локальные изменения будут отброшены.</string>
+  <string name="settings_authentication">Аутентификация</string>
+  <string name="settings_username">Имя пользователя</string>
+  <string name="settings_enter_username">Введите имя пользователя:</string>
+  <string name="settings_password">Пароль</string>
+  <string name="settings_password_summary">Обновить пароль</string>
+  <string name="settings_enter_password">Введите свой пароль:</string>
+  <string name="settings_certificate_alias">Псевдоним сертификата клиента</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Ограничение по времени для прошедших событий</string>
   <string name="settings_sync_time_range_past_none">Будут синхронизироваться все события</string>
@@ -206,7 +198,9 @@
   <string name="settings_event_colors">Поддержка цвета событий</string>
   <string name="settings_event_colors_on">Синхронизация цветов событий</string>
   <string name="settings_event_colors_off">Не синхронизировать цвета событий</string>
-  <string name="settings_event_colors_off_confirm">Отключение цветов событий может удалить уже синхронизированные цвета событий.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Метод группировки контактов</string>
+  <string name="settings_contact_group_method_change">Изменить метод группировки</string>
   <!--collection management-->
   <string name="create_addressbook">Создать адресную книгу</string>
   <string name="create_addressbook_display_name_hint">Моя адресная книга</string>

@@ -145,13 +145,6 @@
   <string name="login_view_logs">عرض التفاصيل</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">%s الإعدادات:</string>
-  <string name="settings_authentication">المصادقة</string>
-  <string name="settings_username">اسم المستخدم</string>
-  <string name="settings_enter_username">أدخل اسم المستخدم:</string>
-  <string name="settings_password">كلمة المرور</string>
-  <string name="settings_password_summary">حدّث كلمة المرور المعمول بها في خادمك.</string>
-  <string name="settings_enter_password">أدخل كلمة المرور:</string>
-  <string name="settings_certificate_alias">الكنية (الاسم المستعار) في شهادة العميل</string>
   <string name="settings_sync">المزامنة</string>
   <string name="settings_sync_interval_contacts">مدة مزامنة جهات الاتصال</string>
   <string name="settings_sync_summary_manually">يدوية فقط</string>
@@ -177,14 +170,13 @@
   <string name="settings_sync_wifi_only_ssids_message">أسماء (SSIDs) مفصولة بفواصل لشبكات WiFi المسموح الاتصال عبرها (اتركه فارغاً للسماح للكل)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">الإذن لمعرفة الموقع الجغرافي والتفعيل الدائم لخدمات الموقع مطلوبان من أجل قراءة أسماء شبكات وايفاي</string>
   <string name="settings_more_info_faq">المزيد من المعلومات (الأسئلة الشائعة)</string>
-  <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">طريقة مجموعة عنوان الاتصال</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>المجموعات هي عناصر VCard منفصلة</item>
-    <item>المجموعات هي فئات حسب جهة الاتصال</item>
-  </string-array>
-  <string name="settings_contact_group_method_change">تغيير طريقة المجموعة</string>
-  <string name="settings_contact_group_method_change_reload_contacts">هذا يتطلب إعادة تحميل جميع جهات الاتصال.  سيتم استبعاد التغييرات المحلية غير المحفوظة.</string>
+  <string name="settings_authentication">المصادقة</string>
+  <string name="settings_username">اسم المستخدم</string>
+  <string name="settings_enter_username">أدخل اسم المستخدم:</string>
+  <string name="settings_password">كلمة المرور</string>
+  <string name="settings_password_summary">حدّث كلمة المرور المعمول بها في خادمك.</string>
+  <string name="settings_enter_password">أدخل كلمة المرور:</string>
+  <string name="settings_certificate_alias">الكنية (الاسم المستعار) في شهادة العميل</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">الحد الزمني للأحداث الماضية</string>
   <string name="settings_sync_time_range_past_none">ستتم مزامنة جميع الأحداث</string>
@@ -203,7 +195,9 @@
   <string name="settings_event_colors">دعم ألوان الأحداث</string>
   <string name="settings_event_colors_on">زامن ألوان الأحداث</string>
   <string name="settings_event_colors_off">لا تزامن ألوان الأحداث</string>
-  <string name="settings_event_colors_off_confirm">إيقاف تشغيل ألوان الأحداث قد يزيل ألوان الأحداث التي سبقت مزامنتها.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">طريقة مجموعة عنوان الاتصال</string>
+  <string name="settings_contact_group_method_change">تغيير طريقة المجموعة</string>
   <!--collection management-->
   <string name="create_addressbook">إنشاء دفتر عناوين</string>
   <string name="create_addressbook_display_name_hint">دفتر عناويني</string>

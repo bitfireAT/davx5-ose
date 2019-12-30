@@ -98,12 +98,6 @@
   <string name="login_no_caldav_carddav">找不到 CalDAV 或 CardDAV 服務。</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">設定: %s</string>
-  <string name="settings_authentication">登入驗證</string>
-  <string name="settings_username">使用者帳號</string>
-  <string name="settings_enter_username">輸入帳號名稱:</string>
-  <string name="settings_password">密碼</string>
-  <string name="settings_password_summary">您在伺服器上使用中的密碼</string>
-  <string name="settings_enter_password">輸入密碼: </string>
   <string name="settings_sync">同步設定</string>
   <string name="settings_sync_interval_contacts">聯絡人同步間隔</string>
   <string name="settings_sync_summary_manually">只手動同步</string>
@@ -113,12 +107,12 @@
   <string name="settings_sync_wifi_only">只用 WiFi 同步</string>
   <string name="settings_sync_wifi_only_on">只於 WiFi 連線時同步</string>
   <string name="settings_sync_wifi_only_off">任何網路連線都可使用</string>
-  <string name="settings_carddav">CardDAV（聯絡人檔案）</string>
-  <string name="settings_contact_group_method">聯絡人群組的儲存格式</string>
-  <string-array name="settings_contact_group_method_entries">
-    <item>群組存成額外的 VCard 檔案</item>
-    <item>群組存成每個聯絡人的分類屬性</item>
-  </string-array>
+  <string name="settings_authentication">登入驗證</string>
+  <string name="settings_username">使用者帳號</string>
+  <string name="settings_enter_username">輸入帳號名稱:</string>
+  <string name="settings_password">密碼</string>
+  <string name="settings_password_summary">您在伺服器上使用中的密碼</string>
+  <string name="settings_enter_password">輸入密碼: </string>
   <string name="settings_caldav">CalDav（行事曆檔案）</string>
   <string name="settings_sync_time_range_past">過去項目的時間限制</string>
   <string name="settings_sync_time_range_past_none">將會同步所有項目</string>
@@ -129,6 +123,8 @@
   <string name="settings_manage_calendar_colors">管理行事曆的顏色</string>
   <string name="settings_manage_calendar_colors_on">行事曆顏色由 DAVx⁵ 管理</string>
   <string name="settings_manage_calendar_colors_off">行事曆顏色不由 DAVx⁵ 管理</string>
+  <string name="settings_carddav">CardDAV（聯絡人檔案）</string>
+  <string name="settings_contact_group_method">聯絡人群組的儲存格式</string>
   <!--collection management-->
   <string name="create_addressbook">建立通訊錄</string>
   <string name="create_addressbook_display_name_hint">我的通訊錄</string>
