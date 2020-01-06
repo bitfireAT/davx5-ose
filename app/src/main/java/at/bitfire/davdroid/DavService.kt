@@ -293,17 +293,18 @@ class DavService: android.app.Service() {
                                 // this response is about the homeset itself
                                 homeSet.value.displayName = response[DisplayName::class.java]?.displayName
                                 homeSet.value.privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind ?: true
-
-                            } else {
-                                val info = Collection.fromDavResponse(response) ?: return@propfind
-                                info.serviceId = serviceId
-                                info.confirmed = true
-                                Logger.log.log(Level.FINE, "Found collection", info)
-
-                                if ((service.type == Service.TYPE_CARDDAV && info.type == Collection.TYPE_ADDRESSBOOK) ||
-                                    (service.type == Service.TYPE_CALDAV && arrayOf(Collection.TYPE_CALENDAR, Collection.TYPE_WEBCAL).contains(info.type)))
-                                    collections[response.href] = info
                             }
+
+                            // in any case, check whether the response is about a useable collection
+                            val info = Collection.fromDavResponse(response) ?: return@propfind
+                            info.serviceId = serviceId
+                            info.confirmed = true
+                            Logger.log.log(Level.FINE, "Found collection", info)
+
+                            // remember usable collections
+                            if ((service.type == Service.TYPE_CARDDAV && info.type == Collection.TYPE_ADDRESSBOOK) ||
+                                    (service.type == Service.TYPE_CALDAV && arrayOf(Collection.TYPE_CALENDAR, Collection.TYPE_WEBCAL).contains(info.type)))
+                                collections[response.href] = info
                         }
                     } catch(e: HttpException) {
                         if (e.code in arrayOf(403, 404, 410))
