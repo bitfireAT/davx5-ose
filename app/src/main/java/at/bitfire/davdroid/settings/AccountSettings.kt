@@ -199,10 +199,34 @@ class AccountSettings(
     fun setTimeRangePastDays(days: Int?) =
             accountManager.setUserData(account, KEY_TIME_RANGE_PAST_DAYS, (days ?: -1).toString())
 
+    /**
+     * Takes the default alarm setting (in this order) from
+     *
+     * 1. the local account settings
+     * 2. the settings provider (unless the value is -1 there).
+     *
+     * @return A default reminder shall be created this number of minutes before the start of every
+     * event without reminder. *null*: No default reminders shall be created.
+     */
     fun getDefaultAlarm() =
-            accountManager.getUserData(account, KEY_DEFAULT_ALARM)?.toInt()
+            accountManager.getUserData(account, KEY_DEFAULT_ALARM)?.toInt() ?:
+            settings.getInt(KEY_DEFAULT_ALARM).takeIf { it != -1 }
+
+    /**
+     * Sets the default alarm value in the local account settings, if the new value differs
+     * from the value of the settings provider. If the new value is the same as the value of
+     * the settings provider, the local setting will be deleted, so that the settings provider
+     * value applies.
+     *
+     * @param minBefore The number of minutes a default reminder shall be created before the
+     * start of every event without reminder. *null*: No default reminders shall be created.
+     */
     fun setDefaultAlarm(minBefore: Int?) =
-            accountManager.setUserData(account, KEY_DEFAULT_ALARM, minBefore?.toString())
+            accountManager.setUserData(account, KEY_DEFAULT_ALARM,
+                    if (minBefore == settings.getInt(KEY_DEFAULT_ALARM).takeIf { it != -1 })
+                        null
+                    else
+                        minBefore?.toString())
 
     fun getManageCalendarColors() = if (settings.has(KEY_MANAGE_CALENDAR_COLORS))
         settings.getBoolean(KEY_MANAGE_CALENDAR_COLORS) ?: false
