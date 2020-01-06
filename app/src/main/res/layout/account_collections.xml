@@ -19,11 +19,14 @@
             android:visibility="invisible"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
 
+        <!-- paddingBottom and clipToPadding are needed to make space for the FAB at the end -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:paddingBottom="@dimen/fab_bottom_padding"
+            android:clipToPadding="false" />
 
         <LinearLayout
             android:id="@+id/empty"
