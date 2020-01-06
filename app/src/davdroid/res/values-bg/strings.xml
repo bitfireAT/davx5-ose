@@ -22,7 +22,7 @@
   <string name="startup_dont_show_again">Не показвай отново</string>
   <string name="startup_not_now">Не сега</string>
   <string name="startup_donate">Информация за отворения код</string>
-  <string name="startup_donate_message">Радваме се, че изполваш DAVx⁵ – софтуер с отворен код (GPLv3).  Тъй като разработването на DAVx⁵ е много трудоемка работа, моля да направите дарение.</string>
+  <string name="startup_donate_message">Радваме се, че изполваш DAVx⁵ – софтуер с отворен код (GPLv3).  Тъй като разработването на DAVx⁵ е много трудоемка работа, моля да направиш дарение.</string>
   <string name="startup_donate_now">Покажи страницата за дарения</string>
   <string name="startup_donate_later">Може би по-късно</string>
   <string name="startup_more_info">Повече информация</string>
