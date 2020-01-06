@@ -50,6 +50,8 @@
   <string name="navigation_drawer_subtitle">Адаптер синхронизации CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">О программе / Лицензия</string>
   <string name="navigation_drawer_beta_feedback">Отзыв о бета-тестировании</string>
+  <string name="install_email_client">Пожалуйста, установите почтовый клиент</string>
+  <string name="install_browser">Пожалуйста, установите веб-браузер</string>
   <string name="navigation_drawer_settings">Настройки</string>
   <string name="navigation_drawer_news_updates">Новости &amp; обновления</string>
   <string name="navigation_drawer_external_links">Внешние ссылки</string>
@@ -58,6 +60,7 @@
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_forums">Помощь / Форумы</string>
   <string name="navigation_drawer_donate">Пожертвовать</string>
+  <string name="navigation_drawer_privacy_policy">Политика конфиденциальности</string>
   <string name="account_list_no_internet">Нет подключения к интернету. Android не будет запускать синхронизацию.</string>
   <string name="account_list_empty">Добро пожаловать в DAVx⁵\n\nТеперь вы можете добавить аккаунт CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Синхронизация отключена на уровне устройства</string>
@@ -192,6 +195,15 @@
     <item quantity="other">События старше %d дней будут игнорироваться</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">События старше указанного количества дней будут игнорироваться (может быть 0). Оставьте пустым для синхронизации всех событий.</string>
+  <string name="settings_default_alarm">Напоминание по умолчанию</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Напоминание по умолчанию за 1 минуту до события</item>
+    <item quantity="few">Напоминание по умолчанию за %d минуты до события</item>
+    <item quantity="many">Напоминание по умолчанию за %d минут до события</item>
+    <item quantity="other">Напоминание по умолчанию за %d минут до события</item>
+  </plurals>
+  <string name="settings_default_alarm_off">Напоминания по умолчанию не создаются</string>
+  <string name="settings_default_alarm_message">Если напоминания по умолчанию должны быть созданы для событий без напоминания: это желаемое количество минут до события. Оставьте пустым, чтобы отключить напоминания по умолчанию.</string>
   <string name="settings_manage_calendar_colors">Управление цветами календаря</string>
   <string name="settings_manage_calendar_colors_on">Цвета календаря управляются DAVx⁵</string>
   <string name="settings_manage_calendar_colors_off">Цвета календаря не управляются DAVx⁵</string>
@@ -200,6 +212,10 @@
   <string name="settings_event_colors_off">Не синхронизировать цвета событий</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Метод группировки контактов</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Группы являются отдельными vCards</item>
+    <item>Группы являются категориями контактов</item>
+  </string-array>
   <string name="settings_contact_group_method_change">Изменить метод группировки</string>
   <!--collection management-->
   <string name="create_addressbook">Создать адресную книгу</string>
