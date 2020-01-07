@@ -1,0 +1,5 @@
+* account settings: new setting "default reminder"; improved re-loading of entries when settings which have impact on parsing/processing are changed
+* improved resource detection: detect address books/calendars when they are identical with their home-set
+* link to privacy policy added to navigation drawer
+* vCard sync: improve compatibility (for instance with Samsung "Edge panel")
+* minor improvements and bug fixes
