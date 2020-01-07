@@ -169,9 +169,9 @@ class CalendarSyncManager(
         if (events.size == 1) {
             val event = events.first()
 
-            // set default reminder, if requested
+            // set default reminder for non-full-day events, if requested
             val defaultAlarmMinBefore = accountSettings.getDefaultAlarm()
-            if (defaultAlarmMinBefore != null && event.alarms.isEmpty()) {
+            if (defaultAlarmMinBefore != null && !event.isAllDay() && event.alarms.isEmpty()) {
                 val alarm = VAlarm(Dur(0, 0, -defaultAlarmMinBefore, 0))
                 Logger.log.log(Level.FINE, "${event.uid}: Adding default alarm", alarm)
                 event.alarms += alarm

@@ -206,7 +206,7 @@ class AccountSettings(
      * 2. the settings provider (unless the value is -1 there).
      *
      * @return A default reminder shall be created this number of minutes before the start of every
-     * event without reminder. *null*: No default reminders shall be created.
+     * non-full-day event without reminder. *null*: No default reminders shall be created.
      */
     fun getDefaultAlarm() =
             accountManager.getUserData(account, KEY_DEFAULT_ALARM)?.toInt() ?:
@@ -219,7 +219,7 @@ class AccountSettings(
      * value applies.
      *
      * @param minBefore The number of minutes a default reminder shall be created before the
-     * start of every event without reminder. *null*: No default reminders shall be created.
+     * start of every non-full-day event without reminder. *null*: No default reminders shall be created.
      */
     fun setDefaultAlarm(minBefore: Int?) =
             accountManager.setUserData(account, KEY_DEFAULT_ALARM,
