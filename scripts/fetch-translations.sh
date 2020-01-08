@@ -42,3 +42,5 @@ do
 	fetch_txt "https://www.transifex.com/api/2/project/davx5/resource/metadata-full-description/translation/$lang?file" ${android[$lang]} full_description.txt
 	fetch_txt "https://www.transifex.com/api/2/project/davx5/resource/metadata-short-description/translation/$lang?file" ${android[$lang]} short_description.txt
 done
+curl -n https://www.transifex.com/api/2/project/davx5/languages/ | ./rewrite-translators.rb >../app/src/main/assets/translators.json
+
