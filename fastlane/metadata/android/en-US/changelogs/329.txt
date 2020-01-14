@@ -1,0 +1,1 @@
+Update libraries, including okhttp, to fix a crash when resource detection with HTTP/2 connections is cancelled by user
