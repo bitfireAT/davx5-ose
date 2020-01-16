@@ -27,6 +27,7 @@ android {
         targetSdkVersion 29     // Android 10.0
         multiDexEnabled true    // >64k methods for Android 4.4
 
+        buildConfigField "String", "okhttpVersion", "\"${versions.okhttp}\""
         buildConfigField "String", "userAgent", "\"DAVx5\""
 
         // when using this, make sure that notification icons are real bitmaps
