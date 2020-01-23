@@ -50,6 +50,8 @@
   <string name="navigation_drawer_subtitle">Προσαρμογέας συγχρονισμού CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Περί / άδεια χρήσης</string>
   <string name="navigation_drawer_beta_feedback">Ανατροφοδότηση beta</string>
+  <string name="install_email_client">Παρακαλούμε εγκαταστήστε ένα πελάτη ηλεκτρονικού ταχυδρομείου</string>
+  <string name="install_browser">Παρακαλούμε εγκαταστήστε έναν περιηγητή ιστού</string>
   <string name="navigation_drawer_settings">Ρυθμίσεις</string>
   <string name="navigation_drawer_news_updates">Νέα &amp; ενημερώσεις</string>
   <string name="navigation_drawer_external_links">Εξωτερικοί σύνδεσμοι</string>
@@ -58,6 +60,7 @@
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_forums">Βοήθεια / Φόρουμ</string>
   <string name="navigation_drawer_donate">Δωρεά</string>
+  <string name="navigation_drawer_privacy_policy">Πολιτική απορρήτου</string>
   <string name="account_list_no_internet">Δεν υπάρχει σύνδεση στο Διαδίκτυο. Το Android δεν θα πραγματοποιήσει συγχρονισμό.</string>
   <string name="account_list_empty">Καλώς ήρθατε στο DAVx⁵!\n\nΜπορείτε να προσθέσετε τώρα έναν λογαριασμό CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Ο αυτόματος συγχρονισμός σε όλο το σύστημα είναι απενεργοποιημένος</string>
@@ -190,6 +193,8 @@
     <item quantity="other">Τα συμβάντα πέραν των %d ημερών θα αγνοηθούν </item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Τα συμβάντα που υπερβαίνουν αυτόν τον αριθμό ημερών στο παρελθόν θα αγνοηθούν (μπορεί να είναι 0). Αφήστε κενό για συγχρονισμό όλων των συμβάντων.</string>
+  <string name="settings_default_alarm">Προεπιλεγμένη υπενθύμιση</string>
+  <string name="settings_default_alarm_off">Δεν δημιουργούνται προεπιλεγμένες υπενθυμίσεις</string>
   <string name="settings_manage_calendar_colors">Διαχείριση χρωμάτων ημερολογίου</string>
   <string name="settings_manage_calendar_colors_on">Τα χρώματα του ημερολογίου διαχειρίζονται από το DAVx⁵</string>
   <string name="settings_manage_calendar_colors_off">Τα χρώματα του ημερολογίου δεν ορίστηκαν από το DAVx⁵</string>

@@ -9,7 +9,7 @@
   <string name="send">Envoyer</string>
   <string name="notification_channel_debugging">Débogage</string>
   <string name="notification_channel_general">Autres messages importants</string>
-  <string name="notification_channel_sync">Syncronisation</string>
+  <string name="notification_channel_sync">Synchronisation</string>
   <string name="notification_channel_sync_errors">Erreurs de synchronisation</string>
   <string name="notification_channel_sync_errors_desc">Erreurs importantes qui bloquent la synchronisation, telles que des réponses inattendues du serveur</string>
   <string name="notification_channel_sync_warnings">Avertissements de synchronisation</string>
@@ -24,14 +24,14 @@
   <string name="startup_battery_optimization_disable">Désactiver pour DAVx⁵</string>
   <string name="startup_dont_show_again">Ne plus afficher</string>
   <string name="startup_not_now">Pas maintenant</string>
-  <string name="startup_donate">Open-Source Information</string>
+  <string name="startup_donate"> Information sur l\'open-source</string>
   <string name="startup_donate_message">Nous sommes heureux que vous utilisiez DAVx⁵, qui est un logiciel open-source (GPLv3). Parce que développer DAVx⁵ est un travail difficile, qui nous a pris de nombreuses heures, nous vous invitons à faire un don.</string>
   <string name="startup_donate_now">Faire un don</string>
   <string name="startup_donate_later">Plus tard</string>
   <string name="startup_more_info">Plus d\'informations</string>
   <string name="startup_opentasks_not_installed">L\'application OpenTasks n\'est pas installée</string>
   <string name="startup_opentasks_not_installed_message">Pour synchroniser les tâches, l\'application gratuite OpenTasks est nécessaire (elle ne l\'est pas pour les contacts et les événements).</string>
-  <string name="startup_opentasks_reinstall_davx5">Après l\'installation OpenTasks, vous devez RE-INSTALLER DAVx⁵ et ajoutez vos comptes à nouveau (bug Android).</string>
+  <string name="startup_opentasks_reinstall_davx5">Après l\'installation d\'OpenTasks, vous devez RÉ-INSTALLER DAVx⁵ et ajoutez vos comptes à nouveau (bug Android).</string>
   <string name="startup_opentasks_not_installed_install">Installer OpenTasks</string>
   <!--AboutActivity-->
   <string name="about_libraries">Librairies</string>
@@ -50,6 +50,8 @@
   <string name="navigation_drawer_subtitle">Adaptateur de synchronisation CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">À propos / Licence</string>
   <string name="navigation_drawer_beta_feedback">Commentaire pour la version Beta</string>
+  <string name="install_email_client">Veuillez installer un client mail</string>
+  <string name="install_browser">Veuillez installer un navigateur</string>
   <string name="navigation_drawer_settings">Paramètres</string>
   <string name="navigation_drawer_news_updates">Actualités &amp; mises à jour</string>
   <string name="navigation_drawer_external_links">Liens externes</string>
@@ -58,6 +60,7 @@
   <string name="navigation_drawer_faq">Foire aux questions</string>
   <string name="navigation_drawer_forums">Aide/Forum</string>
   <string name="navigation_drawer_donate">Faire un don</string>
+  <string name="navigation_drawer_privacy_policy">Politique de confidentialité</string>
   <string name="account_list_no_internet">Pas de connectivité Internet. Android ne pourra pas exécuter la synchronisation.</string>
   <string name="account_list_empty">Bienvenue sur DAVx⁵!\n\nVous pouvez maintenant ajouter un compte CalDAV ou CardDAV.</string>
   <string name="accounts_global_sync_disabled">La synchronisation automatique globale est désactivée</string>
