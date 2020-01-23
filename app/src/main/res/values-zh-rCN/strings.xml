@@ -50,6 +50,8 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV 同步器</string>
   <string name="navigation_drawer_about">关于 / 许可</string>
   <string name="navigation_drawer_beta_feedback">测试版反馈</string>
+  <string name="install_email_client">请安装邮件客户端</string>
+  <string name="install_browser">请安装网页浏览器</string>
   <string name="navigation_drawer_settings">设置</string>
   <string name="navigation_drawer_news_updates">最新消息</string>
   <string name="navigation_drawer_external_links">外部链接</string>
@@ -58,6 +60,8 @@
   <string name="navigation_drawer_faq">常见问题</string>
   <string name="navigation_drawer_forums">帮助 / 论坛</string>
   <string name="navigation_drawer_donate">捐助</string>
+  <string name="navigation_drawer_privacy_policy">隐私政策</string>
+  <string name="account_list_no_internet">无网络连接。Android 将不会运行同步。</string>
   <string name="account_list_empty">欢迎使用 DAVx⁵！\n\n请开始增加 CalDAV/CardDAV 账户。</string>
   <string name="accounts_global_sync_disabled">系统全局自动同步已禁用</string>
   <string name="accounts_global_sync_enable">启用</string>
@@ -188,6 +192,12 @@
     <item quantity="other">%d 天前的日程不会被同步</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">超过这个数字的天数的旧日程将会被忽略（可以为 0）。留空则同步所有日程。</string>
+  <string name="settings_default_alarm">默认提醒</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="other">默认事件开始前 %d 分钟提醒</item>
+  </plurals>
+  <string name="settings_default_alarm_off">默认提醒未创建</string>
+  <string name="settings_default_alarm_message">当没有提醒的事件需增加默认提醒时，事件开始前多少分钟触发提醒。留空以禁用默认提醒。</string>
   <string name="settings_manage_calendar_colors">管理日历颜色</string>
   <string name="settings_manage_calendar_colors_on">日历颜色由 DAVx⁵ 设置</string>
   <string name="settings_manage_calendar_colors_off">日历颜色不由 DAVx⁵ 设置</string>
@@ -196,6 +206,10 @@
   <string name="settings_event_colors_off">不同步日历事件颜色</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">联系人分组方式</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>按 VCard 文件分组</item>
+    <item>按联系人分类分组</item>
+  </string-array>
   <string name="settings_contact_group_method_change">修改分组方式</string>
   <!--collection management-->
   <string name="create_addressbook">创建通讯录</string>

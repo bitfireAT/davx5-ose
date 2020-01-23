@@ -50,6 +50,8 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV synkroniseringsadapter</string>
   <string name="navigation_drawer_about">Om / licens</string>
   <string name="navigation_drawer_beta_feedback">Beta tilbagemelding</string>
+  <string name="install_email_client">Installere en e-post klient</string>
+  <string name="install_browser">Installere en netlæser</string>
   <string name="navigation_drawer_settings">Opsætning</string>
   <string name="navigation_drawer_news_updates">Nyheder &amp; opdateringer</string>
   <string name="navigation_drawer_external_links">Eksterne henvisninger</string>
@@ -58,6 +60,7 @@
   <string name="navigation_drawer_faq">OSS</string>
   <string name="navigation_drawer_forums">Hjælp / fora</string>
   <string name="navigation_drawer_donate">Donation</string>
+  <string name="navigation_drawer_privacy_policy">Privatliv retningslinje</string>
   <string name="account_list_no_internet">Ingen internetforbindelse. Android kører ikke synkronisering.</string>
   <string name="account_list_empty">Velkommen til DAVx⁵!\n\nDu kan nu tilføje en CalDAV/CardDAV konto.</string>
   <string name="accounts_global_sync_disabled">Automatisk synkronisering på tværs af systemet er deaktiveret</string>
@@ -190,6 +193,13 @@
     <item quantity="other">Begivenheder, der er mere end %d dage gamle, vil blive ignoreret</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Begivenheder, som er mere end dette antal dage gamle vil blive ignoreret (kan også være 0). Hvis feltet ikke er udfyldt, vil alle begivenheder blive synkroniseret.</string>
+  <string name="settings_default_alarm">Standard påmindelse</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Standard påmindelse 1 minut før hændelse</item>
+    <item quantity="other">Standard påmindelse %d minutter før hændelse</item>
+  </plurals>
+  <string name="settings_default_alarm_off">Ingen standard påmindelse oprettet</string>
+  <string name="settings_default_alarm_message">Hvis standard påmindelse skal oprettes for hændelse uden påmindelse: antal minutter før hændelse. Efterlad tom for at deaktivere standard påmindelse.</string>
   <string name="settings_manage_calendar_colors">Administrer farver for kalender</string>
   <string name="settings_manage_calendar_colors_on">Kalenderfarver administreres af DAVx⁵</string>
   <string name="settings_manage_calendar_colors_off">Kalenderfarver sættes ikke fra DAVx⁵</string>
@@ -198,6 +208,10 @@
   <string name="settings_event_colors_off">Synkroniser ikke farver for begivenheder</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Gruppering af kontakter</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Grupper er særskilte vCards</item>
+    <item>Grupper er kategorier per kontakt</item>
+  </string-array>
   <string name="settings_contact_group_method_change">Skift grupperingsmetode</string>
   <!--collection management-->
   <string name="create_addressbook">Opret adressebog</string>

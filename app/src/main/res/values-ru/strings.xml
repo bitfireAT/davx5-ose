@@ -25,7 +25,7 @@
   <string name="startup_dont_show_again">Не показывать снова</string>
   <string name="startup_not_now">Не сейчас</string>
   <string name="startup_donate">Open-Source информация</string>
-  <string name="startup_donate_message">Мы гордимся, что вы используете приложение с открытым исходным кодом DAVx⁵. Его разработка и поддержка отнимает очень много сил и времени. Мы будем счастливы, если вы поддержите наш проект.</string>
+  <string name="startup_donate_message">Мы гордимся, что вы используете приложение с открытым исходным кодом DAVx⁵. Его разработка и поддержка отнимает очень много времени и сил. Мы будем счастливы, если вы поддержите наш проект.</string>
   <string name="startup_donate_now">Поддержать проект</string>
   <string name="startup_donate_later">Возможно, позже</string>
   <string name="startup_more_info">Дополнительная информация</string>
@@ -174,8 +174,8 @@
   <string name="settings_sync_wifi_only_ssids">Ограничение WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">Будет синхронизироваться только  %s</string>
   <string name="settings_sync_wifi_only_ssids_on_location_services">Будет синхронизироваться только более %s (требуются активированные службы определения местоположения)</string>
-  <string name="settings_sync_wifi_only_ssids_off">Все соединения WiFi будут использоваться</string>
-  <string name="settings_sync_wifi_only_ssids_message">Названия (SSID), разделенные запятыми разрешенных сетей Wi-Fi (оставьте пустым для всех)</string>
+  <string name="settings_sync_wifi_only_ssids_off">Будут использоваться все WiFi-подключения</string>
+  <string name="settings_sync_wifi_only_ssids_message">Имена (SSID) разрешенных сетей WiFi, разделенные запятыми (оставьте пустым для всех)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">Для чтения имен WiFi требуются разрешение на геолокацию и постоянно активированные службы определения местоположения</string>
   <string name="settings_more_info_faq">Дополнительная информация (FAQ)</string>
   <string name="settings_authentication">Аутентификация</string>
@@ -203,7 +203,7 @@
     <item quantity="other">Напоминание по умолчанию за %d минут до события</item>
   </plurals>
   <string name="settings_default_alarm_off">Напоминания по умолчанию не создаются</string>
-  <string name="settings_default_alarm_message">Если напоминания по умолчанию должны быть созданы для событий без напоминания: это желаемое количество минут до события. Оставьте пустым, чтобы отключить напоминания по умолчанию.</string>
+  <string name="settings_default_alarm_message">Для событий без напоминания введите желаемое количество минут для получения уведомления. Оставьте пустым, чтобы не использовать напоминания по умолчанию.</string>
   <string name="settings_manage_calendar_colors">Управление цветами календаря</string>
   <string name="settings_manage_calendar_colors_on">Цвета календаря управляются DAVx⁵</string>
   <string name="settings_manage_calendar_colors_off">Цвета календаря не управляются DAVx⁵</string>
