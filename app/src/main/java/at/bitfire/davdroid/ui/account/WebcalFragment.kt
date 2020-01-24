@@ -192,7 +192,7 @@ class WebcalFragment: CollectionsFragment() {
                 value = null
             }
         }
-        val subscribedUrls = object: MediatorLiveData<MutableMap<HttpUrl, Long>>() {
+        val subscribedUrls = object: MediatorLiveData<MutableMap<Long, HttpUrl>>() {
             var provider: ContentProviderClient? = null
             var observer: ContentObserver? = null
 
@@ -244,19 +244,19 @@ class WebcalFragment: CollectionsFragment() {
             @Transaction
             private fun queryCalendars(provider: ContentProviderClient) {
                 // query subscribed URLs from Android calendar list
-                val subscriptions = mutableMapOf<HttpUrl, Long>()
+                val subscriptions = mutableMapOf<Long, HttpUrl>()
                 provider.query(Calendars.CONTENT_URI, arrayOf(Calendars._ID, Calendars.NAME),null, null, null)?.use { cursor ->
                     while (cursor.moveToNext())
                         cursor.getString(1)?.let { rawName ->
                             HttpUrl.parse(rawName)?.let { url ->
-                                subscriptions[url] = cursor.getLong(0)
+                                subscriptions[cursor.getLong(0)] = url
                             }
                         }
                 }
 
                 // update "sync" field in database accordingly (will update UI)
                 db.collectionDao().getByServiceAndType(serviceId, Collection.TYPE_WEBCAL).forEach { webcal ->
-                    val newSync = subscriptions.keys
+                    val newSync = subscriptions.values
                             .any { webcal.source?.let { source -> UrlUtils.equals(source, it) } ?: false }
                     if (newSync != webcal.sync)
                         db.collectionDao().update(webcal.copy(sync = newSync))
@@ -278,8 +278,11 @@ class WebcalFragment: CollectionsFragment() {
 
         fun unsubscribe(webcal: Collection) {
             workerHandler.post {
-                subscribedUrls.value?.get(webcal.source)?.let { id ->
-                    // delete subscription from Android calendar list
+                // find first matching source (Webcal) URL
+                subscribedUrls.value?.entries?.firstOrNull { (id, source) ->
+                    UrlUtils.equals(source, webcal.source!!)
+                }?.key?.let { id ->
+                    // delete first matching subscription from Android calendar list
                     calendarProvider.value?.delete(Calendars.CONTENT_URI,
                             "${Calendars._ID}=?", arrayOf(id.toString()))
                 }
