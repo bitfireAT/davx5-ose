@@ -2,42 +2,80 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">DAVx⁵ adresář kontaktů</string>
+  <string name="address_books_authority_title">Adresáře kontaktů</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Spravovat účty</string>
   <string name="send">Odeslat</string>
+  <string name="notification_channel_debugging">Ladění</string>
+  <string name="notification_channel_general">Ostatní důležité zprávy</string>
+  <string name="notification_channel_sync">Synchronizace</string>
+  <string name="notification_channel_sync_errors">Chyby synchronizace</string>
+  <string name="notification_channel_sync_errors_desc">Důležité chyby, které zastaví synchronizaci, jako např. neočekávané odpovědi ze serveru</string>
+  <string name="notification_channel_sync_warnings">Varování ohledně synchronizace</string>
+  <string name="notification_channel_sync_warnings_desc">Nefatální problémy při synchronizaci jako například některé neplatné soubory</string>
+  <string name="notification_channel_sync_io_errors">Chyby sítě a vstupu/výstupu</string>
+  <string name="notification_channel_sync_io_errors_desc">Překročení časových limitů, problémy se spojením, atd. (často dočasné)</string>
   <!--startup dialogs-->
+  <string name="startup_autostart_permission">Automatická synchronizace</string>
+  <string name="startup_autostart_permission_message">%s firmware často blokuje automatickou synchronizaci. V takovém případě umožněte automatickou synchronizaci v nastavení Android.</string>
+  <string name="startup_battery_optimization">Naplánovaná synchronizace</string>
+  <string name="startup_battery_optimization_message">Vaše zařízení omezuje DAVx⁵ synchronizaci. Pro vynucení běžných intervalů synchronizace DAVx⁵, vypněte „optimalizaci akumulátoru“.</string>
   <string name="startup_battery_optimization_disable">Vypnout pro DAVx⁵</string>
   <string name="startup_dont_show_again">Již nezobrazovat</string>
-  <string name="startup_donate">Open Source informace</string>
+  <string name="startup_not_now">Nyní ne</string>
+  <string name="startup_donate">Informace o open source</string>
   <string name="startup_donate_message">Jsme velice rádi že používáte DAVx⁵, software s otevřeným zdrojovým kódem (GPLv3). Vývoj této aplikace je náročný a trval již několik tisíc hodin, velice nás potěší přispějete-li na jeho vývoj.</string>
   <string name="startup_donate_now">Zobrazit stránku pro obdarování</string>
   <string name="startup_donate_later">Možná později</string>
+  <string name="startup_more_info">Další informace</string>
   <string name="startup_opentasks_not_installed">OpenTasks není nainstalován</string>
+  <string name="startup_opentasks_not_installed_message">Pro synchronizaci úkolů je zapotřebí bezplatné aplikace OpenTasks (není potřebná pro kontakty/události).</string>
   <string name="startup_opentasks_reinstall_davx5">Po instalaci OpenTasks musíte PŘEINSTALOVAT DAVx⁵ a přidat znovu své účty (Android chyba).</string>
   <string name="startup_opentasks_not_installed_install">Nainstalovat OpenTasks</string>
   <!--AboutActivity-->
-  <string name="about_license_info_no_warranty">Tento program je distribuován BEZ JAKÉKOLIV ZÁRUKY. Je to volně dostupný software a lze jej za určitých podmínek dále distribuovat.</string>
+  <string name="about_libraries">Knihovny</string>
+  <string name="about_version">Verze %1$s (%2$d)</string>
+  <string name="about_build_date">Sestaveno %s</string>
+  <string name="about_flavor_info">Tuto verzi je možné šířit pouze přes Google Play.</string>
+  <string name="about_license_info_no_warranty">Na tento program nejsou poskytovány ŽÁDNÉ ZÁRUKY. Jedná se o svobodný software a jeho šíření dál je vítáno, ovšem za podmínky, že stejné svobody zůstanou zachovány i všem dalším příjemcům.</string>
   <!--global settings-->
+  <string name="logging_couldnt_create_file">Nedaří se vytvořit soubor pro záznam událostí</string>
+  <string name="logging_notification_title">Zaznamenávání událostí v DAVx⁵</string>
+  <string name="logging_notification_text">Nyní jsou zaznamenávány všechny aktivity v DAVx⁵</string>
+  <string name="logging_notification_send_log">Záznam událostí odesílání</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Otevřít panel navigace</string>
   <string name="navigation_drawer_close">Zavřít panel navigace</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV adapter synchronizace</string>
   <string name="navigation_drawer_about">O aplikaci / Licence</string>
+  <string name="navigation_drawer_beta_feedback">Zpětná vazba k vývojové verzi</string>
+  <string name="install_email_client">Nainstalujte si e-mailového klienta</string>
+  <string name="install_browser">Nainstalujte si webový prohlížeč</string>
   <string name="navigation_drawer_settings">Nastavení</string>
-  <string name="navigation_drawer_news_updates">Novinky &amp; aktualizace</string>
+  <string name="navigation_drawer_news_updates">Novinky a aktualizace</string>
   <string name="navigation_drawer_external_links">Externí odkazy</string>
   <string name="navigation_drawer_website">Webová stránka</string>
+  <string name="navigation_drawer_manual">Ručně</string>
   <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_forums">Nápověda / diskuzní fóra</string>
   <string name="navigation_drawer_donate">Obdarovat</string>
+  <string name="navigation_drawer_privacy_policy">Zásady ochrany soukromí</string>
+  <string name="account_list_no_internet">Bez připojení k Internetu. Android synchronizaci nespustí.</string>
   <string name="account_list_empty">Vítejte v aplikaci DAVx⁵!\n\nNyní můžete přidat CalDAV/CardDAV účet.</string>
+  <string name="accounts_global_sync_disabled">Automatická synchronizace z celého systému je vypnutá</string>
+  <string name="accounts_global_sync_enable">Zapnout</string>
   <!--DavService-->
-  <string name="dav_service_refresh_failed">Vyhledání služby selhalo</string>
-  <string name="dav_service_refresh_couldnt_refresh">Nelze obnovit seznam sbírky</string>
+  <string name="dav_service_refresh_failed">Vyhledání služby se nezdařilo</string>
+  <string name="dav_service_refresh_couldnt_refresh">Nedaří se znovu načíst seznam sbírky</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Nastavení</string>
   <string name="app_settings_debug">Ladění</string>
   <string name="app_settings_show_debug_info">Zobrazit ladící informace</string>
-  <string name="app_settings_show_debug_info_details">Zobrazit/sdílet software a detaily konfigurace</string>
+  <string name="app_settings_show_debug_info_details">Zobrazit/sdílet software a podrobnosti nastavení</string>
+  <string name="app_settings_logging">Podrobnější zaznamenávání událostí</string>
+  <string name="app_settings_logging_on">Zaznamenávání událostí je aktivní</string>
+  <string name="app_settings_logging_off">Zaznamenávání událostí je vypnuté</string>
   <string name="app_settings_connection">Připojení</string>
   <string name="app_settings_override_proxy">Přepsat proxy nastavení</string>
   <string name="app_settings_override_proxy_on">Použít vlastní proxy nastavení</string>
@@ -52,10 +90,19 @@
   <string name="app_settings_reset_certificates_summary">Resetovat důvěryhodnost všech vlastních certifikátů</string>
   <string name="app_settings_reset_certificates_success">Všechny vlastní certifikáty byly resetovány</string>
   <string name="app_settings_user_interface">Uživatelské prostředí</string>
-  <string name="app_settings_reset_hints">Resetovat nápovědu</string>
+  <string name="app_settings_notification_settings">Nastavení oznamování</string>
+  <string name="app_settings_notification_settings_summary">Spravovat kanály oznamování a jejich nastavení</string>
+  <string name="app_settings_reset_hints">Znovu zobrazovat rady</string>
   <string name="app_settings_reset_hints_summary">Znovu povolí vypnuté texty nápovědy</string>
   <string name="app_settings_reset_hints_success">Budou zobrazovány všechny texty nápovědy</string>
   <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_no_address_books">(Zatím) zde nejsou žádné adresáře kontaktů.</string>
+  <string name="account_no_calendars">(Zatím) zde nejsou žádné kalendáře.</string>
+  <string name="account_no_webcals">Nejsou zde žádná přihlášení k odběru kalendáře (zatím).</string>
+  <string name="account_swipe_down">Seznam ze serveru načtete znovu přejetím prstem dolů.</string>
   <string name="account_synchronize_now">Synchronizovat nyní</string>
   <string name="account_synchronizing_now">Probíhá synchronizace</string>
   <string name="account_settings">Nastavení účtu</string>
@@ -65,51 +112,79 @@
   <string name="account_delete">Smazat účet</string>
   <string name="account_delete_confirmation_title">Opravdu smazat účet?</string>
   <string name="account_delete_confirmation_text">Všechny místní kopie adresáře, kalendářů a úkolů budou smazány.</string>
-  <string name="account_refresh_address_book_list">Obnovit seznam adresářů</string>
-  <string name="account_create_new_address_book">Vytvořit nový adresář</string>
-  <string name="account_refresh_calendar_list">Obnovit seznam kalendářů</string>
+  <string name="account_synchronize_this_collection">synchronizovat tuto sadu</string>
+  <string name="account_read_only">pouze pro čtení</string>
+  <string name="account_calendar">kalendář</string>
+  <string name="account_task_list">seznam úkolů</string>
+  <string name="account_refresh_address_book_list">Znovu načíst seznam adresářů kontaktů</string>
+  <string name="account_create_new_address_book">Vytvořit nový adresář kontaktů</string>
+  <string name="account_refresh_calendar_list">Znovu načíst seznam kalednářů</string>
   <string name="account_create_new_calendar">Vytvořit nový kalendář</string>
+  <string name="account_no_webcal_handler_found">Nenalezena žádná aplikace, která by umožňovala webcal</string>
+  <string name="account_install_icsx5">Nainstalovat ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Přidat účet</string>
-  <string name="login_type_email">Přihlášení s emailovou adresou</string>
-  <string name="login_email_address">Emailová adresa</string>
-  <string name="login_email_address_error">Vyžadován platný email</string>
+  <string name="login_type_email">Přihlášení se e-mailovou adresou</string>
+  <string name="login_email_address">E-mailová adresa</string>
+  <string name="login_email_address_error">Vyžadován platný e-mail</string>
   <string name="login_password">Heslo</string>
   <string name="login_password_required">Vyžadováno heslo</string>
   <string name="login_type_url">Přihlášení s URL a uživatelským jménem</string>
-  <string name="login_url_must_be_http_or_https">URL musí začínat na http(s)://</string>
-  <string name="login_url_host_name_required">Vyžadováno hostname</string>
+  <string name="login_url_must_be_http_or_https">Je třeba, aby URL začínalo na http(s)://</string>
+  <string name="login_url_must_be_https">Je třeba, aby URL adresa začínala na https://</string>
+  <string name="login_url_host_name_required">Vyžadován název hostitele</string>
   <string name="login_user_name">Uživatelské jméno</string>
   <string name="login_user_name_required">Vyžadováno uživatelské jméno</string>
-  <string name="login_base_url">Základní URL</string>
-  <string name="login_login">Login</string>
+  <string name="login_base_url">Základ URL</string>
+  <string name="login_type_url_certificate">Přihlásit pomocí URL a klientského certifikátu</string>
+  <string name="login_select_certificate">Vybrat certifikát</string>
+  <string name="login_login">Přihlášení</string>
   <string name="login_back">Zpět</string>
   <string name="login_create_account">Vytvořit účet</string>
-  <string name="login_account_name">Jméno účtu</string>
-  <string name="login_account_name_info">Pro jméno účtu použijte svou emailovou adresu, protože Android bude brát jméno účtu jako údaj pro ORGANIZÁTORA vytvořených událostí. Nelze mít dva účty stejného jména.</string>
+  <string name="login_account_name">Název účtu</string>
+  <string name="login_account_name_info">Pro jméno účtu použijte svou e-mailovou adresu, protože Android bude brát jméno účtu jako údaj pro ORGANIZÁTORA vytvořených událostí. Nelze mít dva účty stejného jména.</string>
   <string name="login_account_contact_group_method">Metoda seskupování kontaktů:</string>
-  <string name="login_account_name_required">Vyžadováno jméno účtu</string>
+  <string name="login_account_name_required">Je třeba zadat název pro účet</string>
+  <string name="login_account_name_already_taken">Tento název účtu už je používán někým jiným</string>
   <string name="login_account_not_created">Účet nelze vytvořit</string>
-  <string name="login_configuration_detection">Vyhledání konfigurace</string>
+  <string name="login_configuration_detection">Zjišťování nastavení</string>
   <string name="login_querying_server">Chvíli strpení, probíhá dotazování serveru…</string>
-  <string name="login_no_caldav_carddav">Nelze nalézt službu CalDAV nebo CardDAV.</string>
+  <string name="login_no_caldav_carddav">Nedaří se nalézt službu CalDAV nebo CardDAV.</string>
+  <string name="login_view_logs">Zobrazit podrobnosti</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Nastavení: %s</string>
   <string name="settings_sync">Synchronizace</string>
   <string name="settings_sync_interval_contacts">Interval synchronizace kontaktů</string>
-  <string name="settings_sync_summary_manually">Pouze manuálně</string>
+  <string name="settings_sync_summary_manually">Pouze ručně</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Každých %d minut a ihned při lokálních změnách</string>
   <string name="settings_sync_interval_calendars">Interval synchronizace kalendáře</string>
   <string name="settings_sync_interval_tasks">Interval synchronizace úkolů</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Pouze ručně</item>
+    <item>Každých 15 minut</item>
+    <item>Každých 30 minut</item>
+    <item>Každou hodinu</item>
+    <item>Každé 2 hodiny</item>
+    <item>Každé 4 hodiny</item>
+    <item>Jednou za den</item>
+  </string-array>
   <string name="settings_sync_wifi_only">Synchronizovat pouze přes WiFi</string>
   <string name="settings_sync_wifi_only_on">Synchronizace omezena na WiFi připojení</string>
   <string name="settings_sync_wifi_only_off">Druh připojení není brán v potaz</string>
+  <string name="settings_sync_wifi_only_ssids">Omezení na názvy (SSID) WiFi sítí</string>
+  <string name="settings_sync_wifi_only_ssids_on">Bude synchronizovat pouze přes %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Bude synchronizovat pouze přes %s (vyžaduje aktivní lokační služby)</string>
+  <string name="settings_sync_wifi_only_ssids_off">Bude použito libovolné WiFi připojení</string>
+  <string name="settings_sync_wifi_only_ssids_message">Čárkou oddělovaný seznam názvů (SSID) WiFi sítí, přes které synchronizovat (pokud omezovat nechcete, nevyplňujte)</string>
+  <string name="settings_sync_wifi_only_ssids_location_permission">Pro čtení názvů WiFi sítí je zapotřebí oprávnění k Umístění a trvale aktivované lokační služby.</string>
+  <string name="settings_more_info_faq">Další informace (ČKD)</string>
   <string name="settings_authentication">Ověření</string>
   <string name="settings_username">Uživatelské jméno</string>
-  <string name="settings_enter_username">Zadat uživatelské jméno</string>
+  <string name="settings_enter_username">Zadejte uživatelské jméno:</string>
   <string name="settings_password">Heslo</string>
   <string name="settings_password_summary">Aktualizovat heslo dle svého serveru.</string>
-  <string name="settings_enter_password">Vložit své heslo:</string>
+  <string name="settings_enter_password">Zadejte své heslo:</string>
+  <string name="settings_certificate_alias">Alternativní název klientského certifikátu</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Časový limit pro staré události</string>
   <string name="settings_sync_time_range_past_none">Synchronizovat všechny události</string>
@@ -120,30 +195,79 @@
     <item quantity="other">Ignorovat události starší než %d dnů</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Události z minulosti starší než vyznačený počet dnů budou ignorovány (lze zadat 0). Ponechte prázdné pro synchronizaci všech událostí.</string>
+  <string name="settings_default_alarm">Výchozí připomínka</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Výchozí připomínka jednu minutu před událostí</item>
+    <item quantity="few">Výchozí připomínka %d minuty před událostí</item>
+    <item quantity="many">Výchozí připomínka %d minut před událostí</item>
+    <item quantity="other">Výchozí připomínka %d minuty před událostí</item>
+  </plurals>
+  <string name="settings_default_alarm_off">Nejsou vytvořené žádné výchozí připomínky</string>
+  <string name="settings_default_alarm_message">Pokud mají být pro události bez připomínky vytvořeny výchozí připomínky: požadovaný počet minut před událostí. Pro vypnutí výchozích připomínek nevyplňujte.</string>
   <string name="settings_manage_calendar_colors">Spravovat barvy kalendářů</string>
   <string name="settings_manage_calendar_colors_on">Barvy kalendářů spravuje DAVx⁵</string>
   <string name="settings_manage_calendar_colors_off">Barvy kalendářů nespravuje DAVx⁵</string>
+  <string name="settings_event_colors">Podpora pro barvy událostí</string>
+  <string name="settings_event_colors_on">Synchronizovat barvy událostí</string>
+  <string name="settings_event_colors_off">Nesynchronizovat barvy událostí</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Metoda seskupování kontaktů</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Skupiny jsou zvlášt vCards vizitky</item>
+    <item>Skupiny jsou kategorie u jednotlivých kontaktů</item>
+  </string-array>
+  <string name="settings_contact_group_method_change">Změnit metodu seskupování</string>
   <!--collection management-->
   <string name="create_addressbook">Vytvořit adresář</string>
   <string name="create_addressbook_display_name_hint">Můj adresář</string>
+  <string name="create_calendar">Vytvořit kalendář</string>
+  <string name="create_calendar_time_zone">Časová zóna</string>
+  <string name="create_calendar_time_zone_required">Je třeba zadat časovou zónu</string>
+  <string name="create_calendar_type">Možné položky kalendáře</string>
+  <string name="create_calendar_type_vevent">Události</string>
+  <string name="create_calendar_type_vtodo">Úkoly</string>
+  <string name="create_calendar_type_vjournal">Poznámky / deník</string>
   <string name="create_calendar_type_events_and_tasks">Kombinovaná (události a úkoly)</string>
+  <string name="create_collection_color">Barva</string>
   <string name="create_collection_creating">Vytváření sbírky</string>
+  <string name="create_collection_display_name">Nadpis</string>
   <string name="create_collection_display_name_required">Nadpis je vyžadován</string>
+  <string name="create_collection_description">Popis</string>
+  <string name="create_collection_optional">volitelné</string>
+  <string name="create_collection_home_set">Umístění úložiště</string>
   <string name="create_collection_create">Vytvořit</string>
   <string name="delete_collection">Smazat sbírku</string>
-  <string name="delete_collection_confirm_title">Jste si jisti?</string>
+  <string name="delete_collection_confirm_title">Opravdu to chcete?</string>
+  <string name="delete_collection_confirm_warning">Tato sada (%s) a všechna její data budou nadobro odebrána.</string>
+  <string name="delete_collection_data_shall_be_deleted">Tato data by měla být smazána ze serveru.</string>
   <string name="delete_collection_deleting_collection">Mazání sbírky</string>
+  <string name="collection_force_read_only">Vynutit pouze pro čtení</string>
+  <string name="collection_properties">Vlastnosti</string>
+  <string name="collection_properties_url">Adresa (URL):</string>
+  <string name="collection_properties_copy_url">Zkopírovat URL adresu</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Došlo k chybě.</string>
   <string name="exception_httpexception">Došlo k HTTP chybě.</string>
-  <string name="exception_ioexception">Došlo k I/O chybě.</string>
-  <string name="exception_show_details">Zobrazit detaily</string>
+  <string name="exception_ioexception">Došlo k chybě vstupu/výstupu.</string>
+  <string name="exception_show_details">Zobrazit podrobnosti</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Ladící informace</string>
+  <string name="debug_info_logs_attached">Záznamy událostí jsou připojeny k této zprávě (vyžaduje podporu příloh u aplikace, do které bude obdrženo).</string>
+  <string name="sync_contacts_read_only_address_book">Adresář kontaktů, který je pouze pro čtení</string>
   <string name="sync_error_permissions">DAVx⁵ oprávnění</string>
   <string name="sync_error_permissions_text">Vyžadována dodatečná oprávnění</string>
+  <string name="sync_error_opentasks_too_old">Příliš stará verze OpenTasks</string>
+  <string name="sync_error_opentasks_required_version">Požadovaná verze: %1$s (stávající %2$s)</string>
+  <string name="sync_error_authentication_failed">Ověření se nezdařilo (zkontrolujte přihlašovací údaje)</string>
+  <string name="sync_error_io">Chyba sítě nebo vstupu/výstupu – %s</string>
+  <string name="sync_error_http_dav">Chyba HTTP serveru – %s</string>
+  <string name="sync_error_local_storage">Chyba místního úložiště – %s</string>
+  <string name="sync_error_retry">Opakovat</string>
+  <string name="sync_error_view_item">Zobrazit položku</string>
+  <string name="sync_invalid_contact">Ze serveru obdržen neplaný kontakt</string>
+  <string name="sync_invalid_event">Ze serveru obdržena neplatná událost</string>
+  <string name="sync_invalid_task">Ze serveru obdržen neplatný úkol</string>
+  <string name="sync_invalid_resources_ignoring">Ignoruje se jeden či více neplatný prostředků</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: Zabezpečení připojení</string>
   <string name="trust_certificate_unknown_certificate_found">DAVx⁵ nalezl neznámý certifikát. Chcete mu důvěřovat?</string>

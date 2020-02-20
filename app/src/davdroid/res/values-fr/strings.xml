@@ -193,6 +193,13 @@
     <item quantity="other">Les événements de plus de %d jours passés seront ignorés</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Les événements antérieurs à ce nombre de jours seront ignorés (peut être 0). Laissez vide pour synchroniser tous les événements.</string>
+  <string name="settings_default_alarm">Rappel par défaut</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Rappel par défaut une minute avant l\'événement</item>
+    <item quantity="other">Rappel par défaut %d minutes avant les événements</item>
+  </plurals>
+  <string name="settings_default_alarm_off">Aucun rappel par défaut</string>
+  <string name="settings_default_alarm_message">Si des rappels par défaut doivent être créé pour des événements sans rappel: le nombre de minutes avant l\'événement. Laisser blanc pour désactiver les rappels par défaut.</string>
   <string name="settings_manage_calendar_colors">Choisir couleur du calendrier</string>
   <string name="settings_manage_calendar_colors_on">Les couleurs de calendrier sont gérées par DAVx⁵</string>
   <string name="settings_manage_calendar_colors_off">Les couleurs de calendrier ne sont pas gérées par DAVx⁵</string>
@@ -201,6 +208,10 @@
   <string name="settings_event_colors_off">Ne pas synchroniser la couleur associée aux événements</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Méthode pour les contacts de type groupe</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Les groupes sont des VCards indépendantes</item>
+    <item>Les groupes sont des catégories pour chacun des contacts</item>
+  </string-array>
   <string name="settings_contact_group_method_change">Changer la méthode de groupe</string>
   <!--collection management-->
   <string name="create_addressbook">Créer un carnet d\'adresses</string>
