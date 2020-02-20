@@ -1,0 +1,4 @@
+* calendar sync: delete exceptions from events when events are mass-deleted, to
+* events/tasks: improve handling of VALARM (REL=END, VALUE=DATE-TIME)
+* Webcal calendars: use UrlUtils.equals to find matching calendar
+* new translation and libraries
