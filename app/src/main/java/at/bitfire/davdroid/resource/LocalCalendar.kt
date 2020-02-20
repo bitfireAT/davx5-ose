@@ -142,10 +142,25 @@ class LocalCalendar private constructor(
                 arrayOf(id.toString()))
     }
 
-    override fun removeNotDirtyMarked(flags: Int) =
-            provider.delete(eventsSyncURI(),
-                    "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL AND ${LocalEvent.COLUMN_FLAGS}=?",
-                    arrayOf(id.toString(), flags.toString()))
+    override fun removeNotDirtyMarked(flags: Int): Int {
+        var deleted = 0
+        // list all non-dirty events with the given flags and delete every row + its exceptions
+        provider.query(eventsSyncURI(), arrayOf(Events._ID),
+                "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL AND ${LocalEvent.COLUMN_FLAGS}=?",
+                arrayOf(id.toString(), flags.toString()), null)?.use { cursor ->
+            val batch = BatchOperation(provider)
+            while (cursor.moveToNext()) {
+                val id = cursor.getLong(0)
+                // delete event and possible exceptions (content provider doesn't delete exceptions itself)
+                batch.enqueue(BatchOperation.Operation(
+                        ContentProviderOperation.newDelete(eventsSyncURI())
+                                .withSelection("${Events._ID}=? OR ${Events.ORIGINAL_ID}=?", arrayOf(id.toString(), id.toString()))
+                ))
+            }
+            deleted = batch.commit()
+        }
+        return deleted
+    }
 
     override fun forgetETags() {
         val values = ContentValues(1)
