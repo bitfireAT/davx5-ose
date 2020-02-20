@@ -50,6 +50,8 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV adattatore di sincronizzazione</string>
   <string name="navigation_drawer_about">Informazioni / Licenza</string>
   <string name="navigation_drawer_beta_feedback">Feedback sulla beta</string>
+  <string name="install_email_client">Installare un client email</string>
+  <string name="install_browser">Installare un browser Web</string>
   <string name="navigation_drawer_settings">Impostazioni</string>
   <string name="navigation_drawer_news_updates">Notizie &amp; aggiornamenti</string>
   <string name="navigation_drawer_external_links">Link esterni</string>
@@ -58,6 +60,8 @@
   <string name="navigation_drawer_faq">Domande Frequenti</string>
   <string name="navigation_drawer_forums">Aiuto / Forum</string>
   <string name="navigation_drawer_donate">Donazione</string>
+  <string name="navigation_drawer_privacy_policy">Politica sulla riservatezza</string>
+  <string name="account_list_no_internet">Nessuna connessione Internet. Android non eseguirà la sincronizzazione.</string>
   <string name="account_list_empty">Benvenuto a DAVx⁵!\n\nÈ ora possibile aggiungere account CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">La sincronizzazione automatica dell\'intero sistema è disabilitata</string>
   <string name="accounts_global_sync_enable">Attiva</string>
@@ -189,6 +193,12 @@
     <item quantity="other">Eventi più vecchi di %d giorni saranno ignorati</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Eventi più vecchi di questo numero di giorni verranno ignorati(può anche essere 0). Lasciare in bianco per sincronizzare tutti gli eventi.</string>
+  <string name="settings_default_alarm">Promemoria predefinito</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Promemoria predefinito un minuto prima dell\'evento</item>
+    <item quantity="other">Promemoria predefinito %d minuti prima dell\'evento</item>
+  </plurals>
+  <string name="settings_default_alarm_off">Nessun promemoria di default creato</string>
   <string name="settings_manage_calendar_colors">Cambia il colore del calendario</string>
   <string name="settings_manage_calendar_colors_on">I colori dei calendari sono gestiti da DAVx⁵</string>
   <string name="settings_manage_calendar_colors_off">I colori dei calendari non sono gestiti da DAVx⁵</string>
@@ -197,18 +207,38 @@
   <string name="settings_event_colors_off">Non sincronizza colori eventi</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Organizzazione dei gruppi di contatto</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>I gruppi sono vCards separate</item>
+    <item>I gruppi sono categorie per ogni contatto</item>
+  </string-array>
   <string name="settings_contact_group_method_change">Cambia il metodo del gruppo</string>
   <!--collection management-->
   <string name="create_addressbook">Crea rubrica</string>
   <string name="create_addressbook_display_name_hint">La mia rubrica</string>
+  <string name="create_calendar">Crea calendario</string>
+  <string name="create_calendar_time_zone">Fuso orario</string>
+  <string name="create_calendar_time_zone_required">Fuso orario richiesto</string>
+  <string name="create_calendar_type_vevent">Eventi</string>
+  <string name="create_calendar_type_vtodo">Attività</string>
+  <string name="create_calendar_type_vjournal">Note / diario</string>
   <string name="create_calendar_type_events_and_tasks">Combinato (eventi e attività)</string>
+  <string name="create_collection_color">Colore</string>
   <string name="create_collection_creating">Crea una raccolta</string>
+  <string name="create_collection_display_name">Titolo</string>
   <string name="create_collection_display_name_required">Il titolo è richiesto</string>
+  <string name="create_collection_description">Descrizione</string>
+  <string name="create_collection_optional">opzionale</string>
+  <string name="create_collection_home_set">Percorso di archiviazione</string>
   <string name="create_collection_create">Crea</string>
   <string name="delete_collection">Elimina raccolta</string>
   <string name="delete_collection_confirm_title">Sei sicuro?</string>
+  <string name="delete_collection_confirm_warning">Questa raccolta (%s) e tutti i suoi dati saranno rimossi permanentemente.</string>
+  <string name="delete_collection_data_shall_be_deleted">Questi dati saranno cancellati dal server.</string>
   <string name="delete_collection_deleting_collection">Cancellazione della raccolta</string>
   <string name="collection_force_read_only">Forza sola lettura</string>
+  <string name="collection_properties">Proprietà</string>
+  <string name="collection_properties_url">Indirizzo (URL):</string>
+  <string name="collection_properties_copy_url">Copia URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Si è verificato un errore.</string>
   <string name="exception_httpexception">Si è verificato un errore HTTP.</string>
@@ -216,12 +246,22 @@
   <string name="exception_show_details">Mostra dettagli</string>
   <!--sync adapters and DebugInfoActivity-->
   <string name="debug_info_title">Informazioni di debug</string>
+  <string name="debug_info_logs_attached">I log sono allegati a questo messaggio (richiede il supporto degli allegati nell\'app ricevente)</string>
   <string name="sync_contacts_read_only_address_book">Rubrica in sola lettura</string>
   <string name="sync_error_permissions">Autorizzazioni DAVx⁵</string>
   <string name="sync_error_permissions_text">Autorizzazioni addizionali richieste</string>
   <string name="sync_error_opentasks_too_old">OpenTasks troppo vecchia</string>
   <string name="sync_error_opentasks_required_version">Versione richiesta: %1$s (attualmente %2$s)</string>
   <string name="sync_error_authentication_failed">Autenticazione fallita (controlla credenziali login)</string>
+  <string name="sync_error_io">Errore di rete o di I/O – %s</string>
+  <string name="sync_error_http_dav">Errore server HTTP – %s</string>
+  <string name="sync_error_local_storage">Errore di archiviazione locale – %s</string>
+  <string name="sync_error_retry">Riprova</string>
+  <string name="sync_error_view_item">Visualizza oggetto</string>
+  <string name="sync_invalid_contact">Contatto non valido ricevuto dal server</string>
+  <string name="sync_invalid_event">Evento non valido ricevuto dal server</string>
+  <string name="sync_invalid_task">Attività non valida ricevuta dal server</string>
+  <string name="sync_invalid_resources_ignoring">Una o più risorse non valide ignorate</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: sicurezza della connessione</string>
   <string name="trust_certificate_unknown_certificate_found">DAVx⁵ ha trovato un certificato sconosciuto. Ritenerlo affidabile?</string>

@@ -50,6 +50,8 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adaptér</string>
   <string name="navigation_drawer_about">O programe / Licencia</string>
   <string name="navigation_drawer_beta_feedback">Odozva na beta-verziu</string>
+  <string name="install_email_client">Prosím, nainštalujte e-mailového klienta</string>
+  <string name="install_browser">Prosím, nainštalujte webový prehliadač</string>
   <string name="navigation_drawer_settings">Nastavenia</string>
   <string name="navigation_drawer_news_updates">Novinky &amp; aktualizácie</string>
   <string name="navigation_drawer_external_links">Externé odkazy</string>
@@ -58,6 +60,8 @@
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_forums">Pomoc / Fóra</string>
   <string name="navigation_drawer_donate">Darovať</string>
+  <string name="navigation_drawer_privacy_policy">Zásady bezpečnosti</string>
+  <string name="account_list_no_internet">Žiadne pripojenie do internetu. Android nestpustí synchronizáciu.</string>
   <string name="account_list_empty">Vitajte v programe DAVx⁵!\n\nTeraz môžete pridať používateľský účet pre CalDAV/CardDAV .</string>
   <string name="accounts_global_sync_disabled">Automatická synchronizácia platná pre celý systém je zakázaná</string>
   <string name="accounts_global_sync_enable">Povoliť</string>
@@ -191,6 +195,15 @@
     <item quantity="other">Udalosti staršie ako %d dní budú ignorované</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Udalosti ktoré sú staršie ako tento počet dní budú ignorované (0 je povolená). Ponechajte prázdne aby ste synchronizovali všetky udalosti.</string>
+  <string name="settings_default_alarm">Prednastavená pripomienka</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Prednastavená pripomienka 1 minútu pred udalosťou</item>
+    <item quantity="few">Prednastavená pripomienka minút pred udalosťou: %d</item>
+    <item quantity="many">Prednastavená pripomienka minút pred udalosťou: %d</item>
+    <item quantity="other">Prednastavená pripomienka minút pred udalosťou: %d</item>
+  </plurals>
+  <string name="settings_default_alarm_off">Neboli vytvorené prednastavené pripomienky</string>
+  <string name="settings_default_alarm_message">Ak majú byť vytvorené prednastavené pripomienky pre udalosti bez pripomienok: počet minút pred udalosťou. Ponechajte prázdne na zrušenie prednastavených pripomienok.</string>
   <string name="settings_manage_calendar_colors">Spravovať farby kalendára</string>
   <string name="settings_manage_calendar_colors_on">Farby kalendára sú spravované DAVx⁵</string>
   <string name="settings_manage_calendar_colors_off">Farby kalendáre nie sú nastavované DAVx⁵</string>
@@ -199,6 +212,10 @@
   <string name="settings_event_colors_off">Nesynchronizovať farby udalostí</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Spôsob práce so skupinami kontaktov</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Skupiny sú osobitné vKarty</item>
+    <item>Skupiny sú kategórie na kontakt</item>
+  </string-array>
   <string name="settings_contact_group_method_change">Zmena spôsobu práce so skupinami</string>
   <!--collection management-->
   <string name="create_addressbook">Vytvoriť adresár</string>
