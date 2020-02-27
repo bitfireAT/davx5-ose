@@ -34,14 +34,14 @@
                 android:layout_height="wrap_content"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:hint="@string/create_collection_display_name"
+                app:error="@{model.displayNameError}"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@={model.displayName}"
-                    app:error="@{model.displayNameError}" />
+                    android:text="@={model.displayName}" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
