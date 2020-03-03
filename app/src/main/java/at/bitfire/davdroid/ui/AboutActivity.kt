@@ -22,7 +22,7 @@ import androidx.fragment.app.FragmentPagerAdapter
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
@@ -108,8 +108,8 @@ class AboutActivity: AppCompatActivity() {
             if (true /* open-source version */) {
                 warranty.setText(R.string.about_license_info_no_warranty)
 
-                val model = ViewModelProviders.of(this).get(LicenseModel::class.java)
-                model.htmlText.observe(this, Observer { spanned ->
+                val model = ViewModelProvider(this).get(LicenseModel::class.java)
+                model.htmlText.observe(viewLifecycleOwner, Observer { spanned ->
                     license_text.text = spanned
                 })
             }

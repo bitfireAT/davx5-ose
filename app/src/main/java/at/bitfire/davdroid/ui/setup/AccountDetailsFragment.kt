@@ -46,8 +46,8 @@ class AccountDetailsFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loginModel = ViewModelProviders.of(requireActivity()).get(LoginModel::class.java)
-        model = ViewModelProviders.of(this).get(AccountDetailsModel::class.java)
+        loginModel = ViewModelProvider(requireActivity()).get(LoginModel::class.java)
+        model = ViewModelProvider(this).get(AccountDetailsModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -90,7 +90,7 @@ class AccountDetailsFragment: Fragment() {
                         loginModel.credentials!!,
                         config,
                         GroupMethod.valueOf(groupMethodName)
-                ).observe(this, Observer<Boolean> { success ->
+                ).observe(viewLifecycleOwner, Observer<Boolean> { success ->
                     if (success)
                         requireActivity().finish()
                     else {

@@ -25,9 +25,9 @@ import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.account.SettingsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.account.AccountActivity
+import at.bitfire.davdroid.ui.account.SettingsActivity
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level

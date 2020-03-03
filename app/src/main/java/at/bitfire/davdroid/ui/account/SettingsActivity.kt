@@ -79,9 +79,9 @@ class SettingsActivity: AppCompatActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             settings = Settings.getInstance(requireActivity())
-            account = arguments!!.getParcelable(EXTRA_ACCOUNT)!!
+            account = requireArguments().getParcelable(EXTRA_ACCOUNT)!!
 
-            model = ViewModelProviders.of(this).get(Model::class.java)
+            model = ViewModelProvider(this).get(Model::class.java)
             model.initialize(account)
 
             initSettings()

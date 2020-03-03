@@ -44,6 +44,7 @@ import java.util.logging.Level
  *
  * @throws InvalidAccountException on construction when the account doesn't exist (anymore)
  */
+@Suppress("FunctionName")
 class AccountSettings(
         val context: Context,
         val account: Account
@@ -295,6 +296,7 @@ class AccountSettings(
             provider.client.update(tasksUri, emptyETag, "${TaskContract.Tasks._DIRTY}=0 AND ${TaskContract.Tasks._DELETED}=0", null)
         }
 
+        @SuppressLint("Recycle")
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED)
             context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
                 provider.update(AndroidCalendar.syncAdapterURI(CalendarContract.Calendars.CONTENT_URI, account),

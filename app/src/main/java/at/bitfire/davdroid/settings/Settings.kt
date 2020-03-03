@@ -15,7 +15,6 @@ import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level
 
-@WorkerThread
 class Settings(
         appContext: Context
 ) {
@@ -68,16 +67,22 @@ class Settings(
     /*** OBSERVERS ***/
 
     fun addOnChangeListener(observer: OnChangeListener) {
-        observers += WeakReference(observer)
+        synchronized(this) {
+            observers += WeakReference(observer)
+        }
     }
 
     fun removeOnChangeListener(observer: OnChangeListener) {
-        observers.removeAll { it.get() == null || it.get() == observer }
+        synchronized(this) {
+            observers.removeAll { it.get() == null || it.get() == observer }
+        }
     }
 
     fun onSettingsChanged() {
-        observers.mapNotNull { it.get() }.forEach {
-            it.onSettingsChanged()
+        synchronized(this) {
+            observers.mapNotNull { it.get() }.forEach {
+                it.onSettingsChanged()
+            }
         }
     }
 

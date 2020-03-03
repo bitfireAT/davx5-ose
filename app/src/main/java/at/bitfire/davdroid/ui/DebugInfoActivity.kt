@@ -36,7 +36,7 @@ import androidx.core.content.pm.PackageInfoCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.InvalidAccountException
@@ -71,7 +71,7 @@ class DebugInfoActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model = ViewModelProviders.of(this).get(ReportModel::class.java)
+        model = ViewModelProvider(this).get(ReportModel::class.java)
         model.initialize(intent.extras)
 
         val binding = DataBindingUtil.setContentView<ActivityDebugInfoBinding>(this, R.layout.activity_debug_info)

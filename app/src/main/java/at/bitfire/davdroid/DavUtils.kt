@@ -27,6 +27,7 @@ import java.util.*
  */
 object DavUtils {
 
+    @Suppress("FunctionName")
     fun ARGBtoCalDAVColor(colorWithAlpha: Int): String {
         val alpha = (colorWithAlpha shr 24) and 0xFF
         val color = colorWithAlpha and 0xFFFFFF

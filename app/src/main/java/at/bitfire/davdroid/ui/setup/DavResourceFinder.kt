@@ -43,7 +43,7 @@ class DavResourceFinder(
         override fun toString() = wellKnownName
     }
 
-    val log = Logger.getLogger("davdroid.DavResourceFinder")
+    val log: Logger = Logger.getLogger("davdroid.DavResourceFinder")
     private val logBuffer = StringHandler()
     init {
         log.level = Level.FINEST

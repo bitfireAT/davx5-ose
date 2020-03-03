@@ -33,23 +33,23 @@ class DetectConfigurationFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loginModel = ViewModelProviders.of(requireActivity()).get(LoginModel::class.java)
-        model = ViewModelProviders.of(this).get(DetectConfigurationModel::class.java)
+        loginModel = ViewModelProvider(requireActivity()).get(LoginModel::class.java)
+        model = ViewModelProvider(this).get(DetectConfigurationModel::class.java)
 
         model.detectConfiguration(loginModel).observe(this, Observer<DavResourceFinder.Configuration> { result ->
             // save result for next step
             loginModel.configuration = result
 
             // remove "Detecting configuration" fragment, it shouldn't come back
-            requireFragmentManager().popBackStack()
+            parentFragmentManager.popBackStack()
 
             if (result.calDAV != null || result.cardDAV != null)
-                requireFragmentManager().beginTransaction()
+                parentFragmentManager.beginTransaction()
                         .replace(android.R.id.content, AccountDetailsFragment())
                         .addToBackStack(null)
                         .commit()
             else
-                requireFragmentManager().beginTransaction()
+                parentFragmentManager.beginTransaction()
                         .add(NothingDetectedFragment(), null)
                         .commit()
         })
@@ -105,7 +105,7 @@ class DetectConfigurationFragment: Fragment() {
     class NothingDetectedFragment: DialogFragment() {
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val model = ViewModelProviders.of(requireActivity()).get(LoginModel::class.java)
+            val model = ViewModelProvider(requireActivity()).get(LoginModel::class.java)
             return MaterialAlertDialogBuilder(requireActivity())
                     .setTitle(R.string.login_configuration_detection)
                     .setIcon(R.drawable.ic_error_dark)
@@ -118,7 +118,7 @@ class DetectConfigurationFragment: Fragment() {
                     .setPositiveButton(android.R.string.ok) { _, _ ->
                         // just dismiss
                     }
-                    .create()!!
+                    .create()
         }
 
     }

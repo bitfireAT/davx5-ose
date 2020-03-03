@@ -20,7 +20,7 @@ import androidx.core.app.NavUtils
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityCreateAddressBookBinding
 import at.bitfire.davdroid.model.AppDatabase
@@ -43,7 +43,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        model = ViewModelProviders.of(this).get(Model::class.java)
+        model = ViewModelProvider(this).get(Model::class.java)
         (intent?.getParcelableExtra(EXTRA_ACCOUNT) as? Account)?.let {
             model.initialize(it)
         }

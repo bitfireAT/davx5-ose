@@ -56,7 +56,7 @@ class CreateCollectionFragment: DialogFragment() {
         super.onCreate(savedInstanceState)
         val args = arguments ?: throw IllegalArgumentException()
 
-        model = ViewModelProviders.of(this).get(Model::class.java)
+        model = ViewModelProvider(this).get(Model::class.java)
         model.account = args.getParcelable(ARG_ACCOUNT) ?: throw IllegalArgumentException("ARG_ACCOUNT required")
         model.serviceType = args.getString(ARG_SERVICE_TYPE) ?: throw java.lang.IllegalArgumentException("ARG_SERVICE_TYPE required")
 
@@ -80,7 +80,7 @@ class CreateCollectionFragment: DialogFragment() {
                 requireActivity().finish()
             else {
                 dismiss()
-                requireFragmentManager().beginTransaction()
+                parentFragmentManager.beginTransaction()
                         .add(ExceptionInfoFragment.newInstance(exception, model.account), null)
                         .commit()
             }

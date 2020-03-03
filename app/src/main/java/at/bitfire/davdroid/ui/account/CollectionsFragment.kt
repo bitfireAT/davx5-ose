@@ -46,8 +46,8 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        accountModel = ViewModelProviders.of(requireActivity()).get(AccountActivity.Model::class.java)
-        model = ViewModelProviders.of(this).get(Model::class.java)
+        accountModel = ViewModelProvider(requireActivity()).get(AccountActivity.Model::class.java)
+        model = ViewModelProvider(this).get(Model::class.java)
         model.initialize(
                 accountModel,
                 arguments?.getLong(EXTRA_SERVICE_ID) ?: throw IllegalArgumentException("EXTRA_SERVICE_ID required"),

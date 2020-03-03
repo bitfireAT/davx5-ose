@@ -45,10 +45,10 @@ class DeleteCollectionFragment: DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        model = ViewModelProviders.of(this).get(DeleteCollectionModel::class.java)
+        model = ViewModelProvider(this).get(DeleteCollectionModel::class.java)
         model.initialize(
-                arguments!!.getParcelable(ARG_ACCOUNT)!!,
-                arguments!!.getLong(ARG_COLLECTION_ID)
+                requireArguments().getParcelable(ARG_ACCOUNT)!!,
+                requireArguments().getLong(ARG_COLLECTION_ID)
         )
     }
 
@@ -62,9 +62,9 @@ class DeleteCollectionFragment: DialogFragment() {
             binding.progress.visibility = View.VISIBLE
             binding.controls.visibility = View.GONE
 
-            model.deleteCollection().observe(this, Observer { exception ->
+            model.deleteCollection().observe(viewLifecycleOwner, Observer { exception ->
                 if (exception != null)
-                    requireFragmentManager().beginTransaction()
+                    parentFragmentManager.beginTransaction()
                             .add(ExceptionInfoFragment.newInstance(exception, model.account), null)
                             .commit()
                 dismiss()

@@ -24,7 +24,7 @@ import androidx.core.app.NavUtils
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityCreateCalendarBinding
@@ -53,7 +53,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         super.onCreate(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        model = ViewModelProviders.of(this).get(Model::class.java)
+        model = ViewModelProvider(this).get(Model::class.java)
         (intent?.getParcelableExtra(EXTRA_ACCOUNT) as? Account)?.let {
             model.initialize(it)
         }
@@ -163,7 +163,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
             context: Context
     ): ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, android.R.id.text1) {
 
-        val tz = TimeZone.getAvailableIDs()!!
+        val tz: Array<String> = TimeZone.getAvailableIDs()
 
         override fun getFilter(): Filter {
             return object: Filter() {

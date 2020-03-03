@@ -32,7 +32,7 @@ import androidx.fragment.app.ListFragment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.AccountActivity
 import kotlinx.android.synthetic.main.account_list.*
@@ -43,14 +43,14 @@ class AccountListFragment: ListFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         listAdapter = AccountListAdapter(requireActivity())
 
-        val model = ViewModelProviders.of(this).get(Model::class.java)
-        model.accounts.observe(this, Observer { accounts ->
+        val model = ViewModelProvider(this).get(Model::class.java)
+        model.accounts.observe(viewLifecycleOwner, Observer { accounts ->
             val adapter = listAdapter as AccountListAdapter
             adapter.clear()
             adapter.addAll(*accounts)
         })
 
-        model.networkAvailable.observe(this, Observer { networkAvailable ->
+        model.networkAvailable.observe(viewLifecycleOwner, Observer { networkAvailable ->
             no_network_info.visibility = if (networkAvailable) View.GONE else View.VISIBLE
         })
 

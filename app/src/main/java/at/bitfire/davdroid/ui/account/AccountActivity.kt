@@ -47,7 +47,7 @@ class AccountActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model = ViewModelProviders.of(this).get(Model::class.java)
+        model = ViewModelProvider(this).get(Model::class.java)
         (intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account)?.let { account ->
             model.initialize(account)
         }

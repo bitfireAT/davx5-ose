@@ -22,7 +22,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.closeCompat
@@ -55,7 +55,7 @@ class RenameAccountFragment: DialogFragment() {
 
     @SuppressLint("Recycle")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val oldAccount: Account = arguments!!.getParcelable(ARG_ACCOUNT)!!
+        val oldAccount: Account = requireArguments().getParcelable(ARG_ACCOUNT)!!
 
         val editText = EditText(requireActivity()).apply {
             setText(oldAccount.name)
@@ -66,7 +66,7 @@ class RenameAccountFragment: DialogFragment() {
         layout.setPadding(8*density, 8*density, 8*density, 8*density)
         layout.addView(editText)
 
-        val model = ViewModelProviders.of(this).get(Model::class.java)
+        val model = ViewModelProvider(this).get(Model::class.java)
         model.finished.observe(this, Observer {
             this@RenameAccountFragment.requireActivity().finish()
         })

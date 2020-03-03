@@ -43,7 +43,7 @@ class WebcalFragment: CollectionsFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        webcalModel = ViewModelProviders.of(this).get(WebcalModel::class.java)
+        webcalModel = ViewModelProvider(this).get(WebcalModel::class.java)
         webcalModel.calendarPermission.observe(this, Observer { granted ->
             if (!granted)
                 requestPermissions(arrayOf(Manifest.permission.READ_CALENDAR), 0)

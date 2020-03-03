@@ -64,7 +64,7 @@ class StartupDialogFragment: DialogFragment() {
             }
 
             // vendor-specific auto-start information
-            if (autostartManufacturers.contains(Build.MANUFACTURER.toLowerCase()) && settings.getBoolean(HINT_AUTOSTART_PERMISSIONS) != false)
+            if (autostartManufacturers.contains(Build.MANUFACTURER.toLowerCase(Locale.ROOT)) && settings.getBoolean(HINT_AUTOSTART_PERMISSIONS) != false)
                 dialogs.add(instantiate(Mode.AUTOSTART_PERMISSIONS))
 
             // OpenTasks information
@@ -92,7 +92,7 @@ class StartupDialogFragment: DialogFragment() {
 
         val settings = Settings.getInstance(requireActivity())
         val activity = requireActivity()
-        return when (Mode.valueOf(arguments!!.getString(ARGS_MODE)!!)) {
+        return when (Mode.valueOf(requireArguments().getString(ARGS_MODE)!!)) {
             Mode.AUTOSTART_PERMISSIONS ->
                 MaterialAlertDialogBuilder(activity)
                         .setIcon(R.drawable.ic_error_dark)
