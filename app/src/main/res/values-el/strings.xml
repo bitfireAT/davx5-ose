@@ -194,7 +194,12 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">Τα συμβάντα που υπερβαίνουν αυτόν τον αριθμό ημερών στο παρελθόν θα αγνοηθούν (μπορεί να είναι 0). Αφήστε κενό για συγχρονισμό όλων των συμβάντων.</string>
   <string name="settings_default_alarm">Προεπιλεγμένη υπενθύμιση</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Προεπιλεγμένη υπενθύμιση ένα λεπτό πριν το συμβάν</item>
+    <item quantity="other">Προεπιλεγμένη υπενθύμιση %dλεπτά πριν το συμβάν.</item>
+  </plurals>
   <string name="settings_default_alarm_off">Δεν δημιουργούνται προεπιλεγμένες υπενθυμίσεις</string>
+  <string name="settings_default_alarm_message">Εάν δημιουργούνται προεπιλεγμένες υπενθυμίσεις για συμβάντα χωρίς υπενθύμιση: επιθυμητός αριθμός λεπτών πριν από το συμβάν. Αφήστε κενό για να απενεργοποιήσετε τις προεπιλεγμένες υπενθυμίσεις.</string>
   <string name="settings_manage_calendar_colors">Διαχείριση χρωμάτων ημερολογίου</string>
   <string name="settings_manage_calendar_colors_on">Τα χρώματα του ημερολογίου διαχειρίζονται από το DAVx⁵</string>
   <string name="settings_manage_calendar_colors_off">Τα χρώματα του ημερολογίου δεν ορίστηκαν από το DAVx⁵</string>
@@ -203,6 +208,10 @@
   <string name="settings_event_colors_off">Να μην γίνει συγχρονισμός χρωμάτων συμβάντων</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Αλλαγή μεθόδου ομάδας</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Οι ομάδες είναι ξεχωριστές vCards</item>
+    <item>Οι ομάδες είναι κατηγορίες ανά επαφή</item>
+  </string-array>
   <string name="settings_contact_group_method_change">Αλλαγή μεθόδου ομάδας</string>
   <!--collection management-->
   <string name="create_addressbook">Δημιουργία βιβλίου διευθύνσεων</string>
