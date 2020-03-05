@@ -199,10 +199,10 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                                     } else
                                         throw e
                                 }
-
-                                Logger.log.log(Level.INFO, "Saving sync state", syncState)
-                                localCollection.lastSyncState = syncState
                             }
+
+                            Logger.log.log(Level.INFO, "Saving sync state", syncState)
+                            localCollection.lastSyncState = syncState
 
                             Logger.log.info("Server has further changes: $furtherChanges")
                         } while(furtherChanges)
@@ -436,6 +436,12 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         Logger.log.info("Number of local non-dirty entries: $number")
     }
 
+    /**
+     * Calls a callback to list remote resources. All resources from the returned
+     * list are downloaded and processed.
+     *
+     * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
+     */
     protected open fun syncRemote(listRemote: (DavResponseCallback) -> Unit) {
         // results must be processed in main thread because exceptions must be thrown in main
         // thread, so that they can be catched by SyncManager
@@ -532,7 +538,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
         // process remaining responses
         processor.shutdown()
-        processor.awaitTermination(5, TimeUnit.MINUTES)
+        if (!processor.awaitTermination(5, TimeUnit.MINUTES))
+            throw TimeoutException("Processing the remote resource list took too long")
 
         // download remaining resources
         if (toDownload.isNotEmpty())
@@ -540,7 +547,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
         // signal end of queue and wait for download thread
         downloader.shutdown()
-        downloader.awaitTermination(5, TimeUnit.MINUTES)
+        if (!downloader.awaitTermination(5, TimeUnit.MINUTES))
+            throw TimeoutException("Downloading and processing the remote resources took too long")
 
         // check remaining results for exceptions
         checkResults(results)

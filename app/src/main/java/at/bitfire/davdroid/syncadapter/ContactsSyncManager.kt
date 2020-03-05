@@ -14,7 +14,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract.Groups
 import at.bitfire.dav4jvm.DavAddressBook
-import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.DavResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
@@ -269,42 +268,33 @@ class ContactsSyncManager(
             }
 
     override fun downloadRemote(bunch: List<HttpUrl>) {
-        Logger.log.info("Downloading ${bunch.size} vCards: $bunch")
-        if (bunch.size == 1) {
-            val remote = bunch.first()
-            // only one contact, use GET
-            useRemote(DavResource(httpClient.okHttpClient, remote)) { resource ->
-                resource.get("text/vcard;version=4.0, text/vcard;charset=utf-8;q=0.8, text/vcard;q=0.5") { response ->
-                    // CardDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc6352#section-6.3.2.3]
-                    val eTag = response.header("ETag")?.let { GetETag(it).eTag }
-                            ?: throw DavException("Received CardDAV GET response without ETag")
-
-                    response.body()!!.use {
-                        processVCard(resource.fileName(), eTag, it.charStream(), resourceDownloader)
+        Logger.log.info("Downloading ${bunch.size} vCard(s): $bunch")
+        /* Always use addressbook-multi-get to get the vCards.
+           We don't use single GETs anymore, because then there are two methods, and in case of a bad
+           server (like iCloud) syncing could fail when there's only one changed resource
+           and succeed when there are multiple changed resources (or vice versa). This is intransparent
+           to the user. Also, when there's only one method, there's less code to maintain and there
+           are less possibilities for errors.
+         */
+        useRemoteCollection {
+            it.multiget(bunch, hasVCard4) { response, _ ->
+                useRemote(response) {
+                    if (!response.isSuccess()) {
+                        Logger.log.warning("Received non-successful multiget response for ${response.href}")
+                        return@useRemote
                     }
+
+                    val eTag = response[GetETag::class.java]?.eTag
+                            ?: throw DavException("Received multi-get response without ETag")
+
+                    val addressData = response[AddressData::class.java]
+                    val vCard = addressData?.vCard
+                            ?: throw DavException("Received multi-get response without address data")
+
+                    processVCard(DavUtils.lastSegmentOfUrl(response.href), eTag, StringReader(vCard), resourceDownloader)
                 }
             }
-        } else
-            // multiple vCards, use addressbook-multi-get
-            useRemoteCollection {
-                it.multiget(bunch, hasVCard4) { response, _ ->
-                    useRemote(response) {
-                        if (!response.isSuccess()) {
-                            Logger.log.warning("Received non-successful multiget response for ${response.href}")
-                            return@useRemote
-                        }
-
-                        val eTag = response[GetETag::class.java]?.eTag
-                                ?: throw DavException("Received multi-get response without ETag")
-
-                        val addressData = response[AddressData::class.java]
-                        val vCard = addressData?.vCard
-                                ?: throw DavException("Received multi-get response without address data")
-
-                        processVCard(DavUtils.lastSegmentOfUrl(response.href), eTag, StringReader(vCard), resourceDownloader)
-                    }
-                }
-            }
+        }
     }
 
     override fun postProcess() {

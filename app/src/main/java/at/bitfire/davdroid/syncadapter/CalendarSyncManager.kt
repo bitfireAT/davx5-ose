@@ -13,7 +13,6 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import at.bitfire.dav4jvm.DavCalendar
-import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.DavResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
@@ -113,41 +112,32 @@ class CalendarSyncManager(
 
     override fun downloadRemote(bunch: List<HttpUrl>) {
         Logger.log.info("Downloading ${bunch.size} iCalendars: $bunch")
-        if (bunch.size == 1) {
-            val remote = bunch.first()
-            // only one contact, use GET
-            useRemote(DavResource(httpClient.okHttpClient, remote)) { resource ->
-                resource.get(DavCalendar.MIME_ICALENDAR.toString()) { response ->
-                    // CalDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc4791#section-5.3.4]
-                    val eTag = response.header("ETag")?.let { GetETag(it).eTag }
-                            ?: throw DavException("Received CalDAV GET response without ETag")
-
-                    response.body()!!.use {
-                        processVEvent(resource.fileName(), eTag, it.charStream())
+        /* Always use calendar-multi-get to get the iCalendars.
+           We don't use single GETs anymore, because then there are two methods, and in case of a bad
+           server (like iCloud) syncing could fail when there's only one changed resource
+           and succeed when there are multiple changed resources (or vice versa). This is intransparent
+           to the user. Also, when there's only one method, there's less code to maintain and there
+           are less possibilities for errors.
+         */
+        useRemoteCollection {
+            it.multiget(bunch) { response, _ ->
+                useRemote(response) {
+                    if (!response.isSuccess()) {
+                        Logger.log.warning("Received non-successful multiget response for ${response.href}")
+                        return@useRemote
                     }
+
+                    val eTag = response[GetETag::class.java]?.eTag
+                            ?: throw DavException("Received multi-get response without ETag")
+
+                    val calendarData = response[CalendarData::class.java]
+                    val iCal = calendarData?.iCalendar
+                            ?: throw DavException("Received multi-get response without address data")
+
+                    processVEvent(DavUtils.lastSegmentOfUrl(response.href), eTag, StringReader(iCal))
                 }
             }
-        } else
-            // multiple iCalendars, use calendar-multi-get
-            useRemoteCollection {
-                it.multiget(bunch) { response, _ ->
-                    useRemote(response) {
-                        if (!response.isSuccess()) {
-                            Logger.log.warning("Received non-successful multiget response for ${response.href}")
-                            return@useRemote
-                        }
-
-                        val eTag = response[GetETag::class.java]?.eTag
-                                ?: throw DavException("Received multi-get response without ETag")
-
-                        val calendarData = response[CalendarData::class.java]
-                        val iCal = calendarData?.iCalendar
-                                ?: throw DavException("Received multi-get response without address data")
-
-                        processVEvent(DavUtils.lastSegmentOfUrl(response.href), eTag, StringReader(iCal))
-                    }
-                }
-            }
+        }
     }
 
     override fun postProcess() {
