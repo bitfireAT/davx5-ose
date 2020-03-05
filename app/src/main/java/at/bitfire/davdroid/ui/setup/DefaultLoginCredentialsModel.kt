@@ -30,6 +30,10 @@ class DefaultLoginCredentialsModel: ViewModel() {
         loginWithEmailAddress.value = true
     }
 
+    fun clearPasswordError(s: CharSequence, start: Int, before: Int, count: Int) {
+        passwordError.value = null
+    }
+
     @MainThread
     fun initialize(intent: Intent) {
         if (initialized)
