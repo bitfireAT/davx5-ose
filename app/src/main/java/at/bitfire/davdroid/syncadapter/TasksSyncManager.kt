@@ -13,7 +13,6 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import at.bitfire.dav4jvm.DavCalendar
-import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.DavResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
@@ -93,41 +92,26 @@ class TasksSyncManager(
 
     override fun downloadRemote(bunch: List<HttpUrl>) {
         Logger.log.info("Downloading ${bunch.size} iCalendars: $bunch")
-        if (bunch.size == 1) {
-            val remote = bunch.first()
-            // only one contact, use GET
-            useRemote(DavResource(httpClient.okHttpClient, remote)) { resource ->
-                resource.get(DavCalendar.MIME_ICALENDAR.toString()) { response ->
-                    // CalDAV servers MUST return ETag on GET [https://tools.ietf.org/html/rfc4791#section-5.3.4]
-                    val eTag = response.header("ETag")?.let { GetETag(it).eTag }
-                            ?: throw DavException("Received CalDAV GET response without ETag")
-
-                    response.body()!!.use {
-                        processVTodo(resource.fileName(), eTag, it.charStream())
+        // multiple iCalendars, use calendar-multi-get
+        useRemoteCollection {
+            it.multiget(bunch) { response, _ ->
+                useRemote(response) {
+                    if (!response.isSuccess()) {
+                        Logger.log.warning("Received non-successful multiget response for ${response.href}")
+                        return@useRemote
                     }
+
+                    val eTag = response[GetETag::class.java]?.eTag
+                            ?: throw DavException("Received multi-get response without ETag")
+
+                    val calendarData = response[CalendarData::class.java]
+                    val iCal = calendarData?.iCalendar
+                            ?: throw DavException("Received multi-get response without address data")
+
+                    processVTodo(DavUtils.lastSegmentOfUrl(response.href), eTag, StringReader(iCal))
                 }
             }
-        } else
-            // multiple iCalendars, use calendar-multi-get
-            useRemoteCollection {
-                it.multiget(bunch) { response, _ ->
-                    useRemote(response) {
-                        if (!response.isSuccess()) {
-                            Logger.log.warning("Received non-successful multiget response for ${response.href}")
-                            return@useRemote
-                        }
-
-                        val eTag = response[GetETag::class.java]?.eTag
-                                ?: throw DavException("Received multi-get response without ETag")
-
-                        val calendarData = response[CalendarData::class.java]
-                        val iCal = calendarData?.iCalendar
-                                ?: throw DavException("Received multi-get response without address data")
-
-                        processVTodo(DavUtils.lastSegmentOfUrl(response.href), eTag, StringReader(iCal))
-                    }
-                }
-            }
+        }
     }
 
     override fun postProcess() {

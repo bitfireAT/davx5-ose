@@ -269,13 +269,6 @@ class ContactsSyncManager(
 
     override fun downloadRemote(bunch: List<HttpUrl>) {
         Logger.log.info("Downloading ${bunch.size} vCard(s): $bunch")
-        /* Always use addressbook-multi-get to get the vCards.
-           We don't use single GETs anymore, because then there are two methods, and in case of a bad
-           server (like iCloud) syncing could fail when there's only one changed resource
-           and succeed when there are multiple changed resources (or vice versa). This is intransparent
-           to the user. Also, when there's only one method, there's less code to maintain and there
-           are less possibilities for errors.
-         */
         useRemoteCollection {
             it.multiget(bunch, hasVCard4) { response, _ ->
                 useRemote(response) {
