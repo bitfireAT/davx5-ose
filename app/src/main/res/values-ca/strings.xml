@@ -18,7 +18,7 @@
   <string name="startup_donate_message">Som feliços de que utilitzis DAVx⁵, el qual és programari lliure (GPLv3). Desenvolupar DAVx⁵ ens porte moltes hores i molta feina, si us plau, considera fer una donació.</string>
   <string name="startup_donate_now">Mostra la pàgina de donació</string>
   <string name="startup_donate_later">Més tard</string>
-  <string name="startup_more_info">Més informació</string>
+  <string name="intro_more_info">Més informació</string>
   <string name="startup_opentasks_not_installed">OpenTasks no està instal·lada</string>
   <string name="startup_opentasks_not_installed_install">Instal·lar OpenTasks</string>
   <!--AboutActivity-->

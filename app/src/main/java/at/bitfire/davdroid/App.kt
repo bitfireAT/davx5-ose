@@ -75,10 +75,11 @@ class App: MultiDexApplication(), Thread.UncaughtExceptionHandler {
         // don't block UI for some background checks
         thread {
             // watch installed/removed apps
-            val tasksFilter = IntentFilter()
-            tasksFilter.addAction(Intent.ACTION_PACKAGE_ADDED)
-            tasksFilter.addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED)
-            tasksFilter.addDataScheme("package")
+            val tasksFilter = IntentFilter(Intent.ACTION_PACKAGE_ADDED).apply {
+                addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED)
+                addAction(Intent.ACTION_PACKAGE_REMOVED)
+                addDataScheme("package")
+            }
             registerReceiver(PackageChangedReceiver(), tasksFilter)
 
             // check whether a tasks app is currently installed

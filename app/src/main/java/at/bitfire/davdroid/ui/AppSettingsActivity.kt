@@ -20,6 +20,10 @@ import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment
+import at.bitfire.davdroid.ui.intro.IntroActivity
+import at.bitfire.davdroid.ui.intro.OpenSourceFragment
+import at.bitfire.davdroid.ui.intro.OpenTasksFragment
 import com.google.android.material.snackbar.Snackbar
 import java.net.URI
 import java.net.URISyntaxException
@@ -146,9 +150,10 @@ class AppSettingsActivity: AppCompatActivity() {
 
         private fun resetHints() {
             val settings = Settings.getInstance(requireActivity())
-            settings.remove(StartupDialogFragment.HINT_AUTOSTART_PERMISSIONS)
-            settings.remove(StartupDialogFragment.HINT_BATTERY_OPTIMIZATIONS)
-            settings.remove(StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED)
+            settings.remove(BatteryOptimizationsFragment.Model.HINT_BATTERY_OPTIMIZATIONS)
+            settings.remove(BatteryOptimizationsFragment.Model.HINT_AUTOSTART_PERMISSION)
+            settings.remove(OpenTasksFragment.Model.HINT_OPENTASKS_NOT_INSTALLED)
+            settings.remove(OpenSourceFragment.Model.SETTING_NEXT_DONATION_POPUP)
             Snackbar.make(requireView(), R.string.app_settings_reset_hints_success, Snackbar.LENGTH_LONG).show()
         }
 

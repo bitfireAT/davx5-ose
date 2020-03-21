@@ -1,0 +1,37 @@
+package at.bitfire.davdroid.ui.intro
+
+import android.content.Context
+import androidx.fragment.app.Fragment
+import at.bitfire.davdroid.settings.Settings
+
+interface IIntroFragmentFactory {
+
+    enum class ShowMode {
+        /** show the fragment */
+        SHOW,
+        /** show the fragment only when there is at least one other fragment with mode [SHOW] */
+        SHOW_NOT_ALONE,
+        /** don't show the fragment */
+        DONT_SHOW
+    }
+
+    /**
+     * Used to determine whether an intro fragment of this type (for instance,
+     * the [IntroActivity.BatteryOptimizationsFragment]) should be shown.
+     *
+     * @param context   used to determine whether the fragment shall be shown
+     * @param settings  used to determine whether the fragment shall be shown
+     *
+     * @return whether an instance of this fragment type shall be created and shown
+     */
+    fun shouldBeShown(context: Context, settings: Settings): ShowMode
+
+    /**
+     * Creates an instance of this intro fragment type. Will only be called when
+     * [shouldBeShown] is true.
+     *
+     * @return the fragment (for instance, a [IntroActivity.BatteryOptimizationsFragment]])
+     */
+    fun create(): Fragment
+
+}

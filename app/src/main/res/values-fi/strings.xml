@@ -28,7 +28,7 @@
   <string name="startup_donate_message">Olemme iloisia että käytät DAVx⁵:ä joka on avoimen lähdekoodin ohjelma (GPLv3). Koska DAVx⁵:n kehitys on vaativaa työtä ja on vaatinut tuhansia tunteja, harkitsethan lahjoituksen antamista, kiitos.</string>
   <string name="startup_donate_now">Näytä lahjoitussivu</string>
   <string name="startup_donate_later">Ehkä myöhemmin</string>
-  <string name="startup_more_info">Lisää tietoa</string>
+  <string name="intro_more_info">Lisää tietoa</string>
   <string name="startup_opentasks_not_installed">OpenTasks ei ole asennettu</string>
   <string name="startup_opentasks_not_installed_message">Synkronoidaksesi tehtävät, avoin ohjelma OpenTasks vaaditaan. (Ei vaadita yhteystiedoille/tapahtumille.)</string>
   <!--AboutActivity-->
