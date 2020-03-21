@@ -22,17 +22,27 @@
     <color name="secondaryDarkColor">#c43c00</color>
     <color name="primaryTextColor">#000000</color>
 
+    <color name="errorColor">#d32f2f</color>
+
 
     <!-- app theme -->
 
     <style name="AppTheme" parent="Theme.MaterialComponents.Light">
+        <!-- see https://github.com/material-components/material-components-android/blob/master/docs/theming/Color.md for component color names -->
         <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>       <!-- additionally required for AppCompatActivity -->
+        <item name="colorPrimaryVariant">@color/primaryLightColor</item>
         <item name="colorOnPrimary">@android:color/black</item>
+
         <item name="colorSecondary">@color/secondaryColor</item>
+        <item name="colorSecondaryVariant">@color/secondaryLightColor</item>
         <item name="colorOnSecondary">@android:color/white</item>
-        <item name="colorAccent">@color/secondaryColor</item>
-        <item name="colorSurface">@color/grey200</item>
+
+        <item name="colorError">@color/errorColor</item>
+        <item name="colorOnError">@android:color/white</item>
+
+        <item name="android:colorBackground">@color/grey200</item>
+        <item name="colorSurface">@android:color/white</item>
     </style>
 
     <color name="actionBarButton">#FF000000</color>

@@ -28,7 +28,7 @@
   <string name="startup_donate_message">Nous sommes heureux que vous utilisiez DAVx⁵, qui est un logiciel open-source (GPLv3). Parce que développer DAVx⁵ est un travail difficile, qui nous a pris de nombreuses heures, nous vous invitons à faire un don.</string>
   <string name="startup_donate_now">Faire un don</string>
   <string name="startup_donate_later">Plus tard</string>
-  <string name="startup_more_info">Plus d\'informations</string>
+  <string name="intro_more_info">Plus d\'informations</string>
   <string name="startup_opentasks_not_installed">L\'application OpenTasks n\'est pas installée</string>
   <string name="startup_opentasks_not_installed_message">Pour synchroniser les tâches, l\'application gratuite OpenTasks est nécessaire (elle ne l\'est pas pour les contacts et les événements).</string>
   <string name="startup_opentasks_reinstall_davx5">Après l\'installation d\'OpenTasks, vous devez RÉ-INSTALLER DAVx⁵ et ajoutez vos comptes à nouveau (bug Android).</string>

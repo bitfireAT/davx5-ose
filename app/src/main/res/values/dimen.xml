@@ -10,6 +10,10 @@
 <resources>
     <dimen name="activity_margin">16dp</dimen>
 
+    <dimen name="card_theme_max_height">20mm</dimen>
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="card_margin_title_text">12dp</dimen>
+
     <dimen name="fab_margin">16dp</dimen>
 
     <!-- space that lists should reserve for the FAB -->

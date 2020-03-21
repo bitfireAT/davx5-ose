@@ -31,23 +31,30 @@
     <string name="notification_channel_sync_io_errors">Network and I/O errors</string>
     <string name="notification_channel_sync_io_errors_desc">Timeouts, connection problems, etc. (often temporary)</string>
 
-    <!-- startup dialogs -->
-    <string name="startup_autostart_permission">Automatic synchronization</string>
-    <string name="startup_autostart_permission_message">%s firmware often blocks automatic synchronization. In this case, allow automatic synchronization in your Android settings.</string>
-    <string name="startup_battery_optimization">Scheduled synchronization</string>
-    <string name="startup_battery_optimization_message">Your device will restrain DAVx⁵ synchronization. To enforce regular DAVx⁵ sync intervals, turn off \"battery optimization\".</string>
-    <string name="startup_battery_optimization_disable">Turn off for DAVx⁵</string>
-    <string name="startup_dont_show_again">Don\'t show again</string>
-    <string name="startup_not_now">Not now</string>
-    <string name="startup_donate">Open-Source Information</string>
-    <string name="startup_donate_message">We\'re happy that you use DAVx⁵, which is open-source software (GPLv3). Because developing DAVx⁵ is hard work and took us thousands of working hours, please consider a donation.</string>
-    <string name="startup_donate_now">Show donation page</string>
-    <string name="startup_donate_later">Maybe later</string>
-    <string name="startup_more_info">More information</string>
-    <string name="startup_opentasks_not_installed">OpenTasks not installed</string>
-    <string name="startup_opentasks_not_installed_message">To synchronize tasks, the free app OpenTasks is required. (Not required for contacts/events.)</string>
-    <string name="startup_opentasks_reinstall_davx5">After installing OpenTasks, you have to RE-INSTALL DAVx⁵ and add your accounts again (Android bug).</string>
-    <string name="startup_opentasks_not_installed_install">Install OpenTasks</string>
+    <!-- IntroActivity -->
+    <string name="intro_slogan1">Your data. Your choice.</string>
+    <string name="intro_slogan2">Take control.</string>
+    <string name="intro_battery_title">Regular sync intervals</string>
+    <string name="intro_battery_not_whitelisted">Disabled (not recommended)</string>
+    <string name="intro_battery_whitelisted">Enabled (recommended)</string>
+    <string name="intro_battery_text">For synchronization at regular intervals, DAVx5 must be allowed to run in the background. Otherwise, Android may pause synchronization at any time.</string>
+    <string name="intro_battery_dont_show">I don\'t need regular sync intervals.*</string>
+    <string name="intro_autostart_title">%s compatibility</string>
+    <string name="intro_autostart_text">This device probably blocks synchronization. If you\'re affected, you can only resolve this manually.</string>
+    <string name="intro_autostart_dont_show">I have done the required settings. Don\'t remind me anymore.*</string>
+    <string name="intro_leave_unchecked">* Leave unchecked to be reminded later. Can be reset in app settings / %s.</string>
+    <string name="intro_tasks_title">Tasks support</string>
+    <string name="intro_tasks_not_installed">Not installed</string>
+    <string name="intro_tasks_opentasks_installed">OpenTasks installed</string>
+    <string name="intro_tasks_no_app_store">No app store available</string>
+    <string name="intro_tasks_text1"><![CDATA[Android doesn\'t have built-in support for tasks. If tasks are supported by your server, %s can synchronize them using <a href="https://opentasks.app/">OpenTasks</a>.]]></string>
+    <string name="intro_tasks_text2">For advanced features like subtasks or recurring tasks, you\'ll need additional apps.</string>
+    <string name="intro_tasks_dont_show">I don\'t need tasks support.*</string>
+    <string name="intro_open_source_title">Open-source software</string>
+    <string name="intro_open_source_text">We\'re happy that you use %s, which is open-source software. Development, maintenance and support are hard work. Please consider contributing (there are many ways) or a donation. It would be highly appreciated!</string>
+    <string name="intro_open_source_details">How to contribute/donate</string>
+    <string name="intro_open_source_dont_show">Don\'t show in the next time</string>
+    <string name="intro_more_info">More information</string>
 
     <!-- AboutActivity -->
     <string name="about_languages">Languages</string>

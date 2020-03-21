@@ -9,6 +9,7 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.AccountManager
+import android.app.Activity
 import android.content.ContentResolver
 import android.content.Intent
 import android.content.SyncStatusObserver
@@ -19,18 +20,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.ui.intro.IntroActivity
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.accounts_content.*
 import kotlinx.android.synthetic.main.activity_accounts.*
 import kotlinx.android.synthetic.main.activity_accounts.view.*
+import java.util.*
+import kotlin.concurrent.thread
 
 class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, SyncStatusObserver {
 
     companion object {
         val accountsDrawerHandler = DefaultAccountsDrawerHandler()
 
+        const val REQUEST_INTRO = 0
         const val fragTagStartup = "startup"
     }
 
@@ -44,14 +49,19 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         super.onCreate(savedInstanceState)
         settings = Settings.getInstance(this)
 
+        if (savedInstanceState == null)
+            thread {
+                // use a separate thread to check whether IntroActivity should be shown
+                if (IntroActivity.shouldShowIntroActivity(this)) {
+                    val intro = Intent(this, IntroActivity::class.java)
+                    // TODO use correct flags
+                    intro.addFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP)
+                    startActivityForResult(intro, REQUEST_INTRO)
+                }
+            }
+
         setContentView(R.layout.activity_accounts)
         setSupportActionBar(toolbar)
-
-        if (supportFragmentManager.findFragmentByTag(fragTagStartup) == null) {
-            val ft = supportFragmentManager.beginTransaction()
-            StartupDialogFragment.getStartupDialogs(this).forEach { ft.add(it, fragTagStartup) }
-            ft.commit()
-        }
 
         fab.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
@@ -101,6 +111,13 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         }
     }
 
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_INTRO && resultCode == Activity.RESULT_CANCELED)
+            finish()
+        else
+            super.onActivityResult(requestCode, resultCode, data)
+    }
 
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START))

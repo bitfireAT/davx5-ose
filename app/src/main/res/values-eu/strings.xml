@@ -23,7 +23,7 @@
   <string name="startup_donate">Kode-Ireki Informazioa</string>
   <string name="startup_donate_now">Erakutsi dohaintza orrialdea</string>
   <string name="startup_donate_later">Agian geroago</string>
-  <string name="startup_more_info">Informazio gehiago</string>
+  <string name="intro_more_info">Informazio gehiago</string>
   <string name="startup_opentasks_not_installed">OpenTask ez dago instalatuta</string>
   <string name="startup_opentasks_not_installed_install">Instalatu OpenTasks</string>
   <!--AboutActivity-->

@@ -28,7 +28,7 @@
   <string name="startup_donate_message">Είμαστε ευτυχείς που χρησιμοποιείτε το DAVx⁵, το οποίο είναι λογισμικό ανοιχτού κώδικα (GPLv3). Επειδή η ανάπτυξη του DAVx⁵ είναι σκληρή δουλειά και μας πήρε ήδη χιλιάδες ώρες εργασίας, παρακαλούμε σκεφτείτε να κάνετε μια δωρεά.</string>
   <string name="startup_donate_now">Εμφάνιση σελίδας δωρεών</string>
   <string name="startup_donate_later">Μπορεί αργότερα</string>
-  <string name="startup_more_info">Περισσότερες πληροφορίες</string>
+  <string name="intro_more_info">Περισσότερες πληροφορίες</string>
   <string name="startup_opentasks_not_installed">Η εφαρμογή OpenTasks δεν είναι εγκατεστημένη</string>
   <string name="startup_opentasks_not_installed_message">Για να συγχρονίσετε εργασίες, απαιτείται η δωρεάν εφαρμογή OpenTasks. (Δεν απαιτείται για επαφές/συμβάντα.)</string>
   <string name="startup_opentasks_reinstall_davx5">Μετά την εγκατάσταση της εφαρμογής OpenTasks, πρέπει να εγκαταστήσετε εκ νέου το DAVx⁵ και να προσθέσετε ξανά τους λογαριασμούς σας (σφάλμα του Android).</string>

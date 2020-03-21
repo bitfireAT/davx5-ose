@@ -47,6 +47,7 @@
 
         <service android:name=".DavService"/>
 
+        <activity android:name=".ui.intro.IntroActivity" android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.AccountsActivity"
             android:label="@string/app_name"

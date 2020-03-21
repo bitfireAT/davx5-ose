@@ -8,7 +8,8 @@
   -->
 
 <resources>
-    <declare-styleable name="EditPassword">
-        <attr name="text" format="string"/>
+    <declare-styleable name="CropImageView">
+        <attr name="horizontalOffsetPercent" format="float"/>
+        <attr name="verticalOffsetPercent" format="float"/>
     </declare-styleable>
 </resources>
