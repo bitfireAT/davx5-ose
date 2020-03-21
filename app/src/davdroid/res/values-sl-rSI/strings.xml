@@ -28,7 +28,7 @@
   <string name="startup_donate_message">Zadovoljni smo, da uporabljate DAVx⁵, ki je odprto koden program (GPLv3). Razvijanje DAVx⁵ je trdo delo, ki nam vzame tisoče ur, zato vas prosimo za donacijo.</string>
   <string name="startup_donate_now">Pojdi na stran donacij</string>
   <string name="startup_donate_later">Morda kasneje</string>
-  <string name="startup_more_info">Več informacij</string>
+  <string name="intro_more_info">Več informacij</string>
   <string name="startup_opentasks_not_installed">OpenTasks ni nameščen</string>
   <string name="startup_opentasks_not_installed_message">Za sinhronizacijo opravil je potrebna brezplačna  aplikacija OpenTasks. (Ta ni potrebna za kontakte/dogodke.)</string>
   <string name="startup_opentasks_reinstall_davx5">Po namestitvi OpenTasks morate PONOVNO namestiti DAVx⁵ in ponovno dodati vaš račun(Android napaka).</string>

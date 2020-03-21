@@ -28,7 +28,7 @@
   <string name="startup_donate_message">Jsme velice rádi že používáte DAVx⁵, software s otevřeným zdrojovým kódem (GPLv3). Vývoj této aplikace je náročný a trval již několik tisíc hodin, velice nás potěší přispějete-li na jeho vývoj.</string>
   <string name="startup_donate_now">Zobrazit stránku pro obdarování</string>
   <string name="startup_donate_later">Možná později</string>
-  <string name="startup_more_info">Další informace</string>
+  <string name="intro_more_info">Další informace</string>
   <string name="startup_opentasks_not_installed">OpenTasks není nainstalován</string>
   <string name="startup_opentasks_not_installed_message">Pro synchronizaci úkolů je zapotřebí bezplatné aplikace OpenTasks (není potřebná pro kontakty/události).</string>
   <string name="startup_opentasks_reinstall_davx5">Po instalaci OpenTasks musíte PŘEINSTALOVAT DAVx⁵ a přidat znovu své účty (Android chyba).</string>

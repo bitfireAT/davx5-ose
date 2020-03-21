@@ -28,7 +28,7 @@
   <string name="startup_donate_message">Sōm my radzi, że używosz DAVx⁵, co mo ôtwarte zdrzōdło (GPLv3). Bez to, że tworzynie DAVx⁵ to je ciynżko robota i wziōnło nōm tysiōnce godzin roboty, proszymy ô rozwożynie przesłanio nōm dowki.</string>
   <string name="startup_donate_now">Pokoż strōna dowki</string>
   <string name="startup_donate_later">Możno niyskorzij</string>
-  <string name="startup_more_info">Wiyncyj informacyji</string>
+  <string name="intro_more_info">Wiyncyj informacyji</string>
   <string name="startup_opentasks_not_installed">OpenTasks niyzainstalowany</string>
   <string name="startup_opentasks_not_installed_message">Żeby synchrōnizować zadania, potrzebno je darmowo aplikacyjo OpenTasks (niywymogano do kōntaktōw/zdarzyń).</string>
   <string name="startup_opentasks_reinstall_davx5">Po zainstalowaniu OpenTasks potrzebne je PRZEINSTALOWANIE DAVx⁵ i przidanie na nowo twojich kōnt (feler Androida).</string>

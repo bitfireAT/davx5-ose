@@ -28,7 +28,7 @@
   <string name="startup_donate_message">يسعدنا كونك تستخدم DAVx⁵ ، البرنامج ذو المصدر المفتوح (GPLv3). تطوير DAVx⁵ عمل مضنٍ أخذ منا آلاف ساعات العمل ، هلّا تبرعت لنا ؟</string>
   <string name="startup_donate_now">عرض صفحة التبرُّع</string>
   <string name="startup_donate_later">ربما لاحقاً</string>
-  <string name="startup_more_info">المزيد من المعلومات</string>
+  <string name="intro_more_info">المزيد من المعلومات</string>
   <string name="startup_opentasks_not_installed">OpenTasks غير مثبت</string>
   <string name="startup_opentasks_not_installed_message">تطبيق OpenTasks المجاني مطلوب لمزامنة المهام.  (غير مطلوب لمزامنة جهات الاتصال أو الأحداث)</string>
   <string name="startup_opentasks_reinstall_davx5">بعد تثبيت OpenTasks، لابد لك من إعادة تثبيت DAVx⁵ وإضافة حساباتك مجدداً (علة في آندرويد).</string>

@@ -28,7 +28,7 @@
   <string name="startup_donate_message">از اینکه ازDAVx⁵  استفاده می کنید خوشحالیم.  DAVx⁵یک نرم افزار منبع باز (GPLv3) است. از آنجا که توسعهDAVx⁵  کار سختی است و ما هزاران ساعت کار را انجام دادیم، لطفا کمک مالی را در نظر بگیرید.</string>
   <string name="startup_donate_now">نمایش صفحه کمک مالی</string>
   <string name="startup_donate_later">شاید بعدا</string>
-  <string name="startup_more_info">اطلاعات بیشتر</string>
+  <string name="intro_more_info">اطلاعات بیشتر</string>
   <string name="startup_opentasks_not_installed">مورد باز شده نصب نمی باشد</string>
   <string name="startup_opentasks_not_installed_message">برای همگام سازی وظایف، برنامه OpenTasks رایگان مورد نیاز است. (برای مخاطبین / رویدادها لازم نیست)</string>
   <string name="startup_opentasks_reinstall_davx5">پس از نصب برنامک وظایف، شما باید DAVx⁵ را دوباره نصب کرده و حساب ابری خود را مجدد وارد کنید.(مشکل اندروید)</string>
