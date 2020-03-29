@@ -503,7 +503,12 @@ class SettingsActivity: AppCompatActivity() {
             accountSettings?.setTimeRangePastDays(days)
             reload()
 
-            resyncCalendars(fullResync = false, tasks = false)
+            /* If the new setting is a certain number of days, no full resync is required,
+            because every sync will cause a REPORT calendar-query with the given number of days.
+            However, if the new setting is "all events", collection sync may/should be used, so
+            the last sync-token has to be reset, which is done by setting fullResync=true.
+             */
+            resyncCalendars(fullResync = days == null, tasks = false)
         }
 
         fun updateDefaultAlarm(minBefore: Int?) {
