@@ -54,8 +54,6 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
                 // use a separate thread to check whether IntroActivity should be shown
                 if (IntroActivity.shouldShowIntroActivity(this)) {
                     val intro = Intent(this, IntroActivity::class.java)
-                    // TODO use correct flags
-                    intro.addFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP)
                     startActivityForResult(intro, REQUEST_INTRO)
                 }
             }
