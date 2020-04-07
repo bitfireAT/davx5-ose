@@ -26,6 +26,7 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_AUTOSTART_PERMISSION
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_BATTERY_OPTIMIZATIONS
+import org.apache.commons.text.WordUtils
 
 class BatteryOptimizationsFragment: Fragment() {
 
@@ -54,7 +55,7 @@ class BatteryOptimizationsFragment: Fragment() {
                ), REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
         })
 
-        binding.autostartHeading.text = getString(R.string.intro_autostart_title, Build.MANUFACTURER)
+        binding.autostartHeading.text = getString(R.string.intro_autostart_title, WordUtils.capitalize(Build.MANUFACTURER))
         binding.autostartText.text = getString(R.string.intro_autostart_text, Build.MANUFACTURER)
         binding.autostartMoreInfo.setOnClickListener {
             UiUtils.launchUri(requireActivity(), App.homepageUrl(requireActivity()).buildUpon()
@@ -71,6 +72,11 @@ class BatteryOptimizationsFragment: Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
             model.checkWhitelisted()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        model.checkWhitelisted()
     }
 
 
@@ -143,10 +149,6 @@ class BatteryOptimizationsFragment: Fragment() {
                 else
                     settings.remove(HINT_AUTOSTART_PERMISSION)
             }
-        }
-
-        init {
-            checkWhitelisted()
         }
 
         fun checkWhitelisted() {

@@ -136,6 +136,7 @@ dependencies {
     implementation 'dnsjava:dnsjava:2.1.9'
     implementation 'org.apache.commons:commons-collections4:4.4'
     implementation 'org.apache.commons:commons-lang3:3.9'
+    implementation 'org.apache.commons:commons-text:1.8'
 
     // for tests
     androidTestImplementation 'androidx.test:runner:1.2.0'
