@@ -36,7 +36,6 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         val accountsDrawerHandler = DefaultAccountsDrawerHandler()
 
         const val REQUEST_INTRO = 0
-        const val fragTagStartup = "startup"
     }
 
     private lateinit var settings: Settings

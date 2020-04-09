@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.Credentials
@@ -33,7 +33,7 @@ class NextcloudLoginFlowFragment: Fragment() {
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        loginModel = ViewModelProviders.of(requireActivity()).get(LoginModel::class.java)
+        loginModel = ViewModelProvider(requireActivity()).get(LoginModel::class.java)
 
         val webView = WebView(requireActivity())
         webView.settings.apply {
