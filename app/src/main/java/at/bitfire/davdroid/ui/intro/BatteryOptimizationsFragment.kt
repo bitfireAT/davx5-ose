@@ -57,7 +57,7 @@ class BatteryOptimizationsFragment: Fragment() {
         binding.batteryText.text = getString(R.string.intro_battery_text, getString(R.string.app_name))
 
         binding.autostartHeading.text = getString(R.string.intro_autostart_title, WordUtils.capitalize(Build.MANUFACTURER))
-        binding.autostartText.text = getString(R.string.intro_autostart_text, Build.MANUFACTURER)
+        binding.autostartText.text = getString(R.string.intro_autostart_text)
         binding.autostartMoreInfo.setOnClickListener {
             UiUtils.launchUri(requireActivity(), App.homepageUrl(requireActivity()).buildUpon()
                     .appendPath("faq").appendPath("synchronization-is-not-run-as-expected")

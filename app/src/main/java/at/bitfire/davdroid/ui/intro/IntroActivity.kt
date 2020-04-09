@@ -40,10 +40,9 @@ class IntroActivity: AppIntro2() {
 
         val factoriesWithMode = introFragmentFactories.associate { Pair(it, it.shouldBeShown(this, settings)) }
         val showAll = factoriesWithMode.values.any { it == ShowMode.SHOW }
-        factoriesWithMode.forEach { factory, mode ->
+        for ((factory, mode) in factoriesWithMode)
             if (mode == ShowMode.SHOW || (mode == ShowMode.SHOW_NOT_ALONE && showAll))
                 addSlide(factory.create())
-        }
 
         setBarColor(resources.getColor(R.color.primaryDarkColor))
         showSkipButton(false)

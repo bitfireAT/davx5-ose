@@ -17,7 +17,7 @@ interface IIntroFragmentFactory {
 
     /**
      * Used to determine whether an intro fragment of this type (for instance,
-     * the [IntroActivity.BatteryOptimizationsFragment]) should be shown.
+     * the [BatteryOptimizationsFragment]) should be shown.
      *
      * @param context   used to determine whether the fragment shall be shown
      * @param settings  used to determine whether the fragment shall be shown
@@ -30,7 +30,7 @@ interface IIntroFragmentFactory {
      * Creates an instance of this intro fragment type. Will only be called when
      * [shouldBeShown] is true.
      *
-     * @return the fragment (for instance, a [IntroActivity.BatteryOptimizationsFragment]])
+     * @return the fragment (for instance, a [BatteryOptimizationsFragment]])
      */
     fun create(): Fragment
 
