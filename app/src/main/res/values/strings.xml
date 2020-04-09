@@ -37,7 +37,7 @@
     <string name="intro_battery_title">Regular sync intervals</string>
     <string name="intro_battery_not_whitelisted">Disabled (not recommended)</string>
     <string name="intro_battery_whitelisted">Enabled (recommended)</string>
-    <string name="intro_battery_text">For synchronization at regular intervals, DAVx5 must be allowed to run in the background. Otherwise, Android may pause synchronization at any time.</string>
+    <string name="intro_battery_text">For synchronization at regular intervals, %s must be allowed to run in the background. Otherwise, Android may pause synchronization at any time.</string>
     <string name="intro_battery_dont_show">I don\'t need regular sync intervals.*</string>
     <string name="intro_autostart_title">%s compatibility</string>
     <string name="intro_autostart_text">This device probably blocks synchronization. If you\'re affected, you can only resolve this manually.</string>
