@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.ui.intro.IIntroFragmentFactory.ShowMode
 import com.github.paolorotolo.appintro.AppIntro2
@@ -16,10 +17,19 @@ class IntroActivity: AppIntro2() {
 
         private val serviceLoader = ServiceLoader.load(IIntroFragmentFactory::class.java)!!
         private val introFragmentFactories = serviceLoader.toList()
+        init {
+            introFragmentFactories.forEach {
+                Logger.log.fine("Registered intro fragment ${it::class.java}")
+            }
+        }
 
         fun shouldShowIntroActivity(context: Context): Boolean {
             val settings = Settings.getInstance(context)
-            return introFragmentFactories.any { it.shouldBeShown(context, settings) == ShowMode.SHOW }
+            return introFragmentFactories.any {
+                val show = it.shouldBeShown(context, settings)
+                Logger.log.fine("Intro fragment $it: showMode=$show")
+                show == ShowMode.SHOW
+            }
         }
 
     }
