@@ -25,18 +25,17 @@ android {
 
         minSdkVersion 21        // Android 5.0
         targetSdkVersion 29     // Android 10.0
-        multiDexEnabled true    // >64k methods for Android 4.4
 
         buildConfigField "String", "okhttpVersion", "\"${versions.okhttp}\""
         buildConfigField "String", "userAgent", "\"DAVx5\""
-
-        // when using this, make sure that notification icons are real bitmaps
-        vectorDrawables.useSupportLibrary = true
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 
     dataBinding.enabled = true
@@ -106,7 +105,6 @@ dependencies {
     implementation project(':ical4android')
     implementation project(':vcard4android')
 
-    implementation 'androidx.multidex:multidex:2.0.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
