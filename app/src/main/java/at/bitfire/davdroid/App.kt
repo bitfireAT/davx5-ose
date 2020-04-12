@@ -22,7 +22,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
-import org.xbill.DNS.config.AndroidResolverConfigProvider
 import java.util.logging.Level
 import kotlin.concurrent.thread
 import kotlin.system.exitProcess
@@ -53,9 +52,6 @@ class App: Application(), Thread.UncaughtExceptionHandler {
     override fun onCreate() {
         super.onCreate()
         Logger.initialize(this)
-
-        // provide app context to dnsjava so that it can determine the DNS servers
-        AndroidResolverConfigProvider.setContext(this)
 
         if (BuildConfig.DEBUG)
             // debug builds

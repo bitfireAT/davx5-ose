@@ -110,7 +110,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta4'
-    implementation 'androidx.fragment:fragment-ktx:1.2.4'
+    implementation 'androidx.fragment:fragment-ktx:1.2.3'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation 'androidx.paging:paging-runtime-ktx:2.1.2'
@@ -127,21 +127,21 @@ dependencies {
     implementation 'com.jaredrummler:colorpicker:1.1.0'
     implementation 'com.github.AppIntro:AppIntro:5.1.0'
     implementation 'com.gitlab.bitfireAT:dav4jvm:1.0.1'
-    implementation 'com.mikepenz:aboutlibraries:8.1.0'
+    implementation 'com.mikepenz:aboutlibraries:7.1.0'
     implementation "com.squareup.okhttp3:okhttp:${versions.okhttp}"
     implementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}"
     implementation 'commons-io:commons-io:2.6'
-    implementation 'dnsjava:dnsjava:3.0.2'
+    implementation 'dnsjava:dnsjava:2.1.9'
     implementation 'org.apache.commons:commons-collections4:4.4'
-    implementation 'org.apache.commons:commons-lang3:3.10'
+    implementation 'org.apache.commons:commons-lang3:3.9'
     implementation 'org.apache.commons:commons-text:1.8'
 
     // for tests
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test:rules:1.2.0'
-    androidTestImplementation 'junit:junit:4.13'
+    androidTestImplementation 'junit:junit:4.12'
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
 
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.12'
     testImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
 }
