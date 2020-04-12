@@ -23,7 +23,7 @@ android {
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
         buildConfigField "boolean", "customCerts", "true"
 
-        minSdkVersion 19        // Android 4.4
+        minSdkVersion 21        // Android 5.0
         targetSdkVersion 29     // Android 10.0
         multiDexEnabled true    // >64k methods for Android 4.4
 
