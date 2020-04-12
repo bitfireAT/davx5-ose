@@ -43,6 +43,30 @@ object DavUtils {
         return segments.firstOrNull { it.isNotEmpty() } ?: "/"
     }
 
+    fun prepareLookup(context: Context, lookup: Lookup) {
+        @TargetApi(Build.VERSION_CODES.O)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            /* Since Android 8, the system properties net.dns1, net.dns2, ... are not available anymore.
+               The current version of dnsjava relies on these properties to find the default name servers,
+               so we have to add the servers explicitly (fortunately, there's an Android API to
+               get the active DNS servers). */
+            val connectivity = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeLink = connectivity.getLinkProperties(connectivity.activeNetwork)
+            if (activeLink != null) {
+                // get DNS servers of active network link and set them for dnsjava so that it can send SRV queries
+                val simpleResolvers = activeLink.dnsServers.map {
+                    Logger.log.fine("Using DNS server ${it.hostAddress}")
+                    val resolver = SimpleResolver()
+                    resolver.setAddress(it)
+                    resolver
+                }
+                val resolver = ExtendedResolver(simpleResolvers.toTypedArray())
+                lookup.setResolver(resolver)
+            } else
+                Logger.log.severe("Couldn't determine DNS servers, dnsjava queries (SRV/TXT records) won't work")
+        }
+    }
+
     fun selectSRVRecord(records: Array<Record>?): SRVRecord? {
         val srvRecords = records?.filterIsInstance(SRVRecord::class.java)
         srvRecords?.let {
