@@ -8,6 +8,7 @@
 
 package at.bitfire.davdroid
 
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -18,7 +19,6 @@ import android.os.Build
 import android.os.StrictMode
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.multidex.MultiDexApplication
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -28,7 +28,7 @@ import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 
 @Suppress("unused")
-class App: MultiDexApplication(), Thread.UncaughtExceptionHandler {
+class App: Application(), Thread.UncaughtExceptionHandler {
 
     companion object {
 
