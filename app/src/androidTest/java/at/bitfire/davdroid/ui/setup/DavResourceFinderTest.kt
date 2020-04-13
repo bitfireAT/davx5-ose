@@ -8,7 +8,6 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import android.app.Application
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.dav4jvm.DavResource
@@ -49,10 +48,9 @@ class DavResourceFinderTest {
 
     @Before
     fun initServerAndClient() {
-        server.setDispatcher(TestDispatcher())
+        server.dispatcher = TestDispatcher()
         server.start()
 
-        val application = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
         loginModel = LoginModel()
         loginModel.baseURI = URI.create("/")
         loginModel.credentials = Credentials("mock", "12345")
@@ -131,16 +129,16 @@ class DavResourceFinderTest {
 
     class TestDispatcher: Dispatcher() {
 
-        override fun dispatch(rq: RecordedRequest): MockResponse {
-            if (!checkAuth(rq)) {
+        override fun dispatch(request: RecordedRequest): MockResponse {
+            if (!checkAuth(request)) {
                 val authenticate = MockResponse().setResponseCode(401)
                 authenticate.setHeader("WWW-Authenticate", "Basic realm=\"test\"")
                 return authenticate
             }
 
-            val path = rq.path
+            val path = request.path!!
 
-            if (rq.method.equals("OPTIONS", true)) {
+            if (request.method.equals("OPTIONS", true)) {
                 val dav = when {
                     path.startsWith(PATH_CALDAV) -> "calendar-access"
                     path.startsWith(PATH_CARDDAV) -> "addressbook"
@@ -151,7 +149,7 @@ class DavResourceFinderTest {
                 if (dav != null)
                     response.addHeader("DAV", dav)
                 return response
-            } else if (rq.method.equals("PROPFIND", true)) {
+            } else if (request.method.equals("PROPFIND", true)) {
                 val props: String?
                 when (path) {
                     PATH_CALDAV,
@@ -176,7 +174,7 @@ class DavResourceFinderTest {
                         .setResponseCode(207)
                         .setBody("<multistatus xmlns='DAV:' xmlns:CARD='urn:ietf:params:xml:ns:carddav'>" +
                                 "<response>" +
-                                "   <href>${rq.path}</href>" +
+                                "   <href>${request.path}</href>" +
                                 "   <propstat><prop>$props</prop></propstat>" +
                                 "</response>" +
                                 "</multistatus>")

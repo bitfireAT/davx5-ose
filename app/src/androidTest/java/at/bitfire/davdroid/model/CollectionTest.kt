@@ -12,7 +12,7 @@ import androidx.test.filters.SmallTest
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.ResourceType
 import at.bitfire.davdroid.HttpClient
-import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -128,7 +128,7 @@ class CollectionTest {
                 }
         assertEquals(Collection.TYPE_WEBCAL, info.type)
         assertEquals("Sample Subscription", info.displayName)
-        assertEquals(HttpUrl.get("https://example.com/1.ics"), info.source)
+        assertEquals("https://example.com/1.ics".toHttpUrl(), info.source)
     }
 
 }
