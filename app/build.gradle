@@ -128,13 +128,14 @@ dependencies {
     implementation 'com.github.AppIntro:AppIntro:5.1.0'
     implementation 'com.gitlab.bitfireAT:dav4jvm:2.0'
     implementation 'com.mikepenz:aboutlibraries:8.1.0'
-    implementation "com.squareup.okhttp3:okhttp:${versions.okhttp}"
-    implementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}"
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:${versions.okhttp}"))
+    implementation "com.squareup.okhttp3:okhttp"
+    implementation "com.squareup.okhttp3:logging-interceptor"
     implementation 'commons-io:commons-io:2.6'
-    //noinspection GradleDependency - dnsjava 3+ needs Java 8
+    //noinspection GradleDependency - dnsjava 3+ needs Java 8/Android 7
     implementation 'dnsjava:dnsjava:2.1.9'
     implementation 'org.apache.commons:commons-collections4:4.4'
-    //noinspection GradleDependency - commons-lang 3.10+ needs Java 8
+    //noinspection GradleDependency - commons-lang 3.10+ needs Java 8/Android 7
     implementation 'org.apache.commons:commons-lang3:3.9'
     implementation 'org.apache.commons:commons-text:1.8'
 
@@ -142,7 +143,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test:rules:1.2.0'
     androidTestImplementation 'junit:junit:4.13'
-    androidTestImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
+    androidTestImplementation "com.squareup.okhttp3:mockwebserver"
 
     testImplementation 'junit:junit:4.13'
     testImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"

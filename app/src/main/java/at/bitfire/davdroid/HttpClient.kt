@@ -49,6 +49,12 @@ class HttpClient private constructor(
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(120, TimeUnit.SECONDS)
 
+                // keep TLS 1.0 and 1.1 for now; remove when major browsers have dropped it (probably 2020)
+                .connectionSpecs(listOf(
+                        ConnectionSpec.CLEARTEXT,
+                        ConnectionSpec.COMPATIBLE_TLS
+                ))
+
                 // don't allow redirects by default, because it would break PROPFIND handling
                 .followRedirects(false)
 
