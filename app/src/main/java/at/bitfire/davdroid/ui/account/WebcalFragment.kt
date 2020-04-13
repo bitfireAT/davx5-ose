@@ -32,6 +32,7 @@ import at.bitfire.davdroid.model.Collection
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.account_caldav_item.view.*
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.logging.Level
 
 class WebcalFragment: CollectionsFragment() {
@@ -248,7 +249,7 @@ class WebcalFragment: CollectionsFragment() {
                 provider.query(Calendars.CONTENT_URI, arrayOf(Calendars._ID, Calendars.NAME),null, null, null)?.use { cursor ->
                     while (cursor.moveToNext())
                         cursor.getString(1)?.let { rawName ->
-                            HttpUrl.parse(rawName)?.let { url ->
+                            rawName.toHttpUrlOrNull()?.let { url ->
                                 subscriptions[cursor.getLong(0)] = url
                             }
                         }

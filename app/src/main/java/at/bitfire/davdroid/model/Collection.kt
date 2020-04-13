@@ -6,6 +6,7 @@ import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.DavUtils
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 @Entity(tableName = "collection",
         foreignKeys = [
@@ -115,12 +116,14 @@ data class Collection(
                             supportsVJOURNAL = it.supportsJournal
                         }
                     } else { // Type.WEBCAL
-                        dav[Source::class.java]?.let { source = it.hrefs.firstOrNull()?.let { rawHref ->
-                            val href = rawHref
-                                    .replace("^webcal://".toRegex(), "http://")
-                                    .replace("^webcals://".toRegex(), "https://")
-                            HttpUrl.parse(href)
-                        } }
+                        dav[Source::class.java]?.let {
+                            source = it.hrefs.firstOrNull()?.let { rawHref ->
+                                val href = rawHref
+                                        .replace("^webcal://".toRegex(), "http://")
+                                        .replace("^webcals://".toRegex(), "https://")
+                                href.toHttpUrlOrNull()
+                            }
+                        }
                         supportsVEVENT = true
                     }
                 }

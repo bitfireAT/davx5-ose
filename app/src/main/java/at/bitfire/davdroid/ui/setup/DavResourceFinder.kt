@@ -19,6 +19,7 @@ import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.log.StringHandler
 import at.bitfire.davdroid.model.Collection
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder
 import org.xbill.DNS.Lookup
 import org.xbill.DNS.Type
@@ -106,11 +107,11 @@ class DavResourceFinder(
         log.info("Finding initial ${service.wellKnownName} service configuration")
 
         if (baseURI.scheme.equals("http", true) || baseURI.scheme.equals("https", true)) {
-            HttpUrl.get(baseURI)?.let { baseURL ->
+            baseURI.toHttpUrlOrNull()?.let { baseURL ->
                 // remember domain for service discovery
                 // try service discovery only for https:// URLs because only secure service discovery is implemented
-                if (baseURL.scheme().equals("https", true))
-                    discoveryFQDN = baseURL.host()
+                if (baseURL.scheme.equals("https", true))
+                    discoveryFQDN = baseURL.host
 
                 checkUserGivenURL(baseURL, service, config)
 

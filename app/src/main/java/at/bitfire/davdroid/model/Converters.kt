@@ -2,6 +2,7 @@ package at.bitfire.davdroid.model
 
 import androidx.room.TypeConverter
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 class Converters {
 
@@ -11,6 +12,6 @@ class Converters {
 
     @TypeConverter
     fun stringToHttpUrl(url: String?): HttpUrl? =
-            url?.let { HttpUrl.parse(it) }
+            url?.let { it.toHttpUrlOrNull() }
 
 }

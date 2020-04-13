@@ -29,6 +29,7 @@ import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.TaskProvider
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.dmfs.tasks.contract.TaskContract
 import java.util.logging.Level
 
@@ -118,7 +119,7 @@ class TasksSyncAdapterService: SyncAdapterService() {
 
             for (list in AndroidTaskList.find(account, provider, LocalTaskList.Factory, null, null))
                 list.syncId?.let {
-                    val url = HttpUrl.parse(it)!!
+                    val url = it.toHttpUrl()
                     val info = remoteTaskLists[url]
                     if (info == null) {
                         Logger.log.fine("Deleting obsolete local task list $url")

@@ -30,7 +30,9 @@ import at.bitfire.ical4android.InvalidCalendarException
 import net.fortuna.ical4j.model.Dur
 import net.fortuna.ical4j.model.component.VAlarm
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
@@ -51,7 +53,7 @@ class CalendarSyncManager(
 ): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(context, account, accountSettings, extras, authority, syncResult, localCalendar) {
 
     override fun prepare(): Boolean {
-        collectionURL = HttpUrl.parse(localCollection.name ?: return false) ?: return false
+        collectionURL = (localCollection.name ?: return false).toHttpUrlOrNull() ?: return false
         davCollection = DavCalendar(httpClient.okHttpClient, collectionURL)
 
         // if there are dirty exceptions for events, mark their master events as dirty, too
@@ -89,10 +91,7 @@ class CalendarSyncManager(
         val os = ByteArrayOutputStream()
         event.write(os)
 
-        RequestBody.create(
-                DavCalendar.MIME_ICALENDAR_UTF8,
-                os.toByteArray()
-        )
+        os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
     }
 
     override fun listAllRemote(callback: DavResponseCallback) {

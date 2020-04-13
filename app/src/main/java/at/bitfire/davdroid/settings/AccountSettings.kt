@@ -35,6 +35,7 @@ import at.bitfire.ical4android.TaskProvider.ProviderName.OpenTasks
 import at.bitfire.vcard4android.ContactsStorageException
 import at.bitfire.vcard4android.GroupMethod
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.apache.commons.lang3.StringUtils
 import org.dmfs.tasks.contract.TaskContract
 import java.util.logging.Level
@@ -388,7 +389,7 @@ class AccountSettings(
                     parcel.unmarshall(raw, 0, raw.size)
                     parcel.setDataPosition(0)
                     val params = parcel.readBundle()!!
-                    val url = params.getString("url")?.let { HttpUrl.parse(it) }
+                    val url = params.getString("url")?.toHttpUrlOrNull()
                     if (url == null)
                         Logger.log.info("No address book URL, ignoring account")
                     else {

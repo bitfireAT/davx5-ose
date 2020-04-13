@@ -25,7 +25,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.settings.AccountSettings
-import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.io.IOException
 import java.io.StringWriter
 import java.util.logging.Level
@@ -62,7 +62,7 @@ class CreateCollectionFragment: DialogFragment() {
 
         model.collection = Collection(
                 type = args.getString(ARG_TYPE) ?: throw IllegalArgumentException("ARG_TYPE required"),
-                url = HttpUrl.parse(args.getString(ARG_URL) ?: throw IllegalArgumentException("ARG_URL required"))!!,
+                url = (args.getString(ARG_URL) ?: throw IllegalArgumentException("ARG_URL required")).toHttpUrl(),
                 displayName = args.getString(ARG_DISPLAY_NAME),
                 description = args.getString(ARG_DESCRIPTION),
 

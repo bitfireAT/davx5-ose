@@ -32,7 +32,7 @@ class MemoryCookieStore: CookieJar {
     override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
         synchronized(storage) {
             for (cookie in cookies)
-                storage.put(cookie.name(), cookie.domain(), cookie.path(), cookie)
+                storage.put(cookie.name, cookie.domain, cookie.path, cookie)
         }
     }
 
@@ -46,7 +46,7 @@ class MemoryCookieStore: CookieJar {
                 val cookie = iter.value
 
                 // remove expired cookies
-                if (cookie.expiresAt() <= System.currentTimeMillis()) {
+                if (cookie.expiresAt <= System.currentTimeMillis()) {
                     iter.remove()
                     continue
                 }
