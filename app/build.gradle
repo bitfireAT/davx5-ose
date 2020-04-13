@@ -130,6 +130,7 @@ dependencies {
     implementation 'com.mikepenz:aboutlibraries:8.1.0'
     implementation(platform("com.squareup.okhttp3:okhttp-bom:${versions.okhttp}"))
     implementation "com.squareup.okhttp3:okhttp"
+    implementation "com.squareup.okhttp3:okhttp-brotli"
     implementation "com.squareup.okhttp3:logging-interceptor"
     implementation 'commons-io:commons-io:2.6'
     //noinspection GradleDependency - dnsjava 3+ needs Java 8/Android 7

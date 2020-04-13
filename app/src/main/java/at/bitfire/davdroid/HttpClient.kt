@@ -19,6 +19,7 @@ import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import okhttp3.*
+import okhttp3.brotli.BrotliInterceptor
 import okhttp3.internal.tls.OkHostnameVerifier
 import okhttp3.logging.HttpLoggingInterceptor
 import java.io.File
@@ -57,6 +58,9 @@ class HttpClient private constructor(
 
                 // don't allow redirects by default, because it would break PROPFIND handling
                 .followRedirects(false)
+
+                // offer Brotli and gzip compression
+                .addInterceptor(BrotliInterceptor)
 
                 // add User-Agent to every request
                 .addNetworkInterceptor(UserAgentInterceptor)
