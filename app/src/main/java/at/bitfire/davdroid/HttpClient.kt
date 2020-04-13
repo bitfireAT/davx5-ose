@@ -60,7 +60,7 @@ class HttpClient private constructor(
 
 
     override fun close() {
-        okHttpClient.cache()?.close()
+        okHttpClient.cache?.close()
         certManager?.close()
     }
 
@@ -81,8 +81,10 @@ class HttpClient private constructor(
 
             // add network logging, if requested
             if (logger.isLoggable(Level.FINEST)) {
-                val loggingInterceptor = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger {
-                    message -> logger.finest(message)
+                val loggingInterceptor = HttpLoggingInterceptor(object: HttpLoggingInterceptor.Logger {
+                    override fun log(message: String) {
+                        logger.finest(message)
+                    }
                 })
                 loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
                 orig.addInterceptor(loggingInterceptor)
@@ -173,8 +175,8 @@ class HttpClient private constructor(
                 factory.trustManagers.first() as X509TrustManager
             }()
 
-            val hostnameVerifier = certManager?.hostnameVerifier(OkHostnameVerifier.INSTANCE)
-                    ?: OkHostnameVerifier.INSTANCE
+            val hostnameVerifier = certManager?.hostnameVerifier(OkHostnameVerifier)
+                    ?: OkHostnameVerifier
 
             var keyManager: KeyManager? = null
             certificateAlias?.let { alias ->

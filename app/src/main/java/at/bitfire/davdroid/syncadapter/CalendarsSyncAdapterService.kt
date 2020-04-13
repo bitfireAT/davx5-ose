@@ -22,6 +22,7 @@ import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.AndroidCalendar
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
 
 class CalendarsSyncAdapterService: SyncAdapterService() {
@@ -81,7 +82,7 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
             val updateColors = settings.getManageCalendarColors()
             for (calendar in AndroidCalendar.find(account, provider, LocalCalendar.Factory, null, null))
                 calendar.name?.let {
-                    val url = HttpUrl.parse(it)!!
+                    val url = it.toHttpUrl()
                     val info = remoteCalendars[url]
                     if (info == null) {
                         Logger.log.log(Level.INFO, "Deleting obsolete local calendar", url)

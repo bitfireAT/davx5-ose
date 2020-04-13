@@ -32,7 +32,9 @@ import at.bitfire.ical4android.Constants
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.Task
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
@@ -52,7 +54,7 @@ class TasksSyncManager(
 ): SyncManager<LocalTask, LocalTaskList, DavCalendar>(context, account, accountSettings, extras, authority, syncResult, localCollection) {
 
     override fun prepare(): Boolean {
-        collectionURL = HttpUrl.parse(localCollection.syncId ?: return false) ?: return false
+        collectionURL = (localCollection.syncId ?: return false).toHttpUrlOrNull() ?: return false
         davCollection = DavCalendar(httpClient.okHttpClient, collectionURL)
 
         return true
@@ -77,10 +79,7 @@ class TasksSyncManager(
         val os = ByteArrayOutputStream()
         task.write(os)
 
-        RequestBody.create(
-                DavCalendar.MIME_ICALENDAR_UTF8,
-                os.toByteArray()
-        )
+        os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
     }
 
     override fun listAllRemote(callback: DavResponseCallback) {

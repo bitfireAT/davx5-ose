@@ -37,7 +37,7 @@ object DavUtils {
 
     fun lastSegmentOfUrl(url: HttpUrl): String {
         // the list returned by HttpUrl.pathSegments() is unmodifiable, so we have to create a copy
-        val segments = LinkedList<String>(url.pathSegments())
+        val segments = LinkedList<String>(url.pathSegments)
         segments.reverse()
 
         return segments.firstOrNull { it.isNotEmpty() } ?: "/"

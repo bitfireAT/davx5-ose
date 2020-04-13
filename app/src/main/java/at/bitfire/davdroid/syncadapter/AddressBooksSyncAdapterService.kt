@@ -23,6 +23,7 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.account.AccountActivity
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
 
 class AddressBooksSyncAdapterService : SyncAdapterService() {
@@ -93,7 +94,7 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
 
                 // delete/update local address books
                 for (addressBook in LocalAddressBook.findAll(context, contactsProvider, account)) {
-                    val url = HttpUrl.parse(addressBook.url)!!
+                    val url = addressBook.url.toHttpUrl()
                     val info = remoteAddressBooks[url]
                     if (info == null) {
                         Logger.log.log(Level.INFO, "Deleting obsolete local address book", url)

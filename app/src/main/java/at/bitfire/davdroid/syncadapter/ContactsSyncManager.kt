@@ -31,8 +31,10 @@ import at.bitfire.vcard4android.GroupMethod
 import ezvcard.VCardVersion
 import ezvcard.io.CannotParseException
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.*
 import java.util.logging.Level
 
@@ -108,7 +110,7 @@ class ContactsSyncManager(
             }
         }
 
-        collectionURL = HttpUrl.parse(localCollection.url) ?: return false
+        collectionURL = localCollection.url.toHttpUrlOrNull() ?: return false
         davCollection = DavAddressBook(httpClient.okHttpClient, collectionURL)
 
         resourceDownloader = ResourceDownloader(davCollection.location)
@@ -256,9 +258,8 @@ class ContactsSyncManager(
         val os = ByteArrayOutputStream()
         contact.write(if (hasVCard4) VCardVersion.V4_0 else VCardVersion.V3_0, groupMethod, os)
 
-        RequestBody.create(
-                if (hasVCard4) DavAddressBook.MIME_VCARD4 else DavAddressBook.MIME_VCARD3_UTF8,
-                os.toByteArray()
+        os.toByteArray().toRequestBody(
+                if (hasVCard4) DavAddressBook.MIME_VCARD4 else DavAddressBook.MIME_VCARD3_UTF8
         )
     }
 
@@ -406,14 +407,14 @@ class ContactsSyncManager(
     ): Contact.Downloader {
 
         override fun download(url: String, accepts: String): ByteArray? {
-            val httpUrl = HttpUrl.parse(url)
+            val httpUrl = url.toHttpUrlOrNull()
             if (httpUrl == null) {
                 Logger.log.log(Level.SEVERE, "Invalid external resource URL", url)
                 return null
             }
 
             // authenticate only against a certain host, and only upon request
-            val builder = HttpClient.Builder(context, baseUrl.host(), accountSettings.credentials())
+            val builder = HttpClient.Builder(context, baseUrl.host, accountSettings.credentials())
 
             // allow redirects
             builder.followRedirects(true)
@@ -426,7 +427,7 @@ class ContactsSyncManager(
                         .build()).execute()
 
                 if (response.isSuccessful)
-                    return response.body()?.bytes()
+                    return response.body?.bytes()
                 else
                     Logger.log.warning("Couldn't download external resource")
             } catch(e: IOException) {

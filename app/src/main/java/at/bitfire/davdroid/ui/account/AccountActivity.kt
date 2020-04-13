@@ -83,13 +83,6 @@ class AccountActivity: AppCompatActivity() {
         return true
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        val itemRename = menu.findItem(R.id.rename_account)
-        // renameAccount is available for API level 21+
-        itemRename.isVisible = Build.VERSION.SDK_INT >= 21
-        return super.onPrepareOptionsMenu(menu)
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (grantResults.contains(PackageManager.PERMISSION_GRANTED))
             model.gotPermissions()
@@ -105,8 +98,7 @@ class AccountActivity: AppCompatActivity() {
     }
 
     fun renameAccount(menuItem: MenuItem) {
-        if (Build.VERSION.SDK_INT >= 21)
-            RenameAccountFragment.newInstance(model.account).show(supportFragmentManager, null)
+        RenameAccountFragment.newInstance(model.account).show(supportFragmentManager, null)
     }
 
     fun deleteAccount(menuItem: MenuItem) {
