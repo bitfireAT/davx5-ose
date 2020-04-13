@@ -45,8 +45,6 @@
         <item name="colorSurface">@android:color/white</item>
     </style>
 
-    <color name="actionBarButton">#FF000000</color>
-
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
