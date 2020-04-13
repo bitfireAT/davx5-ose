@@ -3,6 +3,7 @@ package at.bitfire.davdroid.model
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -30,11 +31,11 @@ class DaoToolsTest {
         service.id = serviceDao.insertOrReplace(service)
 
         val homeSetDao = db.homeSetDao()
-        val entry1 = HomeSet(id=1, serviceId=service.id, url=HttpUrl.get("https://example.com/1"))
-        val entry3 = HomeSet(id=3, serviceId=service.id, url=HttpUrl.get("https://example.com/3"))
+        val entry1 = HomeSet(id=1, serviceId=service.id, url= "https://example.com/1".toHttpUrl())
+        val entry3 = HomeSet(id=3, serviceId=service.id, url= "https://example.com/3".toHttpUrl())
         val oldItems = listOf(
                 entry1,
-                HomeSet(id=2, serviceId=service.id, url=HttpUrl.get("https://example.com/2")),
+                HomeSet(id=2, serviceId=service.id, url= "https://example.com/2".toHttpUrl()),
                 entry3
         )
         homeSetDao.insert(oldItems)
@@ -44,10 +45,10 @@ class DaoToolsTest {
 
         // no id, because identity is given by the url
         val updated = HomeSet(id=0, serviceId=service.id,
-                url=HttpUrl.get("https://example.com/2"), displayName="Updated Entry")
+                url= "https://example.com/2".toHttpUrl(), displayName="Updated Entry")
         newItems[updated.url] = updated
 
-        val created = HomeSet(id=4, serviceId=service.id, url=HttpUrl.get("https://example.com/4"))
+        val created = HomeSet(id=4, serviceId=service.id, url= "https://example.com/4".toHttpUrl())
         newItems[created.url] = created
 
         DaoTools(homeSetDao).syncAll(oldItems, newItems, { it.url })
