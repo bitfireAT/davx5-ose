@@ -14,6 +14,7 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.Credentials
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.net.URI
 import java.util.logging.Level
 
@@ -66,7 +67,7 @@ class NextcloudLoginFlowFragment: Fragment() {
                 val serverUrl = match.groupValues[1]
                 val davPath = requireActivity().intent.getStringExtra(EXTRA_DAV_PATH)
                 loginModel.baseURI = if (davPath != null)
-                    HttpUrl.get(serverUrl + davPath).uri()
+                    (serverUrl + davPath).toHttpUrl().toUri()
                 else
                     URI.create(serverUrl)
 
