@@ -34,7 +34,7 @@
             <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                app:srcCompat="@drawable/ic_account_circle_white"/>
+                app:srcCompat="@drawable/ic_account_circle_white" />
 
             <TextView
                 android:id="@+id/account_name"
