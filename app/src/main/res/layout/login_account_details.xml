@@ -47,11 +47,13 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     app:errorEnabled="true"
                     app:error="@{details.nameError}">
+                    <!--suppress AndroidUnknownAttribute -->
                     <AutoCompleteTextView
                         android:id="@+id/accountName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         unfilteredText="@={details.name}"
+                        android:afterTextChanged="@{details::clearNameError}"
                         android:inputType="textEmailAddress" />
                 </com.google.android.material.textfield.TextInputLayout>
 

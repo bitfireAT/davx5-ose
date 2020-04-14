@@ -12,6 +12,7 @@ import android.accounts.Account
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
@@ -114,6 +115,10 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
         val homeSets = MutableLiveData<HomeSetAdapter>()
         val idxHomeSet = MutableLiveData<Int>()
+
+        fun clearNameError(s: Editable) {
+            displayNameError.value = null
+        }
 
         @MainThread
         fun initialize(account: Account) {

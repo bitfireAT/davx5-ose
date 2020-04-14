@@ -15,6 +15,7 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.os.Bundle
 import android.provider.CalendarContract
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -133,6 +134,10 @@ class AccountDetailsFragment: Fragment() {
 
         val name = MutableLiveData<String>()
         val nameError = MutableLiveData<String>()
+
+        fun clearNameError(s: Editable) {
+            nameError.value = null
+        }
 
         fun createAccount(name: String, credentials: Credentials, config: DavResourceFinder.Configuration, groupMethod: GroupMethod): LiveData<Boolean> {
             val result = MutableLiveData<Boolean>()

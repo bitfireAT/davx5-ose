@@ -39,9 +39,11 @@
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
+                <!--suppress AndroidUnknownAttribute -->
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:afterTextChanged="@{model::clearNameError}"
                     android:text="@={model.displayName}" />
             </com.google.android.material.textfield.TextInputLayout>
 
