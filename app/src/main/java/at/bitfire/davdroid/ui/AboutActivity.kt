@@ -12,6 +12,7 @@ import android.app.Application
 import android.os.Build
 import android.os.Bundle
 import android.text.Spanned
+import android.text.method.LinkMovementMethod
 import android.util.DisplayMetrics
 import android.view.*
 import androidx.annotation.UiThread
@@ -37,6 +38,7 @@ import kotlinx.android.synthetic.main.about_translation.view.*
 import kotlinx.android.synthetic.main.activity_about.*
 import org.apache.commons.io.IOUtils
 import org.json.JSONObject
+import java.text.Collator
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.thread
@@ -82,7 +84,7 @@ class AboutActivity: AppCompatActivity() {
         override fun getPageTitle(position: Int): String =
                 when (position) {
                     0 -> getString(R.string.app_name)
-                    1 -> getString(R.string.about_languages)
+                    1 -> getString(R.string.about_translations)
                     else -> getString(R.string.about_libraries)
                 }
 
@@ -90,11 +92,16 @@ class AboutActivity: AppCompatActivity() {
                 when (position) {
                     0 -> AppFragment()
                     1 -> LanguagesFragment()
-                    else -> LibsBuilder()
-                            .withAutoDetect(false)
-                            .withFields(R.string::class.java.fields)
-                            .withLicenseShown(true)
-                            .supportFragment()
+                    else -> {
+                        val builder = LibsBuilder()
+                                .withAutoDetect(false)
+                                .withFields(R.string::class.java.fields)
+                                .withLicenseShown(true)
+                                .apply {
+                            aboutShowIcon = false
+                        }
+                        builder.supportFragment()
+                    }
                 }
     }
 
@@ -138,35 +145,13 @@ class AboutActivity: AppCompatActivity() {
             model.plainText.observe(viewLifecycleOwner, Observer { json ->
                 val jsonTranslations = JSONObject(json)
                 translators.adapter = TranslationsAdapter(jsonTranslations)
-
-                /*for (locale in Locale.getAvailableLocales()) {
-                    text.append(locale.toLanguageTag()).append("<br/>")
-                }
-                for (langCode in languages.keys()) {
-                    text.append(langCode).append("<br/>")
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        text.append(langCode).append("<br/>")
-                        val langTag = langCode.replace('_', '-')
-
-                        text.append(Locale.forLanguageTag(langTag).displayName).append("<br/>")
-                    }
-
-                    val translators = langCode.getJSONArray("translators")
-                    for (j in 0 until translators.length()) {
-                        val translator = translators.getString(j)
-                        text.append("@").append(translator).append(" (Transifex)<br/>")
-                    }
-                    text.append("<br/>")
-                }
-                translators.setText(HtmlCompat.fromHtml(text.toString(), HtmlCompat.FROM_HTML_MODE_COMPACT))*/
             })
 
             translators.layoutManager = LinearLayoutManager(requireActivity())
         }
 
         class Translation(
-                val langCode: String,
+                val language: String,
                 val translators: Array<String>
         )
 
@@ -183,8 +168,18 @@ class AboutActivity: AppCompatActivity() {
                     val translators = Array<String>(jsonTranslators.length()) {
                         idx -> jsonTranslators.getString(idx)
                     }
-                    translations += Translation(langCode, translators)
+
+                    val langTag = langCode.replace('_', '-')
+                    val language = Locale.forLanguageTag(langTag).displayName
+                    translations += Translation(language, translators)
                 }
+
+                // sort translations by localized language name
+                val collator = Collator.getInstance()
+                translations.sortWith(object: Comparator<Translation> {
+                    override fun compare(o1: Translation, o2: Translation) =
+                            collator.compare(o1.language, o2.language)
+                })
             }
 
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -195,15 +190,12 @@ class AboutActivity: AppCompatActivity() {
             override fun onBindViewHolder(holder: ViewHolder, position: Int) {
                 val translation = translations[position]
                 holder.cardView.apply {
-                    languageCode.text = translation.langCode
-
-                    val langTag = translation.langCode.replace('_', '-')
-                    language.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                         Locale.forLanguageTag(langTag).displayName
-                    else
-                        langTag
-
-                    translators.text = translation.translators.joinToString(" · ")
+                    language.text = translation.language
+                    val profiles = translation.translators.map { "<a href='https://www.transifex.com/user/profile/$it'>$it</a>" }
+                    translators.text = HtmlCompat.fromHtml(
+                            context.getString(R.string.about_translations_thanks, profiles.joinToString(", ")),
+                            HtmlCompat.FROM_HTML_MODE_COMPACT)
+                    translators.movementMethod = LinkMovementMethod.getInstance()
                 }
             }
 

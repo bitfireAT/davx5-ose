@@ -57,13 +57,14 @@
     <string name="intro_more_info">More information</string>
 
     <!-- AboutActivity -->
-    <string name="about_languages">Languages</string>
+    <string name="about_translations">Translations</string>
     <string name="about_libraries">Libraries</string>
     <string name="about_version">Version %1$s (%2$d)</string>
     <string name="about_build_date">Compiled on %s</string>
     <string name="about_copyright" translatable="false">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering)</string>
     <string name="about_flavor_info">This version is only eligible for distribution over Google Play.</string>
     <string name="about_license_info_no_warranty">This program comes with ABSOLUTELY NO WARRANTY. It is free software, and you are welcome to redistribute it under certain conditions.</string>
+    <string name="about_translations_thanks"><![CDATA[<i>Thanks to: </i> %s]]></string>
 
     <!-- global settings -->
     <string name="logging_couldnt_create_file">Couldn\'t create log file</string>
