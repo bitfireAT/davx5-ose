@@ -118,7 +118,6 @@ abstract class SyncAdapterService: Service() {
                 // required for dav4jvm (ServiceLoader)
                 Thread.currentThread().contextClassLoader = context.classLoader
 
-                SyncManager.cancelNotifications(NotificationManagerCompat.from(context), authority, account)
                 sync(account, extras, authority, provider, syncResult)
             } finally {
                 synchronized(runningSyncs) {

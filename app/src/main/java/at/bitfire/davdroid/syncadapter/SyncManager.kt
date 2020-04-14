@@ -77,12 +77,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 min(Runtime.getRuntime().availableProcessors(), 2)
         const val MAX_MULTIGET_RESOURCES = 10
 
-        fun cancelNotifications(manager: NotificationManagerCompat, authority: String, account: Account) =
-                manager.cancel(notificationTag(authority, account), NotificationUtils.NOTIFY_SYNC_ERROR)
-
-        private fun notificationTag(authority: String, account: Account) =
-                "$authority-${account.name}".hashCode().toString()
-
     }
 
     init {
@@ -95,7 +89,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         account
 
     protected val notificationManager = NotificationManagerCompat.from(context)
-    protected val notificationTag = notificationTag(authority, mainAccount)
+    protected val notificationTag = localCollection.tag
 
     protected val httpClient = HttpClient.Builder(context, accountSettings).build()
 

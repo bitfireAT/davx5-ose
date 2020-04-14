@@ -88,6 +88,9 @@ class LocalTaskList private constructor(
 
     }
 
+    override val tag: String
+        get() = "tasks-${account.name}-$id"
+
     override val title: String
         get() = name ?: id.toString()
 
