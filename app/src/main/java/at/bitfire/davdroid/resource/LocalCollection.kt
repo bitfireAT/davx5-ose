@@ -13,6 +13,9 @@ import at.bitfire.davdroid.model.SyncState
 
 interface LocalCollection<out T: LocalResource<*>> {
 
+    /** a tag that uniquely identifies the collection (DAVx5-wide) */
+    val tag: String
+
     /** collection title (used for user notifications etc.) **/
     val title: String
 
