@@ -62,7 +62,7 @@
                             app:layout_constraintStart_toEndOf="@id/start"
                             app:layout_constraintEnd_toStartOf="@id/end"
                             android:layout_marginTop="@dimen/card_margin_title_text"
-                            android:textAppearance="@style/TextView.Heading"
+                            style="@style/TextAppearance.MaterialComponents.Headline6"
                             android:text="@string/intro_open_source_title" />
 
                         <TextView

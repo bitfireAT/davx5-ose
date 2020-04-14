@@ -127,7 +127,7 @@ dependencies {
     implementation 'com.jaredrummler:colorpicker:1.1.0'
     implementation 'com.github.AppIntro:AppIntro:5.1.0'
     implementation 'com.gitlab.bitfireAT:dav4jvm:2.0'
-    implementation 'com.mikepenz:aboutlibraries:8.1.0'
+    implementation 'com.mikepenz:aboutlibraries:8.1.1'
     implementation(platform("com.squareup.okhttp3:okhttp-bom:${versions.okhttp}"))
     implementation "com.squareup.okhttp3:okhttp"
     implementation "com.squareup.okhttp3:okhttp-brotli"

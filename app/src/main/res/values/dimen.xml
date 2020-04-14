@@ -8,7 +8,7 @@
   -->
 
 <resources>
-    <dimen name="activity_margin">16dp</dimen>
+    <dimen name="activity_margin">8dp</dimen>
 
     <dimen name="card_theme_max_height">20mm</dimen>
     <dimen name="card_padding">16dp</dimen>
