@@ -18,7 +18,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.LoginCredentialsFragmentBinding
 import at.bitfire.davdroid.model.Credentials
@@ -31,8 +31,8 @@ class DefaultLoginCredentialsFragment: Fragment() {
     private lateinit var loginModel: LoginModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        model = ViewModelProviders.of(this).get(DefaultLoginCredentialsModel::class.java)
-        loginModel = ViewModelProviders.of(requireActivity()).get(LoginModel::class.java)
+        model = ViewModelProvider(this).get(DefaultLoginCredentialsModel::class.java)
+        loginModel = ViewModelProvider(requireActivity()).get(LoginModel::class.java)
 
         val v = LoginCredentialsFragmentBinding.inflate(inflater, container, false)
         v.lifecycleOwner = viewLifecycleOwner
@@ -52,7 +52,7 @@ class DefaultLoginCredentialsFragment: Fragment() {
 
         v.login.setOnClickListener {
             if (validate())
-                requireFragmentManager().beginTransaction()
+                parentFragmentManager.beginTransaction()
                         .replace(android.R.id.content, DetectConfigurationFragment(), null)
                         .addToBackStack(null)
                         .commit()

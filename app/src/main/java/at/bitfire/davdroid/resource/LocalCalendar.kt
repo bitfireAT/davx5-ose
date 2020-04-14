@@ -85,6 +85,9 @@ class LocalCalendar private constructor(
         }
     }
 
+    override val tag: String
+        get() = "events-${account.name}-$id"
+
     override val title: String
         get() = displayName ?: id.toString()
 

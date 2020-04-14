@@ -77,7 +77,7 @@ class NextcloudLoginFlowFragment: Fragment() {
                 )
 
                 // continue to next fragment
-                requireFragmentManager().beginTransaction()
+                parentFragmentManager.beginTransaction()
                         .replace(android.R.id.content, DetectConfigurationFragment(), null)
                         .addToBackStack(null)
                         .commit()
