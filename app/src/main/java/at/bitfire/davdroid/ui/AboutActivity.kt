@@ -93,14 +93,10 @@ class AboutActivity: AppCompatActivity() {
                     0 -> AppFragment()
                     1 -> LanguagesFragment()
                     else -> {
-                        val builder = LibsBuilder()
-                                .withAutoDetect(false)
-                                .withFields(R.string::class.java.fields)
+                        LibsBuilder()
                                 .withLicenseShown(true)
-                                .apply {
-                            aboutShowIcon = false
-                        }
-                        builder.supportFragment()
+                                .withAboutIconShown(false)
+                                .supportFragment()
                     }
                 }
     }
