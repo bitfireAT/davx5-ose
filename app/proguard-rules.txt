@@ -12,15 +12,6 @@
 -allowaccessmodification
 -dontpreverify
 
-# Kotlin
--dontwarn kotlin.**
-
-# https://github.com/material-components/material-components-android/issues/387
--keep class com.google.android.material.tabs.** {*;}
-
-# Apache Commons
--dontwarn javax.script.**
-
 # ez-vcard
 -dontwarn ezvcard.io.json.**            # JSON serializer (for jCards) not used
 -dontwarn freemarker.**                 # freemarker templating library (for creating hCards) not used
@@ -36,12 +27,6 @@
 -dontwarn org.apache.log4j.**             # ignore warnings from log4j dependency
 -keep class net.fortuna.ical4j.** { *; }  # keep all model classes (properties/factories, created at runtime)
 -keep class org.threeten.bp.** { *; }     # keep ThreeTen (for time zone processing)
-
-# okhttp
--dontwarn javax.annotation.**
--dontwarn okio.**
--dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
--dontwarn org.conscrypt.**
 
 # dnsjava
 -dontwarn sun.net.spi.nameservice.**   # not available on Android
