@@ -1,6 +1,7 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.content.Intent
 import android.net.http.SslError
 import android.os.Bundle
@@ -110,6 +111,7 @@ class NextcloudLoginFlowFragment: Fragment() {
             Logger.log.warning("Received error (deprecated API) $errorCode $description on $failingUrl")
             showError(view, "$description ($errorCode)")
         }
+        @TargetApi(23)
         override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
             Logger.log.warning("Received error ${error.errorCode} on ${request.url}")
             if (request.isForMainFrame)
