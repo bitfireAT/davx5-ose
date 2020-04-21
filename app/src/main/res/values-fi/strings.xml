@@ -16,21 +16,7 @@
   <string name="notification_channel_sync_warnings_desc">Ei-kohtalokkaat synkronoinnin ongelmat kuten tietyt virheelliset tiedostot </string>
   <string name="notification_channel_sync_io_errors">Verkko ja I/O virheet</string>
   <string name="notification_channel_sync_io_errors_desc">Aikakatkaisut, yhteysvirheet, yms. (usein väliaikaisia)</string>
-  <!--startup dialogs-->
-  <string name="startup_autostart_permission">Automaattinen synkronointi</string>
-  <string name="startup_autostart_permission_message">%s laiteohjelmisto usein estää automaattisen synkronoinnin. Tällaisessa tapauksessa, salli automaattinen synkronointi Androidin asetuksista.</string>
-  <string name="startup_battery_optimization">Ajastettu synkronointi</string>
-  <string name="startup_battery_optimization_message">Laitteesi estää DAVx⁵ synkronoinnin. Salliaksesi tavalliset DAVx⁵ synkronointivälit, sammuta \"akun optimointi\".</string>
-  <string name="startup_battery_optimization_disable">Sammuta DAVx⁵:lle.</string>
-  <string name="startup_dont_show_again">Älä näytä uudelleen</string>
-  <string name="startup_not_now">Ei nyt</string>
-  <string name="startup_donate">Avoimen lähdekoodin tiedot</string>
-  <string name="startup_donate_message">Olemme iloisia että käytät DAVx⁵:ä joka on avoimen lähdekoodin ohjelma (GPLv3). Koska DAVx⁵:n kehitys on vaativaa työtä ja on vaatinut tuhansia tunteja, harkitsethan lahjoituksen antamista, kiitos.</string>
-  <string name="startup_donate_now">Näytä lahjoitussivu</string>
-  <string name="startup_donate_later">Ehkä myöhemmin</string>
-  <string name="intro_more_info">Lisää tietoa</string>
-  <string name="startup_opentasks_not_installed">OpenTasks ei ole asennettu</string>
-  <string name="startup_opentasks_not_installed_message">Synkronoidaksesi tehtävät, avoin ohjelma OpenTasks vaaditaan. (Ei vaadita yhteystiedoille/tapahtumille.)</string>
+  <!--IntroActivity-->
   <!--AboutActivity-->
   <!--global settings-->
   <!--AccountsActivity-->

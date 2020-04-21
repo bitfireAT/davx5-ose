@@ -3,7 +3,7 @@
   <!--common strings-->
   <string name="app_name">DAVDroid</string>
   <string name="help">Ajuda</string>
-  <!--startup dialogs-->
+  <!--IntroActivity-->
   <!--AboutActivity-->
   <!--global settings-->
   <!--AccountsActivity-->

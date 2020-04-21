@@ -5,15 +5,7 @@
   <string name="help">Yardım</string>
   <string name="manage_accounts">Hesapları yönet</string>
   <string name="send">Gönder</string>
-  <!--startup dialogs-->
-  <string name="startup_dont_show_again">Bir daha gösterme</string>
-  <string name="startup_donate">Açık-Kaynak Bilgisi</string>
-  <string name="startup_donate_message">Açık kaynaklı yazılım (GPLv3) olan DAVx⁵\'i kullandığına çok mutluyuz. DAVx⁵\'i geliştirmek zor bir iş ve üzerinde binlerce saat çalıştığımızdan, lütfen bir bağışta bulunmayı düşün.</string>
-  <string name="startup_donate_now">Bağış sayfasını göster</string>
-  <string name="startup_donate_later">Belki sonra</string>
-  <string name="startup_opentasks_not_installed">OpenTasks kurulu değil</string>
-  <string name="startup_opentasks_reinstall_davx5">OpenTasks\'i kurduktan sonra, DAVx⁵\'i YENİDEN KURMAN ve hesaplarını yeniden eklemen gerek. (Android hatası).</string>
-  <string name="startup_opentasks_not_installed_install">OpenTasks kur</string>
+  <!--IntroActivity-->
   <!--AboutActivity-->
   <string name="about_license_info_no_warranty">Bu uygulama HİÇ BİR GARANTİ ile gelmemektedir. Bedava bir yazılımdır ve belli koşullar altında dağıtabilirsiniz.</string>
   <!--global settings-->
