@@ -16,32 +16,38 @@
   <string name="notification_channel_sync_warnings_desc">Nicht fatale Synchronisierungsprobleme wie bestimmte ungültige Dateien</string>
   <string name="notification_channel_sync_io_errors">Netzwerk- und E/A-Fehler</string>
   <string name="notification_channel_sync_io_errors_desc">Zeitüberschreitungen, Verbindungsprobleme, usw. (oft vorübergehend)</string>
-  <!--startup dialogs-->
-  <string name="startup_autostart_permission">Automatische Synchronisierung</string>
-  <string name="startup_autostart_permission_message">%s-Firmware verhindert oftmals das automatische Synchronisieren. In diesem Fall müssen Sie das automatische Synchronisieren in den Android-Einstellung erlauben.</string>
-  <string name="startup_battery_optimization">Geplante Synchronisierung</string>
-  <string name="startup_battery_optimization_message">Ihr Gerät wird die DAVx⁵- Synchronisierung einschränken. Damit regelmäßig synchronisiert werden kann, muss die »Akku-Leistungsoptimierung« deaktiviert werden.</string>
-  <string name="startup_battery_optimization_disable">Für DAVx⁵ deaktivieren</string>
-  <string name="startup_dont_show_again">Nicht mehr anzeigen</string>
-  <string name="startup_not_now">Später</string>
-  <string name="startup_donate">Open-Source-Information</string>
-  <string name="startup_donate_message">Es freut uns, dass Sie DAVx⁵ und damit Open-Source-Software (GPLv3) verwenden. Da in DAVx⁵ tausende Stunden harter Arbeit stecken und es immer noch weiter entwickelt wird, gibt es die Möglichkeit, uns zu spenden.</string>
-  <string name="startup_donate_now">Spendenseite anzeigen</string>
-  <string name="startup_donate_later">Vielleicht später</string>
-  <string name="intro_more_info">Mehr Infos</string>
-  <string name="startup_opentasks_not_installed">OpenTasks nicht installiert</string>
-  <string name="startup_opentasks_not_installed_message">Für die Synchronisierung von Aufgaben wird die freie App OpenTasks benötigt. (Nicht benötigt für Kontakte/Termine.)</string>
-  <string name="startup_opentasks_reinstall_davx5">Nach der Installation von OpenTasks muss DAVx⁵ NEU INSTALLIERT und die Konten neu hinzugefügt werden (Android-Bug).</string>
-  <string name="startup_opentasks_not_installed_install">OpenTasks installieren</string>
   <!--IntroActivity-->
-  <string name="intro_slogan1">Ihr Leben. Ihre Daten.</string>
-  <string name="intro_slogan2">Ihre Entscheidung!</string>
+  <string name="intro_slogan1">Dein Leben. Deine Daten.</string>
+  <string name="intro_slogan2">Deine Entscheidung.</string>
+  <string name="intro_battery_title">Regelmäßige Sync-Intervalle</string>
+  <string name="intro_battery_not_whitelisted">Deaktiviert (nicht empfohlen)</string>
+  <string name="intro_battery_whitelisted">Aktiviert (empfohlen)</string>
+  <string name="intro_battery_text">Zur Synchronisierung in regelmäßigen Intervallen muss %s im Hintergrund laufen dürfen; ansonsten kann Android die Synchronisierung jederzeit aussetzen.</string>
+  <string name="intro_battery_dont_show">Ich brauche keine regelmäßigen Sync-Intervalle.*</string>
+  <string name="intro_autostart_title">%s-Kompatibilität</string>
+  <string name="intro_autostart_text">Dieses Gerät blockiert die Synchronisierung wahrscheinlich. Dies kann nur manuell behoben werden.</string>
+  <string name="intro_autostart_dont_show">Ich habe die Einstellungen gemacht, nicht mehr erinnern.</string>
+  <string name="intro_leave_unchecked">* Nicht anwählen, um später erinnert zu werden. Kann unter App-Einstellungen / %s zurückgesetzt werden.</string>
+  <string name="intro_tasks_title">Unterstützung für Aufgaben</string>
+  <string name="intro_tasks_not_installed">Nicht installiert</string>
+  <string name="intro_tasks_opentasks_installed">OpenTasks installiert</string>
+  <string name="intro_tasks_no_app_store">Kein App-Store verfügbar</string>
+  <string name="intro_tasks_text1"><![CDATA[Android unterstützt standardmäßig keine Aufgaben. Wenn Aufgaben vom Server unterstützt werden, kann %s sie über <a href="https://opentasks.app/">OpenTasks</a> synchronisieren.]]></string>
+  <string name="intro_tasks_text2">Für bestimmte Funktionen wie Unteraufgaben oder Wiederholungen benötigen Sie zusätzliche Apps.</string>
+  <string name="intro_tasks_dont_show">Ich brauche keine Unterstützung für Aufgaben.</string>
+  <string name="intro_open_source_title">Open-Source-Software</string>
+  <string name="intro_open_source_text">Wir freuen uns, dass sie die Open-Source-Software %s verwenden. Entwicklung, Wartung und Support sind viel Arbeit. Ziehen Sie daher bitte in Betracht, mitzuhelfen (dazu gibt es viele Möglichkeiten) oder zu spenden. Vielen Dank!</string>
+  <string name="intro_open_source_details">Infos zum Mithelfen/Spenden</string>
+  <string name="intro_open_source_dont_show">In nächster Zeit nicht anzeigen</string>
+  <string name="intro_more_info">Mehr Infos</string>
   <!--AboutActivity-->
+  <string name="about_translations">Übersetzungen</string>
   <string name="about_libraries">Bibliotheken</string>
   <string name="about_version">Version %1$s (%2$d)</string>
   <string name="about_build_date">Erstellt am %s</string>
   <string name="about_flavor_info">Diese Version ist nur zur Verteilung über Google Play bestimmt.</string>
   <string name="about_license_info_no_warranty">Dieses Programm wird OHNE JEDE GEWÄHRLEISTUNG bereitgestellt. Es ist freie Software – Sie können es also unter bestimmten Bedingungen weiterverbreiten.</string>
+  <string name="about_translations_thanks"><![CDATA[<i>Dank an: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Protokolldatei konnte nicht angelegt werden</string>
   <string name="logging_notification_title">DAVx⁵-Protokollierung</string>
@@ -150,6 +156,8 @@
   <string name="login_account_name_required">Kontoname wird benötigt</string>
   <string name="login_account_name_already_taken">Kontoname bereits verwendet</string>
   <string name="login_account_not_created">Konto konnte nicht angelegt werden</string>
+  <string name="login_webview_tlserror">Verbindung nicht sicher (Fehlercode %d)</string>
+  <string name="login_webview_retry">Erneut versuchen</string>
   <string name="login_configuration_detection">Ressourcen-Erkennung</string>
   <string name="login_querying_server">Server-Informationen werden abgerufen. Bitte warten …</string>
   <string name="login_no_caldav_carddav">Es konnte weder ein CalDAV- noch ein CardDAV-Dienst gefunden werden.</string>

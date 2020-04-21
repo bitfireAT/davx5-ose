@@ -12,23 +12,7 @@
   <string name="notification_channel_sync">Синхронизација</string>
   <string name="notification_channel_sync_errors">Грешке синхронизације</string>
   <string name="notification_channel_sync_io_errors">Мрежне и У/И грешке</string>
-  <!--startup dialogs-->
-  <string name="startup_autostart_permission">Аутоматска синхронизација</string>
-  <string name="startup_autostart_permission_message">%s фирмвер често спречава аутоматску синхронизацију. У овом случају, дозволите аутоматску синхронизацију у поставкама Андроида.</string>
-  <string name="startup_battery_optimization">Планирана синхронизација</string>
-  <string name="startup_battery_optimization_message">Ваш уређај ће да задржи синхронизацију ДАВдроида. Да бисте приморали редовне интервале синхронизације, искључите оптимизацију батерије за ДАВдроид.</string>
-  <string name="startup_battery_optimization_disable">Искључи за ДАВдроид</string>
-  <string name="startup_dont_show_again">Не приказуј поново</string>
-  <string name="startup_not_now">Не сада</string>
-  <string name="startup_donate">Подаци о отвореном кôду</string>
-  <string name="startup_donate_message">Драго нам је да користите ДАВдроид, софтвер отвореног кôда (ГПЛв3). Развој ДАВдроида није баш лак посао и захтева хиљаде радних сати, стога вас молимо да размотрите донацију.</string>
-  <string name="startup_donate_now">Прикажи страницу за донације</string>
-  <string name="startup_donate_later">Можда касније</string>
-  <string name="intro_more_info">Још информација</string>
-  <string name="startup_opentasks_not_installed">Отворени задаци нису инсталирани</string>
-  <string name="startup_opentasks_not_installed_message">За синхронизацију листе задатака бесплатна апликација „Отворени задаци“ је потребна. (Није потребна за контакте/догађаје.)</string>
-  <string name="startup_opentasks_reinstall_davx5">Након инсталирања Отворених задатака, морате поново да инсталирате ДАВдроид и поново додате ваше налоге (због грешке у Андроиду).</string>
-  <string name="startup_opentasks_not_installed_install">Инсталирај Отворене задатке</string>
+  <!--IntroActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Библиотеке</string>
   <string name="about_version">Издање %1$s (%2$d)</string>

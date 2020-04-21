@@ -16,23 +16,7 @@
   <string name="notification_channel_sync_warnings_desc">Problèmes de synchronisation non fatals tels que certains fichiers non valides</string>
   <string name="notification_channel_sync_io_errors">Erreurs de réseau et d\'entrée / sortie</string>
   <string name="notification_channel_sync_io_errors_desc">Délais d\'attente, problèmes de connexion, etc. (souvent temporaires)</string>
-  <!--startup dialogs-->
-  <string name="startup_autostart_permission">Synchronisation automatique</string>
-  <string name="startup_autostart_permission_message">%s le matériel bloque souvent la synchronisation automatique. Dans ce cas, autorisez la synchronisation automatique dans vos paramètres d\'Android.</string>
-  <string name="startup_battery_optimization">Synchronisation planifiée</string>
-  <string name="startup_battery_optimization_message">Votre appareil va restreindre la synchronisation DAVx⁵. Pour forcer des intervalles de synchronisation DAVx⁵ plus réguliers, enlever l\'option \"optimisation de batterie\"</string>
-  <string name="startup_battery_optimization_disable">Désactiver pour DAVx⁵</string>
-  <string name="startup_dont_show_again">Ne plus afficher</string>
-  <string name="startup_not_now">Pas maintenant</string>
-  <string name="startup_donate"> Information sur l\'open-source</string>
-  <string name="startup_donate_message">Nous sommes heureux que vous utilisiez DAVx⁵, qui est un logiciel open-source (GPLv3). Parce que développer DAVx⁵ est un travail difficile, qui nous a pris de nombreuses heures, nous vous invitons à faire un don.</string>
-  <string name="startup_donate_now">Faire un don</string>
-  <string name="startup_donate_later">Plus tard</string>
-  <string name="intro_more_info">Plus d\'informations</string>
-  <string name="startup_opentasks_not_installed">L\'application OpenTasks n\'est pas installée</string>
-  <string name="startup_opentasks_not_installed_message">Pour synchroniser les tâches, l\'application gratuite OpenTasks est nécessaire (elle ne l\'est pas pour les contacts et les événements).</string>
-  <string name="startup_opentasks_reinstall_davx5">Après l\'installation d\'OpenTasks, vous devez RÉ-INSTALLER DAVx⁵ et ajoutez vos comptes à nouveau (bug Android).</string>
-  <string name="startup_opentasks_not_installed_install">Installer OpenTasks</string>
+  <!--IntroActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Librairies</string>
   <string name="about_version">Version %1$s (%2$d)</string>

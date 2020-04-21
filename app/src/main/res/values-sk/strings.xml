@@ -16,23 +16,7 @@
   <string name="notification_channel_sync_warnings_desc">Nefatálne synchronizačné chyby ako napríklad neplatné súbory</string>
   <string name="notification_channel_sync_io_errors">Sieťové a V/V chyby</string>
   <string name="notification_channel_sync_io_errors_desc">Vypršanie času, problémy spojenia, atď. (často dočasné)</string>
-  <!--startup dialogs-->
-  <string name="startup_autostart_permission">Automatická sychnronizácia</string>
-  <string name="startup_autostart_permission_message">%s firmware často blokuje automatickú synchronizáciu. V takom prípade povoľte automatickú synchronizáciu v nastavení Androidu.</string>
-  <string name="startup_battery_optimization">Naplánovaná synchronizácia</string>
-  <string name="startup_battery_optimization_message">Vaše zariadenie bráni DAVx⁵ synchronizácii. Na vynútenie pravidelných DAVx⁵ synchronizačných intervalov vypnite \"režim úspory energie\".</string>
-  <string name="startup_battery_optimization_disable">Pre DAVx⁵ vypnúť</string>
-  <string name="startup_dont_show_again">Opätovne neukazovať</string>
-  <string name="startup_not_now">Teraz nie</string>
-  <string name="startup_donate">Open-Source informácie</string>
-  <string name="startup_donate_message">Sme radi že používate DAVx⁵, čo je open-source softvér (GPLv3). Pretože vývoj DAVx⁵ je náročný a stojí nás tisícky hodín práce, zvážte prosím, dar.</string>
-  <string name="startup_donate_now">Zobraziť darovaciu stránku</string>
-  <string name="startup_donate_later">Snáď neskôr</string>
-  <string name="intro_more_info">Viac informácii</string>
-  <string name="startup_opentasks_not_installed">OpenTasks nie je nainštalovaný</string>
-  <string name="startup_opentasks_not_installed_message">Na synchronizáciu úloh sa vyžaduje slobodná aplikácia OpenTask (Nie je potrebná pre kontakty/udalosti).</string>
-  <string name="startup_opentasks_reinstall_davx5">Po inštalácii OpenTask je potrebné PREINŠTALOVAŤ DAVx⁵ a znovu pridať vaše používateľské účty (Chyba Androidu).</string>
-  <string name="startup_opentasks_not_installed_install">Nainštalovať OpenTasks</string>
+  <!--IntroActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Knižnice</string>
   <string name="about_version">Verzia %1$s (%2$d)</string>

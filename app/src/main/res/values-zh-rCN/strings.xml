@@ -16,29 +16,38 @@
   <string name="notification_channel_sync_warnings_desc">不重要的同步问题，如某文件无效</string>
   <string name="notification_channel_sync_io_errors">网络或 I/O 错误</string>
   <string name="notification_channel_sync_io_errors_desc">超时、连接异常等问题（通常是临时错误）</string>
-  <!--startup dialogs-->
-  <string name="startup_autostart_permission">自动同步</string>
-  <string name="startup_autostart_permission_message">%s 的系统通常会禁止自动同步。在 Android 的系统设置中手工打开自动同步即可恢复。</string>
-  <string name="startup_battery_optimization">定时同步</string>
-  <string name="startup_battery_optimization_message">你的设备会限制 DAVx⁵ 的同步频率，如需恢复正常同步频率，请关闭电池优化设置。</string>
-  <string name="startup_battery_optimization_disable">禁用电池优化</string>
-  <string name="startup_dont_show_again">不再显示</string>
-  <string name="startup_not_now">暂不</string>
-  <string name="startup_donate">开源信息</string>
-  <string name="startup_donate_message">欢迎使用 DAVx⁵，这是一款开源软件 (GPLv3)。开发 DAVx⁵ 的工作花费了数千小时，请您考虑捐助我们。</string>
-  <string name="startup_donate_now">显示捐助页面</string>
-  <string name="startup_donate_later">稍后提示</string>
+  <!--IntroActivity-->
+  <string name="intro_slogan1">您的数据。您的选择。</string>
+  <string name="intro_slogan2">获得控制。</string>
+  <string name="intro_battery_title">定期同步间隔</string>
+  <string name="intro_battery_not_whitelisted">禁用（不推荐）</string>
+  <string name="intro_battery_whitelisted">启用（推荐）</string>
+  <string name="intro_battery_text">为了定期进行同步，必须允许%s在后台运行。否则，Android可能会随时暂停同步。</string>
+  <string name="intro_battery_dont_show">我不需要定期的同步间隔。*</string>
+  <string name="intro_autostart_title">%s兼容性</string>
+  <string name="intro_autostart_text">该设备可能会阻止同步。如果您受到影响，则只能手动解决。</string>
+  <string name="intro_autostart_dont_show">我已完成所需的设置。不再提醒我。*</string>
+  <string name="intro_leave_unchecked">*取消选中以供稍后提醒。可以在应用设置中重置/%s。</string>
+  <string name="intro_tasks_title">任务支持</string>
+  <string name="intro_tasks_not_installed">未安装</string>
+  <string name="intro_tasks_opentasks_installed">OpenTasks 已安装</string>
+  <string name="intro_tasks_no_app_store">没有可用的应用商店</string>
+  <string name="intro_tasks_text1"><![CDATA[Android没有内置的任务支持。如果你的服务器支持任务，%s可以使用<a href="https://opentasks.app/">OpenTasks</a>同步它们。]]></string>
+  <string name="intro_tasks_text2">对于子任务或重复任务等高级功能，您将需要其他应用。</string>
+  <string name="intro_tasks_dont_show">我不需要任务支持。*</string>
+  <string name="intro_open_source_title">开源软件</string>
+  <string name="intro_open_source_text">我们很高兴您使用%s开源软件。开发，维护和支持是艰苦的工作。请考虑捐款（有很多方式）或捐款。将不胜感激！</string>
+  <string name="intro_open_source_details">如何捐款/捐款</string>
+  <string name="intro_open_source_dont_show">下次不再显示</string>
   <string name="intro_more_info">更多信息</string>
-  <string name="startup_opentasks_not_installed">OpenTasks 未安装</string>
-  <string name="startup_opentasks_not_installed_message">同步任务需安装 OpenTasks 免费应用。（如只需同步通讯录、事件，则不用安装）</string>
-  <string name="startup_opentasks_reinstall_davx5">安装 OpenTasks 后，由于 Android 的限制，请重新安装 DAVx⁵ 并重新创建账户。</string>
-  <string name="startup_opentasks_not_installed_install">安装 OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_translations">翻译</string>
   <string name="about_libraries">程序库</string>
   <string name="about_version">版本 %1$s (%2$d)</string>
   <string name="about_build_date">编译于 %s</string>
   <string name="about_flavor_info">此版本只允许在 Google Play 上发行。</string>
   <string name="about_license_info_no_warranty">本程序不附带任何担保。这是一款自由软件，你可以有条件地传播它。</string>
+  <string name="about_translations_thanks"><![CDATA[<i>谢谢：</i>%s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">无法创建日志文件</string>
   <string name="logging_notification_title">DAVx⁵ 日志</string>
@@ -56,7 +65,7 @@
   <string name="navigation_drawer_news_updates">最新消息</string>
   <string name="navigation_drawer_external_links">外部链接</string>
   <string name="navigation_drawer_website">应用网站</string>
-  <string name="navigation_drawer_manual">手动</string>
+  <string name="navigation_drawer_manual">手册</string>
   <string name="navigation_drawer_faq">常见问题</string>
   <string name="navigation_drawer_forums">帮助 / 论坛</string>
   <string name="navigation_drawer_donate">捐助</string>

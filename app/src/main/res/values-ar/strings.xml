@@ -16,23 +16,7 @@
   <string name="notification_channel_sync_warnings_desc">المشاكل غير الفادحة في المزامنة ، مثل بعض الملفات غير الصالحة</string>
   <string name="notification_channel_sync_io_errors">أخطاء الشبكة و عمليات الإدخال/الإخراج</string>
   <string name="notification_channel_sync_io_errors_desc">أوقات المهل، مشاكل الاتصال ، …الخ (مؤقتة في العادة)</string>
-  <!--startup dialogs-->
-  <string name="startup_autostart_permission">مزامنة تلقائية</string>
-  <string name="startup_autostart_permission_message">%s البرنامج الثابت للجهاز قد يمنع المزامنة التلقائية.  في هذه الحالة أعط الإذن بالمزامنة التلقائية في إعدادات النظام لديك.</string>
-  <string name="startup_battery_optimization">مزامنة مجدولة</string>
-  <string name="startup_battery_optimization_message">سيقوم جهازك بتقييد مزامنة DAVx⁵ .  قم بإطفاء \"تحسين البطارية\" لإجبار مدد منتظمة لمزامنة DAVx⁵ .</string>
-  <string name="startup_battery_optimization_disable">التعطيل لـ DAVx⁵</string>
-  <string name="startup_dont_show_again">لاتعرضه مرة أخرى</string>
-  <string name="startup_not_now">ليس الآن</string>
-  <string name="startup_donate">معلومات المصدر المفتوح</string>
-  <string name="startup_donate_message">يسعدنا كونك تستخدم DAVx⁵ ، البرنامج ذو المصدر المفتوح (GPLv3). تطوير DAVx⁵ عمل مضنٍ أخذ منا آلاف ساعات العمل ، هلّا تبرعت لنا ؟</string>
-  <string name="startup_donate_now">عرض صفحة التبرُّع</string>
-  <string name="startup_donate_later">ربما لاحقاً</string>
-  <string name="intro_more_info">المزيد من المعلومات</string>
-  <string name="startup_opentasks_not_installed">OpenTasks غير مثبت</string>
-  <string name="startup_opentasks_not_installed_message">تطبيق OpenTasks المجاني مطلوب لمزامنة المهام.  (غير مطلوب لمزامنة جهات الاتصال أو الأحداث)</string>
-  <string name="startup_opentasks_reinstall_davx5">بعد تثبيت OpenTasks، لابد لك من إعادة تثبيت DAVx⁵ وإضافة حساباتك مجدداً (علة في آندرويد).</string>
-  <string name="startup_opentasks_not_installed_install">تثبيت OpenTasks</string>
+  <!--IntroActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">المكتبات</string>
   <string name="about_version">النسخة %1$s (%2$d)</string>

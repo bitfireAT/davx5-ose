@@ -16,29 +16,38 @@
   <string name="notification_channel_sync_warnings_desc">Problemy synchronizacji jak np. pewne błędne pliki</string>
   <string name="notification_channel_sync_io_errors">Błędy sieci oraz wejścia/wyjścia</string>
   <string name="notification_channel_sync_io_errors_desc">Przekroczenia czasu, problemy z połączeniem itp. (często tymczasowe)</string>
-  <!--startup dialogs-->
-  <string name="startup_autostart_permission">Automatyczna synchronizacja</string>
-  <string name="startup_autostart_permission_message">Oprogramowanie %s często blokuje automatyczną synchronizację. W takim przypadku zezwól na automatyczną synchronizację w ustawieniach Twojego Androida.</string>
-  <string name="startup_battery_optimization">Zaplanowana synchronizacja</string>
-  <string name="startup_battery_optimization_message">Twoje urządzenie będzie wstrzymywało synchronizację DAVx⁵. Aby wymusić regularne interwały synchronizacji DAVx⁵, wyłącz „optymalizację baterii”.</string>
-  <string name="startup_battery_optimization_disable">Wyłącz dla DAVx⁵</string>
-  <string name="startup_dont_show_again">Nie pokazuj ponownie</string>
-  <string name="startup_not_now">Nie teraz</string>
-  <string name="startup_donate">Informacje Open-Source</string>
-  <string name="startup_donate_message">Jesteśmy szczęśliwi, że używasz DAVx⁵, który jest otwartym oprogramowaniem (GPLv3). Ponieważ rozwijanie DAVx⁵ jest ciężką pracą i zajęło nam tysiące godzin pracy, prosimy o rozważenie darowizny.</string>
-  <string name="startup_donate_now">Pokaż stronę wsparcia finansowego</string>
-  <string name="startup_donate_later">Może później</string>
+  <!--IntroActivity-->
+  <string name="intro_slogan1">Twoje dane. Twój wybór.</string>
+  <string name="intro_slogan2">Przejmij kontrolę.</string>
+  <string name="intro_battery_title">Regularne przedziały synchronizacji</string>
+  <string name="intro_battery_not_whitelisted">Wyłączone (nie rekomendowane)</string>
+  <string name="intro_battery_whitelisted">Włączone (rekomendowane)</string>
+  <string name="intro_battery_text">Dla synchronizacji w regularnych przedziałach, %s musi mieć pozwolenie na pracę w tle. W przeciwnym razie, Android może wstrzymać synchronizację w dowolnym momencie.</string>
+  <string name="intro_battery_dont_show">Nie potrzebuję regularnych przedziałów synchronizacji.*</string>
+  <string name="intro_autostart_title">%s kompatybilność</string>
+  <string name="intro_autostart_text">To urządzenie prawdopodobnie blokuje synchronizację. Jeśli ten problem Cię dotyczy, możesz go jedynie rozwiązać ręcznie.</string>
+  <string name="intro_autostart_dont_show">Wprowadziłem potrzebne ustawienia. Nie przypominaj mi ponownie.*</string>
+  <string name="intro_leave_unchecked">* Pozostaw nie zaznaczone aby otrzymać przypomnienie później. Możesz to zresetować w ustawieniach aplikacji / %s. </string>
+  <string name="intro_tasks_title">Obsługa zadań</string>
+  <string name="intro_tasks_not_installed">Nie zainstalowane</string>
+  <string name="intro_tasks_opentasks_installed">OpenTasks zainstalowane</string>
+  <string name="intro_tasks_no_app_store">Sklep aplikacji nie jest dostępny</string>
+  <string name="intro_tasks_text1"><![CDATA[Android nie ma wbudowanego wsparcia dla zadań. Jeśli zadania są obsługiiwane przez Twój serwer, %s może je synchronizować używając <a href="https://opentasks.app/">OpenTasks</a>.]]></string>
+  <string name="intro_tasks_text2">Dla zaawansowanych funkcji jak podzadania lub zadania powtarzalne będziesz potrzebował(a) dodatkowych aplikacji.</string>
+  <string name="intro_tasks_dont_show">Nie potrzebuję obsługi zadań.*</string>
+  <string name="intro_open_source_title">Oprogramowanie open-source</string>
+  <string name="intro_open_source_text">Jesteśmy szczęśliwi, że używasz %s,  który jest oprogramowaniem open-source. Rozwój, utrzymanie i wsparcie są ciężką pracą. Proszę rozważ wsparcie (jest na to wiele sposobów) lub dotację. Będziemy bardzo wdzięczni.</string>
+  <string name="intro_open_source_details">Jak wspomóc/wesprzeć</string>
+  <string name="intro_open_source_dont_show">Nie pokazuj za kolejnym razem</string>
   <string name="intro_more_info">Więcej informacji</string>
-  <string name="startup_opentasks_not_installed">OpenTasks nie jest zainstalowany</string>
-  <string name="startup_opentasks_not_installed_message">Aby synchronizować zadania, potrzebna jest darmowa applikacja OpenTasks. (Nie wymagana dla kontaktów i wydarzeń.)</string>
-  <string name="startup_opentasks_reinstall_davx5">Po zainstalowaniu OpenTasks konieczne jest PRZEINSTALOWANIE DAVx⁵ i ponowne dodanie twoich kont (błąd Androida).</string>
-  <string name="startup_opentasks_not_installed_install">Zainstaluj OpenTasks</string>
   <!--AboutActivity-->
+  <string name="about_translations">Tłumaczenia</string>
   <string name="about_libraries">Biblioteki</string>
   <string name="about_version">Wersja %1$s (%2$d)</string>
   <string name="about_build_date">Skompilowano %s</string>
   <string name="about_flavor_info">Ta wersja jest przeznaczona do dystrybucji wyłączenie poprzez Google Play.</string>
   <string name="about_license_info_no_warranty">Ten program jest ABSOLUTNIE BEZ GWARANCJI. To jest wolne oprogramowanie i mile widziane jest dalsze rozpowszechnianie go zgodnie z warunkami licencji.</string>
+  <string name="about_translations_thanks"><![CDATA[<i>Dzięki życzliwości: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Nie udało się utworzyć pliku logu</string>
   <string name="logging_notification_title">Zapis logu DAVx⁵</string>
@@ -147,6 +156,8 @@
   <string name="login_account_name_required">Wymagana nazwa konta</string>
   <string name="login_account_name_already_taken">Nazwa konta jest już zajęta</string>
   <string name="login_account_not_created">Konto nie mogło zostać stworzone</string>
+  <string name="login_webview_tlserror">Problem z bezpieczeństwem połączenia (kod błędu %d)</string>
+  <string name="login_webview_retry">Ponów</string>
   <string name="login_configuration_detection">Wykrywanie konfiguracji</string>
   <string name="login_querying_server">Proszę czekać, odpytywanie serwera…</string>
   <string name="login_no_caldav_carddav">Nie można znaleźć usługi CalDAV lub CardDAV.</string>
