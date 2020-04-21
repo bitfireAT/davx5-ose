@@ -37,7 +37,7 @@
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toTopOf="@id/heading"
                             android:adjustViewBounds="true"
-                            app:verticalOffsetPercent=".3"
+                            app:verticalOffsetPercent=".45"
                             app:srcCompat="@drawable/intro_open_source"/>
 
                         <androidx.constraintlayout.widget.Guideline
