@@ -14,22 +14,7 @@
   <string name="notification_channel_sync_errors_desc">Viktige feil som avbryter synkronisering, som uventede svar fra serveren</string>
   <string name="notification_channel_sync_warnings_desc">Ikke-kritiske synkroniseringsproblem, som enkelte ugyldige filer</string>
   <string name="notification_channel_sync_io_errors">Nettverk- og I/O-feil</string>
-  <!--startup dialogs-->
-  <string name="startup_autostart_permission">Automatisk synkronisering</string>
-  <string name="startup_autostart_permission_message">Firmware fra %s stenger ofte for automatisk synkronisering. I så fall tillat automatisk synkronisering i Android innstillingene</string>
-  <string name="startup_battery_optimization">Planlagt synkronisering</string>
-  <string name="startup_battery_optimization_message">Enheten din vil begrense DAVx⁵ synkronisering. For å sikre jevnlige DAVx⁵ synkroniseringsintervall må du skru av \"batterioptimalisering\"</string>
-  <string name="startup_battery_optimization_disable">Skru av for DAVx⁵</string>
-  <string name="startup_dont_show_again">Ikke vis igjen</string>
-  <string name="startup_not_now">Ikke nå</string>
-  <string name="startup_donate">Friprog-informasjon</string>
-  <string name="startup_donate_message">Vi er glade for at du bruker DAVx⁵, som er fri programvare (GPLv3). Siden utvikling av DAVx⁵ er hardt arbeid og har tatt tusenvis av arbeidstimer, bes du overveie en donasjon.</string>
-  <string name="startup_donate_now">Vis donasjonsside</string>
-  <string name="startup_donate_later">Kanskje senere</string>
-  <string name="intro_more_info">Mer informasjon</string>
-  <string name="startup_opentasks_not_installed">OpenTasks er ikke installert</string>
-  <string name="startup_opentasks_reinstall_davx5">Etter å ha installert OpenTasks, må du reinstallere Davdroid og legge til kontoene dine igjen (Android-feil).</string>
-  <string name="startup_opentasks_not_installed_install">Installer OpenTasks</string>
+  <!--IntroActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Bibliotek</string>
   <string name="about_version">Versjon %1$s(%2$d)</string>

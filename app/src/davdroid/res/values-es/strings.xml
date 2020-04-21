@@ -16,29 +16,38 @@
   <string name="notification_channel_sync_warnings_desc">Problemas de sincronización no-fatales como ciertos archivos inválidos</string>
   <string name="notification_channel_sync_io_errors">Errores de Red y E/S</string>
   <string name="notification_channel_sync_io_errors_desc">Timeouts, problemas de conección, etc. (muchas veces temporal)</string>
-  <!--startup dialogs-->
-  <string name="startup_autostart_permission">Sincronización automática</string>
-  <string name="startup_autostart_permission_message">El firmware de %s muchas veces bloquea la sincronización automática. En este caso, permita la sincronización automática en sus ajustes de Android.</string>
-  <string name="startup_battery_optimization">Sincronización programada</string>
-  <string name="startup_battery_optimization_message">Su dispositivo restringirá la sincronización de DAVx⁵. Para hacer cumplir los intervalos de sincronización regulares de DAVx⁵, apague la \"optimización de batería\".</string>
-  <string name="startup_battery_optimization_disable">Apagar para DAVx⁵</string>
-  <string name="startup_dont_show_again">No mostrar de nuevo</string>
-  <string name="startup_not_now">Ahora no</string>
-  <string name="startup_donate">Información de código abierto</string>
-  <string name="startup_donate_message">Nos alegra que uses DAVx⁵, que es software de código abierto (GPLv3). Debido al duro trabajo que supone el desarrollo de DAVx⁵ y los cientos de horas de trabajo, por favor, considera hacer una donación.</string>
-  <string name="startup_donate_now">Mostrar página de donación</string>
-  <string name="startup_donate_later">Quizás luego</string>
-  <string name="intro_more_info">Más información</string>
-  <string name="startup_opentasks_not_installed">OpenTasks no está instalado</string>
-  <string name="startup_opentasks_not_installed_message">Para sincronizar tareas, la aplicación libre OpenTasks es requerida. (No necesaria para contactos/eventos.)</string>
-  <string name="startup_opentasks_reinstall_davx5">Tras instalar OpenTasks, tendrás que re-instalar DAVx⁵ y añadir tus cuentas de nuevo (por un error de Android).</string>
-  <string name="startup_opentasks_not_installed_install">Instalar OpenTasks</string>
+  <!--IntroActivity-->
+  <string name="intro_slogan1">Sus datos. Su elección.</string>
+  <string name="intro_slogan2">Tome el control.</string>
+  <string name="intro_battery_title">Sincronización a intervalos regulares</string>
+  <string name="intro_battery_not_whitelisted">Deshabilitado (no se recomienda)</string>
+  <string name="intro_battery_whitelisted">Habilitado (se recomienda)</string>
+  <string name="intro_battery_text">Para sincronizar a intervalos regulares, se tiene que permitir a %sejecutarse como tarea de fondo. En caso contrario, Android podría pausar la sincronización en cualquier instante. </string>
+  <string name="intro_battery_dont_show">No necesito la sincronización a intervalos regulares.*</string>
+  <string name="intro_autostart_title">Compatibilidad %s</string>
+  <string name="intro_autostart_text">Este dispositivo bloquea la sincronización. Si está afectado, sólo lo puede resolver manualmente.</string>
+  <string name="intro_autostart_dont_show">No tengo los ajustes requeridos. No volver a recordar.*</string>
+  <string name="intro_leave_unchecked">* Déjelo desmarcado para que se le recuerde más tarde. Se puede reconfigurar en los ajustes de la aplicación / %s</string>
+  <string name="intro_tasks_title">Soporte de tareas</string>
+  <string name="intro_tasks_not_installed">No instalado</string>
+  <string name="intro_tasks_opentasks_installed">OpenTasks instalado</string>
+  <string name="intro_tasks_no_app_store">Ninguna tienda de aplicaciones disponible</string>
+  <string name="intro_tasks_text1"><![CDATA[Android no tiene soporte propio de tareas (tasks). Si su servidor las soporta, %s puede sincronizarlas usando <a href="https://opentasks.app/">OpenTasks</a>.]]></string>
+  <string name="intro_tasks_text2">Para características avanzadas como subtareas o tareas recurrentes necesitará aplicaciones adicionales.</string>
+  <string name="intro_tasks_dont_show">No necesito soporte para tareas.*</string>
+  <string name="intro_open_source_title">Software open-source</string>
+  <string name="intro_open_source_text">Nos complace que use%s, que es software open-source. Desarrollar, mantener y asistir a usuarios es un trabajo duro. Por favor, considere contribuir (hay muchas maneras) o hacer una donación. ¡Se agradecería mucho!</string>
+  <string name="intro_open_source_details">Cómo contribuir o donar</string>
+  <string name="intro_open_source_dont_show">No mostrar la próxima vez</string>
+  <string name="intro_more_info">Información adicional</string>
   <!--AboutActivity-->
+  <string name="about_translations">Traducciones</string>
   <string name="about_libraries">Bibliotecas</string>
   <string name="about_version">Versión %1$s (%2$d)</string>
   <string name="about_build_date">Compilada en %s</string>
   <string name="about_flavor_info">Esta versión sólo está disponible para distribución en Google Play. </string>
   <string name="about_license_info_no_warranty">Este programa viene sin NINGÚN TIPO DE GARANTÍA. Es software libre, y cualquier contribución es bienvenida y redistribuida bajo ciertas condiciones.</string>
+  <string name="about_translations_thanks"><![CDATA[<i>Agradecimientos para: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">No se puede crear el fichero del registro.</string>
   <string name="logging_notification_title">Registro DAVx⁵</string>
@@ -50,6 +59,8 @@
   <string name="navigation_drawer_subtitle">Adaptador de sincronización CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Acerca de / Licencia</string>
   <string name="navigation_drawer_beta_feedback">Retroalimentación Beta</string>
+  <string name="install_email_client">Por favor, instale un cliente de email</string>
+  <string name="install_browser">Por favor, instale un navegador web</string>
   <string name="navigation_drawer_settings">Ajustes</string>
   <string name="navigation_drawer_news_updates">Noticias y actualizaciones</string>
   <string name="navigation_drawer_external_links">Enlaces externos</string>
@@ -58,6 +69,8 @@
   <string name="navigation_drawer_faq">Preguntas frequentes</string>
   <string name="navigation_drawer_forums">Ayuda / Foros</string>
   <string name="navigation_drawer_donate">Donar</string>
+  <string name="navigation_drawer_privacy_policy">Reglamento de privacidad</string>
+  <string name="account_list_no_internet">No hay conexión a Internet. Android no se sincronizará.</string>
   <string name="account_list_empty">Bienvenido a DAVx⁵!\n\nAhora puedes añadir una cuenta CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Sincronización automática del sistema completo está deshabilitada</string>
   <string name="accounts_global_sync_enable">Activar</string>
@@ -189,6 +202,13 @@
     <item quantity="other">Los eventos anteriores a %d días serán ignorados</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Los eventos anteriores a este número de días serán ignorados (puede ser 0). Deja en blanco el campo para sincronizar todos los eventos.</string>
+  <string name="settings_default_alarm">Recordatorio por defecto</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Recordatorio por defecto un minuto antes del evento</item>
+    <item quantity="other">Recordatorio por defecto %dminutos antes del evento</item>
+  </plurals>
+  <string name="settings_default_alarm_off">No se han creado recordatorios por defecto</string>
+  <string name="settings_default_alarm_message">Si se crearán recordatorios por defecto para los eventos que no los tengan: el número de minutos antes del evento. Déjelo en blanco para deshabilitar los recordatorios por defecto.</string>
   <string name="settings_manage_calendar_colors">Colores de calendario</string>
   <string name="settings_manage_calendar_colors_on">Los colores de los calendarios son administrados por DAVx⁵</string>
   <string name="settings_manage_calendar_colors_off">Los colores de los calendarios no son establecidos por DAVx⁵</string>
@@ -197,6 +217,10 @@
   <string name="settings_event_colors_off">No sincronizar colores de eventos</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Método de contacto de grupo</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Los grupos son vCards separadas</item>
+    <item>Los grupos son categorías de cada contacto</item>
+  </string-array>
   <string name="settings_contact_group_method_change">Cambie método de grupo</string>
   <!--collection management-->
   <string name="create_addressbook">Crear nueva agenda</string>

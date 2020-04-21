@@ -14,22 +14,7 @@
   <string name="notification_channel_sync_warnings">Предупреждения от синхронизирането</string>
   <string name="notification_channel_sync_io_errors">Грешки с входа/изхода и мрежата.</string>
   <string name="notification_channel_sync_io_errors_desc">Проточване на времето, проблеми с връзката, и т.н. (обикновенно временни)</string>
-  <!--startup dialogs-->
-  <string name="startup_autostart_permission">Автоматична синхронизация</string>
-  <string name="startup_battery_optimization">Планувана синхронизация</string>
-  <string name="startup_battery_optimization_message">Устройството ти ще възпрепятства DAVx⁵ да синхронизира.  За да се извършва редовна, периодична синхронизация, изключи “оптимизация на батерията”.</string>
-  <string name="startup_battery_optimization_disable">Изключи за DAVx⁵</string>
-  <string name="startup_dont_show_again">Не показвай отново</string>
-  <string name="startup_not_now">Не сега</string>
-  <string name="startup_donate">Информация за отворения код</string>
-  <string name="startup_donate_message">Радваме се, че изполваш DAVx⁵ – софтуер с отворен код (GPLv3).  Тъй като разработването на DAVx⁵ е много трудоемка работа, моля да направиш дарение.</string>
-  <string name="startup_donate_now">Покажи страницата за дарения</string>
-  <string name="startup_donate_later">Може би по-късно</string>
-  <string name="intro_more_info">Повече информация</string>
-  <string name="startup_opentasks_not_installed">OpenTasks не е инсталирана.</string>
-  <string name="startup_opentasks_not_installed_message">За да синхронизираш задачи е нужна програмата OpenTasks.  Тя не е необходима за синхронизиране на контакти или събития.</string>
-  <string name="startup_opentasks_reinstall_davx5">След като инсталирате OpenTasks трябва да инсталирате отново DAVx⁵ и да добавите своите регистрации (грешката е в Андроид).</string>
-  <string name="startup_opentasks_not_installed_install">Инсталирай OpenTasks</string>
+  <!--IntroActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Библиотеки</string>
   <string name="about_version">Версия %1$s (%2$d)</string>

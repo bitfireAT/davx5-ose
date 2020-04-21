@@ -11,16 +11,7 @@
   <string name="notification_channel_general">Altres missatges importants</string>
   <string name="notification_channel_sync">Sincronització</string>
   <string name="notification_channel_sync_io_errors">Xarxa i errors E/S</string>
-  <!--startup dialogs-->
-  <string name="startup_battery_optimization_disable">Desactiva per DAVx⁵</string>
-  <string name="startup_dont_show_again">No mostrar de nou</string>
-  <string name="startup_donate">Informació de Codi Obert</string>
-  <string name="startup_donate_message">Som feliços de que utilitzis DAVx⁵, el qual és programari lliure (GPLv3). Desenvolupar DAVx⁵ ens porte moltes hores i molta feina, si us plau, considera fer una donació.</string>
-  <string name="startup_donate_now">Mostra la pàgina de donació</string>
-  <string name="startup_donate_later">Més tard</string>
-  <string name="intro_more_info">Més informació</string>
-  <string name="startup_opentasks_not_installed">OpenTasks no està instal·lada</string>
-  <string name="startup_opentasks_not_installed_install">Instal·lar OpenTasks</string>
+  <!--IntroActivity-->
   <!--AboutActivity-->
   <!--global settings-->
   <!--AccountsActivity-->
@@ -100,6 +91,7 @@
   <string name="settings_password">Contrasenya</string>
   <string name="settings_enter_password">Escriu la teva contrasenya</string>
   <string name="settings_caldav">CalDAV</string>
+  <string name="settings_manage_calendar_colors">Gestiona els colors del calendari</string>
   <string name="settings_carddav">CardDAV</string>
   <!--collection management-->
   <!--ExceptionInfoFragment-->
