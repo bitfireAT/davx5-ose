@@ -55,7 +55,7 @@ class NextcloudLoginFlowFragment: Fragment() {
         webView.webChromeClient = object: WebChromeClient() {
             override fun onProgressChanged(view: WebView, newProgress: Int) {
                 progressBar.progress = newProgress
-                progressBar.visibility = if (newProgress == 100) View.INVISIBLE else View.VISIBLE
+                progressBar.visibility = if (newProgress == 100) View.GONE else View.VISIBLE
             }
         }
         webView.loadUrl(
