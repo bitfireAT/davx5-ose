@@ -1,0 +1,6 @@
+* use freshly designed AppIntro fragments instead of the previous start-up fragments
+* About dialog: show translations, updated library view
+* use latest version of okhttp (4.5 instead of 3.12); dropping support for API level <21 (Android 5)
+* support for Brotli HTTP compression (if supported by server)
+* Nextcloud Login Flow: show progress bar and error messages if something goes wrong
+* many small bug fixes, improvements, optimizations
