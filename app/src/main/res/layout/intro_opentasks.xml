@@ -43,7 +43,7 @@
                             app:layout_constraintBottom_toTopOf="@id/heading"
                             android:adjustViewBounds="true"
                             app:srcCompat="@drawable/intro_tasks"
-                            app:verticalOffsetPercent=".65" />
+                            app:verticalOffsetPercent=".55" />
 
                         <androidx.constraintlayout.widget.Guideline
                             android:id="@+id/start"
@@ -124,7 +124,7 @@
                             app:layout_constraintTop_toBottomOf="@id/text2"
                             app:layout_constraintBottom_toTopOf="@id/dontShow"
                             app:layout_constraintStart_toStartOf="@id/start"
-                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                             android:text="@string/intro_more_info"/>
 
                         <CheckBox

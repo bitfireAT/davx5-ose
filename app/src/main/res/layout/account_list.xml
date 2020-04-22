@@ -46,20 +46,22 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintVertical_weight=".7"
-            app:layout_constraintHorizontal_bias=".3"
+            app:layout_constraintHorizontal_bias=".5"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
             android:adjustViewBounds="true"
             app:srcCompat="@drawable/accounts_background"/>
 
         <TextView
             android:id="@+id/text"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="16dp"
-            app:layout_constraintVertical_weight=".3"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/image"
-            app:layout_constraintVertical_bias=".75"
             android:gravity="center"
             style="@style/TextAppearance.MaterialComponents.Headline6"
             android:text="@string/account_list_empty" />
