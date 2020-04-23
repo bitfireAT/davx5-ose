@@ -32,6 +32,9 @@ android {
     }
 
     compileOptions {
+        // enable because ical4android requires desugaring
+        coreLibraryDesugaringEnabled true
+
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -39,7 +42,7 @@ android {
         jvmTarget = "1.8"
     }
 
-    dataBinding.enabled = true
+    buildFeatures.dataBinding = true
 
     flavorDimensions "distribution"
     productFlavors {
@@ -107,6 +110,7 @@ dependencies {
     implementation project(':vcard4android')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.5'
 
     implementation 'androidx.appcompat:appcompat:1.2.0-beta01'
     implementation 'androidx.cardview:cardview:1.0.0'

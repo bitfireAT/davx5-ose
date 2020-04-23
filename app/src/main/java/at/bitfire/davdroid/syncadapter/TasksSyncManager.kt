@@ -28,7 +28,6 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.ical4android.Constants
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.Task
 import okhttp3.HttpUrl
@@ -115,7 +114,7 @@ class TasksSyncManager(
 
     override fun postProcess() {
         val touched = localCollection.touchRelations()
-        Constants.log.info("Touched $touched relations")
+        Logger.log.info("Touched $touched relations")
     }
 
     // helpers

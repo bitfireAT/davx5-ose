@@ -36,6 +36,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
+import java.time.Duration
 import java.util.*
 import java.util.logging.Level
 
@@ -154,7 +155,7 @@ class CalendarSyncManager(
             // set default reminder for non-full-day events, if requested
             val defaultAlarmMinBefore = accountSettings.getDefaultAlarm()
             if (defaultAlarmMinBefore != null && !event.isAllDay() && event.alarms.isEmpty()) {
-                val alarm = VAlarm(Dur(0, 0, -defaultAlarmMinBefore, 0))
+                val alarm = VAlarm(Duration.ofMinutes(-defaultAlarmMinBefore.toLong()))
                 Logger.log.log(Level.FINE, "${event.uid}: Adding default alarm", alarm)
                 event.alarms += alarm
             }

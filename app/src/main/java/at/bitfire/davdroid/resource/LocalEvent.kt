@@ -20,7 +20,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
 
     companion object {
         init {
-            ICalendar.prodId = ProdId("+//IDN bitfire.at//${BuildConfig.userAgent}/${BuildConfig.VERSION_NAME} ical4j/" + Constants.ical4jVersion)
+            ICalendar.prodId = ProdId("+//IDN bitfire.at//${BuildConfig.userAgent}/${BuildConfig.VERSION_NAME} ical4j/" + Ical4Android.ical4jVersion)
         }
 
         const val COLUMN_ETAG = Events.SYNC_DATA1
