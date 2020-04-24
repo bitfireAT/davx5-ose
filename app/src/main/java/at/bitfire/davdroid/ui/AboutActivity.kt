@@ -108,7 +108,7 @@ class AboutActivity: AppCompatActivity() {
                 inflater.inflate(R.layout.about, container, false)!!
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            app_name.text = getString(R.string.app_name)
+            app_name.setText(R.string.app_name)
             app_version.text = getString(R.string.about_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
             build_time.text = getString(R.string.about_build_date, SimpleDateFormat.getDateInstance().format(BuildConfig.buildTime))
 

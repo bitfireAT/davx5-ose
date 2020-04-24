@@ -10,7 +10,6 @@ package at.bitfire.davdroid.syncadapter
 
 import android.Manifest
 import android.accounts.Account
-import android.app.PendingIntent
 import android.app.Service
 import android.content.*
 import android.content.pm.PackageManager
@@ -19,14 +18,10 @@ import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import at.bitfire.davdroid.R
+import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.davdroid.ui.account.SettingsActivity
 import java.lang.ref.WeakReference
 import java.util.*
@@ -136,13 +131,6 @@ abstract class SyncAdapterService: Service() {
 
         override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {
             Logger.log.log(Level.WARNING, "Security exception when opening content provider for $authority")
-            syncResult.databaseError = true
-
-            val intent = Intent(context, AccountActivity::class.java)
-            intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-            notifyPermissions(intent)
         }
 
         override fun onSyncCanceled() {
@@ -192,8 +180,7 @@ abstract class SyncAdapterService: Service() {
                         val intent = Intent(context, SettingsActivity::class.java)
                         intent.putExtra(SettingsActivity.EXTRA_ACCOUNT, settings.account)
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-                        notifyPermissions(intent)
+                        PermissionUtils.notifyPermissions(context, intent)
                     }
 
                     val wifi = context.applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
@@ -205,18 +192,6 @@ abstract class SyncAdapterService: Service() {
                 }
             }
             return true
-        }
-
-        protected fun notifyPermissions(intent: Intent) {
-            val notify = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_SYNC_ERRORS)
-                    .setSmallIcon(R.drawable.ic_sync_problem_notify)
-                    .setContentTitle(context.getString(R.string.sync_error_permissions))
-                    .setContentText(context.getString(R.string.sync_error_permissions_text))
-                    .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
-                    .setCategory(NotificationCompat.CATEGORY_ERROR)
-                    .setAutoCancel(true)
-                    .build()
-            NotificationManagerCompat.from(context).notify(NotificationUtils.NOTIFY_PERMISSIONS, notify)
         }
 
     }

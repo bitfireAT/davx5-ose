@@ -112,8 +112,6 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         no_collections.setText(noCollectionsStringId)
     }
 
-    protected abstract fun createAdapter(): CollectionAdapter
-
     override fun onOptionsItemSelected(item: MenuItem) =
             when (item.itemId) {
                 R.id.refresh -> {
@@ -128,6 +126,13 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         model.refresh()
     }
 
+    override fun onResume() {
+        super.onResume()
+        checkPermissions()
+    }
+
+    protected abstract fun checkPermissions()
+    protected abstract fun createAdapter(): CollectionAdapter
 
 
     abstract class CollectionViewHolder(

@@ -163,10 +163,11 @@ class AccountDetailsFragment: Fragment() {
                         refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
                         context.startService(refreshIntent)
 
-                        // contact sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_address_books.xml
-                        accountSettings.setSyncInterval(context.getString(R.string.address_books_authority), Constants.DEFAULT_SYNC_INTERVAL)
-                    } else
-                        ContentResolver.setIsSyncable(account, context.getString(R.string.address_books_authority), 0)
+                        // set default sync interval and enable sync regardless of permissions
+                        val addrBookAuthority = context.getString(R.string.address_books_authority)
+                        ContentResolver.setIsSyncable(account, addrBookAuthority, 1)
+                        accountSettings.setSyncInterval(addrBookAuthority, Constants.DEFAULT_SYNC_INTERVAL)
+                    }
 
                     if (config.calDAV != null) {
                         // insert CalDAV service
@@ -176,18 +177,15 @@ class AccountDetailsFragment: Fragment() {
                         refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
                         context.startService(refreshIntent)
 
-                        // calendar sync is automatically enabled by isAlwaysSyncable="true" in res/xml/sync_calendars.xml
+                        // set default sync interval and enable sync regardless of permissions
+                        ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
                         accountSettings.setSyncInterval(CalendarContract.AUTHORITY, Constants.DEFAULT_SYNC_INTERVAL)
 
-                        // enable task sync if OpenTasks is installed
-                        // further changes will be handled by PackageChangedReceiver
                         if (LocalTaskList.tasksProviderAvailable(context)) {
                             ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1)
                             accountSettings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL)
+                            // further changes will be handled by OpenTasksWatcher on app start or when OpenTasks is (un)installed
                         }
-                    } else {
-                        ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0)
-                        ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0)
                     }
 
                 } catch(e: InvalidAccountException) {

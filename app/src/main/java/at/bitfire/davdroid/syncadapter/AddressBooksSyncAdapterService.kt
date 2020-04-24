@@ -9,7 +9,10 @@ package at.bitfire.davdroid.syncadapter
 
 import android.Manifest
 import android.accounts.Account
-import android.content.*
+import android.content.ContentProviderClient
+import android.content.ContentResolver
+import android.content.Context
+import android.content.SyncResult
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -21,7 +24,6 @@ import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.account.AccountActivity
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
@@ -73,14 +75,8 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
                 if (remoteAddressBooks.isEmpty())
                     Logger.log.info("No contacts permission, but no address book selected for synchronization")
-                else {
-                    // no contacts permission, but address books should be synchronized -> show notification
-                    val intent = Intent(context, AccountActivity::class.java)
-                    intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-                    notifyPermissions(intent)
-                }
+                else
+                    Logger.log.warning("No contacts permission, but address books are selected for synchronization")
                 return false
             }
 

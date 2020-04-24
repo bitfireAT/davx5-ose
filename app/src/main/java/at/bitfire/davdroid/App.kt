@@ -11,7 +11,6 @@ package at.bitfire.davdroid
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
@@ -75,15 +74,10 @@ class App: Application(), Thread.UncaughtExceptionHandler {
         // don't block UI for some background checks
         thread {
             // watch installed/removed apps
-            val tasksFilter = IntentFilter(Intent.ACTION_PACKAGE_ADDED).apply {
-                addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED)
-                addAction(Intent.ACTION_PACKAGE_REMOVED)
-                addDataScheme("package")
-            }
-            registerReceiver(PackageChangedReceiver(), tasksFilter)
+            OpenTasksWatcher(this)
 
             // check whether a tasks app is currently installed
-            PackageChangedReceiver.updateTaskSync(this)
+            OpenTasksWatcher.updateTaskSync(this)
         }
     }
 

@@ -226,7 +226,10 @@ class LocalAddressBook(
         }
 
         // make sure it will still be synchronized when contacts are updated
-        ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
+        if (ContentResolver.getIsSyncable(account, ContactsContract.AUTHORITY) <= 0)
+            ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1)
+        if (!ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY))
+            ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
     }
 
     fun delete() {

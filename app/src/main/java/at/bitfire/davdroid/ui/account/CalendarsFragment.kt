@@ -3,10 +3,13 @@ package at.bitfire.davdroid.ui.account
 import android.content.Intent
 import android.view.*
 import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.ui.CreateCalendarActivity
 import kotlinx.android.synthetic.main.account_caldav_item.view.*
+import kotlinx.android.synthetic.main.account_collections.*
 
 class CalendarsFragment: CollectionsFragment() {
 
@@ -29,6 +32,22 @@ class CalendarsFragment: CollectionsFragment() {
         return false
     }
 
+
+    override fun checkPermissions() {
+        val calendarPermissions = PermissionUtils.havePermissions(requireActivity(), PermissionUtils.CALENDAR_PERMISSIONS)
+        val tasksPermissions = !LocalTaskList.tasksProviderAvailable(requireActivity()) ||
+                PermissionUtils.havePermissions(requireActivity(), PermissionUtils.TASKS_PERMISSIONS)
+        if (calendarPermissions && tasksPermissions)
+            permissionsCard.visibility = View.GONE
+        else {
+            permissionsText.setText(when {
+                !calendarPermissions && tasksPermissions -> R.string.account_caldav_missing_calendar_permissions
+                calendarPermissions && !tasksPermissions -> R.string.account_caldav_missing_tasks_permissions
+                else -> R.string.account_caldav_missing_permissions
+            })
+            permissionsCard.visibility = View.VISIBLE
+        }
+    }
     override fun createAdapter(): CollectionAdapter = CalendarAdapter(accountModel)
 
 

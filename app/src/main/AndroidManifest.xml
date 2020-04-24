@@ -71,6 +71,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.APPLICATION_PREFERENCES"/>
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
@@ -100,6 +101,7 @@
             android:label="@string/debug_info_title">
             <intent-filter>
                 <action android:name="android.intent.action.BUG_REPORT"/>
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <provider
@@ -111,6 +113,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/debug_paths" />
         </provider>
+
+        <activity android:name=".ui.PermissionsActivity" />
 
         <!-- account type "DAVx⁵" -->
         <service

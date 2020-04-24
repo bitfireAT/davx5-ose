@@ -301,7 +301,9 @@ class DebugInfoActivity: AppCompatActivity() {
                         accountSettings.getSyncWifiOnlySSIDs()?.let {
                             text.append(", SSIDs: ${accountSettings.getSyncWifiOnlySSIDs()}")
                         }
-                        text.append("\n  [CardDAV] Contact group method: ${accountSettings.getGroupMethod()}")
+                        text    .append("\n  getIsSyncable(CalendarContract): ${ContentResolver.getIsSyncable(acct, CalendarContract.AUTHORITY)}")
+                                .append("\n  getIsSyncable(OpenTasks): ${ContentResolver.getIsSyncable(acct, TaskProvider.ProviderName.OpenTasks.authority)}")
+                                .append("\n  [CardDAV] Contact group method: ${accountSettings.getGroupMethod()}")
                                 .append("\n  [CalDAV] Time range (past days): ${accountSettings.getTimeRangePastDays()}")
                                 .append("\n           Manage calendar colors: ${accountSettings.getManageCalendarColors()}")
                                 .append("\n           Use event colors: ${accountSettings.getEventColors()}")
