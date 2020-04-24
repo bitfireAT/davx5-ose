@@ -34,7 +34,6 @@ import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName.OpenTasks
 import at.bitfire.vcard4android.ContactsStorageException
 import at.bitfire.vcard4android.GroupMethod
-import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.apache.commons.lang3.StringUtils
 import org.dmfs.tasks.contract.TaskContract
@@ -437,7 +436,7 @@ class AccountSettings(
     @Suppress("unused")
     private fun update_4_5() {
         // call PackageChangedReceiver which then enables/disables OpenTasks sync when it's (not) available
-        PackageChangedReceiver.updateTaskSync(context)
+        OpenTasksWatcher.updateTaskSync(context)
     }
 
     @Suppress("unused")

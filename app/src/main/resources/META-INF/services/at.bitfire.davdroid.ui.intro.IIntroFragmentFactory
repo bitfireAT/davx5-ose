@@ -1,4 +1,5 @@
 at.bitfire.davdroid.ui.intro.WelcomeFragment$Factory
-at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment$Factory
 at.bitfire.davdroid.ui.intro.OpenTasksFragment$Factory
+at.bitfire.davdroid.ui.intro.PermissionsFragmentFactory
+at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment$Factory
 at.bitfire.davdroid.ui.intro.OpenSourceFragment$Factory

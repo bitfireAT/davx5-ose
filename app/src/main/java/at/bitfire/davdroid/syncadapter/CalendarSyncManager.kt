@@ -27,7 +27,6 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
-import net.fortuna.ical4j.model.Dur
 import net.fortuna.ical4j.model.component.VAlarm
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull

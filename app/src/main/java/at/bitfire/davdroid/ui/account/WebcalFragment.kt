@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.app.Application
 import android.content.ContentProviderClient
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.ContentObserver
@@ -20,10 +19,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.room.Transaction
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.closeCompat
 import at.bitfire.davdroid.log.Logger
@@ -31,9 +34,18 @@ import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.account_caldav_item.view.*
+import kotlinx.android.synthetic.main.account_collections.*
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.logging.Level
+import kotlin.collections.MutableMap
+import kotlin.collections.any
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.firstOrNull
+import kotlin.collections.forEach
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
 
 class WebcalFragment: CollectionsFragment() {
 
@@ -45,19 +57,12 @@ class WebcalFragment: CollectionsFragment() {
         super.onCreate(savedInstanceState)
 
         webcalModel = ViewModelProvider(this).get(WebcalModel::class.java)
-        webcalModel.calendarPermission.observe(this, Observer { granted ->
-            if (!granted)
-                requestPermissions(arrayOf(Manifest.permission.READ_CALENDAR), 0)
-        })
         webcalModel.subscribedUrls.observe(this, Observer { urls ->
             Logger.log.log(Level.FINE, "Got Android calendar list", urls.keys)
         })
 
         webcalModel.initialize(arguments?.getLong(EXTRA_SERVICE_ID) ?: throw IllegalArgumentException("EXTRA_SERVICE_ID required"))
     }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) =
-            webcalModel.calendarPermission.check()
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
             inflater.inflate(R.menu.caldav_actions, menu)
@@ -67,6 +72,15 @@ class WebcalFragment: CollectionsFragment() {
         menu.findItem(R.id.create).isVisible = false
     }
 
+
+    override fun checkPermissions() {
+        if (PermissionUtils.havePermissions(requireActivity(), PermissionUtils.CALENDAR_PERMISSIONS))
+            permissionsCard.visibility = View.GONE
+        else {
+            permissionsText.setText(R.string.account_webcal_missing_calendar_permissions)
+            permissionsCard.visibility = View.VISIBLE
+        }
+    }
 
     override fun createAdapter(): CollectionAdapter = WebcalAdapter(accountModel, webcalModel)
 
@@ -159,18 +173,16 @@ class WebcalFragment: CollectionsFragment() {
         private val db = AppDatabase.getInstance(application)
         private val resolver = application.contentResolver
 
-        val calendarPermission = CalendarPermission(application)
+        private var calendarPermission = false
         private val calendarProvider = object: MediatorLiveData<ContentProviderClient>() {
-            var havePermission = false
-
             init {
-                addSource(calendarPermission) { granted ->
-                    havePermission = granted
-                    if (granted)
-                        connect()
-                    else
-                        disconnect()
-                }
+                init()
+            }
+
+            fun init() {
+                calendarPermission = ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
+                if (calendarPermission)
+                    connect()
             }
 
             override fun onActive() {
@@ -179,7 +191,7 @@ class WebcalFragment: CollectionsFragment() {
             }
 
             fun connect() {
-                if (havePermission && value == null)
+                if (calendarPermission && value == null)
                     value = resolver.acquireContentProviderClient(CalendarContract.AUTHORITY)
             }
 
@@ -274,13 +286,12 @@ class WebcalFragment: CollectionsFragment() {
             initialized = true
 
             serviceId = dbServiceId
-            calendarPermission.check()
         }
 
         fun unsubscribe(webcal: Collection) {
             workerHandler.post {
                 // find first matching source (Webcal) URL
-                subscribedUrls.value?.entries?.firstOrNull { (id, source) ->
+                subscribedUrls.value?.entries?.firstOrNull { (_, source) ->
                     UrlUtils.equals(source, webcal.source!!)
                 }?.key?.let { id ->
                     // delete first matching subscription from Android calendar list
@@ -290,16 +301,6 @@ class WebcalFragment: CollectionsFragment() {
             }
         }
 
-    }
-
-    class CalendarPermission(val context: Context): LiveData<Boolean>() {
-        init {
-            check()
-        }
-
-        fun check() {
-            value = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
-        }
     }
 
 }

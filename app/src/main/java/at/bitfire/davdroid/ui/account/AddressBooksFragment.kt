@@ -2,10 +2,13 @@ package at.bitfire.davdroid.ui.account
 
 import android.content.Intent
 import android.view.*
+import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.ui.CreateAddressBookActivity
+import at.bitfire.davdroid.ui.PermissionsActivity
 import kotlinx.android.synthetic.main.account_carddav_item.view.*
+import kotlinx.android.synthetic.main.account_collections.*
 
 class AddressBooksFragment: CollectionsFragment() {
 
@@ -26,6 +29,15 @@ class AddressBooksFragment: CollectionsFragment() {
         }
 
         return false
+    }
+
+    override fun checkPermissions() {
+        if (PermissionUtils.havePermissions(requireActivity(), PermissionUtils.CONTACT_PERMSSIONS))
+            permissionsCard.visibility = View.GONE
+        else {
+            permissionsText.setText(R.string.account_carddav_missing_permissions)
+            permissionsCard.visibility = View.VISIBLE
+        }
     }
 
     override fun createAdapter() = AddressBookAdapter(accountModel)

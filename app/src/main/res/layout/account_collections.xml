@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipe_refresh"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -18,6 +19,42 @@
             android:indeterminate="true"
             android:visibility="invisible"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/permissionsCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_margin"
+            android:layout_marginRight="@dimen/activity_margin"
+            android:layout_marginBottom="@dimen/card_padding">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/card_padding"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/permissionsText"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/permissionsBtn"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    style="@style/TextAppearance.MaterialComponents.Body1"
+                    android:text="@string/account_caldav_missing_permissions" />
+                <Button
+                    android:id="@+id/permissionsBtn"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/permissionsText"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:text="@string/account_permissions_action"
+                    android:onClick="startPermissionsActivity"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- paddingBottom and clipToPadding are needed to make space for the FAB at the end -->
         <androidx.recyclerview.widget.RecyclerView

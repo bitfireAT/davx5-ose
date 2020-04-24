@@ -1,33 +1,31 @@
 package at.bitfire.davdroid.ui.account
 
-import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.app.Application
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.Service
-import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.davdroid.ui.PermissionsActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_account.*
@@ -50,7 +48,7 @@ class AccountActivity: AppCompatActivity() {
         model = ViewModelProvider(this).get(Model::class.java)
         (intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account)?.let { account ->
             model.initialize(account)
-        }
+        } ?: throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
 
         title = model.account.name
         setContentView(R.layout.activity_account)
@@ -67,11 +65,6 @@ class AccountActivity: AppCompatActivity() {
             tabsAdapter.calDavSvcId = it
         })
 
-        model.askForPermissions.observe(this, Observer { permissions ->
-            if (permissions.isNotEmpty())
-                ActivityCompat.requestPermissions(this, permissions.toTypedArray(), 0)
-        })
-
         sync.setOnClickListener {
             DavUtils.requestSync(this, model.account)
             Snackbar.make(view_pager, R.string.account_synchronizing_now, Snackbar.LENGTH_LONG).show()
@@ -81,11 +74,6 @@ class AccountActivity: AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.activity_account, menu)
         return true
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (grantResults.contains(PackageManager.PERMISSION_GRANTED))
-            model.gotPermissions()
     }
 
 
@@ -141,11 +129,19 @@ class AccountActivity: AppCompatActivity() {
     }
 
 
+    // other actions
+
+    fun startPermissionsActivity(view: View) {
+        startActivity(Intent(this, PermissionsActivity::class.java))
+    }
+
+
+
     // adapter
 
     class TabsAdapter(
             val activity: AppCompatActivity
-    ): FragmentStatePagerAdapter(activity.supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    ): FragmentStatePagerAdapter(activity.supportFragmentManager, FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
         
         var cardDavSvcId: Long? = null
             set(value) {
@@ -239,17 +235,6 @@ class AccountActivity: AppCompatActivity() {
         val cardDavService = MutableLiveData<Long>()
         val calDavService = MutableLiveData<Long>()
 
-        private val needContactPermissions: LiveData<Boolean> = Transformations.switchMap(cardDavService) { cardDavId ->
-            if (cardDavId != null)
-                db.collectionDao().observeHasSyncByService(cardDavId)
-            else
-                MutableLiveData<Boolean>().apply { value = false }
-        }
-        private val needCalendarPermissions: LiveData<Boolean> = Transformations.map(calDavService) { calDavId ->
-            calDavId != null
-        }
-        val askForPermissions = PermissionCalculator(application, needContactPermissions, needCalendarPermissions)
-
 
         @MainThread
         fun initialize(account: Account) {
@@ -265,79 +250,18 @@ class AccountActivity: AppCompatActivity() {
             }
         }
 
-        fun gotPermissions() {
-            askForPermissions.calculate()
-        }
-
-        fun toggleSync(item: Collection) =
-                executor.execute {
-                    val newItem = item.copy(sync = !item.sync)
-                    db.collectionDao().update(newItem)
-                }
-
-        fun toggleReadOnly(item: Collection) =
-                executor.execute {
-                    val newItem = item.copy(forceReadOnly = !item.forceReadOnly)
-                    db.collectionDao().update(newItem)
-                }
-
-    }
-
-    class PermissionCalculator(
-            val context: Context,
-            needContactPermissions: LiveData<Boolean>,
-            needCalendarPermissions: LiveData<Boolean>
-    ): MediatorLiveData<List<String>>() {
-
-        companion object {
-            val contactPermissions = arrayOf(
-                    Manifest.permission.READ_CONTACTS,
-                    Manifest.permission.WRITE_CONTACTS
-            )
-            val calendarPermissions = arrayOf(
-                    Manifest.permission.READ_CALENDAR,
-                    Manifest.permission.WRITE_CALENDAR
-            )
-            val taskPermissions = arrayOf(
-                    TaskProvider.PERMISSION_READ_TASKS,
-                    TaskProvider.PERMISSION_WRITE_TASKS
-            )
-        }
-
-        private var usesContacts: Boolean? = null
-        private var usesCalendars: Boolean? = null
-
-        init {
-            addSource(needContactPermissions) {
-                usesContacts = it
-                calculate()
-            }
-            addSource(needCalendarPermissions) {
-                usesCalendars = it
-                calculate()
+        fun toggleSync(item: Collection) {
+            executor.execute {
+                val newItem = item.copy(sync = !item.sync)
+                db.collectionDao().update(newItem)
             }
         }
 
-        fun calculate() {
-            val contacts = usesContacts ?: return
-            val calendar = usesCalendars ?: return
-
-            val required = mutableListOf<String>()
-            if (contacts)
-                required.addAll(contactPermissions)
-
-            if (calendar) {
-                required.addAll(calendarPermissions)
-                if (LocalTaskList.tasksProviderAvailable(context))
-                    required.addAll(taskPermissions)
+        fun toggleReadOnly(item: Collection) {
+            executor.execute {
+                val newItem = item.copy(forceReadOnly = !item.forceReadOnly)
+                db.collectionDao().update(newItem)
             }
-
-            // only ask for permissions which are not granted
-            val askFor = required.filter {
-                ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_DENIED
-            }
-            if (value != askFor)
-                value = askFor
         }
 
     }

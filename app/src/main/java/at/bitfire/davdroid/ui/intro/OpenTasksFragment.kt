@@ -1,11 +1,10 @@
 package at.bitfire.davdroid.ui.intro
 
 import android.app.Application
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -19,11 +18,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.App
+import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.IntroOpentasksBinding
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.ui.UiUtils
+import at.bitfire.davdroid.ui.intro.IIntroFragmentFactory.ShowMode
 import at.bitfire.davdroid.ui.intro.OpenTasksFragment.Model.Companion.HINT_OPENTASKS_NOT_INSTALLED
 import com.google.android.material.snackbar.Snackbar
 
@@ -88,8 +89,8 @@ class OpenTasksFragment: Fragment() {
 
         var isInstalled = MutableLiveData<Boolean>()
         val shallBeInstalled = MutableLiveData<Boolean>()
-        val openTasksInstalledReceiver = object: BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
+        val tasksWatcher = object: PackageChangedReceiver(app) {
+            override fun onReceive(context: Context?, intent: Intent?) {
                 checkInstalled()
             }
         }
@@ -107,17 +108,11 @@ class OpenTasksFragment: Fragment() {
         }
 
         init {
-            val filter = IntentFilter(Intent.ACTION_PACKAGE_ADDED).apply {
-                addAction(Intent.ACTION_PACKAGE_CHANGED)
-                addAction(Intent.ACTION_PACKAGE_REMOVED)
-                addDataScheme("package")
-            }
-            app.registerReceiver(openTasksInstalledReceiver, filter)
             checkInstalled()
         }
 
         override fun onCleared() {
-            getApplication<Application>().unregisterReceiver(openTasksInstalledReceiver)
+            tasksWatcher.close()
         }
 
         fun checkInstalled() {
@@ -131,11 +126,16 @@ class OpenTasksFragment: Fragment() {
 
     class Factory: IIntroFragmentFactory {
 
-        override fun shouldBeShown(context: Context, settings: Settings) =
-                if (!LocalTaskList.tasksProviderAvailable(context) && settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED) != false)
-                    IIntroFragmentFactory.ShowMode.SHOW
-                else
-                    IIntroFragmentFactory.ShowMode.DONT_SHOW
+        override fun shouldBeShown(context: Context, settings: Settings): ShowMode {
+            // On Android <6, OpenTasks must be installed before DAVx5, so this fragment is not useful.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+                return ShowMode.DONT_SHOW
+
+            return if (!LocalTaskList.tasksProviderAvailable(context) && settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED) != false)
+                ShowMode.SHOW
+            else
+                ShowMode.DONT_SHOW
+        }
 
         override fun create() = OpenTasksFragment()
 

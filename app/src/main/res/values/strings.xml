@@ -43,6 +43,7 @@
     <string name="intro_autostart_text">This device probably blocks synchronization. If you\'re affected, you can only resolve this manually.</string>
     <string name="intro_autostart_dont_show">I have done the required settings. Don\'t remind me anymore.*</string>
     <string name="intro_leave_unchecked">* Leave unchecked to be reminded later. Can be reset in app settings / %s.</string>
+    <string name="intro_more_info">More information</string>
     <string name="intro_tasks_title">Tasks support</string>
     <string name="intro_tasks_not_installed">Not installed</string>
     <string name="intro_tasks_opentasks_installed">OpenTasks installed</string>
@@ -54,7 +55,23 @@
     <string name="intro_open_source_text">We\'re happy that you use %s, which is open-source software. Development, maintenance and support are hard work. Please consider contributing (there are many ways) or a donation. It would be highly appreciated!</string>
     <string name="intro_open_source_details">How to contribute/donate</string>
     <string name="intro_open_source_dont_show">Don\'t show in the next time</string>
-    <string name="intro_more_info">More information</string>
+
+    <!-- PermissionsActivity -->
+    <string name="permissions_title">Permissions</string>
+    <string name="permissions_text">%s requires permissions to work properly.</string>
+    <string name="permissions_all_title">All of the below</string>
+    <string name="permissions_all_status_off">Use this to enable all features (recommended)</string>
+    <string name="permissions_all_status_on">All permissions granted</string>
+    <string name="permissions_contacts_title">Contacts permissions</string>
+    <string name="permissions_contacts_status_off">No contact sync (not recommended)</string>
+    <string name="permissions_contacts_status_on">Contact sync possible</string>
+    <string name="permissions_calendar_title">Calendar permissions</string>
+    <string name="permissions_calendar_status_off">No calendar sync (not recommended)</string>
+    <string name="permissions_calendar_status_on">Calendar sync possible</string>
+    <string name="permissions_tasks_title">OpenTasks permissions</string>
+    <string name="permissions_tasks_status_not_installed">No task sync (not installed)</string>
+    <string name="permissions_tasks_status_off">No task sync (not recommended)</string>
+    <string name="permissions_tasks_status_on">Task sync possible</string>
 
     <!-- AboutActivity -->
     <string name="about_translations">Translations</string>
@@ -130,6 +147,12 @@
     <string name="account_carddav">CardDAV</string>
     <string name="account_caldav">CalDAV</string>
     <string name="account_webcal">Webcal</string>
+    <string name="account_carddav_missing_permissions">No contacts sync (missing permissions)</string>
+    <string name="account_caldav_missing_calendar_permissions">No calendar sync (missing permissions)</string>
+    <string name="account_caldav_missing_tasks_permissions">No tasks sync (missing permissions)</string>
+    <string name="account_caldav_missing_permissions">No calendar and tasks sync (missing permissions)</string>
+    <string name="account_webcal_missing_calendar_permissions">Can\'t access calendars (missing permissions)</string>
+    <string name="account_permissions_action">Permissions</string>
     <string name="account_no_address_books">There are no address books (yet).</string>
     <string name="account_no_calendars">There are no calendars (yet).</string>
     <string name="account_no_webcals">There are no calendar subscriptions (yet).</string>

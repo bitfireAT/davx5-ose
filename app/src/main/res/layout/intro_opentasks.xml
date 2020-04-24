@@ -69,7 +69,6 @@
                             app:layout_constraintEnd_toStartOf="@id/install"
                             style="@style/TextAppearance.MaterialComponents.Headline6"
                             android:text="@string/intro_tasks_title" />
-
                         <TextView
                             android:id="@+id/status"
                             android:layout_width="0dp"
@@ -79,8 +78,7 @@
                             app:layout_constraintStart_toStartOf="@id/heading"
                             app:layout_constraintEnd_toEndOf="@id/heading"
                             style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                            android:text="@string/intro_tasks_not_installed" />
-
+                            android:text="@{model.isInstalled() ? @string/intro_tasks_opentasks_installed : @string/intro_tasks_not_installed}" />
                         <Switch
                             android:id="@+id/install"
                             android:layout_width="wrap_content"
@@ -89,7 +87,6 @@
                             android:checked="@={model.shallBeInstalled}"
                             app:layout_constraintTop_toTopOf="@id/heading"
                             app:layout_constraintBottom_toBottomOf="@id/status"
-                            app:layout_constraintStart_toEndOf="@id/heading"
                             app:layout_constraintEnd_toEndOf="@id/end"/>
 
                         <TextView
