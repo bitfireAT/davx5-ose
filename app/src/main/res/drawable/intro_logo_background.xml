@@ -1,4 +1,6 @@
+<!-- This drawable is intentionally empty. In the non-ose version, it's a licensed stock image,
+     but it can't be used in -ose because of license restrictions. -->
 <vector android:height="170dp" android:viewportHeight="150"
     android:viewportWidth="205" android:width="232.33333dp" xmlns:android="http://schemas.android.com/apk/res/android">
-	<path />
+	<path android:fillColor="#ffffffff" android:pathData="Z" />
 </vector>
