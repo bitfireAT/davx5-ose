@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
+import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.LibsBuilder
 import kotlinx.android.synthetic.main.about.*
 import kotlinx.android.synthetic.main.about_languages.*
@@ -98,6 +99,8 @@ class AboutActivity: AppCompatActivity() {
                         LibsBuilder()
                                 .withLicenseShown(true)
                                 .withAboutIconShown(false)
+                                .withLibraryModification("org_brotli__dec", Libs.LibraryFields.LIBRARY_NAME, "Brotli")
+                                .withLibraryModification("org_brotli__dec", Libs.LibraryFields.AUTHOR_NAME, "Google")
                                 .supportFragment()
                     }
                 }
