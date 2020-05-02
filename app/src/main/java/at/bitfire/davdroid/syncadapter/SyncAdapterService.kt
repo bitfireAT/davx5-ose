@@ -93,17 +93,10 @@ abstract class SyncAdapterService: Service() {
             }
         }
 
-        /** Thread used for synchronizing; only for use in [onSyncCanceled]!
-         *  Use this only when parallel syncs are not supported, because otherwise
-         *  there would be more than one thread. */
-        @Volatile
-        private var syncThread: Thread? = null
-
         abstract fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult)
 
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             Logger.log.log(Level.INFO, "$authority sync of $account has been initiated", extras.keySet().joinToString(", "))
-            syncThread = Thread.currentThread()
 
             // prevent multiple syncs of the same authority to be run for the same account
             val currentSync = Pair(authority, account)
@@ -134,15 +127,13 @@ abstract class SyncAdapterService: Service() {
         }
 
         override fun onSyncCanceled() {
-            Logger.log.info("Sync thread (${syncThread?.id}) cancelled! Interrupting sync")
+            Logger.log.info("Sync thread cancelled! Interrupting sync")
             super.onSyncCanceled()
-            syncThread?.threadGroup?.interrupt()
         }
 
         override fun onSyncCanceled(thread: Thread) {
             Logger.log.info("Sync thread ${thread.id} cancelled! Interrupting sync")
             super.onSyncCanceled(thread)
-            thread.threadGroup?.interrupt()
         }
 
 
