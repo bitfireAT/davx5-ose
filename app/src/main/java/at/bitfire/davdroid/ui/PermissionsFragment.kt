@@ -20,7 +20,7 @@ import at.bitfire.davdroid.PermissionUtils.CONTACT_PERMSSIONS
 import at.bitfire.davdroid.PermissionUtils.TASKS_PERMISSIONS
 import at.bitfire.davdroid.PermissionUtils.havePermissions
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.databinding.IntroPermissionsBinding
+import at.bitfire.davdroid.databinding.ActivityPermissionsBinding
 import at.bitfire.davdroid.resource.LocalTaskList
 
 class PermissionsFragment: Fragment() {
@@ -33,7 +33,7 @@ class PermissionsFragment: Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = IntroPermissionsBinding.inflate(inflater, container, false)
+        val binding = ActivityPermissionsBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.model = model
 

@@ -72,6 +72,8 @@
     <string name="permissions_tasks_status_not_installed">No task sync (not installed)</string>
     <string name="permissions_tasks_status_off">No task sync (not recommended)</string>
     <string name="permissions_tasks_status_on">Task sync possible</string>
+    <string name="permissions_app_settings_hint">If a switch doesn\'t work, use app settings / Permissions.</string>
+    <string name="permissions_app_settings">App settings</string>
 
     <!-- AboutActivity -->
     <string name="about_translations">Translations</string>
