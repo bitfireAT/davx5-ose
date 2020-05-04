@@ -23,7 +23,9 @@ import at.bitfire.davdroid.databinding.DeleteCollectionBinding
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.settings.AccountSettings
-import kotlin.concurrent.thread
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.launch
 
 class DeleteCollectionFragment: DialogFragment() {
 
@@ -97,15 +99,15 @@ class DeleteCollectionFragment: DialogFragment() {
                 this.account = account
 
             if (collectionInfo == null)
-                thread {
+                viewModelScope.launch(Dispatchers.IO) {
                     collectionInfo = db.collectionDao().get(collectionId)
                 }
         }
 
         fun deleteCollection(): LiveData<Exception> {
-            thread {
-                val account = account ?: return@thread
-                val collectionInfo = collectionInfo ?: return@thread
+            viewModelScope.launch(Dispatchers.IO + NonCancellable) {
+                val account = account ?: return@launch
+                val collectionInfo = collectionInfo ?: return@launch
 
                 val context = getApplication<Application>()
                 HttpClient.Builder(context, AccountSettings(context, account))

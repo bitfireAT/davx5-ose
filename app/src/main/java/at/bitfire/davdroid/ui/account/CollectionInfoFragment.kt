@@ -18,10 +18,12 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.databinding.CollectionPropertiesBinding
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
-import kotlin.concurrent.thread
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class CollectionInfoFragment: DialogFragment() {
 
@@ -67,7 +69,7 @@ class CollectionInfoFragment: DialogFragment() {
                 return
             initialized = true
 
-            thread {
+            viewModelScope.launch(Dispatchers.IO) {
                 val db = AppDatabase.getInstance(getApplication())
                 collection.postValue(db.collectionDao().get(collectionId))
             }

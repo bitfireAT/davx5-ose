@@ -36,8 +36,10 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.launch
 import java.util.logging.Level
-import kotlin.concurrent.thread
 
 class AccountDetailsFragment: Fragment() {
 
@@ -129,7 +131,7 @@ class AccountDetailsFragment: Fragment() {
         fun createAccount(name: String, credentials: Credentials, config: DavResourceFinder.Configuration, groupMethod: GroupMethod): LiveData<Boolean> {
             val result = MutableLiveData<Boolean>()
             val context = getApplication<Application>()
-            thread {
+            viewModelScope.launch(Dispatchers.Default + NonCancellable) {
                 val account = Account(name, context.getString(R.string.account_type))
 
                 // create Android account
@@ -139,7 +141,7 @@ class AccountDetailsFragment: Fragment() {
                 val accountManager = AccountManager.get(context)
                 if (!accountManager.addAccountExplicitly(account, credentials.password, userData)) {
                     result.postValue(false)
-                    return@thread
+                    return@launch
                 }
 
                 // add entries for account to service DB
@@ -191,7 +193,7 @@ class AccountDetailsFragment: Fragment() {
                 } catch(e: InvalidAccountException) {
                     Logger.log.log(Level.SEVERE, "Couldn't access account settings", e)
                     result.postValue(false)
-                    return@thread
+                    return@launch
                 }
                 result.postValue(true)
             }

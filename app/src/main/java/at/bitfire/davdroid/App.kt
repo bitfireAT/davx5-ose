@@ -21,8 +21,10 @@ import androidx.appcompat.content.res.AppCompatResources
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.logging.Level
-import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 
 @Suppress("unused")
@@ -72,12 +74,12 @@ class App: Application(), Thread.UncaughtExceptionHandler {
         NotificationUtils.createChannels(this)
 
         // don't block UI for some background checks
-        thread {
+        CoroutineScope(Dispatchers.Default).launch {
             // watch installed/removed apps
-            OpenTasksWatcher(this)
+            OpenTasksWatcher(this@App)
 
             // check whether a tasks app is currently installed
-            OpenTasksWatcher.updateTaskSync(this)
+            OpenTasksWatcher.updateTaskSync(this@App)
         }
     }
 

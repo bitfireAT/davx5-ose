@@ -25,11 +25,13 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.settings.AccountSettings
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.io.IOException
 import java.io.StringWriter
 import java.util.logging.Level
-import kotlin.concurrent.thread
 
 class CreateCollectionFragment: DialogFragment() {
 
@@ -101,8 +103,8 @@ class CreateCollectionFragment: DialogFragment() {
 
 
     class Model(
-            application: Application
-    ): AndroidViewModel(application) {
+            app: Application
+    ): AndroidViewModel(app) {
 
         lateinit var account: Account
         lateinit var serviceType: String
@@ -111,7 +113,7 @@ class CreateCollectionFragment: DialogFragment() {
         val result = MutableLiveData<Exception>()
 
         fun createCollection(): LiveData<Exception> {
-            thread {
+            viewModelScope.launch(Dispatchers.IO + NonCancellable) {
                 HttpClient.Builder(getApplication(), AccountSettings(getApplication(), account))
                         .setForeground(true)
                         .build().use { httpClient ->

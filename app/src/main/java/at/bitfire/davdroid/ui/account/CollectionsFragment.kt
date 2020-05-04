@@ -29,7 +29,8 @@ import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.ui.DeleteCollectionFragment
 import at.bitfire.ical4android.TaskProvider
 import kotlinx.android.synthetic.main.account_collections.*
-import java.util.concurrent.Executors
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
@@ -212,7 +213,6 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     class Model(application: Application): AndroidViewModel(application), DavService.RefreshingStatusListener, SyncStatusObserver {
 
         private val db = AppDatabase.getInstance(application)
-        private val executor = Executors.newSingleThreadExecutor()
 
         private lateinit var accountModel: AccountActivity.Model
         val serviceId = MutableLiveData<Long>()
@@ -255,8 +255,8 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             if (context.bindService(Intent(context, DavService::class.java), svcConn, Context.BIND_AUTO_CREATE))
                 davServiceConn = svcConn
 
-            executor.submit {
-                syncStatusHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_PENDING + ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this)
+            viewModelScope.launch(Dispatchers.Default) {
+                syncStatusHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_PENDING + ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this@Model)
                 checkSyncStatus()
             }
         }
@@ -286,7 +286,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         }
 
         override fun onStatusChanged(which: Int) {
-            executor.submit {
+            viewModelScope.launch(Dispatchers.Default) {
                 checkSyncStatus()
             }
         }

@@ -21,7 +21,6 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment
-import at.bitfire.davdroid.ui.intro.IntroActivity
 import at.bitfire.davdroid.ui.intro.OpenSourceFragment
 import at.bitfire.davdroid.ui.intro.OpenTasksFragment
 import com.google.android.material.snackbar.Snackbar

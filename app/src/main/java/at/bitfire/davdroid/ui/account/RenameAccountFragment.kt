@@ -11,18 +11,15 @@ import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Looper
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
+import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.closeCompat
@@ -33,8 +30,10 @@ import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.TaskProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.launch
 import java.util.logging.Level
-import kotlin.concurrent.thread
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class RenameAccountFragment: DialogFragment() {
@@ -77,11 +76,12 @@ class RenameAccountFragment: DialogFragment() {
                 .setView(layout)
                 .setPositiveButton(R.string.account_rename_rename, DialogInterface.OnClickListener { _, _ ->
                     val newName = editText.text.toString()
-
                     if (newName == oldAccount.name)
                         return@OnClickListener
 
                     model.renameAccount(oldAccount, newName)
+
+                    requireActivity().finish()
                 })
                 .setNegativeButton(android.R.string.cancel) { _, _ -> }
                 .create()
@@ -97,26 +97,25 @@ class RenameAccountFragment: DialogFragment() {
         fun renameAccount(oldAccount: Account, newName: String) {
             val context = getApplication<Application>()
 
-            thread {
-                // remember sync intervals
-                val oldSettings = AccountSettings(context, oldAccount)
-                val authorities = arrayOf(
-                        context.getString(R.string.address_books_authority),
-                        CalendarContract.AUTHORITY,
-                        TaskProvider.ProviderName.OpenTasks.authority
-                )
-                val syncIntervals = authorities.map { Pair(it, oldSettings.getSyncInterval(it)) }
+            // remember sync intervals
+            val oldSettings = AccountSettings(context, oldAccount)
+            val authorities = arrayOf(
+                    context.getString(R.string.address_books_authority),
+                    CalendarContract.AUTHORITY,
+                    TaskProvider.ProviderName.OpenTasks.authority
+            )
+            val syncIntervals = authorities.map { Pair(it, oldSettings.getSyncInterval(it)) }
 
-                val accountManager = AccountManager.get(context)
-                accountManager.renameAccount(oldAccount, newName, {
-                    thread {
-                        onAccountRenamed(accountManager, oldAccount, newName, syncIntervals)
-                    }
-                }, null)
-            }
+            val accountManager = AccountManager.get(context)
+            accountManager.renameAccount(oldAccount, newName, {
+                viewModelScope.launch(Dispatchers.Default + NonCancellable) {
+                    onAccountRenamed(accountManager, oldAccount, newName, syncIntervals)
+                }
+            }, null)
         }
 
         @SuppressLint("Recycle")
+        @WorkerThread
         fun onAccountRenamed(accountManager: AccountManager, oldAccount: Account, newName: String, syncIntervals: List<Pair<String, Long?>>) {
             // account has now been renamed
             Logger.log.info("Updating account name references")
@@ -129,8 +128,6 @@ class RenameAccountFragment: DialogFragment() {
 
             // update account name references in database
             val db = AppDatabase.getInstance(context)
-            Logger.log.log(Level.INFO, "Main thread", Looper.getMainLooper().thread)
-            Logger.log.log(Level.INFO, "Current thread", Thread.currentThread())
             db.serviceDao().renameAccount(oldAccount.name, newName)
 
             // update main account of address book accounts

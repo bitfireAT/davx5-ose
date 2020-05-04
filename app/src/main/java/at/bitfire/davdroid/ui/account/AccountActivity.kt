@@ -15,10 +15,7 @@ import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -29,9 +26,10 @@ import at.bitfire.davdroid.ui.PermissionsActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_account.*
-import java.util.concurrent.Executors
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.launch
 import java.util.logging.Level
-import kotlin.concurrent.thread
 
 class AccountActivity: AppCompatActivity() {
 
@@ -230,7 +228,6 @@ class AccountActivity: AppCompatActivity() {
             private set
 
         private val db = AppDatabase.getInstance(application)
-        private val executor = Executors.newSingleThreadExecutor()
 
         val cardDavService = MutableLiveData<Long>()
         val calDavService = MutableLiveData<Long>()
@@ -244,21 +241,21 @@ class AccountActivity: AppCompatActivity() {
 
             this.account = account
 
-            thread {
+            viewModelScope.launch(Dispatchers.IO) {
                 cardDavService.postValue(db.serviceDao().getIdByAccountAndType(account.name, Service.TYPE_CARDDAV))
                 calDavService.postValue(db.serviceDao().getIdByAccountAndType(account.name, Service.TYPE_CALDAV))
             }
         }
 
         fun toggleSync(item: Collection) {
-            executor.execute {
+            viewModelScope.launch(Dispatchers.IO + NonCancellable) {
                 val newItem = item.copy(sync = !item.sync)
                 db.collectionDao().update(newItem)
             }
         }
 
         fun toggleReadOnly(item: Collection) {
-            executor.execute {
+            viewModelScope.launch(Dispatchers.IO + NonCancellable) {
                 val newItem = item.copy(forceReadOnly = !item.forceReadOnly)
                 db.collectionDao().update(newItem)
             }

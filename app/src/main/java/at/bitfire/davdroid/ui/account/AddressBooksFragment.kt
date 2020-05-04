@@ -6,7 +6,6 @@ import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.ui.CreateAddressBookActivity
-import at.bitfire.davdroid.ui.PermissionsActivity
 import kotlinx.android.synthetic.main.account_carddav_item.view.*
 import kotlinx.android.synthetic.main.account_collections.*
 
