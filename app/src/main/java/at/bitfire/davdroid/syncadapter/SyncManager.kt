@@ -27,7 +27,6 @@ import at.bitfire.dav4jvm.property.GetCTag
 import at.bitfire.dav4jvm.property.GetETag
 import at.bitfire.dav4jvm.property.SyncToken
 import at.bitfire.davdroid.*
-import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.SyncState
 import at.bitfire.davdroid.resource.*
@@ -36,9 +35,11 @@ import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.account.SettingsActivity
 import at.bitfire.ical4android.CalendarStorageException
+import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.TaskProvider
+import at.bitfire.ical4android.UsesThreadContextClassLoader
 import at.bitfire.vcard4android.ContactsStorageException
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -52,13 +53,16 @@ import java.net.HttpURLConnection
 import java.security.cert.CertificateException
 import java.util.*
 import java.util.concurrent.ExecutionException
+import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import javax.net.ssl.SSLHandshakeException
+import kotlin.math.min
 
 @Suppress("MemberVisibilityCanBePrivate")
+@UsesThreadContextClassLoader
 abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
         val context: Context,
         val account: Account,
@@ -77,6 +81,19 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     companion object {
         const val MAX_MULTIGET_RESOURCES = 10
     }
+
+    init {
+        // required for ServiceLoader -> ical4j -> ical4android
+        Ical4Android.checkThreadContextClassLoader()
+    }
+    /**
+     * We use our own dispatcher to make sure that all threads have [Thread.getContextClassLoader] set,
+     * which is required for dav4jvm and ical4j (because they rely on [ServiceLoader]).
+     */
+    private val workDispatcher = Executors.newFixedThreadPool(
+                // number of threads = number of CPUs, but max. 4
+                min(Runtime.getRuntime().availableProcessors(), 4)
+            ).asCoroutineDispatcher()
 
     private val mainAccount = if (localCollection is LocalAddressBook)
         localCollection.mainAccount
@@ -307,7 +324,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             }
 
         // upload dirty resources (parallelized)
-        runBlocking(Dispatchers.Default) {
+        runBlocking(workDispatcher) {
             for (local in localCollection.findDirty())
                 launch {
                     useLocal(local) {
@@ -436,7 +453,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         val nDeleted = AtomicInteger()
         val nSkipped = AtomicInteger()
 
-        runBlocking(Dispatchers.Default) {
+        runBlocking(workDispatcher) {
             // download queue
             val toDownload = LinkedBlockingQueue<HttpUrl>()
             fun download(url: HttpUrl?) {

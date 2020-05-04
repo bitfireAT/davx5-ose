@@ -108,11 +108,12 @@ abstract class SyncAdapterService: Service() {
                 runningSyncs += WeakReference(currentSync)
             }
 
-            try {
-                // required for dav4jvm (ServiceLoader)
-                Thread.currentThread().contextClassLoader = context.classLoader
+            // required for ServiceLoader -> ical4j -> ical4android
+            Thread.currentThread().contextClassLoader = context.classLoader
 
-                sync(account, extras, authority, provider, syncResult)
+            try {
+                if (true)
+                    sync(account, extras, authority, provider, syncResult)
             } finally {
                 synchronized(runningSyncs) {
                     runningSyncs.removeAll { it.get() == null || it.get() == currentSync }
