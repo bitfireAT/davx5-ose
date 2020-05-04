@@ -27,8 +27,10 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.accounts_content.*
 import kotlinx.android.synthetic.main.activity_accounts.*
 import kotlinx.android.synthetic.main.activity_accounts.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.concurrent.thread
 
 class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, SyncStatusObserver {
 
@@ -49,10 +51,10 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         settings = Settings.getInstance(this)
 
         if (savedInstanceState == null)
-            thread {
+            CoroutineScope(Dispatchers.Default).launch {
                 // use a separate thread to check whether IntroActivity should be shown
-                if (IntroActivity.shouldShowIntroActivity(this)) {
-                    val intro = Intent(this, IntroActivity::class.java)
+                if (IntroActivity.shouldShowIntroActivity(this@AccountsActivity)) {
+                    val intro = Intent(this@AccountsActivity, IntroActivity::class.java)
                     startActivityForResult(intro, REQUEST_INTRO)
                 }
             }

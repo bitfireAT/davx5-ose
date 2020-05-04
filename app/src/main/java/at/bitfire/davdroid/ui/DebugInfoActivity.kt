@@ -37,6 +37,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.InvalidAccountException
@@ -47,13 +48,14 @@ import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.TaskProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.dmfs.tasks.contract.TaskContract
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 import java.util.logging.Level
-import kotlin.concurrent.thread
 
 class DebugInfoActivity: AppCompatActivity() {
 
@@ -128,7 +130,7 @@ class DebugInfoActivity: AppCompatActivity() {
             Logger.log.info("Generating debug info report")
             initialized = true
 
-            thread {
+            viewModelScope.launch(Dispatchers.Default) {
                 val context = getApplication<Application>()
                 val text = StringBuilder("--- BEGIN DEBUG INFO ---\n")
 

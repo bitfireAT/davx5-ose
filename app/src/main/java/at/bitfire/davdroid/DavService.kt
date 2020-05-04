@@ -28,12 +28,14 @@ import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level
-import kotlin.concurrent.thread
 
 class DavService: android.app.Service() {
 
@@ -72,7 +74,9 @@ class DavService: android.app.Service() {
                         refreshingStatusListeners.forEach { listener ->
                             listener.get()?.onDavRefreshStatusChanged(id, true)
                         }
-                        thread { refreshCollections(id) }
+                        CoroutineScope(Dispatchers.IO).launch {
+                            refreshCollections(id)
+                        }
                     }
 
                 ACTION_FORCE_SYNC -> {

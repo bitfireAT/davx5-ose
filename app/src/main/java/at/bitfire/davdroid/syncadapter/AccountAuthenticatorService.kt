@@ -18,8 +18,10 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.ui.setup.LoginActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.logging.Level
-import kotlin.concurrent.thread
 
 
 /**
@@ -84,8 +86,8 @@ class AccountAuthenticatorService: Service(), OnAccountsUpdateListener {
 
 
     override fun onAccountsUpdated(accounts: Array<out Account>?) {
-        thread {
-            cleanupAccounts(this)
+        CoroutineScope(Dispatchers.Default).launch {
+            cleanupAccounts(this@AccountAuthenticatorService)
         }
     }
 

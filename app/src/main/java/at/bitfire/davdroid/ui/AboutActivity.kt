@@ -26,6 +26,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import at.bitfire.davdroid.App
@@ -36,12 +37,13 @@ import kotlinx.android.synthetic.main.about.*
 import kotlinx.android.synthetic.main.about_languages.*
 import kotlinx.android.synthetic.main.about_translation.view.*
 import kotlinx.android.synthetic.main.activity_about.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.apache.commons.io.IOUtils
 import org.json.JSONObject
 import java.text.Collator
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.concurrent.thread
 
 class AboutActivity: AppCompatActivity() {
 
@@ -212,8 +214,9 @@ class AboutActivity: AppCompatActivity() {
         @UiThread
         fun initialize(assetName: String, html: Boolean) {
             if (initialized) return
+            initialized = true
 
-            thread {
+            viewModelScope.launch(Dispatchers.IO) {
                 getApplication<Application>().resources.assets.open(assetName).use {
                     val raw = IOUtils.toString(it, Charsets.UTF_8)
                     if (html) {
@@ -223,8 +226,6 @@ class AboutActivity: AppCompatActivity() {
                         plainText.postValue(raw)
                 }
             }
-
-            initialized = true
         }
 
     }

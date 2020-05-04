@@ -38,13 +38,8 @@ import kotlinx.android.synthetic.main.account_collections.*
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.logging.Level
-import kotlin.collections.MutableMap
-import kotlin.collections.any
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.firstOrNull
-import kotlin.collections.forEach
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
 
 class WebcalFragment: CollectionsFragment() {

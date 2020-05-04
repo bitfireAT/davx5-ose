@@ -7,7 +7,6 @@ import android.util.AttributeSet
 import androidx.annotation.AttrRes
 import androidx.appcompat.widget.AppCompatImageView
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger.log
 
 /**
  * [android.widget.ImageView] that supports directional cropping in both vertical and

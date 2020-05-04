@@ -19,7 +19,9 @@ import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.TaskProvider.ProviderName.OpenTasks
-import kotlin.concurrent.thread
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class OpenTasksWatcher(
         context: Context
@@ -61,7 +63,7 @@ class OpenTasksWatcher(
 
 
     override fun onReceive(context: Context, intent: Intent) {
-        thread {
+        CoroutineScope(Dispatchers.Default).launch {
             updateTaskSync(context)
         }
     }

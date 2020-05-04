@@ -21,15 +21,17 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityCreateAddressBookBinding
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.ui.account.AccountActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
 import java.util.*
-import kotlin.concurrent.thread
 
 class CreateAddressBookActivity: AppCompatActivity() {
 
@@ -119,7 +121,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
                 return
             this.account = account
 
-            thread {
+            viewModelScope.launch(Dispatchers.IO) {
                 // load account info
                 val adapter = HomeSetAdapter(getApplication())
 
