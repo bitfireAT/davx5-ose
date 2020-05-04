@@ -9,4 +9,5 @@
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
     android:accountType="@string/account_type_address_book"
     android:contentAuthority="com.android.contacts"
+    android:allowParallelSyncs="true"
     android:supportsUploading="true" />
