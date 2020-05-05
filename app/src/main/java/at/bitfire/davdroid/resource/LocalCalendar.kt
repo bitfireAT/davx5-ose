@@ -117,12 +117,16 @@ class LocalCalendar private constructor(
 
         // get dirty events which are required to have an increased SEQUENCE value
         for (localEvent in queryEvents("${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null)) {
-            val event = localEvent.event!!
-            val sequence = event.sequence
-            if (event.sequence == null)      // sequence has not been assigned yet (i.e. this event was just locally created)
-                event.sequence = 0
-            else if (localEvent.weAreOrganizer)
-                event.sequence = sequence!! + 1
+            try {
+                val event = requireNotNull(localEvent.event)
+                val sequence = event.sequence
+                if (sequence == null)               // sequence has not been assigned yet (i.e. this event was just locally created)
+                    event.sequence = 0
+                else if (localEvent.weAreOrganizer) // increase sequence only if we're the organizer (i.e. not for attendee changes)
+                    event.sequence = sequence + 1
+            } catch(e: Exception) {
+                Logger.log.log(Level.WARNING, "Couldn't check/increase sequence", e)
+            }
             dirty += localEvent
         }
 

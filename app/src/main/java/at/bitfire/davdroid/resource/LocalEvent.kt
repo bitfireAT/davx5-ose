@@ -52,7 +52,6 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
     }
 
     override fun populateEvent(row: ContentValues) {
-        super.populateEvent(row)
         val event = requireNotNull(event)
 
         event.uid = row.getAsString(Events.UID_2445)
@@ -60,6 +59,8 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
 
         val isOrganizer = row.getAsInteger(Events.IS_ORGANIZER)
         weAreOrganizer = isOrganizer != null && isOrganizer != 0
+
+        super.populateEvent(row)
     }
 
     override fun buildEvent(recurrence: Event?, builder: ContentProviderOperation.Builder) {

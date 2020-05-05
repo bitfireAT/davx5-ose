@@ -125,12 +125,16 @@ class LocalTaskList private constructor(
     override fun findDirty(): List<LocalTask> {
         val tasks = queryTasks(Tasks._DIRTY, null)
         for (localTask in tasks) {
-            val task = requireNotNull(localTask.task)
-            val sequence = task.sequence
-            if (sequence == null)    // sequence has not been assigned yet (i.e. this task was just locally created)
-                task.sequence = 0
-            else
-                task.sequence = sequence + 1
+            try {
+                val task = requireNotNull(localTask.task)
+                val sequence = task.sequence
+                if (sequence == null)   // sequence has not been assigned yet (i.e. this task was just locally created)
+                    task.sequence = 0
+                else                    // task was modified, increase sequence
+                    task.sequence = sequence + 1
+            } catch(e: Exception) {
+                Logger.log.log(Level.WARNING, "Couldn't check/increase sequence", e)
+            }
         }
         return tasks
     }
