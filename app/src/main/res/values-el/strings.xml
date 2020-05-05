@@ -17,6 +17,7 @@
   <string name="notification_channel_sync_io_errors">Σφάλματα δικτύου και I/O</string>
   <string name="notification_channel_sync_io_errors_desc">Χρονικά όρια, προβλήματα σύνδεσης, κλπ. (συχνά προσωρινά)</string>
   <!--IntroActivity-->
+  <!--PermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Βιβλιοθήκες</string>
   <string name="about_version">Έκδοση %1$s (%2$d)</string>

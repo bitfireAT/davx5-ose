@@ -12,6 +12,7 @@
   <string name="notification_channel_sync">Sincronització</string>
   <string name="notification_channel_sync_io_errors">Xarxa i errors E/S</string>
   <!--IntroActivity-->
+  <!--PermissionsActivity-->
   <!--AboutActivity-->
   <!--global settings-->
   <!--AccountsActivity-->

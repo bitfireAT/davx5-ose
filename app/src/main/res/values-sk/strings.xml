@@ -17,6 +17,7 @@
   <string name="notification_channel_sync_io_errors">Sieťové a V/V chyby</string>
   <string name="notification_channel_sync_io_errors_desc">Vypršanie času, problémy spojenia, atď. (často dočasné)</string>
   <!--IntroActivity-->
+  <!--PermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Knižnice</string>
   <string name="about_version">Verzia %1$s (%2$d)</string>

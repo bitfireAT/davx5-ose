@@ -17,6 +17,7 @@
   <string name="notification_channel_sync_io_errors">Omrežje in I/O napake</string>
   <string name="notification_channel_sync_io_errors_desc">Pavze, povezave v povezavi z omrežjem, itd. (ponavadi začasno)</string>
   <!--IntroActivity-->
+  <!--PermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Knjižnice </string>
   <string name="about_version">Verzija %1$s (%2$d)</string>

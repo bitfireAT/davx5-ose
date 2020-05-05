@@ -28,6 +28,7 @@
   <string name="intro_autostart_text">To urządzenie prawdopodobnie blokuje synchronizację. Jeśli ten problem Cię dotyczy, możesz go jedynie rozwiązać ręcznie.</string>
   <string name="intro_autostart_dont_show">Wprowadziłem potrzebne ustawienia. Nie przypominaj mi ponownie.*</string>
   <string name="intro_leave_unchecked">* Pozostaw nie zaznaczone aby otrzymać przypomnienie później. Możesz to zresetować w ustawieniach aplikacji / %s. </string>
+  <string name="intro_more_info">Więcej informacji</string>
   <string name="intro_tasks_title">Obsługa zadań</string>
   <string name="intro_tasks_not_installed">Nie zainstalowane</string>
   <string name="intro_tasks_opentasks_installed">OpenTasks zainstalowane</string>
@@ -39,7 +40,24 @@
   <string name="intro_open_source_text">Jesteśmy szczęśliwi, że używasz %s,  który jest oprogramowaniem open-source. Rozwój, utrzymanie i wsparcie są ciężką pracą. Proszę rozważ wsparcie (jest na to wiele sposobów) lub dotację. Będziemy bardzo wdzięczni.</string>
   <string name="intro_open_source_details">Jak wspomóc/wesprzeć</string>
   <string name="intro_open_source_dont_show">Nie pokazuj za kolejnym razem</string>
-  <string name="intro_more_info">Więcej informacji</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">Uprawnienia</string>
+  <string name="permissions_text">%s wymaga uprawnień aby działać prawidłowo.</string>
+  <string name="permissions_all_title">Wszystkie poniższe</string>
+  <string name="permissions_all_status_off">Użyj tego aby odblokować wszystkie funkcje (zalecane)</string>
+  <string name="permissions_all_status_on">Wszystkie uprawnienia nadane</string>
+  <string name="permissions_contacts_title">Uprawnienia kontaktów</string>
+  <string name="permissions_contacts_status_off">Bez synchronizacji kontaktów (nie zalecane)</string>
+  <string name="permissions_contacts_status_on">Synchronizacja kontaktów możliwa</string>
+  <string name="permissions_calendar_title">Uprawnienia kalendarza</string>
+  <string name="permissions_calendar_status_off">Bez synchronizacji kalendarza (nie zalecane)</string>
+  <string name="permissions_calendar_status_on">Synchronizacja kalendarza możliwa</string>
+  <string name="permissions_tasks_title">Uprawnienia OpenTasks</string>
+  <string name="permissions_tasks_status_not_installed">Bez synchronizacji zadań (nie zainstalowane)</string>
+  <string name="permissions_tasks_status_off">Bez synchronizacji zadań (nie zalecane)</string>
+  <string name="permissions_tasks_status_on">Synchronizacja zadań możliwa</string>
+  <string name="permissions_app_settings_hint">Jeśli przełącznik nie działa użyj ustawień aplikacji / Uprawnienia.</string>
+  <string name="permissions_app_settings">Ustawienia aplikacji</string>
   <!--AboutActivity-->
   <string name="about_translations">Tłumaczenia</string>
   <string name="about_libraries">Biblioteki</string>
@@ -108,6 +126,12 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">Bez synchronizacji kontaktów (brakuje uprawnień)</string>
+  <string name="account_caldav_missing_calendar_permissions">Bez synchronizacji kalendarza (brakuje uprawnień)</string>
+  <string name="account_caldav_missing_tasks_permissions">Bez synchronizacji zadań (brakuje uprawnień)</string>
+  <string name="account_caldav_missing_permissions">Bez synchronizacji kalendarza i zadań (brakuje uprawnień)</string>
+  <string name="account_webcal_missing_calendar_permissions">Brak dostępu do kalendarzy (brakuje uprawnień)</string>
+  <string name="account_permissions_action">Uprawnienia</string>
   <string name="account_no_address_books">Nie ma (jeszcze) książek adresowych.</string>
   <string name="account_no_calendars">Nie ma (jeszcze) kalendarzy.</string>
   <string name="account_no_webcals">Nie ma (jeszcze) subskrypcji kalendarzy.</string>

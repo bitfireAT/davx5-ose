@@ -28,6 +28,7 @@
   <string name="intro_autostart_text">Este dispositivo bloquea la sincronización. Si está afectado, sólo lo puede resolver manualmente.</string>
   <string name="intro_autostart_dont_show">No tengo los ajustes requeridos. No volver a recordar.*</string>
   <string name="intro_leave_unchecked">* Déjelo desmarcado para que se le recuerde más tarde. Se puede reconfigurar en los ajustes de la aplicación / %s</string>
+  <string name="intro_more_info">Información adicional</string>
   <string name="intro_tasks_title">Soporte de tareas</string>
   <string name="intro_tasks_not_installed">No instalado</string>
   <string name="intro_tasks_opentasks_installed">OpenTasks instalado</string>
@@ -39,7 +40,24 @@
   <string name="intro_open_source_text">Nos complace que use%s, que es software open-source. Desarrollar, mantener y asistir a usuarios es un trabajo duro. Por favor, considere contribuir (hay muchas maneras) o hacer una donación. ¡Se agradecería mucho!</string>
   <string name="intro_open_source_details">Cómo contribuir o donar</string>
   <string name="intro_open_source_dont_show">No mostrar la próxima vez</string>
-  <string name="intro_more_info">Información adicional</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">Permisos</string>
+  <string name="permissions_text">%s necesita permisos para funcionar correctamente.</string>
+  <string name="permissions_all_title">Todos los siguientes</string>
+  <string name="permissions_all_status_off">Usa esto para activar todas las características (recomendado)</string>
+  <string name="permissions_all_status_on">Todos los permisos concedidos</string>
+  <string name="permissions_contacts_title">Permisos de contactos</string>
+  <string name="permissions_contacts_status_off">No sincronizar contactos (no recomendado)</string>
+  <string name="permissions_contacts_status_on">Sincronización de contactos permitida</string>
+  <string name="permissions_calendar_title">Permisos de calendario</string>
+  <string name="permissions_calendar_status_off">Sin sincronización de calendario (no recomendado)</string>
+  <string name="permissions_calendar_status_on">Sincronización de calendario permitida</string>
+  <string name="permissions_tasks_title">Permisos de OpenTasks</string>
+  <string name="permissions_tasks_status_not_installed">Sin sincronización de tareas (no instalado)</string>
+  <string name="permissions_tasks_status_off">Sin sincronización de tareas (no recomendado)</string>
+  <string name="permissions_tasks_status_on">Sincronización de tareas permitidas</string>
+  <string name="permissions_app_settings_hint">Si un interruptor no funciona usa Configuraciones de la app / Permisos.</string>
+  <string name="permissions_app_settings">Configuraciones de la app</string>
   <!--AboutActivity-->
   <string name="about_translations">Traducciones</string>
   <string name="about_libraries">Bibliotecas</string>
@@ -108,6 +126,12 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">Sin sincronización de contactos (faltan permisos)</string>
+  <string name="account_caldav_missing_calendar_permissions">Sin sincronización de calendario (faltan permisos)</string>
+  <string name="account_caldav_missing_tasks_permissions">Sin sincronización de tareas (faltan permisos)</string>
+  <string name="account_caldav_missing_permissions">Sin sincronización de calendario y tareas (faltan permisos)</string>
+  <string name="account_webcal_missing_calendar_permissions">No se puede acceder a los calendarios (faltan permisos)</string>
+  <string name="account_permissions_action">Permisos</string>
   <string name="account_no_address_books">No hay libretas de direciones (todavía).</string>
   <string name="account_no_calendars">No hay calendarios (todavía). </string>
   <string name="account_no_webcals">No hay suscripciones a calendarios (todavía).</string>
@@ -156,6 +180,8 @@
   <string name="login_account_name_required">Nombre de cuenta requerido</string>
   <string name="login_account_name_already_taken">El nombre de la cuenta ya está siendo utilizado</string>
   <string name="login_account_not_created">La cuenta no pudo ser creada</string>
+  <string name="login_webview_tlserror">Problema de seguridad en la conexión (código de error %d)</string>
+  <string name="login_webview_retry">Reintentar</string>
   <string name="login_configuration_detection">Detectar configuración</string>
   <string name="login_querying_server">Por favor espera, consultando al servidor…</string>
   <string name="login_no_caldav_carddav">No se pudo encontrar el servicio CalDAV o CardDAV.</string>

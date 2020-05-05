@@ -26,20 +26,38 @@
   <string name="intro_battery_dont_show">Ich brauche keine regelmäßigen Sync-Intervalle.*</string>
   <string name="intro_autostart_title">%s-Kompatibilität</string>
   <string name="intro_autostart_text">Dieses Gerät blockiert die Synchronisierung wahrscheinlich. Dies kann nur manuell behoben werden.</string>
-  <string name="intro_autostart_dont_show">Ich habe die Einstellungen gemacht, nicht mehr erinnern.</string>
+  <string name="intro_autostart_dont_show">Ich habe die Einstellungen gemacht, nicht mehr erinnern.*</string>
   <string name="intro_leave_unchecked">* Nicht anwählen, um später erinnert zu werden. Kann unter App-Einstellungen / %s zurückgesetzt werden.</string>
+  <string name="intro_more_info">Mehr Infos</string>
   <string name="intro_tasks_title">Unterstützung für Aufgaben</string>
   <string name="intro_tasks_not_installed">Nicht installiert</string>
-  <string name="intro_tasks_opentasks_installed">OpenTasks installiert</string>
+  <string name="intro_tasks_opentasks_installed">Aufgaben installiert</string>
   <string name="intro_tasks_no_app_store">Kein App-Store verfügbar</string>
-  <string name="intro_tasks_text1"><![CDATA[Android unterstützt standardmäßig keine Aufgaben. Wenn Aufgaben vom Server unterstützt werden, kann %s sie über <a href="https://opentasks.app/">OpenTasks</a> synchronisieren.]]></string>
+  <string name="intro_tasks_text1"><![CDATA[Android unterstützt standardmäßig keine Aufgaben. Wenn Aufgaben vom Server unterstützt werden, kann %s sie über <a href="https://opentasks.app/">OpenTasks</a> (Aufgaben) synchronisieren.]]></string>
   <string name="intro_tasks_text2">Für bestimmte Funktionen wie Unteraufgaben oder Wiederholungen benötigen Sie zusätzliche Apps.</string>
   <string name="intro_tasks_dont_show">Ich brauche keine Unterstützung für Aufgaben.</string>
   <string name="intro_open_source_title">Open-Source-Software</string>
-  <string name="intro_open_source_text">Wir freuen uns, dass sie die Open-Source-Software %s verwenden. Entwicklung, Wartung und Support sind viel Arbeit. Ziehen Sie daher bitte in Betracht, mitzuhelfen (dazu gibt es viele Möglichkeiten) oder zu spenden. Vielen Dank!</string>
+  <string name="intro_open_source_text">Wir freuen uns, dass Sie die Open-Source-Software %s verwenden. Entwicklung, Wartung und Support sind viel Arbeit. Ziehen Sie daher bitte in Betracht, mitzuhelfen (dazu gibt es viele Möglichkeiten) oder zu spenden. Vielen Dank!</string>
   <string name="intro_open_source_details">Infos zum Mithelfen/Spenden</string>
-  <string name="intro_open_source_dont_show">In nächster Zeit nicht anzeigen</string>
-  <string name="intro_more_info">Mehr Infos</string>
+  <string name="intro_open_source_dont_show">In nächster Zeit nicht mehr anzeigen</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">Rechteverwaltung</string>
+  <string name="permissions_text">%s benötigt Rechte, um ordnungsgemäß zu funktionieren</string>
+  <string name="permissions_all_title">Alles darunter</string>
+  <string name="permissions_all_status_off">Benutze dies, um alle Funktionen einzuschalten (empfohlen)</string>
+  <string name="permissions_all_status_on">Allen Rechten zugestimmt</string>
+  <string name="permissions_contacts_title">Kontakte Rechteverwaltung</string>
+  <string name="permissions_contacts_status_off">Keine Kontaktsynchronisierung (nicht empfohlen)</string>
+  <string name="permissions_contacts_status_on">Kontaktsynchronisierung möglich</string>
+  <string name="permissions_calendar_title">Kalender Rechteverwaltung</string>
+  <string name="permissions_calendar_status_off">Keine Kalendersynchronisierung (nicht empfohlen)</string>
+  <string name="permissions_calendar_status_on">Kalendersynchronisierung möglich</string>
+  <string name="permissions_tasks_title">Aufgaben Rechteverwaltung</string>
+  <string name="permissions_tasks_status_not_installed">Keine Aufgabensynchronisierung (nicht installiert)</string>
+  <string name="permissions_tasks_status_off">Keine Aufgabensynchronisierung (nicht empfohlen)</string>
+  <string name="permissions_tasks_status_on">Aufgabensynchronisierung möglich</string>
+  <string name="permissions_app_settings_hint">Wenn ein Schalter nicht funktioniert, versuche es unter Einstellungen -&gt; Apps &amp; Benachrichtigungen</string>
+  <string name="permissions_app_settings">App Einstellungen</string>
   <!--AboutActivity-->
   <string name="about_translations">Übersetzungen</string>
   <string name="about_libraries">Bibliotheken</string>
@@ -59,7 +77,7 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV-Sync-Adapter</string>
   <string name="navigation_drawer_about">Über / Lizenz</string>
   <string name="navigation_drawer_beta_feedback">Beta-Rückmeldung</string>
-  <string name="install_email_client">Bitte installieren Sie eine Email-Anwendung</string>
+  <string name="install_email_client">Bitte installieren Sie eine E-Mail-Anwendung</string>
   <string name="install_browser">Bitte installieren Sie einen Web-Browser</string>
   <string name="navigation_drawer_settings">Einstellungen</string>
   <string name="navigation_drawer_news_updates">Aktuelles</string>
@@ -108,6 +126,12 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">Keine Kontaktsynchronisierung (fehlende Rechte)</string>
+  <string name="account_caldav_missing_calendar_permissions">Keine Kalendersynchronisierung (fehlende Rechte)</string>
+  <string name="account_caldav_missing_tasks_permissions">Keine Aufgabensynchronisierung (fehlende Rechte)</string>
+  <string name="account_caldav_missing_permissions">Keine Kalender- und Kontaktsynchronisierung (fehlende Rechte)</string>
+  <string name="account_webcal_missing_calendar_permissions">Fehlender Zugang zu Kalendern (fehlende Rechte)</string>
+  <string name="account_permissions_action">Rechteverwaltung</string>
   <string name="account_no_address_books">(Noch) keine Adressbücher vorhanden</string>
   <string name="account_no_calendars">(Noch) keine Kalender vorhanden</string>
   <string name="account_no_webcals">(Noch) keine Kalender-Abos vorhanden</string>
@@ -121,7 +145,7 @@
   <string name="account_delete">Konto löschen</string>
   <string name="account_delete_confirmation_title">Konto wirklich löschen?</string>
   <string name="account_delete_confirmation_text">Alle Adressbücher, Kalender und Aufgabenlisten werden vom Gerät (nicht am Server) gelöscht.</string>
-  <string name="account_synchronize_this_collection">diesen Ordner synchronisieren</string>
+  <string name="account_synchronize_this_collection">Diesen Ordner synchronisieren</string>
   <string name="account_read_only">schreibgeschützt</string>
   <string name="account_calendar">Kalender</string>
   <string name="account_task_list">Aufgabenliste</string>
@@ -186,9 +210,9 @@
   <string name="settings_sync_wifi_only_ssids_on">Synchronisierung nur über %s</string>
   <string name="settings_sync_wifi_only_ssids_on_location_services">Synchronisierung nur über %s (benötigt aktive Standortdienste)</string>
   <string name="settings_sync_wifi_only_ssids_off">Alle WLAN-Verbindungen werden verwendet</string>
-  <string name="settings_sync_wifi_only_ssids_message">Erlaubte WLAN-Namen (SSIDs, mit Beistrich getrennt, leer lassen für alle)</string>
+  <string name="settings_sync_wifi_only_ssids_message">Erlaubte WLAN-Namen (SSIDs, mit Komma getrennt, leer lassen für alle)</string>
   <string name="settings_sync_wifi_only_ssids_location_permission">Zum Auslesen von WLAN-Namen sind die Standort-Berechtigung und die ständige Aktivierung der Standortdienste notwendig.</string>
-  <string name="settings_more_info_faq">Mehr Info (FAQ)</string>
+  <string name="settings_more_info_faq">Mehr Infos (FAQ)</string>
   <string name="settings_authentication">Anmeldeinformationen</string>
   <string name="settings_username">Benutzername</string>
   <string name="settings_enter_username">Benutzername eingeben:</string>
@@ -263,7 +287,7 @@
   <string name="sync_contacts_read_only_address_book">Schreibgeschütztes Adressbuch</string>
   <string name="sync_error_permissions">DAVx⁵-Berechtigungen</string>
   <string name="sync_error_permissions_text">Zusätzliche Berechtigungen benötigt</string>
-  <string name="sync_error_opentasks_too_old">OpenTasks zu alt</string>
+  <string name="sync_error_opentasks_too_old">OpenTasks (Aufgaben) zu alt</string>
   <string name="sync_error_opentasks_required_version">Version %1$s benötigt (derzeit %2$s)</string>
   <string name="sync_error_authentication_failed">Anmeldungsfehler (Login-Daten überprüfen)</string>
   <string name="sync_error_io">Netzwerk- oder E/A-Fehler – %s</string>
