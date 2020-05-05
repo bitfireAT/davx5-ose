@@ -15,6 +15,7 @@
   <string name="notification_channel_sync_io_errors">Грешки с входа/изхода и мрежата.</string>
   <string name="notification_channel_sync_io_errors_desc">Проточване на времето, проблеми с връзката, и т.н. (обикновенно временни)</string>
   <!--IntroActivity-->
+  <!--PermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Библиотеки</string>
   <string name="about_version">Версия %1$s (%2$d)</string>

@@ -6,6 +6,7 @@
   <string name="manage_accounts">Hesapları yönet</string>
   <string name="send">Gönder</string>
   <!--IntroActivity-->
+  <!--PermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_license_info_no_warranty">Bu uygulama HİÇ BİR GARANTİ ile gelmemektedir. Bedava bir yazılımdır ve belli koşullar altında dağıtabilirsiniz.</string>
   <!--global settings-->

@@ -17,6 +17,7 @@
   <string name="notification_channel_sync_io_errors">Verkko ja I/O virheet</string>
   <string name="notification_channel_sync_io_errors_desc">Aikakatkaisut, yhteysvirheet, yms. (usein väliaikaisia)</string>
   <!--IntroActivity-->
+  <!--PermissionsActivity-->
   <!--AboutActivity-->
   <!--global settings-->
   <!--AccountsActivity-->
