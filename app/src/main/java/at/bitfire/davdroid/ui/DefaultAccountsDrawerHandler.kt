@@ -29,6 +29,8 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
     override fun initMenu(context: Context, menu: Menu) {
         if (BuildConfig.VERSION_NAME.contains("-beta") || BuildConfig.VERSION_NAME.contains("-rc"))
             menu.findItem(R.id.nav_beta_feedback).isVisible = true
+        if (/* ose */ true)
+            menu.findItem(R.id.nav_donate).isVisible = true
     }
 
     override fun onNavigationItemSelected(activity: Activity, item: MenuItem): Boolean {
