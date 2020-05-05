@@ -28,6 +28,7 @@
   <string name="intro_autostart_text">Toto zařízení nejspíš synchronizaci blokuje. Pokud se vás to týká, je možné to vyřešit pouze ručně.</string>
   <string name="intro_autostart_dont_show">Potřebná nastavení provedena, už nepřipomínat.*</string>
   <string name="intro_leave_unchecked">* Pro připomenutí později nezaškrtávejte. Je možné resetovat v nastavení aplikace / %s.</string>
+  <string name="intro_more_info">Další informace</string>
   <string name="intro_tasks_title">Podpora úkolů</string>
   <string name="intro_tasks_not_installed">Nenainstalováno</string>
   <string name="intro_tasks_opentasks_installed">OpenTasks nainstalováno</string>
@@ -39,7 +40,24 @@
   <string name="intro_open_source_text">Jsme rádi, že %s používáte. Jde o opensource software. Vývoj, údržba a podpora je ale těžká práce. Prosím zvažte zapojení se (je mnoho způsobů jak) nebo podpoření vývoje darem. Bude to velmi oceněno!</string>
   <string name="intro_open_source_details">Jak se zapojit / podpořit vývoj darem</string>
   <string name="intro_open_source_dont_show">Příště už nezobrazovat</string>
-  <string name="intro_more_info">Další informace</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">Oprávnění</string>
+  <string name="permissions_text">Aby fungovalo správně, %s vyžaduje oprávnění.</string>
+  <string name="permissions_all_title">Vše níže uvedené</string>
+  <string name="permissions_all_status_off">Použít toto pro zapnutí všech funkcí (doporučeno)</string>
+  <string name="permissions_all_status_on">Všechna oprávnění udělena</string>
+  <string name="permissions_contacts_title">Oprávnění pro přístup ke kontaktům</string>
+  <string name="permissions_contacts_status_off">Bez synchronizace kontaktů (nedoporučeno)</string>
+  <string name="permissions_contacts_status_on">Synchronizace kontaktů možná</string>
+  <string name="permissions_calendar_title">Oprávnění pro přístup ke kalendáři</string>
+  <string name="permissions_calendar_status_off">Bez synchronizace kalendáře (nedoporučeno)</string>
+  <string name="permissions_calendar_status_on">Synchronizace kalendáře možná</string>
+  <string name="permissions_tasks_title">Oprávnění pro OpenTasks</string>
+  <string name="permissions_tasks_status_not_installed">Bez synchronizace úkolů (nenainstalováno)</string>
+  <string name="permissions_tasks_status_off">Bez synchronizace úkolů (nedoporučeno)</string>
+  <string name="permissions_tasks_status_on">Synchronizace úkolů možná</string>
+  <string name="permissions_app_settings_hint">Pokud přepínač nefunguje, použijte nastavení aplikací / Oprávnění</string>
+  <string name="permissions_app_settings">Nastavení aplikace</string>
   <!--AboutActivity-->
   <string name="about_translations">Překlady</string>
   <string name="about_libraries">Knihovny</string>
@@ -108,6 +126,12 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">Bez synchronizace kontaktů (chybí oprávnění)</string>
+  <string name="account_caldav_missing_calendar_permissions">Bez synchronizace kalendáře (chybí oprávnění)</string>
+  <string name="account_caldav_missing_tasks_permissions">Žádné úkoly k synchronizaci (chybí oprávnění)</string>
+  <string name="account_caldav_missing_permissions">Bez synchronizace kalendáře a úkolů (chybí oprávnění)</string>
+  <string name="account_webcal_missing_calendar_permissions">Nedaří se přistupovat ke kalendářům (chybí oprávnění)</string>
+  <string name="account_permissions_action">Oprávnění</string>
   <string name="account_no_address_books">(Zatím) zde nejsou žádné adresáře kontaktů.</string>
   <string name="account_no_calendars">(Zatím) zde nejsou žádné kalendáře.</string>
   <string name="account_no_webcals">Nejsou zde žádná přihlášení k odběru kalendáře (zatím).</string>

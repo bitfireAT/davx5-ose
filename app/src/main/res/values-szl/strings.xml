@@ -17,12 +17,38 @@
   <string name="notification_channel_sync_io_errors">Błyndy necu i wchodu/wychodu</string>
   <string name="notification_channel_sync_io_errors_desc">Braki ôdpowiedzi, problymy połōnczynio, itp. (z wiynksza tymczasowe)</string>
   <!--IntroActivity-->
+  <string name="intro_slogan1">Twoje dane. Twōj wybōr.</string>
+  <string name="intro_slogan2">Przejmij kōntrola.</string>
+  <string name="intro_battery_title">Regularne interwały synchrōnizacyje</string>
+  <string name="intro_battery_not_whitelisted">Zastawiōne (niyrekōmyndowane)</string>
+  <string name="intro_battery_whitelisted">Włōnczōne (rekōmyndowane)</string>
+  <string name="intro_battery_text">Żeby regularnie synchrōnizować, %s musi mieć zwolo na fungowanie na zadku. W inkszym przipadku Android może w kożdyj chwili zastawić synchrōnizacyjo.</string>
+  <string name="intro_battery_dont_show">Niy potrzebuja regularnyj synchrōnizacyje.*</string>
+  <string name="intro_autostart_title">Zgodność %s</string>
+  <string name="intro_autostart_text">Ta maszina może blokować synchrōnizacyjo. Jeźli cie to tyko, możesz to rozwiōnzać ino ryncznie.</string>
+  <string name="intro_autostart_dont_show">Już mōm wymogane sztelōnki. Niy spōminej mi wiyncyj.*</string>
+  <string name="intro_leave_unchecked">* Ôstow niyzaznaczōne, żeby spōmniało ô sobie niyskorzij. Idzie to zmiynić we sztelōnkach aplikacyje / %s</string>
+  <string name="intro_more_info">Wiyncyj informacyji</string>
+  <string name="intro_tasks_title">Sparcie Zadań</string>
+  <string name="intro_tasks_not_installed">Niyzainstalowane</string>
+  <string name="intro_tasks_opentasks_installed">OpenTasks zainstalowany</string>
+  <string name="intro_tasks_no_app_store">Niy je dostympny żodyn sklep ze aplikacyjami</string>
+  <string name="intro_tasks_text1"><![CDATA[Android niy mo wbudowanego sparcio zadań. Jeźli zadania sōm spiyrane ôd twojigo serwera, to %s może je synchrōnizować bez <a href="https://opentasks.app/">OpenTasks</a>.]]></string>
+  <string name="intro_tasks_text2">Do szyrszych działań jak podzadania abo zadania, co sie powtorzajōm, potrzebujesz ekstra aplikacyji.</string>
+  <string name="intro_tasks_dont_show">Niy potrzebuja sparcio zadań.*</string>
+  <string name="intro_open_source_title">Ôprogramowanie Open-Source</string>
+  <string name="intro_open_source_text">Sōm my radzi, że używosz %s, ôprogramowanie open-source. Tworzynie, utrzimanie i sparcie to ciynżko robota. Pōmyśl nad pōmocōm (sōm rozmajte spusoby) abo dowkōm. Fest by nos to ucieszyło!</string>
+  <string name="intro_open_source_details">Jak pōmōc/dociepnōńć sie</string>
+  <string name="intro_open_source_dont_show">Niy pokazuj zaś</string>
+  <!--PermissionsActivity-->
   <!--AboutActivity-->
+  <string name="about_translations">Przekłady</string>
   <string name="about_libraries">Bibliotyki</string>
   <string name="about_version">Wersyjo %1$s (%2$d)</string>
   <string name="about_build_date">Skōmpilowano %s</string>
   <string name="about_flavor_info">Ta wersyjo je do dystrybucyje ino na Google Play.</string>
   <string name="about_license_info_no_warranty">Tyn program przichodzi BEZ ŻODNYJ GWARANCYJE. To je wolne ôprogramowanie i możesz je rozkludzać pod ôkryślōnymi warōnkami.</string>
+  <string name="about_translations_thanks"><![CDATA[<i>Dziynki: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Niy szło stworzić zbioru dziynnika</string>
   <string name="logging_notification_title">Dziynnik DAVx⁵</string>
@@ -34,6 +60,8 @@
   <string name="navigation_drawer_subtitle">Adapter synchrōnizacyje CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Ô DAVx⁵ / Licyncyjo</string>
   <string name="navigation_drawer_beta_feedback">Przekoż ôpinijo</string>
+  <string name="install_email_client">Zainstaluj klijynt emaila</string>
+  <string name="install_browser">Zainstaluj przeglōndarka internetowo</string>
   <string name="navigation_drawer_settings">Sztelōnki</string>
   <string name="navigation_drawer_news_updates">Nowości i aktualizacyje</string>
   <string name="navigation_drawer_external_links">Zewnyntrzne linki</string>
@@ -42,6 +70,8 @@
   <string name="navigation_drawer_faq">Pytania i ôdpowiedzi</string>
   <string name="navigation_drawer_forums">Pōmoc / Forum</string>
   <string name="navigation_drawer_donate">Dowka</string>
+  <string name="navigation_drawer_privacy_policy">Polityka prywatności</string>
+  <string name="account_list_no_internet">Brak połōnczynio z internetym. Android niy bydzie synchrōnizować.</string>
   <string name="account_list_empty">Witōmy w DAVx⁵!\n\nMożesz teroz przidać kōnto CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Autōmatyczno synchrōnizacyjo dlo cołkigo systymu je zastawiōno</string>
   <string name="accounts_global_sync_enable">Włōncz</string>
@@ -127,6 +157,8 @@
   <string name="login_account_name_required">Wymogane miano kōnta</string>
   <string name="login_account_name_already_taken">Miano kōnta je już zajynte</string>
   <string name="login_account_not_created">Kōnto niy mogło być stworzōne</string>
+  <string name="login_webview_tlserror">Problym bezpieczyństwa połōnczynio (kod felera %d)</string>
+  <string name="login_webview_retry">Sprōbuj zaś</string>
   <string name="login_configuration_detection">Wykrywanie kōnfiguracyje</string>
   <string name="login_querying_server">Czekej, ôdpytowanie serwera…</string>
   <string name="login_no_caldav_carddav">Niy idzie znojść usugi CalDAV abo CardDAV.</string>
@@ -174,6 +206,14 @@
     <item quantity="other">Zdarzynia starsze aniżeli %d dni bydōm zignorowane.</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Zdarzynia, co sōm starsze aniżeli podano wielość dni, bydōm zignorowane (może być 0). Ôstow prōzne, coby synchrōnizować wszyjske zdarzynia.</string>
+  <string name="settings_default_alarm">Wychodne spōmniynie</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Wychodne spōmniynie minuta przed zdarzyniym</item>
+    <item quantity="few">Wychodne spōmniynie %d minuty przed zdarzyniym</item>
+    <item quantity="other">Wychodne spōmniynie %d minut przed zdarzyniym</item>
+  </plurals>
+  <string name="settings_default_alarm_off">Niy były stworzōne żodne wychodne spōmniynia</string>
+  <string name="settings_default_alarm_message">Jeźli wychodne spōmniynia bydōm tworzōne do zdarzyń bez spōmniynio: liczba minut przed zdarzyniym. Ôstow prōzne, żeby zastawić wychodne spōmniynia.</string>
   <string name="settings_manage_calendar_colors">Zarzōndzej farbami kalyndorza</string>
   <string name="settings_manage_calendar_colors_on">Farby kalyndorza sōm zarzōndzane ôd DAVx⁵</string>
   <string name="settings_manage_calendar_colors_off">Farby kalyndorza niy sōm sztelowane ôd DAVx⁵</string>
@@ -182,6 +222,10 @@
   <string name="settings_event_colors_off">Niy synchrōnizuj farbōw zdarzyń</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Spusōb grupy kōntaktōw</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Grupy to sōm ôddzielne VCards</item>
+    <item>Grupy to sōm kategoryje co kōntakt</item>
+  </string-array>
   <string name="settings_contact_group_method_change">Zmiyń spusōb grupowy</string>
   <!--collection management-->
   <string name="create_addressbook">Stwōrz ksiōnżka adresowo</string>

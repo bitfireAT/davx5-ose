@@ -17,6 +17,7 @@
   <string name="notification_channel_sync_io_errors">خطاهای شبکه</string>
   <string name="notification_channel_sync_io_errors_desc">اتمام وقت، مشکل اتصال، غیره(اغلب موقت)</string>
   <!--IntroActivity-->
+  <!--PermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">کتابخانه ها</string>
   <string name="about_version">نسخه %1$s (%2$d)</string>

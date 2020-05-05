@@ -28,6 +28,7 @@
   <string name="intro_autostart_text">该设备可能会阻止同步。如果您受到影响，则只能手动解决。</string>
   <string name="intro_autostart_dont_show">我已完成所需的设置。不再提醒我。*</string>
   <string name="intro_leave_unchecked">*取消选中以供稍后提醒。可以在应用设置中重置/%s。</string>
+  <string name="intro_more_info">更多信息</string>
   <string name="intro_tasks_title">任务支持</string>
   <string name="intro_tasks_not_installed">未安装</string>
   <string name="intro_tasks_opentasks_installed">OpenTasks 已安装</string>
@@ -39,7 +40,7 @@
   <string name="intro_open_source_text">我们很高兴您使用%s开源软件。开发，维护和支持是艰苦的工作。请考虑捐款（有很多方式）或捐款。将不胜感激！</string>
   <string name="intro_open_source_details">如何捐款/捐款</string>
   <string name="intro_open_source_dont_show">下次不再显示</string>
-  <string name="intro_more_info">更多信息</string>
+  <!--PermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_translations">翻译</string>
   <string name="about_libraries">程序库</string>
@@ -156,6 +157,8 @@
   <string name="login_account_name_required">请输入账户名</string>
   <string name="login_account_name_already_taken">账户名已被占用</string>
   <string name="login_account_not_created">账户无法创建</string>
+  <string name="login_webview_tlserror">连接安全问题 (错误码%d)</string>
+  <string name="login_webview_retry">重试</string>
   <string name="login_configuration_detection">正在配置</string>
   <string name="login_querying_server">正在与服务器通信，请稍等…</string>
   <string name="login_no_caldav_carddav">找不到 CalDAV 或 CardDAV 服务。</string>

@@ -17,25 +17,51 @@
   <string name="notification_channel_sync_io_errors">Netværks- og I/O-fejl</string>
   <string name="notification_channel_sync_io_errors_desc">Tidsudløb, forbindelse problemer m.m. (ofte midlertidig)</string>
   <!--IntroActivity-->
+  <string name="intro_slogan1">Dine data. Dit valg.</string>
+  <string name="intro_slogan2">Tag kontrol</string>
+  <string name="intro_battery_title">Regelmæssigt synkroniseringsinterval</string>
+  <string name="intro_battery_not_whitelisted">Deaktiveret (ikke anbefalet)</string>
+  <string name="intro_battery_whitelisted">Aktiveret (anbefalet)</string>
+  <string name="intro_battery_text">For regelmæssig synkroniseringsinterval, %s skal have tilladelse til at køre i baggrunden. Ellers kan Android til enhver tid pause synkronisering.</string>
+  <string name="intro_battery_dont_show">Ingen regelmæssigt synkroniseringsinterval.*</string>
+  <string name="intro_autostart_title">%s kompatibilitet</string>
+  <string name="intro_autostart_text">Enheden blokerer sandsynligvis synkronisering. Hvis dette er tilfældet kan det kun løses manuelt.</string>
+  <string name="intro_autostart_dont_show">Den krævede opsætning er udført. Stop påmindelser. *</string>
+  <string name="intro_leave_unchecked">* Efterlad åben for senere påmindelse. Kan nulstilles i program opsætning / %s.</string>
+  <string name="intro_more_info">Mere information</string>
+  <string name="intro_tasks_title">Opgaver understøttelse</string>
+  <string name="intro_tasks_not_installed">Ikke installeret</string>
+  <string name="intro_tasks_opentasks_installed">OpenTasks installeret</string>
+  <string name="intro_tasks_no_app_store">ingen program-butik tilgængelig</string>
+  <string name="intro_tasks_text1"><![CDATA[Android har ikke en indbygget opgaver understøttelse. Hvis opgaver er server understøttet, %s kan synkronisere dem va <a href="https://opentasks.app/">OpenTasks</a>.]]></string>
+  <string name="intro_tasks_text2">For avancerede funktioner som underopgaver eller gentagne opgaver, bruges 3. part program.</string>
+  <string name="intro_tasks_dont_show">Ingen opgaver understøttelse.*</string>
+  <string name="intro_open_source_title">Åben kilde program</string>
+  <string name="intro_open_source_text">Vi er glade for at  %s bruges, som er åben kilde program. Udvikling, vedligehold og understøttelse er hårdt arbejde. Overvej at bidrage (der er flere måder) eller donere. Det vil blive meget værdsat!</string>
+  <string name="intro_open_source_details">Hvordan man bidrager/donerer</string>
+  <string name="intro_open_source_dont_show">Hvis ikke næste gang</string>
+  <!--PermissionsActivity-->
   <!--AboutActivity-->
+  <string name="about_translations">Oversættelser</string>
   <string name="about_libraries">Biblioteker</string>
   <string name="about_version">Version %1$s (%2$d)</string>
   <string name="about_build_date">Oversat den %s</string>
   <string name="about_flavor_info">Denne version er kun berettiget til distribution via Google Play.</string>
   <string name="about_license_info_no_warranty">Dette program leveres ABSOLUT UDEN GARANTI. Det er fri software, og du er velkommen til at videredistribuere det under visse betingelse.</string>
+  <string name="about_translations_thanks"><![CDATA[<i>tak til: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Kan ikke oprette log fil</string>
   <string name="logging_notification_title">DAVx⁵ logning</string>
   <string name="logging_notification_text">Logger nu alle DAVx⁵ aktiviteter</string>
-  <string name="logging_notification_send_log">Sende log</string>
+  <string name="logging_notification_send_log">Send log</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Åbne navigationsvindue</string>
   <string name="navigation_drawer_close">Luk navigationsvindue</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV synkroniseringsadapter</string>
   <string name="navigation_drawer_about">Om / licens</string>
   <string name="navigation_drawer_beta_feedback">Beta tilbagemelding</string>
-  <string name="install_email_client">Installere en e-post klient</string>
-  <string name="install_browser">Installere en netlæser</string>
+  <string name="install_email_client">Installere e-post klient</string>
+  <string name="install_browser">Installere netlæser</string>
   <string name="navigation_drawer_settings">Opsætning</string>
   <string name="navigation_drawer_news_updates">Nyheder &amp; opdateringer</string>
   <string name="navigation_drawer_external_links">Eksterne henvisninger</string>
@@ -55,7 +81,7 @@
   <!--AppSettingsActivity-->
   <string name="app_settings">Indstillinger</string>
   <string name="app_settings_debug">Fejlsøgning</string>
-  <string name="app_settings_show_debug_info">Vis fejlsøgnings information</string>
+  <string name="app_settings_show_debug_info">Vis fejlsøgning information</string>
   <string name="app_settings_show_debug_info_details">Vis/del software og opsætningsoplysninger</string>
   <string name="app_settings_logging">Uddybende logning</string>
   <string name="app_settings_logging_on">Logning er aktiv</string>
@@ -131,6 +157,8 @@
   <string name="login_account_name_required">Kontonavn påkrævet</string>
   <string name="login_account_name_already_taken">Konto navn er taget</string>
   <string name="login_account_not_created">Konto kunne ikke oprettes</string>
+  <string name="login_webview_tlserror">Forbindelse sikkerheds problem (fejlkode %d)</string>
+  <string name="login_webview_retry">Prøv igen</string>
   <string name="login_configuration_detection">Check konfiguration</string>
   <string name="login_querying_server">Vent, forespørger serveren…</string>
   <string name="login_no_caldav_carddav">Kunne ikke finde CalDAV- eller CardDAV-tjeneste.</string>
