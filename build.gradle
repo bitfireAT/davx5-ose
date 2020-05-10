@@ -11,7 +11,7 @@ buildscript {
         aboutLibraries: '8.1.2',
         appIntro: '5.1.0',
         dav4jvm: 'd0422e78',
-        dokka: '0.10.0',
+        dokka: '0.10.1',
         kotlin: '1.3.72',
         okhttp: '4.6.0'
     ]
