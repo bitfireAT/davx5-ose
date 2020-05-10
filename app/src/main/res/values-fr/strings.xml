@@ -41,6 +41,23 @@
   <string name="intro_open_source_details">Comment contribuer/donner</string>
   <string name="intro_open_source_dont_show">Ne pas afficher la prochaine fois</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">Permissions</string>
+  <string name="permissions_text">%s nécessite des permissions pour fonctionner correctement.</string>
+  <string name="permissions_all_title">Tout ce qui suit</string>
+  <string name="permissions_all_status_off">A utiliser pour activer toutes les fonctionnalités (recommandé)</string>
+  <string name="permissions_all_status_on">Toutes les autorisations accordées</string>
+  <string name="permissions_contacts_title">Permissions du carnet d\'adresses</string>
+  <string name="permissions_contacts_status_off">Pas de synchronisation du carnet d\'adresses (non recommandé)</string>
+  <string name="permissions_contacts_status_on">Synchronisation du carnet d\'adresses possible</string>
+  <string name="permissions_calendar_title">Permissions du calendrier</string>
+  <string name="permissions_calendar_status_off">Pas de synchronisation du calendrier (non recommandé)</string>
+  <string name="permissions_calendar_status_on">Synchronisation du calendrier possible</string>
+  <string name="permissions_tasks_title">Permissions d\'OpenTasks</string>
+  <string name="permissions_tasks_status_not_installed">Pas de synchronisation des tâches (non installé)</string>
+  <string name="permissions_tasks_status_off">Pas de synchronisation des tâches (non recommandé)</string>
+  <string name="permissions_tasks_status_on">Synchronisation des tâches possible</string>
+  <string name="permissions_app_settings_hint">Si un commutateur ne fonctionne pas, utiliser les paramètres de l\'application / Permissions.</string>
+  <string name="permissions_app_settings">Paramètres de l\'application</string>
   <!--AboutActivity-->
   <string name="about_translations">Traductions</string>
   <string name="about_libraries">Librairies</string>
@@ -109,6 +126,12 @@
   <string name="account_carddav">CardDAV (les carnets d\'adresse) </string>
   <string name="account_caldav">CalDAV (les agendas) </string>
   <string name="account_webcal">WebCal (les anciens agenda)</string>
+  <string name="account_carddav_missing_permissions">Pas de synchronisation du carnet d\'adresses (permissions manquantes)</string>
+  <string name="account_caldav_missing_calendar_permissions">Pas de synchronisation du calendrier (permissions manquantes)</string>
+  <string name="account_caldav_missing_tasks_permissions">Pas de synchronisation des tâches (permissions manquantes)</string>
+  <string name="account_caldav_missing_permissions">Pas de synchronisation du calendrier et des tâches (permissions manquantes)</string>
+  <string name="account_webcal_missing_calendar_permissions">Impossible d\'accéder aux calendriers (permissions manquantes)</string>
+  <string name="account_permissions_action">Permissions</string>
   <string name="account_no_address_books">Il n\'y a pas (encore) de carnet d\'adresses.</string>
   <string name="account_no_calendars">Il n\'y a pas (encore) de calendriers.</string>
   <string name="account_no_webcals">Il n\'y a pas (encore) d\'abonnement à des calendriers.</string>
