@@ -1,5 +1,5 @@
 /*
- * Copyright © Ricki Hirner (bitfire web engineering).
+ * Copyright © Ricki Hirner (bitfire web engineering) and other contributors.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
@@ -99,8 +99,11 @@ class AboutActivity: AppCompatActivity() {
                         LibsBuilder()
                                 .withLicenseShown(true)
                                 .withAboutIconShown(false)
+
+                                // https://github.com/mikepenz/AboutLibraries/issues/490
                                 .withLibraryModification("org_brotli__dec", Libs.LibraryFields.LIBRARY_NAME, "Brotli")
                                 .withLibraryModification("org_brotli__dec", Libs.LibraryFields.AUTHOR_NAME, "Google")
+
                                 .supportFragment()
                     }
                 }
