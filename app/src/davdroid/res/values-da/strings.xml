@@ -41,6 +41,23 @@
   <string name="intro_open_source_details">Hvordan man bidrager/donerer</string>
   <string name="intro_open_source_dont_show">Hvis ikke næste gang</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">Rettigheder</string>
+  <string name="permissions_text">%s kræver rettigheder for at virke rigtig.</string>
+  <string name="permissions_all_title">Alle nedenstående</string>
+  <string name="permissions_all_status_off">Brug denne for at aktivere alle funktioner (anbefalet)</string>
+  <string name="permissions_all_status_on">Alle rettigheder tildelt</string>
+  <string name="permissions_contacts_title">Kontakter rettigheder</string>
+  <string name="permissions_contacts_status_off">Ingen kontakt synkronisering (ikke anbefalet)</string>
+  <string name="permissions_contacts_status_on">Kontakt synkronisering mulig</string>
+  <string name="permissions_calendar_title">Kalender rettigheder</string>
+  <string name="permissions_calendar_status_off">Ingen kalender synkronisering (ikke anbefalet)</string>
+  <string name="permissions_calendar_status_on">Kalender synkronisering mulig</string>
+  <string name="permissions_tasks_title">OpenTasks rettigheder</string>
+  <string name="permissions_tasks_status_not_installed">Ingen opgave synkronisering (ikke installeret)</string>
+  <string name="permissions_tasks_status_off">Ingen opgave synkronisering (ikke anbefalet)</string>
+  <string name="permissions_tasks_status_on">Opgave synkronisering mulig</string>
+  <string name="permissions_app_settings_hint">Hvis en omskifter ikke virker, brug program opsætninger / rettigheder.</string>
+  <string name="permissions_app_settings">Program opsætning</string>
   <!--AboutActivity-->
   <string name="about_translations">Oversættelser</string>
   <string name="about_libraries">Biblioteker</string>
@@ -109,6 +126,12 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">Ingen kontakter synkronisering (mangler rettigheder)</string>
+  <string name="account_caldav_missing_calendar_permissions">Ingen kalender synkronisering (mangler rettigheder)</string>
+  <string name="account_caldav_missing_tasks_permissions">Ingen opgave synkronisering (mangler rettigheder)</string>
+  <string name="account_caldav_missing_permissions">Ingen kalender og opgaver synkronisering (mangler rettigheder)</string>
+  <string name="account_webcal_missing_calendar_permissions">Kan ikke tilgå kalendere (mangler rettigheder)</string>
+  <string name="account_permissions_action">Rettigheder</string>
   <string name="account_no_address_books">Der er endnu ingen adressebog.</string>
   <string name="account_no_calendars">Der er endnu ingen kalender.</string>
   <string name="account_no_webcals">Der er endnu ingen kalender abonnementer.</string>
