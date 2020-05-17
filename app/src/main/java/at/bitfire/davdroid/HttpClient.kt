@@ -247,7 +247,7 @@ class HttpClient private constructor(
         private val userAgentDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US)
         private val userAgentDate = userAgentDateFormat.format(Date(BuildConfig.buildTime))
         private val userAgent = "${BuildConfig.userAgent}/${BuildConfig.VERSION_NAME} ($userAgentDate; dav4jvm; " +
-                "okhttp/${BuildConfig.okhttpVersion}) Android/${Build.VERSION.RELEASE}"
+                "okhttp/${OkHttp.VERSION}) Android/${Build.VERSION.RELEASE}"
 
         override fun intercept(chain: Interceptor.Chain): Response {
             val locale = Locale.getDefault()
