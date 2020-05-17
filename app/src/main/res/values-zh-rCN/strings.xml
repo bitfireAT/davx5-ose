@@ -41,6 +41,23 @@
   <string name="intro_open_source_details">如何捐款/捐款</string>
   <string name="intro_open_source_dont_show">下次不再显示</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">权限</string>
+  <string name="permissions_text">%s需要权限才能正常工作</string>
+  <string name="permissions_all_title">以下所有</string>
+  <string name="permissions_all_status_off">使用它来启用所有特性 (推荐)</string>
+  <string name="permissions_all_status_on">已授予全部权限</string>
+  <string name="permissions_contacts_title">联系人权限</string>
+  <string name="permissions_contacts_status_off">无联系人同步（不推荐）</string>
+  <string name="permissions_contacts_status_on">可同步联系人</string>
+  <string name="permissions_calendar_title">日历权限</string>
+  <string name="permissions_calendar_status_off">无日历同步（不推荐）</string>
+  <string name="permissions_calendar_status_on">可同步日历</string>
+  <string name="permissions_tasks_title">OpenTasks 权限</string>
+  <string name="permissions_tasks_status_not_installed">无任务同步 （未安装）</string>
+  <string name="permissions_tasks_status_off">无任务同步 （不推荐）</string>
+  <string name="permissions_tasks_status_on">可同步任务</string>
+  <string name="permissions_app_settings_hint">如果切换没有正常工作，请使用应用程序设置/权限</string>
+  <string name="permissions_app_settings">应用设置</string>
   <!--AboutActivity-->
   <string name="about_translations">翻译</string>
   <string name="about_libraries">程序库</string>
@@ -109,6 +126,12 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">无联系人同步 （缺少权限）</string>
+  <string name="account_caldav_missing_calendar_permissions">无日历同步（缺少权限）</string>
+  <string name="account_caldav_missing_tasks_permissions">无任务同步 （缺少权限）</string>
+  <string name="account_caldav_missing_permissions">无日历和任务同步 （缺少权限）</string>
+  <string name="account_webcal_missing_calendar_permissions">无法访问日历 （缺少权限）</string>
+  <string name="account_permissions_action">权限</string>
   <string name="account_no_address_books">暂无通讯录。</string>
   <string name="account_no_calendars">暂无日历。</string>
   <string name="account_no_webcals">暂无日历订阅。</string>
