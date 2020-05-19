@@ -9,13 +9,11 @@ import android.app.Dialog
 import android.content.ContentResolver
 import android.content.DialogInterface
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.widget.EditText
 import android.widget.LinearLayout
-import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
@@ -35,7 +33,6 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import java.util.logging.Level
 
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class RenameAccountFragment: DialogFragment() {
 
     companion object {
