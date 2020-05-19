@@ -219,20 +219,9 @@ class DebugInfoActivity: AppCompatActivity() {
                 // connectivity
                 text.append("\nCONNECTIVITY (at the moment)\n")
                 val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    connectivityManager.allNetworks.forEach { network ->
-                        val capabilities = connectivityManager.getNetworkCapabilities(network)
-                        text.append("- $capabilities\n")
-                    }
-                } else {
-                    connectivityManager.activeNetworkInfo?.let { networkInfo ->
-                        val type = when (networkInfo.type) {
-                            ConnectivityManager.TYPE_WIFI   -> "WiFi"
-                            ConnectivityManager.TYPE_MOBILE -> "mobile"
-                            else -> "type: ${networkInfo.type}"
-                        }
-                        text.append("Active connection: $type, ${networkInfo.detailedState}\n")
-                    }
+                connectivityManager.allNetworks.forEach { network ->
+                    val capabilities = connectivityManager.getNetworkCapabilities(network)
+                    text.append("- $capabilities\n")
                 }
                 if (Build.VERSION.SDK_INT >= 23)
                     connectivityManager.defaultProxy?.let { proxy ->
