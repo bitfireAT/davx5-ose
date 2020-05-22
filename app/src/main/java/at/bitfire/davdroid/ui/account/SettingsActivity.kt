@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.provider.CalendarContract
 import android.security.KeyChain
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.core.content.ContextCompat
@@ -29,7 +30,6 @@ import androidx.preference.*
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
@@ -89,7 +89,7 @@ class SettingsActivity: AppCompatActivity() {
                 model.initialize(account)
                 initSettings()
             } catch (e: InvalidAccountException) {
-                Logger.log.severe("Account does not exist (anymore): $account, closing SettingsActivity")
+                Toast.makeText(context, R.string.account_invalid, Toast.LENGTH_LONG).show()
                 requireActivity().finish()
             }
         }

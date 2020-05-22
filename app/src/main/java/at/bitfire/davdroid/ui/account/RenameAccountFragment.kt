@@ -14,11 +14,13 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.*
 import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.closeCompat
 import at.bitfire.davdroid.log.Logger
@@ -95,7 +97,14 @@ class RenameAccountFragment: DialogFragment() {
             val context = getApplication<Application>()
 
             // remember sync intervals
-            val oldSettings = AccountSettings(context, oldAccount)
+            val oldSettings = try {
+                AccountSettings(context, oldAccount)
+            } catch (e: InvalidAccountException) {
+                Toast.makeText(context, R.string.account_invalid, Toast.LENGTH_LONG).show()
+                finished.value = true
+                return
+            }
+
             val authorities = arrayOf(
                     context.getString(R.string.address_books_authority),
                     CalendarContract.AUTHORITY,
