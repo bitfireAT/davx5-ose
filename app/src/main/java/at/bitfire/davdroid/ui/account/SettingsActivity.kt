@@ -27,7 +27,9 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.*
 import androidx.preference.*
 import at.bitfire.davdroid.App
+import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
@@ -82,9 +84,14 @@ class SettingsActivity: AppCompatActivity() {
             account = requireArguments().getParcelable(EXTRA_ACCOUNT)!!
 
             model = ViewModelProvider(this).get(Model::class.java)
-            model.initialize(account)
 
-            initSettings()
+            try {
+                model.initialize(account)
+                initSettings()
+            } catch (e: InvalidAccountException) {
+                Logger.log.severe("Account does not exist (anymore): $account, closing SettingsActivity")
+                requireActivity().finish()
+            }
         }
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -92,8 +99,6 @@ class SettingsActivity: AppCompatActivity() {
         }
 
         private fun initSettings() {
-            //val accountSettings = AccountSettings(requireActivity(), account)
-
             // preference group: sync
             findPreference<ListPreference>(getString(R.string.settings_sync_interval_contacts_key))!!.let {
                 model.syncIntervalContacts.observe(this, Observer { interval ->
