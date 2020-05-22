@@ -49,10 +49,12 @@ class Settings(
     private val observers = LinkedList<WeakReference<OnChangeListener>>()
 
     init {
-        val factories = ServiceLoader.load(ISettingsProviderFactory::class.java)
-        Logger.log.fine("Loading settings providers from ${factories.count()} factories")
-        factories.forEach { factory ->
-            providers.addAll(factory.getProviders(appContext))
+        synchronized(javaClass) {       // ServiceLoader is not thread-safe
+            val factories = ServiceLoader.load(ISettingsProviderFactory::class.java)
+            Logger.log.fine("Loading settings providers from ${factories.count()} factories")
+            factories.forEach { factory ->
+                providers.addAll(factory.getProviders(appContext))
+            }
         }
     }
 
