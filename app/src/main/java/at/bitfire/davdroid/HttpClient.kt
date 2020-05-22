@@ -121,10 +121,9 @@ class HttpClient private constructor(
                     Logger.log.log(Level.SEVERE, "Can't set proxy, ignoring", e)
                 }
 
-                //if (BuildConfig.customCerts)
-                    customCertManager(CustomCertManager(context, true,
-                            !(settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES)
-                                    ?: Settings.DISTRUST_SYSTEM_CERTIFICATES_DEFAULT)))
+                customCertManager(CustomCertManager(context, true /*BuildConfig.customCertsUI*/,
+                        !(settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES)
+                                ?: Settings.DISTRUST_SYSTEM_CERTIFICATES_DEFAULT)))
             }
 
             // use account settings for authentication
