@@ -34,28 +34,34 @@ class OpenTasksWatcher(
             val tasksInstalled = LocalTaskList.tasksProviderAvailable(context)
             Logger.log.info("App was launched or package was (in)installed; OpenTasks provider now available = $tasksInstalled")
 
+            var enabledAnyAccount = false
+
             // check all accounts and (de)activate OpenTasks if a CalDAV service is defined
             val db = AppDatabase.getInstance(context)
-            db.serviceDao().getByType(Service.TYPE_CALDAV).forEach { service ->
+            for (service in db.serviceDao().getByType(Service.TYPE_CALDAV)) {
                 val account = Account(service.accountName, context.getString(R.string.account_type))
-                val currentSyncable = ContentResolver.getIsSyncable(account, OpenTasks.authority)
-                var enabledAnyAccount = false
-                if (tasksInstalled) {
-                    if (currentSyncable <= 0) {
-                        Logger.log.info("Enabling OpenTasks sync for $account")
-                        ContentResolver.setIsSyncable(account, OpenTasks.authority, 1)
-                        AccountSettings(context, account).setSyncInterval(OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL)
-                        enabledAnyAccount = true
+                try {
+                    val accountSettings = AccountSettings(context, account)
+                    val currentSyncable = ContentResolver.getIsSyncable(account, OpenTasks.authority)
+                    if (tasksInstalled) {
+                        if (currentSyncable <= 0) {
+                            Logger.log.info("Enabling OpenTasks sync for $account")
+                            ContentResolver.setIsSyncable(account, OpenTasks.authority, 1)
+                            accountSettings.setSyncInterval(OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL)
+                            enabledAnyAccount = true
+                        }
+                    } else if (currentSyncable != 0) {
+                        Logger.log.info("Disabling OpenTasks sync for $account")
+                        ContentResolver.setIsSyncable(account, OpenTasks.authority, 0)
                     }
-                } else if (currentSyncable != 0) {
-                    Logger.log.info("Disabling OpenTasks sync for $account")
-                    ContentResolver.setIsSyncable(account, OpenTasks.authority, 0)
+                } catch (e: InvalidAccountException) {
+                    // account which is still mentioned in DB doesn't exist (anymore)
                 }
+            }
 
-                if (enabledAnyAccount && !PermissionUtils.havePermissions(context, PermissionUtils.TASKS_PERMISSIONS)) {
-                    Logger.log.warning("Tasks sync is now enabled for at least one account, but OpenTasks permissions are not granted")
-                    PermissionUtils.notifyPermissions(context, null)
-                }
+            if (enabledAnyAccount && !PermissionUtils.havePermissions(context, PermissionUtils.TASKS_PERMISSIONS)) {
+                Logger.log.warning("Tasks sync is now enabled for at least one account, but OpenTasks permissions are not granted")
+                PermissionUtils.notifyPermissions(context, null)
             }
         }
 

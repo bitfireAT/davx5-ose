@@ -35,6 +35,7 @@ class AccountAuthenticatorService: Service(), OnAccountsUpdateListener {
     companion object {
 
         @WorkerThread
+        @Synchronized
         fun cleanupAccounts(context: Context) {
             Logger.log.info("Cleaning up orphaned accounts")
 
