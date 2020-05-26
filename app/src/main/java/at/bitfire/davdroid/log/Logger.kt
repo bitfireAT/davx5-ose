@@ -8,7 +8,7 @@
 
 package at.bitfire.davdroid.log
 
-import android.annotation.SuppressLint
+import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -27,18 +27,17 @@ import java.io.IOException
 import java.util.logging.FileHandler
 import java.util.logging.Level
 
-@SuppressLint("StaticFieldLeak")    // we'll only keep an app context
 object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
 
     private const val LOG_TO_FILE = "log_to_file"
 
     val log: java.util.logging.Logger = java.util.logging.Logger.getLogger("davx5")
 
-    private lateinit var context: Context
+    private lateinit var context: Application
     private lateinit var preferences: SharedPreferences
 
-    fun initialize(someContext: Context) {
-        context = someContext.applicationContext
+    fun initialize(appContext: Application) {
+        context = appContext
         preferences = PreferenceManager.getDefaultSharedPreferences(context)
         preferences.registerOnSharedPreferenceChangeListener(this)
 
