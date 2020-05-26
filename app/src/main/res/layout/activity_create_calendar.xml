@@ -8,7 +8,9 @@
   -->
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.CreateCalendarActivity">
 
     <data>
         <import type="android.view.View"/>
@@ -31,6 +33,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/create_collection_display_name"
+                app:errorEnabled="true"
                 app:error="@{model.displayNameError}"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintTop_toTopOf="parent"

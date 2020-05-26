@@ -6,13 +6,14 @@ import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
+import org.apache.commons.lang3.StringUtils
 
 object BindingAdapters {
 
     @BindingAdapter("error")
     @JvmStatic
     fun setError(textView: TextView, error: String?) {
-        textView.error = error
+        textView.error = StringUtils.trimToNull(error)
     }
 
     @BindingAdapter("html")
@@ -28,8 +29,8 @@ object BindingAdapters {
 
     @BindingAdapter("unfilteredText")
     @JvmStatic
-    fun setUnfilteredText(view: AutoCompleteTextView, text: String?) {
-        view.setText(text, false)
+    fun setUnfilteredText(textView: AutoCompleteTextView, text: String?) {
+        textView.setText(text, false)
     }
 
     @InverseBindingAdapter(attribute = "unfilteredText", event = "android:textAttrChanged")

@@ -35,6 +35,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:hint="@string/create_collection_display_name"
                 app:error="@{model.displayNameError}"
+                app:errorEnabled="true"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
