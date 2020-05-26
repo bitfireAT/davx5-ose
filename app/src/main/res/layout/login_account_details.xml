@@ -44,13 +44,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/login_account_name"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    app:errorEnabled="true"
                     app:error="@{details.nameError}">
-                    <com.google.android.material.textfield.TextInputEditText
+                    <AutoCompleteTextView
+                        android:id="@+id/accountName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@={details.name}"
-                        android:inputType="textEmailAddress"/>
+                        unfilteredText="@={details.name}"
+                        android:inputType="textEmailAddress" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView

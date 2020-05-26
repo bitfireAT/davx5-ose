@@ -124,6 +124,16 @@ class DavResourceFinderTest {
         assertNull(finder.getCurrentUserPrincipal(server.url(PATH_CARDDAV), DavResourceFinder.Service.CALDAV))
     }
 
+    @Test
+    fun testQueryEmailAddress() {
+        var info = ServiceInfo()
+        assertArrayEquals(
+                arrayOf("email1@example.com", "email2@example.com"),
+                finder.queryEmailAddress(server.url(PATH_CALDAV + SUBPATH_PRINCIPAL)).toTypedArray()
+        )
+        assertTrue(finder.queryEmailAddress(server.url(PATH_CARDDAV + SUBPATH_PRINCIPAL)).isEmpty())
+    }
+
 
     // mock server
 
@@ -167,12 +177,19 @@ class DavResourceFinderTest {
                                 "   <CARD:addressbook/>" +
                                 "</resourcetype>"
 
+                    PATH_CALDAV + SUBPATH_PRINCIPAL ->
+                        props = "<CAL:calendar-user-address-set>" +
+                                "  <href>urn:unknown-entry</href>" +
+                                "  <href>mailto:email1@example.com</href>" +
+                                "  <href>mailto:email2@example.com</href>" +
+                                "</CAL:calendar-user-address-set>"
+
                     else -> props = null
                 }
                 Logger.log.info("Sending props: $props")
                 return MockResponse()
                         .setResponseCode(207)
-                        .setBody("<multistatus xmlns='DAV:' xmlns:CARD='urn:ietf:params:xml:ns:carddav'>" +
+                        .setBody("<multistatus xmlns='DAV:' xmlns:CARD='urn:ietf:params:xml:ns:carddav' xmlns:CAL='urn:ietf:params:xml:ns:caldav'>" +
                                 "<response>" +
                                 "   <href>${request.path}</href>" +
                                 "   <propstat><prop>$props</prop></propstat>" +

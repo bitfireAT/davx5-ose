@@ -143,24 +143,10 @@ class DavResourceFinder(
                 }
             }
 
-        if (config.principal != null && service == Service.CALDAV)
-            // query email address (CalDAV scheduling: calendar-user-address-set)
-            try {
-                DavResource(httpClient.okHttpClient, config.principal!!, log).propfind(0, CalendarUserAddressSet.NAME) { response, _ ->
-                    response[CalendarUserAddressSet::class.java]?.let { addressSet ->
-                        for (href in addressSet.hrefs)
-                            try {
-                                val uri = URI(href)
-                                if (uri.scheme.equals("mailto", true))
-                                    config.email = uri.schemeSpecificPart
-                            } catch(e: URISyntaxException) {
-                                log.log(Level.WARNING, "Couldn't parse user address", e)
-                            }
-                    }
-                }
-            } catch(e: Exception) {
-                log.log(Level.WARNING, "Couldn't query user email address", e)
-                rethrowIfInterrupted(e)
+        // detect email address
+        if (service == Service.CALDAV)
+            config.principal?.let {
+                config.emails.addAll(queryEmailAddress(it))
             }
 
         // return config or null if config doesn't contain useful information
@@ -200,6 +186,33 @@ class DavResourceFinder(
             log.log(Level.FINE, "PROPFIND/OPTIONS on user-given URL failed", e)
             rethrowIfInterrupted(e)
         }
+    }
+
+    /**
+     * Queries a user's email address using CalDAV scheduling: calendar-user-address-set.
+     * @param principal principal URL of the user
+     * @return list of found email addresses (empty if none)
+     */
+    fun queryEmailAddress(principal: HttpUrl): List<String> {
+        var mailboxes = LinkedList<String>()
+        try {
+            DavResource(httpClient.okHttpClient, principal, log).propfind(0, CalendarUserAddressSet.NAME) { response, _ ->
+                response[CalendarUserAddressSet::class.java]?.let { addressSet ->
+                    for (href in addressSet.hrefs)
+                        try {
+                            val uri = URI(href)
+                            if (uri.scheme.equals("mailto", true))
+                                mailboxes.add(uri.schemeSpecificPart)
+                        } catch(e: URISyntaxException) {
+                            log.log(Level.WARNING, "Couldn't parse user address", e)
+                        }
+                }
+            }
+        } catch(e: Exception) {
+            log.log(Level.WARNING, "Couldn't query user email address", e)
+            rethrowIfInterrupted(e)
+        }
+        return mailboxes
     }
 
     /**
@@ -423,7 +436,7 @@ class DavResourceFinder(
                 val homeSets: MutableSet<HttpUrl> = HashSet(),
                 val collections: MutableMap<HttpUrl, Collection> = HashMap(),
 
-                var email: String? = null
+                val emails: MutableList<String> = LinkedList<String>()
         )
 
         override fun toString(): String {

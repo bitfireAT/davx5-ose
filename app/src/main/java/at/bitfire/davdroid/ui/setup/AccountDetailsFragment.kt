@@ -18,6 +18,7 @@ import android.provider.CalendarContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import at.bitfire.davdroid.Constants
@@ -59,15 +60,23 @@ class AccountDetailsFragment: Fragment() {
 
         val config = loginModel.configuration ?: throw IllegalStateException()
 
-        model.name.value = config.calDAV?.email ?:
-                loginModel.credentials?.userName ?:
-                loginModel.credentials?.certificateAlias
+        // default account name
+        model.name.value =
+                config.calDAV?.emails?.firstOrNull() ?:
+                        loginModel.credentials?.userName ?:
+                        loginModel.credentials?.certificateAlias
 
         // CardDAV-specific
         val settings = Settings.getInstance(requireActivity())
         v.carddav.visibility = if (config.cardDAV != null) View.VISIBLE else View.GONE
         if (settings.has(AccountSettings.KEY_CONTACT_GROUP_METHOD))
             v.contactGroupMethod.isEnabled = false
+
+        // CalDAV-specific
+        config.calDAV?.let {
+            val accountNameAdapter = ArrayAdapter<String>(requireActivity(), android.R.layout.simple_list_item_1, it.emails)
+            v.accountName.setAdapter(accountNameAdapter)
+        }
 
         v.createAccount.setOnClickListener {
             val name = model.name.value
