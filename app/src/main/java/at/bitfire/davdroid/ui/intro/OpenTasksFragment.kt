@@ -102,6 +102,7 @@ class OpenTasksFragment: Fragment() {
                     settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
                 else
                     settings.remove(HINT_OPENTASKS_NOT_INSTALLED)
+                notifyChange()
             }
         }
 

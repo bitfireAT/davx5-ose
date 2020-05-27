@@ -139,6 +139,7 @@ class BatteryOptimizationsFragment: Fragment() {
                     settings.putBoolean(HINT_BATTERY_OPTIMIZATIONS, false)
                 else
                     settings.remove(HINT_BATTERY_OPTIMIZATIONS)
+                notifyChange()
             }
         }
 
@@ -149,6 +150,7 @@ class BatteryOptimizationsFragment: Fragment() {
                     settings.putBoolean(HINT_AUTOSTART_PERMISSION, false)
                 else
                     settings.remove(HINT_AUTOSTART_PERMISSION)
+                notifyChange()
             }
         }
 
