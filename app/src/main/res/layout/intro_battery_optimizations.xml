@@ -94,7 +94,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:visibility="@{model.Companion.evilManufacturer ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{model.Companion.manufacturerWarning ? View.VISIBLE : View.GONE}"
                     app:cardUseCompatPadding="true"
                     app:contentPadding="@dimen/card_padding">
 

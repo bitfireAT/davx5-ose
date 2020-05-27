@@ -118,7 +118,8 @@ class BatteryOptimizationsFragment: Fragment() {
              *
              * @see evilManufacturers
              */
-            val evilManufacturer = evilManufacturers.contains(Build.MANUFACTURER.toLowerCase()) || BuildConfig.DEBUG
+            val manufacturerWarning =
+                    (evilManufacturers.contains(Build.MANUFACTURER.toLowerCase()) || BuildConfig.DEBUG)
 
             fun isWhitelisted(context: Context) =
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -172,9 +173,12 @@ class BatteryOptimizationsFragment: Fragment() {
         override fun shouldBeShown(context: Context, settings: Settings) =
                 // show fragment when:
                 // 1. DAVx5 is not whitelisted yet and "don't show anymore" has not been clicked, and/or
-                // 2. evil manufacturer and "don't show anymore" has not been clicked
-                if ((!Model.isWhitelisted(context) && settings.getBoolean(HINT_BATTERY_OPTIMIZATIONS) != false) ||
-                    (Model.evilManufacturer && settings.getBoolean(HINT_AUTOSTART_PERMISSION) != false))
+                // 2a. evil manufacturer AND
+                // 2b. "don't show anymore" has not been clicked
+                if (
+                        (!Model.isWhitelisted(context) && settings.getBoolean(HINT_BATTERY_OPTIMIZATIONS) != false) ||
+                        (Model.manufacturerWarning && settings.getBoolean(HINT_AUTOSTART_PERMISSION) != false)
+                )
                     IIntroFragmentFactory.ShowMode.SHOW
                 else
                     IIntroFragmentFactory.ShowMode.DONT_SHOW
