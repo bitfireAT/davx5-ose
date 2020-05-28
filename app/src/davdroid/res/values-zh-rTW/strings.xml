@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">Account does not exist (anymore)</string>
   <string name="account_title_address_book">DAVx⁵ 通訊錄</string>
   <string name="address_books_authority_title">通訊錄</string>
   <string name="help">幫助</string>
@@ -17,6 +18,9 @@
   <string name="notification_channel_sync_io_errors">網際網絡和輸入輸出錯誤</string>
   <string name="notification_channel_sync_io_errors_desc">超時，連接問題等（臨時問題）</string>
   <!--IntroActivity-->
+  <string name="intro_slogan1">自已數據自已揀
+</string>
+  <string name="intro_battery_not_whitelisted">Disabled (not recommended)</string>
   <!--PermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">庫</string>
