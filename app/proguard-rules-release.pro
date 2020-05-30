@@ -1,14 +1,13 @@
 
-# ProGuard/R8 usage for DAVx⁵:
-#       shrinking        yes
-#       optimization     yes
-#       obfuscation      no (open-source)
+# R8 usage for DAVx⁵:
+#    shrinking        yes (only in release builds)
+#    optimization     yes (on by R8 defaults)
+#    obfuscation      no (open-source)
 
 -dontobfuscate
 
--optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
--optimizationpasses 5
--allowaccessmodification
+# okhttp
+-keepclassmembers class okhttp3.internal.Util.** { *; }
 
 # ez-vcard
 -keep class ezvcard.property.** { *; }  # keep all vCard properties (created at runtime)
