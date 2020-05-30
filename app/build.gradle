@@ -82,7 +82,7 @@ android {
             url = "https://gitlab.com/bitfireAT/davx5-ose/tree/master-ose/"
             lineSuffix = "#L"
         }
-        jdkVersion = 7
+        jdkVersion = 8
 
         externalDocumentationLink {
             url = new URL("https://bitfireat.gitlab.io/cert4android/dokka/cert4android/")
