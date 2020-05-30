@@ -30,7 +30,8 @@ object BindingAdapters {
     @BindingAdapter("unfilteredText")
     @JvmStatic
     fun setUnfilteredText(textView: AutoCompleteTextView, text: String?) {
-        textView.setText(text, false)
+        if (textView.text.toString() != text)
+            textView.setText(text, false)
     }
 
     @InverseBindingAdapter(attribute = "unfilteredText", event = "android:textAttrChanged")
