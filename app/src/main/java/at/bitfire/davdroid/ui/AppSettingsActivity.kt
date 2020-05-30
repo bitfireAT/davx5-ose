@@ -70,13 +70,7 @@ class AppSettingsActivity: AppCompatActivity() {
             }
 
             // security settings
-            findPreference<SwitchPreferenceCompat>(Settings.DISTRUST_SYSTEM_CERTIFICATES)!!.apply {
-                isVisible = BuildConfig.customCerts
-                isEnabled = true
-            }
             findPreference<Preference>("reset_certificates")!!.apply {
-                isVisible = BuildConfig.customCerts
-                isEnabled = true
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     resetCertificates()
                     false

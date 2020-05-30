@@ -22,7 +22,6 @@ android {
 
         versionCode 301000008
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
-        buildConfigField "boolean", "customCerts", "true"
 
         minSdkVersion 21        // Android 5.0
         targetSdkVersion 29     // Android 10.0
@@ -61,6 +60,8 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
+
+            shrinkResources true
         }
     }
 

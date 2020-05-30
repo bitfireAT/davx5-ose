@@ -240,7 +240,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     Logger.log.log(Level.WARNING, "SSL handshake failed", e)
 
                     // when a certificate is rejected by cert4android, the cause will be a CertificateException
-                    if (!BuildConfig.customCerts || e.cause !is CertificateException)
+                    if (e.cause !is CertificateException)
                         notifyException(e, local, remote)
                 }
 
