@@ -28,6 +28,8 @@ android {
         targetSdkVersion 29     // Android 10.0
 
         buildConfigField "String", "userAgent", "\"DAVx5\""
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -52,11 +54,13 @@ android {
 
     buildTypes {
         debug {
-            minifyEnabled false
+            // minifyEnabled enables R8 and thus desugaring (which is needed for working debug builds)
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
         }
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
         }
     }
 
@@ -71,10 +75,6 @@ android {
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/LICENSE'
-    }
-
-    defaultConfig {
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     dokka.configuration {
@@ -122,7 +122,7 @@ dependencies {
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-rc01'
     implementation 'com.google.android:flexbox:1.1.0'
-    implementation 'com.google.android.material:material:1.2.0-alpha06'
+    implementation 'com.google.android.material:material:1.2.0-beta01'
 
     def room_version = '2.2.5'
     implementation "androidx.room:room-runtime:$room_version"
