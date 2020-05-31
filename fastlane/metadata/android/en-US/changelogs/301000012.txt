@@ -1,0 +1,6 @@
+* reworked permissions: permissions are now clearly managed application-wide (no unclear notifications about missing permissions anymore)
+* minify VTIMEZONEs (doesn’t include observances for times before DTSTART anymore) of sent events/tasks
+* sync algorithm: reworking with improvements in parallelism, cancelling, exception handling (using parallel coroutines)
+* account creation/login: suggest all detected email addresses as account name
+* internal rewrite: now uses latest ical4j/3.x even on Android 5+ with R8 desugaring
+* minor improvements and bug fixes
