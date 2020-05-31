@@ -114,7 +114,9 @@
                 android:resource="@xml/debug_paths" />
         </provider>
 
-        <activity android:name=".ui.PermissionsActivity" />
+        <activity
+            android:name=".ui.PermissionsActivity"
+            android:parentActivityName=".ui.AppSettingsActivity" />
 
         <!-- account type "DAVx⁵" -->
         <service

@@ -64,6 +64,14 @@
             android:title="@string/app_settings_reset_certificates"
             android:summary="@string/app_settings_reset_certificates_summary"/>
 
+        <Preference
+            android:title="@string/app_settings_security_app_permissions"
+            android:summary="@string/app_settings_security_app_permissions_summary">
+            <intent
+                android:targetPackage="at.bitfire.davdroid"
+                android:targetClass="at.bitfire.davdroid.ui.PermissionsActivity"/>
+        </Preference>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/app_settings_user_interface">
