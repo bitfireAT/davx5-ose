@@ -66,16 +66,11 @@ android {
     }
 
     lintOptions {
-        disable 'GoogleAppIndexingWarning'      // we don't need Google indexing, thanks
-        disable 'ImpliedQuantity', 'MissingQuantity'		// quantities from Transifex may vary
-        disable 'MissingTranslation', 'ExtraTranslation'	// translations from Transifex are not always up to date
-        disable 'RtlEnabled'
-        disable 'RtlHardcoded'
+        disable 'GoogleAppIndexingWarning'                  // we don't need Google indexing, thanks
+        disable 'ImpliedQuantity', 'MissingQuantity'        // quantities from Transifex may vary
+        disable 'MissingTranslation', 'ExtraTranslation'    // translations from Transifex are not always up to date
+        disable 'RtlEnabled', 'RtlHardcoded'                // RTL not supported yet
         disable 'Typos'
-    }
-    packagingOptions {
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/LICENSE'
     }
 
     dokka.configuration {
@@ -109,7 +104,7 @@ dependencies {
     implementation project(':ical4android')
     implementation project(':vcard4android')
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7"
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.5'
 
