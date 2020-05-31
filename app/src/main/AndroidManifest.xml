@@ -116,6 +116,7 @@
 
         <activity
             android:name=".ui.PermissionsActivity"
+            android:label="@string/app_settings_security_app_permissions"
             android:parentActivityName=".ui.AppSettingsActivity" />
 
         <!-- account type "DAVx⁵" -->
