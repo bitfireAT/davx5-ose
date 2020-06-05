@@ -74,10 +74,16 @@ class LocalAddressBook(
             return addressBook
         }
 
-        fun findAll(context: Context, provider: ContentProviderClient?, mainAccount: Account?) = AccountManager.get(context)
+        fun findAll(context: Context, provider: ContentProviderClient?, mainAccount: Account) = AccountManager.get(context)
                 .getAccountsByType(context.getString(R.string.account_type_address_book))
                 .map { LocalAddressBook(context, it, provider) }
-                .filter { mainAccount == null || it.mainAccount == mainAccount }
+                .filter {
+                    try {
+                        it.mainAccount == mainAccount
+                    } catch(e: IllegalStateException) {
+                        false
+                    }
+                }
                 .toList()
 
         fun accountName(mainAccount: Account, info: Collection): String {
@@ -130,6 +136,10 @@ class LocalAddressBook(
     var includeGroups = true
 
     private var _mainAccount: Account? = null
+    /**
+     * The associated main account which this address book accounts belongs to.
+     * @throws IllegalStateException when no main account is assigned
+     */
     var mainAccount: Account
         get() {
             _mainAccount?.let { return it }
