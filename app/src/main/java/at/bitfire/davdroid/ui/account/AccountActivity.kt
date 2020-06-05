@@ -11,7 +11,6 @@ import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
@@ -43,10 +42,11 @@ class AccountActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model = ViewModelProvider(this).get(Model::class.java)
-        (intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account)?.let { account ->
-            model.initialize(account)
-        } ?: throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
+        val account = intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
+        if (account != null)
+            model = ViewModelProvider(this, Model.Factory(application, account)).get(Model::class.java)
+        else
+            throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
 
         title = model.account.name
         setContentView(R.layout.activity_account)
@@ -221,26 +221,26 @@ class AccountActivity: AppCompatActivity() {
 
     // model
 
-    class Model(application: Application): AndroidViewModel(application) {
+    class Model(
+            application: Application,
+            val account: Account
+    ): AndroidViewModel(application) {
 
-        private var initialized = false
-        lateinit var account: Account
-            private set
+        class Factory(
+                val application: Application,
+                val account: Account
+        ): ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel?> create(modelClass: Class<T>) =
+                    Model(application, account) as T
+        }
 
         private val db = AppDatabase.getInstance(application)
 
         val cardDavService = MutableLiveData<Long>()
         val calDavService = MutableLiveData<Long>()
 
-
-        @MainThread
-        fun initialize(account: Account) {
-            if (initialized)
-                return
-            initialized = true
-
-            this.account = account
-
+        init {
             viewModelScope.launch(Dispatchers.IO) {
                 cardDavService.postValue(db.serviceDao().getIdByAccountAndType(account.name, Service.TYPE_CARDDAV))
                 calDavService.postValue(db.serviceDao().getIdByAccountAndType(account.name, Service.TYPE_CALDAV))
