@@ -97,6 +97,7 @@ class AboutActivity: AppCompatActivity() {
                     1 -> LanguagesFragment()
                     else -> {
                         LibsBuilder()
+                                .withFields(R.string::class.java.fields)        // mandatory for non-standard build flavors
                                 .withLicenseShown(true)
                                 .withAboutIconShown(false)
 

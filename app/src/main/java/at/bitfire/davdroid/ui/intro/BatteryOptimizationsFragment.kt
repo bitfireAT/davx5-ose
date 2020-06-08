@@ -129,7 +129,7 @@ class BatteryOptimizationsFragment: Fragment() {
                         true
         }
 
-        val settings = Settings(app)
+        val settings = Settings.getInstance(app)
 
         val shouldBeWhitelisted = MutableLiveData<Boolean>()
         val isWhitelisted = MutableLiveData<Boolean>()

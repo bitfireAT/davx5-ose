@@ -280,7 +280,7 @@ class DebugInfoActivity: AppCompatActivity() {
                         .append("\n\n")
 
                 // app settings
-                val settings = Settings(context)
+                val settings = Settings.getInstance(context)
                 val overrideProxy = settings.getBoolean(Settings.OVERRIDE_PROXY)
                 text    .append("APP SETTINGS\n")
                         .append("Distrust system certs: ${settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES) ?: Settings.DISTRUST_SYSTEM_CERTIFICATES_DEFAULT}\n")

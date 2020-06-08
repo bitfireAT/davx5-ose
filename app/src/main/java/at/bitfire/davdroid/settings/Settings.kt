@@ -10,16 +10,21 @@ package at.bitfire.davdroid.settings
 
 import android.content.Context
 import androidx.annotation.WorkerThread
+import at.bitfire.davdroid.AndroidSingleton
 import at.bitfire.davdroid.log.Logger
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level
 
-class Settings(
-        appContext: Context
+/**
+ * Settings manager which coordinates [SettingsProvider]s to read/write
+ * application settings.
+ */
+class Settings private constructor(
+        context: Context
 ) {
 
-    companion object {
+    companion object: AndroidSingleton<Settings>() {
 
         // settings keys and default values
         const val DISTRUST_SYSTEM_CERTIFICATES = "distrust_system_certs"
@@ -33,15 +38,7 @@ class Settings(
         const val OVERRIDE_PROXY_PORT_DEFAULT = 8118
 
 
-        private var singleton: Settings? = null
-
-        fun getInstance(context: Context): Settings {
-            singleton?.let { return it }
-
-            val newInstance = Settings(context.applicationContext)
-            singleton = newInstance
-            return newInstance
-        }
+        override fun createInstance(context: Context) = Settings(context)
 
     }
 
@@ -53,15 +50,17 @@ class Settings(
             val factories = ServiceLoader.load(ISettingsProviderFactory::class.java)
             Logger.log.fine("Loading settings providers from ${factories.count()} factories")
             factories.forEach { factory ->
-                providers.addAll(factory.getProviders(appContext))
+                providers.addAll(factory.getProviders(context, this))
             }
         }
     }
 
+    /**
+     * Requests all providers to reload their settings.
+     */
     fun forceReload() {
-        providers.forEach {
-            it.forceReload()
-        }
+        for (provider in providers)
+            provider.forceReload()
         onSettingsChanged()
     }
 
@@ -69,22 +68,25 @@ class Settings(
     /*** OBSERVERS ***/
 
     fun addOnChangeListener(observer: OnChangeListener) {
-        synchronized(this) {
+        synchronized(observers) {
             observers += WeakReference(observer)
         }
     }
 
     fun removeOnChangeListener(observer: OnChangeListener) {
-        synchronized(this) {
+        synchronized(observers) {
             observers.removeAll { it.get() == null || it.get() == observer }
         }
     }
 
+    /**
+     * Notifies registred listeners about changes in the configuration.
+     * Should be called by config providers when settings have changed.
+     */
     fun onSettingsChanged() {
-        synchronized(this) {
-            observers.mapNotNull { it.get() }.forEach {
-                it.onSettingsChanged()
-            }
+        synchronized(observers) {
+            for (observer in observers.mapNotNull { it.get() })
+                observer.onSettingsChanged()
         }
     }
 

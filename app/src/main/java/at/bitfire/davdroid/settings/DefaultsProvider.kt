@@ -72,7 +72,7 @@ open class DefaultsProvider(
 
 
     class Factory : ISettingsProviderFactory {
-        override fun getProviders(context: Context) = listOf(DefaultsProvider())
+        override fun getProviders(context: Context, settings: Settings) = listOf(DefaultsProvider())
     }
 
 }

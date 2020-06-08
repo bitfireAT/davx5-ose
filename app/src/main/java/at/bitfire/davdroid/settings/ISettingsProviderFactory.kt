@@ -12,6 +12,6 @@ import android.content.Context
 
 interface ISettingsProviderFactory {
 
-    fun getProviders(context: Context): List<SettingsProvider>
+    fun getProviders(context: Context, settings: Settings): List<SettingsProvider>
 
 }

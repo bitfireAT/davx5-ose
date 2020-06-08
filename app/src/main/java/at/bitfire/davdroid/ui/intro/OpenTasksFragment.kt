@@ -96,7 +96,7 @@ class OpenTasksFragment: Fragment() {
         }
 
         val dontShow = object: ObservableBoolean() {
-            val settings = Settings(getApplication())
+            val settings = Settings.getInstance(getApplication())
             override fun get() = settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED) == false
             override fun set(dontShowAgain: Boolean) {
                 if (dontShowAgain)

@@ -49,7 +49,7 @@ class OpenSourceFragment: Fragment() {
         }
 
         val dontShow = object: ObservableBoolean() {
-            val settings = Settings(getApplication())
+            val settings = Settings.getInstance(getApplication())
             override fun set(dontShowAgain: Boolean) {
                 if (dontShowAgain) {
                     val nextReminder = System.currentTimeMillis() + 90*86400000L     // 90 days (~ 3 months)

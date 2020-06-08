@@ -11,12 +11,13 @@ package at.bitfire.davdroid.settings
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 
 class SharedPreferencesProvider(
-        val context: Context
+        val context: Context,
+        val settings: Settings
 ): SettingsProvider, SharedPreferences.OnSharedPreferenceChangeListener {
 
     companion object {
@@ -46,7 +47,7 @@ class SharedPreferencesProvider(
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        Settings.getInstance(context).onSettingsChanged()
+        settings.onSettingsChanged()
     }
 
 
@@ -126,7 +127,7 @@ class SharedPreferencesProvider(
 
 
     class Factory : ISettingsProviderFactory {
-        override fun getProviders(context: Context) = listOf(SharedPreferencesProvider(context))
+        override fun getProviders(context: Context, settings: Settings) = listOf(SharedPreferencesProvider(context, settings))
     }
 
 }

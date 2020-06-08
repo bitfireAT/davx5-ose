@@ -36,23 +36,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="DAVx⁵"
-            tools:ignore="HardcodedText" />
+            style="@style/TextAppearance.MaterialComponents.Headline5"
+            android:text="@string/app_name" />
 
         <TextView
             android:id="@+id/app_version"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
+            android:layout_marginTop="4dp"
+            style="@style/TextAppearance.MaterialComponents.Subtitle2"
             android:text="@string/about_version" />
 
         <TextView
             android:id="@+id/build_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:layout_marginBottom="16dp"
             android:textAlignment="center"
+            style="@style/TextAppearance.MaterialComponents.Subtitle2"
             android:text="@string/about_build_date" />
 
         <TextView
@@ -60,7 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            style="@style/TextAppearance.MaterialComponents.Body1"
             android:text="@string/about_copyright" />
 
         <TextView

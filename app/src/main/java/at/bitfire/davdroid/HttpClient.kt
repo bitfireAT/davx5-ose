@@ -100,7 +100,7 @@ class HttpClient private constructor(
                 orig.addInterceptor(loggingInterceptor)
             }
 
-            context?.let {
+            if (context != null) {
                 val settings = Settings.getInstance(context)
 
                 // custom proxy support
@@ -136,8 +136,7 @@ class HttpClient private constructor(
             addAuthentication(host, credentials)
         }
 
-        fun withDiskCache(): Builder {
-            val context = context ?: throw IllegalArgumentException("Context is required to find the cache directory")
+        fun withDiskCache(context: Context): Builder {
             for (dir in arrayOf(context.externalCacheDir, context.cacheDir).filterNotNull()) {
                 if (dir.exists() && dir.canWrite()) {
                     val cacheDir = File(dir, "HttpClient")

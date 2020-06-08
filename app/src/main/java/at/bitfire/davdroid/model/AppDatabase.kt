@@ -9,6 +9,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import at.bitfire.davdroid.AndroidSingleton
 import at.bitfire.davdroid.log.Logger
 
 @Suppress("ClassName")
@@ -24,15 +25,10 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun homeSetDao(): HomeSetDao
     abstract fun collectionDao(): CollectionDao
 
-    companion object {
+    companion object: AndroidSingleton<AppDatabase>() {
 
-        private var INSTANCE: AppDatabase? = null
-
-        @Synchronized
-        fun getInstance(context: Context): AppDatabase {
-            INSTANCE?.let { return it }
-
-            val db = Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "services.db")
+        override fun createInstance(context: Context): AppDatabase =
+                Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "services.db")
                     .addMigrations(
                             Migration1_2,
                             Migration2_3,
@@ -43,10 +39,6 @@ abstract class AppDatabase: RoomDatabase() {
                     )
                     .fallbackToDestructiveMigration()   // as a last fallback, recreate database instead of crashing
                     .build()
-            INSTANCE = db
-
-            return db
-        }
 
     }
 

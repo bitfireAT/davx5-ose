@@ -36,8 +36,8 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var context: Application
     private lateinit var preferences: SharedPreferences
 
-    fun initialize(appContext: Application) {
-        context = appContext
+    fun initialize(app: Application) {
+        context = app
         preferences = PreferenceManager.getDefaultSharedPreferences(context)
         preferences.registerOnSharedPreferenceChangeListener(this)
 
