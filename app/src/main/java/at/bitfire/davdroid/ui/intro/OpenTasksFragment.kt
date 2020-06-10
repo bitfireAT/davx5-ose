@@ -22,7 +22,7 @@ import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.IntroOpentasksBinding
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.intro.IIntroFragmentFactory.ShowMode
 import at.bitfire.davdroid.ui.intro.OpenTasksFragment.Model.Companion.HINT_OPENTASKS_NOT_INSTALLED
@@ -96,8 +96,8 @@ class OpenTasksFragment: Fragment() {
         }
 
         val dontShow = object: ObservableBoolean() {
-            val settings = Settings.getInstance(getApplication())
-            override fun get() = settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED) == false
+            val settings = SettingsManager.getInstance(getApplication())
+            override fun get() = settings.getBooleanOrNull(HINT_OPENTASKS_NOT_INSTALLED) == false
             override fun set(dontShowAgain: Boolean) {
                 if (dontShowAgain)
                     settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
@@ -126,12 +126,12 @@ class OpenTasksFragment: Fragment() {
 
     class Factory: IIntroFragmentFactory {
 
-        override fun shouldBeShown(context: Context, settings: Settings): ShowMode {
+        override fun shouldBeShown(context: Context, settingsManager: SettingsManager): ShowMode {
             // On Android <6, OpenTasks must be installed before DAVx5, so this fragment is not useful.
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
                 return ShowMode.DONT_SHOW
 
-            return if (!LocalTaskList.tasksProviderAvailable(context) && settings.getBoolean(HINT_OPENTASKS_NOT_INSTALLED) != false)
+            return if (!LocalTaskList.tasksProviderAvailable(context) && settingsManager.getBooleanOrNull(HINT_OPENTASKS_NOT_INSTALLED) != false)
                 ShowMode.SHOW
             else
                 ShowMode.DONT_SHOW

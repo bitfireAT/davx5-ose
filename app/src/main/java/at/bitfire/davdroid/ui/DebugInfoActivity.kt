@@ -48,6 +48,7 @@ import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.ical4android.TaskProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -280,13 +281,13 @@ class DebugInfoActivity: AppCompatActivity() {
                         .append("\n\n")
 
                 // app settings
-                val settings = Settings.getInstance(context)
+                val settings = SettingsManager.getInstance(context)
                 val overrideProxy = settings.getBoolean(Settings.OVERRIDE_PROXY)
                 text    .append("APP SETTINGS\n")
-                        .append("Distrust system certs: ${settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES) ?: Settings.DISTRUST_SYSTEM_CERTIFICATES_DEFAULT}\n")
+                        .append("Distrust system certs: ${settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES)}\n")
                         .append("Override system proxy: $overrideProxy\n")
                 if (overrideProxy == true)
-                    text.append("  Proxy: ${settings.getString(Settings.OVERRIDE_PROXY_HOST) ?: Settings.OVERRIDE_PROXY_HOST_DEFAULT}:${settings.getInt(Settings.OVERRIDE_PROXY_PORT) ?: Settings.OVERRIDE_PROXY_PORT_DEFAULT}\n")
+                    text.append("  Proxy: ${settings.getString(Settings.OVERRIDE_PROXY_HOST)}:${settings.getInt(Settings.OVERRIDE_PROXY_PORT)}\n")
                 text.append("\n")
 
                 // main accounts

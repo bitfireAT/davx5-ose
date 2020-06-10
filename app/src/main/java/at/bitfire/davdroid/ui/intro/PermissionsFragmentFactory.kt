@@ -10,12 +10,12 @@ import at.bitfire.davdroid.PermissionUtils.CALENDAR_PERMISSIONS
 import at.bitfire.davdroid.PermissionUtils.CONTACT_PERMSSIONS
 import at.bitfire.davdroid.PermissionUtils.TASKS_PERMISSIONS
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.intro.IIntroFragmentFactory.ShowMode
 
 class PermissionsFragmentFactory: IIntroFragmentFactory {
 
-    override fun shouldBeShown(context: Context, settings: Settings): IIntroFragmentFactory.ShowMode {
+    override fun shouldBeShown(context: Context, settingsManager: SettingsManager): IIntroFragmentFactory.ShowMode {
         // show PermissionsFragment as intro fragment when no permissions are granted
         val permissions = CONTACT_PERMSSIONS + CALENDAR_PERMISSIONS + TASKS_PERMISSIONS
         return if (PermissionUtils.haveAnyPermission(context, permissions))

@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 
 class WelcomeFragment: Fragment() {
 
@@ -17,7 +17,7 @@ class WelcomeFragment: Fragment() {
 
     class Factory : IIntroFragmentFactory {
 
-        override fun shouldBeShown(context: Context, settings: Settings) = IIntroFragmentFactory.ShowMode.SHOW_NOT_ALONE
+        override fun shouldBeShown(context: Context, settingsManager: SettingsManager) = IIntroFragmentFactory.ShowMode.SHOW_NOT_ALONE
 
         override fun create() = WelcomeFragment()
 

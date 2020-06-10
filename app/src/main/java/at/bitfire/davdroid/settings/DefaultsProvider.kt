@@ -15,18 +15,18 @@ open class DefaultsProvider(
 ): SettingsProvider {
 
     open val booleanDefaults = mapOf(
-            Pair(Settings.DISTRUST_SYSTEM_CERTIFICATES, Settings.DISTRUST_SYSTEM_CERTIFICATES_DEFAULT),
-            Pair(Settings.OVERRIDE_PROXY, Settings.OVERRIDE_PROXY_DEFAULT)
+            Pair(Settings.DISTRUST_SYSTEM_CERTIFICATES, false),
+            Pair(Settings.OVERRIDE_PROXY, false)
     )
 
     open val intDefaults = mapOf(
-            Pair(Settings.OVERRIDE_PROXY_PORT, Settings.OVERRIDE_PROXY_PORT_DEFAULT)
+            Pair(Settings.OVERRIDE_PROXY_PORT, 8118)
     )
 
     open val longDefaults = mapOf<String, Long>()
 
     open val stringDefaults = mapOf(
-            Pair(Settings.OVERRIDE_PROXY_HOST, Settings.OVERRIDE_PROXY_HOST_DEFAULT)
+            Pair(Settings.OVERRIDE_PROXY_HOST, "localhost")
     )
 
     override fun forceReload() {
@@ -35,44 +35,31 @@ open class DefaultsProvider(
     override fun close() {
     }
 
+    override fun canWrite() = false
 
-    private fun hasKey(key: String) =
+
+    override fun contains(key: String) =
             booleanDefaults.containsKey(key) ||
             intDefaults.containsKey(key) ||
             longDefaults.containsKey(key) ||
             stringDefaults.containsKey(key)
 
-    override fun has(key: String): Pair<Boolean, Boolean> {
-        val has = hasKey(key)
-        return Pair(has, allowOverride || !has)
-    }
+
+    override fun getBoolean(key: String) = booleanDefaults[key]
+    override fun getInt(key: String) = intDefaults[key]
+    override fun getLong(key: String) = longDefaults[key]
+    override fun getString(key: String) = stringDefaults[key]
+
+    override fun putBoolean(key: String, value: Boolean?) = throw NotImplementedError()
+    override fun putInt(key: String, value: Int?) = throw NotImplementedError()
+    override fun putLong(key: String, value: Long?) = throw NotImplementedError()
+    override fun putString(key: String, value: String?) = throw NotImplementedError()
+
+    override fun remove(key: String) = throw NotImplementedError()
 
 
-    override fun getBoolean(key: String) =
-            Pair(booleanDefaults[key], allowOverride || !booleanDefaults.containsKey(key))
-
-    override fun getInt(key: String) =
-            Pair(intDefaults[key], allowOverride || !intDefaults.containsKey(key))
-
-    override fun getLong(key: String) =
-            Pair(longDefaults[key], allowOverride || !longDefaults.containsKey(key))
-
-    override fun getString(key: String) =
-            Pair(stringDefaults[key], allowOverride || !stringDefaults.containsKey(key))
-
-
-    override fun isWritable(key: String) = Pair(false, allowOverride || !hasKey(key))
-
-    override fun putBoolean(key: String, value: Boolean?) = false
-    override fun putInt(key: String, value: Int?) = false
-    override fun putLong(key: String, value: Long?) = false
-    override fun putString(key: String, value: String?) = false
-
-    override fun remove(key: String) = false
-
-
-    class Factory : ISettingsProviderFactory {
-        override fun getProviders(context: Context, settings: Settings) = listOf(DefaultsProvider())
+    class Factory : SettingsProviderFactory {
+        override fun getProviders(context: Context, settingsManager: SettingsManager) = listOf(DefaultsProvider())
     }
 
 }

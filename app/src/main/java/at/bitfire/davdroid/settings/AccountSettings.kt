@@ -114,7 +114,7 @@ class AccountSettings(
     
     
     val accountManager: AccountManager = AccountManager.get(context)
-    val settings = Settings.getInstance(context)
+    val settings = SettingsManager.getInstance(context)
 
     init {
         synchronized(AccountSettings::class.java) {
@@ -168,14 +168,14 @@ class AccountSettings(
         }
     }
 
-    fun getSyncWifiOnly() = if (settings.has(KEY_WIFI_ONLY))
-            settings.getBoolean(KEY_WIFI_ONLY) ?: WIFI_ONLY_DEFAULT
+    fun getSyncWifiOnly() = if (settings.containsKey(KEY_WIFI_ONLY))
+        settings.getBoolean(KEY_WIFI_ONLY)
                 else
             accountManager.getUserData(account, KEY_WIFI_ONLY) != null
     fun setSyncWiFiOnly(wiFiOnly: Boolean) =
             accountManager.setUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
 
-    fun getSyncWifiOnlySSIDs(): List<String>? = (if (settings.has(KEY_WIFI_ONLY_SSIDS))
+    fun getSyncWifiOnlySSIDs(): List<String>? = (if (settings.containsKey(KEY_WIFI_ONLY_SSIDS))
                 settings.getString(KEY_WIFI_ONLY_SSIDS)
             else
                 accountManager.getUserData(account, KEY_WIFI_ONLY_SSIDS))?.split(',')
@@ -211,7 +211,7 @@ class AccountSettings(
      */
     fun getDefaultAlarm() =
             accountManager.getUserData(account, KEY_DEFAULT_ALARM)?.toInt() ?:
-            settings.getInt(KEY_DEFAULT_ALARM).takeIf { it != -1 }
+            settings.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 }
 
     /**
      * Sets the default alarm value in the local account settings, if the new value differs
@@ -224,20 +224,20 @@ class AccountSettings(
      */
     fun setDefaultAlarm(minBefore: Int?) =
             accountManager.setUserData(account, KEY_DEFAULT_ALARM,
-                    if (minBefore == settings.getInt(KEY_DEFAULT_ALARM).takeIf { it != -1 })
+                    if (minBefore == settings.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 })
                         null
                     else
                         minBefore?.toString())
 
-    fun getManageCalendarColors() = if (settings.has(KEY_MANAGE_CALENDAR_COLORS))
-        settings.getBoolean(KEY_MANAGE_CALENDAR_COLORS) ?: false
+    fun getManageCalendarColors() = if (settings.containsKey(KEY_MANAGE_CALENDAR_COLORS))
+        settings.getBoolean(KEY_MANAGE_CALENDAR_COLORS)
     else
         accountManager.getUserData(account, KEY_MANAGE_CALENDAR_COLORS) == null
     fun setManageCalendarColors(manage: Boolean) =
             accountManager.setUserData(account, KEY_MANAGE_CALENDAR_COLORS, if (manage) null else "0")
 
-    fun getEventColors() = if (settings.has(KEY_EVENT_COLORS))
-            settings.getBoolean(KEY_EVENT_COLORS) ?: false
+    fun getEventColors() = if (settings.containsKey(KEY_EVENT_COLORS))
+            settings.getBoolean(KEY_EVENT_COLORS)
                 else
             accountManager.getUserData(account, KEY_EVENT_COLORS) != null
     fun setEventColors(useColors: Boolean) =

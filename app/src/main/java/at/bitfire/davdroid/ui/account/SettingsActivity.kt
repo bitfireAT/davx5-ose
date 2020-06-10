@@ -32,7 +32,7 @@ import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.SyncAdapterService
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
@@ -73,14 +73,14 @@ class SettingsActivity: AppCompatActivity() {
 
 
     class AccountSettingsFragment: PreferenceFragmentCompat() {
-        private lateinit var settings: Settings
+        private lateinit var settings: SettingsManager
         lateinit var account: Account
 
         private lateinit var model: Model
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
-            settings = Settings.getInstance(requireActivity())
+            settings = SettingsManager.getInstance(requireActivity())
             account = requireArguments().getParcelable(EXTRA_ACCOUNT)!!
 
             model = ViewModelProvider(this).get(Model::class.java)
@@ -160,7 +160,7 @@ class SettingsActivity: AppCompatActivity() {
 
             findPreference<SwitchPreferenceCompat>(getString(R.string.settings_sync_wifi_only_key))!!.let {
                 model.syncWifiOnly.observe(this, Observer { wifiOnly ->
-                    it.isEnabled = !settings.has(AccountSettings.KEY_WIFI_ONLY)
+                    it.isEnabled = !settings.containsKey(AccountSettings.KEY_WIFI_ONLY)
                     it.isChecked = wifiOnly
                     it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, wifiOnly ->
                         model.updateSyncWifiOnly(wifiOnly as Boolean)
@@ -306,7 +306,7 @@ class SettingsActivity: AppCompatActivity() {
                 model.manageCalendarColors.observe(this, Observer { manageCalendarColors ->
                     if (model.syncIntervalCalendars.value != null || model.syncIntervalTasks.value != null) {
                         it.isVisible = true
-                        it.isEnabled = !settings.has(AccountSettings.KEY_MANAGE_CALENDAR_COLORS)
+                        it.isEnabled = !settings.containsKey(AccountSettings.KEY_MANAGE_CALENDAR_COLORS)
                         it.isChecked = manageCalendarColors
                         it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                             model.updateManageCalendarColors(newValue as Boolean)
@@ -321,7 +321,7 @@ class SettingsActivity: AppCompatActivity() {
                 model.eventColors.observe(this, Observer { eventColors ->
                     if (model.syncIntervalCalendars.value != null) {
                         it.isVisible = true
-                        it.isEnabled = !settings.has(AccountSettings.KEY_EVENT_COLORS)
+                        it.isEnabled = !settings.containsKey(AccountSettings.KEY_EVENT_COLORS)
                         it.isChecked = eventColors
                         it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                             model.updateEventColors(newValue as Boolean)
@@ -339,7 +339,7 @@ class SettingsActivity: AppCompatActivity() {
                         it.isVisible = true
                         it.value = groupMethod.name
                         it.summary = it.entry
-                        if (settings.has(AccountSettings.KEY_CONTACT_GROUP_METHOD))
+                        if (settings.containsKey(AccountSettings.KEY_CONTACT_GROUP_METHOD))
                             it.isEnabled = false
                         else {
                             it.isEnabled = true
@@ -380,12 +380,12 @@ class SettingsActivity: AppCompatActivity() {
     }
 
 
-    class Model(app: Application): AndroidViewModel(app), SyncStatusObserver, Settings.OnChangeListener {
+    class Model(app: Application): AndroidViewModel(app), SyncStatusObserver, SettingsManager.OnChangeListener {
 
         private var account: Account? = null
         private var accountSettings: AccountSettings? = null
 
-        private val settings = Settings.getInstance(app)
+        private val settings = SettingsManager.getInstance(app)
         private var statusChangeListener: Any? = null
 
         // settings

@@ -2,7 +2,7 @@ package at.bitfire.davdroid.ui.intro
 
 import android.content.Context
 import androidx.fragment.app.Fragment
-import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 
 interface IIntroFragmentFactory {
 
@@ -20,11 +20,11 @@ interface IIntroFragmentFactory {
      * the [BatteryOptimizationsFragment]) should be shown.
      *
      * @param context   used to determine whether the fragment shall be shown
-     * @param settings  used to determine whether the fragment shall be shown
+     * @param settingsManager  used to determine whether the fragment shall be shown
      *
      * @return whether an instance of this fragment type shall be created and shown
      */
-    fun shouldBeShown(context: Context, settings: Settings): ShowMode
+    fun shouldBeShown(context: Context, settingsManager: SettingsManager): ShowMode
 
     /**
      * Creates an instance of this intro fragment type. Will only be called when

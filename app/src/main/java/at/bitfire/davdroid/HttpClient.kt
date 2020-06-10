@@ -18,6 +18,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import okhttp3.*
 import okhttp3.brotli.BrotliInterceptor
 import okhttp3.internal.tls.OkHostnameVerifier
@@ -101,16 +102,14 @@ class HttpClient private constructor(
             }
 
             if (context != null) {
-                val settings = Settings.getInstance(context)
+                val settings = SettingsManager.getInstance(context)
 
                 // custom proxy support
                 try {
                     if (settings.getBoolean(Settings.OVERRIDE_PROXY) == true) {
                         val address = InetSocketAddress(
-                                settings.getString(Settings.OVERRIDE_PROXY_HOST)
-                                        ?: Settings.OVERRIDE_PROXY_HOST_DEFAULT,
+                                settings.getString(Settings.OVERRIDE_PROXY_HOST),
                                 settings.getInt(Settings.OVERRIDE_PROXY_PORT)
-                                        ?: Settings.OVERRIDE_PROXY_PORT_DEFAULT
                         )
 
                         val proxy = Proxy(Proxy.Type.HTTP, address)
@@ -122,8 +121,7 @@ class HttpClient private constructor(
                 }
 
                 customCertManager(CustomCertManager(context, true /*BuildConfig.customCertsUI*/,
-                        !(settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES)
-                                ?: Settings.DISTRUST_SYSTEM_CERTIFICATES_DEFAULT)))
+                        !(settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES))))
             }
 
             // use account settings for authentication

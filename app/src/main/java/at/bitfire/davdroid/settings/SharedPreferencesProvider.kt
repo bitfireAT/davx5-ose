@@ -11,13 +11,14 @@ package at.bitfire.davdroid.settings
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import android.util.NoSuchPropertyException
 import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 
 class SharedPreferencesProvider(
         val context: Context,
-        val settings: Settings
+        val settingsManager: SettingsManager
 ): SettingsProvider, SharedPreferences.OnSharedPreferenceChangeListener {
 
     companion object {
@@ -46,48 +47,46 @@ class SharedPreferencesProvider(
         preferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
+    override fun canWrite() = true
+
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        settings.onSettingsChanged()
+        settingsManager.onSettingsChanged()
     }
 
 
-    override fun has(key: String) =
-            Pair(preferences.contains(key), true)
+    override fun contains(key: String) = preferences.contains(key)
 
-    private fun<T> getValue(key: String, reader: (SharedPreferences) -> T): Pair<T?, Boolean> {
-        if (preferences.contains(key))
-            return Pair(
-                    try { reader(preferences) } catch(e: ClassCastException) { null },
-                    true)
+    private fun<T> getValue(key: String, reader: (SharedPreferences) -> T): T? =
+            try {
+                if (preferences.contains(key))
+                    reader(preferences)
+                else
+                    null
+            } catch(e: ClassCastException) {
+                null
+            }
 
-        return Pair(null, true)
-    }
-
-    override fun getBoolean(key: String): Pair<Boolean?, Boolean> =
+    override fun getBoolean(key: String) =
             getValue(key) { preferences -> preferences.getBoolean(key, /* will never be used: */ false) }
 
-    override fun getInt(key: String): Pair<Int?, Boolean> =
+    override fun getInt(key: String) =
             getValue(key) { preferences -> preferences.getInt(key, /* will never be used: */ -1) }
 
-    override fun getLong(key: String): Pair<Long?, Boolean> =
+    override fun getLong(key: String) =
             getValue(key) { preferences -> preferences.getLong(key, /* will never be used: */ -1) }
 
-    override fun getString(key: String): Pair<String?, Boolean> =
-            getValue(key) { preferences -> preferences.getString(key, /* will never be used: */ null) }
+    override fun getString(key: String): String? =
+            preferences.getString(key, /* will never be used: */ null)
 
 
-    override fun isWritable(key: String) =
-            Pair(first = true, second = true)
-
-    private fun<T> putValue(key: String, value: T?, writer: (SharedPreferences.Editor, T) -> Unit): Boolean {
-        return if (value == null)
+    private fun<T> putValue(key: String, value: T?, writer: (SharedPreferences.Editor, T) -> Unit) {
+        if (value == null)
             remove(key)
         else {
             Logger.log.fine("Writing setting $key = $value")
             val edit = preferences.edit()
             writer(edit, value)
             edit.apply()
-            true
         }
     }
 
@@ -103,12 +102,9 @@ class SharedPreferencesProvider(
     override fun putString(key: String, value: String?) =
             putValue(key, value) { editor, v -> editor.putString(key, v) }
 
-    override fun remove(key: String): Boolean {
+    override fun remove(key: String) {
         Logger.log.fine("Removing setting $key")
-        preferences.edit()
-                .remove(key)
-                .apply()
-        return true
+        preferences.edit().remove(key).apply()
     }
 
 
@@ -126,8 +122,8 @@ class SharedPreferencesProvider(
     }
 
 
-    class Factory : ISettingsProviderFactory {
-        override fun getProviders(context: Context, settings: Settings) = listOf(SharedPreferencesProvider(context, settings))
+    class Factory : SettingsProviderFactory {
+        override fun getProviders(context: Context, settingsManager: SettingsManager) = listOf(SharedPreferencesProvider(context, settingsManager))
     }
 
 }

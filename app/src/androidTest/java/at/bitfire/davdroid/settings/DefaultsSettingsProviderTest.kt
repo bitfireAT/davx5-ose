@@ -9,7 +9,6 @@
 package at.bitfire.davdroid.settings
 
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Test
 
 class DefaultsSettingsProviderTest {
@@ -17,22 +16,16 @@ class DefaultsSettingsProviderTest {
     private val provider: SettingsProvider = DefaultsProvider()
 
     @Test
-    fun testHas() {
-        assertEquals(Pair(false, true), provider.has("notExisting"))
-        assertEquals(Pair(true, true), provider.has(Settings.OVERRIDE_PROXY))
+    fun testContains() {
+        assertEquals(false, provider.contains("notExisting"))
+        assertEquals(true, provider.contains(Settings.OVERRIDE_PROXY))
     }
 
     @Test
     fun testGet() {
-        assertEquals(Pair("localhost", true), provider.getString(Settings.OVERRIDE_PROXY_HOST))
-        assertEquals(Pair(8118, true), provider.getInt(Settings.OVERRIDE_PROXY_PORT))
+        assertEquals("localhost", provider.getString(Settings.OVERRIDE_PROXY_HOST))
+        assertEquals(8118, provider.getInt(Settings.OVERRIDE_PROXY_PORT))
     }
 
-    @Test
-    fun testPutRemove() {
-        assertEquals(Pair(false, true), provider.isWritable(Settings.OVERRIDE_PROXY))
-        assertFalse(provider.putBoolean(Settings.OVERRIDE_PROXY, true))
-        assertFalse(provider.remove(Settings.OVERRIDE_PROXY))
-    }
 
 }

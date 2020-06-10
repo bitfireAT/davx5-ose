@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.IntroOpenSourceBinding
-import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.intro.OpenSourceFragment.Model.Companion.SETTING_NEXT_DONATION_POPUP
 
@@ -49,7 +49,7 @@ class OpenSourceFragment: Fragment() {
         }
 
         val dontShow = object: ObservableBoolean() {
-            val settings = Settings.getInstance(getApplication())
+            val settings = SettingsManager.getInstance(getApplication())
             override fun set(dontShowAgain: Boolean) {
                 if (dontShowAgain) {
                     val nextReminder = System.currentTimeMillis() + 90*86400000L     // 90 days (~ 3 months)
@@ -63,8 +63,8 @@ class OpenSourceFragment: Fragment() {
 
     class Factory: IIntroFragmentFactory {
 
-        override fun shouldBeShown(context: Context, settings: Settings) =
-                if (System.currentTimeMillis() > (settings.getLong(SETTING_NEXT_DONATION_POPUP) ?: 0))
+        override fun shouldBeShown(context: Context, settingsManager: SettingsManager) =
+                if (System.currentTimeMillis() > (settingsManager.getLongOrNull(SETTING_NEXT_DONATION_POPUP) ?: 0))
                     IIntroFragmentFactory.ShowMode.SHOW
                 else
                     IIntroFragmentFactory.ShowMode.DONT_SHOW

@@ -10,8 +10,8 @@ package at.bitfire.davdroid.settings
 
 import android.content.Context
 
-interface ISettingsProviderFactory {
+interface SettingsProviderFactory {
 
-    fun getProviders(context: Context, settings: Settings): List<SettingsProvider>
+    fun getProviders(context: Context, settingsManager: SettingsManager): Iterable<SettingsProvider>
 
 }

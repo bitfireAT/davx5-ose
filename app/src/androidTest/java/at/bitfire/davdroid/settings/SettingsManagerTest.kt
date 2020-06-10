@@ -14,21 +14,21 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-class SettingsTest {
+class SettingsManagerTest {
 
-    lateinit var settings: Settings
+    lateinit var settingsManager: SettingsManager
 
     @Before
     fun initialize() {
-        settings = Settings.getInstance(InstrumentationRegistry.getInstrumentation().targetContext)
+        settingsManager = SettingsManager.getInstance(InstrumentationRegistry.getInstrumentation().targetContext)
     }
 
     @Test
-    fun testHas() {
-        assertFalse(settings.has("notExisting"))
+    fun testContainsKey() {
+        assertFalse(settingsManager.containsKey("notExisting"))
 
         // provided by DefaultsProvider
-        assertTrue(settings.has(Settings.OVERRIDE_PROXY))
+        assertTrue(settingsManager.containsKey(Settings.OVERRIDE_PROXY))
     }
 
 }

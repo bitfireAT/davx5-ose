@@ -33,7 +33,7 @@ import at.bitfire.davdroid.model.HomeSet
 import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.snackbar.Snackbar
@@ -67,9 +67,9 @@ class AccountDetailsFragment: Fragment() {
                         loginModel.credentials?.certificateAlias
 
         // CardDAV-specific
-        val settings = Settings.getInstance(requireActivity())
+        val settings = SettingsManager.getInstance(requireActivity())
         v.carddav.visibility = if (config.cardDAV != null) View.VISIBLE else View.GONE
-        if (settings.has(AccountSettings.KEY_CONTACT_GROUP_METHOD))
+        if (settings.containsKey(AccountSettings.KEY_CONTACT_GROUP_METHOD))
             v.contactGroupMethod.isEnabled = false
 
         // CalDAV-specific

@@ -22,7 +22,7 @@ import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.IntroBatteryOptimizationsBinding
-import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_AUTOSTART_PERMISSION
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_BATTERY_OPTIMIZATIONS
@@ -129,12 +129,12 @@ class BatteryOptimizationsFragment: Fragment() {
                         true
         }
 
-        val settings = Settings.getInstance(app)
+        val settings = SettingsManager.getInstance(app)
 
         val shouldBeWhitelisted = MutableLiveData<Boolean>()
         val isWhitelisted = MutableLiveData<Boolean>()
         val dontShowBattery = object: ObservableBoolean() {
-            override fun get() = settings.getBoolean(HINT_BATTERY_OPTIMIZATIONS) == false
+            override fun get() = settings.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) == false
             override fun set(dontShowAgain: Boolean) {
                 if (dontShowAgain)
                     settings.putBoolean(HINT_BATTERY_OPTIMIZATIONS, false)
@@ -145,7 +145,7 @@ class BatteryOptimizationsFragment: Fragment() {
         }
 
         val dontShowAutostart = object: ObservableBoolean() {
-            override fun get() = settings.getBoolean(HINT_AUTOSTART_PERMISSION) == false
+            override fun get() = settings.getBooleanOrNull(HINT_AUTOSTART_PERMISSION) == false
             override fun set(dontShowAgain: Boolean) {
                 if (dontShowAgain)
                     settings.putBoolean(HINT_AUTOSTART_PERMISSION, false)
@@ -170,14 +170,14 @@ class BatteryOptimizationsFragment: Fragment() {
 
     class Factory: IIntroFragmentFactory {
 
-        override fun shouldBeShown(context: Context, settings: Settings) =
+        override fun shouldBeShown(context: Context, settingsManager: SettingsManager) =
                 // show fragment when:
                 // 1. DAVx5 is not whitelisted yet and "don't show anymore" has not been clicked, and/or
                 // 2a. evil manufacturer AND
                 // 2b. "don't show anymore" has not been clicked
                 if (
-                        (!Model.isWhitelisted(context) && settings.getBoolean(HINT_BATTERY_OPTIMIZATIONS) != false) ||
-                        (Model.manufacturerWarning && settings.getBoolean(HINT_AUTOSTART_PERMISSION) != false)
+                        (!Model.isWhitelisted(context) && settingsManager.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) != false) ||
+                        (Model.manufacturerWarning && settingsManager.getBooleanOrNull(HINT_AUTOSTART_PERMISSION) != false)
                 )
                     IIntroFragmentFactory.ShowMode.SHOW
                 else

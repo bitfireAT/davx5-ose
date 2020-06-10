@@ -20,6 +20,7 @@ import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment
 import at.bitfire.davdroid.ui.intro.OpenSourceFragment
 import at.bitfire.davdroid.ui.intro.OpenTasksFragment
@@ -46,7 +47,7 @@ class AppSettingsActivity: AppCompatActivity() {
     }
 
 
-    class SettingsFragment: PreferenceFragmentCompat(), Settings.OnChangeListener {
+    class SettingsFragment: PreferenceFragmentCompat(), SettingsManager.OnChangeListener {
 
         override fun onCreatePreferences(bundle: Bundle?, s: String?) {
             addPreferencesFromResource(R.xml.settings_app)
@@ -83,17 +84,21 @@ class AppSettingsActivity: AppCompatActivity() {
         }
 
         private fun loadSettings() {
-            val settings = Settings.getInstance(requireActivity())
+            val settings = SettingsManager.getInstance(requireActivity())
             
             // connection settings
             findPreference<SwitchPreferenceCompat>(Settings.OVERRIDE_PROXY)!!.apply {
-                isChecked = settings.getBoolean(Settings.OVERRIDE_PROXY) ?: Settings.OVERRIDE_PROXY_DEFAULT
+                isChecked = settings.getBoolean(Settings.OVERRIDE_PROXY)
                 isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY)
+                onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    settings.putBoolean(Settings.OVERRIDE_PROXY, newValue as Boolean)
+                    false
+                }
             }
 
             findPreference<EditTextPreference>(Settings.OVERRIDE_PROXY_HOST)!!.apply {
                 isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY_HOST)
-                val proxyHost = settings.getString(Settings.OVERRIDE_PROXY_HOST) ?: Settings.OVERRIDE_PROXY_HOST_DEFAULT
+                val proxyHost = settings.getString(Settings.OVERRIDE_PROXY_HOST)
                 text = proxyHost
                 summary = proxyHost
                 onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
@@ -102,7 +107,7 @@ class AppSettingsActivity: AppCompatActivity() {
                         URI(null, host, null, null)
                         settings.putString(Settings.OVERRIDE_PROXY_HOST, host)
                         summary = host
-                        true
+                        false
                     } catch(e: URISyntaxException) {
                         Snackbar.make(requireView(), e.localizedMessage, Snackbar.LENGTH_LONG).show()
                         false
@@ -112,7 +117,7 @@ class AppSettingsActivity: AppCompatActivity() {
 
             findPreference<EditTextPreference>(Settings.OVERRIDE_PROXY_PORT)!!.apply {
                 isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY_PORT)
-                val proxyPort = settings.getInt(Settings.OVERRIDE_PROXY_PORT) ?: Settings.OVERRIDE_PROXY_PORT_DEFAULT
+                val proxyPort = settings.getInt(Settings.OVERRIDE_PROXY_PORT)
                 text = proxyPort.toString()
                 summary = proxyPort.toString()
                 onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
@@ -122,7 +127,7 @@ class AppSettingsActivity: AppCompatActivity() {
                             settings.putInt(Settings.OVERRIDE_PROXY_PORT, port)
                             text = port.toString()
                             summary = port.toString()
-                            true
+                            false
                         } else
                             false
                     } catch(e: NumberFormatException) {
@@ -133,7 +138,7 @@ class AppSettingsActivity: AppCompatActivity() {
 
             // security settings
             findPreference<SwitchPreferenceCompat>(Settings.DISTRUST_SYSTEM_CERTIFICATES)!!
-                    .isChecked = settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES) ?: Settings.DISTRUST_SYSTEM_CERTIFICATES_DEFAULT
+                    .isChecked = settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES)
         }
 
         override fun onSettingsChanged() {
@@ -142,7 +147,7 @@ class AppSettingsActivity: AppCompatActivity() {
 
 
         private fun resetHints() {
-            val settings = Settings.getInstance(requireActivity())
+            val settings = SettingsManager.getInstance(requireActivity())
             settings.remove(BatteryOptimizationsFragment.Model.HINT_BATTERY_OPTIMIZATIONS)
             settings.remove(BatteryOptimizationsFragment.Model.HINT_AUTOSTART_PERMISSION)
             settings.remove(OpenTasksFragment.Model.HINT_OPENTASKS_NOT_INSTALLED)

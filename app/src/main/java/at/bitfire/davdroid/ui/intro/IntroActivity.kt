@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.intro.IIntroFragmentFactory.ShowMode
 import com.github.paolorotolo.appintro.AppIntro2
 import java.util.*
@@ -24,7 +24,7 @@ class IntroActivity: AppIntro2() {
         }
 
         fun shouldShowIntroActivity(context: Context): Boolean {
-            val settings = Settings.getInstance(context)
+            val settings = SettingsManager.getInstance(context)
             return introFragmentFactories.any {
                 val show = it.shouldBeShown(context, settings)
                 Logger.log.fine("Intro fragment $it: showMode=$show")
@@ -36,7 +36,7 @@ class IntroActivity: AppIntro2() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val settings = Settings.getInstance(this)
+        val settings = SettingsManager.getInstance(this)
 
         val factoriesWithMode = introFragmentFactories.associate { Pair(it, it.shouldBeShown(this, settings)) }
         val showAll = factoriesWithMode.values.any { it == ShowMode.SHOW }

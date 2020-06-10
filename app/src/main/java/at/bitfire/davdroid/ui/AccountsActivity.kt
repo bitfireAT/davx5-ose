@@ -19,7 +19,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.ui.intro.IntroActivity
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.android.material.navigation.NavigationView
@@ -40,15 +39,12 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         const val REQUEST_INTRO = 0
     }
 
-    private lateinit var settings: Settings
-
     private var syncStatusSnackbar: Snackbar? = null
     private var syncStatusObserver: Any? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        settings = Settings.getInstance(this)
 
         if (savedInstanceState == null)
             CoroutineScope(Dispatchers.Default).launch {

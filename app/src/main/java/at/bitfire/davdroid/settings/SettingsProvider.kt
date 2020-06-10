@@ -8,25 +8,40 @@
 
 package at.bitfire.davdroid.settings
 
+/**
+ * Defines a settings provider, which provides settings from a certain source
+ * to the [SettingsManager].
+ *
+ * Implementations must be thread-safe and synchronize get/put operations on their own.
+ */
 interface SettingsProvider {
 
-    fun forceReload()
+    /**
+     * Whether this provider can write settings.
+     *
+     * If this method returns false, the put...() methods will never be called for this provider.
+     *
+     * @return true = this provider provides read/write settings;
+     *         false = this provider provides read-only settings
+     */
+    fun canWrite(): Boolean
+
     fun close()
 
-    fun has(key: String): Pair<Boolean, Boolean>
+    fun forceReload()
 
-    fun getBoolean(key: String): Pair<Boolean?, Boolean>
-    fun getInt(key: String): Pair<Int?, Boolean>
-    fun getLong(key: String): Pair<Long?, Boolean>
-    fun getString(key: String): Pair<String?, Boolean>
+    fun contains(key: String): Boolean
 
-    fun isWritable(key: String): Pair<Boolean, Boolean>
+    fun getBoolean(key: String): Boolean?
+    fun getInt(key: String): Int?
+    fun getLong(key: String): Long?
+    fun getString(key: String): String?
 
-    fun putBoolean(key: String, value: Boolean?): Boolean
-    fun putInt(key: String, value: Int?): Boolean
-    fun putLong(key: String, value: Long?): Boolean
-    fun putString(key: String, value: String?): Boolean
+    fun putBoolean(key: String, value: Boolean?)
+    fun putInt(key: String, value: Int?)
+    fun putLong(key: String, value: Long?)
+    fun putString(key: String, value: String?)
 
-    fun remove(key: String): Boolean
+    fun remove(key: String)
 
 }
