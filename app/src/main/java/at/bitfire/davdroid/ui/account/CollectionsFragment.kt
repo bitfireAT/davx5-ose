@@ -46,15 +46,6 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        accountModel = ViewModelProvider(requireActivity()).get(AccountActivity.Model::class.java)
-        model = ViewModelProvider(this).get(Model::class.java)
-        model.initialize(
-                accountModel,
-                arguments?.getLong(EXTRA_SERVICE_ID) ?: throw IllegalArgumentException("EXTRA_SERVICE_ID required"),
-                arguments?.getString(EXTRA_COLLECTION_TYPE) ?: throw IllegalArgumentException("EXTRA_COLLECTION_TYPE required")
-        )
-
         setHasOptionsMenu(true)
     }
 
@@ -63,6 +54,15 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // don't get the activity ViewModel in onCreate(), it may crash
+        accountModel = ViewModelProvider(requireActivity()).get(AccountActivity.Model::class.java)
+        model = ViewModelProvider(this).get(Model::class.java)
+        model.initialize(
+                accountModel,
+                arguments?.getLong(EXTRA_SERVICE_ID) ?: throw IllegalArgumentException("EXTRA_SERVICE_ID required"),
+                arguments?.getString(EXTRA_COLLECTION_TYPE) ?: throw IllegalArgumentException("EXTRA_COLLECTION_TYPE required")
+        )
 
         model.isRefreshing.observe(viewLifecycleOwner, Observer { nowRefreshing ->
             swipe_refresh.isRefreshing = nowRefreshing
