@@ -5,15 +5,18 @@
 #    obfuscation      no (open-source)
 
 -dontobfuscate
+-printusage build/reports/r8-usage.txt
 
 # okhttp
 -keepclassmembers class okhttp3.internal.Util.** { *; }
 
-# ez-vcard
--keep class ezvcard.property.** { *; }  # keep all vCard properties (created at runtime)
+# ez-vcard: keep all vCard properties/parameters (used via reflection)
+-keep class ezvcard.io.scribe.** { *; }
+-keep class ezvcard.property.** { *; }
+-keep class ezvcard.parameter.** { *; }
 
-# ical4j
--keep class net.fortuna.ical4j.** { *; }  # keep all model classes (properties/factories, created at runtime)
+# ical4j: keep all iCalendar properties/parameters (used via reflection)
+-keep class net.fortuna.ical4j.** { *; }
 
 # DAVx⁵ + libs
 -keep class at.bitfire.** { *; }       # all DAVx⁵ code is required
