@@ -11,6 +11,8 @@ import android.widget.PopupMenu
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import androidx.paging.PagedList
 import androidx.paging.PagedListAdapter
@@ -39,8 +41,8 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         const val EXTRA_COLLECTION_TYPE = "collectionType"
     }
 
-    lateinit var accountModel: AccountActivity.Model
-    lateinit var model: Model
+    val accountModel by activityViewModels<AccountActivity.Model>()
+    val model by viewModels<Model>()
 
     abstract val noCollectionsStringId: Int
 
@@ -56,8 +58,6 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         super.onViewCreated(view, savedInstanceState)
 
         // don't get the activity ViewModel in onCreate(), it may crash
-        accountModel = ViewModelProvider(requireActivity()).get(AccountActivity.Model::class.java)
-        model = ViewModelProvider(this).get(Model::class.java)
         model.initialize(
                 accountModel,
                 arguments?.getLong(EXTRA_SERVICE_ID) ?: throw IllegalArgumentException("EXTRA_SERVICE_ID required"),

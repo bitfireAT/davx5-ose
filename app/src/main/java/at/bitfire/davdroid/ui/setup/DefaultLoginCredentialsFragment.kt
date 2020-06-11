@@ -18,7 +18,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.LoginCredentialsFragmentBinding
 import at.bitfire.davdroid.model.Credentials
@@ -27,13 +28,11 @@ import java.net.URISyntaxException
 
 class DefaultLoginCredentialsFragment: Fragment() {
 
-    private lateinit var model: DefaultLoginCredentialsModel
-    private lateinit var loginModel: LoginModel
+    val loginModel by activityViewModels<LoginModel>()
+    val model by viewModels<DefaultLoginCredentialsModel>()
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        model = ViewModelProvider(this).get(DefaultLoginCredentialsModel::class.java)
-        loginModel = ViewModelProvider(requireActivity()).get(LoginModel::class.java)
-
         val v = LoginCredentialsFragmentBinding.inflate(inflater, container, false)
         v.lifecycleOwner = viewLifecycleOwner
         v.model = model
@@ -153,7 +152,7 @@ class DefaultLoginCredentialsFragment: Fragment() {
     }
 
 
-    class Factory: ILoginCredentialsFragment {
+    class Factory: LoginCredentialsFragment {
 
         override fun getFragment(intent: Intent) = DefaultLoginCredentialsFragment()
 

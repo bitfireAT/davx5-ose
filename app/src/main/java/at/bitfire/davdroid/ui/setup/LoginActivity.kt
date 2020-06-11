@@ -44,7 +44,7 @@ class LoginActivity: AppCompatActivity() {
         const val EXTRA_PASSWORD = "password"
     }
 
-    private val loginFragmentLoader = ServiceLoader.load(ILoginCredentialsFragment::class.java)!!
+    private val loginFragmentLoader = ServiceLoader.load(LoginCredentialsFragment::class.java)!!
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

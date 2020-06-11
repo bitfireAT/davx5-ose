@@ -11,6 +11,7 @@ import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
@@ -36,17 +37,15 @@ class AccountActivity: AppCompatActivity() {
         const val EXTRA_ACCOUNT = "account"
     }
 
-    lateinit var model: Model
+    val model by viewModels<Model>() {
+        val account = intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
+                ?: throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
+        Model.Factory(application, account)
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val account = intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
-        if (account != null)
-            model = ViewModelProvider(this, Model.Factory(application, account)).get(Model::class.java)
-        else
-            throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
 
         title = model.account.name
         setContentView(R.layout.activity_account)

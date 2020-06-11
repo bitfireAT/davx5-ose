@@ -20,6 +20,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.DavService
@@ -44,14 +46,9 @@ import java.util.logging.Level
 
 class AccountDetailsFragment: Fragment() {
 
-    private lateinit var loginModel: LoginModel
-    private lateinit var model: AccountDetailsModel
+    val loginModel by activityViewModels<LoginModel>()
+    val model by viewModels<AccountDetailsModel>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        loginModel = ViewModelProvider(requireActivity()).get(LoginModel::class.java)
-        model = ViewModelProvider(this).get(AccountDetailsModel::class.java)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = LoginAccountDetailsBinding.inflate(inflater, container, false)

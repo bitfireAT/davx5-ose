@@ -15,9 +15,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.UiThread
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.databinding.CollectionPropertiesBinding
 import at.bitfire.davdroid.model.AppDatabase
@@ -41,8 +41,9 @@ class CollectionInfoFragment: DialogFragment() {
 
     }
 
+    val model by viewModels<Model>()
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val model = ViewModelProvider(this).get(Model::class.java)
         arguments?.getLong(ARGS_COLLECTION_ID)?.let { id ->
             model.initialize(id)
         }

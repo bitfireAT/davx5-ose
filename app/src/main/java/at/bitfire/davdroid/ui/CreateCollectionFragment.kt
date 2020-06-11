@@ -15,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.XmlUtils
@@ -52,13 +53,13 @@ class CreateCollectionFragment: DialogFragment() {
         const val ARG_SUPPORTS_VJOURNAL = "supportsVJOURNAL"
     }
 
-    private lateinit var model: Model
+    val model by viewModels<Model>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val args = arguments ?: throw IllegalArgumentException()
 
-        model = ViewModelProvider(this).get(Model::class.java)
         model.account = args.getParcelable(ARG_ACCOUNT) ?: throw IllegalArgumentException("ARG_ACCOUNT required")
         model.serviceType = args.getString(ARG_SERVICE_TYPE) ?: throw java.lang.IllegalArgumentException("ARG_SERVICE_TYPE required")
 

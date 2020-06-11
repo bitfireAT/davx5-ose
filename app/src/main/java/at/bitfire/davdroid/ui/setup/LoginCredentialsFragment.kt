@@ -11,7 +11,7 @@ package at.bitfire.davdroid.ui.setup
 import android.content.Intent
 import androidx.fragment.app.Fragment
 
-interface ILoginCredentialsFragment {
+interface LoginCredentialsFragment {
 
     fun getFragment(intent: Intent): Fragment?
 

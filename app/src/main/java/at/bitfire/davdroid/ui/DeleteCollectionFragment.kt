@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.MainThread
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.davdroid.HttpClient
@@ -43,11 +44,11 @@ class DeleteCollectionFragment: DialogFragment() {
         }
     }
 
-    private lateinit var model: DeleteCollectionModel
+    val model by viewModels<DeleteCollectionModel>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        model = ViewModelProvider(this).get(DeleteCollectionModel::class.java)
         model.initialize(
                 requireArguments().getParcelable(ARG_ACCOUNT)!!,
                 requireArguments().getLong(ARG_COLLECTION_ID)

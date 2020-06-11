@@ -14,13 +14,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityCreateAddressBookBinding
@@ -39,13 +39,13 @@ class CreateAddressBookActivity: AppCompatActivity() {
         const val EXTRA_ACCOUNT = "account"
     }
 
-    private lateinit var model: Model
+    val model by viewModels<Model>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        model = ViewModelProvider(this).get(Model::class.java)
         (intent?.getParcelableExtra(EXTRA_ACCOUNT) as? Account)?.let {
             model.initialize(it)
         }

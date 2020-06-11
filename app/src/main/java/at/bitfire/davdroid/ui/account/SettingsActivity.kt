@@ -25,7 +25,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.*
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.preference.*
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.InvalidAccountException
@@ -76,14 +80,12 @@ class SettingsActivity: AppCompatActivity() {
         private lateinit var settings: SettingsManager
         lateinit var account: Account
 
-        private lateinit var model: Model
+        val model by viewModels<Model>()
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             settings = SettingsManager.getInstance(requireActivity())
             account = requireArguments().getParcelable(EXTRA_ACCOUNT)!!
-
-            model = ViewModelProvider(this).get(Model::class.java)
 
             try {
                 model.initialize(account)

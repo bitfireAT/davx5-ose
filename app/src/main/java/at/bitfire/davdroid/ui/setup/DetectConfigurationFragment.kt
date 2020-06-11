@@ -17,6 +17,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -28,13 +30,11 @@ import kotlin.concurrent.thread
 
 class DetectConfigurationFragment: Fragment() {
 
-    private lateinit var loginModel: LoginModel
-    private lateinit var model: DetectConfigurationModel
+    val loginModel by activityViewModels<LoginModel>()
+    val model by viewModels<DetectConfigurationModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loginModel = ViewModelProvider(requireActivity()).get(LoginModel::class.java)
-        model = ViewModelProvider(this).get(DetectConfigurationModel::class.java)
 
         model.detectConfiguration(loginModel).observe(this, Observer<DavResourceFinder.Configuration> { result ->
             // save result for next step

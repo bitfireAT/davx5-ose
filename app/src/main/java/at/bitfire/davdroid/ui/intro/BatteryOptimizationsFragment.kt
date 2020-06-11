@@ -14,10 +14,10 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
@@ -34,12 +34,8 @@ class BatteryOptimizationsFragment: Fragment() {
         const val REQUEST_IGNORE_BATTERY_OPTIMIZATIONS = 0
     }
 
-    lateinit var model: Model
+    val model by viewModels<Model>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        model = ViewModelProvider(this).get(Model::class.java)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = IntroBatteryOptimizationsBinding.inflate(inflater, container, false)

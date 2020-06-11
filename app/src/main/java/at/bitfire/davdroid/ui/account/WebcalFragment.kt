@@ -19,10 +19,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.room.Transaction
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.Constants
@@ -46,12 +46,11 @@ class WebcalFragment: CollectionsFragment() {
 
     override val noCollectionsStringId = R.string.account_no_webcals
 
-    private lateinit var webcalModel: WebcalModel
+    val webcalModel by viewModels<WebcalModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        webcalModel = ViewModelProvider(this).get(WebcalModel::class.java)
         webcalModel.subscribedUrls.observe(this, Observer { urls ->
             Logger.log.log(Level.FINE, "Got Android calendar list", urls.keys)
         })

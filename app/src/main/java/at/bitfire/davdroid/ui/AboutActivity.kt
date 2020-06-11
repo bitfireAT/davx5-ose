@@ -22,10 +22,10 @@ import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -113,6 +113,8 @@ class AboutActivity: AppCompatActivity() {
 
     class AppFragment: Fragment() {
 
+        val model by viewModels<TextFileModel>()
+
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
                 inflater.inflate(R.layout.about, container, false)!!
 
@@ -129,7 +131,6 @@ class AboutActivity: AppCompatActivity() {
             if (true /* open-source version */) {
                 warranty.setText(R.string.about_license_info_no_warranty)
 
-                val model = ViewModelProvider(this).get(TextFileModel::class.java)
                 model.initialize("gplv3.html", true)
                 model.htmlText.observe(viewLifecycleOwner, Observer { spanned ->
                     license_text.text = spanned
@@ -141,11 +142,12 @@ class AboutActivity: AppCompatActivity() {
 
     class LanguagesFragment: Fragment() {
 
+        val model by viewModels<TextFileModel>()
+
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
                 inflater.inflate(R.layout.about_languages, container, false)!!
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            val model = ViewModelProvider(this).get(TextFileModel::class.java)
             model.initialize("translators.json", false)
             model.plainText.observe(viewLifecycleOwner, Observer { json ->
                 val jsonTranslations = JSONObject(json)

@@ -13,10 +13,10 @@ import android.view.ViewGroup
 import androidx.core.text.HtmlCompat
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
@@ -30,12 +30,8 @@ import com.google.android.material.snackbar.Snackbar
 
 class OpenTasksFragment: Fragment() {
 
-    lateinit var model: Model
+    val model by viewModels<Model>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        model = ViewModelProvider(this).get(Model::class.java)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = IntroOpentasksBinding.inflate(inflater, container, false)

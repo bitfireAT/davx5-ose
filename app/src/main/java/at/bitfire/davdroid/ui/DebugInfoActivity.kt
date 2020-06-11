@@ -27,6 +27,7 @@ import android.provider.ContactsContract
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ShareCompat
@@ -70,12 +71,11 @@ class DebugInfoActivity: AppCompatActivity() {
         const val KEY_REMOTE_RESOURCE = "remoteResource"
     }
 
-    private lateinit var model: ReportModel
+    private val model by viewModels<ReportModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model = ViewModelProvider(this).get(ReportModel::class.java)
         model.initialize(intent.extras)
 
         val binding = DataBindingUtil.setContentView<ActivityDebugInfoBinding>(this, R.layout.activity_debug_info)

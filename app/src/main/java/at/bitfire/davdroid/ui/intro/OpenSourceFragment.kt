@@ -8,8 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.IntroOpenSourceBinding
@@ -19,12 +19,8 @@ import at.bitfire.davdroid.ui.intro.OpenSourceFragment.Model.Companion.SETTING_N
 
 class OpenSourceFragment: Fragment() {
 
-    lateinit var model: Model
+    val model by viewModels<Model>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        model = ViewModelProvider(this).get(Model::class.java)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = IntroOpenSourceBinding.inflate(inflater, container, false)

@@ -29,10 +29,10 @@ import android.widget.AbsListView
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.ListFragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.AccountActivity
 import kotlinx.android.synthetic.main.account_list.*
@@ -40,10 +40,11 @@ import kotlinx.android.synthetic.main.account_list_item.view.*
 
 class AccountListFragment: ListFragment() {
 
+    val model by viewModels<Model>()
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         listAdapter = AccountListAdapter(requireActivity())
 
-        val model = ViewModelProvider(this).get(Model::class.java)
         model.accounts.observe(viewLifecycleOwner, Observer { accounts ->
             val adapter = listAdapter as AccountListAdapter
             adapter.clear()
