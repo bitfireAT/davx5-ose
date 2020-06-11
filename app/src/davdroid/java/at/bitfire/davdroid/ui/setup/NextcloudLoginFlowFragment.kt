@@ -138,7 +138,7 @@ class NextcloudLoginFlowFragment: Fragment() {
     }
 
 
-    class Factory : ILoginCredentialsFragment {
+    class Factory : LoginCredentialsFragment {
 
         override fun getFragment(intent: Intent) =
                 if (intent.hasExtra(EXTRA_LOGIN_FLOW))
