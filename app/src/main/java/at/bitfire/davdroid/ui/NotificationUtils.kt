@@ -15,6 +15,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.content.getSystemService
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 
@@ -42,7 +43,7 @@ object NotificationUtils {
     fun createChannels(context: Context) {
         @TargetApi(Build.VERSION_CODES.O)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val nm = context.getSystemService<NotificationManager>()!!
 
             nm.createNotificationChannelGroup(NotificationChannelGroup(CHANNEL_SYNC, context.getString(R.string.notification_channel_sync)))
 

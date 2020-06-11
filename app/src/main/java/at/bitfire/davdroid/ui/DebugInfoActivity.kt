@@ -14,7 +14,6 @@ import android.accounts.AccountManager
 import android.app.Application
 import android.content.ContentResolver
 import android.content.ContentUris
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -33,11 +32,11 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.content.getSystemService
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.BuildConfig
@@ -219,7 +218,7 @@ class DebugInfoActivity: AppCompatActivity() {
 
                 // connectivity
                 text.append("\nCONNECTIVITY (at the moment)\n")
-                val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                val connectivityManager = context.getSystemService<ConnectivityManager>()!!
                 connectivityManager.allNetworks.forEach { network ->
                     val capabilities = connectivityManager.getNetworkCapabilities(network)
                     text.append("- $capabilities\n")
@@ -232,7 +231,7 @@ class DebugInfoActivity: AppCompatActivity() {
 
                 text.append("CONFIGURATION\n")
                 // power saving
-                val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+                val powerManager = context.getSystemService<PowerManager>()!!
                 if (Build.VERSION.SDK_INT >= 23)
                     text.append("Power saving disabled: ")
                             .append(if (powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) "yes" else "no")

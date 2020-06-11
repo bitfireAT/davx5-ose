@@ -19,6 +19,7 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
@@ -141,7 +142,7 @@ abstract class SyncAdapterService: Service() {
         protected fun checkSyncConditions(settings: AccountSettings): Boolean {
             if (settings.getSyncWifiOnly()) {
                 // WiFi required
-                val connectivityManager = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+                val connectivityManager = context.getSystemService<ConnectivityManager>()!!
 
                 // check for connected WiFi network
                 var wifiAvailable = false
@@ -169,7 +170,7 @@ abstract class SyncAdapterService: Service() {
                         PermissionUtils.notifyPermissions(context, intent)
                     }
 
-                    val wifi = context.applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+                    val wifi = context.getSystemService<WifiManager>()!!
                     val info = wifi.connectionInfo
                     if (info == null || !onlySSIDs.contains(info.ssid.trim('"'))) {
                         Logger.log.info("Connected to wrong WiFi network (${info.ssid}), ignoring")

@@ -11,13 +11,10 @@ package at.bitfire.davdroid
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
-import android.os.Build
 import android.os.StrictMode
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.drawable.toBitmap
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -32,13 +29,8 @@ class App: Application(), Thread.UncaughtExceptionHandler {
 
     companion object {
 
-        fun getLauncherBitmap(context: Context): Bitmap? {
-            val drawableLogo = AppCompatResources.getDrawable(context, R.mipmap.ic_launcher)
-            return if (drawableLogo is BitmapDrawable)
-                drawableLogo.bitmap
-            else
-                null
-        }
+        fun getLauncherBitmap(context: Context) =
+                AppCompatResources.getDrawable(context, R.mipmap.ic_launcher)?.toBitmap()
 
         fun homepageUrl(context: Context) =
                 Uri.parse(context.getString(R.string.homepage_url)).buildUpon()
@@ -67,9 +59,6 @@ class App: Application(), Thread.UncaughtExceptionHandler {
         else // if (BuildConfig.FLAVOR == FLAVOR_STANDARD)
             // handle uncaught exceptions in non-debug standard flavor
             Thread.setDefaultUncaughtExceptionHandler(this)
-
-        if (Build.VERSION.SDK_INT <= 21)
-            AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
         NotificationUtils.createChannels(this)
 

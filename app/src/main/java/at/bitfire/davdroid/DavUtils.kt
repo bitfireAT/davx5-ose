@@ -16,6 +16,7 @@ import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
+import androidx.core.content.getSystemService
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.ical4android.TaskProvider
 import okhttp3.HttpUrl
@@ -50,7 +51,7 @@ object DavUtils {
                The current version of dnsjava relies on these properties to find the default name servers,
                so we have to add the servers explicitly (fortunately, there's an Android API to
                get the active DNS servers). */
-            val connectivity = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val connectivity = context.getSystemService<ConnectivityManager>()!!
             val activeLink = connectivity.getLinkProperties(connectivity.activeNetwork)
             if (activeLink != null) {
                 // get DNS servers of active network link and set them for dnsjava so that it can send SRV queries

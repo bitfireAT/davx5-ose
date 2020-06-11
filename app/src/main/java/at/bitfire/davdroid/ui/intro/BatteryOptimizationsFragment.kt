@@ -11,7 +11,7 @@ import android.os.PowerManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -119,7 +119,7 @@ class BatteryOptimizationsFragment: Fragment() {
 
             fun isWhitelisted(context: Context) =
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        val powerManager = ContextCompat.getSystemService(context, PowerManager::class.java)!!
+                        val powerManager = context.getSystemService<PowerManager>()!!
                         powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
                     } else
                         true

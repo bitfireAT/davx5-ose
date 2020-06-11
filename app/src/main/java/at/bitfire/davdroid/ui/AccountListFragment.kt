@@ -28,6 +28,7 @@ import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.core.content.getSystemService
 import androidx.fragment.app.ListFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
@@ -99,7 +100,7 @@ class AccountListFragment: ListFragment() {
         private var networkReceiver: BroadcastReceiver? = null
 
         private val accountManager = AccountManager.get(getApplication())!!
-        private val connectivityManager = application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        private val connectivityManager = application.getSystemService<ConnectivityManager>()!!
         init {
             accountManager.addOnAccountsUpdatedListener(this, null, true)
 
