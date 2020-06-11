@@ -111,6 +111,8 @@
   <string name="app_settings_override_proxy_host">Nome do servidor proxy HTTP</string>
   <string name="app_settings_override_proxy_port">Porta do proxy HTTP</string>
   <string name="app_settings_security">Segurança</string>
+  <string name="app_settings_security_app_permissions">Permissões do aplicativo</string>
+  <string name="app_settings_security_app_permissions_summary">Revise as permissões necessárias para sincronização</string>
   <string name="app_settings_distrust_system_certs">Desconfiar dos certificados de sistema</string>
   <string name="app_settings_distrust_system_certs_on">ACs adicionadas pelo usuário e pelo sistema não serão confiáveis</string>
   <string name="app_settings_distrust_system_certs_off">ACs adicionadas pelo usuário e pelo sistema serão confiáveis (recomendado)</string>

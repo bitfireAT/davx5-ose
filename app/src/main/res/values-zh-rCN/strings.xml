@@ -111,6 +111,8 @@
   <string name="app_settings_override_proxy_host">HTTP 代理主机名</string>
   <string name="app_settings_override_proxy_port">HTTP 代理端口</string>
   <string name="app_settings_security">安全</string>
+  <string name="app_settings_security_app_permissions">应用权限</string>
+  <string name="app_settings_security_app_permissions_summary">查看同步所需权限</string>
   <string name="app_settings_distrust_system_certs">不信任系统证书</string>
   <string name="app_settings_distrust_system_certs_on">系统和用户增加的发布者不会被信任</string>
   <string name="app_settings_distrust_system_certs_off">系统和用户增加的发布者会被信任（推荐）</string>

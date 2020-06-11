@@ -111,6 +111,8 @@
   <string name="app_settings_override_proxy_host">HTTP proxy værtsnavn</string>
   <string name="app_settings_override_proxy_port">HTTP proxy port</string>
   <string name="app_settings_security">Sikkerhed</string>
+  <string name="app_settings_security_app_permissions">Program tilladelser</string>
+  <string name="app_settings_security_app_permissions_summary">Gennemgå tilladelser krævet til synkronisering</string>
   <string name="app_settings_distrust_system_certs">Stol ikke på systemcertifikater</string>
   <string name="app_settings_distrust_system_certs_on">System og brugertilføjede CA\'er vil ikke blive betroet</string>
   <string name="app_settings_distrust_system_certs_off">System og brugertilføjede CA\'er vil blive betroet (anbefalet)</string>
