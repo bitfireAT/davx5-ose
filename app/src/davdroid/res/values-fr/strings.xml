@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">Le compte n’existe plus (désormais)</string>
   <string name="account_title_address_book">Carnet d\'adresses DAVx⁵</string>
   <string name="address_books_authority_title">Carnets d\'adresses</string>
   <string name="help">Aide</string>
@@ -110,6 +111,8 @@
   <string name="app_settings_override_proxy_host">Nom de l\'hôte du proxy HTTP</string>
   <string name="app_settings_override_proxy_port">Port du proxy HTTP</string>
   <string name="app_settings_security">Sécurité</string>
+  <string name="app_settings_security_app_permissions">Permissions de l\'application</string>
+  <string name="app_settings_security_app_permissions_summary">Consulter les autorisations requises pour la synchronisation</string>
   <string name="app_settings_distrust_system_certs">Révoquer les certificats du système</string>
   <string name="app_settings_distrust_system_certs_on">Les certificats du système et ceux ajoutés par l\'utilisateur ne seront pas  dignes de confiance</string>
   <string name="app_settings_distrust_system_certs_off">Les certificats du système et ceux ajoutés par l\'utilisateur seront dignes de confiance (recommandé)</string>
