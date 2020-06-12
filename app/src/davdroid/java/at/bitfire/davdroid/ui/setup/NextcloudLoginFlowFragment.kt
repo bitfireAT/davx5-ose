@@ -10,7 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -33,13 +33,11 @@ class NextcloudLoginFlowFragment: Fragment() {
         const val EXTRA_DAV_PATH = "davPath"
     }
 
-    lateinit var loginModel: LoginModel
+    val loginModel by activityViewModels<LoginModel>()
 
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        loginModel = ViewModelProvider(requireActivity()).get(LoginModel::class.java)
-
         val view = inflater.inflate(R.layout.activity_webview, container, false)
         val progressBar = view.progress
 
