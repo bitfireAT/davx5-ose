@@ -59,7 +59,6 @@ class AccountSettings(
         const val KEY_CERTIFICATE_ALIAS = "certificate_alias"
 
         const val KEY_WIFI_ONLY = "wifi_only"               // sync on WiFi only (default: false)
-        const val WIFI_ONLY_DEFAULT = false
         const val KEY_WIFI_ONLY_SSIDS = "wifi_only_ssids"   // restrict sync to specific WiFi SSIDs
 
         /** Time range limitation to the past [in days]. Values:

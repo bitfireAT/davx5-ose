@@ -8,13 +8,20 @@
 
 package at.bitfire.davdroid.settings
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.os.Build
+import androidx.core.content.getSystemService
 
 open class DefaultsProvider(
-        private val allowOverride: Boolean = true
+        val context: Context,
+        val settingsManager: SettingsManager
 ): SettingsProvider {
 
-    open val booleanDefaults = mapOf(
+    open val booleanDefaults = mutableMapOf(
             Pair(Settings.DISTRUST_SYSTEM_CERTIFICATES, false),
             Pair(Settings.OVERRIDE_PROXY, false)
     )
@@ -29,10 +36,43 @@ open class DefaultsProvider(
             Pair(Settings.OVERRIDE_PROXY_HOST, "localhost")
     )
 
+    val dataSaverChangedListener by lazy {
+        object: BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                evaluateDataSaver(true)
+            }
+        }
+    }
+
+
+    init {
+        if (Build.VERSION.SDK_INT >= 24) {
+            val dataSaverChangedFilter = IntentFilter(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED)
+            context.registerReceiver(dataSaverChangedListener, dataSaverChangedFilter)
+            evaluateDataSaver()
+        }
+    }
+
     override fun forceReload() {
+        evaluateDataSaver()
     }
 
     override fun close() {
+        if (Build.VERSION.SDK_INT >= 24)
+            context.unregisterReceiver(dataSaverChangedListener)
+    }
+
+    fun evaluateDataSaver(notify: Boolean = false) {
+        if (Build.VERSION.SDK_INT >= 24) {
+            context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->
+                if (connectivityManager.restrictBackgroundStatus == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED)
+                    booleanDefaults[AccountSettings.KEY_WIFI_ONLY] = true
+                else
+                    booleanDefaults -= AccountSettings.KEY_WIFI_ONLY
+            }
+            if (notify)
+                settingsManager.onSettingsChanged()
+        }
     }
 
     override fun canWrite() = false
@@ -59,7 +99,8 @@ open class DefaultsProvider(
 
 
     class Factory : SettingsProviderFactory {
-        override fun getProviders(context: Context, settingsManager: SettingsManager) = listOf(DefaultsProvider())
+        override fun getProviders(context: Context, settingsManager: SettingsManager) =
+                listOf(DefaultsProvider(context, settingsManager))
     }
 
 }

@@ -72,6 +72,7 @@ class DebugInfoActivity: AppCompatActivity() {
 
     private val model by viewModels<ReportModel>()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -217,25 +218,34 @@ class DebugInfoActivity: AppCompatActivity() {
                 }
 
                 // connectivity
-                text.append("\nCONNECTIVITY (at the moment)\n")
-                val connectivityManager = context.getSystemService<ConnectivityManager>()!!
-                connectivityManager.allNetworks.forEach { network ->
-                    val capabilities = connectivityManager.getNetworkCapabilities(network)
-                    text.append("- $capabilities\n")
-                }
-                if (Build.VERSION.SDK_INT >= 23)
-                    connectivityManager.defaultProxy?.let { proxy ->
-                        text.append("System default proxy: ${proxy.host}:${proxy.port}\n")
+                context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->
+                    text.append("\nCONNECTIVITY (at the moment)\n")
+                    connectivityManager.allNetworks.forEach { network ->
+                        val capabilities = connectivityManager.getNetworkCapabilities(network)
+                        text.append("- $capabilities\n")
                     }
-                text.append("\n")
+                    if (Build.VERSION.SDK_INT >= 23)
+                        connectivityManager.defaultProxy?.let { proxy ->
+                            text.append("System default proxy: ${proxy.host}:${proxy.port}\n")
+                        }
+                    if (Build.VERSION.SDK_INT >= 24)
+                        text.append("Data saver: ").append(when (connectivityManager.restrictBackgroundStatus) {
+                            ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED -> "enabled"
+                            ConnectivityManager.RESTRICT_BACKGROUND_STATUS_WHITELISTED -> "whitelisted"
+                            ConnectivityManager.RESTRICT_BACKGROUND_STATUS_DISABLED -> "disabled"
+                            else -> connectivityManager.restrictBackgroundStatus
+                        }).append("\n")
+                    text.append("\n")
+                }
 
                 text.append("CONFIGURATION\n")
                 // power saving
-                val powerManager = context.getSystemService<PowerManager>()!!
                 if (Build.VERSION.SDK_INT >= 23)
-                    text.append("Power saving disabled: ")
-                            .append(if (powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) "yes" else "no")
-                            .append("\n")
+                    context.getSystemService<PowerManager>()?.let { powerManager ->
+                        text.append("Power saving disabled: ")
+                                .append(if (powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) "yes" else "no")
+                                .append("\n")
+                    }
                 // notifications
                 val nm = NotificationManagerCompat.from(context)
                 text.append("Notifications (")
