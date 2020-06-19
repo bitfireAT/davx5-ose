@@ -258,102 +258,126 @@ class SettingsActivity: AppCompatActivity() {
             })
 
             // preference group: CalDAV
-            findPreference<EditTextPreference>(getString(R.string.settings_sync_time_range_past_key))!!.let {
-                model.timeRangePastDays.observe(this, Observer { pastDays ->
-                    if (model.syncIntervalCalendars.value != null) {
-                        it.isVisible = true
-                        if (pastDays != null) {
-                            it.text = pastDays.toString()
-                            it.summary = resources.getQuantityString(R.plurals.settings_sync_time_range_past_days, pastDays, pastDays)
-                        } else {
-                            it.text = null
-                            it.setSummary(R.string.settings_sync_time_range_past_none)
-                        }
-                        it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                            val days = try {
-                                (newValue as String).toInt()
-                            } catch(e: NumberFormatException) {
-                                -1
-                            }
-                            model.updateTimeRangePastDays(if (days < 0) null else days)
-                            false
-                        }
-                    } else
-                        it.isVisible = false
-                })
-            }
+            model.hasCalDav.observe(this, Observer { hasCalDav ->
+                if (!hasCalDav)
+                    findPreference<PreferenceGroup>(getString(R.string.settings_caldav_key))!!.isVisible = false
+                else {
+                    findPreference<PreferenceGroup>(getString(R.string.settings_caldav_key))!!.isVisible = true
 
-            findPreference<EditTextPreference>(getString(R.string.settings_key_default_alarm))!!.let {
-                model.defaultAlarmMinBefore.observe(this, Observer { minBefore ->
-                    if (minBefore != null) {
-                        it.text = minBefore.toString()
-                        it.summary = resources.getQuantityString(R.plurals.settings_default_alarm_on, minBefore, minBefore)
-                    } else {
-                        it.text = null
-                        it.summary = getString(R.string.settings_default_alarm_off)
+                    // when model.hasCalDav is available, model.syncInterval* are also available
+                    // (because hasCalDav is calculated from them)
+                    val hasCalendars = model.syncIntervalCalendars.value != null
+                    val hasTasks = model.syncIntervalTasks.value != null
+                    
+                    findPreference<EditTextPreference>(getString(R.string.settings_sync_time_range_past_key))!!.let { pref ->
+                        if (hasCalendars)
+                            model.timeRangePastDays.observe(this, Observer { pastDays ->
+                                if (model.syncIntervalCalendars.value != null) {
+                                    pref.isVisible = true
+                                    if (pastDays != null) {
+                                        pref.text = pastDays.toString()
+                                        pref.summary = resources.getQuantityString(R.plurals.settings_sync_time_range_past_days, pastDays, pastDays)
+                                    } else {
+                                        pref.text = null
+                                        pref.setSummary(R.string.settings_sync_time_range_past_none)
+                                    }
+                                    pref.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                                        val days = try {
+                                            (newValue as String).toInt()
+                                        } catch(e: NumberFormatException) {
+                                            -1
+                                        }
+                                        model.updateTimeRangePastDays(if (days < 0) null else days)
+                                        false
+                                    }
+                                } else
+                                    pref.isVisible = false
+                            })
+                        else
+                            pref.isVisible = false
                     }
-                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                        val minBefore = try {
-                            (newValue as String).toInt()
-                        } catch (e: java.lang.NumberFormatException) {
-                            null
-                        }
-                        model.updateDefaultAlarm(minBefore)
-                        false
+
+                    findPreference<EditTextPreference>(getString(R.string.settings_key_default_alarm))!!.let { pref ->
+                        if (hasCalendars)
+                            model.defaultAlarmMinBefore.observe(this, Observer { minBefore ->
+                                pref.isVisible = true
+                                if (minBefore != null) {
+                                    pref.text = minBefore.toString()
+                                    pref.summary = resources.getQuantityString(R.plurals.settings_default_alarm_on, minBefore, minBefore)
+                                } else {
+                                    pref.text = null
+                                    pref.summary = getString(R.string.settings_default_alarm_off)
+                                }
+                                pref.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                                    val minBefore = try {
+                                        (newValue as String).toInt()
+                                    } catch (e: java.lang.NumberFormatException) {
+                                        null
+                                    }
+                                    model.updateDefaultAlarm(minBefore)
+                                    false
+                                }
+                            })
+                        else
+                            pref.isVisible = false
                     }
-                })
-            }
 
-            findPreference<SwitchPreferenceCompat>(getString(R.string.settings_manage_calendar_colors_key))!!.let {
-                model.manageCalendarColors.observe(this, Observer { manageCalendarColors ->
-                    if (model.syncIntervalCalendars.value != null || model.syncIntervalTasks.value != null) {
-                        it.isVisible = true
-                        it.isEnabled = !settings.containsKey(AccountSettings.KEY_MANAGE_CALENDAR_COLORS)
-                        it.isChecked = manageCalendarColors
-                        it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                            model.updateManageCalendarColors(newValue as Boolean)
-                            false
-                        }
-                    } else
-                        it.isVisible = false
-                })
-            }
-
-            findPreference<SwitchPreferenceCompat>(getString(R.string.settings_event_colors_key))!!.let {
-                model.eventColors.observe(this, Observer { eventColors ->
-                    if (model.syncIntervalCalendars.value != null) {
-                        it.isVisible = true
-                        it.isEnabled = !settings.containsKey(AccountSettings.KEY_EVENT_COLORS)
-                        it.isChecked = eventColors
-                        it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                            model.updateEventColors(newValue as Boolean)
-                            false
-                        }
-                    } else
-                        it.isVisible = false
-                })
-            }
-
-            // preference group: CardDAV
-            findPreference<ListPreference>(getString(R.string.settings_contact_group_method_key))!!.let {
-                model.contactGroupMethod.observe(this, Observer { groupMethod ->
-                    if (model.syncIntervalContacts.value != null) {
-                        it.isVisible = true
-                        it.value = groupMethod.name
-                        it.summary = it.entry
-                        if (settings.containsKey(AccountSettings.KEY_CONTACT_GROUP_METHOD))
-                            it.isEnabled = false
-                        else {
-                            it.isEnabled = true
-                            it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, groupMethod ->
-                                model.updateContactGroupMethod(GroupMethod.valueOf(groupMethod as String))
+                    findPreference<SwitchPreferenceCompat>(getString(R.string.settings_manage_calendar_colors_key))!!.let {
+                        model.manageCalendarColors.observe(this, Observer { manageCalendarColors ->
+                            it.isEnabled = !settings.containsKey(AccountSettings.KEY_MANAGE_CALENDAR_COLORS)
+                            it.isChecked = manageCalendarColors
+                            it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                                model.updateManageCalendarColors(newValue as Boolean)
                                 false
                             }
-                        }
-                    } else
-                    it.isVisible = false
-                })
-            }
+                        })
+                    }
+
+                    findPreference<SwitchPreferenceCompat>(getString(R.string.settings_event_colors_key))!!.let { pref ->
+                        if (hasCalendars)
+                            model.eventColors.observe(this, Observer { eventColors ->
+                                pref.isVisible = true
+                                pref.isEnabled = !settings.containsKey(AccountSettings.KEY_EVENT_COLORS)
+                                pref.isChecked = eventColors
+                                pref.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                                    model.updateEventColors(newValue as Boolean)
+                                    false
+                                }
+                            })
+                        else
+                            pref.isVisible = false
+                    }
+                }
+            })
+
+            // preference group: CardDAV
+            model.syncIntervalContacts.observe(this, Observer { contactsSyncInterval ->
+                val hasCardDav = contactsSyncInterval != null
+                if (!hasCardDav)
+                    findPreference<PreferenceGroup>(getString(R.string.settings_carddav_key))!!.isVisible = false
+                else {
+                    findPreference<PreferenceGroup>(getString(R.string.settings_carddav_key))!!.isVisible = true
+                    findPreference<ListPreference>(getString(R.string.settings_contact_group_method_key))!!.let {
+                        model.contactGroupMethod.observe(this, Observer { groupMethod ->
+                            if (model.syncIntervalContacts.value != null) {
+                                it.isVisible = true
+                                it.value = groupMethod.name
+                                it.summary = it.entry
+                                if (settings.containsKey(AccountSettings.KEY_CONTACT_GROUP_METHOD))
+                                    it.isEnabled = false
+                                else {
+                                    it.isEnabled = true
+                                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, groupMethod ->
+                                        model.updateContactGroupMethod(GroupMethod.valueOf(groupMethod as String))
+                                        false
+                                    }
+                                }
+                            } else
+                            it.isVisible = false
+                        })
+                    }
+                }
+            })
         }
 
         override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -394,6 +418,16 @@ class SettingsActivity: AppCompatActivity() {
         val syncIntervalContacts = MutableLiveData<Long>()
         val syncIntervalCalendars = MutableLiveData<Long>()
         val syncIntervalTasks = MutableLiveData<Long>()
+        val hasCalDav = object: MediatorLiveData<Boolean>() {
+            init {
+                addSource(syncIntervalCalendars) { calculate() }
+                addSource(syncIntervalTasks) { calculate() }
+            }
+            private fun calculate() {
+                value = syncIntervalCalendars.value != null || syncIntervalTasks.value != null
+            }
+        }
+
         val syncWifiOnly = MutableLiveData<Boolean>()
         val syncWifiOnlySSIDs = MutableLiveData<List<String>>()
 

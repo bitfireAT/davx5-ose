@@ -78,7 +78,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="caldav"
+        android:key="@string/settings_caldav_key"
         android:title="@string/settings_caldav">
 
         <EditTextPreference
@@ -113,7 +113,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="carddav"
+        android:key="@string/settings_carddav_key"
         android:title="@string/settings_carddav">
 
         <ListPreference
