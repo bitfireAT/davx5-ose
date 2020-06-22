@@ -44,6 +44,9 @@ class LocalCalendar private constructor(
             // ACCOUNT_NAME and ACCOUNT_TYPE are required (see docs)! If it's missing, other apps will crash.
             values.put(Calendars.ACCOUNT_NAME, account.name)
             values.put(Calendars.ACCOUNT_TYPE, account.type)
+
+            // Email address for scheduling. Used by the calendar provider to determine whether the
+            // user is ORGANIZER/ATTENDEE for a certain event.
             values.put(Calendars.OWNER_ACCOUNT, account.name)
 
             // flag as visible & synchronizable at creation, might be changed by user at any time

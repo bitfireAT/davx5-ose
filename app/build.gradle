@@ -53,10 +53,6 @@ android {
 
     buildTypes {
         debug {
-            // minifyEnabled is currently needed for working debug builds on Android <8
-            // Can be disabled again as soon as the fix [https://issuetracker.google.com/issues/157785694] is distributed.
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules-debug.pro'
         }
         release {
             minifyEnabled true
