@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">El compte no existeix (eliminat)</string>
   <string name="account_title_address_book">DAVx⁵ Llibreta d’Adreces</string>
   <string name="address_books_authority_title">Llibreta d’adreces</string>
   <string name="help">Ajuda</string>
