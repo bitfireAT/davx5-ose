@@ -36,7 +36,8 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
     override var flags: Int = 0
         private set
 
-    var weAreOrganizer = true
+    var weAreOrganizer = false
+        private set
 
 
     constructor(calendar: AndroidCalendar<*>, event: Event, fileName: String?, eTag: String?, flags: Int): super(calendar, event) {
@@ -51,7 +52,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
         flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
     }
 
-    override fun populateEvent(row: ContentValues) {
+    override fun populateEvent(row: ContentValues, groupScheduled: Boolean) {
         val event = requireNotNull(event)
 
         event.uid = row.getAsString(Events.UID_2445)
@@ -60,7 +61,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
         val isOrganizer = row.getAsInteger(Events.IS_ORGANIZER)
         weAreOrganizer = isOrganizer != null && isOrganizer != 0
 
-        super.populateEvent(row)
+        super.populateEvent(row, groupScheduled)
     }
 
     override fun buildEvent(recurrence: Event?, builder: ContentProviderOperation.Builder) {

@@ -118,15 +118,25 @@ class LocalCalendar private constructor(
     override fun findDirty(): List<LocalEvent> {
         val dirty = LinkedList<LocalEvent>()
 
-        // get dirty events which are required to have an increased SEQUENCE value
+        /*
+         * RFC 5545 3.8.7.4. Sequence Number
+         * When a calendar component is created, its sequence number is 0. It is monotonically incremented by the "Organizer's"
+         * CUA each time the "Organizer" makes a significant revision to the calendar component.
+         */
         for (localEvent in queryEvents("${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null)) {
             try {
                 val event = requireNotNull(localEvent.event)
+
+                val nonGroupScheduled = event.attendees.isEmpty()
+                val weAreOrganizer = localEvent.weAreOrganizer
+
                 val sequence = event.sequence
-                if (sequence == null)               // sequence has not been assigned yet (i.e. this event was just locally created)
+                if (sequence == null)
+                    // sequence has not been assigned yet (i.e. this event was just locally created)
                     event.sequence = 0
-                else if (localEvent.weAreOrganizer) // increase sequence only if we're the organizer (i.e. not for attendee changes)
+                else if (nonGroupScheduled || weAreOrganizer)   // increase sequence
                     event.sequence = sequence + 1
+
             } catch(e: Exception) {
                 Logger.log.log(Level.WARNING, "Couldn't check/increase sequence", e)
             }
