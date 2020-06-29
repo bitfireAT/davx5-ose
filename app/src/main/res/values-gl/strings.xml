@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">A conta non existe (definitivamente)</string>
   <string name="account_title_address_book">DAVx⁵ libreta de enderezos</string>
   <string name="address_books_authority_title">Libretas de enderezos</string>
   <string name="help">Axuda</string>
@@ -110,6 +111,8 @@
   <string name="app_settings_override_proxy_host">Nome servidor proxy HTTP</string>
   <string name="app_settings_override_proxy_port">Porto proxy HTTP</string>
   <string name="app_settings_security">Seguridade</string>
+  <string name="app_settings_security_app_permissions">Permisos da App</string>
+  <string name="app_settings_security_app_permissions_summary">Revisa os permisos requeridos para a sincronización</string>
   <string name="app_settings_distrust_system_certs">Non confiar en certificados do sistema</string>
   <string name="app_settings_distrust_system_certs_on">Non se confiará nos CAs do sistema ou engadidos por usuaria</string>
   <string name="app_settings_distrust_system_certs_off">Confiarase nos CAs do sistema e engadidos por usuaria (recomendado)</string>

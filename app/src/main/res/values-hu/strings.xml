@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">A felhasználói fiók (már) nem létezik</string>
   <string name="account_title_address_book">DAVx⁵ címjegyzék</string>
   <string name="address_books_authority_title">Címjegyzékek</string>
   <string name="help">Súgó</string>
