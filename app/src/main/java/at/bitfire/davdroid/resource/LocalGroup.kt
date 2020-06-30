@@ -100,6 +100,10 @@ class LocalGroup: AndroidGroup, LocalAddress {
     }
 
 
+    override var scheduleTag: String?
+        get() = null
+        set(value) = throw NotImplementedError()
+
     override var flags: Int = 0
 
 
@@ -141,7 +145,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
         fileName = newFileName
     }
 
-    override fun clearDirty(eTag: String?) {
+    override fun clearDirty(eTag: String?, scheduleTag: String?) {
         val id = requireNotNull(id)
 
         val values = ContentValues(2)

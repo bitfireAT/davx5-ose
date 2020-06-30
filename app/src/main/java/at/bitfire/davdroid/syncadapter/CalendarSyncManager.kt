@@ -121,12 +121,13 @@ class CalendarSyncManager(
 
                     val eTag = response[GetETag::class.java]?.eTag
                             ?: throw DavException("Received multi-get response without ETag")
+                    val scheduleTag = response[ScheduleTag::class.java]?.scheduleTag
 
                     val calendarData = response[CalendarData::class.java]
                     val iCal = calendarData?.iCalendar
                             ?: throw DavException("Received multi-get response without address data")
 
-                    processVEvent(DavUtils.lastSegmentOfUrl(response.href), eTag, StringReader(iCal))
+                    processVEvent(DavUtils.lastSegmentOfUrl(response.href), eTag, scheduleTag, StringReader(iCal))
                 }
             }
         }
@@ -138,7 +139,7 @@ class CalendarSyncManager(
 
     // helpers
 
-    private fun processVEvent(fileName: String, eTag: String, reader: Reader) {
+    private fun processVEvent(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
         val events: List<Event>
         try {
             events = Event.eventsFromReader(reader)
@@ -164,11 +165,12 @@ class CalendarSyncManager(
                 if (local != null) {
                     Logger.log.log(Level.INFO, "Updating $fileName in local calendar", event)
                     local.eTag = eTag
+                    local.scheduleTag = scheduleTag
                     local.update(event)
                     syncResult.stats.numUpdates++
                 } else {
                     Logger.log.log(Level.INFO, "Adding $fileName to local calendar", event)
-                    useLocal(LocalEvent(localCollection, event, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) {
+                    useLocal(LocalEvent(localCollection, event, fileName, eTag, scheduleTag, LocalResource.FLAG_REMOTELY_PRESENT)) {
                         it.add()
                     }
                     syncResult.stats.numInserts++

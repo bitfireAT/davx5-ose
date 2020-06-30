@@ -33,6 +33,7 @@ interface LocalResource<in TData: Any> {
      */
     val fileName: String?
     var eTag: String?
+    var scheduleTag: String?
     val flags: Int
 
     /**
@@ -46,8 +47,9 @@ interface LocalResource<in TData: Any> {
      * locally modified resource.
      *
      * @param eTag ETag of the uploaded resource as returned by the server (null if the server didn't return one)
+     * @param scheduleTag CalDAV Schedule-Tag of the uploaded resource as returned by the server (null if not applicable or if the server didn't return one)
      */
-    fun clearDirty(eTag: String?)
+    fun clearDirty(eTag: String?, scheduleTag: String? = null)
 
     /**
      * Sets (local) flags of the resource. At the moment, the only allowed values are

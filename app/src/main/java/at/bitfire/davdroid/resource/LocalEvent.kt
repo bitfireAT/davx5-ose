@@ -26,12 +26,14 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
         const val COLUMN_ETAG = Events.SYNC_DATA1
         const val COLUMN_FLAGS = Events.SYNC_DATA2
         const val COLUMN_SEQUENCE = Events.SYNC_DATA3
+        const val COLUMN_SCHEDULE_TAG = Events.SYNC_DATA4
     }
 
     override var fileName: String? = null
         private set
 
     override var eTag: String? = null
+    override var scheduleTag: String? = null
 
     override var flags: Int = 0
         private set
@@ -40,15 +42,17 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
         private set
 
 
-    constructor(calendar: AndroidCalendar<*>, event: Event, fileName: String?, eTag: String?, flags: Int): super(calendar, event) {
+    constructor(calendar: AndroidCalendar<*>, event: Event, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int): super(calendar, event) {
         this.fileName = fileName
         this.eTag = eTag
+        this.scheduleTag = scheduleTag
         this.flags = flags
     }
 
     private constructor(calendar: AndroidCalendar<*>, values: ContentValues): super(calendar, values) {
         fileName = values.getAsString(Events._SYNC_ID)
         eTag = values.getAsString(COLUMN_ETAG)
+        scheduleTag = values.getAsString(COLUMN_SCHEDULE_TAG)
         flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
     }
 
@@ -82,6 +86,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
         else
             builder .withValue(Events._SYNC_ID, fileName)
                     .withValue(COLUMN_ETAG, eTag)
+                    .withValue(COLUMN_SCHEDULE_TAG, scheduleTag)
     }
 
 
@@ -105,14 +110,16 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
         event!!.uid = uid
     }
 
-    override fun clearDirty(eTag: String?) {
+    override fun clearDirty(eTag: String?, scheduleTag: String?) {
         val values = ContentValues(2)
         values.put(Events.DIRTY, 0)
         values.put(COLUMN_ETAG, eTag)
+        values.put(COLUMN_SCHEDULE_TAG, scheduleTag)
         values.put(COLUMN_SEQUENCE, event!!.sequence)
         calendar.provider.update(eventSyncURI(), values, null, null)
 
         this.eTag = eTag
+        this.scheduleTag = scheduleTag
     }
 
     override fun updateFlags(flags: Int) {

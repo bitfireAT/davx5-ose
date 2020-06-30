@@ -25,6 +25,8 @@ class LocalTask: AndroidTask, LocalResource<Task> {
     }
 
     override var fileName: String? = null
+
+    override var scheduleTag: String? = null
     override var eTag: String? = null
 
     override var flags = 0
@@ -73,7 +75,7 @@ class LocalTask: AndroidTask, LocalResource<Task> {
         task!!.uid = uid
     }
 
-    override fun clearDirty(eTag: String?) {
+    override fun clearDirty(eTag: String?, scheduleTag: String?) {
         val values = ContentValues(3)
         values.put(Tasks._DIRTY, 0)
         values.put(COLUMN_ETAG, eTag)

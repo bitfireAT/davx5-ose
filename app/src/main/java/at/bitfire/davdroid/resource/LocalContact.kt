@@ -37,6 +37,10 @@ class LocalContact: AndroidContact, LocalAddress {
     private val cachedGroupMemberships = HashSet<Long>()
     private val groupMemberships = HashSet<Long>()
 
+    override var scheduleTag: String?
+        get() = null
+        set(value) = throw NotImplementedError()
+
     override var flags: Int = 0
 
     constructor(addressBook: AndroidAddressBook<LocalContact,*>, values: ContentValues)
@@ -62,7 +66,7 @@ class LocalContact: AndroidContact, LocalAddress {
         fileName = newFileName
     }
 
-    override fun clearDirty(eTag: String?) {
+    override fun clearDirty(eTag: String?, scheduleTag: String?) {
         val values = ContentValues(3)
         values.put(COLUMN_ETAG, eTag)
         values.put(ContactsContract.RawContacts.DIRTY, 0)

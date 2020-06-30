@@ -25,8 +25,12 @@ import at.bitfire.dav4jvm.*
 import at.bitfire.dav4jvm.exception.*
 import at.bitfire.dav4jvm.property.GetCTag
 import at.bitfire.dav4jvm.property.GetETag
+import at.bitfire.dav4jvm.property.ScheduleTag
 import at.bitfire.dav4jvm.property.SyncToken
-import at.bitfire.davdroid.*
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.DavService
+import at.bitfire.davdroid.HttpClient
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.SyncState
 import at.bitfire.davdroid.resource.*
@@ -334,18 +338,22 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                             val body = prepareUpload(local)
 
                             var eTag: String? = null
-                            val processETag: (response: okhttp3.Response) -> Unit = { response ->
-                                response.header("ETag")?.let { getETag ->
-                                    eTag = GetETag(getETag).eTag
-                                }
+                            var scheduleTag: String? = null
+                            val onSuccess: (response: okhttp3.Response) -> Unit = { response ->
+                                eTag = GetETag.fromResponse(response)?.eTag
+                                scheduleTag = ScheduleTag.fromResponse(response)?.scheduleTag
                             }
                             try {
                                 if (local.eTag == null) {
                                     Logger.log.info("Uploading new record $fileName")
-                                    remote.put(body, null, true, processETag)
+                                    remote.put(body,  ifNoneMatch = true, callback = onSuccess)
                                 } else {
                                     Logger.log.info("Uploading locally modified record $fileName")
-                                    remote.put(body, local.eTag, false, processETag)
+                                    remote.put(body,
+                                            ifMatch = if (local.scheduleTag == null) local.eTag else null,  // only use If-Match when there is no Schedule-Tag
+                                            ifScheduleTag = local.scheduleTag,
+                                            callback = onSuccess
+                                    )
                                 }
                                 numUploaded++
                             } catch(e: ForbiddenException) {
@@ -370,7 +378,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                             else
                                 Logger.log.fine("Didn't receive new ETag after uploading, setting to null")
 
-                            local.clearDirty(eTag)
+                            local.clearDirty(eTag, scheduleTag)
                         }
                     }
                 }
