@@ -68,14 +68,48 @@ object DavUtils {
         }
     }
 
-    fun selectSRVRecord(records: Array<Record>?): SRVRecord? {
-        val srvRecords = records?.filterIsInstance(SRVRecord::class.java)
-        srvRecords?.let {
-            if (it.size > 1)
-                Logger.log.warning("Multiple SRV records not supported yet; using first one")
-            return it.firstOrNull()
+    fun selectSRVRecord(records: Array<out Record>): SRVRecord? {
+        val srvRecords = records.filterIsInstance(SRVRecord::class.java)
+        if (srvRecords.size <= 1)
+            return srvRecords.firstOrNull()
+
+        /* RFC 2782
+
+           Priority
+                The priority of this target host.  A client MUST attempt to
+                contact the target host with the lowest-numbered priority it can
+                reach; target hosts with the same priority SHOULD be tried in an
+                order defined by the weight field. [...]
+
+           Weight
+                A server selection mechanism.  The weight field specifies a
+                relative weight for entries with the same priority. [...]
+
+                To select a target to be contacted next, arrange all SRV RRs
+                (that have not been ordered yet) in any order, except that all
+                those with weight 0 are placed at the beginning of the list.
+
+                Compute the sum of the weights of those RRs, and with each RR
+                associate the running sum in the selected order. Then choose a
+                uniform random number between 0 and the sum computed
+                (inclusive), and select the RR whose running sum value is the
+                first in the selected order which is greater than or equal to
+                the random number selected. The target host specified in the
+                selected SRV RR is the next one to be contacted by the client.
+        */
+        val minPriority = srvRecords.map { it.priority }.min()
+        val useableRecords = srvRecords.filter { it.priority == minPriority }.sortedBy { it.weight != 0 }
+
+        val map = TreeMap<Int, SRVRecord>()
+        var runningWeight = 0
+        for (record in useableRecords) {
+            val weight = record.weight
+            runningWeight += weight
+            map[runningWeight] = record
         }
-        return null
+
+        val selector = (0..runningWeight).random()
+        return map.ceilingEntry(selector)!!.value
     }
 
     fun pathsFromTXTRecords(records: Array<Record>?): List<String> {
