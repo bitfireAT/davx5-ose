@@ -292,11 +292,13 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             useLocal(local) {
                 val fileName = local.fileName
                 if (fileName != null) {
-                    Logger.log.info("$fileName has been deleted locally -> deleting from server (ETag ${local.eTag})")
+                    val lastScheduleTag = local.scheduleTag
+                    val lastETag = if (lastScheduleTag == null) local.eTag else null
+                    Logger.log.info("$fileName has been deleted locally -> deleting from server (ETag $lastETag / schedule-tag $lastScheduleTag)")
 
                     useRemote(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build())) { remote ->
                         try {
-                            remote.delete(local.eTag) {}
+                            remote.delete(ifETag = lastETag, ifScheduleTag = lastScheduleTag) {}
                             numDeleted++
                         } catch (e: HttpException) {
                             Logger.log.warning("Couldn't delete $fileName from server; ignoring (may be downloaded again)")
@@ -348,10 +350,12 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                                     Logger.log.info("Uploading new record $fileName")
                                     remote.put(body,  ifNoneMatch = true, callback = onSuccess)
                                 } else {
-                                    Logger.log.info("Uploading locally modified record $fileName")
+                                    val lastScheduleTag = local.scheduleTag
+                                    val lastETag = if (lastScheduleTag == null) local.eTag else null
+                                    Logger.log.info("Uploading locally modified record $fileName (when ETag = $lastETag / schedule-tag = $lastScheduleTag)")
                                     remote.put(body,
-                                            ifMatch = if (local.scheduleTag == null) local.eTag else null,  // only use If-Match when there is no Schedule-Tag
-                                            ifScheduleTag = local.scheduleTag,
+                                            ifETag = lastETag,
+                                            ifScheduleTag = lastScheduleTag,
                                             callback = onSuccess
                                     )
                                 }
