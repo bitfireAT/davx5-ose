@@ -19,7 +19,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.DebugInfoActivity
@@ -104,12 +107,17 @@ class DetectConfigurationFragment: Fragment() {
 
     class NothingDetectedFragment: DialogFragment() {
 
+        val model by activityViewModels<LoginModel>()
+
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val model = ViewModelProvider(requireActivity()).get(LoginModel::class.java)
+            var message = getString(R.string.login_no_caldav_carddav)
+            if (model.configuration?.encountered401 == true)
+                message += "\n\n" + getString(R.string.login_username_password_wrong)
+
             return MaterialAlertDialogBuilder(requireActivity())
                     .setTitle(R.string.login_configuration_detection)
                     .setIcon(R.drawable.ic_error_dark)
-                    .setMessage(R.string.login_no_caldav_carddav)
+                    .setMessage(message)
                     .setNeutralButton(R.string.login_view_logs) { _, _ ->
                         val intent = Intent(activity, DebugInfoActivity::class.java)
                         intent.putExtra(DebugInfoActivity.KEY_LOGS, model.configuration?.logs)

@@ -13,6 +13,7 @@ import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.exception.UnauthorizedException
 import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
@@ -51,6 +52,8 @@ class DavResourceFinder(
         log.addHandler(logBuffer)
     }
 
+    var encountered401 = false
+
     private val httpClient: HttpClient = HttpClient.Builder(context, logger = log)
             .addAuthentication(null, loginModel.credentials!!)
             .setForeground(true)
@@ -74,14 +77,14 @@ class DavResourceFinder(
                 cardDavConfig = findInitialConfiguration(Service.CARDDAV)
             } catch (e: Exception) {
                 log.log(Level.INFO, "CardDAV service detection failed", e)
-                rethrowIfInterrupted(e)
+                processException(e)
             }
 
             try {
                 calDavConfig = findInitialConfiguration(Service.CALDAV)
             } catch (e: Exception) {
                 log.log(Level.INFO, "CalDAV service detection failed", e)
-                rethrowIfInterrupted(e)
+                processException(e)
             }
         } catch(e: Exception) {
             // we have been interrupted; reset results so that an error message will be shown
@@ -91,6 +94,7 @@ class DavResourceFinder(
 
         return Configuration(
                 cardDavConfig, calDavConfig,
+                encountered401,
                 logBuffer.toString()
         )
     }
@@ -120,7 +124,7 @@ class DavResourceFinder(
                         config.principal = getCurrentUserPrincipal(baseURL.resolve("/.well-known/" + service.wellKnownName)!!, service)
                     } catch(e: Exception) {
                         log.log(Level.FINE, "Well-known URL detection failed", e)
-                        rethrowIfInterrupted(e)
+                        processException(e)
                     }
             }
         } else if (baseURI.scheme.equals("mailto", true)) {
@@ -139,7 +143,7 @@ class DavResourceFinder(
                     config.principal = discoverPrincipalUrl(it, service)
                 } catch(e: Exception) {
                     log.log(Level.FINE, "$service service discovery failed", e)
-                    rethrowIfInterrupted(e)
+                    processException(e)
                 }
             }
 
@@ -184,7 +188,7 @@ class DavResourceFinder(
             }
         } catch(e: Exception) {
             log.log(Level.FINE, "PROPFIND/OPTIONS on user-given URL failed", e)
-            rethrowIfInterrupted(e)
+            processException(e)
         }
     }
 
@@ -210,7 +214,7 @@ class DavResourceFinder(
             }
         } catch(e: Exception) {
             log.log(Level.WARNING, "Couldn't query user email address", e)
-            rethrowIfInterrupted(e)
+            processException(e)
         }
         return mailboxes
     }
@@ -381,7 +385,7 @@ class DavResourceFinder(
                 principal?.let { return it }
             } catch(e: Exception) {
                 log.log(Level.WARNING, "No resource found", e)
-                rethrowIfInterrupted(e)
+                processException(e)
             }
         return null
     }
@@ -413,11 +417,15 @@ class DavResourceFinder(
     }
 
     /**
-     * Re-throws the exception if it signals that the current thread was interrupted
-     * to stop the current operation.
+     * Processes a thrown exception likes this:
+     *
+     *   - If the Exception is an [UnauthorizedException] (HTTP 401), [encountered401] is set to *true*.
+     *   - Re-throws the exception if it signals that the current thread was interrupted to stop the current operation.
      */
-    private fun rethrowIfInterrupted(e: Exception) {
-        if ((e is InterruptedIOException && e !is SocketTimeoutException) || e is InterruptedException)
+    private fun processException(e: Exception) {
+        if (e is UnauthorizedException)
+            encountered401 = true
+        else if ((e is InterruptedIOException && e !is SocketTimeoutException) || e is InterruptedException)
             throw e
     }
 
@@ -428,6 +436,7 @@ class DavResourceFinder(
             val cardDAV: ServiceInfo?,
             val calDAV: ServiceInfo?,
 
+            val encountered401: Boolean,
             val logs: String
     ) {
 
