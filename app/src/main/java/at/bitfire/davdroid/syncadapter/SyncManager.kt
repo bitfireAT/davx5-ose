@@ -43,7 +43,10 @@ import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.UsesThreadContextClassLoader
 import at.bitfire.vcard4android.ContactsStorageException
-import kotlinx.coroutines.*
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import org.apache.commons.lang3.exception.ContextedException
@@ -286,14 +289,14 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         // but only if they don't have changed on the server. Then finally remove them from the local address book.
         val localList = localCollection.findDeleted()
         for (local in localList) {
-            useLocal(local) {
+            localExceptionContext(local) {
                 val fileName = local.fileName
                 if (fileName != null) {
                     val lastScheduleTag = local.scheduleTag
                     val lastETag = if (lastScheduleTag == null) local.eTag else null
                     Logger.log.info("$fileName has been deleted locally -> deleting from server (ETag $lastETag / schedule-tag $lastScheduleTag)")
 
-                    useRemote(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build())) { remote ->
+                    remoteExceptionContext(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build())) { remote ->
                         try {
                             remote.delete(ifETag = lastETag, ifScheduleTag = lastScheduleTag) {}
                             numDeleted++
@@ -330,12 +333,12 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         runBlocking(workDispatcher) {
             for (local in localCollection.findDirty())
                 launch {
-                    useLocal(local) {
+                    localExceptionContext(local) {
                         val uploadFileName = local.fileName ?:
                                 // if this resource has not been uploaded yet, generate UID and file name
                                 local.prepareForFirstUpload()
 
-                        useRemote(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(uploadFileName).build())) { remote ->
+                        remoteExceptionContext(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(uploadFileName).build())) { remote ->
                             // generate entity to upload (vCard or iCalendar)
                             val body = prepareUpload(local)
 
@@ -500,7 +503,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                         Logger.log.fine("Found remote resource: $name")
 
                         launch {
-                            useLocal(localCollection.findByName(name)) { local ->
+                            localExceptionContext(localCollection.findByName(name)) { local ->
                                 if (local == null) {
                                     Logger.log.info("$name has been added remotely, queueing download")
                                     download(response.href)
@@ -527,7 +530,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     } else if (response.status?.code == HttpURLConnection.HTTP_NOT_FOUND) {
                         // collection sync: resource has been deleted on remote server
                         launch {
-                            useLocal(localCollection.findByName(name)) { local ->
+                            localExceptionContext(localCollection.findByName(name)) { local ->
                                 Logger.log.info("$name has been deleted on server, deleting locally")
                                 local?.delete()
                                 nDeleted.incrementAndGet()
@@ -813,7 +816,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     protected abstract fun notifyInvalidResourceTitle(): String
 
-    protected fun<T: ResourceType?, R> useLocal(local: T, body: (T) -> R): R {
+    protected fun<T: ResourceType?, R> localExceptionContext(local: T, body: (T) -> R): R {
         try {
             return body(local)
         } catch (e: ContextedException) {
@@ -827,7 +830,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
     }
 
-    protected fun<T: DavResource, R> useRemote(remote: T, body: (T) -> R): R {
+    protected fun<T: DavResource, R> remoteExceptionContext(remote: T, body: (T) -> R): R {
         try {
             return body(remote)
         } catch (e: ContextedException) {
@@ -838,7 +841,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
     }
 
-    protected fun<T> useRemote(remote: Response, body: (Response) -> T): T {
+    protected fun<T> remoteExceptionContext(remote: Response, body: (Response) -> T): T {
         try {
             return body(remote)
         } catch (e: ContextedException) {
@@ -850,7 +853,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     }
 
     protected fun<R> useRemoteCollection(body: (RemoteType) -> R) =
-            useRemote(davCollection, body)
+            remoteExceptionContext(davCollection, body)
 
     private fun unwrapExceptions(body: () -> Unit, handler: (e: Throwable, local: ResourceType?, remote: HttpUrl?) -> Unit) {
         var ex: Throwable? = null

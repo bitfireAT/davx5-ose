@@ -84,7 +84,7 @@ class CalendarSyncManager(
             else
                 SyncAlgorithm.COLLECTION_SYNC
 
-    override fun prepareUpload(resource: LocalEvent): RequestBody = useLocal(resource) {
+    override fun prepareUpload(resource: LocalEvent): RequestBody = localExceptionContext(resource) {
         val event = requireNotNull(resource.event)
         Logger.log.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
 
@@ -113,10 +113,10 @@ class CalendarSyncManager(
         Logger.log.info("Downloading ${bunch.size} iCalendars: $bunch")
         useRemoteCollection {
             it.multiget(bunch) { response, _ ->
-                useRemote(response) {
+                remoteExceptionContext(response) {
                     if (!response.isSuccess()) {
                         Logger.log.warning("Received non-successful multiget response for ${response.href}")
-                        return@useRemote
+                        return@remoteExceptionContext
                     }
 
                     val eTag = response[GetETag::class.java]?.eTag
@@ -161,7 +161,7 @@ class CalendarSyncManager(
             }
 
             // update local event, if it exists
-            useLocal(localCollection.findByName(fileName)) { local ->
+            localExceptionContext(localCollection.findByName(fileName)) { local ->
                 if (local != null) {
                     Logger.log.log(Level.INFO, "Updating $fileName in local calendar", event)
                     local.eTag = eTag
@@ -170,7 +170,7 @@ class CalendarSyncManager(
                     syncResult.stats.numUpdates++
                 } else {
                     Logger.log.log(Level.INFO, "Adding $fileName to local calendar", event)
-                    useLocal(LocalEvent(localCollection, event, fileName, eTag, scheduleTag, LocalResource.FLAG_REMOTELY_PRESENT)) {
+                    localExceptionContext(LocalEvent(localCollection, event, fileName, eTag, scheduleTag, LocalResource.FLAG_REMOTELY_PRESENT)) {
                         it.add()
                     }
                     syncResult.stats.numInserts++

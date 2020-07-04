@@ -155,12 +155,12 @@ class ContactsSyncManager(
             if (readOnly) {
                 for (group in localCollection.findDeletedGroups()) {
                     Logger.log.warning("Restoring locally deleted group (read-only address book!)")
-                    useLocal(group) { it.resetDeleted() }
+                    localExceptionContext(group) { it.resetDeleted() }
                 }
 
                 for (contact in localCollection.findDeletedContacts()) {
                     Logger.log.warning("Restoring locally deleted contact (read-only address book!)")
-                    useLocal(contact) { it.resetDeleted() }
+                    localExceptionContext(contact) { it.resetDeleted() }
                 }
 
                 false
@@ -172,12 +172,12 @@ class ContactsSyncManager(
         if (readOnly) {
             for (group in localCollection.findDirtyGroups()) {
                 Logger.log.warning("Resetting locally modified group to ETag=null (read-only address book!)")
-                useLocal(group) { it.clearDirty(null, null) }
+                localExceptionContext(group) { it.clearDirty(null, null) }
             }
 
             for (contact in localCollection.findDirtyContacts()) {
                 Logger.log.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
-                useLocal(contact) { it.clearDirty(null, null) }
+                localExceptionContext(contact) { it.clearDirty(null, null) }
             }
 
         } else {
@@ -189,13 +189,13 @@ class ContactsSyncManager(
                     Logger.log.fine("Finally removing group $group")
                     // useless because Android deletes group memberships as soon as a group is set to DELETED:
                     // group.markMembersDirty()
-                    useLocal(group) { it.delete() }
+                    localExceptionContext(group) { it.delete() }
                 }
 
                 // groups with DIRTY=1: mark all memberships as dirty, then clean DIRTY flag of group
                 for (group in localCollection.findDirtyGroups()) {
                     Logger.log.fine("Marking members of modified group $group as dirty")
-                    useLocal(group) {
+                    localExceptionContext(group) {
                         it.markMembersDirty()
                         it.clearDirty(null, null)
                     }
@@ -228,7 +228,7 @@ class ContactsSyncManager(
         return super.uploadDirty()
     }
 
-    override fun prepareUpload(resource: LocalAddress): RequestBody = useLocal(resource) {
+    override fun prepareUpload(resource: LocalAddress): RequestBody = localExceptionContext(resource) {
         val contact: Contact
         if (resource is LocalContact) {
             contact = resource.contact!!
@@ -272,10 +272,10 @@ class ContactsSyncManager(
         Logger.log.info("Downloading ${bunch.size} vCard(s): $bunch")
         useRemoteCollection {
             it.multiget(bunch, hasVCard4) { response, _ ->
-                useRemote(response) {
+                remoteExceptionContext(response) {
                     if (!response.isSuccess()) {
                         Logger.log.warning("Received non-successful multiget response for ${response.href}")
-                        return@useRemote
+                        return@remoteExceptionContext
                     }
 
                     val eTag = response[GetETag::class.java]?.eTag
@@ -334,7 +334,7 @@ class ContactsSyncManager(
         }
 
         // update local contact, if it exists
-        useLocal(localCollection.findByName(fileName)) {
+        localExceptionContext(localCollection.findByName(fileName)) {
             var local = it
             if (local != null) {
                 Logger.log.log(Level.INFO, "Updating $fileName in local address book", newData)
@@ -363,13 +363,13 @@ class ContactsSyncManager(
             if (local == null) {
                 if (newData.group) {
                     Logger.log.log(Level.INFO, "Creating local group", newData)
-                    useLocal(LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) { group ->
+                    localExceptionContext(LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) { group ->
                         group.add()
                         local = group
                     }
                 } else {
                     Logger.log.log(Level.INFO, "Creating local contact", newData)
-                    useLocal(LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) { contact ->
+                    localExceptionContext(LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) { contact ->
                         contact.add()
                         local = contact
                     }
