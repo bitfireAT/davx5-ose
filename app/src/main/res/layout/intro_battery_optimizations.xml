@@ -26,7 +26,6 @@
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardUseCompatPadding="true"
                     app:contentPadding="@dimen/card_padding">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -95,7 +94,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:visibility="@{model.Companion.manufacturerWarning ? View.VISIBLE : View.GONE}"
-                    app:cardUseCompatPadding="true"
                     app:contentPadding="@dimen/card_padding">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -143,13 +141,13 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-              <TextView
-                  android:id="@+id/infoLeaveUnchecked"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:layout_marginTop="8dp"
-                  style="@style/TextAppearance.MaterialComponents.Body2"
-                  android:text="@string/intro_leave_unchecked"/>
+                <TextView
+                    android:id="@+id/infoLeaveUnchecked"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    android:text="@string/intro_leave_unchecked"/>
 
             </LinearLayout>
 
