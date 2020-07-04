@@ -172,12 +172,12 @@ class ContactsSyncManager(
         if (readOnly) {
             for (group in localCollection.findDirtyGroups()) {
                 Logger.log.warning("Resetting locally modified group to ETag=null (read-only address book!)")
-                useLocal(group) { it.clearDirty(null) }
+                useLocal(group) { it.clearDirty(null, null) }
             }
 
             for (contact in localCollection.findDirtyContacts()) {
                 Logger.log.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
-                useLocal(contact) { it.clearDirty(null) }
+                useLocal(contact) { it.clearDirty(null, null) }
             }
 
         } else {
@@ -197,7 +197,7 @@ class ContactsSyncManager(
                     Logger.log.fine("Marking members of modified group $group as dirty")
                     useLocal(group) {
                         it.markMembersDirty()
-                        it.clearDirty(null)
+                        it.clearDirty(null, null)
                     }
                 }
             } else {

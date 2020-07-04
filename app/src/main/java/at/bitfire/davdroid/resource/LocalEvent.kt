@@ -90,34 +90,39 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
     }
 
 
-    override fun assignNameAndUID() {
+    override fun prepareForFirstUpload(): String {
         var uid: String? = null
         calendar.provider.query(eventSyncURI(), arrayOf(Events.UID_2445), null, null, null)?.use { cursor ->
             if (cursor.moveToNext())
                 uid = cursor.getString(0)
         }
-        if (uid == null)
+
+        if (uid == null) {
+            // generate new UID
             uid = UUID.randomUUID().toString()
 
-        val newFileName = "$uid.ics"
+            val values = ContentValues(1)
+            values.put(Events.UID_2445, uid)
+            calendar.provider.update(eventSyncURI(), values, null, null)
 
-        val values = ContentValues(2)
-        values.put(Events._SYNC_ID, newFileName)
-        values.put(Events.UID_2445, uid)
-        calendar.provider.update(eventSyncURI(), values, null, null)
+            event!!.uid = uid
+        }
 
-        fileName = newFileName
-        event!!.uid = uid
+        return "$uid.ics"
     }
 
-    override fun clearDirty(eTag: String?, scheduleTag: String?) {
-        val values = ContentValues(2)
-        values.put(Events.DIRTY, 0)
+    override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
+        val values = ContentValues(5)
+        if (fileName != null)
+            values.put(Events._SYNC_ID, fileName)
         values.put(COLUMN_ETAG, eTag)
         values.put(COLUMN_SCHEDULE_TAG, scheduleTag)
         values.put(COLUMN_SEQUENCE, event!!.sequence)
+        values.put(Events.DIRTY, 0)
         calendar.provider.update(eventSyncURI(), values, null, null)
 
+        if (fileName != null)
+            this.fileName = fileName
         this.eTag = eTag
         this.scheduleTag = scheduleTag
     }

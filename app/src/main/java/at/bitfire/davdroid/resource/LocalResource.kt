@@ -29,7 +29,9 @@ interface LocalResource<in TData: Any> {
     val id: Long?
 
     /**
-     * Remote file name for the resource, for instance `mycontact.vcf`.
+     * Remote file name for the resource, for instance `mycontact.vcf`. Also used to determine whether
+     * a dirty record has just been created (in this case, [fileName] is *null*) or modified
+     * (in this case, [fileName] is the remote file name).
      */
     val fileName: String?
     var eTag: String?
@@ -37,19 +39,25 @@ interface LocalResource<in TData: Any> {
     val flags: Int
 
     /**
-     * Generates a new UID and file name and assigns them to this resource. Typically used
-     * before uploading a resource which has just been created locally.
+     * Prepares the resource for the first upload.
+     *
+     *   1. If the resource doesn't have an UID yet, this method generates one and writes it to the content provider.
+     *   2. The new file name which should be used for the upload is derived from the UID and returned, but not
+     *   saved to the content provider.
+     *
+     * @return new file name of the resource (like "<uid>.vcf")
      */
-    fun assignNameAndUID()
+    fun prepareForFirstUpload(): String
 
     /**
      * Unsets the /dirty/ field of the resource. Typically used after successfully uploading a
      * locally modified resource.
      *
+     * @param fileName If this argument is not *null*, [LocalResource.fileName] will be set to its value.
      * @param eTag ETag of the uploaded resource as returned by the server (null if the server didn't return one)
      * @param scheduleTag CalDAV Schedule-Tag of the uploaded resource as returned by the server (null if not applicable or if the server didn't return one)
      */
-    fun clearDirty(eTag: String?, scheduleTag: String? = null)
+    fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String? = null)
 
     /**
      * Sets (local) flags of the resource. At the moment, the only allowed values are

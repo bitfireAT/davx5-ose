@@ -43,10 +43,7 @@ import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.UsesThreadContextClassLoader
 import at.bitfire.vcard4android.ContactsStorageException
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import org.apache.commons.lang3.exception.ContextedException
@@ -323,20 +320,23 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         var numUploaded = 0
 
         // make sure all resources have file name and UID before uploading them
-        for (local in localCollection.findDirtyWithoutNameOrUid())
+        /*for (local in localCollection.findDirtyWithoutNameOrUid())
             useLocal(local) {
                 Logger.log.fine("Generating file name/UID for local resource #${local.id}")
                 local.assignNameAndUID()
-            }
+            }*/
 
         // upload dirty resources (parallelized)
         runBlocking(workDispatcher) {
             for (local in localCollection.findDirty())
                 launch {
                     useLocal(local) {
-                        val fileName = local.fileName!!
-                        useRemote(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(fileName).build())) { remote ->
-                            // generate entity to upload (VCard, iCal, whatever)
+                        val uploadFileName = local.fileName ?:
+                                // if this resource has not been uploaded yet, generate UID and file name
+                                local.prepareForFirstUpload()
+
+                        useRemote(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(uploadFileName).build())) { remote ->
+                            // generate entity to upload (vCard or iCalendar)
                             val body = prepareUpload(local)
 
                             var eTag: String? = null
@@ -346,13 +346,14 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                                 scheduleTag = ScheduleTag.fromResponse(response)?.scheduleTag
                             }
                             try {
-                                if (local.eTag == null) {
-                                    Logger.log.info("Uploading new record $fileName")
-                                    remote.put(body,  ifNoneMatch = true, callback = onSuccess)
+                                if (local.fileName == null) {
+                                    Logger.log.info("Uploading new record $uploadFileName")
+                                    remote.put(body, ifNoneMatch = true, callback = onSuccess)
+
                                 } else {
                                     val lastScheduleTag = local.scheduleTag
                                     val lastETag = if (lastScheduleTag == null) local.eTag else null
-                                    Logger.log.info("Uploading locally modified record $fileName (when ETag = $lastETag / schedule-tag = $lastScheduleTag)")
+                                    Logger.log.info("Uploading locally modified record $uploadFileName (when ETag = $lastETag / schedule-tag = $lastScheduleTag)")
                                     remote.put(body,
                                             ifETag = lastETag,
                                             ifScheduleTag = lastScheduleTag,
@@ -382,7 +383,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                             else
                                 Logger.log.fine("Didn't receive new ETag after uploading, setting to null")
 
-                            local.clearDirty(eTag, scheduleTag)
+                            local.clearDirty(uploadFileName, eTag, scheduleTag)
                         }
                     }
                 }

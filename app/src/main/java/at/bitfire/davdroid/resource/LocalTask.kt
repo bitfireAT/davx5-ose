@@ -10,10 +10,8 @@ package at.bitfire.davdroid.resource
 
 import android.content.ContentProviderOperation
 import android.content.ContentValues
-import at.bitfire.ical4android.AndroidTask
-import at.bitfire.ical4android.AndroidTaskFactory
-import at.bitfire.ical4android.AndroidTaskList
-import at.bitfire.ical4android.Task
+import android.provider.CalendarContract
+import at.bitfire.ical4android.*
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.*
 
@@ -61,27 +59,41 @@ class LocalTask: AndroidTask, LocalResource<Task> {
 
     /* custom queries */
 
-    override fun assignNameAndUID() {
-        val uid = UUID.randomUUID().toString()
-        val newFileName = "$uid.ics"
+    override fun prepareForFirstUpload(): String {
+        var uid: String? = null
+        taskList.provider.client.query(taskSyncURI(), arrayOf(Tasks._UID), null, null, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                uid = cursor.getString(0)
+        }
 
-        val values = ContentValues(2)
-        values.put(Tasks._SYNC_ID, newFileName)
-        values.put(Tasks._UID, uid)
-        taskList.provider.client.update(taskSyncURI(), values, null, null)
+        if (uid == null) {
+            // generate new UID
+            uid = UUID.randomUUID().toString()
 
-        fileName = newFileName
+            val values = ContentValues(1)
+            values.put(Tasks._UID, uid)
+            taskList.provider.client.update(taskSyncURI(), values, null, null)
 
-        task!!.uid = uid
+            task!!.uid = uid
+        }
+
+        return "$uid.ics"
     }
 
-    override fun clearDirty(eTag: String?, scheduleTag: String?) {
-        val values = ContentValues(3)
-        values.put(Tasks._DIRTY, 0)
+    override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
+        if (scheduleTag != null)
+            Ical4Android.log.fine("Schedule-Tag for tasks not supported yet, won't save")
+
+        val values = ContentValues(4)
+        if (fileName != null)
+            values.put(Tasks._SYNC_ID, fileName)
         values.put(COLUMN_ETAG, eTag)
         values.put(Tasks.SYNC_VERSION, task!!.sequence)
+        values.put(Tasks._DIRTY, 0)
         taskList.provider.client.update(taskSyncURI(), values, null, null)
 
+        if (fileName != null)
+            this.fileName = fileName
         this.eTag = eTag
     }
 

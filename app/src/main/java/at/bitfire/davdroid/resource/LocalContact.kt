@@ -54,20 +54,34 @@ class LocalContact: AndroidContact, LocalAddress {
     }
 
 
-    override fun assignNameAndUID() {
-        val uid = UUID.randomUUID().toString()
-        val newFileName = "$uid.vcf"
+    override fun prepareForFirstUpload(): String {
+        var uid: String? = null
+        addressBook.provider!!.query(rawContactSyncURI(), arrayOf(COLUMN_UID), null, null, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                uid = cursor.getString(0)
+        }
 
-        val values = ContentValues(2)
-        values.put(COLUMN_FILENAME, newFileName)
-        values.put(COLUMN_UID, uid)
-        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+        if (uid == null) {
+            // generate new UID
+            uid = UUID.randomUUID().toString()
 
-        fileName = newFileName
+            val values = ContentValues(1)
+            values.put(COLUMN_UID, uid)
+            addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+
+            contact!!.uid = uid
+        }
+
+        return "$uid.vcf"
     }
 
-    override fun clearDirty(eTag: String?, scheduleTag: String?) {
-        val values = ContentValues(3)
+    override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
+        if (scheduleTag != null)
+            throw IllegalArgumentException("Contacts must not have a Schedule-Tag")
+
+        val values = ContentValues(4)
+        if (fileName != null)
+            values.put(COLUMN_FILENAME, fileName)
         values.put(COLUMN_ETAG, eTag)
         values.put(ContactsContract.RawContacts.DIRTY, 0)
 
@@ -80,6 +94,8 @@ class LocalContact: AndroidContact, LocalAddress {
 
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
+        if (fileName != null)
+            this.fileName = fileName
         this.eTag = eTag
     }
 
