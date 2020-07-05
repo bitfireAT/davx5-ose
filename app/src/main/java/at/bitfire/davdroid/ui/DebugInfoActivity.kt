@@ -331,6 +331,7 @@ class DebugInfoActivity: AppCompatActivity() {
                         text.append("Address book account: ${acct.name}\n" +
                                 "  Main account: ${addressBook.mainAccount}\n" +
                                 "  URL: ${addressBook.url}\n" +
+                                "  isSyncable(${ContactsContract.AUTHORITY}): ").append(ContentResolver.getIsSyncable(acct, ContactsContract.AUTHORITY)).append("\n" +
                                 "  Sync automatically: ").append(ContentResolver.getSyncAutomatically(acct, ContactsContract.AUTHORITY)).append("\n")
                     } catch(e: Exception) {
                         text.append("$acct is invalid: ${e.message}\n")

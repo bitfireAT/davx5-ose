@@ -62,6 +62,7 @@ class LocalAddressBook(
             }
 
             val addressBook = LocalAddressBook(context, account, provider)
+            ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1)
             ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
 
             // initialize Contacts Provider Settings
