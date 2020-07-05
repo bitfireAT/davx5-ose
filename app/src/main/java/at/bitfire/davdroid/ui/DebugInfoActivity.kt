@@ -182,8 +182,7 @@ class DebugInfoActivity: AppCompatActivity() {
                     val pm = context.packageManager
                     val appIDs = mutableSetOf(      // we always want info about these packages
                             BuildConfig.APPLICATION_ID,                     // DAVx5
-                            "${BuildConfig.APPLICATION_ID}.jbworkaround",   // DAVdroid JB Workaround
-                            "org.dmfs.tasks"                               // OpenTasks
+                            "org.dmfs.tasks"                                // OpenTasks
                     )
                     // add info about contact, calendar, task provider
                     for (authority in arrayOf(ContactsContract.AUTHORITY, CalendarContract.AUTHORITY, TaskProvider.ProviderName.OpenTasks.authority))
@@ -198,18 +197,20 @@ class DebugInfoActivity: AppCompatActivity() {
                     for (appID in appIDs)
                         try {
                             val info = pm.getPackageInfo(appID, 0)
-                            text  .append("* ").append(appID)
+                            val appInfo = info.applicationInfo
+                            text    .append("* ").append(appInfo.loadLabel(pm))
                                     .append(" ").append(info.versionName)
-                                    .append(" (").append(PackageInfoCompat.getLongVersionCode(info)).append(")")
+                                    .append(" (").append(appID)
+                                    .append(" ").append(PackageInfoCompat.getLongVersionCode(info)).append(")")
                             pm.getInstallerPackageName(appID)?.let { installer ->
-                                text.append(" from ").append(installer)
+                                text    .append(" from ")
+                                        .append(pm.getApplicationInfo(installer, 0).loadLabel(pm))
+                                        .append(" (").append(installer).append(")")
                             }
-                            info.applicationInfo?.let { applicationInfo ->
-                                if (!applicationInfo.enabled)
-                                    text.append(" disabled!")
-                                if (applicationInfo.flags.and(ApplicationInfo.FLAG_EXTERNAL_STORAGE) != 0)
-                                    text.append(" on external storage!")
-                            }
+                            if (!appInfo.enabled)
+                                text.append(" DISABLED!")
+                            if (appInfo.flags.and(ApplicationInfo.FLAG_EXTERNAL_STORAGE) != 0)
+                                text.append(" ON EXTERNAL STORAGE!")
                             text.append("\n")
                         } catch(e: PackageManager.NameNotFoundException) {
                         }
