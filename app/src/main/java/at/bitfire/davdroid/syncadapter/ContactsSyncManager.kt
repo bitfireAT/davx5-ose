@@ -123,18 +123,16 @@ class ContactsSyncManager(
         // in case of GROUP_VCARDs, treat groups as contacts in the local address book
         localCollection.includeGroups = groupMethod == GroupMethod.GROUP_VCARDS
 
-        return useRemoteCollection {
+        return remoteExceptionContext {
             var syncState: SyncState? = null
             it.propfind(0, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
                     response[SupportedAddressData::class.java]?.let { supported ->
                         hasVCard4 = supported.hasVCard4()
                     }
-
                     response[SupportedReportSet::class.java]?.let { supported ->
                         hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
                     }
-
                     syncState = syncState(response)
                 }
             }
@@ -228,7 +226,7 @@ class ContactsSyncManager(
         return super.uploadDirty()
     }
 
-    override fun prepareUpload(resource: LocalAddress): RequestBody = localExceptionContext(resource) {
+    override fun generateUpload(resource: LocalAddress): RequestBody = localExceptionContext(resource) {
         val contact: Contact
         if (resource is LocalContact) {
             contact = resource.contact!!
@@ -264,18 +262,18 @@ class ContactsSyncManager(
     }
 
     override fun listAllRemote(callback: DavResponseCallback) =
-            useRemoteCollection {
+            remoteExceptionContext {
                 it.propfind(1, ResourceType.NAME, GetETag.NAME, callback = callback)
             }
 
     override fun downloadRemote(bunch: List<HttpUrl>) {
         Logger.log.info("Downloading ${bunch.size} vCard(s): $bunch")
-        useRemoteCollection {
+        remoteExceptionContext {
             it.multiget(bunch, hasVCard4) { response, _ ->
-                remoteExceptionContext(response) {
+                responseExceptionContext(response) {
                     if (!response.isSuccess()) {
                         Logger.log.warning("Received non-successful multiget response for ${response.href}")
-                        return@remoteExceptionContext
+                        return@responseExceptionContext
                     }
 
                     val eTag = response[GetETag::class.java]?.eTag

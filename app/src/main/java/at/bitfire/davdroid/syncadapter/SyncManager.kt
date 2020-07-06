@@ -165,7 +165,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                         }
 
                         Logger.log.info("Deleting entries which are not present remotely anymore")
-                        syncResult.stats.numDeletes += deleteNotPresentRemotely()
+                        deleteNotPresentRemotely()
 
                         Logger.log.info("Post-processing")
                         postProcess()
@@ -315,87 +315,89 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     }
 
     /**
-     * Uploads locally modified resources to the server (HTTP `PUT`).
+     * Uploads locally modified resources to the server.
      *
      * @return whether resources have been uploaded
      */
     protected open fun uploadDirty(): Boolean {
         var numUploaded = 0
 
-        // make sure all resources have file name and UID before uploading them
-        /*for (local in localCollection.findDirtyWithoutNameOrUid())
-            useLocal(local) {
-                Logger.log.fine("Generating file name/UID for local resource #${local.id}")
-                local.assignNameAndUID()
-            }*/
-
         // upload dirty resources (parallelized)
         runBlocking(workDispatcher) {
             for (local in localCollection.findDirty())
                 launch {
-                    localExceptionContext(local) {
-                        val uploadFileName = local.fileName ?:
-                                // if this resource has not been uploaded yet, generate UID and file name
-                                local.prepareForFirstUpload()
-
-                        remoteExceptionContext(DavResource(httpClient.okHttpClient, collectionURL.newBuilder().addPathSegment(uploadFileName).build())) { remote ->
-                            // generate entity to upload (vCard or iCalendar)
-                            val body = prepareUpload(local)
-
-                            var eTag: String? = null
-                            var scheduleTag: String? = null
-                            val onSuccess: (response: okhttp3.Response) -> Unit = { response ->
-                                eTag = GetETag.fromResponse(response)?.eTag
-                                scheduleTag = ScheduleTag.fromResponse(response)?.scheduleTag
-                            }
-                            try {
-                                if (local.fileName == null) {
-                                    Logger.log.info("Uploading new record $uploadFileName")
-                                    remote.put(body, ifNoneMatch = true, callback = onSuccess)
-
-                                } else {
-                                    val lastScheduleTag = local.scheduleTag
-                                    val lastETag = if (lastScheduleTag == null) local.eTag else null
-                                    Logger.log.info("Uploading locally modified record $uploadFileName (when ETag = $lastETag / schedule-tag = $lastScheduleTag)")
-                                    remote.put(body,
-                                            ifETag = lastETag,
-                                            ifScheduleTag = lastScheduleTag,
-                                            callback = onSuccess
-                                    )
-                                }
-                                numUploaded++
-                            } catch(e: ForbiddenException) {
-                                // HTTP 403 Forbidden
-                                // If and only if the upload failed because of missing permissions, treat it like 412.
-                                if (e.errors.contains(Error.NEED_PRIVILEGES))
-                                    Logger.log.log(Level.INFO, "Couldn't upload because of missing permissions, ignoring", e)
-                                else
-                                    throw e
-                            } catch(e: ConflictException) {
-                                // HTTP 409 Conflict
-                                // We can't interact with the user to resolve the conflict, so we treat 409 like 412.
-                                Logger.log.log(Level.INFO, "Edit conflict, ignoring", e)
-                            } catch(e: PreconditionFailedException) {
-                                // HTTP 412 Precondition failed: Resource has been modified on the server in the meanwhile.
-                                // Ignore this condition so that the resource can be downloaded and reset again.
-                                Logger.log.log(Level.INFO, "Resource has been modified on the server before upload, ignoring", e)
-                            }
-
-                            if (eTag != null)
-                                Logger.log.fine("Received new ETag=$eTag after uploading")
-                            else
-                                Logger.log.fine("Didn't receive new ETag after uploading, setting to null")
-
-                            local.clearDirty(uploadFileName, eTag, scheduleTag)
-                        }
-                    }
+                    uploadDirty(local)
+                    numUploaded++
                 }
         }
+        syncResult.stats.numEntries += numUploaded
         Logger.log.info("Sent $numUploaded record(s) to server")
         return numUploaded > 0
     }
 
-    protected abstract fun prepareUpload(resource: ResourceType): RequestBody
+    protected fun uploadDirty(local: ResourceType) {
+        val existingFileName = local.fileName
+
+        var newFileName: String? = null
+        var eTag: String? = null
+        var scheduleTag: String? = null
+        val readTagsFromResponse: (okhttp3.Response) -> Unit = { response ->
+            eTag = GetETag.fromResponse(response)?.eTag
+            scheduleTag = ScheduleTag.fromResponse(response)?.scheduleTag
+        }
+
+        try {
+            if (existingFileName == null) {             // new resource
+                newFileName = local.prepareForFirstUpload()
+                val uploadUrl = collectionURL.newBuilder().addPathSegment(newFileName).build()
+                remoteExceptionContext(DavResource(httpClient.okHttpClient, uploadUrl)) { remote ->
+                    Logger.log.info("Uploading new record ${local.id} -> $newFileName")
+                    remote.put(generateUpload(local), ifNoneMatch = true, callback = readTagsFromResponse)
+                }
+
+            } else /* existingFileName != null */ {     // updated resource
+                val uploadUrl = collectionURL.newBuilder().addPathSegment(existingFileName).build()
+                remoteExceptionContext(DavResource(httpClient.okHttpClient, uploadUrl)) { remote ->
+                    val lastScheduleTag = local.scheduleTag
+                    val lastETag = if (lastScheduleTag == null) local.eTag else null
+                    Logger.log.info("Uploading modified record ${local.id} -> $newFileName (ETag=$lastETag, Schedule-Tag=$lastScheduleTag)")
+                    remote.put(generateUpload(local), ifETag = lastETag, ifScheduleTag = lastScheduleTag, callback = readTagsFromResponse)
+                }
+            }
+        }  catch(e: ForbiddenException) {
+            // HTTP 403 Forbidden
+            // If and only if the upload failed because of missing permissions, treat it like 412.
+            if (e.errors.contains(Error.NEED_PRIVILEGES))
+                Logger.log.log(Level.INFO, "Couldn't upload because of missing permissions, ignoring", e)
+            else
+                throw e
+        } catch(e: ConflictException) {
+            // HTTP 409 Conflict
+            // We can't interact with the user to resolve the conflict, so we treat 409 like 412.
+            Logger.log.log(Level.INFO, "Edit conflict, ignoring", e)
+        } catch(e: PreconditionFailedException) {
+            // HTTP 412 Precondition failed: Resource has been modified on the server in the meanwhile.
+            // Ignore this condition so that the resource can be downloaded and reset again.
+            Logger.log.log(Level.INFO, "Resource has been modified on the server before upload, ignoring", e)
+        }
+
+        if (eTag != null)
+            Logger.log.fine("Received new ETag=$eTag after uploading")
+        else
+            Logger.log.fine("Didn't receive new ETag after uploading, setting to null")
+
+        local.clearDirty(newFileName, eTag, scheduleTag)
+    }
+
+    /**
+     * Generates the request body (iCalendar or vCard) from a local resource.
+     *
+     * @param resource local resource to generate the body from
+     *
+     * @return iCalendar or vCard (content + Content-Type) that can be uploaded to the server
+     */
+    protected abstract fun generateUpload(resource: ResourceType): RequestBody
+
 
     /**
      * Determines whether a sync is required because there were changes on the server.
@@ -612,10 +614,10 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * Used together with [resetPresentRemotely] when a full listing has been received from
      * the server to locally delete resources which are not present remotely (anymore).
      */
-    protected open fun deleteNotPresentRemotely(): Int {
+    protected open fun deleteNotPresentRemotely() {
         val removed = localCollection.removeNotDirtyMarked(0)
         Logger.log.info("Removed $removed local resources which are not present on the server anymore")
-        return removed
+        syncResult.stats.numDeletes += removed
     }
 
     /**
@@ -841,7 +843,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
     }
 
-    protected fun<T> remoteExceptionContext(remote: Response, body: (Response) -> T): T {
+    protected fun<T> responseExceptionContext(remote: Response, body: (Response) -> T): T {
         try {
             return body(remote)
         } catch (e: ContextedException) {
@@ -852,7 +854,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
     }
 
-    protected fun<R> useRemoteCollection(body: (RemoteType) -> R) =
+    protected fun<R> remoteExceptionContext(body: (RemoteType) -> R) =
             remoteExceptionContext(davCollection, body)
 
     private fun unwrapExceptions(body: () -> Unit, handler: (e: Throwable, local: ResourceType?, remote: HttpUrl?) -> Unit) {

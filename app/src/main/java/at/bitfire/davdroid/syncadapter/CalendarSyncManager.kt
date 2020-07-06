@@ -25,6 +25,7 @@ import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.ical4android.DateUtils
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
 import net.fortuna.ical4j.model.component.VAlarm
@@ -63,14 +64,13 @@ class CalendarSyncManager(
     }
 
     override fun queryCapabilities(): SyncState? =
-            useRemoteCollection {
+            remoteExceptionContext {
                 var syncState: SyncState? = null
                 it.propfind(0, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                     if (relation == Response.HrefRelation.SELF) {
                         response[SupportedReportSet::class.java]?.let { supported ->
                             hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
                         }
-
                         syncState = syncState(response)
                     }
                 }
@@ -84,7 +84,7 @@ class CalendarSyncManager(
             else
                 SyncAlgorithm.COLLECTION_SYNC
 
-    override fun prepareUpload(resource: LocalEvent): RequestBody = localExceptionContext(resource) {
+    override fun generateUpload(resource: LocalEvent): RequestBody = localExceptionContext(resource) {
         val event = requireNotNull(resource.event)
         Logger.log.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
 
@@ -103,7 +103,7 @@ class CalendarSyncManager(
             limitStart = calendar.time
         }
 
-        return useRemoteCollection { remote ->
+        return remoteExceptionContext { remote ->
             Logger.log.info("Querying events since $limitStart")
             remote.calendarQuery("VEVENT", limitStart, null, callback)
         }
@@ -111,12 +111,12 @@ class CalendarSyncManager(
 
     override fun downloadRemote(bunch: List<HttpUrl>) {
         Logger.log.info("Downloading ${bunch.size} iCalendars: $bunch")
-        useRemoteCollection {
+        remoteExceptionContext {
             it.multiget(bunch) { response, _ ->
-                remoteExceptionContext(response) {
+                responseExceptionContext(response) {
                     if (!response.isSuccess()) {
                         Logger.log.warning("Received non-successful multiget response for ${response.href}")
-                        return@remoteExceptionContext
+                        return@responseExceptionContext
                     }
 
                     val eTag = response[GetETag::class.java]?.eTag
@@ -154,7 +154,7 @@ class CalendarSyncManager(
 
             // set default reminder for non-full-day events, if requested
             val defaultAlarmMinBefore = accountSettings.getDefaultAlarm()
-            if (defaultAlarmMinBefore != null && !event.isAllDay() && event.alarms.isEmpty()) {
+            if (defaultAlarmMinBefore != null && DateUtils.isDateTime(event.dtStart) && event.alarms.isEmpty()) {
                 val alarm = VAlarm(Duration.ofMinutes(-defaultAlarmMinBefore.toLong()))
                 Logger.log.log(Level.FINE, "${event.uid}: Adding default alarm", alarm)
                 event.alarms += alarm

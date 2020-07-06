@@ -49,16 +49,15 @@ class LocalAddressBook(
 
         private fun verifyUserData(context: Context, account: Account, userData: Bundle): Boolean {
             val accountManager = AccountManager.get(context)
-            var r = true
             userData.keySet().forEach { key ->
                 val stored = accountManager.getUserData(account, key)
                 val expected = userData.getString(key)
                 if (stored != expected) {
                     Logger.log.warning("Stored user data \"${stored}\" differs from expected data \"${expected}\" for ${key}")
-                    r = false
+                    return false
                 }
             }
-            return r
+            return true
         }
 
         fun create(context: Context, provider: ContentProviderClient, mainAccount: Account, info: Collection): LocalAddressBook {

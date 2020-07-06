@@ -16,10 +16,7 @@ import at.bitfire.dav4jvm.DavCalendar
 import at.bitfire.dav4jvm.DavResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
-import at.bitfire.dav4jvm.property.CalendarData
-import at.bitfire.dav4jvm.property.GetCTag
-import at.bitfire.dav4jvm.property.GetETag
-import at.bitfire.dav4jvm.property.SyncToken
+import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -60,18 +57,19 @@ class TasksSyncManager(
     }
 
     override fun queryCapabilities() =
-            useRemoteCollection {
+            remoteExceptionContext {
                 var syncState: SyncState? = null
                 it.propfind(0, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                     if (relation == Response.HrefRelation.SELF)
-                    syncState = syncState(response)
+                        syncState = syncState(response)
                 }
+
                 syncState
             }
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
-    override fun prepareUpload(resource: LocalTask): RequestBody = localExceptionContext(resource) {
+    override fun generateUpload(resource: LocalTask): RequestBody = localExceptionContext(resource) {
         val task = requireNotNull(resource.task)
         Logger.log.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
 
@@ -82,7 +80,7 @@ class TasksSyncManager(
     }
 
     override fun listAllRemote(callback: DavResponseCallback) {
-        useRemoteCollection { remote ->
+        remoteExceptionContext { remote ->
             Logger.log.info("Querying tasks")
             remote.calendarQuery("VTODO", null, null, callback)
         }
@@ -91,12 +89,12 @@ class TasksSyncManager(
     override fun downloadRemote(bunch: List<HttpUrl>) {
         Logger.log.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
-        useRemoteCollection {
+        remoteExceptionContext {
             it.multiget(bunch) { response, _ ->
-                remoteExceptionContext(response) {
+                responseExceptionContext(response) {
                     if (!response.isSuccess()) {
                         Logger.log.warning("Received non-successful multiget response for ${response.href}")
-                        return@remoteExceptionContext
+                        return@responseExceptionContext
                     }
 
                     val eTag = response[GetETag::class.java]?.eTag
