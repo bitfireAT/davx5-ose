@@ -27,6 +27,7 @@ import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_AUTOSTART_PERMISSION
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_BATTERY_OPTIMIZATIONS
 import org.apache.commons.text.WordUtils
+import java.util.*
 
 class BatteryOptimizationsFragment: Fragment() {
 
@@ -57,7 +58,7 @@ class BatteryOptimizationsFragment: Fragment() {
         binding.autostartMoreInfo.setOnClickListener {
             UiUtils.launchUri(requireActivity(), App.homepageUrl(requireActivity()).buildUpon()
                     .appendPath("faq").appendPath("synchronization-is-not-run-as-expected")
-                    .appendQueryParameter("manufacturer", Build.MANUFACTURER.toLowerCase()).build())
+                    .appendQueryParameter("manufacturer", Build.MANUFACTURER.toLowerCase(Locale.ROOT)).build())
         }
 
         binding.infoLeaveUnchecked.text = getString(R.string.intro_leave_unchecked, getString(R.string.app_settings_reset_hints))
@@ -115,7 +116,7 @@ class BatteryOptimizationsFragment: Fragment() {
              * @see evilManufacturers
              */
             val manufacturerWarning =
-                    (evilManufacturers.contains(Build.MANUFACTURER.toLowerCase()) || BuildConfig.DEBUG)
+                    (evilManufacturers.contains(Build.MANUFACTURER.toLowerCase(Locale.ROOT)) || BuildConfig.DEBUG)
 
             fun isWhitelisted(context: Context) =
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

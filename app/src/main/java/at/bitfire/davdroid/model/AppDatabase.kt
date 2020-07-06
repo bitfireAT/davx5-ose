@@ -17,7 +17,7 @@ import at.bitfire.davdroid.log.Logger
     Service::class,
     HomeSet::class,
     Collection::class
-], version = 7)
+], exportSchema = true, version = 7)
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
 

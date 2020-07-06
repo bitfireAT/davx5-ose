@@ -96,7 +96,7 @@
                         app:layout_constraintEnd_toStartOf="@id/allSwitch"
                         style="@style/TextAppearance.MaterialComponents.Body2"
                         android:text="@{model.haveAllPermissions ? @string/permissions_all_status_on : @string/permissions_all_status_off}" />
-                    <Switch
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/allSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -126,7 +126,7 @@
                         app:layout_constraintEnd_toStartOf="@id/contactsSwitch"
                         style="@style/TextAppearance.MaterialComponents.Body2"
                         android:text="@{model.haveContactsPermissions ? @string/permissions_contacts_status_on : @string/permissions_contacts_status_off}" />
-                    <Switch
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/contactsSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -157,7 +157,7 @@
                         app:layout_constraintEnd_toStartOf="@id/calendarSwitch"
                         style="@style/TextAppearance.MaterialComponents.Body2"
                         android:text="@{model.haveCalendarPermissions ? @string/permissions_calendar_status_on : @string/permissions_calendar_status_off}" />
-                    <Switch
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/calendarSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -187,7 +187,7 @@
                         app:layout_constraintEnd_toStartOf="@id/tasksSwitch"
                         style="@style/TextAppearance.MaterialComponents.Body2"
                         android:text="@{model.haveTasksPermissions != null ? (model.haveTasksPermissions ? @string/permissions_tasks_status_on : @string/permissions_tasks_status_off) : @string/permissions_tasks_status_not_installed}" />
-                    <Switch
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/tasksSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"

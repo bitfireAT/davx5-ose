@@ -7,150 +7,144 @@
         <variable name="model" type="at.bitfire.davdroid.ui.intro.OpenTasksFragment.Model"/>
     </data>
 
-    <FrameLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/appIntro2BottomBarHeight">
+        android:paddingBottom="@dimen/appIntro2BottomBarHeight"
+        android:background="?android:attr/colorBackground">
 
-        <ScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?android:attr/colorBackground">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/activity_margin">
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/activity_margin">
+                android:layout_height="wrap_content">
 
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/card_padding">
-
-                        <at.bitfire.davdroid.ui.widget.CropImageView
-                            android:id="@+id/image"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:maxHeight="@dimen/card_theme_max_height"
-                            app:layout_constraintVertical_chainStyle="packed"
-                            app:layout_constraintVertical_bias="0"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toTopOf="@id/heading"
-                            android:adjustViewBounds="true"
-                            app:srcCompat="@drawable/intro_tasks"
-                            app:verticalOffsetPercent=".55" />
-
-                        <androidx.constraintlayout.widget.Guideline
-                            android:id="@+id/start"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            app:layout_constraintGuide_begin="@dimen/card_padding" />
-                        <androidx.constraintlayout.widget.Guideline
-                            android:id="@+id/end"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            app:layout_constraintGuide_end="@dimen/card_padding" />
-
-                        <TextView
-                            android:id="@+id/heading"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/card_margin_title_text"
-                            app:layout_constraintTop_toBottomOf="@id/image"
-                            app:layout_constraintBottom_toTopOf="@id/status"
-                            app:layout_constraintStart_toStartOf="@id/start"
-                            app:layout_constraintEnd_toStartOf="@id/install"
-                            style="@style/TextAppearance.MaterialComponents.Headline6"
-                            android:text="@string/intro_tasks_title" />
-                        <TextView
-                            android:id="@+id/status"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintTop_toBottomOf="@id/heading"
-                            app:layout_constraintBottom_toTopOf="@id/text1"
-                            app:layout_constraintStart_toStartOf="@id/heading"
-                            app:layout_constraintEnd_toEndOf="@id/heading"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                            android:text="@{model.isInstalled() ? @string/intro_tasks_opentasks_installed : @string/intro_tasks_not_installed}" />
-                        <Switch
-                            android:id="@+id/install"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:clickable="@{!model.isInstalled()}"
-                            android:checked="@={model.shallBeInstalled}"
-                            app:layout_constraintTop_toTopOf="@id/heading"
-                            app:layout_constraintBottom_toBottomOf="@id/status"
-                            app:layout_constraintEnd_toEndOf="@id/end"/>
-
-                        <TextView
-                            android:id="@+id/text1"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/card_margin_title_text"
-                            app:layout_constraintTop_toBottomOf="@id/status"
-                            app:layout_constraintBottom_toTopOf="@id/dontShow"
-                            app:layout_constraintStart_toStartOf="@id/start"
-                            app:layout_constraintEnd_toEndOf="@id/end"
-                            style="@style/TextAppearance.MaterialComponents.Body1"
-                            android:text="@string/intro_tasks_text1"/>
-
-                        <TextView
-                            android:id="@+id/text2"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/card_margin_title_text"
-                            app:layout_constraintTop_toBottomOf="@id/text1"
-                            app:layout_constraintBottom_toTopOf="@id/moreInfo"
-                            app:layout_constraintStart_toStartOf="@id/start"
-                            app:layout_constraintEnd_toEndOf="@id/end"
-                            style="@style/TextAppearance.MaterialComponents.Body1"
-                            android:text="@string/intro_tasks_text2"/>
-
-                        <Button
-                            android:id="@+id/moreInfo"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/card_margin_title_text"
-                            app:layout_constraintTop_toBottomOf="@id/text2"
-                            app:layout_constraintBottom_toTopOf="@id/dontShow"
-                            app:layout_constraintStart_toStartOf="@id/start"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:text="@string/intro_more_info"/>
-
-                        <CheckBox
-                            android:id="@+id/dontShow"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/card_margin_title_text"
-                            android:visibility="@{model.isInstalled ? View.GONE : View.VISIBLE}"
-                            app:layout_constraintTop_toBottomOf="@id/moreInfo"
-                            app:layout_constraintStart_toStartOf="@id/start"
-                            app:layout_constraintEnd_toEndOf="@id/end"
-                            android:checked="@={model.dontShow}"
-                            android:text="@string/intro_tasks_dont_show" />
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <TextView
-                    android:id="@+id/infoLeaveUnchecked"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    style="@style/TextAppearance.MaterialComponents.Body2"
-                    android:text="@string/intro_leave_unchecked"/>
+                    android:layout_marginBottom="@dimen/card_padding">
 
-            </LinearLayout>
+                    <at.bitfire.davdroid.ui.widget.CropImageView
+                        android:id="@+id/image"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxHeight="@dimen/card_theme_max_height"
+                        app:layout_constraintVertical_chainStyle="packed"
+                        app:layout_constraintVertical_bias="0"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/heading"
+                        android:adjustViewBounds="true"
+                        app:srcCompat="@drawable/intro_tasks"
+                        app:verticalOffsetPercent=".55" />
 
-        </ScrollView>
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_begin="@dimen/card_padding" />
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_end="@dimen/card_padding" />
 
-    </FrameLayout>
+                    <TextView
+                        android:id="@+id/heading"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/card_margin_title_text"
+                        app:layout_constraintTop_toBottomOf="@id/image"
+                        app:layout_constraintBottom_toTopOf="@id/status"
+                        app:layout_constraintStart_toStartOf="@id/start"
+                        app:layout_constraintEnd_toStartOf="@id/install"
+                        style="@style/TextAppearance.MaterialComponents.Headline6"
+                        android:text="@string/intro_tasks_title" />
+                    <TextView
+                        android:id="@+id/status"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/heading"
+                        app:layout_constraintBottom_toTopOf="@id/text1"
+                        app:layout_constraintStart_toStartOf="@id/heading"
+                        app:layout_constraintEnd_toEndOf="@id/heading"
+                        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        android:text="@{model.isInstalled() ? @string/intro_tasks_opentasks_installed : @string/intro_tasks_not_installed}" />
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/install"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="@{!model.isInstalled()}"
+                        android:checked="@={model.shallBeInstalled}"
+                        app:layout_constraintTop_toTopOf="@id/heading"
+                        app:layout_constraintBottom_toBottomOf="@id/status"
+                        app:layout_constraintEnd_toEndOf="@id/end"/>
+
+                    <TextView
+                        android:id="@+id/text1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/card_margin_title_text"
+                        app:layout_constraintTop_toBottomOf="@id/status"
+                        app:layout_constraintBottom_toTopOf="@id/dontShow"
+                        app:layout_constraintStart_toStartOf="@id/start"
+                        app:layout_constraintEnd_toEndOf="@id/end"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
+                        android:text="@string/intro_tasks_text1"/>
+
+                    <TextView
+                        android:id="@+id/text2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/card_margin_title_text"
+                        app:layout_constraintTop_toBottomOf="@id/text1"
+                        app:layout_constraintBottom_toTopOf="@id/moreInfo"
+                        app:layout_constraintStart_toStartOf="@id/start"
+                        app:layout_constraintEnd_toEndOf="@id/end"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
+                        android:text="@string/intro_tasks_text2"/>
+
+                    <Button
+                        android:id="@+id/moreInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/card_margin_title_text"
+                        app:layout_constraintTop_toBottomOf="@id/text2"
+                        app:layout_constraintBottom_toTopOf="@id/dontShow"
+                        app:layout_constraintStart_toStartOf="@id/start"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:text="@string/intro_more_info"/>
+
+                    <CheckBox
+                        android:id="@+id/dontShow"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/card_margin_title_text"
+                        android:visibility="@{model.isInstalled ? View.GONE : View.VISIBLE}"
+                        app:layout_constraintTop_toBottomOf="@id/moreInfo"
+                        app:layout_constraintStart_toStartOf="@id/start"
+                        app:layout_constraintEnd_toEndOf="@id/end"
+                        android:checked="@={model.dontShow}"
+                        android:text="@string/intro_tasks_dont_show" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/infoLeaveUnchecked"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:text="@string/intro_leave_unchecked"/>
+
+        </LinearLayout>
+
+    </ScrollView>
 </layout>

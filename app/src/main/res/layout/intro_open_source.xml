@@ -6,106 +6,101 @@
         <variable name="model" type="at.bitfire.davdroid.ui.intro.OpenSourceFragment.Model"/>
     </data>
 
-    <FrameLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/appIntro2BottomBarHeight">
+        android:paddingBottom="@dimen/appIntro2BottomBarHeight"
+        android:background="?android:attr/colorBackground">
 
-        <ScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?android:attr/colorBackground">
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_margin">
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/activity_margin">
+                android:layout_height="wrap_content">
 
-                <com.google.android.material.card.MaterialCardView
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
+                    <at.bitfire.davdroid.ui.widget.CropImageView
+                        android:id="@+id/image"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:maxHeight="@dimen/card_theme_max_height"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/heading"
+                        android:adjustViewBounds="true"
+                        app:verticalOffsetPercent=".45"
+                        app:srcCompat="@drawable/intro_open_source"/>
 
-                        <at.bitfire.davdroid.ui.widget.CropImageView
-                            android:id="@+id/image"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:maxHeight="@dimen/card_theme_max_height"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toTopOf="@id/heading"
-                            android:adjustViewBounds="true"
-                            app:verticalOffsetPercent=".45"
-                            app:srcCompat="@drawable/intro_open_source"/>
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_begin="@dimen/card_padding" />
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_end="@dimen/card_padding" />
 
-                        <androidx.constraintlayout.widget.Guideline
-                            android:id="@+id/start"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            app:layout_constraintGuide_begin="@dimen/card_padding" />
-                        <androidx.constraintlayout.widget.Guideline
-                            android:id="@+id/end"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            app:layout_constraintGuide_end="@dimen/card_padding" />
+                    <TextView
+                        android:id="@+id/heading"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/image"
+                        app:layout_constraintBottom_toTopOf="@id/text"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        app:layout_constraintEnd_toStartOf="@id/end"
+                        android:layout_marginTop="@dimen/card_margin_title_text"
+                        style="@style/TextAppearance.MaterialComponents.Headline6"
+                        android:text="@string/intro_open_source_title" />
 
-                        <TextView
-                            android:id="@+id/heading"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintTop_toBottomOf="@id/image"
-                            app:layout_constraintBottom_toTopOf="@id/text"
-                            app:layout_constraintStart_toEndOf="@id/start"
-                            app:layout_constraintEnd_toStartOf="@id/end"
-                            android:layout_marginTop="@dimen/card_margin_title_text"
-                            style="@style/TextAppearance.MaterialComponents.Headline6"
-                            android:text="@string/intro_open_source_title" />
+                    <TextView
+                        android:id="@+id/text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/heading"
+                        app:layout_constraintBottom_toTopOf="@id/moreInfo"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        app:layout_constraintEnd_toStartOf="@id/end"
+                        android:layout_marginTop="@dimen/card_margin_title_text"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
+                        android:text="@string/intro_open_source_text" />
 
-                        <TextView
-                            android:id="@+id/text"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintTop_toBottomOf="@id/heading"
-                            app:layout_constraintBottom_toTopOf="@id/moreInfo"
-                            app:layout_constraintStart_toEndOf="@id/start"
-                            app:layout_constraintEnd_toStartOf="@id/end"
-                            android:layout_marginTop="@dimen/card_margin_title_text"
-                            style="@style/TextAppearance.MaterialComponents.Body1"
-                            android:text="@string/intro_open_source_text" />
+                    <Button
+                        android:id="@+id/moreInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/text"
+                        app:layout_constraintBottom_toTopOf="@id/dontShow"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        android:layout_marginTop="16dp"
+                        android:layout_gravity="center"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:text="@string/intro_open_source_details" />
 
-                        <Button
-                            android:id="@+id/moreInfo"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintTop_toBottomOf="@id/text"
-                            app:layout_constraintBottom_toTopOf="@id/dontShow"
-                            app:layout_constraintStart_toEndOf="@id/start"
-                            android:layout_marginTop="16dp"
-                            android:layout_gravity="center"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:text="@string/intro_open_source_details" />
+                    <CheckBox
+                        android:id="@+id/dontShow"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/moreInfo"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        app:layout_constraintEnd_toStartOf="@id/end"
+                        android:checked="@={model.dontShow}"
+                        android:text="@string/intro_open_source_dont_show"/>
 
-                        <CheckBox
-                            android:id="@+id/dontShow"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintTop_toBottomOf="@id/moreInfo"
-                            app:layout_constraintStart_toEndOf="@id/start"
-                            app:layout_constraintEnd_toStartOf="@id/end"
-                            android:checked="@={model.dontShow}"
-                            android:text="@string/intro_open_source_dont_show"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
 
-            </LinearLayout>
-
-        </ScrollView>
-    </FrameLayout>
+    </ScrollView>
 
 </layout>

@@ -11,7 +11,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:background="@color/cardview_dark_background"
+              android:background="?attr/colorBackgroundFloating"
               android:gravity="bottom"
               android:orientation="vertical"
               android:padding="@dimen/activity_margin"
