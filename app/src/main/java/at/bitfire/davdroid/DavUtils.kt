@@ -68,7 +68,10 @@ object DavUtils {
         }
     }
 
-    fun selectSRVRecord(records: Array<out Record>): SRVRecord? {
+    fun selectSRVRecord(records: Array<out Record>?): SRVRecord? {
+        if (records == null)
+            return null
+
         val srvRecords = records.filterIsInstance(SRVRecord::class.java)
         if (srvRecords.size <= 1)
             return srvRecords.firstOrNull()

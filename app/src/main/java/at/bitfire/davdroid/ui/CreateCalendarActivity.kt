@@ -126,7 +126,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
             model.timezoneError.value = getString(R.string.create_calendar_time_zone_required)
             ok = false
         } else {
-            DateUtils.tzRegistry.getTimeZone(tzId)?.let { tz ->
+            DateUtils.ical4jTimeZone(tzId)?.let { tz ->
                 val cal = Calendar()
                 cal.components += tz.vTimeZone
                 args.putString(CreateCollectionFragment.ARG_TIMEZONE, cal.toString())
