@@ -1,0 +1,9 @@
+* always set "Sync over WiFi only" when data saver is active
+* show CalDAV/CardDAV account settings only when CalDAV/CardDAV is present
+* login: show "username/password wrong" when 401 is encountered during resource detection
+* various minor improvements and fixes
+
+CalDAV:
+
+* improvements for CalDAV Scheduling, including support for Schedule-Tag
+* more compatible iCalendar generation
