@@ -93,14 +93,12 @@
   <string name="login_password">Pasahitza</string>
   <string name="login_password_required">Pasahitza beharrezkoa</string>
   <string name="login_type_url">Saioa hasi URL eta erabiltzaile izenarekin</string>
-  <string name="login_url_host_name_required">Hostalari izena beharrezkoa</string>
   <string name="login_user_name">Erabiltzaile izena</string>
   <string name="login_user_name_required">Erabiltzaile izena beharrezkoa</string>
   <string name="login_base_url">Oinarri URL</string>
   <string name="login_type_url_certificate">Saioa hasi URL eta bezero ziurtagiriarekin</string>
   <string name="login_select_certificate">Aukeratu ziurtagiria</string>
   <string name="login_login">Saioa hasi</string>
-  <string name="login_back">Atzera</string>
   <string name="login_create_account">Sortu kontua</string>
   <string name="login_account_name">Kontuaren izena</string>
   <string name="login_view_logs">Erakutsi xehetasunak</string>

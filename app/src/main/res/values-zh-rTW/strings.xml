@@ -127,15 +127,12 @@
   <string name="login_password_required">必須填寫密碼</string>
   <string name="login_type_url">用網址和帳號登入</string>
   <string name="login_url_must_be_http_or_https">網址開頭必須是 http(s)://</string>
-  <string name="login_url_must_be_https">網址開頭必須是 https://</string>
-  <string name="login_url_host_name_required">必須輸入伺服器主機名稱</string>
   <string name="login_user_name">使用者帳號</string>
   <string name="login_user_name_required">必須填寫使用者帳號</string>
   <string name="login_base_url">根 URL</string>
   <string name="login_type_url_certificate">用網址和客戶端鑒權登入</string>
   <string name="login_select_certificate">點選憑證</string>
   <string name="login_login">登入</string>
-  <string name="login_back">上一步</string>
   <string name="login_create_account">新建帳號</string>
   <string name="login_account_name">帳號名稱</string>
   <string name="login_account_name_info">使用 Email 地址當作裝置上的帳號顯示名稱，因為當您在行事曆創建活動時，Android 會把帳號顯示名稱放到｢活動發起人」欄位。兩個帳號不能有相同的名稱。</string>

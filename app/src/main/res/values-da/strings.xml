@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
-  <string name="account_invalid">Konto findes ikke længere</string>
+  <string name="account_invalid">Konto findes ikke mere</string>
   <string name="account_title_address_book">DAVx⁵ adressebog</string>
   <string name="address_books_authority_title">Adressebøger</string>
   <string name="help">Hjælp</string>
@@ -167,15 +167,12 @@
   <string name="login_password_required">Adgangskode påkrævet</string>
   <string name="login_type_url">Logge ind med URL og brugernavn</string>
   <string name="login_url_must_be_http_or_https">URL skal starte med http(s)://</string>
-  <string name="login_url_must_be_https">URL skal starte med https://</string>
-  <string name="login_url_host_name_required">Værtsnavn påkrævet</string>
   <string name="login_user_name">Brugernavn</string>
   <string name="login_user_name_required">Brugernavn påkrævet</string>
   <string name="login_base_url">Basis URL</string>
   <string name="login_type_url_certificate">Logge ind med URL og klientcertifikat</string>
   <string name="login_select_certificate">Vælge certifikat</string>
   <string name="login_login">Logge ind</string>
-  <string name="login_back">Tilbage</string>
   <string name="login_create_account">Oprette konto</string>
   <string name="login_account_name">Kontonavn</string>
   <string name="login_account_name_info">Brug e-post adresse som kontonavn da Android bruger kontonavn til ORGANIZER-felt for oprettede aktiviteter. Man kan ikke have to konti med samme navn.</string>
@@ -188,6 +185,7 @@
   <string name="login_configuration_detection">Check konfiguration</string>
   <string name="login_querying_server">Vent, forespørger serveren…</string>
   <string name="login_no_caldav_carddav">Kunne ikke finde CalDAV- eller CardDAV-tjeneste.</string>
+  <string name="login_username_password_wrong">Brugernavn (e-post adresse) / adgangskode forkert?</string>
   <string name="login_view_logs">Vis detaljer</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Indstillinger: %s</string>
