@@ -167,15 +167,12 @@
   <string name="login_password_required">请输入密码</string>
   <string name="login_type_url">使用 URL 和用户名登录</string>
   <string name="login_url_must_be_http_or_https">URL 需以 http(s):// 为开头</string>
-  <string name="login_url_must_be_https">URL 需以 https:// 为开头</string>
-  <string name="login_url_host_name_required">请输入主机名</string>
   <string name="login_user_name">用户名</string>
   <string name="login_user_name_required">请输入用户名</string>
   <string name="login_base_url">根地址</string>
   <string name="login_type_url_certificate">使用 URL 和客户端证书登录</string>
   <string name="login_select_certificate">选择证书</string>
   <string name="login_login">登录</string>
-  <string name="login_back">返回</string>
   <string name="login_create_account">创建账户</string>
   <string name="login_account_name">账户显示名</string>
   <string name="login_account_name_info">请使用你的邮箱地址作为帐户名，因为 Android 会将你创建的日历事件的创建者项设置为帐户名。你不能拥有多个帐户名相同的账户。</string>

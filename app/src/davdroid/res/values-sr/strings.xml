@@ -93,15 +93,12 @@
   <string name="login_password_required">Лозинка је обавезна</string>
   <string name="login_type_url">Пријавите се УРЛ-ом и корисничким именом</string>
   <string name="login_url_must_be_http_or_https">УРЛ мора започињати са http(s)://</string>
-  <string name="login_url_must_be_https">УРЛ мора започињати са https://</string>
-  <string name="login_url_host_name_required">Име домаћина је обавезно</string>
   <string name="login_user_name">Корисничко име</string>
   <string name="login_user_name_required">Корисничко име је обавезно</string>
   <string name="login_base_url">Корени УРЛ</string>
   <string name="login_type_url_certificate">Пријавите се УРЛ-ом и сертификатом клијента</string>
   <string name="login_select_certificate">Изабери сертификат</string>
   <string name="login_login">Пријава</string>
-  <string name="login_back">Назад</string>
   <string name="login_create_account">Направи налог</string>
   <string name="login_account_name">Назив налога</string>
   <string name="login_account_name_info">Користите вашу е-адресу за назив налога јер Андроид користи назив налога за поље ОРГАНИЗАТОР за догађаје које направите. Не можете имати два налога истог назива.</string>
