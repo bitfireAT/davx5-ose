@@ -185,6 +185,7 @@
   <string name="login_configuration_detection">Обнаружение конфигурации</string>
   <string name="login_querying_server">Ожидайте, выполняется запрос к серверу…</string>
   <string name="login_no_caldav_carddav">Не удалось найти службу CalDAV или CardDAV.</string>
+  <string name="login_username_password_wrong">Имя пользователя (адрес email) / пароль неверны?</string>
   <string name="login_view_logs">Показать детали</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Настройки: %s</string>
