@@ -364,21 +364,29 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     remote.put(generateUpload(local), ifETag = lastETag, ifScheduleTag = lastScheduleTag, callback = readTagsFromResponse)
                 }
             }
-        }  catch(e: ForbiddenException) {
-            // HTTP 403 Forbidden
-            // If and only if the upload failed because of missing permissions, treat it like 412.
-            if (e.errors.contains(Error.NEED_PRIVILEGES))
-                Logger.log.log(Level.INFO, "Couldn't upload because of missing permissions, ignoring", e)
-            else
-                throw e
-        } catch(e: ConflictException) {
-            // HTTP 409 Conflict
-            // We can't interact with the user to resolve the conflict, so we treat 409 like 412.
-            Logger.log.log(Level.INFO, "Edit conflict, ignoring", e)
-        } catch(e: PreconditionFailedException) {
-            // HTTP 412 Precondition failed: Resource has been modified on the server in the meanwhile.
-            // Ignore this condition so that the resource can be downloaded and reset again.
-            Logger.log.log(Level.INFO, "Resource has been modified on the server before upload, ignoring", e)
+        } catch (e: ContextedException) {
+            val ex = e.cause
+            when (ex) {
+                is ForbiddenException -> {
+                    // HTTP 403 Forbidden
+                    // If and only if the upload failed because of missing permissions, treat it like 412.
+                    if (ex.errors.contains(Error.NEED_PRIVILEGES))
+                        Logger.log.log(Level.INFO, "Couldn't upload because of missing permissions, ignoring", ex)
+                    else
+                        throw e
+                }
+                is ConflictException -> {
+                    // HTTP 409 Conflict
+                    // We can't interact with the user to resolve the conflict, so we treat 409 like 412.
+                    Logger.log.info("Edit conflict, ignoring")
+                }
+                is PreconditionFailedException -> {
+                    // HTTP 412 Precondition failed: Resource has been modified on the server in the meanwhile.
+                    // Ignore this condition so that the resource can be downloaded and reset again.
+                    Logger.log.info("Resource has been modified on the server before upload, ignoring")
+                }
+                else -> throw e
+            }
         }
 
         if (eTag != null)
