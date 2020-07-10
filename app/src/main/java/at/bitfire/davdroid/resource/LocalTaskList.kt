@@ -139,9 +139,6 @@ class LocalTaskList private constructor(
         return tasks
     }
 
-    override fun findDirtyWithoutNameOrUid() =
-            queryTasks("${Tasks._DIRTY} AND (${Tasks._SYNC_ID} IS NULL OR ${Tasks._UID} IS NULL)", null)
-
     override fun findByName(name: String) =
             queryTasks("${Tasks._SYNC_ID}=?", arrayOf(name)).firstOrNull()
 

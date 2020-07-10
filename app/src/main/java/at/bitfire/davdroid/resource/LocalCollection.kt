@@ -38,17 +38,6 @@ interface LocalCollection<out T: LocalResource<*>> {
     fun findDirty(): List<T>
 
     /**
-     * Finds local resources of this collection which do not have a file name and/or UID, but
-     * need one for synchronization.
-     *
-     * For instance, exceptions of recurring events are local resources but do not need their
-     * own file name/UID because they're sent with the same UID as the main event.
-     *
-     * @return list of resources which need file name and UID for synchronization, but don't have both of them
-     */
-    fun findDirtyWithoutNameOrUid(): List<T>
-
-    /**
      * Finds a local resource of this collection with a given file name. (File names are assigned
      * by the sync adapter.)
      *

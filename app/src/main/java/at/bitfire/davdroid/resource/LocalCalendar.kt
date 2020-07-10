@@ -146,10 +146,6 @@ class LocalCalendar private constructor(
         return dirty
     }
 
-    override fun findDirtyWithoutNameOrUid() =
-            queryEvents("${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL AND " +
-                    "(${Events._SYNC_ID} IS NULL OR ${Events.UID_2445} IS NULL)", null)
-
     override fun findByName(name: String) =
             queryEvents("${Events._SYNC_ID}=?", arrayOf(name)).firstOrNull()
 

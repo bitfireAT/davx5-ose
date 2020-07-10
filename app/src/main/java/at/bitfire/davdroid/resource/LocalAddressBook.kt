@@ -302,18 +302,6 @@ class LocalAddressBook(
     fun findDirtyContacts() = queryContacts(RawContacts.DIRTY, null)
     fun findDirtyGroups() = queryGroups(Groups.DIRTY, null)
 
-    override fun findDirtyWithoutNameOrUid() =
-            if (includeGroups)
-                findDirtyContactsWithoutNameOrUid() + findDirtyGroupsWithoutNameOrUid()
-            else
-                findDirtyContactsWithoutNameOrUid()
-    private fun findDirtyContactsWithoutNameOrUid() = queryContacts(
-            "${RawContacts.DIRTY} AND (${AndroidContact.COLUMN_FILENAME} IS NULL OR ${AndroidContact.COLUMN_UID} IS NULL)",
-            null)
-    private fun findDirtyGroupsWithoutNameOrUid() = queryGroups(
-            "${Groups.DIRTY} AND (${AndroidGroup.COLUMN_FILENAME} IS NULL OR ${AndroidGroup.COLUMN_UID} IS NULL)",
-            null)
-
     override fun forgetETags() {
         if (includeGroups) {
             val values = ContentValues(1)

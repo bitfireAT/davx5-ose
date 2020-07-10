@@ -65,7 +65,6 @@ import java.util.logging.Level
 import javax.net.ssl.SSLHandshakeException
 import kotlin.math.min
 
-@Suppress("MemberVisibilityCanBePrivate")
 @UsesThreadContextClassLoader
 abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
         val context: Context,
@@ -90,6 +89,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         // required for ServiceLoader -> ical4j -> ical4android
         Ical4Android.checkThreadContextClassLoader()
     }
+
     /**
      * We use our own dispatcher to make sure that all threads have [Thread.getContextClassLoader] set,
      * which is required for dav4jvm and ical4j (because they rely on [ServiceLoader]).
@@ -134,8 +134,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             var remoteSyncState = queryCapabilities()
 
             Logger.log.info("Sending local deletes/updates to server")
-            val modificationsSent = processLocallyDeleted() ||
-                    uploadDirty()
+            val modificationsSent = processLocallyDeleted() || uploadDirty()
 
             if (extras.containsKey(SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC)) {
                 Logger.log.info("Forcing re-synchronization of all entries")
@@ -265,6 +264,11 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     }
 
 
+    /**
+     * Prepares synchronization. Sets the lateinit properties [collectionURL] and [davCollection].
+     *
+     * @return whether synchronization shall be performed
+     */
     protected abstract fun prepare(): Boolean
 
     /**
@@ -360,7 +364,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 remoteExceptionContext(DavResource(httpClient.okHttpClient, uploadUrl)) { remote ->
                     val lastScheduleTag = local.scheduleTag
                     val lastETag = if (lastScheduleTag == null) local.eTag else null
-                    Logger.log.info("Uploading modified record ${local.id} -> $newFileName (ETag=$lastETag, Schedule-Tag=$lastScheduleTag)")
+                    Logger.log.info("Uploading modified record ${local.id} -> $existingFileName (ETag=$lastETag, Schedule-Tag=$lastScheduleTag)")
                     remote.put(generateUpload(local), ifETag = lastETag, ifScheduleTag = lastScheduleTag, callback = readTagsFromResponse)
                 }
             }
