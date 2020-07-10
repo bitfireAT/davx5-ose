@@ -18,17 +18,35 @@ import okhttp3.Protocol
 import okhttp3.internal.http.StatusLine
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.After
+import org.junit.*
 import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Test
+import java.util.concurrent.TimeUnit
 
 class SyncManagerTest {
 
-    val server = MockWebServer()
+    companion object {
 
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
-    val account = Account("SyncManagerTest", context.getString(R.string.account_type))
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val account = Account("SyncManagerTest", context.getString(R.string.account_type))
+
+        @BeforeClass
+        @JvmStatic
+        fun createAccount() {
+            assertTrue(AccountManager.get(context).addAccountExplicitly(account, "test", AccountSettings.initialUserData(Credentials("test", "test"))))
+        }
+
+        @AfterClass
+        @JvmStatic
+        fun removeAccount() {
+            assertTrue(AccountManager.get(context).removeAccount(account, null, null).getResult(10, TimeUnit.SECONDS))
+
+            // clear annoying syncError notifications
+            NotificationManagerCompat.from(context).cancelAll()
+        }
+
+    }
+
+    val server = MockWebServer()
 
     private fun syncManager(collection: LocalTestCollection) =
             TestSyncManager(
@@ -40,19 +58,6 @@ class SyncManagerTest {
                     collection,
                     server
             )
-
-    @Before
-    fun createAccount() {
-        assertTrue(AccountManager.get(context).addAccountExplicitly(account, "test", AccountSettings.initialUserData(Credentials("test", "test"))))
-    }
-
-    @After
-    fun removeAccount() {
-        AccountManager.get(context).removeAccountExplicitly(account)
-
-        // clear annoying syncError notifications
-        NotificationManagerCompat.from(context).cancelAll()
-    }
 
     @Before
     fun startServer() {
