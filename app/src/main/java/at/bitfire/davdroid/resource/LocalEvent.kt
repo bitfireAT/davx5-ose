@@ -14,6 +14,7 @@ import android.provider.CalendarContract.Events
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.ical4android.*
 import net.fortuna.ical4j.model.property.ProdId
+import org.apache.commons.lang3.StringUtils
 import java.util.*
 
 class LocalEvent: AndroidEvent, LocalResource<Event> {
@@ -90,11 +91,11 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
     }
 
 
-    override fun prepareForFirstUpload(): String {
+    override fun prepareForUpload(): String {
         var uid: String? = null
         calendar.provider.query(eventSyncURI(), arrayOf(Events.UID_2445), null, null, null)?.use { cursor ->
             if (cursor.moveToNext())
-                uid = cursor.getString(0)
+                uid = StringUtils.trimToNull(cursor.getString(0))
         }
 
         if (uid == null) {

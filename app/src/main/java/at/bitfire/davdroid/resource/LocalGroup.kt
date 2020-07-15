@@ -21,6 +21,7 @@ import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
 import at.bitfire.vcard4android.*
+import org.apache.commons.lang3.StringUtils
 import java.util.*
 
 class LocalGroup: AndroidGroup, LocalAddress {
@@ -133,11 +134,11 @@ class LocalGroup: AndroidGroup, LocalAddress {
     }
 
 
-    override fun prepareForFirstUpload(): String {
+    override fun prepareForUpload(): String {
         var uid: String? = null
         addressBook.provider!!.query(groupSyncUri(), arrayOf(AndroidContact.COLUMN_UID), null, null, null)?.use { cursor ->
             if (cursor.moveToNext())
-                uid = cursor.getString(0)
+                uid = StringUtils.trimToNull(cursor.getString(0))
         }
 
         if (uid == null) {

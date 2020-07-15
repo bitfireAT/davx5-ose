@@ -20,6 +20,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.UnknownProperties
 import at.bitfire.vcard4android.*
 import ezvcard.Ezvcard
+import org.apache.commons.lang3.StringUtils
 import java.io.FileNotFoundException
 import java.util.*
 
@@ -54,11 +55,11 @@ class LocalContact: AndroidContact, LocalAddress {
     }
 
 
-    override fun prepareForFirstUpload(): String {
+    override fun prepareForUpload(): String {
         var uid: String? = null
         addressBook.provider!!.query(rawContactSyncURI(), arrayOf(COLUMN_UID), null, null, null)?.use { cursor ->
             if (cursor.moveToNext())
-                uid = cursor.getString(0)
+                uid = StringUtils.trimToNull(cursor.getString(0))
         }
 
         if (uid == null) {

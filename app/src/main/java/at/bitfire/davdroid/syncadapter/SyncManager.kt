@@ -352,7 +352,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
         try {
             if (existingFileName == null) {             // new resource
-                newFileName = local.prepareForFirstUpload()
+                newFileName = local.prepareForUpload()
+
                 val uploadUrl = collectionURL.newBuilder().addPathSegment(newFileName).build()
                 remoteExceptionContext(DavResource(httpClient.okHttpClient, uploadUrl)) { remote ->
                     Logger.log.info("Uploading new record ${local.id} -> $newFileName")
@@ -360,6 +361,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 }
 
             } else /* existingFileName != null */ {     // updated resource
+                local.prepareForUpload()
+
                 val uploadUrl = collectionURL.newBuilder().addPathSegment(existingFileName).build()
                 remoteExceptionContext(DavResource(httpClient.okHttpClient, uploadUrl)) { remote ->
                     val lastScheduleTag = local.scheduleTag

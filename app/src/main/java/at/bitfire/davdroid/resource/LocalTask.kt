@@ -59,7 +59,7 @@ class LocalTask: AndroidTask, LocalResource<Task> {
 
     /* custom queries */
 
-    override fun prepareForFirstUpload(): String {
+    override fun prepareForUpload(): String {
         var uid: String? = null
         taskList.provider.client.query(taskSyncURI(), arrayOf(Tasks._UID), null, null, null)?.use { cursor ->
             if (cursor.moveToNext())

@@ -14,7 +14,7 @@ class LocalTestResource: LocalResource<Any> {
     var deleted = false
     var dirty = false
 
-    override fun prepareForFirstUpload() = "generated-file.txt"
+    override fun prepareForUpload() = "generated-file.txt"
 
     override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
         dirty = false

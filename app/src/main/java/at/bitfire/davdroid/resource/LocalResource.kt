@@ -39,15 +39,16 @@ interface LocalResource<in TData: Any> {
     val flags: Int
 
     /**
-     * Prepares the resource for the first upload.
+     * Prepares the resource for uploading:
      *
      *   1. If the resource doesn't have an UID yet, this method generates one and writes it to the content provider.
-     *   2. The new file name which should be used for the upload is derived from the UID and returned, but not
-     *   saved to the content provider.
+     *   2. The new file name which can be used for the upload is derived from the UID and returned, but not
+     *   saved to the content provider. The sync manager is responsible for saving the file name that
+     *   was actually used.
      *
      * @return new file name of the resource (like "<uid>.vcf")
      */
-    fun prepareForFirstUpload(): String
+    fun prepareForUpload(): String
 
     /**
      * Unsets the /dirty/ field of the resource. Typically used after successfully uploading a
