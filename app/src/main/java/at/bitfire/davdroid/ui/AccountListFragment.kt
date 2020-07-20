@@ -38,6 +38,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.AccountActivity
 import kotlinx.android.synthetic.main.account_list.*
 import kotlinx.android.synthetic.main.account_list_item.view.*
+import java.text.Collator
 
 class AccountListFragment: ListFragment() {
 
@@ -164,8 +165,12 @@ class AccountListFragment: ListFragment() {
 
         override fun onAccountsUpdated(newAccounts: Array<out Account>) {
             val context = getApplication<Application>()
+            val collator = Collator.getInstance()
             accounts.postValue(
                     AccountManager.get(context).getAccountsByType(context.getString(R.string.account_type))
+                            .sortedArrayWith(Comparator { a, b ->
+                                collator.compare(a.name, b.name)
+                            })
             )
         }
 
