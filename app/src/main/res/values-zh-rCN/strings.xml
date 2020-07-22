@@ -185,6 +185,7 @@
   <string name="login_configuration_detection">正在配置</string>
   <string name="login_querying_server">正在与服务器通信，请稍等…</string>
   <string name="login_no_caldav_carddav">找不到 CalDAV 或 CardDAV 服务。</string>
+  <string name="login_username_password_wrong">用户名(电邮地址) / 密码错误？</string>
   <string name="login_view_logs">显示详情</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">设置：%s</string>

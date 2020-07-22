@@ -57,7 +57,7 @@
   <string name="permissions_tasks_status_not_installed">Задачи не синхронизируются (не установлены)</string>
   <string name="permissions_tasks_status_off">Задачи не синхронизируются (не рекомендуется)</string>
   <string name="permissions_tasks_status_on">Синхронизация задач возможна</string>
-  <string name="permissions_app_settings_hint">Если переключатель не работает, используйте настройки приложения / Разрешения.</string>
+  <string name="permissions_app_settings_hint">Если переключатель не работает, используйте Настройки приложения / Разрешения.</string>
   <string name="permissions_app_settings">Настройки приложения</string>
   <!--AboutActivity-->
   <string name="about_translations">Переводы</string>
@@ -113,7 +113,7 @@
   <string name="app_settings_security">Безопасность</string>
   <string name="app_settings_security_app_permissions">Разрешения приложения</string>
   <string name="app_settings_security_app_permissions_summary">Проверка разрешений, необходимых для синхронизации</string>
-  <string name="app_settings_distrust_system_certs">Доверие системным сертификатам</string>
+  <string name="app_settings_distrust_system_certs">Недоверие к сертификатам системы</string>
   <string name="app_settings_distrust_system_certs_on">Не доверять системным и пользовательским CA</string>
   <string name="app_settings_distrust_system_certs_off">Доверять системным и пользовательским CA (рекомендуется)</string>
   <string name="app_settings_reset_certificates">Сброс (не)доверенных сертификатов</string>
