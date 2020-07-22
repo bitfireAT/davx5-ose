@@ -2,12 +2,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">Account inesistente (o cancellato)</string>
   <string name="account_title_address_book">Rubrica DAVx⁵</string>
   <string name="address_books_authority_title">Rubriche</string>
   <string name="help">Aiuto</string>
   <string name="manage_accounts">Gestione account</string>
   <string name="send">Invia</string>
-  <string name="notification_channel_debugging">Testando</string>
+  <string name="notification_channel_debugging">Debugging</string>
   <string name="notification_channel_general">Altri messaggi importanti</string>
   <string name="notification_channel_sync">Sincronizzazione</string>
   <string name="notification_channel_sync_errors">Errori di sincronizzazione</string>
@@ -17,13 +18,55 @@
   <string name="notification_channel_sync_io_errors">Errori di Rete e di I/O</string>
   <string name="notification_channel_sync_io_errors_desc">Timeouts, problemi di connessione, ecc. (spesso temporanei)</string>
   <!--IntroActivity-->
+  <string name="intro_slogan1">Tuoi i dati. Tua la scelta.</string>
+  <string name="intro_slogan2">Riprendi il controllo.</string>
+  <string name="intro_battery_title">Intervalli di sincronizzazione regolari.</string>
+  <string name="intro_battery_not_whitelisted">Disabilitato (sconsigliato)</string>
+  <string name="intro_battery_whitelisted">Abilitato (scelta consigliata)</string>
+  <string name="intro_battery_text">Per sincronizzare i dati a intervalli regolari, %s deve essere autorizzato a girare in background. Altrimenti Android può mettere in pausa gli aggiornamenti in qualunque momento.</string>
+  <string name="intro_battery_dont_show">Non ho bisogno di sincronizzare a intervalli di tempo regolari.*</string>
+  <string name="intro_autostart_title">%s compatibilità</string>
+  <string name="intro_autostart_text">Questo dispositivo probabilmente impedisce la sincronizzazione. In questo caso puoi risolvere solo manualmente.</string>
+  <string name="intro_autostart_dont_show">Ho settato le impostazioni richieste. Non ricordarmelo più.</string>
+  <string name="intro_leave_unchecked">* Lascia smarcato per fartelo ricordare dopo. Può essere reimpostato nelle impostazione dell\'app %s.</string>
+  <string name="intro_more_info">Maggiori informazioni</string>
+  <string name="intro_tasks_title">Supporto per le attività</string>
+  <string name="intro_tasks_not_installed">Non installato</string>
+  <string name="intro_tasks_opentasks_installed">OpenTasks installato</string>
+  <string name="intro_tasks_no_app_store">Nessun app store disponibile</string>
+  <string name="intro_tasks_text1"><![CDATA[Android non ha un supporto nativo per le attività. Se le attività sono supportate dal tuo server, %s può sincronizzarle usando <a href="https://opentasks.app/">OpenTasks.</a>]]></string>
+  <string name="intro_tasks_text2">Per caratteristiche avanzate come sottoattività o attività ricorrenti, hai bisogno di altre app.</string>
+  <string name="intro_tasks_dont_show">Non ho bisogno del supporto alle attività.*</string>
+  <string name="intro_open_source_title">Software open-source</string>
+  <string name="intro_open_source_text">Siamo felici che tu usi %s, che è un software open source. Lo sviluppo, la manutenzione e il supporto sono compiti duri. Per piacere prendi in considerazione di dare una mano (puoi farlo in molti modi) o una donazione. Sarebbe davvero apprezzato!</string>
+  <string name="intro_open_source_details">Come aiutare/donare</string>
+  <string name="intro_open_source_dont_show">Non mostrare di nuovo</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">Autorizzazioni</string>
+  <string name="permissions_text">%s richiede autorizzazioni per funzionare correttamente.</string>
+  <string name="permissions_all_title">Tutti i seguenti</string>
+  <string name="permissions_all_status_off">Usare questo per abilitare tutte le funzioni (consigliato)</string>
+  <string name="permissions_all_status_on">Concedi tutte le autorizzazioni</string>
+  <string name="permissions_contacts_title">Autorizzazioni per i contatti</string>
+  <string name="permissions_contacts_status_off">Non sincronizzare i contatti (sconsigliato)</string>
+  <string name="permissions_contacts_status_on">Permette di sincronizzare i contatti</string>
+  <string name="permissions_calendar_title">Autorizzazioni per il calendario</string>
+  <string name="permissions_calendar_status_off">Non sincronizzare il calendario (sconsigliato)</string>
+  <string name="permissions_calendar_status_on">Permette di sincronizzare il calendario</string>
+  <string name="permissions_tasks_title">Autorizzazioni OpenTasks</string>
+  <string name="permissions_tasks_status_not_installed">Attività non sincronizzate (app non installata)</string>
+  <string name="permissions_tasks_status_off">Non sincronizzare le attività (sconsigliato)</string>
+  <string name="permissions_tasks_status_on">Permette di sincronizzare le attività</string>
+  <string name="permissions_app_settings_hint">Se uno slider non funziona, vai a impostazioni app/ autorizzazioni.</string>
+  <string name="permissions_app_settings">Impostazioni app</string>
   <!--AboutActivity-->
+  <string name="about_translations">Traduzioni</string>
   <string name="about_libraries">Librerie</string>
   <string name="about_version">Versione %1$s (%2$d)</string>
   <string name="about_build_date">Compilato su %s</string>
   <string name="about_flavor_info">Questa versione è idonea solo per la distribuzione tramite Google Play</string>
   <string name="about_license_info_no_warranty">Il programma è distribuito SENZA ALCUNA GARANZIA. È software libero e può essere redistribuito sotto alcune condizioni.</string>
+  <string name="about_translations_thanks"><![CDATA[<i>Grazie a: </i>%s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Non riesco a creare il file di log</string>
   <string name="logging_notification_title">Sto registrando DAVx⁵</string>
@@ -68,6 +111,8 @@
   <string name="app_settings_override_proxy_host">Nome host del proxy HTTP</string>
   <string name="app_settings_override_proxy_port">Porta del proxy HTTP</string>
   <string name="app_settings_security">Sicurezza</string>
+  <string name="app_settings_security_app_permissions">Autorizzazioni app</string>
+  <string name="app_settings_security_app_permissions_summary">Controlla le autorizzazioni per la sincronizzazione</string>
   <string name="app_settings_distrust_system_certs">Non ti fidare dei certificati di sistema</string>
   <string name="app_settings_distrust_system_certs_on">Le CA di sistema e quelle aggiunte dall\'utente non sono affidabili</string>
   <string name="app_settings_distrust_system_certs_off">Le CA di sistema e quelle aggiunte dall\'utente sono affidabili (raccomandato)</string>
@@ -84,6 +129,12 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">I contatti non sono sincronizzati (autorizzazioni mancanti)</string>
+  <string name="account_caldav_missing_calendar_permissions">Il calendario non è sincronizzato (autorizzazioni mancanti)</string>
+  <string name="account_caldav_missing_tasks_permissions">Le attività non sono sincronizzate (autorizzazioni mancanti)</string>
+  <string name="account_caldav_missing_permissions">Il calendario e le attività non sono sincronizzati (autorizzazioni mancanti)</string>
+  <string name="account_webcal_missing_calendar_permissions">Impossibile leggere i calendari (autorizzazioni mancanti)</string>
+  <string name="account_permissions_action">Autorizzazioni</string>
   <string name="account_no_address_books">Non ci sono rubriche indirizzi (ancora)</string>
   <string name="account_no_calendars">Non ci sono calendari (ancora)</string>
   <string name="account_no_webcals">Non ci sono sottoscrizioni a calendari (ancora)</string>
@@ -129,9 +180,12 @@
   <string name="login_account_name_required">Richiesto il nome dell\'account</string>
   <string name="login_account_name_already_taken">Nome account già usato</string>
   <string name="login_account_not_created">L\'account non può essere creato</string>
+  <string name="login_webview_tlserror">Problema di sicurezza della connessione (codice errore %d)</string>
+  <string name="login_webview_retry">Riprova</string>
   <string name="login_configuration_detection">Rilevazione configurazione</string>
   <string name="login_querying_server">Attendere, invio richiesta al server…</string>
   <string name="login_no_caldav_carddav">Impossibile trovare servizi CalDAV o CardDAV.</string>
+  <string name="login_username_password_wrong">Nome utente (indirizzo email) / password sbagliata?</string>
   <string name="login_view_logs">Visualizza dettagli</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Impostazioni: %s</string>
@@ -181,6 +235,8 @@
     <item quantity="other">Promemoria predefinito %d minuti prima dell\'evento</item>
   </plurals>
   <string name="settings_default_alarm_off">Nessun promemoria di default creato</string>
+  <string name="settings_default_alarm_message">Indicare il numero di minuti che si desidera per il promemoria predefinito. 
+Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="settings_manage_calendar_colors">Cambia il colore del calendario</string>
   <string name="settings_manage_calendar_colors_on">I colori dei calendari sono gestiti da DAVx⁵</string>
   <string name="settings_manage_calendar_colors_off">I colori dei calendari non sono gestiti da DAVx⁵</string>
