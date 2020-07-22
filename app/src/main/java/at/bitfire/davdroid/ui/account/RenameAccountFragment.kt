@@ -119,11 +119,17 @@ class RenameAccountFragment: DialogFragment() {
             val syncIntervals = authorities.map { Pair(it, oldSettings.getSyncInterval(it)) }
 
             val accountManager = AccountManager.get(context)
-            accountManager.renameAccount(oldAccount, newName, {
-                viewModelScope.launch(Dispatchers.Default + NonCancellable) {
-                    onAccountRenamed(accountManager, oldAccount, newName, syncIntervals)
-                }
-            }, null)
+            try {
+                accountManager.renameAccount(oldAccount, newName, {
+                    if (it.result?.name == newName /* success */)
+                        viewModelScope.launch(Dispatchers.Default + NonCancellable) {
+                            onAccountRenamed(accountManager, oldAccount, newName, syncIntervals)
+                        }
+                }, null)
+            } catch (e: Exception) {
+                Logger.log.log(Level.WARNING, "Couldn't rename account", e)
+                Toast.makeText(context, R.string.account_rename_couldnt_rename, Toast.LENGTH_LONG).show()
+            }
         }
 
         @SuppressLint("Recycle")
