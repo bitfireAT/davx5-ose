@@ -19,11 +19,21 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_webview.view.*
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.net.URI
+import java.net.URLDecoder
 import java.util.logging.Level
 
 class NextcloudLoginFlowFragment: Fragment() {
 
     companion object {
+
+        /**
+         * Format of the Nextcloud Login URL, see:
+         * https://docs.nextcloud.com/server/latest/developer_manual/client_apis/LoginFlow/index.html
+         *
+         * The parameter values must be URL-decoded. For instance, Nextcloud passes the username
+         * "test@example.com" as "user:test%40example.com".
+         */
+        val LOGIN_URL_FORMAT = Regex("^nc://login/server:(.+)&user:(.+)&password:(.+)$")
 
         /** Set this to 1 to indicate that Login Flow shall be used. */
         const val EXTRA_LOGIN_FLOW = "loginFlow"
@@ -64,33 +74,34 @@ class NextcloudLoginFlowFragment: Fragment() {
     }
 
     private fun onReceivedNcUrl(url: String) {
-        val format = Regex("^nc://login/server:(.+)&user:(.+)&password:(.+)$")
-        val match = format.find(url)
-        if (match != null) {
-            // determine DAV URL from root URL
-            try {
-                val serverUrl = match.groupValues[1]
-                val davPath = requireActivity().intent.getStringExtra(EXTRA_DAV_PATH)
-                loginModel.baseURI = if (davPath != null)
-                    (serverUrl + davPath).toHttpUrl().toUri()
-                else
-                    URI.create(serverUrl)
-
-                loginModel.credentials = Credentials(
-                        userName = match.groupValues[2],
-                        password = match.groupValues[3]
-                )
-
-                // continue to next fragment
-                parentFragmentManager.beginTransaction()
-                        .replace(android.R.id.content, DetectConfigurationFragment(), null)
-                        .addToBackStack(null)
-                        .commit()
-            } catch (e: IllegalArgumentException) {
-                Logger.log.log(Level.SEVERE, "Couldn't parse server argument of nc URL: $url", e)
-            }
-        } else
+        val match = LOGIN_URL_FORMAT.find(url)
+        if (match == null) {
             Logger.log.severe("Unknown format of nc URL: $url")
+            return
+        }
+
+        // determine DAV URL from root URL
+        try {
+            val serverUrl = URLDecoder.decode(match.groupValues[1], Charsets.UTF_8.name())
+            val davPath = requireActivity().intent.getStringExtra(EXTRA_DAV_PATH)
+            loginModel.baseURI = if (davPath != null)
+                (serverUrl + davPath).toHttpUrl().toUri()
+            else
+                URI.create(serverUrl)
+
+            loginModel.credentials = Credentials(
+                    userName = URLDecoder.decode(match.groupValues[2], Charsets.UTF_8.name()),
+                    password = URLDecoder.decode(match.groupValues[3], Charsets.UTF_8.name())
+            )
+
+            // continue to next fragment
+            parentFragmentManager.beginTransaction()
+                    .replace(android.R.id.content, DetectConfigurationFragment(), null)
+                    .addToBackStack(null)
+                    .commit()
+        } catch (e: IllegalArgumentException) {
+            Logger.log.log(Level.SEVERE, "Couldn't parse server argument of nc URL: $url", e)
+        }
     }
 
 
