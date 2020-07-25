@@ -145,6 +145,7 @@
   <string name="account_rename">Konto umbenennen</string>
   <string name="account_rename_new_name">Ungespeicherte lokale Änderungen können verloren gehen. Nach dem Umbenennen muss neu synchronisiert werden. Neuer Kontoname:</string>
   <string name="account_rename_rename">Umbenennen</string>
+  <string name="account_rename_couldnt_rename">Konto konnte nicht umbenannt werden</string>
   <string name="account_delete">Konto löschen</string>
   <string name="account_delete_confirmation_title">Konto wirklich löschen?</string>
   <string name="account_delete_confirmation_text">Alle Adressbücher, Kalender und Aufgabenlisten werden vom Gerät (nicht am Server) gelöscht.</string>
