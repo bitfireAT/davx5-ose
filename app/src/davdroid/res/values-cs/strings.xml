@@ -145,6 +145,7 @@
   <string name="account_rename">Přejmenovat účet</string>
   <string name="account_rename_new_name">Neuložená místní data mohou být vynechána. Po přejmenování je vyžadována nová synchronizace. Nové jméno účtu:</string>
   <string name="account_rename_rename">Přejmenovat</string>
+  <string name="account_rename_couldnt_rename">Účet se nedaří přejmenovat</string>
   <string name="account_delete">Smazat účet</string>
   <string name="account_delete_confirmation_title">Opravdu smazat účet?</string>
   <string name="account_delete_confirmation_text">Všechny místní kopie adresáře, kalendářů a úkolů budou smazány.</string>
