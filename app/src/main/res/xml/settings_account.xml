@@ -47,7 +47,6 @@
 
         <EditTextPreference
             android:key="@string/settings_sync_wifi_only_ssids_key"
-            android:dependency="sync_wifi_only"
             android:persistent="false"
             android:title="@string/settings_sync_wifi_only_ssids"
             android:dialogMessage="@string/settings_sync_wifi_only_ssids_message"/>

@@ -174,6 +174,9 @@ class SettingsActivity: AppCompatActivity() {
             }
 
             findPreference<EditTextPreference>("sync_wifi_only_ssids")!!.let {
+                model.syncWifiOnly.observe(this, Observer { wifiOnly ->
+                    it.isEnabled = wifiOnly
+                })
                 model.syncWifiOnlySSIDs.observe(this, Observer { onlySSIDs ->
                     if (onlySSIDs != null) {
                         it.text = onlySSIDs.joinToString(", ")
