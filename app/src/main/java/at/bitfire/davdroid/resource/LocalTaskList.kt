@@ -37,6 +37,7 @@ class LocalTaskList private constructor(
 
     companion object {
 
+        // TODO move to TaskProvider class
         fun tasksProviderAvailable(context: Context): Boolean {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                 return context.packageManager.resolveContentProvider(TaskProvider.ProviderName.OpenTasks.authority, 0) != null

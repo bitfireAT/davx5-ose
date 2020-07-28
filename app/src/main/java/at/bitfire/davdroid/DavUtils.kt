@@ -16,8 +16,11 @@ import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
+import android.provider.ContactsContract
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.ical4android.TaskProvider
 import okhttp3.HttpUrl
 import org.xbill.DNS.*
@@ -27,6 +30,11 @@ import java.util.*
  * Some WebDAV and related network utility methods
  */
 object DavUtils {
+
+    enum class SyncStatus {
+        ACTIVE, PENDING, IDLE
+    }
+
 
     @Suppress("FunctionName")
     fun ARGBtoCalDAVColor(colorWithAlpha: Int): String {
@@ -43,6 +51,7 @@ object DavUtils {
 
         return segments.firstOrNull { it.isNotEmpty() } ?: "/"
     }
+
 
     fun prepareLookup(context: Context, lookup: Lookup) {
         @TargetApi(Build.VERSION_CODES.O)
@@ -129,18 +138,67 @@ object DavUtils {
     }
 
 
-    fun requestSync(context: Context, account: Account) {
-        val authorities = arrayOf(
-                context.getString(R.string.address_books_authority),
-                CalendarContract.AUTHORITY,
-                TaskProvider.ProviderName.OpenTasks.authority
-        )
+    /**
+     * Returns the sync status of a given account. Checks the account itself and possible
+     * sub-accounts (address book accounts).
+     *
+     * @param authorities sync authorities to check (usually taken from [syncAuthorities])
+     *
+     * @return sync status of the given account
+     */
+    fun accountSyncStatus(context: Context, authorities: Iterable<String>, account: Account): SyncStatus {
+        // check active syncs
+        if (authorities.any { ContentResolver.isSyncActive(account, it) })
+            return SyncStatus.ACTIVE
 
-        for (authority in authorities) {
+        val addrBookAccounts = LocalAddressBook.findAll(context, null, account).map { it.account }
+        if (addrBookAccounts.any { ContentResolver.isSyncActive(it, ContactsContract.AUTHORITY) })
+            return SyncStatus.ACTIVE
+
+        // check get pending syncs
+        if (authorities.any { ContentResolver.isSyncPending(account, it) } ||
+            addrBookAccounts.any { ContentResolver.isSyncPending(it, ContactsContract.AUTHORITY) })
+            return SyncStatus.PENDING
+
+        return SyncStatus.IDLE
+    }
+
+    /**
+     * Requests an immediate, manual sync of all available authorities for the given account.
+     *
+     * @param account account to sync
+     */
+    fun requestSync(context: Context, account: Account) {
+        for (authority in syncAuthorities(context)) {
             val extras = Bundle(2)
             extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)        // manual sync
             extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)     // run immediately (don't queue)
             ContentResolver.requestSync(account, authority, extras)
         }
     }
+
+    /**
+     * Returns a list of all available sync authorities for main accounts (!= address book accounts):
+     *
+     *   1. address books authority (not [ContactsContract.AUTHORITY], but the one which manages address book accounts)
+     *   1. calendar authority
+     *   1. tasks authority (if available)
+     *
+     * Checking the availability of authorities may be relatively expensive, so the
+     * result should be cached for the current operation.
+     *
+     * @return list of available sync authorities for main accounts
+     */
+    fun syncAuthorities(context: Context): List<String> {
+        val result = mutableListOf(
+                context.getString(R.string.address_books_authority),
+                CalendarContract.AUTHORITY
+        )
+
+        if (LocalTaskList.tasksProviderAvailable(context))
+            result += TaskProvider.ProviderName.OpenTasks.authority
+
+        return result
+    }
+
 }

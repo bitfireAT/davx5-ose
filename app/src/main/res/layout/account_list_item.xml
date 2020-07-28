@@ -22,7 +22,6 @@
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
             app:cardBackgroundColor="@color/cardview_background"
-            app:contentPadding="16dp"
             app:cardElevation="2dp">
 
         <LinearLayout
@@ -31,9 +30,21 @@
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:progressTint="?attr/colorOnSecondary"
+                android:indeterminate="true"
+                android:indeterminateTint="?attr/colorOnSecondary"/>
+
             <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 app:srcCompat="@drawable/ic_account_circle_white" />
 
             <TextView
@@ -41,8 +52,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                android:textColor="@android:color/white"
+                android:textColor="?attr/colorOnSecondary"
                 tools:text="Account Name"/>
 
         </LinearLayout>

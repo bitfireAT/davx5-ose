@@ -298,9 +298,9 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
                 val mainSyncActive = ContentResolver.isSyncActive(accountModel.account, mainAuthority)
                 val mainSyncPending = ContentResolver.isSyncPending(accountModel.account, mainAuthority)
 
-                val accounts = LocalAddressBook.findAll(context, null, accountModel.account)
-                val syncActive = accounts.any { ContentResolver.isSyncActive(it.account, ContactsContract.AUTHORITY) }
-                val syncPending = accounts.any { ContentResolver.isSyncPending(it.account, ContactsContract.AUTHORITY) }
+                val addrBookAccounts = LocalAddressBook.findAll(context, null, accountModel.account).map { it.account }
+                val syncActive = addrBookAccounts.any { ContentResolver.isSyncActive(it, ContactsContract.AUTHORITY) }
+                val syncPending = addrBookAccounts.any { ContentResolver.isSyncPending(it, ContactsContract.AUTHORITY) }
 
                 isSyncActive.postValue(mainSyncActive || syncActive)
                 isSyncPending.postValue(mainSyncPending || syncPending)

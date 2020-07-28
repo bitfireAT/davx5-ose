@@ -11,90 +11,140 @@ package at.bitfire.davdroid.ui
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
+import android.app.Activity
 import android.app.Application
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.AbsListView
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
+import android.view.*
 import androidx.core.content.getSystemService
-import androidx.fragment.app.ListFragment
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
+import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.DavUtils.SyncStatus
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.AccountActivity
 import kotlinx.android.synthetic.main.account_list.*
 import kotlinx.android.synthetic.main.account_list_item.view.*
 import java.text.Collator
 
-class AccountListFragment: ListFragment() {
+class AccountListFragment: Fragment() {
 
     val model by viewModels<Model>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        listAdapter = AccountListAdapter(requireActivity())
-
-        model.accounts.observe(viewLifecycleOwner, Observer { accounts ->
-            val adapter = listAdapter as AccountListAdapter
-            adapter.clear()
-            adapter.addAll(*accounts)
-        })
-
-        model.networkAvailable.observe(viewLifecycleOwner, Observer { networkAvailable ->
-            no_network_info.visibility = if (networkAvailable) View.GONE else View.VISIBLE
-        })
-
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.account_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        listView.choiceMode = AbsListView.CHOICE_MODE_SINGLE
-        listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-            val account = listAdapter!!.getItem(position) as Account
-            val intent = Intent(activity, AccountActivity::class.java)
-            intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
-            startActivity(intent)
+        model.networkAvailable.observe(viewLifecycleOwner, Observer { networkAvailable ->
+            no_network_info.visibility = if (networkAvailable) View.GONE else View.VISIBLE
+        })
+
+        val accountAdapter = AccountAdapter(requireActivity())
+        list.apply {
+            layoutManager = LinearLayoutManager(requireActivity())
+            adapter = accountAdapter
+        }
+        model.accounts.observe(viewLifecycleOwner, Observer { accounts ->
+            if (accounts.isEmpty()) {
+                list.visibility = View.GONE
+                empty.visibility = View.VISIBLE
+            } else {
+                list.visibility = View.VISIBLE
+                empty.visibility = View.GONE
+            }
+            accountAdapter.submitList(accounts)
+            requireActivity().invalidateOptionsMenu()
+        })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
+            inflater.inflate(R.menu.activity_accounts, menu)
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        // Show "Sync all" only when there is at least one account
+        model.accounts.value?.let { accounts ->
+            menu.findItem(R.id.syncAll).setVisible(accounts.isNotEmpty())
         }
     }
 
 
-    // list adapter
+    class AccountAdapter(
+            val activity: Activity
+    ): ListAdapter<Model.AccountInfo, AccountAdapter.ViewHolder>(
+            object: DiffUtil.ItemCallback<Model.AccountInfo>() {
+                override fun areItemsTheSame(oldItem: Model.AccountInfo, newItem: Model.AccountInfo) =
+                        oldItem.account == newItem.account
+                override fun areContentsTheSame(oldItem: Model.AccountInfo, newItem: Model.AccountInfo) =
+                        oldItem == newItem
+            }
+    ) {
+        class ViewHolder(val v: View): RecyclerView.ViewHolder(v) {}
 
-    class AccountListAdapter(
-            context: Context
-    ): ArrayAdapter<Account>(context, R.layout.account_list_item) {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val v = LayoutInflater.from(parent.context).inflate(R.layout.account_list_item, parent, false)
+            return ViewHolder(v)
+        }
 
-        override fun getView(position: Int, _v: View?, parent: ViewGroup): View {
-            val account = getItem(position)!!
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val v = holder.v
+            val accountInfo = currentList[position]
 
-            val v = _v ?: LayoutInflater.from(context).inflate(R.layout.account_list_item, parent, false)
-            v.account_name.text = account.name
+            v.setOnClickListener {
+                val intent = Intent(activity, AccountActivity::class.java)
+                intent.putExtra(AccountActivity.EXTRA_ACCOUNT, accountInfo.account)
+                activity.startActivity(intent)
+            }
 
-            return v
+            when {
+                accountInfo.status == SyncStatus.ACTIVE -> {
+                    v.progress.apply {
+                        alpha = 1.0f
+                        isIndeterminate = true
+                        visibility = View.VISIBLE
+                    }
+                }
+                accountInfo.status == SyncStatus.PENDING -> {
+                    v.progress.apply {
+                        alpha = 0.4f
+                        isIndeterminate = false
+                        progress = 100
+                        visibility = View.VISIBLE
+                    }
+                }
+                else ->
+                    v.progress.visibility = View.INVISIBLE
+            }
+            v.account_name.text = accountInfo.account.name
         }
     }
 
 
     class Model(
             application: Application
-    ): AndroidViewModel(application), OnAccountsUpdateListener {
+    ): AndroidViewModel(application), OnAccountsUpdateListener, SyncStatusObserver {
 
-        val accounts = MutableLiveData<Array<out Account>>()
+        data class AccountInfo(
+                val account: Account,
+                val status: SyncStatus
+        )
+
+        val accounts = MutableLiveData<List<AccountInfo>>()
 
         val networkAvailable = MutableLiveData<Boolean>()
         private var networkCallback: ConnectivityManager.NetworkCallback? = null
@@ -103,8 +153,13 @@ class AccountListFragment: ListFragment() {
         private val accountManager = AccountManager.get(getApplication())!!
         private val connectivityManager = application.getSystemService<ConnectivityManager>()!!
         init {
+            // watch accounts
             accountManager.addOnAccountsUpdatedListener(this, null, true)
 
+            // watch account status
+            ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE or ContentResolver.SYNC_OBSERVER_TYPE_PENDING, this)
+
+            // watch connectivity
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {    // API level <26
                 networkReceiver = object: BroadcastReceiver() {
                     init {
@@ -164,14 +219,26 @@ class AccountListFragment: ListFragment() {
         }
 
         override fun onAccountsUpdated(newAccounts: Array<out Account>) {
+            reloadAccounts()
+        }
+
+        override fun onStatusChanged(which: Int) {
+            reloadAccounts()
+        }
+
+        private fun reloadAccounts() {
             val context = getApplication<Application>()
             val collator = Collator.getInstance()
-            accounts.postValue(
-                    AccountManager.get(context).getAccountsByType(context.getString(R.string.account_type))
-                            .sortedArrayWith(Comparator { a, b ->
-                                collator.compare(a.name, b.name)
-                            })
-            )
+
+            val sortedAccounts = accountManager
+                    .getAccountsByType(context.getString(R.string.account_type))
+                    .sortedArrayWith(Comparator { a, b ->
+                        collator.compare(a.name, b.name)
+                    })
+            val accountsWithInfo = sortedAccounts.map { account ->
+                AccountInfo(account, DavUtils.accountSyncStatus(context, DavUtils.syncAuthorities(context), account))
+            }
+            accounts.postValue(accountsWithInfo)
         }
 
     }

@@ -27,6 +27,14 @@ class DavUtilsTest {
     }
 
     @Test
+    fun testLastSegmentOfUrl() {
+        assertEquals("/", DavUtils.lastSegmentOfUrl(exampleURL.toHttpUrl()))
+        assertEquals("dir", DavUtils.lastSegmentOfUrl((exampleURL + "dir").toHttpUrl()))
+        assertEquals("dir", DavUtils.lastSegmentOfUrl((exampleURL + "dir/").toHttpUrl()))
+        assertEquals("file.html", DavUtils.lastSegmentOfUrl((exampleURL + "dir/file.html").toHttpUrl()))
+    }
+
+    @Test
     fun testSelectSRVRecord() {
         assertNull(DavUtils.selectSRVRecord(emptyArray()))
 
@@ -55,14 +63,6 @@ class DavUtilsTest {
         }
         assertTrue(result[0] > 200 && result[0] < 500)
         assertTrue(result[1] > 500 && result[1] < 800)
-    }
-
-    @Test
-    fun testLastSegmentOfUrl() {
-        assertEquals("/", DavUtils.lastSegmentOfUrl(exampleURL.toHttpUrl()))
-        assertEquals("dir", DavUtils.lastSegmentOfUrl((exampleURL + "dir").toHttpUrl()))
-        assertEquals("dir", DavUtils.lastSegmentOfUrl((exampleURL + "dir/").toHttpUrl()))
-        assertEquals("file.html", DavUtils.lastSegmentOfUrl((exampleURL + "dir/file.html").toHttpUrl()))
     }
 
 }

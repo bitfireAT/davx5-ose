@@ -113,6 +113,7 @@
     <string name="account_list_empty">Welcome to DAVx⁵!\n\nYou can add a CalDAV/CardDAV account now.</string>
     <string name="accounts_global_sync_disabled">System-wide automatic synchronization is disabled</string>
     <string name="accounts_global_sync_enable">Enable</string>
+    <string name="accounts_sync_all">Sync all accounts</string>
 
     <!-- DavService -->
     <string name="dav_service_refresh_failed">Service detection failed</string>

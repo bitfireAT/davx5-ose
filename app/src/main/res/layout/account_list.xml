@@ -24,14 +24,14 @@
         android:drawablePadding="8dp"
         android:text="@string/account_list_no_internet"/>
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:divider="@android:color/transparent"
         android:background="@android:color/transparent"
-        android:cacheColorHint="@android:color/transparent"/>
+        android:cacheColorHint="@android:color/transparent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@android:id/empty"

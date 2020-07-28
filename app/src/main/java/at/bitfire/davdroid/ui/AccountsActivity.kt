@@ -14,10 +14,12 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.content.SyncStatusObserver
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.intro.IntroActivity
 import at.bitfire.davdroid.ui.setup.LoginActivity
@@ -46,7 +48,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (savedInstanceState == null)
+        if (savedInstanceState == null) {
             CoroutineScope(Dispatchers.Default).launch {
                 // use a separate thread to check whether IntroActivity should be shown
                 if (IntroActivity.shouldShowIntroActivity(this@AccountsActivity)) {
@@ -54,6 +56,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
                     startActivityForResult(intro, REQUEST_INTRO)
                 }
             }
+        }
 
         setContentView(R.layout.activity_accounts)
         setSupportActionBar(toolbar)
@@ -71,6 +74,10 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
         nav_view.setNavigationItemSelectedListener(this)
         nav_view.itemIconTintList = null
+
+        // handle "Sync all" intent from launcher shortcut
+        if (savedInstanceState == null && intent.action == Intent.ACTION_SYNC)
+            syncAllAccounts()
     }
 
     override fun onResume() {
@@ -125,6 +132,16 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         val processed = accountsDrawerHandler.onNavigationItemSelected(this, item)
         drawer_layout.closeDrawer(GravityCompat.START)
         return processed
+    }
+
+
+    private fun allAccounts() =
+            AccountManager.get(this).getAccountsByType(getString(R.string.account_type))
+
+    fun syncAllAccounts(item: MenuItem? = null) {
+        val accounts = allAccounts()
+        for (account in accounts)
+            DavUtils.requestSync(this, account)
     }
 
 }
