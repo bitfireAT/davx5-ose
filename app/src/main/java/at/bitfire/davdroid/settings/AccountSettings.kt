@@ -20,6 +20,7 @@ import android.os.Parcel
 import android.os.RemoteException
 import android.provider.CalendarContract
 import android.provider.ContactsContract
+import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.*
 import at.bitfire.davdroid.log.Logger
@@ -158,12 +159,31 @@ class AccountSettings(
             SYNC_INTERVAL_MANUALLY
     }
 
+    /**
+     * Sets the sync interval and enables/disables automatic sync for the given account and authority.
+     *
+     * This methods blocks until the settings have arrived in the sync framework, so it should not
+     * be called from the UI thread.
+     *
+     * @param authority sync authority (like [CalendarContract.AUTHORITY])
+     * @param seconds if [SYNC_INTERVAL_MANUALLY]: automatic sync will be disabled; otherwise: automatic
+     * sync will be enabled and set to the given number of seconds
+     */
+    @WorkerThread
     fun setSyncInterval(authority: String, seconds: Long) {
+        /* Ugly hack: because there is no callback for when the sync status/interval has been
+        updated, we need to make this call blocking. */
         if (seconds == SYNC_INTERVAL_MANUALLY) {
-            ContentResolver.setSyncAutomatically(account, authority, false)
+            do {
+                Logger.log.fine("Unsetting automatic sync of $account/$authority to $seconds seconds")
+                ContentResolver.setSyncAutomatically(account, authority, false)
+            } while (ContentResolver.getSyncAutomatically(account, authority))
         } else {
-            ContentResolver.setSyncAutomatically(account, authority, true)
-            ContentResolver.addPeriodicSync(account, authority, Bundle(), seconds)
+            do {
+                Logger.log.fine("Setting automatic sync of $account/$authority to $seconds seconds")
+                ContentResolver.setSyncAutomatically(account, authority, true)
+                ContentResolver.addPeriodicSync(account, authority, Bundle(), seconds)
+            } while (ContentResolver.getPeriodicSyncs(account, authority).firstOrNull()?.period != seconds)
         }
     }
 
