@@ -77,7 +77,11 @@ abstract class SyncAdapterService: Service() {
 
     abstract class SyncAdapter(
             context: Context
-    ): AbstractThreadedSyncAdapter(context, false) {
+    ): AbstractThreadedSyncAdapter(
+            context,
+            true    // isSyncable shouldn't be -1 because DAVx5 sets it to 0 or 1.
+                                // However, if it is -1 by accident, set it to 1 to avoid endless sync loops.
+    ) {
 
         companion object {
             fun priorityCollections(extras: Bundle): Set<Long> {

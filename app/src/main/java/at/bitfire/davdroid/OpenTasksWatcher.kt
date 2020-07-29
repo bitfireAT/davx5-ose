@@ -8,7 +8,7 @@
 
 package at.bitfire.davdroid
 
-import android.accounts.Account
+import android.accounts.AccountManager
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
@@ -32,30 +32,30 @@ class OpenTasksWatcher(
         @WorkerThread
         fun updateTaskSync(context: Context) {
             val tasksInstalled = LocalTaskList.tasksProviderAvailable(context)
-            Logger.log.info("App was launched or package was (in)installed; OpenTasks provider now available = $tasksInstalled")
+            Logger.log.info("App launched or other package (un)installed; OpenTasks provider now available = $tasksInstalled")
 
             var enabledAnyAccount = false
 
             // check all accounts and (de)activate OpenTasks if a CalDAV service is defined
             val db = AppDatabase.getInstance(context)
-            for (service in db.serviceDao().getByType(Service.TYPE_CALDAV)) {
-                val account = Account(service.accountName, context.getString(R.string.account_type))
-                try {
-                    val accountSettings = AccountSettings(context, account)
-                    val currentSyncable = ContentResolver.getIsSyncable(account, OpenTasks.authority)
-                    if (tasksInstalled) {
-                        if (currentSyncable <= 0) {
-                            Logger.log.info("Enabling OpenTasks sync for $account")
-                            ContentResolver.setIsSyncable(account, OpenTasks.authority, 1)
-                            accountSettings.setSyncInterval(OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL)
+            val accountManager = AccountManager.get(context)
+            for (account in accountManager.getAccountsByType(context.getString(R.string.account_type))) {
+                val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
+                val currentSyncable = ContentResolver.getIsSyncable(account, OpenTasks.authority)
+                if (tasksInstalled && service != null) {
+                    if (currentSyncable <= 0) {
+                        Logger.log.info("Enabling OpenTasks sync for $account")
+                        ContentResolver.setIsSyncable(account, OpenTasks.authority, 1)
+                        try {
+                            AccountSettings(context, account).setSyncInterval(OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL)
                             enabledAnyAccount = true
+                        } catch (e: InvalidAccountException) {
+                            // account has been removed just now
                         }
-                    } else if (currentSyncable != 0) {
-                        Logger.log.info("Disabling OpenTasks sync for $account")
-                        ContentResolver.setIsSyncable(account, OpenTasks.authority, 0)
                     }
-                } catch (e: InvalidAccountException) {
-                    // account which is still mentioned in DB doesn't exist (anymore)
+                } else if (currentSyncable != 0) {
+                    Logger.log.info("Disabling OpenTasks sync for $account")
+                    ContentResolver.setIsSyncable(account, OpenTasks.authority, 0)
                 }
             }
 

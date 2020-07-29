@@ -161,13 +161,14 @@ class AccountSettings(
 
     /**
      * Sets the sync interval and enables/disables automatic sync for the given account and authority.
+     * Does *not* call [ContentResolver.setIsSyncable].
      *
-     * This methods blocks until the settings have arrived in the sync framework, so it should not
+     * This method blocks until the settings have arrived in the sync framework, so it should not
      * be called from the UI thread.
      *
      * @param authority sync authority (like [CalendarContract.AUTHORITY])
-     * @param seconds if [SYNC_INTERVAL_MANUALLY]: automatic sync will be disabled; otherwise: automatic
-     * sync will be enabled and set to the given number of seconds
+     * @param seconds if [SYNC_INTERVAL_MANUALLY]: automatic sync will be disabled;
+     * otherwise: automatic sync will be enabled and set to the given number of seconds
      */
     @WorkerThread
     fun setSyncInterval(authority: String, seconds: Long) {

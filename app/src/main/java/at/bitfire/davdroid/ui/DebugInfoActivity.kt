@@ -314,6 +314,7 @@ class DebugInfoActivity: AppCompatActivity() {
                         accountSettings.getSyncWifiOnlySSIDs()?.let {
                             text.append(", SSIDs: ${accountSettings.getSyncWifiOnlySSIDs()}")
                         }
+                        text    .append("\n  getIsSyncable(AddressBooks): ${ContentResolver.getIsSyncable(acct, context.getString(R.string.address_books_authority))}")
                         text    .append("\n  getIsSyncable(CalendarContract): ${ContentResolver.getIsSyncable(acct, CalendarContract.AUTHORITY)}")
                                 .append("\n  getIsSyncable(OpenTasks): ${ContentResolver.getIsSyncable(acct, TaskProvider.ProviderName.OpenTasks.authority)}")
                                 .append("\n  [CardDAV] Contact group method: ${accountSettings.getGroupMethod()}")
