@@ -3,6 +3,8 @@ package at.bitfire.davdroid.model
 import android.content.Context
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteQueryBuilder
+import android.text.Html
+import android.text.TextUtils
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -11,6 +13,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import at.bitfire.davdroid.AndroidSingleton
 import at.bitfire.davdroid.log.Logger
+import java.io.Writer
 
 @Suppress("ClassName")
 @Database(entities = [
@@ -42,7 +45,7 @@ abstract class AppDatabase: RoomDatabase() {
 
     }
 
-    fun dump(sb: StringBuilder) {
+    fun dumpHtml(writer: Writer) {
         val db = openHelper.readableDatabase
         db.beginTransactionNonExclusive()
 
@@ -50,39 +53,38 @@ abstract class AppDatabase: RoomDatabase() {
         db.query(SQLiteQueryBuilder.buildQueryString(false, "sqlite_master", arrayOf("name"), "type='table'", null, null, null, null)).use { cursorTables ->
             while (cursorTables.moveToNext()) {
                 val table = cursorTables.getString(0)
-                sb.append(table).append("\n")
+                writer.append("<table><caption>$table</caption><thead>")
                 db.query("SELECT * FROM $table").use { cursor ->
                     // print columns
                     val cols = cursor.columnCount
-                    sb.append("\t| ")
+                    writer.append("<thead><tr>")
                     for (i in 0 until cols)
-                        sb  .append(" ")
-                                .append(cursor.getColumnName(i))
-                                .append(" |")
-                    sb.append("\n")
+                        writer  .append("<td>")
+                                .append(Html.escapeHtml(cursor.getColumnName(i)))
+                                .append("</td>")
+                    writer.append("</tr></thead><tbody>")
 
                     // print rows
                     while (cursor.moveToNext()) {
-                        sb.append("\t| ")
+                        writer.append("<tr>")
                         for (i in 0 until cols) {
-                            sb.append(" ")
+                            writer.append("<td>")
                             try {
                                 val value = cursor.getString(i)
                                 if (value != null)
-                                    sb.append(value
-                                            .replace("\r", "<CR>")
-                                            .replace("\n", "<LF>"))
+                                    writer  .append("<code>")
+                                            .append(Html.escapeHtml(value.replace("\n", "<br/>")))
+                                            .append("</code>")
                                 else
-                                    sb.append("<null>")
-
+                                    writer.append("—")
                             } catch (e: SQLiteException) {
-                                sb.append("<unprintable>")
+                                writer.append("<i>unprintable</i>")
                             }
-                            sb.append(" |")
+                            writer.append("</td>")
                         }
-                        sb.append("\n")
+                        writer.append("</tr>")
                     }
-                    sb.append("----------\n")
+                    writer.append("</tbody></table>")
                 }
             }
             db.endTransaction()

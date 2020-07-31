@@ -51,8 +51,8 @@ class ExceptionInfoFragment: DialogFragment() {
                 .setMessage(exception::class.java.name + "\n" + exception.localizedMessage)
                 .setNegativeButton(R.string.exception_show_details) { _, _ ->
                     val intent = Intent(activity, DebugInfoActivity::class.java)
-                    intent.putExtra(DebugInfoActivity.KEY_THROWABLE, exception)
-                    account?.let { intent.putExtra(DebugInfoActivity.KEY_ACCOUNT, it) }
+                    intent.putExtra(DebugInfoActivity.EXTRA_CAUSE, exception)
+                    account?.let { intent.putExtra(DebugInfoActivity.EXTRA_ACCOUNT, it) }
                     startActivity(intent)
                 }
                 .setPositiveButton(android.R.string.ok) { _, _ -> }

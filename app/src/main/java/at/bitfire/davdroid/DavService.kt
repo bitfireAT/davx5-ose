@@ -354,8 +354,8 @@ class DavService: android.app.Service() {
             Logger.log.log(Level.SEVERE, "Couldn't refresh collection list", e)
 
             val debugIntent = Intent(this, DebugInfoActivity::class.java)
-            debugIntent.putExtra(DebugInfoActivity.KEY_THROWABLE, e)
-            debugIntent.putExtra(DebugInfoActivity.KEY_ACCOUNT, account)
+            debugIntent.putExtra(DebugInfoActivity.EXTRA_CAUSE, e)
+            debugIntent.putExtra(DebugInfoActivity.EXTRA_ACCOUNT, account)
 
             val notify = NotificationUtils.newBuilder(this, NotificationUtils.CHANNEL_GENERAL)
                     .setSmallIcon(R.drawable.ic_sync_problem_notify)

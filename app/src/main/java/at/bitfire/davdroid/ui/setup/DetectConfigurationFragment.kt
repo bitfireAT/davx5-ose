@@ -120,7 +120,7 @@ class DetectConfigurationFragment: Fragment() {
                     .setMessage(message)
                     .setNeutralButton(R.string.login_view_logs) { _, _ ->
                         val intent = Intent(activity, DebugInfoActivity::class.java)
-                        intent.putExtra(DebugInfoActivity.KEY_LOGS, model.configuration?.logs)
+                        intent.putExtra(DebugInfoActivity.EXTRA_LOGS, model.configuration?.logs)
                         startActivity(intent)
                     }
                     .setPositiveButton(android.R.string.ok) { _, _ ->

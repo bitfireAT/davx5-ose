@@ -330,8 +330,10 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         runBlocking(workDispatcher) {
             for (local in localCollection.findDirty())
                 launch {
-                    uploadDirty(local)
-                    numUploaded++
+                    localExceptionContext(local) {
+                        uploadDirty(local)
+                        numUploaded++
+                    }
                 }
         }
         syncResult.stats.numEntries += numUploaded
@@ -739,15 +741,15 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     private fun buildDebugInfoIntent(e: Throwable, local: ResourceType?, remote: HttpUrl?) =
             Intent(context, DebugInfoActivity::class.java).apply {
-                putExtra(DebugInfoActivity.KEY_ACCOUNT, account)
-                putExtra(DebugInfoActivity.KEY_AUTHORITY, authority)
-                putExtra(DebugInfoActivity.KEY_THROWABLE, e)
+                putExtra(DebugInfoActivity.EXTRA_ACCOUNT, account)
+                putExtra(DebugInfoActivity.EXTRA_AUTHORITY, authority)
+                putExtra(DebugInfoActivity.EXTRA_CAUSE, e)
 
                 // pass current local/remote resource
                 if (local != null)
-                    putExtra(DebugInfoActivity.KEY_LOCAL_RESOURCE, local.toString())
+                    putExtra(DebugInfoActivity.EXTRA_LOCAL_RESOURCE, local.toString())
                 if (remote != null)
-                    putExtra(DebugInfoActivity.KEY_REMOTE_RESOURCE, remote.toString())
+                    putExtra(DebugInfoActivity.EXTRA_REMOTE_RESOURCE, remote.toString())
             }
 
     private fun buildRetryAction(): NotificationCompat.Action {

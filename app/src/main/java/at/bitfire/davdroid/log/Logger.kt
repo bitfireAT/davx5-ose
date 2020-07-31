@@ -17,10 +17,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.FileProvider
 import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppSettingsActivity
+import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import java.io.File
 import java.io.IOException
@@ -80,6 +80,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
                 val fileHandler = FileHandler(logFile.toString(), true)
                 fileHandler.formatter = PlainTextFormatter.DEFAULT
                 rootLogger.addHandler(fileHandler)
+                log.info("Now logging to file: $logFile")
 
                 val prefIntent = Intent(context, AppSettingsActivity::class.java)
                 prefIntent.putExtra(AppSettingsActivity.EXTRA_SCROLL_TO, LOG_TO_FILE)
@@ -93,18 +94,12 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
                         .setOngoing(true)
 
                 // add "Share" action
-                val logFileUri = FileProvider.getUriForFile(context, context.getString(R.string.authority_debug_provider), logFile)
-                log.fine("Now logging to file: $logFile -> $logFileUri")
-
-                val shareIntent = Intent(Intent.ACTION_SEND)
-                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "DAVx⁵ logs")
-                shareIntent.putExtra(Intent.EXTRA_STREAM, logFileUri)
-                shareIntent.type = "text/plain"
-                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
-                val chooserIntent = Intent.createChooser(shareIntent, null)
+                val shareIntent = Intent(Intent.ACTION_SEND, null, context, DebugInfoActivity::class.java)
+                shareIntent.putExtra(DebugInfoActivity.EXTRA_LOG_FILE, logFile.absolutePath)
+                shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 val shareAction = NotificationCompat.Action.Builder(R.drawable.ic_share_notify,
                         context.getString(R.string.logging_notification_send_log),
-                        PendingIntent.getActivity(context, 0, chooserIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                        PendingIntent.getActivity(context, 0, shareIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                 builder.addAction(shareAction.build())
             } catch(e: IOException) {
                 log.log(Level.SEVERE, "Couldn't create log file", e)

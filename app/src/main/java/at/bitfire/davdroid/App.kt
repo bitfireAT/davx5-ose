@@ -81,7 +81,7 @@ class App: Application(), Thread.UncaughtExceptionHandler {
 
         val intent = Intent(this, DebugInfoActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.putExtra(DebugInfoActivity.KEY_THROWABLE, e)
+        intent.putExtra(DebugInfoActivity.EXTRA_CAUSE, e)
         startActivity(intent)
 
         exitProcess(1)

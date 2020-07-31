@@ -336,17 +336,35 @@
     <string name="collection_properties_url">Address (URL):</string>
     <string name="collection_properties_copy_url">Copy URL</string>
 
+    <!-- debugging and DebugInfoActivity -->
+    <string name="authority_debug_provider" translatable="false">at.bitfire.davdroid.debug</string>
+    <string name="debug_info_title">Debug info</string>
+    <string name="debug_info_attached">Debug info attached to this message (requires attachment support of the receiving app).</string>
+    <string name="debug_info_http_error">HTTP Error</string>
+    <string name="debug_info_server_error">Server Error</string>
+    <string name="debug_info_webdav_error">WebDAV Error</string>
+    <string name="debug_info_io_error">I/O Error</string>
+    <string name="debug_info_http_403_description">The request has been denied. Check involved resources and debug info for details.</string>
+    <string name="debug_info_http_404_description">The requested resource doesn\'t exist (anymore). Check involved resources and debug info for details.</string>
+    <string name="debug_info_http_5xx_description">A server-side problem occured. Please contact your server support.</string>
+    <string name="debug_info_unexpected_error">An unexpected error has occured. View debug info for details.</string>
+    <string name="debug_info_view_details">View details</string>
+    <string name="debug_info_subtitle">Debug info have been collected</string>
+    <string name="debug_info_involved_caption">Involved resources</string>
+    <string name="debug_info_involved_subtitle">Related to the problem</string>
+    <string name="debug_info_involved_remote">Remote resource:</string>
+    <string name="debug_info_involved_local">Local resource:</string>
+    <string name="debug_info_involved_view">View with app</string>
+    <string name="debug_info_logs_caption">Logs</string>
+    <string name="debug_info_logs_subtitle">Verbose logs are available</string>
+
     <!-- ExceptionInfoFragment -->
     <string name="exception">An error has occurred.</string>
     <string name="exception_httpexception">An HTTP error has occurred.</string>
     <string name="exception_ioexception">An I/O error has occurred.</string>
     <string name="exception_show_details">Show details</string>
 
-    <!-- sync adapters and DebugInfoActivity -->
-    <string name="authority_debug_provider" translatable="false">at.bitfire.davdroid.debug</string>
-    <string name="debug_info_title">Debug info</string>
-    <string name="debug_info_logs_attached">Logs are attached to this message (requires attachment support of the receiving app).</string>
-    <string name="sync_contacts_read_only_address_book">Read-only address book</string>
+    <!-- sync adapters -->
     <string name="sync_error_permissions">DAVx⁵ permissions</string>
     <string name="sync_error_permissions_text">Additional permissions required</string>
     <string name="sync_error_opentasks_too_old">OpenTasks too old</string>
