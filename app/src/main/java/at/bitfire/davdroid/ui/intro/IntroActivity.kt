@@ -3,6 +3,7 @@ package at.bitfire.davdroid.ui.intro
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -41,13 +42,13 @@ class IntroActivity: AppIntro2() {
         super.onCreate(savedInstanceState)
         val settings = SettingsManager.getInstance(this)
 
-        val factoriesWithMode = introFragmentFactories.associate { Pair(it, it.shouldBeShown(this, settings)) }
+        val factoriesWithMode = introFragmentFactories.associateWith { it.shouldBeShown(this, settings) }
         val showAll = factoriesWithMode.values.any { it == ShowMode.SHOW }
         for ((factory, mode) in factoriesWithMode)
             if (mode == ShowMode.SHOW || (mode == ShowMode.SHOW_NOT_ALONE && showAll))
                 addSlide(factory.create())
 
-        setBarColor(resources.getColor(R.color.primaryDarkColor))
+        setBarColor(ResourcesCompat.getColor(resources, R.color.primaryDarkColor, null))
         isSkipButtonEnabled = false
     }
 

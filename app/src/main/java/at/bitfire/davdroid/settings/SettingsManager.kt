@@ -88,7 +88,7 @@ class SettingsManager private constructor(
 
     private fun<T> getValue(key: String, reader: (SettingsProvider) -> T?): T? {
         Logger.log.fine("Looking up setting $key")
-        var result: T? = null
+        val result: T? = null
         for (provider in providers)
             try {
                 val value = reader(provider)
@@ -118,7 +118,7 @@ class SettingsManager private constructor(
 
     fun isWritable(key: String): Boolean {
         for (provider in providers) {
-            if (provider.canWrite() == true)
+            if (provider.canWrite())
                 return true
             else if (provider.contains(key))
                 // non-writeable provider contains this key -> setting will always be provided by this read-only provider

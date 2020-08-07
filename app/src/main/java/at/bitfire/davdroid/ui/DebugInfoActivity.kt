@@ -296,7 +296,7 @@ class DebugInfoActivity: AppCompatActivity() {
                 text    .append("APP SETTINGS\n")
                         .append("Distrust system certs: ${settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES)}\n")
                         .append("Override system proxy: $overrideProxy\n")
-                if (overrideProxy == true)
+                if (overrideProxy)
                     text.append("  Proxy: ${settings.getString(Settings.OVERRIDE_PROXY_HOST)}:${settings.getInt(Settings.OVERRIDE_PROXY_PORT)}\n")
                 text.append("\n")
 

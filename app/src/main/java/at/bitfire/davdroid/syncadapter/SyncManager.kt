@@ -372,8 +372,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 }
             }
         } catch (e: ContextedException) {
-            val ex = e.cause
-            when (ex) {
+            when (val ex = e.cause) {
                 is ForbiddenException -> {
                     // HTTP 403 Forbidden
                     // If and only if the upload failed because of missing permissions, treat it like 412.
@@ -438,17 +437,16 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
         val localState = localCollection.lastSyncState
         Logger.log.info("Local sync state = $localState, remote sync state = $state")
-        return when {
-            state?.type == SyncState.Type.SYNC_TOKEN -> {
+        return when (state?.type) {
+            SyncState.Type.SYNC_TOKEN -> {
                 val lastKnownToken = localState?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }?.value
                 lastKnownToken != state.value
             }
-            state?.type == SyncState.Type.CTAG -> {
+            SyncState.Type.CTAG -> {
                 val lastKnownCTag = localState?.takeIf { it.type == SyncState.Type.CTAG }?.value
                 lastKnownCTag != state.value
             }
-            else ->
-                true
+            else -> true
         }
     }
 

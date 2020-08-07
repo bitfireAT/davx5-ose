@@ -3,6 +3,7 @@ package at.bitfire.davdroid.ui.intro
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import at.bitfire.davdroid.PermissionUtils
@@ -15,7 +16,7 @@ import at.bitfire.davdroid.ui.intro.IIntroFragmentFactory.ShowMode
 
 class PermissionsFragmentFactory: IIntroFragmentFactory {
 
-    override fun shouldBeShown(context: Context, settingsManager: SettingsManager): IIntroFragmentFactory.ShowMode {
+    override fun shouldBeShown(context: Context, settingsManager: SettingsManager): ShowMode {
         // show PermissionsFragment as intro fragment when no permissions are granted
         val permissions = CONTACT_PERMSSIONS + CALENDAR_PERMISSIONS + TASKS_PERMISSIONS
         return if (PermissionUtils.haveAnyPermission(context, permissions))
@@ -27,9 +28,9 @@ class PermissionsFragmentFactory: IIntroFragmentFactory {
     override fun create() = PermissionsIntroFragment()
 
 
-    class PermissionsIntroFragment(): Fragment() {
+    class PermissionsIntroFragment : Fragment() {
 
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
                 inflater.inflate(R.layout.intro_permissions, container, false)
 
     }

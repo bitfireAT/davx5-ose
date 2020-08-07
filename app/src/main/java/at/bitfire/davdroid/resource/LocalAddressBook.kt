@@ -53,7 +53,7 @@ class LocalAddressBook(
                 val stored = accountManager.getUserData(account, key)
                 val expected = userData.getString(key)
                 if (stored != expected) {
-                    Logger.log.warning("Stored user data \"${stored}\" differs from expected data \"${expected}\" for ${key}")
+                    Logger.log.warning("Stored user data \"$stored\" differs from expected data \"$expected\" for $key")
                     return false
                 }
             }

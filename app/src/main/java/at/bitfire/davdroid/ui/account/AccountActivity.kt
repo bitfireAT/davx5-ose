@@ -37,7 +37,7 @@ class AccountActivity: AppCompatActivity() {
         const val EXTRA_ACCOUNT = "account"
     }
 
-    val model by viewModels<Model>() {
+    val model by viewModels<Model> {
         val account = intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
                 ?: throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
         Model.Factory(application, account)
@@ -138,7 +138,7 @@ class AccountActivity: AppCompatActivity() {
 
     class TabsAdapter(
             val activity: AppCompatActivity
-    ): FragmentStatePagerAdapter(activity.supportFragmentManager, FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    ): FragmentStatePagerAdapter(activity.supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
         
         var cardDavSvcId: Long? = null
             set(value) {

@@ -16,6 +16,7 @@ import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
+import androidx.core.content.res.ResourcesCompat
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 
@@ -69,7 +70,7 @@ object NotificationUtils {
 
     fun newBuilder(context: Context, channel: String): NotificationCompat.Builder {
         val builder = NotificationCompat.Builder(context, channel)
-                .setColor(context.resources.getColor(R.color.primaryColor))
+                .setColor(ResourcesCompat.getColor(context.resources, R.color.primaryColor, null))
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
             builder.setLargeIcon(App.getLauncherBitmap(context))

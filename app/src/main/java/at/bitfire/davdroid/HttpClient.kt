@@ -106,7 +106,7 @@ class HttpClient private constructor(
 
                 // custom proxy support
                 try {
-                    if (settings.getBoolean(Settings.OVERRIDE_PROXY) == true) {
+                    if (settings.getBoolean(Settings.OVERRIDE_PROXY)) {
                         val address = InetSocketAddress(
                                 settings.getString(Settings.OVERRIDE_PROXY_HOST),
                                 settings.getInt(Settings.OVERRIDE_PROXY_PORT)

@@ -183,9 +183,8 @@ class AboutActivity: AppCompatActivity() {
 
                 // sort translations by localized language name
                 val collator = Collator.getInstance()
-                translations.sortWith(object: Comparator<Translation> {
-                    override fun compare(o1: Translation, o2: Translation) =
-                            collator.compare(o1.language, o2.language)
+                translations.sortWith(Comparator<Translation> {
+                    o1, o2 -> collator.compare(o1.language, o2.language)
                 })
             }
 
@@ -216,7 +215,7 @@ class AboutActivity: AppCompatActivity() {
             application: Application
     ): AndroidViewModel(application) {
 
-        var initialized = false
+        private var initialized = false
         val htmlText = MutableLiveData<Spanned>()
         val plainText = MutableLiveData<String>()
 

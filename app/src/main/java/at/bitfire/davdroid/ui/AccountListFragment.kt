@@ -94,7 +94,7 @@ class AccountListFragment: Fragment() {
                         oldItem == newItem
             }
     ) {
-        class ViewHolder(val v: View): RecyclerView.ViewHolder(v) {}
+        class ViewHolder(val v: View): RecyclerView.ViewHolder(v)
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val v = LayoutInflater.from(parent.context).inflate(R.layout.account_list_item, parent, false)
@@ -111,15 +111,15 @@ class AccountListFragment: Fragment() {
                 activity.startActivity(intent)
             }
 
-            when {
-                accountInfo.status == SyncStatus.ACTIVE -> {
+            when (accountInfo.status) {
+                SyncStatus.ACTIVE -> {
                     v.progress.apply {
                         alpha = 1.0f
                         isIndeterminate = true
                         visibility = View.VISIBLE
                     }
                 }
-                accountInfo.status == SyncStatus.PENDING -> {
+                SyncStatus.PENDING -> {
                     v.progress.apply {
                         alpha = 0.4f
                         isIndeterminate = false
@@ -127,8 +127,7 @@ class AccountListFragment: Fragment() {
                         visibility = View.VISIBLE
                     }
                 }
-                else ->
-                    v.progress.visibility = View.INVISIBLE
+                else -> v.progress.visibility = View.INVISIBLE
             }
             v.account_name.text = accountInfo.account.name
         }

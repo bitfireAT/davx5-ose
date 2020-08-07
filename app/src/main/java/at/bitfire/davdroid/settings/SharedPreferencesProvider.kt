@@ -11,7 +11,6 @@ package at.bitfire.davdroid.settings
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import android.util.NoSuchPropertyException
 import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase

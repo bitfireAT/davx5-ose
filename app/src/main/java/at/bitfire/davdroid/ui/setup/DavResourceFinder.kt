@@ -198,7 +198,7 @@ class DavResourceFinder(
      * @return list of found email addresses (empty if none)
      */
     fun queryEmailAddress(principal: HttpUrl): List<String> {
-        var mailboxes = LinkedList<String>()
+        val mailboxes = LinkedList<String>()
         try {
             DavResource(httpClient.okHttpClient, principal, log).propfind(0, CalendarUserAddressSet.NAME) { response, _ ->
                 response[CalendarUserAddressSet::class.java]?.let { addressSet ->
@@ -445,7 +445,7 @@ class DavResourceFinder(
                 val homeSets: MutableSet<HttpUrl> = HashSet(),
                 val collections: MutableMap<HttpUrl, Collection> = HashMap(),
 
-                val emails: MutableList<String> = LinkedList<String>()
+                val emails: MutableList<String> = LinkedList()
         )
 
         override fun toString(): String {

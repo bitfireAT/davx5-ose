@@ -141,7 +141,7 @@ class NextcloudLoginFlowFragment: Fragment() {
 
         fun showError(view: WebView, message: CharSequence) {
             Snackbar.make(requireView(), message, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.login_webview_retry, { view.reload() })
+                    .setAction(R.string.login_webview_retry) { view.reload() }
                     .show()
         }
     }
