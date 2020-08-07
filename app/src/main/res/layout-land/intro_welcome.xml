@@ -8,7 +8,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/appIntro2BottomBarHeight"
+        android:paddingBottom="@dimen/appintro2_bottombar_height"
         android:orientation="vertical"
         android:gravity="center"
         android:background="@color/primaryDarkColor">

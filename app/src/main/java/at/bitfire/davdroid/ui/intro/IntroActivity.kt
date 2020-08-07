@@ -8,7 +8,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.intro.IIntroFragmentFactory.ShowMode
-import com.github.paolorotolo.appintro.AppIntro2
+import com.github.appintro.AppIntro2
 import java.util.*
 
 class IntroActivity: AppIntro2() {
@@ -34,6 +34,9 @@ class IntroActivity: AppIntro2() {
 
     }
 
+    private var currentSlide = 0
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val settings = SettingsManager.getInstance(this)
@@ -45,12 +48,16 @@ class IntroActivity: AppIntro2() {
                 addSlide(factory.create())
 
         setBarColor(resources.getColor(R.color.primaryDarkColor))
-        showSkipButton(false)
+        isSkipButtonEnabled = false
     }
 
+    override fun onPageSelected(position: Int) {
+        super.onPageSelected(position)
+        currentSlide = position
+    }
 
     override fun onBackPressed() {
-        if (pager.isFirstSlide(fragments.size))
+        if (currentSlide == 0)
             setResult(Activity.RESULT_CANCELED)
         super.onBackPressed()
     }
