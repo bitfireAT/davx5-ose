@@ -13,10 +13,13 @@ import android.app.Activity
 import android.content.ContentResolver
 import android.content.Intent
 import android.content.SyncStatusObserver
+import android.content.pm.ShortcutManager
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.getSystemService
 import androidx.core.view.GravityCompat
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
@@ -138,6 +141,11 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
             AccountManager.get(this).getAccountsByType(getString(R.string.account_type))
 
     fun syncAllAccounts(item: MenuItem? = null) {
+        if (Build.VERSION.SDK_INT >= 25)
+            getSystemService<ShortcutManager>()?.let { shortcutManager ->
+                shortcutManager.reportShortcutUsed(UiUtils.SHORTCUT_SYNC_ALL)
+            }
+
         val accounts = allAccounts()
         for (account in accounts)
             DavUtils.requestSync(this, account)

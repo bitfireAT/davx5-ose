@@ -14,26 +14,26 @@ import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
 import android.net.Uri
+import android.os.Build
 import android.widget.Toast
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.R
 
 object UiUtils {
 
-    private val SHORTCUT_SYNC_ALL = "syncAll"
+    val SHORTCUT_SYNC_ALL = "syncAllAccounts"
 
     fun updateShortcuts(context: Context) {
-        context.getSystemService<ShortcutManager>()?.let { shortcutManager ->
-            shortcutManager.dynamicShortcuts = listOf(
-                    ShortcutInfo.Builder(context, SHORTCUT_SYNC_ALL)
-                            .setIcon(Icon.createWithResource(context, R.drawable.ic_sync_shortcut))
-                            .setShortLabel(context.getString(R.string.accounts_sync_all))
-                            .setIntent(Intent(context, AccountsActivity::class.java).apply {
-                                action = Intent.ACTION_SYNC
-                            })
-                            .build()
-            )
-        }
+        if (Build.VERSION.SDK_INT >= 25)
+            context.getSystemService<ShortcutManager>()?.let { shortcutManager ->
+                shortcutManager.dynamicShortcuts = listOf(
+                        ShortcutInfo.Builder(context, SHORTCUT_SYNC_ALL)
+                                .setIcon(Icon.createWithResource(context, R.drawable.ic_sync_shortcut))
+                                .setShortLabel(context.getString(R.string.accounts_sync_all))
+                                .setIntent(Intent(Intent.ACTION_SYNC, null, context, AccountsActivity::class.java))
+                                .build()
+                )
+            }
     }
 
     /**
