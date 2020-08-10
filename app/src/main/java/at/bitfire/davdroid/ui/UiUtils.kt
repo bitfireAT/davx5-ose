@@ -10,11 +10,31 @@ package at.bitfire.davdroid.ui
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ShortcutInfo
+import android.content.pm.ShortcutManager
+import android.graphics.drawable.Icon
 import android.net.Uri
 import android.widget.Toast
+import androidx.core.content.getSystemService
 import at.bitfire.davdroid.R
 
 object UiUtils {
+
+    private val SHORTCUT_SYNC_ALL = "syncAll"
+
+    fun updateShortcuts(context: Context) {
+        context.getSystemService<ShortcutManager>()?.let { shortcutManager ->
+            shortcutManager.dynamicShortcuts = listOf(
+                    ShortcutInfo.Builder(context, SHORTCUT_SYNC_ALL)
+                            .setIcon(Icon.createWithResource(context, R.drawable.ic_sync_shortcut))
+                            .setShortLabel(context.getString(R.string.accounts_sync_all))
+                            .setIntent(Intent(context, AccountsActivity::class.java).apply {
+                                action = Intent.ACTION_SYNC
+                            })
+                            .build()
+            )
+        }
+    }
 
     /**
      * Starts the [Intent.ACTION_VIEW] intent with the given URL, if possible.

@@ -18,6 +18,7 @@ import androidx.core.graphics.drawable.toBitmap
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.UiUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -64,6 +65,9 @@ class App: Application(), Thread.UncaughtExceptionHandler {
 
         // don't block UI for some background checks
         CoroutineScope(Dispatchers.Default).launch {
+            // create/update app shortcuts
+            UiUtils.updateShortcuts(this@App)
+
             // watch installed/removed apps
             OpenTasksWatcher(this@App)
 
