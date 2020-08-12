@@ -8,6 +8,8 @@
 
 package at.bitfire.davdroid.settings
 
+import java.io.Writer
+
 /**
  * Defines a settings provider, which provides settings from a certain source
  * to the [SettingsManager].
@@ -43,5 +45,8 @@ interface SettingsProvider {
     fun putString(key: String, value: String?)
 
     fun remove(key: String)
+
+
+    fun dumpHtml(writer: Writer)
 
 }

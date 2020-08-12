@@ -13,6 +13,7 @@ import android.util.NoSuchPropertyException
 import androidx.annotation.AnyThread
 import at.bitfire.davdroid.AndroidSingleton
 import at.bitfire.davdroid.log.Logger
+import java.io.Writer
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level
@@ -26,9 +27,7 @@ class SettingsManager private constructor(
 ) {
 
     companion object: AndroidSingleton<SettingsManager>() {
-
         override fun createInstance(context: Context) = SettingsManager(context)
-
     }
 
     private val providers = LinkedList<SettingsProvider>()
@@ -150,6 +149,19 @@ class SettingsManager private constructor(
             putValue(key, value) { provider -> provider.putString(key, value) }
 
     fun remove(key: String) = putString(key, null)
+
+
+    /*** HELPERS ***/
+
+    fun dumpHtml(writer: Writer) {
+        writer.write("<ol>")
+        for (provider in providers) {
+            writer.write("<li>${provider::class.java.simpleName} canWrite=${provider.canWrite()}")
+            provider.dumpHtml(writer)
+            writer.write("</li>")
+        }
+        writer.write("</ol>")
+    }
 
 
     interface OnChangeListener {

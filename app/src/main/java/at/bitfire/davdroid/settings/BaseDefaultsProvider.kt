@@ -9,6 +9,8 @@
 package at.bitfire.davdroid.settings
 
 import android.content.Context
+import android.text.Html
+import java.io.Writer
 
 abstract class BaseDefaultsProvider(
         val context: Context,
@@ -49,5 +51,19 @@ abstract class BaseDefaultsProvider(
     override fun putString(key: String, value: String?) = throw NotImplementedError()
 
     override fun remove(key: String) = throw NotImplementedError()
+
+
+    override fun dumpHtml(writer: Writer) {
+        val strValues = mutableMapOf<String, String>()
+        strValues.putAll(booleanDefaults.mapValues { (_, value) -> value.toString() })
+        strValues.putAll(intDefaults.mapValues { (_, value) -> value.toString() })
+        strValues.putAll(longDefaults.mapValues { (_, value) -> value.toString() })
+        strValues.putAll(stringDefaults)
+
+        writer.write("<ul>")
+        for ((key, value) in strValues.toSortedMap())
+            writer.write("<li><code>${Html.escapeHtml(key)}</code> = <code>${Html.escapeHtml(value)}</code></li>")
+        writer.write("</ul>")
+    }
 
 }

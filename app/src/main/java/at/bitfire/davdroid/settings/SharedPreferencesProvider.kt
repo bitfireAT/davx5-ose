@@ -11,9 +11,11 @@ package at.bitfire.davdroid.settings
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import android.text.Html
 import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
+import java.io.Writer
 
 class SharedPreferencesProvider(
         val context: Context,
@@ -105,6 +107,15 @@ class SharedPreferencesProvider(
         Logger.log.fine("Removing setting $key")
         preferences.edit().remove(key).apply()
     }
+
+
+    override fun dumpHtml(writer: Writer) {
+        writer.write("<ul>")
+        for ((key, value) in preferences.all.toSortedMap())
+            writer.write("<li><code>${Html.escapeHtml(key)}</code> = <code>${Html.escapeHtml(value.toString())}</code></li>")
+        writer.write("</ul>")
+    }
+
 
 
     private fun firstCall(context: Context) {

@@ -413,16 +413,6 @@ class DebugInfoActivity: AppCompatActivity() {
                 }
                 writer.append("</ul>")
 
-                // app settings
-                val settings = SettingsManager.getInstance(context)
-                val overrideProxy = settings.getBoolean(Settings.OVERRIDE_PROXY)
-                writer    .append("<h2>App settings</h2>")
-                        .append("<p>Distrust system certs: ${settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES)}</p>")
-                        .append("<p>Override system proxy: $overrideProxy")
-                if (overrideProxy)
-                    writer.append("(${settings.getString(Settings.OVERRIDE_PROXY_HOST)}:${settings.getInt(Settings.OVERRIDE_PROXY_PORT)})")
-                writer.append("</p>")
-
                 writer.append("<h2>Accounts</h2><ul class='only-indent'>")
                 // main accounts
                 val accountManager = AccountManager.get(context)
@@ -458,8 +448,13 @@ class DebugInfoActivity: AppCompatActivity() {
                     writer.append("</ul>")
                 }
 
+                // database dump
                 writer.append("<h2>Database dump</h2>")
                 AppDatabase.getInstance(context).dumpHtml(writer)
+
+                // app settings
+                writer.append("<h2>App settings</h2>")
+                SettingsManager.getInstance(context).dumpHtml(writer)
 
                 writer.append("</body></html>")
                 writer.toString()
