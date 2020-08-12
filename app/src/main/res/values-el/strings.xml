@@ -223,15 +223,14 @@
   <string name="collection_properties">Ιδιότητες</string>
   <string name="collection_properties_url">Διεύθυνση (URL):</string>
   <string name="collection_properties_copy_url">Αντιγραφή URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Πληροφορίες αποσφαλμάτωσης</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Παρουσιάστηκε σφάλμα.</string>
   <string name="exception_httpexception">Παρουσιάστηκε σφάλμα HTTP.</string>
   <string name="exception_ioexception">Παρουσιάστηκε σφάλμα I/O.</string>
   <string name="exception_show_details">Εμφάνιση λεπτομερειών</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Πληροφορίες αποσφαλμάτωσης</string>
-  <string name="debug_info_logs_attached">Τα αρχεία καταγραφής επισυνάπτονται σε αυτό το μήνυμα (απαιτεί υποστήριξη συνημμένων της εφαρμογής λήψης).</string>
-  <string name="sync_contacts_read_only_address_book">Βιβλίο διευθύνσεων μόνο για ανάγνωση</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">Δικαιώματα DAVx⁵</string>
   <string name="sync_error_permissions_text">Απαιτούνται πρόσθετα δικαιώματα</string>
   <string name="sync_error_opentasks_too_old">Πολύ παλιά εφαρμογή OpenTasks</string>

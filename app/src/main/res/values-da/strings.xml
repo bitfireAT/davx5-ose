@@ -145,6 +145,7 @@
   <string name="account_rename">Omdøbe konto</string>
   <string name="account_rename_new_name">Lokaldata der ikke er gemt kan gå tabt. Eftersynkronisering er krævet efter omdøbning. Nyt kontonavn: </string>
   <string name="account_rename_rename">Omdøbe</string>
+  <string name="account_rename_couldnt_rename">Kunne ikke omdøbe konto</string>
   <string name="account_delete">Slette konto</string>
   <string name="account_delete_confirmation_title">Slette konto?</string>
   <string name="account_delete_confirmation_text">Alle lokale kopier af addessebøger, kalendere og opgavelister vil blive slettet.</string>
@@ -277,15 +278,14 @@
   <string name="collection_properties">Egenskaber</string>
   <string name="collection_properties_url">Adresse (URL):</string>
   <string name="collection_properties_copy_url">Kopiere URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Debug-info</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Der er opstået en fejl.</string>
   <string name="exception_httpexception">Der er opstået en HTTP-fejl.</string>
   <string name="exception_ioexception">Der er opstået en I/O-fejl.</string>
   <string name="exception_show_details">Vis detaljer</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Debug-info</string>
-  <string name="debug_info_logs_attached">Logfiler er vedhæftet denne besked (kræver understøttelse af vedhæftning hos modtagende program).</string>
-  <string name="sync_contacts_read_only_address_book">Skrivebeskyttet adressebog</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵-rettigheder</string>
   <string name="sync_error_permissions_text">Yderligere adgang påkrævet</string>
   <string name="sync_error_opentasks_too_old">OpenTasks-version for gammel</string>

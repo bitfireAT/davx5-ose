@@ -276,15 +276,14 @@
   <string name="collection_properties">Propriétés</string>
   <string name="collection_properties_url">Adresse (URL) :</string>
   <string name="collection_properties_copy_url">Copier l\'URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Infos de débogage</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Une erreur est survenue.</string>
   <string name="exception_httpexception">Une erreur HTTP est survenue.</string>
   <string name="exception_ioexception">Une erreur I/O est survenue.</string>
   <string name="exception_show_details">Voir détails</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Infos de débogage</string>
-  <string name="debug_info_logs_attached">Les logs seront joints à ce message (nécessite la prise en charge de pièce jointe par l\'application destinataire).</string>
-  <string name="sync_contacts_read_only_address_book">Carnet d\'adresse en lecture seulement</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">Autorisations DAVx⁵</string>
   <string name="sync_error_permissions_text">Autorisations supplémentaires demandées</string>
   <string name="sync_error_opentasks_too_old">Version d\'OpenTask trop ancienne</string>

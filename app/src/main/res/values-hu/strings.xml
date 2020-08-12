@@ -205,14 +205,14 @@
   <string name="collection_properties">Tulajdonságok</string>
   <string name="collection_properties_url">Cím (URL):</string>
   <string name="collection_properties_copy_url">URL másolása</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Hibakeresési információ</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Hiba történt.</string>
   <string name="exception_httpexception">HTTP hiba történt.</string>
   <string name="exception_ioexception">I/O hiba történt.</string>
   <string name="exception_show_details">Részletek megjelenítése</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Hibakeresési információ</string>
-  <string name="sync_contacts_read_only_address_book">Csak olvasható címjegyzék</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ engedélyek </string>
   <string name="sync_error_permissions_text">További engedélyek szükségesek</string>
   <string name="sync_error_opentasks_too_old">Az OpenTask verzió nem megfelelő</string>

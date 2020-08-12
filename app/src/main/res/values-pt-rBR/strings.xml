@@ -93,6 +93,7 @@
   <string name="account_list_empty">Bem-vindo ao DAVx⁵!\n\nVocê pode adicionar uma conta CalDAV/CardDAV agora.</string>
   <string name="accounts_global_sync_disabled">A sincronização automática pelo sistema está desativada</string>
   <string name="accounts_global_sync_enable">Ativar</string>
+  <string name="accounts_sync_all">Sincronizar todas as contas</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Falha na detecção do serviço</string>
   <string name="dav_service_refresh_couldnt_refresh">Não foi possível atualizar a lista da coleção</string>
@@ -278,15 +279,32 @@
   <string name="collection_properties">Propriedades</string>
   <string name="collection_properties_url">Endereço (URL):</string>
   <string name="collection_properties_copy_url">Copiar URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Informações de depuração</string>
+  <string name="debug_info_attached">Informações de depuração anexadas a esta mensagem (requer suporte a anexo pelo aplicativo receptor).</string>
+  <string name="debug_info_http_error">Erro HTTP</string>
+  <string name="debug_info_server_error">Erro do servidor</string>
+  <string name="debug_info_webdav_error">Erro do WebDAV</string>
+  <string name="debug_info_io_error">Erro de E/S</string>
+  <string name="debug_info_http_403_description">O pedido foi negado. Verifique os recursos envolvidos e as informações de depuração para obter detalhes.</string>
+  <string name="debug_info_http_404_description">O recurso solicitado não existe (não mais). Verifique os recursos envolvidos e as informações de depuração para obter detalhes.</string>
+  <string name="debug_info_http_5xx_description">Ocorreu um problema. Por favor, entre em contato com o suporte do seu servidor..</string>
+  <string name="debug_info_unexpected_error">Ocorreu um erro inesperado. Consulte as informações de depuração para mais detalhes.</string>
+  <string name="debug_info_view_details">Veja detalhes</string>
+  <string name="debug_info_subtitle">Informações sobre depuração foram coletadas</string>
+  <string name="debug_info_involved_caption">Recursos envolvidos</string>
+  <string name="debug_info_involved_subtitle">Relacionado ao problema</string>
+  <string name="debug_info_involved_remote">Recurso remoto:</string>
+  <string name="debug_info_involved_local">Recurso local:</string>
+  <string name="debug_info_involved_view">Exibir com aplicativo</string>
+  <string name="debug_info_logs_caption">Registros</string>
+  <string name="debug_info_logs_subtitle">Registros descritivos disponíveis</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Ocorreu um erro.</string>
   <string name="exception_httpexception">Ocorreu um erro de HTTP.</string>
   <string name="exception_ioexception">Ocorreu um erro de leitura/gravação.</string>
   <string name="exception_show_details">Mostrar detalhes</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Informações de depuração</string>
-  <string name="debug_info_logs_attached">Os registros são anexados a esta mensagem (requer que o aplicativo de recebimento tenha suporte a anexos).</string>
-  <string name="sync_contacts_read_only_address_book">Livro de endereços somente leitura</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">Permissões do DAVx⁵</string>
   <string name="sync_error_permissions_text">É necessário permissões adicionais</string>
   <string name="sync_error_opentasks_too_old">A versão do OpenTasks é muito antiga</string>

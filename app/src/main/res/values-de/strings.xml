@@ -93,6 +93,7 @@
   <string name="account_list_empty">Herzlich willkommen!\n\nSie können jetzt ein CalDAV/CardDAV-Konto hinzufügen.</string>
   <string name="accounts_global_sync_disabled">Systemweite automatische Synchronisierung ist nicht aktiv</string>
   <string name="accounts_global_sync_enable">Aktivieren</string>
+  <string name="accounts_sync_all">Alle Konten synchronisieren</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Diensterkennung fehlgeschlagen</string>
   <string name="dav_service_refresh_couldnt_refresh">Ordnerliste konnte nicht aktualisiert werden</string>
@@ -278,15 +279,32 @@
   <string name="collection_properties">Eigenschaften</string>
   <string name="collection_properties_url">Adresse (URL):</string>
   <string name="collection_properties_copy_url">URL kopieren</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Informationen zur Fehlersuche</string>
+  <string name="debug_info_attached">Debug-Informationen sind dieser Nachricht beigelegt (benötigt Unterstützung für Anhänge in der empfangenden App).</string>
+  <string name="debug_info_http_error">HTTP-Fehler</string>
+  <string name="debug_info_server_error">Serverfehler</string>
+  <string name="debug_info_webdav_error">WebDAV-Fehler</string>
+  <string name="debug_info_io_error">E/A-Fehler</string>
+  <string name="debug_info_http_403_description">Die Anfrage wurde abgelehnt. Details unter Beteiligte Ressourcen und in den Debug-Informationen.</string>
+  <string name="debug_info_http_404_description">Die Ressource existiert nicht (mehr). Details unter Beteiligte Ressourcen und in den Debug-Informationen.</string>
+  <string name="debug_info_http_5xx_description">Ein serverseitiges Problem ist aufgetreten. Bitte kontaktieren Sie den Server-Support.</string>
+  <string name="debug_info_unexpected_error">Ein unerwarteter Fehler ist aufgetreten. Details in den Debug-Informationen.</string>
+  <string name="debug_info_view_details">Details anzeigen</string>
+  <string name="debug_info_subtitle">Debug-Informationen wurden gesammelt</string>
+  <string name="debug_info_involved_caption">Beteiligte Ressourcen</string>
+  <string name="debug_info_involved_subtitle">haben mit dem Problem zu tun</string>
+  <string name="debug_info_involved_remote">Entfernte Ressource:</string>
+  <string name="debug_info_involved_local">Lokale Ressource:</string>
+  <string name="debug_info_involved_view">In App öffnen</string>
+  <string name="debug_info_logs_caption">Protokoll</string>
+  <string name="debug_info_logs_subtitle">Ausführliches Protokoll verfügbar</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Ein Fehler ist aufgetreten.</string>
   <string name="exception_httpexception">Ein HTTP-Fehler ist aufgetreten.</string>
   <string name="exception_ioexception">Ein E/A-Fehler ist aufgetreten.</string>
   <string name="exception_show_details">Details anzeigen</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Informationen zur Fehlersuche</string>
-  <string name="debug_info_logs_attached">Das Protokoll liegt als Anhang bei (benötigt Unterstützung für Anhänge in der empfangenden App).</string>
-  <string name="sync_contacts_read_only_address_book">Schreibgeschütztes Adressbuch</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵-Berechtigungen</string>
   <string name="sync_error_permissions_text">Zusätzliche Berechtigungen benötigt</string>
   <string name="sync_error_opentasks_too_old">OpenTasks zu alt</string>

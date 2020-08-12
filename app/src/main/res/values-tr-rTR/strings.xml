@@ -105,13 +105,14 @@
   <string name="delete_collection">Koleksiyonu sil</string>
   <string name="delete_collection_confirm_title">Emin misin?</string>
   <string name="delete_collection_deleting_collection">Koleksiyon siliniyor</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Hata ayıklama bilgisi</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Bir hata oluştu.</string>
   <string name="exception_httpexception">Bir HTTP hatası oluştu.</string>
   <string name="exception_ioexception">Bir I/O hatası oluştu.</string>
   <string name="exception_show_details">Detayları göster</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Hata ayıklama bilgisi</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ izinleri</string>
   <string name="sync_error_permissions_text">Ek izinler zorunludur</string>
   <!--cert4android-->

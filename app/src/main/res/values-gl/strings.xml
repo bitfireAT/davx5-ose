@@ -276,15 +276,14 @@
   <string name="collection_properties">Propiedades</string>
   <string name="collection_properties_url">Enderezo (URL):</string>
   <string name="collection_properties_copy_url">Copiar URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Info depuración</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Algo fallou.</string>
   <string name="exception_httpexception">Houbo un fallo HTTP.</string>
   <string name="exception_ioexception">Houbo un fallo I/O.</string>
   <string name="exception_show_details">Mostrar detalles</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Info depuración</string>
-  <string name="debug_info_logs_attached">Os rexistros están anexos a esta mensaxe (precisas soporte para anexos da app receptora).</string>
-  <string name="sync_contacts_read_only_address_book">Libreta de enderezos de só lectura</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">Permisos DAVx⁵</string>
   <string name="sync_error_permissions_text">Precísanse permisos adicionais</string>
   <string name="sync_error_opentasks_too_old">OpenTask demasiado antigo</string>

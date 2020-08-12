@@ -277,15 +277,14 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="collection_properties">Proprietà</string>
   <string name="collection_properties_url">Indirizzo (URL):</string>
   <string name="collection_properties_copy_url">Copia URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Informazioni di debug</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Si è verificato un errore.</string>
   <string name="exception_httpexception">Si è verificato un errore HTTP.</string>
   <string name="exception_ioexception">Si è verificato un errore di I/O.</string>
   <string name="exception_show_details">Mostra dettagli</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Informazioni di debug</string>
-  <string name="debug_info_logs_attached">I log sono allegati a questo messaggio (richiede il supporto degli allegati nell\'app ricevente)</string>
-  <string name="sync_contacts_read_only_address_book">Rubrica in sola lettura</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">Autorizzazioni DAVx⁵</string>
   <string name="sync_error_permissions_text">Autorizzazioni addizionali richieste</string>
   <string name="sync_error_opentasks_too_old">OpenTasks troppo vecchia</string>

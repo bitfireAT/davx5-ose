@@ -200,14 +200,14 @@
   <string name="collection_properties">Egenskaper</string>
   <string name="collection_properties_url">Adresse (URL):</string>
   <string name="collection_properties_copy_url">Kopier nettadresse</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Feilrettingsinfo</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">En feil har inntruffet</string>
   <string name="exception_httpexception">En HTTP-feil har inntruffet.</string>
   <string name="exception_ioexception">En I/O-feil har inntruffet.</string>
   <string name="exception_show_details">Vis detaljer</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Feilrettingsinfo</string>
-  <string name="sync_contacts_read_only_address_book">Adressebok uten skrivetilgang</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵-tilganger</string>
   <string name="sync_error_permissions_text">Ytterligere tilganger kreves</string>
   <string name="sync_error_opentasks_too_old">OpenTasks er for gammel</string>

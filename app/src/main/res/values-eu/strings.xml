@@ -130,13 +130,13 @@
   <string name="delete_collection_confirm_title">Ziur zaude?</string>
   <string name="collection_properties">Propietateak</string>
   <string name="collection_properties_copy_url">Kopiatu URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Arazketa informazioa</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Errore bat gertatu da</string>
   <string name="exception_httpexception">HTTP errore bat gertatu da.</string>
   <string name="exception_show_details">Erakutsi xehetasunak</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Arazketa informazioa</string>
-  <string name="sync_contacts_read_only_address_book">Soilik irakurtzeko helbide liburua</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ baimenak</string>
   <string name="sync_error_opentasks_too_old">OpenTasks zaharregia</string>
   <string name="sync_error_io">Sare edo S/I errorea – %s</string>

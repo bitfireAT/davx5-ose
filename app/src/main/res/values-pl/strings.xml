@@ -93,6 +93,7 @@
   <string name="account_list_empty">Witamy w DAVx⁵!\n\nMożesz teraz dodać konto CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Automatyczna synchronizacja dla całego systemu jest wyłączona</string>
   <string name="accounts_global_sync_enable">Włącz</string>
+  <string name="accounts_sync_all">Synchronizuj wszystkie konta</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Wykrycie serwisu nie powiodło się</string>
   <string name="dav_service_refresh_couldnt_refresh">Nie można odświeżyć listy kolekcji</string>
@@ -282,15 +283,32 @@
   <string name="collection_properties">Właściwości</string>
   <string name="collection_properties_url">Adres (URL):</string>
   <string name="collection_properties_copy_url">Kopiuj URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Informacje debugowania</string>
+  <string name="debug_info_attached">Informacja debugowania załączona do tej wiadomości (wymaga wsparcia dla załączników w odbierającej aplikacji).</string>
+  <string name="debug_info_http_error">Błąd HTTP</string>
+  <string name="debug_info_server_error">Błąd serwera</string>
+  <string name="debug_info_webdav_error">Błąd WebDAV</string>
+  <string name="debug_info_io_error">Błąd Wej/Wyj</string>
+  <string name="debug_info_http_403_description">Żądanie zostało odrzucone. Sprawdź zaangażowane zasoby oraz szczegóły informacji debugowania.</string>
+  <string name="debug_info_http_404_description">Żądany zasób (już) nie istnieje. Sprawdź zaangażowane zasoby oraz szczegóły informacji debugowania.</string>
+  <string name="debug_info_http_5xx_description">Wystapił problem po stronie serwera. Skontaktuj się proszę z zespołem wsparcia Twojego serwera.</string>
+  <string name="debug_info_unexpected_error">Wystąpił niespodziewany błąd.  Obejrzyj szczegóły w informacji debugowania.</string>
+  <string name="debug_info_view_details">Obejrzyj szczegóły</string>
+  <string name="debug_info_subtitle">Informacje debuggowania zostały zebrane</string>
+  <string name="debug_info_involved_caption">Zaangażowane zasoby</string>
+  <string name="debug_info_involved_subtitle">Powiązane z problemem</string>
+  <string name="debug_info_involved_remote">Zasób zdalny:</string>
+  <string name="debug_info_involved_local">Zasób lokalny:</string>
+  <string name="debug_info_involved_view">Przeglądaj z aplikacjią</string>
+  <string name="debug_info_logs_caption">Logi</string>
+  <string name="debug_info_logs_subtitle">Szczegółowe logi są dostępne</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Wystąpił błąd.</string>
   <string name="exception_httpexception">Wystąpił błąd HTTP.</string>
   <string name="exception_ioexception">Wystąpił błąd wejścia/wyjścia.</string>
   <string name="exception_show_details">Pokaż szczegóły</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Informacje debugowania</string>
-  <string name="debug_info_logs_attached">Do tej wiadomości załączone są logi (wymaga wsparcia dla załączników w odbierającej aplikacji).</string>
-  <string name="sync_contacts_read_only_address_book">Książka adresowa tylko do odczytu</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">Uprawnienia DAVx⁵</string>
   <string name="sync_error_permissions_text">Wymagane dodatkowe uprawnienia</string>
   <string name="sync_error_opentasks_too_old">OpenTask jest niekompatybilny</string>
