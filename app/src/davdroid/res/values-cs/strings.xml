@@ -93,6 +93,7 @@
   <string name="account_list_empty">Vítejte v aplikaci DAVx⁵!\n\nNyní můžete přidat CalDAV/CardDAV účet.</string>
   <string name="accounts_global_sync_disabled">Automatická synchronizace z celého systému je vypnutá</string>
   <string name="accounts_global_sync_enable">Zapnout</string>
+  <string name="accounts_sync_all">Synchronizovat všechny účty</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Vyhledání služby se nezdařilo</string>
   <string name="dav_service_refresh_couldnt_refresh">Nedaří se znovu načíst seznam sbírky</string>
@@ -282,15 +283,32 @@
   <string name="collection_properties">Vlastnosti</string>
   <string name="collection_properties_url">Adresa (URL):</string>
   <string name="collection_properties_copy_url">Zkopírovat URL adresu</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Ladící informace</string>
+  <string name="debug_info_attached">Ladící informace připojené k této správě (vyžaduje podporu pro přílohy na straně přijímající aplikace).</string>
+  <string name="debug_info_http_error">Chyba HTTP</string>
+  <string name="debug_info_server_error">Chyba serveru</string>
+  <string name="debug_info_webdav_error">Chyba WebDAV</string>
+  <string name="debug_info_io_error">Chyba vstupu/výstupu</string>
+  <string name="debug_info_http_403_description">Požadavek byl odepřen. Podrobnosti naleznete v souvisejících prostředcích a ladících informacích.</string>
+  <string name="debug_info_http_404_description">Požadovaný prostředek (už) neexistuje. Podrobnosti naleznete v souvisejících prostředcích a ladících informacích.</string>
+  <string name="debug_info_http_5xx_description">Došlo k problému na straně serveru. Obraťte se na podporu serveru, který využíváte.</string>
+  <string name="debug_info_unexpected_error">Došlo k neočekávané chybě. Podrobnosti naleznete v ladících informacích.</string>
+  <string name="debug_info_view_details">Zobrazit podrobnosti</string>
+  <string name="debug_info_subtitle">Ladící informace byly shromážděny</string>
+  <string name="debug_info_involved_caption">Prostředky, kterých se týká</string>
+  <string name="debug_info_involved_subtitle">Související s problémem</string>
+  <string name="debug_info_involved_remote">Prostředek na protějšku:</string>
+  <string name="debug_info_involved_local">Místní prostředek:</string>
+  <string name="debug_info_involved_view">Zobrazit v aplikaci</string>
+  <string name="debug_info_logs_caption">Záznamy událostí</string>
+  <string name="debug_info_logs_subtitle">Jsou k dispozici podrobnější záznamy událostí</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Došlo k chybě.</string>
   <string name="exception_httpexception">Došlo k HTTP chybě.</string>
   <string name="exception_ioexception">Došlo k chybě vstupu/výstupu.</string>
   <string name="exception_show_details">Zobrazit podrobnosti</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Ladící informace</string>
-  <string name="debug_info_logs_attached">Záznamy událostí jsou připojeny k této zprávě (vyžaduje podporu příloh u aplikace, do které bude obdrženo).</string>
-  <string name="sync_contacts_read_only_address_book">Adresář kontaktů, který je pouze pro čtení</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ oprávnění</string>
   <string name="sync_error_permissions_text">Vyžadována dodatečná oprávnění</string>
   <string name="sync_error_opentasks_too_old">Příliš stará verze OpenTasks</string>

@@ -93,6 +93,7 @@
   <string name="account_list_empty">欢迎使用 DAVx⁵！\n\n请开始增加 CalDAV/CardDAV 账户。</string>
   <string name="accounts_global_sync_disabled">系统全局自动同步已禁用</string>
   <string name="accounts_global_sync_enable">启用</string>
+  <string name="accounts_sync_all">同步所有账户</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">服务配置检测失败</string>
   <string name="dav_service_refresh_couldnt_refresh">无法刷新集合列表</string>
@@ -145,6 +146,7 @@
   <string name="account_rename">重命名账户</string>
   <string name="account_rename_new_name">重命名后，未上传的本地修改会被撤销，您需要重新执行同步。新账户名：</string>
   <string name="account_rename_rename">重命名</string>
+  <string name="account_rename_couldnt_rename">无法重命名账户</string>
   <string name="account_delete">删除账户</string>
   <string name="account_delete_confirmation_title">真的要删除账户吗？</string>
   <string name="account_delete_confirmation_text">所有通讯录、日历和任务列表的本机存储将被删除。</string>
@@ -275,15 +277,32 @@
   <string name="collection_properties">属性</string>
   <string name="collection_properties_url">地址 (URL):</string>
   <string name="collection_properties_copy_url">复制 URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">调试信息</string>
+  <string name="debug_info_attached">已附加调试信息到此消息(需要接收应用支持附件功能)</string>
+  <string name="debug_info_http_error">HTTP错误</string>
+  <string name="debug_info_server_error">服务器错误</string>
+  <string name="debug_info_webdav_error">WebDAV错误</string>
+  <string name="debug_info_io_error">I/O错误</string>
+  <string name="debug_info_http_403_description">该请求已被拒绝。 检查涉及的资源和调试信息以获取详细信息。</string>
+  <string name="debug_info_http_404_description">所请求的资源不存在（不再）。 检查涉及的资源和调试信息以获取详细信息。</string>
+  <string name="debug_info_http_5xx_description">发生服务器端问题。 请联系您的服务器支持</string>
+  <string name="debug_info_unexpected_error">发生意外错误。 查看调试信息以获取详细信息。</string>
+  <string name="debug_info_view_details">查看细节</string>
+  <string name="debug_info_subtitle">已收集调试信息</string>
+  <string name="debug_info_involved_caption">所涉资源</string>
+  <string name="debug_info_involved_subtitle">与此问题有关</string>
+  <string name="debug_info_involved_remote">远程资源:</string>
+  <string name="debug_info_involved_local">本地资源:</string>
+  <string name="debug_info_involved_view">用应用程序查看</string>
+  <string name="debug_info_logs_caption">日志</string>
+  <string name="debug_info_logs_subtitle">详细日志可用</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">出现错误</string>
   <string name="exception_httpexception">出现 HTTP 错误</string>
   <string name="exception_ioexception">出现 I/O 错误</string>
   <string name="exception_show_details">显示详情</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">调试信息</string>
-  <string name="debug_info_logs_attached">日志数据将作为附件与该信息一并发送（需要分享目标应用支持附件功能）。</string>
-  <string name="sync_contacts_read_only_address_book">只读通讯录</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ 权限</string>
   <string name="sync_error_permissions_text">需要额外权限</string>
   <string name="sync_error_opentasks_too_old">OpenTasks 版本太旧</string>

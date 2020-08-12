@@ -210,15 +210,14 @@
   <string name="collection_properties">Lastnosti</string>
   <string name="collection_properties_url">Naslov (URL):</string>
   <string name="collection_properties_copy_url">Kopiraj URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Informacije razhroščevalnika</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Zgodila se je napaka</string>
   <string name="exception_httpexception">Zgodila se je HTTP napaka.</string>
   <string name="exception_ioexception">I/O napaka se je zgodila.</string>
   <string name="exception_show_details">Pokaži podrobnosti</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Informacije razhroščevalnika</string>
-  <string name="debug_info_logs_attached">Zapisi so pripeti temu sporočilu (potrebuje podporo priponk prejemnih aplikacij)</string>
-  <string name="sync_contacts_read_only_address_book">Imenik namenjen samo branju</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ dovoljenja</string>
   <string name="sync_error_permissions_text">Dodatna dovoljenja so zahtevana</string>
   <string name="sync_error_opentasks_too_old">OpenTasks je prestar</string>

@@ -27,7 +27,8 @@
   <string name="settings_password_summary">Atualize sua denha de acordo com a do seu servidor.</string>
   <string name="settings_enter_password">Informe sua senha:</string>
   <!--collection management-->
+  <!--debugging and DebugInfoActivity-->
   <!--ExceptionInfoFragment-->
-  <!--sync adapters and DebugInfoActivity-->
+  <!--sync adapters-->
   <!--cert4android-->
 </resources>

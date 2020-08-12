@@ -188,14 +188,13 @@
   <string name="collection_properties">Свойства</string>
   <string name="collection_properties_url">Адрес (URL)</string>
   <string name="collection_properties_copy_url">Копирай адреса</string>
+  <!--debugging and DebugInfoActivity-->
   <!--ExceptionInfoFragment-->
   <string name="exception">Възникна грешка</string>
   <string name="exception_httpexception">Възникна HTTP грешка</string>
   <string name="exception_ioexception">Възникна входно-изходна грешка</string>
   <string name="exception_show_details">Покажи подробности</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_logs_attached">Протоколът е закачен към това съобщение (изисква от получаващото приложение поддръжка за прикачени файлове).</string>
-  <string name="sync_contacts_read_only_address_book">Адресен указател само за четене</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ права</string>
   <string name="sync_error_permissions_text">Необходими са допълнителни права</string>
   <string name="sync_error_opentasks_too_old">OpenTasks е прекалено стара</string>

@@ -93,7 +93,8 @@
   <string name="settings_manage_calendar_colors">Gestiona els colors del calendari</string>
   <string name="settings_carddav">CardDAV</string>
   <!--collection management-->
+  <!--debugging and DebugInfoActivity-->
   <!--ExceptionInfoFragment-->
-  <!--sync adapters and DebugInfoActivity-->
+  <!--sync adapters-->
   <!--cert4android-->
 </resources>

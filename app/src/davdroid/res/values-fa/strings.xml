@@ -219,15 +219,14 @@
   <string name="collection_properties">مشخصات</string>
   <string name="collection_properties_url">آدرس (URL):</string>
   <string name="collection_properties_copy_url">کپی URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">اطلاعات عیب‌یابی</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">یک خطا رخ داده است.</string>
   <string name="exception_httpexception">یک خظای HTTP رخ داده است.</string>
   <string name="exception_ioexception">یک خطای I/O رخ داده است.</string>
   <string name="exception_show_details">نمایش جزییات</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">اطلاعات عیب‌یابی</string>
-  <string name="debug_info_logs_attached">لاگ یا گزارش رویدادها به این پیام پیوست می‌شوند (لازم است کارهٔ دریافت کننده، از پیوست پشتیبانی کند)</string>
-  <string name="sync_contacts_read_only_address_book">فقط از کتابچه آدرس ها خوانده شود</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">دسترسی‌های DAVx⁵</string>
   <string name="sync_error_permissions_text">اجازه برای دسترسی‌های اضافی</string>
   <string name="sync_error_opentasks_too_old">OpenTasks خیلی قدیمی</string>

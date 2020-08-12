@@ -145,6 +145,7 @@
   <string name="account_rename">Переименовать аккаунт</string>
   <string name="account_rename_new_name">Несохраненные локальные данные могут быть потеряны. Необходима повторная синхронизация после переименования. Новое имя аккаунта:</string>
   <string name="account_rename_rename">Переименовать</string>
+  <string name="account_rename_couldnt_rename">Не удалось переименовать аккаунт</string>
   <string name="account_delete">Удалить аккаунт</string>
   <string name="account_delete_confirmation_title">Вы действительно хотите удалить аккаунт?</string>
   <string name="account_delete_confirmation_text">Все локальные копии адресных книг, календарей и задач будут удалены.</string>
@@ -281,15 +282,14 @@
   <string name="collection_properties">Свойства</string>
   <string name="collection_properties_url">Адрес (URL):</string>
   <string name="collection_properties_copy_url">Копировать URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Отладочная информация</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Произошла ошибка.</string>
   <string name="exception_httpexception">Произошла ошибка HTTP</string>
   <string name="exception_ioexception">Произошла ошибка ввода/вывода.</string>
   <string name="exception_show_details">Показать детали</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Отладочная информация</string>
-  <string name="debug_info_logs_attached">К этому сообщению будут добавлены журналы (требуется поддержка вложений принимающего приложения).</string>
-  <string name="sync_contacts_read_only_address_book">Адресная книга только для чтения</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">Разрешения DAVx⁵</string>
   <string name="sync_error_permissions_text">Требуются дополнительные разрешения</string>
   <string name="sync_error_opentasks_too_old">OpenTasks устарел</string>

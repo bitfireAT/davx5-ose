@@ -227,15 +227,14 @@
   <string name="collection_properties">Властивості</string>
   <string name="collection_properties_url">Адреса (URL):</string>
   <string name="collection_properties_copy_url">Скопіювати URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Інформація зневадження</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Трапилась помилка.</string>
   <string name="exception_httpexception">Трапилась помилка HTTP.</string>
   <string name="exception_ioexception">Трапилась помилка I/O.</string>
   <string name="exception_show_details">Показати подробиці</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Інформація зневадження</string>
-  <string name="debug_info_logs_attached">Журнали прикріплені до цього повідомлення (потрібна підтримка вкладеного додатка).</string>
-  <string name="sync_contacts_read_only_address_book">Адресна книга лише для читання</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">Дозволи DAVx⁵</string>
   <string name="sync_error_permissions_text">Потребує додаткові дозволи</string>
   <string name="sync_error_opentasks_too_old">OpenTasks застарів</string>

@@ -276,15 +276,14 @@
   <string name="collection_properties">Eigenschappen</string>
   <string name="collection_properties_url">Adres (URL):</string>
   <string name="collection_properties_copy_url">kopieer URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Debug informatie</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Er is een fout opgetreden.</string>
   <string name="exception_httpexception">Er is een HTTP fout opgetreden.</string>
   <string name="exception_ioexception">Er is een I/O fout opgetreden.</string>
   <string name="exception_show_details">Toon details</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Debug informatie</string>
-  <string name="debug_info_logs_attached">Logs worden toegevoegd aan dit bericht (vereist bijlage support van de ontvangende app).</string>
-  <string name="sync_contacts_read_only_address_book">Alleen-lezen adresboek</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ rechten</string>
   <string name="sync_error_permissions_text">Aanvullende rechten vereist</string>
   <string name="sync_error_opentasks_too_old">OpenTasks te oud</string>

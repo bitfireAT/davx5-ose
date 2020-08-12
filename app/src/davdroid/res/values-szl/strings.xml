@@ -252,15 +252,14 @@
   <string name="collection_properties">Włosności</string>
   <string name="collection_properties_url">Adresa (URL):</string>
   <string name="collection_properties_copy_url">Skopiuj URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Informacyje debugowe</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Trefiōł sie błōnd.</string>
   <string name="exception_httpexception">Trefiōł sie błōnd HTTP.</string>
   <string name="exception_ioexception">Trefiōł sie błōnd I/O.</string>
   <string name="exception_show_details">Pokoż informacyje</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Informacyje debugowe</string>
-  <string name="debug_info_logs_attached">Logi sōm przidane do tyj wiadōmości (wymogo sparcio przidowkōw aplikacyje, co ôdbiyro)</string>
-  <string name="sync_contacts_read_only_address_book">Ksiōnżka adresowo ino do ôdczytu</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">Uprawniynia DAVx⁵</string>
   <string name="sync_error_permissions_text">Wymogane ekstra uprawniynia</string>
   <string name="sync_error_opentasks_too_old">OpenTask je za stary</string>

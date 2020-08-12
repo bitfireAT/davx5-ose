@@ -27,7 +27,8 @@
   <!--AddAccountActivity-->
   <!--AccountSettingsActivity-->
   <!--collection management-->
+  <!--debugging and DebugInfoActivity-->
   <!--ExceptionInfoFragment-->
-  <!--sync adapters and DebugInfoActivity-->
+  <!--sync adapters-->
   <!--cert4android-->
 </resources>

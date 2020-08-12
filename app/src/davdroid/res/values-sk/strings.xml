@@ -227,15 +227,14 @@
   <string name="collection_properties">Vlastnosti</string>
   <string name="collection_properties_url">Adresa (URL):</string>
   <string name="collection_properties_copy_url">Kopírovať URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Ladiace informácie</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Vyskytla sa chyba.</string>
   <string name="exception_httpexception">Vyskytla sa HTTP chyba.</string>
   <string name="exception_ioexception">Vyskytla sa V/V chyba.</string>
   <string name="exception_show_details">Zobraziť detaily</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">Ladiace informácie</string>
-  <string name="debug_info_logs_attached">Protokoly sú pripojené k tejto správe (vyžaduje podporu prílohy v prijímacej aplikácii).</string>
-  <string name="sync_contacts_read_only_address_book">Adresár len na čítanie</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">Oprávnenia DAVx⁵ </string>
   <string name="sync_error_permissions_text">Vyžadujú sa dodatočné oprávnenia</string>
   <string name="sync_error_opentasks_too_old">OpenTask je príliš starý</string>

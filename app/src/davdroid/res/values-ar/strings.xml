@@ -208,14 +208,14 @@
   <string name="collection_properties">خصائص</string>
   <string name="collection_properties_url">العنوان (URL):</string>
   <string name="collection_properties_copy_url">نسخ عنوان URL</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">معلومات تصحيح العلل</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">حدث خطأ.</string>
   <string name="exception_httpexception">حدث خطأ HTTP.</string>
   <string name="exception_ioexception">حدث خطأ في الإدخال/الإخراج.</string>
   <string name="exception_show_details">عرض التفاصيل</string>
-  <!--sync adapters and DebugInfoActivity-->
-  <string name="debug_info_title">معلومات تصحيح العلل</string>
-  <string name="sync_contacts_read_only_address_book">دفتر عناوين للقراءة فقط</string>
+  <!--sync adapters-->
   <string name="sync_error_permissions">أذونات DAVx⁵</string>
   <string name="sync_error_permissions_text">مطلوب أذونات إضافية</string>
   <string name="sync_error_opentasks_too_old">OpenTasks قديم للغاية</string>
