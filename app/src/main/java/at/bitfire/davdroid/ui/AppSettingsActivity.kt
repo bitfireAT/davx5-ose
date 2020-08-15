@@ -11,6 +11,7 @@ package at.bitfire.davdroid.ui
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
@@ -19,12 +20,16 @@ import androidx.preference.SwitchPreferenceCompat
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment
 import at.bitfire.davdroid.ui.intro.OpenSourceFragment
 import at.bitfire.davdroid.ui.intro.OpenTasksFragment
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.net.URI
 import java.net.URISyntaxException
 
@@ -33,6 +38,7 @@ class AppSettingsActivity: AppCompatActivity() {
     companion object {
         const val EXTRA_SCROLL_TO = "scrollTo"
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,9 +55,14 @@ class AppSettingsActivity: AppCompatActivity() {
 
     class SettingsFragment: PreferenceFragmentCompat(), SettingsManager.OnChangeListener {
 
+        val settings by lazy { SettingsManager.getInstance(requireActivity()) }
+
+
         override fun onCreatePreferences(bundle: Bundle?, s: String?) {
             addPreferencesFromResource(R.xml.settings_app)
             loadSettings()
+
+            settings.addOnChangeListener(this)
 
             // UI settings
             findPreference<Preference>("notification_settings")!!.apply {
@@ -83,9 +94,13 @@ class AppSettingsActivity: AppCompatActivity() {
             }
         }
 
+        override fun onDestroy() {
+            super.onDestroy()
+            settings.removeOnChangeListener(this)
+        }
+
+        @UiThread
         private fun loadSettings() {
-            val settings = SettingsManager.getInstance(requireActivity())
-            
             // connection settings
             findPreference<SwitchPreferenceCompat>(Settings.OVERRIDE_PROXY)!!.apply {
                 isChecked = settings.getBoolean(Settings.OVERRIDE_PROXY)
@@ -142,7 +157,10 @@ class AppSettingsActivity: AppCompatActivity() {
         }
 
         override fun onSettingsChanged() {
-            loadSettings()
+            // loadSettings must run in UI thread
+            CoroutineScope(Dispatchers.Main).launch {
+                loadSettings()
+            }
         }
 
 
