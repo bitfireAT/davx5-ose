@@ -47,6 +47,6 @@ interface SettingsProvider {
     fun remove(key: String)
 
 
-    fun dumpHtml(writer: Writer)
+    fun dump(writer: Writer)
 
 }

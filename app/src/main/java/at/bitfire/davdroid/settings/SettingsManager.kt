@@ -153,14 +153,11 @@ class SettingsManager private constructor(
 
     /*** HELPERS ***/
 
-    fun dumpHtml(writer: Writer) {
-        writer.write("<ol>")
-        for (provider in providers) {
-            writer.write("<li>${provider::class.java.simpleName} canWrite=${provider.canWrite()}")
-            provider.dumpHtml(writer)
-            writer.write("</li>")
+    fun dump(writer: Writer) {
+        for ((idx, provider) in providers.withIndex()) {
+            writer.write("${idx + 1}. ${provider::class.java.simpleName} canWrite=${provider.canWrite()}\n")
+            provider.dump(writer)
         }
-        writer.write("</ol>")
     }
 
 

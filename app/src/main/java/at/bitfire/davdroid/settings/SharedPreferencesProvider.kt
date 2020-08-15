@@ -13,6 +13,7 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.text.Html
 import androidx.preference.PreferenceManager
+import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 import java.io.Writer
@@ -109,11 +110,11 @@ class SharedPreferencesProvider(
     }
 
 
-    override fun dumpHtml(writer: Writer) {
-        writer.write("<ul>")
+    override fun dump(writer: Writer) {
+        val table = TextTable("Setting", "Value")
         for ((key, value) in preferences.all.toSortedMap())
-            writer.write("<li><code>${Html.escapeHtml(key)}</code> = <code>${Html.escapeHtml(value.toString())}</code></li>")
-        writer.write("</ul>")
+            table.addLine(key, value)
+        writer.write(table.toString())
     }
 
 

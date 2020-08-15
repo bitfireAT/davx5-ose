@@ -10,6 +10,7 @@ package at.bitfire.davdroid.settings
 
 import android.content.Context
 import android.text.Html
+import at.bitfire.davdroid.TextTable
 import java.io.Writer
 
 abstract class BaseDefaultsProvider(
@@ -53,17 +54,17 @@ abstract class BaseDefaultsProvider(
     override fun remove(key: String) = throw NotImplementedError()
 
 
-    override fun dumpHtml(writer: Writer) {
+    override fun dump(writer: Writer) {
         val strValues = mutableMapOf<String, String>()
         strValues.putAll(booleanDefaults.mapValues { (_, value) -> value.toString() })
         strValues.putAll(intDefaults.mapValues { (_, value) -> value.toString() })
         strValues.putAll(longDefaults.mapValues { (_, value) -> value.toString() })
         strValues.putAll(stringDefaults)
 
-        writer.write("<ul>")
+        val table = TextTable("Setting", "Value")
         for ((key, value) in strValues.toSortedMap())
-            writer.write("<li><code>${Html.escapeHtml(key)}</code> = <code>${Html.escapeHtml(value)}</code></li>")
-        writer.write("</ul>")
+            table.addLine(key, value)
+        writer.write(table.toString())
     }
 
 }

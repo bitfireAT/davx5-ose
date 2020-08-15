@@ -223,7 +223,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/card_margin_title_text"
                             app:layout_constraintTop_toBottomOf="@id/debugInfoSubtitle"
-                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintLeft_toLeftOf="@id/debugInfoStart"
                             app:layout_constraintBottom_toBottomOf="parent"
                             style="@style/Widget.MaterialComponents.Button.TextButton"
                             android:text="@string/debug_info_view_details"/>

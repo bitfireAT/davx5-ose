@@ -23,7 +23,6 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.provider.CalendarContract
 import android.provider.ContactsContract
-import android.text.Html
 import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
@@ -48,18 +47,19 @@ import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.databinding.ActivityDebugInfoBinding
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.ical4android.TaskProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.apache.commons.io.ByteOrderMark
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.dmfs.tasks.contract.TaskContract
@@ -92,7 +92,7 @@ class DebugInfoActivity: AppCompatActivity() {
         /** remote resource related to the problem (plain-text [String]) */
         const val EXTRA_REMOTE_RESOURCE = "remoteResource"
 
-        const val FILE_DEBUG_INFO = "debug-info.html"
+        const val FILE_DEBUG_INFO = "debug-info.txt"
         const val FILE_LOGS = "logs.txt"
     }
 
@@ -136,7 +136,7 @@ class DebugInfoActivity: AppCompatActivity() {
             val showDebugInfo = View.OnClickListener {
                 val uri = FileProvider.getUriForFile(this, getString(R.string.authority_debug_provider), debugInfo)
                 val intent = Intent(Intent.ACTION_VIEW)
-                intent.setDataAndType(uri, "text/html")
+                intent.setDataAndType(uri, "text/plain")
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 startActivity(Intent.createChooser(intent, null))
             }
@@ -245,48 +245,48 @@ class DebugInfoActivity: AppCompatActivity() {
         fun generateDebugInfo(syncAccount: Account?, syncAuthority: String?, cause: Throwable?, localResource: String?, remoteResource: String?) {
             val debugInfoFile = File(debugInfoDir, FILE_DEBUG_INFO)
             debugInfoFile.writer().buffered().use { writer ->
-                writer.append("<!DOCTYPE html><html><head><meta charset=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/><style>")
-                context.assets.open("debug-info.css").use {
-                    val css = IOUtils.toString(it, Charsets.UTF_8)
-                    writer.append(css)
-                }
-                writer.append("</style></head><body><h1>${context.getString(R.string.app_name)} Debug Info</h1>")
+                writer.append(ByteOrderMark.UTF_BOM)
+                writer.append("--- BEGIN DEBUG INFO ---\n\n")
 
                 // begin with most specific information
-                if (syncAccount != null)
-                    writer.append("<h2>Synchronization info</h2><p>Account: <code>$syncAccount</code></p>")
-                if (syncAuthority != null)
-                    writer.append("<p>Authority: <code>$syncAuthority</code></p>")
+                if (syncAccount != null || syncAuthority != null) {
+                    writer.append("SYNCHRONIZATION INFO\n")
+                    if (syncAccount != null)
+                        writer.append("Account: $syncAccount\n")
+                    if (syncAuthority != null)
+                        writer.append("Authority: $syncAuthority\n")
+                    writer.append("\n")
+                }
 
                 cause?.let {
                     // Log.getStackTraceString(e) returns "" in case of UnknownHostException
-                    writer.append("<h2>Exception</h2><pre>${Html.escapeHtml(ExceptionUtils.getStackTrace(cause))}</pre>")
+                    writer.append("EXCEPTION\n${ExceptionUtils.getStackTrace(cause)}\n")
                 }
 
                 // exception details
                 if (cause is HttpException) {
                     cause.request?.let { request ->
-                        writer.append("<h3>HTTP Request</h3><p><code>${Html.escapeHtml(request)}</code></p><pre>\n")
-                        cause.requestBody?.let { writer.append(Html.escapeHtml(it)) }
-                        writer.append("</pre>")
+                        writer.append("HTTP REQUEST\n$request\n")
+                        cause.requestBody?.let { writer.append(it) }
+                        writer.append("\n")
                     }
                     cause.response?.let { response ->
-                        writer.append("<h3>HTTP Response</h3><p><code>${Html.escapeHtml(response)}</code></p><pre>\n")
-                        cause.responseBody?.let { writer.append(Html.escapeHtml(it)) }
-                        writer.append("</pre>")
+                        writer.append("HTTP RESPONSE$response\n")
+                        cause.responseBody?.let { writer.append(it) }
+                        writer.append("\n")
                     }
                 }
 
                 if (localResource != null)
-                    writer.append("<h2>Local Resource</h2><p><code>${Html.escapeHtml(localResource)}</code></p>")
+                    writer.append("LOCAL RESOURCE\n$localResource\n\n")
 
                 if (remoteResource != null)
-                    writer.append("<h2>Remote Resource</h2><p><code>${Html.escapeHtml(remoteResource)}</code></p>")
+                    writer.append("REMOTE RESOURCE\n$remoteResource\n\n")
 
                 // software info
                 try {
-                    writer.append("<h2>Software information</h2><table><thead><tr><td>Package</td>" +
-                                "<td>Version</td><td>Code</td><td>Installer</td><td>Notes</td></tr></thead><tbody>")
+                    writer.append("SOFTWARE INFORMATION\n")
+                    val table = TextTable("Package", "Version", "Code", "Installer", "Notes")
                     val pm = context.packageManager
                     val appIDs = mutableSetOf(      // we always want info about these packages
                             BuildConfig.APPLICATION_ID,                     // DAVx5
@@ -306,123 +306,110 @@ class DebugInfoActivity: AppCompatActivity() {
                         try {
                             val info = pm.getPackageInfo(appID, 0)
                             val appInfo = info.applicationInfo
-                            writer    .append("<tr><td>$appID</td>")
-                                    .append("<td>${info.versionName}</td>")
-                                    .append("<td>${PackageInfoCompat.getLongVersionCode(info)}</td>")
-                                    .append("<td>${pm.getInstallerPackageName(appID) ?: '—'}</td><td>")
                             val notes = mutableListOf<String>()
                             if (!appInfo.enabled)
                                 notes += "disabled"
                             if (appInfo.flags.and(ApplicationInfo.FLAG_EXTERNAL_STORAGE) != 0)
                                 notes += "<em>on external storage</em>"
-                            if (notes.isNotEmpty())
-                                writer.append(notes.joinToString(", "))
-                            writer.append("</td></tr>")
+                            table.addLine(appID, info.versionName, PackageInfoCompat.getLongVersionCode(info), pm.getInstallerPackageName(appID) ?: '—', notes.joinToString(", "))
                         } catch(e: PackageManager.NameNotFoundException) {
                         }
+                    writer.append(table.toString())
                 } catch(e: Exception) {
                     Logger.log.log(Level.SEVERE, "Couldn't get software information", e)
                 }
-                writer.append("</tbody></table>")
 
                 // system info
                 writer.append(
-                        "<h2>System information</h2>" +
-                        "<p>Android version: ${Build.VERSION.RELEASE} (${Build.DISPLAY})<br/>" +
-                        "Device: ${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})</p>"
+                        "SYSTEM INFORMATION\n\n" +
+                        "Android version: ${Build.VERSION.RELEASE} (${Build.DISPLAY})\n" +
+                        "Device: ${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})\n\n"
                 )
 
                 // connectivity
                 context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->
-                    writer.append("<h2>Connectivity</h2><ul>")
+                    writer.append("\nCONNECTVITY\n\n")
                     val activeNetwork = if (Build.VERSION.SDK_INT >= 23) connectivityManager.activeNetwork else null
                     connectivityManager.allNetworks.sortedByDescending { it == activeNetwork }.forEach { network ->
                         val capabilities = connectivityManager.getNetworkCapabilities(network)!!
-                        writer.append("<li>")
-                        if (network == activeNetwork)
-                            writer.append("<strong>")
-                        writer.append("${capabilities.toString().replace('&',' ')}")
-                        if (network == activeNetwork)
-                            writer.append("</strong>")
-                        writer.append("</li>")
+                        writer  .append(if (network == activeNetwork) " ☒ " else " ☐ ")
+                                .append("${capabilities.toString().replace('&',' ')}")
+                                .append('\n')
                     }
-                    writer.append("</ul>")
+                    writer.append('\n')
+
                     if (Build.VERSION.SDK_INT >= 23)
                         connectivityManager.defaultProxy?.let { proxy ->
-                            writer.append("<p>System default proxy: ${proxy.host}:${proxy.port}</p>")
+                            writer.append("System default proxy: ${proxy.host}:${proxy.port}\n")
                         }
                     if (Build.VERSION.SDK_INT >= 24)
-                        writer.append("<p>Data saver: ").append(when (connectivityManager.restrictBackgroundStatus) {
+                        writer.append("Data saver: ").append(when (connectivityManager.restrictBackgroundStatus) {
                             ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED -> "enabled"
                             ConnectivityManager.RESTRICT_BACKGROUND_STATUS_WHITELISTED -> "whitelisted"
                             ConnectivityManager.RESTRICT_BACKGROUND_STATUS_DISABLED -> "disabled"
                             else -> connectivityManager.restrictBackgroundStatus.toString()
-                        }).append("</p>")
+                        }).append('\n')
+                    writer.append('\n')
                 }
 
-                writer.append("<h2>Configuration</h2>")
+                writer.append("\nCONFIGURATION\n\n")
                 // power saving
                 if (Build.VERSION.SDK_INT >= 23)
                     context.getSystemService<PowerManager>()?.let { powerManager ->
-                        writer.append("<p>Power saving disabled: ")
+                        writer.append("Power saving disabled: ")
                                 .append(if (powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) "yes" else "no")
-                                .append("</p>")
+                                .append('\n')
                     }
                 // system-wide sync
-                writer    .append("<p>System-wide synchronization: ")
-                        .append(if (ContentResolver.getMasterSyncAutomatically()) "automatically" else "<em>manually</em>")
-                        .append("</p>")
+                writer  .append("System-wide synchronization: ")
+                        .append(if (ContentResolver.getMasterSyncAutomatically()) "automatically" else "manually")
+                        .append('\n')
                 // notifications
                 val nm = NotificationManagerCompat.from(context)
-                writer.append("<h3>Notifications ")
+                writer.append("\nNotifications")
                 if (!nm.areNotificationsEnabled())
-                    writer.append("(blocked!)")
-                writer.append("</h3><ul>")
+                    writer.append(" (blocked!)")
+                writer.append(":\n")
                 if (Build.VERSION.SDK_INT >= 26) {
                     val channelsWithoutGroup = nm.notificationChannels.toMutableSet()
                     for (group in nm.notificationChannelGroups) {
-                        writer.append("<li>${group.id} ")
+                        writer.append(" - ${group.id} ")
                         if (Build.VERSION.SDK_INT >= 28)
                             writer.append(" isBlocked=${group.isBlocked}")
-                        writer.append("<ul>")
+                        writer.append('\n')
                         for (channel in group.channels) {
-                            writer.append("<li>${channel.id}: importance=${channel.importance}</li>")
+                            writer.append("  * ${channel.id}: importance=${channel.importance}\n")
                             channelsWithoutGroup -= channel
                         }
-                        writer.append("</ul>")
                     }
-                    writer.append("<ul>")
                     for (channel in channelsWithoutGroup)
-                        writer.append("<li>${channel.id}: importance=${channel.importance}</li>")
-                    writer.append("</ul>")
+                        writer.append(" - ${channel.id}: importance=${channel.importance}\n")
                 }
-                writer.append("</ul>")
+                writer.append('\n')
                 // permissions
-                writer.append("<h3>Permissions</h3><ul>")
+                writer.append("Permissions:\n")
                 for (permission in arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS,
                         Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR,
                         TaskProvider.PERMISSION_READ_TASKS, TaskProvider.PERMISSION_WRITE_TASKS,
                         Manifest.permission.ACCESS_COARSE_LOCATION)) {
                     val shortPermission = permission.replace(Regex("^.+\\.permission\\."), "")
-                    writer    .append("<li>$shortPermission: ")
+                    writer  .append(" - $shortPermission: ")
                             .append(if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
                                 "granted"
                             else
                                 "denied")
-                            .append("</li>")
+                            .append('\n')
                 }
-                writer.append("</ul>")
+                writer.append('\n')
 
-                writer.append("<h2>Accounts</h2><ul class='only-indent'>")
+                writer.append("\nACCOUNTS\n\n")
                 // main accounts
                 val accountManager = AccountManager.get(context)
                 val mainAccounts = accountManager.getAccountsByType(context.getString(R.string.account_type))
                 val addressBookAccounts = accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)).toMutableList()
                 for (account in mainAccounts) {
-                    writer.append("<li>")
                     dumpMainAccount(account, writer)
 
-                    writer.append("<ul>")
                     val iter = addressBookAccounts.iterator()
                     while (iter.hasNext()) {
                         val addressBookAccount = iter.next()
@@ -435,28 +422,22 @@ class DebugInfoActivity: AppCompatActivity() {
                             iter.remove()
                         }
                     }
-                    writer.append("</ul></li>")
                 }
-                writer.append("</ul>")
                 if (addressBookAccounts.isNotEmpty()) {
-                    writer.append("<p><em>Address book accounts without main account:</em></p><ul class='only-indent'>")
-                    for (account in addressBookAccounts) {
-                        writer.append("<li>")
+                    writer.append("Address book accounts without main account:\n")
+                    for (account in addressBookAccounts)
                         dumpAddressBookAccount(account, accountManager, writer)
-                        writer.append("</li>")
-                    }
-                    writer.append("</ul>")
                 }
 
                 // database dump
-                writer.append("<h2>Database dump</h2>")
-                AppDatabase.getInstance(context).dumpHtml(writer)
+                writer.append("\nDATABASE DUMP\n\n")
+                AppDatabase.getInstance(context).dump(writer)
 
                 // app settings
-                writer.append("<h2>App settings</h2>")
-                SettingsManager.getInstance(context).dumpHtml(writer)
+                writer.append("\nAPP SETTINGS\n\n")
+                SettingsManager.getInstance(context).dump(writer)
 
-                writer.append("</body></html>")
+                writer.append("--- END DEBUG INFO ---\n")
                 writer.toString()
             }
             debugInfo.postValue(debugInfoFile)
@@ -471,7 +452,7 @@ class DebugInfoActivity: AppCompatActivity() {
                     Logger.log.fine("Writing debug info to ${zipFile.absolutePath}")
                     ZipOutputStream(zipFile.outputStream().buffered()).use { zip ->
                         debugInfo.value?.let { debugInfo ->
-                            zip.putNextEntry(ZipEntry("debug-info.html"))
+                            zip.putNextEntry(ZipEntry("debug-info.txt"))
                             debugInfo.inputStream().use {
                                 IOUtils.copy(it, zip)
                             }
@@ -502,64 +483,55 @@ class DebugInfoActivity: AppCompatActivity() {
 
         private fun dumpMainAccount(account: Account, writer: Writer) {
             val context = getApplication<Application>()
-            writer.append("<table>" +
-                    "<caption>${TextUtils.htmlEncode(account.name)}</caption>" +
-                    "<thead><tr><td>Authority</td><td>isSyncable</td><td>getSyncAutomatically</td><td>Sync interval</td></tr></thead><tbody>")
+
+            writer.append(" - Account: ${account.name}\n")
+            val table = TextTable("Authority", "isSyncable", "getSyncAutomatically", "Sync interval")
+
             for (authority in arrayOf(
                     context.getString(R.string.address_books_authority),
                     CalendarContract.AUTHORITY,
                     TaskProvider.ProviderName.OpenTasks.authority
-            )) {
-                writer.append("<tr><td>$authority</td>" +
-                        "<td>${isSyncableHtml(account, authority)}</td>" +
-                        "<td>${ContentResolver.getSyncAutomatically(account, authority)}</td><td>")
-                ContentResolver.getPeriodicSyncs(account, authority).firstOrNull()?.let { periodicSync ->
-                    writer.append("${periodicSync.period/60} min")
-                }
-                writer.append("</td></tr>")
-            }
-            writer.append("</tbody></table><p>")
+            ))
+                table.addLine(
+                        authority,
+                        ContentResolver.getIsSyncable(account, authority),
+                        ContentResolver.getSyncAutomatically(account, authority),
+                        ContentResolver.getPeriodicSyncs(account, authority).firstOrNull()?.let { periodicSync ->
+                            "${periodicSync.period/60} min"
+                        }
+                )
+            writer.append(table.toString())
 
             try {
                 val accountSettings = AccountSettings(context, account)
                 writer.append("WiFi only: ${accountSettings.getSyncWifiOnly()}")
-                accountSettings.getSyncWifiOnlySSIDs()?.let {
-                    val ssids = it.map { TextUtils.htmlEncode(it) }.joinToString(", ")
-                    writer.append(", SSIDs: $ssids")
+                accountSettings.getSyncWifiOnlySSIDs()?.let { ssids ->
+                    writer.append(", SSIDs: ${ssids.joinToString(", ")}")
                 }
-                writer.append("</p><p>Contact group method: <code>${accountSettings.getGroupMethod()}</code></p>" +
-                        "<p>Time range (past days): ${accountSettings.getTimeRangePastDays()}<br/>" +
-                        "Default alarm (min before): ${accountSettings.getDefaultAlarm()}<br/>" +
-                        "Manage calendar colors: ${accountSettings.getManageCalendarColors()}<br/>" +
-                        "Use event colors: ${accountSettings.getEventColors()}")
+                writer.append("\nContact group method: ${accountSettings.getGroupMethod()}\n" +
+                        "Time range (past days): ${accountSettings.getTimeRangePastDays()}\n" +
+                        "Default alarm (min before): ${accountSettings.getDefaultAlarm()}\n" +
+                        "Manage calendar colors: ${accountSettings.getManageCalendarColors()}\n" +
+                        "Use event colors: ${accountSettings.getEventColors()}\n")
             } catch(e: InvalidAccountException) {
-                writer.append("<em>$e</em>")
+                writer.append("$e\n")
             }
-            writer.append("</p>")
+            writer.append('\n')
         }
 
         private fun dumpAddressBookAccount(account: Account, accountManager: AccountManager, writer: Writer) {
-            writer.append("<table>" +
-                    "<caption>${TextUtils.htmlEncode(account.name)}</caption><tbody>" +
-                    "<thead><tr><td colspan=2>Contacts</td></tr></thead><tbody>" +
-                    "<tr><td>isSyncable</td><td>${isSyncableHtml(account, ContactsContract.AUTHORITY)}</td></tr>" +
-                    "<tr><td>getSyncAutomatically</td><td>${ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY)}</td></tr>" +
-                    "<tr><td>Sync interval</td><td>")
-            ContentResolver.getPeriodicSyncs(account, ContactsContract.AUTHORITY).firstOrNull()?.let { periodicSync ->
-                writer.append("${periodicSync.period/60} min")
-            }
-            writer.append("</td></tr>" +
-                    "<tr><td>URL</td><td>${TextUtils.htmlEncode(accountManager.getUserData(account, LocalAddressBook.USER_DATA_URL))}</td></tr>" +
-                    "<tr><td>read-only</td><td>${accountManager.getUserData(account, LocalAddressBook.USER_DATA_READ_ONLY) ?: 0}</td></tr>" +
-                    "</tbody></table>")
-        }
-
-        private fun isSyncableHtml(account: Account, authority: String): String {
-            val result = ContentResolver.getIsSyncable(account, authority)
-            return if (result == -1)
-                "<em>-1</em>"
-            else
-                result.toString()
+            writer.append("   * Address book: ${account.name}\n")
+            val table = TextTable("isSyncable", "getSyncAutomatically", "Sync interval")
+            table.addLine(
+                    ContentResolver.getIsSyncable(account, ContactsContract.AUTHORITY),
+                    ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY),
+                    ContentResolver.getPeriodicSyncs(account, ContactsContract.AUTHORITY).firstOrNull()?.let { periodicSync ->
+                        "${periodicSync.period/60} min"
+                    }
+            )
+            writer  .append(TextTable.indent(table.toString(), 3))
+                    .append("   URL: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_URL)}\n")
+                    .append("   Read-only: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
         }
 
     }
