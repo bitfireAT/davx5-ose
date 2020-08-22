@@ -93,6 +93,7 @@
   <string name="account_list_empty">Bienvenue sur DAVx⁵!\n\nVous pouvez maintenant ajouter un compte CalDAV ou CardDAV.</string>
   <string name="accounts_global_sync_disabled">La synchronisation automatique globale est désactivée</string>
   <string name="accounts_global_sync_enable">Activer</string>
+  <string name="accounts_sync_all">Synchroniser tous les comptes</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">La détection du service a échoué</string>
   <string name="dav_service_refresh_couldnt_refresh">Impossible d\'actualiser la liste de collection</string>
@@ -278,6 +279,12 @@
   <string name="collection_properties_copy_url">Copier l\'URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Infos de débogage</string>
+  <string name="debug_info_http_error">Erreur HTTP</string>
+  <string name="debug_info_server_error">Erreur Serveur</string>
+  <string name="debug_info_webdav_error">Erreur WebDAV</string>
+  <string name="debug_info_io_error">Erreur I/O</string>
+  <string name="debug_info_view_details">Voir les détails</string>
+  <string name="debug_info_logs_caption">Journaux</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Une erreur est survenue.</string>
   <string name="exception_httpexception">Une erreur HTTP est survenue.</string>
