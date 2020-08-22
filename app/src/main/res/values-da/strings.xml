@@ -93,6 +93,7 @@
   <string name="account_list_empty">Velkommen til DAVx⁵!\n\nDu kan nu tilføje en CalDAV/CardDAV konto.</string>
   <string name="accounts_global_sync_disabled">Automatisk synkronisering på tværs af systemet er deaktiveret</string>
   <string name="accounts_global_sync_enable">Aktivere</string>
+  <string name="accounts_sync_all">Synkronisere alle konti</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Registrering af tjeneste kunne ikke foretages</string>
   <string name="dav_service_refresh_couldnt_refresh">Kunne ikke opdatere samling liste</string>
@@ -280,6 +281,19 @@
   <string name="collection_properties_copy_url">Kopiere URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug-info</string>
+  <string name="debug_info_http_error">HTTP fejl</string>
+  <string name="debug_info_server_error">Server fejl</string>
+  <string name="debug_info_webdav_error">WebDAV fejl</string>
+  <string name="debug_info_io_error">Ind/ud fejl</string>
+  <string name="debug_info_view_details">Vis detaljer</string>
+  <string name="debug_info_subtitle">Fejlsøgnings information er indsamlet</string>
+  <string name="debug_info_involved_caption">Involveret ressourcer</string>
+  <string name="debug_info_involved_subtitle">Relateret til problemet</string>
+  <string name="debug_info_involved_remote">Fjern ressource:</string>
+  <string name="debug_info_involved_local">Lokal ressource:</string>
+  <string name="debug_info_involved_view">Vis med program</string>
+  <string name="debug_info_logs_caption">Log</string>
+  <string name="debug_info_logs_subtitle">Uddybende log er tilgængelig</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Der er opstået en fejl.</string>
   <string name="exception_httpexception">Der er opstået en HTTP-fejl.</string>

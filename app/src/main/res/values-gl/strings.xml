@@ -93,6 +93,7 @@
   <string name="account_list_empty">Benvida a DAVx⁵!\n\nXa podes engadir unha conta CalDAV/CardDAV</string>
   <string name="accounts_global_sync_disabled">A sincronización global automática do sistema está desactivada</string>
   <string name="accounts_global_sync_enable">Activar</string>
+  <string name="accounts_sync_all">Sincroniza todas as contas</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Fallou a detección do servizo</string>
   <string name="dav_service_refresh_couldnt_refresh">Non se actualizou a lista da colección</string>
@@ -145,6 +146,7 @@
   <string name="account_rename">Renomear conta</string>
   <string name="account_rename_new_name">Os datos locais non gardados perderanse. A resincronización é precisa tras renomear. Novo nome da conta:</string>
   <string name="account_rename_rename">Renomear</string>
+  <string name="account_rename_couldnt_rename">Non cambiou o nome da conta</string>
   <string name="account_delete">Eliminar conta</string>
   <string name="account_delete_confirmation_title">Desexas eliminar a conta?</string>
   <string name="account_delete_confirmation_text">Todas as copias locais de libretas de enderezos, calendarios e tarefas eliminaranse.</string>
@@ -185,6 +187,7 @@
   <string name="login_configuration_detection">Detección da configuración</string>
   <string name="login_querying_server">Agarda por favor, consultando o servidor…</string>
   <string name="login_no_caldav_carddav">Non se atopou servizo CalDAV ou CardDAV.</string>
+  <string name="login_username_password_wrong">¿Usuaria (enderezo email) / contrasinal incorrectos?</string>
   <string name="login_view_logs">Mostrar detalles</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Axustes: %s</string>
@@ -234,7 +237,7 @@
     <item quantity="other">Alarma por omisión %d minutos antes do evento</item>
   </plurals>
   <string name="settings_default_alarm_off">Non se crearon alarmas por omisión</string>
-  <string name="settings_default_alarm_message">Se deben ser creadas as alarmas por omisión: o número de minutos desexado antes do evento. Deixar baleiro para desactivar alarmas por omisión.</string>
+  <string name="settings_default_alarm_message">Se deben ser creadas as alarmas por omisión para eventos sen alarma: o número de minutos desexado antes do evento. Deixar baleiro para desactivar alarmas por omisión.</string>
   <string name="settings_manage_calendar_colors">Xestionar cores dos calendarios</string>
   <string name="settings_manage_calendar_colors_on">As cores dos calendarios son xestionadas por DAVx⁵</string>
   <string name="settings_manage_calendar_colors_off">As cores do calendario non son establecidas por DAVx⁵</string>
@@ -278,6 +281,24 @@
   <string name="collection_properties_copy_url">Copiar URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Info depuración</string>
+  <string name="debug_info_attached">Info de depuración anexa a esta mensaxe (require soporte de anexos na app receptora).</string>
+  <string name="debug_info_http_error">Erro HTTP</string>
+  <string name="debug_info_server_error">Fallo no servidor</string>
+  <string name="debug_info_webdav_error">Fallo WebDAV</string>
+  <string name="debug_info_io_error">Fallo I/O</string>
+  <string name="debug_info_http_403_description">A solicitude foi denegada. Comproba os recursos implicados e o rexistro de depuración para máis info.</string>
+  <string name="debug_info_http_404_description">O recurso solicitado xa non existe. Comproba os recursos implicados e a información de depuración.</string>
+  <string name="debug_info_http_5xx_description">Hai un fallo no lado do servidor. Contacta co soporte do servidor.</string>
+  <string name="debug_info_unexpected_error">Aconteceu un fallo non agardado. Mira a info de depuración para detalles.</string>
+  <string name="debug_info_view_details">Ver detalles</string>
+  <string name="debug_info_subtitle">Recolleuse a info de depuración</string>
+  <string name="debug_info_involved_caption">Recursos implicados</string>
+  <string name="debug_info_involved_subtitle">Relacionado co problema</string>
+  <string name="debug_info_involved_remote">Recurso remoto:</string>
+  <string name="debug_info_involved_local">Recurso local:</string>
+  <string name="debug_info_involved_view">Ver coa app</string>
+  <string name="debug_info_logs_caption">Rexistros</string>
+  <string name="debug_info_logs_subtitle">Están dispoñibles rexistros explicativos</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Algo fallou.</string>
   <string name="exception_httpexception">Houbo un fallo HTTP.</string>

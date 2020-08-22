@@ -25,7 +25,13 @@
   <!--AppSettingsActivity-->
   <!--AccountActivity-->
   <!--AddAccountActivity-->
+  <string name="login_type_email">Kirjaudu sähköpostilla</string>
+  <string name="login_email_address">Sähköpostiosoite</string>
+  <string name="login_password">Salasana</string>
+  <string name="login_type_url">Kirjaudu verkko-osoitteella ja käyttäjänimellä</string>
+  <string name="login_user_name">Käyttäjänimi</string>
   <!--AccountSettingsActivity-->
+  <string name="settings_title">Asetukset: %s</string>
   <!--collection management-->
   <!--debugging and DebugInfoActivity-->
   <!--ExceptionInfoFragment-->
