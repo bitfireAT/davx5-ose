@@ -1,0 +1,8 @@
+* accounts overview: show sync/refresh status of every account with a progress bar
+* accounts overview: new *Sync all accounts* action
+* launcher shortcut: *Sync all accounts* (available as DAVx⁵ has been started the first time); can be used as widget
+* new debug info/share logs screen
+  * improved UI (including specific messages for common errors)
+  * improved debug info (more information, better readability)
+  * *Share* action now generates a ZIP file with debug info (and logs, if available)
+
