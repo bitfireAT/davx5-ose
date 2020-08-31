@@ -93,6 +93,7 @@
   <string name="account_list_empty">Welkom bij DAVx⁵!\n\nJe kunt nu een CalDAV/CardDAv account toevoegen.</string>
   <string name="accounts_global_sync_disabled">Systeembrede automatische synchronisatie is uitgeschakeld</string>
   <string name="accounts_global_sync_enable">Inschakelen</string>
+  <string name="accounts_sync_all">Alle accounts synchroniseren</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Service herkenning is mislukt</string>
   <string name="dav_service_refresh_couldnt_refresh">Kon de collectie lijst niet vernieuwen</string>
@@ -145,6 +146,7 @@
   <string name="account_rename">Account hernoemen</string>
   <string name="account_rename_new_name">Niet opgeslagen lokale informatie mag verloren gaan. Synchronisatie is noodzakelijk na hernoemen. Nieuw account naam:</string>
   <string name="account_rename_rename">Hernoemen</string>
+  <string name="account_rename_couldnt_rename">Account kon niet hernoemd worden</string>
   <string name="account_delete">Account verwijderen</string>
   <string name="account_delete_confirmation_title">Account echt verwijderen?</string>
   <string name="account_delete_confirmation_text">Alle lokale kopieën van adresboeken, agenda\'s en taken worden verwijderd.</string>
@@ -173,10 +175,10 @@
   <string name="login_type_url_certificate">Login met URL en client certificaat</string>
   <string name="login_select_certificate">Certificaat selecteren</string>
   <string name="login_login">Login</string>
-  <string name="login_create_account">Maak een account</string>
+  <string name="login_create_account">Account aanmaken</string>
   <string name="login_account_name">Accountnaam</string>
-  <string name="login_account_name_info">Gebruik je email adres als account naam want Android zal je account naam gebruiken als ORGANIZER veld voor gemaakte afspraken. Je kunt geen 2 accounts met dezelfde naam hebben,</string>
-  <string name="login_account_contact_group_method">Contact groep methode:</string>
+  <string name="login_account_name_info">Gebruik je e-mailadres als account-naam, want Android zal deze gebruiken als ORGANIZER veld voor afspraken die je maakt. Je kunt geen 2 accounts met dezelfde naam hebben.</string>
+  <string name="login_account_contact_group_method">Methode voor groepen contacten:</string>
   <string name="login_account_name_required">Accountnaam vereist</string>
   <string name="login_account_name_already_taken">Account name is al in gebruik</string>
   <string name="login_account_not_created">Account kon niet gemaakt worden.</string>
@@ -185,6 +187,7 @@
   <string name="login_configuration_detection">Configuratie detectie</string>
   <string name="login_querying_server">Even geduld, verzoek naar server…</string>
   <string name="login_no_caldav_carddav">Kon geen CalDAV of CardDAV service vinden.</string>
+  <string name="login_username_password_wrong">Gebruikersnaam (e-mailadres) / wachtwoord verkeerd?</string>
   <string name="login_view_logs">Toon details</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Instellingen: %s</string>
@@ -235,14 +238,14 @@
   </plurals>
   <string name="settings_default_alarm_off">Er worden geen standaardherinneringen gemaakt</string>
   <string name="settings_default_alarm_message">Als standaardherinneringen worden aangemaakt voor evenementen zonder herinnering: het gewenste aantal minuten voor het evenement. Laat leeg om standaardherinneringen uit te schakelen.</string>
-  <string name="settings_manage_calendar_colors">Agenda kleuren beheren</string>
-  <string name="settings_manage_calendar_colors_on">Agenda kleuren worden door DAVx⁵ beheerd.</string>
-  <string name="settings_manage_calendar_colors_off">Agenda kleuren worden niet door DAVx⁵ ingesteld</string>
-  <string name="settings_event_colors">Evenement kleur ondersteuning</string>
-  <string name="settings_event_colors_on">Evenement kleuren synchroniseren</string>
-  <string name="settings_event_colors_off">Evenement kleuren niet synchroniseren</string>
+  <string name="settings_manage_calendar_colors">Agendakleuren beheren</string>
+  <string name="settings_manage_calendar_colors_on">Agendakleuren worden door DAVx⁵ beheerd.</string>
+  <string name="settings_manage_calendar_colors_off">Agendakleuren worden niet door DAVx⁵ ingesteld</string>
+  <string name="settings_event_colors">Evenementkleuren ondersteunen</string>
+  <string name="settings_event_colors_on">Evenementkleuren worden synchroniseerd</string>
+  <string name="settings_event_colors_off">Evenementkleuren worden niet gesynchroniseerd</string>
   <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Contact groep methode</string>
+  <string name="settings_contact_group_method">Methode groepen contacten</string>
   <string-array name="settings_contact_group_method_entries">
     <item>Groepen zijn afzonderlijke vCards</item>
     <item>Groepen zijn categorieën per contact</item>
@@ -278,6 +281,11 @@
   <string name="collection_properties_copy_url">kopieer URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug informatie</string>
+  <string name="debug_info_attached">Debug-informatie wordt toegevoegd aan dit bericht (de ontvangende app moet bijlagen kunnen versturen).</string>
+  <string name="debug_info_http_error">HTTP-fout</string>
+  <string name="debug_info_server_error">Serverfout</string>
+  <string name="debug_info_webdav_error">Fout met WebDAV</string>
+  <string name="debug_info_io_error">I/O-fout</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Er is een fout opgetreden.</string>
   <string name="exception_httpexception">Er is een HTTP fout opgetreden.</string>
