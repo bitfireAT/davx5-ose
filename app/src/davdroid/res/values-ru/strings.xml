@@ -93,6 +93,7 @@
   <string name="account_list_empty">Добро пожаловать в DAVx⁵\n\nТеперь вы можете добавить аккаунт CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Синхронизация отключена на уровне устройства</string>
   <string name="accounts_global_sync_enable">Включить</string>
+  <string name="accounts_sync_all">Синхронизировать все аккаунты</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Сбой при обнаружении службы</string>
   <string name="dav_service_refresh_couldnt_refresh">Не удалось обновить список коллекций</string>
@@ -284,6 +285,24 @@
   <string name="collection_properties_copy_url">Копировать URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>
+  <string name="debug_info_attached">Отладочная информация, прикреплена к данному сообщению (требует поддержки вложений со стороны принимающего приложения).</string>
+  <string name="debug_info_http_error">Ошибка HTTP</string>
+  <string name="debug_info_server_error">Ошибка сервера</string>
+  <string name="debug_info_webdav_error">Ошибка WebDAV</string>
+  <string name="debug_info_io_error">Ошибка ввода/вывода</string>
+  <string name="debug_info_http_403_description">Запрос был отклонен. Для получения подробной информации проверьте задействованные ресурсы и отладочную информацию.</string>
+  <string name="debug_info_http_404_description">Запрошенного ресурса не существует (больше не существует). Проверьте задействованные ресурсы и отладочную информацию для получения подробной информации.</string>
+  <string name="debug_info_http_5xx_description">Возникла проблема на стороне сервера. Пожалуйста, свяжитесь со службой поддержки вашего сервера.</string>
+  <string name="debug_info_unexpected_error">Произошла непредвиденная ошибка. Для получения подробной информации просмотрите отладочную информацию.</string>
+  <string name="debug_info_view_details">Просмотреть информацию</string>
+  <string name="debug_info_subtitle">Собрана отладочная информация</string>
+  <string name="debug_info_involved_caption">Вовлеченные ресурсы</string>
+  <string name="debug_info_involved_subtitle">Связанная с этим проблема</string>
+  <string name="debug_info_involved_remote">Удаленный ресурс:</string>
+  <string name="debug_info_involved_local">Локальный ресурс:</string>
+  <string name="debug_info_involved_view">Просмотр с помощью приложения</string>
+  <string name="debug_info_logs_caption">Журналы</string>
+  <string name="debug_info_logs_subtitle">Доступны подробные журналы</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Произошла ошибка.</string>
   <string name="exception_httpexception">Произошла ошибка HTTP</string>

@@ -12,9 +12,9 @@
   <string name="notification_channel_general">Inne ważne wiadomości</string>
   <string name="notification_channel_sync">Synchronizacja</string>
   <string name="notification_channel_sync_errors">Błędy synchronizacji</string>
-  <string name="notification_channel_sync_errors_desc">Istotne błędy, które zatrzymują synchronizację, jak nieoczekiwane odpowiedzi serwera</string>
+  <string name="notification_channel_sync_errors_desc">Ważne błędy, które zatrzymują synchronizację, takie jak nieoczekiwane odpowiedzi serwera</string>
   <string name="notification_channel_sync_warnings">Ostrzeżenia synchronizacji</string>
-  <string name="notification_channel_sync_warnings_desc">Problemy synchronizacji jak np. pewne błędne pliki</string>
+  <string name="notification_channel_sync_warnings_desc">Niekrytyczne problemy z synchronizacją, takie jak niektóre nieprawidłowe pliki</string>
   <string name="notification_channel_sync_io_errors">Błędy sieci oraz wejścia/wyjścia</string>
   <string name="notification_channel_sync_io_errors_desc">Przekroczenia czasu, problemy z połączeniem itp. (często tymczasowe)</string>
   <!--IntroActivity-->
@@ -43,7 +43,7 @@
   <string name="intro_open_source_dont_show">Nie pokazuj za kolejnym razem</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Uprawnienia</string>
-  <string name="permissions_text">%s wymaga uprawnień aby działać prawidłowo.</string>
+  <string name="permissions_text">%s wymaga uprawnień do prawidłowego działania</string>
   <string name="permissions_all_title">Wszystkie poniższe</string>
   <string name="permissions_all_status_off">Użyj tego aby odblokować wszystkie funkcje (zalecane)</string>
   <string name="permissions_all_status_on">Wszystkie uprawnienia nadane</string>
@@ -57,7 +57,7 @@
   <string name="permissions_tasks_status_not_installed">Bez synchronizacji zadań (nie zainstalowane)</string>
   <string name="permissions_tasks_status_off">Bez synchronizacji zadań (nie zalecane)</string>
   <string name="permissions_tasks_status_on">Synchronizacja zadań możliwa</string>
-  <string name="permissions_app_settings_hint">Jeśli przełącznik nie działa użyj ustawień aplikacji / Uprawnienia.</string>
+  <string name="permissions_app_settings_hint">Jeśli przełącznik nie działa użyj ustawień dla aplikacji/Uprawnienia.</string>
   <string name="permissions_app_settings">Ustawienia aplikacji</string>
   <!--AboutActivity-->
   <string name="about_translations">Tłumaczenia</string>

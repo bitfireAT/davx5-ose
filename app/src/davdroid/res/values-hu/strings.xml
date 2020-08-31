@@ -18,13 +18,55 @@
   <string name="notification_channel_sync_io_errors">Hálózati és I/O hibák</string>
   <string name="notification_channel_sync_io_errors_desc">Időtúllépésék, kapcsolódási problémák, stb. (gyakran átmeneti problémák)</string>
   <!--IntroActivity-->
+  <string name="intro_slogan1">Az Ön adatai.  Az Ön döntése.</string>
+  <string name="intro_slogan2">Vegye kézbe az irányítást.</string>
+  <string name="intro_battery_title">Rendszeres ütemezett szinkronizálás</string>
+  <string name="intro_battery_not_whitelisted">Kikapcsolva (nem javasolt)</string>
+  <string name="intro_battery_whitelisted">Bekapcsolva (javasolt)</string>
+  <string name="intro_battery_text">A rendszeres ütemezett szinkronizáláshoz a %s számára engedélyezni kell a háttérben futást, különben az Android rendszer a szinkronizálást bármikor leállíthatja.</string>
+  <string name="intro_battery_dont_show">Nincs igénylem a rendszeres ütemezett szinkronizálást.*</string>
+  <string name="intro_autostart_title">%s kompatibilitás</string>
+  <string name="intro_autostart_text">Ez az eszköz valószínűleg blokkolja a szinkronizálást.  Ha valóban, ez manuálisan megoldható.</string>
+  <string name="intro_autostart_dont_show">Elvégeztem a szükséges beállításokat, nincs szükségem további figyelmeztetésre.*</string>
+  <string name="intro_leave_unchecked">* Hagyja üresen, ha szeretné, ha legközelebb is kapjon emlékeztetést.  Később felülírható az alkalmazásbeállításoknál (%s).</string>
+  <string name="intro_more_info">További információk</string>
+  <string name="intro_tasks_title">Feladatok támogatása</string>
+  <string name="intro_tasks_not_installed">Nincs telepítve</string>
+  <string name="intro_tasks_opentasks_installed">Az OpenTasks telepítve</string>
+  <string name="intro_tasks_no_app_store">Nincs elérhető alkalmazás-áruház</string>
+  <string name="intro_tasks_text1"><![CDATA[Android rendszerben beépítetten nem támogatja a feladatokat.  Ha az Ön által használt szerver támogatja a feladatokat,  %s meg tudja oldani a feladatok szinkronizálását az <a href="https://opentasks.app/">OpenTasks</a> felhasználásával.]]></string>
+  <string name="intro_tasks_text2">Egyes funkciók, például alfeladatok és ismétlődő feladatok, támogatása más alkalmazásokat igényel.</string>
+  <string name="intro_tasks_dont_show">Nincs szükségem a feladatok támogatására.*</string>
+  <string name="intro_open_source_title">Nyílt forráskódú szoftver</string>
+  <string name="intro_open_source_text">Nagyon örülünk, hogy a %s felhasználói közé tartozik, ami egy nyílt forráskódú szoftver.  Ennek fejlesztése, karbantartása és támogatása ugyanakkor kemény munkát igényel.  Kérjük, fontolja meg, hogy ezt pénzzel vagy valamilyen módon támogassa (több lehetőség közül is választhat).  Nagyon megköszönnénk!</string>
+  <string name="intro_open_source_details">A hozzájárulás lehetőségei</string>
+  <string name="intro_open_source_dont_show">Ne mutassa legközelebb</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">Engedélyek</string>
+  <string name="permissions_text">A %s megfelelő működése bizonyos engedélyeket igényel.</string>
+  <string name="permissions_all_title">Az összes alább felsorolt</string>
+  <string name="permissions_all_status_off">Ezt választva valamennyi funkció bekapcsolható (javasolt)</string>
+  <string name="permissions_all_status_on">Az összes engedély megadva</string>
+  <string name="permissions_contacts_title">Névjegy-engedélyek</string>
+  <string name="permissions_contacts_status_off">A címtárak szinkronizálásának mellőzése (nem javasolt)</string>
+  <string name="permissions_contacts_status_on">A névjegyek szinkronizálása (javasolt)</string>
+  <string name="permissions_calendar_title">Naptár-engedélyek</string>
+  <string name="permissions_calendar_status_off">A naptárak szinkronizálásának mellőzése (nem javasolt)</string>
+  <string name="permissions_calendar_status_on">A naptárak szinkronizálása (javasolt)</string>
+  <string name="permissions_tasks_title">OpenTasks engedélyek</string>
+  <string name="permissions_tasks_status_not_installed">A feladatlisták szinkronizálása nem lehetséges (nincs telepítve)</string>
+  <string name="permissions_tasks_status_off">A feladatlisták szinkronizálásának mellőzése (nem javasolt)</string>
+  <string name="permissions_tasks_status_on">A feladatlisták szinkronizálása lehetséges</string>
+  <string name="permissions_app_settings_hint">Ha a kapcsolók nem működnek, használja az alkalmazás-beállításokat</string>
+  <string name="permissions_app_settings">Alkalmazásbeállítások</string>
   <!--AboutActivity-->
+  <string name="about_translations">Fordítások</string>
   <string name="about_libraries">Könyvtárak</string>
   <string name="about_version">Verziószám:%1$s (%2$d)</string>
   <string name="about_build_date">Fordítás ideje: %s</string>
   <string name="about_flavor_info">Ez a verzió csak a Google Play Áruházon keresztül terjeszthető</string>
   <string name="about_license_info_no_warranty">Ehhez a program SEMMIFÉLE GARANCIA NEM JÁR.   Ez a program szabad szoftver, ami a bizonyos feltételek mellett szabadon terjeszthető.</string>
+  <string name="about_translations_thanks"><![CDATA[<i>Köszönet a következőknek: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">A naplófájl létrehozása nem sikerült</string>
   <string name="logging_notification_title">DAVx⁵ naplózás</string>
@@ -36,6 +78,8 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV szinkronizációs adapter</string>
   <string name="navigation_drawer_about">Névjegy / Licenc</string>
   <string name="navigation_drawer_beta_feedback">Tesztelői visszajelzés</string>
+  <string name="install_email_client">Kérjük, telepítsen egy levelező-klienst</string>
+  <string name="install_browser">Kérjük, telepítsen egy böngészőt</string>
   <string name="navigation_drawer_settings">Beállítások</string>
   <string name="navigation_drawer_news_updates">Hírek és frissítések</string>
   <string name="navigation_drawer_external_links">Weblapok</string>
@@ -44,9 +88,12 @@
   <string name="navigation_drawer_faq">GYIK</string>
   <string name="navigation_drawer_forums">Segítség / Fórumok</string>
   <string name="navigation_drawer_donate">Támogatás</string>
+  <string name="navigation_drawer_privacy_policy">Adatvédelmi politika</string>
+  <string name="account_list_no_internet">Nincs Internet-elérés.  Az Android rendszer nem fogja elvégezni a szinkronizálst</string>
   <string name="account_list_empty">Üdvözöljük a DAVx⁵ felhasználók között!\n\nMost már felvehet CalDAV/CardDav fiókokat.</string>
   <string name="accounts_global_sync_disabled">A rendszerszintű automatikus szinkronizálás ki van kapcsolva</string>
   <string name="accounts_global_sync_enable">Bekapcsolás</string>
+  <string name="accounts_sync_all">Az összes fiók szinkronizálása</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Szolgáltatások felderítése nem sikerült</string>
   <string name="dav_service_refresh_couldnt_refresh">Gyűjteménylista frissítése nem sikerült</string>
@@ -65,6 +112,8 @@
   <string name="app_settings_override_proxy_host">HTTP proxyállomás neve</string>
   <string name="app_settings_override_proxy_port">HTTP proxy port</string>
   <string name="app_settings_security">Biztonság</string>
+  <string name="app_settings_security_app_permissions">Alkalmazásengedélyek</string>
+  <string name="app_settings_security_app_permissions_summary">Tekintse át a szinkronizáláshoz szükséges engedélyeket</string>
   <string name="app_settings_distrust_system_certs">A rendszertanúsítványok elfogadása</string>
   <string name="app_settings_distrust_system_certs_on">A rendszer által kezelt, előre vagy felhasználó által telepített tanúsítványok figyelmen kívül lesznek hagyva</string>
   <string name="app_settings_distrust_system_certs_off">A rendszer által kezelt, előre vagy felhasználó által telepített tanúsítványok megbízhatóak (javasolt)</string>
@@ -81,12 +130,23 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">A névjegyek szinkronizálása nem működik (nincs engedélyezve)</string>
+  <string name="account_caldav_missing_calendar_permissions">A naptárak szinkronizálása nem működik (nincs engedélyezve)</string>
+  <string name="account_caldav_missing_tasks_permissions">A feladatok szinkronizálása nem működik (nincs engedélyezve)</string>
+  <string name="account_caldav_missing_permissions">A naptárak és feladatok szinkronizálása nem működik (nincs engedélyezve)</string>
+  <string name="account_webcal_missing_calendar_permissions">A naptárak elérése nem működik (nincs engedélyezve)</string>
+  <string name="account_permissions_action">Engedélyek</string>
+  <string name="account_no_address_books">Nincsenek címjegyzékek (még).</string>
+  <string name="account_no_calendars">Nincsenek naptárak (még).</string>
+  <string name="account_no_webcals">Nem iratkozott fel egyetlen naptárra sem (még).</string>
+  <string name="account_swipe_down">Lefelé húzással frissítse a listát a szerverről.</string>
   <string name="account_synchronize_now">Szinkronizálás most</string>
   <string name="account_synchronizing_now">Szinkronizálás</string>
   <string name="account_settings">Fiókbeállítások</string>
   <string name="account_rename">Fiók átnevezése</string>
   <string name="account_rename_new_name">Az elmentetlen helyben tárolt adatok elvesznek.  Az átnevezés után szinkronizálásra lesz szükség.  Új fióknév:</string>
   <string name="account_rename_rename">Átnevez</string>
+  <string name="account_rename_couldnt_rename">A fiók átnevezése nem sikerült.</string>
   <string name="account_delete">Fiók törlése</string>
   <string name="account_delete_confirmation_title">Valóban törölni akarja a fiókot?</string>
   <string name="account_delete_confirmation_text">Az összes címjegyzék, naptár és feladatlista helyi példányai törölve lesznek.</string>
@@ -122,9 +182,12 @@
   <string name="login_account_name_required">A fióknév megadása feltétlenül szükséges</string>
   <string name="login_account_name_already_taken">A fióknév már használatban van</string>
   <string name="login_account_not_created">A fiók létrehozása nem sikerült</string>
+  <string name="login_webview_tlserror">Biztonsági probléma a kapcsolódásnál (hibakód:%d)</string>
+  <string name="login_webview_retry">Újbóli próbálkozás</string>
   <string name="login_configuration_detection">A konfiguráció felderítése</string>
   <string name="login_querying_server">Kérjük, várjon, a szerver lekérdezése…</string>
   <string name="login_no_caldav_carddav">Nem található CalDAV vagy CardDAV szolgáltatás.</string>
+  <string name="login_username_password_wrong">Felhasználónév (e-mail cím) vagy jelszó hibás?</string>
   <string name="login_view_logs">Részletek mutatása</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Beállítások: %s</string>
@@ -168,6 +231,13 @@
     <item quantity="other">A %d napnál régebbi események figyelmen kívül hagyása</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Az ennyi napnál (lehet 0) régebbi események figyelmen kívül lesznek hagyva.  Hagyja üresen, ha minden múltbéli eseményt szinkronizálni akar.</string>
+  <string name="settings_default_alarm">Alapértelmezett emlékeztető</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Az alapértelmezett emlékeztető egy perc az esemény kezdetet előtt</item>
+    <item quantity="other">Az alapértelmezett emlékeztető %d perc az esemény kezdetet előtt</item>
+  </plurals>
+  <string name="settings_default_alarm_off">Nem lesznek alapértelmezett emlékeztetők beállítva</string>
+  <string name="settings_default_alarm_message">Ha szeretné, hogy az emlékeztető nélküli eseményekhez egy alapértelmezett emlékeztető legyen beállítva, akkor adja meg, hogy az hány perccel az esemény előtt legyen.  Ha nem akar ilyet, hagyja üresen.</string>
   <string name="settings_manage_calendar_colors">Naptárszínek kezelése</string>
   <string name="settings_manage_calendar_colors_on">A naptárszíneket a DAVx⁵ kezeli</string>
   <string name="settings_manage_calendar_colors_off">A naptárszíneket nem a DAVx⁵ kezeli</string>
@@ -176,6 +246,10 @@
   <string name="settings_event_colors_off">Az eseményszínek szinkronizálásának elhagyása</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">A csoportok kezelésének módja</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>A csoportok különálló vCard objektumok</item>
+    <item>A csoportok névjegy-kategóriák</item>
+  </string-array>
   <string name="settings_contact_group_method_change">A csoportok kezelésének megváltoztatása</string>
   <!--collection management-->
   <string name="create_addressbook">Címjegyzék létrehozása</string>
@@ -207,6 +281,24 @@
   <string name="collection_properties_copy_url">URL másolása</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Hibakeresési információ</string>
+  <string name="debug_info_attached">Hibakeresési információ csatolása ehhez az üzenethez (ha a fogadó alkalmazás támogatja a csatolmányokat).</string>
+  <string name="debug_info_http_error">HTTP hiba</string>
+  <string name="debug_info_server_error">Szerverhiba</string>
+  <string name="debug_info_webdav_error">WebDav hiba</string>
+  <string name="debug_info_io_error">I/O hiba</string>
+  <string name="debug_info_http_403_description">A kérés megtagadva.  Ellenőrizze az érintett erőforrásokat és a hibakeresési információkat a további részletekért.</string>
+  <string name="debug_info_http_404_description">Az igényelt erőforrás nem létezik (már).  Ellenőrizze az érintett erőforrásokat és a hibakeresési információkat a további részletekért.</string>
+  <string name="debug_info_http_5xx_description">Szerveroldali hiba történt.  Vegye fel a kapcsolatot a szerver üzemeltetőjével.</string>
+  <string name="debug_info_unexpected_error">Váratlan hiba történt.  Hibakereséshez használja a hibakeresési információkat.</string>
+  <string name="debug_info_view_details">Részletek megtekintése</string>
+  <string name="debug_info_subtitle">A hibakeresési információ összegyűjtése befejeződött</string>
+  <string name="debug_info_involved_caption">Érintett erőforrások</string>
+  <string name="debug_info_involved_subtitle">A probléma kapcsán érintett erőforrások</string>
+  <string name="debug_info_involved_remote">Távoli erőforrás:</string>
+  <string name="debug_info_involved_local">Helyi erőforrás:</string>
+  <string name="debug_info_involved_view">Megtekintés alkalmazásban</string>
+  <string name="debug_info_logs_caption">Naplóbejegyzések</string>
+  <string name="debug_info_logs_subtitle">Rendelkezésre állnak részletes naplóbejegyzések </string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Hiba történt.</string>
   <string name="exception_httpexception">HTTP hiba történt.</string>
