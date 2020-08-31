@@ -490,6 +490,7 @@ class DebugInfoActivity: AppCompatActivity() {
             for (authority in arrayOf(
                     context.getString(R.string.address_books_authority),
                     CalendarContract.AUTHORITY,
+                    ContactsContract.AUTHORITY,     // Should never be set! Main accounts shall not contain contacts.
                     TaskProvider.ProviderName.OpenTasks.authority
             ))
                 table.addLine(
