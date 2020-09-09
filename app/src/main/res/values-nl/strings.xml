@@ -286,6 +286,19 @@
   <string name="debug_info_server_error">Serverfout</string>
   <string name="debug_info_webdav_error">Fout met WebDAV</string>
   <string name="debug_info_io_error">I/O-fout</string>
+  <string name="debug_info_http_403_description">Het verzoek is afgewezen. Controleer de betrokken bronnen en foutopsporingsinformatie voor details.</string>
+  <string name="debug_info_http_404_description">De gevraagde bron bestaat niet (meer). Controleer de betrokken bronnen en foutopsporingsinformatie voor details.</string>
+  <string name="debug_info_http_5xx_description">Er is een probleem met de server opgetreden. Neem contact op met uw serverondersteuning.</string>
+  <string name="debug_info_unexpected_error">Er is een onverwachte fout opgetreden. Bekijk foutopsporingsinformatie voor details.</string>
+  <string name="debug_info_view_details">Bekijk details</string>
+  <string name="debug_info_subtitle">Foutopsporingsinformatie is verzameld</string>
+  <string name="debug_info_involved_caption">Betrokken bronnen</string>
+  <string name="debug_info_involved_subtitle">Gerelateerd aan het probleem</string>
+  <string name="debug_info_involved_remote">Externe bron:</string>
+  <string name="debug_info_involved_local">Lokale bron:</string>
+  <string name="debug_info_involved_view">Bekijk met app</string>
+  <string name="debug_info_logs_caption">Logboeken</string>
+  <string name="debug_info_logs_subtitle">Uitgebreide logboeken zijn beschikbaar</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Er is een fout opgetreden.</string>
   <string name="exception_httpexception">Er is een HTTP fout opgetreden.</string>

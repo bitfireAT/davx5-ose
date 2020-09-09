@@ -281,10 +281,15 @@
   <string name="collection_properties_copy_url">Kopiere URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug-info</string>
+  <string name="debug_info_attached">Fejlsøge informationer vedhæftet denne meddelelse (kræver vedhæftning understøttelse hos modtagende program).</string>
   <string name="debug_info_http_error">HTTP fejl</string>
   <string name="debug_info_server_error">Server fejl</string>
   <string name="debug_info_webdav_error">WebDAV fejl</string>
   <string name="debug_info_io_error">Ind/ud fejl</string>
+  <string name="debug_info_http_403_description">Anmodning blev afvist. Tjek involverede ressourcer og fejlsøge oplysninger for detaljer.</string>
+  <string name="debug_info_http_404_description">Den ønskede ressource findes ikke. Kontrollere involverede ressourcer og fejlsøge oplysninger for detaljer.</string>
+  <string name="debug_info_http_5xx_description">Der opstod et problem på server siden. Kontakt server brugerhjælp.</string>
+  <string name="debug_info_unexpected_error">En uventet fejl er opstået. Se fejlsøge oplysninger for detaljer.</string>
   <string name="debug_info_view_details">Vis detaljer</string>
   <string name="debug_info_subtitle">Fejlsøgnings information er indsamlet</string>
   <string name="debug_info_involved_caption">Involveret ressourcer</string>
