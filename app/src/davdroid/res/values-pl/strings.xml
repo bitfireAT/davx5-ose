@@ -28,19 +28,19 @@
   <string name="intro_autostart_title">%s kompatybilność</string>
   <string name="intro_autostart_text">To urządzenie prawdopodobnie blokuje synchronizację. Jeśli ten problem Cię dotyczy, możesz go jedynie rozwiązać ręcznie.</string>
   <string name="intro_autostart_dont_show">Wprowadziłem potrzebne ustawienia. Nie przypominaj mi ponownie.*</string>
-  <string name="intro_leave_unchecked">* Pozostaw nie zaznaczone aby otrzymać przypomnienie później. Możesz to zresetować w ustawieniach aplikacji / %s. </string>
+  <string name="intro_leave_unchecked">* Pozostaw nie zaznaczone, aby otrzymać przypomnienie później. Możesz to zresetować w ustawieniach aplikacji/%s. </string>
   <string name="intro_more_info">Więcej informacji</string>
   <string name="intro_tasks_title">Obsługa zadań</string>
   <string name="intro_tasks_not_installed">Nie zainstalowane</string>
   <string name="intro_tasks_opentasks_installed">OpenTasks zainstalowane</string>
   <string name="intro_tasks_no_app_store">Sklep aplikacji nie jest dostępny</string>
   <string name="intro_tasks_text1"><![CDATA[Android nie ma wbudowanego wsparcia dla zadań. Jeśli zadania są obsługiiwane przez Twój serwer, %s może je synchronizować używając <a href="https://opentasks.app/">OpenTasks</a>.]]></string>
-  <string name="intro_tasks_text2">Dla zaawansowanych funkcji jak podzadania lub zadania powtarzalne będziesz potrzebował(a) dodatkowych aplikacji.</string>
+  <string name="intro_tasks_text2">Aby korzystać z zaawansowanych funkcji, takich jak podzadania lub zadania cykliczne, potrzebujesz dodatkowych aplikacji.</string>
   <string name="intro_tasks_dont_show">Nie potrzebuję obsługi zadań.*</string>
   <string name="intro_open_source_title">Oprogramowanie open-source</string>
-  <string name="intro_open_source_text">Jesteśmy szczęśliwi, że używasz %s,  który jest oprogramowaniem open-source. Rozwój, utrzymanie i wsparcie są ciężką pracą. Proszę rozważ wsparcie (jest na to wiele sposobów) lub dotację. Będziemy bardzo wdzięczni.</string>
+  <string name="intro_open_source_text">Cieszymy się, że używasz %s, czyli oprogramowania typu open-source. Rozwój, utrzymanie i wsparcie to ciężka praca. Prosimy o rozważenie wniesienia swojego wkładu (jest wiele sposobów) lub darowizny. Byłoby to bardzo cenne!</string>
   <string name="intro_open_source_details">Jak wspomóc/wesprzeć</string>
-  <string name="intro_open_source_dont_show">Nie pokazuj za kolejnym razem</string>
+  <string name="intro_open_source_dont_show">Nie pokazuj następnym razem</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Uprawnienia</string>
   <string name="permissions_text">%s wymaga uprawnień do prawidłowego działania</string>
@@ -76,7 +76,7 @@
   <string name="navigation_drawer_open">Otwórz menu nawigacji</string>
   <string name="navigation_drawer_close">Zamknij menu nawigacji</string>
   <string name="navigation_drawer_subtitle">Adapter synchronizacji CalDAV/CardDAV</string>
-  <string name="navigation_drawer_about">Informacje / Licencja</string>
+  <string name="navigation_drawer_about">Informacje/Licencja</string>
   <string name="navigation_drawer_beta_feedback">Przekaż opinię</string>
   <string name="install_email_client">Proszę zainstalować klienta poczty elektronicznej</string>
   <string name="install_browser">Proszę zainstalować przeglądarkę internetową</string>
@@ -86,7 +86,7 @@
   <string name="navigation_drawer_website">Strona WWW</string>
   <string name="navigation_drawer_manual">Podręcznik</string>
   <string name="navigation_drawer_faq">Często zadawane pytania</string>
-  <string name="navigation_drawer_forums">Pomoc / Fora</string>
+  <string name="navigation_drawer_forums">Pomoc/Fora</string>
   <string name="navigation_drawer_donate">Wesprzyj finansowo</string>
   <string name="navigation_drawer_privacy_policy">Polityka prywatności</string>
   <string name="account_list_no_internet">Brak połączenia z Internetem. Android nie wykona synchronizacji.</string>
@@ -187,7 +187,7 @@
   <string name="login_configuration_detection">Wykrywanie konfiguracji</string>
   <string name="login_querying_server">Proszę czekać, odpytywanie serwera…</string>
   <string name="login_no_caldav_carddav">Nie można znaleźć usługi CalDAV lub CardDAV.</string>
-  <string name="login_username_password_wrong">Błędna nazwa użytkownika (adres e-mail) / hasło?</string>
+  <string name="login_username_password_wrong">Błędna nazwa użytkownika (adres e-mail)/hasło?</string>
   <string name="login_view_logs">Pokaż szczegóły</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Ustawienia: %s</string>
@@ -264,7 +264,7 @@
   <string name="create_calendar_type">Możliwe wpisy kalendarza</string>
   <string name="create_calendar_type_vevent">Wydarzenia</string>
   <string name="create_calendar_type_vtodo">Zadania</string>
-  <string name="create_calendar_type_vjournal">Notatki / dziennik</string>
+  <string name="create_calendar_type_vjournal">Notatki/dziennik</string>
   <string name="create_calendar_type_events_and_tasks">Połączone (wydarzenia i zadania)</string>
   <string name="create_collection_color">Kolor</string>
   <string name="create_collection_creating">Tworzenie kolekcji</string>
