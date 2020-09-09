@@ -1,0 +1,1 @@
+Fix for Google Contacts / Android 11: export address book authenticator so that address books are shown in Google Contacts again
