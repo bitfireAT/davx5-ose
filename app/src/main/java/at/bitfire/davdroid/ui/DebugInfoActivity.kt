@@ -268,10 +268,10 @@ class DebugInfoActivity: AppCompatActivity() {
                     cause.request?.let { request ->
                         writer.append("HTTP REQUEST\n$request\n")
                         cause.requestBody?.let { writer.append(it) }
-                        writer.append("\n")
+                        writer.append("\n\n")
                     }
                     cause.response?.let { response ->
-                        writer.append("HTTP RESPONSE$response\n")
+                        writer.append("HTTP RESPONSE\n$response\n")
                         cause.responseBody?.let { writer.append(it) }
                         writer.append("\n")
                     }
