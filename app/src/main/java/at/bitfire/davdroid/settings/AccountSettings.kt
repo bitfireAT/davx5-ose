@@ -456,7 +456,7 @@ class AccountSettings(
     @Suppress("unused")
     private fun update_4_5() {
         // call PackageChangedReceiver which then enables/disables OpenTasks sync when it's (not) available
-        OpenTasksWatcher.updateTaskSync(context)
+        TasksWatcher.updateTaskSync(context)
     }
 
     @Suppress("unused")

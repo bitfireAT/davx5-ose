@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.TasksActivity">
 
     <data>
         <import type="android.view.View"/>
-        <variable name="model" type="at.bitfire.davdroid.ui.intro.OpenTasksFragment.Model"/>
+        <variable name="model" type="at.bitfire.davdroid.ui.TasksFragment.Model"/>
     </data>
 
     <ScrollView
+        android:id="@+id/frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/appintro2_bottombar_height"
         android:background="?android:attr/colorBackground">
 
         <LinearLayout
@@ -60,73 +62,99 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/card_margin_title_text"
                         app:layout_constraintTop_toBottomOf="@id/image"
-                        app:layout_constraintBottom_toTopOf="@id/status"
+                        app:layout_constraintBottom_toTopOf="@id/text1"
                         app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintEnd_toStartOf="@id/install"
+                        app:layout_constraintEnd_toStartOf="@id/end"
                         style="@style/TextAppearance.MaterialComponents.Headline6"
                         android:text="@string/intro_tasks_title" />
-                    <TextView
-                        android:id="@+id/status"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/heading"
-                        app:layout_constraintBottom_toTopOf="@id/text1"
-                        app:layout_constraintStart_toStartOf="@id/heading"
-                        app:layout_constraintEnd_toEndOf="@id/heading"
-                        style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                        android:text="@{model.isInstalled() ? @string/intro_tasks_opentasks_installed : @string/intro_tasks_not_installed}" />
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/install"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:clickable="@{!model.isInstalled()}"
-                        android:checked="@={model.shallBeInstalled}"
-                        app:layout_constraintTop_toTopOf="@id/heading"
-                        app:layout_constraintBottom_toBottomOf="@id/status"
-                        app:layout_constraintEnd_toEndOf="@id/end"/>
 
                     <TextView
                         android:id="@+id/text1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/card_margin_title_text"
-                        app:layout_constraintTop_toBottomOf="@id/status"
-                        app:layout_constraintBottom_toTopOf="@id/dontShow"
+                        app:layout_constraintTop_toBottomOf="@id/heading"
+                        app:layout_constraintBottom_toTopOf="@id/openTasksRadio"
                         app:layout_constraintStart_toStartOf="@id/start"
                         app:layout_constraintEnd_toEndOf="@id/end"
                         style="@style/TextAppearance.MaterialComponents.Body1"
                         android:text="@string/intro_tasks_text1"/>
 
-                    <TextView
-                        android:id="@+id/text2"
+                    <RadioButton
+                        android:id="@+id/openTasksRadio"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/card_margin_title_text"
                         app:layout_constraintTop_toBottomOf="@id/text1"
-                        app:layout_constraintBottom_toTopOf="@id/moreInfo"
+                        app:layout_constraintBottom_toTopOf="@id/tasksOrgRadio"
                         app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintEnd_toEndOf="@id/end"
+                        app:layout_constraintEnd_toStartOf="@id/openTasksSwitch"
                         style="@style/TextAppearance.MaterialComponents.Body1"
-                        android:text="@string/intro_tasks_text2"/>
-
-                    <Button
-                        android:id="@+id/moreInfo"
+                        android:clickable="@{model.openTasksInstalled}"
+                        android:checked="@={model.openTasksSelected}"
+                        android:text="@string/intro_tasks_opentasks"/>
+                    <TextView
+                        android:id="@+id/openTasksInfo"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/openTasksRadio"
+                        app:layout_constraintBottom_toTopOf="@id/tasksOrgRadio"
+                        app:layout_constraintStart_toStartOf="@id/start"
+                        app:layout_constraintEnd_toStartOf="@id/end"
+                        style="@style/TextAppearance.MaterialComponents.Body2"
+                        app:html="@{@string/intro_tasks_opentasks_info}"/>
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/openTasksSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:checked="@={model.openTasksRequested}"
+                        android:clickable="@{!model.openTasksInstalled}"
+                        app:layout_constraintTop_toTopOf="@id/openTasksRadio"
+                        app:layout_constraintBottom_toBottomOf="@id/openTasksRadio"
+                        app:layout_constraintStart_toEndOf="@id/openTasksRadio"
+                        app:layout_constraintEnd_toEndOf="@id/end"/>
+
+                    <RadioButton
+                        android:id="@+id/tasksOrgRadio"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/card_margin_title_text"
-                        app:layout_constraintTop_toBottomOf="@id/text2"
+                        app:layout_constraintTop_toBottomOf="@id/openTasksInfo"
+                        app:layout_constraintBottom_toTopOf="@id/tasksOrgInfo"
+                        app:layout_constraintStart_toStartOf="@id/start"
+                        app:layout_constraintEnd_toStartOf="@id/tasksOrgSwitch"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
+                        android:clickable="@{model.tasksOrgInstalled}"
+                        android:checked="@={model.tasksOrgSelected}"
+                        android:text="@string/intro_tasks_tasks_org"/>
+                    <TextView
+                        android:id="@+id/tasksOrgInfo"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/tasksOrgRadio"
                         app:layout_constraintBottom_toTopOf="@id/dontShow"
                         app:layout_constraintStart_toStartOf="@id/start"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:text="@string/intro_more_info"/>
+                        app:layout_constraintEnd_toStartOf="@id/end"
+                        style="@style/TextAppearance.MaterialComponents.Body2"
+                        app:html="@{@string/intro_tasks_tasks_org_info}" />
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/tasksOrgSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="@={model.tasksOrgRequested}"
+                        android:clickable="@{!model.tasksOrgInstalled}"
+                        app:layout_constraintTop_toTopOf="@id/tasksOrgRadio"
+                        app:layout_constraintBottom_toBottomOf="@id/tasksOrgRadio"
+                        app:layout_constraintStart_toEndOf="@id/tasksOrgRadio"
+                        app:layout_constraintEnd_toEndOf="@id/end"/>
 
                     <CheckBox
                         android:id="@+id/dontShow"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/card_margin_title_text"
-                        android:visibility="@{model.isInstalled ? View.GONE : View.VISIBLE}"
-                        app:layout_constraintTop_toBottomOf="@id/moreInfo"
+                        android:visibility="@{model.openTasksInstalled ? View.GONE : View.VISIBLE}"
+                        app:layout_constraintTop_toBottomOf="@id/tasksOrgInfo"
                         app:layout_constraintStart_toStartOf="@id/start"
                         app:layout_constraintEnd_toEndOf="@id/end"
                         android:checked="@={model.dontShow}"

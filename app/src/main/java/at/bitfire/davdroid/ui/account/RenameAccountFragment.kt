@@ -170,7 +170,7 @@ class RenameAccountFragment: DialogFragment() {
 
             // update account_name of local tasks
             try {
-                LocalTaskList.onRenameAccount(context.contentResolver, oldAccount.name, newName)
+                LocalTaskList.onRenameAccount(context, oldAccount.name, newName)
             } catch (e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't propagate new account name to tasks provider", e)
             }

@@ -16,12 +16,12 @@ import androidx.lifecycle.Observer
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.PermissionUtils.CALENDAR_PERMISSIONS
-import at.bitfire.davdroid.PermissionUtils.CONTACT_PERMSSIONS
-import at.bitfire.davdroid.PermissionUtils.TASKS_PERMISSIONS
+import at.bitfire.davdroid.PermissionUtils.CONTACT_PERMISSIONS
 import at.bitfire.davdroid.PermissionUtils.havePermissions
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityPermissionsBinding
-import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.ical4android.TaskProvider
+import at.bitfire.ical4android.TaskProvider.ProviderName
 
 class PermissionsFragment: Fragment() {
 
@@ -37,20 +37,25 @@ class PermissionsFragment: Fragment() {
 
         model.needContactsPermissions.observe(viewLifecycleOwner, Observer { needContacts ->
             if (needContacts && model.haveContactsPermissions.value == false)
-                requestPermissions(CONTACT_PERMSSIONS, 0)
+                requestPermissions(CONTACT_PERMISSIONS, 0)
         })
         model.needCalendarPermissions.observe(viewLifecycleOwner, Observer { needCalendars ->
             if (needCalendars && model.haveCalendarPermissions.value == false)
                 requestPermissions(CALENDAR_PERMISSIONS, 0)
         })
-        model.needTasksPermissions.observe(viewLifecycleOwner, Observer { needTasks ->
-            if (needTasks == true && model.haveTasksPermissions.value == false)
-                requestPermissions(TASKS_PERMISSIONS, 0)
+        model.needOpenTasksPermissions.observe(viewLifecycleOwner, Observer { needOpenTasks ->
+            if (needOpenTasks == true && model.haveOpenTasksPermissions.value == false)
+                requestPermissions(TaskProvider.PERMISSIONS_OPENTASKS, 0)
+        })
+        model.needTasksOrgPermissions.observe(viewLifecycleOwner, Observer { needTasksOrg ->
+            if (needTasksOrg == true && model.haveTasksOrgPermissions.value == false)
+                requestPermissions(TaskProvider.PERMISSIONS_TASKS_ORG, 0)
         })
         model.needAllPermissions.observe(viewLifecycleOwner, Observer { needAll ->
             if (needAll && model.haveAllPermissions.value == false) {
-                val all = CONTACT_PERMSSIONS + CALENDAR_PERMISSIONS +
-                    if (model.haveTasksPermissions.value != null) TASKS_PERMISSIONS else emptyArray()
+                val all = CONTACT_PERMISSIONS + CALENDAR_PERMISSIONS +
+                    if (model.haveOpenTasksPermissions.value != null) TaskProvider.PERMISSIONS_OPENTASKS else emptyArray<String>() +
+                    if (model.haveTasksOrgPermissions.value != null) TaskProvider.PERMISSIONS_TASKS_ORG else emptyArray<String>()
                 requestPermissions(all, 0)
             }
         })
@@ -83,8 +88,10 @@ class PermissionsFragment: Fragment() {
         val haveCalendarPermissions = MutableLiveData<Boolean>()
         val needCalendarPermissions = MutableLiveData<Boolean>()
 
-        val haveTasksPermissions = MutableLiveData<Boolean>()
-        val needTasksPermissions = MutableLiveData<Boolean>()
+        val haveOpenTasksPermissions = MutableLiveData<Boolean>()
+        val needOpenTasksPermissions = MutableLiveData<Boolean>()
+        val haveTasksOrgPermissions = MutableLiveData<Boolean>()
+        val needTasksOrgPermissions = MutableLiveData<Boolean>()
         val tasksWatcher = object: PackageChangedReceiver(app) {
             override fun onReceive(context: Context?, intent: Intent?) {
                 checkPermissions()
@@ -103,7 +110,7 @@ class PermissionsFragment: Fragment() {
         }
 
         fun checkPermissions() {
-            val contactPermissions = havePermissions(getApplication(), CONTACT_PERMSSIONS)
+            val contactPermissions = havePermissions(getApplication(), CONTACT_PERMISSIONS)
             haveContactsPermissions.value = contactPermissions
             needContactsPermissions.value = contactPermissions
 
@@ -111,18 +118,34 @@ class PermissionsFragment: Fragment() {
             haveCalendarPermissions.value = calendarPermissions
             needCalendarPermissions.value = calendarPermissions
 
-            val tasksAvailable = LocalTaskList.tasksProviderAvailable(getApplication())
-            var tasksPermissions: Boolean? = null
-            if (tasksAvailable) {
-                tasksPermissions = havePermissions(getApplication(), TASKS_PERMISSIONS)
-                haveTasksPermissions.value = tasksPermissions
-                needTasksPermissions.value = tasksPermissions
+            val pm = getApplication<Application>().packageManager
+            // OpenTasks
+            val openTasksAvailable = pm.resolveContentProvider(ProviderName.OpenTasks.authority, 0) != null
+            var openTasksPermissions: Boolean? = null
+            if (openTasksAvailable) {
+                openTasksPermissions = havePermissions(getApplication(), TaskProvider.PERMISSIONS_OPENTASKS)
+                haveOpenTasksPermissions.value = openTasksPermissions
+                needOpenTasksPermissions.value = openTasksPermissions
             } else {
-                haveTasksPermissions.value = null
-                needTasksPermissions.value = null
+                haveOpenTasksPermissions.value = null
+                needOpenTasksPermissions.value = null
+            }
+            // tasks.org
+            val tasksOrgAvailable = pm.resolveContentProvider(ProviderName.TasksOrg.authority, 0) != null
+            var tasksOrgPermissions: Boolean? = null
+            if (tasksOrgAvailable) {
+                tasksOrgPermissions = havePermissions(getApplication(), TaskProvider.PERMISSIONS_TASKS_ORG)
+                haveTasksOrgPermissions.value = tasksOrgPermissions
+                needTasksOrgPermissions.value = tasksOrgPermissions
+            } else {
+                haveOpenTasksPermissions.value = null
+                needOpenTasksPermissions.value = null
             }
 
-            val allPermissions = contactPermissions && calendarPermissions && (!tasksAvailable || tasksPermissions == true)
+            val allPermissions = contactPermissions &&
+                    calendarPermissions &&
+                    (!openTasksAvailable || openTasksPermissions == true) &&
+                    (!tasksOrgAvailable || tasksOrgPermissions == true)
             haveAllPermissions.value = allPermissions
             needAllPermissions.value = allPermissions
         }

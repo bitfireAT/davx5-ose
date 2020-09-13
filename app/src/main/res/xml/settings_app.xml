@@ -89,4 +89,14 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/app_settings_integration">
+
+        <Preference
+            android:key="preferred_tasks_provider"
+            android:icon="@drawable/ic_playlist_add_check_dark"
+            android:title="@string/app_settings_tasks_provider"
+            android:summary="@string/app_settings_tasks_provider_synchronizing_with" />
+
+    </PreferenceCategory>
+
 </androidx.preference.PreferenceScreen>

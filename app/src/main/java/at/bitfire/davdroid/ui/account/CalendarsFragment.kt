@@ -6,8 +6,9 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.Collection
-import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.ui.CreateCalendarActivity
+import at.bitfire.ical4android.TaskProvider
 import kotlinx.android.synthetic.main.account_caldav_item.view.*
 import kotlinx.android.synthetic.main.account_collections.*
 
@@ -35,8 +36,9 @@ class CalendarsFragment: CollectionsFragment() {
 
     override fun checkPermissions() {
         val calendarPermissions = PermissionUtils.havePermissions(requireActivity(), PermissionUtils.CALENDAR_PERMISSIONS)
-        val tasksPermissions = !LocalTaskList.tasksProviderAvailable(requireActivity()) ||
-                PermissionUtils.havePermissions(requireActivity(), PermissionUtils.TASKS_PERMISSIONS)
+        val taskProvider = TaskUtils.currentProvider(requireActivity())
+        val tasksPermissions = taskProvider == null ||                                         // no task provider OR
+                PermissionUtils.havePermissions(requireActivity(), taskProvider.permissions)   // task permissions granted
         if (calendarPermissions && tasksPermissions)
             permissionsCard.visibility = View.GONE
         else {

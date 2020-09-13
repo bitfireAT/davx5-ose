@@ -34,7 +34,7 @@ import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.model.HomeSet
 import at.bitfire.davdroid.model.Service
-import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.ical4android.TaskProvider
@@ -195,10 +195,11 @@ class AccountDetailsFragment: Fragment() {
                         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
                         accountSettings.setSyncInterval(CalendarContract.AUTHORITY, Constants.DEFAULT_SYNC_INTERVAL)
 
-                        if (LocalTaskList.tasksProviderAvailable(context)) {
-                            ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 1)
-                            accountSettings.setSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, Constants.DEFAULT_SYNC_INTERVAL)
-                            // further changes will be handled by OpenTasksWatcher on app start or when OpenTasks is (un)installed
+                        val taskProvider = TaskUtils.currentProvider(context)
+                        if (taskProvider != null) {
+                            ContentResolver.setIsSyncable(account, taskProvider.authority, 1)
+                            accountSettings.setSyncInterval(taskProvider.authority, Constants.DEFAULT_SYNC_INTERVAL)
+                            // further changes will be handled by TasksWatcher on app start or when tasks app is (un)installed
                         }
                     }
 

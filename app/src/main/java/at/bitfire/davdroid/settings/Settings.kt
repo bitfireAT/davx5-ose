@@ -8,4 +8,6 @@ object Settings {
     const val OVERRIDE_PROXY_HOST = "override_proxy_host"
     const val OVERRIDE_PROXY_PORT = "override_proxy_port"
 
+    const val PREFERRED_TASKS_PROVIDER = "preferred_tasks_provider"
+
 }

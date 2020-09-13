@@ -69,10 +69,10 @@ class App: Application(), Thread.UncaughtExceptionHandler {
             UiUtils.updateShortcuts(this@App)
 
             // watch installed/removed apps
-            OpenTasksWatcher(this@App)
+            TasksWatcher(this@App)
 
             // check whether a tasks app is currently installed
-            OpenTasksWatcher.updateTaskSync(this@App)
+            TasksWatcher.updateTaskSync(this@App)
         }
     }
 

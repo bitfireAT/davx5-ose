@@ -118,6 +118,10 @@
             android:name=".ui.PermissionsActivity"
             android:label="@string/app_settings_security_app_permissions"
             android:parentActivityName=".ui.AppSettingsActivity" />
+        <activity
+            android:name=".ui.TasksActivity"
+            android:label="@string/intro_tasks_title"
+            android:parentActivityName=".ui.AppSettingsActivity" />
 
         <!-- account type "DAVx⁵" -->
         <service
@@ -126,7 +130,6 @@
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator"/>
             </intent-filter>
-
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/account_authenticator"/>
@@ -138,22 +141,31 @@
             <intent-filter>
                 <action android:name="android.content.SyncAdapter"/>
             </intent-filter>
-
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/sync_calendars"/>
         </service>
         <service
-            android:name=".syncadapter.TasksSyncAdapterService"
+            android:name=".syncadapter.OpenTasksSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter"/>
             </intent-filter>
-
             <meta-data
                 android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_tasks"/>
+                android:resource="@xml/sync_opentasks"/>
+        </service>
+        <service
+            android:name=".syncadapter.TasksOrgSyncAdapterService"
+            android:exported="true"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_tasks_org"/>
         </service>
 
         <!-- account type "DAVx⁵ Address book" -->

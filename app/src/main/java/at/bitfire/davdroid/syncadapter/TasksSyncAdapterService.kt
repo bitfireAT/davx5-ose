@@ -36,7 +36,7 @@ import java.util.logging.Level
 /**
  * Synchronization manager for CalDAV collections; handles tasks ({@code VTODO}).
  */
-class TasksSyncAdapterService: SyncAdapterService() {
+open class TasksSyncAdapterService: SyncAdapterService() {
 
     override fun syncAdapter() = TasksSyncAdapter(this)
 
@@ -47,11 +47,12 @@ class TasksSyncAdapterService: SyncAdapterService() {
 
         override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
-                val taskProvider = TaskProvider.fromProviderClient(context, provider)
+                val providerName = TaskProvider.ProviderName.fromAuthority(authority)
+                val taskProvider = TaskProvider.fromProviderClient(context, providerName, provider)
 
-                // make sure account can be seen by OpenTasks
+                // make sure account can be seen by task provider
                 if (Build.VERSION.SDK_INT >= 26)
-                    AccountManager.get(context).setAccountVisibility(account, taskProvider.name.packageName, AccountManager.VISIBILITY_VISIBLE)
+                    AccountManager.get(context).setAccountVisibility(account, providerName.packageName, AccountManager.VISIBILITY_VISIBLE)
 
                 val accountSettings = AccountSettings(context, account)
                 /* don't run sync if
@@ -75,24 +76,28 @@ class TasksSyncAdapterService: SyncAdapterService() {
                 }
             } catch (e: TaskProvider.ProviderTooOldException) {
                 val nm = NotificationManagerCompat.from(context)
-                val message = context.getString(R.string.sync_error_opentasks_required_version, e.provider.minVersionName, e.installedVersionName)
+                val message = context.getString(R.string.sync_error_tasks_required_version, e.provider.minVersionName)
+
+                val pm = context.packageManager
+                val tasksAppInfo = pm.getPackageInfo(e.provider.packageName, 0)
+                val tasksAppLabel = tasksAppInfo.applicationInfo.loadLabel(pm)
+
                 val notify = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_SYNC_ERRORS)
                         .setSmallIcon(R.drawable.ic_sync_problem_notify)
-                        .setContentTitle(context.getString(R.string.sync_error_opentasks_too_old))
+                        .setContentTitle(context.getString(R.string.sync_error_tasks_too_old, tasksAppLabel))
                         .setContentText(message)
-                        .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+                        .setSubText("${tasksAppLabel} ${e.installedVersionName}")
                         .setCategory(NotificationCompat.CATEGORY_ERROR)
 
                 try {
-                    val icon = context.packageManager.getApplicationIcon(e.provider.packageName)
+                    val icon = pm.getApplicationIcon(e.provider.packageName)
                     if (icon is BitmapDrawable)
                         notify.setLargeIcon(icon.bitmap)
                 } catch(ignored: PackageManager.NameNotFoundException) {}
 
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${e.provider.packageName}"))
-                if (intent.resolveActivity(context.packageManager) != null)
-                    notify  .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
-                            .setAutoCancel(true)
+                if (intent.resolveActivity(pm) != null)
+                    notify.setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
 
                 nm.notify(NotificationUtils.NOTIFY_OPENTASKS, notify.build())
                 syncResult.databaseError = true

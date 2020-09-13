@@ -21,6 +21,7 @@ import androidx.core.content.getSystemService
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.ical4android.TaskProvider
 import okhttp3.HttpUrl
 import org.xbill.DNS.*
@@ -195,8 +196,9 @@ object DavUtils {
                 CalendarContract.AUTHORITY
         )
 
-        if (LocalTaskList.tasksProviderAvailable(context))
-            result += TaskProvider.ProviderName.OpenTasks.authority
+        TaskUtils.currentProvider(context)?.let { taskProvider ->
+            result += taskProvider.authority
+        }
 
         return result
     }

@@ -9,6 +9,7 @@
 package at.bitfire.davdroid.ui
 
 import android.content.Intent
+import android.graphics.drawable.InsetDrawable
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.UiThread
@@ -20,18 +21,19 @@ import androidx.preference.SwitchPreferenceCompat
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment
 import at.bitfire.davdroid.ui.intro.OpenSourceFragment
-import at.bitfire.davdroid.ui.intro.OpenTasksFragment
+import at.bitfire.ical4android.TaskProvider
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.URI
 import java.net.URISyntaxException
+import kotlin.math.roundToInt
 
 class AppSettingsActivity: AppCompatActivity() {
 
@@ -154,6 +156,28 @@ class AppSettingsActivity: AppCompatActivity() {
             // security settings
             findPreference<SwitchPreferenceCompat>(Settings.DISTRUST_SYSTEM_CERTIFICATES)!!
                     .isChecked = settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES)
+
+            // integration settings
+            findPreference<Preference>(Settings.PREFERRED_TASKS_PROVIDER)!!.apply {
+                val pm = context.packageManager
+                val taskProvider = TaskUtils.currentProvider(context)
+                if (taskProvider != null) {
+                    val tasksAppInfo = pm.getApplicationInfo(taskProvider.packageName, 0)
+                    val inset = (24*resources.displayMetrics.density).roundToInt()  // 24dp
+                    icon = InsetDrawable(
+                            tasksAppInfo.loadIcon(pm),
+                            0, inset, inset, inset
+                    )
+                    summary = getString(R.string.app_settings_tasks_provider_synchronizing_with, tasksAppInfo.loadLabel(pm))
+                } else {
+                    setIcon(R.drawable.ic_playlist_add_check_dark)
+                    setSummary(R.string.app_settings_tasks_provider_none)
+                }
+                setOnPreferenceClickListener {
+                    startActivity(Intent(requireActivity(), TasksActivity::class.java))
+                    false
+                }
+            }
         }
 
         override fun onSettingsChanged() {
@@ -168,7 +192,7 @@ class AppSettingsActivity: AppCompatActivity() {
             val settings = SettingsManager.getInstance(requireActivity())
             settings.remove(BatteryOptimizationsFragment.Model.HINT_BATTERY_OPTIMIZATIONS)
             settings.remove(BatteryOptimizationsFragment.Model.HINT_AUTOSTART_PERMISSION)
-            settings.remove(OpenTasksFragment.Model.HINT_OPENTASKS_NOT_INSTALLED)
+            settings.remove(TasksFragment.Model.HINT_OPENTASKS_NOT_INSTALLED)
             settings.remove(OpenSourceFragment.Model.SETTING_NEXT_DONATION_POPUP)
             Snackbar.make(requireView(), R.string.app_settings_reset_hints_success, Snackbar.LENGTH_LONG).show()
         }

@@ -31,7 +31,7 @@ class AddressBooksFragment: CollectionsFragment() {
     }
 
     override fun checkPermissions() {
-        if (PermissionUtils.havePermissions(requireActivity(), PermissionUtils.CONTACT_PERMSSIONS))
+        if (PermissionUtils.havePermissions(requireActivity(), PermissionUtils.CONTACT_PERMISSIONS))
             permissionsCard.visibility = View.GONE
         else {
             permissionsText.setText(R.string.account_carddav_missing_permissions)

@@ -23,7 +23,6 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.provider.CalendarContract
 import android.provider.ContactsContract
-import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -289,8 +288,9 @@ class DebugInfoActivity: AppCompatActivity() {
                     val table = TextTable("Package", "Version", "Code", "Installer", "Notes")
                     val pm = context.packageManager
                     val appIDs = mutableSetOf(      // we always want info about these packages
-                            BuildConfig.APPLICATION_ID,                     // DAVx5
-                            "org.dmfs.tasks"                                // OpenTasks
+                            BuildConfig.APPLICATION_ID,                         // DAVx5
+                            TaskProvider.ProviderName.OpenTasks.packageName,    // OpenTasks
+                            TaskProvider.ProviderName.TasksOrg.packageName      // tasks.org
                     )
                     // add info about contact, calendar, task provider
                     for (authority in arrayOf(ContactsContract.AUTHORITY, CalendarContract.AUTHORITY, TaskProvider.ProviderName.OpenTasks.authority))
@@ -390,7 +390,8 @@ class DebugInfoActivity: AppCompatActivity() {
                 writer.append("Permissions:\n")
                 for (permission in arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS,
                         Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR,
-                        TaskProvider.PERMISSION_READ_TASKS, TaskProvider.PERMISSION_WRITE_TASKS,
+                        TaskProvider.PERMISSION_OPENTASKS_READ, TaskProvider.PERMISSION_OPENTASKS_WRITE,
+                        TaskProvider.PERMISSION_TASKS_ORG_READ, TaskProvider.PERMISSION_TASKS_ORG_WRITE,
                         Manifest.permission.ACCESS_COARSE_LOCATION)) {
                     val shortPermission = permission.replace(Regex("^.+\\.permission\\."), "")
                     writer  .append(" - $shortPermission: ")

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View"/>
         <variable name="model" type="at.bitfire.davdroid.ui.PermissionsFragment.Model"/>
     </data>
 
@@ -152,7 +153,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         app:layout_constraintTop_toBottomOf="@id/calendarHeading"
-                        app:layout_constraintBottom_toTopOf="@id/tasksHeading"
                         app:layout_constraintStart_toEndOf="@id/start"
                         app:layout_constraintEnd_toStartOf="@id/calendarSwitch"
                         style="@style/TextAppearance.MaterialComponents.Body2"
@@ -168,41 +168,76 @@
                         android:checked="@={model.needCalendarPermissions}" />
 
                     <TextView
-                        android:id="@+id/tasksHeading"
+                        android:id="@+id/openTasksHeading"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/card_margin_title_text"
                         app:layout_constraintTop_toBottomOf="@id/calendarStatus"
-                        app:layout_constraintBottom_toTopOf="@id/tasksStatus"
+                        app:layout_constraintBottom_toTopOf="@id/openTasksStatus"
                         app:layout_constraintStart_toEndOf="@id/start"
-                        app:layout_constraintEnd_toStartOf="@id/tasksSwitch"
+                        app:layout_constraintEnd_toStartOf="@id/openTasksSwitch"
+                        android:visibility="@{model.haveOpenTasksPermissions != null ? View.VISIBLE : View.GONE}"
                         style="@style/TextAppearance.MaterialComponents.Body1"
-                        android:text="@string/permissions_tasks_title" />
+                        android:text="@string/permissions_opentasks_title" />
                     <TextView
-                        android:id="@+id/tasksStatus"
+                        android:id="@+id/openTasksStatus"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/tasksHeading"
+                        app:layout_constraintTop_toBottomOf="@id/openTasksHeading"
                         app:layout_constraintStart_toEndOf="@id/start"
-                        app:layout_constraintEnd_toStartOf="@id/tasksSwitch"
+                        app:layout_constraintEnd_toStartOf="@id/openTasksSwitch"
+                        android:visibility="@{model.haveOpenTasksPermissions != null ? View.VISIBLE : View.GONE}"
                         style="@style/TextAppearance.MaterialComponents.Body2"
-                        android:text="@{model.haveTasksPermissions != null ? (model.haveTasksPermissions ? @string/permissions_tasks_status_on : @string/permissions_tasks_status_off) : @string/permissions_tasks_status_not_installed}" />
+                        android:text="@{model.haveOpenTasksPermissions != null ? (model.haveOpenTasksPermissions ? @string/permissions_tasks_status_on : @string/permissions_tasks_status_off) : @string/permissions_tasks_status_not_installed}" />
                     <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/tasksSwitch"
+                        android:id="@+id/openTasksSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        app:layout_constraintTop_toTopOf="@id/tasksHeading"
-                        app:layout_constraintBottom_toBottomOf="@id/tasksStatus"
+                        app:layout_constraintTop_toTopOf="@id/openTasksHeading"
+                        app:layout_constraintBottom_toBottomOf="@id/openTasksStatus"
                         app:layout_constraintEnd_toStartOf="@id/end"
-                        android:enabled="@{model.haveTasksPermissions != null}"
-                        android:clickable="@{!model.haveTasksPermissions}"
-                        android:checked="@={model.needTasksPermissions}" />
+                        android:visibility="@{model.haveOpenTasksPermissions != null ? View.VISIBLE : View.GONE}"
+                        android:clickable="@{!model.haveOpenTasksPermissions}"
+                        android:checked="@={model.needOpenTasksPermissions}" />
+
+                    <TextView
+                        android:id="@+id/tasksOrgHeading"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/card_margin_title_text"
+                        app:layout_constraintTop_toBottomOf="@id/openTasksStatus"
+                        app:layout_constraintBottom_toTopOf="@id/tasksOrgStatus"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        app:layout_constraintEnd_toStartOf="@id/tasksOrgSwitch"
+                        android:visibility="@{model.haveTasksOrgPermissions != null ? View.VISIBLE : View.GONE}"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
+                        android:text="@string/permissions_tasksorg_title" />
+                    <TextView
+                        android:id="@+id/tasksOrgStatus"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/tasksOrgHeading"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        app:layout_constraintEnd_toStartOf="@id/tasksOrgSwitch"
+                        android:visibility="@{model.haveTasksOrgPermissions != null ? View.VISIBLE : View.GONE}"
+                        style="@style/TextAppearance.MaterialComponents.Body2"
+                        android:text="@{model.haveTasksOrgPermissions != null ? (model.haveTasksOrgPermissions ? @string/permissions_tasks_status_on : @string/permissions_tasks_status_off) : @string/permissions_tasks_status_not_installed}" />
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/tasksOrgSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        app:layout_constraintTop_toTopOf="@id/tasksOrgHeading"
+                        app:layout_constraintBottom_toBottomOf="@id/tasksOrgStatus"
+                        app:layout_constraintEnd_toStartOf="@id/end"
+                        android:visibility="@{model.haveTasksOrgPermissions != null ? View.VISIBLE : View.GONE}"
+                        android:clickable="@{!model.haveTasksOrgPermissions}"
+                        android:checked="@={model.needTasksOrgPermissions}" />
 
                     <TextView
                         android:id="@+id/appSettingsHint"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/tasksSwitch"
+                        app:layout_constraintTop_toBottomOf="@id/tasksOrgSwitch"
                         app:layout_constraintStart_toStartOf="@id/start"
                         app:layout_constraintEnd_toEndOf="@id/end"
                         android:layout_marginTop="24dp"

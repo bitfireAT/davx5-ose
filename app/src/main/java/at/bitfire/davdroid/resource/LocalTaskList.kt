@@ -10,15 +10,11 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.annotation.SuppressLint
-import android.content.ContentProviderClient
-import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.DavUtils
-import at.bitfire.davdroid.closeCompat
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.SyncState
@@ -37,21 +33,6 @@ class LocalTaskList private constructor(
 
     companion object {
 
-        // TODO move to TaskProvider class
-        fun tasksProviderAvailable(context: Context): Boolean {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                return context.packageManager.resolveContentProvider(TaskProvider.ProviderName.OpenTasks.authority, 0) != null
-            else
-                try {
-                    TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)?.use {
-                        return true
-                    }
-                } catch (e: Exception) {
-                    // couldn't acquire task provider
-                }
-                return false
-        }
-
         fun create(account: Account, provider: TaskProvider, info: Collection): Uri {
             val values = valuesFromCollectionInfo(info, true)
             values.put(TaskLists.OWNER, account.name)
@@ -62,17 +43,15 @@ class LocalTaskList private constructor(
 
         @SuppressLint("Recycle")
         @Throws(Exception::class)
-        fun onRenameAccount(resolver: ContentResolver, oldName: String, newName: String) {
-            var client: ContentProviderClient? = null
-            try {
-                client = resolver.acquireContentProviderClient(TaskProvider.ProviderName.OpenTasks.authority)
-                client?.use {
-                    val values = ContentValues(1)
-                    values.put(Tasks.ACCOUNT_NAME, newName)
-                    it.update(Tasks.getContentUri(TaskProvider.ProviderName.OpenTasks.authority), values, "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldName))
-                }
-            } finally {
-                client?.closeCompat()
+        fun onRenameAccount(context: Context, oldName: String, newName: String) {
+            TaskProvider.acquire(context)?.use { provider ->
+                val values = ContentValues(1)
+                values.put(Tasks.ACCOUNT_NAME, newName)
+                provider.client.update(
+                        Tasks.getContentUri(provider.name.authority),
+                        values,
+                        "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldName)
+                )
             }
         }
 

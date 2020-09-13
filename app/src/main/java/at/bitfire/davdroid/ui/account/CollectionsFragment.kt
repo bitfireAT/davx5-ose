@@ -28,6 +28,7 @@ import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.ui.DeleteCollectionFragment
 import at.bitfire.ical4android.TaskProvider
 import kotlinx.android.synthetic.main.account_collections.*
@@ -306,8 +307,8 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
                 isSyncPending.postValue(mainSyncPending || syncPending)
             } else {
                 val authorities = mutableListOf(CalendarContract.AUTHORITY)
-                if (LocalTaskList.tasksProviderAvailable(context))
-                    authorities += TaskProvider.ProviderName.OpenTasks.authority
+                if (TaskUtils.isAvailable(context))
+                    authorities.addAll(TaskProvider.ProviderName.values().map { it.authority })
                 isSyncActive.postValue(authorities.any {
                     ContentResolver.isSyncActive(accountModel.account, it)
                 })
