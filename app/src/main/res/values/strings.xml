@@ -287,12 +287,12 @@
     <string name="settings_default_alarm_message">If default reminders shall be created for events without reminder: the desired number of minutes before the event. Leave blank to disable default reminders.</string>
     <string name="settings_manage_calendar_colors_key" translatable="false">manage_calendar_colors</string>
     <string name="settings_manage_calendar_colors">Manage calendar colors</string>
-    <string name="settings_manage_calendar_colors_on">Calendar colors are managed by DAVx⁵</string>
-    <string name="settings_manage_calendar_colors_off">Calendar colors are not set by DAVx⁵</string>
+    <string name="settings_manage_calendar_colors_on">Calendar colors are reset at each sync</string>
+    <string name="settings_manage_calendar_colors_off">Calendar colors can be set by other apps</string>
     <string name="settings_event_colors_key" translatable="false">event_colors</string>
     <string name="settings_event_colors">Event color support</string>
-    <string name="settings_event_colors_on">Sync event colors</string>
-    <string name="settings_event_colors_off">Do not sync event colors</string>
+    <string name="settings_event_colors_on">Event colors are synced</string>
+    <string name="settings_event_colors_off">Event colors are not synced</string>
     <string name="settings_carddav_key" translatable="false">carddav</string>
     <string name="settings_carddav">CardDAV</string>
     <string name="settings_contact_group_method_key" translatable="false">contact_group_method</string>
