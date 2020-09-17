@@ -46,14 +46,16 @@ class TasksWatcher(
             for (account in accountManager.getAccountsByType(context.getString(R.string.account_type))) {
                 val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
                 for (providerName in TaskProvider.ProviderName.values()) {
-                    val isSyncable = ContentResolver.getIsSyncable(account, providerName.authority) == 1
+                    val isSyncable = ContentResolver.getIsSyncable(account, providerName.authority)     // may be -1 (unknown state)
                     val shallBeSyncable = hasCalDAV && providerName == currentProvider
-                    if (isSyncable != shallBeSyncable)
-                        if (setSyncable(context, account, providerName.authority, shallBeSyncable)) {
-                            // check whether additional permissions are required
-                            if (!PermissionUtils.havePermissions(context, providerName.permissions))
-                                permissionsRequired = true
-                        }
+                    if ((shallBeSyncable && isSyncable != 1) || (!shallBeSyncable && isSyncable != 0)) {
+                        // enable/disable sync
+                        setSyncable(context, account, providerName.authority, shallBeSyncable)
+
+                        // if sync has just been enabled: check whether additional permissions are required
+                        if (shallBeSyncable && !PermissionUtils.havePermissions(context, providerName.permissions))
+                            permissionsRequired = true
+                    }
                 }
             }
 
@@ -63,13 +65,12 @@ class TasksWatcher(
             }
         }
 
-        private fun setSyncable(context: Context, account: Account, authority: String, syncable: Boolean): Boolean {
+        private fun setSyncable(context: Context, account: Account, authority: String, syncable: Boolean) {
             if (syncable) {
                 Logger.log.info("Enabling $authority sync for $account")
                 ContentResolver.setIsSyncable(account, authority, 1)
                 try {
                     AccountSettings(context, account).setSyncInterval(authority, Constants.DEFAULT_SYNC_INTERVAL)
-                    return true
                 } catch (e: InvalidAccountException) {
                     // account has already been removed
                 }
@@ -77,7 +78,6 @@ class TasksWatcher(
                 Logger.log.info("Disabling ${authority} sync for $account")
                 ContentResolver.setIsSyncable(account, authority, 0)
             }
-            return false
         }
 
     }

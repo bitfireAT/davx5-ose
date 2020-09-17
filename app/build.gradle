@@ -15,7 +15,7 @@ apply plugin: 'org.jetbrains.dokka'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion '29.0.2'
+    buildToolsVersion '30.0.2'
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
