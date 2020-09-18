@@ -165,11 +165,7 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">Hendelser som er mer enn dette antallet dager i fortid vil bli ignorert (kan være 0). La stå tomt for å synkronisere alle hendelser.</string>
   <string name="settings_manage_calendar_colors">Velg kalenderfarger</string>
-  <string name="settings_manage_calendar_colors_on">Kalenderfarger behandles av DAVx⁵</string>
-  <string name="settings_manage_calendar_colors_off">Kalenderfarger settes ikke av DAVx⁵</string>
   <string name="settings_event_colors">Støtte for fargelegging av hendelser</string>
-  <string name="settings_event_colors_on">Synkroniser hendelsesfarger</string>
-  <string name="settings_event_colors_off">Ikke synkroniser hendelsesfarger</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Kontaktgruppemetode</string>
   <string name="settings_contact_group_method_change">Endre gruppemetode</string>
@@ -210,8 +206,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵-tilganger</string>
   <string name="sync_error_permissions_text">Ytterligere tilganger kreves</string>
-  <string name="sync_error_opentasks_too_old">OpenTasks er for gammel</string>
-  <string name="sync_error_opentasks_required_version">Krever versjon: %1$s (er nå %2$s)</string>
   <string name="sync_error_io">Nettverk- og I/O-feil - %s</string>
   <string name="sync_error_http_dav">HTTP-tjenerfeil - %s</string>
   <string name="sync_error_local_storage">Feil med lokallagring - %s</string>

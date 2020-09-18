@@ -150,11 +150,7 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">Догађаји старији од овог броја дана ће бити занемарени (може бити 0). Оставите празно за синхронизацију свих догађаја.</string>
   <string name="settings_manage_calendar_colors">Управљај бојама календара</string>
-  <string name="settings_manage_calendar_colors_on">Бојама календара управља ДАВдроид</string>
-  <string name="settings_manage_calendar_colors_off">Боје календара није поставио ДАВдроид</string>
   <string name="settings_event_colors">Подршка за боју догађаја</string>
-  <string name="settings_event_colors_on">Синхронизуј боје догађаја</string>
-  <string name="settings_event_colors_off">Не синхронизуј боје догађаја</string>
   <string name="settings_carddav">КардДАВ</string>
   <string name="settings_contact_group_method">Режим група контаката</string>
   <string name="settings_contact_group_method_change">Измени режим група</string>
@@ -182,8 +178,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">ДАВдроид дозволе</string>
   <string name="sync_error_permissions_text">Потребне су додатне доволе</string>
-  <string name="sync_error_opentasks_too_old">Отворени задаци застарели</string>
-  <string name="sync_error_opentasks_required_version">Потребно издање: %1$s (текуће %2$s)</string>
   <string name="sync_error_authentication_failed">Аутентификација није успела (проверите акредитиве за пријаву)</string>
   <string name="sync_error_io">Мрежна или У/И грешка – %s</string>
   <string name="sync_error_http_dav">Грешка ХТТП сервера – %s</string>

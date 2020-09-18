@@ -153,11 +153,7 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">Събития преди повече от този брой дни в миналото ще бъдат пренебрегнати (може да бъде 0).  Остави празно за да се синхронизират всички събития.</string>
   <string name="settings_manage_calendar_colors">Управлявай цвета на календарите</string>
-  <string name="settings_manage_calendar_colors_on">Цветовете на календарите се управляват от DAVx⁵</string>
-  <string name="settings_manage_calendar_colors_off">Цветовете на календарите не се задават от DAVx⁵</string>
   <string name="settings_event_colors">Поддръжка на цветове за събития</string>
-  <string name="settings_event_colors_on">Синхронизирай цветовете на събитията</string>
-  <string name="settings_event_colors_off">Не синхронизирай цветовете на събитията</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Метод за съхранение на групи от контакти</string>
   <string name="settings_contact_group_method_change">Метод за съхранение на групи от контакти</string>
@@ -197,8 +193,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ права</string>
   <string name="sync_error_permissions_text">Необходими са допълнителни права</string>
-  <string name="sync_error_opentasks_too_old">OpenTasks е прекалено стара</string>
-  <string name="sync_error_opentasks_required_version">Изисква се версия: %1$s, а е налична %2$s.</string>
   <string name="sync_error_authentication_failed">Регистрирането се провали, провери потребителското име и паролата.</string>
   <string name="sync_error_io">Грешка с входа/изхода или мрежата – %s</string>
   <string name="sync_error_http_dav">Грешка с HTTP сървъра – %s</string>

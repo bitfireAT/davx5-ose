@@ -187,11 +187,7 @@
   <string name="settings_default_alarm_off">Нагадування за замовчуванням не створюються</string>
   <string name="settings_default_alarm_message">Якщо нагадування за замовчуванням створюються для подій без нагадування: бажана кількість хвилин до події. Залиште поле порожнім, щоб вимкнути нагадування за замовчуванням.</string>
   <string name="settings_manage_calendar_colors">Керування кольорами</string>
-  <string name="settings_manage_calendar_colors_on">Кольори календаря керуються DAVx⁵</string>
-  <string name="settings_manage_calendar_colors_off">Кольори календаря не керуються DAVx⁵</string>
   <string name="settings_event_colors">Підтримка кольорів подій</string>
-  <string name="settings_event_colors_on">Синхронізувати кольори подій</string>
-  <string name="settings_event_colors_off">Не синхронізувати кольори подій</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Метод групування контактів</string>
   <string-array name="settings_contact_group_method_entries">
@@ -237,8 +233,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">Дозволи DAVx⁵</string>
   <string name="sync_error_permissions_text">Потребує додаткові дозволи</string>
-  <string name="sync_error_opentasks_too_old">OpenTasks застарів</string>
-  <string name="sync_error_opentasks_required_version">Необхідна версія: %1$s (поточна %2$s)</string>
   <string name="sync_error_authentication_failed">Помилка аутентифікації (перевірте обліковий запис)</string>
   <string name="sync_error_io">Помилка мережі та вводу/виводу — %s</string>
   <string name="sync_error_http_dav">Помилка сервера HTTP — %s</string>

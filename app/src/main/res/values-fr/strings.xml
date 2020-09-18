@@ -31,11 +31,7 @@
   <string name="intro_leave_unchecked">* Laisser non coché pour un rappel ultérieur. Peut être réinitialisé dans les paramètres de l\'application / %s.</string>
   <string name="intro_more_info">Plus d\'informations</string>
   <string name="intro_tasks_title">Support des tâches</string>
-  <string name="intro_tasks_not_installed">Non installé</string>
-  <string name="intro_tasks_opentasks_installed">OpenTasks installé</string>
   <string name="intro_tasks_no_app_store">Pas de magasin d\'application disponible</string>
-  <string name="intro_tasks_text1"><![CDATA[Android n\'a pas de support intégré pour les tâches. Si les tâches sont prises en charge par votre serveur, %s peut les synchroniser en utilisant <a href="https://opentasks.app/">OpenTasks</a>.]]></string>
-  <string name="intro_tasks_text2">Pour les fonctionnalités avancées comme les sous-tâches ou les tâches récurrentes, vous aurez besoin d\'applications supplémentaires.</string>
   <string name="intro_tasks_dont_show">Je n\'ai pas besoin de support des tâches.*</string>
   <string name="intro_open_source_title">Logiciels open-source</string>
   <string name="intro_open_source_text">Nous sommes heureux que vous utilisiez %s, qui est un logiciel open-source. Le développement, la maintenance et l\'assistance sont un travail difficile. Veuillez envisager de contribuer (il y a plusieurs façons de le faire) ou de faire un don. Ce serait très apprécié !</string>
@@ -53,7 +49,6 @@
   <string name="permissions_calendar_title">Permissions du calendrier</string>
   <string name="permissions_calendar_status_off">Pas de synchronisation du calendrier (non recommandé)</string>
   <string name="permissions_calendar_status_on">Synchronisation du calendrier possible</string>
-  <string name="permissions_tasks_title">Permissions d\'OpenTasks</string>
   <string name="permissions_tasks_status_not_installed">Pas de synchronisation des tâches (non installé)</string>
   <string name="permissions_tasks_status_off">Pas de synchronisation des tâches (non recommandé)</string>
   <string name="permissions_tasks_status_on">Synchronisation des tâches possible</string>
@@ -237,11 +232,7 @@
   <string name="settings_default_alarm_off">Aucun rappel par défaut</string>
   <string name="settings_default_alarm_message">Si des rappels par défaut doivent être créé pour des événements sans rappel: le nombre de minutes avant l\'événement. Laisser blanc pour désactiver les rappels par défaut.</string>
   <string name="settings_manage_calendar_colors">Choisir couleur du calendrier</string>
-  <string name="settings_manage_calendar_colors_on">Les couleurs de calendrier sont gérées par DAVx⁵</string>
-  <string name="settings_manage_calendar_colors_off">Les couleurs de calendrier ne sont pas gérées par DAVx⁵</string>
   <string name="settings_event_colors">Couleur associée aux événements</string>
-  <string name="settings_event_colors_on">Synchroniser la couleur associée aux événements</string>
-  <string name="settings_event_colors_off">Ne pas synchroniser la couleur associée aux événements</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Méthode pour les contacts de type groupe</string>
   <string-array name="settings_contact_group_method_entries">
@@ -293,8 +284,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">Autorisations DAVx⁵</string>
   <string name="sync_error_permissions_text">Autorisations supplémentaires demandées</string>
-  <string name="sync_error_opentasks_too_old">Version d\'OpenTask trop ancienne</string>
-  <string name="sync_error_opentasks_required_version">Version requise %1$s (actuellement %2$s)</string>
   <string name="sync_error_authentication_failed">Echec d\'authentification (contrôler vos identifiants de connexion)</string>
   <string name="sync_error_io">Erreur de réseau ou d\'entrée / sortie - %s</string>
   <string name="sync_error_http_dav">Erreur de serveur HTTP - %s</string>

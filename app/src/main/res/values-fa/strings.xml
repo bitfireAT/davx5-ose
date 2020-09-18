@@ -183,11 +183,7 @@
   <string name="settings_default_alarm_off">هیچ یادآوری پیش‌فرضی ساخته نشده است</string>
   <string name="settings_default_alarm_message">درصورت تمایل به ایجاد یادآوریهای پیش‌فرض برای رویدادهای فاقد یادآوری: تعداد دقایق مطلوب پیش از رویداد. برای غیر فعال کردن یادآوری‌های پیش‌فرض، خالی بگذارید.</string>
   <string name="settings_manage_calendar_colors">مدیریت رنگ‌های تقویم</string>
-  <string name="settings_manage_calendar_colors_on">رنگ‌های تقویم توسط DAVx⁵ مدیریت می‌شود</string>
-  <string name="settings_manage_calendar_colors_off">رنگ‌های تقویم توسط DAVx⁵ تنظیم نمی‌شود</string>
   <string name="settings_event_colors">پشتیبانی رنگ رویداد</string>
-  <string name="settings_event_colors_on">همگام کردن رنگ رویداد</string>
-  <string name="settings_event_colors_off">همگام نکردن رنگ رویداد</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">روش گروه‌بندی مخاطبین</string>
   <string name="settings_contact_group_method_change">تغییر روش گروه ها</string>
@@ -229,8 +225,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">دسترسی‌های DAVx⁵</string>
   <string name="sync_error_permissions_text">اجازه برای دسترسی‌های اضافی</string>
-  <string name="sync_error_opentasks_too_old">OpenTasks خیلی قدیمی</string>
-  <string name="sync_error_opentasks_required_version">نسخه مورد نیاز: %1$s (نسخه فعلی %2$s)</string>
   <string name="sync_error_authentication_failed">احراز هویت با شکست مواجه شد (اعتبارنامهٔ ورود را بررسی کنید)</string>
   <string name="sync_error_io">خطای شبکه یا I/O – %s</string>
   <string name="sync_error_http_dav">خطای کارگزار HTTP – %s</string>

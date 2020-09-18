@@ -93,8 +93,6 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">Bu sayıdan daha eski olan olaylar yok sayılacaktır (0 olabilir). Tüm olayları senkronize etmek için boş bırak.</string>
   <string name="settings_manage_calendar_colors">Takvim renklerini yönet</string>
-  <string name="settings_manage_calendar_colors_on">Takvim renkleri DAVx⁵ tarafından yönetilmekte</string>
-  <string name="settings_manage_calendar_colors_off">Takvim renkleri DAVx⁵ tarafından ayarlanmadı</string>
   <!--collection management-->
   <string name="create_addressbook">Rehber yarat</string>
   <string name="create_addressbook_display_name_hint">Benim Rehberim</string>

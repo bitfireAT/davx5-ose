@@ -172,11 +172,7 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">この日数より過去のイベントは無視されます (0 も可)。すべてのイベントを同期させるには、空白のままにしてください。</string>
   <string name="settings_manage_calendar_colors">カレンダーの色を管理</string>
-  <string name="settings_manage_calendar_colors_on">カレンダーの色は DAVx⁵ が管理します</string>
-  <string name="settings_manage_calendar_colors_off">カレンダーの色を DAVx⁵ が設定しません</string>
   <string name="settings_event_colors">イベントカラーサポート</string>
-  <string name="settings_event_colors_on">イベントカラーを同期</string>
-  <string name="settings_event_colors_off">イベントカラーを同期しない</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">連絡先グループ方法</string>
   <string name="settings_contact_group_method_change">グループ方法を変更</string>
@@ -218,8 +214,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ アクセス許可</string>
   <string name="sync_error_permissions_text">追加のアクセス許可が必要です</string>
-  <string name="sync_error_opentasks_too_old">OpenTasks が古すぎます</string>
-  <string name="sync_error_opentasks_required_version">必要なバージョン: %1$s (現在 %2$s)</string>
   <string name="sync_error_authentication_failed">認証に失敗しました (ログイン情報を確認してください)</string>
   <string name="sync_error_io">ネットワークまたは I/O エラー – %s</string>
   <string name="sync_error_http_dav">HTTP サーバーエラー – %s</string>

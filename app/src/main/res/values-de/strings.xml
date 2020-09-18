@@ -31,11 +31,7 @@
   <string name="intro_leave_unchecked">* Nicht anwählen, um später erinnert zu werden. Kann unter App-Einstellungen / %s zurückgesetzt werden.</string>
   <string name="intro_more_info">Mehr Infos</string>
   <string name="intro_tasks_title">Unterstützung für Aufgaben</string>
-  <string name="intro_tasks_not_installed">Nicht installiert</string>
-  <string name="intro_tasks_opentasks_installed">Aufgaben installiert</string>
   <string name="intro_tasks_no_app_store">Kein App-Store verfügbar</string>
-  <string name="intro_tasks_text1"><![CDATA[Android unterstützt standardmäßig keine Aufgaben. Wenn Aufgaben vom Server unterstützt werden, kann %s sie über <a href="https://opentasks.app/">OpenTasks</a> (Aufgaben) synchronisieren.]]></string>
-  <string name="intro_tasks_text2">Für bestimmte Funktionen wie Unteraufgaben oder Wiederholungen benötigen Sie zusätzliche Apps.</string>
   <string name="intro_tasks_dont_show">Ich brauche keine Unterstützung für Aufgaben.</string>
   <string name="intro_open_source_title">Open-Source-Software</string>
   <string name="intro_open_source_text">Wir freuen uns, dass Sie die Open-Source-Software %s verwenden. Entwicklung, Wartung und Support sind viel Arbeit. Ziehen Sie daher bitte in Betracht, mitzuhelfen (dazu gibt es viele Möglichkeiten) oder zu spenden. Vielen Dank!</string>
@@ -53,7 +49,7 @@
   <string name="permissions_calendar_title">Kalender-Berechtigungen</string>
   <string name="permissions_calendar_status_off">Keine Kalendersynchronisierung (nicht empfohlen)</string>
   <string name="permissions_calendar_status_on">Kalendersynchronisierung möglich</string>
-  <string name="permissions_tasks_title">Aufgaben-Berechtigungen</string>
+  <string name="permissions_tasksorg_title">Aufgaben-Berechtigungen</string>
   <string name="permissions_tasks_status_not_installed">Keine Aufgabensynchronisierung (nicht installiert)</string>
   <string name="permissions_tasks_status_off">Keine Aufgabensynchronisierung (nicht empfohlen)</string>
   <string name="permissions_tasks_status_on">Aufgabensynchronisierung möglich</string>
@@ -239,11 +235,8 @@
   <string name="settings_default_alarm_off">Keine Standard-Erinnerungen</string>
   <string name="settings_default_alarm_message">Wenn Standard-Erinnerungen für Termine ohne Erinnerung erzeugt werden sollen: gewünschte Anzahl der Minuten vor dem Ereignis. Leer lassen, um Standard-Erinnerungen zu deaktivieren.</string>
   <string name="settings_manage_calendar_colors">Kalenderfarben verwalten</string>
-  <string name="settings_manage_calendar_colors_on">Kalenderfarben werden von DAVx⁵ verwaltet</string>
-  <string name="settings_manage_calendar_colors_off">DAVx⁵ setzt keine Kalenderfarben</string>
+  <string name="settings_manage_calendar_colors_off">Kalenderfarben können von anderen Apps festgesetzt werden</string>
   <string name="settings_event_colors">Unterstützung für Terminfarben</string>
-  <string name="settings_event_colors_on">Terminfarben werden synchronisiert</string>
-  <string name="settings_event_colors_off">Terminfarben werden nicht synchronisiert</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Kontaktgruppen-Methode</string>
   <string-array name="settings_contact_group_method_entries">
@@ -307,8 +300,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵-Berechtigungen</string>
   <string name="sync_error_permissions_text">Zusätzliche Berechtigungen benötigt</string>
-  <string name="sync_error_opentasks_too_old">OpenTasks zu alt</string>
-  <string name="sync_error_opentasks_required_version">Version %1$s benötigt (derzeit %2$s)</string>
   <string name="sync_error_authentication_failed">Anmeldungsfehler (Login-Daten überprüfen)</string>
   <string name="sync_error_io">Netzwerk- oder E/A-Fehler – %s</string>
   <string name="sync_error_http_dav">HTTP-Serverfehler – %s</string>
